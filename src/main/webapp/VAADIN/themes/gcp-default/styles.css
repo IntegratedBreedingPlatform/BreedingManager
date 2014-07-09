@@ -182,12 +182,10 @@
 }
 
 .listManagerTree {
-	width: 850px;
 	height: 400px;
 }
 
 .crossingManagerTree {
-	width: 850px;
 	height: 400px;
 }
 
@@ -713,6 +711,10 @@
 	display: inline-block !important
 }
 
+.lm-search-bar div.v-csslayout {
+	display: inline-block !important
+}
+
 .lm-search-bar .lm-subtitle {
 	padding-bottom: 12px;
 }
@@ -731,7 +733,7 @@
 
 .closeAllTabsListManagerPosition span span {
 	position: relative;
-	top: -4px;
+	top: 0px;
 }
 
 .lm-toggle .bms-fa-chevron-left,
@@ -744,4 +746,59 @@
 .v-horizontallayout .v-captiontext{
 	text-transform: none;
 	font-size: 13px;	
+}
+
+.scale-row > div {
+	overflow: scroll !important;
+	overflow-x: hidden !important;
+}
+
+.align-center {
+	margin-left:auto;
+	margin-right:auto;
+}
+
+
+/* 
+Makes the tab header of the tabsheet in List Manager expands
+the user click the hide list builder component button  
+*/
+div.v-tabsheet-tabcontainer-listDetails {
+	width: 100% !important;
+}
+
+/* 
+Makes the arrow heads <> of tab header fixed on the right side of the pane in List Manager.  
+*/
+div.listDetails div.v-tabsheet-scroller {
+	position: absolute !important;
+	right: 0px !important;
+}
+
+
+.v-horizontallayout.v-horizontallayout-lm-div-wrap {
+	display: inline-block !important;
+	float: left !important;
+}
+
+.v-horizontallayout.v-horizontallayout-lm-word-wrap {
+	word-wrap: break-word !important;
+	width:100% !important;
+}
+
+.lm-component-wrap {
+	display: inline-block !important;
+	float: left !important;
+}
+
+/*
+Make the Unsaved Changes Confirm Dialog to have a similar formatting to the defualt ConfirmDialog class 
+*/
+div.unsaved-changes-dialog div.v-window-outerheader {
+	background: #CECECE;
+	text-align: center;
+}
+
+div.unsaved-changes-dialog div.v-window-contents>div {
+	background: #CECECE;
 }

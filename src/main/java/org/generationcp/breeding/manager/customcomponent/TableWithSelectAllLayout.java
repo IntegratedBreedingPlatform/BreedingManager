@@ -18,9 +18,9 @@ public class TableWithSelectAllLayout extends TableLayout implements BreedingMan
 	
 	private static final long serialVersionUID = 5246715520145983375L;
 
-	private CheckBox selectAllCheckBox;
-	private final Object checkboxColumnId;
-	private Label dummyLabel;
+	protected CheckBox selectAllCheckBox;
+	protected final Object checkboxColumnId;
+	protected Label dummyLabel;
 	
 	public TableWithSelectAllLayout(int recordCount, int maxRecords, Object checkboxColumnId){
 		super(recordCount, maxRecords);

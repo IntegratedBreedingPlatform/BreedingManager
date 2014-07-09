@@ -326,4 +326,13 @@ public class CrossingSettingsMethodComponent extends CssLayout implements
 			mapMethods.put(m.getMname(), new Integer(methodId));
         }
     }
+    
+	public boolean validateInputFields(){
+		if(((Boolean) selectMethod.getValue()) && breedingMethods.getValue()==null) {
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT)
+					, messageSource.getMessage(Message.PLEASE_CHOOSE_CROSSING_METHOD));
+			return false;
+		}
+		return true;
+	}    
 }

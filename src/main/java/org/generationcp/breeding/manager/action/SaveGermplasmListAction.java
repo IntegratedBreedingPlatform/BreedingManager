@@ -8,11 +8,11 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntr
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.workbench.Project;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -30,8 +30,11 @@ public class SaveGermplasmListAction implements Serializable {
     @Autowired
     private WorkbenchDataManager workbenchDataManager;
     
+    @Autowired
+	private InventoryDataManager inventoryDataManager;
+    
 	public static final String LIST_DATA_SOURCE = "Crossing Manager Tool";
-    public static final Integer LIST_DATA_STATUS = 1;
+    public static final Integer LIST_DATA_STATUS = 0;
     public static final Integer LIST_DATA_LRECID = 0;
     
 	private GermplasmList germplasmList;
@@ -134,9 +137,9 @@ public class SaveGermplasmListAction implements Serializable {
 		
         //after saving iterate through the itemIds
         int currentSaveListCount = (int) germplasmListManager.countGermplasmListDataByListId(germplasmList.getId());
-        List<GermplasmListData> currentSavedList = germplasmListManager.getGermplasmListDataByListId(germplasmList.getId(), 0, currentSaveListCount);
+        List<GermplasmListData> currentSavedList = inventoryDataManager.getLotCountsForList(germplasmList.getId(), 0, Long.valueOf(currentSaveListCount).intValue());
         if (source != null){
-        	source.updateListDataTable(currentSavedList);
+        	source.updateListDataTable(germplasmList.getId(), currentSavedList);
         }
         
 	}

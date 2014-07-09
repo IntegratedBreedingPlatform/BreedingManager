@@ -12,6 +12,7 @@ import org.generationcp.breeding.manager.crossingmanager.listeners.SelectTreeIte
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
 import org.generationcp.breeding.manager.customfields.LocalListFoldersTreeComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
+import org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -112,11 +113,11 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		addStyleName(Reindeer.WINDOW_LIGHT);
 		setResizable(false);
 		setModal(true);
-
+		
 		if(germplasmList!=null)
-		    germplasmListTree = new LocalListFoldersTreeComponent(new SelectTreeItemOnSaveListener(this), germplasmList.getId(), false, true);
+		    germplasmListTree = new LocalListFoldersTreeComponent(new SelectTreeItemOnSaveListener(this,source.getParentComponent()), germplasmList.getId(), false, true);
 		else
-			germplasmListTree = new LocalListFoldersTreeComponent(new SelectTreeItemOnSaveListener(this), null, false, true);
+			germplasmListTree = new LocalListFoldersTreeComponent(new SelectTreeItemOnSaveListener(this,source.getParentComponent()), null, false, true);
 		
 		guideMessage = new Label(messageSource.getMessage(Message.SELECT_A_FOLDER_TO_CREATE_A_LIST_OR_SELECT_AN_EXISTING_LIST_TO_EDIT_AND_OVERWRITE_ITS_ENTRIES)+".");
 		
@@ -156,6 +157,14 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 				
 				SimpleDateFormat formatter = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT);
 				
+				try {
+				    listDetailsComponent.getListDateField().validate();
+				} catch (Exception e) {
+					MessageNotifier.showError(getWindow().getParent().getWindow(), 
+							messageSource.getMessage(Message.ERROR), messageSource.getMessage(Message.DATE_MUST_BE_IN_THIS_FORMAT));
+					return;
+				}
+				
 				Date date;
 				try {
 					date = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy", Locale.ENGLISH).parse(listDetailsComponent.getListDateField().getValue().toString());
@@ -169,7 +178,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 							messageSource.getMessage(Message.ERROR), messageSource.getMessage(Message.UNABLE_TO_EDIT_LOCKED_LIST));
 				
 				//If target list to be overwritten is not itself and is an existing list
-				} else if( (!germplasmList.getType().equals("FOLDER") && (germplasmList.getId()!=null && originalGermplasmList==null)) 
+				} else if( (germplasmList.getType()!=null && !germplasmList.getType().equals("FOLDER") && (germplasmList.getId()!=null && originalGermplasmList==null)) 
 						|| (germplasmList.getId()!=null && originalGermplasmList!=null &&  germplasmList.getId()!=originalGermplasmList.getId())) {
 					
 					final GermplasmList gl = getGermplasmListToSave();
@@ -187,6 +196,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 								public void onClose(ConfirmDialog dialog) {
 			                        if (dialog.isConfirmed()) {
 			    						source.saveList(gl);
+			    						saveReservationChanges();
 			    						Window window = event.getButton().getWindow();
 			    				        window.getParent().removeWindow(window);
 			                        }
@@ -206,6 +216,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 						gl.setNotes(listDetailsComponent.getListNotesField().getValue().toString());
 						
 						source.saveList(gl);
+						saveReservationChanges();
 						
 						Window window = event.getButton().getWindow();
 				        window.getParent().removeWindow(window);
@@ -335,5 +346,19 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 	
 	public void setGermplasmList(GermplasmList germplasmList){
 		this.germplasmList = germplasmList;
+	}
+	
+	public BreedingManagerListDetailsComponent getListDetailsComponent(){
+		return listDetailsComponent;
+	}
+	
+	public LocalListFoldersTreeComponent getGermplasmListTree(){
+		return germplasmListTree;
+	}
+	
+	public void saveReservationChanges(){
+		if(source instanceof ListBuilderComponent){
+			((ListBuilderComponent) source).saveReservationChangesAction();
+		}
 	}
 }

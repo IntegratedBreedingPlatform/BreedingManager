@@ -2,6 +2,7 @@ package org.generationcp.breeding.manager.listmanager;
 
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.inventory.InventoryViewComponent;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -38,7 +39,7 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
     private int userId;
     private ListDetailComponent listDetailComponent;
     
-    private ListInventoryComponent listInventoryComponent;
+    private InventoryViewComponent listInventoryComponent;
     private ListManagerMain listManagerMain;
     
     private boolean fromUrl;    //this is true if this component is created by accessing the Germplasm List Details page directly from the URL
@@ -111,7 +112,7 @@ public class ListManagerTreeMenu extends VerticalLayout implements InitializingB
         listDataComponent = new ListDataComponent(this, germplasmListId,listName,userId,fromUrl,forGermplasmListWindow,germplasmListStatus, this, listManagerMain);
         listDataComponent.setData(LIST_DATA);
        
-        listInventoryComponent = new ListInventoryComponent(germplasmListId);
+        listInventoryComponent = new InventoryViewComponent(germplasmListId);
         listInventoryComponent.setData(LIST_SEED_INVENTORY);
         
         ComponentTree content = new ComponentTree();

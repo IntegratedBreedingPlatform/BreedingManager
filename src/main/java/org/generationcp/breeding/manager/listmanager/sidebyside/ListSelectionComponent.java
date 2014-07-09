@@ -1,6 +1,5 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
-import com.vaadin.ui.VerticalLayout;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
@@ -17,6 +16,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
@@ -153,6 +153,18 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 	
 	public ListSearchComponent getListSearchComponent(){
 		return listSearchComponent;
+	}
+
+	@Override
+	public void addListToFemaleList(Integer germplasmListId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addListToMaleList(Integer germplasmListId) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

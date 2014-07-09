@@ -52,6 +52,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Embedded;
@@ -164,10 +165,15 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     
     public void searchButtonClickAction() throws InternationalizableException {
     	String searchQuery = searchField.getValue().toString();
-    	if(searchQuery==null || searchQuery.equals("")){
-    		MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), messageSource.getMessage(Message.ERROR_NO_ENTRY_ON_SEARCH_FIELD) , Notification.POSITION_CENTERED);
-    		return;
-    	}
+    	
+		if(searchQuery.replaceAll(" ", "").trim().equals("")){
+			MessageNotifier.showWarning(getWindow(),
+					messageSource.getMessage(Message.UNABLE_TO_SEARCH),
+					messageSource.getMessage(Message.SEARCH_QUERY_CANNOT_BE_EMPTY),
+					Notification.POSITION_CENTERED);
+			return;
+		}
+		
     	try {
     		//TODO check if the newly introduced last parameter (searchPublicData flag) needs to be UI driven here too. Setting true as default to retain behavior on this screen for now.
     		List<Germplasm> germplasms = germplasmDataManager.searchForGermplasm(searchQuery, (((Boolean) likeOrEqualCheckBox.getValue()).equals(true) ? Operation.EQUAL : Operation.LIKE), false, true);

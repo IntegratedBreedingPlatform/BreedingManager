@@ -157,4 +157,16 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
     			parentsComponent.getFemaleListNameForCrosses(), parentsComponent.getMaleListNameForCrosses(), type, chkBoxMakeReciprocalCrosses.booleanValue());
     }
 
+	@Override
+	public void addListToFemaleList(Integer germplasmListId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addListToMaleList(Integer germplasmListId) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

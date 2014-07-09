@@ -167,6 +167,15 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 	}
 
 	public void doSearch(String q) {
+		
+		if(q.replaceAll(" ", "").trim().equals("")){
+			MessageNotifier.showWarning(getWindow(),
+					messageSource.getMessage(Message.UNABLE_TO_SEARCH),
+					messageSource.getMessage(Message.SEARCH_QUERY_CANNOT_BE_EMPTY),
+					Notification.POSITION_CENTERED);
+			return;
+		}
+		
 		try {
 			boolean searchPublicData = (Boolean) searchPublicDataCheckBox.getValue();
 			boolean exactMatchedOnly = (Boolean) exactMatchesOnlyCheckBox.getValue();

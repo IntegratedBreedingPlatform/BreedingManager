@@ -106,23 +106,10 @@ public class LocalListFoldersTreeComponent extends ListTreeComponent {
 			return;
 		
 		BreedingManagerApplication breedingManagerApplication = (BreedingManagerApplication) getApplication();
-		if(breedingManagerApplication==null){
-			System.out.println("BM application is null");
-			return;
+		if(breedingManagerApplication!=null){
+			breedingManagerApplication.refreshListManagerTree();
+			breedingManagerApplication.refreshCrossingManagerTree();
 		}
-
-		ListManagerMain listManagerMain = breedingManagerApplication.getListManagerMain();
-
-		if(listManagerMain!=null){
-			listManagerMain.getListSelectionComponent().getListTreeComponent().refreshTree();
-		}
-		
-		ManageCrossingSettingsMain manageCrossSettingsMain = breedingManagerApplication.getManageCrossingSettingsMain();
-		
-		if(manageCrossSettingsMain!=null){
-			manageCrossSettingsMain.getMakeCrossesComponent().getSelectParentsComponent().getListTreeComponent().refreshTree();
-		}
-		
 	}
 
 }

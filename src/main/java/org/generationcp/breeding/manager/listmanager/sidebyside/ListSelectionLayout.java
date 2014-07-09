@@ -11,10 +11,17 @@
  *******************************************************************************/
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
+import org.generationcp.breeding.manager.customcomponent.UnsavedChangesSource;
 import org.generationcp.breeding.manager.util.ListManagerDetailsTabCloseHandler;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -45,7 +52,8 @@ import com.vaadin.ui.themes.Reindeer;
  * @author Mark Agarrado
  */
 @Configurable
-public class ListSelectionLayout extends VerticalLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
+public class ListSelectionLayout extends VerticalLayout implements InternationalizableComponent, 
+							InitializingBean, BreedingManagerLayout, UnsavedChangesSource {
 
     protected static final Logger LOG = LoggerFactory.getLogger(ListSelectionLayout.class);
     private static final long serialVersionUID = -6583178887344009055L;
@@ -59,7 +67,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    private final ListManagerMain listManagerMain;
+    private final ListManagerMain source;
     
     private Label headingLabel;
     private Label noListLabel;
@@ -72,14 +80,16 @@ public class ListSelectionLayout extends VerticalLayout implements International
 
     private HorizontalLayout headerLayout;
     private HorizontalLayout listSelectionHeaderContainer;
+    private HorizontalLayout searchOrBrowseContainer;
     
     private TabSheet detailsTabSheet;
+    private Map<ListComponent,Boolean> listStatusForChanges;
     
     private final Integer listId;
 
-    public ListSelectionLayout(final ListManagerMain listManagerMain, final Integer listId) {
+    public ListSelectionLayout(final ListManagerMain source, final Integer listId) {
     	super();
-        this.listManagerMain = listManagerMain;
+        this.source = source;
         this.listId = listId;
     }
     
@@ -125,7 +135,8 @@ public class ListSelectionLayout extends VerticalLayout implements International
         btnCloseAllTabs.setData(CLOSE_ALL_TABS_ID);
         btnCloseAllTabs.setImmediate(true);
         btnCloseAllTabs.setStyleName(Reindeer.BUTTON_LINK);
-        btnCloseAllTabs.addStyleName("closeAllTabsListManagerPosition");
+        //btnCloseAllTabs.addStyleName("closeAllTabsListManagerPosition");
+        //btnCloseAllTabs.addStyleName("closeAllTabsListManagerPadding");
         
         browseForLists = new Button();
         browseForLists.setImmediate(true);
@@ -140,7 +151,8 @@ public class ListSelectionLayout extends VerticalLayout implements International
         
         toWorkWith = new Label();
         toWorkWith.setImmediate(true);
-
+        
+        listStatusForChanges = new HashMap<ListComponent,Boolean>();
     }
 
     @Override
@@ -158,12 +170,17 @@ public class ListSelectionLayout extends VerticalLayout implements International
         this.setWidth("100%");
 
         listSelectionHeaderContainer = new HorizontalLayout();
+        listSelectionHeaderContainer.setHeight("26px");
         listSelectionHeaderContainer.setWidth("100%");
-        listSelectionHeaderContainer.setHeight("43px");
 
         final HeaderLabelLayout headerLbl = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS,headingLabel);
 
         final HorizontalLayout searchOrBrowseLayout = new HorizontalLayout();
+        
+        searchOrBrowseContainer = new HorizontalLayout();
+        searchOrBrowseContainer.setHeight("19px");
+        searchOrBrowseContainer.setWidth("100%");
+        
         // Ugh, bit of a hack - can't figure out how to space these nicely
         searchForLists.setWidth("43px");
         or.setWidth("16px");
@@ -173,78 +190,31 @@ public class ListSelectionLayout extends VerticalLayout implements International
         searchOrBrowseLayout.addComponent(or);
         searchOrBrowseLayout.addComponent(browseForLists);
         searchOrBrowseLayout.addComponent(toWorkWith);
-
-        final VerticalLayout headerAndDesc = new VerticalLayout();
-        headerAndDesc.addComponent(noListLabel);
-        headerAndDesc.addComponent(headerLbl);
-        headerAndDesc.addComponent(searchOrBrowseLayout);
-
+        
+        searchOrBrowseContainer.addComponent(searchOrBrowseLayout);
+        searchOrBrowseContainer.addComponent(btnCloseAllTabs);
+        searchOrBrowseContainer.setComponentAlignment(btnCloseAllTabs,Alignment.TOP_RIGHT);
+    
+        final VerticalLayout header = new VerticalLayout();
+        header.setWidth("100%");
+        header.addComponent(noListLabel);
+        header.addComponent(headerLbl);
+        
+        
         final VerticalLayout headerBtnContainer = new VerticalLayout();
         headerBtnContainer.setSizeUndefined();
         headerBtnContainer.setSpacing(true);
-        headerBtnContainer.addComponent(listManagerMain.listBuilderToggleBtn1);
-        headerBtnContainer.addComponent(btnCloseAllTabs);
-        headerBtnContainer.setComponentAlignment(btnCloseAllTabs,Alignment.TOP_RIGHT);
+        headerBtnContainer.addComponent(source.listBuilderToggleBtn1);
+        
 
-        listSelectionHeaderContainer.addComponent(headerAndDesc);
+        listSelectionHeaderContainer.addComponent(header);
         listSelectionHeaderContainer.addComponent(headerBtnContainer);
-        listSelectionHeaderContainer.setExpandRatio(headerAndDesc,1.0F);
+        listSelectionHeaderContainer.setExpandRatio(header,1.0F);
         listSelectionHeaderContainer.setComponentAlignment(headerBtnContainer,Alignment.TOP_RIGHT);
 
         this.addComponent(listSelectionHeaderContainer);
+        this.addComponent(searchOrBrowseContainer);
         this.addComponent(detailsTabSheet);
-        //this.setExpandRatio(detailsTabSheet,1.0f);
-
-
-
-
-        /*
-        * setWidth("100%");
-    	setStyleName(Reindeer.TABSHEET_SMALL);
-        setMargin(false);
-
-        setDetailsTabSheetHeight();
-
-    	//Components
-        headerLayout.setSizeUndefined();
-        final HeaderLabelLayout headerLbl = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS, headingLabel);
-        headerLbl.addStyleName("lm-title");
-        headerLbl.setHeight("30px");
-
-        headerLayout.addComponent(headerLbl);
-
-        innerLayout = new VerticalLayout();
-        innerLayout.setSizeUndefined();
-
-        final VerticalLayout headerBtnContainer = new VerticalLayout();
-        headerBtnContainer.setSpacing(true);
-        headerBtnContainer.addComponent(listBuilderToggleBtn);
-        headerBtnContainer.addComponent(btnCloseAllTabs);
-
-        final HorizontalLayout listSelectionHeader = new HorizontalLayout();
-        listSelectionHeader.setWidth("100%");
-
-        listSelectionHeader.addComponent(innerLayout);
-        listSelectionHeader.addComponent(headerBtnContainer);
-        listSelectionHeader.setExpandRatio(innerLayout,1.0F);
-
-
-
-
-        searchOrBrowseLayout.addComponent(searchForLists);
-        searchOrBrowseLayout.addComponent(or);
-        searchOrBrowseLayout.addComponent(browseForLists);
-        searchOrBrowseLayout.addComponent(toWorkWith);
-
-        innerLayout.addComponent(noListLabel);
-        innerLayout.addComponent(headerLayout);
-        innerLayout.addComponent(searchOrBrowseLayout);
-
-        addComponent(listSelectionHeader);
-        addComponent(detailsTabSheet);
-
-        *
-        * */
         this.displayDefault();
     }
     
@@ -285,7 +255,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
 
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				listManagerMain.getListSelectionComponent().openListBrowseDialog();
+				source.getListSelectionComponent().openListBrowseDialog();
 			}
         });
         
@@ -295,7 +265,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
 
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				listManagerMain.getListSelectionComponent().openListSearchDialog();
+				source.getListSelectionComponent().openListSearchDialog();
 			}
         });
 
@@ -330,7 +300,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
         
         if (!tabExists) {
             
-        	final Component tabContent = new ListTabComponent(listManagerMain, this, germplasmList);
+        	final Component tabContent = new ListTabComponent(source, this, germplasmList);
             final Tab tab = detailsTabSheet.addTab(tabContent, tabName, null);
             
             if (germplasmList != null){
@@ -360,7 +330,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
     public void showDetailsTabsheet() {
         detailsTabSheet.setVisible(true);
         this.addComponent(detailsTabSheet);
-        this.requestRepaintAll();
+        this.requestRepaint();
     }
     
     public void hideDetailsTabsheet() {
@@ -375,6 +345,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
     	if(detailsTabSheet.isVisible()){
     	    this.removeAllComponents();
     	    this.addComponent(listSelectionHeaderContainer);
+    	    this.addComponent(searchOrBrowseContainer);
     	    this.addComponent(detailsTabSheet);
     	
             detailsTabSheet.setVisible(true);
@@ -382,8 +353,8 @@ public class ListSelectionLayout extends VerticalLayout implements International
             if(detailsTabSheet.getComponentCount() > 1){
             	btnCloseAllTabs.setVisible(true);
             }
-            this.requestRepaintAll();
-    	}
+            this.requestRepaint();
+    	}    	
     }
     
     public void renameTab(Integer listId, String newName){
@@ -407,9 +378,93 @@ public class ListSelectionLayout extends VerticalLayout implements International
             this.hideDetailsTabsheet();
         }
     }
-    
-    /*public void closeAllTab(String tabName){
-    	// TODO method stub
-    }*/
+
+	@Override
+	public void setHasUnsavedChangesMain(boolean hasChanges) {
+		source.setHasUnsavedChangesMain(hasChanges);
+	}
+
+	public Map<ListComponent,Boolean> getListStatusForChanges(){
+		return listStatusForChanges;
+	}
+	
+	public void addUpdateListStatusForChanges(ListComponent listComponent, Boolean status){
+		removeListStatusForChanges(listComponent);
+		listStatusForChanges.put(listComponent, status);
+		
+		if(hasUnsavedChanges()){
+			setHasUnsavedChangesMain(true);
+		}
+		else{
+			setHasUnsavedChangesMain(false);
+		}
+	}
+	
+	public boolean hasUnsavedChanges() {
+		List<Boolean> listOfStatus = new ArrayList<Boolean>();
+		
+		listOfStatus.addAll(listStatusForChanges.values());
+		
+		for(Boolean status: listOfStatus){
+			if(status){
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
+	public void removeListStatusForChanges(ListComponent listComponent){
+		if(listStatusForChanges.containsKey(listComponent)){
+			listStatusForChanges.remove(listComponent);
+		}
+	}
+	
+	public void updateViewForAllLists(ModeView modeView){
+		List<ListComponent> listComponents = new ArrayList<ListComponent>();
+		listComponents.addAll(listStatusForChanges.keySet());
+		
+		if(modeView.equals(ModeView.LIST_VIEW)){
+			for(ListComponent listComponent : listComponents){
+				listComponent.changeToListView();
+			}
+		}
+		else if(modeView.equals(ModeView.INVENTORY_VIEW)){
+			for(ListComponent listComponent : listComponents){
+				listComponent.viewInventoryActionConfirmed();
+			}
+		}
+	}
+	
+	public void updateHasChangesForAllList(Boolean hasChanges){
+		List<ListComponent> listComponents = new ArrayList<ListComponent>();
+		listComponents.addAll(listStatusForChanges.keySet());
+		
+		for(ListComponent listComponent : listComponents){
+			listComponent.setHasUnsavedChanges(hasChanges);
+		}
+	}
+
+	public void resetListViewForCancelledChanges() {
+		List<ListComponent> listComponents = new ArrayList<ListComponent>();
+		listComponents.addAll(listStatusForChanges.keySet());
+		
+		for(ListComponent listComponent : listComponents){
+			if(listComponent.hasUnsavedChanges()){
+				listComponent.resetListDataTableValues();
+			}
+		}
+	}
+	
+	public void resetInventoryViewForCancelledChanges() {
+		List<ListComponent> listComponents = new ArrayList<ListComponent>();
+		listComponents.addAll(listStatusForChanges.keySet());
+		
+		for(ListComponent listComponent : listComponents){
+			if(listComponent.hasUnsavedChanges()){
+				listComponent.resetListInventoryTableValues();
+			}
+		}
+	}
 
 }

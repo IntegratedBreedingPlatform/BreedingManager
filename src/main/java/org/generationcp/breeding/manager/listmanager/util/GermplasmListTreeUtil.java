@@ -457,7 +457,6 @@ public class GermplasmListTreeUtil implements Serializable {
         // show window
         mainWindow.addWindow(w);
         source.refreshRemoteTree();
-        
     }
 
 	public void deleteFolderOrList(final ListTreeComponent listTreeComponent, final Integer lastItemId, 
@@ -491,8 +490,6 @@ public class GermplasmListTreeUtil implements Serializable {
 				throw new Error(messageSource.getMessage(Message.ERROR_UNABLE_TO_DELETE_LOCKED_LIST));
 			}
 
-			source.refreshRemoteTree();
-			
 			try {
 				if (hasChildren(gpList.getId())) {
 					throw new Error(HAS_CHILDREN);
@@ -521,6 +518,8 @@ public class GermplasmListTreeUtil implements Serializable {
 								workbenchDataManager, source.getWindow(), messageSource, "item");
 						listTreeComponent.removeListFromTree(finalGpList);
 						((BreedingManagerApplication) mainWindow.getApplication()).getListManagerMain().updateUIForDeletedList(finalGpList);
+
+						source.refreshRemoteTree();
 						
 					} catch (Error e) {
 						MessageNotifier.showError(mainWindow, e.getMessage(), "");

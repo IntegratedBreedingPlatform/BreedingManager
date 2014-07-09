@@ -1,9 +1,14 @@
 package org.generationcp.breeding.manager.listmanager.sidebyside;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.ModeView;
+import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialog;
+import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialogSource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -31,19 +36,21 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class ListManagerMain extends VerticalLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
-
+public class ListManagerMain extends VerticalLayout implements InternationalizableComponent, InitializingBean, 
+										BreedingManagerLayout, UnsavedChangesConfirmDialogSource {
+	
     private static final long serialVersionUID = 5976245899964745758L;
+    
+    private static final Logger LOG = LoggerFactory.getLogger(ListManagerMain.class);
     
     private static final String VERSION_STRING = "<h2>1.0.0</h2>";
     
+    
     private AbsoluteLayout titleLayout;
     private Label mainTitle;
-    //private Button buildNewListButton;
     public static final String BUILD_NEW_LIST_BUTTON_DATA = "Build new list";
     
     // Tabs
@@ -63,14 +70,13 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
     // You can toggle the plant selection content to display a list view, or a germplasm view
     private ListSelectionComponent listSelectionComponent;
     private GermplasmSelectionComponent plantSelectionComponent;
-    
-    // The split pane can be expanded and collapsed
-	private static Float COLLAPSED_SPLIT_POSITION_RIGHT = Float.valueOf(94); //actual width in pixel 50
-	private static Float MAX_EXPANDED_SPLIT_POSITION_RIGHT = Float.valueOf(50);
 	
 	private final Integer selectedListId;
 	
-	private static final Logger LOG = LoggerFactory.getLogger(ListManagerMain.class);
+	//Handles Universal Mode View for ListManagerMain
+	private ModeView modeView;
+	private boolean hasChanges; //marks if there are unsaved changes in List from ListComponent and ListBuilderComponent
+	private UnsavedChangesConfirmDialog unsavedChangesDialog;
 	
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -123,6 +129,9 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
         listBuilderToggleBtn2.setHtmlContentAllowed(true);
         listBuilderToggleBtn2.setStyleName(Bootstrap.Buttons.BORDERED.styleName() + " lm-toggle");
 
+        modeView = ModeView.LIST_VIEW;
+        hasChanges = false;
+        
         setSizeFull();
         setTitleContent();
         setTabHeader();
@@ -167,7 +176,9 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
 
         listBuilderToggleBtn1.addListener(new Button.ClickListener() {
-            @Override
+			private static final long serialVersionUID = -8178708255873293566L;
+
+			@Override
             public void buttonClick(ClickEvent event) {
                 ListManagerMain.this.toggleListBuilder();
             }
@@ -175,7 +186,9 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
 
         listBuilderToggleBtn2.addListener(new Button.ClickListener() {
-            @Override
+			private static final long serialVersionUID = 4202348847712247508L;
+
+			@Override
             public void buttonClick(ClickEvent event) {
                 ListManagerMain.this.toggleListBuilder();
             }
@@ -329,16 +342,12 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	private void setTabContent(){
 		splitPanel = new HorizontalSplitPanel();
 		splitPanel.setMargin(false);
-		//splitPanel.setSplitPosition(50, Sizeable.UNITS_PERCENTAGE);
-		splitPanel.setMaxSplitPosition(50, Sizeable.UNITS_PERCENTAGE);
-		//splitPanel.setMinSplitPosition(, Sizeable.UNITS_PERCENTAGE);
-		splitPanel.setSplitPosition(0,Sizeable.UNITS_PIXELS,true);
+		splitPanel.setMaxSplitPosition(46.5f, Sizeable.UNITS_PERCENTAGE);
+		splitPanel.setSplitPosition(0,Sizeable.UNITS_PERCENTAGE,true);
 
         splitPanel.setImmediate(true);
         splitPanel.setStyleName(Reindeer.SPLITPANEL_SMALL);
         splitPanel.addStyleName("tabContainerStyle");
-
-
 
         listSelectionComponent = new ListSelectionComponent(this, selectedListId);
 		plantSelectionComponent = new GermplasmSelectionComponent(this);
@@ -346,7 +355,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
         plantFinderContent = new AbsoluteLayout();
         plantFinderContent.addComponent(listSelectionComponent,"top:0px;left:0px");
         plantFinderContent.addComponent(plantSelectionComponent,"top:0px;left:0px");
-
+        
         listBuilderComponent = new ListBuilderComponent(this);
 
 		splitPanel.setFirstComponent(plantFinderContent);
@@ -408,8 +417,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		        return true;
 		    } catch (MiddlewareQueryException e) {
 		        LOG.error("Error with locking list.", e);
-	            MessageNotifier.showError(getWindow(), "Database Error!", "Error with locking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
-	                    , Notification.POSITION_CENTERED);
+	            MessageNotifier.showError(getWindow(), "Database Error!", "Error with locking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
 	            return false;
 		    }
 		}
@@ -445,8 +453,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		        return true;
 		    } catch (MiddlewareQueryException e) {
 		        LOG.error("Error with unlocking list.", e);
-	            MessageNotifier.showError(getWindow(), "Database Error!", "Error with unlocking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
-	                    , Notification.POSITION_CENTERED);
+	            MessageNotifier.showError(getWindow(), "Database Error!", "Error with unlocking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
 	            return false;
 		    }
 		}
@@ -461,7 +468,6 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
         	hideListBuilder();
         }
 
-        isListBuilderShown = !isListBuilderShown;
         listSelectionComponent.getListDetailsLayout().repaintTabsheet();
     }
 
@@ -475,6 +481,8 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
         listBuilderToggleBtn1.setCaption(hideTxt);
         listBuilderToggleBtn2.setCaption(hideTxt);
+        
+        isListBuilderShown = true;
     }
 
     public void hideListBuilder(){
@@ -487,6 +495,8 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
         listBuilderToggleBtn1.setCaption(showTxt);
         listBuilderToggleBtn2.setCaption(showTxt);
+        
+        isListBuilderShown = false;
     }
 	
     public Integer getListBuilderStatus(){
@@ -500,5 +510,139 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
     		return true;
     	return false;
     }
+
+	public ModeView getModeView() {
+		return modeView;
+	}
+
+	public void setModeView(ModeView newModeView) {
+		String message = "";
+		
+		if(this.modeView != newModeView){
+			if(hasChanges){
+				if(this.modeView.equals(ModeView.LIST_VIEW) && newModeView.equals(ModeView.INVENTORY_VIEW)){
+					message = "You have unsaved changes to one or more lists. Do you want to save them before changing views?";
+					showUnsavedChangesConfirmDialog(message,newModeView);
+				}
+				else if(this.modeView.equals(ModeView.INVENTORY_VIEW) && newModeView.equals(ModeView.LIST_VIEW)){
+					message = "You have unsaved reservations to one or more lists. Do you want to save them before changing views?";
+					showUnsavedChangesConfirmDialog(message,newModeView);
+				}
+			}
+			else{
+				modeView = newModeView;
+				updateView(modeView);
+			}
+		}
+		
+	}
+	
+	public void showUnsavedChangesConfirmDialog(String message, ModeView newModeView){
+		modeView = newModeView;
+		unsavedChangesDialog = new UnsavedChangesConfirmDialog(this, message);
+		this.getWindow().addWindow(unsavedChangesDialog);
+	}
+	
+	public void setModeViewOnly(ModeView newModeView) {
+		this.modeView = newModeView; 
+	}
+
+	public void updateView(ModeView modeView) {
+		listSelectionComponent.getListDetailsLayout().updateViewForAllLists(modeView);
+		
+		if(modeView.equals(ModeView.INVENTORY_VIEW)){
+			listBuilderComponent.viewInventoryActionConfirmed();
+		}
+		else if(modeView.equals(ModeView.LIST_VIEW)){
+			listBuilderComponent.changeToListView();
+		}
+			
+	}
+	
+	@Override
+	public void saveAllListChangesAction() {
+		
+		if(getListSelectionComponent().getListDetailsLayout().hasUnsavedChanges()){
+			Map<ListComponent,Boolean> listToUpdate = new HashMap<ListComponent, Boolean>(); 
+			listToUpdate.putAll(listSelectionComponent.getListDetailsLayout().getListStatusForChanges());
+			
+			for(Map.Entry<ListComponent, Boolean> list : listToUpdate.entrySet()){
+				Boolean isListHasUnsavedChanges = list.getValue();
+				if(isListHasUnsavedChanges){
+					ListComponent toSave = list.getKey();
+					toSave.saveChangesAction();
+				}
+			}
+		}
+		
+		if(listBuilderComponent.hasUnsavedChanges()){
+			//Save all changes in ListBuilder
+			GermplasmList currentlySavedGermplasmList = listBuilderComponent.getCurrentlySavedGermplasmList();
+			if(currentlySavedGermplasmList == null){
+				listBuilderComponent.openSaveListAsDialog();
+			}
+			else{
+				listBuilderComponent.getSaveListButtonListener().doSaveAction();
+				//Change ListBuilder View to List View
+				listBuilderComponent.viewInventoryActionConfirmed();
+			}	
+		}
+		
+		resetUnsavedStatus();
+		updateView(modeView);
+		
+		this.getWindow().removeWindow(unsavedChangesDialog);
+	}//end of saveAllListChangesAction()
+	
+	@Override
+	public void discardAllListChangesAction(){
+		//cancel all the unsaved changes
+		listSelectionComponent.getListDetailsLayout().resetListViewForCancelledChanges();
+		listSelectionComponent.getListDetailsLayout().updateViewForAllLists(modeView);
+		
+		if(listBuilderComponent.getCurrentlySavedGermplasmList() != null){
+			if(modeView.equals(ModeView.INVENTORY_VIEW)){
+				listBuilderComponent.discardChangesInListView();
+			}
+			else if(modeView.equals(ModeView.LIST_VIEW)){
+				listBuilderComponent.discardChangesInInventoryView();
+			}
+		}
+		else{
+			//if no list save, just reset the list
+			listBuilderComponent.resetList();
+		}
+		
+		resetUnsavedStatus();
+		
+		this.getWindow().removeWindow(unsavedChangesDialog);
+	}//end of discardAllListChangesAction()
+	
+	@Override
+	public void cancelAllListChangesAction(){
+		
+		//Return to Previous Mode View
+		if(modeView.equals(ModeView.LIST_VIEW)){
+			setModeViewOnly(ModeView.INVENTORY_VIEW);
+		}
+		else if(modeView.equals(ModeView.INVENTORY_VIEW)){
+			setModeViewOnly(ModeView.LIST_VIEW);
+		}
+		
+		this.getWindow().removeWindow(unsavedChangesDialog);
+	}//end of cancelAllListChangesAction()
+	
+	public void resetUnsavedStatus(){
+		listSelectionComponent.getListDetailsLayout().updateHasChangesForAllList(false);
+		listBuilderComponent.resetUnsavedChangesFlag();
+	}
+
+	public boolean hasUnsavedChanges() {
+		return hasChanges;
+	}
+
+	public void setHasUnsavedChangesMain(boolean hasChanges) {
+		this.hasChanges = hasChanges;
+	}
     
 }

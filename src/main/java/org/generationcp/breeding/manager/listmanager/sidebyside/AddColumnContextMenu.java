@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.vaadin.ui.*;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.middleware.domain.gms.ListDataColumn;
 import org.generationcp.middleware.domain.gms.ListDataInfo;
@@ -24,6 +23,10 @@ import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.data.Item;
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.Table;
 
 @Configurable
 public class AddColumnContextMenu implements InternationalizableComponent  {
@@ -486,12 +489,12 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private void markHasChangesFlags(boolean fromAddColumn){
     	//mark flag that changes have been made in listDataTable
         if(listDetailsComponent != null && fromAddColumn){ 
-        	listDetailsComponent.setChanged(true); 
+        	listDetailsComponent.getListComponent().setHasUnsavedChanges(true); 
         }
         
         //mark flag that changes have been made in buildNewListTable
         if(buildNewListComponent != null){ 
-        	buildNewListComponent.setChanged(true); 
+        	buildNewListComponent.setHasUnsavedChanges(true);
         }
     }
     

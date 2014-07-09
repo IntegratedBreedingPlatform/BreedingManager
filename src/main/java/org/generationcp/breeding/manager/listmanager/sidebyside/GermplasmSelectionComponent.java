@@ -56,14 +56,17 @@ public class GermplasmSelectionComponent extends VerticalLayout implements Initi
 		
 		headerLayout = new HorizontalLayout();
 		instructionLayout = new HorizontalLayout();
+		instructionLayout.setWidth("100%");
 		
 		headingLabel = new Label();
     	headingLabel.setImmediate(true);
-    	headingLabel.setWidth("300px");
+    	headingLabel.setWidth("200px");
     	headingLabel.setStyleName(Bootstrap.Typography.H4.styleName());
     	headingLabel.addStyleName(AppConstants.CssStyles.BOLD);
 		
 		searchDescription = new Label();
+		searchDescription.addStyleName("lm-word-wrap");
+		searchDescription.setHeight("53px");
 		
 		searchResultsComponent = new GermplasmSearchResultsComponent(source);
 		searchBarComponent = new GermplasmSearchBarComponent(searchResultsComponent);
@@ -95,7 +98,6 @@ public class GermplasmSelectionComponent extends VerticalLayout implements Initi
 		headerLayout.addComponent(headingLayout);
 
 		instructionLayout.addComponent(searchDescription);
-		instructionLayout.addStyleName("lm-subtitle");
 		
 		final Panel listDataTablePanel = new Panel();
         listDataTablePanel.setStyleName(Reindeer.PANEL_LIGHT + " "+AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);

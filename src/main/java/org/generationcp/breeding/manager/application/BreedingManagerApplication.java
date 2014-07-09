@@ -168,9 +168,12 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 	            	Window listManagerWindow = new Window(messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
 	                listManagerWindow.setName(name);
 	                listManagerWindow.setSizeFull();
-	                listManagerWindow.addComponent(new org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain(listId));
+	                
+	                listManagerMain = new org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain(listId);
+					
+	                listManagerWindow.setContent(listManagerMain);
 	                this.addWindow(listManagerWindow);
-	                listManagerWindow.getContent().setHeight("100%");
+	                
 	                return listManagerWindow;
             	} catch(NumberFormatException ex){
             		Window emptyGermplasmListDetailsWindow = new Window(messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
@@ -289,4 +292,21 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     public ManageCrossingSettingsMain getManageCrossingSettingsMain() {
     	return manageCrossingSettingsMain;
     }
+    
+    public void refreshListManagerTree(){
+		ListManagerMain listManagerMain = getListManagerMain();
+		if(listManagerMain!=null){
+			listManagerMain.getListSelectionComponent().getListTreeComponent().refreshTree();
+		}
+    }
+    
+    public void refreshCrossingManagerTree(){
+		ManageCrossingSettingsMain manageCrossSettingsMain = getManageCrossingSettingsMain();
+		if(manageCrossSettingsMain!=null){
+			manageCrossSettingsMain.getMakeCrossesComponent().getSelectParentsComponent().getListTreeComponent().refreshTree();
+		}
+    }
+    
+    
+    
 }
