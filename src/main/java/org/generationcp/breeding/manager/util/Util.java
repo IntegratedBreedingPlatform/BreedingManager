@@ -490,7 +490,7 @@ public class Util {
         }
         
         String returnString = locationFolderString.toString();
-        if(folder != null && folder.getName().length() >= 40){
+        if(folder != null && folder.getName().length() >= 47){
         	returnString = folder.getName().substring(0, 47);
         	
         } else if(locationFolderString.length() > 47){
