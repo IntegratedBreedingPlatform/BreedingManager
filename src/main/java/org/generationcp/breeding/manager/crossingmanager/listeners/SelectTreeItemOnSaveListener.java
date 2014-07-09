@@ -29,7 +29,6 @@ public class SelectTreeItemOnSaveListener extends AbsoluteLayout
 	
 	@Override
 	public void updateUIForRenamedList(GermplasmList list, String newName) {
-		System.out.println("parentCOmponent: " + parentComponent);
     	if(parentComponent instanceof ListManagerMain){
     		ListManagerMain listManagerMain = (ListManagerMain)parentComponent;
     				listManagerMain.getListSelectionComponent().updateUIForRenamedList(list, newName);

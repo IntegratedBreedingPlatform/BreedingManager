@@ -229,7 +229,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 
 	@Override
 	public void layoutComponents() {
-		setWidth("725px");
+		setWidth("745px");
 		setHeight("510px");
 		
 		contentLayout = new HorizontalLayout();
@@ -238,7 +238,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		contentLayout.addComponent(listDetailsComponent);
 		contentLayout.addStyleName("contentLayout");
 
-		contentLayout.setWidth("689px");
+		contentLayout.setWidth("709px");
 		contentLayout.setHeight("341px");
 		
 		germplasmListTree.addStyleName("germplasmListTree");

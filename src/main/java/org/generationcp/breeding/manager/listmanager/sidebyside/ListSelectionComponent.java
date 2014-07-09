@@ -138,6 +138,7 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 	}
 
 	public void openListBrowseDialog() {
+		listTreeComponent.showAddRenameFolderSection(false);
 		launchListSelectionWindow(getWindow(), listTreeComponent, messageSource.getMessage(Message.BROWSE_FOR_LISTS));
 	}
 

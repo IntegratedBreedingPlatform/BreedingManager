@@ -4,22 +4,15 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Deque;
-import java.util.Iterator;
-import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customfields.ListTreeComponent;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.Database;
-import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -27,23 +20,17 @@ import org.generationcp.middleware.pojos.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.event.Transferable;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.TreeTargetDetails;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class GermplasmListTreeUtil implements Serializable {
@@ -198,265 +185,154 @@ public class GermplasmListTreeUtil implements Serializable {
 		});
     }
     
-    public void addFolder(final Object parentItemId){
-    	final Window mainWindow;
-    	// show window
-        if (source.usedInSubWindow()){
-        	mainWindow = source.getWindow().getParent();
-        } else {        	
-        	mainWindow = source.getWindow();   	
-        }  
+    public void addFolder(final Object parentItemId, final TextField folderTextField){
     	
-        final Window w = new Window("Add new folder");
-        w.setWidth("300px");
-        w.setHeight("160px");
-        w.setModal(true);
-        w.setResizable(false);
-        w.setStyleName(Reindeer.WINDOW_LIGHT);
+    	Integer newFolderId = null;
+    	GermplasmList newFolder = new GermplasmList();
+    	GermplasmList parentList = null;
+    	
+		try {
+			folderTextField.validate();
+			String folderName = folderTextField.getValue().toString().trim();
+				
+			User user;
+			try {
+				user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+				Integer projectId= workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue();
+				Integer ibdbUserId=workbenchDataManager.getLocalIbdbUserId(user.getUserid(),Long.valueOf(projectId));
+				
+				
+				newFolder.setName(folderName);
+				newFolder.setDescription(folderName);
+				newFolder.setType("FOLDER");
+				newFolder.setStatus(0);
+				newFolder.setUserId(ibdbUserId);
+				newFolder.setDate(Long.valueOf((new SimpleDateFormat(DATE_AS_NUMBER_FORMAT)).format(Calendar.getInstance().getTime())));
+				
+				if (parentItemId==null || parentItemId instanceof String || targetTree.getItem(parentItemId)==null) {
+					newFolder.setParent(null);
+				} else if (!source.isFolder(parentItemId)) {
+					parentList = germplasmListManager.getGermplasmListById((Integer) parentItemId);
+					newFolder.setParent(germplasmListManager.getGermplasmListById(parentList.getParentId()));
+				} else {
+					newFolder.setParent(germplasmListManager.getGermplasmListById((Integer) parentItemId));
+				}
+				
+				newFolderId = germplasmListManager.addGermplasmList(newFolder);
+				
+			} catch (MiddlewareQueryException e) {
+				MessageNotifier.showError(source.getWindow(), 
+						messageSource.getMessage(Message.ERROR_INTERNAL), 
+						messageSource.getMessage(Message.ERROR_REPORT_TO));
+				e.printStackTrace();
+			}
 
-        VerticalLayout container = new VerticalLayout();
-        container.setSpacing(true);
-        container.setMargin(true);
+			//update UI
+			addFolderToTree(parentItemId, folderName, newFolderId,	newFolder, parentList);
+			
+			
+		} catch (InvalidValueException e) {
+			e.printStackTrace();
+			MessageNotifier.showError(source.getWindow(),
+	                messageSource.getMessage(Message.INVALID_INPUT), e.getMessage());
+		}	
+			
 
-        HorizontalLayout formContainer = new HorizontalLayout();
-        formContainer.setSpacing(true);
+    }
 
-        Label l = new Label("Folder Name");
-        l.addStyleName(AppConstants.CssStyles.BOLD);
-        final TextField name = new TextField();
-        name.setMaxLength(50);
-
-        formContainer.addComponent(l);
-        formContainer.addComponent(name);
-
-        HorizontalLayout btnContainer = new HorizontalLayout();
-        btnContainer.setSpacing(true);
-     
-        Button ok = new Button(messageSource.getMessage(Message.SAVE_LABEL));
-        ok.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-        ok.addListener(new Button.ClickListener() {
-			private static final long serialVersionUID = -4225085062616113624L;
-
-			@Override
-            public void buttonClick(Button.ClickEvent event) {
-                Integer newFolderId = null;
-                
-                if(name.getValue().toString().replace(" ","").equals("")){
-                	MessageNotifier.showWarning(source.getWindow(),
-                            messageSource.getMessage(Message.INVALID_INPUT), 
-                            messageSource.getMessage(Message.INVALID_ITEM_NAME));
-                	return;
-                }
-
-                GermplasmList newFolder = new GermplasmList();
-                GermplasmList parentList = null;
-                try {
-                	
-                	List<GermplasmList> matchingGermplasmLists = germplasmListManager.getGermplasmListByName(name.getValue().toString(), 0, 1, Operation.EQUAL, Database.LOCAL);
-                	matchingGermplasmLists.addAll(germplasmListManager.getGermplasmListByName(name.getValue().toString(), 0, 1, Operation.EQUAL, Database.CENTRAL));
-
-                	if(matchingGermplasmLists.size()==0 
-                			&& !name.getValue().toString().toLowerCase().equals(ListTreeComponent.PROGRAM_LISTS.toLowerCase()) 
-                			&& !name.getValue().toString().toLowerCase().equals(ListTreeComponent.PUBLIC_LISTS.toLowerCase())		
-                			) {
-                		
-                        User user =workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
-                        Integer projectId= workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue();
-                        Integer ibdbUserId=workbenchDataManager.getLocalIbdbUserId(user.getUserid(),Long.valueOf(projectId));
-                		
-	                	newFolder.setName(name.getValue().toString());
-	                	newFolder.setDescription(name.getValue().toString());
-	                	newFolder.setType("FOLDER");
-	                	newFolder.setStatus(0);
-	                	newFolder.setUserId(ibdbUserId);
-	                	newFolder.setDate(Long.valueOf((new SimpleDateFormat(DATE_AS_NUMBER_FORMAT)).format(Calendar.getInstance().getTime())));
-	                	
-	                    if (parentItemId==null || parentItemId instanceof String || targetTree.getItem(parentItemId)==null) {
-	                        newFolder.setParent(null);
-	                    } else if (!source.isFolder(parentItemId)) {
-	                    	parentList = germplasmListManager.getGermplasmListById((Integer) parentItemId);
-	                        newFolder.setParent(germplasmListManager.getGermplasmListById(parentList.getParentId()));
-	                    } else {
-	                        newFolder.setParent(germplasmListManager.getGermplasmListById((Integer) parentItemId));
-	                    }
-	                	
-	                	newFolderId = germplasmListManager.addGermplasmList(newFolder);
-	                	
-	            	} else {
-	        			MessageNotifier.showWarning(source.getWindow(),
-	                            messageSource.getMessage(Message.NAME_ALREADY_EXISTS), 
-	                            messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));        
-	        			return;
-	            	}
-                	
-                	
-                } catch (MiddlewareQueryException e){
-                	MessageNotifier.showError(source.getWindow(), 
-                            messageSource.getMessage(Message.ERROR_INTERNAL), 
-                            messageSource.getMessage(Message.ERROR_REPORT_TO));
-        			e.printStackTrace();
-                } catch (Error e) {
-                	MessageNotifier.showError(source.getWindow(), 
-                            messageSource.getMessage(Message.ERROR_INTERNAL), 
-                            messageSource.getMessage(Message.ERROR_REPORT_TO));
-        			e.printStackTrace();
-                    return;
-                }
-
-                //update UI
-                if (newFolderId != null) {
-                    targetTree.addItem(newFolderId);
-                    targetTree.setItemCaption(newFolderId, name.getValue().toString());
-                    targetTree.setChildrenAllowed(newFolderId, true);
-                    
-                    source.setSelectedListId(newFolderId);
-    		        
-                    //If parent of list does not exist
-    		        if (parentList==null && !source.isFolder(parentItemId)){
-    		        	targetTree.setChildrenAllowed(ListTreeComponent.LOCAL, true);
-    		        	targetTree.setParent(newFolderId, ListTreeComponent.LOCAL);
-    		        //If parent of list is root node
-    		        } else if (parentList!=null && !source.isFolder(parentItemId) && (parentList.getParentId()==null || parentList.getParentId()==0)){
-    		        	targetTree.setChildrenAllowed(ListTreeComponent.LOCAL, true);
-        		        targetTree.setParent(newFolderId, ListTreeComponent.LOCAL);
-                    //If folder
-    		        } else if (newFolder.getParent() != null && targetTree.getItem(parentItemId)!=null && source.isFolder(parentItemId)) {
-    		        	targetTree.setChildrenAllowed(parentItemId, true);
-                        Boolean parentSet = targetTree.setParent(newFolderId, parentItemId);
-                        if(!parentSet)
-                        	parentSet = targetTree.setParent(newFolderId, ListTreeComponent.LOCAL);
-                    //If list, add to parent
-                    } else if (newFolder.getParent() != null && targetTree.getItem(parentItemId)!=null) {
-                    	targetTree.setChildrenAllowed(parentList.getParentId(), true);
-                    	targetTree.setParent(newFolderId, parentList.getParentId());
-                    //All else, add to LOCAL list
-                    } else {
-                    	targetTree.setChildrenAllowed(ListTreeComponent.LOCAL, true);
-                    	targetTree.setParent(newFolderId, ListTreeComponent.LOCAL);
-                    }
-
-                    if (targetTree.getValue() != null) {
-                        if (!targetTree.isExpanded(targetTree.getValue()))
-                            targetTree.expandItem(parentItemId);
-                    } else {
-                    	targetTree.expandItem(ListTreeComponent.LOCAL);
-					}
-                    targetTree.select(newFolderId);
-                    source.updateButtons(newFolderId);
-                }
-
-                // close popup
-                mainWindow.removeWindow(event.getComponent().getWindow());
-                source.refreshRemoteTree();
-                
-            }
-        });
-
-        Button cancel = new Button(messageSource.getMessage(Message.CANCEL));
-        cancel.addListener(new Button.ClickListener() {
-            private static final long serialVersionUID = -971341450278698928L;
-
-			@Override
-            public void buttonClick(Button.ClickEvent event) {
-            	mainWindow.removeWindow(w);
-            }
-        });
-
-        btnContainer.addComponent(cancel);
-        btnContainer.addComponent(ok);
-
-        HorizontalLayout spacerLayout = new HorizontalLayout();
-        spacerLayout.setHeight("5px");
-        
-        container.addComponent(formContainer);
-        container.addComponent(spacerLayout);
-        container.addComponent(btnContainer);
-        container.setComponentAlignment(btnContainer, Alignment.MIDDLE_CENTER);
-
-        w.setContent(container);
-
-        // show window
-    	mainWindow.addWindow(w);    	
-    }    
+	protected void addFolderToTree(final Object parentItemId,
+			String folderName, Integer newFolderId,
+			GermplasmList newFolder, GermplasmList parentList) {
+		if (newFolderId != null) {
+			targetTree.addItem(newFolderId);
+			targetTree.setItemCaption(newFolderId, folderName);
+			targetTree.setChildrenAllowed(newFolderId, true);
+			
+			source.setSelectedListId(newFolderId);
+			
+			//If parent of list does not exist
+			if (parentList==null && !source.isFolder(parentItemId)){
+				targetTree.setChildrenAllowed(ListTreeComponent.LOCAL, true);
+				targetTree.setParent(newFolderId, ListTreeComponent.LOCAL);
+				//If parent of list is root node
+			} else if (parentList!=null && !source.isFolder(parentItemId) && (parentList.getParentId()==null || parentList.getParentId()==0)){
+				targetTree.setChildrenAllowed(ListTreeComponent.LOCAL, true);
+				targetTree.setParent(newFolderId, ListTreeComponent.LOCAL);
+				//If folder
+			} else if (newFolder.getParent() != null && targetTree.getItem(parentItemId)!=null && source.isFolder(parentItemId)) {
+				targetTree.setChildrenAllowed(parentItemId, true);
+				Boolean parentSet = targetTree.setParent(newFolderId, parentItemId);
+				if(!parentSet)
+					parentSet = targetTree.setParent(newFolderId, ListTreeComponent.LOCAL);
+				//If list, add to parent
+			} else if (newFolder.getParent() != null && targetTree.getItem(parentItemId)!=null) {
+				targetTree.setChildrenAllowed(parentList.getParentId(), true);
+				targetTree.setParent(newFolderId, parentList.getParentId());
+				//All else, add to LOCAL list
+			} else {
+				targetTree.setChildrenAllowed(ListTreeComponent.LOCAL, true);
+				targetTree.setParent(newFolderId, ListTreeComponent.LOCAL);
+			}
+			
+			if (targetTree.getValue() != null) {
+				if (!targetTree.isExpanded(targetTree.getValue()))
+					targetTree.expandItem(parentItemId);
+			} else {
+				targetTree.expandItem(ListTreeComponent.LOCAL);
+			}
+			
+			targetTree.select(newFolderId);
+			source.updateButtons(newFolderId);
+			source.showAddRenameFolderSection(false);
+			source.refreshRemoteTree();
+			MessageNotifier.showMessage(source.getWindow(), messageSource.getMessage(Message.SUCCESS), "Folder saved successfully.");
+		}
+	}    
 
     
-    public void renameFolderOrList(final Integer listId, final ListTreeActionsListener listener){
-    	final Window mainWindow;
-		if (source.usedInSubWindow()){
-        	mainWindow = source.getWindow().getParent();
-        } else {        	
-        	mainWindow = source.getWindow();   	
-        }  
-        
-    	GermplasmList germplasmList = null;
-        try {
-			germplasmList = germplasmListManager.getGermplasmListById(listId);
-		} catch (MiddlewareQueryException e1) {
-			e1.printStackTrace();
-		}
+    public void renameFolderOrList(final Integer listId, final ListTreeActionsListener listener, TextField folderTextField, String oldName){
     	
-        final Window w = new Window();
-        w.setCaption("Rename Item");
-        w.setWidth("320px");
-        w.setHeight("160px");
-        w.setModal(true);
-        w.setResizable(false);
-        w.setStyleName(Reindeer.WINDOW_LIGHT);
+    	String newName = folderTextField.getValue().toString().trim();
+    	if (newName.equals(oldName)){
+    		source.showAddRenameFolderSection(false);
+    		return;
+    	}
+    	
+    	try {
+    		folderTextField.validate();
+    			
+			GermplasmList germplasmList;
+			try {
+				germplasmList = germplasmListManager.getGermplasmListById(listId);
+				
+				germplasmList.setName(newName);
+				germplasmListManager.updateGermplasmList(germplasmList);
+				
+				targetTree.setItemCaption(listId, newName);
+				targetTree.select(listId);
+				
+				//rename tabs
+				if (listener != null){
+					listener.updateUIForRenamedList(germplasmList, newName);
+				}
+				
+				source.showAddRenameFolderSection(false);
+				source.refreshRemoteTree();
+				MessageNotifier.showMessage(source.getWindow(), messageSource.getMessage(Message.SUCCESS), "Item renamed successfully.");
+				
+			} catch (MiddlewareQueryException e) {
+				MessageNotifier.showWarning(source.getWindow(),
+						messageSource.getMessage(Message.ERROR_DATABASE), 
+						messageSource.getMessage(Message.ERROR_REPORT_TO));
+			}
 
-        VerticalLayout container = new VerticalLayout();
-        container.setSpacing(true);
-        container.setMargin(true);
+			
+		} catch (InvalidValueException e) {
+			MessageNotifier.showError(source.getWindow(),
+	                messageSource.getMessage(Message.INVALID_INPUT), 
+	                e.getMessage());
+		}	
 
-        HorizontalLayout formContainer = new HorizontalLayout();
-        formContainer.setSpacing(true);
-
-        Label l = new Label();
-        l.addStyleName(AppConstants.CssStyles.BOLD);
-        l.setValue(messageSource.getMessage(Message.ITEM_NAME));
-
-        final TextField name = new TextField();
-        name.setMaxLength(50);
-        
-        if(germplasmList!=null){
-        	name.setValue(germplasmList.getName());
-        }
-
-        formContainer.addComponent(l);
-        formContainer.addComponent(name);
-
-        HorizontalLayout btnContainer = new HorizontalLayout();
-        btnContainer.setSpacing(true);
-
-        Button ok = new Button(messageSource.getMessage(Message.SAVE_LABEL));
-        ok.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-        ok.addListener(new RenameListTreeItemListener(source, listener, listId, name));
-
-        Button cancel = new Button(messageSource.getMessage(Message.CANCEL));
-        cancel.addListener(new Button.ClickListener() {
-			private static final long serialVersionUID = -5337463407790224943L;
-
-			@Override
-            public void buttonClick(Button.ClickEvent event) {
-            	mainWindow.removeWindow(w);
-            }
-        });
-
-        btnContainer.addComponent(cancel);
-        btnContainer.addComponent(ok);
-
-        HorizontalLayout spacerLayout = new HorizontalLayout();
-        spacerLayout.setHeight("5px");
-        
-        container.addComponent(formContainer);
-        container.addComponent(spacerLayout);
-        container.addComponent(btnContainer);
-        container.setComponentAlignment(btnContainer, Alignment.MIDDLE_CENTER);
-
-        w.setContent(container);
-
-        // show window
-        mainWindow.addWindow(w);
-        source.refreshRemoteTree();
     }
 
 	public void deleteFolderOrList(final ListTreeComponent listTreeComponent, final Integer lastItemId, 
@@ -555,87 +431,6 @@ public class GermplasmListTreeUtil implements Serializable {
     		return;
     	}
     }
-    
-    private final class RenameListTreeItemListener implements
-			Button.ClickListener {
-		private static final long serialVersionUID = -8013177728518110200L;
-		private ListTreeComponent listTreeComponent;
-		private final ListTreeActionsListener listener;
-		private final Integer listId;
-		private final TextField name;
-		
-		private RenameListTreeItemListener(ListTreeComponent listTreeComponent, ListTreeActionsListener listener,
-				Integer listId, TextField name) {
-			this.listTreeComponent = listTreeComponent; 
-			this.listener = listener;
-			this.listId = listId;
-			this.name = name;
-		}
-		
-		@Override
-		public void buttonClick(Button.ClickEvent event) {
-			final Window mainWindow;
-			if (source.usedInSubWindow()){
-	        	mainWindow = source.getWindow().getParent();
-	        } else {        	
-	        	mainWindow = source.getWindow();   	
-	        }  
-	        
-		    String newName = name.getValue().toString();
-			if(newName.replace(" ","").equals("")){
-		    	MessageNotifier.showError(source.getWindow(),
-		                messageSource.getMessage(Message.INVALID_INPUT), 
-		                messageSource.getMessage(Message.INVALID_ITEM_NAME));
-		    	return;
-		    }
-		    
-		    try {
-		    	GermplasmList germplasmList = germplasmListManager.getGermplasmListById(listId);
-		    	
-		    	List<GermplasmList> matchingGermplasmLists = germplasmListManager.getGermplasmListByName(newName, 0, 1, Operation.EQUAL, Database.LOCAL);
-		    	matchingGermplasmLists.addAll(germplasmListManager.getGermplasmListByName(newName, 0, 1, Operation.EQUAL, Database.CENTRAL));
-		    	
-		    	Boolean nameAlreadyExisting = false;
-		    	for(GermplasmList glist : matchingGermplasmLists){
-		    		if(!glist.getId().equals(germplasmList.getId())){
-		    			nameAlreadyExisting = true;
-		    		}
-		    	}
-		
-		    	if(!nameAlreadyExisting){
-		        	germplasmList.setName(newName);
-		        	germplasmListManager.updateGermplasmList(germplasmList);
-		        	
-		            targetTree.setItemCaption(listId, newName);
-		            targetTree.select(listId);
-		            
-		            //rename tabs
-		            if (listener != null){
-		            	listener.updateUIForRenamedList(germplasmList, newName);
-		            }
-		    	} else {
-					MessageNotifier.showWarning(source.getWindow(),
-		                    messageSource.getMessage(Message.NAME_ALREADY_EXISTS), 
-		                    messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE)); 
-					return;
-		    	}
-		    	
-		    } catch (MiddlewareQueryException e) {
-		    	MessageNotifier.showWarning(source.getWindow(),
-		                messageSource.getMessage(Message.ERROR_DATABASE), 
-		                messageSource.getMessage(Message.ERROR_REPORT_TO));
-		    } catch (Error e) {
-		    	MessageNotifier.showError(source.getWindow(), 
-		                messageSource.getMessage(Message.ERROR_INTERNAL), 
-		                messageSource.getMessage(Message.ERROR_REPORT_TO));
-				e.printStackTrace();
-		        return;
-		    }
-		
-		    mainWindow.removeWindow(event.getComponent().getWindow());
-		    listTreeComponent.refreshRemoteTree();
-		}
-}
 
     
 }

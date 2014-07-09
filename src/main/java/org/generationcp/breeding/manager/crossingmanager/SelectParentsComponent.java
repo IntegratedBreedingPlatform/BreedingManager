@@ -192,6 +192,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	}
 	
 	public void openBrowseForListDialog(){
+		listTreeComponent.showAddRenameFolderSection(false);
 		launchListSelectionWindow(getWindow(), listTreeComponent, messageSource.getMessage(Message.BROWSE_FOR_LISTS));
 	}
 	

@@ -67,7 +67,7 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 		        	if(!item.equals("CENTRAL") && !item.equals("LOCAL")){
 		        		int germplasmListId = Integer.valueOf(item);
 		                    try {
-		                        listManagerTreeItemClickAction(germplasmListId);
+		                        treeItemClickAction(germplasmListId);
 		                    } catch (InternationalizableException e) {
 		                        LOG.error(e.toString() + "\n" + e.getStackTrace());
 		                        e.printStackTrace();

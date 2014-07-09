@@ -13,7 +13,6 @@
 package org.generationcp.breeding.manager.listmanager.listeners;
 
 import org.generationcp.breeding.manager.customfields.ListTreeComponent;
-import org.generationcp.breeding.manager.customfields.LocalListFoldersTreeComponent;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -42,22 +41,24 @@ public class GermplasmListItemClickListener implements ItemClickEvent.ItemClickL
         	String item = event.getItemId().toString();
         	
             if (event.getButton() == ClickEvent.BUTTON_LEFT) {
-	        	if(!item.equals("CENTRAL") && !item.equals("LOCAL")){
+	        	ListTreeComponent listTreeComponent = (ListTreeComponent) source;
+				if(!item.equals("CENTRAL") && !item.equals("LOCAL")){
 	        		int germplasmListId = Integer.valueOf(event.getItemId().toString());
 	                    try {
-	                        ((ListTreeComponent) source).listManagerTreeItemClickAction(germplasmListId);
+	                        listTreeComponent.treeItemClickAction(germplasmListId);
 	                    } catch (InternationalizableException e) {
 	                        LOG.error(e.toString() + "\n" + e.getStackTrace());
 	                        e.printStackTrace();
 	                        MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
 	                    }
 	        	} else{
-	        		((ListTreeComponent) source).expandOrCollapseListTreeNode(item);
-	        		((ListTreeComponent) source).getTreeActionsListener().folderClicked(null);
+	        		listTreeComponent.expandOrCollapseListTreeNode(item);
+	        		listTreeComponent.getTreeActionsListener().folderClicked(null);
+	        		listTreeComponent.showAddRenameFolderSection(false);
 
 	        	}
-	        	((ListTreeComponent) source).setSelectedListId(event.getItemId());
-            	((ListTreeComponent) source).updateButtons(event.getItemId());
+	        	listTreeComponent.setSelectedListId(event.getItemId());
+            	listTreeComponent.updateButtons(event.getItemId());
             	
             }
         }
