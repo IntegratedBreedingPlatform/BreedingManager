@@ -8,9 +8,12 @@ import java.util.Locale;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
+import org.generationcp.breeding.manager.crossingmanager.ParentTabComponent;
 import org.generationcp.breeding.manager.crossingmanager.listeners.SelectTreeItemOnSaveListener;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
 import org.generationcp.breeding.manager.customfields.LocalListFoldersTreeComponent;
+import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
+import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -220,6 +223,17 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 						
 						Window window = event.getButton().getWindow();
 				        window.getParent().removeWindow(window);
+					}
+				}
+				
+				if(source instanceof ReserveInventorySource){
+					ReserveInventoryAction reserveInventoryAction = new ReserveInventoryAction((ReserveInventorySource) source);
+					if(source instanceof ParentTabComponent){
+						boolean success = reserveInventoryAction.saveReserveTransactions(((ParentTabComponent) source).getValidReservationsToSave(), germplasmList.getId());
+						if(success){
+							((ParentTabComponent)source).refreshInventoryColumns(((ParentTabComponent)source).getValidReservationsToSave());
+							((ParentTabComponent)source).resetListInventoryTableValues();
+						}
 					}
 				}
 			}

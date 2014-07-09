@@ -17,6 +17,7 @@ import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayou
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.CrossingManagerInventoryTable;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
+import org.generationcp.breeding.manager.inventory.ListDataAndLotDetails;
 import org.generationcp.breeding.manager.inventory.ReservationStatusWindow;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
 import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
@@ -497,6 +498,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	/*--------------------------------------INVENTORY RELATED FUNCTIONS---------------------------------------*/
 	
 	private void viewListAction(){
+		
 		if(!hasUnsavedChanges()){
 			makeCrossesParentsComponent.getMakeCrossesMain().setModeView(ModeView.LIST_VIEW);
 		}else{
@@ -547,7 +549,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	
 	public void changeToInventoryView(){
 		if(tableWithSelectAllLayout.isVisible()){
-			tableWithSelectAllLayout.setVisible(true);
+			tableWithSelectAllLayout.setVisible(false);
 			listInventoryTable.setVisible(true);
 			
 			subHeaderLayout.removeComponent(actionButton);

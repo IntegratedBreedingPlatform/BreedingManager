@@ -25,6 +25,7 @@ import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayou
 import org.generationcp.breeding.manager.customcomponent.listinventory.CrossingManagerInventoryTable;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
 import org.generationcp.breeding.manager.inventory.InventoryDropTargetContainer;
+import org.generationcp.breeding.manager.inventory.ListDataAndLotDetails;
 import org.generationcp.breeding.manager.inventory.ReservationStatusWindow;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
 import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
@@ -148,6 +149,8 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
     private ReserveInventoryUtil reserveInventoryUtil;
     private ReserveInventoryAction reserveInventoryAction;
     private Map<ListEntryLotDetails, Double> validReservationsToSave;
+    
+    private InventoryTableDropHandler inventoryTableDropHandler;
 
 	public ParentTabComponent(CrossingManagerMakeCrossesComponent makeCrossesMain,
 				MakeCrossesParentsComponent source, String parentLabel, Integer rowCount) {
@@ -504,7 +507,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
                 }
         });
 		
-		InventoryTableDropHandler inventoryTableDropHandler = new InventoryTableDropHandler(this, germplasmDataManager, germplasmListManager, inventoryDataManager, listInventoryTable.getTable());
+		inventoryTableDropHandler = new InventoryTableDropHandler(this, germplasmDataManager, germplasmListManager, inventoryDataManager, listInventoryTable.getTable());
 		listInventoryTable.getTable().setDropHandler(inventoryTableDropHandler);
 	}
 
@@ -680,6 +683,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	/*--------------------------------------INVENTORY RELATED FUNCTIONS---------------------------------------*/
 	
 	private void viewListAction(){
+		
 		if(!hasUnsavedChanges()){
 			source.getMakeCrossesMain().setModeView(ModeView.LIST_VIEW);
 		}else{
@@ -893,13 +897,54 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	
 	public void saveReservationChangesAction() {
 		if(hasUnsavedChanges()){
-			reserveInventoryAction = new ReserveInventoryAction(this);
-			boolean success = reserveInventoryAction.saveReserveTransactions(getValidReservationsToSave(), germplasmList.getId());
-			if(success){
-				refreshInventoryColumns(getValidReservationsToSave());
-				resetListInventoryTableValues();
-				MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
-						"All reservations were saved.");
+			
+			List<Integer> alreadyAddedEntryIds = new ArrayList<Integer>();
+			List<ListDataAndLotDetails> listDataAndLotDetails = inventoryTableDropHandler.getListDataAndLotDetails();
+			
+			for(ListDataAndLotDetails listDataAndLotDetail : listDataAndLotDetails){
+				if(!alreadyAddedEntryIds.contains(listDataAndLotDetail.getEntryId())){
+					//dropHandler.addGermplasmFromList(listDataAndLotDetail.getListId(), listDataAndLotDetail.getSourceLrecId());
+					
+					try {
+
+						GermplasmListData germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndEntryId(listDataAndLotDetail.getListId(), listDataAndLotDetail.getEntryId());
+						
+        				GermplasmListEntry entryObject = new GermplasmListEntry(germplasmListData.getId(),germplasmListData.getGid(), germplasmListData.getEntryId(), germplasmListData.getDesignation(), germplasmListData.getSeedSource());
+
+    					Item newItem = listDataTable.addItem(entryObject);
+        				
+						CheckBox tag = new CheckBox();
+						newItem.getItemProperty(TAG_COLUMN_ID).setValue(tag);
+						tag.addListener(new ParentsTableCheckboxListener(listDataTable, entryObject, tableWithSelectAllLayout.getCheckBox()));
+			            tag.setImmediate(true);
+
+						Button desigButton = new Button(germplasmListData.getDesignation(), new GidLinkClickListener(germplasmListData.getGid().toString(),true));
+	                    desigButton.setStyleName(BaseTheme.BUTTON_LINK);
+	                    desigButton.setDescription("Click to view Germplasm information");
+	                    newItem.getItemProperty(DESIGNATION_ID).setValue(desigButton);
+	                    
+	                    //avail inv
+	                    //seed res
+	                    
+					} catch (MiddlewareQueryException e) {
+						e.printStackTrace();
+					}
+					
+					alreadyAddedEntryIds.add(listDataAndLotDetail.getEntryId());
+				}
+			}
+			
+			if(listDataAndLotDetails.size()==0){
+				reserveInventoryAction = new ReserveInventoryAction(this);
+				boolean success = reserveInventoryAction.saveReserveTransactions(getValidReservationsToSave(), germplasmList.getId());
+				if(success){
+					refreshInventoryColumns(getValidReservationsToSave());
+					resetListInventoryTableValues();
+					MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
+							"All reservations were saved.");
+				}
+			} else {
+				openSaveListAsDialog();				
 			}
 		}
 	}
@@ -1047,4 +1092,5 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	public void refreshListInventoryItemCount() {
 		updateNoOfEntries(listInventoryTable.getTable().getItemIds().size());
 	}
+	
 }
