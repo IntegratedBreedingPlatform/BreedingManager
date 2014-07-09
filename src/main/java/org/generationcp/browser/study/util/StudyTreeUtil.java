@@ -22,6 +22,7 @@ import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
+import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -301,8 +302,9 @@ public class StudyTreeUtil implements Serializable {
 		        Object sourceItemId = t.getData("itemId");
 		        Object targetItemId = target.getItemIdOver();
 		        
-		        // if source item is dropped to itself, do nothing
-		        if (sourceItemId.equals(targetItemId)){
+		        VerticalDropLocation location = target.getDropLocation();
+		        
+		        if (location != VerticalDropLocation.MIDDLE || sourceItemId.equals(targetItemId)){
 		        	return;
 		        }
 		        
