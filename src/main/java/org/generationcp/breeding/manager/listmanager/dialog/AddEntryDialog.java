@@ -7,30 +7,25 @@ import java.util.Date;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customfields.BreedingLocationField;
 import org.generationcp.breeding.manager.customfields.BreedingMethodField;
 import org.generationcp.breeding.manager.customfields.ListDateField;
-import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
+import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItemClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListValueChangeListener;
-import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
-import org.generationcp.breeding.manager.listmanager.util.germplasm.GermplasmSearchQuery;
+import org.generationcp.breeding.manager.listmanager.sidebyside.GermplasmSearchBarComponent;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
-import org.generationcp.middleware.pojos.Location;
-import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.pojos.workbench.Project;
@@ -45,26 +40,19 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Window.Notification;
-import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.PopupView;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
 public class AddEntryDialog extends Window implements InitializingBean, InternationalizableComponent {
@@ -73,7 +61,6 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     
     private final static Logger LOG = LoggerFactory.getLogger(AddEntryDialog.class);
     
-    public static final String SEARCH_BUTTON_ID = "AddEntryDialog Search Button";
     public static final String OPTION_1_ID = "AddEntryDialog Option 1";
     public static final String OPTION_2_ID = "AddEntryDialog Option 2";
     public static final String OPTION_3_ID = "AddEntryDialog Option 3";
@@ -109,32 +96,20 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     private BreedingMethodField breedingMethodField;
     private BreedingLocationField breedingLocationField;
     
-	private static final String GUIDE = 
-	        "You may search for germplasms using GID's, germplasm names (partial/full)" +
-	        " <br/><br/><b>Search results would contain</b> <br/>" +
-	        "  - Germplasms with matching GID's <br/>" +
-	        "  - Germplasms with name containing search query <br/>" +
-	        " <br/><br/>The <b>Exact matches only</b> checkbox allows you search using partial names (when unchecked)" +
-	        " or to only return results which match the query exactly (when checked).";
-	private Label searchLabel;
-	private TextField searchField;
-	private Button searchButton;
-    private CheckBox likeOrEqualCheckBox;
-    private PopupView popup;
-    
-    private TableWithSelectAllLayout resultsTable;
-    
     private Button doneButton;
     private Button cancelButton;
     
     private Label germplasmDateLabel;
     private Label nameTypeLabel;
     private Label bottomPartHeader;
-    private Label matchingGermplasmsCount;
     
     private ComboBox nameTypeComboBox;
     
     private ListDateField germplasmDateField;
+
+    private GermplasmSearchBarComponent searchBarComponent;
+    
+    private GermplasmSearchResultsComponent searchResultsComponent;
     
     public AddEntryDialog(AddEntryDialogSource source, Window parentWindow){
         this.source = source;
@@ -163,87 +138,6 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         assembleButtonLayout();
     }
     
-    public void searchButtonClickAction() throws InternationalizableException {
-    	String searchQuery = searchField.getValue().toString();
-    	
-		if(searchQuery.replaceAll(" ", "").trim().equals("")){
-			MessageNotifier.showWarning(getWindow(),
-					messageSource.getMessage(Message.UNABLE_TO_SEARCH),
-					messageSource.getMessage(Message.SEARCH_QUERY_CANNOT_BE_EMPTY),
-					Notification.POSITION_CENTERED);
-			return;
-		}
-		
-    	try {
-    		//TODO check if the newly introduced last parameter (searchPublicData flag) needs to be UI driven here too. Setting true as default to retain behavior on this screen for now.
-    		List<Germplasm> germplasms = germplasmDataManager.searchForGermplasm(searchQuery, (((Boolean) likeOrEqualCheckBox.getValue()).equals(true) ? Operation.EQUAL : Operation.LIKE), false, true);
-    	
-    		resultsTable.getTable().removeAllItems();
-    		
-            for(final Germplasm germplasm : germplasms){
-            	
-            	Item newItem = resultsTable.getTable().addItem(germplasm.getGid()); 
-            	
-                CheckBox tagCheckBox = new CheckBox();
-                tagCheckBox.setImmediate(true);
-                tagCheckBox.addListener(new ClickListener() {
-    	 			private static final long serialVersionUID = 1L;
-    	 			@Override
-    	 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-    	 				CheckBox itemCheckBox = (CheckBox) event.getButton();
-    	 				if(((Boolean) itemCheckBox.getValue()).equals(true)){
-    	 					resultsTable.getTable().select(germplasm.getGid());
-    	 				} else {
-    	 					resultsTable.getTable().unselect(germplasm.getGid());
-    	 				}
-    	 			}
-    	 			 
-    	 		});
-            	
-                Button gidButton = new Button(String.format("%s", germplasm.getGid()), new GidLinkButtonClickListener(germplasm.getGid().toString(), false));
-                gidButton.setStyleName(BaseTheme.BUTTON_LINK);
-                
-	            List<Name> names = germplasmDataManager.getNamesByGID(new Integer(germplasm.getGid()), null, null);
-	            StringBuffer germplasmNames = new StringBuffer("");
-	            int i = 0;
-	            for (Name n : names) {
-	                if (i < names.size() - 1) {
-	                    germplasmNames.append(n.getNval() + ",");
-	                } else {
-	                    germplasmNames.append(n.getNval());
-	                }
-	                i++;
-	            }
-	            
-	            String methodName = "-";
-	            Method germplasmMethod = germplasmDataManager.getMethodByID(germplasm.getMethodId());
-	            if(germplasmMethod!=null && germplasmMethod.getMname()!=null){
-	            	methodName = germplasmMethod.getMname();
-	            }
-	            
-	            String locationName = "-";
-	            Location germplasmLocation = germplasmDataManager.getLocationByID(germplasm.getLocationId());
-	            if(germplasmLocation!=null && germplasmLocation.getLname()!=null){
-	            	locationName = germplasmLocation.getLname();
-	            }
-	            
-	            newItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(tagCheckBox);
-                //newItem.getItemProperty(GermplasmSearchQuery.GID).setValue(germplasm.getGid());
-                newItem.getItemProperty(GermplasmSearchQuery.GID).setValue(gidButton);
-                newItem.getItemProperty(GermplasmSearchQuery.NAMES).setValue(germplasmNames);
-                newItem.getItemProperty(GermplasmSearchQuery.METHOD).setValue(methodName);
-                newItem.getItemProperty(GermplasmSearchQuery.LOCATION).setValue(locationName);
-            
-            }
-
-            setGermplasmCount(germplasms.size());
-            
-    	} catch (MiddlewareQueryException e) {
-    		MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SEARCH) , Notification.POSITION_CENTERED);
-    		LOG.error(messageSource.getMessage(Message.ERROR_SEARCH_ON_ADD_ENTRY)+searchQuery, e);
-    	}
-    }
-    
     public void resultTableItemClickAction(Table sourceTable) throws InternationalizableException {
     	
     	this.selectedGids = getSelectedItemIds(sourceTable);
@@ -256,7 +150,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     }
     
     public void resultTableValueChangeAction() throws InternationalizableException {
-    	this.selectedGids = getSelectedItemIds(resultsTable.getTable());
+    	this.selectedGids = getSelectedItemIds(searchResultsComponent.getMatchingGermplasmsTable());
     	if(doneButton!=null){
 	    	if(selectedGids.size()>0){
 	    		this.doneButton.setEnabled(true);
@@ -316,88 +210,24 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         topPart.setSpacing(true);
         topPart.setMargin(false);
         
-        AbsoluteLayout searchFormLayout = new AbsoluteLayout();
-        searchFormLayout.setHeight("45px");
-        searchFormLayout.setWidth("100%");
-                
-        searchLabel = new Label();
-        searchLabel.setValue(messageSource.getMessage(Message.SEARCH_FOR)+": ");
-        searchLabel.setWidth("200px");
-        searchLabel.addStyleName("bold");
+        searchResultsComponent = new GermplasmSearchResultsComponent(null, false, false);
+        searchResultsComponent.getMatchingGermplasmsTable().setHeight("100px");
+        searchResultsComponent.getMatchingGermplasmsTableWithSelectAll().setHeight("130px");
+        searchResultsComponent.setRightClickActionHandlerEnabled(false);
         
-        searchField = new TextField();
-        searchField.setImmediate(true);
+        searchResultsComponent.getMatchingGermplasmsTable().addListener(new GermplasmListValueChangeListener(this));
+        searchResultsComponent.getMatchingGermplasmsTable().addListener(new GermplasmListItemClickListener(this));
         
-        searchButton = new Button(messageSource.getMessage(Message.SEARCH));
-        searchButton.setHeight("24px");
-        searchButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
-        searchButton.setData(SEARCH_BUTTON_ID);
-        searchButton.setClickShortcut(KeyCode.ENTER);
-        searchButton.addListener(new ClickListener(){
-			private static final long serialVersionUID = 1L;
-			@Override
-			public void buttonClick(ClickEvent event) {
-				searchButtonClickAction();				
-			}
-        	
-        });
-
-        Label descLbl = new Label(GUIDE, Label.CONTENT_XHTML);
-        descLbl.setWidth("300px");
-        popup = new PopupView(" ? ",descLbl);
-        popup.setStyleName("gcp-popup-view");
+        searchBarComponent = new GermplasmSearchBarComponent(searchResultsComponent);
         
-        likeOrEqualCheckBox = new CheckBox();
-        likeOrEqualCheckBox.setValue(true);
-        likeOrEqualCheckBox.setCaption(messageSource.getMessage(Message.EXACT_MATCHES_ONLY));
-        
-        searchFormLayout.addComponent(searchLabel, "top:15px; left:15px");
-        searchFormLayout.addComponent(searchField, "top:12px; left:100px");
-        searchFormLayout.addComponent(searchButton, "top:12px; left:285px");
-        searchFormLayout.addComponent(likeOrEqualCheckBox, "top:15px; left:370px");
-        searchFormLayout.addComponent(popup, "top:13px; left:520px");
-        
-        searchFormLayout.addStyleName("searchBarLayout");
-
-        topPart.addComponent(searchFormLayout);
+        topPart.addComponent(searchBarComponent);
         
         Label topPartHeader = new Label(messageSource.getMessage(Message.SELECT_A_GERMPLASM));
         topPartHeader.addStyleName("bold");
         topPartHeader.addStyleName("h3");
         topPart.addComponent(topPartHeader);
         
-        matchingGermplasmsCount = new Label();
-        topPart.addComponent(matchingGermplasmsCount);
-        setGermplasmCount(0);
-        
-        resultsTable = new TableWithSelectAllLayout(ListDataTablePropertyID.TAG.getName());
-        
-        resultsTable.getTable().setImmediate(true);
-        
-        resultsTable.getTable().addListener(new GermplasmListValueChangeListener(this));
-        resultsTable.getTable().addListener(new GermplasmListItemClickListener(this));
-        
-        resultsTable.getTable().setColumnWidth(GermplasmSearchQuery.GID, 100);
-        resultsTable.getTable().setWidth("100%");
-        resultsTable.getTable().setHeight("110px");
-        resultsTable.getTable().setSelectable(true);
-        resultsTable.getTable().setMultiSelect(true);
-        resultsTable.getTable().setColumnReorderingAllowed(true);
-        resultsTable.getTable().setColumnCollapsingAllowed(true);
-
-        resultsTable.getTable().addContainerProperty(ListDataTablePropertyID.TAG.getName(), CheckBox.class, null);
-        resultsTable.getTable().addContainerProperty(GermplasmSearchQuery.GID, Button.class, null);
-        resultsTable.getTable().addContainerProperty(GermplasmSearchQuery.NAMES, String.class, null);
-        resultsTable.getTable().addContainerProperty(GermplasmSearchQuery.METHOD, String.class, null);
-        resultsTable.getTable().addContainerProperty(GermplasmSearchQuery.LOCATION, String.class, null);
-        
-        messageSource.setColumnHeader(resultsTable.getTable(), (String) ListDataTablePropertyID.TAG.getName(), Message.CHECK_ICON);
-        messageSource.setColumnHeader(resultsTable.getTable(), (String) GermplasmSearchQuery.GID, Message.GID_LABEL);
-        messageSource.setColumnHeader(resultsTable.getTable(), (String) GermplasmSearchQuery.NAMES, Message.NAMES_LABEL);
-        messageSource.setColumnHeader(resultsTable.getTable(), (String) GermplasmSearchQuery.METHOD, Message.METHOD_LABEL);
-        messageSource.setColumnHeader(resultsTable.getTable(), (String) GermplasmSearchQuery.LOCATION, Message.LOCATION_LABEL);
-        
-        topPart.addComponent(resultsTable);
+        topPart.addComponent(searchResultsComponent);
         
         Label step2Label = new Label(messageSource.getMessage(Message.HOW_DO_YOU_WANT_TO_ADD_THE_GERMPLASM_TO_THE_LIST));
         step2Label.addStyleName("bold");
@@ -530,7 +360,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
                         messageSource.getMessage(Message.YOU_MUST_SELECT_A_GERMPLASM_FROM_THE_SEARCH_RESULTS), Notification.POSITION_CENTERED);
             }
         } else if(optionGroup.getValue().equals(OPTION_3_ID)){
-            String searchValue = this.searchField.getValue().toString();
+            String searchValue = searchBarComponent.getSearchField().getValue().toString();
             
         	if(breedingMethodField.getBreedingMethodComboBox().getValue() == null){
         		MessageNotifier.showError(this, messageSource.getMessage(Message.ERROR), 
@@ -576,7 +406,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
 	        }
 	        
 	        Integer date = Integer.parseInt(parsedDate);
-	        String germplasmName = this.searchField.getValue().toString();
+            String germplasmName = searchBarComponent.getSearchField().getValue().toString();
 	        
 	        if(this.optionGroup.getValue().equals(OPTION_2_ID)){
 		        
@@ -732,7 +562,6 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     
     @Override
     public void updateLabels() {
-        messageSource.setCaption(searchButton, Message.SEARCH_LABEL);
     }
 
     /**
@@ -769,10 +598,6 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     }    
     
     
-    private void setGermplasmCount(Integer count){
-    	matchingGermplasmsCount.setCaption(messageSource.getMessage(Message.MATCHING_GERMPLASM_ENTRIES)+": "+count.toString());
-    }
-    
     private void setSpeficyDetailsVisible(Boolean visible){
     	if(visible){
     		setHeight("720px");
@@ -786,7 +611,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     }
     
     public void focusOnSearchField(){
-    	searchField.focus();
+        searchBarComponent.getSearchField().focus();
     }
     
 }

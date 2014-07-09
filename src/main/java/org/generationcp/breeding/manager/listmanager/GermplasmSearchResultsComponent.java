@@ -11,7 +11,6 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
-import org.generationcp.breeding.manager.listmanager.sidebyside.GermplasmDetailsComponent;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.tomcat.util.TomcatUtil;
@@ -23,6 +22,8 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.Location;
+import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.workbench.Tool;
 import org.generationcp.middleware.pojos.workbench.ToolName;
@@ -34,14 +35,12 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
 import com.vaadin.event.Action;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.terminal.ExternalResource;
+import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -76,6 +75,10 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
     
 	private final org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain listManagerMain;
 	
+	private boolean viaToolUrl = true;
+	
+	private boolean showAddToList = true;
+	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
@@ -86,11 +89,18 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
     private WorkbenchDataManager workbenchDataManager;
     
     @Autowired
-    private TomcatUtil tomcatUtil;	
-	
+    private TomcatUtil tomcatUtil;
+
 	public GermplasmSearchResultsComponent(final ListManagerMain listManagerMain) {
 		this.listManagerMain = listManagerMain;
 	}
+	
+    public GermplasmSearchResultsComponent(final ListManagerMain listManagerMain, boolean viaToolUrl, boolean showAddToList) {
+        this(listManagerMain);
+        
+        this.viaToolUrl = viaToolUrl;
+        this.showAddToList = showAddToList;
+    }
 	
 	@Override
 	public void updateLabels() {
@@ -123,9 +133,11 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 		matchingGermplasmsTable = matchingGermplasmsTableWithSelectAll.getTable();
 		matchingGermplasmsTable.setData(MATCHING_GEMRPLASMS_TABLE_DATA);
 		matchingGermplasmsTable.addContainerProperty(CHECKBOX_COLUMN_ID, CheckBox.class, null);
-		matchingGermplasmsTable.addContainerProperty("GID", Button.class, null);
 		matchingGermplasmsTable.addContainerProperty("NAMES", String.class,null);
 		matchingGermplasmsTable.addContainerProperty("PARENTAGE", String.class,null);
+		matchingGermplasmsTable.addContainerProperty("GID", Button.class, null);
+		matchingGermplasmsTable.addContainerProperty("LOCATION", String.class,null);
+		matchingGermplasmsTable.addContainerProperty("METHOD", String.class,null);
 		matchingGermplasmsTable.setWidth("100%");
 		matchingGermplasmsTable.setMultiSelect(true);
 		matchingGermplasmsTable.setSelectable(true);
@@ -201,7 +213,8 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 		matchingGermplasmsTable.removeAllItems();
 		for(Germplasm germplasm:germplasms){
 
-        	Button gidButton = new Button(String.format("%s", germplasm.getGid().toString()), new GidLinkButtonClickListener(listManagerMain, germplasm.getGid().toString(), true, true));
+		    GidLinkButtonClickListener listener = new GidLinkButtonClickListener(listManagerMain, germplasm.getGid().toString(), viaToolUrl, showAddToList);
+        	Button gidButton = new Button(String.format("%s", germplasm.getGid().toString()), listener);
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 			
 			String shortenedNames = getShortenedGermplasmNames(germplasm.getGid());
@@ -232,8 +245,30 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 	 			}
 	 			 
 	 		});
+	   		
+	   		String methodName = "-";
+	   		try {
+	   		    Method germplasmMethod = germplasmDataManager.getMethodByID(germplasm.getMethodId());
+	   		    if(germplasmMethod!=null && germplasmMethod.getMname()!=null){
+	   		        methodName = germplasmMethod.getMname();
+	   		    }
+	   		}
+	   		catch (MiddlewareQueryException e) {
+	   		    LOG.error(e.getMessage(), e);
+	   		}
+
+	   		String locationName = "-";
+	   		try {
+	   		    Location germplasmLocation = germplasmDataManager.getLocationByID(germplasm.getLocationId());
+	   		    if(germplasmLocation!=null && germplasmLocation.getLname()!=null){
+	   		        locationName = germplasmLocation.getLname();
+	   		    }
+	   		}
+            catch (MiddlewareQueryException e) {
+                LOG.error(e.getMessage(), e);
+            }
             
-            matchingGermplasmsTable.addItem(new Object[]{itemCheckBox, gidButton, shortenedNames, crossExpansion},germplasm.getGid());
+            matchingGermplasmsTable.addItem(new Object[]{itemCheckBox, shortenedNames, crossExpansion, gidButton, locationName, methodName},germplasm.getGid());
 		}
 		
 		// Update total count
@@ -284,6 +319,10 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
         } catch (MiddlewareQueryException e) {
             return null;
         }
+    }
+    
+    public TableWithSelectAllLayout getMatchingGermplasmsTableWithSelectAll() {
+        return matchingGermplasmsTableWithSelectAll;
     }
 	
     public Table getMatchingGermplasmsTable(){
@@ -444,5 +483,21 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 		}
     	
     	        
-    }    
+    }
+
+    public boolean isViaToolUrl() {
+        return viaToolUrl;
+    }
+
+    public void setViaToolUrl(boolean viaToolUrl) {
+        this.viaToolUrl = viaToolUrl;
+    }
+
+    public boolean isShowAddToList() {
+        return showAddToList;
+    }
+
+    public void setShowAddToList(boolean showAddToList) {
+        this.showAddToList = showAddToList;
+    }
 }

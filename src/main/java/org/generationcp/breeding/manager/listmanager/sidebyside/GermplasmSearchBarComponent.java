@@ -70,8 +70,12 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		super();
 		this.searchResultsComponent = searchResultsComponent;
 	}
+	
+    public TextField getSearchField() {
+        return searchField;
+    }
 
-	@Override
+    @Override
 	public void afterPropertiesSet() throws Exception {
 		instantiateComponents();
 		initializeValues();

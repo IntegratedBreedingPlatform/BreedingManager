@@ -73,17 +73,8 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
         }else if (event.getButton().getData().equals(ListManagerCopyToNewListDialog.CANCEL_BUTTON_ID)
                 && (source instanceof ListManagerCopyToNewListDialog)) { // "Cancel Germplasm List"
             ((ListManagerCopyToNewListDialog) source).cancelGermplasmListButtonClickAction();
-        }else if (event.getButton().getData().equals(AddEntryDialog.SEARCH_BUTTON_ID)
-                    && (source instanceof AddEntryDialog)){
-                try {
-                    ((AddEntryDialog) source).searchButtonClickAction();
-                } catch (InternationalizableException e){
-                    LOG.error(e.toString() + "\n" + e.getStackTrace());
-                    e.printStackTrace();
-                    MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
-                }
-            
-        }else if (event.getButton().getData().equals(AddEntryDialog.BACK_BUTTON_ID)
+        }
+        else if (event.getButton().getData().equals(AddEntryDialog.BACK_BUTTON_ID)
                 && (source instanceof AddEntryDialog)){
             try {
                 ((AddEntryDialog) source).backButtonClickAction();
