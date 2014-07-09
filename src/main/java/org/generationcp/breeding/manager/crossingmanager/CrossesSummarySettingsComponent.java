@@ -1,8 +1,12 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.crossingmanager.xml.AdditionalDetailsSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -83,6 +87,10 @@ public class CrossesSummarySettingsComponent extends HorizontalLayout implements
 		Integer locationId = setting.getAdditionalDetailsSetting().getHarvestLocationId();
 		Label harvestLocationValue = initializeHarvestLocationValue(locationId);
 		
+		Label harvestDateLabel = new Label(messageSource.getMessage(Message.DATE_LABEL) + ":");
+		harvestDateLabel.addStyleName(AppConstants.CssStyles.BOLD);
+		Label harvestDateValue = initializeHarvestDateValue();
+
 		Label dummyLabel = new Label();
 		dummyLabel.setWidth("30px"); // for spacing only
 		
@@ -92,13 +100,14 @@ public class CrossesSummarySettingsComponent extends HorizontalLayout implements
         layout.addComponent(harvestLocationLabel);
         layout.addComponent(harvestLocationValue);
         layout.addComponent(dummyLabel);
+        layout.addComponent(harvestDateLabel);
+        layout.addComponent(harvestDateValue);
 
         additionalDetailsComponent.addComponent(additionalDetailsTitle);
         additionalDetailsComponent.addComponent(layout);
         
 	}
 
-	@SuppressWarnings("deprecation")
 	private Label initializeHarvestLocationValue(Integer locationId) {
 		Label harvestLocationValue = new Label("-"); 
 		if (locationId != null){
@@ -111,4 +120,12 @@ public class CrossesSummarySettingsComponent extends HorizontalLayout implements
 		}
 		return harvestLocationValue;
 	}
+
+	private Label initializeHarvestDateValue() {
+		Label harvestDateValue = new Label("-");
+		AdditionalDetailsSetting addSetting = setting.getAdditionalDetailsSetting();
+		harvestDateValue.setValue(addSetting.getHarvestYear() + " " + addSetting.getHarvestMonth());
+		return harvestDateValue;
+	}
+
 }
