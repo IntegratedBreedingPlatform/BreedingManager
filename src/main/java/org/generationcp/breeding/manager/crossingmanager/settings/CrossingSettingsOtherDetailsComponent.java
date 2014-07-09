@@ -42,7 +42,6 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
@@ -265,8 +264,7 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 		try {
 			harvestDateField.validate();
 		} catch (InvalidValueException e) {
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), e.getMessage()
-					, Notification.POSITION_CENTERED);
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), e.getMessage());
 			return false;
 		}
 		return true;

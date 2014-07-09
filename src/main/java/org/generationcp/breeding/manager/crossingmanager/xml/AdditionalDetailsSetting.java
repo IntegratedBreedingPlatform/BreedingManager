@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.text.DateFormatSymbols;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
@@ -32,8 +33,8 @@ public class AdditionalDetailsSetting implements Serializable {
 	public void setHarvestLocationId(Integer harvestLocationId) {
 		this.harvestLocationId = harvestLocationId;
 	}
-
-	@XmlAttribute
+	
+	@XmlTransient
 	public String getHarvestDate() {
 		return harvestDate;
 	}
@@ -73,7 +74,6 @@ public class AdditionalDetailsSetting implements Serializable {
         AdditionalDetailsSetting rhs = (AdditionalDetailsSetting) obj;
         return new EqualsBuilder()
         		.append(harvestLocationId, rhs.harvestLocationId)
-        		.append(harvestDate, rhs.harvestDate)
         		.isEquals();
     }
 

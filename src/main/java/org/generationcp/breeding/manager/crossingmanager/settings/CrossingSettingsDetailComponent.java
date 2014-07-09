@@ -38,7 +38,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.Window.Notification;
 
 @Configurable
 public class CrossingSettingsDetailComponent extends CssLayout 
@@ -148,6 +147,7 @@ public class CrossingSettingsDetailComponent extends CssLayout
 		});
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void layoutComponents() {
 		setWidth("900px");
@@ -213,8 +213,7 @@ public class CrossingSettingsDetailComponent extends CssLayout
 						else{
 							setDefaultManageCrossingSettingsFields();
 						}
-						MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Crossing Manager Setting has been reset."
-								, 3000,Notification.POSITION_CENTERED);
+						MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Crossing Manager Setting has been reset.");
 					}
 				}
 			}
@@ -255,8 +254,7 @@ public class CrossingSettingsDetailComponent extends CssLayout
 								defineSettingComponent.setSettingsComboBox(null);
 								setDefaultManageCrossingSettingsFields();
 								
-								MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Crossing Manager Setting has been deleted."
-										, 3000,Notification.POSITION_CENTERED);
+								MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Crossing Manager Setting has been deleted.");
 							} catch (MiddlewareQueryException e) {
 								LOG.error("Error with deleting the manage crossing template setting", e);
 								e.printStackTrace();
@@ -290,7 +288,7 @@ public class CrossingSettingsDetailComponent extends CssLayout
  			crossingManagerTool = workbenchDataManager.getToolWithName(CrossingManagerSetting.CROSSING_MANAGER_TOOL_NAME);
  		} catch(MiddlewareQueryException ex){
  			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
- 					, "Error with retrieving currently opened Workbench Program and Crossing Manager Tool record.", Notification.POSITION_CENTERED);
+ 					, "Error with retrieving currently opened Workbench Program and Crossing Manager Tool record.");
  			LOG.error("Error with retrieving currently opened Workbench Program and Crossing Manager Tool record.", ex);
  			return;
  		}
@@ -316,8 +314,7 @@ public class CrossingSettingsDetailComponent extends CssLayout
 					String configuration = getXmlStringForSetting(currentlyDefinedSettingsInUi);
 					templateSetting.setConfiguration(configuration);
 				} catch(JAXBException ex){
-					MessageNotifier.showError(getWindow(), "XML Writing Error", "There was an error with writing the XML for the setting."
-							, Notification.POSITION_CENTERED);
+					MessageNotifier.showError(getWindow(), "XML Writing Error", "There was an error with writing the XML for the setting.");
 					LOG.error("Error with writing XML String.", ex);
 					return;
 				}
@@ -334,12 +331,11 @@ public class CrossingSettingsDetailComponent extends CssLayout
 						currentSetting = templateSetting;
 					}
 					
-					MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Crossing Manager Settings have been saved."
-							, 3000, Notification.POSITION_CENTERED);
+					MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Crossing Manager Settings have been saved.");
 				} catch(MiddlewareQueryException ex){
 					LOG.error("Error with saving template setting.", ex);
 					MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
-							, "Error with saving template setting.", Notification.POSITION_CENTERED);
+							, "Error with saving template setting.");
 				}
 			} else{
 				confirmCrossingSettingOverwrite();
@@ -405,16 +401,14 @@ public class CrossingSettingsDetailComponent extends CssLayout
 					currentSetting.setConfiguration(configuration);
 					thereIsAChange = true;
 				} catch(JAXBException ex){
-					MessageNotifier.showError(getWindow(), "XML Writing Error", "There was an error with writing the XML for the setting."
-							, Notification.POSITION_CENTERED);
+					MessageNotifier.showError(getWindow(), "XML Writing Error", "There was an error with writing the XML for the setting.");
 					LOG.error("Error with writing XML String.", ex);
 					return;
 				}
 			}
 		} catch(JAXBException ex){
 			LOG.error("Error with parsing crossing manager XML string.", ex);
-			MessageNotifier.showError(getWindow(), "XML Parsing Error", "Error with parsing XML string for Crossing Manager setting."
-					, Notification.POSITION_CENTERED);
+			MessageNotifier.showError(getWindow(), "XML Parsing Error", "Error with parsing XML string for Crossing Manager setting.");
 			return;
 		}
 		
@@ -428,13 +422,13 @@ public class CrossingSettingsDetailComponent extends CssLayout
 				workbenchDataManager.updateTemplateSetting(currentSetting);
 				//must reload settings combobox to solve out of sync when going back to this screen
 				defineSettingComponent.setSettingsComboBox(currentSetting);
-				MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Crossing Manager Setting has been updated."
-						, 3000,Notification.POSITION_CENTERED);
+				MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS),
+						"Crossing Manager Setting has been updated.");
 			}
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error with updating template setting record.", ex);
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), "Error with updating Crossing Manager Setting."
-					, Notification.POSITION_CENTERED);
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), 
+					"Error with updating Crossing Manager Setting.");
 			return;
 		}
 	}
@@ -461,7 +455,7 @@ public class CrossingSettingsDetailComponent extends CssLayout
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error getting template settings for project:" + projectId + "and crossing manager tool.", ex);
 			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
-					, "Error with checking for uniqueness of settings name.", Notification.POSITION_CENTERED);
+					, "Error with checking for uniqueness of settings name.");
 		}
 		return null;
 	}
@@ -492,7 +486,7 @@ public class CrossingSettingsDetailComponent extends CssLayout
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error getting template settings for project:" + projectId + "and crossing manager tool.", ex);
 			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
-					, "Error with checking for uniqueness of settings name.", Notification.POSITION_CENTERED);
+					, "Error with checking for uniqueness of settings name.");
 			return true;
 		}
 		return false;
