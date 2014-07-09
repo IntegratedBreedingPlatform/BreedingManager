@@ -1,5 +1,6 @@
 package org.generationcp.breeding.manager.customfields;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -231,18 +232,23 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
     	}
     }
     
-	private Map<String, String> populateMethods() {
-		
-		if(methods==null){
-			try {
-				methods = germplasmDataManager.getAllMethods();
-			} catch (MiddlewareQueryException e) {
-				e.printStackTrace();
-				LOG.error("Error on gettingAllMethods", e);
-			}
-		}
-		
-		methodMap = new HashMap<String, String>();
+    private Map<String, String> populateMethods() {
+        if (methods == null) {
+            try {
+                methods = germplasmDataManager.getAllMethods();
+            }
+            catch (MiddlewareQueryException e) {
+                e.printStackTrace();
+                LOG.error("Error on gettingAllMethods", e);
+            }
+        }
+        
+        if (methods == null) {
+            methods = new ArrayList<Method>();
+        }
+        
+        methodMap = new HashMap<String, String>();
+
         for(Method method : methods){
             breedingMethodComboBox.addItem(method.getMid());
             breedingMethodComboBox.setItemCaption(method.getMid(), method.getMname());
@@ -254,7 +260,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
             methodMap.put(method.getMid().toString(), method.getMdesc());
         }
         
-        if(breedingMethodComboBox.getValue()==null && methods.get(0) != null){
+        if(breedingMethodComboBox.getValue()==null && methods.size() > 0 && methods.get(0) != null){
         	breedingMethodComboBox.setValue(methods.get(0).getMid());
         	breedingMethodComboBox.setDescription(methods.get(0).getMdesc());
         }
