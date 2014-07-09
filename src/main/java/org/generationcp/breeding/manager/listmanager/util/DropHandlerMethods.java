@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.inventory.InventoryDropTargetContainer;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.ListSearchResultsComponent;
@@ -53,6 +54,7 @@ public class DropHandlerMethods {
 	
 	protected boolean changed = false;
 	protected ListManagerMain listManagerMain;
+	protected InventoryDropTargetContainer inventoryDropTargetContainer;
 	
     protected List<ListUpdatedListener> listeners = null;
 	

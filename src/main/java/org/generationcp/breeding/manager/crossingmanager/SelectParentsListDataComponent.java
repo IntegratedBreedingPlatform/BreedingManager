@@ -68,6 +68,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	private static final String CHECKBOX_COLUMN_ID="Checkbox Column ID";
 	
 	public static final String LIST_DATA_TABLE_ID = "SelectParentsListDataComponent List Data Table ID";
+	public static final String CROSSING_MANAGER_PARENT_TAB_INVENTORY_TABLE = "Crossing manager parent tab inventory table";
 	
 	private static final Action ACTION_ADD_TO_FEMALE_LIST = new Action("Add to Female List");
 	private static final Action ACTION_ADD_TO_MALE_LIST = new Action("Add to Male List");
@@ -283,6 +284,8 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		listInventoryTable = new CrossingManagerInventoryTable(germplasmList.getId());
 		listInventoryTable.setVisible(false);
 		listInventoryTable.setMaxRows(9);
+		listInventoryTable.getTable().setDragMode(TableDragMode.ROW);
+		listInventoryTable.getTable().setData(CROSSING_MANAGER_PARENT_TAB_INVENTORY_TABLE);
 	}
 
 	private void retrieveListDetails() {
@@ -544,7 +547,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	
 	public void changeToInventoryView(){
 		if(tableWithSelectAllLayout.isVisible()){
-			tableWithSelectAllLayout.setVisible(false);
+			tableWithSelectAllLayout.setVisible(true);
 			listInventoryTable.setVisible(true);
 			
 			subHeaderLayout.removeComponent(actionButton);
@@ -771,7 +774,17 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	public void setHasUnsavedChanges(Boolean hasChanges) {
 		this.hasChanges = hasChanges;
 		
+		if(hasChanges){
+			menuInventorySaveChanges.setEnabled(true);
+		} else {
+			menuInventorySaveChanges.setEnabled(false);
+		}
+		
 		SelectParentsComponent selectParentComponent = makeCrossesParentsComponent.getMakeCrossesMain().getSelectParentsComponent();
 		selectParentComponent.addUpdateListStatusForChanges(this, this.hasChanges);
+	}
+	
+	public Integer getGermplasmListId(){
+		return germplasmListId;
 	}
 }

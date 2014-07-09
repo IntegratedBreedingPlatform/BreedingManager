@@ -4,6 +4,6 @@ public interface InventoryDropTargetContainer {
 
 	public void setHasUnsavedChanges(Boolean hasChanges);
 	
-	
+	public void refreshListInventoryItemCount();
 	
 }

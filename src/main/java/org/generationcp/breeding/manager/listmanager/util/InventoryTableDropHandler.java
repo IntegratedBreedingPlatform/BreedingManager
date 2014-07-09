@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.generationcp.breeding.manager.crossingmanager.SelectParentsListDataComponent;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
+import org.generationcp.breeding.manager.inventory.InventoryDropTargetContainer;
 import org.generationcp.breeding.manager.inventory.ListDataAndLotDetails;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListComponent;
@@ -48,6 +50,16 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		
 		listDataAndLotDetails = new ArrayList<ListDataAndLotDetails>();
 	}
+	
+	public InventoryTableDropHandler(InventoryDropTargetContainer inventoryDropTargetContainer, GermplasmDataManager germplasmDataManager, GermplasmListManager germplasmListManager, InventoryDataManager inventoryDataManager, Table targetTable) {
+		this.inventoryDropTargetContainer = inventoryDropTargetContainer;
+		this.germplasmDataManager = germplasmDataManager;
+		this.germplasmListManager = germplasmListManager;
+		this.inventoryDataManager = inventoryDataManager;
+		this.targetTable = targetTable;
+		
+		listDataAndLotDetails = new ArrayList<ListDataAndLotDetails>();
+	}
 
 	@Override
 	public void drop(DragAndDropEvent event) {
@@ -80,6 +92,23 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 					lotDetails.add((ListEntryLotDetails) transferable.getItemId());
 				}
 				addSelectedInventoryDetails(lotDetails, sourceTable);
+				
+			} else if(sourceTableData.equals(SelectParentsListDataComponent.CROSSING_MANAGER_PARENT_TAB_INVENTORY_TABLE) && !sourceTable.equals(targetTable)){				
+				inventoryDropTargetContainer.setHasUnsavedChanges(true);
+				
+				lastDroppedListId = ((SelectParentsListDataComponent) transferable.getSourceComponent().getParent().getParent()).getGermplasmListId();
+				
+				List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
+				
+				//If table has selected items, add selected items
+				if(hasSelectedItems(sourceTable)){
+					lotDetails.addAll(getInventoryTableSelectedItemIds(sourceTable));
+				} //If none, add what was dropped
+				else if(transferable.getSourceComponent().getParent().getParent() instanceof SelectParentsListDataComponent){
+					lotDetails.add((ListEntryLotDetails) transferable.getItemId());
+				}
+				addSelectedInventoryDetails(lotDetails, sourceTable);
+								
 				
 			} else {
 				LOG.error("Error During Drop: Unknown table data: "+sourceTableData);
@@ -121,7 +150,10 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		}
 	
 		//Update counter
-		listManagerMain.getListBuilderComponent().refreshListInventoryItemCount();
+		if(listManagerMain!=null)
+			listManagerMain.getListBuilderComponent().refreshListInventoryItemCount();
+		else
+			inventoryDropTargetContainer.refreshListInventoryItemCount();
 		
 	}
     
@@ -143,6 +175,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 				if(!uniqueEntryIds.contains(currentEntryId))
 					uniqueEntryIds.add(currentEntryId);
 			}
+		
 		}
 		
 		return uniqueEntryIds;
@@ -158,6 +191,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
         List<ListEntryLotDetails> allLotDetails = new ArrayList<ListEntryLotDetails>();
         List<ListEntryLotDetails> matchingLotDetails = new ArrayList<ListEntryLotDetails>();
 	    allLotDetails.addAll((Collection<? extends ListEntryLotDetails>) sourceTable.getItemIds());
+	    
 	    for(ListEntryLotDetails lotDetail : allLotDetails){
 
 			Item item = sourceTable.getItem(lotDetail);

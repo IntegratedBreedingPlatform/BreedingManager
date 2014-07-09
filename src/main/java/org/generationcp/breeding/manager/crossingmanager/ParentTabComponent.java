@@ -24,6 +24,7 @@ import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.listinventory.CrossingManagerInventoryTable;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
+import org.generationcp.breeding.manager.inventory.InventoryDropTargetContainer;
 import org.generationcp.breeding.manager.inventory.ReservationStatusWindow;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
 import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
@@ -31,12 +32,14 @@ import org.generationcp.breeding.manager.inventory.ReserveInventoryUtil;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
+import org.generationcp.breeding.manager.listmanager.util.InventoryTableDropHandler;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -75,7 +78,7 @@ import com.vaadin.ui.themes.Reindeer;
 @Configurable
 public class ParentTabComponent extends VerticalLayout implements InitializingBean, 
 						InternationalizableComponent, BreedingManagerLayout, SaveGermplasmListActionSource, 
-						SaveListAsDialogSource, ReserveInventorySource {
+						SaveListAsDialogSource, ReserveInventorySource, InventoryDropTargetContainer {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ParentTabComponent.class);
 	private static final long serialVersionUID = 2124522470629189449L;
@@ -118,6 +121,9 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
     
     @Autowired
     private GermplasmListManager germplasmListManager;
+    
+    @Autowired
+    private GermplasmDataManager germplasmDataManager;
     
     @Autowired
     private InventoryDataManager inventoryDataManager;  
@@ -497,6 +503,9 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
                 	return AcceptAll.get();
                 }
         });
+		
+		InventoryTableDropHandler inventoryTableDropHandler = new InventoryTableDropHandler(this, germplasmDataManager, germplasmListManager, inventoryDataManager, listInventoryTable.getTable());
+		listInventoryTable.getTable().setDropHandler(inventoryTableDropHandler);
 	}
 
 	public void updateNoOfEntries(int numOfEntries) {
@@ -1004,6 +1013,13 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	
 	public void setHasUnsavedChanges(Boolean hasChanges) {
 		this.hasChanges = hasChanges;
+		
+		if(hasChanges){
+			menuInventorySaveChanges.setEnabled(true);
+		} else {
+			menuInventorySaveChanges.setEnabled(false);
+		}
+		
 		source.setHasChanges(this.hasChanges);
 	}
 	
@@ -1025,5 +1041,10 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	public void discardChangesInInventoryView() {
 		listInventoryTable.updateListInventoryTableAfterSave();
 		changeToListView();
+	}
+
+	@Override
+	public void refreshListInventoryItemCount() {
+		updateNoOfEntries(listInventoryTable.getTable().getItemIds().size());
 	}
 }
