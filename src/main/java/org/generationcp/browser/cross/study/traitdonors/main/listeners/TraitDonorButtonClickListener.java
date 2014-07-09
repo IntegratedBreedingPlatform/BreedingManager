@@ -2,7 +2,8 @@ package org.generationcp.browser.cross.study.traitdonors.main.listeners;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.generationcp.browser.cross.study.adapted.main.SetUpTraitFilter;
 import org.generationcp.browser.cross.study.commons.EnvironmentFilter;
 import org.generationcp.browser.cross.study.commons.trait.filter.CategoricalVariatesSection;
@@ -21,7 +22,7 @@ public class TraitDonorButtonClickListener implements ClickListener {
 
 	private static final long serialVersionUID = -7609072413444730195L;
 
-	private static final Logger log = Logger.getLogger(TraitDonorButtonClickListener.class);
+	private static final Logger log = LoggerFactory.getLogger(TraitDonorButtonClickListener.class);
 
 	private final Component source;
 	private Integer traitId;

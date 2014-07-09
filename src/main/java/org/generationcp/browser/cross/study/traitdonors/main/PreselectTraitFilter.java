@@ -6,7 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.commons.EnvironmentFilter;
 import org.generationcp.browser.cross.study.traitdonors.main.listeners.TraitDonorButtonClickListener;
@@ -48,7 +49,7 @@ public class PreselectTraitFilter extends AbsoluteLayout implements Initializing
 
 	private static final long serialVersionUID = 2143984475747491163L;
 
-	private static final Logger log = Logger.getLogger(PreselectTraitFilter.class);
+	private static final Logger log = LoggerFactory.getLogger(PreselectTraitFilter.class);
 
 	public static final String NEXT_BUTTON_ID = "PreselectTraitFilter Next Button ID";
 
