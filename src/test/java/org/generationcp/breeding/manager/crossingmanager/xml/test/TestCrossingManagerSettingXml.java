@@ -22,7 +22,7 @@ public class TestCrossingManagerSettingXml {
 	public void test() throws Exception {
 		BreedingMethodSetting breedingMethodSetting = new BreedingMethodSetting(Integer.valueOf(104), false);
 		CrossNameSetting crossNameSetting = new CrossNameSetting("IR", "M", true, Integer.valueOf(5), CrossNameSetting.DEFAULT_SEPARATOR);
-		AdditionalDetailsSetting additionalDetailsSetting = new AdditionalDetailsSetting(Integer.valueOf(1000), "20140500");
+		AdditionalDetailsSetting additionalDetailsSetting = new AdditionalDetailsSetting(Integer.valueOf(1000));
 		CrossingManagerSetting crossingManagerSetting = new CrossingManagerSetting("sample", breedingMethodSetting, crossNameSetting, additionalDetailsSetting);
 		
 		JAXBContext context = JAXBContext.newInstance(CrossingManagerSetting.class);

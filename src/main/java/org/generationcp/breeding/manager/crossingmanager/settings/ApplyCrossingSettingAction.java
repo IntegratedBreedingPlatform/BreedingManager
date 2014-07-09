@@ -1,13 +1,11 @@
 package org.generationcp.breeding.manager.crossingmanager.settings;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainer;
 import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainerUpdateListener;
-import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
 import org.generationcp.breeding.manager.crossingmanager.GenerateCrossNameAction;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUtil;
@@ -168,28 +166,20 @@ public class ApplyCrossingSettingAction implements
         AdditionalDetailsSetting detailsSetting =  setting.getAdditionalDetailsSetting();    
 	    if (this.container != null && this.container.getCrossesMade() != null && 
             this.container.getCrossesMade().getCrossesMap()!= null) {
-        
-            Integer dateIntValue = 0;
+	    	
             Integer harvestLocationId = 0;
             
             if(detailsSetting.getHarvestLocationId() != null){
                 harvestLocationId = detailsSetting.getHarvestLocationId();
-            }
-            
-            if(detailsSetting.getHarvestDate() != null){
-                SimpleDateFormat formatter = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT);
-                        dateIntValue = Integer.parseInt(formatter.format(Long.valueOf(detailsSetting.getHarvestDate())));
             }
         
             Map<Germplasm, Name> crossesMap = container.getCrossesMade().getCrossesMap();
 	        for (Map.Entry<Germplasm, Name> entry : crossesMap.entrySet()){
 	            Germplasm germplasm = entry.getKey();
 	            germplasm.setLocationId(harvestLocationId);
-	            germplasm.setGdate(dateIntValue);
 	            
 	            Name name = entry.getValue();
 	            name.setLocationId(harvestLocationId);
-	            name.setNdate(dateIntValue);
 	        }
 	        return true;
 	    }
