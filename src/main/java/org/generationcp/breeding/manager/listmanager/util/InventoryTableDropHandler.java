@@ -30,7 +30,6 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableTransferable;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 
 public class InventoryTableDropHandler extends DropHandlerMethods implements DropHandler {
@@ -62,10 +61,9 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 	        //targetTable = (Table) dropData.getTarget();
 			
 	        if(sourceTableData.equals(MATCHING_GERMPLASMS_TABLE_DATA)){
-	        	String message = "Please switch to inventory view before adding a germplasm entry to the list.";
+	        	String message = "Please switch to list view first before adding a germplasm entry to the list.";
 	        	
-	        	MessageNotifier.showWarning(listManagerMain.getWindow(), 
-							"Warning!", message, Notification.POSITION_TOP_RIGHT);
+	        	MessageNotifier.showWarning(listManagerMain.getWindow(),"Warning!", message);
 				
 			} else if(sourceTableData.equals(ListManagerInventoryTable.INVENTORY_TABLE_DATA) && !sourceTable.equals(targetTable)){
 				super.setHasUnsavedChanges(true);

@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.crossingmanager;
 import java.util.Collection;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customfields.ListTreeComponent;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -20,8 +21,23 @@ import com.vaadin.ui.Window;
 
 @Configurable
 public class CrossingManagerListTreeComponent extends ListTreeComponent {
-
+	
+	private static final long serialVersionUID = 8112173851252075693L;
+	
 	private static final Logger LOG = LoggerFactory.getLogger(CrossingManagerListTreeComponent.class);
+	
+	private Button addToFemaleListButton;
+	private Button cancelButton;
+	private Button addToMaleListButton;
+	private Button openForReviewButton;
+	private CrossingManagerMakeCrossesComponent source;
+
+	public CrossingManagerListTreeComponent(
+			ListTreeActionsListener treeActionsListener,
+			CrossingManagerMakeCrossesComponent source) {
+		super(treeActionsListener);
+		this.source = source;
+	}
 
 	@Override
 	public void addListeners() {
@@ -30,38 +46,46 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 	
 		
 		addToFemaleListButton.addListener(new Button.ClickListener(){
+			private static final long serialVersionUID = -3383724866291655410L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				// TODO Auto-generated method stub
-				
-				Integer germplasmListId = (Integer) germplasmListTree.getValue();
-				getTreeActionsListener().addListToFemaleList(germplasmListId);
-				Window dialog = event.getComponent().getParent().getWindow();
-				dialog.getParent().getWindow().removeWindow(dialog);
+				if(source.getModeView().equals(ModeView.INVENTORY_VIEW)){
+					showWarningInInventoryView();
+				}
+				else{
+					Integer germplasmListId = (Integer) germplasmListTree.getValue();
+					getTreeActionsListener().addListToFemaleList(germplasmListId);
+					Window dialog = event.getComponent().getParent().getWindow();
+					dialog.getParent().getWindow().removeWindow(dialog);
+				}
 			}
 			
 		});
 		
 		addToMaleListButton.addListener(new Button.ClickListener(){
+			private static final long serialVersionUID = -7685621731871659880L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				// TODO Auto-generated method stub
-				
-				Integer germplasmListId = (Integer) germplasmListTree.getValue();
-				getTreeActionsListener().addListToMaleList(germplasmListId);
-				Window dialog = event.getComponent().getParent().getWindow();
-				dialog.getParent().getWindow().removeWindow(dialog);
+				if(source.getModeView().equals(ModeView.INVENTORY_VIEW)){
+					showWarningInInventoryView();
+				}
+				else{
+					Integer germplasmListId = (Integer) germplasmListTree.getValue();
+					getTreeActionsListener().addListToMaleList(germplasmListId);
+					Window dialog = event.getComponent().getParent().getWindow();
+					dialog.getParent().getWindow().removeWindow(dialog);
+				}
 			}
 			
 		});
 		
 		openForReviewButton.addListener(new Button.ClickListener(){
+			private static final long serialVersionUID = 2103866815084444657L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				// TODO Auto-generated method stub
 				String item = germplasmListTree.getValue().toString();
 	        	
 		        	if(!item.equals("CENTRAL") && !item.equals("LOCAL")){
@@ -90,10 +114,10 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 		});
 		
 		cancelButton.addListener(new Button.ClickListener(){
+			private static final long serialVersionUID = -3708969669687499248L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				// TODO Auto-generated method stub
 				Window dialog = event.getComponent().getParent().getWindow();
 				dialog.getParent().getWindow().removeWindow(dialog);
 			}
@@ -102,10 +126,10 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 		
 		
 		germplasmListTree.addListener(new ItemClickEvent.ItemClickListener() {
-			
+			private static final long serialVersionUID = -4428462607366745162L;
+
 			@Override
 			public void itemClick(ItemClickEvent event) {
-				// TODO Auto-generated method stub
 				String item = event.getItemId().toString();
 	        	
 	        	if(!item.equals("CENTRAL") && !item.equals("LOCAL")){
@@ -142,6 +166,11 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 			}
 		});
 		
+	}
+	
+	public void showWarningInInventoryView(){
+		String message = "Please switch to list view first before adding entries to parent lists.";
+    	MessageNotifier.showWarning(getWindow(),"Warning!", message);
 	}
 
 	@Override
@@ -192,18 +221,6 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 			germplasmListTree.removeListener(ItemClickEvent.class,l);
 
 		}
-	}
-
-	private static final long serialVersionUID = 8112173851252075693L;
-	
-	private Button addToFemaleListButton;
-	private Button cancelButton;
-	private Button addToMaleListButton;
-	private Button openForReviewButton;	
-
-	public CrossingManagerListTreeComponent(
-			ListTreeActionsListener treeActionsListener) {
-		super(treeActionsListener);
 	}
 
 	@Override

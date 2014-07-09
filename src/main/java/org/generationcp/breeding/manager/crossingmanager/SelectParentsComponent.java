@@ -88,7 +88,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
         browseForListsButton.setImmediate(true);
         browseForListsButton.setStyleName(Reindeer.BUTTON_LINK);
 
-        listTreeComponent = new CrossingManagerListTreeComponent(this);
+        listTreeComponent = new CrossingManagerListTreeComponent(this,source);
                 
         instructionForSelectParents = new Label("for a list to work with.");
         
