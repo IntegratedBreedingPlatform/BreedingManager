@@ -61,6 +61,8 @@ public class NumericTraitsSection extends VerticalLayout implements
 	private CrossStudyDataManager crossStudyDataManager;
 
 	private List<Integer> environmentIds = null;
+	private List<Integer> selectedTraits = null;
+	
 	private List<Field> fieldsToValidate = new ArrayList<Field>();
 	private List<NumericTraitFilter> filters;
 	
@@ -71,6 +73,13 @@ public class NumericTraitsSection extends VerticalLayout implements
 		super();
 		this.parentWindow = parentWindow;
 		this.environmentIds = environmentIds;
+	}
+	
+	public NumericTraitsSection(List<Integer> environmentIds, List<Integer> selectedTraits, Window parentWindow) {
+		super();
+		this.parentWindow = parentWindow;
+		this.environmentIds = environmentIds;
+		this.selectedTraits = selectedTraits;
 	}
 
 	@Override
@@ -97,6 +106,9 @@ public class NumericTraitsSection extends VerticalLayout implements
 		
 		try {
 			numericTraits = crossStudyDataManager.getTraitsForNumericVariates(this.environmentIds);
+			if(selectedTraits != null) {
+				numericTraits = filterUnwantedTraitsFromResults(numericTraits, selectedTraits);
+			}
 		} catch (MiddlewareQueryException e) {
 			e.printStackTrace();
 			LOG.error("Database error!", e);
@@ -167,6 +179,20 @@ public class NumericTraitsSection extends VerticalLayout implements
 		addComponent(lblSectionTitle);
 		addComponent(traitsTable);
 	
+	}
+	
+	// TODO : Rebecca is not happy with public/private method ordering
+	// TODO : warning - On2 may need to revisit for performance
+	private List<NumericTraitInfo> filterUnwantedTraitsFromResults(List<NumericTraitInfo> numericTraitInfos, List<Integer> desiredTraits) {
+		List<NumericTraitInfo> filteredTraits = new ArrayList<NumericTraitInfo>();
+		for (NumericTraitInfo cto : numericTraitInfos) {
+			for (Integer traitId : desiredTraits) {
+				if(cto.getId() == traitId.intValue()) {
+					filteredTraits.add(cto);
+				}
+			}
+		}
+		return filteredTraits;
 	}
 	
 	public void showEmptyTraitsMessage() {

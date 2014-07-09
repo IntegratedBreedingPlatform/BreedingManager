@@ -1,148 +1,187 @@
+
 package org.generationcp.browser.cross.study.traitdonors.main;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.commons.EnvironmentFilter;
-import org.generationcp.browser.cross.study.h2h.main.pojos.EnvironmentForComparison;
-import org.generationcp.browser.cross.study.traitdonors.main.SelectTraitsSection.TraitItem;
 import org.generationcp.browser.cross.study.traitdonors.main.listeners.TraitDonorButtonClickListener;
+import org.generationcp.browser.cross.study.traitdonors.main.pojos.TraitItem;
+import org.generationcp.browser.exception.GermplasmStudyBrowserException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.middleware.domain.oms.PropertyReference;
+import org.generationcp.middleware.domain.oms.StandardVariableReference;
+import org.generationcp.middleware.domain.oms.TermId;
+import org.generationcp.middleware.domain.oms.TraitClassReference;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.AbstractSelect.MultiSelectMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TreeTable;
 
-// FIXME : Rebecca align the screen please
+/**
+ * This accordion panel provides a Trait tree from which to select traits of interest. The traits
+ * appear as selected into an adjacent selection table. This selected table is then caried through to
+ * the next panel.
+ * 
+ * @author rebecca
+ *
+ */
 @Configurable
-public class PreselectTraitFilter extends AbsoluteLayout implements InitializingBean, InternationalizableComponent{
+public class PreselectTraitFilter extends AbsoluteLayout implements InitializingBean, InternationalizableComponent, ItemClickListener {
 
-	// FIXME Rebecca decent serial
-	private static final long serialVersionUID = 1L;
-	
+	private static final long serialVersionUID = 2143984475747491163L;
+
+	private static final Logger log = Logger.getLogger(PreselectTraitFilter.class);
+
 	public static final String NEXT_BUTTON_ID = "PreselectTraitFilter Next Button ID";
 
-	
 	@Autowired
-    private SimpleResourceBundleMessageSource messageSource;
-	
+	private SimpleResourceBundleMessageSource messageSource;
+
+	@Autowired
+	private OntologyDataManager ontologyDataManager;
+
 	private TraitDonorsQueryMain mainScreen;
 	private EnvironmentFilter nextScreen;
-	
+
 	private Button nextButton;
-	
+
 	private Label lblSectionTitle;
 	private TreeTable traitTreeTable;
 	private Table traitSelectTable;
-	
+
+	private Map<String, StandardVariableReference> traitMap;
+
 	public PreselectTraitFilter(TraitDonorsQueryMain mainScreen, EnvironmentFilter nextScreen) {
+
 		this.mainScreen = mainScreen;
 		this.nextScreen = nextScreen;
+
 	}
 
 	@Override
 	public void updateLabels() {
-//		if (nextButton != null){
-//			messageSource.setCaption(nextButton, Message.NEXT);
-//		}		
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 
-    	setHeight("450px");
-    	setWidth("980px");
-    	
-    	//initializeComponents();
-    	//populateTable();		
+		setHeight("450px");
+		setWidth("980px");
+
 	}
-	
-	private void initializeComponents() {
+
+	private void initializeComponents() throws GermplasmStudyBrowserException {
+
+		// --- TRAIT TREE : setup the table that provides perusal of the Crop Traits
+
+		traitMap = new HashMap<String, StandardVariableReference>();
+
 		lblSectionTitle = new Label(messageSource.getMessage(Message.GET_NUMERIC_VARIATES));
-		
+
 		traitTreeTable = new TreeTable();
 		traitTreeTable.setImmediate(true);
 		traitTreeTable.setHeight("360px");
 		traitTreeTable.setWidth("440px");
 
-		
 		traitTreeTable.addContainerProperty("Trait", String.class, "");
-		
-		Object root = traitTreeTable.addItem(new Object[] { "All Traits"}, null);
-		Object agronomic = traitTreeTable.addItem(new Object[] {"Agronomic"}, null);
-		Object metronomic = traitTreeTable.addItem(new Object[] {"Metronomic"}, null);
-		Object vegenomic = traitTreeTable.addItem(new Object[] {"Vegenomic"}, null);
-		Object plantHeight = traitTreeTable.addItem(new Object[] {"Plant Height"}, null);
-		Object plantFat = traitTreeTable.addItem(new Object[] {"Plant Fat"}, null);
-		Object plantSway = traitTreeTable.addItem(new Object[] {"Plant Sway"}, null);
-		Object plantSong = traitTreeTable.addItem(new Object[] {"Plant Song"}, null);
-		Object plantGreen = traitTreeTable.addItem(new Object[] {"Plant Green"}, null);
-		Object plantLeaves = traitTreeTable.addItem(new Object[] {"Plant Leaves"}, null);
-		
-		traitTreeTable.setParent(agronomic, root);
-		traitTreeTable.setParent(metronomic, root);
-		traitTreeTable.setParent(vegenomic, root);
-		traitTreeTable.setParent(plantHeight, agronomic);
-		traitTreeTable.setParent(plantFat, agronomic);
-		traitTreeTable.setParent(plantSway, metronomic);
-		traitTreeTable.setParent(plantSong, metronomic);
-		traitTreeTable.setParent(plantGreen, vegenomic);
-		traitTreeTable.setParent(plantLeaves, vegenomic);
-		
+		traitTreeTable.setItemCaptionPropertyId("trait_name");
+
+		Object root = traitTreeTable.addItem(new Object[] {"All Traits"}, null);
+
+		try {
+			// Use the standard service to load the entire Ontology in tree form
+			List<TraitClassReference> traitClasses = ontologyDataManager.getAllTraitGroupsHierarchy(true);
+
+			// top level = two classes - Crop Traits and Research Traits
+			for (TraitClassReference traitClassReference : traitClasses) {
+				// we want to display crop traits
+				if (traitClassReference.getId().intValue() == TermId.ONTOLOGY_TRAIT_CLASS.getId()) {
+					for (TraitClassReference subReference : traitClassReference.getTraitClassChildren()) {
+						
+						// add trait groups
+						Object traitGroup = traitTreeTable.addItem(new Object[] {subReference.getName()}, null);
+						traitTreeTable.setParent(traitGroup, root);
+						
+						// add traits for each group
+						for (PropertyReference propertyReference : subReference.getProperties()) {
+							if (!propertyReference.getStandardVariables().isEmpty()) {
+								Object trait = traitTreeTable.addItem(new Object[] {propertyReference.getName()}, null);
+								traitTreeTable.setParent(trait, traitGroup);
+								
+								// for each trait, there are number of standard
+								// variables - add them all
+								for (StandardVariableReference svr : propertyReference.getStandardVariables()) {
+									traitMap.put(svr.getName(), svr);
+									Object sv = traitTreeTable.addItem(new Object[] {svr.getName()}, null);
+									traitTreeTable.setChildrenAllowed(sv, false);
+									traitTreeTable.setParent(sv, trait);
+								}
+							}
+						}
+					}
+				}
+			}
+			// FIXME : what will happen to this?
+		} catch (MiddlewareQueryException e) {
+			log.error("Problem occurred loading the Ontology Tree");
+			throw new GermplasmStudyBrowserException("Problem occurred loading the Ontology Tree", e);
+		}
+
 		traitTreeTable.setCollapsed(root, false);
-		traitTreeTable.setCollapsed(agronomic, true);
-		traitTreeTable.setCollapsed(metronomic, true);
-		traitTreeTable.setCollapsed(vegenomic, true);
-		
-		traitTreeTable.setChildrenAllowed(plantHeight, false);
-		traitTreeTable.setChildrenAllowed(plantFat, false);
-		traitTreeTable.setChildrenAllowed(plantSway, false);
-		traitTreeTable.setChildrenAllowed(plantSong, false);
-		traitTreeTable.setChildrenAllowed(plantGreen, false);
-		traitTreeTable.setChildrenAllowed(plantLeaves, false);
-		
+
 		traitTreeTable.setSelectable(true);
-		traitTreeTable.setMultiSelect(true);
-		traitTreeTable.setMultiSelectMode(MultiSelectMode.DEFAULT);
-		
+		traitTreeTable.setMultiSelect(false);
+
+		traitTreeTable.addListener(this);
+
+		// --- SELECTED TRAITS : setup the table where selections are collected ---
+
 		traitSelectTable = new Table();
 		traitSelectTable.setImmediate(true);
 		traitSelectTable.setHeight("360px");
-		traitSelectTable.setWidth("440px");
-		
-		final BeanItemContainer<TraitItem> tableContainer = new BeanItemContainer<SelectTraitsSection.TraitItem>(TraitItem.class);
+		traitSelectTable.setWidth("480px");
+		traitSelectTable.addItem("Testing");
+
+		final BeanItemContainer<TraitItem> tableContainer = new BeanItemContainer<TraitItem>(TraitItem.class);
 		traitSelectTable.setContainerDataSource(tableContainer);
-		traitSelectTable.setVisibleColumns(new Object[] { "traitName", "stdVarName" });
-		
+		traitSelectTable.setVisibleColumns(new Object[] {"traitName", "stdVarName"});
+		traitSelectTable.setColumnHeaders(new String[] {"Trait Name", "Standard Variable Name"});
+
+		traitSelectTable.addListener(this);
+
 		addComponent(lblSectionTitle, "top:10px;left:20px");
 		addComponent(traitTreeTable, "top:50px;left:20px");
 		addComponent(traitSelectTable, "top:50px;left:500px");
 
 	}
-	
-	public void populateTraitsTables(List<EnvironmentForComparison> environments) {
-//		this.environmentsForComparisonList = environments;
-//		this.environmentIds = new ArrayList<Integer>();
-//		for (EnvironmentForComparison envt : environments){
-//			this.environmentIds.add(envt.getEnvironmentNumber());
-//		}
-//		
-//		createTraitsTabs();
+
+	public void populateTraitsTables() throws GermplasmStudyBrowserException {
+
 		initializeComponents();
 		createButtonLayout();
+
 	}
-	
-	private void createButtonLayout(){
+
+	private void createButtonLayout() {
+
 		nextButton = new Button(messageSource.getMessage(Message.NEXT));
 		nextButton.setWidth("80px");
 		nextButton.setData(NEXT_BUTTON_ID);
@@ -150,16 +189,57 @@ public class PreselectTraitFilter extends AbsoluteLayout implements Initializing
 		nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 		addComponent(nextButton, "top:420px;left:900px");
 		updateLabels();
-	}
-	
-	public void nextButtonClickAction(){
-		
-		this.mainScreen.selectSecondTab();
-		this.nextScreen.populateEnvironmentsTable();
-		//this.nextScreen.populateEnvironmentsTable(traitForComparisonsListTemp, traitEnvMapTemp, trialEnvMapTemp, germplasmIds, germplasmPairsTemp, germplasmIdNameMap);
-		
-	}
-	
-	
 
+	}
+
+	/*
+	 * Extract trait ids from the selected table tree and send them through to the Environment Filter. We
+	 * will only process locations that record these traits as measured.
+	 * 
+	 */
+	public void nextButtonClickAction() {
+
+		List<Integer> traitsList = extractSelectionsFromSelectTable();
+		this.mainScreen.selectSecondTab();
+		this.nextScreen.populateEnvironmentsTable(traitsList);
+
+	}
+
+	/**
+	 * Activates when an item is selected in the trait browse tree table. The item is selected if it is a Standard Variable (no children in
+	 * the tree).
+	 * 
+	 */
+	@Override
+	public void itemClick(ItemClickEvent event) {
+
+		if (event.isDoubleClick() && event.getSource().equals(traitSelectTable)) {
+			Object itemId = event.getItemId();
+			traitSelectTable.removeItem(itemId);
+		} else if (event.getSource().equals(traitTreeTable)) {
+			// this block only operates on leaf nodes (no children)
+			if (!traitTreeTable.hasChildren(event.getItemId())) {
+				Item item = traitTreeTable.getItem(event.getItemId());
+				Item parent = traitTreeTable.getItem(traitTreeTable.getParent(event.getItemId()));
+				TraitItem ti = new TraitItem();
+				ti.setTraitName(parent.toString());
+				ti.setStdVarName(item.toString());
+				traitSelectTable.addItem(ti);
+			}
+		}
+
+	}
+	
+	/*
+	 * Pulls the trait IDs from the Items in the Selected traits tree
+	 */
+	private List<Integer> extractSelectionsFromSelectTable() {
+		List<Integer> selectedTraitIds = new ArrayList<Integer>();
+		for (Object item : traitSelectTable.getItemIds()) {
+			TraitItem ti = (TraitItem) item;
+			StandardVariableReference svr = traitMap.get(ti.getStdVarName());
+			selectedTraitIds.add(svr.getId());
+		}
+		return selectedTraitIds;
+	}
 }

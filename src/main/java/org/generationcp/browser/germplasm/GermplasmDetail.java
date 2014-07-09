@@ -14,6 +14,7 @@ package org.generationcp.browser.germplasm;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.germplasm.containers.GermplasmIndexContainer;
+import org.generationcp.browser.germplasm.inventory.InventoryViewComponent;
 import org.generationcp.browser.germplasm.listeners.GermplasmButtonClickListener;
 import org.generationcp.browser.germplasm.listeners.GermplasmSelectedTabChangeListener;
 import org.generationcp.browser.germplasm.pedigree.GermplasmPedigreeGraphComponent;
@@ -181,7 +182,7 @@ public class GermplasmDetail extends Accordion implements InitializingBean, Inte
                 }
             }else if (((VerticalLayout) tab.getComponent()).getData().equals(TEN_TAB)) {
                 if (layoutInventoryInformation.getComponentCount() == 0) {
-                    layoutInventoryInformation.addComponent(new InventoryInformationComponent(dataIndexContainer, gDetailModel));
+                    layoutInventoryInformation.addComponent(new InventoryViewComponent(null, null, gid));
                     layoutInventoryInformation.setMargin(true);
                 }
             }else if (((VerticalLayout) tab.getComponent()).getData().equals(ELEVEN_TAB)) {

@@ -386,4 +386,23 @@ public enum Message {
      ,CHANGE_LOCATION
      
      ,CLOSE_ALL_TABS
+     
+     //List Data Inventory
+     ,LOT_DETAILS_FOR_SELECTED_ENTRIES
+     ,LOT_LOCATION
+     ,LOT_UNITS
+     ,ACTUAL_BALANCE
+     ,AVAILABLE_BALANCE
+     ,RES_THIS_ENTRY
+     ,RES_OTHER_ENTRY
+     ,COMMENTS
+     ,LOT_ID    
+     ,UNITS
+     ,AVAIL
+     ,RES
+     ,NEW_RES
+     ,TOTAL
+     ,COMM
+     ,AMOUNT_TO_RESERVE
+     ,THERE_IS_NO_INVENTORY_INFORMATION_AVAILABLE_FOR_THIS_GERMPLASM
 }

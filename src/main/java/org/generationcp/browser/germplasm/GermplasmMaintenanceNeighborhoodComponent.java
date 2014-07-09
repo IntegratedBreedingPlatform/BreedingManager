@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Select;
@@ -54,7 +55,9 @@ public class GermplasmMaintenanceNeighborhoodComponent extends VerticalLayout im
     private Label labelNumberOfStepsBackward;
     private Label labelNumberOfStepsForward;
     private Button btnDisplay;
-    private HorizontalLayout hLayout;
+    private HorizontalLayout hLayout1;
+    private HorizontalLayout hLayout2;
+    private HorizontalLayout hLayout3;
     private Select selectNumberOfStepBackward;
     private Select selectNumberOfStepForward;
     public static final String  DISPLAY_BUTTON_ID="Display Derivative Neighborhood";
@@ -114,10 +117,24 @@ public class GermplasmMaintenanceNeighborhoodComponent extends VerticalLayout im
         setSpacing(true);
         setMargin(true);
         
-        hLayout= new HorizontalLayout();
-        hLayout.setSpacing(true);
+        this.setStyleName("gsb-component-wrap");
         
+        hLayout1= new HorizontalLayout();
+        hLayout1.setSpacing(true);
+        hLayout1.setMargin(false, true, false, false);
+        hLayout1.addStyleName("gsb-component-wrap");
+       
+        hLayout2= new HorizontalLayout();
+        hLayout2.setSpacing(true);
+        hLayout2.setMargin(false, true, false, false);
+        hLayout2.addStyleName("gsb-component-wrap");
+       
+        hLayout3= new HorizontalLayout();
+        hLayout3.setSpacing(true);
+        hLayout3.addStyleName("gsb-component-wrap");
+       
         labelNumberOfStepsBackward=new Label();
+        labelNumberOfStepsBackward.setWidth("170px");
         selectNumberOfStepBackward= new Select ();
         selectNumberOfStepBackward.setWidth("50px");
         populateSelectSteps(selectNumberOfStepBackward);
@@ -125,6 +142,7 @@ public class GermplasmMaintenanceNeighborhoodComponent extends VerticalLayout im
         selectNumberOfStepBackward.select("2");
       
         labelNumberOfStepsForward= new Label();
+        labelNumberOfStepsForward.setWidth("170px");
         selectNumberOfStepForward= new Select ();
         selectNumberOfStepForward.setWidth("50px");
         populateSelectSteps(selectNumberOfStepForward);
@@ -137,12 +155,20 @@ public class GermplasmMaintenanceNeighborhoodComponent extends VerticalLayout im
         btnDisplay.addListener(new GermplasmButtonClickListener(this));
         btnDisplay.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         
-        hLayout.addComponent(labelNumberOfStepsBackward);
-        hLayout.addComponent(selectNumberOfStepBackward);
-        hLayout.addComponent(labelNumberOfStepsForward);
-        hLayout.addComponent(selectNumberOfStepForward);
-        hLayout.addComponent(btnDisplay);
-        addComponent(hLayout);
+        hLayout1.addComponent(labelNumberOfStepsBackward);
+        hLayout1.addComponent(selectNumberOfStepBackward);
+        hLayout2.addComponent(labelNumberOfStepsForward);
+        hLayout2.addComponent(selectNumberOfStepForward);
+        hLayout3.addComponent(btnDisplay);
+        
+        CssLayout cssLayout = new CssLayout();
+        cssLayout.setWidth("100%");
+        cssLayout.addComponent(hLayout1);
+        cssLayout.addComponent(hLayout2);
+        cssLayout.addComponent(hLayout3);
+        
+        addComponent(cssLayout);
+
         
         maintenanceNeighborhoodTree= new Tree();
         addComponent(maintenanceNeighborhoodTree);
@@ -179,8 +205,8 @@ public class GermplasmMaintenanceNeighborhoodComponent extends VerticalLayout im
     @Override
     public void updateLabels() {
         
-        messageSource.setCaption(labelNumberOfStepsBackward, Message.NUMBER_OF_STEPS_BACKWARD_LABEL);
-        messageSource.setCaption(labelNumberOfStepsForward, Message.NUMBER_OF_STEPS_FORWARD_LABEL);
+        messageSource.setValue(labelNumberOfStepsBackward, Message.NUMBER_OF_STEPS_BACKWARD_LABEL);
+        messageSource.setValue(labelNumberOfStepsForward, Message.NUMBER_OF_STEPS_FORWARD_LABEL);
         messageSource.setCaption(btnDisplay, Message.DISPLAY_BUTTON_LABEL);
        
     }

@@ -1,7 +1,6 @@
 package org.generationcp.browser.cross.study.commons;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -69,6 +68,13 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
+/**
+ * Accordion tab used by all three queries (Adapted Germplasm, Trait Donor and H2H) in order to select environments/locations 
+ * where observations should be drawn from for analysis.
+ * 
+ * @author rebecca
+ *
+ */
 @Configurable
 public class EnvironmentFilter extends AbsoluteLayout implements InitializingBean, InternationalizableComponent {
 	
@@ -91,9 +97,6 @@ private static final long serialVersionUID = -3667517088395779496L;
     public static final String ADD_ENVIRONMENT_BUTTON_ID = "EnvironmentFilter Add Env Button ID";
     public static final String QUERY_FOR_ADAPTED_GERMPLASM_WINDOW_NAME = "Query_For_Adapted_Germplasm";
     
-    /*Head to Head Query Variables*/
-    private HeadToHeadCrossStudyMain mainScreen1;
-    private ResultsComponent nextScreen1;
     
     private Map<String, ObservationList> observationMap;
     private Map<String, String> germplasmIdNameMap;
@@ -104,10 +107,18 @@ private static final long serialVersionUID = -3667517088395779496L;
     private Map<String, TrialEnvironment> trialEnvMap;
     private List<TraitForComparison> traitForComparisonsList;
     
-    /*Adapted Germplasm Variables*/
+    /* Adapted Germplasm Variables */
     private QueryForAdaptedGermplasmMain mainScreen2;
 	private SetUpTraitFilter nextScreen2;
+
+	/* Trait Donor Query Variables */
+	private TraitDonorsQueryMain mainScreen3;
+	private SetUpTraitDonorFilter nextScreen3;
 	
+	/* Head to Head Query Variables */
+	private HeadToHeadCrossStudyMain mainScreen1;
+	private ResultsComponent nextScreen1;
+
 	private Label headerLabel;
 	private Label headerValLabel;
 	private Label chooseEnvLabel;
@@ -161,10 +172,8 @@ private static final long serialVersionUID = -3667517088395779496L;
     private Panel tablePanel;
     private AbsoluteLayout tableLayout;
     
-    // TODO - check if Trait Donor Filter is reqlly required
-	private TraitDonorsQueryMain mainScreen3;
-	private SetUpTraitDonorFilter nextScreen3;
-
+	
+	// This list allows us to limit environments based on selected traits (Trait Donors Query)
 	private List<Integer> traitsList;
     
     /*Constructors*/
@@ -475,9 +484,8 @@ private static final long serialVersionUID = -3667517088395779496L;
     	traitEnvMap = traitEnvMapTemp; 
     	trialEnvMap = trialEnvMapTemp;
     	traitForComparisonsList = traitForComparisonsListTemp;
-    	//germplasmPairs = germplasmPairsTemp;
+
     	Iterator<TraitForComparison> iter = traitForComparisonsList.iterator();
-    	
     	
     	while(iter.hasNext()){
     		TraitForComparison comparison = iter.next();
@@ -529,6 +537,24 @@ private static final long serialVersionUID = -3667517088395779496L;
         
     }
 	
+	/**
+	 * Used for the Trait Donor Query. The locations that measurements are assessed over are limited by 
+	 * the traits we are interested in. So a list is populated and we generate the environment table based
+	 * on the traits selected
+	 * 
+	 * @param selectedTraits
+	 */
+	public void populateEnvironmentsTable(List<Integer> selectedTraits) {
+		
+		traitsList = selectedTraits;
+		populateEnvironmentsTable();
+	}
+	
+	/** 
+	 * Sets up the environments table - this process undergoes query
+	 * specific processing 
+	 * 
+	 */
 	public void populateEnvironmentsTable() {
 		tableEntriesMap = new HashMap<String, Object[]>();
 		
@@ -666,11 +692,6 @@ private static final long serialVersionUID = -3667517088395779496L;
     	}
     	else if(this.crossStudyToolType == CrossStudyToolType.TRAIT_DONORS_QUERY){
     		try {
-    			//environments = crossStudyDataManager.getAllTrialEnvironments();
-    			
-    			// FIXME : Rebecca Hacking AGAIN
-    			Integer[] traitIds = {new Integer(22564), new Integer(22574), new Integer(21730)};
-    			traitsList = new ArrayList<Integer>(Arrays.asList(traitIds));
     			
     			// FIXME : hit a view for this query - too heavy
     			environments = crossStudyDataManager.getEnvironmentsForTraits(traitsList);
@@ -1032,7 +1053,6 @@ private static final long serialVersionUID = -3667517088395779496L;
 	 }
 	 
 	public void nextButtonClickAction(){
-        //this.nextScreen.populateResultsTable(this.currentTestEntryGID, this.currentStandardEntryGID, this.traitsForComparisonList);
     	final List<EnvironmentForComparison> toBeCompared = new ArrayList<EnvironmentForComparison>();
 
     	int total = 0;
@@ -1070,6 +1090,12 @@ private static final long serialVersionUID = -3667517088395779496L;
 		}
     }
 	
+	/**
+	 * Navigation to the next accorsion tab. The H2H goes to results, whereby the Adapted Germplasm and the 
+	 * Trait Donor Query move in to the presentation and range selection of trait observations
+	 * 
+	 * @param toBeCompared : environments to select traits from
+	 */
 	public void nextTabAction(List<EnvironmentForComparison> toBeCompared){
 		
 		if(crossStudyToolType == CrossStudyToolType.HEAD_TO_HEAD_QUERY){
@@ -1084,7 +1110,7 @@ private static final long serialVersionUID = -3667517088395779496L;
 		}
 		else if(crossStudyToolType == CrossStudyToolType.TRAIT_DONORS_QUERY) {
 			if (this.nextScreen3 != null){
-	    		this.nextScreen3.populateTraitsTables(toBeCompared);
+	    		this.nextScreen3.populateTraitsTables(toBeCompared, traitsList);
 	    	}
 	        this.mainScreen3.selectThirdTab();
 		}

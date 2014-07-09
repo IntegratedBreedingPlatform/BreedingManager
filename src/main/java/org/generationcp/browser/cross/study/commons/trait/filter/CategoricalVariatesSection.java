@@ -57,6 +57,7 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 	public static final String TRAIT_BUTTON_ID = "CharacterTraitsSection Trait Button ID";
 	
 	private List<Integer> environmentIds = null;
+	private List<Integer> selectedTraits = null;
 	private List<Field> fieldsToValidate = new ArrayList<Field>();
 	
 	private Window parentWindow;
@@ -79,13 +80,22 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 		this.environmentIds = environmentIds;
 		this.parentWindow = parentWindow;
 	}
+	
+	public CategoricalVariatesSection(List<Integer> environmentIds, List<Integer> selectedTraits, Window parentWindow) {
+		super();
+		this.environmentIds = environmentIds;
+		this.selectedTraits = selectedTraits;
+		this.parentWindow = parentWindow;
+	}
 
 	private void initializeComponents(){
 		
-
 		if(this.environmentIds != null && !this.environmentIds.isEmpty()){
 			try{
 				categoricalValueObjects = crossStudyDataManager.getTraitsForCategoricalVariates(environmentIds);
+				if(selectedTraits != null) {
+					categoricalValueObjects = filterUnwantedTraitsFromResults(categoricalValueObjects, selectedTraits);
+				}
 			} catch(MiddlewareQueryException ex){
 				LOG.error("Error with getting categorical variate info given environment ids: " + this.environmentIds.toString(), ex);
 				MessageNotifier.showError(parentWindow, "Database Error!", "Error with getting categorical variate info given environment ids. "
@@ -145,9 +155,7 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 		
 		setWidth((1200+(getMaxCategoryValueCount(categoricalValueObjects)*120))+"px");
 	}
-	
 
-	
 	private void initializeLayout(){
 		setMargin(true);
 		setSpacing(true);
@@ -232,6 +240,20 @@ public class CategoricalVariatesSection extends VerticalLayout implements Initia
 				}
 			}
 		}
+	}
+	
+	// TODO : Rebecca is not happy with public/private method ordering
+	// TODO : warning - On2 may need to revisit for performance
+	private List<CategoricalTraitInfo> filterUnwantedTraitsFromResults(List<CategoricalTraitInfo> categoricalTraitInfos, List<Integer> desiredTraits) {
+		List<CategoricalTraitInfo> filteredTraits = new ArrayList<CategoricalTraitInfo>();
+		for (CategoricalTraitInfo cto : categoricalTraitInfos) {
+			for (Integer traitId : desiredTraits) {
+				if(cto.getId() == traitId.intValue()) {
+					filteredTraits.add(cto);
+				}
+			}
+		}
+		return filteredTraits;
 	}
 	
 	@Override

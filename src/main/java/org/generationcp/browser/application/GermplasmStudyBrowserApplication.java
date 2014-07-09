@@ -317,10 +317,11 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
                      int gid = Integer.parseInt(gidPart);
                      Window germplasmDetailsWindow = new Window(messageSource.getMessage(Message.GERMPLASM_DETAILS_TEXT) + " " + gid);  // "Germplasm Details"
                      germplasmDetailsWindow.setSizeUndefined();
-                     germplasmDetailsWindow.addStyleName("graybg");
+                     germplasmDetailsWindow.setSizeFull();
+                     //germplasmDetailsWindow.addStyleName("graybg");
                      GermplasmQueries queries = new GermplasmQueries();
                      germplasmDetailsWindow.addComponent(new GermplasmDetailsComponentTree(gid, queries));
-                     germplasmDetailsWindow.getContent().addStyleName("graybg");
+                     //germplasmDetailsWindow.getContent().addStyleName("graybg");
                      this.addWindow(germplasmDetailsWindow);
                      return germplasmDetailsWindow;
                  } catch (Exception ex) {

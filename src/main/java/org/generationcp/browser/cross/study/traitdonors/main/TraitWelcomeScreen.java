@@ -1,11 +1,9 @@
+
 package org.generationcp.browser.cross.study.traitdonors.main;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.generationcp.browser.application.Message;
-import org.generationcp.browser.cross.study.h2h.main.pojos.EnvironmentForComparison;
 import org.generationcp.browser.cross.study.traitdonors.main.listeners.TraitDonorButtonClickListener;
+import org.generationcp.browser.exception.GermplasmStudyBrowserException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -20,92 +18,84 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 
+/**
+ * First accordion panel for the Trait Donors Query. This panel provides an explanation of the query
+ * and navigates into the next panel.
+ * 
+ * @author rebecca
+ *
+ */
 @Configurable
 public class TraitWelcomeScreen extends AbsoluteLayout implements InitializingBean, InternationalizableComponent {
-	
-    private static final long serialVersionUID = -3667517088395779496L;
-    
+
+	private static final long serialVersionUID = -3667517088395779496L;
+
 	private final static Logger LOG = LoggerFactory.getLogger(org.generationcp.browser.cross.study.adapted.main.WelcomeScreen.class);
-    
-    public static final String NEXT_BUTTON_ID = "WelcomeScreen Next Button ID";
-    
-    private TraitDonorsQueryMain mainScreen;
-	private PreselectTraitFilter nextScreen;
-	
+
+	public static final String NEXT_BUTTON_ID = "TraitWelcomeScreen Next Button ID";
+
+	private final TraitDonorsQueryMain mainScreen;
+	private final PreselectTraitFilter nextScreen;
+
 	private Label introductionMessage;
-	
+
 	private Button nextButton;
-	
+
 	@Autowired
 	private CrossStudyDataManager crossStudyManager;
 
 	@Autowired
-    private SimpleResourceBundleMessageSource messageSource;
-	
+	private SimpleResourceBundleMessageSource messageSource;
+
 	public TraitWelcomeScreen(TraitDonorsQueryMain mainScreen, PreselectTraitFilter nextScreen) {
-		 this.mainScreen = mainScreen;
-		 this.nextScreen = nextScreen;
+		this.mainScreen = mainScreen;
+		this.nextScreen = nextScreen;
 	}
 
 	@Override
 	public void updateLabels() {
-		
-	}
 
+	}
+	
+	/**
+	 * Sets a message into the panel, and provides a Next button for navigation.
+	 */
 	@Override
 	public void afterPropertiesSet() throws Exception {
-	   setHeight("150px");
-       setWidth("1000px");
-       
-       introductionMessage = new Label(messageSource.getMessage(Message.TRAIT_DONORS_QUERY_INTRODUCTION_MESSAGE));
-       addComponent(introductionMessage, "top:30px; left:30px;");
-       
-       nextButton = new Button(messageSource.getMessage(Message.NEXT));
-       nextButton.setData(NEXT_BUTTON_ID);
-       nextButton.addListener(new TraitDonorButtonClickListener(this));
-       nextButton.setWidth("80px");
-       nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-       addComponent(nextButton, "top:90px;left:900px");
-	}
+		this.setHeight("150px");
+		this.setWidth("1000px");
 
-    
-    public void nextButtonClickAction(){
-    	
-//    	try {
-//    		// show confirm dialog first if trial envts count is > 1k
-//			if (crossStudyManager.countAllTrialEnvironments() > 1000L){
-//				ConfirmDialog.show(getWindow(), "", 
-//						messageSource.getMessage(Message.LOAD_ENVIRONMENTS_CONFIRM), "Yes", "No", new ConfirmDialog.Listener() {
-//
-//					private static final long serialVersionUID = 1L;
-//					@Override
-//					public void onClose(ConfirmDialog dialog) {
-//						if (dialog.isConfirmed()){
-//							proceedToNextScreen();
-//						}
-//					}
-//				});
-//				
-//				
-//			} else {
-//				proceedToNextScreen();
-//			}
-//		} catch (MiddlewareQueryException e) {
-//			e.printStackTrace();
-//		}
-    	
-    	proceedToNextScreen();
-    }
-    
-    // FIXME : Rebecca
-	private void proceedToNextScreen() {
-		LOG.debug("Proceeding to Next Screen : Traits");
+		this.introductionMessage = new Label(this.messageSource.getMessage(Message.TRAIT_DONORS_QUERY_INTRODUCTION_MESSAGE));
+		this.addComponent(this.introductionMessage, "top:30px; left:30px;");
+
+		this.nextButton = new Button(this.messageSource.getMessage(Message.NEXT));
+		this.nextButton.setData(TraitWelcomeScreen.NEXT_BUTTON_ID);
+		this.nextButton.addListener(new TraitDonorButtonClickListener(this));
+		this.nextButton.setWidth("80px");
+		this.nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+		this.addComponent(this.nextButton, "top:90px;left:900px");
+	}
+	
+	/**
+	 * Proceeds to the next screen - in this case the Preselect trait filter, where traits of interest for 
+	 * assessment for adaptation is made.
+	 * 
+	 * @throws GermplasmStudyBrowserException
+	 */
+	public void nextButtonClickAction() throws GermplasmStudyBrowserException {
+
+		this.proceedToNextScreen();
+	}
+	
+	/*
+	 * Selecting the first tab in order to highlight and activate tabs. Then enter the next tab via 
+	 * the method to populate the Traits into a selectable tree
+	 * 
+	 */
+	private void proceedToNextScreen() throws GermplasmStudyBrowserException {
+		TraitWelcomeScreen.LOG.debug("Proceeding to Next Screen : Traits");
 		this.mainScreen.selectFirstTab();
-		//this.nextScreen.populateEnvironmentsTable();
-		List<EnvironmentForComparison> environments = new ArrayList<EnvironmentForComparison>();
-		//this.nextScreen.populateTraitsTables(environments);
-		this.nextScreen.populateTraitsTables(environments);
+		this.nextScreen.populateTraitsTables();
 	}
-    
-}
 
+}

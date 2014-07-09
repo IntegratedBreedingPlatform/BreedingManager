@@ -31,6 +31,14 @@ import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.VerticalLayout;
 
+/**
+ * Prompts the Breeder to select a range for each trait that they are interested in adaptation for the germplasm.
+ * 
+ * Traits are split into Numeric, Character and Categorial for processing
+ * 
+ * @author rebecca
+ *
+ */
 @Configurable
 public class SetUpTraitDonorFilter extends AbsoluteLayout implements InitializingBean, InternationalizableComponent {
 	
@@ -56,6 +64,7 @@ public class SetUpTraitDonorFilter extends AbsoluteLayout implements Initializin
 	private Button nextButton;
 	
 	private List<EnvironmentForComparison> environmentsForComparisonList;
+	private List<Integer> selectedTraits;
 	private List<Integer> environmentIds;
 	
 	
@@ -77,6 +86,11 @@ public class SetUpTraitDonorFilter extends AbsoluteLayout implements Initializin
         setWidth("1000px");	 
 	}
 	
+	/*
+	 * Creates a three tabbed panel, one tab each to contain Numeric, Character and Categorical traits. These traits have been 
+	 * pre-specified in the earlier PreselectTraitFiler panel.
+	 * 
+	 */
 	public void createTraitsTabs() {		
 		mainTabSheet = new TabSheet();
 		mainTabSheet.setHeight("470px");
@@ -86,18 +100,18 @@ public class SetUpTraitDonorFilter extends AbsoluteLayout implements Initializin
         	
         	switch (i) {
 				case 0:
-					numericSection = new NumericTraitsSection(this.environmentIds, this.getWindow());
+					numericSection = new NumericTraitsSection(this.environmentIds, this.selectedTraits, this.getWindow());
 					numericSection.showEmptyTraitsMessage();
 					layout = numericSection;
 					break;
 				
 				case 1:
-					characterSection = new CharacterTraitsSection(this.environmentIds, this.getWindow());
+					characterSection = new CharacterTraitsSection(this.environmentIds, this.selectedTraits, this.getWindow());
 					layout = characterSection;
 					break;
 					
 				case 2:
-					categoricalVariatesSection = new CategoricalVariatesSection(this.environmentIds, this.getWindow());
+					categoricalVariatesSection = new CategoricalVariatesSection(this.environmentIds, this.selectedTraits, this.getWindow());
 					layout = categoricalVariatesSection;
 					break;
 					
@@ -132,8 +146,9 @@ public class SetUpTraitDonorFilter extends AbsoluteLayout implements Initializin
         addComponent(mainTabSheet, "top:20px");
 	}
 
-	public void populateTraitsTables(List<EnvironmentForComparison> environments) {
+	public void populateTraitsTables(List<EnvironmentForComparison> environments, List<Integer> traitsList) {
 		this.environmentsForComparisonList = environments;
+		this.selectedTraits = traitsList;
 		this.environmentIds = new ArrayList<Integer>();
 		for (EnvironmentForComparison envt : environments){
 			this.environmentIds.add(envt.getEnvironmentNumber());
@@ -166,6 +181,7 @@ public class SetUpTraitDonorFilter extends AbsoluteLayout implements Initializin
 			}
 		}
 		
+		// each Section looks after its own details for selection
 		List<NumericTraitFilter> numericFilters = numericSection.getFilters();
 		List<CharacterTraitFilter> characterFilters = characterSection.getFilters();
 		List<CategoricalTraitFilter> categoricalFilters = categoricalVariatesSection.getFilters();
@@ -179,7 +195,6 @@ public class SetUpTraitDonorFilter extends AbsoluteLayout implements Initializin
 		} else {
 			this.mainScreen.selectFourthTab();
 			this.nextScreen.populateResultsTable(environmentsForComparisonList,numericFilters,characterFilters,categoricalFilters);
-			//this.nextScreen.populateEnvironmentsTable();
 		}
 	}
 	

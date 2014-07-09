@@ -2,6 +2,7 @@ package org.generationcp.browser.germplasm;
 
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.germplasm.containers.GermplasmIndexContainer;
+import org.generationcp.browser.germplasm.inventory.InventoryViewComponent;
 import org.generationcp.browser.germplasm.pedigree.GermplasmPedigreeGraphComponent;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -19,6 +20,7 @@ import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -62,7 +64,7 @@ public class GermplasmDetailsComponentTree extends VerticalLayout implements
 	private GermplasmAttributesComponent attributesComponent;
 	private GermplasmPedigreeTreeContainer pedigreeTreeComponent;
 	private GermplasmNamesComponent namesComponent;
-	private InventoryInformationComponent inventoryComponent;
+	private InventoryViewComponent inventoryViewComponent;
 	private GermplasmListComponent listsComponent;
 	private GermplasmStudyInfoComponent studiesComponent;
 	private GermplasmGenerationHistoryComponent generationHistoryComponent;
@@ -97,9 +99,7 @@ public class GermplasmDetailsComponentTree extends VerticalLayout implements
 	private void initializeComponents(){
 		
 		componentTree = new ComponentTree();
-		componentTree.setWidth("100%");
-		componentTree.setHeight("380px");
-		componentTree.addStyleName("overflow_y_scroll");
+		componentTree.setSizeFull();
 		componentTree.addStyleName("component-tree");
 		
 		germplasmDetailModel = germplasmQueries.getGermplasmDetails(gid);
@@ -136,7 +136,7 @@ public class GermplasmDetailsComponentTree extends VerticalLayout implements
 		attributesComponent = null;
 		pedigreeTreeComponent = null;
 		namesComponent = null;
-		inventoryComponent = null;
+		inventoryViewComponent = null;
 		listsComponent = null;
 		studiesComponent = null;
 		generationHistoryComponent = null;
@@ -403,10 +403,10 @@ public class GermplasmDetailsComponentTree extends VerticalLayout implements
 	}
 	
 	private void showInventoryInformation(){
-		if(inventoryComponent == null){
-			inventoryComponent = new InventoryInformationComponent(new GermplasmIndexContainer(germplasmQueries), germplasmDetailModel);
+		if(inventoryViewComponent == null){
+			inventoryViewComponent = new InventoryViewComponent(null, null, gid);
 			inventoryInformationTreeItem.removeChild(tempInventoryChild);
-			inventoryInformationTreeItem.addChild(inventoryComponent);
+			inventoryInformationTreeItem.addChild(inventoryViewComponent);
 		}
 	}
 	
@@ -467,6 +467,7 @@ public class GermplasmDetailsComponentTree extends VerticalLayout implements
 	}
 	
 	private void layoutComponents(){
+		setSizeFull();
 		addComponent(componentTree);
 	}
 	
