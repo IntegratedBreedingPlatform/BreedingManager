@@ -37,6 +37,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -214,17 +216,17 @@ public abstract class ListTreeComponent extends CssLayout implements
 		    }
 		});
 		
+		folderTextField.addShortcutListener(new ShortcutListener("ENTER", ShortcutAction.KeyCode.ENTER, null) {
+			@Override
+            public void handleAction(Object sender, Object target) {
+				addRenameItemAction();
+            }
+        });		
+		
 		saveFolderButton.addListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if (doSaveNewFolder()){
-					germplasmListTreeUtil.addFolder(selectedListId, folderTextField);
-				} else{
-					String oldName = germplasmListTree.getItemCaption(selectedListId);
-					germplasmListTreeUtil.renameFolderOrList(Integer.valueOf(selectedListId.toString()), 
-							treeActionsListener, folderTextField, oldName);
-				}
-				
+				addRenameItemAction();
 			}
 		});
 		
@@ -364,6 +366,16 @@ public abstract class ListTreeComponent extends CssLayout implements
         
 	}
 	
+	protected void addRenameItemAction() {
+		if (doSaveNewFolder()){
+			germplasmListTreeUtil.addFolder(selectedListId, folderTextField);
+		} else{
+			String oldName = germplasmListTree.getItemCaption(selectedListId);
+			germplasmListTreeUtil.renameFolderOrList(Integer.valueOf(selectedListId.toString()), 
+					treeActionsListener, folderTextField, oldName);
+		}
+	}
+	
 
 	protected void initializeAddRenameFolderPanel() {
 		folderLabel = new Label("Folder");
@@ -422,6 +434,7 @@ public abstract class ListTreeComponent extends CssLayout implements
 					 folderTextField.setValue(itemCaption);
 				 }
 			 }
+			 folderTextField.focus();
 			 
 		 }
 	}
@@ -790,6 +803,7 @@ public abstract class ListTreeComponent extends CssLayout implements
         					&& addRenameFolderLayout.isVisible() && !doSaveNewFolder()){
         				if (germplasmListId < 0){
         					folderTextField.setValue(germplasmListTree.getItemCaption(selectedListId));
+        					folderTextField.focus();
         				} else {
         					showAddRenameFolderSection(false);
         				}
