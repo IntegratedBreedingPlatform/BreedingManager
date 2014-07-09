@@ -149,9 +149,10 @@ public class GermplasmListTreeUtil implements Serializable {
 		        Object targetItemId = target.getItemIdOver();
 		        
 		        VerticalDropLocation location = target.getDropLocation();
-				
-		        //HierarchicalContainer container = (HierarchicalContainer) germplasmListTree.getContainerDataSource();
-				//Tree sourceTree = (Tree) t.getSourceComponent();
+		        
+		        if(location != VerticalDropLocation.MIDDLE || sourceItemId.equals(targetItemId)) {
+		        	return;
+		        }
 				
 		        GermplasmList targetList = null;
 		        try {
@@ -161,10 +162,10 @@ public class GermplasmListTreeUtil implements Serializable {
 				}
 		        
 		        //Dropped straight to LOCAL (so no germplasmList found for LOCAL)
-		        if(location == VerticalDropLocation.MIDDLE && targetList==null){
+		        if(targetList==null){
 					setParent(sourceItemId, "LOCAL");
 				//Dropped on a folder
-		        } else if (location == VerticalDropLocation.MIDDLE && targetList.getType().equals("FOLDER")){
+		        } else if (targetList.getType().equals("FOLDER")){
 	        		setParent(sourceItemId, targetItemId);
 		        //Dropped on a list with parent != LOCAL
 		        } else if (targetList!=null && targetList.getParentId()!=null && targetList.getParentId()>=0){
