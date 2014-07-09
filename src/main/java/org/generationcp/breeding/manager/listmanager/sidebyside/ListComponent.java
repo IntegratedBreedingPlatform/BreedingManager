@@ -2095,17 +2095,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			Item item = listDataTable.getItem(itemId);
 			Button gidButton = (Button) item.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
 			String currentGid = "";
-			if(gidButton!=null)
+			if(gidButton!=null){
 				currentGid = gidButton.getCaption();
-			
-			if(currentGid.equals(gid.toString())){
-				if(availInv.equals("0")){
-					((Button) item.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).getValue()).setCaption("-");
-					((Button) item.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).getValue()).setEnabled(false);
-				} else {
-					((Button) item.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).getValue()).setCaption(availInv);
-					((Button) item.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).getValue()).setEnabled(true);
-				}
+				((Button) item.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).getValue()).setCaption(availInv);
 			}
 		}
 		listDataTable.requestRepaint();
