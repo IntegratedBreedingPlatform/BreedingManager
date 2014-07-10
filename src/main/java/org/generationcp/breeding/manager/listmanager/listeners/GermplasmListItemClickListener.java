@@ -42,7 +42,11 @@ public class GermplasmListItemClickListener implements ItemClickEvent.ItemClickL
         	
             if (event.getButton() == ClickEvent.BUTTON_LEFT) {
 	        	ListTreeComponent listTreeComponent = (ListTreeComponent) source;
-				if(!item.equals("CENTRAL") && !item.equals("LOCAL")){
+	        	listTreeComponent.setSelectedListId(event.getItemId());
+	        	listTreeComponent.updateButtons(event.getItemId());
+	        	listTreeComponent.toggleFolderSectionForItemSelected();
+	        	
+	        	if(!item.equals("CENTRAL") && !item.equals("LOCAL")){
 	        		int germplasmListId = Integer.valueOf(event.getItemId().toString());
 	                    try {
 	                        listTreeComponent.treeItemClickAction(germplasmListId);
@@ -54,11 +58,7 @@ public class GermplasmListItemClickListener implements ItemClickEvent.ItemClickL
 	        	} else{
 	        		listTreeComponent.expandOrCollapseListTreeNode(item);
 	        		listTreeComponent.getTreeActionsListener().folderClicked(null);
-	        		listTreeComponent.showAddRenameFolderSection(false);
-
 	        	}
-	        	listTreeComponent.setSelectedListId(event.getItemId());
-            	listTreeComponent.updateButtons(event.getItemId());
             	
             }
         }

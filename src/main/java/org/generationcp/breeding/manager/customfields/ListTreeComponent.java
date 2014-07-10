@@ -436,7 +436,34 @@ public abstract class ListTreeComponent extends CssLayout implements
 			 }
 			 folderTextField.focus();
 			 
-		 }
+		 } 
+	}
+	
+	public void toggleFolderSectionForItemSelected(){
+		if (addRenameFolderLayout != null 	&& addRenameFolderLayout.isVisible()){
+			Integer listId = null;
+			if (selectedListId instanceof Integer){
+				listId = Integer.valueOf(selectedListId.toString());
+			}
+			
+			// hide folder section for "Public Lists" and central lists nodes
+			if (CENTRAL.equals(selectedListId) || (listId != null && listId > 0)){
+				showAddRenameFolderSection(false);
+				
+			// RENAME scenarios
+			} else if (!doSaveNewFolder()){
+				if (listId != null && listId < 0){
+					folderTextField.setValue(germplasmListTree.getItemCaption(selectedListId));
+					folderTextField.focus();
+					
+				} else if (LOCAL.equals(selectedListId)){
+					showAddRenameFolderSection(false);
+				}
+			
+			} 
+		}
+		
+
 	}
 
 	private boolean doSaveNewFolder() {
@@ -796,17 +823,6 @@ public abstract class ListTreeComponent extends CssLayout implements
         		if (!hasChildList){
         			if (treeActionsListener != null){
         				treeActionsListener.openListDetails(germplasmList);
-        			}
-        			
-        			// if Rename Folder section is visible, set the local item name to rename textfield
-        			if (doIncludeActionsButtons() && addRenameFolderLayout != null 
-        					&& addRenameFolderLayout.isVisible() && !doSaveNewFolder()){
-        				if (germplasmListId < 0){
-        					folderTextField.setValue(germplasmListTree.getItemCaption(selectedListId));
-        					folderTextField.focus();
-        				} else {
-        					showAddRenameFolderSection(false);
-        				}
         			}
         			
         		//toggle folder
