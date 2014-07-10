@@ -740,7 +740,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		
 		validReservationsToSave.clear();//reset the reservations to save. 
 		
-		resetUnsavedChangesFlag();
+		setHasUnsavedChanges(false);
 	}
 	
 	public void resetUnsavedChangesFlag() {
