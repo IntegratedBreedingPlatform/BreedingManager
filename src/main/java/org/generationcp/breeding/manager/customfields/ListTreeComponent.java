@@ -105,6 +105,7 @@ public abstract class ListTreeComponent extends CssLayout implements
 	protected Boolean selectProgramListsByDefault;
     
     protected Object selectedListId;
+    protected GermplasmList germplasmList;
     
     protected ToggleButton toggleListTreeButton;
     
@@ -812,8 +813,7 @@ public abstract class ListTreeComponent extends CssLayout implements
 
         try {
     		
-        	GermplasmList germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
-        	
+        	germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
         	selectedListId = germplasmListId;
         	
         	boolean isEmptyFolder = isEmptyFolder(germplasmList);
@@ -821,14 +821,12 @@ public abstract class ListTreeComponent extends CssLayout implements
         		boolean hasChildList = hasChildList(germplasmListId);
 
         		if (!hasChildList){
-        			if (treeActionsListener != null){
-        				treeActionsListener.openListDetails(germplasmList);
-        			}
+        			studyClickedAction(germplasmList);
         			
         		//toggle folder
 	        	} else if(hasChildList){
+	        		folderClickedAction(germplasmList);
 	        		expandOrCollapseListTreeNode(Integer.valueOf(germplasmListId));
-	        		treeActionsListener.folderClicked(germplasmList);
 	        	}
         		
         		germplasmListTree.setNullSelectionAllowed(false);
@@ -836,7 +834,7 @@ public abstract class ListTreeComponent extends CssLayout implements
         		germplasmListTree.setValue(germplasmListId);
         	}
         	else{//when an empty folder is clicked
-        		treeActionsListener.folderClicked(germplasmList);
+        		folderClickedAction(germplasmList);
         	}
 			        
         } catch (NumberFormatException e) {
@@ -869,6 +867,18 @@ public abstract class ListTreeComponent extends CssLayout implements
     
     public void setListId(Integer listId){
     	this.listId = listId; 
+    }
+    
+    public void studyClickedAction(GermplasmList germplasmList){
+    	if (treeActionsListener != null && germplasmList != null){
+			treeActionsListener.studyClicked(germplasmList);
+		}
+    }
+    
+    public void folderClickedAction(GermplasmList germplasmList){
+    	if (treeActionsListener != null && germplasmList != null){
+			treeActionsListener.folderClicked(germplasmList);
+		}
     }
     
     public Tree getGermplasmListTree(){

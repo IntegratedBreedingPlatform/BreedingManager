@@ -85,7 +85,7 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 	}
 
 	@Override
-    public void openListDetails(final GermplasmList list) {
+    public void studyClicked(final GermplasmList list) {
         try {
             listSelectionLayout.createListDetailsTab(list.getId());
         } catch (MiddlewareQueryException e) {
@@ -156,16 +156,4 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 		return listSearchComponent;
 	}
 
-	@Override
-	public void addListToFemaleList(Integer germplasmListId) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void addListToMaleList(Integer germplasmListId) {
-		// TODO Auto-generated method stub
-		
-	}
-	
 }

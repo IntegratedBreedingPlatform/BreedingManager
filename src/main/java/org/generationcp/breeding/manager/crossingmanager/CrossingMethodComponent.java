@@ -8,11 +8,9 @@ import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
-import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
-import org.generationcp.middleware.pojos.GermplasmList;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -27,7 +25,7 @@ import com.vaadin.ui.VerticalLayout;
 
 @Configurable
 public class CrossingMethodComponent extends VerticalLayout implements BreedingManagerLayout,InitializingBean, 
-								InternationalizableComponent, ListTreeActionsListener {
+								InternationalizableComponent {
 
 	private static final long serialVersionUID = -8847158352169444182L;
 	
@@ -50,24 +48,6 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 			CrossingManagerMakeCrossesComponent makeCrossesMain) {
 		super();
 		this.makeCrossesMain = makeCrossesMain;
-	}
-
-	@Override
-	public void updateUIForRenamedList(GermplasmList list, String newName) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void openListDetails(GermplasmList list) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void folderClicked(GermplasmList list) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -157,16 +137,5 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
     			parentsComponent.getFemaleListNameForCrosses(), parentsComponent.getMaleListNameForCrosses(), type, chkBoxMakeReciprocalCrosses.booleanValue());
     }
 
-	@Override
-	public void addListToFemaleList(Integer germplasmListId) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void addListToMaleList(Integer germplasmListId) {
-		// TODO Auto-generated method stub
-		
-	}
 
 }

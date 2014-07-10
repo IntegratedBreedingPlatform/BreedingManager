@@ -9,9 +9,9 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.constants.ModeView;
+import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerTreeActionsListener;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.UnsavedChangesSource;
-import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.breeding.manager.listmanager.ListManagerDetailsLayout;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -40,7 +40,7 @@ import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class SelectParentsComponent extends VerticalLayout implements BreedingManagerLayout,InitializingBean, 
-												InternationalizableComponent, ListTreeActionsListener, UnsavedChangesSource {
+												InternationalizableComponent, CrossingManagerTreeActionsListener, UnsavedChangesSource {
 
 	private static final long serialVersionUID = -5109231715662648484L;
 	
@@ -187,7 +187,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	}
 	
 	@Override
-	public void openListDetails(GermplasmList list) {
+	public void studyClicked(GermplasmList list) {
 		createListDetailsTab(list.getId(), list.getName());
 	}
 	

@@ -48,7 +48,7 @@ public class SelectTreeItemOnSaveListener extends AbsoluteLayout
 	}
 	
 	@Override
-	public void openListDetails(GermplasmList list) {
+	public void studyClicked(GermplasmList list) {
 		if(saveListAsDialog != null && !list.getType().equals("FOLDER")){
 			saveListAsDialog.getDetailsComponent().setGermplasmListDetails(list);
 			
@@ -89,16 +89,4 @@ public class SelectTreeItemOnSaveListener extends AbsoluteLayout
 		
 	}
 
-	@Override
-	public void addListToFemaleList(Integer germplasmListId) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void addListToMaleList(Integer germplasmListId) {
-		// TODO Auto-generated method stub
-		
-	}
-	
 }
