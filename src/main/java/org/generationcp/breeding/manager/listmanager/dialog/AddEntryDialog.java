@@ -124,7 +124,6 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         setModal(true);
         // define window size, set as not resizable
         setWidth("800px");
-        setHeight("650px");
         setResizable(false);
         setCaption(messageSource.getMessage(Message.ADD_LIST_ENTRIES));
         // center window within the browser
@@ -210,9 +209,14 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         topPart.setSpacing(true);
         topPart.setMargin(false);
         
+        Label topPartHeader = new Label(messageSource.getMessage(Message.SELECT_A_GERMPLASM));
+        topPartHeader.addStyleName("bold");
+        topPartHeader.addStyleName("h3");
+        topPart.addComponent(topPartHeader);
+        
         searchResultsComponent = new GermplasmSearchResultsComponent(null, false, false);
-        searchResultsComponent.getMatchingGermplasmsTable().setHeight("100px");
-        searchResultsComponent.getMatchingGermplasmsTableWithSelectAll().setHeight("130px");
+        searchResultsComponent.getMatchingGermplasmsTable().setHeight("150px");
+        searchResultsComponent.getMatchingGermplasmsTableWithSelectAll().setHeight("180px");
         searchResultsComponent.setRightClickActionHandlerEnabled(false);
         
         searchResultsComponent.getMatchingGermplasmsTable().addListener(new GermplasmListValueChangeListener(this));
@@ -221,11 +225,6 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         searchBarComponent = new GermplasmSearchBarComponent(searchResultsComponent);
         
         topPart.addComponent(searchBarComponent);
-        
-        Label topPartHeader = new Label(messageSource.getMessage(Message.SELECT_A_GERMPLASM));
-        topPartHeader.addStyleName("bold");
-        topPartHeader.addStyleName("h3");
-        topPart.addComponent(topPartHeader);
         
         topPart.addComponent(searchResultsComponent);
         
@@ -599,12 +598,14 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     
     
     private void setSpeficyDetailsVisible(Boolean visible){
+        int height = 530;
     	if(visible){
-    		setHeight("720px");
+    	    height += 230 + 10; // add height of bottom part + margin
+    		setHeight(height + "px");
     		bottomPart.setVisible(true);
     		center();
     	} else {
-    		setHeight("480px");
+    		setHeight(height + "px");
     		bottomPart.setVisible(false);
     		center();
     	}
