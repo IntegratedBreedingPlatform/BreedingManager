@@ -900,32 +900,41 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			
 			List<Integer> alreadyAddedEntryIds = new ArrayList<Integer>();
 			List<ListDataAndLotDetails> listDataAndLotDetails = inventoryTableDropHandler.getListDataAndLotDetails();
-			
+
 			for(ListDataAndLotDetails listDataAndLotDetail : listDataAndLotDetails){
+				
+				System.out.println("EntryID: "+listDataAndLotDetail.getEntryId());
+				System.out.println("ListID: "+listDataAndLotDetail.getListId());
+				System.out.println("Source Lred: "+listDataAndLotDetail.getSourceLrecId());
+				System.out.println("Saved Lred: "+listDataAndLotDetail.getSavedLrecId());
+				System.out.println("");
+				
 				if(!alreadyAddedEntryIds.contains(listDataAndLotDetail.getEntryId())){
 					//dropHandler.addGermplasmFromList(listDataAndLotDetail.getListId(), listDataAndLotDetail.getSourceLrecId());
 					
 					try {
 
-						GermplasmListData germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndEntryId(listDataAndLotDetail.getListId(), listDataAndLotDetail.getEntryId());
+						GermplasmListData germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndLrecId(listDataAndLotDetail.getListId(), listDataAndLotDetail.getSourceLrecId());
 						
-        				GermplasmListEntry entryObject = new GermplasmListEntry(germplasmListData.getId(),germplasmListData.getGid(), germplasmListData.getEntryId(), germplasmListData.getDesignation(), germplasmListData.getSeedSource());
-
-    					Item newItem = listDataTable.addItem(entryObject);
-        				
-						CheckBox tag = new CheckBox();
-						newItem.getItemProperty(TAG_COLUMN_ID).setValue(tag);
-						tag.addListener(new ParentsTableCheckboxListener(listDataTable, entryObject, tableWithSelectAllLayout.getCheckBox()));
-			            tag.setImmediate(true);
-
-						Button desigButton = new Button(germplasmListData.getDesignation(), new GidLinkClickListener(germplasmListData.getGid().toString(),true));
-	                    desigButton.setStyleName(BaseTheme.BUTTON_LINK);
-	                    desigButton.setDescription("Click to view Germplasm information");
-	                    newItem.getItemProperty(DESIGNATION_ID).setValue(desigButton);
-	                    
-	                    //avail inv
-	                    //seed res
-	                    
+						if(germplasmListData!=null){
+							
+							Integer entryId = getListDataTableNextEntryId();
+	        				GermplasmListEntry entryObject = new GermplasmListEntry(germplasmListData.getId(),germplasmListData.getGid(), entryId, germplasmListData.getDesignation(), germplasmListData.getSeedSource());
+	
+	    					Item newItem = listDataTable.addItem(entryObject);
+	        				
+							CheckBox tag = new CheckBox();
+							newItem.getItemProperty(TAG_COLUMN_ID).setValue(tag);
+							newItem.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(entryId);
+							tag.addListener(new ParentsTableCheckboxListener(listDataTable, entryObject, tableWithSelectAllLayout.getCheckBox()));
+				            tag.setImmediate(true);
+	
+							Button desigButton = new Button(germplasmListData.getDesignation(), new GidLinkClickListener(germplasmListData.getGid().toString(),true));
+		                    desigButton.setStyleName(BaseTheme.BUTTON_LINK);
+		                    desigButton.setDescription("Click to view Germplasm information");
+		                    newItem.getItemProperty(DESIGNATION_ID).setValue(desigButton);
+						}
+						
 					} catch (MiddlewareQueryException e) {
 						e.printStackTrace();
 					}
@@ -946,6 +955,8 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			} else {
 				openSaveListAsDialog();				
 			}
+			
+			inventoryTableDropHandler.resetListDataAndLotDetails();
 		}
 	}
 	
@@ -1092,5 +1103,21 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	public void refreshListInventoryItemCount() {
 		updateNoOfEntries(listInventoryTable.getTable().getItemIds().size());
 	}
+	
+	private Integer getListDataTableNextEntryId(){
+		int nextId = 0;
+		for(GermplasmListEntry entry : (Collection<? extends GermplasmListEntry>) listDataTable.getItemIds()){
+			
+			Integer entryId = 0;
+			Item item = listDataTable.getItem(entry);
+			if(item!=null)
+				entryId = (Integer) item.getItemProperty(ENTRY_NUMBER_COLUMN_ID).getValue();
+			
+			if(entryId > nextId)
+				nextId = entryId;
+			
+		}
+		return nextId+1;
+	}	
 	
 }

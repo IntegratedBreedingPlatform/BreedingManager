@@ -145,6 +145,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		for(ListEntryLotDetails lotDetail : allLotDetailsToBeAdded){
 			if(lastLrecId!=lotDetail.getId())
 				nextId++;
+			
 			addItemToDestinationTable(lotDetail, nextId, sourceTable, targetTable);
 			lastLrecId = lotDetail.getId();
 		}
