@@ -457,4 +457,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
 	public void setHasUnsavedChangesMain(boolean hasChanges) {
 		this.hasChanges = hasChanges;
 	}
+	
+	public Boolean hasUnsavedChangesMain(){
+		return hasChanges;
+	}
 }

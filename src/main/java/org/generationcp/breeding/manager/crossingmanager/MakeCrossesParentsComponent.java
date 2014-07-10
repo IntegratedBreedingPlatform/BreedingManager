@@ -682,11 +682,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		this.maleParentTab = maleParentTab;
 	}
 
-	public void setHasUnsavedChanges(boolean hasChanges) {
-		femaleParentTab.setHasUnsavedChanges(hasChanges);
-		maleParentTab.setHasUnsavedChanges(hasChanges);
-	}
-
 	public void updateViewForAllParentLists(ModeView modeView) {
 		if(modeView.equals(ModeView.LIST_VIEW)){
 			femaleParentTab.changeToListView();
@@ -701,7 +696,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	public CrossingManagerMakeCrossesComponent getMakeCrossesMain() {
 		return makeCrossesMain;
 	}
-
+	
 	public Boolean hasUnsavedChanges() {
 		
 		hasChanges = false;
@@ -715,10 +710,9 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		
 		return hasChanges;
 	}
-
-	public void setHasChanges(Boolean hasChanges) {
+	
+	public void setHasUnsavedChanges(boolean hasChanges) {
 		this.hasChanges = hasChanges;
-		
 		setHasUnsavedChangesMain(this.hasChanges);
 	}
 	

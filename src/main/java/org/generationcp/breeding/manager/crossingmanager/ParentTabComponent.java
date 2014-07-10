@@ -896,18 +896,12 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	}
 	
 	public void saveReservationChangesAction() {
+		
 		if(hasUnsavedChanges()){
 			
 			List<Integer> alreadyAddedEntryIds = new ArrayList<Integer>();
 			List<ListDataAndLotDetails> listDataAndLotDetails = inventoryTableDropHandler.getListDataAndLotDetails();
-
 			for(ListDataAndLotDetails listDataAndLotDetail : listDataAndLotDetails){
-				
-				System.out.println("EntryID: "+listDataAndLotDetail.getEntryId());
-				System.out.println("ListID: "+listDataAndLotDetail.getListId());
-				System.out.println("Source Lred: "+listDataAndLotDetail.getSourceLrecId());
-				System.out.println("Saved Lred: "+listDataAndLotDetail.getSavedLrecId());
-				System.out.println("");
 				
 				if(!alreadyAddedEntryIds.contains(listDataAndLotDetail.getEntryId())){
 					//dropHandler.addGermplasmFromList(listDataAndLotDetail.getListId(), listDataAndLotDetail.getSourceLrecId());
@@ -1076,7 +1070,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			menuInventorySaveChanges.setEnabled(false);
 		}
 		
-		source.setHasChanges(this.hasChanges);
+		source.setHasUnsavedChanges(this.hasChanges);
 	}
 	
 	public boolean hasUnsavedChanges() {	
