@@ -84,12 +84,16 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	private static final Logger LOG = LoggerFactory.getLogger(ParentTabComponent.class);
 	private static final long serialVersionUID = 2124522470629189449L;
 	
+	private Button editHeaderButton;
 	private Label listEntriesLabel;
 	private Label totalListEntriesLabel;
 	
 	private Button actionButton;
 	private Button inventoryViewActionButton;
+	
+	//Layout Variables
 	private HorizontalLayout subHeaderLayout;
+	private HorizontalLayout headerLayout;
 	
 	//Tables
 	private TableWithSelectAllLayout tableWithSelectAllLayout;
@@ -174,6 +178,10 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		listEntriesLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
 		listEntriesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		listEntriesLabel.setWidth("160px");
+		
+        editHeaderButton = new Button(messageSource.getMessage(Message.EDIT_HEADER));
+        editHeaderButton.setImmediate(true);
+        editHeaderButton.setStyleName(Reindeer.BUTTON_LINK);
 		
 		totalListEntriesLabel = new Label(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
          		 + "  <b>0</b>", Label.CONTENT_XHTML);
@@ -283,7 +291,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		setupDropHandler();
 		
 		parentActionListener = new CrossingManagerActionHandler(source);
-        listDataTable.addActionHandler(parentActionListener);
+		listDataTable.addActionHandler(parentActionListener);
         
         actionButton.addListener(new ClickListener(){
 			private static final long serialVersionUID = 1L;
@@ -347,6 +355,15 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 				} else if(clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))){
 					listInventoryTable.getTable().setValue(listInventoryTable.getTable().getItemIds());
 				}
+			}
+		});
+		
+		editHeaderButton.addListener(new ClickListener() {
+			private static final long serialVersionUID = -6306973449416812850L;
+
+			@Override
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				openSaveListAsDialog();
 			}
 		});
 	}
@@ -677,7 +694,13 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		this.addComponent(inventoryViewActionMenu);
 		
 		HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, listEntriesLabel);
-		this.addComponent(headingLayout);
+		
+		headerLayout = new HorizontalLayout();
+		headerLayout.setWidth("100%");
+		headerLayout.addComponent(headingLayout);
+		headerLayout.addComponent(editHeaderButton);
+		headerLayout.setComponentAlignment(headingLayout, Alignment.MIDDLE_LEFT);
+		headerLayout.setComponentAlignment(editHeaderButton, Alignment.BOTTOM_RIGHT);
 		
 		subHeaderLayout = new HorizontalLayout();
 		subHeaderLayout.setWidth("100%");
@@ -686,6 +709,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		subHeaderLayout.setComponentAlignment(totalListEntriesLabel, Alignment.MIDDLE_LEFT);
 		subHeaderLayout.setComponentAlignment(actionButton, Alignment.TOP_RIGHT);
 		
+		this.addComponent(headerLayout);
 		this.addComponent(subHeaderLayout);
 		this.addComponent(tableWithSelectAllLayout);
 	}
