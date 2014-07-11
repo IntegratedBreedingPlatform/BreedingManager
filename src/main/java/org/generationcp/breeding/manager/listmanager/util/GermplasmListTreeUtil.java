@@ -161,18 +161,19 @@ public class GermplasmListTreeUtil implements Serializable {
 				} catch (ClassCastException e) {
 				}
 		        
-		        //Dropped straight to LOCAL (so no germplasmList found for LOCAL)
-		        if(targetList==null){
-					setParent(sourceItemId, "LOCAL");
-				//Dropped on a folder
-		        } else if (targetList.getType().equals("FOLDER")){
+		        //Dropped on a folder / public or program list folder
+		        if (targetItemId instanceof String || targetList == null || targetList.getType().equals("FOLDER")){
 	        		setParent(sourceItemId, targetItemId);
-		        //Dropped on a list with parent != LOCAL
-		        } else if (targetList!=null && targetList.getParentId()!=null && targetList.getParentId()>=0){
-		        	setParent(sourceItemId, targetList.getParentId());
-		        //Dropped on a list with parent == LOCAL 
-				} else {
-					setParent(sourceItemId, "LOCAL");
+		        //Dropped on a list
+		        } else if (targetList!=null){
+		        	if(targetList.getParentId()==null && ((Integer)targetItemId)>0) {
+		        		targetItemId = ListTreeComponent.CENTRAL;
+		        	} else if(targetList.getParentId()==null && ((Integer)targetItemId)<0) {
+		        		targetItemId = ListTreeComponent.LOCAL;
+		        	} else {
+		        		targetItemId = targetList.getParentId();
+		        	}
+		        	setParent(sourceItemId, targetItemId);
 				}
 		        
 		        source.refreshRemoteTree();
