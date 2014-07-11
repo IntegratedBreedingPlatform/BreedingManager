@@ -141,8 +141,7 @@ public class ReserveInventoryWindow extends Window implements InitializingBean,
 			
 		} catch (InvalidValueException e) {
 			MessageNotifier.showError(getWindow(), 
-					this.messageSource.getMessage(Message.INVALID_INPUT), 
-					e.getMessage(), Notification.POSITION_TOP_RIGHT);
+					this.messageSource.getMessage(Message.INVALID_INPUT),e.getMessage());
 			return false;
 		}
 	}
@@ -216,11 +215,11 @@ public class ReserveInventoryWindow extends Window implements InitializingBean,
 		
 	}
 
-	protected Map<Double, List<ListEntryLotDetails>> getReservations() {
-		Map<Double, List<ListEntryLotDetails>> reservations = new HashMap<Double,List<ListEntryLotDetails>>();
+	protected Map<ReservationRowKey, List<ListEntryLotDetails>> getReservations() {
+		Map<ReservationRowKey, List<ListEntryLotDetails>> reservations = new HashMap<ReservationRowKey,List<ListEntryLotDetails>>();
 		
 		for(ReserveInventoryRowComponent row : scaleRows){
-			reservations.put(row.getReservationAmount(), scaleGrouping.get(row.getScale()));
+			reservations.put(new ReservationRowKey(row.getScale(), row.getReservationAmount()), scaleGrouping.get(row.getScale()));
 		}
 		
 		return reservations;
