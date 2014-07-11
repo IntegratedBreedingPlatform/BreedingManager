@@ -189,7 +189,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		actionMenu.setWidth("250px");
 		actionMenu.addItem(messageSource.getMessage(Message.ADD_TO_MALE_LIST));
 		actionMenu.addItem(messageSource.getMessage(Message.ADD_TO_FEMALE_LIST));
-		actionMenu.addItem(messageSource.getMessage(Message.INVENTORY_VIEW));
+		//actionMenu.addItem(messageSource.getMessage(Message.INVENTORY_VIEW));
 		actionMenu.addItem(messageSource.getMessage(Message.SELECT_ALL));
 		
 		inventoryViewActionMenu = new ContextMenu();

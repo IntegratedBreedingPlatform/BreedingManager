@@ -186,7 +186,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		
 		actionMenu = new ContextMenu();
         actionMenu.setWidth("250px");
-        actionMenu.addItem(messageSource.getMessage(Message.INVENTORY_VIEW));
+        //actionMenu.addItem(messageSource.getMessage(Message.INVENTORY_VIEW));
         actionMenu.addItem(messageSource.getMessage(Message.REMOVE_SELECTED_ENTRIES));
         saveActionMenu = actionMenu.addItem(messageSource.getMessage(Message.SAVE_LIST));
         saveActionMenu.setEnabled(false);
