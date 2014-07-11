@@ -41,6 +41,8 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 	
 	private List<ListDataAndLotDetails> listDataAndLotDetails;
 	
+	private boolean hasChanges = false; // TODO this will be REMOVED after refactoring the DropHandler Method
+	
 	public InventoryTableDropHandler(ListManagerMain listManagerMain, GermplasmDataManager germplasmDataManager, GermplasmListManager germplasmListManager, InventoryDataManager inventoryDataManager, Table targetTable) {
 		this.listManagerMain = listManagerMain;
 		this.germplasmDataManager = germplasmDataManager;
@@ -93,8 +95,9 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 				}
 				addSelectedInventoryDetails(lotDetails, sourceTable);
 				
-			} else if(sourceTableData.equals(SelectParentsListDataComponent.CROSSING_MANAGER_PARENT_TAB_INVENTORY_TABLE) && !sourceTable.equals(targetTable)){				
+			} else if(sourceTableData.equals(SelectParentsListDataComponent.CROSSING_MANAGER_PARENT_TAB_INVENTORY_TABLE) && !sourceTable.equals(targetTable)){
 				inventoryDropTargetContainer.setHasUnsavedChanges(true);
+				hasChanges = true;
 				
 				lastDroppedListId = ((SelectParentsListDataComponent) transferable.getSourceComponent().getParent().getParent()).getGermplasmListId();
 				
@@ -336,6 +339,17 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 	
 	public void resetListDataAndLotDetails(){
 		this.listDataAndLotDetails.clear();
+	}
+
+	/*
+	 * TODO this methods will be removed after successfull refactoring of code in DROP HANDLER CLASS
+	 * */
+	public boolean hasChanges() {
+		return hasChanges;
+	}
+
+	public void setHasChanges(boolean hasChanges) {
+		this.hasChanges = hasChanges;
 	}
 	
 }

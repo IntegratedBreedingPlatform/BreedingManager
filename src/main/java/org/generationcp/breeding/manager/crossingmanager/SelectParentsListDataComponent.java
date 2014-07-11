@@ -17,7 +17,6 @@ import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayou
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.CrossingManagerInventoryTable;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
-import org.generationcp.breeding.manager.inventory.ListDataAndLotDetails;
 import org.generationcp.breeding.manager.inventory.ReservationStatusWindow;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
 import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
@@ -741,10 +740,6 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		validReservationsToSave.clear();//reset the reservations to save. 
 		
 		setHasUnsavedChanges(false);
-	}
-	
-	public void resetUnsavedChangesFlag() {
-		hasChanges = false;
 	}
 	
 	/*--------------------------------END OF INVENTORY RELATED FUNCTIONS--------------------------------------*/

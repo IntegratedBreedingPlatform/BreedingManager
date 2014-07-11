@@ -310,7 +310,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 					 parentActionListener.removeSelectedEntriesAction(listDataTable);
 				 }
 				 else if(clickedItem.getName().equals(messageSource.getMessage(Message.SAVE_LIST))){
-					 openSaveListAsDialog();
+					 doSaveAction();
 				 }
 				 else if(clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))){
 					 listDataTable.setValue(listDataTable.getItemIds());
@@ -337,7 +337,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 				// Get reference to clicked item
 				ContextMenuItem clickedItem = event.getClickedItem();
 				if(clickedItem.getName().equals(messageSource.getMessage(Message.SAVE_CHANGES))){	  
-					saveReservationChangesAction();
+					doSaveAction();
 				} else if(clickedItem.getName().equals(messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))){
 					viewListAction();
 				} else if(clickedItem.getName().equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST))){
@@ -349,6 +349,86 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 				}
 			}
 		});
+	}
+
+	public void doSaveAction() {
+		if(hasUnsavedChanges()){
+			
+			if(source.getMakeCrossesMain().getModeView().equals(ModeView.LIST_VIEW)){
+				if(germplasmList == null){//new lists
+					openSaveListAsDialog();
+				}
+				else{//existing lists
+					saveList(germplasmList);
+				}
+			}
+			else if(source.getMakeCrossesMain().getModeView().equals(ModeView.INVENTORY_VIEW)){
+				if(germplasmList == null){//new list in inventory view
+					openSaveListAsDialog();
+				}
+				else{
+					if(inventoryTableDropHandler.hasChanges()){
+						System.out.println("nagbagooooooooo ang lot entries sa inventory view..");
+						saveList(germplasmList);
+					}
+					else { //only reservations are made
+						saveReservationChangesAction(true);
+					}
+				}
+			}
+			
+		}
+	}
+	
+	private void updateListDataTableBeforeSaving(){
+		List<Integer> alreadyAddedEntryIds = new ArrayList<Integer>();
+		List<ListDataAndLotDetails> listDataAndLotDetails = inventoryTableDropHandler.getListDataAndLotDetails();
+		
+		for(ListDataAndLotDetails listDataAndLotDetail : listDataAndLotDetails){
+			
+			if(!alreadyAddedEntryIds.contains(listDataAndLotDetail.getEntryId())){
+				//dropHandler.addGermplasmFromList(listDataAndLotDetail.getListId(), listDataAndLotDetail.getSourceLrecId());
+				
+				try {
+
+					GermplasmListData germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndLrecId(listDataAndLotDetail.getListId(), listDataAndLotDetail.getSourceLrecId());
+					
+					if(germplasmListData!=null){
+						
+						Integer entryId = getListDataTableNextEntryId();
+        				GermplasmListEntry entryObject = new GermplasmListEntry(germplasmListData.getId(),germplasmListData.getGid(), entryId, germplasmListData.getDesignation(), germplasmListData.getSeedSource());
+        				
+//        				//if the item is already existing in the target table, remove the existing item then add a new entry
+//    		            listDataTable.removeItem(entryObject);
+        				
+    					Item newItem = listDataTable.addItem(entryObject);
+    					System.out.println("entryObject: " + entryObject);
+    					System.out.println("newItem: " + newItem);
+        				System.out.println("newItem tag: " + newItem.getItemProperty(TAG_COLUMN_ID));
+        				
+						CheckBox tag = new CheckBox();
+        				tag.addListener(new ParentsTableCheckboxListener(listDataTable, entryObject, getSelectAllCheckBox()));
+    		            tag.setImmediate(true);
+			            
+    		            newItem.getItemProperty(TAG_COLUMN_ID).setValue(tag);
+        				
+						newItem.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(entryId);
+						
+						Button desigButton = new Button(germplasmListData.getDesignation(), new GidLinkClickListener(germplasmListData.getGid().toString(),true));
+	                    desigButton.setStyleName(BaseTheme.BUTTON_LINK);
+	                    desigButton.setDescription("Click to view Germplasm information");
+	                    newItem.getItemProperty(DESIGNATION_ID).setValue(desigButton);
+	                    
+	                    System.out.println("newItem after: " + newItem);
+					}
+					
+				} catch (MiddlewareQueryException e) {
+					e.printStackTrace();
+				}
+				
+				alreadyAddedEntryIds.add(listDataAndLotDetail.getEntryId());
+			}
+		}
 	}
 
 	protected void openSaveListAsDialog() {
@@ -368,6 +448,11 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	@SuppressWarnings("unchecked")
 	@Override
 	public void saveList(GermplasmList list) {
+		
+		if(source.getMakeCrossesMain().getModeView().equals(ModeView.INVENTORY_VIEW)){
+			updateListDataTableBeforeSaving();
+		}
+		
 		List<GermplasmListEntry> listEntries = new ArrayList<GermplasmListEntry>();
 		listEntries.addAll((Collection<GermplasmListEntry>) listDataTable.getItemIds());
 		
@@ -379,9 +464,19 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			updateCrossesSeedSource(germplasmList);
 			source.updateUIForSuccessfulSaving(this, germplasmList);
 			
+			if(source.getMakeCrossesMain().getModeView().equals(ModeView.INVENTORY_VIEW)){
+				if(validReservationsToSave.size() > 0){
+					saveReservationChangesAction(false);
+				}
+				inventoryTableDropHandler.resetListDataAndLotDetails();
+			}
+			
 			setHasUnsavedChanges(false);
 			source.getMakeCrossesMain().updateView(source.getMakeCrossesMain().getModeView());
-
+			
+			//show success message for saving
+			MessageNotifier.showMessage(this.source.getWindow(), messageSource.getMessage(Message.SUCCESS), 
+					messageSource.getMessage(getSuccessMessage()), 3000);
 		} catch (MiddlewareQueryException e) {
 			LOG.error("Error in saving the Parent List",e);
 			e.printStackTrace();
@@ -762,9 +857,8 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	}
 
 	public void resetUnsavedChangesFlag() {
-		hasChanges = false;
-		
-		// TODO reset also the flag that marks the changes for drag and drop
+		inventoryTableDropHandler.setHasChanges(false);
+		setHasUnsavedChanges(false);
 	}
 
 	public void viewInventoryActionConfirmed(){
@@ -895,62 +989,20 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		source.getWindow().removeWindow(this.reservationStatus);
 	}
 	
-	public void saveReservationChangesAction() {
+	public void saveReservationChangesAction(boolean displayReservationSuccessMessage) {
 		
 		if(hasUnsavedChanges()){
-			
-			List<Integer> alreadyAddedEntryIds = new ArrayList<Integer>();
-			List<ListDataAndLotDetails> listDataAndLotDetails = inventoryTableDropHandler.getListDataAndLotDetails();
-			for(ListDataAndLotDetails listDataAndLotDetail : listDataAndLotDetails){
+			reserveInventoryAction = new ReserveInventoryAction(this);
+			boolean success = reserveInventoryAction.saveReserveTransactions(getValidReservationsToSave(), germplasmList.getId());
+			if(success){
+				refreshInventoryColumns(getValidReservationsToSave());
+				resetListInventoryTableValues();
 				
-				if(!alreadyAddedEntryIds.contains(listDataAndLotDetail.getEntryId())){
-					//dropHandler.addGermplasmFromList(listDataAndLotDetail.getListId(), listDataAndLotDetail.getSourceLrecId());
-					
-					try {
-
-						GermplasmListData germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndLrecId(listDataAndLotDetail.getListId(), listDataAndLotDetail.getSourceLrecId());
-						
-						if(germplasmListData!=null){
-							
-							Integer entryId = getListDataTableNextEntryId();
-	        				GermplasmListEntry entryObject = new GermplasmListEntry(germplasmListData.getId(),germplasmListData.getGid(), entryId, germplasmListData.getDesignation(), germplasmListData.getSeedSource());
-	
-	    					Item newItem = listDataTable.addItem(entryObject);
-	        				
-							CheckBox tag = new CheckBox();
-							newItem.getItemProperty(TAG_COLUMN_ID).setValue(tag);
-							newItem.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(entryId);
-							tag.addListener(new ParentsTableCheckboxListener(listDataTable, entryObject, tableWithSelectAllLayout.getCheckBox()));
-				            tag.setImmediate(true);
-	
-							Button desigButton = new Button(germplasmListData.getDesignation(), new GidLinkClickListener(germplasmListData.getGid().toString(),true));
-		                    desigButton.setStyleName(BaseTheme.BUTTON_LINK);
-		                    desigButton.setDescription("Click to view Germplasm information");
-		                    newItem.getItemProperty(DESIGNATION_ID).setValue(desigButton);
-						}
-						
-					} catch (MiddlewareQueryException e) {
-						e.printStackTrace();
-					}
-					
-					alreadyAddedEntryIds.add(listDataAndLotDetail.getEntryId());
-				}
-			}
-			
-			if(listDataAndLotDetails.size()==0){
-				reserveInventoryAction = new ReserveInventoryAction(this);
-				boolean success = reserveInventoryAction.saveReserveTransactions(getValidReservationsToSave(), germplasmList.getId());
-				if(success){
-					refreshInventoryColumns(getValidReservationsToSave());
-					resetListInventoryTableValues();
+				if(displayReservationSuccessMessage){
 					MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
 							"All reservations were saved.");
-				}
-			} else {
-				openSaveListAsDialog();				
+				}	
 			}
-			
-			inventoryTableDropHandler.resetListDataAndLotDetails();
 		}
 	}
 	
@@ -1070,12 +1122,12 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			menuInventorySaveChanges.setEnabled(false);
 		}
 		
+		inventoryTableDropHandler.setHasChanges(false);
+		
 		source.setHasUnsavedChanges(this.hasChanges);
 	}
 	
 	public boolean hasUnsavedChanges() {	
-		// TODO mark other unsaved changes in dropHandler, listDataTable, inventoryTable
-		
 		return hasChanges;
 	}
 	
@@ -1098,6 +1150,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		updateNoOfEntries(listInventoryTable.getTable().getItemIds().size());
 	}
 	
+	@SuppressWarnings("unchecked")
 	private Integer getListDataTableNextEntryId(){
 		int nextId = 0;
 		for(GermplasmListEntry entry : (Collection<? extends GermplasmListEntry>) listDataTable.getItemIds()){

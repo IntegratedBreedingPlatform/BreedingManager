@@ -375,7 +375,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
 					femaleParentTab.openSaveListAsDialog();
 				}
 				else{
-					femaleParentTab.saveList(femaleGermplasmList);
+					femaleParentTab.doSaveAction();
 				}
 			}
 			else if(maleParentTab.hasUnsavedChanges() && !femaleParentTab.hasUnsavedChanges()){
@@ -384,7 +384,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
 					maleParentTab.openSaveListAsDialog();
 				}
 				else{
-					maleParentTab.saveList(maleGermplasmList);
+					maleParentTab.doSaveAction();
 				}
 			}
 		}
