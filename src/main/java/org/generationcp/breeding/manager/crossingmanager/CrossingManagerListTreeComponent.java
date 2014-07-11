@@ -51,11 +51,10 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 				else{
 					Integer germplasmListId = (Integer) germplasmListTree.getValue();
 					crossingTreeActionsListener.addListToFemaleList(germplasmListId);
-					Window dialog = event.getComponent().getParent().getWindow();
-					dialog.getParent().getWindow().removeWindow(dialog);
+					closeTreeWindow(event);
 				}
 			}
-			
+
 		});
 		
 		addToMaleListButton.addListener(new Button.ClickListener(){
@@ -69,8 +68,7 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 				else{
 					Integer germplasmListId = (Integer) germplasmListTree.getValue();
 					crossingTreeActionsListener.addListToMaleList(germplasmListId);
-					Window dialog = event.getComponent().getParent().getWindow();
-					dialog.getParent().getWindow().removeWindow(dialog);
+					closeTreeWindow(event);
 				}
 			}
 			
@@ -83,6 +81,7 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 			public void buttonClick(ClickEvent event) {
 				if (germplasmList != null){
 					getTreeActionsListener().studyClicked(germplasmList);
+					closeTreeWindow(event);
 				}
 	            	
 			}
@@ -94,14 +93,17 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				Window dialog = event.getComponent().getParent().getWindow();
-				dialog.getParent().getWindow().removeWindow(dialog);
+				closeTreeWindow(event);
 			}
 			
 		});
 		
 	}
 	
+	protected void closeTreeWindow(ClickEvent event) {
+		Window dialog = event.getComponent().getParent().getWindow();
+		dialog.getParent().getWindow().removeWindow(dialog);
+	}
 	
 	public void showWarningInInventoryView(){
 		String message = "Please switch to list view first before adding entries to parent lists.";
