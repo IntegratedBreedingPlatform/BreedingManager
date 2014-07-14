@@ -331,3 +331,8 @@ img[src$="document-icon.png"] {
 .gsb-div-wrap div.v-csslayout {
 	display: inline-block !important
 }
+
+/* Fix the unnecessary scrollbar in Germplasm Details table*/
+.v-scrollable{
+	overflow:overlay;
+}
