@@ -76,7 +76,6 @@ public class ReserveInventoryAction implements Serializable {
 				}
 				else{
 					if(availBalance < amountReserved){
-						validLotReservations.put(lot, amountReserved);
 						invalidLotReservations.put(lot, amountReserved);
 					}
 					else{
