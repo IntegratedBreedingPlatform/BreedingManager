@@ -107,7 +107,7 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 	
 	public void showWarningInInventoryView(){
 		String message = "Please switch to list view first before adding entries to parent lists.";
-    	MessageNotifier.showWarning(getWindow(),"Warning!", message);
+    	MessageNotifier.showError(getWindow(),"Warning!", message);
 	}
 
 	@Override

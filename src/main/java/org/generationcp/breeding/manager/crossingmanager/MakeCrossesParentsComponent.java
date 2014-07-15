@@ -514,6 +514,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 				maleParentTab.setGermplasmList(listFromTree);
 				maleParentTab.setListNameForCrosses(listFromTree.getName());
 	    	    updateCrossesSeedSource(maleParentTab, listFromTree);
+	    	    maleParentTab.enableReserveInventory();
 			}
         } catch(MiddlewareQueryException e) {
         	LOG.error("Error in getting list by GID",e);	
@@ -616,7 +617,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 				femaleParentTab.setGermplasmList(listFromTree);
 				femaleParentTab.setListNameForCrosses(listFromTree.getName());
 	    	    updateCrossesSeedSource(femaleParentTab, listFromTree);
-				
+				femaleParentTab.enableReserveInventory();
 			}
         } catch(MiddlewareQueryException e) {
         	LOG.error("Error in getting list by GID",e);	

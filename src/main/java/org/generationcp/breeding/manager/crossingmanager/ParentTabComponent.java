@@ -112,7 +112,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	private ContextMenuItem menuInventorySaveChanges;
 	@SuppressWarnings("unused")
 	private ContextMenuItem menuListView;
-	@SuppressWarnings("unused")
 	private ContextMenuItem menuReserveInventory;
 	
 	private static final String TAG_COLUMN_ID = "Tag";
@@ -228,6 +227,11 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
         
         //Temporarily disable to Copy to New List in InventoryView TODO implement the function
         menuCopyToNewListFromInventory.setEnabled(false);
+        
+        //disable the reserve inventory at first if the list is not yet saved.
+        if(germplasmList == null){
+            menuReserveInventory.setEnabled(false);
+        }
 	}
 
 	private void initializeParentTable() {
@@ -397,6 +401,35 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		}
 	}
 	
+	public void doSaveActionFromMain() {
+		if(hasUnsavedChanges()){
+			
+			if(prevModeView.equals(ModeView.LIST_VIEW)){
+				if(germplasmList == null){//new lists
+					openSaveListAsDialog();
+				}
+				else{//existing lists
+					saveList(germplasmList);
+				}
+			}
+			else if(prevModeView.equals(ModeView.INVENTORY_VIEW)){
+				if(germplasmList == null){//new list in inventory view
+					openSaveListAsDialog();
+				}
+				else{
+					if(inventoryTableDropHandler.hasChanges()){
+						saveList(germplasmList);
+					}
+					else { //only reservations are made
+						saveReservationChangesAction(true);
+						makeCrossesMain.updateView(makeCrossesMain.getModeView());
+					}
+				}
+			}
+			
+		}
+	}
+	
 	private void updateListDataTableBeforeSaving(){
 		List<Integer> alreadyAddedEntryIds = new ArrayList<Integer>();
 		List<ListDataAndLotDetails> listDataAndLotDetails = inventoryTableDropHandler.getListDataAndLotDetails();
@@ -460,14 +493,11 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	@SuppressWarnings("unchecked")
 	@Override
 	public void saveList(GermplasmList list) {
-		//update the listdatatable when the user tries to change list view but has unsaved changes in inventory view
+		//update the listDataTable when the user tries to change list view but has unsaved changes in inventory view
 		if(prevModeView != null){
 			if(prevModeView.equals(ModeView.INVENTORY_VIEW)){
 				updateListDataTableBeforeSaving();
 			}
-			
-			//reset the marker
-			prevModeView = null;
 		}
 		else{
 			//update the listdatatable in inventory view w/o changing mode
@@ -490,12 +520,21 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			if(source.getMakeCrossesMain().getModeView().equals(ModeView.INVENTORY_VIEW)){
 				if(validReservationsToSave.size() > 0){
 					saveReservationChangesAction(false);
+					inventoryTableDropHandler.resetListDataAndLotDetails();
 				}
-				inventoryTableDropHandler.resetListDataAndLotDetails();
 			}
 			
 			setHasUnsavedChanges(false);
-			source.getMakeCrossesMain().updateView(source.getMakeCrossesMain().getModeView());
+			
+			if(prevModeView != null){
+				source.getMakeCrossesMain().updateView(source.getMakeCrossesMain().getModeView());
+				
+				//reset the marker
+				prevModeView = null;
+			}
+			
+			//Reserve Inventory Action will now be available after saving the list for the first time
+			menuReserveInventory.setEnabled(true);
 			
 			//show success message for saving
 			MessageNotifier.showMessage(this.source.getWindow(), messageSource.getMessage(Message.SUCCESS), 
@@ -926,17 +965,24 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 					"Please change to Inventory View first.");
 		}
 		else{
-			List<ListEntryLotDetails> lotDetailsGid = listInventoryTable.getSelectedLots();
-			
-			if( lotDetailsGid == null || lotDetailsGid.size() == 0){
+			if(hasUnsavedChanges()){
 				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.WARNING), 
-						"Please select at least 1 lot to reserve.");
+						"Please save the list first before reserving an inventory.");
 			}
 			else{
-		        //this util handles the inventory reservation related functions
-		        reserveInventoryUtil = new ReserveInventoryUtil(this,lotDetailsGid);
-				reserveInventoryUtil.viewReserveInventoryWindow();
+				List<ListEntryLotDetails> lotDetailsGid = listInventoryTable.getSelectedLots();
+				
+				if( lotDetailsGid == null || lotDetailsGid.size() == 0){
+					MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.WARNING), 
+							"Please select at least 1 lot to reserve.");
+				}
+				else{
+			        //this util handles the inventory reservation related functions
+			        reserveInventoryUtil = new ReserveInventoryUtil(this,lotDetailsGid);
+					reserveInventoryUtil.viewReserveInventoryWindow();
+				}
 			}
+			
 		}
 	}
 	
@@ -1158,6 +1204,10 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	}
 	
 	public boolean hasUnsavedChanges() {	
+		if(inventoryTableDropHandler.hasChanges()){
+			hasChanges = true;
+		}
+		
 		return hasChanges;
 	}
 	
@@ -1199,6 +1249,10 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	public void setPreviousModeView(ModeView prevModeView) {
 		this.prevModeView = prevModeView;
+	}
+
+	public void enableReserveInventory() {
+		menuReserveInventory.setEnabled(true);
 	}	
 	
 }

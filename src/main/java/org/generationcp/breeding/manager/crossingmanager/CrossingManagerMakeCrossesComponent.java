@@ -376,11 +376,11 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
 			
 			if(femaleParentTab.hasUnsavedChanges() && !maleParentTab.hasUnsavedChanges()){
 				femaleParentTab.setPreviousModeView(prevModeView);
-				femaleParentTab.doSaveAction();
+				femaleParentTab.doSaveActionFromMain();
 			}
 			else if(maleParentTab.hasUnsavedChanges() && !femaleParentTab.hasUnsavedChanges()){
 				maleParentTab.setPreviousModeView(prevModeView);
-				maleParentTab.doSaveAction();
+				maleParentTab.doSaveActionFromMain();
 			}
 		}
 		else{
