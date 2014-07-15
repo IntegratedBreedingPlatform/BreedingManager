@@ -158,28 +158,28 @@ public class ReserveInventoryWindow extends Window implements InitializingBean,
 		panelContentLayout.setSpacing(true);
 		
 		if(isSingleScaled){
-			setHeight("255px");
-			setWidth("430px");
+			setHeight("225px");
+			setWidth("500px");
 			
-			contentPanel.setWidth("383px");
-			contentPanel.setHeight("120px");
+			contentPanel.setWidth("453px");
+			contentPanel.setHeight("90px");
 			
 			panelContentLayout.addComponent(singleScaleDescriptionLabel);
 			panelContentLayout.addComponent(scaleRows.get(0));
 			
 		}
 		else{
-			setHeight("325px");
-			setWidth("430px");
+			setHeight("300px");
+			setWidth("500px");
 			
-			contentPanel.setWidth("383px");
-			contentPanel.setHeight("190px");
+			contentPanel.setWidth("453px");
+			contentPanel.setHeight("165px");
 			
 			panelContentLayout.addComponent(multiScaleDescriptionLabel);
 			
 			VerticalLayout scaleLayout = new VerticalLayout();
 			scaleLayout.setSpacing(true);
-			scaleLayout.setHeight("90px");
+			scaleLayout.setHeight("80px");
 			
 			if(scaleRows.size() > 3){
 				scaleLayout.addStyleName(AppConstants.CssStyles.SCALE_ROW);
