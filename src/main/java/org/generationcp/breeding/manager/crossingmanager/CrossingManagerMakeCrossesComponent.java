@@ -359,34 +359,32 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
 					toSave.saveReservationChangesAction();
 				}
 			}
-			
-			updateView(modeView);
 		}
 		
 		if(parentsComponent.hasUnsavedChanges()){
-			
 			//for female and male parent lists
 			ParentTabComponent femaleParentTab = parentsComponent.getFemaleParentTab();
 			ParentTabComponent maleParentTab = parentsComponent.getMaleParentTab();
 			
+			ModeView prevModeView;
+			if(modeView.equals(ModeView.LIST_VIEW)){
+				prevModeView = ModeView.INVENTORY_VIEW;
+			}
+			else{
+				prevModeView = ModeView.LIST_VIEW;
+			}
+			
 			if(femaleParentTab.hasUnsavedChanges() && !maleParentTab.hasUnsavedChanges()){
-				GermplasmList femaleGermplasmList = femaleParentTab.getGermplasmList();
-				if(femaleGermplasmList == null){
-					femaleParentTab.openSaveListAsDialog();
-				}
-				else{
-					femaleParentTab.doSaveAction();
-				}
+				femaleParentTab.setPreviousModeView(prevModeView);
+				femaleParentTab.doSaveAction();
 			}
 			else if(maleParentTab.hasUnsavedChanges() && !femaleParentTab.hasUnsavedChanges()){
-				GermplasmList maleGermplasmList = maleParentTab.getGermplasmList();
-				if(maleGermplasmList == null){
-					maleParentTab.openSaveListAsDialog();
-				}
-				else{
-					maleParentTab.doSaveAction();
-				}
+				maleParentTab.setPreviousModeView(prevModeView);
+				maleParentTab.doSaveAction();
 			}
+		}
+		else{
+			updateView(modeView);
 		}
 		
 		resetUnsavedStatus();

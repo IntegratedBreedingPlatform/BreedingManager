@@ -153,6 +153,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
     private ReserveInventoryUtil reserveInventoryUtil;
     private ReserveInventoryAction reserveInventoryAction;
     private Map<ListEntryLotDetails, Double> validReservationsToSave;
+    private ModeView prevModeView;
     
     private InventoryTableDropHandler inventoryTableDropHandler;
 
@@ -385,7 +386,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 				}
 				else{
 					if(inventoryTableDropHandler.hasChanges()){
-						System.out.println("nagbagooooooooo ang lot entries sa inventory view..");
 						saveList(germplasmList);
 					}
 					else { //only reservations are made
@@ -419,10 +419,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 //    		            listDataTable.removeItem(entryObject);
         				
     					Item newItem = listDataTable.addItem(entryObject);
-    					System.out.println("entryObject: " + entryObject);
-    					System.out.println("newItem: " + newItem);
-        				System.out.println("newItem tag: " + newItem.getItemProperty(TAG_COLUMN_ID));
-        				
+
 						CheckBox tag = new CheckBox();
         				tag.addListener(new ParentsTableCheckboxListener(listDataTable, entryObject, getSelectAllCheckBox()));
     		            tag.setImmediate(true);
@@ -435,8 +432,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	                    desigButton.setStyleName(BaseTheme.BUTTON_LINK);
 	                    desigButton.setDescription("Click to view Germplasm information");
 	                    newItem.getItemProperty(DESIGNATION_ID).setValue(desigButton);
-	                    
-	                    System.out.println("newItem after: " + newItem);
 					}
 					
 				} catch (MiddlewareQueryException e) {
@@ -465,9 +460,20 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	@SuppressWarnings("unchecked")
 	@Override
 	public void saveList(GermplasmList list) {
-		
-		if(source.getMakeCrossesMain().getModeView().equals(ModeView.INVENTORY_VIEW)){
-			updateListDataTableBeforeSaving();
+		//update the listdatatable when the user tries to change list view but has unsaved changes in inventory view
+		if(prevModeView != null){
+			if(prevModeView.equals(ModeView.INVENTORY_VIEW)){
+				updateListDataTableBeforeSaving();
+			}
+			
+			//reset the marker
+			prevModeView = null;
+		}
+		else{
+			//update the listdatatable in inventory view w/o changing mode
+			if(source.getMakeCrossesMain().getModeView().equals(ModeView.INVENTORY_VIEW)){
+				updateListDataTableBeforeSaving();
+			}
 		}
 		
 		List<GermplasmListEntry> listEntries = new ArrayList<GermplasmListEntry>();
@@ -1189,6 +1195,10 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			
 		}
 		return nextId+1;
+	}
+
+	public void setPreviousModeView(ModeView prevModeView) {
+		this.prevModeView = prevModeView;
 	}	
 	
 }
