@@ -1556,7 +1556,7 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 	}
 
 	public void discardChangesInInventoryView() {
-		listInventoryTable.updateListInventoryTableAfterSave();
+		resetListInventoryTableValues();
 		changeToListView();
 	}
 	

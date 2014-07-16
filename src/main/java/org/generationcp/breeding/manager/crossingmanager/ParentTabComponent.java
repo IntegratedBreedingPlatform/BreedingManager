@@ -1223,7 +1223,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	}
 
 	public void discardChangesInInventoryView() {
-		listInventoryTable.updateListInventoryTableAfterSave();
+		resetListInventoryTableValues();
 		changeToListView();
 	}
 

@@ -557,7 +557,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	}
 	
 	public void viewInventoryActionConfirmed(){
-		listInventoryTable.loadInventoryData();
+		resetListInventoryTableValues();
 		changeToInventoryView();
 	}
 	

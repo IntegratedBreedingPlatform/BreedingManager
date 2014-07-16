@@ -410,6 +410,9 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
 	@Override
 	public void discardAllListChangesAction(){
 		//cancel all the unsaved changes
+		if(modeView.equals(ModeView.INVENTORY_VIEW)){
+			selectParentsComponent.resetInventoryViewForCancelledChanges();
+		}
 		selectParentsComponent.updateViewForAllLists(modeView);
 		
 		//for female parent list

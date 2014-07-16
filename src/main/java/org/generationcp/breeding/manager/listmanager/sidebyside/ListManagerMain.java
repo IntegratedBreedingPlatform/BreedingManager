@@ -570,7 +570,13 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 				Boolean isListHasUnsavedChanges = list.getValue();
 				if(isListHasUnsavedChanges){
 					ListComponent toSave = list.getKey();
-					toSave.saveChangesAction();
+					//NOTE: the value of modeView here is the newModeView
+					if(modeView.equals(ModeView.LIST_VIEW)){
+						toSave.saveReservationChangesAction();
+					}
+					else if(modeView.equals(ModeView.INVENTORY_VIEW)){
+						toSave.saveChangesAction();
+					}
 				}
 			}
 		}
@@ -597,7 +603,13 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	@Override
 	public void discardAllListChangesAction(){
 		//cancel all the unsaved changes
-		listSelectionComponent.getListDetailsLayout().resetListViewForCancelledChanges();
+		if(modeView.equals(ModeView.LIST_VIEW)){
+			listSelectionComponent.getListDetailsLayout().resetInventoryViewForCancelledChanges();
+		}
+		else if(modeView.equals(ModeView.INVENTORY_VIEW)){
+			listSelectionComponent.getListDetailsLayout().resetListViewForCancelledChanges();
+		}
+		
 		listSelectionComponent.getListDetailsLayout().updateViewForAllLists(modeView);
 		
 		if(listBuilderComponent.getCurrentlySavedGermplasmList() != null){
