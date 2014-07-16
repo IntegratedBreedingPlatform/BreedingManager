@@ -46,13 +46,11 @@ import com.vaadin.data.Property.ConversionException;
 import com.vaadin.data.Property.ReadOnlyException;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
@@ -93,19 +91,13 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     private Button backButton;
     private Button nextButton;
     
-    private Accordion accordion;
-    private Component nextScreen;
-    private Component previousScreen;
-
     private String DEFAULT_METHOD = "UDM";
     private String DEFAULT_LOCATION = "Unknown";
     private String DEFAULT_NAME_TYPE = "Line Name";
     private List<ImportedGermplasm> importedGermplasms;
     private GermplasmListUploader germplasmListUploader;
 
-    //private List<Germplasm> germplasmList = new ArrayList();
-    //private List<Name> nameList = new ArrayList();
-    private List<Integer> doNotCreateGermplasmsWithId = new ArrayList();
+    private List<Integer> doNotCreateGermplasmsWithId = new ArrayList<Integer>();
     
     private List<SelectGermplasmWindow> selectGermplasmWindows = new ArrayList<SelectGermplasmWindow>();
     private List<GermplasmName> germplasmNameObjects;
@@ -134,9 +126,8 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     private Boolean viaToolURL;
     private Map<String, String> methodMap;
     
-    public SpecifyGermplasmDetailsComponent(GermplasmImportMain source, Accordion accordion, Boolean viaToolURL){
+    public SpecifyGermplasmDetailsComponent(GermplasmImportMain source, Boolean viaToolURL){
         this.source = source;
-        this.accordion = accordion;
         this.viaToolURL = viaToolURL;
     }
 
@@ -144,14 +135,6 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         return germplasmDetailsTable;
     }
     
-    public void setNextScreen(Component nextScreen){
-        this.nextScreen = nextScreen;
-    }
-    
-    public void setPreviousScreen(Component previousScreen){
-        this.previousScreen = previousScreen;
-    }
-
     public List<ImportedGermplasm> getImportedGermplasms() {
         return importedGermplasms;
     }
@@ -489,8 +472,6 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         
     public void nextButtonClickAction(){
         if (validateMethod() && validateLocation() && validatePedigreeOption()) {
-            if(this.nextScreen != null){
-                
             	germplasmNameObjects = new ArrayList<GermplasmName>();
             	
                 //germplasmList = new ArrayList<Germplasm>(); 
@@ -799,30 +780,24 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                     
                 }
     
-               if(nextScreen instanceof SaveGermplasmListComponent){
-                   //((SaveGermplasmListComponent) nextScreen).setGermplasmList(germplasmList);
-                   ((SaveGermplasmListComponent) nextScreen).setDoNotCreateGermplasmsWithId(doNotCreateGermplasmsWithId);
-                   //((SaveGermplasmListComponent) nextScreen).setNameList(nameList);
-                   ((SaveGermplasmListComponent) nextScreen).setFilename(germplasmListUploader.getOriginalFilename());
-                   
-                    //for 909
-                   ((SaveGermplasmListComponent) nextScreen).setListDetails(germplasmListUploader.getListName(), germplasmListUploader.getListTitle(), germplasmListUploader.getListDate(), germplasmListUploader.getListType());
-                   
-    			   try {
-    				   Method breedingMethod = germplasmDataManager.getMethodByID((Integer) breedingMethodComboBox.getValue());
-    				   ((SaveGermplasmListComponent) nextScreen).setBreedingMethod(breedingMethod);
-    			   } catch (MiddlewareQueryException e) {
-    				   e.printStackTrace();
-    			   }
-                  
-               	}
-                source.enableAllTabs();
-               	this.accordion.setSelectedTab(this.nextScreen);
-               	source.enableTab(3);
-               	source.alsoEnableTab(2);
-            } else {
-                this.nextButton.setEnabled(false);
-            }
+//               if(nextScreen instanceof SaveGermplasmListComponent){
+//                   //((SaveGermplasmListComponent) nextScreen).setGermplasmList(germplasmList);
+//                   ((SaveGermplasmListComponent) nextScreen).setDoNotCreateGermplasmsWithId(doNotCreateGermplasmsWithId);
+//                   //((SaveGermplasmListComponent) nextScreen).setNameList(nameList);
+//                   ((SaveGermplasmListComponent) nextScreen).setFilename(germplasmListUploader.getOriginalFilename());
+//                   
+//                    //for 909
+//                   ((SaveGermplasmListComponent) nextScreen).setListDetails(germplasmListUploader.getListName(), germplasmListUploader.getListTitle(), germplasmListUploader.getListDate(), germplasmListUploader.getListType());
+//                   
+//    			   try {
+//    				   Method breedingMethod = germplasmDataManager.getMethodByID((Integer) breedingMethodComboBox.getValue());
+//    				   ((SaveGermplasmListComponent) nextScreen).setBreedingMethod(breedingMethod);
+//    			   } catch (MiddlewareQueryException e) {
+//    				   e.printStackTrace();
+//    			   }
+//                  
+//               	}
+                source.nextStep();
         }
     }
     
@@ -901,13 +876,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     }
     
     public void backButtonClickAction(){
-        if(this.previousScreen != null){
-        	source.enableAllTabs();
-            this.accordion.setSelectedTab(previousScreen);
-            source.enableTab(1);
-        } else{
-            this.backButton.setEnabled(false);
-        }
+        source.backStep();
     }
     
     public GermplasmImportMain getSource() {
@@ -976,10 +945,6 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
 
     public List<SelectGermplasmWindow> getSelectGermplasmWindows(){
     	return selectGermplasmWindows;
-    }
-    
-    public void setSelectedTab(Component component){
-    	accordion.setSelectedTab(component);
     }
     
     public void closeAllSelectGermplasmWindows(){
