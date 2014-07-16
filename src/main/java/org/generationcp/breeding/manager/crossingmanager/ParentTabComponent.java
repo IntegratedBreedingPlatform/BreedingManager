@@ -1257,4 +1257,8 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		menuReserveInventory.setEnabled(true);
 	}	
 	
+	public CrossingManagerInventoryTable getListInventoryTable(){
+		return listInventoryTable;
+	}
+	
 }

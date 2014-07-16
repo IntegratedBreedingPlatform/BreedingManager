@@ -584,6 +584,13 @@ public abstract class ListTreeComponent extends CssLayout implements
         });
 	}
 	  
+	public void assignNewNameToGermplasmListMap(String key, String newName){
+		GermplasmList germplasmList = germplasmListsMap.get(Integer.valueOf(key.toString()));
+		if(germplasmList!=null){
+			germplasmList.setName(newName);
+		}
+	}
+	
 	protected void createGermplasmListTree() {
         List<GermplasmList> localGermplasmListParent = new ArrayList<GermplasmList>();
         List<GermplasmList> centralGermplasmListParent = new ArrayList<GermplasmList>();

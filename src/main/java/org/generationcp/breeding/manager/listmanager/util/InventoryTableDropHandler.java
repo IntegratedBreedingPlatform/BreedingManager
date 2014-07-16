@@ -13,11 +13,13 @@ import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClic
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListComponent;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 
 import com.vaadin.data.Item;
@@ -63,6 +65,15 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		listDataAndLotDetails = new ArrayList<ListDataAndLotDetails>();
 	}
 
+	public InventoryTableDropHandler(GermplasmDataManager germplasmDataManager, GermplasmListManager germplasmListManager, InventoryDataManager inventoryDataManager, Table targetTable) {
+		this.germplasmDataManager = germplasmDataManager;
+		this.germplasmListManager = germplasmListManager;
+		this.inventoryDataManager = inventoryDataManager;
+		this.targetTable = targetTable;
+		
+		listDataAndLotDetails = new ArrayList<ListDataAndLotDetails>();
+	}	
+	
 	@Override
 	public void drop(DragAndDropEvent event) {
 		
@@ -232,6 +243,79 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 	}
 
 	
+	/**
+	 * Use this to handle drop events from list inventory view of list tab to list inventory view of list builder
+	 * @param selectedItemIds
+	 * @param sourceTable
+	 */
+	public void addGermplasmListInventoryData(Integer listId){
+		
+		List<GermplasmListData> inventoryDetails;
+		try {
+			inventoryDetails = inventoryDataManager.getLotDetailsForList(listId,0,Integer.MAX_VALUE);
+		
+			Integer lastEntryId = getInventoryTableLastEntryId();
+			
+			if(inventoryDetails!=null){
+				for(GermplasmListData inventoryDetail : inventoryDetails){
+					
+					Integer entryId = lastEntryId+inventoryDetail.getEntryId();
+					String designation = inventoryDetail.getDesignation();
+					
+					ListDataInventory listDataInventory = inventoryDetail.getInventoryInfo();
+					@SuppressWarnings("unchecked")
+					List<ListEntryLotDetails> lotDetails = (List<ListEntryLotDetails>)listDataInventory.getLotRows();
+					
+					if(lotDetails!=null){
+						for(ListEntryLotDetails lotDetail : lotDetails){
+							Item newItem = targetTable.addItem(lotDetail);
+							
+							CheckBox itemCheckBox = new CheckBox();
+					        itemCheckBox.setData(lotDetail);
+					        itemCheckBox.setImmediate(true);
+					   		itemCheckBox.addListener(new ClickListener() {
+					 			private static final long serialVersionUID = 1L;
+					 			@Override
+					 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+					 				CheckBox itemCheckBox = (CheckBox) event.getButton();
+					 				if(((Boolean) itemCheckBox.getValue()).equals(true)){
+					 					targetTable.select(itemCheckBox.getData());
+					 				} else {
+					 					targetTable.unselect(itemCheckBox.getData());
+					 				}
+					 			}
+					 			 
+					 		});
+							
+					   		Button desigButton = new Button(String.format("%s", designation), 
+					   					new GidLinkButtonClickListener(inventoryDetail.getGid().toString(), true));
+				            desigButton.setStyleName(BaseTheme.BUTTON_LINK);
+					   		
+					   		newItem.getItemProperty(ListInventoryTable.TAG_COLUMN_ID).setValue(itemCheckBox);
+							newItem.getItemProperty(ListInventoryTable.ENTRY_NUMBER_COLUMN_ID).setValue(entryId);
+							newItem.getItemProperty(ListInventoryTable.DESIGNATION_COLUMN_ID).setValue(desigButton);
+							newItem.getItemProperty(ListInventoryTable.LOCATION_COLUMN_ID).setValue(lotDetail.getLocationOfLot().getLname());
+							newItem.getItemProperty(ListInventoryTable.UNITS_COLUMN_ID).setValue(lotDetail.getScaleOfLot().getName());
+							newItem.getItemProperty(ListInventoryTable.AVAIL_COLUMN_ID).setValue(lotDetail.getAvailableLotBalance());
+							newItem.getItemProperty(ListInventoryTable.TOTAL_COLUMN_ID).setValue(lotDetail.getActualLotBalance());
+							newItem.getItemProperty(ListInventoryTable.RESERVED_COLUMN_ID).setValue(lotDetail.getReservedTotalForEntry());
+							newItem.getItemProperty(ListInventoryTable.NEWLY_RESERVED_COLUMN_ID).setValue(0);
+							newItem.getItemProperty(ListInventoryTable.COMMENT_COLUMN_ID).setValue(lotDetail.getCommentOfLot());
+							newItem.getItemProperty(ListInventoryTable.LOT_ID_COLUMN_ID).setValue(lotDetail.getLotId());
+							
+						}
+					}
+				}
+			}
+
+		} catch (MiddlewareQueryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
 	private Item addItemToDestinationTable(ListEntryLotDetails lotDetail, Integer entryId, Table sourceTable, final Table targetTable){
 		
 		listDataAndLotDetails.add(new ListDataAndLotDetails(lastDroppedListId, lotDetail.getId(), entryId));
@@ -302,8 +386,8 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		return lotDetails;
 	}	
 	
-	private Integer getInventoryTableNextEntryId(){
-		int nextId = 0;
+	private Integer getInventoryTableLastEntryId(){
+		int topId = 0;
 		for(ListEntryLotDetails lotDetails : (Collection<? extends ListEntryLotDetails>) targetTable.getItemIds()){
 			
 			Integer entryId = 0;
@@ -311,12 +395,16 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 			if(item!=null)
 				entryId = (Integer) item.getItemProperty(ListInventoryTable.ENTRY_NUMBER_COLUMN_ID).getValue();
 			
-			if(entryId > nextId)
-				nextId = entryId;
+			if(entryId > topId)
+				topId = entryId;
 			
 		}
-		return nextId+1;
+		return topId;
 	}
+	
+	private Integer getInventoryTableNextEntryId(){
+		return getInventoryTableLastEntryId()+1;
+	}	
 	
 	private Integer getInventoryTableNextTempLrecId(){
 		int nextId = 0;
@@ -351,5 +439,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 	public void setHasChanges(boolean hasChanges) {
 		this.hasChanges = hasChanges;
 	}
+	
+	
 	
 }

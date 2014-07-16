@@ -368,4 +368,8 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 			selectParentComponent.setHasUnsavedChanges(hasChanges);
 		}
 	}
+	
+	public CrossingManagerMakeCrossesComponent getCrossingManagerMakeCrossesComponent(){
+		return source;
+	}
 }
