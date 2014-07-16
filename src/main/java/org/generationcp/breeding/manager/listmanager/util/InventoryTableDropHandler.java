@@ -259,6 +259,8 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 			if(inventoryDetails!=null){
 				for(GermplasmListData inventoryDetail : inventoryDetails){
 					
+					listDataAndLotDetails.add(new ListDataAndLotDetails(listId, inventoryDetail.getId(), inventoryDetail.getEntryId()));
+					
 					Integer entryId = lastEntryId+inventoryDetail.getEntryId();
 					String designation = inventoryDetail.getDesignation();
 					
