@@ -802,3 +802,11 @@ div.unsaved-changes-dialog div.v-window-outerheader {
 div.unsaved-changes-dialog div.v-window-contents>div {
 	background: #CECECE;
 }
+
+.bms-upload-container .v-upload,
+.bms-upload-container .v-upload div,
+.bms-upload-container .v-csslayout-container div
+{float: left; }
+.bms-upload-container .v-progressindicator-wrapper { width: 200px; margin-left: 20px;}
+.bms-upload-container .v-label { width: inherit !important; margin: 4px 20px 4px 0px}
+.bms-upload-container .v-label em { display: none;}
