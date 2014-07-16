@@ -1006,6 +1006,8 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		//enable now the Save Changes option
 		menuInventorySaveChanges.setEnabled(true);
 		
+		setHasUnsavedChanges(true);
+		
 		if(validReservations.size() == 0){//if there are no valid reservations
 			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), 
 					messageSource.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES) + ".");
