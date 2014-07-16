@@ -1,11 +1,15 @@
 package org.generationcp.breeding.manager.listimport;
 
+import java.util.List;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.constants.AppConstants.CssStyles;
-import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDisplay;
 import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDisplay.StepChangeListener;
+import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
+import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
+import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -44,7 +48,7 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
     
     private GermplasmImportFileComponent importFileComponent;
     private SpecifyGermplasmDetailsComponent germplasmDetailsComponent;
-    private BreedingManagerWizardDisplay wizardDisplay;
+    private GermplasmListImportWizardDisplay wizardDisplay;
     
     private ComponentContainer parent;
     
@@ -92,11 +96,11 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
         toolTitle = new Label(messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
         toolTitle.setStyleName(Bootstrap.Typography.H1.styleName());
         toolTitle.setContentMode(Label.CONTENT_XHTML);
-        toolTitle.setWidth("400px");
+        toolTitle.setWidth("300px");
         titleLayout.addComponent(toolTitle);
         
         Label descLbl = new Label(guideMessage);
-        descLbl.setWidth("300px");
+        descLbl.setWidth("400px");
         
         PopupView popup = new PopupView("?",descLbl);
         popup.setStyleName(CssStyles.POPUP_VIEW);
@@ -154,10 +158,10 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 	private void instantiateWizardDisplay() {
 		wizardStepNames[0] = messageSource.getMessage(Message.CHOOSE_IMPORT_FILE);
 		wizardStepNames[1] = messageSource.getMessage(Message.SPECIFY_GERMPLASM_DETAILS);
-		wizardDisplay = new BreedingManagerWizardDisplay(wizardStepNames);
+		wizardDisplay = new GermplasmListImportWizardDisplay(wizardStepNames);
 	}
 
-	private void showNextWizardStep(int step) {
+	private void showWizardStep(int step) {
 		Tab tab = Util.getTabAlreadyExist(tabSheet, wizardStepNames[step]);
 		if (tab != null){
 			Component tabComponent = tab.getComponent();
@@ -166,21 +170,41 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 				StepChangeListener listener = (StepChangeListener) tabComponent;
 				listener.updatePage();
 			}
+			getWindow().setScrollTop(0);
 		}
 	}
 	
 	public void nextStep(){
 		int step = wizardDisplay.nextStep();
-		showNextWizardStep(step);
-		getWindow().setScrollTop(0);
+		// if from upload to specify Germplasm Details step
+		if (step == 1){
+			initializeSpecifyGermplasmDetailsPage();
+		}
+		showWizardStep(step);
 	}
 	
 	public void backStep(){
 		int step = wizardDisplay.backStep();
-		showNextWizardStep(step);
+		showWizardStep(step);
 	}
 	
 	public void reset(){
         this.parent.replaceComponent(this, new GermplasmImportMain(this.parent, viaToolURL, viaPopup));
     }
+	
+	private void initializeSpecifyGermplasmDetailsPage(){
+		GermplasmListUploader germplasmListUploader = importFileComponent.getGermplasmListUploader();
+        if(germplasmDetailsComponent != null && germplasmListUploader != null
+                && germplasmListUploader.getImportedGermplasmList() != null){
+        	
+            ImportedGermplasmList importedGermplasmList = germplasmListUploader.getImportedGermplasmList();
+            List<ImportedGermplasm> importedGermplasms = importedGermplasmList.getImportedGermplasms();
+            
+            germplasmDetailsComponent.setImportedGermplasms(importedGermplasms);
+            germplasmDetailsComponent.setGermplasmListUploader(germplasmListUploader);
+            
+            germplasmDetailsComponent.initializeFromImportFile(importedGermplasmList);
+
+        }
+	}
 }

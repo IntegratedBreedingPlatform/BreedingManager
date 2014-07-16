@@ -18,8 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Upload;
 
@@ -34,8 +36,10 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
     private GermplasmImportMain source;
 
     public static final String NEXT_BUTTON_ID = "next button";
+    
     private Label selectFileLabel;
     private UploadField uploadComponents;
+    private Button cancelButton;
     private Button nextButton;
     private GermplasmListUploader germplasmListUploader;
     
@@ -75,42 +79,6 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 		} catch (GermplasmImportException e) {
 			MessageNotifier.showError(getWindow(), e.getCaption(), e.getMessage());
 		}
-    	
-//    	if(germplasmListUploader.getFileIsValid()==null){
-//    		source.getApplication().getMainWindow().showNotification("Please upload a valid import file before clicking on the next button", Notification.TYPE_ERROR_MESSAGE);
-//    	} else if(germplasmListUploader.getFileIsValid()==false){
-//    		source.getApplication().getMainWindow().showNotification("Invalid import file, please upload a valid import file before clicking on the next button", Notification.TYPE_ERROR_MESSAGE);
-//    	} else {
-	            //we set it here
-//	            if(getGermplasmDetailsComponent() != null
-//	                    && germplasmListUploader != null
-//	                    && germplasmListUploader.getImportedGermplasmList() != null){
-//	                    ImportedGermplasmList importedGermplasmList = germplasmListUploader.getImportedGermplasmList();
-//	                    List<ImportedGermplasm> importedGermplasms = importedGermplasmList.getImportedGermplasms();
-//	                    
-//	                    //Clear table contents first (possible that it has some rows in it from previous uploads, and then user went back to upload screen)
-//	                    getGermplasmDetailsComponent().getGermplasmDetailsTable().removeAllItems();
-//	                    String source;
-//	                    for(int i = 0 ; i < importedGermplasms.size() ; i++){
-//	                        ImportedGermplasm importedGermplasm  = importedGermplasms.get(i);
-//	                        if(importedGermplasm.getSource()==null){
-//	                        	source = importedGermplasmList.getFilename()+":"+(i+1);
-//	                        }else{
-//	                        	source=importedGermplasm.getSource();
-//	                        }
-//	                        getGermplasmDetailsComponent().getGermplasmDetailsTable().addItem(new Object[]{importedGermplasm.getEntryId(), importedGermplasm.getEntryCode(),importedGermplasm.getGid(), importedGermplasm.getDesig(), importedGermplasm.getCross(), source}, new Integer(i+1));
-//	                    }
-//	                    getGermplasmDetailsComponent().setImportedGermplasms(importedGermplasms);
-//	                    getGermplasmDetailsComponent().setGermplasmListUploader(germplasmListUploader);
-//
-//	                    if(germplasmListUploader.importFileIsAdvanced()){
-//	                    	getGermplasmDetailsComponent().setPedigreeOptionGroupValue(3);
-//	                    	getGermplasmDetailsComponent().setPedigreeOptionGroupEnabled(false);
-//	                    } else {
-//	                    	getGermplasmDetailsComponent().setPedigreeOptionGroupEnabled(true);
-//	                    }
-//	            }
-//    	}
     }
     
     public GermplasmImportMain getSource() {
@@ -135,10 +103,14 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
         uploadComponents.setSelectedFileText(messageSource.getMessage("SELECTED_IMPORT_FILE"));
         uploadComponents.setDeleteCaption(messageSource.getMessage("CLEAR"));
         uploadComponents.setFieldType(UploadField.FieldType.FILE);
-        uploadComponents.getRootLayout().setWidth("100%");
         uploadComponents.setButtonCaption("Browse");
         
+        uploadComponents.getRootLayout().setWidth("100%");
+        uploadComponents.getRootLayout().setStyleName("bms-upload-container");
+        
         germplasmListUploader = new GermplasmListUploader();
+        
+        cancelButton = new Button(messageSource.getMessage(Message.CANCEL));
         
         nextButton = new Button();
         nextButton.setData(NEXT_BUTTON_ID);
@@ -163,15 +135,36 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
         });
 		uploadComponents.setFileFactory(germplasmListUploader);
 		
+		cancelButton.addListener(new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				source.reset();
+			}
+		});
+		
 		nextButton.addListener(new GermplasmImportButtonClickListener(this));
 	}
 
 	@Override
 	public void layoutComponents() {
-		 addComponent(selectFileLabel, "top:40px;left:30px");
+		addComponent(selectFileLabel, "top:20px;left:30px");
 		 
-		 addComponent(uploadComponents, "top:60px;left:30px");
+		addComponent(uploadComponents, "top:50px;left:30px");
 		 
-		 addComponent(nextButton, "top:250px;left:700px");
+		HorizontalLayout buttonLayout = new HorizontalLayout();
+        buttonLayout.setWidth("100%");
+        buttonLayout.setHeight("40px");
+        buttonLayout.setSpacing(true);
+        
+        buttonLayout.addComponent(cancelButton);
+        buttonLayout.addComponent(nextButton);
+        buttonLayout.setComponentAlignment(cancelButton, Alignment.BOTTOM_RIGHT);
+        buttonLayout.setComponentAlignment(nextButton, Alignment.BOTTOM_LEFT);
+        
+        addComponent(buttonLayout, "top:230px");
+	}
+	
+	public GermplasmListUploader getGermplasmListUploader(){
+		return this.germplasmListUploader;
 	}
 }
