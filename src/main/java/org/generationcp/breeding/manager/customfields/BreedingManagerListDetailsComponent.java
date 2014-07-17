@@ -341,19 +341,22 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	
 	private String getOwnerListName(Integer userId) {
 		try{
-	        User user=userDataManager.getUserById(userId);
-	        if(user != null){
-	            int personId=user.getPersonid();
-	            Person p =userDataManager.getPersonById(personId);
-	    
-	            if(p!=null){
-	                return p.getFirstName()+" "+p.getMiddleName() + " "+p.getLastName();
-	            }else{
-	                return user.getName();
-	            }
-	        } else {
-	            return "";
+			if(userId != null){
+				User user=userDataManager.getUserById(userId);
+				if(user != null){
+					int personId=user.getPersonid();
+					Person p =userDataManager.getPersonById(personId);
+					
+					if(p!=null){
+						return p.getFirstName()+" "+p.getMiddleName() + " "+p.getLastName();
+					}else{
+						return user.getName();
+					}
+				} else {
+					return "";
+				}
 	        }
+			return "";
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error with getting list owner name of user with id: " + userId, ex);
 			return "";

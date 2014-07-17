@@ -591,7 +591,7 @@ public class GermplasmListUploader implements FileFactory {
 
 	@Override
 	public File createFile(String fileName, String mimeType) {
-		File f = new File(TEMP_FILE_DIR + fileName);
+		File f = new File(TEMP_FILE_DIR + "/" + fileName);
 		tempFileName = f.getAbsolutePath();
 		originalFilename = fileName;
         return f;
