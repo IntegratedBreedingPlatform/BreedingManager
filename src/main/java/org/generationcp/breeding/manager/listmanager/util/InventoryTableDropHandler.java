@@ -65,15 +65,6 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		listDataAndLotDetails = new ArrayList<ListDataAndLotDetails>();
 	}
 
-	public InventoryTableDropHandler(GermplasmDataManager germplasmDataManager, GermplasmListManager germplasmListManager, InventoryDataManager inventoryDataManager, Table targetTable) {
-		this.germplasmDataManager = germplasmDataManager;
-		this.germplasmListManager = germplasmListManager;
-		this.inventoryDataManager = inventoryDataManager;
-		this.targetTable = targetTable;
-		
-		listDataAndLotDetails = new ArrayList<ListDataAndLotDetails>();
-	}	
-	
 	@Override
 	public void drop(DragAndDropEvent event) {
 		
@@ -167,7 +158,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		//Update counter
 		if(listManagerMain!=null)
 			listManagerMain.getListBuilderComponent().refreshListInventoryItemCount();
-		else
+		else if(inventoryDropTargetContainer!=null)
 			inventoryDropTargetContainer.refreshListInventoryItemCount();
 		
 	}
@@ -309,7 +300,13 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 					}
 				}
 			}
-
+			
+			//Update counter
+			if(listManagerMain!=null)
+				listManagerMain.getListBuilderComponent().refreshListInventoryItemCount();
+			else
+				inventoryDropTargetContainer.refreshListInventoryItemCount();
+			
 		} catch (MiddlewareQueryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

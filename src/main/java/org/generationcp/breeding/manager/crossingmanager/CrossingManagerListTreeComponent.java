@@ -63,13 +63,16 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 					
 					if(crossingTreeActionsListener instanceof SelectParentsComponent){
 						MakeCrossesParentsComponent parentsComponent = ((SelectParentsComponent) crossingTreeActionsListener).getCrossingManagerMakeCrossesComponent().getParentsComponent();
-						InventoryTableDropHandler inventoryTableDropHandler = new InventoryTableDropHandler(germplasmDataManager, germplasmListManager, inventoryDataManager, parentsComponent.getFemaleParentTab().getListInventoryTable().getTable());
+						InventoryTableDropHandler inventoryTableDropHandler = new InventoryTableDropHandler(source.getParentsComponent().getFemaleParentTab(), germplasmDataManager, germplasmListManager, inventoryDataManager, parentsComponent.getFemaleParentTab().getListInventoryTable().getTable());
 						inventoryTableDropHandler.addGermplasmListInventoryData(germplasmListId);
 						
 						if(parentsComponent.getFemaleTable().getItemIds().size()==0){
 							crossingTreeActionsListener.addListToFemaleList(germplasmListId);
+						} else {
+							source.getParentsComponent().getFemaleParentTab().setHasUnsavedChanges(true);
 						}
 						source.getParentsComponent().getParentTabSheet().setSelectedTab(0);
+					
 					}
 					
 					closeTreeWindow(event);
@@ -95,11 +98,13 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 					
 					if(crossingTreeActionsListener instanceof SelectParentsComponent){
 						MakeCrossesParentsComponent parentsComponent = ((SelectParentsComponent) crossingTreeActionsListener).getCrossingManagerMakeCrossesComponent().getParentsComponent();
-						InventoryTableDropHandler inventoryTableDropHandler = new InventoryTableDropHandler(germplasmDataManager, germplasmListManager, inventoryDataManager, parentsComponent.getMaleParentTab().getListInventoryTable().getTable());
+						InventoryTableDropHandler inventoryTableDropHandler = new InventoryTableDropHandler(source.getParentsComponent().getMaleParentTab(), germplasmDataManager, germplasmListManager, inventoryDataManager, parentsComponent.getMaleParentTab().getListInventoryTable().getTable());
 						inventoryTableDropHandler.addGermplasmListInventoryData(germplasmListId);
 						
 						if(parentsComponent.getMaleTable().getItemIds().size()==0){
 							crossingTreeActionsListener.addListToMaleList(germplasmListId);
+						} else {
+							source.getParentsComponent().getMaleParentTab().setHasUnsavedChanges(true);
 						}
 						source.getParentsComponent().getParentTabSheet().setSelectedTab(1);
 					}
