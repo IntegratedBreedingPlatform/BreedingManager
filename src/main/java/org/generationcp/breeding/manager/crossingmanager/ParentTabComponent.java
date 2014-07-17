@@ -509,7 +509,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		List<GermplasmListEntry> listEntries = new ArrayList<GermplasmListEntry>();
 		listEntries.addAll((Collection<GermplasmListEntry>) listDataTable.getItemIds());
 		
-		//TO DO correct the entryID, get from the parent table
+		// TODO correct the entryID, get from the parent table
 		// Create Map <Key: "GID+ENTRYID">, <Value:CheckBox Obj>
 		SaveGermplasmListAction saveListAction = new SaveGermplasmListAction(this, list, listEntries);
 		try {
