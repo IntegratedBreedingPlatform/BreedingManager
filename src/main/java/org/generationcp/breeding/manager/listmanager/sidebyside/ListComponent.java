@@ -749,7 +749,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		headerLayout.addComponent(viewHeaderButton);
 		headerLayout.setComponentAlignment(viewHeaderButton, Alignment.BOTTOM_RIGHT);
 		
-		if(germplasmList.isLocalList() && !germplasmList.isLockedList()){
+		if(germplasmList.isLocalList()){
 			headerLayout.addComponent(editHeaderButton);
 			headerLayout.setComponentAlignment(editHeaderButton, Alignment.BOTTOM_LEFT);
 		}
@@ -760,9 +760,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	
 			headerLayout.addComponent(unlockButton);
 			headerLayout.setComponentAlignment(unlockButton, Alignment.BOTTOM_LEFT);
-	
-			setLockedState(germplasmList.isLockedList());
 		}
+		
+		setLockedState(germplasmList.isLockedList());
 
         headerLayout.setExpandRatio(headingLayout,1.0f);
 		
@@ -1233,6 +1233,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
     private void setLockedState(boolean locked) {
         lockButton.setVisible(!locked);
         unlockButton.setVisible(locked);
+        
+        if (germplasmList.isLocalList()) {
+            editHeaderButton.setVisible(!locked);
+        }
         
         if (fillWith != null) {
             fillWith.setContextMenuEnabled(!locked);
