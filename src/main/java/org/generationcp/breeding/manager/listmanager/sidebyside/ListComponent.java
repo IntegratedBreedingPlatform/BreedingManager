@@ -822,7 +822,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
                     		|| selectedColumn.equals(ListDataTablePropertyID.DESIGNATION.getName())
                     		|| selectedColumn.equals(ListDataTablePropertyID.SEED_RES.getName())
                     		|| selectedColumn.equals(ListDataTablePropertyID.AVAIL_INV.getName())){
-                            tableContextMenu_DeleteEntries.setVisible(true);
+                            tableContextMenu_DeleteEntries.setVisible(!germplasmList.isLockedList());
                             tableContextMenu_EditCell.setVisible(false);
                             if(source!=null)
                             	tableContextMenu_CopyToNewList.setVisible(!source.listBuilderIsLocked());
