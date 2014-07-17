@@ -305,6 +305,7 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
     public void cancelButtonClickAction(){
     	if(source instanceof SpecifyGermplasmDetailsComponent){
 	    	source.closeAllSelectGermplasmWindows();
+	    	source.getWindow().removeWindow(source.getSaveListAsDialog());
 //	    	source.getSource().enableAllTabs();
 //	    	source.getSource().enableTab(2);
 //	    	source.getSource().alsoEnableTab(1);

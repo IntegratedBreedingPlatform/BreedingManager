@@ -94,6 +94,8 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     private List<GermplasmName> germplasmNameObjects;
 
 	private GermplasmList germplasmList;
+	
+	private SaveListAsDialog saveListAsDialog;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -169,11 +171,14 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         
     public void nextButtonClickAction(){
         if (validateMethod() && validateLocation() && validatePedigreeOption()) {
+        	
             	germplasmNameObjects = new ArrayList<GermplasmName>();
             	
                 //germplasmList = new ArrayList<Germplasm>(); 
                 //nameList = new ArrayList<Name>();
                 doNotCreateGermplasmsWithId = new ArrayList<Integer>();
+                
+                popupSaveAsDialog();
                 
                 if(pedigreeOptionComboBox.getValue().toString().equalsIgnoreCase("1") && getImportedGermplasms() != null){
                     //meaning 1st pedigree
@@ -191,6 +196,8 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                         Integer dateIntValue = Integer.parseInt(sDate.replace("-", ""));
                         
                         Map<String, Germplasm> createdGermplasms = new HashMap<String, Germplasm>();
+
+                        
                         
                         for(int i = 0 ; i < getImportedGermplasms().size(); i++){
                             ImportedGermplasm importedGermplasm  = getImportedGermplasms().get(i);
@@ -232,7 +239,6 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                             	germplasmNameObjects.add(new GermplasmName(createdGermplasms.get(name.getNval()),name));
                             }
                             
-                            
                         }
                         //logFirstPedigreeUploadedToWorkbenchProjectActivity();
     
@@ -255,7 +261,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                         Integer dateIntValue = Integer.parseInt(sDate.replace("-", ""));
                         
                         Map<String, Germplasm> createdGermplasms = new HashMap<String, Germplasm>();
-                        
+
                         for(int i = 0 ; i < getImportedGermplasms().size(); i++){
                             
                             ImportedGermplasm importedGermplasm  = getImportedGermplasms().get(i);
@@ -476,9 +482,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                     }
                     
                 }
-    
-                popupSaveAsDialog();
-                
+
 //               if(nextScreen instanceof SaveGermplasmListComponent){
 //                   //((SaveGermplasmListComponent) nextScreen).setGermplasmList(germplasmList);
 //                   ((SaveGermplasmListComponent) nextScreen).setDoNotCreateGermplasmsWithId(doNotCreateGermplasmsWithId);
@@ -534,8 +538,8 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
 	        }
 	    }
 	     
-	    SaveListAsDialog dialog = new SaveListAsDialog(this, germplasmList);
-	    this.getWindow().addWindow(dialog);
+	    saveListAsDialog = new SaveListAsDialog(this, germplasmList);
+	    this.getWindow().addWindow(saveListAsDialog);
          
     }
     
@@ -762,16 +766,16 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
 
 	@Override
 	public void addListeners() {
-		nextButton.addListener(new ClickListener(){
-
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				nextButtonClickAction();
-			}
-			
-		});
+//		nextButton.addListener(new ClickListener(){
+//
+//			private static final long serialVersionUID = 1L;
+//
+//			@Override
+//			public void buttonClick(ClickEvent event) {
+//				nextButtonClickAction();
+//			}
+//			
+//		});
 	}
 
 	@Override
@@ -846,6 +850,8 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
 					activity.setUser(user);
 					this.workbenchDataManager.addProjectActivity(activity);
 
+					this.getWindow().removeWindow(saveListAsDialog);
+					
 					MessageNotifier.showMessage(this.source.getWindow(), messageSource.getMessage(Message.SUCCESS), messageSource.getMessage(Message.GERMPLASM_LIST_SAVED_SUCCESSFULLY), 3000);
 					
 				} else{
@@ -874,4 +880,8 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
 		return germplasmList;
 	}
     
+	public SaveListAsDialog getSaveListAsDialog(){
+		return saveListAsDialog;
+	}
+	
 }
