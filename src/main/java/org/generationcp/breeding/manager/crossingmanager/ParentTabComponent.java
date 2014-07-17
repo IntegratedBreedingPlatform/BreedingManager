@@ -436,7 +436,10 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		
 		for(ListDataAndLotDetails listDataAndLotDetail : listDataAndLotDetails){
 			
+			System.out.println("listDataAntLotDetail: "+listDataAndLotDetail);
+			
 			if(!alreadyAddedEntryIds.contains(listDataAndLotDetail.getEntryId())){
+				System.out.println("does not contain");
 				//dropHandler.addGermplasmFromList(listDataAndLotDetail.getListId(), listDataAndLotDetail.getSourceLrecId());
 				
 				try {
@@ -453,18 +456,20 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
         				
     					Item newItem = listDataTable.addItem(entryObject);
 
-						CheckBox tag = new CheckBox();
-        				tag.addListener(new ParentsTableCheckboxListener(listDataTable, entryObject, getSelectAllCheckBox()));
-    		            tag.setImmediate(true);
-			            
-    		            newItem.getItemProperty(TAG_COLUMN_ID).setValue(tag);
-        				
-						newItem.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(entryId);
-						
-						Button desigButton = new Button(germplasmListData.getDesignation(), new GidLinkClickListener(germplasmListData.getGid().toString(),true));
-	                    desigButton.setStyleName(BaseTheme.BUTTON_LINK);
-	                    desigButton.setDescription("Click to view Germplasm information");
-	                    newItem.getItemProperty(DESIGNATION_ID).setValue(desigButton);
+    					if(newItem!=null){
+							CheckBox tag = new CheckBox();
+	        				tag.addListener(new ParentsTableCheckboxListener(listDataTable, entryObject, getSelectAllCheckBox()));
+	    		            tag.setImmediate(true);
+				            
+	    		            newItem.getItemProperty(TAG_COLUMN_ID).setValue(tag);
+	        				
+							newItem.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(entryId);
+							
+							Button desigButton = new Button(germplasmListData.getDesignation(), new GidLinkClickListener(germplasmListData.getGid().toString(),true));
+		                    desigButton.setStyleName(BaseTheme.BUTTON_LINK);
+		                    desigButton.setDescription("Click to view Germplasm information");
+		                    newItem.getItemProperty(DESIGNATION_ID).setValue(desigButton);
+    					}
 					}
 					
 				} catch (MiddlewareQueryException e) {
