@@ -226,6 +226,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	
 	private Integer localUserId = null;
 
+    private FillWith fillWith;
+
 	
 	public ListComponent(ListManagerMain source, ListTabComponent parentListDetailsComponent, GermplasmList germplasmList) {
 		super();
@@ -548,7 +550,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		});
 		
 		if(germplasmList.isLocalList() && !germplasmList.isLockedList()){
-	        new FillWith(parentListDetailsComponent, parentListDetailsComponent, messageSource, listDataTable, ListDataTablePropertyID.GID.getName());
+	        fillWith = new FillWith(parentListDetailsComponent, parentListDetailsComponent, messageSource, listDataTable, ListDataTablePropertyID.GID.getName());
 	    }
 		
 		makeTableEditable();
@@ -759,7 +761,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			headerLayout.addComponent(unlockButton);
 			headerLayout.setComponentAlignment(unlockButton, Alignment.BOTTOM_LEFT);
 	
-			showHideOptionsForLocked();
+			setLockedState(germplasmList.isLockedList());
 		}
 
         headerLayout.setExpandRatio(headingLayout,1.0f);
@@ -1228,13 +1230,13 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
         }
     }
     
-    private void recreateTab() {
-        try {
-            parentListDetailsComponent.getListSelectionLayout().removeTab(germplasmList.getId());
-			parentListDetailsComponent.getListSelectionLayout().createListDetailsTab(germplasmList.getId());
-		} catch (MiddlewareQueryException e) {
-			e.printStackTrace();
-		}
+    private void setLockedState(boolean locked) {
+        lockButton.setVisible(!locked);
+        unlockButton.setVisible(locked);
+        
+        if (fillWith != null) {
+            fillWith.setContextMenuEnabled(!locked);
+        }
     }
     
     private void exportListForGenotypingOrderAction() throws InternationalizableException {
@@ -1701,20 +1703,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	
     public void lockGermplasmList() {
     	if(source.lockGermplasmList(germplasmList)){
-	        showHideOptionsForLocked(); // hide enabled elements for unlocked lists
-	        recreateTab();
+	        setLockedState(germplasmList.isLockedList());
     	}
 	}
-    
-    private void showHideOptionsForLocked() {
-        boolean locked = germplasmList.isLockedList();
-        lockButton.setVisible(!locked);
-        unlockButton.setVisible(locked);
-        
-        /*menuDeleteEntries.setVisible(!locked);
-        menuSaveChanges.setVisible(!locked);
-        menuAddEntry.setVisible(!locked);*/
-    }
     
     public void unlockGermplasmList() {
         if(germplasmList.isLockedList()){
@@ -1722,7 +1713,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		    try {
 		        germplasmListManager.updateGermplasmList(germplasmList);
 		
-		        recreateTab();
+		        setLockedState(germplasmList.isLockedList());
 		
 		        User user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
 		        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()),
@@ -1732,9 +1723,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		                user,
 		                new Date());
 		        workbenchDataManager.addProjectActivity(projAct);
-		        
-	                showHideOptionsForLocked(); // show disabled elements for locked lists
-				
 		    } catch (MiddlewareQueryException e) {
 		        LOG.error("Error with unlocking list.", e);
 		        MessageNotifier.showError(getWindow(), "Database Error!", "Error with unlocking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
