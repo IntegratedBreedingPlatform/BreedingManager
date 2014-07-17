@@ -69,6 +69,7 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 						if(parentsComponent.getMaleTable().getItemIds().size()==0){
 							crossingTreeActionsListener.addListToFemaleList(germplasmListId);
 						}
+						source.getParentsComponent().getParentTabSheet().setSelectedTab(0);
 					}
 					
 					closeTreeWindow(event);
@@ -100,6 +101,7 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 						if(parentsComponent.getMaleTable().getItemIds().size()==0){
 							crossingTreeActionsListener.addListToMaleList(germplasmListId);
 						}
+						source.getParentsComponent().getParentTabSheet().setSelectedTab(1);
 					}
 					
 					closeTreeWindow(event);
