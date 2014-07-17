@@ -66,7 +66,7 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 						InventoryTableDropHandler inventoryTableDropHandler = new InventoryTableDropHandler(germplasmDataManager, germplasmListManager, inventoryDataManager, parentsComponent.getFemaleParentTab().getListInventoryTable().getTable());
 						inventoryTableDropHandler.addGermplasmListInventoryData(germplasmListId);
 						
-						if(parentsComponent.getMaleTable().getItemIds().size()==0){
+						if(parentsComponent.getFemaleTable().getItemIds().size()==0){
 							crossingTreeActionsListener.addListToFemaleList(germplasmListId);
 						}
 						source.getParentsComponent().getParentTabSheet().setSelectedTab(0);
