@@ -482,7 +482,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     
     private boolean validatePedigreeOption() {
         return BreedingManagerUtil.validateRequiredField(getWindow(), pedigreeOptionComboBox,
-                messageSource, pedigreeOptionComboBox.getCaption());
+                messageSource, messageSource.getMessage(Message.PEDIGREE_OPTIONS_LABEL));
     }
     
     private boolean validateLocation() {
