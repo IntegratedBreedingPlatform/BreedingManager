@@ -85,28 +85,38 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
         return source;
     }
 
-	@SuppressWarnings("serial")
+    public void initializeUploadField(){
+    	uploadComponents = new UploadField(){
+			private static final long serialVersionUID = 1L;
+			@Override
+            public void uploadFinished(Upload.FinishedEvent event) {
+                super.uploadFinished(event);
+                nextButton.setEnabled(true);
+            }
+       };
+       uploadComponents.discard();
+       
+       uploadComponents.setButtonCaption(messageSource.getMessage(Message.UPLOAD));
+       uploadComponents.setNoFileSelectedText(messageSource.getMessage("NO_FILE_SELECTED"));
+       uploadComponents.setSelectedFileText(messageSource.getMessage("SELECTED_IMPORT_FILE"));
+       uploadComponents.setDeleteCaption(messageSource.getMessage("CLEAR"));
+       uploadComponents.setFieldType(UploadField.FieldType.FILE);
+       uploadComponents.setButtonCaption("Browse");
+       
+       uploadComponents.getRootLayout().setWidth("100%");
+       uploadComponents.getRootLayout().setStyleName("bms-upload-container");
+       addListenersForUploadField();
+    }
+    
+    public UploadField getUploadComponent(){
+    	return uploadComponents;
+    }
+    
 	@Override
 	public void instantiateComponents() {
 		selectFileLabel = new Label(messageSource.getMessage(Message.SELECT_GERMPLASM_LIST_FILE));
       
-        uploadComponents = new UploadField(){
-        	 @Override
-             public void uploadFinished(Upload.FinishedEvent event) {
-                 super.uploadFinished(event);
-                 nextButton.setEnabled(true);
-             }
-        };
-        
-        uploadComponents.setButtonCaption(messageSource.getMessage(Message.UPLOAD));
-        uploadComponents.setNoFileSelectedText(messageSource.getMessage("NO_FILE_SELECTED"));
-        uploadComponents.setSelectedFileText(messageSource.getMessage("SELECTED_IMPORT_FILE"));
-        uploadComponents.setDeleteCaption(messageSource.getMessage("CLEAR"));
-        uploadComponents.setFieldType(UploadField.FieldType.FILE);
-        uploadComponents.setButtonCaption("Browse");
-        
-        uploadComponents.getRootLayout().setWidth("100%");
-        uploadComponents.getRootLayout().setStyleName("bms-upload-container");
+		initializeUploadField();
         
         germplasmListUploader = new GermplasmListUploader();
         
@@ -124,9 +134,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 		
 	}
 
-	@SuppressWarnings("serial")
-	@Override
-	public void addListeners() {
+	public void addListenersForUploadField(){
 		uploadComponents.setDeleteButtonListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
@@ -134,6 +142,13 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
             }
         });
 		uploadComponents.setFileFactory(germplasmListUploader);
+	}
+	
+	@SuppressWarnings("serial")
+	@Override
+	public void addListeners() {
+		
+		addListenersForUploadField();
 		
 		cancelButton.addListener(new Button.ClickListener() {
 			@Override

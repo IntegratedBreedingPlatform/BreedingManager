@@ -16,8 +16,6 @@ import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
 import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
-import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
@@ -34,11 +32,8 @@ import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
-import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
-import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.Project;
-import org.generationcp.middleware.pojos.workbench.ProjectActivity;
 import org.generationcp.middleware.pojos.workbench.WorkbenchRuntimeData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,8 +46,6 @@ import com.vaadin.data.Property.ReadOnlyException;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -110,7 +103,6 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
     private WorkbenchDataManager workbenchDataManager;
     
     private Boolean viaToolURL;
-
     
     public SpecifyGermplasmDetailsComponent(GermplasmImportMain source, Boolean viaToolURL){
         this.source = source;
@@ -179,7 +171,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
                 doNotCreateGermplasmsWithId = new ArrayList<Integer>();
                 
                 popupSaveAsDialog();
-                
+
                 if(pedigreeOptionComboBox.getValue().toString().equalsIgnoreCase("1") && getImportedGermplasms() != null){
                     //meaning 1st pedigree
                     //we should create the germplasm and named pojos here
@@ -832,37 +824,17 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
 	@Override
 	public void saveList(GermplasmList list) {
 			
+		SaveGermplasmListAction saveGermplasmListAction = new SaveGermplasmListAction();
 		
-			try{
-				Integer listId = germplasmListManager.addGermplasmList(list);
-				
-				if(listId != null){
-					GermplasmList listSaved = this.germplasmListManager.getGermplasmListById(listId);
-					
-					ProjectActivity activity = new ProjectActivity();
-					activity.setCreatedAt(new Date());
-					activity.setName("List Manager Save List");
-					activity.setDescription("Successfully saved list and list entries for: " + listSaved.getId() + " - " + listSaved.getName());
-					WorkbenchRuntimeData runtimeData = this.workbenchDataManager.getWorkbenchRuntimeData();
-					Project project = this.workbenchDataManager.getLastOpenedProject(runtimeData.getUserId());
-					User user = this.workbenchDataManager.getUserById(runtimeData.getUserId());
-					activity.setProject(project);
-					activity.setUser(user);
-					this.workbenchDataManager.addProjectActivity(activity);
-
-					this.getWindow().removeWindow(saveListAsDialog);
-					
-					MessageNotifier.showMessage(this.source.getWindow(), messageSource.getMessage(Message.SUCCESS), messageSource.getMessage(Message.GERMPLASM_LIST_SAVED_SUCCESSFULLY), 3000);
-					
-				} else{
-				    MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
-							, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
-					return;
-				}
-			} catch(MiddlewareQueryException ex){
-				LOG.error("Error in saving germplasm list: " + list.getName(), ex);
-			    MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
-			}
+		try {
+			saveGermplasmListAction.saveRecords(list, germplasmNameObjects, germplasmListUploader.getOriginalFilename(), doNotCreateGermplasmsWithId, importedGermplasms);
+			MessageNotifier.showMessage(this.source.getWindow(), messageSource.getMessage(Message.SUCCESS), messageSource.getMessage(Message.GERMPLASM_LIST_SAVED_SUCCESSFULLY), 3000);
+			source.backStep();
+			source.reset();
+		} catch (MiddlewareQueryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 
