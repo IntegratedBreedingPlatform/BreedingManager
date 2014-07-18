@@ -45,6 +45,7 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
     		+ "Sample import file templates are available in the Examples folder in the documentation provided with the BMS.";
     
     private final String[] wizardStepNames = new String[NUMBER_OF_STEPS];
+    private final String[] tabHeights = new String[NUMBER_OF_STEPS];
     
     private GermplasmImportFileComponent importFileComponent;
     private SpecifyGermplasmDetailsComponent germplasmDetailsComponent;
@@ -125,7 +126,7 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 		tabSheet = new TabSheet();
 		tabSheet.hideTabs(true); //tab names are not actually shown
 		
-		tabSheet.setHeight("1250px");
+		tabSheet.setHeight(tabHeights[0]);
 		tabSheet.setWidth("100%");
 		
 		tabSheet.addStyleName(AppConstants.CssStyles.TABSHEET_WHITE);
@@ -158,6 +159,10 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 	private void instantiateWizardDisplay() {
 		wizardStepNames[0] = messageSource.getMessage(Message.CHOOSE_IMPORT_FILE);
 		wizardStepNames[1] = messageSource.getMessage(Message.SPECIFY_GERMPLASM_DETAILS);
+		
+		tabHeights[0] = "300px";
+		tabHeights[1] = "750px";
+		
 		wizardDisplay = new GermplasmListImportWizardDisplay(wizardStepNames);
 	}
 
@@ -170,6 +175,7 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 				StepChangeListener listener = (StepChangeListener) tabComponent;
 				listener.updatePage();
 			}
+			tabSheet.setHeight(tabHeights[step]);
 			getWindow().setScrollTop(0);
 		}
 	}

@@ -43,7 +43,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Property.ConversionException;
 import com.vaadin.data.Property.ReadOnlyException;
-import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -51,10 +50,11 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements InitializingBean, 
+public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements InitializingBean, 
 		InternationalizableComponent, BreedingManagerLayout, SaveListAsDialogSource {
 
     private static final long serialVersionUID = 2762965368037453497L;
@@ -701,7 +701,7 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
 
 	@Override
 	public void instantiateComponents() {
-		germplasmFieldsComponent = new GermplasmFieldsComponent();
+		germplasmFieldsComponent = new GermplasmFieldsComponent(200);
 		
         reviewImportDetailsLabel = new Label(messageSource.getMessage(Message.GERMPLASM_DETAILS_LABEL).toUpperCase());
         reviewImportDetailsLabel.addStyleName(Bootstrap.Typography.H4.styleName());
@@ -724,11 +724,12 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         
         pedigreeOptionsLabel = new Label(messageSource.getMessage(Message.PEDIGREE_OPTIONS_LABEL) + ":");
         pedigreeOptionsLabel.addStyleName(AppConstants.CssStyles.BOLD);
+        pedigreeOptionsLabel.setWidth("250px");
         
         pedigreeOptionComboBox = new ComboBox();
         pedigreeOptionComboBox.setRequired(true);
         pedigreeOptionComboBox.setWidth("450px");
-        pedigreeOptionComboBox.setNullSelectionAllowed(true);
+        pedigreeOptionComboBox.setInputPrompt("Please Choose");
         
         
         GermplasmImportButtonClickListener clickListener = new GermplasmImportButtonClickListener(this);
@@ -772,20 +773,30 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
 
 	@Override
 	public void layoutComponents() {
-		setHeight("620px");
 		setWidth("800px");
         
-		addComponent(germplasmFieldsComponent, "top:0px;left:0px");
+		// Review Import Details Layout
+		VerticalLayout importDetailsLayout = new VerticalLayout();
+		importDetailsLayout.setSpacing(true);
+		importDetailsLayout.addComponent(reviewImportDetailsLabel);
+		importDetailsLayout.addComponent(totalEntriesLabel);
+		importDetailsLayout.addComponent(germplasmDetailsTable);
 		
-        addComponent(reviewImportDetailsLabel, "top:220px;left:0px");
-        addComponent(totalEntriesLabel, "top:250px;left:0px");
-        addComponent(germplasmDetailsTable, "top:275px;left:0px");
-       
-        addComponent(selectPedigreeOptionsLabel, "top:500px;left:0px");
-        addComponent(pedigreeOptionsLabel, "top:530px;left:0px");
-        addComponent(pedigreeOptionComboBox, "top:530px;left:250px");
-        
-        HorizontalLayout buttonLayout = new HorizontalLayout();
+		
+		// Pedigree Options Layout
+		VerticalLayout pedigreeOptionsLayout = new VerticalLayout();
+		pedigreeOptionsLayout.setSpacing(true);
+		
+		HorizontalLayout pedigreeControlsLayout = new HorizontalLayout();
+		pedigreeControlsLayout.addComponent(pedigreeOptionsLabel);
+		pedigreeControlsLayout.addComponent(pedigreeOptionComboBox);
+
+		pedigreeOptionsLayout.addComponent(selectPedigreeOptionsLabel);
+		pedigreeOptionsLayout.addComponent(pedigreeControlsLayout);
+		
+		
+		// Buttons Layout
+		HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setWidth("100%");
         buttonLayout.setHeight("40px");
         buttonLayout.setSpacing(true);
@@ -794,8 +805,18 @@ public class SpecifyGermplasmDetailsComponent extends AbsoluteLayout implements 
         buttonLayout.addComponent(nextButton);
         buttonLayout.setComponentAlignment(backButton, Alignment.BOTTOM_RIGHT);
         buttonLayout.setComponentAlignment(nextButton, Alignment.BOTTOM_LEFT);
+		
+        VerticalLayout spacerLayout = new VerticalLayout();
+        spacerLayout.setHeight("30px");
+        VerticalLayout spacerLayout2 = new VerticalLayout();
+        spacerLayout2.setHeight("30px");
         
-        addComponent(buttonLayout, "top:580px");
+		addComponent(germplasmFieldsComponent);
+		addComponent(importDetailsLayout);
+		addComponent(spacerLayout);
+		addComponent(pedigreeOptionsLayout);
+		addComponent(spacerLayout2);
+        addComponent(buttonLayout);
 	}
 	
 	public void initializeFromImportFile(ImportedGermplasmList importedGermplasmList){
