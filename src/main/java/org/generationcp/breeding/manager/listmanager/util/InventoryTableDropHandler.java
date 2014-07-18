@@ -19,7 +19,6 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
-import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 
 import com.vaadin.data.Item;
@@ -242,6 +241,10 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 	public void addGermplasmListInventoryData(Integer listId){
 		
 		List<GermplasmListData> inventoryDetails;
+		
+		if(inventoryDropTargetContainer!=null)
+			inventoryDropTargetContainer.setHasUnsavedChanges(true);
+		
 		try {
 			inventoryDetails = inventoryDataManager.getLotDetailsForList(listId,0,Integer.MAX_VALUE);
 		
@@ -251,6 +254,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 				for(GermplasmListData inventoryDetail : inventoryDetails){
 					
 					listDataAndLotDetails.add(new ListDataAndLotDetails(listId, inventoryDetail.getId(), inventoryDetail.getEntryId()));
+					//listDataAndLotDetails.add(new ListDataAndLotDetails(listId, inventoryDetail.getId(), listDataAndLotDetails.size()+1));
 					
 					Integer entryId = lastEntryId+inventoryDetail.getEntryId();
 					String designation = inventoryDetail.getDesignation();
@@ -306,7 +310,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 				listManagerMain.getListBuilderComponent().refreshListInventoryItemCount();
 			else
 				inventoryDropTargetContainer.refreshListInventoryItemCount();
-			
+
 		} catch (MiddlewareQueryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

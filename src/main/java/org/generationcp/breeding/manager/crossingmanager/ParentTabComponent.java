@@ -439,17 +439,19 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			System.out.println("listDataAntLotDetail: "+listDataAndLotDetail);
 			
 			if(!alreadyAddedEntryIds.contains(listDataAndLotDetail.getEntryId())){
-				System.out.println("does not contain");
 				//dropHandler.addGermplasmFromList(listDataAndLotDetail.getListId(), listDataAndLotDetail.getSourceLrecId());
 				
 				try {
 
 					GermplasmListData germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndLrecId(listDataAndLotDetail.getListId(), listDataAndLotDetail.getSourceLrecId());
 					
+					System.out.println("List ID: "+listDataAndLotDetail.getListId());
+					System.out.println("LrecId: "+listDataAndLotDetail.getSourceLrecId());
+					
 					if(germplasmListData!=null){
 						
 						Integer entryId = getListDataTableNextEntryId();
-        				GermplasmListEntry entryObject = new GermplasmListEntry(germplasmListData.getId(),germplasmListData.getGid(), entryId, germplasmListData.getDesignation(), germplasmListData.getSeedSource());
+        				GermplasmListEntry entryObject = new GermplasmListEntry(germplasmListData.getId(),germplasmListData.getGid(), (listDataTable.size()+1), germplasmListData.getDesignation(), germplasmListData.getSeedSource());
         				
 //        				//if the item is already existing in the target table, remove the existing item then add a new entry
 //    		            listDataTable.removeItem(entryObject);
@@ -469,7 +471,11 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		                    desigButton.setStyleName(BaseTheme.BUTTON_LINK);
 		                    desigButton.setDescription("Click to view Germplasm information");
 		                    newItem.getItemProperty(DESIGNATION_ID).setValue(desigButton);
+    					} else {
+    						System.out.println("Unable to add item: "+entryObject.toString());
     					}
+					} else {
+						System.out.println("germplasmListData on parentTabComponent is null");
 					}
 					
 				} catch (MiddlewareQueryException e) {
@@ -1264,6 +1270,10 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	
 	public CrossingManagerInventoryTable getListInventoryTable(){
 		return listInventoryTable;
+	}
+	
+	public InventoryTableDropHandler getInventoryTableDropHandler(){
+		return inventoryTableDropHandler;
 	}
 	
 }
