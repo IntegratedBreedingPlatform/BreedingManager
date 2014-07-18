@@ -436,17 +436,12 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		
 		for(ListDataAndLotDetails listDataAndLotDetail : listDataAndLotDetails){
 			
-			System.out.println("listDataAntLotDetail: "+listDataAndLotDetail);
-			
 			if(!alreadyAddedEntryIds.contains(listDataAndLotDetail.getEntryId())){
 				//dropHandler.addGermplasmFromList(listDataAndLotDetail.getListId(), listDataAndLotDetail.getSourceLrecId());
 				
 				try {
 
 					GermplasmListData germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndLrecId(listDataAndLotDetail.getListId(), listDataAndLotDetail.getSourceLrecId());
-					
-					System.out.println("List ID: "+listDataAndLotDetail.getListId());
-					System.out.println("LrecId: "+listDataAndLotDetail.getSourceLrecId());
 					
 					if(germplasmListData!=null){
 						
@@ -471,11 +466,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		                    desigButton.setStyleName(BaseTheme.BUTTON_LINK);
 		                    desigButton.setDescription("Click to view Germplasm information");
 		                    newItem.getItemProperty(DESIGNATION_ID).setValue(desigButton);
-    					} else {
-    						System.out.println("Unable to add item: "+entryObject.toString());
     					}
-					} else {
-						System.out.println("germplasmListData on parentTabComponent is null");
 					}
 					
 				} catch (MiddlewareQueryException e) {

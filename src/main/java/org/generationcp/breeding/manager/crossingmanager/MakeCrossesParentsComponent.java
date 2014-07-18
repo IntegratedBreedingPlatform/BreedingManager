@@ -521,7 +521,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         }
         
         assignEntryNumber(maleParents);
-		maleParentTab.updateNoOfEntries(maleParents.size());
 		parentTabSheet.setSelectedTab(1);
 	}
 	
@@ -624,7 +623,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         }
         
         assignEntryNumber(femaleParents);
-        femaleParentTab.updateNoOfEntries(femaleParents.size());
         parentTabSheet.setSelectedTab(0);
 	}
 
