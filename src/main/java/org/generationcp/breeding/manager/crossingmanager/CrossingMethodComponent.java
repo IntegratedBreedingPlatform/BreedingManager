@@ -5,12 +5,14 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -120,21 +122,28 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 	}
 	
     public void makeCrossButtonAction(){
-    	parentsComponent = makeCrossesMain.getParentsComponent();
-    	
-    	Table femaleParents = parentsComponent.getFemaleTable();
-    	Table maleParents = parentsComponent.getMaleTable();
-    	
-    	List<GermplasmListEntry> femaleList = parentsComponent.getCorrectSortedValue(femaleParents);
-    	List<GermplasmListEntry> maleList = parentsComponent.getCorrectSortedValue(maleParents);
-      
-    	CrossType type = (CrossType) crossingMethodComboBox.getValue();
-    	
-    	parentsComponent.updateFemaleListNameForCrosses();
-    	parentsComponent.updateMaleListNameForCrosses();
-    	
-    	makeCrossesMain.makeCrossButtonAction(femaleList, maleList, 
-    			parentsComponent.getFemaleListNameForCrosses(), parentsComponent.getMaleListNameForCrosses(), type, chkBoxMakeReciprocalCrosses.booleanValue());
+    	// TODO temporary fix, will have a new fix approach soon
+    	if(makeCrossesMain.getModeView().equals(ModeView.INVENTORY_VIEW)){
+    		String message = "Please switch to list view first before making crosses.";
+        	MessageNotifier.showError(getWindow(),"Warning!", message);
+    	}
+    	else{
+    		parentsComponent = makeCrossesMain.getParentsComponent();
+        	
+        	Table femaleParents = parentsComponent.getFemaleTable();
+        	Table maleParents = parentsComponent.getMaleTable();
+        	
+        	List<GermplasmListEntry> femaleList = parentsComponent.getCorrectSortedValue(femaleParents);
+        	List<GermplasmListEntry> maleList = parentsComponent.getCorrectSortedValue(maleParents);
+          
+        	CrossType type = (CrossType) crossingMethodComboBox.getValue();
+        	
+        	parentsComponent.updateFemaleListNameForCrosses();
+        	parentsComponent.updateMaleListNameForCrosses();
+        	
+        	makeCrossesMain.makeCrossButtonAction(femaleList, maleList, 
+        			parentsComponent.getFemaleListNameForCrosses(), parentsComponent.getMaleListNameForCrosses(), type, chkBoxMakeReciprocalCrosses.booleanValue());
+    	}
     }
 
 

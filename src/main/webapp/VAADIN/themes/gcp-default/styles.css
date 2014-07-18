@@ -437,7 +437,7 @@
 
 /* TabStyled Header */
 .v-button-tabStyleButton {
-	border-color: #f6f6f6;
+	border-color: #CECECE;
 }
 
 .v-button-tabStyleButton, .tabStyleButton .v-button-wrap,
@@ -446,8 +446,8 @@
 .tabHeaderStyle div div .v-button:active,
 .tabHeaderStyle div div .v-button:active .v-button-wrap
 {
-	border-color: #f6f6f6;
-	background: #f6f6f6;
+	border-color: #CECECE;
+	background: #CECECE;
 }
 
 .v-button-tabStyleButton,

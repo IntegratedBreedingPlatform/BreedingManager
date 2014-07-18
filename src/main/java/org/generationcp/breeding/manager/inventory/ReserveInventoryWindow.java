@@ -141,8 +141,7 @@ public class ReserveInventoryWindow extends Window implements InitializingBean,
 			
 		} catch (InvalidValueException e) {
 			MessageNotifier.showError(getWindow(), 
-					this.messageSource.getMessage(Message.INVALID_INPUT), 
-					e.getMessage(), Notification.POSITION_TOP_RIGHT);
+					this.messageSource.getMessage(Message.INVALID_INPUT),e.getMessage());
 			return false;
 		}
 	}
@@ -159,22 +158,22 @@ public class ReserveInventoryWindow extends Window implements InitializingBean,
 		panelContentLayout.setSpacing(true);
 		
 		if(isSingleScaled){
-			setHeight("255px");
-			setWidth("430px");
+			setHeight("225px");
+			setWidth("550px");
 			
-			contentPanel.setWidth("383px");
-			contentPanel.setHeight("120px");
+			contentPanel.setWidth("510px");
+			contentPanel.setHeight("90px");
 			
 			panelContentLayout.addComponent(singleScaleDescriptionLabel);
 			panelContentLayout.addComponent(scaleRows.get(0));
 			
 		}
 		else{
-			setHeight("325px");
-			setWidth("430px");
+			setHeight("310px");
+			setWidth("550px");
 			
-			contentPanel.setWidth("383px");
-			contentPanel.setHeight("190px");
+			contentPanel.setWidth("510px");
+			contentPanel.setHeight("175px");
 			
 			panelContentLayout.addComponent(multiScaleDescriptionLabel);
 			
@@ -216,11 +215,11 @@ public class ReserveInventoryWindow extends Window implements InitializingBean,
 		
 	}
 
-	protected Map<Double, List<ListEntryLotDetails>> getReservations() {
-		Map<Double, List<ListEntryLotDetails>> reservations = new HashMap<Double,List<ListEntryLotDetails>>();
+	protected Map<ReservationRowKey, List<ListEntryLotDetails>> getReservations() {
+		Map<ReservationRowKey, List<ListEntryLotDetails>> reservations = new HashMap<ReservationRowKey,List<ListEntryLotDetails>>();
 		
 		for(ReserveInventoryRowComponent row : scaleRows){
-			reservations.put(row.getReservationAmount(), scaleGrouping.get(row.getScale()));
+			reservations.put(new ReservationRowKey(row.getScale(), row.getReservationAmount()), scaleGrouping.get(row.getScale()));
 		}
 		
 		return reservations;

@@ -236,9 +236,27 @@ public class CrossingSettingsMethodComponent extends CssLayout implements
 		} else {
 			selectMethod.setValue(true);
 			final Integer methodId = breedingMethodSetting.getMethodId();
+			
+			if(!isMethodGen(methodId)){
+				favoriteMethodsCheckbox.setValue(true);
+				populateBreedingMethods(true);
+			}
+			else{
+				favoriteMethodsCheckbox.setValue(false);
+				populateBreedingMethods(false);
+			}
 			breedingMethods.select(methodId);
 			showMethodDescription(methodId);
 		}
+	}
+
+	private boolean isMethodGen(Integer methodId) {
+		for(Method method : methods){
+			if(method.getMid().equals(methodId)){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void setFieldsDefaultValue() {

@@ -1,6 +1,7 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -17,7 +18,6 @@ import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayou
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.CrossingManagerInventoryTable;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
-import org.generationcp.breeding.manager.inventory.ListDataAndLotDetails;
 import org.generationcp.breeding.manager.inventory.ReservationStatusWindow;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
 import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
@@ -189,7 +189,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		actionMenu.setWidth("250px");
 		actionMenu.addItem(messageSource.getMessage(Message.ADD_TO_MALE_LIST));
 		actionMenu.addItem(messageSource.getMessage(Message.ADD_TO_FEMALE_LIST));
-		//actionMenu.addItem(messageSource.getMessage(Message.INVENTORY_VIEW));
+		actionMenu.addItem(messageSource.getMessage(Message.INVENTORY_VIEW));
 		actionMenu.addItem(messageSource.getMessage(Message.SELECT_ALL));
 		
 		inventoryViewActionMenu = new ContextMenu();
@@ -388,13 +388,27 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 			  if(clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))){
 				  listDataTable.setValue(listDataTable.getItemIds());
 			  }else if(clickedItem.getName().equals(messageSource.getMessage(Message.ADD_TO_FEMALE_LIST))){
-				  makeCrossesParentsComponent.dropToFemaleOrMaleTable(listDataTable, makeCrossesParentsComponent.getFemaleTable(), null);
-				  makeCrossesParentsComponent.assignEntryNumber(makeCrossesParentsComponent.getFemaleTable());
-				  makeCrossesParentsComponent.getParentTabSheet().setSelectedTab(0);
+				  Collection<?> selectedIdsToAdd = (Collection<?>)listDataTable.getValue();
+				  if(selectedIdsToAdd.size() > 0){
+					  makeCrossesParentsComponent.dropToFemaleOrMaleTable(listDataTable, makeCrossesParentsComponent.getFemaleTable(), null);
+					  makeCrossesParentsComponent.assignEntryNumber(makeCrossesParentsComponent.getFemaleTable());
+					  makeCrossesParentsComponent.getParentTabSheet().setSelectedTab(0);
+				  }
+				  else{
+					  MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.WARNING) 
+			                    , messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
+				  }
 			  }else if(clickedItem.getName().equals(messageSource.getMessage(Message.ADD_TO_MALE_LIST))){
-				  makeCrossesParentsComponent.dropToFemaleOrMaleTable(listDataTable, makeCrossesParentsComponent.getMaleTable(), null);
-				  makeCrossesParentsComponent.assignEntryNumber(makeCrossesParentsComponent.getMaleTable());
-				  makeCrossesParentsComponent.getParentTabSheet().setSelectedTab(1);
+				  Collection<?> selectedIdsToAdd = (Collection<?>)listDataTable.getValue();
+				  if(selectedIdsToAdd.size() > 0){
+					  makeCrossesParentsComponent.dropToFemaleOrMaleTable(listDataTable, makeCrossesParentsComponent.getMaleTable(), null);
+					  makeCrossesParentsComponent.assignEntryNumber(makeCrossesParentsComponent.getMaleTable());
+					  makeCrossesParentsComponent.getParentTabSheet().setSelectedTab(1);
+				  }
+				  else{
+					  MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.WARNING) 
+			                    , messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
+				  }
 			  }else if(clickedItem.getName().equals(messageSource.getMessage(Message.INVENTORY_VIEW))){
 				  viewInventoryAction();
 			  }
@@ -543,7 +557,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	}
 	
 	public void viewInventoryActionConfirmed(){
-		listInventoryTable.loadInventoryData();
+		resetListInventoryTableValues();
 		changeToInventoryView();
 	}
 	
@@ -741,10 +755,6 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		validReservationsToSave.clear();//reset the reservations to save. 
 		
 		setHasUnsavedChanges(false);
-	}
-	
-	public void resetUnsavedChangesFlag() {
-		hasChanges = false;
 	}
 	
 	/*--------------------------------END OF INVENTORY RELATED FUNCTIONS--------------------------------------*/

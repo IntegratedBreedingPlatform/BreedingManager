@@ -161,6 +161,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     
     private ContextMenu inventoryViewMenu;
 	private ContextMenuItem menuCopyToNewListFromInventory;
+	private ContextMenuItem menuReserveInventory;
 	
     //For Saving
     private ListManagerMain source;
@@ -273,7 +274,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         inventoryViewMenu.setWidth("300px");
         
         menuCopyToNewListFromInventory = inventoryViewMenu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST));
-        inventoryViewMenu.addItem(messageSource.getMessage(Message.RESERVE_INVENTORY));
+        menuReserveInventory = inventoryViewMenu.addItem(messageSource.getMessage(Message.RESERVE_INVENTORY));
         inventoryViewMenu.addItem(messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
         inventoryViewMenu.addItem(messageSource.getMessage(Message.SELECT_ALL));
         
@@ -322,6 +323,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     private void resetInventoryMenuOptions() {
         //Temporarily disable to Copy to New List in InventoryView TODO implement the function
         menuCopyToNewListFromInventory.setEnabled(false);
+        
+        if(!isCurrentListSaved()){
+        	menuReserveInventory.setEnabled(false);
+        }
 	}
 
 	@Override
@@ -711,7 +716,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     	dropHandler.addListener(new BuildNewListDropHandler.ListUpdatedListener() {
 			@Override
 			public void listUpdated(final ListUpdatedEvent event) {
-				updateListTotal();
+				updateTotalListEntries();
 			}
 			
 		});
@@ -761,15 +766,18 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
                     , messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
         }
         
-        updateListTotal();
+        updateTotalListEntries();
     }
     
-    private void updateListTotal() {
-    	final int count = tableWithSelectAllLayout.getTable().getItemIds().size();
-    	if(!listInventoryTable.isVisible())
-    		totalListEntriesLabel.setValue(new Label(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
-	       		 + "  <b>" + count + "</b>", Label.CONTENT_XHTML));
-		
+    public void updateTotalListEntries() {
+    	if(source.getModeView().equals(ModeView.LIST_VIEW)){
+    		totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
+   	       		 + "  <b>" + listDataTable.getItemIds().size() + "</b>");
+    	}
+    	else if(source.getModeView().equals(ModeView.INVENTORY_VIEW)){
+    		totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LOTS) + ": " 
+	          		 + "  <b>" + listInventoryTable.getTable().getItemIds().size() + "</b>");
+    	}
 	}
 
 	/**
@@ -815,8 +823,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
     public void enableMenuOptionsAfterSave(){
         menuExportList.setEnabled(true);
-        //menuExportForGenotypingOrder.setEnabled(true);
         menuCopyToList.setEnabled(true);
+        menuReserveInventory.setEnabled(true);
     }
     
 	public void editList(GermplasmList germplasmList) {
@@ -837,6 +845,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         } else {
         	setUIForUnlockedList();
         }
+        
+        enableMenuOptionsAfterSave();
     }
 	
 	public void addListsFromSearchResults(Set<Integer> lists) {
@@ -878,7 +888,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 									messageSource, workbenchDataManager, inventoryDataManager); 
 		saveButton.addListener(saveListButtonListener);
 		
-		updateListTotal();
+		updateTotalListEntries();
+		
+		resetInventoryMenuOptions();
 		
 		//Reset the marker for changes in Build New List
 		resetUnsavedChangesFlag();
@@ -901,7 +913,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		tableWithSelectAllLayout.getTable().setWidth("100%");
 		addBasicTableColumns(tableWithSelectAllLayout.getTable());
 		
-		updateListTotal();
+		updateTotalListEntries();
 	}
 	
     public GermplasmList getCurrentlySetGermplasmListInfo(){
@@ -1165,6 +1177,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		resetUnsavedChangesFlag();
 		source.updateView(source.getModeView());
 		saveListButtonListener.setForceHasChanges(false);
+		enableMenuOptionsAfterSave();
 	}
 	
 	public void saveList(GermplasmList list, Boolean showMessages) {
@@ -1175,6 +1188,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		
 		resetUnsavedChangesFlag();
 		source.updateView(source.getModeView());
+		enableMenuOptionsAfterSave();
 	}
 	
 	public SaveListButtonClickListener getSaveListButtonListener(){
@@ -1208,8 +1222,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			toolsButtonContainer.removeComponent(inventoryViewToolsButton);
 			
 			topLabel.setValue(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
-	        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
-	       		 + "  <b>" + listDataTable.getItemIds().size() + "</b>");
+	        updateTotalListEntries();
 	        
 	        resetUnsavedChangesFlag();
 		}
@@ -1223,8 +1236,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	        toolsButtonContainer.addComponent(inventoryViewToolsButton, "top:0; right:0;");
 	        
 	        topLabel.setValue(messageSource.getMessage(Message.LOTS));
-	        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LOTS) + ": " 
-	          		 + "  <b>" + listInventoryTable.getTable().getItemIds().size() + "</b>");
+	        updateTotalListEntries();
 	        
 	        resetUnsavedChangesFlag();
 		}
@@ -1252,13 +1264,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		}
 		
 		changeToInventoryView();
-		
-        refreshListInventoryItemCount();
-	}
-	
-	public void refreshListInventoryItemCount(){
-        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LOTS) + ": " 
-         		 + "  <b>" + listInventoryTable.getTable().getItemIds().size() + "</b>");
 	}
 	
 	private void reserveInventoryAction(){
@@ -1267,16 +1272,23 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 					"Please change to Inventory View first.");
 		}
 		else{
-			List<ListEntryLotDetails> lotDetailsGid = listInventoryTable.getSelectedLots();
 			
-			if( lotDetailsGid == null || lotDetailsGid.size() == 0){
+			if(hasUnsavedChanges()){
 				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.WARNING), 
-						"Please select at least 1 lot to reserve.");
+						"Please save the list first before reserving an inventory.");
 			}
 			else{
-		        //this util handles the inventory reservation related functions
-		        reserveInventoryUtil = new ReserveInventoryUtil(this,lotDetailsGid);
-				reserveInventoryUtil.viewReserveInventoryWindow();
+				List<ListEntryLotDetails> lotDetailsGid = listInventoryTable.getSelectedLots();
+				
+				if( lotDetailsGid == null || lotDetailsGid.size() == 0){
+					MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.WARNING), 
+							"Please select at least 1 lot to reserve.");
+				}
+				else{
+			        //this util handles the inventory reservation related functions
+			        reserveInventoryUtil = new ReserveInventoryUtil(this,lotDetailsGid);
+					reserveInventoryUtil.viewReserveInventoryWindow();
+				}
 			}
 		}
 	}
@@ -1544,10 +1556,17 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 	}
 
 	public void discardChangesInInventoryView() {
-		listInventoryTable.updateListInventoryTableAfterSave();
+		resetListInventoryTableValues();
 		changeToListView();
 	}
 	
-	
+	public void enableReserveInventory() {
+		menuReserveInventory.setEnabled(true);
+	}
+
+	@Override
+	public void refreshListInventoryItemCount() {
+		updateTotalListEntries();
+	}
 	
 }

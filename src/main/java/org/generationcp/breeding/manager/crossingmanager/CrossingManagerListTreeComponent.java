@@ -4,9 +4,13 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerTreeActionsListener;
 import org.generationcp.breeding.manager.customfields.ListTreeComponent;
+import org.generationcp.breeding.manager.listmanager.util.InventoryTableDropHandler;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.Button;
@@ -26,6 +30,12 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 	private CrossingManagerMakeCrossesComponent source;
 	private CrossingManagerTreeActionsListener crossingTreeActionsListener;
 
+	@Autowired
+	private GermplasmDataManager germplasmDataManager;
+	
+	@Autowired
+	private InventoryDataManager inventoryDataManager;	
+	
 	public CrossingManagerListTreeComponent(
 			CrossingManagerTreeActionsListener treeActionsListener,
 			CrossingManagerMakeCrossesComponent source) {
@@ -45,11 +55,29 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
+				
+				Integer germplasmListId = (Integer) germplasmListTree.getValue();
+				
 				if(source.getModeView().equals(ModeView.INVENTORY_VIEW)){
-					showWarningInInventoryView();
+					//showWarningInInventoryView();
+					
+					if(crossingTreeActionsListener instanceof SelectParentsComponent){
+						MakeCrossesParentsComponent parentsComponent = ((SelectParentsComponent) crossingTreeActionsListener).getCrossingManagerMakeCrossesComponent().getParentsComponent();
+						InventoryTableDropHandler inventoryTableDropHandler = parentsComponent.getFemaleParentTab().getInventoryTableDropHandler();
+						inventoryTableDropHandler.addGermplasmListInventoryData(germplasmListId);
+						
+						if(parentsComponent.getFemaleTable().getItemIds().size()==0){
+							crossingTreeActionsListener.addListToFemaleList(germplasmListId);
+						} else {
+							source.getParentsComponent().getFemaleParentTab().setHasUnsavedChanges(true);
+							inventoryTableDropHandler.setHasChanges(true);
+						}
+						source.getParentsComponent().getParentTabSheet().setSelectedTab(0);
+					}
+					
+					closeTreeWindow(event);
 				}
 				else{
-					Integer germplasmListId = (Integer) germplasmListTree.getValue();
 					crossingTreeActionsListener.addListToFemaleList(germplasmListId);
 					closeTreeWindow(event);
 				}
@@ -62,11 +90,29 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
+				
+				Integer germplasmListId = (Integer) germplasmListTree.getValue();
+				
 				if(source.getModeView().equals(ModeView.INVENTORY_VIEW)){
-					showWarningInInventoryView();
+					//showWarningInInventoryView();
+					
+					if(crossingTreeActionsListener instanceof SelectParentsComponent){
+						MakeCrossesParentsComponent parentsComponent = ((SelectParentsComponent) crossingTreeActionsListener).getCrossingManagerMakeCrossesComponent().getParentsComponent();
+						InventoryTableDropHandler inventoryTableDropHandler = parentsComponent.getMaleParentTab().getInventoryTableDropHandler();
+						inventoryTableDropHandler.addGermplasmListInventoryData(germplasmListId);
+						
+						if(parentsComponent.getMaleTable().getItemIds().size()==0){
+							crossingTreeActionsListener.addListToMaleList(germplasmListId);
+						} else {
+							source.getParentsComponent().getMaleParentTab().setHasUnsavedChanges(true);
+							inventoryTableDropHandler.setHasChanges(true);
+						}
+						source.getParentsComponent().getParentTabSheet().setSelectedTab(1);
+					}
+					
+					closeTreeWindow(event);
 				}
 				else{
-					Integer germplasmListId = (Integer) germplasmListTree.getValue();
 					crossingTreeActionsListener.addListToMaleList(germplasmListId);
 					closeTreeWindow(event);
 				}
@@ -107,7 +153,7 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 	
 	public void showWarningInInventoryView(){
 		String message = "Please switch to list view first before adding entries to parent lists.";
-    	MessageNotifier.showWarning(getWindow(),"Warning!", message);
+    	MessageNotifier.showError(getWindow(),"Warning!", message);
 	}
 
 	@Override

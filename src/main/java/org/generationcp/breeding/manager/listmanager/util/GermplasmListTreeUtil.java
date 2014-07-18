@@ -319,7 +319,10 @@ public class GermplasmListTreeUtil implements Serializable {
 				}
 				
 				source.showAddRenameFolderSection(false);
+				//dennis
+				source.assignNewNameToGermplasmListMap(listId.toString(), newName);
 				source.refreshRemoteTree();
+				
 				MessageNotifier.showMessage(source.getWindow(), messageSource.getMessage(Message.SUCCESS), "Item renamed successfully.");
 				
 			} catch (MiddlewareQueryException e) {

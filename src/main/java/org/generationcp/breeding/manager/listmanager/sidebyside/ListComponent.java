@@ -2095,7 +2095,15 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		listDataTable.requestRepaint();
 	}
 	
+	public Window getViewListHeaderWindow() {
+		return viewListHeaderWindow;
+	}
+
+	public void setViewListHeaderWindow(ViewListHeaderWindow viewListHeaderWindow) {
+		this.viewListHeaderWindow = viewListHeaderWindow;
+	}
 	
 }
+
 
 
