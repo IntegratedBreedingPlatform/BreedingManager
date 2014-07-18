@@ -154,7 +154,6 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
     
     @Override
     public void updateLabels() {
-//        messageSource.setCaption(pedigreeOptionComboBox, Message.PEDIGREE_OPTIONS_LABEL);
         messageSource.setCaption(backButton, Message.BACK);
         messageSource.setCaption(nextButton, Message.FINISH);
     }
@@ -711,11 +710,11 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         germplasmDetailsTable = new Table();
         germplasmDetailsTable.addContainerProperty(1, Integer.class, null);
         germplasmDetailsTable.addContainerProperty(2, String.class, null);
-        germplasmDetailsTable.addContainerProperty(3, Integer.class, null);
+        germplasmDetailsTable.addContainerProperty(3, String.class, null);
         germplasmDetailsTable.addContainerProperty(4, String.class, null);
-        germplasmDetailsTable.addContainerProperty(5, String.class, null);
+        germplasmDetailsTable.addContainerProperty(5, Integer.class, null);
         germplasmDetailsTable.addContainerProperty(6, String.class, null);
-        germplasmDetailsTable.setColumnHeaders(new String[]{"Entry ID", "Entry Code","GID","Designation", "Cross", "Source"});
+        germplasmDetailsTable.setColumnHeaders(new String[]{"Entry_No", "Entry_Code", "Designation", "Parentage", "GID", "Source"});
         germplasmDetailsTable.setHeight("200px");
         germplasmDetailsTable.setWidth("700px");
         
@@ -830,7 +829,8 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
             }else{
             	source=importedGermplasm.getSource();
             }
-            getGermplasmDetailsTable().addItem(new Object[]{importedGermplasm.getEntryId(), importedGermplasm.getEntryCode(),importedGermplasm.getGid(), importedGermplasm.getDesig(), importedGermplasm.getCross(), source}, new Integer(i+1));
+            getGermplasmDetailsTable().addItem(new Object[]{importedGermplasm.getEntryId(), 
+            		importedGermplasm.getEntryCode(),  importedGermplasm.getDesig(), importedGermplasm.getCross(), importedGermplasm.getGid(), source}, new Integer(i+1));
         }
         updateTotalEntriesLabel();
 
