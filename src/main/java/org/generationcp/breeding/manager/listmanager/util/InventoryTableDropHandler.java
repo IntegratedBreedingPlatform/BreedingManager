@@ -305,7 +305,6 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 				}
 			}
 
-			System.out.println("InventoryDropTargetContainer: "+inventoryDropTargetContainer);
 			//Update counter
 			if(listManagerMain!=null)
 				listManagerMain.getListBuilderComponent().refreshListInventoryItemCount();
