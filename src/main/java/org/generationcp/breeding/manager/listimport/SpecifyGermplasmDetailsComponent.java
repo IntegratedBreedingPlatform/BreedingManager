@@ -714,6 +714,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         germplasmDetailsTable.addContainerProperty(4, String.class, null);
         germplasmDetailsTable.addContainerProperty(5, Integer.class, null);
         germplasmDetailsTable.addContainerProperty(6, String.class, null);
+        germplasmDetailsTable.setColumnCollapsingAllowed(true);
         germplasmDetailsTable.setColumnHeaders(new String[]{"Entry_No", "Entry_Code", "Designation", "Parentage", "GID", "Source"});
         germplasmDetailsTable.setHeight("200px");
         germplasmDetailsTable.setWidth("700px");

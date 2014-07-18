@@ -100,8 +100,6 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 
 	@Override
 	public void updateLabels() {
-        messageSource.setValue(germplasmDateLabel, Message.GERMPLASM_DATE_LABEL);
-        messageSource.setValue(nameTypeLabel, Message.GERMPLASM_NAME_TYPE_LABEL);
 	}
 
 	@Override
@@ -117,22 +115,22 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 		} else {
 			methodComponent = new BreedingMethodField(200);
 		}
-		methodComponent.setCaption(messageSource.getMessage(Message.GERMPLASM_BREEDING_METHOD_LABEL));
+		methodComponent.setCaption(messageSource.getMessage(Message.GERMPLASM_BREEDING_METHOD_LABEL) + ":");
 		
 		if (parentWindow != null){
 			locationComponent = new BreedingLocationField(parentWindow, 200);
 		} else {
 			locationComponent = new BreedingLocationField(200);
 		}
-		locationComponent.setCaption(messageSource.getMessage(Message.GERMPLASM_LOCATION_LABEL));
+		locationComponent.setCaption(messageSource.getMessage(Message.GERMPLASM_LOCATION_LABEL) + ":");
 		
-        germplasmDateLabel = new Label();
+        germplasmDateLabel = new Label(messageSource.getMessage(Message.GERMPLASM_DATE_LABEL) + ":");
         germplasmDateLabel.addStyleName(CssStyles.BOLD);
         germplasmDateField =  new DateField();
         germplasmDateField.setResolution(DateField.RESOLUTION_DAY);
         germplasmDateField.setDateFormat(GermplasmImportMain.DATE_FORMAT);
         
-        nameTypeLabel = new Label();
+        nameTypeLabel = new Label(messageSource.getMessage(Message.GERMPLASM_NAME_TYPE_LABEL) + ":");
         nameTypeLabel.addStyleName(CssStyles.BOLD);
         nameTypeComboBox = new ComboBox();
         nameTypeComboBox.setWidth("400px");
