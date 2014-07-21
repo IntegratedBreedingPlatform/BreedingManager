@@ -14,6 +14,7 @@ package org.generationcp.breeding.manager.listimport;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.listimport.actions.ProcessImportedGermplasmAction;
 import org.generationcp.breeding.manager.listimport.listeners.CloseWindowAction;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
@@ -23,6 +24,7 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.LocationDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.pojos.Method;
@@ -68,27 +70,21 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
     @Autowired
     private GermplasmDataManager germplasmDataManager;
     
+    @Autowired
+    private LocationDataManager locationDataManager;
+    
     private String germplasmName;
     private List<Germplasm> germplasms;
     private int germplasmCount;
     private Table germplasmTable;
     private int germplasmIndex;
     private Germplasm germplasm;
-    private SpecifyGermplasmDetailsComponent source;
+    private ProcessImportedGermplasmAction source;
     private Boolean viaToolURL;
     
     private Label selectGermplasmLabel;
     
-    public SelectGermplasmWindow(SpecifyGermplasmDetailsComponent specifyGermplasmDetailsComponent, String germplasmName2, int i, Germplasm germplasm2) {
-        this.viaToolURL = false;
-    }
-     
-    public SelectGermplasmWindow(String germplasmName) {
-        this.germplasmName = germplasmName;
-        this.viaToolURL = false;
-    }    
-    
-    public SelectGermplasmWindow(SpecifyGermplasmDetailsComponent source, String germplasmName, int index, Germplasm germplasm, Boolean viaToolURL) {
+    public SelectGermplasmWindow(ProcessImportedGermplasmAction source, String germplasmName, int index, Germplasm germplasm, Boolean viaToolURL) {
         this.germplasmName = germplasmName;
         this.germplasmIndex = index;
         this.germplasm = germplasm;
@@ -105,14 +101,19 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
     
     protected void initializeComponents() {
         mainLayout = new AbsoluteLayout();
+        
         selectGermplasmLabel = new Label();
         selectGermplasmLabel.setStyleName("bold");
+        
         buttonArea = new HorizontalLayout();
+        
         cancelButton = new Button(); 
         cancelButton.setData(CANCEL_BUTTON_ID);
+        
         doneButton = new Button();
         doneButton.setEnabled(false);
         doneButton.setData(DONE_BUTTON_ID);
+        
         germplasmTable = new Table();
         germplasmTable.addContainerProperty("GID", Button.class, null);
         germplasmTable.addContainerProperty("Name", String.class, null);
@@ -145,7 +146,7 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
             for (int i=0; i<this.germplasms.size(); i++){
             	
                 Germplasm germplasm = germplasms.get(i);
-                Location location = germplasmDataManager.getLocationByID(germplasm.getLocationId());
+                Location location = locationDataManager.getLocationByID(germplasm.getLocationId());
                 Method method = germplasmDataManager.getMethodByID(germplasm.getMethodId());
 
             	Button gidButton = new Button(String.format("%s", germplasm.getGid().toString()), new GidLinkClickListener(germplasm.getGid().toString(), viaToolURL));
@@ -229,7 +230,7 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
         Germplasm selectedGermplasm;
         try {
             selectedGermplasm = this.germplasmDataManager.getGermplasmByGID((Integer) germplasmTable.getValue());
-            ((SpecifyGermplasmDetailsComponent) source).receiveGermplasmFromWindowAndUpdateGermplasmData(germplasmIndex, germplasm, selectedGermplasm);
+            source.receiveGermplasmFromWindowAndUpdateGermplasmData(germplasmIndex, germplasm, selectedGermplasm);
             removeWindow(this);
         } catch (MiddlewareQueryException e) {
             // TODO Add proper logging
@@ -303,12 +304,8 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
     
 
     public void cancelButtonClickAction(){
-    	if(source instanceof SpecifyGermplasmDetailsComponent){
+    	if(source instanceof ProcessImportedGermplasmAction){
 	    	source.closeAllSelectGermplasmWindows();
-	    	source.getWindow().removeWindow(source.getSaveListAsDialog());
-//	    	source.getSource().enableAllTabs();
-//	    	source.getSource().enableTab(2);
-//	    	source.getSource().alsoEnableTab(1);
     	}
     }
 }

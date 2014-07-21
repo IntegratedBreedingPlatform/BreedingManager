@@ -1,4 +1,4 @@
-package org.generationcp.breeding.manager.listimport;
+package org.generationcp.breeding.manager.listimport.actions;
 
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
