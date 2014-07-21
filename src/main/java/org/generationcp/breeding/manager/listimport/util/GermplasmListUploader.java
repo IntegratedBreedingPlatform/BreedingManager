@@ -17,6 +17,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.generationcp.breeding.manager.listimport.exceptions.GermplasmImportException;
 import org.generationcp.breeding.manager.listimport.exceptions.InvalidFileTypeImportException;
 import org.generationcp.breeding.manager.pojos.ImportedCondition;
@@ -140,7 +141,12 @@ public class GermplasmListUploader implements FileFactory {
         
         try {
             inp = new FileInputStream(tempFileName);
-            wb = new HSSFWorkbook(inp);
+            
+            if(tempFileName.toLowerCase().endsWith(".xls")){
+            	wb = new HSSFWorkbook(inp);
+            } else {
+            	wb = new XSSFWorkbook(inp);
+            }
             
             Sheet sheet1 = wb.getSheetAt(0);
             
