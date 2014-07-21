@@ -176,6 +176,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 
 	public void focusOnSearchField(){
 		searchField.focus();
+		searchField.selectAll();
 	}
 	
 	@Override
