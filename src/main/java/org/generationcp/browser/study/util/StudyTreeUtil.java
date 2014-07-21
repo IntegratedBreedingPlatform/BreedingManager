@@ -17,11 +17,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.Transferable;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -82,6 +84,7 @@ public class StudyTreeUtil implements Serializable {
         final TextField name = new TextField();
         name.setMaxLength(50);
         name.setWidth("190px");
+        name.focus();
 
         formContainer.addComponent(l);
         formContainer.addComponent(name);
@@ -95,6 +98,7 @@ public class StudyTreeUtil implements Serializable {
         btnContainer.setExpandRatio(spacer, 1.0F);
 
         Button ok = new Button("Ok");
+        ok.setClickShortcut(KeyCode.ENTER);
         ok.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         ok.addListener(new Button.ClickListener() {
             private static final long serialVersionUID = -6313787074401316900L;
@@ -134,6 +138,7 @@ public class StudyTreeUtil implements Serializable {
                 if (newFolderId != null) {
                     targetTree.addItem(newFolderId);
                     targetTree.setItemCaption(newFolderId, newFolderName);
+                    targetTree.setItemIcon(newFolderId, new ThemeResource("../vaadin-retro/svg/folder-icon.svg"));
                     targetTree.setChildrenAllowed(newFolderId, true);
                     
                     source.setSelectedStudyTreeNodeId(newFolderId);
@@ -152,6 +157,7 @@ public class StudyTreeUtil implements Serializable {
                     } else {
                     	targetTree.expandItem(StudyTreeComponent.LOCAL);
 					}
+                    
                     targetTree.select(newFolderId);
                     source.updateButtons(newFolderId);
                 }
@@ -368,6 +374,7 @@ public class StudyTreeUtil implements Serializable {
         final TextField nameField = new TextField();
         nameField.setMaxLength(50);
         nameField.setValue(name);
+        nameField.setCursorPosition(nameField.getValue() == null ? 0 : nameField.getValue().toString().length());
         nameField.setWidth("200px");
 
         formContainer.addComponent(l);
@@ -382,6 +389,7 @@ public class StudyTreeUtil implements Serializable {
         btnContainer.setExpandRatio(spacer, 1.0F);
 
         Button ok = new Button("Ok");
+        ok.setClickShortcut(KeyCode.ENTER);
         ok.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         ok.addListener(new Button.ClickListener() {
             @Override
