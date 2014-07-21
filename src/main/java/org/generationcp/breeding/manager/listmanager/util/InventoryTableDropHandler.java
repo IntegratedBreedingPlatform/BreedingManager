@@ -19,7 +19,6 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
-import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 
 import com.vaadin.data.Item;
@@ -65,15 +64,6 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		listDataAndLotDetails = new ArrayList<ListDataAndLotDetails>();
 	}
 
-	public InventoryTableDropHandler(GermplasmDataManager germplasmDataManager, GermplasmListManager germplasmListManager, InventoryDataManager inventoryDataManager, Table targetTable) {
-		this.germplasmDataManager = germplasmDataManager;
-		this.germplasmListManager = germplasmListManager;
-		this.inventoryDataManager = inventoryDataManager;
-		this.targetTable = targetTable;
-		
-		listDataAndLotDetails = new ArrayList<ListDataAndLotDetails>();
-	}	
-	
 	@Override
 	public void drop(DragAndDropEvent event) {
 		
@@ -167,7 +157,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		//Update counter
 		if(listManagerMain!=null)
 			listManagerMain.getListBuilderComponent().refreshListInventoryItemCount();
-		else
+		else if(inventoryDropTargetContainer!=null)
 			inventoryDropTargetContainer.refreshListInventoryItemCount();
 		
 	}
@@ -251,6 +241,10 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 	public void addGermplasmListInventoryData(Integer listId){
 		
 		List<GermplasmListData> inventoryDetails;
+		
+		if(inventoryDropTargetContainer!=null)
+			inventoryDropTargetContainer.setHasUnsavedChanges(true);
+		
 		try {
 			inventoryDetails = inventoryDataManager.getLotDetailsForList(listId,0,Integer.MAX_VALUE);
 		
@@ -260,6 +254,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 				for(GermplasmListData inventoryDetail : inventoryDetails){
 					
 					listDataAndLotDetails.add(new ListDataAndLotDetails(listId, inventoryDetail.getId(), inventoryDetail.getEntryId()));
+					//listDataAndLotDetails.add(new ListDataAndLotDetails(listId, inventoryDetail.getId(), listDataAndLotDetails.size()+1));
 					
 					Integer entryId = lastEntryId+inventoryDetail.getEntryId();
 					String designation = inventoryDetail.getDesignation();
@@ -309,6 +304,12 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 					}
 				}
 			}
+
+			//Update counter
+			if(listManagerMain!=null)
+				listManagerMain.getListBuilderComponent().refreshListInventoryItemCount();
+			else if(inventoryDropTargetContainer!=null)
+				inventoryDropTargetContainer.refreshListInventoryItemCount();
 
 		} catch (MiddlewareQueryException e) {
 			// TODO Auto-generated catch block

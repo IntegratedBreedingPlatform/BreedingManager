@@ -22,6 +22,7 @@ import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.UnsavedChangesSource;
+import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.util.ListManagerDetailsTabCloseHandler;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -358,12 +359,22 @@ public class ListSelectionLayout extends VerticalLayout implements International
     }
     
     public void renameTab(Integer listId, String newName){
+    	
+    	//dennis put change header name here
         String tabDescription = generateTabDescription(listId);
         Tab tab = Util.getTabWithDescription(detailsTabSheet, tabDescription);
         if (tab != null){
             tab.setCaption(newName);
             ListTabComponent listDetails = (ListTabComponent) tab.getComponent();
             listDetails.setListNameLabel(newName);
+            
+            if(tab.getComponent() instanceof ListTabComponent){
+            	((ListTabComponent) tab.getComponent()).getGermplasmList().setName(newName);
+            	
+            	GermplasmList germplasmList = ((ListTabComponent) tab.getComponent()).getListComponent().getGermplasmList();
+            	germplasmList.setName(newName);
+            	((ListTabComponent) tab.getComponent()).getListComponent().setViewListHeaderWindow(new ViewListHeaderWindow(germplasmList));
+            }
         }
     }
     

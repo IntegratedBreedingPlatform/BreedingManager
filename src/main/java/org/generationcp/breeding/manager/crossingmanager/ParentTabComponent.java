@@ -446,25 +446,27 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 					if(germplasmListData!=null){
 						
 						Integer entryId = getListDataTableNextEntryId();
-        				GermplasmListEntry entryObject = new GermplasmListEntry(germplasmListData.getId(),germplasmListData.getGid(), entryId, germplasmListData.getDesignation(), germplasmListData.getSeedSource());
+        				GermplasmListEntry entryObject = new GermplasmListEntry(germplasmListData.getId(),germplasmListData.getGid(), (listDataTable.size()+1), germplasmListData.getDesignation(), germplasmListData.getSeedSource());
         				
 //        				//if the item is already existing in the target table, remove the existing item then add a new entry
 //    		            listDataTable.removeItem(entryObject);
         				
     					Item newItem = listDataTable.addItem(entryObject);
 
-						CheckBox tag = new CheckBox();
-        				tag.addListener(new ParentsTableCheckboxListener(listDataTable, entryObject, getSelectAllCheckBox()));
-    		            tag.setImmediate(true);
-			            
-    		            newItem.getItemProperty(TAG_COLUMN_ID).setValue(tag);
-        				
-						newItem.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(entryId);
-						
-						Button desigButton = new Button(germplasmListData.getDesignation(), new GidLinkClickListener(germplasmListData.getGid().toString(),true));
-	                    desigButton.setStyleName(BaseTheme.BUTTON_LINK);
-	                    desigButton.setDescription("Click to view Germplasm information");
-	                    newItem.getItemProperty(DESIGNATION_ID).setValue(desigButton);
+    					if(newItem!=null){
+							CheckBox tag = new CheckBox();
+	        				tag.addListener(new ParentsTableCheckboxListener(listDataTable, entryObject, getSelectAllCheckBox()));
+	    		            tag.setImmediate(true);
+				            
+	    		            newItem.getItemProperty(TAG_COLUMN_ID).setValue(tag);
+	        				
+							newItem.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(entryId);
+							
+							Button desigButton = new Button(germplasmListData.getDesignation(), new GidLinkClickListener(germplasmListData.getGid().toString(),true));
+		                    desigButton.setStyleName(BaseTheme.BUTTON_LINK);
+		                    desigButton.setDescription("Click to view Germplasm information");
+		                    newItem.getItemProperty(DESIGNATION_ID).setValue(desigButton);
+    					}
 					}
 					
 				} catch (MiddlewareQueryException e) {
@@ -509,7 +511,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		List<GermplasmListEntry> listEntries = new ArrayList<GermplasmListEntry>();
 		listEntries.addAll((Collection<GermplasmListEntry>) listDataTable.getItemIds());
 		
-		//TO DO correct the entryID, get from the parent table
+		// TODO correct the entryID, get from the parent table
 		// Create Map <Key: "GID+ENTRYID">, <Value:CheckBox Obj>
 		SaveGermplasmListAction saveListAction = new SaveGermplasmListAction(this, list, listEntries);
 		try {
@@ -1223,7 +1225,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	}
 
 	public void discardChangesInInventoryView() {
-		listInventoryTable.updateListInventoryTableAfterSave();
+		resetListInventoryTableValues();
 		changeToListView();
 	}
 
@@ -1259,6 +1261,10 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	
 	public CrossingManagerInventoryTable getListInventoryTable(){
 		return listInventoryTable;
+	}
+	
+	public InventoryTableDropHandler getInventoryTableDropHandler(){
+		return inventoryTableDropHandler;
 	}
 	
 }

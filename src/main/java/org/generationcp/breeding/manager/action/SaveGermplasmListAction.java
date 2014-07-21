@@ -74,16 +74,17 @@ public class SaveGermplasmListAction implements Serializable {
     }
 	
 	private GermplasmList saveGermplasmListRecord(GermplasmList germplasmList) throws MiddlewareQueryException {
-		int newListId = 0;
+		int listId = 0;
 		
 		if(germplasmList.getId() == null){ // add new
-			newListId = this.germplasmListManager.addGermplasmList(germplasmList);
+			listId = this.germplasmListManager.addGermplasmList(germplasmList);
 		}
 		else{ // update
-			newListId = this.germplasmListManager.updateGermplasmList(germplasmList);
+			GermplasmList listToUpdate = germplasmListManager.getGermplasmListById(germplasmList.getId());
+			listId = this.germplasmListManager.updateGermplasmList(listToUpdate);
 		}
 		
-		GermplasmList list = this.germplasmListManager.getGermplasmListById(newListId);
+		GermplasmList list = this.germplasmListManager.getGermplasmListById(listId);
         
         return list;
     }

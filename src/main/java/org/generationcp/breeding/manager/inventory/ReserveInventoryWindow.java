@@ -159,9 +159,9 @@ public class ReserveInventoryWindow extends Window implements InitializingBean,
 		
 		if(isSingleScaled){
 			setHeight("225px");
-			setWidth("500px");
+			setWidth("550px");
 			
-			contentPanel.setWidth("453px");
+			contentPanel.setWidth("510px");
 			contentPanel.setHeight("90px");
 			
 			panelContentLayout.addComponent(singleScaleDescriptionLabel);
@@ -169,17 +169,17 @@ public class ReserveInventoryWindow extends Window implements InitializingBean,
 			
 		}
 		else{
-			setHeight("300px");
-			setWidth("500px");
+			setHeight("310px");
+			setWidth("550px");
 			
-			contentPanel.setWidth("453px");
-			contentPanel.setHeight("165px");
+			contentPanel.setWidth("510px");
+			contentPanel.setHeight("175px");
 			
 			panelContentLayout.addComponent(multiScaleDescriptionLabel);
 			
 			VerticalLayout scaleLayout = new VerticalLayout();
 			scaleLayout.setSpacing(true);
-			scaleLayout.setHeight("80px");
+			scaleLayout.setHeight("90px");
 			
 			if(scaleRows.size() > 3){
 				scaleLayout.addStyleName(AppConstants.CssStyles.SCALE_ROW);

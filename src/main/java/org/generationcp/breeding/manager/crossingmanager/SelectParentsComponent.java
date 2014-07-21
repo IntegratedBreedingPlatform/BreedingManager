@@ -372,4 +372,15 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	public CrossingManagerMakeCrossesComponent getCrossingManagerMakeCrossesComponent(){
 		return source;
 	}
+
+	public void resetInventoryViewForCancelledChanges() {
+		List<SelectParentsListDataComponent> listDataComponents = new ArrayList<SelectParentsListDataComponent>();
+		listDataComponents.addAll(listStatusForChanges.keySet());
+		
+		for(SelectParentsListDataComponent listDataComponent : listDataComponents){
+			if(listDataComponent.hasUnsavedChanges()){
+				listDataComponent.resetListInventoryTableValues();
+			}
+		}
+	}
 }
