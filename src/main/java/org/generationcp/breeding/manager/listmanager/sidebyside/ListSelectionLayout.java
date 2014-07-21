@@ -158,7 +158,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
 
     @Override
     public void initializeValues() {
-        headingLabel.setValue(messageSource.getMessage(Message.MANAGE_LISTS));
+        headingLabel.setValue(messageSource.getMessage(Message.LIST_DETAILS));
         browseForLists.setCaption(messageSource.getMessage(Message.BROWSE_FOR_A_LIST) + " ");
         searchForLists.setCaption(messageSource.getMessage(Message.SEARCH_FOR_A_LIST) + " ");
         or.setValue(messageSource.getMessage(Message.OR) + " ");
@@ -187,9 +187,9 @@ public class ListSelectionLayout extends VerticalLayout implements International
         or.setWidth("16px");
         browseForLists.setWidth("48px");
 
-        searchOrBrowseLayout.addComponent(searchForLists);
-        searchOrBrowseLayout.addComponent(or);
         searchOrBrowseLayout.addComponent(browseForLists);
+        searchOrBrowseLayout.addComponent(or);
+        searchOrBrowseLayout.addComponent(searchForLists);
         searchOrBrowseLayout.addComponent(toWorkWith);
         
         searchOrBrowseContainer.addComponent(searchOrBrowseLayout);
@@ -274,7 +274,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
 
     @Override
     public void updateLabels() {
-        headingLabel.setValue(messageSource.getMessage(Message.MANAGE_LISTS)); 
+        headingLabel.setValue(messageSource.getMessage(Message.LIST_DETAILS)); 
         browseForLists.setCaption(messageSource.getMessage(Message.BROWSE_FOR_A_LIST) + " ");
         searchForLists.setCaption(messageSource.getMessage(Message.SEARCH_FOR_A_LIST) + " ");
         or.setValue(messageSource.getMessage(Message.OR) + " ");

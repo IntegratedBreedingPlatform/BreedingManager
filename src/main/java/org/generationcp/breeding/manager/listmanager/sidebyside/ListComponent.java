@@ -336,7 +336,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
         tableContextMenu_SelectAll = tableContextMenu.addItem(messageSource.getMessage(Message.SELECT_ALL));
         tableContextMenu_DeleteEntries = tableContextMenu.addItem(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
         tableContextMenu_EditCell = tableContextMenu.addItem(messageSource.getMessage(Message.EDIT_VALUE));
-        tableContextMenu_CopyToNewList = tableContextMenu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST));
+        tableContextMenu_CopyToNewList = tableContextMenu.addItem(messageSource.getMessage(Message.ADD_SELECTED_ENTRIES_TO_NEW_LIST));
         
         //Inventory Related Variables
         validReservationsToSave = new HashMap<ListEntryLotDetails, Double>();
@@ -727,7 +727,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
                         }
 
                         listDataTable.select(selectedItemId);
-                    }else if(action.equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST))){
+                    }else if(action.equals(messageSource.getMessage(Message.ADD_SELECTED_ENTRIES_TO_NEW_LIST))){
                         source.addSelectedPlantsToList(listDataTable);
                     }
             }
