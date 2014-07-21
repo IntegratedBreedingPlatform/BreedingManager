@@ -140,7 +140,6 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 
 	@Override
 	public void initializeValues() {
-		germplasmDateField.setValue(new Date());
 		
         try {
 			populateNameTypes();

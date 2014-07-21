@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.listimport.actions;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,11 +79,15 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		    Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
 		    Project project = workbenchDataManager.getLastOpenedProject(wbUserId);
 		    Integer ibdbUserId = workbenchDataManager.getLocalIbdbUserId(wbUserId, project.getProjectId());
-		    
-		    SimpleDateFormat formatter = new SimpleDateFormat(GermplasmImportMain.DATE_FORMAT);
-		    String sDate = formatter.format(getGermplasmFieldsComponent().getGermplasmDateField().getValue());
 
-		    Integer dateIntValue = Integer.parseInt(sDate.replace("-", ""));
+		    SimpleDateFormat formatter = new SimpleDateFormat(GermplasmImportMain.DATE_FORMAT);
+		    String sDate = "";
+		    Integer dateIntValue = null;
+		    String dateFieldValue = (String) getGermplasmFieldsComponent().getGermplasmDateField().getValue();
+		    if(dateFieldValue!=null && !dateFieldValue.equals("")){
+		    	sDate = formatter.format(dateFieldValue);
+		    	dateIntValue = Integer.parseInt(sDate.replace("-", ""));
+		    }
 		    
 		    Map<String, Germplasm> createdGermplasms = new HashMap<String, Germplasm>();
 		    
@@ -168,7 +173,10 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		            
 		            germplasm.setUserId(ibdbUserId);
 		            germplasm.setLocationId((Integer)getGermplasmFieldsComponent().getLocationComboBox().getValue());
-		            germplasm.setGdate(dateIntValue);
+		            if(dateFieldValue!=null && !dateFieldValue.toString().equals(""))
+		            	germplasm.setGdate(dateIntValue);
+		            else
+		            	germplasm.setGdate(0);
 		            germplasm.setMethodId((Integer)getGermplasmFieldsComponent().getBreedingMethodComboBox().getValue());
 
 		            germplasm.setGnpgs(0);
@@ -186,7 +194,10 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		        name.setUserId(ibdbUserId);
 		        name.setNval(importedGermplasm.getDesig());
 		        name.setLocationId((Integer)getGermplasmFieldsComponent().getLocationComboBox().getValue());
-		        name.setNdate(dateIntValue);
+		        if(dateFieldValue!=null && !dateFieldValue.toString().equals(""))
+		        	name.setNdate(dateIntValue);
+		        else
+	            	name.setNdate(0);
 		        name.setReferenceId(0);
 		        
 		        if(!createdGermplasms.containsKey(name.getNval())){
@@ -215,9 +226,13 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		    Integer ibdbUserId = workbenchDataManager.getLocalIbdbUserId(wbUserId, project.getProjectId());                    
 		    
 		    SimpleDateFormat formatter = new SimpleDateFormat(GermplasmImportMain.DATE_FORMAT);
-		    String sDate = formatter.format(getGermplasmFieldsComponent().getGermplasmDateField().getValue());
-
-		    Integer dateIntValue = Integer.parseInt(sDate.replace("-", ""));
+		    String sDate = "";
+		    Integer dateIntValue = null;
+		    String dateFieldValue = (String) getGermplasmFieldsComponent().getGermplasmDateField().getValue();
+		    if(dateFieldValue!=null && !dateFieldValue.equals("")){
+		    	sDate = formatter.format(dateFieldValue);
+		    	dateIntValue = Integer.parseInt(sDate.replace("-", ""));
+		    }
 		    
 		    Map<String, Germplasm> createdGermplasms = new HashMap<String, Germplasm>();
 
@@ -234,7 +249,10 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		                germplasm.setGid(i);
 		                germplasm.setUserId(ibdbUserId);
 		                germplasm.setLocationId((Integer)getGermplasmFieldsComponent().getLocationComboBox().getValue());
-		                germplasm.setGdate(dateIntValue);
+		                if(dateFieldValue!=null && !dateFieldValue.toString().equals(""))
+		                	germplasm.setGdate(dateIntValue);
+		                else
+		                	germplasm.setGdate(0);
 		                germplasm.setMethodId((Integer)getGermplasmFieldsComponent().getBreedingMethodComboBox().getValue());
 
 		                germplasm.setGnpgs(-1);
@@ -272,7 +290,10 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		        name.setUserId(ibdbUserId);
 		        name.setNval(importedGermplasm.getDesig());
 		        name.setLocationId((Integer)getGermplasmFieldsComponent().getLocationComboBox().getValue());
-		        name.setNdate(dateIntValue);
+		        if(dateFieldValue!=null && !dateFieldValue.toString().equals(""))
+		        	name.setNdate(dateIntValue);
+		        else
+	            	name.setNdate(0);
 		        name.setReferenceId(0);
 		        
 		        if(!createdGermplasms.containsKey(name.getNval())){
@@ -307,12 +328,16 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		    Integer ibdbUserId = workbenchDataManager.getLocalIbdbUserId(wbUserId, project.getProjectId());
 
 		    SimpleDateFormat formatter = new SimpleDateFormat(GermplasmImportMain.DATE_FORMAT);
-		    String sDate = formatter.format(getGermplasmFieldsComponent().getGermplasmDateField().getValue());
 
-		    Integer dateIntValue = Integer.parseInt(sDate.replace("-", ""));
+		    String sDate = "";
+		    Integer dateIntValue = null;
+		    Date dateFieldValue = (Date) getGermplasmFieldsComponent().getGermplasmDateField().getValue();
+		    if(dateFieldValue!=null && !dateFieldValue.toString().equals("")){
+		    	sDate = formatter.format(dateFieldValue);
+		    	dateIntValue = Integer.parseInt(sDate.replace("-", ""));
+		    }
 		    
 		    Map<String, Germplasm> createdGermplasms = new HashMap<String, Germplasm>();
-		    
 		    
 		    for(int i = 0 ; i < getImportedGermplasms().size(); i++){
 		        ImportedGermplasm importedGermplasm  = getImportedGermplasms().get(i);
@@ -320,7 +345,10 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		        germplasm.setGid(i);
 		        germplasm.setUserId(ibdbUserId);
 		        germplasm.setLocationId((Integer)getGermplasmFieldsComponent().getLocationComboBox().getValue());
-		        germplasm.setGdate(dateIntValue);
+		        if(dateFieldValue!=null && !dateFieldValue.toString().equals(""))
+		        	germplasm.setGdate(dateIntValue);
+		        else
+		        	germplasm.setGdate(0);
 		        germplasm.setMethodId((Integer)getGermplasmFieldsComponent().getBreedingMethodComboBox().getValue());
 
 		        germplasm.setGnpgs(-1);
@@ -336,7 +364,10 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		        name.setUserId(ibdbUserId);
 		        name.setNval(importedGermplasm.getDesig());
 		        name.setLocationId((Integer)getGermplasmFieldsComponent().getLocationComboBox().getValue());
-		        name.setNdate(dateIntValue);
+		        if(dateFieldValue!=null && !dateFieldValue.toString().equals(""))
+		        	name.setNdate(dateIntValue);
+		        else
+	            	name.setNdate(0);
 		        name.setReferenceId(0);
 		        
 		        if(!createdGermplasms.containsKey(name.getNval())){
@@ -383,7 +414,10 @@ public class ProcessImportedGermplasmAction implements Serializable {
         
         germplasm.setUserId(ibdbUserId);
         germplasm.setLocationId((Integer)getGermplasmFieldsComponent().getLocationComboBox().getValue());
-        germplasm.setGdate(dateIntValue);
+        if(dateIntValue!=null)
+        	germplasm.setGdate(dateIntValue);
+        else
+        	germplasm.setGdate(0);
         germplasm.setMethodId((Integer)getGermplasmFieldsComponent().getBreedingMethodComboBox().getValue());
 
         germplasm.setGnpgs(0);
@@ -412,7 +446,10 @@ public class ProcessImportedGermplasmAction implements Serializable {
             name.setUserId(ibdbUserId);
             name.setNval(desig);
             name.setLocationId((Integer)getGermplasmFieldsComponent().getLocationComboBox().getValue());
-            name.setNdate(dateIntValue);
+            if(dateIntValue!=null)
+            	name.setNdate(dateIntValue);
+            else
+            	name.setNdate(0);
             name.setReferenceId(0);
             germplasmDataManager.addGermplasmName(name);
     	} catch(MiddlewareQueryException ex){
