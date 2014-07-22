@@ -9,6 +9,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
@@ -18,6 +19,7 @@ import org.generationcp.commons.tomcat.util.WebAppStatusInfo;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
@@ -32,33 +34,43 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.vaadin.peter.contextmenu.ContextMenu;
+import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.data.Item;
 import com.vaadin.event.Action;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Embedded;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class GermplasmSearchResultsComponent extends CssLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+public class GermplasmSearchResultsComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 5314653969843976836L;
 
 	private Label matchingGermplasmsLabel;
 	private Table matchingGermplasmsTable;
+	
+	private Button actionButton;
+	private ContextMenu menu;
+	private ContextMenuItem menuSelectAll;
+	private ContextMenuItem menuAddNewEntry;
+	
 	private TableWithSelectAllLayout matchingGermplasmsTableWithSelectAll;
 	
 	private final static Logger LOG = LoggerFactory.getLogger(GermplasmSearchResultsComponent.class);
@@ -68,8 +80,9 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 	public static final String MATCHING_GEMRPLASMS_TABLE_DATA = "Matching Germplasms Table";
 	public static final String GERMPLASM_BROWSER_LINK = "http://localhost:18080/GermplasmStudyBrowser/main/germplasm-";
 	
-    static final Action ACTION_COPY_TO_NEW_LIST= new Action("Copy to new list");
-    static final Action[] GERMPLASMS_TABLE_CONTEXT_MENU = new Action[] { ACTION_COPY_TO_NEW_LIST };
+    static final Action ACTION_COPY_TO_NEW_LIST= new Action("Add Selected Entries to New List");
+    static final Action ACTION_SELECT_ALL= new Action("Select All");
+    static final Action[] GERMPLASMS_TABLE_CONTEXT_MENU = new Action[] { ACTION_COPY_TO_NEW_LIST, ACTION_SELECT_ALL };
 	
     private Action.Handler rightClickActionHandler;
     
@@ -118,15 +131,18 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 	public void instantiateComponents() {
 		
 		setWidth("100%");
-
-		matchingGermplasmsLabel = new Label();
-		matchingGermplasmsLabel.setWidth("100%");
 		
 		matchingGermplasmsLabel = new Label(messageSource.getMessage(Message.TOTAL_RESULTS) + ": " 
        		 + "  <b>" + 0 + "</b>", Label.CONTENT_XHTML);
 		
-		matchingGermplasmsLabel.setStyleName("lm-search-results-label");
-       	
+		actionButton = new ActionButton();
+		
+		menu = new ContextMenu();
+		menu.setWidth("250px");
+		menuAddNewEntry = menu.addItem(messageSource.getMessage(Message.ADD_SELECTED_ENTRIES_TO_NEW_LIST));
+		menuSelectAll = menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
+		updateActionMenuOptions(false);		
+		
 		matchingGermplasmsTableWithSelectAll = new TableWithSelectAllLayout(10, CHECKBOX_COLUMN_ID);
 		matchingGermplasmsTableWithSelectAll.setHeight("500px");
 
@@ -171,19 +187,22 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 					return GERMPLASMS_TABLE_CONTEXT_MENU;
 	            }
 
-				@SuppressWarnings("unchecked")
 				@Override
 				public void handleAction(Action action, Object sender, Object target) {
 	             	if (ACTION_COPY_TO_NEW_LIST == action) {
-	             		List<Integer> gids = new ArrayList<Integer>();
-	             		gids.addAll((Collection<? extends Integer>) matchingGermplasmsTable.getValue());
-	             		for(Integer gid : gids){
-	             			listManagerMain.addPlantToList(gid);
-	             		}
+	             		addSelectedEntriesToNewList();
+	             	}
+	             	else if(ACTION_SELECT_ALL == action){
+	             		matchingGermplasmsTable.setValue(matchingGermplasmsTable.getItemIds());
 	             	}
 				}
 			};
 		
+	}
+
+	private void updateActionMenuOptions(boolean status) {
+		menuAddNewEntry.setEnabled(status);
+		menuSelectAll.setEnabled(status);
 	}
 
 	@Override
@@ -193,6 +212,35 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 
 	@Override
 	public void addListeners() {
+		
+        actionButton.addListener(new ClickListener(){
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				menu.show(event.getClientX(), event.getClientY());
+			}
+        	
+        });
+        
+		menu.addListener(new ContextMenu.ClickListener() {
+			private static final long serialVersionUID = -2343109406180457070L;
+			
+			@Override
+			public void contextItemClick(
+					org.vaadin.peter.contextmenu.ContextMenu.ClickEvent event) {
+				 ContextMenuItem clickedItem = event.getClickedItem();
+				 
+				 if(clickedItem.getName().equals(messageSource.getMessage(Message.ADD_SELECTED_ENTRIES_TO_NEW_LIST))){
+					 addSelectedEntriesToNewList();
+				 }
+				 else if(clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))){
+					 matchingGermplasmsTable.setValue(matchingGermplasmsTable.getItemIds());
+				 }
+				
+			}
+		});
+        
 		matchingGermplasmsTable.addActionHandler(rightClickActionHandler);
 	}
 
@@ -204,7 +252,18 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 	
 	@Override
 	public void layoutComponents() {
-		addComponent(matchingGermplasmsLabel);
+		setSpacing(true);
+		
+		HorizontalLayout headerLayout = new HorizontalLayout();
+		headerLayout.setWidth("100%");
+		headerLayout.setSpacing(true);
+		headerLayout.addComponent(matchingGermplasmsLabel);
+		headerLayout.addComponent(actionButton);
+		headerLayout.setComponentAlignment(matchingGermplasmsLabel, Alignment.BOTTOM_LEFT);
+		headerLayout.setComponentAlignment(actionButton, Alignment.BOTTOM_RIGHT);
+		
+		addComponent(menu);
+		addComponent(headerLayout);
 		addComponent(matchingGermplasmsTableWithSelectAll);
 	}
 		
@@ -262,7 +321,8 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 
 	   		String locationName = "-";
 	   		try {
-	   		    Location germplasmLocation = germplasmDataManager.getLocationByID(germplasm.getLocationId());
+	   		    @SuppressWarnings("deprecation")
+				Location germplasmLocation = germplasmDataManager.getLocationByID(germplasm.getLocationId());
 	   		    if(germplasmLocation!=null && germplasmLocation.getLname()!=null){
 	   		        locationName = germplasmLocation.getLname();
 	   		    }
@@ -278,6 +338,10 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 		final int count = matchingGermplasmsTable.getItemIds().size();
 		matchingGermplasmsLabel.setValue(new Label(messageSource.getMessage(Message.TOTAL_RESULTS) + ": " 
 	       		 + "  <b>" + count + "</b>", Label.CONTENT_XHTML));
+		
+		if(matchingGermplasmsTable.getItemIds().size() > 0){
+			updateActionMenuOptions(true);
+		}
 	}
 
     private String getGermplasmNames(int gid) throws InternationalizableException {
@@ -332,27 +396,8 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
     	return matchingGermplasmsTable;
     }
     
-    private Window launchGermplasmDetailsWindow (final Window window, final String caption, final Integer gid) {
-
-    	/*
-        final CssLayout layout = new CssLayout();
-        layout.setMargin(true);
-
-        layout.addComponent(new GermplasmDetailsComponent(listManagerMain, gid));
-        
-        final Window popupWindow = new Window();
-        popupWindow.setWidth("900px");
-        popupWindow.setHeight("550px");
-        popupWindow.setModal(true);
-        popupWindow.setResizable(false);
-        popupWindow.center();
-        popupWindow.setCaption(caption);
-        popupWindow.setContent(layout);
-        popupWindow.addStyleName(Reindeer.WINDOW_LIGHT);
-        popupWindow.addStyleName("lm-list-manager-popup");
-
-        window.addWindow(popupWindow);*/
-        
+    @SuppressWarnings("unused")
+	private Window launchGermplasmDetailsWindow (final Window window, final String caption, final Integer gid) {
     	launchWebTool();
     	
     	Tool tool = null;
@@ -360,8 +405,6 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
             tool = workbenchDataManager.getToolWithName(ToolName.germplasm_browser.toString());
         } catch (MiddlewareQueryException qe) {
             LOG.error("QueryException", qe);
-            /*MessageNotifier.showError(mainWindow, messageSource.getMessage(Message.DATABASE_ERROR),
-                    "<br />" + messageSource.getMessage(Message.CONTACT_ADMIN_ERROR_DESC));*/
         }
         
         ExternalResource germplasmBrowserLink = null;
@@ -485,8 +528,23 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 			//e2.printStackTrace();
 		}
     	
-    	        
     }
+    
+	@SuppressWarnings("unchecked")
+	public void addSelectedEntriesToNewList() {
+		List<Integer> gids = new ArrayList<Integer>();
+ 		gids.addAll((Collection<? extends Integer>) matchingGermplasmsTable.getValue());
+
+ 		if(gids.size() == 0){
+ 			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.WARNING) 
+                    , messageSource.getMessage(Message.ERROR_GERMPLASM_MUST_BE_SELECTED));
+ 		}
+ 		else{
+ 			for(Integer gid : gids){
+ 	 			listManagerMain.addPlantToList(gid);
+ 	 		}
+ 		}	
+	}
 
     public boolean isViaToolUrl() {
         return viaToolUrl;
