@@ -133,7 +133,7 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 		matchingGermplasmsTable = matchingGermplasmsTableWithSelectAll.getTable();
 		matchingGermplasmsTable.setData(MATCHING_GEMRPLASMS_TABLE_DATA);
 		matchingGermplasmsTable.addContainerProperty(CHECKBOX_COLUMN_ID, CheckBox.class, null);
-		matchingGermplasmsTable.addContainerProperty("NAMES", String.class,null);
+		matchingGermplasmsTable.addContainerProperty("NAMES", Button.class,null);
 		matchingGermplasmsTable.addContainerProperty("PARENTAGE", String.class,null);
 		matchingGermplasmsTable.addContainerProperty("GID", Button.class, null);
 		matchingGermplasmsTable.addContainerProperty("LOCATION", String.class,null);
@@ -217,8 +217,11 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
         	Button gidButton = new Button(String.format("%s", germplasm.getGid().toString()), listener);
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 			
-			String shortenedNames = getShortenedGermplasmNames(germplasm.getGid());
-			
+            String shortenedNames = getShortenedGermplasmNames(germplasm.getGid());
+        	Button namesButton = new Button(shortenedNames, listener);
+        	namesButton.setStyleName(BaseTheme.BUTTON_LINK);
+        	namesButton.setDescription(getGermplasmNames(germplasm.getGid()));
+            
             String crossExpansion = "";
             if(germplasm!=null){
             	try {
@@ -268,7 +271,7 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
                 LOG.error(e.getMessage(), e);
             }
             
-            matchingGermplasmsTable.addItem(new Object[]{itemCheckBox, shortenedNames, crossExpansion, gidButton, locationName, methodName},germplasm.getGid());
+            matchingGermplasmsTable.addItem(new Object[]{itemCheckBox, namesButton, crossExpansion, gidButton, locationName, methodName},germplasm.getGid());
 		}
 		
 		// Update total count
