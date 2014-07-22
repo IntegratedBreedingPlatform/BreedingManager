@@ -12,6 +12,7 @@ import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerExporter;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerExporterException;
+import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
@@ -122,10 +123,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 		
 		initializeListEntriesTable();
 		
-		toolsButton = new Button(messageSource.getMessage(Message.ACTIONS));
-		toolsButton.setIcon(AppConstants.Icons.ICON_TOOLS);
-		toolsButton.setWidth("110px");
-		toolsButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
+		toolsButton = new ActionButton();
 		
 		menu = new ContextMenu();
 		menu.setWidth("200px");
@@ -240,7 +238,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 		setSpacing(true);
 			
 		HorizontalLayout tableHeaderLayout = new HorizontalLayout();
-		tableHeaderLayout.setHeight("25px");
+		tableHeaderLayout.setHeight("30px");
 		tableHeaderLayout.setWidth("100%");
 		
 		HorizontalLayout leftHeaderLayout = new HorizontalLayout();

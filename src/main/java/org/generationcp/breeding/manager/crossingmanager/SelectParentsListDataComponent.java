@@ -13,6 +13,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.constants.ModeView;
+import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
@@ -46,6 +47,8 @@ import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.event.Action;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -80,6 +83,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	private Long count;
 	private Label listEntriesLabel;
 	private Label totalListEntriesLabel;
+	private Label totalSelectedListEntriesLabel;
 
 	private Table listDataTable;
 	private Button viewListHeaderButton;
@@ -163,21 +167,22 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		listEntriesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		listEntriesLabel.setWidth("160px");
 		
-		totalListEntriesLabel = new Label(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
-       		 + "  <b>" + count + "</b>", Label.CONTENT_XHTML);
-       	totalListEntriesLabel.setWidth("135px");
-		
+		totalListEntriesLabel = new Label("", Label.CONTENT_XHTML);
+       	totalListEntriesLabel.setWidth("110px");
+       	updateNoOfEntries(count);
+       	
+       	totalSelectedListEntriesLabel = new Label("", Label.CONTENT_XHTML);
+		totalSelectedListEntriesLabel.setWidth("90px");
+		updateNoOfSelectedEntries(0);
+       	
 		viewListHeaderWindow = new ViewListHeaderWindow(germplasmList);
 		
 		viewListHeaderButton = new Button(messageSource.getMessage(Message.VIEW_HEADER));
 		viewListHeaderButton.addStyleName(Reindeer.BUTTON_LINK);
 		viewListHeaderButton.setDescription(viewListHeaderWindow.getListHeaderComponent().toString());
 		
-		actionButton = new Button(messageSource.getMessage(Message.ACTIONS));
+		actionButton = new ActionButton();
 		actionButton.setData(ACTIONS_BUTTON_ID);
-		actionButton.setIcon(AppConstants.Icons.ICON_TOOLS);
-		actionButton.setWidth("110px");
-		actionButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 		
 		inventoryViewActionButton = new Button(messageSource.getMessage(Message.ACTIONS));
 		inventoryViewActionButton.setData(ACTIONS_BUTTON_ID);
@@ -475,6 +480,24 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 				return LIST_DATA_TABLE_ACTIONS;
 			}
 		});
+		
+        tableWithSelectAllLayout.getTable().addListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				updateNoOfSelectedEntries();
+			}
+		});
+        
+        listInventoryTable.getTable().addListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				updateNoOfSelectedEntries();
+			}
+		});
 	}
 
 	@Override
@@ -487,26 +510,77 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		
 		headerLayout = new HorizontalLayout();
 		headerLayout.setWidth("100%");
-		
 		HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, listEntriesLabel);
 		headerLayout.addComponent(headingLayout);
 		headerLayout.addComponent(viewListHeaderButton);
 		headerLayout.setComponentAlignment(headingLayout, Alignment.MIDDLE_LEFT);
 		headerLayout.setComponentAlignment(viewListHeaderButton, Alignment.MIDDLE_RIGHT);
 		
-		addComponent(headerLayout);
+		HorizontalLayout leftSubHeaderLayout = new HorizontalLayout();
+		leftSubHeaderLayout.setSpacing(true);
+		leftSubHeaderLayout.addComponent(totalListEntriesLabel);
+		leftSubHeaderLayout.addComponent(totalSelectedListEntriesLabel);
+		leftSubHeaderLayout.setComponentAlignment(totalListEntriesLabel, Alignment.MIDDLE_LEFT);
+		leftSubHeaderLayout.setComponentAlignment(totalSelectedListEntriesLabel, Alignment.MIDDLE_LEFT);
 		
 		subHeaderLayout = new HorizontalLayout();
 		subHeaderLayout.setWidth("100%");
-		subHeaderLayout.addComponent(totalListEntriesLabel);
+		subHeaderLayout.addComponent(leftSubHeaderLayout);
 		subHeaderLayout.addComponent(actionButton);
-		subHeaderLayout.setComponentAlignment(totalListEntriesLabel, Alignment.MIDDLE_LEFT);
+		subHeaderLayout.setComponentAlignment(leftSubHeaderLayout, Alignment.MIDDLE_LEFT);
 		subHeaderLayout.setComponentAlignment(actionButton, Alignment.MIDDLE_RIGHT);
 		
+		addComponent(headerLayout);
 		addComponent(subHeaderLayout);
 		addComponent(tableWithSelectAllLayout);
 		addComponent(listInventoryTable);
 
+	}
+	
+	private void updateNoOfEntries(long count){
+		if(makeCrossesParentsComponent.getMakeCrossesMain().getModeView().equals(ModeView.LIST_VIEW)){
+			if(count == 0) {
+				totalListEntriesLabel.setValue(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
+			} else {
+				totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
+		        		 + "  <b>" + count + "</b>");
+	        }
+		}
+		else{//Inventory View
+			totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LOTS) + ": " 
+	        		 + "  <b>" + count + "</b>");
+		}
+	}
+	
+	private void updateNoOfEntries(){
+		int count = 0;
+		if(makeCrossesParentsComponent.getMakeCrossesMain().getModeView().equals(ModeView.LIST_VIEW)){
+			count = listDataTable.getItemIds().size();
+		}
+		else{//Inventory View
+			count = listInventoryTable.getTable().size();
+		}
+		updateNoOfEntries(count);
+	}
+	
+	private void updateNoOfSelectedEntries(int count){
+		totalSelectedListEntriesLabel.setValue("<i>" + messageSource.getMessage(Message.SELECTED) + ": " 
+	        		 + "  <b>" + count + "</b></i>");
+	}
+	
+	private void updateNoOfSelectedEntries(){
+		int count = 0;
+		
+		if(makeCrossesParentsComponent.getMakeCrossesMain().getModeView().equals(ModeView.LIST_VIEW)){
+			Collection<?> selectedItems = (Collection<?>)tableWithSelectAllLayout.getTable().getValue();
+			count = selectedItems.size();
+		}
+		else{
+			Collection<?> selectedItems = (Collection<?>)listInventoryTable.getTable().getValue();
+			count = selectedItems.size();
+		}
+		
+		updateNoOfSelectedEntries(count);
 	}
 	
 	/*--------------------------------------INVENTORY RELATED FUNCTIONS---------------------------------------*/
@@ -534,8 +608,8 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 			subHeaderLayout.setComponentAlignment(actionButton, Alignment.MIDDLE_RIGHT);
 			
 			listEntriesLabel.setValue(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
-	        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
-	       		 + "  <b>" + count + "</b>");
+	        updateNoOfEntries();
+	        updateNoOfSelectedEntries();
 	        
 	        this.removeComponent(listInventoryTable);
 	        this.addComponent(tableWithSelectAllLayout);
@@ -571,8 +645,8 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	        subHeaderLayout.setComponentAlignment(inventoryViewActionButton, Alignment.MIDDLE_RIGHT);
 	        
 	        listEntriesLabel.setValue(messageSource.getMessage(Message.LOTS));
-	        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LOTS) + ": " 
-	          		 + "  <b>" + listInventoryTable.getTable().getItemIds().size() + "</b>");
+	        updateNoOfEntries();
+	        updateNoOfSelectedEntries();
 	        
 	        this.removeComponent(tableWithSelectAllLayout);
 	        this.addComponent(listInventoryTable);

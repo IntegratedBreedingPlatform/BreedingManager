@@ -18,6 +18,7 @@ import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerActionHandler;
 import org.generationcp.breeding.manager.crossingmanager.listeners.ParentsTableCheckboxListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
+import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
@@ -54,6 +55,8 @@ import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.event.Transferable;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
@@ -87,6 +90,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	private Button editHeaderButton;
 	private Label listEntriesLabel;
 	private Label totalListEntriesLabel;
+	private Label totalSelectedListEntriesLabel;
 	
 	private Button actionButton;
 	private Button inventoryViewActionButton;
@@ -185,12 +189,13 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		
 		totalListEntriesLabel = new Label(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
          		 + "  <b>0</b>", Label.CONTENT_XHTML);
-		totalListEntriesLabel.setWidth("135px");
+		totalListEntriesLabel.setWidth("110px");
+		
+		totalSelectedListEntriesLabel = new Label("", Label.CONTENT_XHTML);
+		totalSelectedListEntriesLabel.setWidth("90px");
+		updateNoOfSelectedEntries(0);
         
-		actionButton = new Button(messageSource.getMessage(Message.ACTIONS));
-        actionButton.setIcon(AppConstants.Icons.ICON_TOOLS);
-        actionButton.setWidth("110px");
-        actionButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
+		actionButton = new ActionButton();
 		
 		actionMenu = new ContextMenu();
         actionMenu.setWidth("250px");
@@ -369,6 +374,24 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			@Override
 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 				openSaveListAsDialog();
+			}
+		});
+		
+        tableWithSelectAllLayout.getTable().addListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				updateNoOfSelectedEntries();
+			}
+		});
+        
+        listInventoryTable.getTable().addListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				updateNoOfSelectedEntries();
 			}
 		});
 	}
@@ -670,15 +693,46 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		listInventoryTable.getTable().setDropHandler(inventoryTableDropHandler);
 	}
 
-	public void updateNoOfEntries(int numOfEntries) {
+	public void updateNoOfEntries(int count){
 		if(makeCrossesMain.getModeView().equals(ModeView.LIST_VIEW)){
 			totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
-		       		 + "  <b>" + numOfEntries + "</b>");
+	        		 + "  <b>" + count + "</b>");
 		}
-		else if(makeCrossesMain.getModeView().equals(ModeView.INVENTORY_VIEW)){
+		else{//Inventory View
 			totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LOTS) + ": " 
-		       		 + "  <b>" + numOfEntries + "</b>");
+	        		 + "  <b>" + count + "</b>");
 		}
+	}
+	
+	public void updateNoOfEntries(){
+		int count = 0;
+		if(makeCrossesMain.getModeView().equals(ModeView.LIST_VIEW)){
+			count = listDataTable.getItemIds().size();
+		}
+		else{//Inventory View
+			count = listInventoryTable.getTable().size();
+		}
+		updateNoOfEntries(count);
+	}
+	
+	private void updateNoOfSelectedEntries(int count){
+		totalSelectedListEntriesLabel.setValue("<i>" + messageSource.getMessage(Message.SELECTED) + ": " 
+	        		 + "  <b>" + count + "</b></i>");
+	}
+	
+	private void updateNoOfSelectedEntries(){
+		int count = 0;
+		
+		if(source.getMakeCrossesMain().getModeView().equals(ModeView.LIST_VIEW)){
+			Collection<?> selectedItems = (Collection<?>)tableWithSelectAllLayout.getTable().getValue();
+			count = selectedItems.size();
+		}
+		else{
+			Collection<?> selectedItems = (Collection<?>)listInventoryTable.getTable().getValue();
+			count = selectedItems.size();
+		}
+		
+		updateNoOfSelectedEntries(count);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -749,11 +803,18 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		headerLayout.setComponentAlignment(headingLayout, Alignment.MIDDLE_LEFT);
 		headerLayout.setComponentAlignment(editHeaderButton, Alignment.BOTTOM_RIGHT);
 		
+		HorizontalLayout leftSubHeaderLayout = new HorizontalLayout();
+		leftSubHeaderLayout.setSpacing(true);
+		leftSubHeaderLayout.addComponent(totalListEntriesLabel);
+		leftSubHeaderLayout.addComponent(totalSelectedListEntriesLabel);
+		leftSubHeaderLayout.setComponentAlignment(totalListEntriesLabel, Alignment.MIDDLE_LEFT);
+		leftSubHeaderLayout.setComponentAlignment(totalSelectedListEntriesLabel, Alignment.MIDDLE_LEFT);
+		
 		subHeaderLayout = new HorizontalLayout();
 		subHeaderLayout.setWidth("100%");
-		subHeaderLayout.addComponent(totalListEntriesLabel);
+		subHeaderLayout.addComponent(leftSubHeaderLayout);
 		subHeaderLayout.addComponent(actionButton);
-		subHeaderLayout.setComponentAlignment(totalListEntriesLabel, Alignment.MIDDLE_LEFT);
+		subHeaderLayout.setComponentAlignment(leftSubHeaderLayout, Alignment.MIDDLE_LEFT);
 		subHeaderLayout.setComponentAlignment(actionButton, Alignment.TOP_RIGHT);
 		
 		this.addComponent(headerLayout);
@@ -885,7 +946,8 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			subHeaderLayout.setComponentAlignment(actionButton, Alignment.MIDDLE_RIGHT);
 			
 			listEntriesLabel.setValue(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
-			updateNoOfEntries(listDataTable.size());
+			updateNoOfEntries();
+			updateNoOfSelectedEntries();
 	        
 	        this.removeComponent(listInventoryTable);
 	        this.addComponent(tableWithSelectAllLayout);
@@ -952,7 +1014,8 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	        subHeaderLayout.setComponentAlignment(inventoryViewActionButton, Alignment.MIDDLE_RIGHT);
 	        
 	        listEntriesLabel.setValue(messageSource.getMessage(Message.LOTS));
-	        updateNoOfEntries(listInventoryTable.getTable().getItemIds().size());
+	        updateNoOfEntries();
+	        updateNoOfSelectedEntries();
 	        
 	        this.removeComponent(tableWithSelectAllLayout);
 	        this.addComponent(listInventoryTable);
