@@ -16,6 +16,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.constants.ModeView;
+import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.IconButton;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
@@ -68,6 +69,8 @@ import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.event.Action;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
@@ -122,6 +125,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     private Label buildNewListDesc;
     private Label topLabel;
     private Label totalListEntriesLabel;
+    private Label totalSelectedListEntriesLabel;
     private BreedingManagerListDetailsComponent breedingManagerListDetailsComponent;
     private TableWithSelectAllLayout tableWithSelectAllLayout;
     private Table listDataTable;
@@ -226,8 +230,14 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         topLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
         topLabel.setWidth("130px");
         topLabel.setStyleName(Bootstrap.Typography.H4.styleName());
-		totalListEntriesLabel = new Label(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
-       		 + "  <b>" + 0 + "</b>", Label.CONTENT_XHTML);
+        
+		totalListEntriesLabel = new Label("", Label.CONTENT_XHTML);
+		totalListEntriesLabel.setWidth("110px");
+		updateNoOfEntries(0);
+		
+		totalSelectedListEntriesLabel = new Label("", Label.CONTENT_XHTML);
+//		totalSelectedListEntriesLabel.setWidth("95px");
+		updateNoOfSelectedEntries(0);
 
         editHeaderButton = new Button(messageSource.getMessage(Message.EDIT_HEADER));
         editHeaderButton.setImmediate(true);
@@ -284,13 +294,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         resetMenuOptions();
         resetInventoryMenuOptions();
         
-        toolsButton = new Button(messageSource.getMessage(Message.ACTIONS));
+		toolsButton = new ActionButton();
 		toolsButton.setData(TOOLS_BUTTON_ID);
-		toolsButton.setIcon(AppConstants.Icons.ICON_TOOLS);
-		toolsButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
-		toolsButton.setWidth("110px");
-        toolsButton.addStyleName("lm-tools-button");
-        
+		
         inventoryViewToolsButton = new Button(messageSource.getMessage(Message.ACTIONS));
         inventoryViewToolsButton.setData(TOOLS_BUTTON_ID);
         inventoryViewToolsButton.setIcon(AppConstants.Icons.ICON_TOOLS);
@@ -501,6 +507,24 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         		}
             }
         });
+        
+        tableWithSelectAllLayout.getTable().addListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				updateNoOfSelectedEntries();
+			}
+		});
+        
+        listInventoryTable.getTable().addListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				updateNoOfSelectedEntries();
+			}
+		});
 		
 	}
 
@@ -641,20 +665,27 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         listBuilderPanelTitleContainer.setComponentAlignment(lockButton, Alignment.BOTTOM_RIGHT);
         listBuilderPanelTitleContainer.setComponentAlignment(unlockButton, Alignment.BOTTOM_RIGHT);
 
+		HorizontalLayout leftSubHeaderLayout = new HorizontalLayout();
+		leftSubHeaderLayout.setSpacing(true);
+		leftSubHeaderLayout.addComponent(totalListEntriesLabel);
+		leftSubHeaderLayout.addComponent(totalSelectedListEntriesLabel);
+		leftSubHeaderLayout.setComponentAlignment(totalListEntriesLabel, Alignment.MIDDLE_LEFT);
+		leftSubHeaderLayout.setComponentAlignment(totalSelectedListEntriesLabel, Alignment.MIDDLE_LEFT);
+        
         toolsButtonContainer = new AbsoluteLayout();
         toolsButtonContainer.setHeight("27px");
-        toolsButtonContainer.setWidth("120px");
+        toolsButtonContainer.setWidth("90px");
         toolsButtonContainer.addComponent(toolsButton, "top:0; right:0");
         
-        final HorizontalLayout toolsLayout = new HorizontalLayout();
-        toolsLayout.setWidth("100%");
-        toolsLayout.addComponent(totalListEntriesLabel);
-        toolsLayout.addComponent(toolsButtonContainer);
-        toolsLayout.setComponentAlignment(totalListEntriesLabel,Alignment.MIDDLE_LEFT);
-        toolsLayout.setExpandRatio(totalListEntriesLabel, 1.0F);
+        final HorizontalLayout subHeaderLayout = new HorizontalLayout();
+        subHeaderLayout.setWidth("100%");
+        subHeaderLayout.addComponent(leftSubHeaderLayout);
+        subHeaderLayout.addComponent(toolsButtonContainer);
+        subHeaderLayout.setComponentAlignment(leftSubHeaderLayout,Alignment.MIDDLE_LEFT);
+        subHeaderLayout.setExpandRatio(leftSubHeaderLayout, 1.0F);
 
         listDataTableLayout.addComponent(listBuilderPanelTitleContainer);
-        listDataTableLayout.addComponent(toolsLayout);
+        listDataTableLayout.addComponent(subHeaderLayout);
         listDataTableLayout.addComponent(tableWithSelectAllLayout);
         listDataTableLayout.addComponent(listInventoryTable);
 
@@ -716,7 +747,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     	dropHandler.addListener(new BuildNewListDropHandler.ListUpdatedListener() {
 			@Override
 			public void listUpdated(final ListUpdatedEvent event) {
-				updateTotalListEntries();
+				updateNoOfEntries();
 			}
 			
 		});
@@ -766,18 +797,49 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
                     , messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
         }
         
-        updateTotalListEntries();
+        updateNoOfEntries();
     }
     
-    public void updateTotalListEntries() {
+	private void updateNoOfEntries(long count){
     	if(source.getModeView().equals(ModeView.LIST_VIEW)){
     		totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
-   	       		 + "  <b>" + listDataTable.getItemIds().size() + "</b>");
+   	       		 + "  <b>" + count + "</b>");
     	}
     	else if(source.getModeView().equals(ModeView.INVENTORY_VIEW)){
     		totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LOTS) + ": " 
-	          		 + "  <b>" + listInventoryTable.getTable().getItemIds().size() + "</b>");
+	          		 + "  <b>" + count + "</b>");
     	}
+	}
+    
+    public void updateNoOfEntries() {
+		int count = 0;
+		if(source.getModeView().equals(ModeView.LIST_VIEW)){
+			count = listDataTable.getItemIds().size();
+		}
+		else{//Inventory View
+			count = listInventoryTable.getTable().size();
+		}
+		updateNoOfEntries(count);
+	}
+    
+	private void updateNoOfSelectedEntries(int count){
+		totalSelectedListEntriesLabel.setValue("<i>" + messageSource.getMessage(Message.SELECTED) + ": " 
+       		 + "  <b>" + count + "</b></i>");
+	}
+	
+	private void updateNoOfSelectedEntries(){
+		int count = 0;
+		
+		if(source.getModeView().equals(ModeView.LIST_VIEW)){
+			Collection<?> selectedItems = (Collection<?>)tableWithSelectAllLayout.getTable().getValue();
+			count = selectedItems.size();
+		}
+		else{
+			Collection<?> selectedItems = (Collection<?>)listInventoryTable.getTable().getValue();
+			count = selectedItems.size();
+		}
+		
+		updateNoOfSelectedEntries(count);
 	}
 
 	/**
@@ -888,7 +950,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 									messageSource, workbenchDataManager, inventoryDataManager); 
 		saveButton.addListener(saveListButtonListener);
 		
-		updateTotalListEntries();
+		updateNoOfEntries();
 		
 		resetInventoryMenuOptions();
 		
@@ -913,7 +975,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		tableWithSelectAllLayout.getTable().setWidth("100%");
 		addBasicTableColumns(tableWithSelectAllLayout.getTable());
 		
-		updateTotalListEntries();
+		updateNoOfEntries();
 	}
 	
     public GermplasmList getCurrentlySetGermplasmListInfo(){
@@ -1222,8 +1284,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			toolsButtonContainer.removeComponent(inventoryViewToolsButton);
 			
 			topLabel.setValue(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
-	        updateTotalListEntries();
-	        
+	        updateNoOfEntries();
+	        updateNoOfSelectedEntries();
 	        resetUnsavedChangesFlag();
 		}
 	}
@@ -1236,8 +1298,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	        toolsButtonContainer.addComponent(inventoryViewToolsButton, "top:0; right:0;");
 	        
 	        topLabel.setValue(messageSource.getMessage(Message.LOTS));
-	        updateTotalListEntries();
-	        
+	        updateNoOfEntries();
+	        updateNoOfSelectedEntries();
 	        resetUnsavedChangesFlag();
 		}
 	}
@@ -1566,7 +1628,7 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 
 	@Override
 	public void refreshListInventoryItemCount() {
-		updateTotalListEntries();
+		updateNoOfEntries();
 	}
 	
 }
