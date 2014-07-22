@@ -1,13 +1,14 @@
 package org.generationcp.breeding.manager.listmanager;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.constants.ModeView;
+import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.listmanager.listeners.ListSearchResultsItemClickListener;
@@ -16,7 +17,6 @@ import org.generationcp.breeding.manager.listmanager.sidebyside.ListSelectionLay
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -26,6 +26,8 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.event.Action;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
@@ -46,7 +48,9 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 	
 	private ListManagerMain source;
 	
-	private Label matchingListsLabel;
+	private Label totalMatchingListsLabel;
+	private Label totalSelectedMatchingListsLabel;
+	
 	private Button actionButton;
 	private Table matchingListsTable;
 	private TableWithSelectAllLayout matchingListsTableWithSelectAll;
@@ -101,20 +105,16 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 	@Override
 	public void instantiateComponents() {
 		
-		matchingListsLabel = new Label();
+		totalMatchingListsLabel = new Label("",Label.CONTENT_XHTML);
+		totalMatchingListsLabel.setWidth("120px");	
+		updateNoOfEntries(0);
 		
+		totalSelectedMatchingListsLabel = new Label("",Label.CONTENT_XHTML);
+		totalSelectedMatchingListsLabel.setWidth("95px");
+		updateNoOfSelectedEntries(0);
 		
-		matchingListsLabel = new Label(messageSource.getMessage(Message.TOTAL_RESULTS) + ": " 
-	       		 + "  <b>" + 0 + "</b>", Label.CONTENT_XHTML);
-		matchingListsLabel.setWidth("150px");	
-		matchingListsLabel.setStyleName("lm-search-results-label");
-		
-		actionButton = new Button(messageSource.getMessage(Message.ACTIONS));
+		actionButton = new ActionButton();
 		actionButton.setData(TOOLS_BUTTON_ID);
-		actionButton.setIcon(AppConstants.Icons.ICON_TOOLS);
-		actionButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
-		actionButton.setWidth("110px");
-        actionButton.addStyleName("lm-tools-button");
         
         //Action Button ContextMenu
         menu = new ContextMenu();
@@ -122,6 +122,8 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
         
         menuAddToNewList = menu.addItem(messageSource.getMessage(Message.ADD_SELECTED_LIST_TO_NEW_LIST));
         menuSelectAll = menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
+        
+        updateActionMenuOptions(false);
         
 		matchingListsTableWithSelectAll = new TableWithSelectAllLayout(5,
 				CHECKBOX_COLUMN_ID);
@@ -190,6 +192,11 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 		addActionHandler();
 	}
 	
+	private void updateActionMenuOptions(boolean status) {
+		menuAddToNewList.setEnabled(status);
+		menuSelectAll.setEnabled(status);
+	}
+
 	public void updateGermplasmListsMap(){
 		germplasmListsMap = Util.getAllGermplasmLists(germplasmListManager);
 	}
@@ -269,6 +276,15 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
                 menu.show(event.getClientX(), event.getClientY());
             }
 		});
+		
+		matchingListsTable.addListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				updateNoOfSelectedEntries();
+			}
+		});
 	}
 
 	@Override
@@ -277,12 +293,18 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 		setWidth("100%");
 		setSpacing(true);
 		
+		HorizontalLayout leftHeaderLayout = new HorizontalLayout();
+		leftHeaderLayout.setSpacing(true);
+		leftHeaderLayout.addComponent(totalMatchingListsLabel);
+		leftHeaderLayout.addComponent(totalSelectedMatchingListsLabel);
+		leftHeaderLayout.setComponentAlignment(totalMatchingListsLabel, Alignment.MIDDLE_LEFT);
+		leftHeaderLayout.setComponentAlignment(totalSelectedMatchingListsLabel, Alignment.MIDDLE_LEFT);
+		
 		HorizontalLayout headerLayout = new HorizontalLayout();
 		headerLayout.setWidth("100%");
-		headerLayout.addComponent(matchingListsLabel);
+		headerLayout.addComponent(leftHeaderLayout);
 		headerLayout.addComponent(actionButton);
-		
-		headerLayout.setComponentAlignment(matchingListsLabel, Alignment.BOTTOM_LEFT);
+		headerLayout.setComponentAlignment(leftHeaderLayout, Alignment.BOTTOM_LEFT);
 		headerLayout.setComponentAlignment(actionButton, Alignment.BOTTOM_RIGHT);
 		
 		addComponent(headerLayout);
@@ -291,7 +313,7 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 	}
 
 	public void applyGermplasmListResults(List<GermplasmList> germplasmLists) {
-		matchingListsLabel.setValue(new Label(messageSource.getMessage(Message.TOTAL_RESULTS) + ": " 
+		totalMatchingListsLabel.setValue(new Label(messageSource.getMessage(Message.TOTAL_RESULTS) + ": " 
 	       		 + "  <b>" + String.valueOf(germplasmLists.size()) + "</b>", Label.CONTENT_XHTML));
 		matchingListsTable.removeAllItems();
 		for (GermplasmList germplasmList : germplasmLists) {
@@ -318,7 +340,37 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 					germplasmList.getName(), germplasmList.getDescription() },
 					germplasmList.getId());
 		}
+		
+		if(matchingListsTable.getItemIds().size() > 0){
+			updateActionMenuOptions(true);
+		}
 	}
+	
+	private void updateNoOfEntries(long count){
+		totalMatchingListsLabel.setValue(messageSource.getMessage(Message.TOTAL_RESULTS) + ": " 
+       		 + "  <b>" + count + "</b>");
+	}
+	
+	private void updateNoOfEntries(){
+		int count = 0;
+		count = matchingListsTable.getItemIds().size();
+		updateNoOfEntries(count);
+	}
+	
+	private void updateNoOfSelectedEntries(int count){
+		totalSelectedMatchingListsLabel.setValue("<i>" + messageSource.getMessage(Message.SELECTED) + ": " 
+	        		 + "  <b>" + count + "</b></i>");
+	}
+	
+	private void updateNoOfSelectedEntries(){
+		int count = 0;
+		
+		Collection<?> selectedItems = (Collection<?>)matchingListsTable.getValue();
+		count = selectedItems.size();
+		
+		updateNoOfSelectedEntries(count);
+	}
+
 
 	public Table getMatchingListsTable() {
 		return matchingListsTable;
@@ -332,10 +384,11 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 		matchingListsTable.removeItem(itemId);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void addSelectedListToNewList(){
 		source.showListBuilder();
 		
-		Set<Integer> listIds = (Set)matchingListsTable.getValue(); 
+		Set<Integer> listIds = (Set<Integer>)matchingListsTable.getValue(); 
 		source.getListBuilderComponent().addListsFromSearchResults(listIds);
 	}
 }
