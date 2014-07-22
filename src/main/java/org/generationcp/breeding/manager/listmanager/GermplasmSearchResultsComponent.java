@@ -38,6 +38,8 @@ import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.event.Action;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.AbsoluteLayout;
@@ -63,7 +65,8 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 	private static final long serialVersionUID = 5314653969843976836L;
 
-	private Label matchingGermplasmsLabel;
+	private Label totalMatchingGermplasmsLabel;
+	private Label totalSelectedMatchingGermplasmsLabel;
 	private Table matchingGermplasmsTable;
 	
 	private Button actionButton;
@@ -132,8 +135,13 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		
 		setWidth("100%");
 		
-		matchingGermplasmsLabel = new Label(messageSource.getMessage(Message.TOTAL_RESULTS) + ": " 
-       		 + "  <b>" + 0 + "</b>", Label.CONTENT_XHTML);
+		totalMatchingGermplasmsLabel = new Label("", Label.CONTENT_XHTML);
+		totalMatchingGermplasmsLabel.setWidth("120px");
+		updateNoOfEntries(0);
+		
+		totalSelectedMatchingGermplasmsLabel = new Label("", Label.CONTENT_XHTML);
+		totalSelectedMatchingGermplasmsLabel.setWidth("95px");
+		updateNoOfSelectedEntries(0);
 		
 		actionButton = new ActionButton();
 		
@@ -242,6 +250,15 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		});
         
 		matchingGermplasmsTable.addActionHandler(rightClickActionHandler);
+        
+		matchingGermplasmsTable.addListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				updateNoOfSelectedEntries();
+			}
+		});
 	}
 
 	public void setRightClickActionHandlerEnabled(Boolean isEnabled){
@@ -254,12 +271,19 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	public void layoutComponents() {
 		setSpacing(true);
 		
+		HorizontalLayout leftHeaderLayout = new HorizontalLayout();
+		leftHeaderLayout.setSpacing(true);
+		leftHeaderLayout.addComponent(totalMatchingGermplasmsLabel);
+		leftHeaderLayout.addComponent(totalSelectedMatchingGermplasmsLabel);
+		leftHeaderLayout.setComponentAlignment(totalMatchingGermplasmsLabel, Alignment.MIDDLE_LEFT);
+		leftHeaderLayout.setComponentAlignment(totalSelectedMatchingGermplasmsLabel, Alignment.MIDDLE_LEFT);
+		
 		HorizontalLayout headerLayout = new HorizontalLayout();
 		headerLayout.setWidth("100%");
 		headerLayout.setSpacing(true);
-		headerLayout.addComponent(matchingGermplasmsLabel);
+		headerLayout.addComponent(leftHeaderLayout);
 		headerLayout.addComponent(actionButton);
-		headerLayout.setComponentAlignment(matchingGermplasmsLabel, Alignment.BOTTOM_LEFT);
+		headerLayout.setComponentAlignment(leftHeaderLayout, Alignment.BOTTOM_LEFT);
 		headerLayout.setComponentAlignment(actionButton, Alignment.BOTTOM_RIGHT);
 		
 		addComponent(menu);
@@ -268,7 +292,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	}
 		
 	public void applyGermplasmResults(List<Germplasm> germplasms){
-		matchingGermplasmsLabel.setValue(messageSource.getMessage(Message.TOTAL_RESULTS)+": "+String.valueOf(germplasms.size()));
+		updateNoOfEntries(germplasms.size());
 		matchingGermplasmsTable.removeAllItems();
 		for(Germplasm germplasm:germplasms){
 
@@ -334,10 +358,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
             matchingGermplasmsTable.addItem(new Object[]{itemCheckBox, namesButton, crossExpansion, gidButton, locationName, methodName},germplasm.getGid());
 		}
 		
-		// Update total count
-		final int count = matchingGermplasmsTable.getItemIds().size();
-		matchingGermplasmsLabel.setValue(new Label(messageSource.getMessage(Message.TOTAL_RESULTS) + ": " 
-	       		 + "  <b>" + count + "</b>", Label.CONTENT_XHTML));
+		updateNoOfEntries();
 		
 		if(matchingGermplasmsTable.getItemIds().size() > 0){
 			updateActionMenuOptions(true);
@@ -481,6 +502,32 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
     	
         return germplasmWindow;
 	}
+    
+	private void updateNoOfEntries(long count){
+		totalMatchingGermplasmsLabel.setValue(messageSource.getMessage(Message.TOTAL_RESULTS) + ": " 
+       		 + "  <b>" + count + "</b>");
+	}
+	
+	private void updateNoOfEntries(){
+		int count = 0;
+		count = matchingGermplasmsTable.getItemIds().size();
+		updateNoOfEntries(count);
+	}
+	
+	private void updateNoOfSelectedEntries(int count){
+		totalSelectedMatchingGermplasmsLabel.setValue("<i>" + messageSource.getMessage(Message.SELECTED) + ": " 
+	        		 + "  <b>" + count + "</b></i>");
+	}
+	
+	private void updateNoOfSelectedEntries(){
+		int count = 0;
+		
+		Collection<?> selectedItems = (Collection<?>)matchingGermplasmsTable.getValue();
+		count = selectedItems.size();
+		
+		updateNoOfSelectedEntries(count);
+	}
+
     
     private void launchWebTool(){
     	
