@@ -74,20 +74,105 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	}
 
 
+	protected Integer getIBDBUserId() throws MiddlewareQueryException {
+		Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+		Project project = workbenchDataManager.getLastOpenedProject(wbUserId);
+		Integer ibdbUserId = workbenchDataManager.getLocalIbdbUserId(wbUserId, project.getProjectId());
+		return ibdbUserId;
+	}
+
+
+	protected void performFirstPedigreeAction() {
+		try{
+		    Integer ibdbUserId = getIBDBUserId();
+		    Integer dateIntValue = getGermplasmDateValue();
+		    
+		    Map<String, Germplasm> createdGermplasms = new HashMap<String, Germplasm>();
+		    
+		    for(int i = 0 ; i < getImportedGermplasms().size(); i++){
+		        ImportedGermplasm importedGermplasm  = getImportedGermplasms().get(i);
+		        
+		        Germplasm germplasm = createGermplasmObject(i, -1, 0, 0, ibdbUserId, dateIntValue);
+
+		        Name name = createNameObject(ibdbUserId, dateIntValue, importedGermplasm.getDesig());
+		        
+		        if(!createdGermplasms.containsKey(name.getNval())){
+		        	createdGermplasms.put(name.getNval(), germplasm);
+		        	
+		        	germplasmNameObjects.add(new GermplasmName(germplasm,name));
+		        } else {
+		        	germplasmNameObjects.add(new GermplasmName(createdGermplasms.get(name.getNval()),name));
+		        }
+		        
+		    }
+
+		}catch (MiddlewareQueryException mqe){
+		    mqe.printStackTrace();
+		}
+	}
+	
+	
+	protected void performSecondPedigreeAction() {
+		try{
+			Integer ibdbUserId = getIBDBUserId();
+		    Integer dateIntValue = getGermplasmDateValue();                    
+		    
+		    Map<String, Germplasm> createdGermplasms = new HashMap<String, Germplasm>();
+
+		    for(int i = 0 ; i < getImportedGermplasms().size(); i++){
+		        
+		        ImportedGermplasm importedGermplasm  = getImportedGermplasms().get(i);
+		        int germplasmMatchesCount = (int) this.germplasmDataManager.countGermplasmByName(importedGermplasm.getDesig(), Operation.EQUAL);
+		        
+		        Germplasm germplasm = new Germplasm();
+		        
+		        if(importedGermplasm.getGid()!=null){
+		        	germplasm = germplasmDataManager.getGermplasmByGID(importedGermplasm.getGid()); 
+		        } else {
+	        		// gpid1 and gpid 2 values are temporary here, actual values will be set below
+	        		germplasm = createGermplasmObject(i, -1, 0, 0, ibdbUserId, dateIntValue);
+	        		
+	                if(germplasmMatchesCount==1){
+	                    //If a single match is found, multiple matches will be 
+	                    //   handled by SelectGemrplasmWindow and 
+	                    //   then receiveGermplasmFromWindowAndUpdateGermplasmData()
+	                    List<Germplasm> foundGermplasm = this.germplasmDataManager.getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
+	                    if(foundGermplasm.get(0).getGnpgs()<2){
+	                    	germplasm.setGpid1(foundGermplasm.get(0).getGpid1());
+	                    } else {
+	                    	germplasm.setGpid1(foundGermplasm.get(0).getGid());                            	
+	                    }
+	                    germplasm.setGpid2(foundGermplasm.get(0).getGid()); 
+	                } 
+		                
+		        }
+
+		        
+		        Name name = createNameObject(ibdbUserId, dateIntValue, importedGermplasm.getDesig());
+		        
+		        if(!createdGermplasms.containsKey(name.getNval())){
+		        	createdGermplasms.put(name.getNval(), germplasm);
+		        	
+		        	germplasmNameObjects.add(new GermplasmName(germplasm,name));
+		        } else {
+		        	
+		        	germplasmNameObjects.add(new GermplasmName(createdGermplasms.get(name.getNval()),name));
+		        }
+
+		        if(germplasmMatchesCount>1 && importedGermplasm.getGid()==null){
+		            displaySelectGermplasmWindow(importedGermplasm.getDesig(), i, germplasm);
+		        }
+
+		    }
+		}catch (MiddlewareQueryException mqe){
+		    mqe.printStackTrace();
+		}
+	}
+	
 	protected void performThirdPedigreeAction() {
 		try{
-		    Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
-		    Project project = workbenchDataManager.getLastOpenedProject(wbUserId);
-		    Integer ibdbUserId = workbenchDataManager.getLocalIbdbUserId(wbUserId, project.getProjectId());
-
-		    SimpleDateFormat formatter = new SimpleDateFormat(GermplasmImportMain.DATE_FORMAT);
-		    String sDate = "";
-		    Integer dateIntValue = null;
-		    String dateFieldValue = (String) getGermplasmFieldsComponent().getGermplasmDateField().getValue();
-		    if(dateFieldValue!=null && !dateFieldValue.equals("")){
-		    	sDate = formatter.format(dateFieldValue);
-		    	dateIntValue = Integer.parseInt(sDate.replace("-", ""));
-		    }
+		    Integer ibdbUserId = getIBDBUserId();
+		    Integer dateIntValue = getGermplasmDateValue();     
 		    
 		    Map<String, Germplasm> createdGermplasms = new HashMap<String, Germplasm>();
 		    
@@ -159,6 +244,9 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		        }
 		        
 		        if(searchByNameOrNewGermplasmIsNeeded) {
+		        	// gid at creation is temporary, will be set properly below
+		        	germplasm = createGermplasmObject(i, 0, 0, 0, ibdbUserId, dateIntValue);
+		        	
 		        	if(germplasmMatchesCount==1){
 		                //If a single match is found, multiple matches will be 
 		                //   handled by SelectGemrplasmWindow and 
@@ -166,39 +254,10 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		                List<Germplasm> foundGermplasm = this.germplasmDataManager.getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
 		                germplasm.setGid(foundGermplasm.get(0).getGid());
 		                doNotCreateGermplasmsWithId.add(foundGermplasm.get(0).getGid());
-		            } else {
-		                //If no matches found
-		                germplasm.setGid(i);
 		            }
-		            
-		            germplasm.setUserId(ibdbUserId);
-		            germplasm.setLocationId((Integer)getGermplasmFieldsComponent().getLocationComboBox().getValue());
-		            if(dateFieldValue!=null && !dateFieldValue.toString().equals(""))
-		            	germplasm.setGdate(dateIntValue);
-		            else
-		            	germplasm.setGdate(0);
-		            germplasm.setMethodId((Integer)getGermplasmFieldsComponent().getBreedingMethodComboBox().getValue());
-
-		            germplasm.setGnpgs(0);
-		            germplasm.setGpid1(0);
-		            germplasm.setGpid2(0);
-		            germplasm.setLgid(0);
-		            germplasm.setGrplce(0);
-		            germplasm.setReferenceId(0);
-		            germplasm.setMgid(0);
-		            
 		        }
 
-		        Name name = new Name();
-		        name.setTypeId((Integer)getGermplasmFieldsComponent().getNameTypeComboBox().getValue());
-		        name.setUserId(ibdbUserId);
-		        name.setNval(importedGermplasm.getDesig());
-		        name.setLocationId((Integer)getGermplasmFieldsComponent().getLocationComboBox().getValue());
-		        if(dateFieldValue!=null && !dateFieldValue.toString().equals(""))
-		        	name.setNdate(dateIntValue);
-		        else
-	            	name.setNdate(0);
-		        name.setReferenceId(0);
+		        Name name = createNameObject(ibdbUserId, dateIntValue, importedGermplasm.getDesig());
 		        
 		        if(!createdGermplasms.containsKey(name.getNval())){
 		        	createdGermplasms.put(name.getNval(), germplasm);
@@ -219,170 +278,52 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	}
 
 
-	protected void performSecondPedigreeAction() {
-		try{
-		    Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
-		    Project project = workbenchDataManager.getLastOpenedProject(wbUserId);
-		    Integer ibdbUserId = workbenchDataManager.getLocalIbdbUserId(wbUserId, project.getProjectId());                    
-		    
-		    SimpleDateFormat formatter = new SimpleDateFormat(GermplasmImportMain.DATE_FORMAT);
-		    String sDate = "";
-		    Integer dateIntValue = null;
-		    String dateFieldValue = (String) getGermplasmFieldsComponent().getGermplasmDateField().getValue();
-		    if(dateFieldValue!=null && !dateFieldValue.equals("")){
-		    	sDate = formatter.format(dateFieldValue);
-		    	dateIntValue = Integer.parseInt(sDate.replace("-", ""));
-		    }
-		    
-		    Map<String, Germplasm> createdGermplasms = new HashMap<String, Germplasm>();
-
-		    for(int i = 0 ; i < getImportedGermplasms().size(); i++){
-		        
-		        ImportedGermplasm importedGermplasm  = getImportedGermplasms().get(i);
-		        int germplasmMatchesCount = (int) this.germplasmDataManager.countGermplasmByName(importedGermplasm.getDesig(), Operation.EQUAL);
-		        
-		        Germplasm germplasm = new Germplasm();
-		        
-		        if(importedGermplasm.getGid()!=null){
-		        	germplasm = germplasmDataManager.getGermplasmByGID(importedGermplasm.getGid()); 
-		        } else {
-		                germplasm.setGid(i);
-		                germplasm.setUserId(ibdbUserId);
-		                germplasm.setLocationId((Integer)getGermplasmFieldsComponent().getLocationComboBox().getValue());
-		                if(dateFieldValue!=null && !dateFieldValue.toString().equals(""))
-		                	germplasm.setGdate(dateIntValue);
-		                else
-		                	germplasm.setGdate(0);
-		                germplasm.setMethodId((Integer)getGermplasmFieldsComponent().getBreedingMethodComboBox().getValue());
-
-		                germplasm.setGnpgs(-1);
-		                if(germplasmMatchesCount==1){
-		                    //If a single match is found, multiple matches will be 
-		                    //   handled by SelectGemrplasmWindow and 
-		                    //   then receiveGermplasmFromWindowAndUpdateGermplasmData()
-		                    List<Germplasm> foundGermplasm = this.germplasmDataManager.getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
-		                    if(foundGermplasm.get(0).getGnpgs()<2){
-		                    	germplasm.setGpid1(foundGermplasm.get(0).getGpid1());
-		                    } else {
-		                    	germplasm.setGpid1(foundGermplasm.get(0).getGid());                            	
-		                    }
-		                    germplasm.setGpid2(foundGermplasm.get(0).getGid()); 
-		                } else {
-		                    //If no matches are found
-		                    germplasm.setGpid1(0); 
-		                    germplasm.setGpid2(0);
-		                }
-		                
-		                germplasm.setUserId(ibdbUserId); 
-		                germplasm.setLgid(0);
-		                germplasm.setGrplce(0);
-		                germplasm.setReferenceId(0);
-		                germplasm.setMgid(0);
-		                
-		        }
-		        
-		        
-
-		        Name name = new Name();
-		        //name.setNid();
-		        //name.setGermplasmId();
-		        name.setTypeId((Integer)getGermplasmFieldsComponent().getNameTypeComboBox().getValue());
-		        name.setUserId(ibdbUserId);
-		        name.setNval(importedGermplasm.getDesig());
-		        name.setLocationId((Integer)getGermplasmFieldsComponent().getLocationComboBox().getValue());
-		        if(dateFieldValue!=null && !dateFieldValue.toString().equals(""))
-		        	name.setNdate(dateIntValue);
-		        else
-	            	name.setNdate(0);
-		        name.setReferenceId(0);
-		        
-		        if(!createdGermplasms.containsKey(name.getNval())){
-		        	//germplasmList.add(germplasm);
-		        	//nameList.add(name);
-		        	createdGermplasms.put(name.getNval(), germplasm);
-		        	
-		        	germplasmNameObjects.add(new GermplasmName(germplasm,name));
-		        } else {
-		        	//germplasmList.add(createdGermplasms.get(name.getNval()));
-		        	//nameList.add(name);
-		        	
-		        	germplasmNameObjects.add(new GermplasmName(createdGermplasms.get(name.getNval()),name));
-		        }
-
-		        if(germplasmMatchesCount>1 && importedGermplasm.getGid()==null){
-		            displaySelectGermplasmWindow(importedGermplasm.getDesig(), i, germplasm);
-		        }
-
-		    }
-		    //logFirstPedigreeUploadedToWorkbenchProjectActivity();
-		}catch (MiddlewareQueryException mqe){
-		    mqe.printStackTrace();
-		}
+	protected Name createNameObject(Integer ibdbUserId, Integer dateIntValue, String desig) {
+		Name name = new Name();
+		name.setTypeId((Integer)getGermplasmFieldsComponent().getNameTypeComboBox().getValue());
+		name.setUserId(ibdbUserId);
+		name.setNval(desig);
+		name.setLocationId((Integer)getGermplasmFieldsComponent().getLocationComboBox().getValue());
+		name.setNdate(dateIntValue);
+		name.setReferenceId(0);
+		
+		return name;
 	}
 
 
-	protected void performFirstPedigreeAction() {
-		try{
-		    Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
-		    Project project = workbenchDataManager.getLastOpenedProject(wbUserId);
-		    Integer ibdbUserId = workbenchDataManager.getLocalIbdbUserId(wbUserId, project.getProjectId());
+	protected Germplasm createGermplasmObject(Integer gid, Integer gnpgs, Integer gpid1, Integer gpid2, Integer ibdbUserId, Integer dateIntValue) throws MiddlewareQueryException {
+		Germplasm germplasm = new Germplasm();
+		
+		germplasm.setGid(gid);
+		germplasm.setUserId(ibdbUserId);
+		germplasm.setLocationId((Integer)getGermplasmFieldsComponent().getLocationComboBox().getValue());
+		germplasm.setGdate(dateIntValue);
+		germplasm.setMethodId((Integer)getGermplasmFieldsComponent().getBreedingMethodComboBox().getValue());
 
-		    SimpleDateFormat formatter = new SimpleDateFormat(GermplasmImportMain.DATE_FORMAT);
+		germplasm.setGnpgs(gnpgs);
+		germplasm.setGpid1(gpid1);
+		germplasm.setGpid2(gpid2);
+		
+		germplasm.setLgid(0);
+		germplasm.setGrplce(0);
+		germplasm.setReferenceId(0);
+		germplasm.setMgid(0);
+		
+		return germplasm;
+	}
 
-		    String sDate = "";
-		    Integer dateIntValue = null;
-		    Date dateFieldValue = (Date) getGermplasmFieldsComponent().getGermplasmDateField().getValue();
-		    if(dateFieldValue!=null && !dateFieldValue.toString().equals("")){
-		    	sDate = formatter.format(dateFieldValue);
-		    	dateIntValue = Integer.parseInt(sDate.replace("-", ""));
-		    }
-		    
-		    Map<String, Germplasm> createdGermplasms = new HashMap<String, Germplasm>();
-		    
-		    for(int i = 0 ; i < getImportedGermplasms().size(); i++){
-		        ImportedGermplasm importedGermplasm  = getImportedGermplasms().get(i);
-		        Germplasm germplasm = new Germplasm();
-		        germplasm.setGid(i);
-		        germplasm.setUserId(ibdbUserId);
-		        germplasm.setLocationId((Integer)getGermplasmFieldsComponent().getLocationComboBox().getValue());
-		        if(dateFieldValue!=null && !dateFieldValue.toString().equals(""))
-		        	germplasm.setGdate(dateIntValue);
-		        else
-		        	germplasm.setGdate(0);
-		        germplasm.setMethodId((Integer)getGermplasmFieldsComponent().getBreedingMethodComboBox().getValue());
 
-		        germplasm.setGnpgs(-1);
-		        germplasm.setGpid1(0);
-		        germplasm.setGpid2(0);
-		        germplasm.setLgid(0);
-		        germplasm.setGrplce(0);
-		        germplasm.setReferenceId(0);
-		        germplasm.setMgid(0);
+	protected Integer getGermplasmDateValue() {
+		SimpleDateFormat formatter = new SimpleDateFormat(GermplasmImportMain.DATE_FORMAT);
 
-		        Name name = new Name();
-		        name.setTypeId((Integer)getGermplasmFieldsComponent().getNameTypeComboBox().getValue());
-		        name.setUserId(ibdbUserId);
-		        name.setNval(importedGermplasm.getDesig());
-		        name.setLocationId((Integer)getGermplasmFieldsComponent().getLocationComboBox().getValue());
-		        if(dateFieldValue!=null && !dateFieldValue.toString().equals(""))
-		        	name.setNdate(dateIntValue);
-		        else
-	            	name.setNdate(0);
-		        name.setReferenceId(0);
-		        
-		        if(!createdGermplasms.containsKey(name.getNval())){
-		        	createdGermplasms.put(name.getNval(), germplasm);
-		        	
-		        	germplasmNameObjects.add(new GermplasmName(germplasm,name));
-		        } else {
-		        	germplasmNameObjects.add(new GermplasmName(createdGermplasms.get(name.getNval()),name));
-		        }
-		        
-		    }
-
-		}catch (MiddlewareQueryException mqe){
-		    mqe.printStackTrace();
+		String sDate = "";
+		Integer dateIntValue = 0;
+		Date dateFieldValue = (Date) getGermplasmFieldsComponent().getGermplasmDateField().getValue();
+		if(dateFieldValue!=null && !dateFieldValue.toString().equals("")){
+			sDate = formatter.format(dateFieldValue);
+			dateIntValue = Integer.parseInt(sDate.replace("-", ""));
 		}
+		return dateIntValue;
 	}
 	
 	public void displaySelectGermplasmWindow(String germplasmName, int i, Germplasm germplasm){
@@ -393,65 +334,44 @@ public class ProcessImportedGermplasmAction implements Serializable {
     }
 	
 	 private void searchOrAddANewGermplasm(int germplasmMatchesCount, Integer ibdbUserId, Integer dateIntValue, String desig, int index
-    		, Map<String, Germplasm> createdGermplasms){
-    	Germplasm germplasm = new Germplasm();
-    	if(germplasmMatchesCount==1){
-            //If a single match is found, multiple matches will be 
-            //   handled by SelectGemrplasmWindow and 
-            //   then receiveGermplasmFromWindowAndUpdateGermplasmData()
-    		try{
-	            List<Germplasm> foundGermplasm = this.germplasmDataManager.getGermplasmByName(desig, 0, 1, Operation.EQUAL);
-	            germplasm.setGid(foundGermplasm.get(0).getGid());
-	            doNotCreateGermplasmsWithId.add(foundGermplasm.get(0).getGid());
-    		} catch(MiddlewareQueryException ex){
-    			LOG.error("Error with getting germplasm by name = " + desig, ex);
-    			return;
-    		}
-        } else {
-            //If no matches found
-            germplasm.setGid(index);
-        }
-        
-        germplasm.setUserId(ibdbUserId);
-        germplasm.setLocationId((Integer)getGermplasmFieldsComponent().getLocationComboBox().getValue());
-        if(dateIntValue!=null)
-        	germplasm.setGdate(dateIntValue);
-        else
-        	germplasm.setGdate(0);
-        germplasm.setMethodId((Integer)getGermplasmFieldsComponent().getBreedingMethodComboBox().getValue());
-
-        germplasm.setGnpgs(0);
-        germplasm.setGpid1(0);
-        germplasm.setGpid2(0);
-        germplasm.setLgid(0);
-        germplasm.setGrplce(0);
-        germplasm.setReferenceId(0);
-        germplasm.setMgid(0);
-        
-        if(germplasmMatchesCount>1){
-            displaySelectGermplasmWindow(desig, index, germplasm);
-        } else{
-        	germplasmNameObjects.get(index).setGermplasm(germplasm);
-        }
+    		, Map<String, Germplasm> createdGermplasms) {
+		 
+		 try{
+			 Germplasm germplasm = createGermplasmObject(index, 0, 0, 0, ibdbUserId, dateIntValue);
+    	
+			 if(germplasmMatchesCount==1){
+	            //If a single match is found, multiple matches will be 
+	            //   handled by SelectGemrplasmWindow and 
+	            //   then receiveGermplasmFromWindowAndUpdateGermplasmData()
+		            List<Germplasm> foundGermplasm = this.germplasmDataManager.getGermplasmByName(desig, 0, 1, Operation.EQUAL);
+		            germplasm.setGid(foundGermplasm.get(0).getGid());
+		            doNotCreateGermplasmsWithId.add(foundGermplasm.get(0).getGid());
+			 } 
+	        
+		 
+			 if(germplasmMatchesCount>1){
+				 displaySelectGermplasmWindow(desig, index, germplasm);
+			 } else{
+				 germplasmNameObjects.get(index).setGermplasm(germplasm);
+			 }
+			 
+		 } catch(MiddlewareQueryException ex){
+			 LOG.error("Error with getting germplasm by name = " + desig, ex);
+			 return;
+		 }
         
     }
     
     private void addGermplasmName(String desig, Integer gid, Integer ibdbUserId, Integer dateIntValue){
     	try{
-    		Name name = new Name();
+    		Name name = createNameObject(ibdbUserId, dateIntValue, desig);
+    		
     		name.setNid(null);
     		name.setNstat(Integer.valueOf(0));
     		name.setGermplasmId(gid);
-            name.setTypeId((Integer)getGermplasmFieldsComponent().getNameTypeComboBox().getValue());
-            name.setUserId(ibdbUserId);
-            name.setNval(desig);
-            name.setLocationId((Integer)getGermplasmFieldsComponent().getLocationComboBox().getValue());
-            if(dateIntValue!=null)
-            	name.setNdate(dateIntValue);
-            else
-            	name.setNdate(0);
-            name.setReferenceId(0);
+    		
             germplasmDataManager.addGermplasmName(name);
+            
     	} catch(MiddlewareQueryException ex){
     		LOG.error("Error with saving germplasm name.", ex);
     	}
