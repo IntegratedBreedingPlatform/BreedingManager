@@ -748,6 +748,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			@Override
 			public void listUpdated(final ListUpdatedEvent event) {
 				updateNoOfEntries();
+				updateNoOfSelectedEntries();
 			}
 			
 		});
@@ -775,6 +776,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         }
         
         updateNoOfEntries();
+        updateNoOfSelectedEntries();
     }
     
 	private void updateNoOfEntries(long count){
@@ -928,6 +930,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		saveButton.addListener(saveListButtonListener);
 		
 		updateNoOfEntries();
+		updateNoOfSelectedEntries();
 		
 		resetInventoryMenuOptions();
 		
@@ -953,6 +956,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		addBasicTableColumns(tableWithSelectAllLayout.getTable());
 		
 		updateNoOfEntries();
+		updateNoOfSelectedEntries();
 	}
 	
     public GermplasmList getCurrentlySetGermplasmListInfo(){
@@ -1606,6 +1610,7 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 	@Override
 	public void refreshListInventoryItemCount() {
 		updateNoOfEntries();
+		updateNoOfSelectedEntries();
 	}
 	
 }
