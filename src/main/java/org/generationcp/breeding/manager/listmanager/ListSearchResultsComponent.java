@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
+import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.event.Action;
@@ -56,6 +57,9 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 	private TableWithSelectAllLayout matchingListsTableWithSelectAll;
 
 	private static final String CHECKBOX_COLUMN_ID = "Tag All Column";
+	private static final String NAME_ID = "NAME";
+	private static final String DESCRIPTION_ID = "DESCRIPTION";
+	
 	public static final String MATCHING_LISTS_TABLE_DATA = "Matching Lists Table";
 	public static final String TOOLS_BUTTON_ID = "Actions";
 
@@ -132,9 +136,8 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 		matchingListsTable.setData(MATCHING_LISTS_TABLE_DATA);
 		matchingListsTable.addContainerProperty(CHECKBOX_COLUMN_ID,
 				CheckBox.class, null);
-		matchingListsTable.addContainerProperty("NAME", String.class, null);
-		matchingListsTable.addContainerProperty("DESCRIPTION", String.class,
-				null);
+		matchingListsTable.addContainerProperty(NAME_ID, String.class, null);
+		matchingListsTable.addContainerProperty(DESCRIPTION_ID, String.class,null);
 		matchingListsTable.setHeight("260px");
 		matchingListsTable.setWidth("100%");
 		matchingListsTable.setMultiSelect(true);
@@ -336,9 +339,11 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 
 			});
 
-			matchingListsTable.addItem(new Object[] { itemCheckBox,
-					germplasmList.getName(), germplasmList.getDescription() },
-					germplasmList.getId());
+			Item newItem = matchingListsTable.getContainerDataSource().addItem(germplasmList.getId());
+			
+			newItem.getItemProperty(CHECKBOX_COLUMN_ID).setValue(itemCheckBox);
+			newItem.getItemProperty(NAME_ID).setValue(germplasmList.getName());
+			newItem.getItemProperty(DESCRIPTION_ID).setValue(germplasmList.getDescription());
 		}
 		
 		if(matchingListsTable.getItemIds().size() > 0){
