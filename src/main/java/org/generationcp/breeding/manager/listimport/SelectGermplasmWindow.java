@@ -126,7 +126,7 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
         		if(source.getNameGermplasmMap()==null) {
         			source.setNameGermplasmMap(new HashMap<String, Germplasm>());
         		}
-        		source.getNameGermplasmMap().put(germplasmName,germplasm);
+        		source.mapGermplasmNamesToGermplasm(germplasmName,germplasm);
         	}
         	if(!ignoreMatchesCheckbox.booleanValue()) {
         		Germplasm selectedGermplasm = this.germplasmDataManager.getGermplasmByGID((Integer) germplasmTable.getValue());

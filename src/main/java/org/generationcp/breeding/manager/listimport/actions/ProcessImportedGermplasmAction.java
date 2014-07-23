@@ -499,8 +499,9 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		SelectGermplasmWindow selectGermplasmWindow = window.next();
 		String germplasmName = selectGermplasmWindow.getGermplasmName();
 		int germplasmIndex = selectGermplasmWindow.getGermplasmIndex();
-		if(nameGermplasmMap!=null && nameGermplasmMap.containsKey(germplasmName)) {
-			Germplasm germplasm = nameGermplasmMap.get(germplasmName);
+		Germplasm germplasm = checkIfThereIsAMatch(germplasmName);
+		if(germplasm != null) {
+			nameGermplasmMap.get(germplasmName);
 			germplasmNameObjects.get(germplasmIndex).setGermplasm(germplasm);
 			removeWindow(selectGermplasmWindow);
 			processNextItems();
@@ -515,8 +516,8 @@ public class ProcessImportedGermplasmAction implements Serializable {
 			SelectGermplasmWindow selectGermplasmWindow = window.next();
 			String germplasmName = selectGermplasmWindow.getGermplasmName();
 			int germplasmIndex = selectGermplasmWindow.getGermplasmIndex();
-			if(nameGermplasmMap!=null && nameGermplasmMap.containsKey(germplasmName)) {
-				Germplasm germplasm = nameGermplasmMap.get(germplasmName);
+			Germplasm germplasm = checkIfThereIsAMatch(germplasmName);
+			if(germplasm!=null) {
 				germplasmNameObjects.get(germplasmIndex).setGermplasm(germplasm);
 			}
 		}
@@ -527,6 +528,39 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	public void saveImport() {
 		germplasmDetailsComponent.popupSaveAsDialog();
 	}
+
+
+	public void mapGermplasmNamesToGermplasm(String germplasmName,
+			Germplasm germplasm) {
+		String nameInImportFile = germplasmName.toLowerCase();
+		String standardizedNameInImportFile = GermplasmDataManagerUtil.standardizeName(nameInImportFile).toLowerCase();
+		String nameInImportFileWithSpacesRemoved = GermplasmDataManagerUtil.removeSpaces(nameInImportFile).toLowerCase();
+		
+		nameGermplasmMap.put(nameInImportFile,germplasm);
+		nameGermplasmMap.put(standardizedNameInImportFile,germplasm);
+		nameGermplasmMap.put(nameInImportFileWithSpacesRemoved,germplasm);
+	}
+	
+	public Germplasm checkIfThereIsAMatch(String germplasmName) {
+		if(nameGermplasmMap==null || nameGermplasmMap.isEmpty()) {
+			return null;
+		}
+		String nameInImportFile = germplasmName.toLowerCase();
+		if(nameGermplasmMap.containsKey(nameInImportFile)) {
+			return nameGermplasmMap.get(nameInImportFile);
+		}
+		String standardizedNameInImportFile = GermplasmDataManagerUtil.standardizeName(nameInImportFile).toLowerCase();
+		if(nameGermplasmMap.containsKey(standardizedNameInImportFile)) {
+			return nameGermplasmMap.get(standardizedNameInImportFile);
+		}
+		String nameInImportFileWithSpacesRemoved = GermplasmDataManagerUtil.removeSpaces(nameInImportFile).toLowerCase();
+		if(nameGermplasmMap.containsKey(nameInImportFileWithSpacesRemoved)) {
+			return nameGermplasmMap.get(nameInImportFileWithSpacesRemoved);
+		}
+		return null;
+	}
+	
+		
 
 	
 
