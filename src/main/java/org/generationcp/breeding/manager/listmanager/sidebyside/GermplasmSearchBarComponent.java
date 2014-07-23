@@ -38,11 +38,11 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 	
 	public static final String SEARCH_BUTTON = "List Manager Germplasm Search Button";
 	private static final String GUIDE = 
-	        "You may search for germplasm and germplasm lists using GID's or germplasm names (partial/full)" +
-	        " <br/><br/><b>Matching germplasm would contain</b> <br/>" +
-	        "  - Germplasm with matching GID's <br/>" +
-	        "  - Germplasm with name containing search query <br/>" +
-	        "  - Parents of the result germplasm (if selected)" +
+	        "You may search for germplasm and germplasm lists using GIDs, or partial or full germplasm names." +
+	        " <br/><br/><b>The search results will show:</b> <br/>" +
+	        "  - Germplasm with matching GIDs <br/>" +
+	        "  - Germplasm with name(s) containing the search term <br/>" +
+	        "  - Parents of the matching germplasm (if selected)" +
 	        " <br/><br/>The <b>Exact matches only</b> checkbox shows results that match the search term exactly when checked, " +
 	        " If you uncheck this option, the search will show results that contain the search term you enter." + 
 	        " <br/><br/>The <b>Search public data</b> checkbox allows you to search public (central) data, in addition to the local germplasm data.";
