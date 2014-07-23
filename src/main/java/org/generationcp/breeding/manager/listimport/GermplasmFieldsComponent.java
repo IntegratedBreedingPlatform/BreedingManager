@@ -111,9 +111,9 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 		addGermplasmDetailsMessage.setValue("You can specify following details to apply to the imported germplasm. These details are optional.");
 		
 		if (parentWindow != null){
-			methodComponent = new BreedingMethodField(parentWindow, 200);
+			methodComponent = new BreedingMethodField(parentWindow, 200, false, false);
 		} else {
-			methodComponent = new BreedingMethodField(200);
+			methodComponent = new BreedingMethodField(200, false, false);
 		}
 		methodComponent.setCaption(messageSource.getMessage(Message.GERMPLASM_BREEDING_METHOD_LABEL) + ":");
 		
@@ -126,9 +126,9 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 		
         germplasmDateLabel = new Label(messageSource.getMessage(Message.GERMPLASM_DATE_LABEL) + ":");
         germplasmDateLabel.addStyleName(CssStyles.BOLD);
-        germplasmDateField =  new DateField();
+        germplasmDateField = new DateField();
         germplasmDateField.setResolution(DateField.RESOLUTION_DAY);
-        germplasmDateField.setDateFormat(GermplasmImportMain.DATE_FORMAT);
+        germplasmDateField.setDateFormat(GermplasmImportMain.DATE_FORMAT);    
         
         nameTypeLabel = new Label(messageSource.getMessage(Message.GERMPLASM_NAME_TYPE_LABEL) + ":");
         nameTypeLabel.addStyleName(CssStyles.BOLD);

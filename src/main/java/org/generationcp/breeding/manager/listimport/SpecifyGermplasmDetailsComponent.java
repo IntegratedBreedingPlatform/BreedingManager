@@ -33,6 +33,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Item;
 import com.vaadin.data.Property.ConversionException;
 import com.vaadin.data.Property.ReadOnlyException;
 import com.vaadin.ui.Alignment;
@@ -150,7 +151,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
     
         
     public void nextButtonClickAction(){
-        if (validateMethod() && validateLocation() && validatePedigreeOption()) {
+        if (validateLocation() && validatePedigreeOption()) {
             processGermplasmAction.processGermplasm();
         }
     }
@@ -205,13 +206,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         return BreedingManagerUtil.validateRequiredField(getWindow(), germplasmFieldsComponent.getLocationComboBox(),
                 messageSource, messageSource.getMessage(Message.GERMPLASM_LOCATION_LABEL));
     }
-    
-    private boolean validateMethod() {
-        return BreedingManagerUtil.validateRequiredField(getWindow(), germplasmFieldsComponent.getBreedingMethodComboBox(),
-                messageSource, messageSource.getMessage(Message.GERMPLASM_BREEDING_METHOD_LABEL));
-    }
   
-    
     private void updateTotalEntriesLabel(){
     	int count = germplasmDetailsTable.getItemIds().size();
 		if(count == 0) {
@@ -244,17 +239,27 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         germplasmFieldsComponent.setGermplasmListType(germplasmListType);
     }
 
+    protected void initializePedigreeOptions() {
+		pedigreeOptionComboBox.addItem(1);
+        pedigreeOptionComboBox.addItem(2);
+        pedigreeOptionComboBox.addItem(3);
+        pedigreeOptionComboBox.setItemCaption(1, messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_ONE));
+        pedigreeOptionComboBox.setItemCaption(2, messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_TWO));
+        pedigreeOptionComboBox.setItemCaption(3, messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_THREE));
+	}
     
-    public void setPedigreeOptionGroupValue(Integer value){
-    	pedigreeOptionComboBox.setValue(value);
+    private void showFirstPedigreeOption(boolean visible){
+    	Item firstOption = pedigreeOptionComboBox.getItem(1);
+    	if (firstOption == null && visible){
+    		pedigreeOptionComboBox.removeAllItems();
+    		initializePedigreeOptions();
+    	} else if (!visible){
+    		pedigreeOptionComboBox.removeItem(1);
+    	}
     }
     
     public Integer getPedigreeOptionGroupValue(){
     	return (Integer) pedigreeOptionComboBox.getValue();
-    }
-    
-    public void setPedigreeOptionGroupEnabled(Boolean value){
-    	pedigreeOptionComboBox.setEnabled(value);
     }
     
     public String getPedigreeOption(){
@@ -315,15 +320,8 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 	@Override
 	public void initializeValues() {
         // 2nd section
-        pedigreeOptionComboBox.addItem(1);
-        pedigreeOptionComboBox.addItem(2);
-        pedigreeOptionComboBox.addItem(3);
-        pedigreeOptionComboBox.setItemCaption(1, messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_ONE));
-        pedigreeOptionComboBox.setItemCaption(2, messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_TWO));
-        pedigreeOptionComboBox.setItemCaption(3, messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_THREE));
+        initializePedigreeOptions();
 	}
-
-	
 
 	@Override
 	public void addListeners() {
@@ -395,10 +393,9 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         updateTotalEntriesLabel();
 
         if(germplasmListUploader.importFileIsAdvanced()){
-        	setPedigreeOptionGroupValue(3);
-        	setPedigreeOptionGroupEnabled(false);
+        	showFirstPedigreeOption(false);
         } else {
-        	setPedigreeOptionGroupEnabled(true);
+        	showFirstPedigreeOption(true);
         }
 	}
 

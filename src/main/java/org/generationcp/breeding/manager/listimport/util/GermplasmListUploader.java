@@ -300,6 +300,8 @@ public class GermplasmListUploader implements FileFactory {
     			listDescHeaderFound = true;
     		} else if(header.equals(LIST_DATE_HEADER_LABEL)){
     			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
+    			simpleDateFormat.setLenient(false);
+    			
     			try{
     				if(value != null && value.length() > 0){
     					listDate = simpleDateFormat.parse(value);
@@ -602,4 +604,5 @@ public class GermplasmListUploader implements FileFactory {
 		originalFilename = fileName;
         return f;
 	}
+	
 };
