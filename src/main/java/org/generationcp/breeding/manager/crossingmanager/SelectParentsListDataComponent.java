@@ -168,11 +168,11 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		listEntriesLabel.setWidth("160px");
 		
 		totalListEntriesLabel = new Label("", Label.CONTENT_XHTML);
-       	totalListEntriesLabel.setWidth("110px");
+       	totalListEntriesLabel.setWidth("120px");
        	updateNoOfEntries(count);
        	
        	totalSelectedListEntriesLabel = new Label("", Label.CONTENT_XHTML);
-		totalSelectedListEntriesLabel.setWidth("90px");
+		totalSelectedListEntriesLabel.setWidth("95px");
 		updateNoOfSelectedEntries(0);
        	
 		viewListHeaderWindow = new ViewListHeaderWindow(germplasmList);

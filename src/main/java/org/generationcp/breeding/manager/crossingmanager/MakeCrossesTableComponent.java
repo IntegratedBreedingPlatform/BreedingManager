@@ -47,6 +47,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -56,7 +57,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
 /**
@@ -92,6 +92,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
     private Label lblCrossMade;
     
     private Label totalCrossesLabel;
+    private Label totalSelectedCrossesLabel;
     private Button saveButton;
     
     private SaveListAsDialog saveListAsWindow;
@@ -120,7 +121,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
     
     @Override
     public void updateLabels() {
-    	lblCrossMade.setValue(messageSource.getMessage(Message.LABEL_CROSS_MADE).toUpperCase());
+    	lblCrossMade.setValue(messageSource.getMessage(Message.LABEL_CROSS_MADE));
     }
     
   
@@ -277,7 +278,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
             }
             tableCrossesMade.setPageLength(0);
         } else {
-            MessageNotifier.showWarning(this.getWindow(), "Warning!", messageSource.getMessage(Message.ERROR_CROSS_MUST_BE_SELECTED), Notification.POSITION_CENTERED);
+            MessageNotifier.showWarning(this.getWindow(), "Warning!", messageSource.getMessage(Message.ERROR_CROSS_MUST_BE_SELECTED));
         }
         if(tableCrossesMade.size()==0 && getParent() instanceof CrossingManagerMakeCrossesComponent)
             ((CrossingManagerMakeCrossesComponent) getParent()).disableNextButton();
@@ -353,13 +354,16 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		lblReviewCrosses.setWidth("150px");
 		
 		lblCrossMade = new Label();
-		lblCrossMade.addStyleName(Bootstrap.Typography.H5.styleName());
-		lblCrossMade.addStyleName(AppConstants.CssStyles.BOLD);
-		lblCrossMade.setWidth("120px");
+		lblCrossMade.addStyleName(Bootstrap.Typography.H4.styleName());
+		lblCrossMade.setWidth("160px");
 		
         totalCrossesLabel = new Label();
         totalCrossesLabel.setContentMode(Label.CONTENT_XHTML);
-        totalCrossesLabel.setWidth("150px");
+        totalCrossesLabel.setWidth("120px");
+        
+        totalSelectedCrossesLabel = new Label();
+        totalSelectedCrossesLabel.setContentMode(Label.CONTENT_XHTML);
+        totalSelectedCrossesLabel.setWidth("95px");
         
         saveButton = new Button(messageSource.getMessage(Message.SAVE_LABEL));
         saveButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
@@ -406,9 +410,22 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		String label = "Total Crosses: " + "<b>" + size + "</b>";
 		totalCrossesLabel.setValue(label);
 	}
+	
+	private void generateTotalSelectedCrossesLabel(Integer size){
+		String label = "<i>" + messageSource.getMessage(Message.SELECTED) + ": <b>" + size + "</b></i>";
+		totalSelectedCrossesLabel.setValue(label);
+	}
+	
+	private void generateTotalSelectedCrossesLabel(){
+		Collection<?> selectedItems = (Collection<?>)tableCrossesMade.getValue();
+		int count = selectedItems.size();
+		generateTotalSelectedCrossesLabel(count);
+	}
+	
 	@Override
 	public void initializeValues() {
 		generateTotalCrossesLabel(0);
+		generateTotalSelectedCrossesLabel(0);
 	}
 
 	@SuppressWarnings("serial")
@@ -420,6 +437,15 @@ public class MakeCrossesTableComponent extends VerticalLayout
 				launchSaveListAsWindow();
 			}
 		});
+		
+		tableCrossesMade.addListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				generateTotalSelectedCrossesLabel();
+			}
+		});
 	}
 
 	@SuppressWarnings("deprecation")
@@ -429,18 +455,28 @@ public class MakeCrossesTableComponent extends VerticalLayout
         setMargin(false,false,false,true);
         setWidth("450px");
 		
+        
+        HeaderLabelLayout headingLayout = new HeaderLabelLayout(null, lblCrossMade);
+        
+		HorizontalLayout leftLabelContainer = new HorizontalLayout();
+		leftLabelContainer.setSpacing(true);
+		leftLabelContainer.addComponent(totalCrossesLabel);
+		leftLabelContainer.addComponent(totalSelectedCrossesLabel);
+		leftLabelContainer.setComponentAlignment(totalCrossesLabel, Alignment.MIDDLE_LEFT);
+		leftLabelContainer.setComponentAlignment(totalSelectedCrossesLabel, Alignment.MIDDLE_LEFT);
+        
 		HorizontalLayout labelContainer = new HorizontalLayout();
 		labelContainer.setSpacing(true);
         labelContainer.setWidth("100%");
-        labelContainer.addComponent(lblCrossMade);
-        labelContainer.addComponent(totalCrossesLabel);
+        labelContainer.addComponent(leftLabelContainer);
         labelContainer.addComponent(saveButton);
-        labelContainer.setComponentAlignment(totalCrossesLabel, Alignment.MIDDLE_CENTER);
+        labelContainer.setComponentAlignment(leftLabelContainer, Alignment.MIDDLE_LEFT);
         labelContainer.setComponentAlignment(saveButton, Alignment.MIDDLE_RIGHT);
         
 		VerticalLayout makeCrossesLayout = new VerticalLayout();
 		makeCrossesLayout.setSpacing(true);
 		makeCrossesLayout.setMargin(true);
+		makeCrossesLayout.addComponent(headingLayout);
         makeCrossesLayout.addComponent(labelContainer);
         makeCrossesLayout.addComponent(tableCrossesMade);
 		
@@ -495,7 +531,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
         try {
             crossList = saveAction.saveRecords(makeCrossesMain.getCrossesMadeContainer().getCrossesMade());
             MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
-                    messageSource.getMessage(Message.CROSSES_SAVED_SUCCESSFULLY), 3000, Notification.POSITION_CENTERED);
+                    messageSource.getMessage(Message.CROSSES_SAVED_SUCCESSFULLY), 3000);
             
             // enable NEXT button if all lists saved
             makeCrossesMain.toggleNextButton();
@@ -504,7 +540,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
             LOG.error(e.getMessage() + " " + e.getStackTrace());
             e.printStackTrace();
             MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), 
-                messageSource.getMessage(Message.ERROR_IN_SAVING_CROSSES_DEFINED), Notification.POSITION_CENTERED);
+                messageSource.getMessage(Message.ERROR_IN_SAVING_CROSSES_DEFINED));
         }
     }
     
@@ -558,7 +594,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
     			} catch (MiddlewareQueryException e) {
     				e.printStackTrace();
     				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), 
-    						messageSource.getMessage(Message.ERROR_IN_SAVING_GERMPLASMLIST_DATA_CHANGES), Notification.POSITION_CENTERED);
+    						messageSource.getMessage(Message.ERROR_IN_SAVING_GERMPLASMLIST_DATA_CHANGES));
     			}
     		}
     	}

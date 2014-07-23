@@ -189,10 +189,10 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		
 		totalListEntriesLabel = new Label(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
          		 + "  <b>0</b>", Label.CONTENT_XHTML);
-		totalListEntriesLabel.setWidth("110px");
+		totalListEntriesLabel.setWidth("120px");
 		
 		totalSelectedListEntriesLabel = new Label("", Label.CONTENT_XHTML);
-		totalSelectedListEntriesLabel.setWidth("90px");
+		totalSelectedListEntriesLabel.setWidth("95px");
 		updateNoOfSelectedEntries(0);
         
 		actionButton = new ActionButton();
