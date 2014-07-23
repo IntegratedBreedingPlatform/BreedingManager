@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +44,8 @@ public class ProcessImportedGermplasmAction implements Serializable {
     private List<SelectGermplasmWindow> selectGermplasmWindows = new ArrayList<SelectGermplasmWindow>();
     private List<GermplasmName> germplasmNameObjects = new ArrayList<GermplasmName>();
     
+    private Map<String,Germplasm> nameGermplasmMap = new HashMap<String,Germplasm>();
+    
 	@Autowired
 	private WorkbenchDataManager workbenchDataManager;
 	
@@ -62,15 +65,12 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		String pedigreeOptionChosen = germplasmDetailsComponent.getPedigreeOption();
 		if(pedigreeOptionChosen.equalsIgnoreCase("1") && getImportedGermplasms() != null){
             performFirstPedigreeAction();
-            
         } else if(pedigreeOptionChosen.equalsIgnoreCase("2") && getImportedGermplasms() != null){
             performSecondPedigreeAction();
-           
         } else if(pedigreeOptionChosen.equalsIgnoreCase("3") && getImportedGermplasms() != null){
             performThirdPedigreeAction();
-            
         }
-
+		openNextWindow();
 	}
 
 
@@ -160,7 +160,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		        }
 
 		        if(germplasmMatchesCount>1 && importedGermplasm.getGid()==null){
-		            displaySelectGermplasmWindow(importedGermplasm.getDesig(), i, germplasm);
+		        	displaySelectGermplasmWindowIfNecessary(importedGermplasm.getDesig(), i, germplasm);
 		        }
 
 		    }
@@ -268,7 +268,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		        }
 		        
 		        if(germplasmMatchesCount>1 && searchByNameOrNewGermplasmIsNeeded){
-		            displaySelectGermplasmWindow(importedGermplasm.getDesig(), i, germplasm);
+		        	displaySelectGermplasmWindowIfNecessary(importedGermplasm.getDesig(), i, germplasm);
 		        }
 		    }
 
@@ -326,11 +326,13 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		return dateIntValue;
 	}
 	
-	public void displaySelectGermplasmWindow(String germplasmName, int i, Germplasm germplasm){
-        SelectGermplasmWindow selectGermplasmWindow = new SelectGermplasmWindow(this, germplasmName, i, germplasm, germplasmDetailsComponent.getViaToolURL());
+	public void displaySelectGermplasmWindowIfNecessary(String germplasmName, int i, Germplasm germplasm){
+		SelectGermplasmWindow selectGermplasmWindow = new SelectGermplasmWindow(this, germplasmName, i, germplasm, germplasmDetailsComponent.getViaToolURL());
         selectGermplasmWindow.addStyleName(Reindeer.WINDOW_LIGHT);
+        if(selectGermplasmWindows.isEmpty()) {
+        	germplasmDetailsComponent.getWindow().addWindow(selectGermplasmWindow);
+        }
         selectGermplasmWindows.add(selectGermplasmWindow);
-        germplasmDetailsComponent.getWindow().addWindow(selectGermplasmWindow);
     }
 	
 	 private void searchOrAddANewGermplasm(int germplasmMatchesCount, Integer ibdbUserId, Integer dateIntValue, String desig, int index
@@ -350,7 +352,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	        
 		 
 			 if(germplasmMatchesCount>1){
-				 displaySelectGermplasmWindow(desig, index, germplasm);
+				 displaySelectGermplasmWindowIfNecessary(desig, index, germplasm);
 			 } else{
 				 germplasmNameObjects.get(index).setGermplasm(germplasm);
 			 }
@@ -431,5 +433,44 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		return germplasmNameObjects;
 	}
 
+
+	public Map<String, Germplasm> getNameGermplasmMap() {
+		return nameGermplasmMap;
+	}
+
+
+	public void setNameGermplasmMap(Map<String, Germplasm> nameGermplasmMap) {
+		this.nameGermplasmMap = nameGermplasmMap;
+	}
+	
+	public void removeWindow(SelectGermplasmWindow selectGermplasmWindow) {
+		selectGermplasmWindows.remove(selectGermplasmWindow);
+	}
+
+	public void openNextWindow() {
+		Iterator<SelectGermplasmWindow> window = selectGermplasmWindows.iterator();
+		if(!window.hasNext()) {
+			saveImport();
+			return;
+		}
+		SelectGermplasmWindow selectGermplasmWindow = window.next();
+		Germplasm germplasm = selectGermplasmWindow.getGermplasm();
+		String germplasmName = selectGermplasmWindow.getGermplasmName();
+		int germplasmIndex = selectGermplasmWindow.getGermplasmIndex();
+		if(nameGermplasmMap!=null && nameGermplasmMap.containsKey(germplasmName)) {
+			germplasmNameObjects.get(germplasmIndex).setGermplasm(germplasm);
+			removeWindow(selectGermplasmWindow);
+			openNextWindow();
+		} else {
+			germplasmDetailsComponent.getWindow().addWindow(selectGermplasmWindow);
+		}
+	}
+
+
+	public void saveImport() {
+		germplasmDetailsComponent.popupSaveAsDialog();
+	}
+
+	
 
 }

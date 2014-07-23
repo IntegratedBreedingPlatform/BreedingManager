@@ -11,7 +11,9 @@
  *******************************************************************************/
 package org.generationcp.breeding.manager.listimport;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
@@ -48,6 +50,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.themes.BaseTheme;
 
 
@@ -118,11 +121,24 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
     }
  
     public void doneAction(){
-        Germplasm selectedGermplasm;
         try {
-            selectedGermplasm = this.germplasmDataManager.getGermplasmByGID((Integer) germplasmTable.getValue());
-            source.receiveGermplasmFromWindowAndUpdateGermplasmData(germplasmIndex, germplasm, selectedGermplasm);
-            removeWindow(this);
+        	if(!ignoreMatchesCheckbox.booleanValue() && !ignoreRemainingMatchesCheckbox.booleanValue()) {
+        		Germplasm selectedGermplasm = this.germplasmDataManager.getGermplasmByGID((Integer) germplasmTable.getValue());
+	        	if(useSameGidCheckbox.booleanValue()) {
+	        		if(source.getNameGermplasmMap()==null) {
+	        			source.setNameGermplasmMap(new HashMap<String, Germplasm>());
+	        		}
+	        		source.getNameGermplasmMap().put(germplasmName,germplasm);
+	        	}
+	        	source.receiveGermplasmFromWindowAndUpdateGermplasmData(germplasmIndex, germplasm, selectedGermplasm);
+        	}
+        	source.removeWindow(this);
+    		if(ignoreRemainingMatchesCheckbox.booleanValue()) {
+        		source.saveImport();
+        	} else {
+        		source.openNextWindow();
+        	}
+            removeWindow(this);            
         } catch (MiddlewareQueryException e) {
             // TODO Add proper logging
             e.printStackTrace();
@@ -201,27 +217,54 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
         germplasmTable.setImmediate(true);
         
         useSameGidCheckbox = new CheckBox("Use this match for other instances of this GID in the import list");
+        useSameGidCheckbox.setImmediate(true);
         ignoreMatchesCheckbox = new CheckBox("Ignore matches and add a new entry");
+        ignoreMatchesCheckbox.setImmediate(true);
         ignoreRemainingMatchesCheckbox = new CheckBox("Ignore remaining matches and add new entries for all");
+        ignoreRemainingMatchesCheckbox.setImmediate(true);
 	}
 
 	@Override
 	public void addListeners() {
 		germplasmTable.addListener(new Property.ValueChangeListener() {
 	        private static final long serialVersionUID = 1L;
-	        public void valueChange(ValueChangeEvent event) {
-	            if(germplasmTable.getValue()!=null){
-	                doneButton.setEnabled(true);
-	            } else {
-	                doneButton.setEnabled(false);
-	            }
-	        }
+	        @Override
+			public void valueChange(ValueChangeEvent event) {
+				toggleContinueButton();
+			}
 	    });
+		
+		ignoreMatchesCheckbox.addListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				toggleContinueButton();
+			}
+		});
+		
+		ignoreRemainingMatchesCheckbox.addListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				toggleContinueButton();
+			}
+		});
 		
 		doneButton.addListener(new GermplasmImportButtonClickListener(this));
         doneButton.addListener(new CloseWindowAction(this));
 	        
         cancelButton.addListener(new CloseWindowAction(this));
+	}
+
+	protected void toggleContinueButton() {
+		boolean enableButton = (germplasmTable.getValue()!=null) ||
+							ignoreMatchesCheckbox.booleanValue() || 
+							ignoreRemainingMatchesCheckbox.booleanValue();
+		if(enableButton) {
+			doneButton.setEnabled(true);
+		} else {
+			doneButton.setEnabled(false);
+		}				
 	}
 
 	@Override
@@ -333,4 +376,32 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
         	e.printStackTrace();
         }
 	}
+
+	public String getGermplasmName() {
+		return germplasmName;
+	}
+
+	public void setGermplasmName(String germplasmName) {
+		this.germplasmName = germplasmName;
+	}
+
+	public Germplasm getGermplasm() {
+		return germplasm;
+	}
+
+	public void setGermplasm(Germplasm germplasm) {
+		this.germplasm = germplasm;
+	}
+
+	public int getGermplasmIndex() {
+		return germplasmIndex;
+	}
+
+	public void setGermplasmIndex(int germplasmIndex) {
+		this.germplasmIndex = germplasmIndex;
+	}
+	
+	
+	
+	
 }

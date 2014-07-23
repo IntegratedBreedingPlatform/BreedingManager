@@ -151,12 +151,11 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         
     public void nextButtonClickAction(){
         if (validateMethod() && validateLocation() && validatePedigreeOption()) {
-            popupSaveAsDialog();
             processGermplasmAction.processGermplasm();
         }
     }
     
-    private void popupSaveAsDialog(){
+    public void popupSaveAsDialog(){
 
 		germplasmList = new GermplasmList();
 		
