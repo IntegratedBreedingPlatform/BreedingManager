@@ -490,7 +490,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			 
 		});
 		
-		Item newItem = listDataTable.addItem(entry.getId());
+		Item newItem = listDataTable.getContainerDataSource().addItem(entry.getId());
 		newItem.getItemProperty(CHECKBOX_COLUMN_ID).setValue(itemCheckBox);
 		newItem.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(entry.getEntryId());
 		newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(desigButton);

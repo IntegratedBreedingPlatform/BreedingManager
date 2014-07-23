@@ -474,7 +474,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 //        				//if the item is already existing in the target table, remove the existing item then add a new entry
 //    		            listDataTable.removeItem(entryObject);
         				
-    					Item newItem = listDataTable.addItem(entryObject);
+    					Item newItem = listDataTable.getContainerDataSource().addItem(entryObject);
 
     					if(newItem!=null){
 							CheckBox tag = new CheckBox();
@@ -650,7 +650,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	                		            //if the item is already existing in the target table, remove the existing item then add a new entry
 	                		            targetTable.removeItem(entryObject);
 	                		            
-	                    				Item item = targetTable.addItem(entryObject);
+	                    				Item item = targetTable.getContainerDataSource().addItem(entryObject);
 	                    				
 	                    				item.getItemProperty(DESIGNATION_ID).setValue(gidButton);
 	                    				item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
@@ -850,7 +850,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		for(GermplasmListData entry : savedListEntries){
 			GermplasmListEntry itemId = new GermplasmListEntry(entry.getId(),entry.getGid(), entry.getEntryId(), entry.getDesignation(), entry.getSeedSource());
 			
-			Item newItem = listDataTable.addItem(itemId);
+			Item newItem = listDataTable.getContainerDataSource().addItem(itemId);
 			
 			// #1
 			CheckBox tag = new CheckBox();
