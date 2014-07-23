@@ -737,6 +737,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         table.setMultiSelect(true);
         table.setWidth("100%");
         table.setHeight("280px");
+        table.setImmediate(true);
         
         setContextMenuActionHandler(table);
     }
@@ -775,6 +776,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
                     , messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
         }
         
+        tableWithSelectAllLayout.getTable().setValue(null); //reset value
+        
         updateNoOfEntries();
         updateNoOfSelectedEntries();
     }
@@ -810,14 +813,14 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		int count = 0;
 		
 		if(source.getModeView().equals(ModeView.LIST_VIEW)){
-			Collection<?> selectedItems = (Collection<?>)tableWithSelectAllLayout.getTable().getValue();
+			Collection<?> selectedItems = (Collection<?>)listDataTable.getValue();
 			count = selectedItems.size();
 		}
 		else{
 			Collection<?> selectedItems = (Collection<?>)listInventoryTable.getTable().getValue();
 			count = selectedItems.size();
 		}
-		
+
 		updateNoOfSelectedEntries(count);
 	}
 
