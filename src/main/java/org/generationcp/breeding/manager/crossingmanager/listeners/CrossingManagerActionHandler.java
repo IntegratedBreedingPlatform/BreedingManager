@@ -80,9 +80,17 @@ public class CrossingManagerActionHandler implements Handler {
         List<Object> selectedItemIds = new ArrayList<Object>();
         selectedItemIds.addAll((Collection<? extends Integer>) table.getValue());
         
-        for(Object selectedItemId:selectedItemIds){
-            table.removeItem(selectedItemId);
+        if(table.getItemIds().size() == selectedItemIds.size()){
+        	table.getContainerDataSource().removeAllItems();
         }
+        else{
+        	for(Object selectedItemId:selectedItemIds){
+            	table.getContainerDataSource().removeItem(selectedItemId);
+            }
+        }
+        
+        //reset selection
+        table.setValue(null);
         
         List<Object> itemsLeftAfterDelete = new ArrayList<Object>();
         itemsLeftAfterDelete.addAll((Collection<? extends Integer>) table.getItemIds());
