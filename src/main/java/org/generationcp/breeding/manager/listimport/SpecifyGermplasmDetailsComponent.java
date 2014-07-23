@@ -151,7 +151,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
     
         
     public void nextButtonClickAction(){
-        if (validateMethod() && validateLocation() && validatePedigreeOption()) {
+        if (validateLocation() && validatePedigreeOption()) {
             popupSaveAsDialog();
             processGermplasmAction.processGermplasm();
         }
@@ -207,13 +207,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         return BreedingManagerUtil.validateRequiredField(getWindow(), germplasmFieldsComponent.getLocationComboBox(),
                 messageSource, messageSource.getMessage(Message.GERMPLASM_LOCATION_LABEL));
     }
-    
-    private boolean validateMethod() {
-        return BreedingManagerUtil.validateRequiredField(getWindow(), germplasmFieldsComponent.getBreedingMethodComboBox(),
-                messageSource, messageSource.getMessage(Message.GERMPLASM_BREEDING_METHOD_LABEL));
-    }
   
-    
     private void updateTotalEntriesLabel(){
     	int count = germplasmDetailsTable.getItemIds().size();
 		if(count == 0) {

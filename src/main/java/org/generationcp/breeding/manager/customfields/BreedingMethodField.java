@@ -51,7 +51,8 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	private Label captionLabel;
 	private String caption;
 	private ComboBox breedingMethodComboBox;
-	private boolean isMandatory;
+	private boolean isMandatory = true;
+	private boolean hasDefaultValue = true;
 	private boolean changed;
 	private int leftIndentPixels = 130;
 	
@@ -82,17 +83,45 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	public BreedingMethodField(Window attachToWindow){
 		this();
 		this.attachToWindow = attachToWindow;
+		this.isMandatory = true;
+		this.hasDefaultValue = true;
 	}
 	
 	public BreedingMethodField(Window attachToWindow, int pixels){
 		this();
 		this.attachToWindow = attachToWindow;
 		this.leftIndentPixels = pixels;
+		this.isMandatory = true;
+		this.hasDefaultValue = true;
 	}
 	
-	public BreedingMethodField(int pixels){
+	public BreedingMethodField(int pixels){ 
 		this();
 		this.leftIndentPixels = pixels;
+		this.isMandatory = true;
+		this.hasDefaultValue = true;
+	}
+	
+	public BreedingMethodField(Window attachToWindow , boolean isMandatory, boolean hasDefaultValue){
+		this();
+		this.attachToWindow = attachToWindow;
+		this.isMandatory = isMandatory;
+		this.hasDefaultValue = hasDefaultValue;
+	}
+	
+	public BreedingMethodField(Window attachToWindow, int pixels, boolean isMandatory, boolean hasDefaultValue){
+		this();
+		this.attachToWindow = attachToWindow;
+		this.leftIndentPixels = pixels;
+		this.isMandatory = isMandatory;
+		this.hasDefaultValue = hasDefaultValue;
+	}
+	
+	public BreedingMethodField(int pixels, boolean isMandatory, boolean hasDefaultValue){ 
+		this();
+		this.leftIndentPixels = pixels;
+		this.isMandatory = isMandatory;
+		this.hasDefaultValue = hasDefaultValue;
 	}
 	
 	@Override
@@ -105,11 +134,15 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		breedingMethodComboBox = new ComboBox();
 		breedingMethodComboBox.setWidth("320px");
 		breedingMethodComboBox.setImmediate(true);
-		breedingMethodComboBox.setNullSelectionAllowed(false);
 		
 		if(isMandatory){
+			breedingMethodComboBox.setNullSelectionAllowed(false);
 			breedingMethodComboBox.setRequired(true);
 			breedingMethodComboBox.setRequiredError("Please specify the method.");
+		}
+		else{
+			breedingMethodComboBox.setNullSelectionAllowed(true);
+			breedingMethodComboBox.setInputPrompt("Please Choose");
 		}
 		
 		showFavoritesCheckBox = new CheckBox();
@@ -260,21 +293,32 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
         
         methodMap = new HashMap<String, String>();
 
+        Method defaultMethod = null;
         for(Method method : methods){
             breedingMethodComboBox.addItem(method.getMid());
             breedingMethodComboBox.setItemCaption(method.getMid(), method.getMname());
+            
             if(DEFAULT_METHOD.equalsIgnoreCase(method.getMcode())){
-                breedingMethodComboBox.setValue(method.getMid());
-                //breedingMethodComboBox.setDescription(method.getMdesc());
-                methodDescription.setValue(method.getMdesc());
+            	defaultMethod = method;
             }
+            
             methodMap.put(method.getMid().toString(), method.getMdesc());
         }
         
-        if(breedingMethodComboBox.getValue()==null && methods.size() > 0 && methods.get(0) != null){
-        	breedingMethodComboBox.setValue(methods.get(0).getMid());
-        	breedingMethodComboBox.setDescription(methods.get(0).getMdesc());
+        if(hasDefaultValue){
+        	if(defaultMethod != null){
+                breedingMethodComboBox.setValue(defaultMethod.getMid());
+                methodDescription.setValue(defaultMethod.getMdesc());
+        	}
+        	else{
+        		//if the list of methods has no default method, just select the first item from the list
+        		if(breedingMethodComboBox.getValue()==null && methods.size() > 0 && methods.get(0) != null){
+                	breedingMethodComboBox.setValue(methods.get(0).getMid());
+                	breedingMethodComboBox.setDescription(methods.get(0).getMdesc());
+                }
+        	}
         }
+        
 		return methodMap;
 	}    
 	

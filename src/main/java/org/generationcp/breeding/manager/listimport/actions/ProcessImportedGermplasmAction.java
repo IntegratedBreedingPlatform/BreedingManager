@@ -22,6 +22,7 @@ import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.slf4j.Logger;
@@ -43,6 +44,8 @@ public class ProcessImportedGermplasmAction implements Serializable {
     private List<Integer> doNotCreateGermplasmsWithId = new ArrayList<Integer>();
     private List<SelectGermplasmWindow> selectGermplasmWindows = new ArrayList<SelectGermplasmWindow>();
     private List<GermplasmName> germplasmNameObjects = new ArrayList<GermplasmName>();
+    
+    private final Integer UNKNOWN_DERIVATIVE_METHOD = -31;
     
 	@Autowired
 	private WorkbenchDataManager workbenchDataManager;
@@ -315,9 +318,10 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		germplasm.setUserId(ibdbUserId);
 		germplasm.setLocationId((Integer)getGermplasmFieldsComponent().getLocationComboBox().getValue());
 		germplasm.setGdate(dateIntValue);
-		germplasm.setMethodId((Integer)getGermplasmFieldsComponent().getBreedingMethodComboBox().getValue());
-
-		germplasm.setGnpgs(gnpgs);
+		
+		int methodId = getGermplasmMethodId(getGermplasmFieldsComponent().getBreedingMethodComboBox().getValue());
+		germplasm.setMethodId(methodId);
+		germplasm.setGnpgs(getGermplasmGnpgs(methodId,gnpgs));
 		germplasm.setGpid1(gpid1);
 		germplasm.setGpid2(gpid2);
 		
@@ -327,6 +331,34 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		germplasm.setMgid(0);
 		
 		return germplasm;
+	}
+
+	private int getGermplasmMethodId(Object methodValue){
+		Integer methodId = 0;
+		if(methodValue == null){
+			methodId = UNKNOWN_DERIVATIVE_METHOD;
+		}
+		else{
+			methodId = (Integer)methodValue;
+		}
+		return methodId;
+	}
+	
+	private int getGermplasmGnpgs(Integer methodId, Integer prevGnpgs) throws MiddlewareQueryException {
+		int gnpgs = 0;
+		if(methodId == UNKNOWN_DERIVATIVE_METHOD){
+			gnpgs= -1;
+		}
+		else{
+			Method selectedMethod = germplasmDataManager.getMethodByID(methodId);
+			if(selectedMethod.getMtype().equals("GEN")){
+				gnpgs = 2;
+			}
+			else{
+				gnpgs = prevGnpgs;
+			}
+		}
+		return gnpgs;
 	}
 
 
