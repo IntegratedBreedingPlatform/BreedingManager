@@ -131,7 +131,7 @@ public class DropHandlerMethods {
             Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
 
             final Integer newItemId = getNextListEntryId();
-            Item newItem = targetTable.addItem(newItemId);
+            Item newItem = targetTable.getContainerDataSource().addItem(newItemId);
             
             Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(listManagerMain,gid.toString(), true, true));
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
@@ -298,7 +298,7 @@ public class DropHandlerMethods {
 	            }
 	            final Integer newItemId = niid;
 	            
-	            Item newItem = targetTable.addItem(newItemId);
+	            Item newItem = targetTable.getContainerDataSource().addItem(newItemId);
 	            
 	            Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(listManagerMain,gid.toString(), true, true));
 	            gidButton.setStyleName(BaseTheme.BUTTON_LINK);
@@ -433,7 +433,7 @@ public class DropHandlerMethods {
 			
 			Item itemFromSourceTable = sourceTable.getItem(itemId);
 			Integer newItemId = getNextListEntryId();
-			Item newItem = targetTable.addItem(newItemId);
+			Item newItem = targetTable.getContainerDataSource().addItem(newItemId);
 			
 			Integer gid = getGidFromButtonCaption(sourceTable, itemId);
 			Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(listManagerMain,gid.toString(), true, true));
