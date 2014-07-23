@@ -1154,13 +1154,19 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), "Error with deleting list entries.");
 		}
     	
-    	//marks the entryId and designationId of the list entries to delete
-    	for(final Object itemId : selectedIds){
-            Button desigButton = (Button) listDataTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue();
-            String designation = String.valueOf((desigButton.getCaption().toString()));
-    		itemsToDelete.put(itemId, designation);
-    		listDataTable.removeItem(itemId);
+    	if(listDataTable.getItemIds().size() == selectedIds.size()){
+    		listDataTable.getContainerDataSource().removeAllItems();
     	}
+    	else{
+    		//marks the entryId and designationId of the list entries to delete
+        	for(final Object itemId : selectedIds){
+                Button desigButton = (Button) listDataTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue();
+                String designation = String.valueOf((desigButton.getCaption().toString()));
+        		itemsToDelete.put(itemId, designation);
+        		listDataTable.getContainerDataSource().removeItem(itemId);
+        	}
+    	}
+    	listDataTable.setValue(null);//reset selection
     	
     	renumberEntryIds();
         listDataTable.requestRepaint();
