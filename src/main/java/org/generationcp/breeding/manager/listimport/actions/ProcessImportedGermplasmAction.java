@@ -36,6 +36,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 
 	private static final long serialVersionUID = -9047259985457065559L;
 	private static final Logger LOG = LoggerFactory.getLogger(ProcessImportedGermplasmAction.class);
+	private static final int PREFERRED_NAME_STATUS = 1;
 	
 	private SpecifyGermplasmDetailsComponent germplasmDetailsComponent;
 	
@@ -124,31 +125,30 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		        ImportedGermplasm importedGermplasm  = getImportedGermplasms().get(i);
 		        int germplasmMatchesCount = (int) this.germplasmDataManager.countGermplasmByName(importedGermplasm.getDesig(), Operation.EQUAL);
 		        
-		        Germplasm germplasm = new Germplasm();
+		        // gpid1 and gpid 2 values are default here, actual values will be set below based on matched germplasm
+		        Germplasm germplasm = createGermplasmObject(i, -1, 0, 0, ibdbUserId, dateIntValue);
+		        List<Germplasm> foundGermplasm = new ArrayList<Germplasm>();
 		        
-		        if(importedGermplasm.getGid()!=null){
-		        	germplasm = germplasmDataManager.getGermplasmByGID(importedGermplasm.getGid()); 
+		        if(isGidSpecified(importedGermplasm)){
+		        	foundGermplasm.add(germplasmDataManager.getGermplasmByGID(importedGermplasm.getGid())); 
 		        } else {
-	        		// gpid1 and gpid 2 values are temporary here, actual values will be set below
-	        		germplasm = createGermplasmObject(i, -1, 0, 0, ibdbUserId, dateIntValue);
 	        		
 	                if(germplasmMatchesCount==1){
 	                    //If a single match is found, multiple matches will be 
 	                    //   handled by SelectGemrplasmWindow and 
 	                    //   then receiveGermplasmFromWindowAndUpdateGermplasmData()
-	                    List<Germplasm> foundGermplasm = this.germplasmDataManager.getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
-	                    if(foundGermplasm.get(0).getGnpgs()<2){
-	                    	germplasm.setGpid1(foundGermplasm.get(0).getGpid1());
-	                    } else {
-	                    	germplasm.setGpid1(foundGermplasm.get(0).getGid());                            	
-	                    }
-	                    germplasm.setGpid2(foundGermplasm.get(0).getGid()); 
+	                    foundGermplasm = this.germplasmDataManager.getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
 	                } 
 		                
+		        }
+		        
+				if (foundGermplasm != null && !foundGermplasm.isEmpty() && foundGermplasm.get(0) != null){
+                    updatePedigreeConnections(germplasm, foundGermplasm.get(0)); 
 		        }
 
 		        
 		        Name name = createNameObject(ibdbUserId, dateIntValue, importedGermplasm.getDesig());
+		        name.setNstat(PREFERRED_NAME_STATUS);
 		        
 		        if(!createdGermplasms.containsKey(name.getNval())){
 		        	createdGermplasms.put(name.getNval(), germplasm);
@@ -159,14 +159,25 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		        	germplasmNameObjects.add(new GermplasmName(createdGermplasms.get(name.getNval()),name));
 		        }
 
-		        if(germplasmMatchesCount>1 && importedGermplasm.getGid()==null){
+		        if(germplasmMatchesCount>1){
 		            displaySelectGermplasmWindow(importedGermplasm.getDesig(), i, germplasm);
 		        }
 
 		    }
+		    
 		}catch (MiddlewareQueryException mqe){
 		    mqe.printStackTrace();
 		}
+	}
+
+	// Set imported germplasm's gpid1 and gpid2 based on source/connecting germplasm
+	protected void updatePedigreeConnections(Germplasm germplasm, Germplasm sourceGermplasm) {
+		if(sourceGermplasm.getGnpgs() < 2){
+			germplasm.setGpid1(sourceGermplasm.getGpid1());
+		} else {
+			germplasm.setGpid1(sourceGermplasm.getGid());                            	
+		}
+		germplasm.setGpid2(sourceGermplasm.getGid());
 	}
 	
 	protected void performThirdPedigreeAction() {
@@ -184,7 +195,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		        Germplasm germplasm = new Germplasm();
 		        
 		        boolean searchByNameOrNewGermplasmIsNeeded = true;
-		        if(importedGermplasm.getGid()!=null && !importedGermplasm.getGid().equals(Integer.valueOf(0))){
+		        if(isGidSpecified(importedGermplasm)){
 		        	germplasm = germplasmDataManager.getGermplasmByGID(importedGermplasm.getGid());
 		        	
 		        	if(germplasm != null){
@@ -278,8 +289,14 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	}
 
 
+	protected boolean isGidSpecified(ImportedGermplasm importedGermplasm) {
+		return importedGermplasm.getGid()!=null && !importedGermplasm.getGid().equals(Integer.valueOf(0));
+	}
+
+
 	protected Name createNameObject(Integer ibdbUserId, Integer dateIntValue, String desig) {
 		Name name = new Name();
+		
 		name.setTypeId((Integer)getGermplasmFieldsComponent().getNameTypeComboBox().getValue());
 		name.setUserId(ibdbUserId);
 		name.setNval(desig);
@@ -394,15 +411,8 @@ public class ProcessImportedGermplasmAction implements Serializable {
         String pedigreeOption = germplasmDetailsComponent.getPedigreeOption();
 		if(pedigreeOption.equalsIgnoreCase("2")){
             //Update GPID 1 & 2 to values of selected germplasm, and update germplasmList using the updated germplasm
+            updatePedigreeConnections(importedGermplasm, selectedGermplasm);
             
-            if(selectedGermplasm.getGnpgs()<2){
-            	importedGermplasm.setGpid1(selectedGermplasm.getGpid1());
-            } else {
-            	importedGermplasm.setGpid1(selectedGermplasm.getGid());                            	
-            }
-            importedGermplasm.setGpid2(selectedGermplasm.getGid());
-            
-            //germplasmList.set(index, importedGermplasm);
             germplasmNameObjects.get(index).setGermplasm(importedGermplasm);
             
         } else if(pedigreeOption.equalsIgnoreCase("3")){
