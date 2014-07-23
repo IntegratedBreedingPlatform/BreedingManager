@@ -34,10 +34,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.data.Property.ConversionException;
 import com.vaadin.data.Property.ReadOnlyException;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -68,7 +71,10 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
     
     private Button backButton;
     private Button nextButton;
-    
+
+
+    private CheckBox automaticallyAcceptSingleMatchesCheckbox;
+
     private List<ImportedGermplasm> importedGermplasms;
     private GermplasmListUploader germplasmListUploader;
 
@@ -91,7 +97,6 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
     
     private Boolean viaToolURL;
     
-   
 	public SpecifyGermplasmDetailsComponent(GermplasmImportMain source, Boolean viaToolURL){
         this.source = source;
         this.viaToolURL = viaToolURL;
@@ -299,10 +304,13 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         pedigreeOptionsLabel.setWidth("250px");
         
         pedigreeOptionComboBox = new ComboBox();
+        pedigreeOptionComboBox.setImmediate(true);
         pedigreeOptionComboBox.setRequired(true);
         pedigreeOptionComboBox.setWidth("450px");
         pedigreeOptionComboBox.setInputPrompt("Please Choose");
         
+        automaticallyAcceptSingleMatchesCheckbox = new CheckBox(messageSource.getMessage(Message.AUTOMATICALLY_ACCEPT_SINGLE_MATCHES_WHENEVER_FOUND));
+        automaticallyAcceptSingleMatchesCheckbox.setVisible(false);
         
         GermplasmImportButtonClickListener clickListener = new GermplasmImportButtonClickListener(this);
         
@@ -326,6 +334,23 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 	@Override
 	public void addListeners() {
 		processGermplasmAction = new ProcessImportedGermplasmAction(this);
+		pedigreeOptionComboBox.addListener(new Property.ValueChangeListener(){
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				if(pedigreeOptionComboBox.getValue()!=null){
+					if(pedigreeOptionComboBox.getValue().equals(3)){
+						automaticallyAcceptSingleMatchesCheckbox.setVisible(true);
+						automaticallyAcceptSingleMatchesCheckbox.setValue(false);
+					} else {
+						automaticallyAcceptSingleMatchesCheckbox.setVisible(false);
+						automaticallyAcceptSingleMatchesCheckbox.setValue(false);
+					}
+				}
+			}
+			
+		});
+		
 	}
 
 	@Override
@@ -343,14 +368,17 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 		// Pedigree Options Layout
 		VerticalLayout pedigreeOptionsLayout = new VerticalLayout();
 		pedigreeOptionsLayout.setSpacing(true);
-		
+
+		VerticalLayout pedigreeControlsLayoutVL = new VerticalLayout();
+		pedigreeControlsLayoutVL.addComponent(pedigreeOptionComboBox);
+		pedigreeControlsLayoutVL.addComponent(automaticallyAcceptSingleMatchesCheckbox);
+
 		HorizontalLayout pedigreeControlsLayout = new HorizontalLayout();
 		pedigreeControlsLayout.addComponent(pedigreeOptionsLabel);
-		pedigreeControlsLayout.addComponent(pedigreeOptionComboBox);
+		pedigreeControlsLayout.addComponent(pedigreeControlsLayoutVL);
 
 		pedigreeOptionsLayout.addComponent(selectPedigreeOptionsLabel);
 		pedigreeOptionsLayout.addComponent(pedigreeControlsLayout);
-		
 		
 		// Buttons Layout
 		HorizontalLayout buttonLayout = new HorizontalLayout();
@@ -439,5 +467,9 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 			getWindow().removeWindow(saveListAsDialog);
 		}
 	}
-    
+
+	public Boolean automaticallyAcceptSingleMatchesCheckbox(){
+		return (Boolean) automaticallyAcceptSingleMatchesCheckbox.getValue();
+	}
+	
 }

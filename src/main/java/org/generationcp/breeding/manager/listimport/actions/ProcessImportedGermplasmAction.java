@@ -262,7 +262,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		        	// gid at creation is temporary, will be set properly below
 		        	germplasm = createGermplasmObject(i, 0, 0, 0, ibdbUserId, dateIntValue);
 		        	
-		        	if(germplasmMatchesCount==1){
+		        	if(germplasmMatchesCount==1 && germplasmDetailsComponent.automaticallyAcceptSingleMatchesCheckbox()){
 		                //If a single match is found, multiple matches will be 
 		                //   handled by SelectGemrplasmWindow and 
 		                //   then receiveGermplasmFromWindowAndUpdateGermplasmData()
@@ -282,7 +282,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		        	germplasmNameObjects.add(new GermplasmName(createdGermplasms.get(name.getNval()),name));
 		        }
 		        
-		        if(germplasmMatchesCount>1 && searchByNameOrNewGermplasmIsNeeded){
+		        if((germplasmMatchesCount>1 || !germplasmDetailsComponent.automaticallyAcceptSingleMatchesCheckbox())&& searchByNameOrNewGermplasmIsNeeded){
 		        	displaySelectGermplasmWindowIfNecessary(importedGermplasm.getDesig(), i, germplasm);
 		        }
 		    }
