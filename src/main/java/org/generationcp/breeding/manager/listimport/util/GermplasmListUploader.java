@@ -309,7 +309,7 @@ public class GermplasmListUploader implements FileFactory {
     					listDate = null;
     				}
     			} catch(ParseException ex){
-    				throwInvalidFileError("LIST DATE has wrong format. Please follow the format - yyyyMMdd.");
+    				throwInvalidFileError("LIST DATE has wrong format. Please follow the format - YYYYMMDD.");
     				return;
     			}
     			listDateHeaderFound = true;
