@@ -205,10 +205,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
         saveActionMenu.setEnabled(false);
         actionMenu.addItem(messageSource.getMessage(Message.SELECT_ALL));
         
-        inventoryViewActionButton = new Button(messageSource.getMessage(Message.ACTIONS));
-        inventoryViewActionButton.setIcon(AppConstants.Icons.ICON_TOOLS);
-        inventoryViewActionButton.setWidth("110px");
-        inventoryViewActionButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
+        inventoryViewActionButton = new ActionButton();
         
 		inventoryViewActionMenu = new ContextMenu();
 		inventoryViewActionMenu.setWidth("295px");

@@ -272,11 +272,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		toolsButton = new ActionButton();
 		toolsButton.setData(TOOLS_BUTTON_ID);
 			
-		inventoryViewToolsButton = new Button(messageSource.getMessage(Message.ACTIONS));
+		inventoryViewToolsButton = new ActionButton();
 		inventoryViewToolsButton.setData(TOOLS_BUTTON_ID);
-		inventoryViewToolsButton.setIcon(AppConstants.Icons.ICON_TOOLS);
-		inventoryViewToolsButton.setWidth("110px");
-		inventoryViewToolsButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 		
 		try{
 			listEntriesCount = germplasmListManager.countGermplasmListDataByListId(germplasmList.getId());

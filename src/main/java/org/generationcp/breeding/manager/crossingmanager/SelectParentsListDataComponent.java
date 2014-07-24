@@ -184,11 +184,8 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		actionButton = new ActionButton();
 		actionButton.setData(ACTIONS_BUTTON_ID);
 		
-		inventoryViewActionButton = new Button(messageSource.getMessage(Message.ACTIONS));
+		inventoryViewActionButton = new ActionButton();
 		inventoryViewActionButton.setData(ACTIONS_BUTTON_ID);
-		inventoryViewActionButton.setIcon(AppConstants.Icons.ICON_TOOLS);
-		inventoryViewActionButton.setWidth("110px");
-		inventoryViewActionButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 		
 		actionMenu = new ContextMenu();
 		actionMenu.setWidth("250px");

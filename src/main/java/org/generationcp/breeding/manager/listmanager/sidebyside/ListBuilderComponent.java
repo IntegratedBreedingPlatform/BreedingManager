@@ -297,12 +297,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		toolsButton = new ActionButton();
 		toolsButton.setData(TOOLS_BUTTON_ID);
 		
-        inventoryViewToolsButton = new Button(messageSource.getMessage(Message.ACTIONS));
+        inventoryViewToolsButton = new ActionButton();
         inventoryViewToolsButton.setData(TOOLS_BUTTON_ID);
-        inventoryViewToolsButton.setIcon(AppConstants.Icons.ICON_TOOLS);
-        inventoryViewToolsButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
-        inventoryViewToolsButton.setWidth("110px");
-        inventoryViewToolsButton.addStyleName("lm-tools-button");        
         
         dropHandler = new BuildNewListDropHandler(source, germplasmDataManager, germplasmListManager, inventoryDataManager, tableWithSelectAllLayout.getTable());
         
