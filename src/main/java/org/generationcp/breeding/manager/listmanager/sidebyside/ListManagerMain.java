@@ -7,6 +7,7 @@ import java.util.Map;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
+import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialog;
 import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialogSource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -384,17 +385,41 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	}
 
 	public void updateUIForDeletedList(GermplasmList list) {
-
+		
+		SaveListAsDialog saveListAsDialog = null;
+		
+		//close the save dialog window in View list if the deleted list is the current selected list
+		ListTabComponent currentListTab = (ListTabComponent)listSelectionComponent.getListDetailsLayout().getDetailsTabsheet().getSelectedTab();
+		if(currentListTab != null){
+			ListComponent listComponent = currentListTab.getListComponent();
+			saveListAsDialog = listComponent.getSaveListAsDialog();
+			if(saveListAsDialog != null){
+				if(listComponent.getCurrentListInSaveDialog().getName().equals(list.getName())){
+					listComponent.getWindow().removeWindow(saveListAsDialog);
+				}
+			}
+		}
+		
 		//Check if tab for deleted list is opened
 		listSelectionComponent.getListDetailsLayout().removeTab(list.getId());
-
-		//Check if deleted list is currently being edited in the list builder
-		if(getListBuilderComponent().getCurrentlySetGermplasmListInfo()!=null
-			&& list!=null
-			&& getListBuilderComponent().getCurrentlySetGermplasmListInfo().getId() == list.getId()){
+		
+		//close the save dialog window in List Builder if the deleted list is the current selected list
+		saveListAsDialog = getListBuilderComponent().getSaveListAsDialog();
+		if(saveListAsDialog != null){
+			if(saveListAsDialog.getGermplasmListToSave().getName().equals(list.getName())){
+				getListBuilderComponent().getWindow().removeWindow(saveListAsDialog);
+			}
+		}
+		
+		if(	getListBuilderComponent().getCurrentlySavedGermplasmList() != null
+			&& list != null
+			&& getListBuilderComponent().getCurrentlySavedGermplasmList().getName().equals(list.getName())){
 			getListBuilderComponent().resetList();
 		}
-
+		
+		//refresh tree on browse for list dialog
+		showNodeOnTree(list.getId());
+		
 		//Check if deleted list is in the search results
 		listSelectionComponent.getListSearchComponent().getSearchResultsComponent().removeSearchResult(list.getId());
 	}

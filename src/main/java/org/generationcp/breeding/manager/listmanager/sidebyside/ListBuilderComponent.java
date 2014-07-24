@@ -167,6 +167,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	private ContextMenuItem menuCopyToNewListFromInventory;
 	private ContextMenuItem menuReserveInventory;
 	
+	private SaveListAsDialog dialog;
+	
     //For Saving
     private ListManagerMain source;
     private GermplasmList currentlySavedGermplasmList;
@@ -438,7 +440,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 			@Override
 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-				if(currentlySetGermplasmInfo == null){
+				if (currentlySetGermplasmInfo == null){
 					openSaveListAsDialog();
 				}
 			}
@@ -1202,9 +1204,17 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     }
 
 	public void openSaveListAsDialog(){
-		SaveListAsDialog dialog = new SaveListAsDialog(this, currentlySavedGermplasmList, messageSource.getMessage(Message.EDIT_LIST_HEADER));
+		dialog = new SaveListAsDialog(this, currentlySavedGermplasmList, messageSource.getMessage(Message.EDIT_LIST_HEADER));
 		this.getWindow().addWindow(dialog);
 	}
+	
+    public SaveListAsDialog getSaveListAsDialog(){
+    	return dialog;
+    }
+    
+    public GermplasmList getCurrentListInSaveDialog(){
+    	return dialog.getGermplasmListToSave();
+    }
 
 	/**
 	 * This method is called by the SaveListAsDialog window displayed when Edit Header button is clicked.

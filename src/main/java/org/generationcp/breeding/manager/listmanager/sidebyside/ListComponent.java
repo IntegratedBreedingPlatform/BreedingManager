@@ -229,6 +229,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private Integer localUserId = null;
 
     private FillWith fillWith;
+    
+    private SaveListAsDialog dialog;
 
 	
 	public ListComponent(ListManagerMain source, ListTabComponent parentListDetailsComponent, GermplasmList germplasmList) {
@@ -1762,9 +1764,17 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
     }
 
     public void openSaveListAsDialog(){
-		SaveListAsDialog dialog = new SaveListAsDialog(this, germplasmList, messageSource.getMessage(Message.EDIT_LIST_HEADER));
+		dialog = new SaveListAsDialog(this, germplasmList, messageSource.getMessage(Message.EDIT_LIST_HEADER));
 		this.getWindow().addWindow(dialog);
 	}
+    
+    public SaveListAsDialog getSaveListAsDialog(){
+    	return dialog;
+    }
+    
+    public GermplasmList getCurrentListInSaveDialog(){
+    	return dialog.getGermplasmListToSave();
+    }
     
 	@Override
 	public void saveList(GermplasmList list) {
