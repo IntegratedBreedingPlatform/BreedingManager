@@ -59,7 +59,7 @@ import com.vaadin.ui.themes.BaseTheme;
  *
  */
 @Configurable
-public class SelectGermplasmWindow extends Window implements InitializingBean, InternationalizableComponent, BreedingManagerLayout{
+public class SelectGermplasmWindow extends Window implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, Window.CloseListener{
 
     private static final String PARENTAGE = "Parentage";
 
@@ -216,7 +216,7 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
         germplasmTable.setNullSelectionAllowed(false);
         germplasmTable.setImmediate(true);
         
-        useSameGidCheckbox = new CheckBox("Use this match for other instances of this GID in the import list");
+        useSameGidCheckbox = new CheckBox("Use this match for other instances of this name in the import list");
         useSameGidCheckbox.setImmediate(true);
         ignoreMatchesCheckbox = new CheckBox("Ignore matches and add a new entry");
         ignoreMatchesCheckbox.setImmediate(true);
@@ -234,11 +234,20 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
 			}
 	    });
 		
+		useSameGidCheckbox.addListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				toggleGermplasmTable();
+			}
+		});
+		
 		ignoreMatchesCheckbox.addListener(new Property.ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				toggleContinueButton();
+				toggleGermplasmTable();
 			}
 		});
 		
@@ -246,6 +255,27 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
         doneButton.addListener(new CloseWindowAction(this));
 	        
         cancelButton.addListener(new CloseWindowAction(this));
+	}
+
+	protected void toggleGermplasmTable() {
+		boolean disableSelection = ignoreMatchesCheckbox.booleanValue() &&
+				!useSameGidCheckbox.booleanValue();
+		if(disableSelection) {
+			germplasmTable.setSelectable(false);
+			germplasmTable.setNullSelectionAllowed(true);
+			germplasmTable.unselect(germplasmTable.getValue());
+			germplasmTable.select(null);
+			germplasmTable.refreshRowCache();
+			germplasmTable.requestRepaint();
+			germplasmTable.setImmediate(true);
+		} else {
+			germplasmTable.setSelectable(true);
+			germplasmTable.setNullSelectionAllowed(false);
+			germplasmTable.setMultiSelect(false);
+			germplasmTable.refreshRowCache();
+			germplasmTable.requestRepaint();
+			germplasmTable.setImmediate(true);
+		}
 	}
 
 	protected void toggleContinueButton() {
@@ -272,8 +302,6 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
         setWidth("800px");
         setHeight("460px");
         setResizable(false);
-        
-        setClosable(false);
         
         // center window within the browser
         center();
@@ -390,6 +418,12 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
 
 	public void setGermplasmIndex(int germplasmIndex) {
 		this.germplasmIndex = germplasmIndex;
+	}
+
+	@Override
+	public void windowClose(CloseEvent e) {
+		super.close();
+		source.closeAllSelectGermplasmWindows();
 	}
 	
 	

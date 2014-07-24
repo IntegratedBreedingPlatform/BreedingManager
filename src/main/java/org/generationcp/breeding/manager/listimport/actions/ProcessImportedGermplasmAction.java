@@ -58,12 +58,17 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	public ProcessImportedGermplasmAction(SpecifyGermplasmDetailsComponent germplasmDetailsComponent) {
 		super();
 		this.germplasmDetailsComponent = germplasmDetailsComponent;
+		if(selectGermplasmWindows!=null) {
+			selectGermplasmWindows.clear();
+		}
 	}
 
 	
 	public void processGermplasm(){
 		germplasmNameObjects = new ArrayList<GermplasmName>();
         doNotCreateGermplasmsWithId = new ArrayList<Integer>();
+        nameGermplasmMap = new HashMap<String, Germplasm>();
+        selectGermplasmWindows.clear();
         
 		String pedigreeOptionChosen = germplasmDetailsComponent.getPedigreeOption();
 		if(pedigreeOptionChosen.equalsIgnoreCase("1") && getImportedGermplasms() != null){
@@ -440,6 +445,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
     	}
     	selectGermplasmWindows.clear();
     	germplasmDetailsComponent.closeSaveListAsDialog();
+    	nameGermplasmMap.clear();
     }
     
     public void receiveGermplasmFromWindowAndUpdateGermplasmData(int index, Germplasm importedGermplasm, Germplasm selectedGermplasm) {
