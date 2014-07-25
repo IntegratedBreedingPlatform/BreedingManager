@@ -189,10 +189,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 				} catch (MiddlewareQueryException e) {
 					e.printStackTrace();
 				}
-	        } else {
-	        	if(germplasmNameObjects.get(i).getGermplasm().getGpid1()==0 && germplasmNameObjects.get(i).getGermplasm().getGpid2()==0)
-	        		germplasmNameObjects.get(i).getGermplasm().setGnpgs(-1);
-	        	 
+	        } else {	        	 
 	           	germplasmNameObjectsToBeSaved.add(new GermplasmName(germplasmNameObjects.get(i).getGermplasm(), germplasmNameObjects.get(i).getName()));
 	        }
 	    }
