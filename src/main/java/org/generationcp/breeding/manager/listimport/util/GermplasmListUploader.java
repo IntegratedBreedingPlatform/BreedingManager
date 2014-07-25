@@ -3,10 +3,8 @@ package org.generationcp.breeding.manager.listimport.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,20 +13,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.poifs.filesystem.OfficeXmlFileException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.generationcp.breeding.manager.listimport.GermplasmImportFileComponent;
-import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.generationcp.breeding.manager.listimport.exceptions.GermplasmImportException;
+import org.generationcp.breeding.manager.listimport.exceptions.InvalidFileTypeImportException;
 import org.generationcp.breeding.manager.pojos.ImportedCondition;
 import org.generationcp.breeding.manager.pojos.ImportedConstant;
 import org.generationcp.breeding.manager.pojos.ImportedFactor;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.pojos.ImportedVariate;
-import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.Operation;
@@ -40,20 +37,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.vaadin.easyuploads.FileFactory;
 
 import com.vaadin.data.Property.ConversionException;
 import com.vaadin.data.Property.ReadOnlyException;
-import com.vaadin.ui.Upload.Receiver;
-import com.vaadin.ui.Upload.SucceededEvent;
-import com.vaadin.ui.Upload.SucceededListener;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import com.vaadin.data.Validator.InvalidValueException;
 
 @Configurable
-public class GermplasmListUploader implements Receiver, SucceededListener {
+public class GermplasmListUploader implements FileFactory {
     
-    private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory.getLogger(GermplasmListUploader.class);
+    private static final String TEMP_FILE_DIR = new File(
+            System.getProperty("java.io.tmpdir")).getPath();
+
     
     private static final String LIST_NAME_HEADER_LABEL = "LIST NAME";
     private static final String LIST_DESC_HEADER_LABEL = "LIST DESCRIPTION";
@@ -82,7 +78,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     private String crossFactor;
     private String sourceFactor;
     
-    private GermplasmImportFileComponent source;
+//    private GermplasmImportFileComponent source;
     
     public File file;
 
@@ -102,7 +98,6 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     
     private ImportedGermplasmList importedGermplasmList;
     
-    private Boolean fileIsValid;
     private Boolean importFileIsAdvanced;
 
     @Autowired
@@ -114,10 +109,6 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     
     public String getOriginalFilename() {
         return originalFilename;
-    }
-
-    public Boolean getFileIsValid(){
-    	return fileIsValid;
     }
     
     public String getListName() {
@@ -136,112 +127,57 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         return listType;
     }
 
-    
-    public GermplasmListUploader(GermplasmImportFileComponent source) {
-        this.source = source;
-    }
-
 
     public ImportedGermplasmList getImportedGermplasmList() {
         return importedGermplasmList;
     }
 
-    public OutputStream receiveUpload(String filename, String mimeType) {
-        tempFileName = source.getAccordion().getApplication().getContext().getBaseDirectory().getAbsolutePath()+"/WEB-INF/uploads/imported_germplasmlist.xls";
-        FileOutputStream fos = null;
-        try {
-            file = new File(tempFileName);
-            fos = new FileOutputStream(file);
-            
-            originalFilename = filename;            
-        } catch (final java.io.FileNotFoundException e) {
-            return null;
-        }
-        return fos; // Return the output stream to write to
-    }
 
-    public void uploadSucceeded(SucceededEvent event) {
+    public void validate() throws GermplasmImportException {
         currentSheet = 0;
         currentRow = 0;
-        
-        fileIsValid = true;
         
         importedGermplasmList = null;
         
         try {
             inp = new FileInputStream(tempFileName);
-            wb = new HSSFWorkbook(inp);
             
-            try{
-                Sheet sheet1 = wb.getSheetAt(0);
-                
-                if(sheet1 == null || sheet1.getSheetName() == null || !(sheet1.getSheetName().equals("Description"))){
-                    MessageNotifier.showError(source.getWindow(), "Error with reading file uploaded."
-                            , "File doesn't have the first sheet - Description", Notification.POSITION_CENTERED);
-                    fileIsValid = false;
-                    return;
-                }
-            } catch(Exception ex){
-                MessageNotifier.showError(source.getWindow(), "Error with reading file uploaded."
-                        , "File doesn't have the first sheet - Description", Notification.POSITION_CENTERED);
-                fileIsValid = false;
-                return;
+            if(tempFileName.toLowerCase().endsWith(".xls")){
+            	wb = new HSSFWorkbook(inp);
+            } else {
+            	wb = new XSSFWorkbook(inp);
             }
             
-            try{
-                Sheet sheet2 = wb.getSheetAt(1);
-                
-                if(sheet2 == null || sheet2.getSheetName() == null || !(sheet2.getSheetName().equals("Observation"))){
-                    MessageNotifier.showError(source.getWindow(), "Error with reading file uploaded."
-                            , "File doesn't have the second sheet - Observation", Notification.POSITION_CENTERED);
-                    fileIsValid = false;
-                    return;
-                }
-            } catch(Exception ex){
-                MessageNotifier.showError(source.getWindow(), "Error with reading file uploaded."
-                        , "File doesn't have the second sheet - Observation", Notification.POSITION_CENTERED);
-                fileIsValid = false;
-                return;
+            Sheet sheet1 = wb.getSheetAt(0);
+            
+            if(sheet1 == null || sheet1.getSheetName() == null || !(sheet1.getSheetName().equals("Description"))){
+            	throw new GermplasmImportException("File doesn't have the first sheet - Description");
+            }
+            
+            Sheet sheet2 = wb.getSheetAt(1);
+            
+            if(sheet2 == null || sheet2.getSheetName() == null || !(sheet2.getSheetName().equals("Observation"))){
+            	throw new InvalidValueException("File doesn't have second sheet - Observation");
             }
             
             readSheet1();
             readSheet2();
 
-            if(fileIsValid==false){
-                importedGermplasmList = null;
-                
-            	if(source instanceof GermplasmImportFileComponent){
-            		source.disableNextButton();
-            	}
-            	
-            } else {
-            	
-            	Window.Notification notif;
-            	notif = new Window.Notification("File was successfully uploaded", Notification.TYPE_HUMANIZED_MESSAGE);
-            	notif.setDelayMsec(5000);
-            	source.getAccordion().getWindow().showNotification(notif);
-               
-            	if(source instanceof GermplasmImportFileComponent){
-            		source.updateFilenameLabelValue(originalFilename);
-            		source.enableNextButton();
-            	}
-            	
-            }
         } catch (FileNotFoundException e) {
         	//	"File not found"
         } catch (IOException e) {
-            showInvalidFileTypeError();
+            throwInvalidFileTypeError();
         } catch (ReadOnlyException e) {
-            showInvalidFileTypeError();
+            throwInvalidFileTypeError();
+        } catch (IllegalArgumentException e){
+        	throwInvalidFileTypeError();
         } catch (ConversionException e) {
-            showInvalidFileTypeError();
-        } catch (OfficeXmlFileException e){
-            showInvalidFileTypeError();
+            throwInvalidFileTypeError();
         }
     }
 
 
-    private void readSheet1(){
+    private void readSheet1() throws GermplasmImportException{
         readGermplasmListFileInfo();
         readConditions();
         readFactors();
@@ -249,7 +185,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         readVariates();
     }
     
-    private void readSheet2(){
+    private void readSheet2() throws GermplasmImportException{
         currentSheet = 1;
         currentRow = 0;
                 
@@ -273,78 +209,76 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         }
         
         if(entryColumnIsPresent==false){
-            showInvalidFileError("ENTRY column missing from Observation sheet.");
+            throwInvalidFileError("ENTRY column missing from Observation sheet.");
         } else if(gidColumnIsPresent==false && desigColumnIsPresent==false){
-            showInvalidFileError("DESIGNATION column missing from Observation sheet.");
+            throwInvalidFileError("DESIGNATION column missing from Observation sheet.");
         } else if(gidFactor != null && !gidColumnIsPresent){
-        	showInvalidFileError("GID column missing from Observation sheet.");
+        	throwInvalidFileError("GID column missing from Observation sheet.");
         }
         
         //If still valid (after checking headers for ENTRY and DESIG), proceed
-        if(fileIsValid){
-            currentRow = 1;
+        currentRow = 1;
         
-            while(!rowIsEmpty() && fileIsValid){
-                importedGermplasm = new ImportedGermplasm();
-                for(int col=0;col<importedGermplasmList.getImportedFactors().size();col++){
-                	//Map cell (given a column label) with a pojo setter
-                	String columnHeader = getCellStringValue(currentSheet, 0, col, false);
-                	if(columnHeader.equals(entryFactor)){
-                    	importedGermplasm.setEntryId(Integer.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
-                    } else if(columnHeader.equals(desigFactor)){
-                        importedGermplasm.setDesig(getCellStringValue(currentSheet, currentRow, col, true));
-                    } else if(columnHeader.equals(gidFactor)){
-                    	String gidString = getCellStringValue(currentSheet, currentRow, col, true);
-                    	Integer gidInteger = null;
-                    	if(gidString != null && gidString.length() > 0){
-                    		gidInteger = Integer.valueOf(gidString);
-                    	} 
-                    	importedGermplasm.setGid(gidInteger);
-                    } else if(columnHeader.equals(crossFactor)){
-                        importedGermplasm.setCross(getCellStringValue(currentSheet, currentRow, col, true));
-                    } else if(columnHeader.equals(sourceFactor)){
-                        importedGermplasm.setSource(getCellStringValue(currentSheet, currentRow, col, true));
-                    } else if(columnHeader.equals(entryCodeFactor)){
-                        importedGermplasm.setEntryCode(getCellStringValue(currentSheet, currentRow, col, true));
-                    } else {
-                    	
-                    }
-                }
-                
-                //For cases where GID is preset and Desig is not present, or GID is not present and desig is present, or both are present
-                
-                //GID is given, but no DESIG, get value of DESIG given GID
-                if(importedGermplasm.getGid()!=null && importedGermplasm.getDesig()==null){
-                	try {
-
-                		//Check if germplasm exists
-				        Germplasm currentGermplasm = germplasmDataManager.getGermplasmByGID(importedGermplasm.getGid());
-				        if(currentGermplasm==null){
-				        	showInvalidFileError("Germplasm with GID "+importedGermplasm.getGid()+" not found in database");
-				        } else {
-                		
-					        List<Integer> importedGermplasmGids = new ArrayList<Integer>();
-					        importedGermplasmGids.add(importedGermplasm.getGid());
-					        
-							Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(importedGermplasmGids);
-							
-							if(preferredNames.get(importedGermplasm.getGid())!=null)
-								importedGermplasm.setDesig(preferredNames.get(importedGermplasm.getGid()));
-							
-				        }
-					} catch (MiddlewareQueryException e) {
-						e.printStackTrace();
-					}
+        while(!rowIsEmpty()){
+            importedGermplasm = new ImportedGermplasm();
+            for(int col=0;col<importedGermplasmList.getImportedFactors().size();col++){
+            	//Map cell (given a column label) with a pojo setter
+            	String columnHeader = getCellStringValue(currentSheet, 0, col, false);
+            	if(columnHeader.equals(entryFactor)){
+                	importedGermplasm.setEntryId(Integer.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
+                } else if(columnHeader.equals(desigFactor)){
+                    importedGermplasm.setDesig(getCellStringValue(currentSheet, currentRow, col, true));
+                } else if(columnHeader.equals(gidFactor)){
+                	String gidString = getCellStringValue(currentSheet, currentRow, col, true);
+                	Integer gidInteger = null;
+                	if(gidString != null && gidString.length() > 0){
+                		gidInteger = Integer.valueOf(gidString);
+                	} 
+                	importedGermplasm.setGid(gidInteger);
+                } else if(columnHeader.equals(crossFactor)){
+                    importedGermplasm.setCross(getCellStringValue(currentSheet, currentRow, col, true));
+                } else if(columnHeader.equals(sourceFactor)){
+                    importedGermplasm.setSource(getCellStringValue(currentSheet, currentRow, col, true));
+                } else if(columnHeader.equals(entryCodeFactor)){
+                    importedGermplasm.setEntryCode(getCellStringValue(currentSheet, currentRow, col, true));
+                } else {
                 	
-                //GID is not given or 0, and DESIG is not given
-                } else if((importedGermplasm.getGid() == null || importedGermplasm.getGid().equals(Integer.valueOf(0)))
-                		 && (importedGermplasm.getDesig() == null || importedGermplasm.getDesig().length() == 0)){
-                	showInvalidFileError("Row " + currentRow + " on Observation sheet of file doesn't have a GID or a DESIGNATION value.");
                 }
-                
-                importedGermplasmList.addImportedGermplasm(importedGermplasm);
-                currentRow++;
             }
+            
+            //For cases where GID is preset and Desig is not present, or GID is not present and desig is present, or both are present
+            
+            //GID is given, but no DESIG, get value of DESIG given GID
+            if(importedGermplasm.getGid()!=null && importedGermplasm.getDesig()==null){
+            	try {
+
+            		//Check if germplasm exists
+			        Germplasm currentGermplasm = germplasmDataManager.getGermplasmByGID(importedGermplasm.getGid());
+			        if(currentGermplasm==null){
+			        	throwInvalidFileError("Germplasm with GID "+importedGermplasm.getGid()+" not found in database");
+			        } else {
+            		
+				        List<Integer> importedGermplasmGids = new ArrayList<Integer>();
+				        importedGermplasmGids.add(importedGermplasm.getGid());
+				        
+						Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(importedGermplasmGids);
+						
+						if(preferredNames.get(importedGermplasm.getGid())!=null)
+							importedGermplasm.setDesig(preferredNames.get(importedGermplasm.getGid()));
+						
+			        }
+				} catch (MiddlewareQueryException e) {
+					e.printStackTrace();
+				}
+            	
+            //GID is not given or 0, and DESIG is not given
+            } else if((importedGermplasm.getGid() == null || importedGermplasm.getGid().equals(Integer.valueOf(0)))
+            		 && (importedGermplasm.getDesig() == null || importedGermplasm.getDesig().length() == 0)){
+            	throwInvalidFileError("Row " + currentRow + " on Observation sheet of file doesn't have a GID or a DESIGNATION value.");
+            }
+            
+            importedGermplasmList.addImportedGermplasm(importedGermplasm);
+            currentRow++;
         }
     }
 
@@ -366,6 +300,8 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     			listDescHeaderFound = true;
     		} else if(header.equals(LIST_DATE_HEADER_LABEL)){
     			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
+    			simpleDateFormat.setLenient(false);
+    			
     			try{
     				if(value != null && value.length() > 0){
     					listDate = simpleDateFormat.parse(value);
@@ -373,7 +309,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     					listDate = null;
     				}
     			} catch(ParseException ex){
-    				showInvalidFileError("LIST DATE has wrong format. Please follow the format - yyyyMMdd.");
+    				throwInvalidFileError("LIST DATE has wrong format. Please follow the format - YYYYMMDD.");
     				return;
     			}
     			listDateHeaderFound = true;
@@ -395,7 +331,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
     	}
     	
     	if(errorString.toString().length() > 0){
-    		showInvalidFileError(errorString.toString());
+    		throwInvalidFileError(errorString.toString());
     		return;
     	}
     	
@@ -405,7 +341,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
 				Long matchingNamesCountOnCentral = germplasmListManager.countGermplasmListByName(listName, Operation.EQUAL, Database.CENTRAL);
 				
 				if(matchingNamesCountOnLocal>0 || matchingNamesCountOnCentral>0){
-					showInvalidFileError("There is already an existing germplasm list with the name specified on the file");
+					throwInvalidFileError("There is already an existing germplasm list with the name specified on the file");
 				}
 			} catch (MiddlewareQueryException e1) {
 				LOG.error("Error with count Germplasm List by name = " + listName, e1);
@@ -423,7 +359,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
 				}
 				
 				if(!listTypeCodes.contains(listType)){
-					showInvalidFileError("Invalid list type "+listType);
+					throwInvalidFileError("Invalid list type "+listType);
 				}
 			} catch (MiddlewareQueryException e1) {
 				LOG.error("Error with getting germplasm list types.", e1);
@@ -438,7 +374,7 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         }
     }
     
-    private void readConditions(){
+    private void readConditions() throws GermplasmImportException{
         
         currentRow++; //Skip row from file info
     
@@ -452,30 +388,28 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
 	            || !getCellStringValue(currentSheet,currentRow,4,true).toUpperCase().equals("METHOD")
 	            || !getCellStringValue(currentSheet,currentRow,5,true).toUpperCase().equals("DATA TYPE")
 	            || !getCellStringValue(currentSheet,currentRow,6,true).toUpperCase().equals("VALUE")){
-	            showInvalidFileError("Incorrect headers for conditions.");
+	            throwInvalidFileError("Incorrect headers for conditions.");
 	        }
-	        //If file is still valid (after checking headers), proceed
-	        if(fileIsValid){
-	            ImportedCondition importedCondition;
-	            currentRow++; 
-	            while(!rowIsEmpty()){
-	                importedCondition = new ImportedCondition(getCellStringValue(currentSheet,currentRow,0,true)
-	                    ,getCellStringValue(currentSheet,currentRow,1,true)
-	                    ,getCellStringValue(currentSheet,currentRow,2,true)
-	                    ,getCellStringValue(currentSheet,currentRow,3,true)
-	                    ,getCellStringValue(currentSheet,currentRow,4,true)
-	                    ,getCellStringValue(currentSheet,currentRow,5,true)
-	                    ,getCellStringValue(currentSheet,currentRow,6,true)
-	                    ,getCellStringValue(currentSheet,currentRow,7,true));
-	                importedGermplasmList.addImportedCondition(importedCondition);
-	                currentRow++;
-	            }
-	        }
-	        currentRow++;
+	        
+            ImportedCondition importedCondition;
+            currentRow++; 
+            while(!rowIsEmpty()){
+                importedCondition = new ImportedCondition(getCellStringValue(currentSheet,currentRow,0,true)
+                    ,getCellStringValue(currentSheet,currentRow,1,true)
+                    ,getCellStringValue(currentSheet,currentRow,2,true)
+                    ,getCellStringValue(currentSheet,currentRow,3,true)
+                    ,getCellStringValue(currentSheet,currentRow,4,true)
+                    ,getCellStringValue(currentSheet,currentRow,5,true)
+                    ,getCellStringValue(currentSheet,currentRow,6,true)
+                    ,getCellStringValue(currentSheet,currentRow,7,true));
+                importedGermplasmList.addImportedCondition(importedCondition);
+                currentRow++;
+            }
         }
+        currentRow++;
     }
 
-    private void readFactors(){
+    private void readFactors() throws GermplasmImportException {
         Boolean entryColumnIsPresent = false;
         Boolean desigColumnIsPresent = false;
         Boolean gidColumnIsPresent = false;
@@ -496,59 +430,58 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
             || !getCellStringValue(currentSheet,currentRow,3,true).toUpperCase().equals("SCALE")
             || !getCellStringValue(currentSheet,currentRow,4,true).toUpperCase().equals("METHOD")
             || !getCellStringValue(currentSheet,currentRow,5,true).toUpperCase().equals("DATA TYPE")){
-            showInvalidFileError("Incorrect headers for factors.");
+            throwInvalidFileError("Incorrect headers for factors.");
         }
-        //If file is still valid (after checking headers), proceed
-        if(fileIsValid){
-            ImportedFactor importedFactor;            
-            currentRow++; //skip header
-            while(!rowIsEmpty()){
-                importedFactor = new ImportedFactor(getCellStringValue(currentSheet,currentRow,0,true)
-                    ,getCellStringValue(currentSheet,currentRow,1,true)
-                    ,getCellStringValue(currentSheet,currentRow,2,true)
-                    ,getCellStringValue(currentSheet,currentRow,3,true)
-                    ,getCellStringValue(currentSheet,currentRow,4,true)
-                    ,getCellStringValue(currentSheet,currentRow,5,true)
-                    ,getCellStringValue(currentSheet,currentRow,7,true));
-                
-                   importedGermplasmList.addImportedFactor(importedFactor);
-                                
-                //Factors validation
-                String property = importedFactor.getProperty().toUpperCase();
-                String scale = importedFactor.getScale().toUpperCase();
-                if(property.equals(ENTRY_PROPERTY) && scale.equals(ENTRY_SCALE)){
-                	entryColumnIsPresent = true;
-                	entryFactor = importedFactor.getFactor();
-                } else if(property.equals(DESIG_PROPERTY) && scale.equals(DESIG_SCALE)){
-                	desigColumnIsPresent = true;
-                	desigFactor = importedFactor.getFactor();
-                } else if(property.equals(GID_PROPERTY) && scale.equals(GID_SCALE)){
-                	gidColumnIsPresent = true;
-                	importFileIsAdvanced = true;
-                	gidFactor = importedFactor.getFactor();
-                } else if(property.equals(ENTRY_CODE_PROPERTY) && scale.equals(ENTRY_CODE_SCALE)){
-                	entryCodeFactor = importedFactor.getFactor();
-                } else if(property.equals(SOURCE_PROPERTY) && scale.equals(SOURCE_SCALE)){
-                	sourceFactor = importedFactor.getFactor();
-                } else if(property.equals(CROSS_PROPERTY) && scale.equals(CROSS_SCALE)){
-                	crossFactor = importedFactor.getFactor();
-                }
-                
-                currentRow++;
+
+        
+        ImportedFactor importedFactor;            
+        currentRow++; //skip header
+        while(!rowIsEmpty()){
+            importedFactor = new ImportedFactor(getCellStringValue(currentSheet,currentRow,0,true)
+                ,getCellStringValue(currentSheet,currentRow,1,true)
+                ,getCellStringValue(currentSheet,currentRow,2,true)
+                ,getCellStringValue(currentSheet,currentRow,3,true)
+                ,getCellStringValue(currentSheet,currentRow,4,true)
+                ,getCellStringValue(currentSheet,currentRow,5,true)
+                ,getCellStringValue(currentSheet,currentRow,7,true));
+            
+               importedGermplasmList.addImportedFactor(importedFactor);
+                            
+            //Factors validation
+            String property = importedFactor.getProperty().toUpperCase();
+            String scale = importedFactor.getScale().toUpperCase();
+            if(property.equals(ENTRY_PROPERTY) && scale.equals(ENTRY_SCALE)){
+            	entryColumnIsPresent = true;
+            	entryFactor = importedFactor.getFactor();
+            } else if(property.equals(DESIG_PROPERTY) && scale.equals(DESIG_SCALE)){
+            	desigColumnIsPresent = true;
+            	desigFactor = importedFactor.getFactor();
+            } else if(property.equals(GID_PROPERTY) && scale.equals(GID_SCALE)){
+            	gidColumnIsPresent = true;
+            	importFileIsAdvanced = true;
+            	gidFactor = importedFactor.getFactor();
+            } else if(property.equals(ENTRY_CODE_PROPERTY) && scale.equals(ENTRY_CODE_SCALE)){
+            	entryCodeFactor = importedFactor.getFactor();
+            } else if(property.equals(SOURCE_PROPERTY) && scale.equals(SOURCE_SCALE)){
+            	sourceFactor = importedFactor.getFactor();
+            } else if(property.equals(CROSS_PROPERTY) && scale.equals(CROSS_SCALE)){
+            	crossFactor = importedFactor.getFactor();
             }
+            
+            currentRow++;
         }
         currentRow++;
 
         //If ENTRY or DESIG is not present on Factors, return error
         if(entryColumnIsPresent==false){
-        	showInvalidFileError("There is no ENTRY factor.");
+        	throwInvalidFileError("There is no ENTRY factor.");
         } else if(desigColumnIsPresent==false && gidColumnIsPresent==false){
-            showInvalidFileError("There is no DESIGNATION factor.");
+            throwInvalidFileError("There is no DESIGNATION factor.");
         } 
 	}
 
 
-    private void readConstants(){
+    private void readConstants() throws GermplasmImportException{
     	
     	//Constants section is not required, do nothing if it's not there
     	if(getCellStringValue(currentSheet,currentRow,0,true).toUpperCase().equals("CONSTANT")){
@@ -560,29 +493,27 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
 	            || !getCellStringValue(currentSheet,currentRow,4,true).toUpperCase().equals("METHOD")
 	            || !getCellStringValue(currentSheet,currentRow,5,true).toUpperCase().equals("DATA TYPE")
 	            || !getCellStringValue(currentSheet,currentRow,6,true).toUpperCase().equals("VALUE")) {
-	            showInvalidFileError("Incorrect headers for constants.");
+	            throwInvalidFileError("Incorrect headers for constants.");
 	        }
-	        //If file is still valid (after checking headers), proceed
-	        if(fileIsValid){
-	            ImportedConstant importedConstant;
-	            currentRow++; //skip header
-	            while(!rowIsEmpty()){
-	                importedConstant = new ImportedConstant(getCellStringValue(currentSheet,currentRow,0,true)
-	                    ,getCellStringValue(currentSheet,currentRow,1,true)
-	                    ,getCellStringValue(currentSheet,currentRow,2,true)
-	                    ,getCellStringValue(currentSheet,currentRow,3,true)
-	                    ,getCellStringValue(currentSheet,currentRow,4,true)
-	                    ,getCellStringValue(currentSheet,currentRow,5,true)
-	                    ,getCellStringValue(currentSheet,currentRow,6,true));
-	                importedGermplasmList.addImportedConstant(importedConstant);   
-	                currentRow++;
-	            }
-	        }
+	        
+            ImportedConstant importedConstant;
+            currentRow++; //skip header
+            while(!rowIsEmpty()){
+                importedConstant = new ImportedConstant(getCellStringValue(currentSheet,currentRow,0,true)
+                    ,getCellStringValue(currentSheet,currentRow,1,true)
+                    ,getCellStringValue(currentSheet,currentRow,2,true)
+                    ,getCellStringValue(currentSheet,currentRow,3,true)
+                    ,getCellStringValue(currentSheet,currentRow,4,true)
+                    ,getCellStringValue(currentSheet,currentRow,5,true)
+                    ,getCellStringValue(currentSheet,currentRow,6,true));
+                importedGermplasmList.addImportedConstant(importedConstant);   
+                currentRow++;
+            }
 	        currentRow++;
     	}
     }
     
-    private void readVariates(){
+    private void readVariates() throws GermplasmImportException{
     	
     	//Variates section is not required, do nothing if it's not there
     	if(getCellStringValue(currentSheet,currentRow,0,true).toUpperCase().equals("VARIATE")){
@@ -593,23 +524,20 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
 	            || !getCellStringValue(currentSheet,currentRow,3,true).toUpperCase().equals("SCALE")
 	            || !getCellStringValue(currentSheet,currentRow,4,true).toUpperCase().equals("METHOD")
 	            || !getCellStringValue(currentSheet,currentRow,5,true).toUpperCase().equals("DATA TYPE")) {
-	            showInvalidFileError("Incorrect headers for variates.");
+	            throwInvalidFileError("Incorrect headers for variates.");
 	        }
-	        //If file is still valid (after checking headers), proceed
-	        if(fileIsValid){
-	            ImportedVariate importedVariate;
-	            currentRow++; //skip header
-	            while(!rowIsEmpty()){
-	                importedVariate = new ImportedVariate(getCellStringValue(currentSheet,currentRow,0,true)
-	                    ,getCellStringValue(currentSheet,currentRow,1,true)
-	                    ,getCellStringValue(currentSheet,currentRow,2,true)
-	                    ,getCellStringValue(currentSheet,currentRow,3,true)
-	                    ,getCellStringValue(currentSheet,currentRow,4,true)
-	                    ,getCellStringValue(currentSheet,currentRow,5,true));
-	                importedGermplasmList.addImportedVariate(importedVariate);
-	                currentRow++;
-	            }
-	        }
+            ImportedVariate importedVariate;
+            currentRow++; //skip header
+            while(!rowIsEmpty()){
+                importedVariate = new ImportedVariate(getCellStringValue(currentSheet,currentRow,0,true)
+                    ,getCellStringValue(currentSheet,currentRow,1,true)
+                    ,getCellStringValue(currentSheet,currentRow,2,true)
+                    ,getCellStringValue(currentSheet,currentRow,3,true)
+                    ,getCellStringValue(currentSheet,currentRow,4,true)
+                    ,getCellStringValue(currentSheet,currentRow,5,true));
+                importedGermplasmList.addImportedVariate(importedVariate);
+                currentRow++;
+            }
 	        currentRow++;
     	}
     }
@@ -657,25 +585,24 @@ public class GermplasmListUploader implements Receiver, SucceededListener {
         }
     }
     
-    private void showInvalidFileError(String message){
-        if(fileIsValid){
-            //source.getAccordion().getWindow().showNotification("Invalid Import File: " + message, Notification.TYPE_ERROR_MESSAGE);
-            MessageNotifier.showError(source.getAccordion().getWindow(), "Invalid Import File: ", message
-                    , Notification.POSITION_CENTERED);
-            fileIsValid = false;
-        }
+    private void throwInvalidFileError(String message) throws GermplasmImportException{
+    	throw new GermplasmImportException(message);
     }
     
-    private void showInvalidFileTypeError(){
-        if(fileIsValid){
-            //source.getAccordion().getWindow().showNotification("Invalid Import File Type, you need to upload an XLS file", Notification.TYPE_ERROR_MESSAGE);
-            MessageNotifier.showError(source.getAccordion().getWindow(), "Invalid Import File Type.", "Please upload a properly formatted XLS file."
-                    , Notification.POSITION_CENTERED);
-            fileIsValid = false;
-        }
+    private void throwInvalidFileTypeError() throws GermplasmImportException {
+    	throw new InvalidFileTypeImportException("Please upload a properly formatted XLS file.");
     }    
     
     public Boolean importFileIsAdvanced(){
     	return importFileIsAdvanced;
     }
+
+	@Override
+	public File createFile(String fileName, String mimeType) {
+		File f = new File(TEMP_FILE_DIR + "/" + fileName);
+		tempFileName = f.getAbsolutePath();
+		originalFilename = fileName;
+        return f;
+	}
+	
 };

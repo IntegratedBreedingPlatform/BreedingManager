@@ -11,6 +11,7 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.LocationDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.pojos.workbench.Project;
@@ -49,6 +50,8 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	private boolean isMandatory;
 	private String DEFAULT_LOCATION = "Unknown";
 	private boolean changed;
+	private int leftIndentPixels = 130;
+	
 	
     private List<Location> locations;
 	private CheckBox showFavoritesCheckBox;
@@ -65,22 +68,30 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	@Autowired
     private GermplasmDataManager germplasmDataManager;	
 	
+	@Autowired
+    private LocationDataManager locationDataManager;
+	
 	public BreedingLocationField(){
 		this.caption = "Location: ";
 		this.changed = false;
-		this.attachToWindow = getWindow();
 	}
 	
 	public BreedingLocationField(Window attachToWindow){
-		this.caption = "Location: ";
-		this.changed = false;
+		this();
 		this.attachToWindow = attachToWindow;
+	}
+	
+	public BreedingLocationField(Window attachToWindow, int pixels){
+		this(attachToWindow);
+		this.leftIndentPixels = pixels;
+	}
+	
+	public BreedingLocationField(int pixels){
+		this.leftIndentPixels = pixels;
 	}
 	
 	@Override
 	public void instantiateComponents() {
-		
-		setWidth("500px");
 		setHeight("250px");
 		
 		captionLabel = new Label(caption);
@@ -159,15 +170,16 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	@Override
 	public void layoutComponents() {
 		addComponent(captionLabel, "top:3px; left:0;");
-		addComponent(breedingLocationComboBox, "top:0; left:130px;");
-		addComponent(showFavoritesCheckBox, "top:25px; left:130px;");
-		addComponent(manageFavoritesLink, "top:28px; left:350px;");
+		addComponent(breedingLocationComboBox, "top:0; left:" + leftIndentPixels + "px");
+		
+		addComponent(showFavoritesCheckBox, "top:30px; left:" + leftIndentPixels + "px");
+		
+		int pixels = leftIndentPixels + 220;
+		addComponent(manageFavoritesLink, "top:33px; left:" + pixels + "px");
 	}
 
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -235,7 +247,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		
 		if(locations==null){
 			try {
-				locations = germplasmDataManager.getAllBreedingLocations();
+				locations = locationDataManager.getAllLocations();
 			} catch (MiddlewareQueryException e) {
 				e.printStackTrace();
 				LOG.error("Error on getting all locations", e);
@@ -265,7 +277,8 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		try {
 			Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
             Project project = workbenchDataManager.getLastOpenedProject(wbUserId);
-			Window manageFavoriteLocationsWindow = Util.launchLocationManager(workbenchDataManager, project.getProjectId(), attachToWindow, messageSource.getMessage(Message.MANAGE_LOCATIONS));
+            Window window = attachToWindow != null ? attachToWindow : getWindow();
+			Window manageFavoriteLocationsWindow = Util.launchLocationManager(workbenchDataManager, project.getProjectId(), window, messageSource.getMessage(Message.MANAGE_LOCATIONS));
 			manageFavoriteLocationsWindow.addListener(new CloseListener(){
 				private static final long serialVersionUID = 1L;
 				@Override
@@ -279,4 +292,16 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 			LOG.error("Error on manageFavoriteLocations click", e);
 		}
     }
+    
+    public void setCaption(String caption){
+    	this.caption = caption;
+    	if (this.captionLabel != null){
+    		this.captionLabel.setValue(this.caption);
+    	}
+    }
+    
+    protected int getLeftIndentPixels(){
+    	return leftIndentPixels;
+    }
+    
 }

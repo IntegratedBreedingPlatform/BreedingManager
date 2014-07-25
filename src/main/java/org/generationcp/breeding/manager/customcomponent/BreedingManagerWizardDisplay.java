@@ -8,7 +8,6 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
@@ -27,10 +26,9 @@ public class BreedingManagerWizardDisplay extends HorizontalLayout
 	
 	private static final long serialVersionUID = -122768867922396461L;
 
-	private List<String> wizardSteps = new ArrayList<String>();
-	private List<Label> wizardLabels = new ArrayList<Label>();
-	private List<HorizontalLayout> layouts = new ArrayList<HorizontalLayout>();
-	private int currentIndex = 0;
+	protected List<String> wizardSteps = new ArrayList<String>();
+	protected List<Label> wizardLabels = new ArrayList<Label>();
+	protected int currentIndex = 0;
 	
 	public BreedingManagerWizardDisplay(String... steps){
 		super();
@@ -85,25 +83,40 @@ public class BreedingManagerWizardDisplay extends HorizontalLayout
 	private void initializeLabelLayouts() {
 		for (int i=1; i<= wizardSteps.size(); i++){
 			
-			Label label = new Label(i + "." + wizardSteps.get(i-1));
-			label.addStyleName(Bootstrap.Typography.H3.styleName());
+			Label label = new Label();
+			if (displayStepNumber()){
+				label.setValue(i + "." + wizardSteps.get(i-1));
+			} else {
+				label.setValue( wizardSteps.get(i-1));
+			}
+			label.addStyleName(getLabelStyleName());
+			label.setVisible(showAllSteps());
 			
-			label.setWidth("180px");
-			
-			HorizontalLayout layout = new HorizontalLayout();
-			layout.addComponent(label);
-			
-			layout.setWidth("180px");
-			
-			layout.setComponentAlignment(label, Alignment.TOP_LEFT);
+			label.setWidth(getLabelWidth());
 			
 			wizardLabels.add(label);
-			layouts.add(layout);
 		}
 	}
-
+	
+	protected String getLabelWidth(){
+		return "180px";
+	}
+	
+	protected String getLabelStyleName(){
+		return Bootstrap.Typography.H3.styleName();
+	}
+	
+	protected boolean displayStepNumber(){
+		return true;
+	}
+ 
 	@Override
 	public void initializeValues() {
+		// only show first step
+		Label firstStepLabel = wizardLabels.get(0);
+		if (!showAllSteps() && firstStepLabel != null){
+			firstStepLabel.setVisible(true);
+		}
 	}
 
 	@Override
@@ -112,8 +125,8 @@ public class BreedingManagerWizardDisplay extends HorizontalLayout
 
 	@Override
 	public void layoutComponents() {
-		for (HorizontalLayout layout : layouts){
-			addComponent(layout);
+		for (Label label : wizardLabels){
+			addComponent(label);
 		}
 	}
 
@@ -121,6 +134,10 @@ public class BreedingManagerWizardDisplay extends HorizontalLayout
 	public void afterPropertiesSet() throws Exception {
 		instantiateComponents();
 		layoutComponents();
+	}
+	
+	protected boolean showAllSteps(){
+		return true;
 	}
 
 	

@@ -46,13 +46,15 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 
 	private static final long serialVersionUID = 4506866031376540836L;
 	private final static Logger LOG = LoggerFactory.getLogger(BreedingMethodField.class);
+	private static String DEFAULT_METHOD = "UDM";
 
 	private Label captionLabel;
 	private String caption;
 	private ComboBox breedingMethodComboBox;
-	private boolean isMandatory;
-	private static String DEFAULT_METHOD = "UDM";
+	private boolean isMandatory = true;
+	private boolean hasDefaultValue = true;
 	private boolean changed;
+	private int leftIndentPixels = 130;
 	
 	private Map<String, String> methodMap;
 	private List<Method> methods;
@@ -76,19 +78,54 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	public BreedingMethodField(){
 		this.caption = "Breeding Method: ";
 		this.changed = false;
-		this.attachToWindow = getWindow();
 	}
 	
 	public BreedingMethodField(Window attachToWindow){
-		this.caption = "Breeding Method: ";
-		this.changed = false;
+		this();
 		this.attachToWindow = attachToWindow;
+		this.isMandatory = true;
+		this.hasDefaultValue = true;
+	}
+	
+	public BreedingMethodField(Window attachToWindow, int pixels){
+		this();
+		this.attachToWindow = attachToWindow;
+		this.leftIndentPixels = pixels;
+		this.isMandatory = true;
+		this.hasDefaultValue = true;
+	}
+	
+	public BreedingMethodField(int pixels){ 
+		this();
+		this.leftIndentPixels = pixels;
+		this.isMandatory = true;
+		this.hasDefaultValue = true;
+	}
+	
+	public BreedingMethodField(Window attachToWindow , boolean isMandatory, boolean hasDefaultValue){
+		this();
+		this.attachToWindow = attachToWindow;
+		this.isMandatory = isMandatory;
+		this.hasDefaultValue = hasDefaultValue;
+	}
+	
+	public BreedingMethodField(Window attachToWindow, int pixels, boolean isMandatory, boolean hasDefaultValue){
+		this();
+		this.attachToWindow = attachToWindow;
+		this.leftIndentPixels = pixels;
+		this.isMandatory = isMandatory;
+		this.hasDefaultValue = hasDefaultValue;
+	}
+	
+	public BreedingMethodField(int pixels, boolean isMandatory, boolean hasDefaultValue){ 
+		this();
+		this.leftIndentPixels = pixels;
+		this.isMandatory = isMandatory;
+		this.hasDefaultValue = hasDefaultValue;
 	}
 	
 	@Override
 	public void instantiateComponents() {
-		
-		setWidth("500px");
 		setHeight("250px");
 		
 		captionLabel = new Label(caption);
@@ -97,11 +134,15 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		breedingMethodComboBox = new ComboBox();
 		breedingMethodComboBox.setWidth("320px");
 		breedingMethodComboBox.setImmediate(true);
-		breedingMethodComboBox.setNullSelectionAllowed(false);
 		
 		if(isMandatory){
+			breedingMethodComboBox.setNullSelectionAllowed(false);
 			breedingMethodComboBox.setRequired(true);
 			breedingMethodComboBox.setRequiredError("Please specify the method.");
+		}
+		else{
+			breedingMethodComboBox.setNullSelectionAllowed(true);
+			breedingMethodComboBox.setInputPrompt("Please Choose");
 		}
 		
 		showFavoritesCheckBox = new CheckBox();
@@ -175,16 +216,19 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	@Override
 	public void layoutComponents() {
 		addComponent(captionLabel, "top:3px; left:0;");
-		addComponent(breedingMethodComboBox, "top:0; left:130px;");
-		addComponent(popup, "top:0; left:455px;");
-		addComponent(showFavoritesCheckBox, "top:25px; left:130px;");
-		addComponent(manageFavoritesLink, "top:28px; left:350px;");
+		addComponent(breedingMethodComboBox, "top:0; left:" + leftIndentPixels + "px");
+		
+		int pixels = leftIndentPixels + 325;
+		addComponent(popup, "top:0; left:" + pixels + "px");
+		
+		addComponent(showFavoritesCheckBox, "top:30px; left:" + leftIndentPixels + "px");
+		
+		pixels = leftIndentPixels + 220;
+		addComponent(manageFavoritesLink, "top:33px; left:" + pixels + "px");
 	}
 
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -249,21 +293,32 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
         
         methodMap = new HashMap<String, String>();
 
+        Method defaultMethod = null;
         for(Method method : methods){
             breedingMethodComboBox.addItem(method.getMid());
             breedingMethodComboBox.setItemCaption(method.getMid(), method.getMname());
+            
             if(DEFAULT_METHOD.equalsIgnoreCase(method.getMcode())){
-                breedingMethodComboBox.setValue(method.getMid());
-                //breedingMethodComboBox.setDescription(method.getMdesc());
-                methodDescription.setValue(method.getMdesc());
+            	defaultMethod = method;
             }
+            
             methodMap.put(method.getMid().toString(), method.getMdesc());
         }
         
-        if(breedingMethodComboBox.getValue()==null && methods.size() > 0 && methods.get(0) != null){
-        	breedingMethodComboBox.setValue(methods.get(0).getMid());
-        	breedingMethodComboBox.setDescription(methods.get(0).getMdesc());
+        if(hasDefaultValue){
+        	if(defaultMethod != null){
+                breedingMethodComboBox.setValue(defaultMethod.getMid());
+                methodDescription.setValue(defaultMethod.getMdesc());
+        	}
+        	else{
+        		//if the list of methods has no default method, just select the first item from the list
+        		if(breedingMethodComboBox.getValue()==null && methods.size() > 0 && methods.get(0) != null){
+                	breedingMethodComboBox.setValue(methods.get(0).getMid());
+                	breedingMethodComboBox.setDescription(methods.get(0).getMdesc());
+                }
+        	}
         }
+        
 		return methodMap;
 	}    
 	
@@ -288,7 +343,8 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		try {
 			Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
             Project project = workbenchDataManager.getLastOpenedProject(wbUserId);
-			Window manageFavoriteMethodsWindow = Util.launchMethodManager(workbenchDataManager, project.getProjectId(), attachToWindow, messageSource.getMessage(Message.MANAGE_METHODS));
+            Window window = attachToWindow != null ? attachToWindow : getWindow();
+			Window manageFavoriteMethodsWindow = Util.launchMethodManager(workbenchDataManager, project.getProjectId(), window, messageSource.getMessage(Message.MANAGE_METHODS));
 			manageFavoriteMethodsWindow.addListener(new CloseListener(){
 				private static final long serialVersionUID = 1L;
 				@Override
@@ -302,4 +358,16 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 			LOG.error("Error on manageFavoriteMethods click", e);
 		}
     }
+    
+    public void setCaption(String caption){
+    	this.caption = caption;
+    	if (this.captionLabel != null){
+    		this.captionLabel.setValue(this.caption);
+    	}
+    }
+    
+    protected int getLeftIndentPixels(){
+    	return leftIndentPixels;
+    }
+    
 }
