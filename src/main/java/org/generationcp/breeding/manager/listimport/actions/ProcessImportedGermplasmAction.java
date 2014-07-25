@@ -181,11 +181,18 @@ public class ProcessImportedGermplasmAction implements Serializable {
 
 	// Set imported germplasm's gpid1 and gpid2 based on source/connecting germplasm
 	protected void updatePedigreeConnections(Germplasm germplasm, Germplasm sourceGermplasm) {
-		if(sourceGermplasm.getGnpgs() < 2){
-			germplasm.setGpid1(sourceGermplasm.getGpid1());
-		} else {
-			germplasm.setGpid1(sourceGermplasm.getGid());                            	
+		if(germplasm.getGnpgs() == -1){
+			if(sourceGermplasm.getGpid1() == 0){
+				germplasm.setGpid1(sourceGermplasm.getGid());
+			}
+			else{
+				germplasm.setGpid1(sourceGermplasm.getGpid1());
+			}
 		}
+		else{
+			germplasm.setGpid1(sourceGermplasm.getGid());
+		}
+		
 		germplasm.setGpid2(sourceGermplasm.getGid());
 	}
 	
