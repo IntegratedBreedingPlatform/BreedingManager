@@ -472,4 +472,10 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
 	public Boolean hasUnsavedChangesMain(){
 		return hasChanges;
 	}
+
+	public void showNodeOnTree(Integer listId) {
+		CrossingManagerListTreeComponent listTreeComponent = getSelectParentsComponent().getListTreeComponent();
+		listTreeComponent.setListId(listId);
+		listTreeComponent.createTree();
+	}
 }

@@ -107,7 +107,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 					
 					source.setHasUnsavedChanges(false);
 					
-					((ListManagerMain) this.source.getSource()).showNodeOnTree(listId);
+					((ListManagerMain) this.source.getSource()).getListSelectionComponent().showNodeOnTree(listId);
 					
 				} else{
 					if(showMessages){

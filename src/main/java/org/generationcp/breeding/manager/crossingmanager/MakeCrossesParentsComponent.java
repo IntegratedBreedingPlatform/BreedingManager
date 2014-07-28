@@ -734,4 +734,18 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		femaleParentTab.resetUnsavedChangesFlag();
 		maleParentTab.resetUnsavedChangesFlag();
 	}
+
+	public void updateUIForDeletedList(GermplasmList germplasmList) {
+		if(femaleParentTab.getGermplasmList() != null){
+			if(femaleParentTab.getGermplasmList().getName().equals(germplasmList.getName())){
+				femaleParentTab.updateUIforDeletedList(germplasmList);
+			}
+		}
+		
+		if(maleParentTab.getGermplasmList() != null){
+			if(maleParentTab.getGermplasmList().getName().equals(germplasmList.getName())){
+				maleParentTab.updateUIforDeletedList(germplasmList);
+			}
+		}
+	}
 }

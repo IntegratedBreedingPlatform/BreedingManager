@@ -152,6 +152,11 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 		
 	}
 	
+	public void showNodeOnTree(Integer listId){
+		listTreeComponent.setListId(listId);
+		listTreeComponent.createTree();
+	}
+	
 	public ListSearchComponent getListSearchComponent(){
 		return listSearchComponent;
 	}

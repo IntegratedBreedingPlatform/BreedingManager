@@ -976,6 +976,9 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	}
 	
 	public void resetList() {
+		updateNoOfEntries(0);
+		updateNoOfSelectedEntries(0);
+		
 		//Reset list data table
 		listDataTable.removeAllItems();
 		
@@ -1309,6 +1312,25 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			
 		}
 		return nextId+1;
+	}
+	
+	public void updateUIforDeletedList(GermplasmList germplasmList){
+		if(this.germplasmList.getName().equals(germplasmList.getName())){
+			this.getWindow().removeWindow(saveListAsWindow);
+			makeCrossesMain.showNodeOnTree(germplasmList.getId());//refresh the list tree in select parents
+			saveListAsWindow = null;
+			setGermplasmList(null);
+			resetList();
+			
+			String message = "";
+			if(parentLabel.equals("Female Parents")){
+				message = "Female Parent List was successfully deleted.";
+			} else if(parentLabel.equals("Male Parents")){
+				message = "Male Parent List was successfully deleted.";
+			}
+			
+			MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), message);
+		}
 	}
 
 	public void setPreviousModeView(ModeView prevModeView) {

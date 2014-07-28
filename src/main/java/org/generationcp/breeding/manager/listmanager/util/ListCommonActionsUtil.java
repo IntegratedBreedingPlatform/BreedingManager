@@ -112,13 +112,13 @@ public class ListCommonActionsUtil {
 					ListBuilderComponent component = (ListBuilderComponent) source;
 					component.setCurrentlySavedGermplasmList(listFromDB);
 					component.setHasUnsavedChanges(false);
-					((ListManagerMain) component.getSource()).showNodeOnTree(listId);
+					((ListManagerMain) component.getSource()).getListSelectionComponent().showNodeOnTree(listId);
 				} else if(source instanceof ListManagerMain) {
 					ListManagerMain component = (ListManagerMain) source;
 					component.getListSelectionComponent().
 							updateUIForRenamedList(listToSave, listToSave.getName());
 					
-					component.showNodeOnTree(listFromDB.getId());
+					component.getListSelectionComponent().showNodeOnTree(listFromDB.getId());
 					MessageNotifier.showMessage(source.getWindow(), messageSource.getMessage(Message.SUCCESS), 
 							"Changes to list header were saved.", 3000);
 				}

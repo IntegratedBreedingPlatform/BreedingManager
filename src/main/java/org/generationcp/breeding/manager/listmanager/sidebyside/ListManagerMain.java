@@ -260,11 +260,6 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		listBuilderComponent.addGermplasm(gid);
 	}
 
-	public void showNodeOnTree(Integer listId){
-		listSelectionComponent.getListTreeComponent().setListId(listId);
-		listSelectionComponent.getListTreeComponent().createTree();
-	}
-
 	public ListBuilderComponent getListBuilderComponent() {
 		return listBuilderComponent;
 	}
@@ -385,7 +380,6 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	}
 
 	public void updateUIForDeletedList(GermplasmList list) {
-		
 		SaveListAsDialog saveListAsDialog = null;
 		
 		//close the save dialog window in View list if the deleted list is the current selected list
@@ -396,6 +390,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 			if(saveListAsDialog != null){
 				if(listComponent.getCurrentListInSaveDialog().getName().equals(list.getName())){
 					listComponent.getWindow().removeWindow(saveListAsDialog);
+					MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Germplasm List was deleted.");
 				}
 			}
 		}
@@ -415,10 +410,11 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 			&& list != null
 			&& getListBuilderComponent().getCurrentlySavedGermplasmList().getName().equals(list.getName())){
 			getListBuilderComponent().resetList();
+			MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Germplasm List was deleted.");
 		}
 		
 		//refresh tree on browse for list dialog
-		showNodeOnTree(list.getId());
+		listSelectionComponent.showNodeOnTree(list.getId());
 		
 		//Check if deleted list is in the search results
 		listSelectionComponent.getListSearchComponent().getSearchResultsComponent().removeSearchResult(list.getId());

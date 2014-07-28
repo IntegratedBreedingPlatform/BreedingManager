@@ -398,8 +398,8 @@ public class GermplasmListTreeUtil implements Serializable {
 						ListCommonActionsUtil.deleteGermplasmList(germplasmListManager, finalGpList, 
 								workbenchDataManager, source.getWindow(), messageSource, "item");
 						listTreeComponent.removeListFromTree(finalGpList);
-						((BreedingManagerApplication) mainWindow.getApplication()).getListManagerMain().updateUIForDeletedList(finalGpList);
-
+						
+						((BreedingManagerApplication) mainWindow.getApplication()).updateUIForDeletedList(finalGpList);
 						source.refreshRemoteTree();
 						
 					} catch (Error e) {
