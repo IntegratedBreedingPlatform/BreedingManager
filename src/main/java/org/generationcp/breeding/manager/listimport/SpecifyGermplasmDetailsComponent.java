@@ -328,24 +328,16 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         initializePedigreeOptions();
 	}
 
+	@SuppressWarnings("serial")
 	@Override
 	public void addListeners() {
 		processGermplasmAction = new ProcessImportedGermplasmAction(this);
+		
 		pedigreeOptionComboBox.addListener(new Property.ValueChangeListener(){
-
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				if(pedigreeOptionComboBox.getValue()!=null){
-					if(pedigreeOptionComboBox.getValue().equals(3)){
-						automaticallyAcceptSingleMatchesCheckbox.setVisible(true);
-						automaticallyAcceptSingleMatchesCheckbox.setValue(false);
-					} else {
-						automaticallyAcceptSingleMatchesCheckbox.setVisible(false);
-						automaticallyAcceptSingleMatchesCheckbox.setValue(false);
-					}
-				}
+				toggleAcceptSingleMatchesCheckbox();
 			}
-			
 		});
 		
 	}
@@ -401,6 +393,16 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         addComponent(buttonLayout);
 	}
 	
+	protected void toggleAcceptSingleMatchesCheckbox() {
+		automaticallyAcceptSingleMatchesCheckbox.setVisible(false); //by default hide it
+		automaticallyAcceptSingleMatchesCheckbox.setValue(false);
+		
+		if(pedigreeOptionComboBox.getValue()!=null){
+			boolean selectGermplasmOptionChosen = pedigreeOptionComboBox.getValue().equals(3);
+			automaticallyAcceptSingleMatchesCheckbox.setVisible(selectGermplasmOptionChosen);
+		}
+	}
+	
 	public void initializeFromImportFile(ImportedGermplasmList importedGermplasmList){
 		//Clear table contents first (possible that it has some rows in it from previous uploads, and then user went back to upload screen)
 		getGermplasmDetailsTable().removeAllItems();
@@ -422,6 +424,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         } else {
         	showFirstPedigreeOption(true);
         }
+        toggleAcceptSingleMatchesCheckbox();
 	}
 
 	@Override
