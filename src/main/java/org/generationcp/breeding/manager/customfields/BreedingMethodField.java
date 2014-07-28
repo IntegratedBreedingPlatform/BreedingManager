@@ -162,6 +162,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	@Override
 	public void initializeValues() {
         populateMethods();
+        enableMethodHelp(hasDefaultValue);
 	}
 
 	@Override
@@ -269,11 +270,18 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	
     private void updateComboBoxDescription(){
     	Object breedingMethodComboBoxValue = breedingMethodComboBox.getValue();
-    	breedingMethodComboBox.setDescription("");
-    	if(breedingMethodComboBoxValue!=null){
-    		//breedingMethodComboBox.setDescription(methodMap.get(breedingMethodComboBoxValue.toString()));
+    	
+    	final Boolean methodSelected = breedingMethodComboBoxValue != null;
+		enableMethodHelp(methodSelected);
+		
+    	if(methodSelected){
     		methodDescription.setValue(methodMap.get(breedingMethodComboBoxValue.toString()));
-    	}
+    	} 
+    }
+    
+    private void enableMethodHelp (final Boolean enable) {
+    	methodDescription.setEnabled(enable);
+    	popup.setEnabled(enable);
     }
     
     private Map<String, String> populateMethods() {
