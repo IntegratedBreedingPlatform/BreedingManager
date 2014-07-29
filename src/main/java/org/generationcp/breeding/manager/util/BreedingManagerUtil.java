@@ -16,6 +16,8 @@ import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.UserDefinedField;
+import org.generationcp.middleware.pojos.dms.ProgramFavorite;
+import org.generationcp.middleware.pojos.dms.ProgramFavorite.FavoriteType;
 import org.generationcp.middleware.pojos.workbench.Project;
 
 import com.vaadin.ui.AbstractField;
@@ -85,7 +87,7 @@ public class BreedingManagerUtil{
             if (window != null && messageSource != null){
                 MessageNotifier.showError(window, 
                         messageSource.getMessage(Message.ERROR_DATABASE),
-                        messageSource.getMessage(Message.ERROR_IN_GETTING_CROSSING_NAME_TYPE), Notification.POSITION_CENTERED);
+                        messageSource.getMessage(Message.ERROR_IN_GETTING_CROSSING_NAME_TYPE));
             }
         }
         
@@ -156,7 +158,7 @@ public class BreedingManagerUtil{
         
         if (window != null){
             MessageNotifier.showError(window, MessageFormat.format(
-                    messageSource.getMessage(Message.ERROR_MUST_BE_SPECIFIED), fieldName), "", Notification.POSITION_CENTERED);
+                    messageSource.getMessage(Message.ERROR_MUST_BE_SPECIFIED), fieldName), "");
         }
 
     }
@@ -176,20 +178,15 @@ public class BreedingManagerUtil{
     	
     	locationComboBox.removeAllItems();
     	
-        List<Long> favoriteLocationLongIds = new ArrayList<Long>();
         List<Integer> favoriteLocationIds = new ArrayList<Integer>();
         List<Location> favoriteLocations = new ArrayList<Location>();
          
-		Integer workbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
-		Long lastProjectId = workbenchDataManager.getLastOpenedProject(workbenchUserId).getProjectId();
-        
+		
         //Get location Id's
-        favoriteLocationLongIds.addAll(workbenchDataManager.getFavoriteProjectLocationIds(lastProjectId, 0, 10000));
-        
-        //Convert to int
-        for(Long favoriteLocationLongId : favoriteLocationLongIds){
-        	favoriteLocationIds.add(Integer.valueOf(favoriteLocationLongId.toString()));
-        }
+        List<ProgramFavorite> list = germplasmDataManager.getProgramFavorites(FavoriteType.LOCATION, 1000);
+		for (ProgramFavorite f : list){
+			favoriteLocationIds.add(f.getEntityId());
+		}
         
         //Get locations
         favoriteLocations = germplasmDataManager.getLocationsByIDs(favoriteLocationIds);
@@ -220,20 +217,14 @@ public class BreedingManagerUtil{
     	
     	locationComboBox.removeAllItems();
     	
-        List<Long> favoriteLocationLongIds = new ArrayList<Long>();
         List<Integer> favoriteLocationIds = new ArrayList<Integer>();
         List<Location> favoriteLocations = new ArrayList<Location>();
-         
-		Integer workbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
-		Long lastProjectId = workbenchDataManager.getLastOpenedProject(workbenchUserId).getProjectId();
         
         //Get location Id's
-        favoriteLocationLongIds.addAll(workbenchDataManager.getFavoriteProjectLocationIds(lastProjectId, 0, 10000));
-        
-        //Convert to int
-        for(Long favoriteLocationLongId : favoriteLocationLongIds){
-        	favoriteLocationIds.add(Integer.valueOf(favoriteLocationLongId.toString()));
-        }
+        List<ProgramFavorite> list = germplasmDataManager.getProgramFavorites(FavoriteType.LOCATION, 1000);
+		for (ProgramFavorite f : list){
+			favoriteLocationIds.add(f.getEntityId());
+		}
         
         //Get locations
         favoriteLocations = germplasmDataManager.getLocationsByIDs(favoriteLocationIds);
@@ -273,10 +264,11 @@ public class BreedingManagerUtil{
         List<Method> favoriteMethods = new ArrayList<Method>();
          
 		try {
-			Integer workbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
-			Project lastProject = workbenchDataManager.getLastOpenedProject(workbenchUserId);
-
-			favoriteMethodIds.addAll(workbenchDataManager.getFavoriteProjectMethods(lastProject, 0, 10000));
+			
+			List<ProgramFavorite> list = germplasmDataManager.getProgramFavorites(FavoriteType.METHOD, 1000);
+			for (ProgramFavorite f : list){
+				favoriteMethodIds.add(f.getEntityId());
+			}
 	        
 	        //Get Methods
 	        if (!favoriteMethodIds.isEmpty()){
@@ -316,10 +308,11 @@ public class BreedingManagerUtil{
         List<Method> favoriteMethods = new ArrayList<Method>();
          
 		try {
-			Integer workbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
-			Project lastProject = workbenchDataManager.getLastOpenedProject(workbenchUserId);
 
-			favoriteMethodIds.addAll(workbenchDataManager.getFavoriteProjectMethods(lastProject, 0, 10000));
+			List<ProgramFavorite> list = germplasmDataManager.getProgramFavorites(FavoriteType.METHOD, 1000);
+			for (ProgramFavorite f : list){
+				favoriteMethodIds.add(f.getEntityId());
+			}
 	        
 	        //Get Methods
 	        if (!favoriteMethodIds.isEmpty()){
