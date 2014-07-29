@@ -249,7 +249,7 @@ public class GermplasmListUploader implements FileFactory {
             //For cases where GID is preset and Desig is not present, or GID is not present and desig is present, or both are present
             
             //GID is given, but no DESIG, get value of DESIG given GID
-            if(importedGermplasm.getGid()!=null && importedGermplasm.getDesig()==null){
+            if(importedGermplasm.getGid()!=null && (importedGermplasm.getDesig()==null || importedGermplasm.getDesig().equals(""))){
             	try {
 
             		//Check if germplasm exists
