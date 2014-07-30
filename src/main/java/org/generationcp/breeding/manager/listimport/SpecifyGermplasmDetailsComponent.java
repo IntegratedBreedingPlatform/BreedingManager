@@ -47,6 +47,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 @Configurable
 public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements InitializingBean, 
@@ -433,19 +434,32 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 		SaveGermplasmListAction saveGermplasmListAction = new SaveGermplasmListAction();
 		
 		try {
-			saveGermplasmListAction.saveRecords(list, getGermplasmNameObjects(), 
+			Integer listId = saveGermplasmListAction.saveRecords(list, getGermplasmNameObjects(), 
 					germplasmListUploader.getOriginalFilename(), processGermplasmAction.getMatchedGermplasmIds(), importedGermplasms);
 			
-			MessageNotifier.showMessage(this.source.getWindow(), messageSource.getMessage(Message.SUCCESS), 
-					messageSource.getMessage(Message.GERMPLASM_LIST_SAVED_SUCCESSFULLY), 3000);
-			
-			source.backStep();
-			source.reset();
+			if (listId != null){
+				Window window = this.source.getWindow();
+				MessageNotifier.showMessage(window, messageSource.getMessage(Message.SUCCESS), 
+						messageSource.getMessage(Message.GERMPLASM_LIST_SAVED_SUCCESSFULLY), 3000);
+				
+				source.backStep();
+				source.reset();
+				
+				if(source.isViaPopup()){
+					notifyExternalApplication(window, listId);
+				}
+			}
+			 
 		} catch (MiddlewareQueryException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
+	}
+	
+	private void notifyExternalApplication(Window window, Integer listId){
+		if (window != null){
+			window.executeJavaScript("window.parent.closeImportFrame("+listId+");");
+		}
 	}
 
 	@Override

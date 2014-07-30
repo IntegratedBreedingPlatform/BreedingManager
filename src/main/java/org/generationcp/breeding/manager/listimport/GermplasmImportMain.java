@@ -213,4 +213,9 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 
         }
 	}
+	
+	
+	public boolean isViaPopup(){
+		return this.viaPopup;
+	}
 }
