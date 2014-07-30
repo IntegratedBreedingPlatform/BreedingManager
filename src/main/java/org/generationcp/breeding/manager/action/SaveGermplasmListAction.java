@@ -130,9 +130,19 @@ public class SaveGermplasmListAction implements Serializable {
         
         //get all the updated entries 
         List<GermplasmListData> listToUpdate = new ArrayList<GermplasmListData>();
+        
         if(existingListDataEntries.size() > 0){
         	listToUpdate = getEntriesToUpdate(currentListDataEntries,existingListDataEntries);
 		}
+        
+        for(GermplasmListData entryToUpdate : listToUpdate){
+        	for(GermplasmListData currentEntry : currentListDataEntries){
+        		if(entryToUpdate.getId().equals(currentEntry.getId())){
+        			entryToUpdate.setEntryCode(currentEntry.getEntryCode());
+        			entryToUpdate.setEntryId(currentEntry.getEntryId());
+        		}
+        	}
+        }
         
         this.germplasmListManager.updateGermplasmListData(listToUpdate); // UPDATE the existing created list
 		
@@ -192,4 +202,5 @@ public class SaveGermplasmListAction implements Serializable {
         
         return germplasmListData;
 	}
+	
 }
