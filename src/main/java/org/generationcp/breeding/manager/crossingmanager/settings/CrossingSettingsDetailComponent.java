@@ -123,6 +123,11 @@ public class CrossingSettingsDetailComponent extends CssLayout
 		currentSetting = null;
 		project = null;
 		crossingManagerTool = null;
+		
+		if(defineSettingComponent.getSelectedTemplateSetting()!=null){
+			setCurrentSetting(defineSettingComponent.getSelectedTemplateSetting());
+			setManageCrossingSettingsFields();
+		}
 	}
 
 	@Override

@@ -155,6 +155,7 @@ public class DefineCrossingSettingComponent extends CssLayout implements Breedin
 		addComponent(defineCrossingSettingsLabel);
 		addComponent(crossingSettingsHelp);
 		addComponent(crossingForm);
+
 	}
 
 	public void setSettingsComboBox(TemplateSetting currentSetting){
@@ -171,6 +172,11 @@ public class DefineCrossingSettingComponent extends CssLayout implements Breedin
 			for(TemplateSetting ts : templateSettings){
 				settingsComboBox.addItem(ts);
 				settingsComboBox.setItemCaption(ts, ts.getName());
+				
+				if(ts.getIsDefault()!=null && ts.getIsDefault()==1){
+					settingsComboBox.select(ts);
+				}
+					
 			}
 
 			if(currentSetting != null){
