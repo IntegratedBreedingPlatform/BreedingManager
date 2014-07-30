@@ -121,12 +121,9 @@
 	padding: 10px;
 	border: 1px solid e3e3e3;
 	background: #e3e3e3;
-	width: 284px;
-	height: 320px;
+	width: 100%;
+	height: 370px;
 	overflow: scroll;
-	border-radius: 10px;
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
     color: #33333;
 }
 
@@ -222,6 +219,11 @@
 	font-size: 13px;
 	text-transform: none;
 	font-weight: bold;
+}
+
+.v-horizontallayout .v-captiontext{
+	text-transform: none;
+	font-size: 13px;	
 }
 
 .v-absolutelayout {
@@ -335,4 +337,12 @@ img[src$="document-icon.png"] {
 /* Fix the unnecessary scrollbar in Germplasm Details table*/
 .v-scrollable{
 	overflow:overlay;
+}
+
+.bold {
+	font-weight: bold;
+}
+
+.no-caption .v-caption {
+	height: 0px;
 }

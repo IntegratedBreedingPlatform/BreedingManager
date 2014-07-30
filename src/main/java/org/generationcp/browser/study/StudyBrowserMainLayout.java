@@ -11,6 +11,7 @@
  *******************************************************************************/
 package org.generationcp.browser.study;
 
+import org.generationcp.browser.application.GermplasmStudyBrowserLayout;
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.util.Util;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -33,12 +34,12 @@ import com.vaadin.ui.themes.BaseTheme;
  *
  */
 @Configurable
-public class StudyBrowserMainLayout extends HorizontalLayout implements InitializingBean {
+public class StudyBrowserMainLayout extends HorizontalLayout implements InitializingBean, GermplasmStudyBrowserLayout {
     
     private static final long serialVersionUID = -1375083442943045398L;
     
     private StudyBrowserMain studyBrowserMain;
-    private TabSheet tabSheetStudyDatabaseInstance;
+    private Button closeAllTabsButton;
     private VerticalLayout studyDetailsLayout;
     
     @Autowired
@@ -46,27 +47,30 @@ public class StudyBrowserMainLayout extends HorizontalLayout implements Initiali
     
     public StudyBrowserMainLayout(StudyBrowserMain studyBrowserMain) {
         this.studyBrowserMain = studyBrowserMain;
-        this.tabSheetStudyDatabaseInstance = studyBrowserMain.getTabSheetStudyDatabaseInstance();
     }
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        studyDetailsLayout = new VerticalLayout();
-        studyDetailsLayout.setHeight("800px");
-        studyDetailsLayout.setVisible(false);
-        
-        addCloseAllButton();
-        
-        this.addComponent(tabSheetStudyDatabaseInstance);
-        this.addComponent(studyDetailsLayout);
-        
-        this.setSizeFull();
-        this.setSpacing(true);
+        instantiateComponents();
+		initializeValues();
+		addListeners();
+		layoutComponents();
     }
     
-    private void addCloseAllButton() {
-        Button closeAllTabsButton = new Button(messageSource.getMessage(Message.CLOSE_ALL_TABS));
+	@Override
+	public void instantiateComponents() {        
+        closeAllTabsButton = new Button(messageSource.getMessage(Message.CLOSE_ALL_TABS));
         closeAllTabsButton.setStyleName(BaseTheme.BUTTON_LINK);
+	}
+
+	@Override
+	public void initializeValues() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addListeners() {
         closeAllTabsButton.addListener(new ClickListener() {
             
             private static final long serialVersionUID = 3037464142423787558L;
@@ -76,25 +80,29 @@ public class StudyBrowserMainLayout extends HorizontalLayout implements Initiali
                 closeAllDetailTabs();
             }
         });
+	}
+
+	@Override
+	public void layoutComponents() {
+		setWidth("100%");
+        
+    	studyDetailsLayout = new VerticalLayout();
+        studyDetailsLayout.setVisible(false);
         studyDetailsLayout.addComponent(closeAllTabsButton);
         studyDetailsLayout.setComponentAlignment(closeAllTabsButton, Alignment.TOP_RIGHT);
-    }
+        
+        addComponent(studyDetailsLayout);
+	}
     
     public void addStudyInfoTabSheet(TabSheet tabSheet) {
         studyDetailsLayout.addComponent(tabSheet);
-        studyDetailsLayout.setExpandRatio(tabSheet, 10.0f);
-        studyDetailsLayout.setComponentAlignment(tabSheet, Alignment.TOP_LEFT);
     }
     
     public void showDetailsLayout() {
         studyDetailsLayout.setVisible(true);
-        this.setExpandRatio(tabSheetStudyDatabaseInstance, 1);
-        this.setExpandRatio(studyDetailsLayout, 2);
     }
     
     public void hideDetailsLayout() {
-        this.setExpandRatio(tabSheetStudyDatabaseInstance, 1);
-        this.setExpandRatio(studyDetailsLayout, 0);
         studyDetailsLayout.setVisible(false);
     }
     
@@ -102,5 +110,4 @@ public class StudyBrowserMainLayout extends HorizontalLayout implements Initiali
         Util.closeAllTab(studyBrowserMain.getCombinedStudyTreeComponent().getTabSheetStudy());
         hideDetailsLayout();
     }
-    
 }

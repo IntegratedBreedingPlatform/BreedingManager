@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.generationcp.browser.application.GermplasmStudyBrowserLayout;
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.util.StudyBrowserTabCloseHandler;
 import org.generationcp.browser.study.listeners.StudyButtonClickListener;
@@ -57,11 +58,12 @@ import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.ItemStyleGenerator;
 import com.vaadin.ui.Tree.TreeDragMode;
-import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class StudyTreeComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent {
+public class StudyTreeComponent extends VerticalLayout implements InitializingBean, 
+								InternationalizableComponent, GermplasmStudyBrowserLayout {
 
     private static final long serialVersionUID = -3481988646509402160L;
 
@@ -104,8 +106,112 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 
     public StudyTreeComponent(StudyBrowserMain studyBrowserMain) {
         this.studyBrowserMain = studyBrowserMain;
-        this.studyBrowserMainLayout = studyBrowserMain.getMainLayout();
     }
+    
+    @Override
+    public void afterPropertiesSet() {
+        instantiateComponents();
+		initializeValues();
+		addListeners();
+		layoutComponents();
+    }
+    
+	@Override
+	public void instantiateComponents() {
+		
+		studyBrowserMainLayout = studyBrowserMain.getMainLayout();
+		
+		tabSheetStudy = new TabSheet();
+        
+		initializeButtonPanel();
+		
+    	studyTree = createCombinedStudyTree();
+
+        // add tooltip
+        studyTree.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
+
+            private static final long serialVersionUID = -2669417630841097077L;
+
+            @Override
+            public String generateDescription(Component source, Object itemId, Object propertyId) {
+                return messageSource.getMessage(Message.STUDY_DETAILS_LABEL); // "Click to view study details"
+            }
+        });
+        
+        refreshButton = new Button(); // "Refresh"
+        refreshButton.setData(REFRESH_BUTTON_ID);
+        refreshButton.addStyleName(Bootstrap.Buttons.INFO.styleName());   
+	}
+
+	@Override
+	public void initializeValues() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addListeners() {
+		studyTreeUtil = new StudyTreeUtil(studyTree, this);
+		
+		refreshButton.addListener(new StudyButtonClickListener(this));
+		
+        renameFolderBtn.addListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+            public void buttonClick(Button.ClickEvent event) {
+				int studyId = Integer.valueOf(selectedStudyTreeNodeId.toString());
+				String name = studyTree.getItemCaption(selectedStudyTreeNodeId);
+				studyTreeUtil.renameFolder(studyId, name);
+            }
+        });
+        
+        addFolderBtn.addListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+            public void buttonClick(Button.ClickEvent event) {
+				studyTreeUtil.addFolder(selectedStudyTreeNodeId);
+            }
+        });
+        
+        deleteFolderBtn.addListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 1L;
+			@Override
+            public void buttonClick(Button.ClickEvent event) {
+				int studyId = Integer.valueOf(selectedStudyTreeNodeId.toString());
+				studyTreeUtil.deleteFolder(studyId);
+            }
+        });
+	}
+
+	@Override
+	public void layoutComponents() {
+    	setSpacing(true);
+        
+        controlButtonsSubLayout = new HorizontalLayout();
+        controlButtonsSubLayout.addComponent(addFolderBtn);
+        controlButtonsSubLayout.addComponent(renameFolderBtn);
+        controlButtonsSubLayout.addComponent(deleteFolderBtn);
+        controlButtonsSubLayout.setComponentAlignment(addFolderBtn, Alignment.BOTTOM_RIGHT);
+        controlButtonsSubLayout.setComponentAlignment(renameFolderBtn, Alignment.BOTTOM_RIGHT);
+        controlButtonsSubLayout.setComponentAlignment(deleteFolderBtn, Alignment.BOTTOM_RIGHT);
+        
+        controlButtonsLayout = new HorizontalLayout();
+        controlButtonsLayout.setWidth("100%");
+        controlButtonsLayout.setHeight("30px");
+        controlButtonsLayout.setSpacing(true);
+        
+        controlButtonsLayout.addComponent(controlButtonsHeading);
+        controlButtonsLayout.addComponent(controlButtonsSubLayout);
+        controlButtonsLayout.setComponentAlignment(controlButtonsHeading, Alignment.BOTTOM_LEFT);
+        controlButtonsLayout.setComponentAlignment(controlButtonsSubLayout, Alignment.BOTTOM_RIGHT);
+        
+        treeContainer = new VerticalLayout();
+        treeContainer.addComponent(studyTree);
+        
+        addComponent(controlButtonsLayout);
+        addComponent(treeContainer);
+        addComponent(refreshButton);
+	}
     
     // Called by StudyButtonClickListener
     public void createTree() {
@@ -158,6 +264,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 
         studyTree.addStyleName("studyBrowserTree");
         studyTree.setImmediate(true);
+        studyTree.setWidth("98%");
         
         return studyTree;
     }
@@ -277,8 +384,6 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         }
     }
 
-    
-    
     private void createStudyInfoTab(int studyId) throws InternationalizableException {
         VerticalLayout layout = new VerticalLayout();
 
@@ -331,67 +436,20 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         return false;
     }
     
-    @Override
-    public void afterPropertiesSet() {
-    	
-        setSpacing(true);
-        setMargin(true);
-        
-        tabSheetStudy = new TabSheet();
-        
-    	studyTree = createCombinedStudyTree();
-    	initializeButtonPanel();
-    	addComponent(controlButtonsLayout);
-
-        // add tooltip
-        studyTree.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
-
-            private static final long serialVersionUID = -2669417630841097077L;
-
-            @Override
-            public String generateDescription(Component source, Object itemId, Object propertyId) {
-                return messageSource.getMessage(Message.STUDY_DETAILS_LABEL); // "Click to view study details"
-            }
-        });
-        
-        treeContainer = new VerticalLayout();
-        treeContainer.addComponent(studyTree);
-        addComponent(treeContainer);
-        
-        refreshButton = new Button(); // "Refresh"
-        refreshButton.setData(REFRESH_BUTTON_ID);
-        refreshButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
-
-        
-        refreshButton.addListener(new StudyButtonClickListener(this));
-        addComponent(refreshButton);
-
-        studyTreeUtil = new StudyTreeUtil(studyTree, this);
-    }
-    
     private void initializeButtonPanel() {
     	controlButtonsHeading = new Label();
-		controlButtonsHeading.setValue(messageSource.getMessage(Message.PROJECT_STUDIES));
+		controlButtonsHeading.setValue(messageSource.getMessage(Message.ALL_STUDIES));
 		controlButtonsHeading.setStyleName(Bootstrap.Typography.H4.styleName());
 		controlButtonsHeading.setWidth("177px");
 		
-		renameFolderBtn =new Button("<span class='bms-edit' style='left: 2px; color: #0083c0;font-size: 18px; font-weight: bold;'></span>");
+		renameFolderBtn = new Button("<span class='bms-edit' style='left: 2px; color: #0083c0;font-size: 18px; font-weight: bold;'></span>");
         renameFolderBtn.setHtmlContentAllowed(true);
         renameFolderBtn.setDescription(messageSource.getMessage(Message.RENAME_ITEM));
         renameFolderBtn.setStyleName(Reindeer.BUTTON_LINK);
         renameFolderBtn.setWidth("25px");
         renameFolderBtn.setHeight("30px");
         renameFolderBtn.setEnabled(false);
-        renameFolderBtn.addListener(new Button.ClickListener() {
-			private static final long serialVersionUID = 1L;
-			@Override
-            public void buttonClick(Button.ClickEvent event) {
-				int studyId = Integer.valueOf(selectedStudyTreeNodeId.toString());
-				String name = studyTree.getItemCaption(selectedStudyTreeNodeId);
-				studyTreeUtil.renameFolder(studyId, name);
-            }
-        });
-        
+
         addFolderBtn = new Button("<span class='bms-add' style='left: 2px; color: #00a950;font-size: 18px; font-weight: bold;'></span>");
         addFolderBtn.setHtmlContentAllowed(true);
         addFolderBtn.setDescription(messageSource.getMessage(Message.ADD_NEW_FOLDER));
@@ -399,13 +457,6 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         addFolderBtn.setWidth("25px");
         addFolderBtn.setHeight("30px");
         addFolderBtn.setEnabled(false);
-        addFolderBtn.addListener(new Button.ClickListener() {
-			private static final long serialVersionUID = 1L;
-			@Override
-            public void buttonClick(Button.ClickEvent event) {
-				studyTreeUtil.addFolder(selectedStudyTreeNodeId);
-            }
-        });
         
         deleteFolderBtn = new Button("<span class='bms-delete' style='left: 2px; color: #f4a41c;font-size: 18px; font-weight: bold;'></span>");
         deleteFolderBtn.setHtmlContentAllowed(true);
@@ -414,32 +465,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
         deleteFolderBtn.setWidth("25px");
         deleteFolderBtn.setHeight("30px");
         deleteFolderBtn.setEnabled(false);
-        deleteFolderBtn.addListener(new Button.ClickListener() {
-			private static final long serialVersionUID = 1L;
-			@Override
-            public void buttonClick(Button.ClickEvent event) {
-				int studyId = Integer.valueOf(selectedStudyTreeNodeId.toString());
-				studyTreeUtil.deleteFolder(studyId);
-            }
-        });
-        
-        controlButtonsSubLayout = new HorizontalLayout();
-        controlButtonsSubLayout.addComponent(addFolderBtn);
-        controlButtonsSubLayout.addComponent(renameFolderBtn);
-        controlButtonsSubLayout.addComponent(deleteFolderBtn);
-        controlButtonsSubLayout.setComponentAlignment(addFolderBtn, Alignment.BOTTOM_RIGHT);
-        controlButtonsSubLayout.setComponentAlignment(renameFolderBtn, Alignment.BOTTOM_RIGHT);
-        controlButtonsSubLayout.setComponentAlignment(deleteFolderBtn, Alignment.BOTTOM_RIGHT);
-        
-        controlButtonsLayout = new HorizontalLayout();
-        controlButtonsLayout.setWidth("304px");
-        controlButtonsLayout.setSpacing(true);
-        
-        controlButtonsLayout.addComponent(controlButtonsHeading);
-        controlButtonsLayout.addComponent(controlButtonsSubLayout);
-        controlButtonsLayout.setComponentAlignment(controlButtonsHeading, Alignment.BOTTOM_LEFT);
-        controlButtonsLayout.setComponentAlignment(controlButtonsSubLayout, Alignment.BOTTOM_RIGHT);
-        
+
 	}
     
     @Override
@@ -611,4 +637,8 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 		}
 			
 	}
+    
+    public StudyBrowserMain getParentComponent(){
+    	return studyBrowserMain;
+    }
 }

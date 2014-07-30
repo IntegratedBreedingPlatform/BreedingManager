@@ -12,6 +12,7 @@
 
 package org.generationcp.browser.study;
 
+import org.generationcp.browser.application.GermplasmStudyBrowserLayout;
 import org.generationcp.browser.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -31,7 +32,8 @@ import com.vaadin.ui.VerticalLayout;
  * 
  */
 @Configurable
-public class StudySearchResultTable extends VerticalLayout implements InitializingBean, InternationalizableComponent {
+public class StudySearchResultTable extends VerticalLayout implements InitializingBean, 
+									InternationalizableComponent, GermplasmStudyBrowserLayout {
 
     private static final long serialVersionUID = 1L;
     
@@ -48,16 +50,47 @@ public class StudySearchResultTable extends VerticalLayout implements Initializi
         this.dataSource = dataSource;
     }
     
+    @Override
+    public void afterPropertiesSet() {
+        instantiateComponents();
+		initializeValues();
+		addListeners();
+		layoutComponents();
+    }
+    
+	@Override
+	public void instantiateComponents() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void initializeValues() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addListeners() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void layoutComponents() {
+	}
+    
     public Table getResultTable() {
         
         resultTable = new Table("", this.dataSource);
-        resultTable.setWidth("100%");
-        resultTable.setHeight("200px");
+        resultTable.setWidth("98%");
+        resultTable.setHeight("250px");
         resultTable.setSelectable(true);
         resultTable.setMultiSelect(false);
         resultTable.setImmediate(true); 
         resultTable.setColumnReorderingAllowed(true);
         resultTable.setColumnCollapsingAllowed(true);
+        resultTable.setCaption(null);
 
         // set column headers
         resultTable.setColumnHeaders(new String[] { STUDY_ID, STUDY_NAME });
@@ -76,10 +109,6 @@ public class StudySearchResultTable extends VerticalLayout implements Initializi
 
     public void setDataSource(IndexedContainer dataSource) {
         this.dataSource = dataSource;
-    }
-    
-    @Override
-    public void afterPropertiesSet() {
     }
     
     @Override
