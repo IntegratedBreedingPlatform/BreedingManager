@@ -134,7 +134,7 @@ public class FilterLocationDialog extends Window implements InitializingBean, In
         buttonLayout.addComponent(applyButton);
         //buttonLayout.setComponentAlignment(doneButton, Alignment.MIDDLE_RIGHT);
         //buttonLayout.setComponentAlignment(cancelButton, Alignment.MIDDLE_RIGHT);
-        mainLayout.addComponent(buttonLayout, "top:420px;left:782px");
+        mainLayout.addComponent(buttonLayout, "top:420px;left:415px");
         
         
         addComponent(mainLayout);

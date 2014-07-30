@@ -2,6 +2,8 @@ package org.generationcp.browser.cross.study.adapted.main;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -178,7 +180,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		
 		addTagAllCheckBoxToCombinedScoreTagColTable();
 		
-		prevEntryBtn = new Button(messageSource.getMessage(Message.PREV_ENTRY));
+		prevEntryBtn = new Button(messageSource.getMessage(Message.PREV_ARROW));
 		prevEntryBtn.setData(NEXT_ENTRY_BUTTON_ID);
 		prevEntryBtn.addListener(new Button.ClickListener(){
 			private static final long serialVersionUID = 7083618946346280184L;
@@ -188,12 +190,12 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 				prevEntryButtonClickAction();
 			}
 		});
-		prevEntryBtn.setWidth("80px");
+		prevEntryBtn.setWidth("50px");
 		prevEntryBtn.setEnabled(true);
 		prevEntryBtn.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-		addComponent(prevEntryBtn, "top:470px;left:445px");
+		addComponent(prevEntryBtn, "top:470px;left:455px");
 		
-		nextEntryBtn = new Button(messageSource.getMessage(Message.NEXT_ENTRY));
+		nextEntryBtn = new Button(messageSource.getMessage(Message.NEXT_ARROW));
 		nextEntryBtn.setData(NEXT_ENTRY_BUTTON_ID);
 		nextEntryBtn.addListener(new Button.ClickListener(){
 			private static final long serialVersionUID = -4837144379158727020L;
@@ -203,10 +205,10 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 				nextEntryButtonClickAction();
 			}
 		});
-		nextEntryBtn.setWidth("80px");
+		nextEntryBtn.setWidth("50px");
 		nextEntryBtn.setEnabled(true);
 		nextEntryBtn.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-		addComponent(nextEntryBtn, "top:470px;left:535x");
+		addComponent(nextEntryBtn, "top:470px;left:515x");
 		
 		backButton = new Button(messageSource.getMessage(Message.BACK));
 		backButton.setData(BACK_BUTTON_ID);
@@ -218,9 +220,9 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 				backButtonClickAction();
 			}
 		});
-		backButton.setWidth("80px");
+		backButton.setWidth("100px");
 		backButton.setEnabled(true);
-		addComponent(backButton, "top:510px;left:790px");
+		addComponent(backButton, "top:510px;left:405px");
 
 		saveButton = new Button(messageSource.getMessage(Message.SAVE_GERMPLASMS_TO_NEW_LIST_LABEL));
 		saveButton.setData(SAVE_BUTTON_ID);
@@ -235,7 +237,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 		saveButton.setWidth("100px");
 		saveButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 		saveButton.setEnabled(false);
-		addComponent(saveButton, "top:510px;left:880px");
+		addComponent(saveButton, "top:510px;left:515px");
 	}
 	
 	public void populateResultsTable(List<EnvironmentForComparison> environments, List<NumericTraitFilter> numericTraitFilter, 
@@ -626,6 +628,7 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 			germplasmIds.addAll(germplasmIdNameMap.keySet());
 			
 			for(Map.Entry<String, Integer> germplasm : germplasmNameIdMap.entrySet()){
+				LOG.debug("Processing : " + germplasm.getValue() + ":" + germplasm.getKey());
 				int germplasmId = germplasm.getValue();
 				
 				Map<NumericTraitFilter,TraitObservationScore> numericTOSMap = new HashMap<NumericTraitFilter,TraitObservationScore>();
@@ -642,11 +645,14 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 					
 					Double totalEnvWeight = getTotalEnvWeightForTrait(trait.getTraitInfo().getId(), germplasmId);
 					
+					LOG.info("Processing Trait : " + trait.getTraitInfo() + ":weight:" + totalEnvWeight);
+					
 					for(EnvironmentForComparison env : environments){
 						ObservationKey key = new ObservationKey(trait.getTraitInfo().getId(), germplasmId, env.getEnvironmentNumber());
 						ObservationList obsList = observationsMap.get(key);
 						
 						if(obsList != null){ // if the observation exist
+							LOG.trace("Processing : " + key + "Found Observations : " + obsList.getObservationList());
 							ComboBox weightComboBox = env.getWeightComboBox();
 							EnvironmentWeight weight = (EnvironmentWeight) weightComboBox.getValue();
 							envWt = Double.valueOf(weight.getWeight()) / totalEnvWeight;
@@ -657,14 +663,15 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 							Double scorePerEnv = 0.0;
 							for(Observation obs : obsList.getObservationList()){
 								if(testNumericTraitVal(trait, obs)){
+									LOG.trace("Complies - Adding : " + obs.getValue());
 									scorePerEnv = scorePerEnv + Double.valueOf(1);
 								}
-								else{
-									scorePerEnv = scorePerEnv + Double.valueOf(-1);
-								}
 							}
-						
+							
+							// for an environment with 3 values in range out of 5, we get a score of 3/5=0.6
 							scorePerEnv = envWt * ( scorePerEnv / Double.valueOf(noOfObservation) );
+							
+							LOG.info("Score for env : " + env.getLocationName() + ":" + scorePerEnv);
 							
 							scorePerTrait += scorePerEnv;
 						}
@@ -672,7 +679,9 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 					
 					//No Of Observation and Wt Score Per Trait
 					scorePerTrait = roundOffDoubleToTwoDecimalPlaces(scorePerTrait);
+					LOG.info("Score for trait : " + trait.getTraitInfo().getName());
 					TraitObservationScore tos = new TraitObservationScore(germplasmId,noObsForAllEnvs,scorePerTrait);
+					LOG.info("Trait Map Add : " + trait.getTraitInfo() + tos);
 					numericTOSMap.put(trait,tos);
 				}
 				
@@ -702,9 +711,6 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 							for(Observation obs : obsList.getObservationList()){
 								if(testCharacterTraitVal(trait, obs)){
 									scorePerEnv = scorePerEnv + Double.valueOf(1);
-								}
-								else{
-									scorePerEnv = scorePerEnv + Double.valueOf(-1);
 								}
 							}
 
@@ -746,9 +752,6 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 								if(testCategoricalTraitVal(trait, obs)){
 									scorePerEnv = scorePerEnv + Double.valueOf(1);
 								}
-								else{
-									scorePerEnv = scorePerEnv + Double.valueOf(-1);
-								}
 							}
 
 							scorePerEnv = envWt * ( scorePerEnv / Double.valueOf(noOfObservation));
@@ -770,6 +773,16 @@ public class DisplayResults extends AbsoluteLayout implements InitializingBean, 
 			e.printStackTrace();
 		}
 		
+		// Sort the TableResultRow instances by Combined Score, highest to lowest. This alleviates the 
+		// Vaadin behaviour whereby sorting only occurs in the visible page
+		Collections.sort(tableRows, new Comparator<TableResultRow>() {
+
+			@Override
+			public int compare(TableResultRow o1, TableResultRow o2) {
+				return o2.getCombinedScore().compareTo(o1.getCombinedScore());
+			}
+			
+		});
 		return tableRows;
 	}
 	

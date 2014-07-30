@@ -65,7 +65,7 @@ public class WelcomeScreen extends AbsoluteLayout implements InitializingBean, I
        nextButton.addListener(new AdaptedGermplasmButtonClickListener(this));
        nextButton.setWidth("80px");
        nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-       addComponent(nextButton, "top:90px;left:900px");
+       addComponent(nextButton, "top:90px;left:460px");
 	}
 
     

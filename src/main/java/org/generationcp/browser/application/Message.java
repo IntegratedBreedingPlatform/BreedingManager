@@ -301,6 +301,8 @@ public enum Message {
      ,SAVE
      ,NEXT_ENTRY
      ,PREV_ENTRY
+     ,NEXT_ARROW
+     ,PREV_ARROW
      ,LINE_BY_LOCATION_TITLE
      ,LINE_BY_LOCATION_FOR_TRAIT
      ,OBSERVATION_NO
