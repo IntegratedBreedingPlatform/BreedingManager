@@ -79,6 +79,12 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 		super();
 		this.parentWindow = parentWindow;
 	}
+
+	public GermplasmFieldsComponent(Window parentWindow, int pixels) {
+		super();
+		this.parentWindow = parentWindow;
+		this.leftIndentPixels = pixels;
+	}
 	
 	public GermplasmFieldsComponent(int pixels) {
 		super();

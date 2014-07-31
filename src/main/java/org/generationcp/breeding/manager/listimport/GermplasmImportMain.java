@@ -52,6 +52,7 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
     private GermplasmListImportWizardDisplay wizardDisplay;
     
     private ComponentContainer parent;
+    private GermplasmImportPopupSource popupSource;
     
     private TabSheet tabSheet;
     
@@ -73,6 +74,14 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
         this.viaToolURL = viaToolURL;
         this.viaPopup = viaPopup;
     }
+    
+    public GermplasmImportMain(ComponentContainer parent, boolean viaToolURL, GermplasmImportPopupSource popupSource){
+        this.parent = parent;
+        this.viaToolURL = viaToolURL;
+        this.viaPopup = false;
+        this.popupSource = popupSource;
+    }   
+    
     @Override
     public void afterPropertiesSet() throws Exception {
     	instantiateComponents();
@@ -112,6 +121,9 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 
 	@Override
 	public void instantiateComponents() {
+		
+		setWidth("710px");
+		
 		titleLayout = new HorizontalLayout();
 		titleLayout.setSpacing(true);
 		setTitleContent(GUIDE_MESSAGE);
@@ -176,7 +188,9 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 				listener.updatePage();
 			}
 			tabSheet.setHeight(tabHeights[step]);
-			getWindow().setScrollTop(0);
+			
+			if(getWindow()!=null)
+				getWindow().setScrollTop(0);
 		}
 	}
 	
@@ -218,4 +232,13 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 	public boolean isViaPopup(){
 		return this.viaPopup;
 	}
+	
+	public GermplasmImportPopupSource getGermplasmImportPopupSource(){
+		return popupSource;
+	}
+	
+	public ComponentContainer getComponentContainer(){
+		return parent;
+	}
+	
 }

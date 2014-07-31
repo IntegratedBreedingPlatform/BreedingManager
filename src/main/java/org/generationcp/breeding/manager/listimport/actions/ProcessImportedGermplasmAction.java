@@ -392,7 +392,12 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		SelectGermplasmWindow selectGermplasmWindow = new SelectGermplasmWindow(this, germplasmName, i, germplasm, germplasmDetailsComponent.getViaToolURL());
         selectGermplasmWindow.addStyleName(Reindeer.WINDOW_LIGHT);
         if(selectGermplasmWindows.isEmpty()) {
-        	germplasmDetailsComponent.getWindow().addWindow(selectGermplasmWindow);
+        	//If not from popup
+        	if(germplasmDetailsComponent.getSource().getGermplasmImportPopupSource()==null){
+        		germplasmDetailsComponent.getWindow().addWindow(selectGermplasmWindow);
+        	} else {
+        		germplasmDetailsComponent.getSource().getGermplasmImportPopupSource().getParentWindow().addWindow(selectGermplasmWindow);
+        	}
         }
         selectGermplasmWindows.add(selectGermplasmWindow);
     }
@@ -519,7 +524,12 @@ public class ProcessImportedGermplasmAction implements Serializable {
 			removeWindow(selectGermplasmWindow);
 			processNextItems();
 		} else {
-			germplasmDetailsComponent.getWindow().addWindow(selectGermplasmWindow);
+        	//If not from popup
+        	if(germplasmDetailsComponent.getSource().getGermplasmImportPopupSource()==null){
+        		germplasmDetailsComponent.getWindow().addWindow(selectGermplasmWindow);
+        	} else {
+        		germplasmDetailsComponent.getSource().getGermplasmImportPopupSource().getParentWindow().addWindow(selectGermplasmWindow);
+        	}
 		}
 	}
 	

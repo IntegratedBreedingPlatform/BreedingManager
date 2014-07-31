@@ -76,8 +76,11 @@ public class ListSelectionLayout extends VerticalLayout implements International
     private Button btnCloseAllTabs;
     private Button browseForLists;
     private Button searchForLists;
+    private Button importList;
     private Label or;
     private Label toWorkWith;
+    private Label or2;
+    private Label aNewListLabel;
 
     private HorizontalLayout headerLayout;
     private HorizontalLayout listSelectionHeaderContainer;
@@ -147,11 +150,21 @@ public class ListSelectionLayout extends VerticalLayout implements International
         searchForLists.setImmediate(true);
         searchForLists.setStyleName(Reindeer.BUTTON_LINK);
         
+        importList = new Button();
+        importList.setImmediate(true);
+        importList.setStyleName(Reindeer.BUTTON_LINK);
+        
         or = new Label();
         or.setImmediate(true);
         
+        or2 = new Label();
+        or2.setImmediate(true);
+        
         toWorkWith = new Label();
         toWorkWith.setImmediate(true);
+        
+        aNewListLabel = new Label();
+        aNewListLabel.setImmediate(true);
         
         listStatusForChanges = new HashMap<ListComponent,Boolean>();
     }
@@ -161,8 +174,11 @@ public class ListSelectionLayout extends VerticalLayout implements International
         headingLabel.setValue(messageSource.getMessage(Message.LIST_DETAILS));
         browseForLists.setCaption(messageSource.getMessage(Message.BROWSE_FOR_A_LIST) + " ");
         searchForLists.setCaption(messageSource.getMessage(Message.SEARCH_FOR_A_LIST) + " ");
+        importList.setCaption(messageSource.getMessage(Message.IMPORT_A_LIST) + " ");
         or.setValue(messageSource.getMessage(Message.OR) + " ");
-        toWorkWith.setValue(messageSource.getMessage(Message.A_LIST_TO_WORK_WITH));
+        or2.setValue(messageSource.getMessage(Message.OR) + " ");
+        toWorkWith.setValue(messageSource.getMessage(Message.A_LIST_TO_WORK_WITH) + ", ");
+        aNewListLabel.setValue(messageSource.getMessage(Message.A_NEW_LIST) + ".");
     }
     
     @Override
@@ -179,18 +195,27 @@ public class ListSelectionLayout extends VerticalLayout implements International
         final HorizontalLayout searchOrBrowseLayout = new HorizontalLayout();
         
         searchOrBrowseContainer = new HorizontalLayout();
-        searchOrBrowseContainer.setHeight("19px");
+        //searchOrBrowseContainer.setHeight("19px");
+        searchOrBrowseContainer.setHeight("39px");
         searchOrBrowseContainer.setWidth("100%");
         
         // Ugh, bit of a hack - can't figure out how to space these nicely
         searchForLists.setWidth("43px");
         or.setWidth("16px");
         browseForLists.setWidth("48px");
+        toWorkWith.setWidth("132px");
+        
+        or2.setWidth("16px");
+        importList.setWidth("44px");
+        aNewListLabel.setWidth("70px");
 
         searchOrBrowseLayout.addComponent(browseForLists);
         searchOrBrowseLayout.addComponent(or);
         searchOrBrowseLayout.addComponent(searchForLists);
         searchOrBrowseLayout.addComponent(toWorkWith);
+        searchOrBrowseLayout.addComponent(or2);
+        searchOrBrowseLayout.addComponent(importList);
+        searchOrBrowseLayout.addComponent(aNewListLabel);
         
         searchOrBrowseContainer.addComponent(searchOrBrowseLayout);
         searchOrBrowseContainer.addComponent(btnCloseAllTabs);
@@ -270,6 +295,16 @@ public class ListSelectionLayout extends VerticalLayout implements International
 			}
         });
 
+        importList.addListener(new Button.ClickListener() {
+        	
+        	private static final long serialVersionUID = 6385074843600086746L;
+
+			@Override
+			public void buttonClick(final ClickEvent event) {
+				source.getListSelectionComponent().openListImportDialog();
+			}
+        });        
+        
     }
 
     @Override

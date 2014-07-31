@@ -3,6 +3,8 @@ package org.generationcp.breeding.manager.listmanager.sidebyside;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
+import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
+import org.generationcp.breeding.manager.listimport.GermplasmImportPopupSource;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -14,6 +16,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -21,7 +25,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class ListSelectionComponent extends VerticalLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout, ListTreeActionsListener {
+public class ListSelectionComponent extends VerticalLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout, ListTreeActionsListener, GermplasmImportPopupSource {
     
     private static final Logger LOG = LoggerFactory.getLogger(ListSelectionComponent.class);
 
@@ -161,4 +165,42 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 		return listSearchComponent;
 	}
 
+	public void openListImportDialog() {
+		Window window = getWindow();
+		Window popupWindow = new Window();
+		
+		GermplasmImportMain germplasmImportMain = new GermplasmImportMain(popupWindow,false,this);
+		
+		VerticalLayout content = new VerticalLayout();
+		content.addComponent(germplasmImportMain);
+		content.setComponentAlignment(germplasmImportMain, Alignment.TOP_CENTER);
+		
+        popupWindow.setWidth("760px");
+        popupWindow.setHeight("550px");
+        popupWindow.setModal(true);
+        popupWindow.setResizable(false);
+        popupWindow.center();
+        popupWindow.setCaption(messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
+        popupWindow.setContent(content);
+        popupWindow.addStyleName(Reindeer.WINDOW_LIGHT);
+        popupWindow.addStyleName("lm-list-manager-popup");
+        
+        window.addWindow(popupWindow);
+	}
+
+	@Override
+	public void openSavedGermplasmList(GermplasmList germplasmList) {
+		studyClicked(germplasmList);
+	}
+
+	@Override
+	public void refreshListTreeAfterListImport() {
+		listTreeComponent.refreshTree();
+	}
+	
+	@Override
+	public Window getParentWindow(){
+		return getWindow();
+	}
+	
 }

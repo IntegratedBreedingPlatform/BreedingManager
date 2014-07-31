@@ -196,7 +196,12 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 	    }
 	     
 	    saveListAsDialog = new SaveListAsDialog(this, germplasmList);
-	    this.getWindow().addWindow(saveListAsDialog);
+	    //If not from popup
+	    if(source.getGermplasmImportPopupSource()==null){
+	    	this.getWindow().addWindow(saveListAsDialog);
+	    } else {
+	    	source.getGermplasmImportPopupSource().getParentWindow().addWindow(saveListAsDialog);
+	    }
          
     }
     
@@ -275,7 +280,12 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 
 	@Override
 	public void instantiateComponents() {
-		germplasmFieldsComponent = new GermplasmFieldsComponent(200);
+		
+		if(source.getGermplasmImportPopupSource()==null){
+	    	germplasmFieldsComponent = new GermplasmFieldsComponent(this.getWindow(),200);
+	    } else {
+	    	germplasmFieldsComponent = new GermplasmFieldsComponent(source.getGermplasmImportPopupSource().getParentWindow(),200);
+	    }
 		
         reviewImportDetailsLabel = new Label(messageSource.getMessage(Message.GERMPLASM_DETAILS_LABEL).toUpperCase());
         reviewImportDetailsLabel.addStyleName(Bootstrap.Typography.H4.styleName());
@@ -345,7 +355,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 
 	@Override
 	public void layoutComponents() {
-		setWidth("800px");
+		setWidth("700px");
         
 		// Review Import Details Layout
 		VerticalLayout importDetailsLayout = new VerticalLayout();
@@ -441,10 +451,18 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 				Window window = this.source.getWindow();
 				MessageNotifier.showMessage(window, messageSource.getMessage(Message.SUCCESS), 
 						messageSource.getMessage(Message.GERMPLASM_LIST_SAVED_SUCCESSFULLY), 3000);
-				
-				source.backStep();
+
 				source.reset();
 				
+				//If not via popup
+				if(source.getGermplasmImportPopupSource()==null){
+					source.backStep();
+				} else {
+					source.getGermplasmImportPopupSource().openSavedGermplasmList(list);
+					source.getGermplasmImportPopupSource().refreshListTreeAfterListImport();
+					source.getGermplasmImportPopupSource().getParentWindow().removeWindow(((Window) source.getComponentContainer()));
+				}
+
 				if(source.isViaPopup()){
 					notifyExternalApplication(window, listId);
 				}
