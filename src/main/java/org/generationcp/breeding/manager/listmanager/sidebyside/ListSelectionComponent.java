@@ -168,6 +168,7 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 	public void openListImportDialog() {
 		Window window = getWindow();
 		Window popupWindow = new Window();
+		popupWindow.addStyleName("lm-white-window");
 		
 		GermplasmImportMain germplasmImportMain = new GermplasmImportMain(popupWindow,false,this);
 		

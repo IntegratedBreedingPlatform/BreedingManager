@@ -810,3 +810,7 @@ div.unsaved-changes-dialog div.v-window-contents>div {
 .bms-upload-container .v-progressindicator-wrapper { width: 200px; margin-left: 20px;}
 .bms-upload-container .v-label { width: inherit !important; margin: 4px 20px 4px 0px}
 .bms-upload-container .v-label em { display: none;}
+
+.lm-white-window div.v-window-contents {
+	background: #FFFFFF !important;
+}
