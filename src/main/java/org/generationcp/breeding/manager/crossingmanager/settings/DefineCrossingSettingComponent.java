@@ -169,12 +169,15 @@ public class DefineCrossingSettingComponent extends CssLayout implements Breedin
 
 			List<TemplateSetting> templateSettings = workbenchDataManager.getTemplateSettings(templateSettingFilter);
 
+			settingsParentComponent.setDefaultSettingExists(false);
+			
 			for(TemplateSetting ts : templateSettings){
 				settingsComboBox.addItem(ts);
 				settingsComboBox.setItemCaption(ts, ts.getName());
 				
 				if(ts.getIsDefault()!=null && ts.getIsDefault()==1){
 					settingsComboBox.select(ts);
+					settingsParentComponent.setDefaultSettingExists(true);
 				}
 					
 			}

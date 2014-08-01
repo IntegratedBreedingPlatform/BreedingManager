@@ -251,6 +251,10 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 		return setAsDefaultSettingCheckbox;
 	}
 
+	public void setSetAsDefaultSettingCheckbox(Boolean value) {
+		setAsDefaultSettingCheckbox.setValue(value);
+	}
+	
 	public HarvestDateField getHarvestDtDateField() {
 		return harvestDateField;
 	}

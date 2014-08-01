@@ -74,6 +74,8 @@ public class CrossingSettingsDetailComponent extends CssLayout
 	private Project project;
 	private Tool crossingManagerTool;
 	
+	private Boolean defaultSettingExists;
+	
 	public CrossingSettingsDetailComponent(ManageCrossingSettingsMain manageCrossingSettingsMain) {
 		this.manageCrossingSettingsMain = manageCrossingSettingsMain;
 	}
@@ -278,7 +280,27 @@ public class CrossingSettingsDetailComponent extends CssLayout
 	private void doNextAction(){
 		if(nameComponent.validateInputFields() && additionalDetailsComponent.validateInputFields() && methodComponent.validateInputFields()){
 			if (additionalDetailsComponent.settingsFileNameProvided()){
-				saveSetting();
+				
+				if(defaultSettingExists && (Boolean) additionalDetailsComponent.getSetAsDefaultSettingCheckbox().getValue()==true){
+					ConfirmDialog.show(getWindow(), "Save Crossing Setting", "There is already a default setting. " 
+						+ "Do you want to change that and set this as the default setting instead?"
+						, "Yes", "No", new ConfirmDialog.Listener() {	
+							private static final long serialVersionUID = 1L;	
+							@Override
+							public void onClose(ConfirmDialog dialog) {
+								if (dialog.isConfirmed()) {
+									saveSetting();
+								}
+								else{
+									additionalDetailsComponent.setSetAsDefaultSettingCheckbox(false);
+									saveSetting();
+								}
+							}
+						});
+				
+				} else {
+					saveSetting();
+				}
 			}
 			else{
 				manageCrossingSettingsMain.nextStep();
@@ -554,5 +576,9 @@ public class CrossingSettingsDetailComponent extends CssLayout
 		additionalDetailsComponent.setFieldsDefaultValue();
 	}
 
+	public void setDefaultSettingExists(Boolean defaultSettingExists){
+		this.defaultSettingExists = defaultSettingExists;
+	}
+	
 }
 
