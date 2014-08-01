@@ -40,7 +40,6 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.HeaderClickEvent;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
@@ -811,7 +810,7 @@ public class FillWith implements InternationalizableComponent  {
 	            	item.getItemProperty(propertyId).setValue(crossExpansion);
 	            } catch(MiddlewareQueryException ex){
 	            	LOG.error("Error with getting cross expansion: gid=" + gid + " level=" + crossExpansionLevel, ex);
-	            	MessageNotifier.showError(targetTable.getWindow(), "Database Error!", "Error with getting Cross Expansion. "+messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
+	            	MessageNotifier.showError(targetTable.getWindow(), "Database Error!", "Error with getting Cross Expansion. "+messageSource.getMessage(Message.ERROR_REPORT_TO));
 	            	return;
 	            }
 	        }
@@ -854,14 +853,11 @@ public class FillWith implements InternationalizableComponent  {
     private String getGermplasmPrefID(int gid) throws InternationalizableException {
     	String prefId = "";
     	try {
-    		ArrayList<Name> names = (ArrayList<Name>) germplasmDataManager.getNamesByGID(gid, 8, null);
+    		 Name preferredIdName = germplasmDataManager.getPreferredIdByGID(gid);
+    		 if (preferredIdName != null){
+    			 prefId = preferredIdName.getNval();
+    		 }
           
-    		for (Name n : names) {
-    			if (n.getNstat() == 8) {
-    				prefId = n.getNval();
-    				break;
-    			}
-    		}
     		return prefId;
     	} catch (MiddlewareQueryException e) {
     		LOG.error("Error with getting preferred id of germplasm: " + gid, e);
