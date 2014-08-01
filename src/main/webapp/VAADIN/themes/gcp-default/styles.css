@@ -346,3 +346,7 @@ img[src$="document-icon.png"] {
 .no-caption .v-caption {
 	height: 0px;
 }
+
+.study-browser-main .v-button .v-button-caption {
+	font-size: 13px;
+}

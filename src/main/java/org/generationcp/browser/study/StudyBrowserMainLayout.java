@@ -61,6 +61,7 @@ public class StudyBrowserMainLayout extends HorizontalLayout implements Initiali
 	public void instantiateComponents() {        
         closeAllTabsButton = new Button(messageSource.getMessage(Message.CLOSE_ALL_TABS));
         closeAllTabsButton.setStyleName(BaseTheme.BUTTON_LINK);
+        closeAllTabsButton.setVisible(false);
 	}
 
 	@Override
@@ -100,10 +101,14 @@ public class StudyBrowserMainLayout extends HorizontalLayout implements Initiali
     
     public void showDetailsLayout() {
         studyDetailsLayout.setVisible(true);
+        if(studyBrowserMain.getCombinedStudyTreeComponent().getTabSheetStudy().getComponentCount() > 1){
+        	closeAllTabsButton.setVisible(true);
+        }
     }
     
     public void hideDetailsLayout() {
         studyDetailsLayout.setVisible(false);
+        closeAllTabsButton.setVisible(false);
     }
     
     public void closeAllDetailTabs(){
