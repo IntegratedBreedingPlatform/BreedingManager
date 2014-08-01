@@ -265,6 +265,11 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 
 	public boolean validateInputFields(){
 
+		if((Boolean) setAsDefaultSettingCheckbox.getValue()==true && (settingsNameTextfield.getValue()==null || settingsNameTextfield.getValue().equals(""))){
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), messageSource.getMessage(Message.PLEASE_ENTER_A_NAME_FOR_THIS_SETTING_IF_YOU_WANT_TO_SET_IT_AS_DEFAULT));
+			return false;
+		}
+		
 		try {
 			harvestDateField.validate();
 		} catch (InvalidValueException e) {
