@@ -291,7 +291,6 @@ public class SaveCrossesMadeAction implements Serializable {
 			Integer entryId = 1;
 			for(GermplasmListData germplasmListData : allExistingEntries){
 				if(germplasmListData.getStatus()!=9){
-					germplasmListData.setEntryCode(entryId.toString());
 					germplasmListData.setEntryId(entryId);
 					this.existingListEntries.add(germplasmListData);
 					entryId++;

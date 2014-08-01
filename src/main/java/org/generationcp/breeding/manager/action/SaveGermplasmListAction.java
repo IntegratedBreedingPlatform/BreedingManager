@@ -138,7 +138,6 @@ public class SaveGermplasmListAction implements Serializable {
         for(GermplasmListData entryToUpdate : listToUpdate){
         	for(GermplasmListData currentEntry : currentListDataEntries){
         		if(entryToUpdate.getId().equals(currentEntry.getId())){
-        			entryToUpdate.setEntryCode(currentEntry.getEntryCode());
         			entryToUpdate.setEntryId(currentEntry.getEntryId());
         		}
         	}
