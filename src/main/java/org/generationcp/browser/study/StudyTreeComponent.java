@@ -122,6 +122,7 @@ public class StudyTreeComponent extends VerticalLayout implements InitializingBe
 		studyBrowserMainLayout = studyBrowserMain.getMainLayout();
 		
 		tabSheetStudy = new TabSheet();
+		tabSheetStudy.setHeight("615px");
         
 		initializeButtonPanel();
 		

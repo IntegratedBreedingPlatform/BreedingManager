@@ -83,14 +83,14 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
     	browseForStudy = new Button();
     	browseForStudy.setImmediate(true);
     	browseForStudy.setStyleName(Reindeer.BUTTON_LINK);
-    	browseForStudy.setWidth("44px");
+    	browseForStudy.setWidth("45px");
     	
     	or = new Label("or");
     	
     	searchForStudy = new Button();
     	searchForStudy.setImmediate(true);
     	searchForStudy.setStyleName(Reindeer.BUTTON_LINK);
-    	searchForStudy.setWidth("39px");
+    	searchForStudy.setWidth("40px");
     	
     	browseStudyDescriptionLabel = new Label("for a study to work with.");
     	
