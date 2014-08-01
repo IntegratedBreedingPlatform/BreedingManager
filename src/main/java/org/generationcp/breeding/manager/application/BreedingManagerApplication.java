@@ -16,6 +16,7 @@ import org.generationcp.commons.vaadin.actions.UpdateComponentLabelsAction;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.manager.WorkbenchDataManagerImpl;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -307,6 +308,16 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 		}
     }
     
+    public void updateUIForDeletedList(GermplasmList germplasmList){
+    	if(getListManagerMain() != null){
+    		getListManagerMain().updateUIForDeletedList(germplasmList);
+    	}
+    	
+    	if(getManageCrossingSettingsMain() != null){
+    		getManageCrossingSettingsMain().getMakeCrossesComponent().getParentsComponent().updateUIForDeletedList(germplasmList);
+    		getManageCrossingSettingsMain().getMakeCrossesComponent().showNodeOnTree(germplasmList.getId());
+    	}
+    }
     
     
 }

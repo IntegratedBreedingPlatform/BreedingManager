@@ -1,13 +1,11 @@
 package org.generationcp.breeding.manager.crossingmanager.settings;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainer;
 import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainerUpdateListener;
-import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
 import org.generationcp.breeding.manager.crossingmanager.GenerateCrossNameAction;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUtil;
@@ -177,8 +175,7 @@ public class ApplyCrossingSettingAction implements
             }
             
             if(detailsSetting.getHarvestDate() != null){
-                SimpleDateFormat formatter = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT);
-                        dateIntValue = Integer.parseInt(formatter.format(Long.valueOf(detailsSetting.getHarvestDate())));
+                dateIntValue = Integer.parseInt(detailsSetting.getHarvestDate());
             }
         
             Map<Germplasm, Name> crossesMap = container.getCrossesMade().getCrossesMap();

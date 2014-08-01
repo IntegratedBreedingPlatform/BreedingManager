@@ -22,6 +22,7 @@ import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.UnsavedChangesSource;
+import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.util.ListManagerDetailsTabCloseHandler;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -75,8 +76,11 @@ public class ListSelectionLayout extends VerticalLayout implements International
     private Button btnCloseAllTabs;
     private Button browseForLists;
     private Button searchForLists;
+    private Button importList;
     private Label or;
     private Label toWorkWith;
+    private Label or2;
+    private Label aNewListLabel;
 
     private HorizontalLayout headerLayout;
     private HorizontalLayout listSelectionHeaderContainer;
@@ -146,22 +150,35 @@ public class ListSelectionLayout extends VerticalLayout implements International
         searchForLists.setImmediate(true);
         searchForLists.setStyleName(Reindeer.BUTTON_LINK);
         
+        importList = new Button();
+        importList.setImmediate(true);
+        importList.setStyleName(Reindeer.BUTTON_LINK);
+        
         or = new Label();
         or.setImmediate(true);
         
+        or2 = new Label();
+        or2.setImmediate(true);
+        
         toWorkWith = new Label();
         toWorkWith.setImmediate(true);
+        
+        aNewListLabel = new Label();
+        aNewListLabel.setImmediate(true);
         
         listStatusForChanges = new HashMap<ListComponent,Boolean>();
     }
 
     @Override
     public void initializeValues() {
-        headingLabel.setValue(messageSource.getMessage(Message.MANAGE_LISTS));
+        headingLabel.setValue(messageSource.getMessage(Message.LIST_DETAILS));
         browseForLists.setCaption(messageSource.getMessage(Message.BROWSE_FOR_A_LIST) + " ");
         searchForLists.setCaption(messageSource.getMessage(Message.SEARCH_FOR_A_LIST) + " ");
+        importList.setCaption(messageSource.getMessage(Message.IMPORT_A_LIST) + " ");
         or.setValue(messageSource.getMessage(Message.OR) + " ");
-        toWorkWith.setValue(messageSource.getMessage(Message.A_LIST_TO_WORK_WITH));
+        or2.setValue(messageSource.getMessage(Message.OR) + " ");
+        toWorkWith.setValue(messageSource.getMessage(Message.A_LIST_TO_WORK_WITH) + ", ");
+        aNewListLabel.setValue(messageSource.getMessage(Message.A_NEW_LIST) + ".");
     }
     
     @Override
@@ -178,18 +195,27 @@ public class ListSelectionLayout extends VerticalLayout implements International
         final HorizontalLayout searchOrBrowseLayout = new HorizontalLayout();
         
         searchOrBrowseContainer = new HorizontalLayout();
-        searchOrBrowseContainer.setHeight("19px");
+        //searchOrBrowseContainer.setHeight("19px");
+        searchOrBrowseContainer.setHeight("39px");
         searchOrBrowseContainer.setWidth("100%");
         
         // Ugh, bit of a hack - can't figure out how to space these nicely
         searchForLists.setWidth("43px");
         or.setWidth("16px");
         browseForLists.setWidth("48px");
+        toWorkWith.setWidth("132px");
+        
+        or2.setWidth("16px");
+        importList.setWidth("44px");
+        aNewListLabel.setWidth("70px");
 
-        searchOrBrowseLayout.addComponent(searchForLists);
-        searchOrBrowseLayout.addComponent(or);
         searchOrBrowseLayout.addComponent(browseForLists);
+        searchOrBrowseLayout.addComponent(or);
+        searchOrBrowseLayout.addComponent(searchForLists);
         searchOrBrowseLayout.addComponent(toWorkWith);
+        searchOrBrowseLayout.addComponent(or2);
+        searchOrBrowseLayout.addComponent(importList);
+        searchOrBrowseLayout.addComponent(aNewListLabel);
         
         searchOrBrowseContainer.addComponent(searchOrBrowseLayout);
         searchOrBrowseContainer.addComponent(btnCloseAllTabs);
@@ -269,11 +295,21 @@ public class ListSelectionLayout extends VerticalLayout implements International
 			}
         });
 
+        importList.addListener(new Button.ClickListener() {
+        	
+        	private static final long serialVersionUID = 6385074843600086746L;
+
+			@Override
+			public void buttonClick(final ClickEvent event) {
+				source.getListSelectionComponent().openListImportDialog();
+			}
+        });        
+        
     }
 
     @Override
     public void updateLabels() {
-        headingLabel.setValue(messageSource.getMessage(Message.MANAGE_LISTS)); 
+        headingLabel.setValue(messageSource.getMessage(Message.LIST_DETAILS)); 
         browseForLists.setCaption(messageSource.getMessage(Message.BROWSE_FOR_A_LIST) + " ");
         searchForLists.setCaption(messageSource.getMessage(Message.SEARCH_FOR_A_LIST) + " ");
         or.setValue(messageSource.getMessage(Message.OR) + " ");
@@ -358,12 +394,22 @@ public class ListSelectionLayout extends VerticalLayout implements International
     }
     
     public void renameTab(Integer listId, String newName){
+    	
+    	//dennis put change header name here
         String tabDescription = generateTabDescription(listId);
         Tab tab = Util.getTabWithDescription(detailsTabSheet, tabDescription);
         if (tab != null){
             tab.setCaption(newName);
             ListTabComponent listDetails = (ListTabComponent) tab.getComponent();
             listDetails.setListNameLabel(newName);
+            
+            if(tab.getComponent() instanceof ListTabComponent){
+            	((ListTabComponent) tab.getComponent()).getGermplasmList().setName(newName);
+            	
+            	GermplasmList germplasmList = ((ListTabComponent) tab.getComponent()).getListComponent().getGermplasmList();
+            	germplasmList.setName(newName);
+            	((ListTabComponent) tab.getComponent()).getListComponent().setViewListHeaderWindow(new ViewListHeaderWindow(germplasmList));
+            }
         }
     }
     

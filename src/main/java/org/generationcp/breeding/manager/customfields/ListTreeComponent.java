@@ -10,6 +10,7 @@ import java.util.Map;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.constants.AppConstants.CssStyles;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.IconButton;
 import org.generationcp.breeding.manager.customcomponent.ToggleButton;
@@ -20,6 +21,7 @@ import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListTree
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListTreeExpandListener;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
 import org.generationcp.breeding.manager.util.Util;
+import org.generationcp.breeding.manager.validator.ListNameValidator;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -35,6 +37,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -43,10 +47,11 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.ItemStyleGenerator;
 import com.vaadin.ui.Tree.TreeDragMode;
-import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.VerticalLayout;
 
 @Configurable
 public abstract class ListTreeComponent extends CssLayout implements
@@ -62,6 +67,10 @@ public abstract class ListTreeComponent extends CssLayout implements
 	
 	public static final String PROGRAM_LISTS = "Program Lists";
 	public static final String PUBLIC_LISTS = "Public Lists";
+	
+	private enum FolderSaveMode {
+    	ADD, RENAME
+    }
 	
     @Autowired
     protected GermplasmListManager germplasmListManager;
@@ -87,13 +96,24 @@ public abstract class ListTreeComponent extends CssLayout implements
 	protected Tree germplasmListTree;
 	protected Button refreshButton;
 	
+	protected HorizontalLayout addRenameFolderLayout;
+	protected Label folderLabel;
+	protected TextField folderTextField;
+	protected Button saveFolderButton;
+	protected Button cancelFolderButton;
+	
 	protected Boolean selectProgramListsByDefault;
     
     protected Object selectedListId;
+    protected GermplasmList germplasmList;
     
     protected ToggleButton toggleListTreeButton;
     
     private Map<Integer, GermplasmList> germplasmListsMap;
+    
+    private FolderSaveMode folderSaveMode;
+   
+    private ListNameValidator listNameValidator;
     
     public ListTreeComponent(Integer selectListId){
     	this.listId = selectListId;
@@ -123,7 +143,7 @@ public abstract class ListTreeComponent extends CssLayout implements
 		
 		treeHeadingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_BUILD_NEW_LIST, heading);
     	
-		// if tree will include the toogle button to hide itself
+		// if tree will include the toggle button to hide itself
 		if (doIncludeToggleButton()){
 			toggleListTreeButton = new ToggleButton("Toggle Build New List Pane");
 		}
@@ -131,9 +151,11 @@ public abstract class ListTreeComponent extends CssLayout implements
 		// assumes that all tree will display control buttons
 		if (doIncludeActionsButtons()){
 			initializeButtonPanel();
+			initializeAddRenameFolderPanel();
 		}
 		
 		treeContainerLayout = new CssLayout();
+		treeContainerLayout.setWidth("100%");
 		germplasmListTree = new Tree();
 		if (doIncludeRefreshButton()){
 			initializeRefreshButton();
@@ -160,21 +182,84 @@ public abstract class ListTreeComponent extends CssLayout implements
 				}
 			});
 		}
+		
+		if (doIncludeActionsButtons()){
+			addFolderActionsListener();
+		}
+	}
+
+	@SuppressWarnings("serial")
+	protected void addFolderActionsListener() {
+		renameFolderBtn.addListener(new Button.ClickListener() {
+			@Override
+		    public void buttonClick(Button.ClickEvent event) {
+				folderSaveMode = FolderSaveMode.RENAME;
+				showAddRenameFolderSection(true);
+		    }
+		});
+		
+		addFolderBtn.addListener(new Button.ClickListener() {
+			@Override
+		    public void buttonClick(Button.ClickEvent event) {
+				folderSaveMode = FolderSaveMode.ADD;
+				showAddRenameFolderSection(true);
+		    }
+		});
+		
+		deleteFolderBtn.addListener(new Button.ClickListener() {
+			@Override
+		    public void buttonClick(Button.ClickEvent event) {
+				Object data = event.getButton().getData();
+				if (data instanceof ListTreeComponent){
+					germplasmListTreeUtil.deleteFolderOrList((ListTreeComponent) data, 
+							Integer.valueOf(selectedListId.toString()), treeActionsListener);
+				}
+		    }
+		});
+		
+		folderTextField.addShortcutListener(new ShortcutListener("ENTER", ShortcutAction.KeyCode.ENTER, null) {
+			@Override
+            public void handleAction(Object sender, Object target) {
+				addRenameItemAction();
+            }
+        });		
+		
+		saveFolderButton.addListener(new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				addRenameItemAction();
+			}
+		});
+		
+		cancelFolderButton.addListener(new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				showAddRenameFolderSection(false);
+			}
+		});
 	}
 
 	@Override
 	public void layoutComponents() {
 		setWidth("100%");
+		
+		VerticalLayout layout = new VerticalLayout();
+		layout.setSpacing(true);
+		layout.setWidth("100%");
+		
 		if (doIncludeActionsButtons()){
-			addComponent(controlButtonsLayout);
+			layout.addComponent(controlButtonsLayout);
+			layout.addComponent(addRenameFolderLayout);
 		}
 		
 		treeContainerLayout.addComponent(germplasmListTree);
-		addComponent(treeContainerLayout);
+		layout.addComponent(treeContainerLayout);
 		
 		if(doIncludeRefreshButton()){
-			addComponent(refreshButton);
+			layout.addComponent(refreshButton);
 		}
+		
+		addComponent(layout);
 	}
 
 	@Override
@@ -237,39 +322,13 @@ public abstract class ListTreeComponent extends CssLayout implements
 	protected void initializeButtonPanel() {
 		renameFolderBtn = new IconButton("<span class='bms-edit' style='left: 2px; color: #0083c0;font-size: 18px; font-weight: bold;'></span>","Rename Item");
         renameFolderBtn.setEnabled(false);
-        renameFolderBtn.addListener(new Button.ClickListener() {
-			protected static final long serialVersionUID = 1L;
-			@Override
-            public void buttonClick(Button.ClickEvent event) {
-				germplasmListTreeUtil.renameFolderOrList(Integer.valueOf(selectedListId.toString()), treeActionsListener);
-            }
-        });
         
         addFolderBtn = new IconButton("<span class='bms-add' style='left: 2px; color: #00a950;font-size: 18px; font-weight: bold;'></span>","Add New Folder");
         addFolderBtn.setEnabled(false);
-        addFolderBtn.addListener(new Button.ClickListener() {
-			protected static final long serialVersionUID = 1L;
-			@Override
-            public void buttonClick(Button.ClickEvent event) {
-				germplasmListTreeUtil.addFolder(selectedListId);
-            }
-        });
-        
 
         deleteFolderBtn = new IconButton("<span class='bms-delete' style='left: 2px; color: #f4a41c;font-size: 18px; font-weight: bold;'></span>","Delete Item");
         deleteFolderBtn.setEnabled(false);
         deleteFolderBtn.setData(this);
-        deleteFolderBtn.addListener(new Button.ClickListener() {
-			protected static final long serialVersionUID = 1L;
-			@Override
-            public void buttonClick(Button.ClickEvent event) {
-				Object data = event.getButton().getData();
-				if (data instanceof ListTreeComponent){
-					germplasmListTreeUtil.deleteFolderOrList((ListTreeComponent) data, 
-							Integer.valueOf(selectedListId.toString()), treeActionsListener);
-				}
-            }
-        });
         
         ctrlBtnsRightSubLayout = new HorizontalLayout();
         ctrlBtnsRightSubLayout.setHeight("30px");
@@ -306,9 +365,112 @@ public abstract class ListTreeComponent extends CssLayout implements
         controlButtonsLayout.setComponentAlignment(ctrlBtnsLeftSubLayout, Alignment.BOTTOM_LEFT);
         controlButtonsLayout.setComponentAlignment(ctrlBtnsRightSubLayout, Alignment.BOTTOM_RIGHT);
         
-        
-        
 	}
+	
+	protected void addRenameItemAction() {
+		if (doSaveNewFolder()){
+			germplasmListTreeUtil.addFolder(selectedListId, folderTextField);
+		} else{
+			String oldName = germplasmListTree.getItemCaption(selectedListId);
+			germplasmListTreeUtil.renameFolderOrList(Integer.valueOf(selectedListId.toString()), 
+					treeActionsListener, folderTextField, oldName);
+		}
+	}
+	
+
+	protected void initializeAddRenameFolderPanel() {
+		folderLabel = new Label("Folder");
+		folderLabel.addStyleName(CssStyles.BOLD);
+		Label mandatoryMarkLabel = new MandatoryMarkLabel();
+		
+		folderTextField = new TextField();
+		folderTextField.setMaxLength(50);
+		folderTextField.setValidationVisible(false);
+		
+		folderTextField.setRequired(true);
+		folderTextField.setRequiredError("Please specify item name.");
+		listNameValidator = new ListNameValidator();
+		folderTextField.addValidator(listNameValidator);
+		
+		saveFolderButton =new Button("<span class='glyphicon glyphicon-ok' style='right: 2px;'></span>");
+		saveFolderButton.setHtmlContentAllowed(true);
+		saveFolderButton.setDescription(messageSource.getMessage(Message.SAVE_LABEL));
+		saveFolderButton.setStyleName(Bootstrap.Buttons.SUCCESS.styleName());
+		
+		cancelFolderButton =new Button("<span class='glyphicon glyphicon-remove' style='right: 2px;'></span>");
+		cancelFolderButton.setHtmlContentAllowed(true);
+		cancelFolderButton.setDescription(messageSource.getMessage(Message.CANCEL));
+		cancelFolderButton.setStyleName(Bootstrap.Buttons.DANGER.styleName());
+		
+        addRenameFolderLayout = new HorizontalLayout();
+        addRenameFolderLayout.setSpacing(true);
+        
+        HorizontalLayout rightPanelLayout = new HorizontalLayout();
+        rightPanelLayout.addComponent(folderTextField);
+        rightPanelLayout.addComponent(saveFolderButton);
+        rightPanelLayout.addComponent(cancelFolderButton);
+        
+        addRenameFolderLayout.addComponent(folderLabel);
+        addRenameFolderLayout.addComponent(mandatoryMarkLabel);
+        addRenameFolderLayout.addComponent(rightPanelLayout);
+     
+        
+        addRenameFolderLayout.setVisible(false);
+	}
+	
+	public void showAddRenameFolderSection(boolean showFolderSection){
+		 addRenameFolderLayout.setVisible(showFolderSection);
+		 
+		 if(showFolderSection && folderSaveMode != null){
+			 folderLabel.setValue(doSaveNewFolder()? "Add Folder" : "Rename Item");
+
+			 if(doSaveNewFolder()){
+				 folderTextField.setValue("");
+				 
+			 //If rename, set existing name
+			 } else if (selectedListId != null){
+				 String itemCaption = germplasmListTree.getItemCaption(selectedListId);
+				 if (itemCaption != null){
+					 listNameValidator.setCurrentListName(itemCaption);
+					 folderTextField.setValue(itemCaption);
+				 }
+			 }
+			 folderTextField.focus();
+			 
+		 } 
+	}
+	
+	public void toggleFolderSectionForItemSelected(){
+		if (addRenameFolderLayout != null 	&& addRenameFolderLayout.isVisible()){
+			Integer listId = null;
+			if (selectedListId instanceof Integer){
+				listId = Integer.valueOf(selectedListId.toString());
+			}
+			
+			// hide folder section for "Public Lists" and central lists nodes
+			if (CENTRAL.equals(selectedListId) || (listId != null && listId > 0)){
+				showAddRenameFolderSection(false);
+				
+			// RENAME scenarios
+			} else if (!doSaveNewFolder()){
+				if (listId != null && listId < 0){
+					folderTextField.setValue(germplasmListTree.getItemCaption(selectedListId));
+					folderTextField.focus();
+					
+				} else if (LOCAL.equals(selectedListId)){
+					showAddRenameFolderSection(false);
+				}
+			
+			} 
+		}
+		
+
+	}
+
+	private boolean doSaveNewFolder() {
+		return FolderSaveMode.ADD.equals(folderSaveMode);
+	}
+	
 	
     public void removeListFromTree(GermplasmList germplasmList){
     	Integer listId = germplasmList.getId();
@@ -422,6 +584,13 @@ public abstract class ListTreeComponent extends CssLayout implements
         });
 	}
 	  
+	public void assignNewNameToGermplasmListMap(String key, String newName){
+		GermplasmList germplasmList = germplasmListsMap.get(Integer.valueOf(key.toString()));
+		if(germplasmList!=null){
+			germplasmList.setName(newName);
+		}
+	}
+	
 	protected void createGermplasmListTree() {
         List<GermplasmList> localGermplasmListParent = new ArrayList<GermplasmList>();
         List<GermplasmList> centralGermplasmListParent = new ArrayList<GermplasmList>();
@@ -504,10 +673,13 @@ public abstract class ListTreeComponent extends CssLayout implements
 	    			germplasmListTree.select(listId);
 	    			germplasmListTree.setValue(listId);
 	    			setSelectedListId(listId);
+	    			updateButtons(listId);
 	    		}
+	    		
 	        } else if(selectProgramListsByDefault) {
-	        	germplasmListTree.select("LOCAL");
-    			germplasmListTree.setValue("LOCAL");
+	        	germplasmListTree.select(LOCAL);
+    			germplasmListTree.setValue(LOCAL);
+    			updateButtons(LOCAL);
 	        }
         } catch(MiddlewareQueryException ex){
     		LOG.error("Error with getting parents for hierarchy of list id: " + listId, ex);
@@ -644,27 +816,24 @@ public abstract class ListTreeComponent extends CssLayout implements
     	return !doShowFoldersOnly() || isFolder(list.getId());
     }
     
-    public void listManagerTreeItemClickAction(int germplasmListId) throws InternationalizableException{
+    public void treeItemClickAction(int germplasmListId) throws InternationalizableException{
 
         try {
     		
-        	GermplasmList germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
-        	
+        	germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
         	selectedListId = germplasmListId;
         	
-        	boolean hasChildList = hasChildList(germplasmListId);
         	boolean isEmptyFolder = isEmptyFolder(germplasmList);
         	if (!isEmptyFolder){
+        		boolean hasChildList = hasChildList(germplasmListId);
 
         		if (!hasChildList){
-        			if (treeActionsListener != null){
-        				treeActionsListener.openListDetails(germplasmList);
-        			}
+        			studyClickedAction(germplasmList);
         			
         		//toggle folder
 	        	} else if(hasChildList){
+	        		folderClickedAction(germplasmList);
 	        		expandOrCollapseListTreeNode(Integer.valueOf(germplasmListId));
-	        		treeActionsListener.folderClicked(germplasmList);
 	        	}
         		
         		germplasmListTree.setNullSelectionAllowed(false);
@@ -672,7 +841,7 @@ public abstract class ListTreeComponent extends CssLayout implements
         		germplasmListTree.setValue(germplasmListId);
         	}
         	else{//when an empty folder is clicked
-        		treeActionsListener.folderClicked(germplasmList);
+        		folderClickedAction(germplasmList);
         	}
 			        
         } catch (NumberFormatException e) {
@@ -680,8 +849,7 @@ public abstract class ListTreeComponent extends CssLayout implements
         	LOG.error("Error clicking of list.", e);
             MessageNotifier.showWarning(getWindow(), 
                     messageSource.getMessage(Message.ERROR_INVALID_FORMAT),
-                    messageSource.getMessage(Message.ERROR_IN_NUMBER_FORMAT),
-                    Notification.POSITION_CENTERED);
+                    messageSource.getMessage(Message.ERROR_IN_NUMBER_FORMAT));
         }catch (MiddlewareQueryException e){
         	LOG.error("Error in displaying germplasm list details.", e);
             throw new InternationalizableException(e, Message.ERROR_DATABASE,
@@ -706,6 +874,18 @@ public abstract class ListTreeComponent extends CssLayout implements
     
     public void setListId(Integer listId){
     	this.listId = listId; 
+    }
+    
+    public void studyClickedAction(GermplasmList germplasmList){
+    	if (treeActionsListener != null && germplasmList != null){
+			treeActionsListener.studyClicked(germplasmList);
+		}
+    }
+    
+    public void folderClickedAction(GermplasmList germplasmList){
+    	if (treeActionsListener != null && germplasmList != null){
+			treeActionsListener.folderClicked(germplasmList);
+		}
     }
     
     public Tree getGermplasmListTree(){

@@ -287,7 +287,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
                             //TODO must accommodate the expanding of the folder up to the parent of the list being opened
                             listManagerMain.getListSelectionComponent().getListTreeComponent().getGermplasmListTree().expandItem(ListTreeComponent.LOCAL);
                             //TODO must accommodate opening in the search screen also
-                            listManagerMain.getListSelectionComponent().getListTreeComponent().listManagerTreeItemClickAction(newListid);
+                            listManagerMain.getListSelectionComponent().getListTreeComponent().treeItemClickAction(newListid);
                         } catch (MiddlewareQueryException e){
                             germplasmListManager.deleteGermplasmListByListId(newListid);
                             LOG.error("Error with copying list entries", e);
@@ -319,7 +319,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
                         listManagerMain.getListSelectionComponent().getListTreeComponent().getGermplasmListTree().expandItem(ListTreeComponent.LOCAL);
                         //TODO must accommodate opening in the search screen also
                         listManagerMain.getListSelectionComponent().getListDetailsLayout().removeTab(Integer.valueOf(listId));
-                        listManagerMain.getListSelectionComponent().getListTreeComponent().listManagerTreeItemClickAction(Integer.valueOf(listId));
+                        listManagerMain.getListSelectionComponent().getListTreeComponent().treeItemClickAction(Integer.valueOf(listId));
                     } catch (MiddlewareQueryException e) {
                         LOG.error("Error with copying list entries", e);
                             e.printStackTrace();

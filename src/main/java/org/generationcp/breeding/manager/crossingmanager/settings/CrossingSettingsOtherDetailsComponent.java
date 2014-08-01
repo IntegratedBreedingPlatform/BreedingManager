@@ -42,7 +42,6 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
@@ -252,6 +251,10 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 		return setAsDefaultSettingCheckbox;
 	}
 
+	public void setSetAsDefaultSettingCheckbox(Boolean value) {
+		setAsDefaultSettingCheckbox.setValue(value);
+	}
+	
 	public HarvestDateField getHarvestDtDateField() {
 		return harvestDateField;
 	}
@@ -262,11 +265,15 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 
 	public boolean validateInputFields(){
 
+		if((Boolean) setAsDefaultSettingCheckbox.getValue()==true && (settingsNameTextfield.getValue()==null || settingsNameTextfield.getValue().equals(""))){
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), messageSource.getMessage(Message.PLEASE_ENTER_A_NAME_FOR_THIS_SETTING_IF_YOU_WANT_TO_SET_IT_AS_DEFAULT));
+			return false;
+		}
+		
 		try {
 			harvestDateField.validate();
 		} catch (InvalidValueException e) {
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), e.getMessage()
-					, Notification.POSITION_CENTERED);
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), e.getMessage());
 			return false;
 		}
 		return true;
@@ -275,18 +282,13 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 	public void setFields(AdditionalDetailsSetting additionalDetailsSetting, String name, Boolean isDefault ) {
 		showFavouriteLocations.setValue(false);
 		populateHarvestLocation();
-
 		harvestLocations.select(additionalDetailsSetting.getHarvestLocationId());
-		harvestDateField.setValue(additionalDetailsSetting.getHarvestDate());
-
 		settingsNameTextfield.setValue(name);
-
 		setAsDefaultSettingCheckbox.setValue(isDefault);
 	}
 
 	public void setFieldsDefaultValue() {
 		harvestLocations.select(null);
-		harvestDateField.setValue("20140000");//default value year - 2014
 		settingsNameTextfield.setValue("");
 		setAsDefaultSettingCheckbox.setValue(false);
 		showFavouriteLocations.setValue(false);

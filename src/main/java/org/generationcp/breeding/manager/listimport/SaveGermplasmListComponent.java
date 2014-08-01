@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
+import org.generationcp.breeding.manager.listimport.actions.SaveGermplasmListAction;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.dialog.SelectLocationFolderDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.SelectLocationFolderDialogSource;
@@ -47,6 +48,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
+@Deprecated
 @Configurable
 public class SaveGermplasmListComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent, SelectLocationFolderDialogSource{
 
@@ -237,15 +239,7 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
     }
 
     public void backButtonClickAction(){
-       
-        if(this.previousScreen != null){
-        	source.enableAllTabs();
-            this.accordion.setSelectedTab(previousScreen);
-            source.enableTab(2);
-            source.alsoEnableTab(1);
-        } else{
-            this.backButton.setEnabled(false);
-        }
+        source.backStep();
     }
 
     public void nextButtonClickAction() throws InternationalizableException {
@@ -362,17 +356,17 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
              List<ImportedGermplasm> importedGermplasms = ((SpecifyGermplasmDetailsComponent) previousScreen).getImportedGermplasms();
              Integer listId = saveAction.saveRecords(germplasmList, germplasmNameObjects, getFilename(), doNotCreateGermplasmsWithId, importedGermplasms);
              MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS),
-                    messageSource.getMessage(Message.GERMPLASM_LIST_SAVED_SUCCESSFULLY), 3000, Window.Notification.POSITION_CENTERED);
+                    messageSource.getMessage(Message.GERMPLASM_LIST_SAVED_SUCCESSFULLY));
              if(viaPopup)
             	 notifyExternalApplication(listId);
              else
-            	 this.source.viewGermplasmListCreated(listId);
+            	 this.source.reset();
             
         } catch (MiddlewareQueryException e) {
             LOG.error(e.getMessage() + " " + e.getStackTrace());
             e.printStackTrace();
             MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE),
-                messageSource.getMessage(Message.ERROR_IN_SAVING_CROSSES_DEFINED), Window.Notification.POSITION_CENTERED);
+                messageSource.getMessage(Message.ERROR_IN_SAVING_CROSSES_DEFINED));
         }
 
     }

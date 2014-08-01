@@ -1,4 +1,4 @@
-package org.generationcp.breeding.manager.listimport;
+package org.generationcp.breeding.manager.listimport.actions;
 
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
@@ -118,7 +118,7 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
     	Germplasm germplasm = germplasmName.getGermplasm();
     	for(Integer gid : addedGermplasmNameMap.keySet()){
     		if(addedGermplasmNameMap.get(gid).getGermplasm().getGpid1().equals(germplasm.getGpid1()) 
-        			&& addedGermplasmNameMap.get(gid).getGermplasm().getGpid1().equals(germplasm.getGpid1())
+        			&& addedGermplasmNameMap.get(gid).getGermplasm().getGpid2().equals(germplasm.getGpid2())
         			&& addedGermplasmNameMap.get(gid).getName().getNval().equals(germplasmName.getName().getNval())
     		  ){
     			return addedGermplasmNameMap.get(gid).getGermplasm();

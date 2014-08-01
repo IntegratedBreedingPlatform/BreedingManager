@@ -9,9 +9,9 @@ import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
-import org.generationcp.breeding.manager.listmanager.sidebyside.GermplasmDetailsComponent;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.tomcat.util.TomcatUtil;
@@ -19,10 +19,13 @@ import org.generationcp.commons.tomcat.util.WebAppStatusInfo;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.Location;
+import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.workbench.Tool;
 import org.generationcp.middleware.pojos.workbench.ToolName;
@@ -31,35 +34,46 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.vaadin.peter.contextmenu.ContextMenu;
+import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.event.Action;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.terminal.ExternalResource;
+import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Embedded;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class GermplasmSearchResultsComponent extends CssLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+public class GermplasmSearchResultsComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 5314653969843976836L;
 
-	private Label matchingGermplasmsLabel;
+	private Label totalMatchingGermplasmsLabel;
+	private Label totalSelectedMatchingGermplasmsLabel;
 	private Table matchingGermplasmsTable;
+	
+	private Button actionButton;
+	private ContextMenu menu;
+	private ContextMenuItem menuSelectAll;
+	private ContextMenuItem menuAddNewEntry;
+	
 	private TableWithSelectAllLayout matchingGermplasmsTableWithSelectAll;
 	
 	private final static Logger LOG = LoggerFactory.getLogger(GermplasmSearchResultsComponent.class);
@@ -69,12 +83,17 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 	public static final String MATCHING_GEMRPLASMS_TABLE_DATA = "Matching Germplasms Table";
 	public static final String GERMPLASM_BROWSER_LINK = "http://localhost:18080/GermplasmStudyBrowser/main/germplasm-";
 	
-    static final Action ACTION_COPY_TO_NEW_LIST= new Action("Copy to new list");
-    static final Action[] GERMPLASMS_TABLE_CONTEXT_MENU = new Action[] { ACTION_COPY_TO_NEW_LIST };
+    static final Action ACTION_COPY_TO_NEW_LIST= new Action("Add Selected Entries to New List");
+    static final Action ACTION_SELECT_ALL= new Action("Select All");
+    static final Action[] GERMPLASMS_TABLE_CONTEXT_MENU = new Action[] { ACTION_COPY_TO_NEW_LIST, ACTION_SELECT_ALL };
 	
     private Action.Handler rightClickActionHandler;
     
 	private final org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain listManagerMain;
+	
+	private boolean viaToolUrl = true;
+	
+	private boolean showAddToList = true;
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -86,11 +105,18 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
     private WorkbenchDataManager workbenchDataManager;
     
     @Autowired
-    private TomcatUtil tomcatUtil;	
-	
+    private TomcatUtil tomcatUtil;
+
 	public GermplasmSearchResultsComponent(final ListManagerMain listManagerMain) {
 		this.listManagerMain = listManagerMain;
 	}
+	
+    public GermplasmSearchResultsComponent(final ListManagerMain listManagerMain, boolean viaToolUrl, boolean showAddToList) {
+        this(listManagerMain);
+        
+        this.viaToolUrl = viaToolUrl;
+        this.showAddToList = showAddToList;
+    }
 	
 	@Override
 	public void updateLabels() {
@@ -108,24 +134,34 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 	public void instantiateComponents() {
 		
 		setWidth("100%");
-
-		matchingGermplasmsLabel = new Label();
-		matchingGermplasmsLabel.setWidth("100%");
 		
-		matchingGermplasmsLabel = new Label(messageSource.getMessage(Message.TOTAL_RESULTS) + ": " 
-       		 + "  <b>" + 0 + "</b>", Label.CONTENT_XHTML);
+		totalMatchingGermplasmsLabel = new Label("", Label.CONTENT_XHTML);
+		totalMatchingGermplasmsLabel.setWidth("120px");
+		updateNoOfEntries(0);
 		
-		matchingGermplasmsLabel.setStyleName("lm-search-results-label");
-       	
+		totalSelectedMatchingGermplasmsLabel = new Label("", Label.CONTENT_XHTML);
+		totalSelectedMatchingGermplasmsLabel.setWidth("95px");
+		updateNoOfSelectedEntries(0);
+		
+		actionButton = new ActionButton();
+		
+		menu = new ContextMenu();
+		menu.setWidth("250px");
+		menuAddNewEntry = menu.addItem(messageSource.getMessage(Message.ADD_SELECTED_ENTRIES_TO_NEW_LIST));
+		menuSelectAll = menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
+		updateActionMenuOptions(false);		
+		
 		matchingGermplasmsTableWithSelectAll = new TableWithSelectAllLayout(10, CHECKBOX_COLUMN_ID);
 		matchingGermplasmsTableWithSelectAll.setHeight("500px");
 
 		matchingGermplasmsTable = matchingGermplasmsTableWithSelectAll.getTable();
 		matchingGermplasmsTable.setData(MATCHING_GEMRPLASMS_TABLE_DATA);
 		matchingGermplasmsTable.addContainerProperty(CHECKBOX_COLUMN_ID, CheckBox.class, null);
-		matchingGermplasmsTable.addContainerProperty("GID", Button.class, null);
-		matchingGermplasmsTable.addContainerProperty("NAMES", String.class,null);
+		matchingGermplasmsTable.addContainerProperty("NAMES", Button.class,null);
 		matchingGermplasmsTable.addContainerProperty("PARENTAGE", String.class,null);
+		matchingGermplasmsTable.addContainerProperty("GID", Button.class, null);
+		matchingGermplasmsTable.addContainerProperty("LOCATION", String.class,null);
+		matchingGermplasmsTable.addContainerProperty("METHOD", String.class,null);
 		matchingGermplasmsTable.setWidth("100%");
 		matchingGermplasmsTable.setMultiSelect(true);
 		matchingGermplasmsTable.setSelectable(true);
@@ -159,19 +195,22 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 					return GERMPLASMS_TABLE_CONTEXT_MENU;
 	            }
 
-				@SuppressWarnings("unchecked")
 				@Override
 				public void handleAction(Action action, Object sender, Object target) {
 	             	if (ACTION_COPY_TO_NEW_LIST == action) {
-	             		List<Integer> gids = new ArrayList<Integer>();
-	             		gids.addAll((Collection<? extends Integer>) matchingGermplasmsTable.getValue());
-	             		for(Integer gid : gids){
-	             			listManagerMain.addPlantToList(gid);
-	             		}
+	             		addSelectedEntriesToNewList();
+	             	}
+	             	else if(ACTION_SELECT_ALL == action){
+	             		matchingGermplasmsTable.setValue(matchingGermplasmsTable.getItemIds());
 	             	}
 				}
 			};
 		
+	}
+
+	private void updateActionMenuOptions(boolean status) {
+		menuAddNewEntry.setEnabled(status);
+		menuSelectAll.setEnabled(status);
 	}
 
 	@Override
@@ -181,7 +220,45 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 
 	@Override
 	public void addListeners() {
+		
+        actionButton.addListener(new ClickListener(){
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				menu.show(event.getClientX(), event.getClientY());
+			}
+        	
+        });
+        
+		menu.addListener(new ContextMenu.ClickListener() {
+			private static final long serialVersionUID = -2343109406180457070L;
+			
+			@Override
+			public void contextItemClick(
+					org.vaadin.peter.contextmenu.ContextMenu.ClickEvent event) {
+				 ContextMenuItem clickedItem = event.getClickedItem();
+				 
+				 if(clickedItem.getName().equals(messageSource.getMessage(Message.ADD_SELECTED_ENTRIES_TO_NEW_LIST))){
+					 addSelectedEntriesToNewList();
+				 }
+				 else if(clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))){
+					 matchingGermplasmsTable.setValue(matchingGermplasmsTable.getItemIds());
+				 }
+				
+			}
+		});
+        
 		matchingGermplasmsTable.addActionHandler(rightClickActionHandler);
+        
+		matchingGermplasmsTable.addListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				updateNoOfSelectedEntries();
+			}
+		});
 	}
 
 	public void setRightClickActionHandlerEnabled(Boolean isEnabled){
@@ -192,20 +269,42 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 	
 	@Override
 	public void layoutComponents() {
-		addComponent(matchingGermplasmsLabel);
+		setSpacing(true);
+		
+		HorizontalLayout leftHeaderLayout = new HorizontalLayout();
+		leftHeaderLayout.setSpacing(true);
+		leftHeaderLayout.addComponent(totalMatchingGermplasmsLabel);
+		leftHeaderLayout.addComponent(totalSelectedMatchingGermplasmsLabel);
+		leftHeaderLayout.setComponentAlignment(totalMatchingGermplasmsLabel, Alignment.MIDDLE_LEFT);
+		leftHeaderLayout.setComponentAlignment(totalSelectedMatchingGermplasmsLabel, Alignment.MIDDLE_LEFT);
+		
+		HorizontalLayout headerLayout = new HorizontalLayout();
+		headerLayout.setWidth("100%");
+		headerLayout.setSpacing(true);
+		headerLayout.addComponent(leftHeaderLayout);
+		headerLayout.addComponent(actionButton);
+		headerLayout.setComponentAlignment(leftHeaderLayout, Alignment.BOTTOM_LEFT);
+		headerLayout.setComponentAlignment(actionButton, Alignment.BOTTOM_RIGHT);
+		
+		addComponent(menu);
+		addComponent(headerLayout);
 		addComponent(matchingGermplasmsTableWithSelectAll);
 	}
 		
 	public void applyGermplasmResults(List<Germplasm> germplasms){
-		matchingGermplasmsLabel.setValue(messageSource.getMessage(Message.TOTAL_RESULTS)+": "+String.valueOf(germplasms.size()));
+		updateNoOfEntries(germplasms.size());
 		matchingGermplasmsTable.removeAllItems();
 		for(Germplasm germplasm:germplasms){
 
-        	Button gidButton = new Button(String.format("%s", germplasm.getGid().toString()), new GidLinkButtonClickListener(listManagerMain, germplasm.getGid().toString(), true, true));
+		    GidLinkButtonClickListener listener = new GidLinkButtonClickListener(listManagerMain, germplasm.getGid().toString(), viaToolUrl, showAddToList);
+        	Button gidButton = new Button(String.format("%s", germplasm.getGid().toString()), listener);
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 			
-			String shortenedNames = getShortenedGermplasmNames(germplasm.getGid());
-			
+            String shortenedNames = getShortenedGermplasmNames(germplasm.getGid());
+        	Button namesButton = new Button(shortenedNames, listener);
+        	namesButton.setStyleName(BaseTheme.BUTTON_LINK);
+        	namesButton.setDescription(getGermplasmNames(germplasm.getGid()));
+            
             String crossExpansion = "";
             if(germplasm!=null){
             	try {
@@ -232,14 +331,38 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 	 			}
 	 			 
 	 		});
+	   		
+	   		String methodName = "-";
+	   		try {
+	   		    Method germplasmMethod = germplasmDataManager.getMethodByID(germplasm.getMethodId());
+	   		    if(germplasmMethod!=null && germplasmMethod.getMname()!=null){
+	   		        methodName = germplasmMethod.getMname();
+	   		    }
+	   		}
+	   		catch (MiddlewareQueryException e) {
+	   		    LOG.error(e.getMessage(), e);
+	   		}
+
+	   		String locationName = "-";
+	   		try {
+	   		    @SuppressWarnings("deprecation")
+				Location germplasmLocation = germplasmDataManager.getLocationByID(germplasm.getLocationId());
+	   		    if(germplasmLocation!=null && germplasmLocation.getLname()!=null){
+	   		        locationName = germplasmLocation.getLname();
+	   		    }
+	   		}
+            catch (MiddlewareQueryException e) {
+                LOG.error(e.getMessage(), e);
+            }
             
-            matchingGermplasmsTable.addItem(new Object[]{itemCheckBox, gidButton, shortenedNames, crossExpansion},germplasm.getGid());
+            matchingGermplasmsTable.addItem(new Object[]{itemCheckBox, namesButton, crossExpansion, gidButton, locationName, methodName},germplasm.getGid());
 		}
 		
-		// Update total count
-		final int count = matchingGermplasmsTable.getItemIds().size();
-		matchingGermplasmsLabel.setValue(new Label(messageSource.getMessage(Message.TOTAL_RESULTS) + ": " 
-	       		 + "  <b>" + count + "</b>", Label.CONTENT_XHTML));
+		updateNoOfEntries();
+		
+		if(matchingGermplasmsTable.getItemIds().size() > 0){
+			updateActionMenuOptions(true);
+		}
 	}
 
     private String getGermplasmNames(int gid) throws InternationalizableException {
@@ -285,32 +408,17 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
             return null;
         }
     }
+    
+    public TableWithSelectAllLayout getMatchingGermplasmsTableWithSelectAll() {
+        return matchingGermplasmsTableWithSelectAll;
+    }
 	
     public Table getMatchingGermplasmsTable(){
     	return matchingGermplasmsTable;
     }
     
-    private Window launchGermplasmDetailsWindow (final Window window, final String caption, final Integer gid) {
-
-    	/*
-        final CssLayout layout = new CssLayout();
-        layout.setMargin(true);
-
-        layout.addComponent(new GermplasmDetailsComponent(listManagerMain, gid));
-        
-        final Window popupWindow = new Window();
-        popupWindow.setWidth("900px");
-        popupWindow.setHeight("550px");
-        popupWindow.setModal(true);
-        popupWindow.setResizable(false);
-        popupWindow.center();
-        popupWindow.setCaption(caption);
-        popupWindow.setContent(layout);
-        popupWindow.addStyleName(Reindeer.WINDOW_LIGHT);
-        popupWindow.addStyleName("lm-list-manager-popup");
-
-        window.addWindow(popupWindow);*/
-        
+    @SuppressWarnings("unused")
+	private Window launchGermplasmDetailsWindow (final Window window, final String caption, final Integer gid) {
     	launchWebTool();
     	
     	Tool tool = null;
@@ -318,8 +426,6 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
             tool = workbenchDataManager.getToolWithName(ToolName.germplasm_browser.toString());
         } catch (MiddlewareQueryException qe) {
             LOG.error("QueryException", qe);
-            /*MessageNotifier.showError(mainWindow, messageSource.getMessage(Message.DATABASE_ERROR),
-                    "<br />" + messageSource.getMessage(Message.CONTACT_ADMIN_ERROR_DESC));*/
         }
         
         ExternalResource germplasmBrowserLink = null;
@@ -397,6 +503,32 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
         return germplasmWindow;
 	}
     
+	private void updateNoOfEntries(long count){
+		totalMatchingGermplasmsLabel.setValue(messageSource.getMessage(Message.TOTAL_RESULTS) + ": " 
+       		 + "  <b>" + count + "</b>");
+	}
+	
+	private void updateNoOfEntries(){
+		int count = 0;
+		count = matchingGermplasmsTable.getItemIds().size();
+		updateNoOfEntries(count);
+	}
+	
+	private void updateNoOfSelectedEntries(int count){
+		totalSelectedMatchingGermplasmsLabel.setValue("<i>" + messageSource.getMessage(Message.SELECTED) + ": " 
+	        		 + "  <b>" + count + "</b></i>");
+	}
+	
+	private void updateNoOfSelectedEntries(){
+		int count = 0;
+		
+		Collection<?> selectedItems = (Collection<?>)matchingGermplasmsTable.getValue();
+		count = selectedItems.size();
+		
+		updateNoOfSelectedEntries(count);
+	}
+
+    
     private void launchWebTool(){
     	
 		try {
@@ -443,6 +575,37 @@ public class GermplasmSearchResultsComponent extends CssLayout implements Initia
 			//e2.printStackTrace();
 		}
     	
-    	        
-    }    
+    }
+    
+	@SuppressWarnings("unchecked")
+	public void addSelectedEntriesToNewList() {
+		List<Integer> gids = new ArrayList<Integer>();
+ 		gids.addAll((Collection<? extends Integer>) matchingGermplasmsTable.getValue());
+
+ 		if(gids.size() == 0){
+ 			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.WARNING) 
+                    , messageSource.getMessage(Message.ERROR_GERMPLASM_MUST_BE_SELECTED));
+ 		}
+ 		else{
+ 			for(Integer gid : gids){
+ 	 			listManagerMain.addPlantToList(gid);
+ 	 		}
+ 		}	
+	}
+
+    public boolean isViaToolUrl() {
+        return viaToolUrl;
+    }
+
+    public void setViaToolUrl(boolean viaToolUrl) {
+        this.viaToolUrl = viaToolUrl;
+    }
+
+    public boolean isShowAddToList() {
+        return showAddToList;
+    }
+
+    public void setShowAddToList(boolean showAddToList) {
+        this.showAddToList = showAddToList;
+    }
 }

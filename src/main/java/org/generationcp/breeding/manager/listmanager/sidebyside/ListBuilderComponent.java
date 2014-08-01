@@ -16,6 +16,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.constants.ModeView;
+import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.IconButton;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
@@ -25,6 +26,7 @@ import org.generationcp.breeding.manager.customcomponent.UnsavedChangesSource;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
+import org.generationcp.breeding.manager.inventory.InventoryDropTargetContainer;
 import org.generationcp.breeding.manager.inventory.ListDataAndLotDetails;
 import org.generationcp.breeding.manager.inventory.ReservationStatusWindow;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
@@ -67,6 +69,8 @@ import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.event.Action;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
@@ -87,7 +91,7 @@ import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class ListBuilderComponent extends VerticalLayout implements InitializingBean, 
-				BreedingManagerLayout, SaveListAsDialogSource, ReserveInventorySource, UnsavedChangesSource {
+				BreedingManagerLayout, SaveListAsDialogSource, ReserveInventorySource, UnsavedChangesSource, InventoryDropTargetContainer {
 	private static final long serialVersionUID = 4997159450197570044L;
 
 	private static final Logger LOG = LoggerFactory.getLogger(ListBuilderComponent.class);
@@ -121,6 +125,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     private Label buildNewListDesc;
     private Label topLabel;
     private Label totalListEntriesLabel;
+    private Label totalSelectedListEntriesLabel;
     private BreedingManagerListDetailsComponent breedingManagerListDetailsComponent;
     private TableWithSelectAllLayout tableWithSelectAllLayout;
     private Table listDataTable;
@@ -160,6 +165,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     
     private ContextMenu inventoryViewMenu;
 	private ContextMenuItem menuCopyToNewListFromInventory;
+	private ContextMenuItem menuReserveInventory;
+	
+	private SaveListAsDialog dialog;
 	
     //For Saving
     private ListManagerMain source;
@@ -224,8 +232,14 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         topLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
         topLabel.setWidth("130px");
         topLabel.setStyleName(Bootstrap.Typography.H4.styleName());
-		totalListEntriesLabel = new Label(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
-       		 + "  <b>" + 0 + "</b>", Label.CONTENT_XHTML);
+        
+		totalListEntriesLabel = new Label("", Label.CONTENT_XHTML);
+		totalListEntriesLabel.setWidth("110px");
+		updateNoOfEntries(0);
+		
+		totalSelectedListEntriesLabel = new Label("", Label.CONTENT_XHTML);
+//		totalSelectedListEntriesLabel.setWidth("95px");
+		updateNoOfSelectedEntries(0);
 
         editHeaderButton = new Button(messageSource.getMessage(Message.EDIT_HEADER));
         editHeaderButton.setImmediate(true);
@@ -272,7 +286,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         inventoryViewMenu.setWidth("300px");
         
         menuCopyToNewListFromInventory = inventoryViewMenu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST));
-        inventoryViewMenu.addItem(messageSource.getMessage(Message.RESERVE_INVENTORY));
+        menuReserveInventory = inventoryViewMenu.addItem(messageSource.getMessage(Message.RESERVE_INVENTORY));
         inventoryViewMenu.addItem(messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
         inventoryViewMenu.addItem(messageSource.getMessage(Message.SELECT_ALL));
         
@@ -282,19 +296,11 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         resetMenuOptions();
         resetInventoryMenuOptions();
         
-        toolsButton = new Button(messageSource.getMessage(Message.ACTIONS));
+		toolsButton = new ActionButton();
 		toolsButton.setData(TOOLS_BUTTON_ID);
-		toolsButton.setIcon(AppConstants.Icons.ICON_TOOLS);
-		toolsButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
-		toolsButton.setWidth("110px");
-        toolsButton.addStyleName("lm-tools-button");
-        
-        inventoryViewToolsButton = new Button(messageSource.getMessage(Message.ACTIONS));
+		
+        inventoryViewToolsButton = new ActionButton();
         inventoryViewToolsButton.setData(TOOLS_BUTTON_ID);
-        inventoryViewToolsButton.setIcon(AppConstants.Icons.ICON_TOOLS);
-        inventoryViewToolsButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
-        inventoryViewToolsButton.setWidth("110px");
-        inventoryViewToolsButton.addStyleName("lm-tools-button");        
         
         dropHandler = new BuildNewListDropHandler(source, germplasmDataManager, germplasmListManager, inventoryDataManager, tableWithSelectAllLayout.getTable());
         
@@ -321,6 +327,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     private void resetInventoryMenuOptions() {
         //Temporarily disable to Copy to New List in InventoryView TODO implement the function
         menuCopyToNewListFromInventory.setEnabled(false);
+        
+        if(!isCurrentListSaved()){
+        	menuReserveInventory.setEnabled(false);
+        }
 	}
 
 	@Override
@@ -430,7 +440,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 			@Override
 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-				if(currentlySetGermplasmInfo == null){
+				if (currentlySetGermplasmInfo == null){
 					openSaveListAsDialog();
 				}
 			}
@@ -495,6 +505,24 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         		}
             }
         });
+        
+        tableWithSelectAllLayout.getTable().addListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				updateNoOfSelectedEntries();
+			}
+		});
+        
+        listInventoryTable.getTable().addListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				updateNoOfSelectedEntries();
+			}
+		});
 		
 	}
 
@@ -635,20 +663,27 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         listBuilderPanelTitleContainer.setComponentAlignment(lockButton, Alignment.BOTTOM_RIGHT);
         listBuilderPanelTitleContainer.setComponentAlignment(unlockButton, Alignment.BOTTOM_RIGHT);
 
+		HorizontalLayout leftSubHeaderLayout = new HorizontalLayout();
+		leftSubHeaderLayout.setSpacing(true);
+		leftSubHeaderLayout.addComponent(totalListEntriesLabel);
+		leftSubHeaderLayout.addComponent(totalSelectedListEntriesLabel);
+		leftSubHeaderLayout.setComponentAlignment(totalListEntriesLabel, Alignment.MIDDLE_LEFT);
+		leftSubHeaderLayout.setComponentAlignment(totalSelectedListEntriesLabel, Alignment.MIDDLE_LEFT);
+        
         toolsButtonContainer = new AbsoluteLayout();
         toolsButtonContainer.setHeight("27px");
-        toolsButtonContainer.setWidth("120px");
+        toolsButtonContainer.setWidth("90px");
         toolsButtonContainer.addComponent(toolsButton, "top:0; right:0");
         
-        final HorizontalLayout toolsLayout = new HorizontalLayout();
-        toolsLayout.setWidth("100%");
-        toolsLayout.addComponent(totalListEntriesLabel);
-        toolsLayout.addComponent(toolsButtonContainer);
-        toolsLayout.setComponentAlignment(totalListEntriesLabel,Alignment.MIDDLE_LEFT);
-        toolsLayout.setExpandRatio(totalListEntriesLabel, 1.0F);
+        final HorizontalLayout subHeaderLayout = new HorizontalLayout();
+        subHeaderLayout.setWidth("100%");
+        subHeaderLayout.addComponent(leftSubHeaderLayout);
+        subHeaderLayout.addComponent(toolsButtonContainer);
+        subHeaderLayout.setComponentAlignment(leftSubHeaderLayout,Alignment.MIDDLE_LEFT);
+        subHeaderLayout.setExpandRatio(leftSubHeaderLayout, 1.0F);
 
         listDataTableLayout.addComponent(listBuilderPanelTitleContainer);
-        listDataTableLayout.addComponent(toolsLayout);
+        listDataTableLayout.addComponent(subHeaderLayout);
         listDataTableLayout.addComponent(tableWithSelectAllLayout);
         listDataTableLayout.addComponent(listInventoryTable);
 
@@ -700,6 +735,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         table.setMultiSelect(true);
         table.setWidth("100%");
         table.setHeight("280px");
+        table.setImmediate(true);
         
         setContextMenuActionHandler(table);
     }
@@ -710,7 +746,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     	dropHandler.addListener(new BuildNewListDropHandler.ListUpdatedListener() {
 			@Override
 			public void listUpdated(final ListUpdatedEvent event) {
-				updateListTotal();
+				updateNoOfEntries();
+				updateNoOfSelectedEntries();
 			}
 			
 		});
@@ -722,37 +759,14 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     private void deleteSelectedEntries(){
         Collection<? extends Integer> selectedIdsToDelete = (Collection<? extends Integer>) tableWithSelectAllLayout.getTable().getValue();
         if(selectedIdsToDelete.size() > 0){
-            if (!isCurrentListSaved()) {
-                // TODO directly remove list entries if list being built is not yet saved.
-            } else {
-                // TODO make behavior consistent with ListDataComponent.deleteEntriesButtonClickAction()
-                // for editing existing lists and after saving the new list
-                
-                // if list is already saved
-                /*if(tableWithSelectAllLayout.getTable().size() == selectedIdsToDelete.size()) {
-                    ConfirmDialog.show(this.getWindow(),
-                            messageSource.getMessage(Message.DELETE_ALL_ENTRIES),
-                            messageSource.getMessage(Message.DELETE_ALL_ENTRIES_CONFIRM),
-                            messageSource.getMessage(Message.YES),
-                            messageSource.getMessage(Message.NO),
-                            new ConfirmDialog.Listener() {
-                        private static final long serialVersionUID = 1L;
-                        public void onClose(ConfirmDialog dialog) {
-                            if (dialog.isConfirmed()) {
-                                removeRowsInListDataTable((Collection<?>)listDataTable.getValue());
-                            }
-                        }
-                        
-                    });
-                } else {
-                    removeRowsInListDataTable(selectedIdsToDelete);
-                }*/
-            }
-            
-            //TODO replace with more advanced deletion handling
-            for(Integer selectedItemId : selectedIdsToDelete){
-                tableWithSelectAllLayout.getTable().removeItem(selectedItemId);
-            }
+        	if(listDataTable.getItemIds().size() == selectedIdsToDelete.size()){
+        		tableWithSelectAllLayout.getTable().getContainerDataSource().removeAllItems();
+        	}
+        	else{
+        		for(Integer selectedItemId : selectedIdsToDelete){
+                    tableWithSelectAllLayout.getTable().getContainerDataSource().removeItem(selectedItemId);
+                }
+        	}
             assignSerializedEntryNumber();
             setHasUnsavedChanges(true);
         }else{
@@ -760,15 +774,52 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
                     , messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
         }
         
-        updateListTotal();
+        tableWithSelectAllLayout.getTable().setValue(null); //reset value
+        
+        updateNoOfEntries();
+        updateNoOfSelectedEntries();
     }
     
-    private void updateListTotal() {
-    	final int count = tableWithSelectAllLayout.getTable().getItemIds().size();
-    	if(!listInventoryTable.isVisible())
-    		totalListEntriesLabel.setValue(new Label(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
-	       		 + "  <b>" + count + "</b>", Label.CONTENT_XHTML));
+	private void updateNoOfEntries(long count){
+    	if(source.getModeView().equals(ModeView.LIST_VIEW)){
+    		totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
+   	       		 + "  <b>" + count + "</b>");
+    	}
+    	else if(source.getModeView().equals(ModeView.INVENTORY_VIEW)){
+    		totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LOTS) + ": " 
+	          		 + "  <b>" + count + "</b>");
+    	}
+	}
+    
+    public void updateNoOfEntries() {
+		int count = 0;
+		if(source.getModeView().equals(ModeView.LIST_VIEW)){
+			count = listDataTable.getItemIds().size();
+		}
+		else{//Inventory View
+			count = listInventoryTable.getTable().size();
+		}
+		updateNoOfEntries(count);
+	}
+    
+	private void updateNoOfSelectedEntries(int count){
+		totalSelectedListEntriesLabel.setValue("<i>" + messageSource.getMessage(Message.SELECTED) + ": " 
+       		 + "  <b>" + count + "</b></i>");
+	}
+	
+	private void updateNoOfSelectedEntries(){
+		int count = 0;
 		
+		if(source.getModeView().equals(ModeView.LIST_VIEW)){
+			Collection<?> selectedItems = (Collection<?>)listDataTable.getValue();
+			count = selectedItems.size();
+		}
+		else{
+			Collection<?> selectedItems = (Collection<?>)listInventoryTable.getTable().getValue();
+			count = selectedItems.size();
+		}
+
+		updateNoOfSelectedEntries(count);
 	}
 
 	/**
@@ -814,8 +865,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
     public void enableMenuOptionsAfterSave(){
         menuExportList.setEnabled(true);
-        //menuExportForGenotypingOrder.setEnabled(true);
         menuCopyToList.setEnabled(true);
+        menuReserveInventory.setEnabled(true);
     }
     
 	public void editList(GermplasmList germplasmList) {
@@ -836,6 +887,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         } else {
         	setUIForUnlockedList();
         }
+        
+        enableMenuOptionsAfterSave();
     }
 	
 	public void addListsFromSearchResults(Set<Integer> lists) {
@@ -877,7 +930,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 									messageSource, workbenchDataManager, inventoryDataManager); 
 		saveButton.addListener(saveListButtonListener);
 		
-		updateListTotal();
+		updateNoOfEntries();
+		updateNoOfSelectedEntries();
+		
+		resetInventoryMenuOptions();
 		
 		//Reset the marker for changes in Build New List
 		resetUnsavedChangesFlag();
@@ -900,7 +956,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		tableWithSelectAllLayout.getTable().setWidth("100%");
 		addBasicTableColumns(tableWithSelectAllLayout.getTable());
 		
-		updateListTotal();
+		updateNoOfEntries();
+		updateNoOfSelectedEntries();
 	}
 	
     public GermplasmList getCurrentlySetGermplasmListInfo(){
@@ -1147,9 +1204,17 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     }
 
 	public void openSaveListAsDialog(){
-		SaveListAsDialog dialog = new SaveListAsDialog(this, currentlySavedGermplasmList, messageSource.getMessage(Message.EDIT_LIST_HEADER));
+		dialog = new SaveListAsDialog(this, currentlySavedGermplasmList, messageSource.getMessage(Message.EDIT_LIST_HEADER));
 		this.getWindow().addWindow(dialog);
 	}
+	
+    public SaveListAsDialog getSaveListAsDialog(){
+    	return dialog;
+    }
+    
+    public GermplasmList getCurrentListInSaveDialog(){
+    	return dialog.getGermplasmListToSave();
+    }
 
 	/**
 	 * This method is called by the SaveListAsDialog window displayed when Edit Header button is clicked.
@@ -1164,6 +1229,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		resetUnsavedChangesFlag();
 		source.updateView(source.getModeView());
 		saveListButtonListener.setForceHasChanges(false);
+		enableMenuOptionsAfterSave();
 	}
 	
 	public void saveList(GermplasmList list, Boolean showMessages) {
@@ -1174,6 +1240,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		
 		resetUnsavedChangesFlag();
 		source.updateView(source.getModeView());
+		enableMenuOptionsAfterSave();
 	}
 	
 	public SaveListButtonClickListener getSaveListButtonListener(){
@@ -1207,9 +1274,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			toolsButtonContainer.removeComponent(inventoryViewToolsButton);
 			
 			topLabel.setValue(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
-	        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
-	       		 + "  <b>" + listDataTable.getItemIds().size() + "</b>");
-	        
+	        updateNoOfEntries();
+	        updateNoOfSelectedEntries();
 	        resetUnsavedChangesFlag();
 		}
 	}
@@ -1222,9 +1288,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	        toolsButtonContainer.addComponent(inventoryViewToolsButton, "top:0; right:0;");
 	        
 	        topLabel.setValue(messageSource.getMessage(Message.LOTS));
-	        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LOTS) + ": " 
-	          		 + "  <b>" + listInventoryTable.getTable().getItemIds().size() + "</b>");
-	        
+	        updateNoOfEntries();
+	        updateNoOfSelectedEntries();
 	        resetUnsavedChangesFlag();
 		}
 	}
@@ -1251,13 +1316,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		}
 		
 		changeToInventoryView();
-		
-        refreshListInventoryItemCount();
-	}
-	
-	public void refreshListInventoryItemCount(){
-        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LOTS) + ": " 
-         		 + "  <b>" + listInventoryTable.getTable().getItemIds().size() + "</b>");
 	}
 	
 	private void reserveInventoryAction(){
@@ -1266,16 +1324,23 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 					"Please change to Inventory View first.");
 		}
 		else{
-			List<ListEntryLotDetails> lotDetailsGid = listInventoryTable.getSelectedLots();
 			
-			if( lotDetailsGid == null || lotDetailsGid.size() == 0){
+			if(hasUnsavedChanges()){
 				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.WARNING), 
-						"Please select at least 1 lot to reserve.");
+						"Please save the list first before reserving an inventory.");
 			}
 			else{
-		        //this util handles the inventory reservation related functions
-		        reserveInventoryUtil = new ReserveInventoryUtil(this,lotDetailsGid);
-				reserveInventoryUtil.viewReserveInventoryWindow();
+				List<ListEntryLotDetails> lotDetailsGid = listInventoryTable.getSelectedLots();
+				
+				if( lotDetailsGid == null || lotDetailsGid.size() == 0){
+					MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.WARNING), 
+							"Please select at least 1 lot to reserve.");
+				}
+				else{
+			        //this util handles the inventory reservation related functions
+			        reserveInventoryUtil = new ReserveInventoryUtil(this,lotDetailsGid);
+					reserveInventoryUtil.viewReserveInventoryWindow();
+				}
 			}
 		}
 	}
@@ -1512,17 +1577,9 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 			Item item = listDataTable.getItem(itemId);
 			Button gidButton = (Button) item.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
 			String currentGid = "";
-			if(gidButton!=null)
+			if(gidButton!=null){
 				currentGid = gidButton.getCaption();
-			
-			if(currentGid.equals(gid.toString())){
-				if(availInv.equals("0")){
-					((Button) item.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).getValue()).setCaption("-");
-					((Button) item.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).getValue()).setEnabled(false);
-				} else {
-					((Button) item.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).getValue()).setCaption(availInv);
-					((Button) item.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).getValue()).setEnabled(true);
-				}
+				((Button) item.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).getValue()).setCaption(availInv);
 			}
 		}
 		listDataTable.requestRepaint();
@@ -1551,10 +1608,18 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 	}
 
 	public void discardChangesInInventoryView() {
-		listInventoryTable.updateListInventoryTableAfterSave();
+		resetListInventoryTableValues();
 		changeToListView();
 	}
 	
-	
+	public void enableReserveInventory() {
+		menuReserveInventory.setEnabled(true);
+	}
+
+	@Override
+	public void refreshListInventoryItemCount() {
+		updateNoOfEntries();
+		updateNoOfSelectedEntries();
+	}
 	
 }

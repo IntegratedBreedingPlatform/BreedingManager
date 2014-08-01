@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.validator;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.customfields.ListTreeComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
@@ -15,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Validator;
-import com.vaadin.ui.Label;
 
 @Configurable
 public class ListNameValidator implements Validator {
@@ -84,6 +84,17 @@ public class ListNameValidator implements Validator {
 	}
 	
 	private boolean validateListName(String listName){
+		listName = listName.trim();
+		if (listName.isEmpty()){
+			this.errorDetails = messageSource.getMessage(Message.INVALID_ITEM_NAME);
+			return false;
+			
+		} else if (ListTreeComponent.PROGRAM_LISTS.equalsIgnoreCase(listName) || 
+				ListTreeComponent.PUBLIC_LISTS.equalsIgnoreCase(listName) ){
+			this.errorDetails = "Cannot use \"Program Lists\" and \"Public Lists\" as item name.";
+			return false;
+		}
+		
 		try{
 			List<GermplasmList> centralLists = this.germplasmListManager.getGermplasmListByName(listName, 0, 5, Operation.EQUAL, Database.CENTRAL);
 			

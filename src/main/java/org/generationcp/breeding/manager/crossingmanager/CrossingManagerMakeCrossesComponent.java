@@ -19,7 +19,6 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -359,34 +358,43 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
 					toSave.saveReservationChangesAction();
 				}
 			}
-			
-			updateView(modeView);
 		}
 		
 		if(parentsComponent.hasUnsavedChanges()){
-			
 			//for female and male parent lists
 			ParentTabComponent femaleParentTab = parentsComponent.getFemaleParentTab();
 			ParentTabComponent maleParentTab = parentsComponent.getMaleParentTab();
 			
+			ModeView prevModeView;
+			if(modeView.equals(ModeView.LIST_VIEW)){
+				prevModeView = ModeView.INVENTORY_VIEW;
+			}
+			else{
+				prevModeView = ModeView.LIST_VIEW;
+			}
+			
 			if(femaleParentTab.hasUnsavedChanges() && !maleParentTab.hasUnsavedChanges()){
-				GermplasmList femaleGermplasmList = femaleParentTab.getGermplasmList();
-				if(femaleGermplasmList == null){
-					femaleParentTab.openSaveListAsDialog();
-				}
-				else{
-					femaleParentTab.saveList(femaleGermplasmList);
-				}
+				femaleParentTab.setPreviousModeView(prevModeView);
+				femaleParentTab.doSaveActionFromMain();
 			}
 			else if(maleParentTab.hasUnsavedChanges() && !femaleParentTab.hasUnsavedChanges()){
-				GermplasmList maleGermplasmList = maleParentTab.getGermplasmList();
-				if(maleGermplasmList == null){
-					maleParentTab.openSaveListAsDialog();
-				}
-				else{
-					maleParentTab.saveList(maleGermplasmList);
+				maleParentTab.setPreviousModeView(prevModeView);
+				maleParentTab.doSaveActionFromMain();
+			}
+			else{
+				//keep track the unsaved changes due to reservation and dragging lots given that the parents have existing lists.
+				if(femaleParentTab.getGermplasmList() != null && maleParentTab.getGermplasmList() != null){
+					
+					femaleParentTab.setPreviousModeView(prevModeView);
+					femaleParentTab.doSaveActionFromMain();
+					
+					maleParentTab.setPreviousModeView(prevModeView);
+					maleParentTab.doSaveActionFromMain();
 				}
 			}
+		}
+		else{
+			updateView(modeView);
 		}
 		
 		resetUnsavedStatus();
@@ -402,6 +410,9 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
 	@Override
 	public void discardAllListChangesAction(){
 		//cancel all the unsaved changes
+		if(modeView.equals(ModeView.INVENTORY_VIEW)){
+			selectParentsComponent.resetInventoryViewForCancelledChanges();
+		}
 		selectParentsComponent.updateViewForAllLists(modeView);
 		
 		//for female parent list
@@ -456,5 +467,15 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
 
 	public void setHasUnsavedChangesMain(boolean hasChanges) {
 		this.hasChanges = hasChanges;
+	}
+	
+	public Boolean hasUnsavedChangesMain(){
+		return hasChanges;
+	}
+
+	public void showNodeOnTree(Integer listId) {
+		CrossingManagerListTreeComponent listTreeComponent = getSelectParentsComponent().getListTreeComponent();
+		listTreeComponent.setListId(listId);
+		listTreeComponent.createTree();
 	}
 }

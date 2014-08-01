@@ -24,7 +24,7 @@ To Build
    <pre>mvn clean package</pre>
  2. To build using a specific configuration, run the following:
   <pre>mvn clean package-DenvConfig=release</pre>
-  In this example, it is expected that pipeline/config/release folder exists and the database configuration files (IBPDatasource.properties and workbench.properties) are properly set.
+  In this example, it is expected that pipeline/config/release folder exists and the database configuration files (workbench.properties) are properly set.
 
 
 To Run Tests

@@ -1,6 +1,7 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.constants.ModeView;
+import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
@@ -45,6 +47,8 @@ import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.event.Action;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -68,6 +72,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	private static final String CHECKBOX_COLUMN_ID="Checkbox Column ID";
 	
 	public static final String LIST_DATA_TABLE_ID = "SelectParentsListDataComponent List Data Table ID";
+	public static final String CROSSING_MANAGER_PARENT_TAB_INVENTORY_TABLE = "Crossing manager parent tab inventory table";
 	
 	private static final Action ACTION_ADD_TO_FEMALE_LIST = new Action("Add to Female List");
 	private static final Action ACTION_ADD_TO_MALE_LIST = new Action("Add to Male List");
@@ -78,6 +83,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	private Long count;
 	private Label listEntriesLabel;
 	private Label totalListEntriesLabel;
+	private Label totalSelectedListEntriesLabel;
 
 	private Table listDataTable;
 	private Button viewListHeaderButton;
@@ -161,27 +167,25 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		listEntriesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		listEntriesLabel.setWidth("160px");
 		
-		totalListEntriesLabel = new Label(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
-       		 + "  <b>" + count + "</b>", Label.CONTENT_XHTML);
-       	totalListEntriesLabel.setWidth("135px");
-		
+		totalListEntriesLabel = new Label("", Label.CONTENT_XHTML);
+       	totalListEntriesLabel.setWidth("120px");
+       	updateNoOfEntries(count);
+       	
+       	totalSelectedListEntriesLabel = new Label("", Label.CONTENT_XHTML);
+		totalSelectedListEntriesLabel.setWidth("95px");
+		updateNoOfSelectedEntries(0);
+       	
 		viewListHeaderWindow = new ViewListHeaderWindow(germplasmList);
 		
 		viewListHeaderButton = new Button(messageSource.getMessage(Message.VIEW_HEADER));
 		viewListHeaderButton.addStyleName(Reindeer.BUTTON_LINK);
 		viewListHeaderButton.setDescription(viewListHeaderWindow.getListHeaderComponent().toString());
 		
-		actionButton = new Button(messageSource.getMessage(Message.ACTIONS));
+		actionButton = new ActionButton();
 		actionButton.setData(ACTIONS_BUTTON_ID);
-		actionButton.setIcon(AppConstants.Icons.ICON_TOOLS);
-		actionButton.setWidth("110px");
-		actionButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 		
-		inventoryViewActionButton = new Button(messageSource.getMessage(Message.ACTIONS));
+		inventoryViewActionButton = new ActionButton();
 		inventoryViewActionButton.setData(ACTIONS_BUTTON_ID);
-		inventoryViewActionButton.setIcon(AppConstants.Icons.ICON_TOOLS);
-		inventoryViewActionButton.setWidth("110px");
-		inventoryViewActionButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 		
 		actionMenu = new ContextMenu();
 		actionMenu.setWidth("250px");
@@ -283,6 +287,8 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		listInventoryTable = new CrossingManagerInventoryTable(germplasmList.getId());
 		listInventoryTable.setVisible(false);
 		listInventoryTable.setMaxRows(9);
+		listInventoryTable.getTable().setDragMode(TableDragMode.ROW);
+		listInventoryTable.getTable().setData(CROSSING_MANAGER_PARENT_TAB_INVENTORY_TABLE);
 	}
 
 	private void retrieveListDetails() {
@@ -353,9 +359,16 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
     	   			seed_res = entry.getInventoryInfo().getReservedLotCount().toString().trim();
     	   		}
     	   		
-    	   		listDataTable.addItem(new Object[] {
-                        itemCheckBox, entry.getEntryId(), desigButton, inventoryButton, seed_res, entry.getGroupName(), entry.getEntryCode(), gidButton, entry.getSeedSource()}
-    	   			, entry.getId());
+    	   		Item newItem = listDataTable.getContainerDataSource().addItem(entry.getId());    			
+    	   		newItem.getItemProperty(CHECKBOX_COLUMN_ID).setValue(itemCheckBox);
+    	   		newItem.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(entry.getEntryId());
+    	   		newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(desigButton);
+    	   		newItem.getItemProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
+    	   		newItem.getItemProperty(ListDataTablePropertyID.SEED_RESERVATION.getName()).setValue(seed_res);
+    	   		newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(entry.getGroupName());
+    	   		newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(entry.getEntryCode());
+    	   		newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
+    	   		newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
 			}
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error with getting list entries for list: " + germplasmListId);
@@ -384,13 +397,27 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 			  if(clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))){
 				  listDataTable.setValue(listDataTable.getItemIds());
 			  }else if(clickedItem.getName().equals(messageSource.getMessage(Message.ADD_TO_FEMALE_LIST))){
-				  makeCrossesParentsComponent.dropToFemaleOrMaleTable(listDataTable, makeCrossesParentsComponent.getFemaleTable(), null);
-				  makeCrossesParentsComponent.assignEntryNumber(makeCrossesParentsComponent.getFemaleTable());
-				  makeCrossesParentsComponent.getParentTabSheet().setSelectedTab(0);
+				  Collection<?> selectedIdsToAdd = (Collection<?>)listDataTable.getValue();
+				  if(selectedIdsToAdd.size() > 0){
+					  makeCrossesParentsComponent.dropToFemaleOrMaleTable(listDataTable, makeCrossesParentsComponent.getFemaleTable(), null);
+					  makeCrossesParentsComponent.assignEntryNumber(makeCrossesParentsComponent.getFemaleTable());
+					  makeCrossesParentsComponent.getParentTabSheet().setSelectedTab(0);
+				  }
+				  else{
+					  MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.WARNING) 
+			                    , messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
+				  }
 			  }else if(clickedItem.getName().equals(messageSource.getMessage(Message.ADD_TO_MALE_LIST))){
-				  makeCrossesParentsComponent.dropToFemaleOrMaleTable(listDataTable, makeCrossesParentsComponent.getMaleTable(), null);
-				  makeCrossesParentsComponent.assignEntryNumber(makeCrossesParentsComponent.getMaleTable());
-				  makeCrossesParentsComponent.getParentTabSheet().setSelectedTab(1);
+				  Collection<?> selectedIdsToAdd = (Collection<?>)listDataTable.getValue();
+				  if(selectedIdsToAdd.size() > 0){
+					  makeCrossesParentsComponent.dropToFemaleOrMaleTable(listDataTable, makeCrossesParentsComponent.getMaleTable(), null);
+					  makeCrossesParentsComponent.assignEntryNumber(makeCrossesParentsComponent.getMaleTable());
+					  makeCrossesParentsComponent.getParentTabSheet().setSelectedTab(1);
+				  }
+				  else{
+					  MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.WARNING) 
+			                    , messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
+				  }
 			  }else if(clickedItem.getName().equals(messageSource.getMessage(Message.INVENTORY_VIEW))){
 				  viewInventoryAction();
 			  }
@@ -457,6 +484,24 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 				return LIST_DATA_TABLE_ACTIONS;
 			}
 		});
+		
+        tableWithSelectAllLayout.getTable().addListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				updateNoOfSelectedEntries();
+			}
+		});
+        
+        listInventoryTable.getTable().addListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				updateNoOfSelectedEntries();
+			}
+		});
 	}
 
 	@Override
@@ -469,31 +514,83 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		
 		headerLayout = new HorizontalLayout();
 		headerLayout.setWidth("100%");
-		
 		HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, listEntriesLabel);
 		headerLayout.addComponent(headingLayout);
 		headerLayout.addComponent(viewListHeaderButton);
 		headerLayout.setComponentAlignment(headingLayout, Alignment.MIDDLE_LEFT);
 		headerLayout.setComponentAlignment(viewListHeaderButton, Alignment.MIDDLE_RIGHT);
 		
-		addComponent(headerLayout);
+		HorizontalLayout leftSubHeaderLayout = new HorizontalLayout();
+		leftSubHeaderLayout.setSpacing(true);
+		leftSubHeaderLayout.addComponent(totalListEntriesLabel);
+		leftSubHeaderLayout.addComponent(totalSelectedListEntriesLabel);
+		leftSubHeaderLayout.setComponentAlignment(totalListEntriesLabel, Alignment.MIDDLE_LEFT);
+		leftSubHeaderLayout.setComponentAlignment(totalSelectedListEntriesLabel, Alignment.MIDDLE_LEFT);
 		
 		subHeaderLayout = new HorizontalLayout();
 		subHeaderLayout.setWidth("100%");
-		subHeaderLayout.addComponent(totalListEntriesLabel);
+		subHeaderLayout.addComponent(leftSubHeaderLayout);
 		subHeaderLayout.addComponent(actionButton);
-		subHeaderLayout.setComponentAlignment(totalListEntriesLabel, Alignment.MIDDLE_LEFT);
+		subHeaderLayout.setComponentAlignment(leftSubHeaderLayout, Alignment.MIDDLE_LEFT);
 		subHeaderLayout.setComponentAlignment(actionButton, Alignment.MIDDLE_RIGHT);
 		
+		addComponent(headerLayout);
 		addComponent(subHeaderLayout);
 		addComponent(tableWithSelectAllLayout);
 		addComponent(listInventoryTable);
 
 	}
 	
+	private void updateNoOfEntries(long count){
+		if(makeCrossesParentsComponent.getMakeCrossesMain().getModeView().equals(ModeView.LIST_VIEW)){
+			if(count == 0) {
+				totalListEntriesLabel.setValue(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
+			} else {
+				totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
+		        		 + "  <b>" + count + "</b>");
+	        }
+		}
+		else{//Inventory View
+			totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LOTS) + ": " 
+	        		 + "  <b>" + count + "</b>");
+		}
+	}
+	
+	private void updateNoOfEntries(){
+		int count = 0;
+		if(makeCrossesParentsComponent.getMakeCrossesMain().getModeView().equals(ModeView.LIST_VIEW)){
+			count = listDataTable.getItemIds().size();
+		}
+		else{//Inventory View
+			count = listInventoryTable.getTable().size();
+		}
+		updateNoOfEntries(count);
+	}
+	
+	private void updateNoOfSelectedEntries(int count){
+		totalSelectedListEntriesLabel.setValue("<i>" + messageSource.getMessage(Message.SELECTED) + ": " 
+	        		 + "  <b>" + count + "</b></i>");
+	}
+	
+	private void updateNoOfSelectedEntries(){
+		int count = 0;
+		
+		if(makeCrossesParentsComponent.getMakeCrossesMain().getModeView().equals(ModeView.LIST_VIEW)){
+			Collection<?> selectedItems = (Collection<?>)tableWithSelectAllLayout.getTable().getValue();
+			count = selectedItems.size();
+		}
+		else{
+			Collection<?> selectedItems = (Collection<?>)listInventoryTable.getTable().getValue();
+			count = selectedItems.size();
+		}
+		
+		updateNoOfSelectedEntries(count);
+	}
+	
 	/*--------------------------------------INVENTORY RELATED FUNCTIONS---------------------------------------*/
 	
 	private void viewListAction(){
+		
 		if(!hasUnsavedChanges()){
 			makeCrossesParentsComponent.getMakeCrossesMain().setModeView(ModeView.LIST_VIEW);
 		}else{
@@ -515,8 +612,8 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 			subHeaderLayout.setComponentAlignment(actionButton, Alignment.MIDDLE_RIGHT);
 			
 			listEntriesLabel.setValue(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
-	        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
-	       		 + "  <b>" + count + "</b>");
+	        updateNoOfEntries();
+	        updateNoOfSelectedEntries();
 	        
 	        this.removeComponent(listInventoryTable);
 	        this.addComponent(tableWithSelectAllLayout);
@@ -538,7 +635,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	}
 	
 	public void viewInventoryActionConfirmed(){
-		listInventoryTable.loadInventoryData();
+		resetListInventoryTableValues();
 		changeToInventoryView();
 	}
 	
@@ -552,8 +649,8 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	        subHeaderLayout.setComponentAlignment(inventoryViewActionButton, Alignment.MIDDLE_RIGHT);
 	        
 	        listEntriesLabel.setValue(messageSource.getMessage(Message.LOTS));
-	        totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LOTS) + ": " 
-	          		 + "  <b>" + listInventoryTable.getTable().getItemIds().size() + "</b>");
+	        updateNoOfEntries();
+	        updateNoOfSelectedEntries();
 	        
 	        this.removeComponent(tableWithSelectAllLayout);
 	        this.addComponent(listInventoryTable);
@@ -735,11 +832,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		
 		validReservationsToSave.clear();//reset the reservations to save. 
 		
-		resetUnsavedChangesFlag();
-	}
-	
-	public void resetUnsavedChangesFlag() {
-		hasChanges = false;
+		setHasUnsavedChanges(false);
 	}
 	
 	/*--------------------------------END OF INVENTORY RELATED FUNCTIONS--------------------------------------*/
@@ -771,7 +864,17 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	public void setHasUnsavedChanges(Boolean hasChanges) {
 		this.hasChanges = hasChanges;
 		
+		if(hasChanges){
+			menuInventorySaveChanges.setEnabled(true);
+		} else {
+			menuInventorySaveChanges.setEnabled(false);
+		}
+		
 		SelectParentsComponent selectParentComponent = makeCrossesParentsComponent.getMakeCrossesMain().getSelectParentsComponent();
 		selectParentComponent.addUpdateListStatusForChanges(this, this.hasChanges);
+	}
+	
+	public Integer getGermplasmListId(){
+		return germplasmListId;
 	}
 }

@@ -9,9 +9,9 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.constants.ModeView;
+import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerTreeActionsListener;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.UnsavedChangesSource;
-import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.breeding.manager.listmanager.ListManagerDetailsLayout;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -40,7 +40,7 @@ import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class SelectParentsComponent extends VerticalLayout implements BreedingManagerLayout,InitializingBean, 
-												InternationalizableComponent, ListTreeActionsListener, UnsavedChangesSource {
+												InternationalizableComponent, CrossingManagerTreeActionsListener, UnsavedChangesSource {
 
 	private static final long serialVersionUID = -5109231715662648484L;
 	
@@ -88,7 +88,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
         browseForListsButton.setImmediate(true);
         browseForListsButton.setStyleName(Reindeer.BUTTON_LINK);
 
-        listTreeComponent = new CrossingManagerListTreeComponent(this);
+        listTreeComponent = new CrossingManagerListTreeComponent(this,source);
                 
         instructionForSelectParents = new Label("for a list to work with.");
         
@@ -187,11 +187,12 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	}
 	
 	@Override
-	public void openListDetails(GermplasmList list) {
+	public void studyClicked(GermplasmList list) {
 		createListDetailsTab(list.getId(), list.getName());
 	}
 	
 	public void openBrowseForListDialog(){
+		listTreeComponent.showAddRenameFolderSection(false);
 		launchListSelectionWindow(getWindow(), listTreeComponent, messageSource.getMessage(Message.BROWSE_FOR_LISTS));
 	}
 	
@@ -365,6 +366,21 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 		
 		for(SelectParentsListDataComponent selectParentComponent : selectParentComponents){
 			selectParentComponent.setHasUnsavedChanges(hasChanges);
+		}
+	}
+	
+	public CrossingManagerMakeCrossesComponent getCrossingManagerMakeCrossesComponent(){
+		return source;
+	}
+
+	public void resetInventoryViewForCancelledChanges() {
+		List<SelectParentsListDataComponent> listDataComponents = new ArrayList<SelectParentsListDataComponent>();
+		listDataComponents.addAll(listStatusForChanges.keySet());
+		
+		for(SelectParentsListDataComponent listDataComponent : listDataComponents){
+			if(listDataComponent.hasUnsavedChanges()){
+				listDataComponent.resetListInventoryTableValues();
+			}
 		}
 	}
 }

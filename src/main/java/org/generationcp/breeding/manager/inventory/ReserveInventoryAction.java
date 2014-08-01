@@ -6,12 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListComponent;
 import org.generationcp.breeding.manager.util.Util;
-import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -22,8 +17,6 @@ import org.generationcp.middleware.pojos.ims.Transaction;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-
-import com.vaadin.ui.Window;
 
 @Configurable
 public class ReserveInventoryAction implements Serializable {
@@ -54,7 +47,7 @@ public class ReserveInventoryAction implements Serializable {
 		this.source = source;
 	}
 	
-	public void validateReservations(Map<Double,List<ListEntryLotDetails>> reservations){
+	public void validateReservations(Map<ReservationRowKey,List<ListEntryLotDetails>> reservations){
 		
 		//reset allocation
 		validLotReservations = new HashMap<ListEntryLotDetails,Double>();
@@ -63,17 +56,16 @@ public class ReserveInventoryAction implements Serializable {
 		Map<Integer,Double> duplicatedLots = getTotalReserveAmountPerLot(reservations); 
 		
 		List<Integer> checkedLots = new ArrayList<Integer>();
-		
-		for(Map.Entry<Double, List<ListEntryLotDetails>> entry : reservations.entrySet()){
+		for(Map.Entry<ReservationRowKey, List<ListEntryLotDetails>> entry : reservations.entrySet()){
 			List<ListEntryLotDetails> lotList = entry.getValue();
-			Double amountReserved = entry.getKey();;
+			ReservationRowKey key = entry.getKey();
+			Double amountReserved = key.getAmountToReserve();
 			
 			for(ListEntryLotDetails lot : lotList){
 				Double availBalance = lot.getAvailableLotBalance();
 				
 				if(checkedLots.contains(lot.getLotId())){ // duplicated lots mapped to GID that has multiple entries in list entries
 					Double totalAmountReserved = duplicatedLots.get(lot.getLotId());
-					
 					if(availBalance < totalAmountReserved){
 						removeAllLotfromReservationLists(lot.getLotId());
 						invalidLotReservations.put(lot, totalAmountReserved);
@@ -96,7 +88,6 @@ public class ReserveInventoryAction implements Serializable {
 		}
 		
 		boolean withInvalidReservations = false;
-		
 		if(validLotReservations.size()>0 && invalidLotReservations.size() > 0){//if there is an invalid reservation
 			reservationStatus = new ReservationStatusWindow(invalidLotReservations);
 			source.addReservationStatusWindow(reservationStatus);
@@ -121,12 +112,13 @@ public class ReserveInventoryAction implements Serializable {
 	}
 
 	private Map<Integer, Double> getTotalReserveAmountPerLot(
-			Map<Double, List<ListEntryLotDetails>> reservations) {
+			Map<ReservationRowKey, List<ListEntryLotDetails>> reservations) {
 		Map<Integer,Double> duplicatedLots = new HashMap<Integer,Double>();
 		
-		for(Map.Entry<Double, List<ListEntryLotDetails>> entry: reservations.entrySet()){
+		for(Map.Entry<ReservationRowKey, List<ListEntryLotDetails>> entry: reservations.entrySet()){
 			List<ListEntryLotDetails> lotList = entry.getValue();
-			Double amountReserved = entry.getKey();
+			ReservationRowKey key = entry.getKey();
+			Double amountReserved = key.getAmountToReserve(); 
 			
 			for(ListEntryLotDetails lot : lotList){
 				Integer lotId = lot.getLotId();

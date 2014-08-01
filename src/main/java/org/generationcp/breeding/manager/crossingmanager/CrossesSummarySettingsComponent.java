@@ -1,8 +1,5 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -108,6 +105,7 @@ public class CrossesSummarySettingsComponent extends HorizontalLayout implements
         
 	}
 
+	@SuppressWarnings("deprecation")
 	private Label initializeHarvestLocationValue(Integer locationId) {
 		Label harvestLocationValue = new Label("-"); 
 		if (locationId != null){

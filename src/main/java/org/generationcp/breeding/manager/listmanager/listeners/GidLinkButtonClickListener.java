@@ -133,7 +133,7 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
 	        
 	        if(listManagerMain.getModeView().equals(ModeView.INVENTORY_VIEW)){
 	        	addToListLink.setEnabled(false);
-	        	addToListLink.setDescription("Please switch to inventory view before adding a germplasm entry to the list.");
+	        	addToListLink.setDescription("Please switch to list view first before adding a germplasm entry to the list.");
 	        }
 	        
 			addToListLink.setImmediate(true);

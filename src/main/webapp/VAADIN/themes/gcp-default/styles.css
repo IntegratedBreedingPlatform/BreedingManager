@@ -186,11 +186,11 @@
 }
 
 .crossingManagerTree {
-	height: 400px;
+	height: 365px;
 }
 
 .saveListTree {
-	width: 315px;
+	width: 335px;
 	height: 290px;
 }
 
@@ -437,7 +437,7 @@
 
 /* TabStyled Header */
 .v-button-tabStyleButton {
-	border-color: #f6f6f6;
+	border-color: #CECECE;
 }
 
 .v-button-tabStyleButton, .tabStyleButton .v-button-wrap,
@@ -446,8 +446,8 @@
 .tabHeaderStyle div div .v-button:active,
 .tabHeaderStyle div div .v-button:active .v-button-wrap
 {
-	border-color: #f6f6f6;
-	background: #f6f6f6;
+	border-color: #CECECE;
+	background: #CECECE;
 }
 
 .v-button-tabStyleButton,
@@ -801,4 +801,16 @@ div.unsaved-changes-dialog div.v-window-outerheader {
 
 div.unsaved-changes-dialog div.v-window-contents>div {
 	background: #CECECE;
+}
+
+.bms-upload-container .v-upload,
+.bms-upload-container .v-upload div,
+.bms-upload-container .v-csslayout-container div
+{float: left; }
+.bms-upload-container .v-progressindicator-wrapper { width: 200px; margin-left: 20px;}
+.bms-upload-container .v-label { width: inherit !important; margin: 4px 20px 4px 0px}
+.bms-upload-container .v-label em { display: none;}
+
+.lm-white-window div.v-window-contents {
+	background: #FFFFFF !important;
 }

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.inventory.InventoryDropTargetContainer;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.ListSearchResultsComponent;
@@ -53,6 +54,7 @@ public class DropHandlerMethods {
 	
 	protected boolean changed = false;
 	protected ListManagerMain listManagerMain;
+	protected InventoryDropTargetContainer inventoryDropTargetContainer;
 	
     protected List<ListUpdatedListener> listeners = null;
 	
@@ -129,7 +131,7 @@ public class DropHandlerMethods {
             Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
 
             final Integer newItemId = getNextListEntryId();
-            Item newItem = targetTable.addItem(newItemId);
+            Item newItem = targetTable.getContainerDataSource().addItem(newItemId);
             
             Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(listManagerMain,gid.toString(), true, true));
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
@@ -296,7 +298,7 @@ public class DropHandlerMethods {
 	            }
 	            final Integer newItemId = niid;
 	            
-	            Item newItem = targetTable.addItem(newItemId);
+	            Item newItem = targetTable.getContainerDataSource().addItem(newItemId);
 	            
 	            Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(listManagerMain,gid.toString(), true, true));
 	            gidButton.setStyleName(BaseTheme.BUTTON_LINK);
@@ -431,7 +433,7 @@ public class DropHandlerMethods {
 			
 			Item itemFromSourceTable = sourceTable.getItem(itemId);
 			Integer newItemId = getNextListEntryId();
-			Item newItem = targetTable.addItem(newItemId);
+			Item newItem = targetTable.getContainerDataSource().addItem(newItemId);
 			
 			Integer gid = getGidFromButtonCaption(sourceTable, itemId);
 			Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(listManagerMain,gid.toString(), true, true));

@@ -7,6 +7,7 @@ import java.util.Map;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
+import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialog;
 import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialogSource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -259,11 +260,6 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		listBuilderComponent.addGermplasm(gid);
 	}
 
-	public void showNodeOnTree(Integer listId){
-		listSelectionComponent.getListTreeComponent().setListId(listId);
-		listSelectionComponent.getListTreeComponent().createTree();
-	}
-
 	public ListBuilderComponent getListBuilderComponent() {
 		return listBuilderComponent;
 	}
@@ -384,17 +380,42 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	}
 
 	public void updateUIForDeletedList(GermplasmList list) {
-
+		SaveListAsDialog saveListAsDialog = null;
+		
+		//close the save dialog window in View list if the deleted list is the current selected list
+		ListTabComponent currentListTab = (ListTabComponent)listSelectionComponent.getListDetailsLayout().getDetailsTabsheet().getSelectedTab();
+		if(currentListTab != null){
+			ListComponent listComponent = currentListTab.getListComponent();
+			saveListAsDialog = listComponent.getSaveListAsDialog();
+			if(saveListAsDialog != null){
+				if(listComponent.getCurrentListInSaveDialog().getName().equals(list.getName())){
+					listComponent.getWindow().removeWindow(saveListAsDialog);
+					MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Germplasm List was deleted.");
+				}
+			}
+		}
+		
 		//Check if tab for deleted list is opened
 		listSelectionComponent.getListDetailsLayout().removeTab(list.getId());
-
-		//Check if deleted list is currently being edited in the list builder
-		if(getListBuilderComponent().getCurrentlySetGermplasmListInfo()!=null
-			&& list!=null
-			&& getListBuilderComponent().getCurrentlySetGermplasmListInfo().getId() == list.getId()){
-			getListBuilderComponent().resetList();
+		
+		//close the save dialog window in List Builder if the deleted list is the current selected list
+		saveListAsDialog = getListBuilderComponent().getSaveListAsDialog();
+		if(saveListAsDialog != null){
+			if(saveListAsDialog.getGermplasmListToSave().getName().equals(list.getName())){
+				getListBuilderComponent().getWindow().removeWindow(saveListAsDialog);
+			}
 		}
-
+		
+		if(	getListBuilderComponent().getCurrentlySavedGermplasmList() != null
+			&& list != null
+			&& getListBuilderComponent().getCurrentlySavedGermplasmList().getName().equals(list.getName())){
+			getListBuilderComponent().resetList();
+			MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Germplasm List was deleted.");
+		}
+		
+		//refresh tree on browse for list dialog
+		listSelectionComponent.showNodeOnTree(list.getId());
+		
 		//Check if deleted list is in the search results
 		listSelectionComponent.getListSearchComponent().getSearchResultsComponent().removeSearchResult(list.getId());
 	}
@@ -570,7 +591,13 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 				Boolean isListHasUnsavedChanges = list.getValue();
 				if(isListHasUnsavedChanges){
 					ListComponent toSave = list.getKey();
-					toSave.saveChangesAction();
+					//NOTE: the value of modeView here is the newModeView
+					if(modeView.equals(ModeView.LIST_VIEW)){
+						toSave.saveReservationChangesAction();
+					}
+					else if(modeView.equals(ModeView.INVENTORY_VIEW)){
+						toSave.saveChangesAction();
+					}
 				}
 			}
 		}
@@ -597,7 +624,13 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	@Override
 	public void discardAllListChangesAction(){
 		//cancel all the unsaved changes
-		listSelectionComponent.getListDetailsLayout().resetListViewForCancelledChanges();
+		if(modeView.equals(ModeView.LIST_VIEW)){
+			listSelectionComponent.getListDetailsLayout().resetInventoryViewForCancelledChanges();
+		}
+		else if(modeView.equals(ModeView.INVENTORY_VIEW)){
+			listSelectionComponent.getListDetailsLayout().resetListViewForCancelledChanges();
+		}
+		
 		listSelectionComponent.getListDetailsLayout().updateViewForAllLists(modeView);
 		
 		if(listBuilderComponent.getCurrentlySavedGermplasmList() != null){

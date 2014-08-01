@@ -1,5 +1,4 @@
 # PROJECT SPECIFIC IGNORES
-src/main/resources/IBPDatasource.properties
 src/main/resources/workbench.properties
 
 # Maven

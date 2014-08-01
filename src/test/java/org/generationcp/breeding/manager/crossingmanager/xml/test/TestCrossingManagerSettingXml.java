@@ -2,7 +2,6 @@ package org.generationcp.breeding.manager.crossingmanager.xml.test;
 
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.Date;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;

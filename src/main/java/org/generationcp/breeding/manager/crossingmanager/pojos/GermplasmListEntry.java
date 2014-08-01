@@ -163,6 +163,9 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
             return false;
         }
         
+        if(other.listDataId!=listDataId || other.seedSource!=seedSource || other.gid!=gid || other.entryId!=entryId || other.designation!=designation)
+        	return false;
+        
         return true;
     }
     

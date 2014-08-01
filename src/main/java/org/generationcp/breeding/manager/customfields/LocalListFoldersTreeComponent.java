@@ -2,14 +2,7 @@ package org.generationcp.breeding.manager.customfields;
 
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.crossingmanager.CrossingManagerListTreeComponent;
-import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
-import org.generationcp.breeding.manager.crossingmanager.SelectParentsComponent;
 import org.generationcp.breeding.manager.crossingmanager.listeners.SelectTreeItemOnSaveListener;
-import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
-import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
-import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +39,15 @@ public class LocalListFoldersTreeComponent extends ListTreeComponent {
 		super(selectTreeItemOnSaveListener, folderId);
 		this.showFoldersOnly = showFoldersOnly;
 		this.refreshTreeOnAddEditOrDeleteAction = refreshTreeOnAddEditOrDeleteAction;
+	}
+	
+	@Override
+	public void instantiateComponents() {
+		super.instantiateComponents();
+		
+		if (folderTextField != null){
+			folderTextField.setWidth("140px");
+		}
 	}
 	
 	

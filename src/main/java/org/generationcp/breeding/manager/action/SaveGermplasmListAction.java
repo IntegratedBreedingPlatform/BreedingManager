@@ -74,16 +74,17 @@ public class SaveGermplasmListAction implements Serializable {
     }
 	
 	private GermplasmList saveGermplasmListRecord(GermplasmList germplasmList) throws MiddlewareQueryException {
-		int newListId = 0;
+		int listId = 0;
 		
 		if(germplasmList.getId() == null){ // add new
-			newListId = this.germplasmListManager.addGermplasmList(germplasmList);
+			listId = this.germplasmListManager.addGermplasmList(germplasmList);
 		}
 		else{ // update
-			newListId = this.germplasmListManager.updateGermplasmList(germplasmList);
+			GermplasmList listToUpdate = germplasmListManager.getGermplasmListById(germplasmList.getId());
+			listId = this.germplasmListManager.updateGermplasmList(listToUpdate);
 		}
 		
-		GermplasmList list = this.germplasmListManager.getGermplasmListById(newListId);
+		GermplasmList list = this.germplasmListManager.getGermplasmListById(listId);
         
         return list;
     }
@@ -129,9 +130,18 @@ public class SaveGermplasmListAction implements Serializable {
         
         //get all the updated entries 
         List<GermplasmListData> listToUpdate = new ArrayList<GermplasmListData>();
+        
         if(existingListDataEntries.size() > 0){
         	listToUpdate = getEntriesToUpdate(currentListDataEntries,existingListDataEntries);
 		}
+        
+        for(GermplasmListData entryToUpdate : listToUpdate){
+        	for(GermplasmListData currentEntry : currentListDataEntries){
+        		if(entryToUpdate.getId().equals(currentEntry.getId())){
+        			entryToUpdate.setEntryId(currentEntry.getEntryId());
+        		}
+        	}
+        }
         
         this.germplasmListManager.updateGermplasmListData(listToUpdate); // UPDATE the existing created list
 		
@@ -191,4 +201,5 @@ public class SaveGermplasmListAction implements Serializable {
         
         return germplasmListData;
 	}
+	
 }
