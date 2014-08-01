@@ -282,8 +282,7 @@ public class CrossingSettingsDetailComponent extends CssLayout
 			if (additionalDetailsComponent.settingsFileNameProvided()){
 				
 				if(defaultSetting!=null && !defaultSetting.equals(currentSetting) && (Boolean) additionalDetailsComponent.getSetAsDefaultSettingCheckbox().getValue()==true){
-					ConfirmDialog.show(getWindow(), "Save Crossing Setting", "There is already a default setting. " 
-						+ "Do you want to change that and set this as the default setting instead?"
+					ConfirmDialog.show(getWindow(), "Save Crossing Setting", "There is already an existing default setting. Do you want to replace the default setting?"
 						, "Yes", "No", new ConfirmDialog.Listener() {	
 							private static final long serialVersionUID = 1L;	
 							@Override
