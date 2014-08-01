@@ -12,7 +12,7 @@
                             http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
 >
     <!-- Declare property file locations -->
-    <context:property-placeholder location="classpath:IBPDatasource.properties, classpath:workbench.properties" />
+    <context:property-placeholder location="classpath:workbench.properties" />
     
     <!-- Enable Spring annotations -->
     <context:annotation-config/>

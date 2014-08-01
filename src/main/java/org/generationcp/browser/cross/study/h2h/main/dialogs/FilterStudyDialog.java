@@ -137,7 +137,7 @@ public class FilterStudyDialog extends Window implements InitializingBean, Inter
         buttonLayout.addComponent(applyButton);
         //buttonLayout.setComponentAlignment(doneButton, Alignment.MIDDLE_RIGHT);
         //buttonLayout.setComponentAlignment(cancelButton, Alignment.MIDDLE_RIGHT);
-        mainLayout.addComponent(buttonLayout, "top:420px;left:587px");
+        mainLayout.addComponent(buttonLayout, "top:420px;left:415px");
         
         
         addComponent(mainLayout);

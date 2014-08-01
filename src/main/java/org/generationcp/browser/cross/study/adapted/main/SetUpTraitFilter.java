@@ -153,7 +153,7 @@ public class SetUpTraitFilter extends AbsoluteLayout implements InitializingBean
 		nextButton.setData(NEXT_BUTTON_ID);
 		nextButton.addListener(new AdaptedGermplasmButtonClickListener(this));
 		nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-		addComponent(nextButton, "top:500px;left:900px");
+		addComponent(nextButton, "top:500px;left:460px");
 		updateLabels();
 	}
 	

@@ -25,8 +25,10 @@ import org.generationcp.browser.study.util.DatasetExporterException;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.dms.DataSet;
+import org.generationcp.middleware.domain.dms.PhenotypicType;
 import org.generationcp.middleware.domain.dms.VariableType;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -37,7 +39,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
-import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 
 import com.vaadin.addon.tableexport.CsvExport;
 import com.vaadin.addon.tableexport.TableExport;
@@ -66,6 +67,13 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
     public static final String EXPORT_EXCEL_BUTTON_ID = "RepresentationDatasetComponent Export to FieldBook Excel File Button";
     public static final String OPEN_TABLE_VIEWER_BUTTON_ID = "RepresentationDatasetComponent Open Table Viewer Button";
 
+    
+    private static final List<Integer> EXCLUDED_STORED_IN_IDS = new ArrayList<Integer>();
+    static {
+    	EXCLUDED_STORED_IN_IDS.addAll(PhenotypicType.DATASET.getTypeStorages());
+    	EXCLUDED_STORED_IN_IDS.add(TermId.STUDY_INFORMATION.getId());
+    }
+    
     private Table datasetTable;
     private String reportName;
     private Integer studyIdHolder;
@@ -245,7 +253,8 @@ public class RepresentationDatasetComponent extends VerticalLayout implements In
         
         for(VariableType variable : variables)
         {
-            if(variable.getStandardVariable().getStoredIn().getId() != TermId.STUDY_INFORMATION.getId()){
+            int storedInId = variable.getStandardVariable().getStoredIn().getId();
+			if(!EXCLUDED_STORED_IN_IDS.contains(storedInId)){
                 String columnId = new StringBuffer().append(variable.getId()).append("-").append(variable.getLocalName()).toString();
                 columnIds.add(columnId);
             }

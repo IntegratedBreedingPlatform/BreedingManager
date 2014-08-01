@@ -1,4 +1,3 @@
-src/main/resources/IBPDatasource.properties
 src/main/resources/workbench.properties
 target/
 .classpath

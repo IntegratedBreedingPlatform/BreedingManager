@@ -16,6 +16,7 @@ package org.generationcp.browser.study;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.generationcp.browser.application.GermplasmStudyBrowserLayout;
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.util.StudyBrowserTabCloseHandler;
 import org.generationcp.browser.study.containers.StudyDataIndexContainer;
@@ -37,6 +38,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Table;
@@ -48,14 +51,15 @@ import com.vaadin.ui.VerticalLayout;
  * 
  */
 @Configurable
-public class StudySearchMainComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent{
+public class StudySearchMainComponent extends HorizontalLayout implements InitializingBean, 
+					InternationalizableComponent, GermplasmStudyBrowserLayout{
 
     private static final long serialVersionUID = 1L;
 
     private final static Logger LOG = LoggerFactory.getLogger(StudySearchMainComponent.class);
 
-    private VerticalLayout mainLayout;
     private VerticalLayout searchResultLayout;
+    private Label totalEntriesLabel;
     private TabSheet tabSheetStudy;
 
     private StudySearchInputComponent searchInputComponent;
@@ -79,28 +83,52 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
 
     @Override
     public void afterPropertiesSet() throws Exception { 
-
-        studyDataIndexContainer = new StudyDataIndexContainer(studyDataManager, 0);
+        instantiateComponents();
+		initializeValues();
+		addListeners();
+		layoutComponents();
+    }
+    
+	@Override
+	public void instantiateComponents() {
+		studyDataIndexContainer = new StudyDataIndexContainer(studyDataManager, 0);
         tabSheetStudy = studyBrowserMain.getCombinedStudyTreeComponent().getTabSheetStudy();
-
-        setSpacing(true);
-        mainLayout = new VerticalLayout();
-        mainLayout.setSpacing(true);
-        mainLayout.setMargin(true);
-        
         searchInputComponent = new StudySearchInputComponent(this);
-        searchResultLayout = new VerticalLayout();
+        
+        totalEntriesLabel = new Label("",Label.CONTENT_XHTML);
+        totalEntriesLabel.setWidth("120px");
+        updateNoOfEntries(0);
+	}
+	
+	public void updateNoOfEntries(int count){
+		totalEntriesLabel.setValue(messageSource.getMessage(Message.SEARCH_RESULT_LABEL) + ": " 
+	       		 + "  <b>" + count + "</b>");
+	}
+
+	@Override
+	public void initializeValues() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addListeners() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void layoutComponents() {
+		setSpacing(true);
+		setMargin(false,false,false,true);
+		searchResultLayout = new VerticalLayout();
+		searchResultLayout.setSpacing(true);
+		searchResultLayout.setWidth("425px");
         searchResultLayout.setVisible(false);
 
-        mainLayout.addComponent(searchInputComponent);
-        mainLayout.addComponent(searchResultLayout);
-
-        addComponent(mainLayout);
-        
-        /*studyDetailsLayout.addComponent(this);
-        studyDetailsLayout.setExpandRatio(this, 1.0f);  */
-
-    }
+        addComponent(searchInputComponent);
+        addComponent(searchResultLayout);
+	}
 
     @Override
     public void attach() {
@@ -119,17 +147,18 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
         IndexedContainer dataSourceResult = studyDataIndexContainer.getStudies(name, country, season, date);
         
         if (dataSourceResult.size() == 0){
+        	updateNoOfEntries(0);	
             MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.NO_STUDIES_FOUND), ""); 
         } else {
             searchResultTable = new StudySearchResultTable(dataSourceResult).getResultTable();
-            searchResultTable.setCaption(messageSource.getMessage(Message.SEARCH_RESULT_LABEL) + ": " + dataSourceResult.size());
+            updateNoOfEntries(dataSourceResult.size());
             searchResultTable.addListener(new StudyItemClickListener(this));
-            searchResultTable.setWidth(7, UNITS_CM);
-            searchResultTable.setHeight(8, UNITS_CM);
+            
             searchResultLayout.removeAllComponents();
+            searchResultLayout.addComponent(totalEntriesLabel);
             searchResultLayout.addComponent(searchResultTable);
             searchResultLayout.setVisible(true);
-            mainLayout.requestRepaintAll();
+            requestRepaint();
         }
 
     }
@@ -157,7 +186,6 @@ public class StudySearchMainComponent extends VerticalLayout implements Initiali
         }
 
     }
-
 
     private String getStudyName(int studyId) throws InternationalizableException {
         try {

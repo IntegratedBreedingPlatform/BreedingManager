@@ -44,9 +44,6 @@
             <artifactId>vaadin-colorpicker</artifactId>
             <version>1.1.0</version>
         </dependency>
-
-        <!-- <dependency> <groupId>com.google.gwt</groupId> <artifactId>gwt-user</artifactId>
-            <version>${gwt.version}</version> </dependency> -->
         <dependency>
             <groupId>org.dellroad</groupId>
             <artifactId>dellroad-stuff-vaadin</artifactId>
@@ -121,9 +118,8 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- -->
 
-        <!-- these two below are needed by TableExport addon -->
+        <!-- These two below are needed by TableExport addon -->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
@@ -170,34 +166,18 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.6.6</version>
+            <version>1.7.7</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.0.7</version>
+            <version>1.1.2</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
-            <version>1.0.7</version>
+            <version>1.1.2</version>
         </dependency>
-		<dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-		<dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.16</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>1.6.4</version>
-        </dependency>
-
 
         <dependency>
             <groupId>org.vaadin.addon</groupId>
@@ -286,7 +266,6 @@
                                 <copy todir="src/main/resources" overwrite="true">
                                     <fileset dir="pipeline/config/${envConfig}" id="fromDir">
                                         <include name="workbench.properties"/>
-                                        <!-- <include name="IBPDatasource.properties" />  -->
                                     </fileset>
                                 </copy>
                             </tasks>

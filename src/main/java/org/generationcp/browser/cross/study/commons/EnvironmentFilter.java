@@ -351,7 +351,7 @@ private static final long serialVersionUID = -3667517088395779496L;
 	       nextButton.setWidth("80px");
 	       nextButton.setEnabled(false);
 	       nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-	       addComponent(nextButton, "top:490px;left:900px");
+	       addComponent(nextButton, "top:490px;left:460px");
 	       
 	       if(this.crossStudyToolType == CrossStudyToolType.HEAD_TO_HEAD_QUERY){
 		       backButton = new Button(messageSource.getMessage(Message.BACK));

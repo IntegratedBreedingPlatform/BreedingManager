@@ -17,11 +17,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.Transferable;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
+import com.vaadin.terminal.ThemeResource;
+import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -30,7 +33,6 @@ import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.TreeTargetDetails;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
@@ -81,6 +83,7 @@ public class StudyTreeUtil implements Serializable {
         final TextField name = new TextField();
         name.setMaxLength(50);
         name.setWidth("190px");
+        name.focus();
 
         formContainer.addComponent(l);
         formContainer.addComponent(name);
@@ -94,6 +97,7 @@ public class StudyTreeUtil implements Serializable {
         btnContainer.setExpandRatio(spacer, 1.0F);
 
         Button ok = new Button("Ok");
+        ok.setClickShortcut(KeyCode.ENTER);
         ok.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         ok.addListener(new Button.ClickListener() {
             private static final long serialVersionUID = -6313787074401316900L;
@@ -124,8 +128,7 @@ public class StudyTreeUtil implements Serializable {
                 	LOG.error("Error with adding a study folder.", ex);
                 	MessageNotifier.showError(source.getWindow(),
                             messageSource.getMessage(Message.ERROR_DATABASE), 
-                            messageSource.getMessage(Message.PLEASE_SEE_ERROR_LOG),
-                            Notification.POSITION_CENTERED);
+                            messageSource.getMessage(Message.PLEASE_SEE_ERROR_LOG));
                 	return;
                 }
                 
@@ -133,6 +136,7 @@ public class StudyTreeUtil implements Serializable {
                 if (newFolderId != null) {
                     targetTree.addItem(newFolderId);
                     targetTree.setItemCaption(newFolderId, newFolderName);
+                    targetTree.setItemIcon(newFolderId, new ThemeResource("../vaadin-retro/svg/folder-icon.svg"));
                     targetTree.setChildrenAllowed(newFolderId, true);
                     
                     source.setSelectedStudyTreeNodeId(newFolderId);
@@ -151,12 +155,13 @@ public class StudyTreeUtil implements Serializable {
                     } else {
                     	targetTree.expandItem(StudyTreeComponent.LOCAL);
 					}
+                    
                     targetTree.select(newFolderId);
                     source.updateButtons(newFolderId);
                 }
 
                 // close popup
-                source.getWindow().removeWindow(event.getComponent().getWindow());
+                source.getParentComponent().getWindow().removeWindow(event.getComponent().getWindow());
             }
 
 
@@ -168,7 +173,7 @@ public class StudyTreeUtil implements Serializable {
 
 			@Override
             public void buttonClick(Button.ClickEvent event) {
-            	source.getWindow().removeWindow(w);
+            	source.getParentComponent().getWindow().removeWindow(w);
             }
         });
 
@@ -181,37 +186,33 @@ public class StudyTreeUtil implements Serializable {
         w.setContent(container);
 
         // show window
-        source.getWindow().addWindow(w);    	
+        source.getParentComponent().getWindow().addWindow(w);    	
     }
 	
 	private boolean isValidNameInput(String newFolderName) throws MiddlewareQueryException {
 		if(newFolderName.replace(" ","").equals("")){
         	MessageNotifier.showError(source.getWindow(),
                     messageSource.getMessage(Message.INVALID_INPUT), 
-                    messageSource.getMessage(Message.INVALID_ITEM_NAME),
-                    Notification.POSITION_CENTERED);
+                    messageSource.getMessage(Message.INVALID_ITEM_NAME));
         	return false;
         	
         } else if(newFolderName.length() > STUDY_NAME_LIMITS){
         	MessageNotifier.showError(source.getWindow(),
                     messageSource.getMessage(Message.INVALID_INPUT), 
-                    messageSource.getMessage(Message.INVALID_LONG_STUDY_FOLDER_NAME),
-                    Notification.POSITION_CENTERED);
+                    messageSource.getMessage(Message.INVALID_LONG_STUDY_FOLDER_NAME));
         	return false;
         	
         } else if(studyDataManager.checkIfProjectNameIsExisting(newFolderName)){
     		MessageNotifier.showError(source.getWindow(),
                     messageSource.getMessage(Message.INVALID_INPUT), 
-                    messageSource.getMessage(Message.EXISTING_STUDY_ERROR_MESSAGE),
-                    Notification.POSITION_CENTERED);
+                    messageSource.getMessage(Message.EXISTING_STUDY_ERROR_MESSAGE));
         	return false;
     	} else if(newFolderName.toLowerCase().equals(messageSource.getMessage(Message.PROGRAM_STUDIES).toString().toLowerCase()) ||
         		newFolderName.toLowerCase().equals(messageSource.getMessage(Message.PUBLIC_STUDIES).toString().toLowerCase())
         			){
         		MessageNotifier.showError(source.getWindow(),
                 	messageSource.getMessage(Message.INVALID_INPUT), 
-                	messageSource.getMessage(Message.EXISTING_STUDY_ERROR_MESSAGE),
-                	Notification.POSITION_CENTERED);
+                	messageSource.getMessage(Message.EXISTING_STUDY_ERROR_MESSAGE));
         		return false;
        	}
 		
@@ -301,8 +302,9 @@ public class StudyTreeUtil implements Serializable {
 		        Object sourceItemId = t.getData("itemId");
 		        Object targetItemId = target.getItemIdOver();
 		        
-		        // if source item is dropped to itself, do nothing
-		        if (sourceItemId.equals(targetItemId)){
+		        VerticalDropLocation location = target.getDropLocation();
+		        
+		        if (location != VerticalDropLocation.MIDDLE || sourceItemId.equals(targetItemId)){
 		        	return;
 		        }
 		        
@@ -366,6 +368,7 @@ public class StudyTreeUtil implements Serializable {
         final TextField nameField = new TextField();
         nameField.setMaxLength(50);
         nameField.setValue(name);
+        nameField.setCursorPosition(nameField.getValue() == null ? 0 : nameField.getValue().toString().length());
         nameField.setWidth("200px");
 
         formContainer.addComponent(l);
@@ -380,9 +383,12 @@ public class StudyTreeUtil implements Serializable {
         btnContainer.setExpandRatio(spacer, 1.0F);
 
         Button ok = new Button("Ok");
+        ok.setClickShortcut(KeyCode.ENTER);
         ok.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         ok.addListener(new Button.ClickListener() {
-            @Override
+			private static final long serialVersionUID = 1L;
+
+			@Override
             public void buttonClick(Button.ClickEvent event) {
                 
                 try {
@@ -415,15 +421,17 @@ public class StudyTreeUtil implements Serializable {
                     return;
                 }
 
-                source.getWindow().removeWindow(event.getComponent().getWindow());
+                source.getParentComponent().getWindow().removeWindow(event.getComponent().getWindow());
             }
         });
 
         Button cancel = new Button("Cancel");
         cancel.addListener(new Button.ClickListener() {
-            @Override
+			private static final long serialVersionUID = 1L;
+
+			@Override
             public void buttonClick(Button.ClickEvent event) {
-            	source.getWindow().removeWindow(w);
+            	source.getParentComponent().getWindow().removeWindow(w);
             }
         });
 
@@ -436,7 +444,7 @@ public class StudyTreeUtil implements Serializable {
         w.setContent(container);
 
         // show window
-        source.getWindow().addWindow(w);    	
+        source.getParentComponent().getWindow().addWindow(w);    	
     }
 	
 	/**
@@ -492,10 +500,8 @@ public class StudyTreeUtil implements Serializable {
 			MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_TEXT), e.getMessage());
 			return;
 		}
-    		
     	
-    	String item = targetTree.getItemCaption(targetTree.getValue());
-		ConfirmDialog.show(source.getWindow(),
+		ConfirmDialog.show(source.getParentComponent().getWindow(),
 				messageSource.getMessage(Message.DELETE_ITEM),
 				messageSource.getMessage(Message.DELETE_ITEM_CONFIRM),	
 				messageSource.getMessage(Message.YES), messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {

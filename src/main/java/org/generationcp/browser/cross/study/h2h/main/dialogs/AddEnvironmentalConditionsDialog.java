@@ -131,7 +131,7 @@ public class AddEnvironmentalConditionsDialog extends Window implements Initiali
         
         buttonLayout.addComponent(cancelButton);
         buttonLayout.addComponent(applyButton);
-        mainLayout.addComponent(buttonLayout, "top:410px;left:587px");
+        mainLayout.addComponent(buttonLayout, "top:410px;left:310px");
         
         
         addComponent(mainLayout);

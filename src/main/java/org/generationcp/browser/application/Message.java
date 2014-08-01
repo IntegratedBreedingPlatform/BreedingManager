@@ -301,6 +301,8 @@ public enum Message {
      ,SAVE
      ,NEXT_ENTRY
      ,PREV_ENTRY
+     ,NEXT_ARROW
+     ,PREV_ARROW
      ,LINE_BY_LOCATION_TITLE
      ,LINE_BY_LOCATION_FOR_TRAIT
      ,OBSERVATION_NO
@@ -405,4 +407,10 @@ public enum Message {
      ,COMM
      ,AMOUNT_TO_RESERVE
      ,THERE_IS_NO_INVENTORY_INFORMATION_AVAILABLE_FOR_THIS_GERMPLASM
+     
+     //Study Browser
+     ,BROWSE_STUDIES
+     ,SEARCH_STUDIES
+     ,ALL_STUDIES
+     ,SEARCH_CRITERIA
 }

@@ -14,6 +14,7 @@ package org.generationcp.browser.study;
 
 import java.util.List;
 
+import org.generationcp.browser.application.GermplasmStudyBrowserLayout;
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.util.InvalidDateException;
 import org.generationcp.browser.util.Util;
@@ -34,19 +35,21 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.validator.IntegerValidator;
 import com.vaadin.data.validator.StringLengthValidator;
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.VerticalLayout;
 
 /**
  * 
@@ -54,19 +57,21 @@ import com.vaadin.ui.Button.ClickListener;
  * 
  */
 @Configurable
-public class StudySearchInputComponent extends GridLayout implements InitializingBean, InternationalizableComponent{
+public class StudySearchInputComponent extends VerticalLayout implements InitializingBean, 
+						InternationalizableComponent, GermplasmStudyBrowserLayout {
 
     private static final Logger LOG = LoggerFactory.getLogger(StudySearchInputComponent.class);
     private static final long serialVersionUID = 1L;
 
     List<Study> studies; 
+    
+    private Panel searchPanel;
+    private Label dateLabel;
+    private Label nameLabel;
+    private Label countryLabel;
+    private Label seasonLabel;
 
-    Label dateLabel;
-    Label nameLabel;
-    Label countryLabel;
-    Label seasonLabel;
-
-    private GridLayout gridLayout;
+    private GridLayout searchFieldsLayout;
     private TextField dateYearField;
     private TextField dateMonthField;
     private TextField dateDayField;
@@ -78,7 +83,8 @@ public class StudySearchInputComponent extends GridLayout implements Initializin
     private Button clearButton;
     private Component buttonArea;
 
-    StudySearchMainComponent parentComponent;
+    private StudySearchMainComponent parentComponent;
+    private Label searchCriteriaLabel;
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -93,10 +99,15 @@ public class StudySearchInputComponent extends GridLayout implements Initializin
     
     @Override
     public void afterPropertiesSet() {
-
-        setSpacing(true);
-
-        dateYearField = new TextField();
+        instantiateComponents();
+		initializeValues();
+		addListeners();
+		layoutComponents();
+    }
+    
+	@Override
+	public void instantiateComponents() {
+		dateYearField = new TextField();
         dateYearField.setDescription(messageSource.getMessage(Message.DATE_YEAR_FIELD_DESCRIPTION)); //"Input at least the year for the search date."
         dateYearField.setWidth(1, UNITS_CM);
         dateYearField.addValidator(new IntegerValidator(messageSource.getMessage(Message.ERROR_YEAR_MUST_BE_NUMBER))); //"Year must be a number"));
@@ -111,7 +122,45 @@ public class StudySearchInputComponent extends GridLayout implements Initializin
         dateDayField.setWidth(1, UNITS_CM);
         dateDayField.addValidator(new IntegerValidator(messageSource.getMessage(Message.ERROR_DAY_MUST_BE_NUMBER))); //"Day must be a number"
         dateDayField.addValidator(new StringLengthValidator(messageSource.getMessage(Message.ERROR_DAY_FORMAT, 1, 2, true))); //"Day must be in format DD"
+        
+        nameField = new TextField();
+        nameField.setDescription(messageSource.getMessage(Message.EXACT_STUDY_NAME_TEXT));
+        countryCombo = createCountryComboBox();
+        seasonCombo = createSeasonComboBox();
 
+        dateLabel = new Label(messageSource.getMessage(Message.START_DATE_LABEL));
+        nameLabel = new Label(messageSource.getMessage(Message.NAME_LABEL));
+        countryLabel = new Label(messageSource.getMessage(Message.COUNTRY_LABEL));
+        seasonLabel = new Label(messageSource.getMessage(Message.SEASON_LABEL));
+        
+        //Buttons
+        searchButton = new Button(messageSource.getMessage(Message.SEARCH_LABEL));
+        searchButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+        clearButton = new Button(messageSource.getMessage(Message.CLEAR_LABEL));
+        
+        searchCriteriaLabel = new Label("<b>" + messageSource.getMessage(Message.SEARCH_CRITERIA) + "</b>",Label.CONTENT_XHTML);
+        searchCriteriaLabel.setWidth("120px");
+	}
+
+	@Override
+	public void initializeValues() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addListeners() {
+        ButtonClickListener buttonClickListener = new ButtonClickListener();
+        searchButton.addListener(buttonClickListener);
+        clearButton.addListener(buttonClickListener);
+        searchButton.setClickShortcut(KeyCode.ENTER);
+	}
+
+	@Override
+	public void layoutComponents() {
+		setSpacing(true);
+		setWidth("300px");
+		
         GridLayout dateLayout = new GridLayout();
         dateLayout.setRows(3);
         dateLayout.setColumns(4);
@@ -122,40 +171,34 @@ public class StudySearchInputComponent extends GridLayout implements Initializin
         dateLayout.addComponent(new Label("Month"), 2, 2);
         dateLayout.addComponent(new Label("Day"), 3, 2);
         
-        nameField = new TextField();
-        nameField.setDescription(messageSource.getMessage(Message.EXACT_STUDY_NAME_TEXT));
-        countryCombo = createCountryComboBox();
-        seasonCombo = createSeasonComboBox();
+        searchFieldsLayout = new GridLayout();
+        searchFieldsLayout.setRows(5);
+        searchFieldsLayout.setColumns(3);
+        searchFieldsLayout.setSpacing(true);
+        searchFieldsLayout.addComponent(dateLabel, 1, 1);
+        searchFieldsLayout.addComponent(dateLayout, 2, 1);
+        searchFieldsLayout.addComponent(nameLabel, 1, 2);
+        searchFieldsLayout.addComponent(nameField, 2, 2);
+        searchFieldsLayout.addComponent(countryLabel, 1, 3);
+        searchFieldsLayout.addComponent(countryCombo, 2, 3);
+        searchFieldsLayout.addComponent(seasonLabel, 1, 4);
+        searchFieldsLayout.addComponent(seasonCombo, 2, 4);
 
-        dateLabel = new Label(messageSource.getMessage(Message.START_DATE_LABEL));
-        nameLabel = new Label(messageSource.getMessage(Message.NAME_LABEL));
-        countryLabel = new Label(messageSource.getMessage(Message.COUNTRY_LABEL));
-        seasonLabel = new Label(messageSource.getMessage(Message.SEASON_LABEL));        
-
-        gridLayout = new GridLayout();
-        gridLayout.setRows(5);
-        gridLayout.setColumns(3);
-        gridLayout.setSpacing(true);
-        
-        gridLayout.addComponent(dateLabel, 1, 1);
-
-        gridLayout.addComponent(dateLayout, 2, 1);
-        
-        gridLayout.addComponent(nameLabel, 1, 2);
-        gridLayout.addComponent(nameField, 2, 2);
-        
-        gridLayout.addComponent(countryLabel, 1, 3);
-        gridLayout.addComponent(countryCombo, 2, 3);
-        
-        gridLayout.addComponent(seasonLabel, 1, 4);
-        gridLayout.addComponent(seasonCombo, 2, 4);
-        addComponent(gridLayout);
-        
         buttonArea = layoutButtonArea();
-        addComponent(buttonArea);
-        setComponentAlignment(buttonArea, Alignment.TOP_RIGHT);
         
-    }
+        VerticalLayout searchLayout = new VerticalLayout();
+        searchLayout.addComponent(searchFieldsLayout);
+        searchLayout.addComponent(buttonArea);
+        searchLayout.setComponentAlignment(buttonArea, Alignment.BOTTOM_CENTER);
+        
+        searchPanel = new Panel();
+        searchPanel.setWidth("300px");
+        searchPanel.setHeight("250px");
+        searchPanel.setLayout(searchLayout);
+        
+        addComponent(searchCriteriaLabel);
+        addComponent(searchPanel);
+	}
     
 
     protected Component layoutButtonArea() {
@@ -163,26 +206,13 @@ public class StudySearchInputComponent extends GridLayout implements Initializin
         buttonLayout.setSpacing(true);
         buttonLayout.setMargin(true, false, false, false);
 
-        searchButton = new Button();
-        searchButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-        messageSource.setCaption(searchButton, Message.SEARCH_LABEL);
-        
-        clearButton = new Button();
-        messageSource.setCaption(clearButton, Message.CLEAR_LABEL);
-
-        ButtonClickListener buttonClickListener = new ButtonClickListener();
-        searchButton.addListener(buttonClickListener);
-        clearButton.addListener(buttonClickListener);
-        searchButton.setClickShortcut(KeyCode.ENTER);
-        
-        buttonLayout.addComponent(searchButton);
         buttonLayout.addComponent(clearButton);
+        buttonLayout.addComponent(searchButton);
         return buttonLayout;
     }
-    
-    
 
-    private ComboBox createCountryComboBox(){
+    @SuppressWarnings("deprecation")
+	private ComboBox createCountryComboBox(){
         List<Country> countries = null;
         try {
             countries = germplasmDataManager.getAllCountry();
@@ -301,11 +331,8 @@ public class StudySearchInputComponent extends GridLayout implements Initializin
                 nameField.setValue("");
                 countryCombo.setValue(null);
                 seasonCombo.setValue(null);
-                requestRepaintAll();
+                requestRepaint();
             }
         }
     }
-    
-
-
 }

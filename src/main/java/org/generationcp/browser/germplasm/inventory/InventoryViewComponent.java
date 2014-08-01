@@ -75,7 +75,7 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 	public void instantiateComponents() {
 	  
 		lotEntriesTable = new Table();
-		lotEntriesTable.setWidth("100%");
+		lotEntriesTable.setWidth("90%");
 		lotEntriesTable.setHeight("160px");
 		
 		noEntriesLabel = new Label(messageSource.getMessage(Message.THERE_IS_NO_INVENTORY_INFORMATION_AVAILABLE_FOR_THIS_GERMPLASM)+".");
@@ -150,7 +150,7 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 	}
 
 	public void layoutComponents() {
-		setMargin(true);
+
 		setSpacing(true);
 		if(lotEntriesTable.getItemIds().size()>0)
 			addComponent(lotEntriesTable);
