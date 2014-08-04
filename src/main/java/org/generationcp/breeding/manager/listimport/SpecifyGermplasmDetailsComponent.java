@@ -12,6 +12,7 @@ import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
+import org.generationcp.breeding.manager.customcomponent.SaveListDialogWithFolderOnlyTree;
 import org.generationcp.breeding.manager.listimport.actions.ProcessImportedGermplasmAction;
 import org.generationcp.breeding.manager.listimport.actions.SaveGermplasmListAction;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
@@ -195,7 +196,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 	        }
 	    }
 	     
-	    saveListAsDialog = new SaveListAsDialog(this, germplasmList);
+	    saveListAsDialog = new SaveListDialogWithFolderOnlyTree(this, germplasmList);
 	    //If not from popup
 	    if(source.getGermplasmImportPopupSource()==null){
 	    	this.getWindow().addWindow(saveListAsDialog);
