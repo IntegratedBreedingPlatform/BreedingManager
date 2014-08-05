@@ -154,6 +154,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private ContextMenuItem menuListView;
 	@SuppressWarnings("unused")
 	private ContextMenuItem menuReserveInventory;
+	@SuppressWarnings("unused")
+	private ContextMenuItem menuCancelReservation;
 
     //Tooltips
   	public static String TOOLS_BUTTON_ID = "Actions";
@@ -324,10 +326,11 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		
 		inventoryViewMenu = new ContextMenu();
 		inventoryViewMenu.setWidth("295px");
+		menuCancelReservation = inventoryViewMenu.addItem(messageSource.getMessage(Message.CANCEL_RESERVATIONS));
 		menuCopyToNewListFromInventory = inventoryViewMenu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST));
         menuReserveInventory = inventoryViewMenu.addItem(messageSource.getMessage(Message.RESERVE_INVENTORY));
         menuListView = inventoryViewMenu.addItem(messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
-        menuInventorySaveChanges = inventoryViewMenu.addItem(messageSource.getMessage(Message.SAVE_CHANGES));
+        menuInventorySaveChanges = inventoryViewMenu.addItem(messageSource.getMessage(Message.SAVE_RESERVATIONS));
         inventoryViewMenu.addItem(messageSource.getMessage(Message.SELECT_ALL));
         
         resetInventoryMenuOptions();
@@ -644,7 +647,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			public void contextItemClick(ClickEvent event) {
 			      // Get reference to clicked item
 			      ContextMenuItem clickedItem = event.getClickedItem();
-			      if(clickedItem.getName().equals(messageSource.getMessage(Message.SAVE_CHANGES))){	  
+			      if(clickedItem.getName().equals(messageSource.getMessage(Message.SAVE_RESERVATIONS))){	  
 			    	  saveReservationChangesAction();
                   } else if(clickedItem.getName().equals(messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))){
                 	  viewListAction();
@@ -654,6 +657,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		          	  reserveInventoryAction();
                   } else if(clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))){
                 	  listInventoryTable.getTable().setValue(listInventoryTable.getTable().getItemIds());
+		          } else if(clickedItem.getName().equals(messageSource.getMessage(Message.CANCEL_RESERVATIONS))){
+                	  cancelReservationsAction();
 		          }
 		    }
 		});
@@ -1980,16 +1985,64 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		}
 	}
 	
+	public void cancelReservationsAction() {
+		List<ListEntryLotDetails> lotDetailsGid = listInventoryTable.getSelectedLots();
+		
+		if( lotDetailsGid == null || lotDetailsGid.size() == 0){
+			MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.WARNING), 
+					"Please select at least 1 lot to cancel reservations.");
+		}
+		else{
+			if(!listInventoryTable.isSelectedEntriesHasReservation(lotDetailsGid)){
+				MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.WARNING), 
+						"There is no reservation to the current selected lots.");
+			}
+			else{
+				ConfirmDialog.show(getWindow(), messageSource.getMessage(Message.CANCEL_RESERVATIONS), 
+					"Are you sure you want to cancel the selected reservations?"
+					, messageSource.getMessage(Message.YES), messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {	
+						private static final long serialVersionUID = 1L;	
+						@Override
+						public void onClose(ConfirmDialog dialog) {
+							if (dialog.isConfirmed()) {
+								cancelReservations();
+							}
+						}
+					}
+				);
+			}
+		}
+	}
+
+	public void cancelReservations() {
+		List<ListEntryLotDetails> lotDetailsGid = listInventoryTable.getSelectedLots();
+		reserveInventoryAction = new ReserveInventoryAction(this);
+		try {
+			reserveInventoryAction.cancelReservations(lotDetailsGid);
+		} catch (MiddlewareQueryException e) {
+			e.printStackTrace();
+		}
+		
+		refreshInventoryColumns(getLrecIds(lotDetailsGid));
+		listInventoryTable.resetRowsForCancelledReservation(lotDetailsGid,germplasmList.getId());
+		
+		MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
+				"All selected reservations were cancelled successfully.");
+	}
 	
-	private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReservationsToSave){
+	private Set<Integer> getLrecIds(List<ListEntryLotDetails> lotDetails) {
+		Set<Integer> lrecIds = new HashSet<Integer>();
 		
-		Set<Integer> entryIds = new HashSet<Integer>();
-		for(Entry<ListEntryLotDetails, Double> details : validReservationsToSave.entrySet()){
-			entryIds.add(details.getKey().getId());
-		 }
-		
+		for(ListEntryLotDetails lotDetail: lotDetails){
+			if(!lrecIds.contains(lotDetail.getId())){
+				lrecIds.add(lotDetail.getId());
+			}
+		}
+		return lrecIds;
+	}
+
+	private void refreshInventoryColumns(Set<Integer> entryIds){
 		List<GermplasmListData> germplasmListDataEntries = new ArrayList<GermplasmListData>();
-		
 		try {
 			if (!entryIds.isEmpty())
 				germplasmListDataEntries = this.inventoryDataManager.getLotCountsForListEntries(germplasmList.getId(), new ArrayList<Integer>(entryIds));
@@ -2035,8 +2088,16 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			
 	   		item.getItemProperty(ListDataTablePropertyID.SEED_RES.getName()).setValue(seed_res);
 		}
+	}
+	
+	private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReservationsToSave){
 		
+		Set<Integer> entryIds = new HashSet<Integer>();
+		for(Entry<ListEntryLotDetails, Double> details : validReservationsToSave.entrySet()){
+			entryIds.add(details.getKey().getId());
+		}
 		
+		refreshInventoryColumns(entryIds);
 	}
 	
 	@Override
@@ -2156,9 +2217,13 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		for(Integer itemId : itemIds){
 			Item item = listDataTable.getItem(itemId);
 			Button gidButton = (Button) item.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
+			
 			String currentGid = "";
 			if(gidButton!=null){
 				currentGid = gidButton.getCaption();
+			}
+			
+			if(currentGid.equals(gid)){
 				((Button) item.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).getValue()).setCaption(availInv);
 			}
 		}
