@@ -354,7 +354,7 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
              }             
              
              List<ImportedGermplasm> importedGermplasms = ((SpecifyGermplasmDetailsComponent) previousScreen).getImportedGermplasms();
-             Integer listId = saveAction.saveRecords(germplasmList, germplasmNameObjects, getFilename(), doNotCreateGermplasmsWithId, importedGermplasms);
+             Integer listId = saveAction.saveRecords(germplasmList, germplasmNameObjects, null, getFilename(), doNotCreateGermplasmsWithId, importedGermplasms);
              MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS),
                     messageSource.getMessage(Message.GERMPLASM_LIST_SAVED_SUCCESSFULLY));
              if(viaPopup)

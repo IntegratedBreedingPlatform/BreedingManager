@@ -64,7 +64,7 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
      * @return id of new Germplasm List created
      * @throws MiddlewareQueryException
      */
-    public Integer saveRecords(GermplasmList germplasmList, List<GermplasmName> germplasmNameObjects, String filename
+    public Integer saveRecords(GermplasmList germplasmList, List<GermplasmName> germplasmNameObjects, List<Name> newNames, String filename
     		, List<Integer> doNotCreateGermplasmsWithId, List<ImportedGermplasm> importedGermplasms)throws MiddlewareQueryException{
 
         retrieveIbdbUserId();
@@ -107,12 +107,20 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
         
         GermplasmList list = saveGermplasmListRecord(germplasmList);
         saveGermplasmListDataRecords(germplasmNameObjects, germplasmIds, list, filename, importedGermplasms);
-
+        addNewNamesToExistingGermplasm(newNames);
+        
         // log project activity in Workbench
         addWorkbenchProjectActivity(filename);
 
         return list.getId();
     }
+
+	protected void addNewNamesToExistingGermplasm(List<Name> newNames)
+			throws MiddlewareQueryException {
+		for (Name name: newNames){
+        	germplasmManager.addGermplasmName(name);
+        }
+	}
 
     private Germplasm getAlreadyAddedGermplasm(GermplasmName germplasmName, Map<Integer, GermplasmName> addedGermplasmNameMap){
     	Germplasm germplasm = germplasmName.getGermplasm();

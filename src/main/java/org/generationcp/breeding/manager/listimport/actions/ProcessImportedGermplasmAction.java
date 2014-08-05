@@ -14,6 +14,8 @@ import org.generationcp.breeding.manager.listimport.GermplasmFieldsComponent;
 import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
 import org.generationcp.breeding.manager.listimport.SelectGermplasmWindow;
 import org.generationcp.breeding.manager.listimport.SpecifyGermplasmDetailsComponent;
+import org.generationcp.breeding.manager.listimport.listeners.ImportGermplasmEntryActionListener;
+import org.generationcp.breeding.manager.listimport.listeners.NameNotExistsForGermplasmActionListener;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -31,7 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.ui.themes.Reindeer;
+import com.vaadin.ui.Window;
 
 @Configurable
 public class ProcessImportedGermplasmAction implements Serializable {
@@ -43,8 +45,9 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	private SpecifyGermplasmDetailsComponent germplasmDetailsComponent;
 	
     private List<Integer> doNotCreateGermplasmsWithId = new ArrayList<Integer>();
-    private List<SelectGermplasmWindow> selectGermplasmWindows = new ArrayList<SelectGermplasmWindow>();
+    private List<ImportGermplasmEntryActionListener> importEntryListeners = new ArrayList<ImportGermplasmEntryActionListener>();
     private List<GermplasmName> germplasmNameObjects = new ArrayList<GermplasmName>();
+    private List<Name> newDesignationsForExistingGermplasm = new ArrayList<Name>();
     
     private Map<String,Germplasm> nameGermplasmMap = new HashMap<String,Germplasm>();
     private final Integer UNKNOWN_DERIVATIVE_METHOD = 31;
@@ -58,8 +61,8 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	public ProcessImportedGermplasmAction(SpecifyGermplasmDetailsComponent germplasmDetailsComponent) {
 		super();
 		this.germplasmDetailsComponent = germplasmDetailsComponent;
-		if(selectGermplasmWindows!=null) {
-			selectGermplasmWindows.clear();
+		if(importEntryListeners!=null) {
+			importEntryListeners.clear();
 		}
 	}
 
@@ -68,7 +71,8 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		germplasmNameObjects = new ArrayList<GermplasmName>();
         doNotCreateGermplasmsWithId = new ArrayList<Integer>();
         nameGermplasmMap = new HashMap<String, Germplasm>();
-        selectGermplasmWindows.clear();
+        importEntryListeners.clear();
+        newDesignationsForExistingGermplasm = new ArrayList<Name>();
         
 		String pedigreeOptionChosen = germplasmDetailsComponent.getPedigreeOption();
 		if(pedigreeOptionChosen.equalsIgnoreCase("1") && getImportedGermplasms() != null){
@@ -78,7 +82,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
         } else if(pedigreeOptionChosen.equalsIgnoreCase("3") && getImportedGermplasms() != null){
             performThirdPedigreeAction();
         }
-		if(selectGermplasmWindows.isEmpty()) {
+		if(importEntryListeners.isEmpty()) {
 			saveImport();
 		}
 	}
@@ -233,32 +237,17 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		        		if(thereIsMatchingName){
 		        			doNotCreateGermplasmsWithId.add(importedGermplasm.getGid());
 		        		} else{
-		        			final Integer gidFinal = importedGermplasm.getGid(); 
-		        			final String desigFinal = importedGermplasm.getDesig();
-		        			final Integer finalIbdbUserId = ibdbUserId;
-		        			final Integer finalDateIntValue = dateIntValue;
-		        			final int index = i;
-		        			final int finalGermplasmMatchesCount = germplasmMatchesCount;
-		        			final Map<String, Germplasm> finalCreatedGermplasms = createdGermplasms;
-		        			ConfirmDialog.show(germplasmDetailsComponent.getWindow(), "New Name" 
-		        		            ,"The name \"" + importedGermplasm.getDesig() + "\" is not recorded as a name of GID " + importedGermplasm.getGid() + "."
-		        		            + " Do you want to add the name to the GID or search/create another germplasm record?"
-		        		            , "Add name to GID"  //confirm option
-		        		            , "Search/create another germplasm record"  //the other option 
-		        		            , new ConfirmDialog.Listener() {
-		        						private static final long serialVersionUID = 1L;
-		        						public void onClose(ConfirmDialog dialog) {
-		        		                    if (dialog.isConfirmed()) {
-		        		                    	addGermplasmName(desigFinal, gidFinal, finalIbdbUserId, finalDateIntValue);
-		        		                    	doNotCreateGermplasmsWithId.add(gidFinal);
-		        		                    } else{
-		        		                    	searchOrAddANewGermplasm(finalGermplasmMatchesCount, finalIbdbUserId
-		        		                    			, finalDateIntValue, desigFinal, index, finalCreatedGermplasms);
-		        		                    }
-		        		                }
-		        		            }
-		        			);
+		        			NameNotExistsForGermplasmActionListener listener = new NameNotExistsForGermplasmActionListener(this);
+		        			listener.setGid(importedGermplasm.getGid());
+		        			listener.setDateIntValue(dateIntValue);
+		        			listener.setIbdbUserId(ibdbUserId);
+		        			listener.setGermplasmIndex(i);
+		        			listener.setGermplasmName(importedGermplasm.getDesig());
+		        			listener.setNameMatchesCount(germplasmMatchesCount);
+		        			
+		        			addImportEntryListener(listener);
 		        		}
+		        		
 		        		searchByNameOrNewGermplasmIsNeeded = false;
 		        	} else{
 		        		MessageNotifier.showWarning(germplasmDetailsComponent.getWindow(), "Warning!", "GID: " + importedGermplasm.getGid() + " written on file does not exist in database."
@@ -312,7 +301,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	}
 
 
-	protected Name createNameObject(Integer ibdbUserId, Integer dateIntValue, String desig) {
+	public Name createNameObject(Integer ibdbUserId, Integer dateIntValue, String desig) {
 		Name name = new Name();
 		
 		name.setTypeId((Integer)getGermplasmFieldsComponent().getNameTypeComboBox().getValue());
@@ -390,74 +379,74 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		return dateIntValue;
 	}
 	
-	public void displaySelectGermplasmWindowIfNecessary(String germplasmName, int i, Germplasm germplasm){
-		SelectGermplasmWindow selectGermplasmWindow = new SelectGermplasmWindow(this, germplasmName, i, germplasm, germplasmDetailsComponent.getViaToolURL());
-        selectGermplasmWindow.addStyleName(Reindeer.WINDOW_LIGHT);
-        if(selectGermplasmWindows.isEmpty()) {
-        	//If not from popup
-        	if(germplasmDetailsComponent.getSource().getGermplasmImportPopupSource()==null){
-        		germplasmDetailsComponent.getWindow().addWindow(selectGermplasmWindow);
-        	} else {
-        		germplasmDetailsComponent.getSource().getGermplasmImportPopupSource().getParentWindow().addWindow(selectGermplasmWindow);
-        	}
-        }
-        selectGermplasmWindows.add(selectGermplasmWindow);
-    }
+	private SelectGermplasmWindow createSelectGermplasmWindow(String germplasmName, int i, Germplasm germplasm){
+		return new SelectGermplasmWindow(this, germplasmName, i, germplasm, germplasmDetailsComponent.getViaToolURL());
+	}
 	
-	 private void searchOrAddANewGermplasm(int germplasmMatchesCount, Integer ibdbUserId, Integer dateIntValue, String desig, int index
-    		, Map<String, Germplasm> createdGermplasms) {
+	private void displaySelectGermplasmWindowIfNecessary(String germplasmName, int i, Germplasm germplasm){
+		SelectGermplasmWindow selectGermplasmWindow = createSelectGermplasmWindow(germplasmName, i, germplasm);
+        addImportEntryListener(selectGermplasmWindow);
+    }
+
+
+	protected void addImportEntryListener(ImportGermplasmEntryActionListener listener) {
+		if(importEntryListeners.isEmpty()) {
+        	showImportEntryListener(listener);
+        }
+        importEntryListeners.add(listener);
+	}
+	
+	 public void searchOrAddANewGermplasm(NameNotExistsForGermplasmActionListener listener) {
 		 
+		 int index = listener.getGermplasmIndex();
+		 String desig = listener.getGermplasmName();
 		 try{
-			 Germplasm germplasm = createGermplasmObject(index, 0, 0, 0, ibdbUserId, dateIntValue);
+			 Germplasm germplasm = createGermplasmObject(index, 0, 0, 0, 
+					 listener.getIbdbUserId(), listener.getDateIntValue());
     	
-			 if(germplasmMatchesCount==1){
+			 if(listener.getNameMatchesCount()==1){
 	            //If a single match is found, multiple matches will be 
 	            //   handled by SelectGemrplasmWindow and 
 	            //   then receiveGermplasmFromWindowAndUpdateGermplasmData()
-		            List<Germplasm> foundGermplasm = this.germplasmDataManager.getGermplasmByName(desig, 0, 1, Operation.EQUAL);
-		            germplasm.setGid(foundGermplasm.get(0).getGid());
-		            doNotCreateGermplasmsWithId.add(foundGermplasm.get(0).getGid());
+				 List<Germplasm> foundGermplasm = this.germplasmDataManager.getGermplasmByName(desig, 0, 1, Operation.EQUAL);
+		            
+				 Integer gid = foundGermplasm.get(0).getGid();
+				 germplasm.setGid(gid);
+				 doNotCreateGermplasmsWithId.add(gid);
 			 } 
 	        
 		 
-			 if(germplasmMatchesCount>1){
-				 displaySelectGermplasmWindowIfNecessary(desig, index, germplasm);
+			 if(listener.getNameMatchesCount()>1){
+				 // force process the select germplasm window first for this entry before other entries
+				 SelectGermplasmWindow window = createSelectGermplasmWindow(desig, index, germplasm);
+				 this.importEntryListeners.add(0, window);
+				 
 			 } else{
 				 germplasmNameObjects.get(index).setGermplasm(germplasm);
 			 }
 			 
+			 removeCurrentListenerAndProcessNextItem(listener);
 		 } catch(MiddlewareQueryException ex){
 			 LOG.error("Error with getting germplasm by name = " + desig, ex);
 			 return;
 		 }
         
     }
+
+	public void removeCurrentListenerAndProcessNextItem(ImportGermplasmEntryActionListener listener) {
+		removeListener(listener);
+		processNextItems();
+	}
     
-    private void addGermplasmName(String desig, Integer gid, Integer ibdbUserId, Integer dateIntValue){
-    	try{
-    		Name name = createNameObject(ibdbUserId, dateIntValue, desig);
-    		
-    		name.setNid(null);
-    		name.setNstat(Integer.valueOf(0));
-    		name.setGermplasmId(gid);
-    		
-            germplasmDataManager.addGermplasmName(name);
-            
-    	} catch(MiddlewareQueryException ex){
-    		LOG.error("Error with saving germplasm name.", ex);
-    	}
-    }
-    
-    public void closeAllSelectGermplasmWindows(){
-    	for(int i=0;i<selectGermplasmWindows.size();i++){
-    		SelectGermplasmWindow selectGermplasmWindow = selectGermplasmWindows.get(i);
-    		try {
-    			selectGermplasmWindow.getParent().removeWindow(selectGermplasmWindow);
-    		} catch(NullPointerException e) {
-    			selectGermplasmWindows.remove(selectGermplasmWindow);
+    public void closeAllImportEntryListeners(){
+    	for(int i=0;i<importEntryListeners.size();i++){
+    		ImportGermplasmEntryActionListener listener = importEntryListeners.get(i);
+    		if (listener instanceof SelectGermplasmWindow){
+    			SelectGermplasmWindow window = (SelectGermplasmWindow) listener;
+    			getWindow().removeWindow(window);
     		}
     	}
-    	selectGermplasmWindows.clear();
+    	importEntryListeners.clear();
     	germplasmDetailsComponent.closeSaveListAsDialog();
     	nameGermplasmMap.clear();
     }
@@ -495,6 +484,10 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	public List<GermplasmName> getGermplasmNameObjects(){
 		return germplasmNameObjects;
 	}
+	
+	public List<Name> getNewNames(){
+		return newDesignationsForExistingGermplasm;
+	}
 
 
 	public Map<String, Germplasm> getNameGermplasmMap() {
@@ -506,48 +499,90 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		this.nameGermplasmMap = nameGermplasmMap;
 	}
 	
-	public void removeWindow(SelectGermplasmWindow selectGermplasmWindow) {
-		selectGermplasmWindows.remove(selectGermplasmWindow);
+	public void removeListener(ImportGermplasmEntryActionListener importEntryListener) {
+		importEntryListeners.remove(importEntryListener);
 	}
 
 	public void processNextItems() {
-		Iterator<SelectGermplasmWindow> window = selectGermplasmWindows.iterator();
-		if(!window.hasNext()) {
+		Iterator<ImportGermplasmEntryActionListener> listenersIterator = importEntryListeners.iterator();
+		if(!listenersIterator.hasNext()) {
 			saveImport();
 			return;
 		}
-		SelectGermplasmWindow selectGermplasmWindow = window.next();
-		String germplasmName = selectGermplasmWindow.getGermplasmName();
-		int germplasmIndex = selectGermplasmWindow.getGermplasmIndex();
-		Germplasm germplasm = checkIfThereIsAMatch(germplasmName);
-		if(germplasm != null) {
-			nameGermplasmMap.get(germplasmName);
-			germplasmNameObjects.get(germplasmIndex).setGermplasm(germplasm);
-			removeWindow(selectGermplasmWindow);
-			processNextItems();
+		ImportGermplasmEntryActionListener listener = listenersIterator.next();
+		if (listener instanceof SelectGermplasmWindow){
+			String germplasmName = listener.getGermplasmName();
+			int germplasmIndex = listener.getGermplasmIndex();
+			Germplasm germplasm = checkIfThereIsAMatch(germplasmName);
+			if(germplasm != null) {
+				nameGermplasmMap.get(germplasmName);
+				germplasmNameObjects.get(germplasmIndex).setGermplasm(germplasm);
+				removeListener(listener);
+				processNextItems();
+			} else {
+				//If not from popup
+				showImportEntryListener(listener);
+			}
+			
+		// New Name confirm dialog
 		} else {
-        	//If not from popup
-        	if(germplasmDetailsComponent.getSource().getGermplasmImportPopupSource()==null){
-        		germplasmDetailsComponent.getWindow().addWindow(selectGermplasmWindow);
-        	} else {
-        		germplasmDetailsComponent.getSource().getGermplasmImportPopupSource().getParentWindow().addWindow(selectGermplasmWindow);
-        	}
+			showImportEntryListener(listener);
+		}
+	}
+
+
+	protected void showImportEntryListener(ImportGermplasmEntryActionListener listener) {
+		if (listener instanceof SelectGermplasmWindow){
+			showSelectGermplasmWindow(listener);
+			
+		} else if (listener instanceof NameNotExistsForGermplasmActionListener){
+			NameNotExistsForGermplasmActionListener nameNotExistsListener = 
+					(NameNotExistsForGermplasmActionListener) listener;
+			
+			ConfirmDialog.show(getWindow(), NameNotExistsForGermplasmActionListener.WINDOW_NAME
+		            , nameNotExistsListener.getConfirmationMessage()
+		            , NameNotExistsForGermplasmActionListener.ADD_NAME_TO_GID  //confirm option
+		            , NameNotExistsForGermplasmActionListener.SEARCH_OR_CREATE_NEW  //the other option 
+		            , nameNotExistsListener
+			);
+		}
+		
+	}
+
+
+	protected void showSelectGermplasmWindow(ImportGermplasmEntryActionListener listener) {
+		SelectGermplasmWindow window = (SelectGermplasmWindow) listener;
+		getWindow().addWindow(window);
+	}
+	
+	public Window getWindow(){
+		if(germplasmDetailsComponent.getSource().getGermplasmImportPopupSource()==null){
+			return germplasmDetailsComponent.getWindow();
+		} else {
+			return germplasmDetailsComponent.getSource().getGermplasmImportPopupSource().getParentWindow();
 		}
 	}
 	
 	public void ignoreRemainingMatches() {
-		Iterator<SelectGermplasmWindow> window = selectGermplasmWindows.iterator();
-		while(window.hasNext()) {
-			SelectGermplasmWindow selectGermplasmWindow = window.next();
-			String germplasmName = selectGermplasmWindow.getGermplasmName();
-			int germplasmIndex = selectGermplasmWindow.getGermplasmIndex();
-			Germplasm germplasm = checkIfThereIsAMatch(germplasmName);
-			if(germplasm!=null) {
-				germplasmNameObjects.get(germplasmIndex).setGermplasm(germplasm);
+		Iterator<ImportGermplasmEntryActionListener> listenersIterator = importEntryListeners.iterator();
+		while(listenersIterator.hasNext()) {
+			ImportGermplasmEntryActionListener listener = listenersIterator.next();
+			if (listener instanceof SelectGermplasmWindow){
+				String germplasmName = listener.getGermplasmName();
+				int germplasmIndex = listener.getGermplasmIndex();
+				Germplasm germplasm = checkIfThereIsAMatch(germplasmName);
+				if(germplasm!=null) {
+					germplasmNameObjects.get(germplasmIndex).setGermplasm(germplasm);
+				}
+				importEntryListeners.remove(listener);
 			}
 		}
-		selectGermplasmWindows.clear();
-		saveImport();
+//		importEntryListeners.clear();
+		if (importEntryListeners.isEmpty()){
+			saveImport();
+		} else {
+			processNextItems();
+		}
 	}
 
 	public void saveImport() {
@@ -585,8 +620,11 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		return null;
 	}
 	
-		
-
+	public void addNameToGermplasm(Name name, Integer gid){
+		doNotCreateGermplasmsWithId.add(gid);
+		newDesignationsForExistingGermplasm.add(name);
+	}
+	
 	
 
 }

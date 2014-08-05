@@ -30,6 +30,7 @@ import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.Name;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -278,6 +279,11 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
     public List<GermplasmName> getGermplasmNameObjects(){
     	return processGermplasmAction.getGermplasmNameObjects();
     }
+    
+	private List<Name> getNewNames(){
+		return processGermplasmAction.getNewNames();
+	}
+
 
 	@Override
 	public void instantiateComponents() {
@@ -445,7 +451,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 		SaveGermplasmListAction saveGermplasmListAction = new SaveGermplasmListAction();
 		
 		try {
-			Integer listId = saveGermplasmListAction.saveRecords(list, getGermplasmNameObjects(), 
+			Integer listId = saveGermplasmListAction.saveRecords(list, getGermplasmNameObjects(), getNewNames(), 
 					germplasmListUploader.getOriginalFilename(), processGermplasmAction.getMatchedGermplasmIds(), importedGermplasms);
 			
 			if (listId != null){
