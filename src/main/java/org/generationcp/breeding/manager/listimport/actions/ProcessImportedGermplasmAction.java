@@ -294,7 +294,9 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		        	germplasmNameObjects.add(new GermplasmName(createdGermplasms.get(name.getNval()),name));
 		        }
 		        
-		        if((germplasmMatchesCount>1 || !germplasmDetailsComponent.automaticallyAcceptSingleMatchesCheckbox())&& searchByNameOrNewGermplasmIsNeeded){
+		        if( ((germplasmMatchesCount>1) 
+		        		|| (germplasmMatchesCount > 0 && !germplasmDetailsComponent.automaticallyAcceptSingleMatchesCheckbox())) 
+		        		&& searchByNameOrNewGermplasmIsNeeded){
 		        	displaySelectGermplasmWindowIfNecessary(importedGermplasm.getDesig(), i, germplasm);
 		        }
 		    }
