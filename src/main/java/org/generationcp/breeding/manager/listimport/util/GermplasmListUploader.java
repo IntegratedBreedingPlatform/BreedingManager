@@ -181,6 +181,8 @@ public class GermplasmListUploader implements FileFactory {
         	throwInvalidFileTypeError();
         } catch (ConversionException e) {
             throwInvalidFileTypeError();
+        } catch (Exception e) {
+        	throwInvalidFileTypeError();
         }
     }
 
@@ -609,7 +611,7 @@ public class GermplasmListUploader implements FileFactory {
     }
     
     private void throwInvalidFileTypeError() throws GermplasmImportException {
-    	throw new InvalidFileTypeImportException("Please upload a properly formatted XLS file.");
+    	throw new InvalidFileTypeImportException("Please upload a properly formatted XLS or XLSX file.");
     }    
     
     public Boolean importFileIsAdvanced(){
