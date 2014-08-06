@@ -47,7 +47,7 @@ public class GroupRelativesQuery implements Query{
     public static final Object PREFERRED_NAME = "preferred name";
     
     private Integer gid;
-    
+    private int size = 0;
     @Autowired
     private PedigreeDataManager pedigreeDataManager;
     
@@ -120,9 +120,11 @@ public class GroupRelativesQuery implements Query{
      */
     @Override
     public int size() {
-        int size = 0;
+        
         try {
-	    size = ((Long) pedigreeDataManager.countGroupRelatives(gid)).intValue();
+        	if(size==0) {
+        		size = ((Long) pedigreeDataManager.countGroupRelatives(gid)).intValue();
+        	}
 	} catch (MiddlewareQueryException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();

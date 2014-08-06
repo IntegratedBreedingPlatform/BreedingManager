@@ -51,6 +51,7 @@ public class ManagementNeighborsQuery implements Query{
     @Autowired
     private PedigreeDataManager pedigreeDataManager;
     private Integer gid;
+    private int size = 0;
     
     /**
      * These parameters are passed by the QueryFactory which instantiates
@@ -122,9 +123,11 @@ public class ManagementNeighborsQuery implements Query{
      */
     @Override
     public int size() {
-        int size = 0;
+        
         try {
-            size = ((Long) pedigreeDataManager.countManagementNeighbors(gid)).intValue();
+        	if(size==0) {
+        		size = ((Long) pedigreeDataManager.countManagementNeighbors(gid)).intValue();
+        	}
         } catch (MiddlewareQueryException ex) {
             LOG.error("Error with getting number of management neighbors for gid: " + gid + "\n" + ex.toString());
         }
