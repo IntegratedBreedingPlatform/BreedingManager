@@ -186,6 +186,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
         editHeaderButton = new Button(messageSource.getMessage(Message.EDIT_HEADER));
         editHeaderButton.setImmediate(true);
         editHeaderButton.setStyleName(Reindeer.BUTTON_LINK);
+        editHeaderButton.setVisible(false);
 		
 		totalListEntriesLabel = new Label(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
          		 + "  <b>0</b>", Label.CONTENT_XHTML);
@@ -557,6 +558,9 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			
 			//Reserve Inventory Action will now be available after saving the list for the first time
 			menuReserveInventory.setEnabled(true);
+			
+			//Edit Header Section will also be visible to the user
+			editHeaderButton.setVisible(true);
 			
 			//show success message for saving
 			MessageNotifier.showMessage(this.source.getWindow(), messageSource.getMessage(Message.SUCCESS), 
@@ -1339,6 +1343,10 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	public void enableReserveInventory() {
 		menuReserveInventory.setEnabled(true);
+	}
+	
+	public void enableEditListHeaderOption() {
+		editHeaderButton.setVisible(true);
 	}	
 	
 	public CrossingManagerInventoryTable getListInventoryTable(){

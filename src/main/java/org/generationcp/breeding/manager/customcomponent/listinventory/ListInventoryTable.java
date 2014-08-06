@@ -197,6 +197,35 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		loadInventoryData(); //reset
 	}
 	
+	public void resetRowsForCancelledReservation(
+			List<ListEntryLotDetails> lotDetailsToCancel, Integer listId) {
+		
+		for(ListEntryLotDetails lotDetail : lotDetailsToCancel){
+			Item item = listInventoryTable.getItem(lotDetail);
+			
+			Double avail_column = (Double) item.getItemProperty(AVAIL_COLUMN_ID).getValue();
+			Double reserved_column = (Double) item.getItemProperty(RESERVED_COLUMN_ID).getValue();
+			Double newAvailVal = avail_column + reserved_column; 
+			
+			item.getItemProperty(AVAIL_COLUMN_ID).setValue(newAvailVal);
+			item.getItemProperty(RESERVED_COLUMN_ID).setValue(0);
+			item.getItemProperty(NEWLY_RESERVED_COLUMN_ID).setValue(0);
+		}
+	}
+	
+	public boolean isSelectedEntriesHasReservation(List<ListEntryLotDetails> lotDetailsGid) {
+		for(ListEntryLotDetails lotDetails : lotDetailsGid){
+			Item item = listInventoryTable.getItem(lotDetails);
+			Double res_column = (Double)item.getItemProperty(RESERVED_COLUMN_ID).getValue();
+			Double new_res_column = (Double)item.getItemProperty(NEWLY_RESERVED_COLUMN_ID).getValue();
+			
+			if(res_column > 0 || new_res_column > 0){
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public List<ListEntryLotDetails> getSelectedLots(){
 		Collection<ListEntryLotDetails> selectedEntries = (Collection<ListEntryLotDetails>) listInventoryTable.getValue();

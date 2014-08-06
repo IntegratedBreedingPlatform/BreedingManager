@@ -47,6 +47,7 @@ import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -166,6 +167,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     private ContextMenu inventoryViewMenu;
 	private ContextMenuItem menuCopyToNewListFromInventory;
 	private ContextMenuItem menuReserveInventory;
+	@SuppressWarnings("unused")
+	private ContextMenuItem menuCancelReservation;
 	
 	private SaveListAsDialog dialog;
 	
@@ -284,7 +287,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         
         inventoryViewMenu = new ContextMenu();
         inventoryViewMenu.setWidth("300px");
-        
+        menuCancelReservation = inventoryViewMenu.addItem(messageSource.getMessage(Message.CANCEL_RESERVATIONS));
         menuCopyToNewListFromInventory = inventoryViewMenu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST));
         menuReserveInventory = inventoryViewMenu.addItem(messageSource.getMessage(Message.RESERVE_INVENTORY));
         inventoryViewMenu.addItem(messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
@@ -322,6 +325,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         //initially disabled when the current list building is not yet save or being reset
         menuExportList.setEnabled(false);
         menuCopyToList.setEnabled(false);
+        menuCancelReservation.setEnabled(false);
     }
     
     private void resetInventoryMenuOptions() {
@@ -383,6 +387,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		          	  reserveInventoryAction();
                   } else if(clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))){
                 	  listInventoryTable.getTable().setValue(listInventoryTable.getTable().getItemIds());
+		          } else if(clickedItem.getName().equals(messageSource.getMessage(Message.CANCEL_RESERVATIONS))){
+                	  cancelReservationsAction();
 		          }      
 		    }
 		});		
@@ -867,6 +873,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         menuExportList.setEnabled(true);
         menuCopyToList.setEnabled(true);
         menuReserveInventory.setEnabled(true);
+        menuCancelReservation.setEnabled(true);
     }
     
 	public void editList(GermplasmList germplasmList) {
@@ -1376,15 +1383,64 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		}
 	}
 	
-private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReservationsToSave){
+	public void cancelReservationsAction() {
+		List<ListEntryLotDetails> lotDetailsGid = listInventoryTable.getSelectedLots();
 		
-		Set<Integer> entryIds = new HashSet<Integer>();
-		for(Entry<ListEntryLotDetails, Double> details : validReservationsToSave.entrySet()){
-			entryIds.add(details.getKey().getId());
-		 }
+		if( lotDetailsGid == null || lotDetailsGid.size() == 0){
+			MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.WARNING), 
+					"Please select at least 1 lot to cancel reservations.");
+		}
+		else{
+			if(!listInventoryTable.isSelectedEntriesHasReservation(lotDetailsGid)){
+				MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.WARNING), 
+						"There is no reservation to the current selected lots.");
+			}
+			else{
+				ConfirmDialog.show(getWindow(), messageSource.getMessage(Message.CANCEL_RESERVATIONS), 
+					"Are you sure you want to cancel the selected reservations?"
+					, messageSource.getMessage(Message.YES), messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {	
+						private static final long serialVersionUID = 1L;	
+						@Override
+						public void onClose(ConfirmDialog dialog) {
+							if (dialog.isConfirmed()) {
+								cancelReservations();
+							}
+						}
+					}
+				);
+			}
+		}
+	}
+
+	public void cancelReservations() {
+		List<ListEntryLotDetails> lotDetailsGid = listInventoryTable.getSelectedLots();
+		reserveInventoryAction = new ReserveInventoryAction(this);
+		try {
+			reserveInventoryAction.cancelReservations(lotDetailsGid);
+		} catch (MiddlewareQueryException e) {
+			e.printStackTrace();
+		}
 		
+		refreshInventoryColumns(getLrecIds(lotDetailsGid));
+		listInventoryTable.resetRowsForCancelledReservation(lotDetailsGid,currentlySavedGermplasmList.getId());
+		
+		MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
+				"All selected reservations were cancelled successfully.");
+	}
+	
+	private Set<Integer> getLrecIds(List<ListEntryLotDetails> lotDetails) {
+		Set<Integer> lrecIds = new HashSet<Integer>();
+		
+		for(ListEntryLotDetails lotDetail: lotDetails){
+			if(!lrecIds.contains(lotDetail.getId())){
+				lrecIds.add(lotDetail.getId());
+			}
+		}
+		return lrecIds;
+	}
+	
+	private void refreshInventoryColumns(Set<Integer> entryIds) {
 		List<GermplasmListData> germplasmListDataEntries = new ArrayList<GermplasmListData>();
-		
 		try {
 			if (!entryIds.isEmpty())
 				germplasmListDataEntries = this.inventoryDataManager.getLotCountsForListEntries(currentlySavedGermplasmList.getId(), new ArrayList<Integer>(entryIds));
@@ -1430,8 +1486,16 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 			
 	   		item.getItemProperty(ListDataTablePropertyID.SEED_RES.getName()).setValue(seed_res);
 		}
+	}
+	
+	private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReservationsToSave){
 		
+		Set<Integer> entryIds = new HashSet<Integer>();
+		for(Entry<ListEntryLotDetails, Double> details : validReservationsToSave.entrySet()){
+			entryIds.add(details.getKey().getId());
+		}
 		
+		refreshInventoryColumns(entryIds);
 	}
 
 	@Override
@@ -1576,9 +1640,13 @@ private void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReser
 		for(Integer itemId : itemIds){
 			Item item = listDataTable.getItem(itemId);
 			Button gidButton = (Button) item.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
+			
 			String currentGid = "";
 			if(gidButton!=null){
 				currentGid = gidButton.getCaption();
+			}
+			
+			if(currentGid.equals(gid)){
 				((Button) item.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).getValue()).setCaption(availInv);
 			}
 		}

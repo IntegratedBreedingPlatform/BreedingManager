@@ -16,7 +16,7 @@
     </licenses>
 
     <properties>
-        <vaadin.version>6.8.10</vaadin.version>
+        <vaadin.version>6.8.13</vaadin.version>
         <gwt.version>2.3.0</gwt.version>
     </properties>
     <dependencies>

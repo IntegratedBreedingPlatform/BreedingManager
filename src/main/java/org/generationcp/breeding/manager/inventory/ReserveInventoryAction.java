@@ -13,6 +13,7 @@ import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.ims.Lot;
+import org.generationcp.middleware.pojos.ims.ReservedInventoryKey;
 import org.generationcp.middleware.pojos.ims.Transaction;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -211,5 +212,22 @@ public class ReserveInventoryAction implements Serializable {
 
 	public Map<ListEntryLotDetails, Double> getInvalidLotReservations() {
 		return invalidLotReservations;
+	}
+	
+	public List<ReservedInventoryKey> getLotIdAndLrecId(List<ListEntryLotDetails> listEntries){
+		List<ReservedInventoryKey> lrecIds = new ArrayList<ReservedInventoryKey>();
+		int id = 1;
+		for(ListEntryLotDetails lotDetail : listEntries){
+			ReservedInventoryKey key = new ReservedInventoryKey(id, lotDetail.getId(), lotDetail.getLotId());
+			if(!lrecIds.contains(key)){
+				lrecIds.add(key);
+				id++;
+			}
+		}
+		return lrecIds;
+	}
+
+	public void cancelReservations(List<ListEntryLotDetails> listEntries) throws MiddlewareQueryException {
+		inventoryDataManager.cancelReservedInventory(getLotIdAndLrecId(listEntries));
 	}
 }
