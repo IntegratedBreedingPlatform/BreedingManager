@@ -25,7 +25,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Select;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.Window.Notification;
 
 @Configurable
 public class CrossingSettingsNameComponent extends CssLayout implements
@@ -45,8 +44,9 @@ public class CrossingSettingsNameComponent extends CssLayout implements
 	private Label namingLabel;
 	private Label namingDescLabel;
 
-	private OptionGroup addSpaceOptionGroup;
-
+	private OptionGroup addSpaceBetPrefixAndCodeOptionGroup;
+	private OptionGroup addSpaceBetSuffixAndCodeOptionGroup;
+	
 	private TextField crossNamePrefix;
     private TextField crossNameSuffix;
 
@@ -59,7 +59,7 @@ public class CrossingSettingsNameComponent extends CssLayout implements
     private TextField generatedNextName;
     private TextField generatedExampleParentage;
 
-    public enum AddSpaceBetPrefixAndCodeOption{
+    public enum AddSpaceOption{
         YES, NO
     };
 
@@ -91,9 +91,12 @@ public class CrossingSettingsNameComponent extends CssLayout implements
 		namingDescLabel = new Label(messageSource.getMessage(Message.SPECIFY_NAMING_CONVENTION_FOR_CROSSES));
 		namingDescLabel.addStyleName("gcp-content-help-text");
 
-		addSpaceOptionGroup = new OptionGroup(messageSource.getMessage(Message.ADD_SPACE_BETWEEN_PREFIX_AND_CODE));
-        addSpaceOptionGroup.setImmediate(true);
-
+		addSpaceBetPrefixAndCodeOptionGroup = new OptionGroup(messageSource.getMessage(Message.ADD_SPACE_BETWEEN_PREFIX_AND_CODE));
+        addSpaceBetPrefixAndCodeOptionGroup.setImmediate(true);
+        
+        addSpaceBetSuffixAndCodeOptionGroup = new OptionGroup(messageSource.getMessage(Message.ADD_SPACE_BETWEEN_SUFFIX_AND_CODE));
+        addSpaceBetSuffixAndCodeOptionGroup.setImmediate(true);
+        
         crossNamePrefix = new TextField(messageSource.getMessage(Message.CROSS_NAME_PREFIX));
         crossNamePrefix.setImmediate(true);
         crossNamePrefix.setMaxLength(MAX_PREFIX_SUFFIX_LENGTH);
@@ -134,10 +137,16 @@ public class CrossingSettingsNameComponent extends CssLayout implements
         // Add space option group
         final String yes = messageSource.getMessage(Message.YES);
         final String no = messageSource.getMessage(Message.NO);
-        addSpaceOptionGroup.addItem(AddSpaceBetPrefixAndCodeOption.YES);
-        addSpaceOptionGroup.setItemCaption(AddSpaceBetPrefixAndCodeOption.YES, yes);
-        addSpaceOptionGroup.addItem(AddSpaceBetPrefixAndCodeOption.NO);
-        addSpaceOptionGroup.setItemCaption(AddSpaceBetPrefixAndCodeOption.NO, no);
+        
+        addSpaceBetPrefixAndCodeOptionGroup.addItem(AddSpaceOption.YES);
+        addSpaceBetPrefixAndCodeOptionGroup.setItemCaption(AddSpaceOption.YES, yes);
+        addSpaceBetPrefixAndCodeOptionGroup.addItem(AddSpaceOption.NO);
+        addSpaceBetPrefixAndCodeOptionGroup.setItemCaption(AddSpaceOption.NO, no);
+        
+        addSpaceBetSuffixAndCodeOptionGroup.addItem(AddSpaceOption.YES);
+        addSpaceBetSuffixAndCodeOptionGroup.setItemCaption(AddSpaceOption.YES, yes);
+        addSpaceBetSuffixAndCodeOptionGroup.addItem(AddSpaceOption.NO);
+        addSpaceBetSuffixAndCodeOptionGroup.setItemCaption(AddSpaceOption.NO, no);
 
         setFieldsDefaultValue();
 	}
@@ -156,7 +165,8 @@ public class CrossingSettingsNameComponent extends CssLayout implements
 		// Generate new cross name when any of the fields change
 		crossNamePrefix.addListener(new CrossNameFieldsValueChangeListener());
 		crossNameSuffix.addListener(new CrossNameFieldsValueChangeListener());
-		addSpaceOptionGroup.addListener(new CrossNameFieldsValueChangeListener());
+		addSpaceBetPrefixAndCodeOptionGroup.addListener(new CrossNameFieldsValueChangeListener());
+		addSpaceBetSuffixAndCodeOptionGroup.addListener(new CrossNameFieldsValueChangeListener());
 		leadingZerosSelect.addListener(new CrossNameFieldsValueChangeListener());
 		startNumberTextField.addListener(new CrossNameFieldsValueChangeListener());
 	}
@@ -168,7 +178,8 @@ public class CrossingSettingsNameComponent extends CssLayout implements
 
 		formFields.addComponent(crossNamePrefix);
 		formFields.addComponent(crossNameSuffix);
-		formFields.addComponent(addSpaceOptionGroup);
+		formFields.addComponent(addSpaceBetPrefixAndCodeOptionGroup);
+		formFields.addComponent(addSpaceBetSuffixAndCodeOptionGroup);
 		formFields.addComponent(leadingZerosSelect);
 		formFields.addComponent(startNumberTextField);
 		formFields.addComponent(separatorTextField);
@@ -192,11 +203,12 @@ public class CrossingSettingsNameComponent extends CssLayout implements
 		    suffix = null; //set as null so attribute will not be marshalled
 		}
 
-		final boolean addSpaceBetweenPrefixAndCode = AddSpaceBetPrefixAndCodeOption.YES.equals(addSpaceOptionGroup.getValue());
+		final boolean addSpaceBetweenPrefixAndCode = AddSpaceOption.YES.equals(addSpaceBetPrefixAndCodeOptionGroup.getValue());
+		final boolean addSpaceBetweenSuffixAndCode = AddSpaceOption.YES.equals(addSpaceBetSuffixAndCodeOptionGroup.getValue());
 		final Integer numOfDigits = leadingZerosSelect.getValue() == null ? null : (Integer) leadingZerosSelect.getValue();
 
 		final String separator = (String) separatorTextField.getValue();
-		final CrossNameSetting crossNameSettingPojo = new CrossNameSetting(prefix.trim(), suffix, addSpaceBetweenPrefixAndCode, numOfDigits, separator);
+		final CrossNameSetting crossNameSettingPojo = new CrossNameSetting(prefix.trim(), suffix, addSpaceBetweenPrefixAndCode, addSpaceBetweenSuffixAndCode, numOfDigits, separator);
 		final String startNumber = (String) startNumberTextField.getValue();
 
 		if (!startNumber.isEmpty() && NumberUtils.isDigits(startNumber)){
@@ -210,10 +222,17 @@ public class CrossingSettingsNameComponent extends CssLayout implements
 		crossNamePrefix.setValue(crossNameSetting.getPrefix());
 
 		if(crossNameSetting.isAddSpaceBetweenPrefixAndCode()){
-			addSpaceOptionGroup.select(AddSpaceBetPrefixAndCodeOption.YES);
+			addSpaceBetPrefixAndCodeOptionGroup.select(AddSpaceOption.YES);
 		}
 		else{
-			addSpaceOptionGroup.select(AddSpaceBetPrefixAndCodeOption.NO);
+			addSpaceBetPrefixAndCodeOptionGroup.select(AddSpaceOption.NO);
+		}
+		
+		if(crossNameSetting.isAddSpaceBetweenSuffixAndCode()){
+			addSpaceBetSuffixAndCodeOptionGroup.select(AddSpaceOption.YES);
+		}
+		else{
+			addSpaceBetSuffixAndCodeOptionGroup.select(AddSpaceOption.NO);
 		}
 
 		if(crossNameSetting.getNumOfDigits() != null
@@ -236,7 +255,8 @@ public class CrossingSettingsNameComponent extends CssLayout implements
     public void setFieldsDefaultValue() {
 		crossNamePrefix.setValue("");
 		crossNameSuffix.setValue("");
-		addSpaceOptionGroup.select(AddSpaceBetPrefixAndCodeOption.NO);
+		addSpaceBetPrefixAndCodeOptionGroup.select(AddSpaceOption.NO);
+		addSpaceBetSuffixAndCodeOptionGroup.select(AddSpaceOption.NO);
 		leadingZerosSelect.select(null);
 		startNumberTextField.setValue("");
 		separatorTextField.setValue(CrossNameSetting.DEFAULT_SEPARATOR);
@@ -250,7 +270,7 @@ public class CrossingSettingsNameComponent extends CssLayout implements
 
 		if (prefix == null || prefix.trim().length() == 0) {
 			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT)
-					, messageSource.getMessage(Message.PLEASE_SPECIFY_A_PREFIX), Notification.POSITION_CENTERED);
+					, messageSource.getMessage(Message.PLEASE_SPECIFY_A_PREFIX));
 			return false;
 		}
 		return validateStartNumberField();
@@ -276,7 +296,7 @@ public class CrossingSettingsNameComponent extends CssLayout implements
                 LOG.error(e.toString() + "\n" + e.getStackTrace());
                 e.printStackTrace();
                 MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE),
-                        messageSource.getMessage(Message.ERROR_IN_GETTING_NEXT_NUMBER_IN_CROSS_NAME_SEQUENCE), Notification.POSITION_CENTERED);
+                        messageSource.getMessage(Message.ERROR_IN_GETTING_NEXT_NUMBER_IN_CROSS_NAME_SEQUENCE));
             }
         } else {
         	updateNextNameInSequence("");
@@ -294,12 +314,12 @@ public class CrossingSettingsNameComponent extends CssLayout implements
 		if (!StringUtils.isEmpty(startNumberString)){
 			if(startNumberString.length() > 10){
 				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT)
-						, messageSource.getMessage(Message.STARTING_NUMBER_HAS_TOO_MANY_DIGITS), Notification.POSITION_CENTERED);
+						, messageSource.getMessage(Message.STARTING_NUMBER_HAS_TOO_MANY_DIGITS));
 				return false;
 			}
 			if (!NumberUtils.isDigits(startNumberString)){
 				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT)
-						, messageSource.getMessage(Message.PLEASE_ENTER_VALID_STARTING_NUMBER), Notification.POSITION_CENTERED);
+						, messageSource.getMessage(Message.PLEASE_ENTER_VALID_STARTING_NUMBER));
 				return false;
 			}
 
