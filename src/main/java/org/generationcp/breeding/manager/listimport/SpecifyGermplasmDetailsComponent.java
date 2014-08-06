@@ -75,7 +75,8 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
     private Button backButton;
     private Button nextButton;
 
-
+    private ImportedGermplasmList importedGermplasmList;
+    
     private CheckBox automaticallyAcceptSingleMatchesCheckbox;
 
     private List<ImportedGermplasm> importedGermplasms;
@@ -422,6 +423,9 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 	}
 	
 	public void initializeFromImportFile(ImportedGermplasmList importedGermplasmList){
+		
+		this.importedGermplasmList = importedGermplasmList;
+		
 		//Clear table contents first (possible that it has some rows in it from previous uploads, and then user went back to upload screen)
 		getGermplasmDetailsTable().removeAllItems();
         String source;
@@ -452,7 +456,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 		
 		try {
 			Integer listId = saveGermplasmListAction.saveRecords(list, getGermplasmNameObjects(), getNewNames(), 
-					germplasmListUploader.getOriginalFilename(), processGermplasmAction.getMatchedGermplasmIds(), importedGermplasms);
+					germplasmListUploader.getOriginalFilename(), processGermplasmAction.getMatchedGermplasmIds(), importedGermplasmList);
 			
 			if (listId != null){
 				Window window = this.source.getWindow();
@@ -511,4 +515,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 		return (Boolean) automaticallyAcceptSingleMatchesCheckbox.getValue();
 	}
 	
+	public ImportedGermplasmList getImportedGermplasmList(){
+		return importedGermplasmList;
+	}
 }
