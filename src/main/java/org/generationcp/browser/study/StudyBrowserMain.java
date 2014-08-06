@@ -21,6 +21,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
@@ -82,14 +83,14 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
     	browseForStudy = new Button();
     	browseForStudy.setImmediate(true);
     	browseForStudy.setStyleName(Reindeer.BUTTON_LINK);
-    	browseForStudy.setWidth("42px");
+    	browseForStudy.setWidth("45px");
     	
     	or = new Label("or");
     	
     	searchForStudy = new Button();
     	searchForStudy.setImmediate(true);
     	searchForStudy.setStyleName(Reindeer.BUTTON_LINK);
-    	searchForStudy.setWidth("38px");
+    	searchForStudy.setWidth("40px");
     	
     	browseStudyDescriptionLabel = new Label("for a study to work with.");
     	
@@ -132,11 +133,15 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
 		setMargin(false, true, true, true);
 		
         HorizontalLayout directionLayout = new HorizontalLayout();
+        directionLayout.addStyleName("study-browser-main");
+        directionLayout.setHeight("16px");
         directionLayout.setSpacing(true);
         directionLayout.addComponent(browseForStudy);
         directionLayout.addComponent(or);
         directionLayout.addComponent(searchForStudy);
         directionLayout.addComponent(browseStudyDescriptionLabel);
+        directionLayout.setComponentAlignment(browseForStudy, Alignment.BOTTOM_CENTER);
+        directionLayout.setComponentAlignment(searchForStudy, Alignment.BOTTOM_CENTER);
         
         addComponent(applicationTitle);
         addComponent(headingLabel);
