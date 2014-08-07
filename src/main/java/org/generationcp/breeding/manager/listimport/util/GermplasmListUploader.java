@@ -154,7 +154,11 @@ public class GermplasmListUploader implements FileFactory {
             if(tempFileName.toLowerCase().endsWith(".xls")){
             	wb = new HSSFWorkbook(inp);
             } else {
-            	wb = new XSSFWorkbook(inp);
+            	try {
+            		wb = new XSSFWorkbook(inp);
+            	} catch (Exception e) {
+            		throwInvalidFileTypeError();
+            	}
             }
             
             Sheet sheet1 = wb.getSheetAt(0);
@@ -172,8 +176,6 @@ public class GermplasmListUploader implements FileFactory {
             readSheet1();
             readSheet2();
 
-//        } catch (InvalidFormatException e) {
-//        	throwInvalidFileTypeError();
         } catch (FileNotFoundException e) {
         	//	"File not found"
         } catch (IOException e) {
