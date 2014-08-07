@@ -153,12 +153,14 @@ public class GermplasmListUploader implements FileFactory {
             
             if(tempFileName.toLowerCase().endsWith(".xls")){
             	wb = new HSSFWorkbook(inp);
-            } else {
+            } else if(tempFileName.toLowerCase().endsWith(".xlsx")){ 
             	try {
             		wb = new XSSFWorkbook(inp);
             	} catch (Exception e) {
             		throwInvalidFileTypeError();
             	}
+            } else {
+            	throwInvalidFileTypeError();
             }
             
             Sheet sheet1 = wb.getSheetAt(0);
