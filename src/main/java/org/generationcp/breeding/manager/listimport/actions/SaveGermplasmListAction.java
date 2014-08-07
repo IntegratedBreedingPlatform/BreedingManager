@@ -173,12 +173,13 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
         	Integer gid = item.getKey();
         	Lot lot = item.getValue();
         	//lot.setTransactions(gidTransactionSetMap.get(gid));
-        	inventoryDataManager.addLot(lot);
         	
         	List<Transaction> listOfTransactions = gidTransactionSetMap.get(gid);
         	
-        	if(listOfTransactions!=null && listOfTransactions.size()>0)
+        	if(listOfTransactions!=null && listOfTransactions.size()>0){
+            	inventoryDataManager.addLot(lot);
         		inventoryDataManager.addTransactions(listOfTransactions);
+        	}
         }
         
         // log project activity in Workbench
@@ -261,7 +262,8 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
             	Integer intDate = Integer.valueOf(df.format(date));
             	
             	Transaction transaction = new Transaction(null, wbUserId, gidLotMap.get(gid), intDate, 1, importedGermplasm.getSeedAmount(), "From list import", 0, "LIST", list.getId(), lrecId, Double.valueOf(0), 0);
-            	gidTransactionSetMap.get(gid).add(transaction);
+            	if(importedGermplasm.getSeedAmount()!=null)
+            		gidTransactionSetMap.get(gid).add(transaction);
             }
             
         }
