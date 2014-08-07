@@ -13,7 +13,6 @@ package org.generationcp.breeding.manager.listimport;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
@@ -21,6 +20,7 @@ import org.generationcp.breeding.manager.listimport.actions.ProcessImportedGermp
 import org.generationcp.breeding.manager.listimport.listeners.CloseWindowAction;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
+import org.generationcp.breeding.manager.listimport.listeners.ImportGermplasmEntryActionListener;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -50,8 +50,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.ui.themes.Reindeer;
 
 
 /**
@@ -59,7 +59,8 @@ import com.vaadin.ui.themes.BaseTheme;
  *
  */
 @Configurable
-public class SelectGermplasmWindow extends Window implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, Window.CloseListener{
+public class SelectGermplasmWindow extends Window implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, 
+		Window.CloseListener, ImportGermplasmEntryActionListener{
 
     private static final String PARENTAGE = "Parentage";
 
@@ -132,7 +133,7 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
         		Germplasm selectedGermplasm = this.germplasmDataManager.getGermplasmByGID((Integer) germplasmTable.getValue());
             	source.receiveGermplasmFromWindowAndUpdateGermplasmData(germplasmIndex, germplasm, selectedGermplasm);
         	}
-        	source.removeWindow(this);
+        	source.removeListener(this);
         	if(ignoreRemainingMatchesCheckbox.booleanValue()) {
         		source.ignoreRemainingMatches();
         	} else {
@@ -186,7 +187,7 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
 
     public void cancelButtonClickAction(){
     	if(source instanceof ProcessImportedGermplasmAction){
-	    	source.closeAllSelectGermplasmWindows();
+	    	source.closeAllImportEntryListeners();
     	}
     }
 
@@ -302,6 +303,7 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
         setWidth("800px");
         setHeight("460px");
         setResizable(false);
+        addStyleName(Reindeer.WINDOW_LIGHT);
         
         // center window within the browser
         center();
@@ -423,7 +425,7 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
 	@Override
 	public void windowClose(CloseEvent e) {
 		super.close();
-		source.closeAllSelectGermplasmWindows();
+		source.closeAllImportEntryListeners();
 	}
 	
 	

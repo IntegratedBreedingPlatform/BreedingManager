@@ -131,6 +131,12 @@
     	<aop:scoped-proxy/>
     </bean>
     
+    <bean id="ontologyDataManager" factory-bean="managerFactory"
+        factory-method="getOntologyDataManager"
+        scope="request">
+        <aop:scoped-proxy/>
+    </bean>
+    
     <bean id="studyDataManager" factory-bean="managerFactory"
     	factory-method="getNewStudyDataManager"
     	scope="request">

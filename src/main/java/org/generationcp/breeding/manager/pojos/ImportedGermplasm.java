@@ -8,6 +8,7 @@ public class ImportedGermplasm {
     private String cross;
     private String source;
     private String entryCode;
+    private Double seedAmount;
     
     public ImportedGermplasm(){
         
@@ -65,4 +66,13 @@ public class ImportedGermplasm {
 	public String getEntryCode(){
 		return entryCode;
 	}
+	
+    public void setSeedAmount(Double seedAmount){
+        this.seedAmount = seedAmount;
+	}
+	
+	public Double getSeedAmount(){
+	    return seedAmount;
+	}
+	
 };
