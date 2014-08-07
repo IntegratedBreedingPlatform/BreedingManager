@@ -157,8 +157,10 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
                 	}
                 }
                 
-                Lot lot = new Lot(null, ibdbUserId, "GERMPLSM", gid, germplasm.getLocationId(), seedAmountScaleId, 0, 0, "From List Import");
-                gidLotMap.put(gid, lot);
+                if(seedAmountScaleId!=null){
+                	Lot lot = new Lot(null, ibdbUserId, "GERMPLSM", gid, germplasm.getLocationId(), seedAmountScaleId, 0, 0, "From List Import");
+                	gidLotMap.put(gid, lot);
+                }
             }
         } catch (Exception e) {
         }
