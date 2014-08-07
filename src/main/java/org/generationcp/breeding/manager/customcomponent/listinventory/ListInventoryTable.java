@@ -207,6 +207,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 			Double reserved_column = (Double) item.getItemProperty(RESERVED_COLUMN_ID).getValue();
 			Double newAvailVal = avail_column + reserved_column; 
 			
+			lotDetail.setAvailableLotBalance(newAvailVal);
 			item.getItemProperty(AVAIL_COLUMN_ID).setValue(newAvailVal);
 			item.getItemProperty(RESERVED_COLUMN_ID).setValue(0);
 			item.getItemProperty(NEWLY_RESERVED_COLUMN_ID).setValue(0);
