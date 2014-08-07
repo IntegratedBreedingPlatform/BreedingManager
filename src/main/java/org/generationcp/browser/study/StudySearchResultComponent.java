@@ -111,8 +111,7 @@ public class StudySearchResultComponent extends VerticalLayout implements Initia
 
 	@Override
 	public void addListeners() {
-		// TODO Auto-generated method stub
-		
+		searchResultTable.addListener(new StudyItemClickListener(parentComponent));
 	}
 
 	@Override
@@ -153,8 +152,6 @@ public class StudySearchResultComponent extends VerticalLayout implements Initia
         } else {
         	setSearchResultDataSource(dataSourceResult);
             updateNoOfEntries(dataSourceResult.size());
-            searchResultTable.addListener(new StudyItemClickListener(this));
-            
             resetSearchResultLayout();
             requestRepaint();
         }
