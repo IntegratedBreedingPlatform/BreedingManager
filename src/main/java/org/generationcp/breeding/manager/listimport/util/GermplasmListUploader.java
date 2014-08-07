@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -171,6 +172,8 @@ public class GermplasmListUploader implements FileFactory {
             readSheet1();
             readSheet2();
 
+//        } catch (InvalidFormatException e) {
+//        	throwInvalidFileTypeError();
         } catch (FileNotFoundException e) {
         	//	"File not found"
         } catch (IOException e) {
@@ -181,8 +184,6 @@ public class GermplasmListUploader implements FileFactory {
         	throwInvalidFileTypeError();
         } catch (ConversionException e) {
             throwInvalidFileTypeError();
-        } catch (InvalidFormatException e) {
-        	throwInvalidFileTypeError();
         }
     }
 
