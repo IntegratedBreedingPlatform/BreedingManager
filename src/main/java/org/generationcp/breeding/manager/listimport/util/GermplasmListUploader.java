@@ -181,7 +181,7 @@ public class GermplasmListUploader implements FileFactory {
         	throwInvalidFileTypeError();
         } catch (ConversionException e) {
             throwInvalidFileTypeError();
-        } catch (Exception e) {
+        } catch (InvalidFormatException e) {
         	throwInvalidFileTypeError();
         }
     }
