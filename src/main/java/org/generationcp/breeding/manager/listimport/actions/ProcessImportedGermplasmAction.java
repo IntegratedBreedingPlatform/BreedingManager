@@ -236,10 +236,10 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		        		if(thereIsMatchingName){
 		        			doNotCreateGermplasmsWithId.add(importedGermplasm.getGid());
 		        		} else{
-		        			NewDesignationForGermplasmConfirmDialog listener = new NewDesignationForGermplasmConfirmDialog(
+		        			NewDesignationForGermplasmConfirmDialog dialog = new NewDesignationForGermplasmConfirmDialog(
 		        					this, importedGermplasm.getDesig(), i, importedGermplasm.getGid(), ibdbUserId, dateIntValue, germplasmMatchesCount);
 		        			
-		        			addImportEntryListener(listener);
+		        			addImportEntryListener(dialog);
 		        		}
 		        		
 		        		searchByNameOrNewGermplasmIsNeeded = false;
@@ -439,8 +439,8 @@ public class ProcessImportedGermplasmAction implements Serializable {
     public void closeAllImportEntryListeners(){
     	for(int i=0;i<importEntryListeners.size();i++){
     		ImportGermplasmEntryActionListener listener = importEntryListeners.get(i);
-    		if (listener instanceof SelectGermplasmWindow){
-    			SelectGermplasmWindow window = (SelectGermplasmWindow) listener;
+    		if (listener instanceof Window){
+    			Window window = (Window) listener;
     			getWindow().removeWindow(window);
     		}
     	}

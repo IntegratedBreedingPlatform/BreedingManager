@@ -112,7 +112,7 @@ public class NewDesignationForGermplasmConfirmDialog extends Window implements B
 	
 	private void searchOrAddANewGermplasm(){
 		source.searchOrAddANewGermplasm(this);
-		removeWindow(this);
+		this.getParent().removeWindow(this);
 	}
 
 	@Override
@@ -198,7 +198,7 @@ public class NewDesignationForGermplasmConfirmDialog extends Window implements B
 		source.addNameToGermplasm(name, gid);
 		
 		source.removeCurrentListenerAndProcessNextItem(this);
-		removeWindow(this);
+		this.getParent().removeWindow(this);
     }
     
     private String getConfirmationMessage(){
