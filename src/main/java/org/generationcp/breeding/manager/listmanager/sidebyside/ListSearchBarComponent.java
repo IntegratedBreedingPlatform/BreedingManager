@@ -39,15 +39,17 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 
 	public static final String SEARCH_BUTTON = "List Manager Search Button";
 	private static final String GUIDE = "You may search for germplasm lists using partial or full germplasm names or list names, or GIDs."
-			+ " <br/><br/><b>The search results will show lists in which: </b> <br/>"
-			+ "  - The list name contains the search term <br/>"
-			+ "  - The list description contains the search term <br/>"
-			+ "  - The list contains germplasm with names that <br/>contain the search term <br/>"
-			+ "  - The list contains germplasm with GIDs that <br/>contain the search term<br/>"
-			+ " <br/>The <b>Exact matches only</b> shows results that match the search "
-			+ " term exactly when checked, If you uncheck this option, the search  "
-			+ " will show results that contain the search term you enter."; 
-	        //" <br/><br/>The <b>Search public data</b> checkbox allows you to search public (central) data, in addition to the local germplasm list data.";
+			+ " <br/><br/><b>The search results will show lists in which: </b>"
+			+ " <ul>"
+			+ "  <li>The list name contains the search term </li>"
+			+ "  <li>The list description contains the search term </li>"
+			+ "  <li>The list contains germplasm with names that contain the search term </li>"
+			+ "  <li>The list contains germplasm with GIDs that contain the search term </li>"
+			+ " </ul>"
+			+ " The <b>Exact matches only</b> checkbox shows results that match the search "
+			+ " term exactly when checked. If you uncheck this option, the search  "
+			+ " will show results that contain the search term you enter.";
+	        //+ " <br/><br/>The <b>Search public data</b> checkbox allows you to search public (central) data, in addition to the local germplasm list data.";
 
 	private HorizontalLayout searchBarLayout;
 	private TextField searchField;

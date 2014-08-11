@@ -248,7 +248,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 
 	@Override
 	public void layoutComponents() {
-		setWidth("745px");
+		setWidth("740px");
 		setHeight("510px");
 		
 		contentLayout = new HorizontalLayout();
@@ -257,10 +257,9 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		contentLayout.addComponent(listDetailsComponent);
 		contentLayout.addStyleName("contentLayout");
 
-		contentLayout.setWidth("709px");
-		contentLayout.setHeight("341px");
+		contentLayout.setWidth("714px");
+		contentLayout.setHeight("356px");
 		
-		germplasmListTree.addStyleName("germplasmListTree");
 		listDetailsComponent.addStyleName("listDetailsComponent");
 		
 		buttonLayout = new HorizontalLayout();
@@ -274,11 +273,12 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		buttonLayoutMain.addComponent(buttonLayout);
 		buttonLayoutMain.setComponentAlignment(buttonLayout, Alignment.MIDDLE_CENTER);
 		buttonLayoutMain.setWidth("100%");
-		buttonLayoutMain.setHeight("60px");
+		buttonLayoutMain.setHeight("50px");
 		buttonLayoutMain.addStyleName("buttonLayoutMain");
 		
 		mainLayout = new CssLayout();
-		mainLayout.setSizeFull();
+		mainLayout.setWidth("741px");
+		mainLayout.setHeight("420px");
 		mainLayout.addComponent(guideMessage);
 		mainLayout.addComponent(contentLayout);
 		mainLayout.addComponent(buttonLayoutMain);

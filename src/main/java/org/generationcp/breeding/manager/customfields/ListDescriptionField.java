@@ -40,7 +40,7 @@ public class ListDescriptionField extends HorizontalLayout
 		
 		descriptionTextArea = new TextArea();
 		descriptionTextArea.setWidth("200px");
-		descriptionTextArea.setHeight("35px");
+		descriptionTextArea.setHeight("65px");
 		descriptionTextArea.setImmediate(true);
 		descriptionTextArea.addValidator(new StringLengthValidator(
                 "List Description must not exceed 255 characters.", 1, 255, false));
@@ -76,7 +76,7 @@ public class ListDescriptionField extends HorizontalLayout
 	public void layoutComponents() {
 		setSpacing(true);
 		
-		addComponent(captionLabel);
+		addComponent(captionLabel);		
 		
 		if(isMandatory){
 			addComponent(mandatoryMark);

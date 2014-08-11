@@ -37,7 +37,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		captionLabel.addStyleName("bold");
 		
 		listNotesTextArea = new TextArea();
-		listNotesTextArea.setWidth("255px");
+		listNotesTextArea.setWidth("250px");
 		listNotesTextArea.setHeight("65px");
 		listNotesTextArea.setImmediate(true);
 		
