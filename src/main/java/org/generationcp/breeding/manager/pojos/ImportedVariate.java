@@ -6,6 +6,7 @@ public class ImportedVariate {
     private String description;
     private String property;
     private String scale;
+    private Integer scaleId;
     private String method;
     private String dataType;
     private String sampleLevel;
@@ -65,6 +66,14 @@ public class ImportedVariate {
     
     public void setScale(String scale){
         this.scale = scale;
+    }
+    
+    public Integer getScaleId() {
+        return scaleId;
+    }
+
+    public void setScaleId(Integer scaleId){
+        this.scaleId = scaleId;
     }
     
     public String getMethod() {
