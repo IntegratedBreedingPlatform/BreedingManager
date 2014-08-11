@@ -372,6 +372,18 @@ public class GermplasmListTreeUtil implements Serializable {
 			}
 
 			try {
+				User user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+	            Integer projectId= workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue();
+	            Integer ibdbUserId=workbenchDataManager.getLocalIbdbUserId(user.getUserid(),Long.valueOf(projectId));
+	            
+				if (!gpList.getUserId().equals(ibdbUserId)) {
+					throw new Error(messageSource.getMessage(Message.ERROR_UNABLE_TO_DELETE_LIST_NON_OWNER));
+				}
+			} catch (MiddlewareQueryException e) {
+				throw new Error(messageSource.getMessage(Message.ERROR_DATABASE));
+			}
+			
+			try {
 				if (hasChildren(gpList.getId())) {
 					throw new Error(HAS_CHILDREN);
 				}
