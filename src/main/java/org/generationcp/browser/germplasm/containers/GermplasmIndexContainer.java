@@ -13,17 +13,21 @@
 package org.generationcp.browser.germplasm.containers;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import org.generationcp.browser.cross.study.h2h.main.containers.GermplasmEnvironmentSearchQuery;
+import org.generationcp.browser.cross.study.h2h.main.containers.GermplasmEnvironmentSearchQueryFactory;
 import org.generationcp.browser.germplasm.GermplasmBrowserMain;
 import org.generationcp.browser.germplasm.GermplasmDetailModel;
 import org.generationcp.browser.germplasm.GermplasmNamesAttributesModel;
 import org.generationcp.browser.germplasm.GermplasmQueries;
 import org.generationcp.browser.germplasm.GermplasmSearchResultModel;
 import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.middleware.domain.dms.StudyReference;
+import org.generationcp.middleware.manager.api.CrossStudyDataManager;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 //import org.generationcp.middleware.pojos.StudyInfo;
 import org.generationcp.middleware.pojos.report.LotReportRow;
-import org.generationcp.middleware.domain.dms.StudyReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
@@ -110,6 +114,21 @@ public final class GermplasmIndexContainer{
         container.addContainerProperty(GermplasmSearchQuery.NAMES, String.class, null);
         container.addContainerProperty(GermplasmSearchQuery.METHOD, String.class, null);
         container.addContainerProperty(GermplasmSearchQuery.LOCATION, String.class, null);
+
+        container.getQueryView().getItem(0); // initialize the first batch of data to be displayed
+        return container;
+    }
+    
+    public LazyQueryContainer getGermplasmEnvironmentResultLazyContainer(CrossStudyDataManager crossStudyDataManager, String searchChoice, String searchValue, List<Integer> environmentIds)
+            throws InternationalizableException {
+
+        GermplasmEnvironmentSearchQueryFactory factory = new GermplasmEnvironmentSearchQueryFactory(crossStudyDataManager, searchChoice, searchValue, environmentIds);
+        LazyQueryContainer container = new LazyQueryContainer(factory, false, 10);
+
+        // add the column ids to the LazyQueryContainer tells the container the columns to display for the Table
+        container.addContainerProperty(GermplasmEnvironmentSearchQuery.GID, String.class, null);
+        container.addContainerProperty(GermplasmEnvironmentSearchQuery.NAMES, String.class, null);
+        container.addContainerProperty(GermplasmEnvironmentSearchQuery.LOCATION, String.class, null);
 
         container.getQueryView().getItem(0); // initialize the first batch of data to be displayed
         return container;

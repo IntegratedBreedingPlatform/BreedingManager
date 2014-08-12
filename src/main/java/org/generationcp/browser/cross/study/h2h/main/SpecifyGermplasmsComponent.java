@@ -21,6 +21,8 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.h2h.GermplasmPair;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.CrossStudyDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmListData;
@@ -87,6 +89,9 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
    
     @Autowired
     private GermplasmListManager germplasmListManager;
+    
+    @Autowired
+    private CrossStudyDataManager crossStudyDataManager;
     
     private Set<String> tableEntriesId = new HashSet<String>();
     private Set<String> singleEntriesSet = new HashSet<String>();
@@ -257,9 +262,18 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     }
     
     public void selectStandardEntryButtonClickAction(){
+    	Set<Integer> gids = new HashSet<Integer>();
+    	for (String gid : germplasmIdNameMap.keySet()) {
+			gids.add(Integer.parseInt(gid));
+		}
         Window parentWindow = this.getWindow();
         SelectGermplasmEntryDialog selectAGermplasmDialog = new SelectGermplasmEntryDialog(this, parentWindow, false);
         selectAGermplasmDialog.addStyleName(Reindeer.WINDOW_LIGHT);
+        try {
+			selectAGermplasmDialog.setEnvironmentIds(crossStudyDataManager.getTrialEnvironmentIdsForGermplasm(gids));
+		} catch (MiddlewareQueryException e) {
+			e.printStackTrace();
+		}
         parentWindow.addWindow(selectAGermplasmDialog);
     }
     
@@ -278,71 +292,6 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
     }
     
     public void nextButtonClickAction(){
-        /*
-        if(this.testEntryLabel.getData() == null){
-            MessageNotifier.showWarning(getWindow(), "Warning!", "Need to specify a test entry. Please use the Select test entry button.", Notification.POSITION_CENTERED);
-            return;
-        }
-        
-        if(this.standardEntryLabel.getData() == null){
-            MessageNotifier.showWarning(getWindow(), "Warning!", "Need to specify a standard entry. Please use the Select standard entry button.", Notification.POSITION_CENTERED);
-            return;
-        }
-        
-        Integer testEntryGID = (Integer) testEntryLabel.getData();
-        Integer standardEntryGID = (Integer) standardEntryLabel.getData();
-        
-        if(this.nextScreen != null){
-            if(areCurrentGIDsDifferentFromLast(testEntryGID, standardEntryGID)){
-                this.resultsScreen.setEntriesLabel((String) testEntryLabel.getValue(),(String) standardEntryLabel.getValue());
-                this.nextScreen.populateTraitsAvailableTable(testEntryGID, standardEntryGID);
-                this.lastTestEntryGID = testEntryGID;
-                this.lastStandardEntryGID = standardEntryGID;
-            }
-            this.mainScreen.selectSecondTab();
-        }
-        */
-    	//we check the chosen rows
-    	/*
-    	Iterator iter = entriesTable.getItemIds().iterator();
-		boolean hasLeftBlank = false;
-		boolean hasRightBlank = false;
-		boolean isNoEntries = true;
-		
-		
-		
-		while(iter.hasNext()){
-			isNoEntries = false;
-			//we iterate and permutate against the list
-			String id = (String)iter.next();
-			String leftId = "";
-			String rightId = "";
-			StringTokenizer tokenizer = new StringTokenizer(id,":");
-			if(tokenizer.countTokens() == 2){
-				leftId = tokenizer.nextToken().trim();
-				rightId = tokenizer.nextToken().trim();
-			}
-			if(leftId.equalsIgnoreCase("")){
-				hasLeftBlank = true;
-				break;
-			}
-			if(rightId.equalsIgnoreCase("")){
-				hasRightBlank = true;
-				break;
-			}
-		}
-		if(isNoEntries){
-			MessageNotifier.showWarning(getWindow(), "Warning!", "There should be at least one Test/Standard entry.", Notification.POSITION_CENTERED);
-			return;
-		}
-		if(hasLeftBlank){
-			MessageNotifier.showWarning(getWindow(), "Warning!", "There should be at least one Test entry.", Notification.POSITION_CENTERED);
-			return;
-		}else if(hasRightBlank){
-			MessageNotifier.showWarning(getWindow(), "Warning!", "There should be at least one Standard entry.", Notification.POSITION_CENTERED);
-			return;
-		}
-		*/
         if(this.nextScreen != null){
         	this.nextScreen.populateTraitsAvailableTable(getGermplasmPairs(), germplasmIdNameMap);
             this.mainScreen.selectSecondTab();
