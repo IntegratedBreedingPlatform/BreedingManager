@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class WelcomeScreen extends AbsoluteLayout implements InitializingBean, InternationalizableComponent {
@@ -70,23 +71,25 @@ public class WelcomeScreen extends AbsoluteLayout implements InitializingBean, I
 
     
     public void nextButtonClickAction(){
-    	
+   	
     	try {
     		// show confirm dialog first if trial envts count is > 1k
-			if (crossStudyManager.countAllTrialEnvironments() > 1000L){
-				ConfirmDialog.show(getWindow(), "", 
-						messageSource.getMessage(Message.LOAD_ENVIRONMENTS_CONFIRM), "Yes", "No", new ConfirmDialog.Listener() {
-
+    		long trialEnvCount = crossStudyManager.countAllTrialEnvironments();
+			if (trialEnvCount > 1000L){
+				String message = messageSource.getMessage(Message.LOAD_ENVIRONMENTS_CONFIRM, trialEnvCount);
+				String publidDataYes = messageSource.getMessage(Message.LOAD_ENVIRONMENTS_INCLUDING_PUBLIC);
+				String publidDataNo = messageSource.getMessage(Message.LOAD_ENVIRONMENTS_EXCLUDING_PUBLIC);
+				ConfirmDialog confirmDialog = ConfirmDialog.show(getWindow(), "", message, publidDataYes, publidDataNo, new ConfirmDialog.Listener() {
 					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void onClose(ConfirmDialog dialog) {
-						if (dialog.isConfirmed()){
-							proceedToNextScreen();
-						}
+						nextScreen.setIncludePublicData(dialog.isConfirmed());
+						proceedToNextScreen();						
 					}
 				});
-				
-				
+				confirmDialog.getCancelButton().setStyleName(Reindeer.BUTTON_DEFAULT);
+				confirmDialog.getOkButton().removeStyleName(Reindeer.BUTTON_DEFAULT);;
 			} else {
 				proceedToNextScreen();
 			}

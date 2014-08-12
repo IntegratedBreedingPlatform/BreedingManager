@@ -175,8 +175,10 @@ private static final long serialVersionUID = -3667517088395779496L;
 	
 	// This list allows us to limit environments based on selected traits (Trait Donors Query)
 	private List<Integer> traitsList;
+	
+	// Keeping default to true to keep existing behavior intact for H2H and Trait Donor's queries.
+	private boolean includePublicData = true;
     
-    /*Constructors*/
     public EnvironmentFilter(HeadToHeadCrossStudyMain mainScreen, ResultsComponent nextScreen){
         this.mainScreen1 = mainScreen;
         this.nextScreen1 = nextScreen;
@@ -370,6 +372,14 @@ private static final long serialVersionUID = -3667517088395779496L;
 	       }
 	}
 	
+	public boolean isIncludePublicData() {
+		return includePublicData;
+	}
+
+	public void setIncludePublicData(boolean includePublicData) {
+		this.includePublicData = includePublicData;
+	}
+
 	private void createEnvironmentsTable(Set<TraitInfo> traitInfos){
 		List<Object> propertyIds = new ArrayList<Object>();
         for(Object propertyId : environmentsTable.getContainerPropertyIds()){
@@ -606,7 +616,7 @@ private static final long serialVersionUID = -3667517088395779496L;
     	
     	if(this.crossStudyToolType == CrossStudyToolType.QUERY_FOR_ADAPTED_GERMPLASM){
     		try {
-    			environments = crossStudyDataManager.getAllTrialEnvironments();
+    			environments = crossStudyDataManager.getAllTrialEnvironments(this.includePublicData);
     			
     			Set<TrialEnvironment> trialEnvSet = environments.getTrialEnvironments();
     			Iterator<TrialEnvironment> trialEnvIter = trialEnvSet.iterator();
