@@ -353,7 +353,7 @@ private static final long serialVersionUID = -3667517088395779496L;
 	       nextButton.setWidth("80px");
 	       nextButton.setEnabled(false);
 	       nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-	       addComponent(nextButton, "top:490px;left:460px");
+	       // note that the nextButton is added below (line 374) as part of the H2H control block
 	       
 	       if(this.crossStudyToolType == CrossStudyToolType.HEAD_TO_HEAD_QUERY){
 		       backButton = new Button(messageSource.getMessage(Message.BACK));
@@ -368,7 +368,10 @@ private static final long serialVersionUID = -3667517088395779496L;
 		       });
 		       backButton.setWidth("80px");
 		       backButton.setEnabled(true);
-		       addComponent(backButton, "top:490px;left:810px");
+		       addComponent(backButton, "top:490px;left:410px");
+	    	   addComponent(nextButton, "top:490px;left:500px");
+	       } else {
+	    	   addComponent(nextButton, "top:490px;left:460px");
 	       }
 	}
 	

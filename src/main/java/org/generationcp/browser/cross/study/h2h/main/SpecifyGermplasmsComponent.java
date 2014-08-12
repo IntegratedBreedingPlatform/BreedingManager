@@ -223,7 +223,7 @@ public class SpecifyGermplasmsComponent extends AbsoluteLayout implements Initia
         nextButton.setEnabled(false);
         nextButton.setWidth("80px");
         nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-        addComponent(nextButton, "top:550px;left:860px");
+        addComponent(nextButton, "top:550px;left:460px");
         
         addComponent(entriesTable, "top:200px;left:20px");
     }

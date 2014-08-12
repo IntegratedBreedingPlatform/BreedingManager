@@ -183,13 +183,13 @@ public class TraitsAvailableComponent extends AbsoluteLayout implements Initiali
         nextButton.setEnabled(false);
         nextButton.setWidth("80px");
         nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-        addComponent(nextButton, "top:450px;left:900px");
+        addComponent(nextButton, "top:450px;left:500px");
         
         backButton = new Button("Back");
         backButton.setData(BACK_BUTTON_ID);
         backButton.addListener(new HeadToHeadCrossStudyMainButtonClickListener(this));
         backButton.setWidth("80px");
-        addComponent(backButton, "top:450px;left:810px");
+        addComponent(backButton, "top:450px;left:410px");
         
     }
     
