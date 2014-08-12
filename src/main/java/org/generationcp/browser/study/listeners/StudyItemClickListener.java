@@ -64,7 +64,7 @@ public class StudyItemClickListener implements ItemClickEvent.ItemClickListener{
             int studyId = Integer.valueOf(event.getItem().getItemProperty(StudyDataIndexContainer.STUDY_ID).getValue().toString());
             if (event.getButton() == ClickEvent.BUTTON_LEFT) {
                 try {
-                    ((StudySearchMainComponent) source).studyItemClickAction(studyId);
+                    ((StudySearchMainComponent) source).getSearchResultComponent().studyItemClickAction(studyId);
                 } catch (InternationalizableException e) {
                     LOG.error(e.toString() + "\n" + e.getStackTrace());
                     e.printStackTrace();

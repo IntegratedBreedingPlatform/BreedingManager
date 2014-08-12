@@ -135,7 +135,7 @@ public class StudySearchInputComponent extends VerticalLayout implements Initial
         
         //Buttons
         searchButton = new Button(messageSource.getMessage(Message.SEARCH_LABEL));
-        searchButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+        searchButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
         clearButton = new Button(messageSource.getMessage(Message.CLEAR_LABEL));
         
         searchCriteriaLabel = new Label("<b>" + messageSource.getMessage(Message.SEARCH_CRITERIA) + "</b>",Label.CONTENT_XHTML);
@@ -322,7 +322,7 @@ public class StudySearchInputComponent extends VerticalLayout implements Initial
                 if ((seasonCombo != null) && (seasonCombo.getValue() != null)) {
                     seasonValue = (Season) seasonCombo.getValue();
                 }
-                parentComponent.searchStudy(nameValue, countryValue, seasonValue, dateValue);
+                parentComponent.getSearchResultComponent().searchStudy(nameValue, countryValue, seasonValue, dateValue);
 
             } else if (event.getButton() == clearButton){
                 dateYearField.setValue("");

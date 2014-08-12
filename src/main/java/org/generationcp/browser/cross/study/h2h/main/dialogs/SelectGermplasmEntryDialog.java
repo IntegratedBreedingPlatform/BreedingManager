@@ -1,5 +1,8 @@
 package org.generationcp.browser.cross.study.h2h.main.dialogs;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.generationcp.browser.application.Message;
 import org.generationcp.browser.cross.study.h2h.main.SpecifyGermplasmsComponent;
 import org.generationcp.browser.cross.study.h2h.main.listeners.HeadToHeadCrossStudyMainButtonClickListener;
@@ -15,6 +18,7 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.CrossStudyDataManager;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
@@ -56,6 +60,9 @@ public class SelectGermplasmEntryDialog extends Window implements InitializingBe
     private GermplasmDataManager germplasmDataManager;
     
     @Autowired
+    private CrossStudyDataManager crossStudyDataManager;
+    
+    @Autowired
     private WorkbenchDataManager workbenchDataManager;
     
     @Autowired
@@ -78,7 +85,13 @@ public class SelectGermplasmEntryDialog extends Window implements InitializingBe
     private Integer selectedGid;
     private boolean isTestEntry; 
     
-    public SelectGermplasmEntryDialog(Component source, Window parentWindow, boolean isTestEntry){
+    private List<Integer> environmentIds;
+    
+	public void setEnvironmentIds(List<Integer> environmentIds) {
+		this.environmentIds = environmentIds;
+	}
+
+	public SelectGermplasmEntryDialog(Component source, Window parentWindow, boolean isTestEntry){
         this.source = source;
         this.parentWindow = parentWindow;
         this.isTestEntry = isTestEntry;
@@ -169,9 +182,16 @@ public class SelectGermplasmEntryDialog extends Window implements InitializingBe
                     }
                 }
             }
-                
+            
+            // TODO : perhaps default to full search to prevent NPE
             if(withNoError){
-                LazyQueryContainer dataSourceResultLazy =  dataResultIndexContainer.getGermplasmResultLazyContainer(germplasmDataManager, searchChoice, searchValue);                                        
+            	LazyQueryContainer dataSourceResultLazy = null;
+            	if(isTestEntry || environmentIds == null) {
+            		dataSourceResultLazy =  dataResultIndexContainer.getGermplasmResultLazyContainer(germplasmDataManager, searchChoice, searchValue);   
+            	} else {
+            		environmentIds = Arrays.asList(new Integer[] {5794, 5795, 5796, 5880});
+                    dataSourceResultLazy =  dataResultIndexContainer.getGermplasmEnvironmentResultLazyContainer(crossStudyDataManager, searchChoice, searchValue, environmentIds);               		
+            	}
                 resultComponent.setCaption("Germplasm Search Result: " + dataSourceResultLazy.size());
                 resultComponent.setContainerDataSource(dataSourceResultLazy);
                 mainLayout.requestRepaintAll();
