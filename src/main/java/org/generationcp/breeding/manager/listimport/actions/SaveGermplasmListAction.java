@@ -1,29 +1,42 @@
 package org.generationcp.breeding.manager.listimport.actions;
 
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
-import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.pojos.ImportedVariate;
+import org.generationcp.middleware.domain.dms.PhenotypicType;
 import org.generationcp.middleware.domain.dms.StandardVariable;
+import org.generationcp.middleware.domain.oms.CvId;
+import org.generationcp.middleware.domain.oms.Term;
+import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.generationcp.middleware.pojos.*;
+import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.ims.EntityType;
 import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.Transaction;
+import org.generationcp.middleware.pojos.ims.TransactionStatus;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.ProjectActivity;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-
-import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,7 +49,8 @@ import java.util.*;
 public class SaveGermplasmListAction  implements Serializable, InitializingBean {
 
 
-    public static final String WB_ACTIVITY_NAME = "Imported a Germplasm List";
+	private static final String INVENTORY_COMMENT = "From List Import";
+	public static final String WB_ACTIVITY_NAME = "Imported a Germplasm List";
     public static final String WB_ACTIVITY_DESCRIPTION = "Imported list from file ";
     public static final Integer LIST_DATA_STATUS = 0;
     public static final Integer LIST_DATA_LRECID = 0;
@@ -92,87 +106,33 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
         retrieveIbdbUserId();
         germplasmList.setUserId(ibdbUserId);
 
-        //For the lot details
-        for(ImportedVariate importedVariate : importedGermplasmList.getImportedVariates()){
-	    	//Factors validation
-	    	String property = importedVariate.getProperty().toUpperCase();
-	    	if(property.equals(GermplasmListUploader.SEED_AMOUNT_PROPERTY)){
-	    	   Set<StandardVariable> matchingStandardVariables;
-	    	   try {
-	    		  matchingStandardVariables = ontologyDataManager.findStandardVariablesByNameOrSynonym(importedVariate.getVariate());
-	    		  if(matchingStandardVariables.size()==0){
-	    			  //throw new GermplasmImportException("Invalid seed amount scale - "+importedVariate.getVariate());
-	    			  StandardVariable standardVariable = new StandardVariable();
-	    			  standardVariable.setName(importedVariate.getVariate());
-	    			  standardVariable.setDescription("New variate for SEED AMOUNT from list import");
-	    			  ontologyDataManager.addStandardVariable(standardVariable);
-	    			  matchingStandardVariables = ontologyDataManager.findStandardVariablesByNameOrSynonym(importedVariate.getVariate());
-	    		  } 
-	    		  importedVariate.setScaleId(matchingStandardVariables.iterator().next().getId());
-	    		  seedAmountScaleId = importedVariate.getScaleId();
-	    	   } catch (MiddlewareQueryException e) {
-	    		  e.printStackTrace();
-	    	   }
-	    	}
-        }
-        
-        
+        //Retieve seed stock variable and/or attribute types (or create new one) as needed
+        processVariates(importedGermplasmList);
         
         List<Integer> germplasmIds = new ArrayList<Integer>();
         Map<Integer, GermplasmName> addedGermplasmNameMap = new HashMap<Integer, GermplasmName>();
         gidLotMap = new HashMap<Integer, Lot>();
         gidTransactionSetMap = new HashMap<Integer, List<Transaction>>();
         
-        try {
-            for(GermplasmName germplasmName : germplasmNameObjects){
-                Name name = germplasmName.getName();
-                name.setNid(null);
-                name.setNstat(Integer.valueOf(1));
-                
-                Integer gid = null;
-                Germplasm germplasm;
-                
-                if(doNotCreateGermplasmsWithId.contains(germplasmName.getGermplasm().getGid()) || germplasmIds.contains(germplasmName.getGermplasm().getGid())){
-                    //If do not create new germplasm
-                	gid = germplasmName.getGermplasm().getGid();
-                	germplasm = germplasmManager.getGermplasmByGID(gid);
-                	germplasmName.setGermplasm(germplasm);
-                    germplasmIds.add(gid);
-                    name.setGermplasmId(gid);
-                } else {
-                	Germplasm addedGermplasmMatch = getAlreadyAddedGermplasm(germplasmName, addedGermplasmNameMap);
-            		germplasmName.getGermplasm().setLgid(Integer.valueOf(0));
-                	//not yet added, create new germplasm record
-                	if(addedGermplasmMatch==null){
-                		germplasm = germplasmName.getGermplasm();
-                		germplasmName.getGermplasm().setGid(null);
-                		gid = germplasmManager.addGermplasm(germplasm, name);
-                        germplasmIds.add(gid);
-                		addedGermplasmNameMap.put(germplasmName.getGermplasm().getGid(), germplasmName);
-                	//if already addded (re-use that one)
-                	} else {
-                		germplasm = addedGermplasmMatch;
-                		germplasmName.setGermplasm(addedGermplasmMatch);
-                		gid = addedGermplasmMatch.getGid();
-                	}
-                }
-                
-                if(seedAmountScaleId!=null){
-                	Lot lot = new Lot(null, ibdbUserId, "GERMPLSM", gid, germplasm.getLocationId(), seedAmountScaleId, 0, 0, "From List Import");
-                	gidLotMap.put(gid, lot);
-                }
-            }
-        } catch (Exception e) {
-        }
+        processGermplasmNamesAndLots(germplasmNameObjects, doNotCreateGermplasmsWithId, germplasmIds,
+				addedGermplasmNameMap);
         
         GermplasmList list = saveGermplasmListRecord(germplasmList);
         saveGermplasmListDataRecords(germplasmNameObjects, germplasmIds, list, filename, importedGermplasms);
         addNewNamesToExistingGermplasm(newNames);
         
-        for(Map.Entry<Integer, Lot> item: gidLotMap.entrySet()){
+        saveInventory();
+        
+        // log project activity in Workbench
+        addWorkbenchProjectActivity(filename);
+
+        return list.getId();
+    }
+
+	protected void saveInventory() throws MiddlewareQueryException {
+		for(Map.Entry<Integer, Lot> item: gidLotMap.entrySet()){
         	Integer gid = item.getKey();
         	Lot lot = item.getValue();
-        	//lot.setTransactions(gidTransactionSetMap.get(gid));
         	
         	List<Transaction> listOfTransactions = gidTransactionSetMap.get(gid);
         	
@@ -181,12 +141,114 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
         		inventoryDataManager.addTransactions(listOfTransactions);
         	}
         }
-        
-        // log project activity in Workbench
-        addWorkbenchProjectActivity(filename);
+	}
 
-        return list.getId();
-    }
+	protected void processGermplasmNamesAndLots(
+			List<GermplasmName> germplasmNameObjects,
+			List<Integer> doNotCreateGermplasmsWithId,
+			List<Integer> germplasmIds,
+			Map<Integer, GermplasmName> addedGermplasmNameMap)
+			throws MiddlewareQueryException {
+		for(GermplasmName germplasmName : germplasmNameObjects){
+            Name name = germplasmName.getName();
+            name.setNid(null);
+            name.setNstat(Integer.valueOf(1));
+            
+            Integer gid = null;
+            Germplasm germplasm;
+            
+            if(doNotCreateGermplasmsWithId.contains(germplasmName.getGermplasm().getGid()) || germplasmIds.contains(germplasmName.getGermplasm().getGid())){
+                //If do not create new germplasm
+            	gid = germplasmName.getGermplasm().getGid();
+            	germplasm = germplasmManager.getGermplasmByGID(gid);
+            	germplasmName.setGermplasm(germplasm);
+                germplasmIds.add(gid);
+                name.setGermplasmId(gid);
+            } else {
+            	Germplasm addedGermplasmMatch = getAlreadyAddedGermplasm(germplasmName, addedGermplasmNameMap);
+        		germplasmName.getGermplasm().setLgid(Integer.valueOf(0));
+            	//not yet added, create new germplasm record
+            	if(addedGermplasmMatch==null){
+            		germplasm = germplasmName.getGermplasm();
+            		germplasmName.getGermplasm().setGid(null);
+            		gid = germplasmManager.addGermplasm(germplasm, name);
+                    germplasmIds.add(gid);
+            		addedGermplasmNameMap.put(germplasmName.getGermplasm().getGid(), germplasmName);
+            	//if already addded (re-use that one)
+            	} else {
+            		germplasm = addedGermplasmMatch;
+            		germplasmName.setGermplasm(addedGermplasmMatch);
+            		gid = addedGermplasmMatch.getGid();
+            	}
+            }
+            
+            if(seedAmountScaleId!=null){
+            	Lot lot = new Lot(null, ibdbUserId, EntityType.GERMPLSM.name(), gid, germplasm.getLocationId(), seedAmountScaleId, 0, 0, INVENTORY_COMMENT);
+            	gidLotMap.put(gid, lot);
+            }
+        }
+	}
+
+	protected void processVariates(ImportedGermplasmList importedGermplasmList) throws MiddlewareQueryException {
+		for(ImportedVariate importedVariate : importedGermplasmList.getImportedVariates()){
+	    	if(importedVariate.isSeedStockVariable()){
+	    		processSeedStockVariate(importedVariate);
+	    	}
+        }
+	}
+
+	protected void processSeedStockVariate(ImportedVariate importedVariate)
+			throws MiddlewareQueryException {
+		String trait = importedVariate.getProperty().toUpperCase();
+		String scale = importedVariate.getScale().toUpperCase();
+		String method = importedVariate.getMethod().toUpperCase();
+		
+		StandardVariable stdVariable = ontologyDataManager.findStandardVariableByTraitScaleMethodNames(trait, scale, method);
+		// create new variate if PSMR doesn't exist
+		if (stdVariable == null || stdVariable.getStoredIn().getId() != TermId.OBSERVATION_VARIATE.getId()){
+			
+			Term traitTerm = ontologyDataManager.findTermByName(trait, CvId.PROPERTIES);
+			if (traitTerm == null){
+				traitTerm = new Term();
+				traitTerm.setName(trait);
+				traitTerm.setDefinition(trait);
+				
+			}
+			
+			Term scaleTerm = ontologyDataManager.findTermByName(scale, CvId.SCALES);
+			if (scaleTerm == null){
+				scaleTerm = new Term();
+				scaleTerm.setName(scale);
+				scaleTerm.setDefinition(scale);
+			}
+			
+			Term methodTerm = ontologyDataManager.findTermByName(method, CvId.METHODS);
+			if (methodTerm == null){
+				methodTerm = new Term();
+				methodTerm.setName(method);
+				methodTerm.setDefinition(method);
+			}
+			
+			Term dataType = new Term();
+			dataType.setId("N".equals(importedVariate.getDataType())? TermId.NUMERIC_VARIABLE.getId() : TermId.CHARACTER_VARIABLE.getId());
+			
+			Term storedIn = new Term();
+			storedIn.setId(TermId.OBSERVATION_VARIATE.getId());
+			
+			stdVariable = new StandardVariable(traitTerm, scaleTerm, methodTerm, dataType, storedIn, null, 
+					PhenotypicType.VARIATE, null, null);
+			stdVariable.setName(importedVariate.getVariate());
+			stdVariable.setDescription(importedVariate.getDescription());
+			
+			ontologyDataManager.addStandardVariable(stdVariable);
+		}
+
+		if (stdVariable.getId() != 0){
+			importedVariate.setScaleId(stdVariable.getId());
+			seedAmountScaleId = importedVariate.getScaleId();
+			
+		}
+	}
 
 	protected void addNewNamesToExistingGermplasm(List<Name> newNames)
 			throws MiddlewareQueryException {
@@ -251,29 +313,37 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
             listToSave.add(germplasmListData);
             Integer lrecId = germplasmListManager.addGermplasmListData(germplasmListData);
             
-            if(importedGermplasm!=null && importedGermplasm.getSeedAmount()!=null && importedGermplasm.getSeedAmount()>0){
-            	
-            	if(gidTransactionSetMap.get(gid)==null){
-            		gidTransactionSetMap.put(gid, new ArrayList<Transaction>());
-            	}
-            	
-            	SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");  
-            	Date date = new Date(); 
-            	Integer intDate = Integer.valueOf(df.format(date));
-            	
-            	Transaction transaction = new Transaction(null, wbUserId, gidLotMap.get(gid), intDate, 1, importedGermplasm.getSeedAmount(), "From list import", 0, "LIST", list.getId(), lrecId, Double.valueOf(0), 0);
-            	if(importedGermplasm.getSeedAmount()!=null)
-            		gidTransactionSetMap.get(gid).add(transaction);
-            }
+            createDepositInventoryTransaction(list, importedGermplasm, gid,	lrecId);
             
         }
 
-        //this.germplasmListManager.addGermplasmListData(listToSave); <-- moved to top, and did for each so I can get the lrecid to be used for transaction
         
         
             
         
     }
+
+	protected void createDepositInventoryTransaction(GermplasmList list,
+			ImportedGermplasm importedGermplasm, Integer gid, Integer lrecId) {
+		if(importedGermplasm!=null && importedGermplasm.getSeedAmount()!=null && importedGermplasm.getSeedAmount()>0){
+			
+			if(gidTransactionSetMap.get(gid)==null){
+				gidTransactionSetMap.put(gid, new ArrayList<Transaction>());
+			}
+			
+			SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");  
+			Date date = new Date(); 
+			Integer intDate = Integer.valueOf(df.format(date));
+			
+			Transaction transaction = new Transaction(null, 
+					wbUserId, gidLotMap.get(gid), intDate, TransactionStatus.DEPOSITED.getIntValue(), importedGermplasm.getSeedAmount(), 
+					INVENTORY_COMMENT, 0, "LIST", list.getId(), lrecId, Double.valueOf(0), 0);
+			if(importedGermplasm.getSeedAmount()!=null)
+				gidTransactionSetMap.get(gid).add(transaction);
+		}
+	}
+	
+	
     private GermplasmListData buildGermplasmListData(GermplasmList list, Integer gid, int entryId,
             String designation, String groupName, String source, String entryCode) {
 

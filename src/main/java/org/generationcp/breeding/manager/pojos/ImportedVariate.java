@@ -10,6 +10,8 @@ public class ImportedVariate {
     private String method;
     private String dataType;
     private String sampleLevel;
+    
+    private boolean isSeedStockVariable;
 
     public ImportedVariate(){
         
@@ -99,5 +101,13 @@ public class ImportedVariate {
     public void setSampleLevel(String sampleLevel){
         this.sampleLevel = sampleLevel;
     }
+
+	public boolean isSeedStockVariable() {
+		return isSeedStockVariable;
+	}
+
+	public void setSeedStockVariable(boolean isSeedStockVariable) {
+		this.isSeedStockVariable = isSeedStockVariable;
+	}
     
 };

@@ -453,13 +453,13 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 	public void saveList(GermplasmList list) {
 			
 		SaveGermplasmListAction saveGermplasmListAction = new SaveGermplasmListAction();
+		Window window = this.source.getWindow();
 		
 		try {
 			Integer listId = saveGermplasmListAction.saveRecords(list, getGermplasmNameObjects(), getNewNames(), 
 					germplasmListUploader.getOriginalFilename(), processGermplasmAction.getMatchedGermplasmIds(), importedGermplasmList);
 			
 			if (listId != null){
-				Window window = this.source.getWindow();
 				MessageNotifier.showMessage(window, messageSource.getMessage(Message.SUCCESS), 
 						messageSource.getMessage(Message.GERMPLASM_LIST_SAVED_SUCCESSFULLY), 3000);
 
@@ -480,6 +480,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 			}
 			 
 		} catch (MiddlewareQueryException e) {
+			MessageNotifier.showError(window, "ERROR", "Error with saving germplasm list. Please see log for details.");
 			e.printStackTrace();
 		}
 		
