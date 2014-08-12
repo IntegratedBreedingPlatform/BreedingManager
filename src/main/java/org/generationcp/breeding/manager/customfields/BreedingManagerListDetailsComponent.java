@@ -30,7 +30,6 @@ import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window.Notification;
 
 @Configurable
 public class BreedingManagerListDetailsComponent extends VerticalLayout 
@@ -150,8 +149,8 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		containerLayout.addComponent(listNotesField);
 		
 		containerPanel = new Panel();
-		containerPanel.setWidth("345px");
-		containerPanel.setHeight("315px");
+		containerPanel.setWidth("340px");
+		containerPanel.setHeight("320px");
 		containerPanel.setContent(containerLayout);
 		
 		setSpacing(false);
@@ -179,7 +178,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		} catch (InvalidValueException e) {
 			MessageNotifier.showError(getWindow(), 
 					this.messageSource.getMessage(Message.INVALID_INPUT), 
-					e.getMessage(), Notification.POSITION_CENTERED);
+					e.getMessage());
 			return false;
 		}
 	}

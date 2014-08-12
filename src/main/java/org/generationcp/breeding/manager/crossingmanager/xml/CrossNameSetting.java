@@ -15,6 +15,7 @@ public class CrossNameSetting implements Serializable {
 	private String prefix;
 	private String suffix;
 	private boolean addSpaceBetweenPrefixAndCode;
+	private boolean addSpaceBetweenSuffixAndCode;
 	private Integer numOfDigits;
 	private String separator;
 
@@ -25,12 +26,13 @@ public class CrossNameSetting implements Serializable {
 	}
 
 	public CrossNameSetting(String prefix, String suffix,
-			boolean addSpaceBetweenPrefixAndCode, Integer numOfDigits,
-			String separator) {
+			boolean addSpaceBetweenPrefixAndCode, boolean addSpaceBetweenSuffixAndCode,
+			Integer numOfDigits, String separator) {
 		super();
 		this.prefix = prefix;
 		this.suffix = suffix;
 		this.addSpaceBetweenPrefixAndCode = addSpaceBetweenPrefixAndCode;
+		this.addSpaceBetweenSuffixAndCode = addSpaceBetweenSuffixAndCode;
 		this.numOfDigits = numOfDigits;
 		this.separator = separator;
 	}
@@ -62,6 +64,15 @@ public class CrossNameSetting implements Serializable {
 
 	public void setAddSpaceBetweenPrefixAndCode(boolean addSpaceBetweenPrefixAndCode) {
 		this.addSpaceBetweenPrefixAndCode = addSpaceBetweenPrefixAndCode;
+	}
+	
+	@XmlAttribute
+	public boolean isAddSpaceBetweenSuffixAndCode() {
+		return addSpaceBetweenSuffixAndCode;
+	}
+
+	public void setAddSpaceBetweenSuffixAndCode(boolean addSpaceBetweenSuffixAndCode) {
+		this.addSpaceBetweenSuffixAndCode = addSpaceBetweenSuffixAndCode;
 	}
 
 	@XmlAttribute
@@ -107,6 +118,7 @@ public class CrossNameSetting implements Serializable {
         		.append(prefix, rhs.prefix)
         		.append(suffix, rhs.suffix)
         		.append(addSpaceBetweenPrefixAndCode, rhs.addSpaceBetweenPrefixAndCode)
+        		.append(addSpaceBetweenSuffixAndCode, rhs.addSpaceBetweenSuffixAndCode)
         		.append(numOfDigits, rhs.numOfDigits)
         		.append(separator, rhs.separator)
         		.isEquals();
@@ -121,6 +133,8 @@ public class CrossNameSetting implements Serializable {
 		builder.append(suffix);
 		builder.append(", addSpaceBetweenPrefixAndCode=");
 		builder.append(addSpaceBetweenPrefixAndCode);
+		builder.append(", addSpaceBetweenSuffixAndCode=");
+		builder.append(addSpaceBetweenSuffixAndCode);
 		builder.append(", numOfDigits=");
 		builder.append(numOfDigits);
 		builder.append(", separator=");
