@@ -189,10 +189,12 @@ public class SelectGermplasmEntryDialog extends Window implements InitializingBe
             	if(isTestEntry || environmentIds == null) {
             		dataSourceResultLazy =  dataResultIndexContainer.getGermplasmResultLazyContainer(germplasmDataManager, searchChoice, searchValue);   
             	} else {
-            		environmentIds = Arrays.asList(new Integer[] {5794, 5795, 5796, 5880});
                     dataSourceResultLazy =  dataResultIndexContainer.getGermplasmEnvironmentResultLazyContainer(crossStudyDataManager, searchChoice, searchValue, environmentIds);               		
             	}
-                resultComponent.setCaption("Germplasm Search Result: " + dataSourceResultLazy.size());
+            	resultComponent.setCaption("Germplasm Search Result: " + dataSourceResultLazy.size());
+            	if(!isTestEntry && environmentIds != null && environmentIds.isEmpty()) {
+            		resultComponent.setCaption("Selected Test Entries not used in Trials - no comparable data");
+            	}
                 resultComponent.setContainerDataSource(dataSourceResultLazy);
                 mainLayout.requestRepaintAll();
             }
