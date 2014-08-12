@@ -60,6 +60,8 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 	private Button saveButton;
 	
 	private final String windowCaption;
+	private boolean showFoldersOnlyInListTree = false;
+	
 	@SuppressWarnings("unused")
 	private String defaultListType;
 	
@@ -117,10 +119,13 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		setResizable(false);
 		setModal(true);
 		
-		if(germplasmList!=null)
-		    germplasmListTree = new LocalListFoldersTreeComponent(new SelectTreeItemOnSaveListener(this,source.getParentComponent()), germplasmList.getId(), false, true);
-		else
-			germplasmListTree = new LocalListFoldersTreeComponent(new SelectTreeItemOnSaveListener(this,source.getParentComponent()), null, false, true);
+		if(germplasmList!=null){
+			germplasmListTree = new LocalListFoldersTreeComponent(new SelectTreeItemOnSaveListener(this,source.getParentComponent()), germplasmList.getId(), 
+					isShowFoldersOnlyInListTree(), true);
+		} else{
+			germplasmListTree = new LocalListFoldersTreeComponent(new SelectTreeItemOnSaveListener(this,source.getParentComponent()), 
+					null, isShowFoldersOnlyInListTree(), true);
+		}
 		
 		guideMessage = new Label(messageSource.getMessage(Message.SELECT_A_FOLDER_TO_CREATE_A_LIST_OR_SELECT_AN_EXISTING_LIST_TO_EDIT_AND_OVERWRITE_ITS_ENTRIES)+".");
 		
@@ -243,7 +248,7 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 
 	@Override
 	public void layoutComponents() {
-		setWidth("745px");
+		setWidth("740px");
 		setHeight("510px");
 		
 		contentLayout = new HorizontalLayout();
@@ -252,10 +257,9 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		contentLayout.addComponent(listDetailsComponent);
 		contentLayout.addStyleName("contentLayout");
 
-		contentLayout.setWidth("709px");
-		contentLayout.setHeight("341px");
+		contentLayout.setWidth("714px");
+		contentLayout.setHeight("356px");
 		
-		germplasmListTree.addStyleName("germplasmListTree");
 		listDetailsComponent.addStyleName("listDetailsComponent");
 		
 		buttonLayout = new HorizontalLayout();
@@ -269,11 +273,12 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		buttonLayoutMain.addComponent(buttonLayout);
 		buttonLayoutMain.setComponentAlignment(buttonLayout, Alignment.MIDDLE_CENTER);
 		buttonLayoutMain.setWidth("100%");
-		buttonLayoutMain.setHeight("60px");
+		buttonLayoutMain.setHeight("50px");
 		buttonLayoutMain.addStyleName("buttonLayoutMain");
 		
 		mainLayout = new CssLayout();
-		mainLayout.setSizeFull();
+		mainLayout.setWidth("741px");
+		mainLayout.setHeight("420px");
 		mainLayout.addComponent(guideMessage);
 		mainLayout.addComponent(contentLayout);
 		mainLayout.addComponent(buttonLayoutMain);
@@ -284,8 +289,6 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	public GermplasmList getSelectedListOnTree(){
@@ -374,5 +377,13 @@ public class SaveListAsDialog extends Window implements InitializingBean, Intern
 		if(source instanceof ListBuilderComponent){
 			((ListBuilderComponent) source).saveReservationChangesAction();
 		}
+	}
+
+	protected boolean isShowFoldersOnlyInListTree() {
+		return showFoldersOnlyInListTree;
+	}
+
+	protected void setShowFoldersOnlyInListTree(boolean showFoldersOnlyInListTree) {
+		this.showFoldersOnlyInListTree = showFoldersOnlyInListTree;
 	}
 }

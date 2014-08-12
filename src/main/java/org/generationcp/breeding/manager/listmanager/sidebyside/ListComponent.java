@@ -1995,7 +1995,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		else{
 			if(!listInventoryTable.isSelectedEntriesHasReservation(lotDetailsGid)){
 				MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.WARNING), 
-						"There is no reservation to the current selected lots.");
+						"There are no reservations on the current selected lots.");
 			}
 			else{
 				ConfirmDialog.show(getWindow(), messageSource.getMessage(Message.CANCEL_RESERVATIONS), 

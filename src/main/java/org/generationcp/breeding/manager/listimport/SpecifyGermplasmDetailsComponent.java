@@ -12,6 +12,7 @@ import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
+import org.generationcp.breeding.manager.customcomponent.SaveListDialogWithFolderOnlyTree;
 import org.generationcp.breeding.manager.listimport.actions.ProcessImportedGermplasmAction;
 import org.generationcp.breeding.manager.listimport.actions.SaveGermplasmListAction;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
@@ -29,6 +30,7 @@ import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.Name;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -73,7 +75,8 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
     private Button backButton;
     private Button nextButton;
 
-
+    private ImportedGermplasmList importedGermplasmList;
+    
     private CheckBox automaticallyAcceptSingleMatchesCheckbox;
 
     private List<ImportedGermplasm> importedGermplasms;
@@ -195,7 +198,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 	        }
 	    }
 	     
-	    saveListAsDialog = new SaveListAsDialog(this, germplasmList);
+	    saveListAsDialog = new SaveListDialogWithFolderOnlyTree(this, germplasmList);
 	    //If not from popup
 	    if(source.getGermplasmImportPopupSource()==null){
 	    	this.getWindow().addWindow(saveListAsDialog);
@@ -277,6 +280,11 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
     public List<GermplasmName> getGermplasmNameObjects(){
     	return processGermplasmAction.getGermplasmNameObjects();
     }
+    
+	private List<Name> getNewNames(){
+		return processGermplasmAction.getNewNames();
+	}
+
 
 	@Override
 	public void instantiateComponents() {
@@ -415,6 +423,9 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 	}
 	
 	public void initializeFromImportFile(ImportedGermplasmList importedGermplasmList){
+		
+		this.importedGermplasmList = importedGermplasmList;
+		
 		//Clear table contents first (possible that it has some rows in it from previous uploads, and then user went back to upload screen)
 		getGermplasmDetailsTable().removeAllItems();
         String source;
@@ -444,8 +455,8 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 		SaveGermplasmListAction saveGermplasmListAction = new SaveGermplasmListAction();
 		
 		try {
-			Integer listId = saveGermplasmListAction.saveRecords(list, getGermplasmNameObjects(), 
-					germplasmListUploader.getOriginalFilename(), processGermplasmAction.getMatchedGermplasmIds(), importedGermplasms);
+			Integer listId = saveGermplasmListAction.saveRecords(list, getGermplasmNameObjects(), getNewNames(), 
+					germplasmListUploader.getOriginalFilename(), processGermplasmAction.getMatchedGermplasmIds(), importedGermplasmList);
 			
 			if (listId != null){
 				Window window = this.source.getWindow();
@@ -504,4 +515,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 		return (Boolean) automaticallyAcceptSingleMatchesCheckbox.getValue();
 	}
 	
+	public ImportedGermplasmList getImportedGermplasmList(){
+		return importedGermplasmList;
+	}
 }

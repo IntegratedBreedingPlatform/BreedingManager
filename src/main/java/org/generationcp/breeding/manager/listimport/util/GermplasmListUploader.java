@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -31,6 +32,7 @@ import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.slf4j.Logger;
@@ -69,6 +71,9 @@ public class GermplasmListUploader implements FileFactory {
     private static final String CROSS_SCALE = "NAME";
     private static final String SOURCE_PROPERTY = "SEED SOURCE";
     private static final String SOURCE_SCALE = "NAME";
+    
+    public static final String SEED_AMOUNT_PROPERTY = "SEED AMOUNT";
+    
 	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
     
     private String entryFactor;
@@ -77,6 +82,8 @@ public class GermplasmListUploader implements FileFactory {
     private String entryCodeFactor;
     private String crossFactor;
     private String sourceFactor;
+    
+    private String seedAmountVariate;
     
 //    private GermplasmImportFileComponent source;
     
@@ -106,6 +113,8 @@ public class GermplasmListUploader implements FileFactory {
     @Autowired
     private GermplasmListManager germplasmListManager;
     
+    @Autowired
+    private OntologyDataManager ontologyDataManager; 
     
     public String getOriginalFilename() {
         return originalFilename;
@@ -144,8 +153,14 @@ public class GermplasmListUploader implements FileFactory {
             
             if(tempFileName.toLowerCase().endsWith(".xls")){
             	wb = new HSSFWorkbook(inp);
+            } else if(tempFileName.toLowerCase().endsWith(".xlsx")){ 
+            	try {
+            		wb = new XSSFWorkbook(inp);
+            	} catch (Exception e) {
+            		throwInvalidFileTypeError();
+            	}
             } else {
-            	wb = new XSSFWorkbook(inp);
+            	throwInvalidFileTypeError();
             }
             
             Sheet sheet1 = wb.getSheetAt(0);
@@ -221,7 +236,7 @@ public class GermplasmListUploader implements FileFactory {
         
         while(!rowIsEmpty()){
             importedGermplasm = new ImportedGermplasm();
-            for(int col=0;col<importedGermplasmList.getImportedFactors().size();col++){
+            for(int col=0;col<(importedGermplasmList.getImportedFactors().size()+importedGermplasmList.getImportedVariates().size()+1);col++){
             	//Map cell (given a column label) with a pojo setter
             	String columnHeader = getCellStringValue(currentSheet, 0, col, false);
             	if(columnHeader.equals(entryFactor)){
@@ -241,8 +256,11 @@ public class GermplasmListUploader implements FileFactory {
                     importedGermplasm.setSource(getCellStringValue(currentSheet, currentRow, col, true));
                 } else if(columnHeader.equals(entryCodeFactor)){
                     importedGermplasm.setEntryCode(getCellStringValue(currentSheet, currentRow, col, true));
+                } else if(columnHeader.equals(seedAmountVariate)){
+                	if(getCellStringValue(currentSheet, currentRow, col, true)!=null && !getCellStringValue(currentSheet, currentRow, col, true).equals(""))
+                		importedGermplasm.setSeedAmount(Double.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
                 } else {
-                	
+                	System.out.println("Unknown column "+columnHeader);
                 }
             }
             
@@ -536,6 +554,14 @@ public class GermplasmListUploader implements FileFactory {
                     ,getCellStringValue(currentSheet,currentRow,4,true)
                     ,getCellStringValue(currentSheet,currentRow,5,true));
                 importedGermplasmList.addImportedVariate(importedVariate);
+                
+                String property = importedVariate.getProperty().toUpperCase();
+                String scale = importedVariate.getScale().toUpperCase();
+                
+                if(property.equals(SEED_AMOUNT_PROPERTY)){
+                	seedAmountVariate = importedVariate.getVariate();
+                }
+                
                 currentRow++;
             }
 	        currentRow++;
@@ -590,7 +616,7 @@ public class GermplasmListUploader implements FileFactory {
     }
     
     private void throwInvalidFileTypeError() throws GermplasmImportException {
-    	throw new InvalidFileTypeImportException("Please upload a properly formatted XLS file.");
+    	throw new InvalidFileTypeImportException("Please upload a properly formatted XLS or XLSX file.");
     }    
     
     public Boolean importFileIsAdvanced(){

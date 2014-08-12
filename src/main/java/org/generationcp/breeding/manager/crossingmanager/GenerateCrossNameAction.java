@@ -71,14 +71,21 @@ public class GenerateCrossNameAction {
         }
         return prefix;
     }
+	
+	private String buildSuffixString(){
+		String suffix = setting.getSuffix().trim();
+        if(setting.isAddSpaceBetweenSuffixAndCode()){
+            return " " + suffix ;
+        }
+        return suffix;
+    }
 
     public String buildNextNameInSequence(Integer number) {
         StringBuilder sb = new StringBuilder();
         sb.append(buildPrefixString());
         sb.append(getNumberWithLeadingZeroesAsString(number));
         if (!StringUtils.isEmpty(setting.getSuffix())){
-            sb.append(" ");
-            sb.append(setting.getSuffix());
+            sb.append(buildSuffixString());
         }
         return sb.toString();
     }
