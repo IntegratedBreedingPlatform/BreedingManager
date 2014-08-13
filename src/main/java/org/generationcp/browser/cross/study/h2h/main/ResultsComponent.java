@@ -138,7 +138,6 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
         	
         	traitsIteratorArray[x++] = iter.next();
         }
-        		//(TraitForComparison[]) envForComparison.getTraitAndObservationMap().keySet().l();
         int traitSize = envForComparison.getTraitAndObservationMap().keySet().size();
         resultsTable = new Table[traitSize];
         VerticalLayout[] layouts = new VerticalLayout[traitSize];
@@ -147,22 +146,6 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
         for(int counter = 0 ; counter < traitsIteratorArray.length ; counter++){    
         	TraitForComparison traitForCompare = traitsIteratorArray[counter];
         	if(traitForCompare.isDisplay()){
-        		//layouts[counter] = new VerticalLayout();
-        		//create multiple table       
-        		/*
-        		this.resultsTable[counter].removeAllItems();
-            	
-            	
-                List<Object> propertyIds = new ArrayList<Object>();
-                for(Object propertyId : resultsTable[counter].getContainerPropertyIds()){
-                    propertyIds.add(propertyId);
-                }
-                
-                for(Object propertyId : propertyIds){
-                	resultsTable[counter].removeContainerProperty(propertyId);
-                }
-                */
-        		
         		resultsTable[counter] = new Table();
         	    resultsTable[counter].setWidth("912px");
         	    resultsTable[counter].setHeight("400px");
@@ -197,9 +180,6 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
         }
         
         
-        //traitsIterator = envForComparison.getTraitAndObservationMap().keySet();
-    	
-        
         for(GermplasmPair germplasmPair : germplasmPairList){
         	String uniquieId = germplasmPair.getGid1() + ":" + germplasmPair.getGid2();
         	String testEntry = germplasmNameIdMap.get(Integer.toString(germplasmPair.getGid1()));
@@ -224,7 +204,6 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
 	                }
             	}
         	}
-        	
         	
         	resData.setTraitDataMap(traitDataMap);
         	resultsDataList.add(resData);
