@@ -187,14 +187,16 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
         	Map<String,String> traitDataMap = new HashMap<String, String>();
         	ResultsData resData = new ResultsData(germplasmPair.getGid1(), testEntry, germplasmPair.getGid2(), standardEntry, traitDataMap);
         	
-        	
         	for(int i = 0 ; i < resultsTable.length ; i++){
         		Table table = resultsTable[i];
         		Item item = table.addItem(uniquieId);
             	item.getItemProperty(TEST_COLUMN_ID).setValue(testEntry);
             	item.getItemProperty(STANDARD_COLUMN_ID).setValue(standardEntry);
             	TraitForComparison traitForCompare = traitsIteratorArray[i];
-            	if(traitForCompare.isDisplay()){
+            	// check for number of environments that are compatible - because if there are not any, we would
+            	// not show any data on the screen. This improves clarity.
+            	Integer envValue = HeadToHeadResultsUtil.getTotalNumOfEnv(germplasmPair, traitForCompare, observationMap,environmentForComparisonList);
+            	if(traitForCompare.isDisplay() && envValue > 0){
             		Map<String, Object> valuesMap = new HashMap<String, Object>();
 	            	for(String columnKey : columnIdData){
 	            		String cellKey = traitForCompare.getTraitInfo().getName()+columnKey;
