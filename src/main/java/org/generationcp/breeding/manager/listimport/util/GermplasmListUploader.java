@@ -84,8 +84,8 @@ public class GermplasmListUploader implements FileFactory {
     private String entryCodeFactor;
     private String crossFactor;
     private String sourceFactor;
-    
     private String seedAmountVariate;
+    private List<String> attributeVariates;
     
     public File file;
 
@@ -259,8 +259,10 @@ public class GermplasmListUploader implements FileFactory {
                 } else if(columnHeader.equals(seedAmountVariate)){
                 	if(getCellStringValue(currentSheet, currentRow, col, true)!=null && !getCellStringValue(currentSheet, currentRow, col, true).equals(""))
                 		importedGermplasm.setSeedAmount(Double.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
-                } else {
-                	LOG.debug("Unknown column "+columnHeader);
+                } else if(isAnAttributeVariate(columnHeader)){
+                	importedGermplasm.addAttributeVariate(columnHeader, getCellStringValue(currentSheet, currentRow, col, true));
+            	} else {
+                	System.out.println("Unknown column "+columnHeader);
                 }
             }
             
@@ -300,7 +302,15 @@ public class GermplasmListUploader implements FileFactory {
         }
     }
 
-    private void readGermplasmListFileInfo(){
+    private boolean isAnAttributeVariate(String columnHeader) {
+		if(attributeVariates.contains(columnHeader)){
+			return true;
+		}
+    	
+		return false;
+	}
+
+	private void readGermplasmListFileInfo(){
     	boolean listNameHeaderFound = false;
     	boolean listDescHeaderFound = false;
     	boolean listTypeHeaderFound = false;
@@ -559,6 +569,13 @@ public class GermplasmListUploader implements FileFactory {
                 	importedVariate.setSeedStockVariable(true);
                 	seedAmountVariate = importedVariate.getVariate();
                 	LOG.debug("SEED STOCK " + importedVariate.getProperty());
+                }
+                else{
+                	//initialize
+                	if(attributeVariates == null){
+                		attributeVariates = new ArrayList<String>();
+                	}
+                	attributeVariates.add(importedVariate.getVariate());
                 }
                 
                 currentRow++;

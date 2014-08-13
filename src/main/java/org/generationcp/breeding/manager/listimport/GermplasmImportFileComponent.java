@@ -136,7 +136,9 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 
 	public void addListenersForUploadField(){
 		uploadComponents.setDeleteButtonListener(new Button.ClickListener() {
-            @Override
+			private static final long serialVersionUID = -1357425494204377238L;
+
+			@Override
             public void buttonClick(ClickEvent event) {
                nextButton.setEnabled(false);
             }

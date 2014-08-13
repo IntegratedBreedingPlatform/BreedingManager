@@ -23,17 +23,20 @@ import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.Attribute;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.pojos.ims.EntityType;
 import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.Transaction;
 import org.generationcp.middleware.pojos.ims.TransactionStatus;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.ProjectActivity;
+import org.generationcp.middleware.util.Util;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -101,8 +104,6 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
     public Integer saveRecords(GermplasmList germplasmList, List<GermplasmName> germplasmNameObjects, List<Name> newNames, String filename
     		, List<Integer> doNotCreateGermplasmsWithId, ImportedGermplasmList importedGermplasmList)throws MiddlewareQueryException{
 
-    	List<ImportedGermplasm> importedGermplasms = importedGermplasmList.getImportedGermplasms();
-    	
         retrieveIbdbUserId();
         germplasmList.setUserId(ibdbUserId);
 
@@ -117,6 +118,7 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
         processGermplasmNamesAndLots(germplasmNameObjects, doNotCreateGermplasmsWithId, germplasmIds,
 				addedGermplasmNameMap);
         
+        List<ImportedGermplasm> importedGermplasms = importedGermplasmList.getImportedGermplasms();
         GermplasmList list = saveGermplasmListRecord(germplasmList);
         saveGermplasmListDataRecords(germplasmNameObjects, germplasmIds, list, filename, importedGermplasms);
         addNewNamesToExistingGermplasm(newNames);
@@ -190,11 +192,42 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
 	}
 
 	protected void processVariates(ImportedGermplasmList importedGermplasmList) throws MiddlewareQueryException {
+		List<UserDefinedField> existingUdflds = getUserDefinedFields();
+        List<UserDefinedField> newUdflds = new ArrayList<UserDefinedField>();
+        
 		for(ImportedVariate importedVariate : importedGermplasmList.getImportedVariates()){
+			String property = importedVariate.getProperty();
+			
 	    	if(importedVariate.isSeedStockVariable()){
 	    		processSeedStockVariate(importedVariate);
 	    	}
+	    	else{
+	    		if(!isUdfldsExist(existingUdflds, property)){
+	    			UserDefinedField newUdfld = createNewUserDefinedField(importedVariate);
+	    			newUdflds.add(newUdfld);
+	    		}
+	    	}
         }
+		
+        //Add All UDFLDS
+        germplasmManager.addUserDefinedFields(newUdflds);
+	}
+	
+	private UserDefinedField createNewUserDefinedField(ImportedVariate importedVariate){
+		UserDefinedField newUdfld = new UserDefinedField();
+		newUdfld.setFtable("ATRIBUTS");
+		newUdfld.setFtype("ATTRIBUTE");
+		newUdfld.setFcode(importedVariate.getProperty());
+		newUdfld.setFname(importedVariate.getDescription());
+		String fmt = importedVariate.getScale() + "," + importedVariate.getMethod() + "," + importedVariate.getDataType();
+		newUdfld.setFfmt(fmt);
+		newUdfld.setFdesc("-");
+		newUdfld.setLfldno(0);
+		newUdfld.setUser(new User(ibdbUserId));
+		newUdfld.setFdate(Util.getCurrentDate());
+		newUdfld.setScaleid(0);
+		
+		return newUdfld;
 	}
 
 	protected void processSeedStockVariate(ImportedVariate importedVariate)
@@ -248,6 +281,24 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
 			seedAmountScaleId = importedVariate.getScaleId();
 			
 		}
+    }
+
+	private boolean isUdfldsExist(List<UserDefinedField> existingUdflds, String property) {
+		for(UserDefinedField udfld : existingUdflds){
+			if(udfld.getFcode().equals(property)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private Integer getUdfldID(List<UserDefinedField> existingUdflds, String property) {
+		for(UserDefinedField udfld : existingUdflds){
+			if(udfld.getFcode().toUpperCase().equals(property.toUpperCase())){
+				return udfld.getFldno();
+			}
+		}
+		return 0;
 	}
 
 	protected void addNewNamesToExistingGermplasm(List<Name> newNames)
@@ -276,14 +327,20 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
 
         return list;
     }
-
+    
+    private List<UserDefinedField> getUserDefinedFields() throws MiddlewareQueryException{
+    	List<UserDefinedField> existingUdflds = germplasmManager.getUserDefinedFieldByFieldTableNameAndType("ATRIBUTS", "ATTRIBUTE");
+    	return existingUdflds;
+    }
 
     private void saveGermplasmListDataRecords( List<GermplasmName> germplasmNameObjects,
         List<Integer> germplasmIds, GermplasmList list, String filename, List<ImportedGermplasm> importedGermplasms) throws MiddlewareQueryException {
-
+    	
         List<GermplasmListData> listToSave = new ArrayList<GermplasmListData>();
+        List<UserDefinedField> existingUdflds = getUserDefinedFields();
+        List<Attribute> attrs = new ArrayList<Attribute>();
+        
         int ctr = 1;
-
         for (GermplasmName germplasmName : germplasmNameObjects){
         	
             int entryId = ctr++;
@@ -315,11 +372,11 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
             
             createDepositInventoryTransaction(list, importedGermplasm, gid,	lrecId);
             
+            attrs.addAll(prepareAllAttributesToAdd(importedGermplasm, existingUdflds, germplasmName.getGermplasm()));
         }
-
         
-        
-            
+        //Add All Attributes to database
+        germplasmManager.addAttributes(attrs);
         
     }
 
@@ -343,30 +400,55 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
 		}
 	}
 	
-	
-    private GermplasmListData buildGermplasmListData(GermplasmList list, Integer gid, int entryId,
+	   
+    private List<Attribute> prepareAllAttributesToAdd(ImportedGermplasm importedGermplasm, 
+    		List<UserDefinedField> existingUdflds, Germplasm germplasm) {
+    	List<Attribute> attrs = new ArrayList<Attribute>();
+    	
+    	Map<String, String> otherAttributes = importedGermplasm.getAttributeVariates();
+    	for(Map.Entry<String, String> entry : otherAttributes.entrySet()){
+    		String property = entry.getKey();
+    		String value = entry.getValue();
+    		
+    		if(value!= null && !value.trim().equals("")){
+    			//Create New Attribute Object
+                Attribute newAttr = new Attribute();
+                newAttr.setGermplasmId(germplasm.getGid());
+                newAttr.setTypeId(getUdfldID(existingUdflds,property));
+                newAttr.setUserId(wbUserId);
+                newAttr.setAval(value);
+                newAttr.setLocationId(germplasm.getLocationId());
+                newAttr.setReferenceId(0);
+                newAttr.setAdate(Util.getCurrentDate());
+                
+                attrs.add(newAttr);
+    		}
+    	}
+    	
+    	return attrs;
+	}
+
+	private GermplasmListData buildGermplasmListData(GermplasmList list, Integer gid, int entryId,
             String designation, String groupName, String source, String entryCode) {
+        GermplasmListData germplasmListData = new GermplasmListData();
+        germplasmListData.setList(list);
+        germplasmListData.setGid(gid);
+        germplasmListData.setEntryId(entryId);
+        germplasmListData.setEntryCode(entryCode);
+        germplasmListData.setSeedSource(source);
+        germplasmListData.setDesignation(designation);
+        germplasmListData.setStatus(LIST_DATA_STATUS);
+        germplasmListData.setGroupName(groupName);
+        germplasmListData.setLocalRecordId(entryId);
 
-            GermplasmListData germplasmListData = new GermplasmListData();
-            germplasmListData.setList(list);
-            germplasmListData.setGid(gid);
-            germplasmListData.setEntryId(entryId);
-            germplasmListData.setEntryCode(entryCode);
-            germplasmListData.setSeedSource(source);
-            germplasmListData.setDesignation(designation);
-            germplasmListData.setStatus(LIST_DATA_STATUS);
-            germplasmListData.setGroupName(groupName);
-            germplasmListData.setLocalRecordId(entryId);
-
-            return germplasmListData;
-        }
+        return germplasmListData;
+    }
 
     private void retrieveIbdbUserId() throws MiddlewareQueryException {
         this.wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
         this.project = workbenchDataManager.getLastOpenedProject(wbUserId);
         this.ibdbUserId = workbenchDataManager.getLocalIbdbUserId(wbUserId, this.project.getProjectId());
     }
-
 
     /*
      * Adds a ProjectActivity record in Workbench for creating the GermplasmList through
