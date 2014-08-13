@@ -341,7 +341,7 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
 	protected void initializeTableValues() {
 		try {
             this.germplasmCount = (int) this.germplasmDataManager.countGermplasmByName(germplasmName, Operation.EQUAL);
-            this.germplasms = this.germplasmDataManager.getGermplasmByName(germplasmName, 0, germplasmCount);
+            this.germplasms = this.germplasmDataManager.getGermplasmByName(germplasmName, 0, germplasmCount, Operation.EQUAL);
             for (int i=0; i<this.germplasms.size(); i++){
             	
                 Germplasm germplasm = germplasms.get(i);
