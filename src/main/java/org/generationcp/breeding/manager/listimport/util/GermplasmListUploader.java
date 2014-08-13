@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -27,6 +26,9 @@ import org.generationcp.breeding.manager.pojos.ImportedFactor;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.pojos.ImportedVariate;
+import org.generationcp.middleware.domain.dms.NameSynonym;
+import org.generationcp.middleware.domain.oms.CvId;
+import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.Operation;
@@ -72,7 +74,7 @@ public class GermplasmListUploader implements FileFactory {
     private static final String SOURCE_PROPERTY = "SEED SOURCE";
     private static final String SOURCE_SCALE = "NAME";
     
-    public static final String SEED_AMOUNT_PROPERTY = "SEED AMOUNT";
+    public static final String INVENTORY_AMOUNT_PROPERTY = "INVENTORY AMOUNT";
     
 	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
     
@@ -82,10 +84,8 @@ public class GermplasmListUploader implements FileFactory {
     private String entryCodeFactor;
     private String crossFactor;
     private String sourceFactor;
-    
     private String seedAmountVariate;
-    
-//    private GermplasmImportFileComponent source;
+    private List<String> attributeVariates;
     
     public File file;
 
@@ -259,7 +259,9 @@ public class GermplasmListUploader implements FileFactory {
                 } else if(columnHeader.equals(seedAmountVariate)){
                 	if(getCellStringValue(currentSheet, currentRow, col, true)!=null && !getCellStringValue(currentSheet, currentRow, col, true).equals(""))
                 		importedGermplasm.setSeedAmount(Double.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
-                } else {
+                } else if(isAnAttributeVariate(columnHeader)){
+                	importedGermplasm.addAttributeVariate(columnHeader, getCellStringValue(currentSheet, currentRow, col, true));
+            	} else {
                 	System.out.println("Unknown column "+columnHeader);
                 }
             }
@@ -300,7 +302,15 @@ public class GermplasmListUploader implements FileFactory {
         }
     }
 
-    private void readGermplasmListFileInfo(){
+    private boolean isAnAttributeVariate(String columnHeader) {
+		if(attributeVariates.contains(columnHeader)){
+			return true;
+		}
+    	
+		return false;
+	}
+
+	private void readGermplasmListFileInfo(){
     	boolean listNameHeaderFound = false;
     	boolean listDescHeaderFound = false;
     	boolean listTypeHeaderFound = false;
@@ -555,11 +565,17 @@ public class GermplasmListUploader implements FileFactory {
                     ,getCellStringValue(currentSheet,currentRow,5,true));
                 importedGermplasmList.addImportedVariate(importedVariate);
                 
-                String property = importedVariate.getProperty().toUpperCase();
-                String scale = importedVariate.getScale().toUpperCase();
-                
-                if(property.equals(SEED_AMOUNT_PROPERTY)){
+                if(isSeedAmountVariable(importedVariate)){
+                	importedVariate.setSeedStockVariable(true);
                 	seedAmountVariate = importedVariate.getVariate();
+                	LOG.debug("SEED STOCK " + importedVariate.getProperty());
+                }
+                else{
+                	//initialize
+                	if(attributeVariates == null){
+                		attributeVariates = new ArrayList<String>();
+                	}
+                	attributeVariates.add(importedVariate.getVariate());
                 }
                 
                 currentRow++;
@@ -567,6 +583,41 @@ public class GermplasmListUploader implements FileFactory {
 	        currentRow++;
     	}
     }
+    
+    /*
+     * Returns true if variate property = "INVENTORY AMOUNT" or any of its synonyms
+     */
+    private boolean isSeedAmountVariable(ImportedVariate variate){
+    	boolean isSeedAmountVar = false;
+    	
+    	String property = variate.getProperty().toUpperCase();
+    	if (INVENTORY_AMOUNT_PROPERTY.equals(property)) {
+    		isSeedAmountVar = true;
+    		
+    	} else {
+    		try {
+				List<Term> termsByNameOrSynonym = ontologyDataManager.findTermsByNameOrSynonym(INVENTORY_AMOUNT_PROPERTY, CvId.PROPERTIES);
+				if (termsByNameOrSynonym != null && !termsByNameOrSynonym.isEmpty()){
+					List<NameSynonym> synonymsOfTerm = ontologyDataManager.getSynonymsOfTerm(termsByNameOrSynonym.get(0).getId());
+					for (NameSynonym synonym : synonymsOfTerm){
+						if (synonym.getName().toUpperCase().equals(property)){
+							isSeedAmountVar = true;
+							break;
+						}
+					}
+				}
+				
+			} catch (MiddlewareQueryException e) {
+				LOG.error("Error getting seed amount synonyms " + e.getMessage());
+				e.printStackTrace();
+			}
+    	}
+    	
+    	
+    	return isSeedAmountVar;
+    }
+    
+    
 
     
     

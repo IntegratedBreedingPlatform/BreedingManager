@@ -1,5 +1,8 @@
 package org.generationcp.breeding.manager.pojos;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ImportedGermplasm {
     
 	private Integer gid;
@@ -9,14 +12,17 @@ public class ImportedGermplasm {
     private String source;
     private String entryCode;
     private Double seedAmount;
+    private Map<String, String> attributeVariates;
     
     public ImportedGermplasm(){
+    	attributeVariates = new HashMap<String, String>();
         
     }
     
     public ImportedGermplasm(Integer entryId, String desig){
         this.entryId = entryId;
         this.desig = desig;
+        attributeVariates = new HashMap<String, String>();
     }
     
     public Integer getEntryId(){
@@ -74,5 +80,16 @@ public class ImportedGermplasm {
 	public Double getSeedAmount(){
 	    return seedAmount;
 	}
+
+	public Map<String, String> getAttributeVariates() {
+		return attributeVariates;
+	}
+
+	public void setAttributeVariates(Map<String, String> variatesMap) {
+		this.attributeVariates = variatesMap;
+	}
 	
+	public void addAttributeVariate(String property, String value){
+		attributeVariates.put(property, value);
+	}
 };
