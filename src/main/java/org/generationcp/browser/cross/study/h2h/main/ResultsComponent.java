@@ -120,8 +120,8 @@ public class ResultsComponent extends AbsoluteLayout implements InitializingBean
     		Map<String,String> germplasmNameIdMap, List<GermplasmPair> germplasmPairList, Map<String, ObservationList> observationMap){
     	    	
     	this.removeAllComponents();
-    	addComponent(exportButton, "top:505px;left:900px");
-    	addComponent(backButton, "top:505px;left:810px");
+    	addComponent(exportButton, "top:505px;left:500px");
+    	addComponent(backButton, "top:505px;left:410px");
     	
     	mainTabs = new TabSheet();    
     	mainTabs.setWidth("957px");   
