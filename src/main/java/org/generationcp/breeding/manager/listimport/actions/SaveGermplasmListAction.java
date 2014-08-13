@@ -372,12 +372,16 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
             
             createDepositInventoryTransaction(list, importedGermplasm, gid,	lrecId);
             
-            attrs.addAll(prepareAllAttributesToAdd(importedGermplasm, existingUdflds, germplasmName.getGermplasm()));
+            if(importedGermplasm.getAttributeVariates().size() > 0){
+            	attrs.addAll(prepareAllAttributesToAdd(importedGermplasm, existingUdflds, germplasmName.getGermplasm()));
+            }
+            
         }
         
-        //Add All Attributes to database
-        germplasmManager.addAttributes(attrs);
-        
+        if(attrs.size() > 0){
+            //Add All Attributes to database
+            germplasmManager.addAttributes(attrs);
+        }
     }
 
 	protected void createDepositInventoryTransaction(GermplasmList list,

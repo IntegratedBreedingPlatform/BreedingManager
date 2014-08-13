@@ -15,12 +15,14 @@ public class ImportedGermplasm {
     private Map<String, String> attributeVariates;
     
     public ImportedGermplasm(){
+    	attributeVariates = new HashMap<String, String>();
         
     }
     
     public ImportedGermplasm(Integer entryId, String desig){
         this.entryId = entryId;
         this.desig = desig;
+        attributeVariates = new HashMap<String, String>();
     }
     
     public Integer getEntryId(){
@@ -88,9 +90,6 @@ public class ImportedGermplasm {
 	}
 	
 	public void addAttributeVariate(String property, String value){
-		if(attributeVariates == null){
-			attributeVariates = new HashMap<String, String>();
-		}
 		attributeVariates.put(property, value);
 	}
 };
