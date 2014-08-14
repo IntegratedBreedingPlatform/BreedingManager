@@ -64,7 +64,7 @@ public class UploadField extends org.vaadin.easyuploads.UploadField {
         // Bug #3 will display FileName when no present
         if( lastFileName != null )
         {
-            sb.append(selectedFileText + "\u00a0");
+            sb.append("<b>" + selectedFileText + "</b>" + "\u00a0");
             sb.append("<i>"+ lastFileName + "</i>");
             sb.append("</br> ");
         }

@@ -378,6 +378,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 		pedigreeOptionsLayout.setSpacing(true);
 
 		VerticalLayout pedigreeControlsLayoutVL = new VerticalLayout();
+		pedigreeControlsLayoutVL.setSpacing(true);
 		pedigreeControlsLayoutVL.addComponent(pedigreeOptionComboBox);
 		pedigreeControlsLayoutVL.addComponent(automaticallyAcceptSingleMatchesCheckbox);
 

@@ -164,10 +164,10 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 
 	@Override
 	public void layoutComponents() {
-		addComponent(selectFileLabel, "top:20px;left:30px");
-		 
-		addComponent(uploadComponents, "top:50px;left:30px");
-		 
+		addComponent(selectFileLabel, "top:20px");
+
+		addComponent(uploadComponents, "top:50px");
+
 		HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setWidth("100%");
         buttonLayout.setHeight("40px");
