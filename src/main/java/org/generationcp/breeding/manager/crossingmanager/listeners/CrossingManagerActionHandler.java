@@ -118,7 +118,7 @@ public class CrossingManagerActionHandler implements Handler {
 		} else if(this.source instanceof MakeCrossesParentsComponent && itemsLeftAfterDelete.size()==0){
         	if(((MakeCrossesParentsComponent) source).getFemaleTable().equals(table)){
         		((MakeCrossesParentsComponent) source).getFemaleParentTab().getSaveActionMenu().setEnabled(false);
-        		((MakeCrossesParentsComponent) source).getFemaleParentTab().setHasUnsavedChanges(false);;
+        		((MakeCrossesParentsComponent) source).getFemaleParentTab().setHasUnsavedChanges(false);
         	} else if(((MakeCrossesParentsComponent) source).getMaleTable().equals(table)){
         		((MakeCrossesParentsComponent) source).getMaleParentTab().getSaveActionMenu().setEnabled(false);
         		((MakeCrossesParentsComponent) source).getMaleParentTab().setHasUnsavedChanges(false);
@@ -128,8 +128,12 @@ public class CrossingManagerActionHandler implements Handler {
         //update the number of entries of male/female after delete
         if(((MakeCrossesParentsComponent) source).getFemaleTable().equals(table)){
     		((MakeCrossesParentsComponent) source).getFemaleParentTab().updateNoOfEntries(table.size());
+    		if(((MakeCrossesParentsComponent) source).getFemaleList().getId()>0)
+				((MakeCrossesParentsComponent) source).setFemaleParentList(null);
     	} else if(((MakeCrossesParentsComponent) source).getMaleTable().equals(table)){
     		((MakeCrossesParentsComponent) source).getMaleParentTab().updateNoOfEntries(table.size());
+    		if(((MakeCrossesParentsComponent) source).getMaleList().getId()>0)
+				((MakeCrossesParentsComponent) source).setMaleParentList(null);
     	}
 	}
 }
