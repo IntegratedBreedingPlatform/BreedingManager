@@ -378,7 +378,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	}
 	
 	private SelectGermplasmWindow createSelectGermplasmWindow(String germplasmName, int i, Germplasm germplasm){
-		return new SelectGermplasmWindow(this, germplasmName, i, germplasm, germplasmDetailsComponent.getViaToolURL());
+		return new SelectGermplasmWindow(this, germplasmName, i, germplasm, getWindow());
 	}
 	
 	private void displaySelectGermplasmWindowIfNecessary(String germplasmName, int i, Germplasm germplasm){

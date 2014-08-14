@@ -98,20 +98,20 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
     private Germplasm germplasm;
     
     private ProcessImportedGermplasmAction source;
-    private Boolean viaToolURL;
     
     private Label selectGermplasmLabel;
     
     private CheckBox useSameGidCheckbox;
     private CheckBox ignoreMatchesCheckbox;
     private CheckBox ignoreRemainingMatchesCheckbox;
+    private Window parentWindow;
     
-    public SelectGermplasmWindow(ProcessImportedGermplasmAction source, String germplasmName, int index, Germplasm germplasm, Boolean viaToolURL) {
+    public SelectGermplasmWindow(ProcessImportedGermplasmAction source, String germplasmName, int index, Germplasm germplasm, Window parentWindow) {
         this.germplasmName = germplasmName;
         this.germplasmIndex = index;
         this.germplasm = germplasm;
         this.source = source;
-        this.viaToolURL = viaToolURL;
+        this.parentWindow = parentWindow;
     }
     
     protected void assemble() {
@@ -349,11 +349,11 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
                 Method method = germplasmDataManager.getMethodByID(germplasm.getMethodId());
             	Name preferredName = germplasmDataManager.getPreferredNameByGID(germplasm.getGid());
             	
-            	Button gidButton = new Button(String.format("%s", germplasm.getGid().toString()), new GidLinkClickListener(germplasm.getGid().toString(), viaToolURL));
+            	Button gidButton = new Button(String.format("%s", germplasm.getGid().toString()), new GidLinkClickListener(germplasm.getGid().toString(), parentWindow));
                 gidButton.setStyleName(BaseTheme.BUTTON_LINK); 
                 
                 
-                Button desigButton = new Button(preferredName.getNval(), new GidLinkClickListener(germplasm.getGid().toString(), viaToolURL));
+                Button desigButton = new Button(preferredName.getNval(), new GidLinkClickListener(germplasm.getGid().toString(), parentWindow));
                 desigButton.setStyleName(BaseTheme.BUTTON_LINK); 
                 
                 String crossExpansion = "";

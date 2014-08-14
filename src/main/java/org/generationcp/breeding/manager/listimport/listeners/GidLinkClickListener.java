@@ -55,17 +55,27 @@ public class GidLinkClickListener implements Button.ClickListener, ItemClickList
     
     private String gid;
     private final Boolean viaToolURL;
+    private final Window parentWindow;
     
     public GidLinkClickListener() {
     	this.gid = null;
     	this.viaToolURL = false;
+    	this.parentWindow = null;
     }
 
     public GidLinkClickListener(final String gid, final Boolean viaToolURL) {
         this.gid = gid;
         this.viaToolURL = viaToolURL;
+        this.parentWindow = null;
     }
 
+    public GidLinkClickListener(final String gid, final Window parentWindow) {
+        this.gid = gid;
+        this.viaToolURL = false;
+        this.parentWindow = parentWindow;
+    }
+    
+    
     @Override
     public void buttonClick(final ClickEvent event) {
     	openDetailsWindow(event.getComponent());
@@ -80,7 +90,10 @@ public class GidLinkClickListener implements Button.ClickListener, ItemClickList
 
 	private void openDetailsWindow (final Component component) {
 		Window mainWindow;
-    	if(viaToolURL)
+		
+		if(parentWindow!=null)
+			mainWindow = parentWindow;
+		else if(viaToolURL)
     		mainWindow = component.getWindow();
     	else
     		mainWindow = component.getApplication().getWindow(GERMPLASM_IMPORT_WINDOW_NAME);
