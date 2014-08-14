@@ -577,7 +577,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 				@SuppressWarnings("unchecked")
 				public void drop(DragAndDropEvent dropEvent) {
-					
+
 					//Dragged from a table
 					if(dropEvent.getTransferable() instanceof TableTransferable){
 						
@@ -608,7 +608,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 								newItem.getItemProperty(DESIGNATION_ID).setValue(oldDesignation);
 								newItem.getItemProperty(AVAIL_INV_COLUMN_ID).setValue(oldAvailInv);
 								newItem.getItemProperty(SEED_RES_COLUMN_ID).setValue(oldSeedRes);
-								
+
 								saveActionMenu.setEnabled(true);
 								setHasUnsavedChanges(true);
 		                    }

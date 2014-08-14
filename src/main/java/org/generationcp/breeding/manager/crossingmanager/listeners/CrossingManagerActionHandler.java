@@ -55,6 +55,16 @@ public class CrossingManagerActionHandler implements Handler {
 					MakeCrossesParentsComponent makeCrosses = ((MakeCrossesParentsComponent) source);
 					makeCrosses.assignEntryNumber((Table) sender);
 					makeCrosses.setHasUnsavedChanges(true);
+					
+					if(sender.equals(makeCrosses.getFemaleTable())){
+						if(makeCrosses.getFemaleList().getId()>0){
+							makeCrosses.setFemaleParentList(null);
+						}
+					} else if(sender.equals(makeCrosses.getMaleTable())){
+						if(makeCrosses.getMaleList().getId()>0){
+							makeCrosses.setMaleParentList(null);
+						}
+					}
 				}
 		} else if (ACTION_DELETE_CROSSES.equals(action)) {
 			((MakeCrossesTableComponent) source).deleteCrossAction();

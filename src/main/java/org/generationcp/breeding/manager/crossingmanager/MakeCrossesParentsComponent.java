@@ -229,10 +229,13 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     		if(targetTable.equals(femaleParents)){
     			GermplasmList femaleGermplasmList = ((SelectParentsListDataComponent) makeCrossesMain.getSelectParentsComponent().getListDetailsTabSheet().getSelectedTab()).getGermplasmList();
             	updateFemaleParentList(femaleGermplasmList);
-            	
+            	femaleParentTab.getSaveActionMenu().setEnabled(false);
+            	femaleParentTab.setHasUnsavedChanges(false);
     		} else{//if male
     			GermplasmList maleGermplasmList = ((SelectParentsListDataComponent) makeCrossesMain.getSelectParentsComponent().getListDetailsTabSheet().getSelectedTab()).getGermplasmList();
-            	updateMaleParentList(maleGermplasmList);	
+            	updateMaleParentList(maleGermplasmList);
+            	maleParentTab.getSaveActionMenu().setEnabled(false);
+    			maleParentTab.setHasUnsavedChanges(false);
     		}
     		
     		//updates the crossesMade.savebutton if both parents are save at least once;
