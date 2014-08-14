@@ -415,7 +415,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 	
 	protected void toggleAcceptSingleMatchesCheckbox() {
 		automaticallyAcceptSingleMatchesCheckbox.setVisible(false); //by default hide it
-		automaticallyAcceptSingleMatchesCheckbox.setValue(false);
+		automaticallyAcceptSingleMatchesCheckbox.setValue(true);
 		
 		if(pedigreeOptionComboBox.getValue()!=null){
 			boolean selectGermplasmOptionChosen = pedigreeOptionComboBox.getValue().equals(3);

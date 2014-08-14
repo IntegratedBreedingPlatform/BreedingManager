@@ -334,7 +334,7 @@ public class SelectGermplasmWindow extends Window implements InitializingBean, I
 	}
 	
 	private void initializeGuideMessage(){
-		selectGermplasmLabel.setValue("Multiple matches were found with the name <b>" + this.germplasmName + "</b>. Click on an entry below to choose it as a match. "
+		selectGermplasmLabel.setValue("Matches were found with the name <b>" + this.germplasmName + "</b>. Click on an entry below to choose it as a match. "
 				+ "You can also choose to ignore the match and add a new entry.");
 	}
 	
