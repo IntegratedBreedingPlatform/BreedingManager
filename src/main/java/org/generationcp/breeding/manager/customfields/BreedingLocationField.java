@@ -245,13 +245,11 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
      */
 	private void populateLocations() {
 		
-		if(locations==null){
-			try {
-				locations = locationDataManager.getAllLocations();
-			} catch (MiddlewareQueryException e) {
-				e.printStackTrace();
-				LOG.error("Error on getting all locations", e);
-			}
+		try {
+			locations = locationDataManager.getAllLocations();
+		} catch (MiddlewareQueryException e) {
+			e.printStackTrace();
+			LOG.error("Error on getting all locations", e);
 		}
 		
 		Integer firstId = null;

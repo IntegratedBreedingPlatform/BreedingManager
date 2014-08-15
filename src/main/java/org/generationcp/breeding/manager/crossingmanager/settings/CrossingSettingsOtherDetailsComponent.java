@@ -234,6 +234,16 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
     }
 
     private void populateWithLocations(){
+    	
+		try {
+			locations = locationDataManager.getAllLocations();
+		} catch (MiddlewareQueryException e) {
+			e.printStackTrace();
+			LOG.error(e.getMessage());
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR),
+					"Error getting breeding locations!");
+		}
+    	
 		harvestLocations.removeAllItems();
 
         for (Location loc : locations) {
