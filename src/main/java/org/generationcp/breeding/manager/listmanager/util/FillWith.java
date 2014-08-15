@@ -541,7 +541,12 @@ public class FillWith implements InternationalizableComponent  {
  				  List<Integer> parentGids = new ArrayList<Integer>();
  				  parentGids.add(germplasm.getGpid1());
  				  Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(parentGids);
- 				  table.getItem(itemId).getItemProperty(propertyId).setValue(preferredNames.get(germplasm.getGpid1()));
+ 				  
+ 				  String femalePreferredName = "";
+ 				  if(preferredNames.get(germplasm.getGpid1()) != null){
+ 					  femalePreferredName = preferredNames.get(germplasm.getGpid1());
+ 				  }
+ 				  table.getItem(itemId).getItemProperty(propertyId).setValue(femalePreferredName);
  			  } 
  		   }
  		   
@@ -590,7 +595,11 @@ public class FillWith implements InternationalizableComponent  {
 	  			   List<Integer> parentGids = new ArrayList<Integer>();
 	  			   parentGids.add(germplasm.getGpid2());
 	  			   Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(parentGids);
-	  			   table.getItem(itemId).getItemProperty(propertyId).setValue(preferredNames.get(germplasm.getGpid2()));
+	  			   String malePreferredName = "";
+	  			   if(preferredNames.get(germplasm.getGpid2()) != null){
+	  				   malePreferredName = preferredNames.get(germplasm.getGpid2());
+	  			   }
+	  			   table.getItem(itemId).getItemProperty(propertyId).setValue(malePreferredName);
   			 	}
   		   }
   		   
