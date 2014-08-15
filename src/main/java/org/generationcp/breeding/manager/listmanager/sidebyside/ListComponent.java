@@ -262,7 +262,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	@Override
 	public void instantiateComponents() {
 		topLabel = new Label(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
-		topLabel.setWidth("150px");
+		topLabel.setWidth("120px");
 		topLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		
 		viewListHeaderWindow = new ViewListHeaderWindow(germplasmList);
