@@ -285,14 +285,12 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
     }
     
     private Map<String, String> populateMethods() {
-        if (methods == null) {
-            try {
-                methods = germplasmDataManager.getAllMethods();
-            }
-            catch (MiddlewareQueryException e) {
-                e.printStackTrace();
-                LOG.error("Error on gettingAllMethods", e);
-            }
+        try {
+            methods = germplasmDataManager.getAllMethods();
+        }
+        catch (MiddlewareQueryException e) {
+            e.printStackTrace();
+            LOG.error("Error on gettingAllMethods", e);
         }
         
         if (methods == null) {

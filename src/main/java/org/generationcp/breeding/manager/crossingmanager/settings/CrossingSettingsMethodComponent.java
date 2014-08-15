@@ -334,6 +334,13 @@ public class CrossingSettingsMethodComponent extends CssLayout implements
     }
 
     private void populateBreedingMethod(){
+    	
+        try {
+			methods = germplasmDataManager.getMethodsByType("GEN");
+		} catch (MiddlewareQueryException e) {
+			LOG.error(e.getMessage());
+		}
+        
     	breedingMethods.removeAllItems();
         mapMethods = new HashMap<String, Integer>();
 
