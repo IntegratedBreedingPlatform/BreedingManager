@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -155,7 +156,11 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 		cancelButton.addListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				source.reset();
+				if (source.getGermplasmImportPopupSource() == null){
+					source.reset();
+				} else {
+					source.getGermplasmImportPopupSource().getParentWindow().removeWindow(((Window) source.getComponentContainer()));
+				}
 			}
 		});
 		
