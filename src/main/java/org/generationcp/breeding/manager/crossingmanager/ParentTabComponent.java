@@ -1153,6 +1153,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void refreshInventoryColumns(
 			Map<ListEntryLotDetails, Double> validReservationsToSave2) {
 		
@@ -1170,9 +1171,9 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			e.printStackTrace();
 		}
 		
+		Collection<? extends GermplasmListEntry> itemIds = (Collection<? extends GermplasmListEntry>)  listDataTable.getItemIds();
 		for (GermplasmListData listData : germplasmListDataEntries){
-			GermplasmListEntry itemId = new GermplasmListEntry(listData.getId(),listData.getGid(), listData.getEntryId(), listData.getDesignation(), listData.getSeedSource());
-			
+			GermplasmListEntry itemId = getGermplasmListEntry(listData.getEntryId(), itemIds);
 			Item item = listDataTable.getItem(itemId);
 			
 			//#1 Available Inventory
@@ -1207,6 +1208,15 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	}
 	
 	/*--------------------------------END OF INVENTORY RELATED FUNCTIONS--------------------------------------*/
+
+	private GermplasmListEntry getGermplasmListEntry(Integer entryId, Collection<? extends GermplasmListEntry> itemIds) {
+		for(GermplasmListEntry entry : itemIds){
+			if(entry.getEntryId().equals(entryId)){
+				return entry;
+			}	
+		}
+		return null;
+	}
 
 	public Map<ListEntryLotDetails, Double> getValidReservationsToSave(){
 		return validReservationsToSave;
