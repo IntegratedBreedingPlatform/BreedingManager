@@ -237,6 +237,7 @@ public class FillWith implements InternationalizableComponent  {
         };
     	
 	   	 fillWithMenu = new ContextMenu();
+	   	 fillWithMenu.setWidth("310px");
 		 
 	   	 menuFillWithEmpty = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_EMPTY));
 	   	 menuFillWithLocationName = fillWithMenu.addItem(messageSource.getMessage(Message.FILL_WITH_LOCATION_NAME));
