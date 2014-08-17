@@ -100,7 +100,7 @@ public class PreselectTraitFilter extends AbsoluteLayout implements Initializing
 		traitTreeTable = new TreeTable();
 		traitTreeTable.setImmediate(true);
 		traitTreeTable.setHeight("360px");
-		traitTreeTable.setWidth("440px");
+		traitTreeTable.setWidth("470px");
 
 		traitTreeTable.addContainerProperty("Trait", String.class, "");
 		traitTreeTable.setItemCaptionPropertyId("trait_name");
@@ -188,7 +188,7 @@ public class PreselectTraitFilter extends AbsoluteLayout implements Initializing
 		nextButton.setData(NEXT_BUTTON_ID);
 		nextButton.addListener(new TraitDonorButtonClickListener(this));
 		nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-		addComponent(nextButton, "top:420px;left:900px");
+		addComponent(nextButton, "top:420px;left:460px");
 		updateLabels();
 
 	}

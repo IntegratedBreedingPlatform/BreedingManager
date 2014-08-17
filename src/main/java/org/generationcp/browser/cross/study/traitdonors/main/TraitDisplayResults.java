@@ -190,7 +190,7 @@ public class TraitDisplayResults extends AbsoluteLayout implements InitializingB
 
 		this.addTagAllCheckBoxToCombinedScoreTagColTable();
 
-		this.prevEntryBtn = new Button(this.messageSource.getMessage(Message.PREV_ENTRY));
+		this.prevEntryBtn = new Button(this.messageSource.getMessage(Message.PREV_ARROW));
 		this.prevEntryBtn.setData(TraitDisplayResults.NEXT_ENTRY_BUTTON_ID);
 		
 		this.prevEntryBtn.addListener(new Button.ClickListener() {
@@ -203,12 +203,12 @@ public class TraitDisplayResults extends AbsoluteLayout implements InitializingB
 			}
 		});
 		
-		this.prevEntryBtn.setWidth("80px");
+		this.prevEntryBtn.setWidth("50px");
 		this.prevEntryBtn.setEnabled(true);
 		this.prevEntryBtn.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-		this.addComponent(this.prevEntryBtn, "top:470px;left:445px");
+		this.addComponent(this.prevEntryBtn, "top:470px;left:455px");
 
-		this.nextEntryBtn = new Button(this.messageSource.getMessage(Message.NEXT_ENTRY));
+		this.nextEntryBtn = new Button(this.messageSource.getMessage(Message.NEXT_ARROW));
 		this.nextEntryBtn.setData(TraitDisplayResults.NEXT_ENTRY_BUTTON_ID);
 		
 		this.nextEntryBtn.addListener(new Button.ClickListener() {
@@ -221,10 +221,10 @@ public class TraitDisplayResults extends AbsoluteLayout implements InitializingB
 			}
 		});
 		
-		this.nextEntryBtn.setWidth("80px");
+		this.nextEntryBtn.setWidth("50px");
 		this.nextEntryBtn.setEnabled(true);
 		this.nextEntryBtn.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-		this.addComponent(this.nextEntryBtn, "top:470px;left:535x");
+		this.addComponent(this.nextEntryBtn, "top:470px;left:515x");
 
 		this.backButton = new Button(this.messageSource.getMessage(Message.BACK));
 		this.backButton.setData(TraitDisplayResults.BACK_BUTTON_ID);
@@ -238,9 +238,9 @@ public class TraitDisplayResults extends AbsoluteLayout implements InitializingB
 			}
 		});
 		
-		this.backButton.setWidth("80px");
+		this.backButton.setWidth("100px");
 		this.backButton.setEnabled(true);
-		this.addComponent(this.backButton, "top:510px;left:790px");
+		this.addComponent(this.backButton, "top:500px;left:405px");
 
 		this.saveButton = new Button(this.messageSource.getMessage(Message.SAVE_GERMPLASMS_TO_NEW_LIST_LABEL));
 		this.saveButton.setData(TraitDisplayResults.SAVE_BUTTON_ID);
@@ -257,7 +257,7 @@ public class TraitDisplayResults extends AbsoluteLayout implements InitializingB
 		this.saveButton.setWidth("100px");
 		this.saveButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 		this.saveButton.setEnabled(false);
-		this.addComponent(this.saveButton, "top:510px;left:880px");
+		this.addComponent(this.saveButton, "top:500px;left:515px");
 	}
 
 	public void populateResultsTable(List<EnvironmentForComparison> environments, List<NumericTraitFilter> numericTraitFilter,

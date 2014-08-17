@@ -12,7 +12,6 @@ import org.generationcp.browser.cross.study.commons.trait.filter.CategoricalVari
 import org.generationcp.browser.cross.study.commons.trait.filter.CharacterTraitsSection;
 import org.generationcp.browser.cross.study.commons.trait.filter.NumericTraitsSection;
 import org.generationcp.browser.cross.study.h2h.main.pojos.EnvironmentForComparison;
-import org.generationcp.browser.cross.study.traitdonors.main.listeners.TraitDonorButtonClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;

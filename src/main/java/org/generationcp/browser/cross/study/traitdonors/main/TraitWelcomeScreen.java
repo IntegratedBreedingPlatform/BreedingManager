@@ -73,7 +73,7 @@ public class TraitWelcomeScreen extends AbsoluteLayout implements InitializingBe
 		this.nextButton.addListener(new TraitDonorButtonClickListener(this));
 		this.nextButton.setWidth("80px");
 		this.nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-		this.addComponent(this.nextButton, "top:90px;left:900px");
+		this.addComponent(this.nextButton, "top:90px;left:460px");
 	}
 	
 	/**

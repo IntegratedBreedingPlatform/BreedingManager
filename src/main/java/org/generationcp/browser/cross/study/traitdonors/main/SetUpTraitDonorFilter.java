@@ -165,7 +165,7 @@ public class SetUpTraitDonorFilter extends AbsoluteLayout implements Initializin
 		nextButton.setData(NEXT_BUTTON_ID);
 		nextButton.addListener(new TraitDonorButtonClickListener(this));
 		nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-		addComponent(nextButton, "top:500px;left:900px");
+		addComponent(nextButton, "top:500px;left:460px");
 		updateLabels();
 	}
 	
