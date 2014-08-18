@@ -89,7 +89,7 @@ public class CrossingSettingsDetailComponent extends CssLayout
 	@Override
 	public void updateLabels() {
 		messageSource.setCaption(nextButton, Message.NEXT);
-		messageSource.setCaption(cancelButton, Message.CANCEL);
+		messageSource.setCaption(cancelButton, Message.RESET);
 	}
 
 	@Override
