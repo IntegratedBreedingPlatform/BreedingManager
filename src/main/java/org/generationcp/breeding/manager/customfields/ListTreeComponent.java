@@ -487,6 +487,7 @@ public abstract class ListTreeComponent extends CssLayout implements
 			germplasmListTree.expandItem(parent.getId());
 			setSelectedListId(parent.getId());
 		}
+		updateButtons(this.selectedListId);
     }
     
 	/*
@@ -804,9 +805,9 @@ public abstract class ListTreeComponent extends CssLayout implements
     				deleteFolderBtn.setEnabled(false);
     				//Any non-numeric itemID (nothing goes here as of the moment)
     			} else {
-    				addFolderBtn.setEnabled(true);
-    				renameFolderBtn.setEnabled(true);
-    				deleteFolderBtn.setEnabled(true);
+    				addFolderBtn.setEnabled(false);
+    				renameFolderBtn.setEnabled(false);
+    				deleteFolderBtn.setEnabled(false);
     			}
     		}
     	}

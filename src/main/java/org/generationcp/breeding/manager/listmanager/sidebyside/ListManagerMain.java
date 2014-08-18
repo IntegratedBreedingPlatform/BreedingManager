@@ -413,9 +413,6 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 			MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Germplasm List was deleted.");
 		}
 		
-		//refresh tree on browse for list dialog
-		listSelectionComponent.showNodeOnTree(list.getId());
-		
 		//Check if deleted list is in the search results
 		listSelectionComponent.getListSearchComponent().getSearchResultsComponent().removeSearchResult(list.getId());
 	}
