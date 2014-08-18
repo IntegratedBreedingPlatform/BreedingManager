@@ -144,7 +144,7 @@ public class CrossingManagerSummaryComponent extends VerticalLayout implements
 		tabContentLayout.addComponent(settingsComponent);
 		tabContentLayout.addComponent(buttonLayout);
 		
-		tabSheet.setHeight("600px");
+		tabSheet.setHeight("620px");
 		tabSheet.addTab(tabContentLayout);
 	}
 
