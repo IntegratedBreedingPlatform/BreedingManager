@@ -735,6 +735,12 @@
 	top: 0px;
 }
 
+.lm-toggle .v-button-caption,
+.lm-toggle .v-button-caption * {
+	font-size: 11px !important;
+	color: #1b95b2 !important;
+}
+
 .lm-toggle .bms-fa-chevron-left,
 .lm-toggle .bms-fa-chevron-right {
     display: inline-block;
