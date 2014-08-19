@@ -113,13 +113,15 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 	public void instantiateComponents() {
 		listEntriesLabel = new Label(messageSource.getMessage(Message.CROSS_LIST_ENTRIES).toUpperCase());
 		listEntriesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
-		listEntriesLabel.setWidth("160px");
+		listEntriesLabel.addStyleName(AppConstants.CssStyles.BOLD);
+		listEntriesLabel.setWidth("180px");
 		
 		viewListHeaderWindow = new ViewListHeaderWindow(list);
 		
 		viewHeaderButton = new Button(messageSource.getMessage(Message.VIEW_HEADER));
 		viewHeaderButton.addStyleName(Reindeer.BUTTON_LINK);
 		viewHeaderButton.setDescription(viewListHeaderWindow.getListHeaderComponent().toString());
+		viewHeaderButton.setHeight("14px");
 		
 		initializeListEntriesTable();
 		
@@ -238,11 +240,12 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 		setSpacing(true);
 			
 		HorizontalLayout tableHeaderLayout = new HorizontalLayout();
-		tableHeaderLayout.setHeight("30px");
+		tableHeaderLayout.setHeight("27px");
 		tableHeaderLayout.setWidth("100%");
 		
 		HorizontalLayout leftHeaderLayout = new HorizontalLayout();
 		leftHeaderLayout.setSpacing(true);
+		leftHeaderLayout.setHeight("100%");
 		leftHeaderLayout.addComponent(listEntriesLabel);
 		leftHeaderLayout.addComponent(viewHeaderButton);
 		leftHeaderLayout.setComponentAlignment(viewHeaderButton, Alignment.MIDDLE_RIGHT);

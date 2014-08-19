@@ -134,7 +134,7 @@ public class CrossingManagerSummaryComponent extends VerticalLayout implements
 		buttonLayout.setComponentAlignment(doneButton, Alignment.MIDDLE_CENTER);
 		
 		VerticalLayout spacingLayout = new VerticalLayout();
-		spacingLayout.setHeight("25px");
+		spacingLayout.setHeight("5px");
 		
 		tabContentLayout.setSpacing(true);
 		tabContentLayout.setMargin(true);
