@@ -52,8 +52,6 @@ public class GermplasmSelectionComponent extends VerticalLayout implements Initi
 		setWidth("100%");
 		setHeight("800px");
 		
-		addStyleName("pink");
-		
 		headerLayout = new HorizontalLayout();
 		instructionLayout = new HorizontalLayout();
 		instructionLayout.setWidth("100%");
@@ -66,7 +64,7 @@ public class GermplasmSelectionComponent extends VerticalLayout implements Initi
 		
 		searchDescription = new Label();
 		searchDescription.addStyleName("lm-word-wrap");
-		searchDescription.setHeight("53px");
+		searchDescription.setHeight("55px");
 		
 		searchResultsComponent = new GermplasmSearchResultsComponent(source);
 		searchBarComponent = new GermplasmSearchBarComponent(searchResultsComponent);
@@ -92,11 +90,7 @@ public class GermplasmSelectionComponent extends VerticalLayout implements Initi
         selectionHeaderContainer.setWidth("100%");
 
 		final HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS, headingLabel);
-		//headingLayout.addStyleName("lm-title");
-        //headingLayout.setHeight("30px");
-        
 		headerLayout.addComponent(headingLayout);
-
 		instructionLayout.addComponent(searchDescription);
 		
 		final Panel listDataTablePanel = new Panel();

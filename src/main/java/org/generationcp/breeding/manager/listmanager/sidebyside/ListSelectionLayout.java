@@ -195,8 +195,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
         final HorizontalLayout searchOrBrowseLayout = new HorizontalLayout();
         
         searchOrBrowseContainer = new HorizontalLayout();
-        //searchOrBrowseContainer.setHeight("19px");
-        searchOrBrowseContainer.setHeight("39px");
+        searchOrBrowseContainer.setHeight("19px");
         searchOrBrowseContainer.setWidth("100%");
         
         // Ugh, bit of a hack - can't figure out how to space these nicely
