@@ -611,6 +611,12 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 								saveActionMenu.setEnabled(true);
 								setHasUnsavedChanges(true);
+								
+								//Checker if list is modified and list is central, clear germplasm to force new list to be saved
+								if(germplasmList.getId() > 0){
+									germplasmList = null;
+								}
+								
 		                    }
 	                    } else if(sourceTable.getData().equals(SelectParentsListDataComponent.LIST_DATA_TABLE_ID)){
 	                    	source.dropToFemaleOrMaleTable(sourceTable, listDataTable, (Integer) transferable.getItemId());
