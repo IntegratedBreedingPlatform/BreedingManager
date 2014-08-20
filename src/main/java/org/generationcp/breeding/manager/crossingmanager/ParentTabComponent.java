@@ -613,7 +613,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 								setHasUnsavedChanges(true);
 								
 								//Checker if list is modified and list is central, clear germplasm to force new list to be saved
-								if(germplasmList.getId() > 0){
+								if(germplasmList!=null && germplasmList.getId() > 0){
 									germplasmList = null;
 								}
 								
