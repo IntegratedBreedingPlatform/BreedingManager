@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.BreedingLocationField;
 import org.generationcp.breeding.manager.customfields.BreedingMethodField;
@@ -17,6 +18,7 @@ import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItem
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListValueChangeListener;
 import org.generationcp.breeding.manager.listmanager.sidebyside.GermplasmSearchBarComponent;
 import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -170,11 +172,16 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
             LOG.error(messageSource.getMessage(Message.QUERY_EXCEPTION), qe);
         }
         
+        String addtlParams = ContextUtil.getContextParameterString(
+        		BreedingManagerApplication.currentRequest());
+        
         ExternalResource germplasmBrowserLink = null;
         if (tool == null) {
-            germplasmBrowserLink = new ExternalResource(GERMPLASM_BROWSER_LINK + gid);
+            germplasmBrowserLink = new ExternalResource(GERMPLASM_BROWSER_LINK + gid+ "?restartApplication"+
+            		addtlParams);
         } else {
-            germplasmBrowserLink = new ExternalResource(tool.getPath().replace("germplasm/", "germplasm-") + gid);
+            germplasmBrowserLink = new ExternalResource(tool.getPath().replace("germplasm/", "germplasm-") + gid+ "?restartApplication"+
+            		addtlParams);
         }
         
         Window germplasmWindow = new Window(messageSource.getMessage(Message.GERMPLASM_INFORMATION) + " - " + gid);

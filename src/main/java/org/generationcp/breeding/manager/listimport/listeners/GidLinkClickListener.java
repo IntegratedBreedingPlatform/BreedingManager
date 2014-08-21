@@ -12,8 +12,10 @@
 
 package org.generationcp.breeding.manager.listimport.listeners;
 
+import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.commons.tomcat.util.TomcatUtil;
 import org.generationcp.commons.tomcat.util.WebAppStatusInfo;
+import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
@@ -108,12 +110,16 @@ public class GidLinkClickListener implements Button.ClickListener, ItemClickList
             /*MessageNotifier.showError(mainWindow, messageSource.getMessage(Message.DATABASE_ERROR),
                     "<br />" + messageSource.getMessage(Message.CONTACT_ADMIN_ERROR_DESC));*/
         }
+        String addtlParams = ContextUtil.getContextParameterString(
+        		BreedingManagerApplication.currentRequest());
         
         ExternalResource germplasmBrowserLink = null;
         if (tool == null) {
-            germplasmBrowserLink = new ExternalResource(GERMPLASM_BROWSER_LINK + gid + "?restartApplication");
+            germplasmBrowserLink = new ExternalResource(GERMPLASM_BROWSER_LINK + gid + "?restartApplication"+
+            		addtlParams);
         } else {
-            germplasmBrowserLink = new ExternalResource(tool.getPath().replace("germplasm/", "germplasm-") + gid + "?restartApplication");
+            germplasmBrowserLink = new ExternalResource(tool.getPath().replace("germplasm/", "germplasm-") + gid + "?restartApplication"+
+            		addtlParams);
         }
         
         String preferredName = null;

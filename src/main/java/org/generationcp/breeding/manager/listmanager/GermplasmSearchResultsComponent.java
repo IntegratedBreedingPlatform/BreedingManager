@@ -16,6 +16,7 @@ import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.tomcat.util.TomcatUtil;
 import org.generationcp.commons.tomcat.util.WebAppStatusInfo;
+import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -428,11 +429,16 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
             LOG.error("QueryException", qe);
         }
         
+        String addtlParams = ContextUtil.getContextParameterString(
+        		BreedingManagerApplication.currentRequest());
+        
         ExternalResource germplasmBrowserLink = null;
         if (tool == null) {
-            germplasmBrowserLink = new ExternalResource(GERMPLASM_BROWSER_LINK + gid + "?restartApplication");
+            germplasmBrowserLink = new ExternalResource(GERMPLASM_BROWSER_LINK + gid+ "?restartApplication"+
+            		addtlParams);
         } else {
-            germplasmBrowserLink = new ExternalResource(tool.getPath().replace("germplasm/", "germplasm-") + gid + "?restartApplication");
+            germplasmBrowserLink = new ExternalResource(tool.getPath().replace("germplasm/", "germplasm-") + gid+ "?restartApplication"+
+            		addtlParams);
         }
         
         String preferredName = null;
