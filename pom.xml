@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.generationcp</groupId>
     <artifactId>GermplasmStudyBrowser</artifactId>
-    <version>1.2.0</version>
+    <version>3.0.0.RELEASE</version>
     <packaging>war</packaging>
     <name>GermplasmStudyBrowser</name>
 
@@ -20,6 +20,7 @@
     <properties>
         <vaadin.version>6.8.10</vaadin.version>
         <gwt.version>2.3.0</gwt.version>
+        <ibpcommons.version>3.0.0.RELEASE</ibpcommons.version>
     </properties>
 
     <dependencies>
@@ -143,7 +144,7 @@
         <dependency>
             <groupId>org.generationcp</groupId>
             <artifactId>ibpcommons</artifactId>
-            <version>1.3.0-SNAPSHOT</version>
+            <version>${ibpcommons.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.gwt</groupId>
