@@ -172,8 +172,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
             LOG.error(messageSource.getMessage(Message.QUERY_EXCEPTION), qe);
         }
         
-        String addtlParams = ContextUtil.getContextParameterString(
-        		BreedingManagerApplication.currentRequest());
+        String addtlParams = getAdditionalParams();
         
         ExternalResource germplasmBrowserLink = null;
         if (tool == null) {
@@ -210,6 +209,21 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         
         this.parentWindow.addWindow(germplasmWindow);
     }
+    
+    private String getAdditionalParams() {
+        String addtlParams = "";
+        
+    	try {
+        	Long projectId = ContextUtil.getProjectInContext(workbenchDataManager, BreedingManagerApplication.currentRequest()).getProjectId();
+        	Integer userId =  ContextUtil.getCurrentWorkbenchUserId(workbenchDataManager, BreedingManagerApplication.currentRequest()); 
+        	
+        	addtlParams = ContextUtil.getContextParameterString(userId, projectId);
+		} catch (MiddlewareQueryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        return addtlParams;
+	}
     
     private void assembleTopPart(){
         topPart = new VerticalLayout();

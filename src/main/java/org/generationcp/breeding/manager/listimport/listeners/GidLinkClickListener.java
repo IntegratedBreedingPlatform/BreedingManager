@@ -110,8 +110,7 @@ public class GidLinkClickListener implements Button.ClickListener, ItemClickList
             /*MessageNotifier.showError(mainWindow, messageSource.getMessage(Message.DATABASE_ERROR),
                     "<br />" + messageSource.getMessage(Message.CONTACT_ADMIN_ERROR_DESC));*/
         }
-        String addtlParams = ContextUtil.getContextParameterString(
-        		BreedingManagerApplication.currentRequest());
+        String addtlParams = getAdditionalParams();
         
         ExternalResource germplasmBrowserLink = null;
         if (tool == null) {
@@ -158,6 +157,20 @@ public class GidLinkClickListener implements Button.ClickListener, ItemClickList
         mainWindow.addWindow(germplasmWindow);
 	}
     
+    private String getAdditionalParams() {
+        String addtlParams = "";
+        
+    	try {
+        	Long projectId = ContextUtil.getProjectInContext(workbenchDataManager, BreedingManagerApplication.currentRequest()).getProjectId();
+        	Integer userId =  ContextUtil.getCurrentWorkbenchUserId(workbenchDataManager, BreedingManagerApplication.currentRequest()); 
+        	
+        	addtlParams = ContextUtil.getContextParameterString(userId, projectId);
+		} catch (MiddlewareQueryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        return addtlParams;
+	}
     
     private void launchWebTool(){
     	

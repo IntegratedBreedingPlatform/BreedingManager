@@ -429,8 +429,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
             LOG.error("QueryException", qe);
         }
         
-        String addtlParams = ContextUtil.getContextParameterString(
-        		BreedingManagerApplication.currentRequest());
+        String addtlParams = getAdditionalParams();
         
         ExternalResource germplasmBrowserLink = null;
         if (tool == null) {
@@ -507,6 +506,21 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
         window.addWindow(germplasmWindow);
     	
         return germplasmWindow;
+	}
+    
+    private String getAdditionalParams() {
+        String addtlParams = "";
+        
+    	try {
+        	Long projectId = ContextUtil.getProjectInContext(workbenchDataManager, BreedingManagerApplication.currentRequest()).getProjectId();
+        	Integer userId =  ContextUtil.getCurrentWorkbenchUserId(workbenchDataManager, BreedingManagerApplication.currentRequest()); 
+        	
+        	addtlParams = ContextUtil.getContextParameterString(userId, projectId);
+		} catch (MiddlewareQueryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        return addtlParams;
 	}
     
 	private void updateNoOfEntries(long count){

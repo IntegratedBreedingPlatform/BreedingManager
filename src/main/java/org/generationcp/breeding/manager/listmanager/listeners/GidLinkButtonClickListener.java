@@ -23,7 +23,6 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.workbench.Tool;
 import org.generationcp.middleware.pojos.workbench.ToolName;
 import org.slf4j.Logger;
@@ -95,8 +94,7 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
                     "<br />" + messageSource.getMessage(Message.CONTACT_ADMIN_ERROR_DESC));*/
         }
         
-        String addtlParams = ContextUtil.getContextParameterString(
-        		BreedingManagerApplication.currentRequest());
+        String addtlParams = getAdditionalParams();
         
         ExternalResource germplasmBrowserLink = null;
         if (tool == null) {
@@ -174,7 +172,22 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
     }
     
     
-    private void launchWebTool(){
+    private String getAdditionalParams() {
+        String addtlParams = "";
+        
+    	try {
+        	Long projectId = ContextUtil.getProjectInContext(workbenchDataManager, BreedingManagerApplication.currentRequest()).getProjectId();
+        	Integer userId =  ContextUtil.getCurrentWorkbenchUserId(workbenchDataManager, BreedingManagerApplication.currentRequest()); 
+        	
+        	addtlParams = ContextUtil.getContextParameterString(userId, projectId);
+		} catch (MiddlewareQueryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        return addtlParams;
+	}
+
+	private void launchWebTool(){
     	
 		try {
 			Tool germplasmBrowserTool;
