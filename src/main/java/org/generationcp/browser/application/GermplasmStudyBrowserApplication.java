@@ -21,12 +21,10 @@ import org.generationcp.browser.cross.study.h2h.HeadToHeadComparisonMain;
 import org.generationcp.browser.cross.study.h2h.main.HeadToHeadCrossStudyMain;
 import org.generationcp.browser.cross.study.traitdonors.main.TraitDonorsQueryMain;
 import org.generationcp.browser.germplasm.GermplasmBrowserMain;
-import org.generationcp.browser.germplasm.GermplasmDetail;
 import org.generationcp.browser.germplasm.GermplasmDetailsComponentTree;
 import org.generationcp.browser.germplasm.GermplasmQueries;
 import org.generationcp.browser.germplasm.GidByPhenotypicQueries;
 import org.generationcp.browser.germplasm.SearchGermplasmByPhenotypicTab;
-import org.generationcp.browser.germplasm.containers.GermplasmIndexContainer;
 import org.generationcp.browser.germplasm.containers.TraitDataIndexContainer;
 import org.generationcp.browser.germplasm.listeners.GermplasmSelectedTabChangeListener;
 import org.generationcp.browser.germplasmlist.GermplasmListAccordionMenu;
@@ -43,7 +41,6 @@ import org.generationcp.commons.vaadin.actions.UpdateComponentLabelsAction;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.ConfigException;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.WorkbenchDataManagerImpl;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.slf4j.Logger;
@@ -131,14 +128,6 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
         rootLayoutForGermplasmListBrowser = new VerticalLayout();
         rootLayoutForStudyBrowser = new VerticalLayout();
         rootLayoutForGermplasmByPhenoTab = new VerticalLayout();
-
-        // initialize Middleware ManagerFactory
-        /*        try {
-                    initDataSource();
-                } catch (Exception e) {
-                    log.error(e.toString() + "\n" + e.getStackTrace());
-                    return;
-                }*/
 
         window = new Window(messageSource.getMessage(Message.RETRIEVE_GERMPLASM_BY_PHENO_LABEL)); // "Retrieve Germplasms By Phenotypic Data"
         setMainWindow(window);
@@ -385,9 +374,7 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
             	  this.addWindow(awhereWindow);
             	  return awhereWindow;
               }
-
         }
-
         return super.getWindow(name);
     }
 
@@ -442,10 +429,8 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
     @Override
     public void close() {
         super.close();
-
         // implement this when we need to do something on session timeout
         messageSource.removeListener(messageSourceListener);
-
         LOG.debug("Application closed");
     }
     
@@ -455,34 +440,10 @@ public class GermplasmStudyBrowserApplication extends SpringContextApplication i
 
     @Override
     protected void doOnRequestStart(HttpServletRequest request, HttpServletResponse response) {
-       
-        
         LOG.trace("Request started " + request.getRequestURI() + "?" + request.getQueryString());
-        
-        synchronized (this) {
-        	
-        /**	  Boolean lastOpenedProjectChanged = true;
-          	try {
-      			lastOpenedProjectChanged = workbenchDataManager.isLastOpenedProjectChanged();
-      		} catch (MiddlewareQueryException e) {
-      			e.printStackTrace();
-      		}
-          	
-          	if (lastOpenedProjectChanged){	
-          		 try{
-          	        	managerFactoryProvider.close();
-          	        }catch(Exception e){
-          		        e.printStackTrace();	
-          	        }
-      			close();
-      			request.getSession().invalidate();
-      		
-      		}**/
-        	
-        	
+        synchronized (this) {      	
             HttpRequestAwareUtil.onRequestStart(applicationContext, request, response);
         }
-        
         super.doOnRequestStart(request, response);
     }
     
