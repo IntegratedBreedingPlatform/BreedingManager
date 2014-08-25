@@ -12,14 +12,12 @@
 
 package org.generationcp.breeding.manager.listimport.listeners;
 
-import org.generationcp.breeding.manager.application.BreedingManagerApplication;
+import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.tomcat.util.TomcatUtil;
 import org.generationcp.commons.tomcat.util.WebAppStatusInfo;
-import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.workbench.Tool;
 import org.generationcp.middleware.pojos.workbench.ToolName;
 import org.slf4j.Logger;
@@ -110,7 +108,7 @@ public class GidLinkClickListener implements Button.ClickListener, ItemClickList
             /*MessageNotifier.showError(mainWindow, messageSource.getMessage(Message.DATABASE_ERROR),
                     "<br />" + messageSource.getMessage(Message.CONTACT_ADMIN_ERROR_DESC));*/
         }
-        String addtlParams = getAdditionalParams();
+        String addtlParams = Util.getAdditionalParams(workbenchDataManager);
         
         ExternalResource germplasmBrowserLink = null;
         if (tool == null) {
@@ -156,22 +154,7 @@ public class GidLinkClickListener implements Button.ClickListener, ItemClickList
         
         mainWindow.addWindow(germplasmWindow);
 	}
-    
-    private String getAdditionalParams() {
-        String addtlParams = "";
-        
-    	try {
-        	Long projectId = ContextUtil.getProjectInContext(workbenchDataManager, BreedingManagerApplication.currentRequest()).getProjectId();
-        	Integer userId =  ContextUtil.getCurrentWorkbenchUserId(workbenchDataManager, BreedingManagerApplication.currentRequest()); 
-        	
-        	addtlParams = ContextUtil.getContextParameterString(userId, projectId);
-		} catch (MiddlewareQueryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        return addtlParams;
-	}
-    
+     
     private void launchWebTool(){
     	
 		try {

@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.BreedingLocationField;
 import org.generationcp.breeding.manager.customfields.BreedingMethodField;
@@ -17,8 +16,8 @@ import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButt
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItemClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListValueChangeListener;
 import org.generationcp.breeding.manager.listmanager.sidebyside.GermplasmSearchBarComponent;
+import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.exceptions.InternationalizableException;
-import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -172,7 +171,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
             LOG.error(messageSource.getMessage(Message.QUERY_EXCEPTION), qe);
         }
         
-        String addtlParams = getAdditionalParams();
+        String addtlParams = Util.getAdditionalParams(workbenchDataManager);
         
         ExternalResource germplasmBrowserLink = null;
         if (tool == null) {
@@ -209,21 +208,6 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         
         this.parentWindow.addWindow(germplasmWindow);
     }
-    
-    private String getAdditionalParams() {
-        String addtlParams = "";
-        
-    	try {
-        	Long projectId = ContextUtil.getProjectInContext(workbenchDataManager, BreedingManagerApplication.currentRequest()).getProjectId();
-        	Integer userId =  ContextUtil.getCurrentWorkbenchUserId(workbenchDataManager, BreedingManagerApplication.currentRequest()); 
-        	
-        	addtlParams = ContextUtil.getContextParameterString(userId, projectId);
-		} catch (MiddlewareQueryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        return addtlParams;
-	}
     
     private void assembleTopPart(){
         topPart = new VerticalLayout();
