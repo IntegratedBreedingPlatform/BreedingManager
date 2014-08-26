@@ -70,7 +70,6 @@ import com.vaadin.ui.Table.TableTransferable;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
@@ -108,7 +107,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
     private Integer saveInListId;
     private Button changeLocationButton;
     private Window selectFolderWindow;
-    private ListManagerTreeFoldersComponent listManagerTreeFoldersComponent;
     
     private Label listNameLabel;
     private Label descriptionLabel;
@@ -228,9 +226,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 				if(source instanceof ListManagerMain){
 					
 					AbsoluteLayout selectFolderWindowLayout = new AbsoluteLayout();
-					listManagerTreeFoldersComponent = new ListManagerTreeFoldersComponent((ListManagerMain) source, getBuildNewListComponent(), false, saveInListId);
 					
-					selectFolderWindowLayout.addComponent(listManagerTreeFoldersComponent, "top:10px; left:10px;");
 					
 					selectFolderWindow = new Window();
 					selectFolderWindow.setCaption(messageSource.getMessage(Message.LIST_LOCATION));
@@ -268,11 +264,6 @@ public class BuildNewListComponent extends AbsoluteLayout implements
 						@Override
 						public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 							if(source instanceof ListManagerMain){
-								try {
-									saveInListId = Integer.valueOf(listManagerTreeFoldersComponent.getSelectedListId().toString());
-								} catch(NumberFormatException e) {
-									saveInListId = null;
-								}
 								updateSaveInDisplay();
 								((ListManagerMain) source).getBrowseListsComponent().getListManagerTreeComponent().createTree();
 								((ListManagerMain) source).getWindow().removeWindow(selectFolderWindow);

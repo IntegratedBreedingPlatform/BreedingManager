@@ -38,7 +38,6 @@ import org.generationcp.breeding.manager.constants.TemplateCrossingCondition;
 import org.generationcp.breeding.manager.constants.TemplateCrossingFactor;
 import org.generationcp.breeding.manager.constants.TemplateUploadSource;
 import org.generationcp.breeding.manager.crosses.NurseryTemplateImportFileComponent;
-import org.generationcp.breeding.manager.crossingmanager.CrossingManagerImportFileComponent;
 import org.generationcp.breeding.manager.pojos.ImportedCondition;
 import org.generationcp.breeding.manager.pojos.ImportedConstant;
 import org.generationcp.breeding.manager.pojos.ImportedFactor;
@@ -106,9 +105,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
     // TODO: consider renaming class to "NurseryTemplateUploader" or something so that it's a generic uploader utility class
     public CrossingManagerUploader(AbstractLayout source, GermplasmListManager germplasmListManager, GermplasmDataManager germplasmDataManager) {
         // take note of source type
-        if (source instanceof CrossingManagerImportFileComponent) {
-            this.uploadSourceType = TemplateUploadSource.CROSSING_MANAGER;
-        } else if (source instanceof NurseryTemplateImportFileComponent) {
+    	if (source instanceof NurseryTemplateImportFileComponent) {
             this.uploadSourceType = TemplateUploadSource.NURSERY_TEMPLATE;
         }
         

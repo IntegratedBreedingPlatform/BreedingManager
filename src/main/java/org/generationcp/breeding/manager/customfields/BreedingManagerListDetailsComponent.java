@@ -7,7 +7,7 @@ import java.util.Date;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
-import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
+import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.breeding.manager.validator.ListNameValidator;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -37,7 +37,6 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = LoggerFactory.getLogger(BreedingManagerListDetailsComponent.class);
-	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
 	
 	private String defaultListType;
 	
@@ -109,7 +108,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 			listDescriptionField.setValue(germplasmList.getDescription());
 			listTypeField.setValue(germplasmList.getType());
 			
-			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(Util.DATE_AS_NUMBER_FORMAT);
             try {
                 this.listDateField.setValue(simpleDateFormat.parse(germplasmList.getDate().toString()));
             } catch (ReadOnlyException e) {
@@ -186,7 +185,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	public GermplasmList getGermplasmList(){
 		String listName = listNameField.getValue().toString();
         String listDescription = listDescriptionField.getValue().toString();
-        SimpleDateFormat formatter = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT);
+        SimpleDateFormat formatter = new SimpleDateFormat(Util.DATE_AS_NUMBER_FORMAT);
         Date date = (Date) listDateField.getValue();
         
         GermplasmList list = new GermplasmList();
@@ -217,7 +216,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 			
 			listDescriptionField.setValue(germplasmList.getDescription());
 			
-			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(Util.DATE_AS_NUMBER_FORMAT);
 	        try {
 	            this.listDateField.setValue(simpleDateFormat.parse(germplasmList.getDate().toString()));
 	        } catch (ReadOnlyException e) {

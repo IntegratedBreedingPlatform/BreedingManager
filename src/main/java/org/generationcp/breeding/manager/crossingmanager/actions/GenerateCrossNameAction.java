@@ -1,4 +1,4 @@
-package org.generationcp.breeding.manager.crossingmanager;
+package org.generationcp.breeding.manager.crossingmanager.actions;
 
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;

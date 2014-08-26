@@ -30,13 +30,13 @@ import org.generationcp.breeding.manager.constants.TemplateCrossingFactor;
 import org.generationcp.breeding.manager.constants.TemplateFactorHeader;
 import org.generationcp.breeding.manager.constants.TemplateStudyDetails;
 import org.generationcp.breeding.manager.constants.TemplateVariateHeader;
-import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerExporterException;
 import org.generationcp.breeding.manager.pojos.ImportedCondition;
 import org.generationcp.breeding.manager.pojos.ImportedConstant;
 import org.generationcp.breeding.manager.pojos.ImportedFactor;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
 import org.generationcp.breeding.manager.pojos.ImportedVariate;
+import org.generationcp.breeding.manager.util.Util;
 
 
 public class NurseryTemplateManagerExporter{
@@ -353,12 +353,12 @@ public class NurseryTemplateManagerExporter{
                 break;
             }
             case START_DATE : {
-                SimpleDateFormat formatter = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT);
+                SimpleDateFormat formatter = new SimpleDateFormat(Util.DATE_AS_NUMBER_FORMAT);
                 cell.setCellValue(formatter.format(nurseryTemplateData.getStartDate()));
                 break;
             }
             case END_DATE : {
-                SimpleDateFormat formatter = new SimpleDateFormat(CrossingManagerMain.DATE_AS_NUMBER_FORMAT);
+                SimpleDateFormat formatter = new SimpleDateFormat(Util.DATE_AS_NUMBER_FORMAT);
                 cell.setCellValue(formatter.format(nurseryTemplateData.getEndDate()));
                 break;
             }

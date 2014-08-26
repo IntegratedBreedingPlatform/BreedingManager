@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainer;
 import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainerUpdateListener;
-import org.generationcp.breeding.manager.crossingmanager.GenerateCrossNameAction;
+import org.generationcp.breeding.manager.crossingmanager.actions.GenerateCrossNameAction;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUtil;
 import org.generationcp.breeding.manager.crossingmanager.xml.AdditionalDetailsSetting;

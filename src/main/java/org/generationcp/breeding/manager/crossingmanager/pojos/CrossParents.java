@@ -1,6 +1,5 @@
-package org.generationcp.breeding.manager.crossingmanager;
+package org.generationcp.breeding.manager.crossingmanager.pojos;
 
-import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 
 public class CrossParents {
     

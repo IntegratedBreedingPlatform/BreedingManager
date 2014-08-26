@@ -48,15 +48,6 @@ public class WelcomeTabButtonClickListener implements Button.ClickListener{
                 MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
             }
         
-        } else if (source instanceof WelcomeTab && event.getButton().getData().equals(WelcomeTab.SELECT_GERMPLASM_LIST_BUTTON_ID)) {
-            try {
-                ((WelcomeTab) source).selectGermplasmButtonClickAction();
-            }catch (InternationalizableException e){
-                LOG.error(e.toString() + "\n" + e.getStackTrace());
-                e.printStackTrace();
-                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
-            }
-
-        }
+        } 
     }
 }

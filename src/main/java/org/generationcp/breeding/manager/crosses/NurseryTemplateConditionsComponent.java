@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.crossingmanager.SelectGermplasmListWindow;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerExporterException;
 import org.generationcp.breeding.manager.nurserytemplate.listeners.NurseryTemplateButtonClickListener;
 import org.generationcp.breeding.manager.nurserytemplate.util.NurseryTemplateManagerExporter;
@@ -25,6 +24,7 @@ import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -37,7 +37,6 @@ import org.generationcp.middleware.pojos.User;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -51,7 +50,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window.Notification;
 
 /**
  * 
@@ -527,8 +525,8 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
 
         public void layoutClick(LayoutClickEvent event) {
                 if (event.getChildComponent() == txtField) {
-                    SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow(getMainClass(),germplasmListFor);
-                    getWindow().addWindow(selectListWindow);
+//                    SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow(getMainClass(),germplasmListFor);
+//                    getWindow().addWindow(selectListWindow);
                 }
             }
         });

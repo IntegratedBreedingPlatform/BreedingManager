@@ -29,7 +29,7 @@ import org.generationcp.breeding.manager.constants.ExportCrossesObservationSheet
 import org.generationcp.breeding.manager.constants.TemplateConditionHeader;
 import org.generationcp.breeding.manager.constants.TemplateFactorHeader;
 import org.generationcp.breeding.manager.constants.TemplateForExportListDetails;
-import org.generationcp.breeding.manager.crossingmanager.CrossParents;
+import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.pojos.ImportedCondition;
 import org.generationcp.breeding.manager.pojos.ImportedFactor;

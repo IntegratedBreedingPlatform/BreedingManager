@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
-import org.generationcp.breeding.manager.crossingmanager.SelectGermplasmListComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItemClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListTreeCollapseListener;
@@ -40,7 +39,6 @@ import com.vaadin.ui.Tree.ItemStyleGenerator;
 import com.vaadin.ui.Tree.TreeDragMode;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 
 @Configurable
 @Deprecated
@@ -76,7 +74,6 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     
     protected Integer listId;
     protected GermplasmListTreeUtil germplasmListTreeUtil;
-    protected SelectGermplasmListComponent selectListComponent;
     
     protected final ThemeResource ICON_REFRESH = new ThemeResource("images/refresh-icon.png");
     
@@ -106,15 +103,9 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         this.forSelectingFolderToSaveIn = false;
     }
     
-    public ListManagerTreeComponent(SelectGermplasmListComponent selectListComponent){
-    	this.selectListComponent = selectListComponent;
-    	this.forSelectingFolderToSaveIn = false;
-    }
-    
     public ListManagerTreeComponent(boolean forSelectingFolderToSaveIn, Integer folderId){
     	super();
     	this.forSelectingFolderToSaveIn = forSelectingFolderToSaveIn;
-    	this.selectListComponent = null;
     	this.listManagerMain = null;
         this.germplasmListBrowserMainLayout = null;
         this.forGermplasmListWindow = false;
@@ -125,7 +116,6 @@ public class ListManagerTreeComponent extends VerticalLayout implements
     	super();
     	this.makeCrossesComponent = makeCrossesComponent;
     	this.forSelectingFolderToSaveIn = false;
-    	this.selectListComponent = null;
     	this.listManagerMain = null;
         this.germplasmListBrowserMainLayout = null;
         this.forGermplasmListWindow = false;
@@ -277,10 +267,6 @@ public class ListManagerTreeComponent extends VerticalLayout implements
    		germplasmListTree.removeAllItems();
    		germplasmListTree = createGermplasmListTree();
         germplasmListTree.addStyleName("listManagerTree");
-        
-        if(selectListComponent != null){
-        	germplasmListTree.addStyleName("listManagerTree-long");
-        }
         
         germplasmListTree.setItemStyleGenerator(new ItemStyleGenerator() {
         	protected static final long serialVersionUID = -5690995097357568121L;
@@ -485,8 +471,6 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         				this.displayDetailsLayout.createListInfoFromBrowseScreen(germplasmListId);
         				
         			//open details in Select List pop-up
-        			} else if (this.selectListComponent != null){
-        				this.selectListComponent.getListInfoComponent().displayListInfo(germplasmList);
         			} else if(this.makeCrossesComponent != null){
         				this.makeCrossesComponent.getSelectParentsComponent().createListDetailsTab(germplasmList.getId(), germplasmList.getName());
         			}

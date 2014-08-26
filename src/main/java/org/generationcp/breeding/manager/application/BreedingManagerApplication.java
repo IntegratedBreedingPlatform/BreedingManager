@@ -5,7 +5,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.dellroad.stuff.vaadin.SpringContextApplication;
 import org.generationcp.breeding.manager.crosses.NurseryTemplateMain;
-import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
@@ -220,7 +219,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
         }
         else if (source.getSelectedTab() == this.rootLayoutForCrossingManager) {
             if (this.rootLayoutForCrossingManager.getComponentCount() == 0) {
-                rootLayoutForCrossingManager.addComponent(new CrossingManagerMain(rootLayoutForCrossingManager));
+                rootLayoutForCrossingManager.addComponent(new ManageCrossingSettingsMain(rootLayoutForCrossingManager));
                 rootLayoutForCrossingManager.addStyleName("addSpacing");
             }
         }
