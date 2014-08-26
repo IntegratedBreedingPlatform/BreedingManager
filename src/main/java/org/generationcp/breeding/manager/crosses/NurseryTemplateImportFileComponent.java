@@ -181,7 +181,7 @@ public class NurseryTemplateImportFileComponent extends VerticalLayout implement
     public void nextButtonClickAction() {
     
     if(crossingManagerUploader.getImportedGermplasmCrosses()==null){
-        MessageNotifier.showError(getWindow(), "Error with file.", "You must upload a nursery template file before clicking on next.", Notification.POSITION_CENTERED);
+        MessageNotifier.showError(getWindow(), "Error with file.", "You must upload a nursery template file before clicking on next.");
     }else{
         source.enableNurseryTemplateConditionsComponent();
         this.accordion.setSelectedTab(source.getSpecifyNurseryConditionsScreen());

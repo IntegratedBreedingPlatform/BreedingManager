@@ -1235,8 +1235,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
                 LOG.error("Error with exporting list.", e);
                 MessageNotifier.showError( this.getWindow()
                         , "Error with exporting list."    
-                        , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO)
-                        , Notification.POSITION_CENTERED);
+                        , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO));
             }
         }
         
@@ -1264,8 +1263,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             } catch (GermplasmListExporterException e) {
                 LOG.error("Error with exporting list.", e);
                 MessageNotifier.showError(this.getWindow() 
-                        , "Error with exporting list."
-                        , e.getMessage(), Notification.POSITION_CENTERED);
+                        , "Error with exporting list.", e.getMessage());
             }
         }
     }// end of exportListForGenotypingOrderAction
@@ -1278,7 +1276,7 @@ public class BuildNewListComponent extends AbsoluteLayout implements
             Collection<?> listEntries = (Collection<?>) germplasmsTable.getValue();
             
             if (listEntries == null || listEntries.isEmpty()){
-                MessageNotifier.showError(this.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "", Notification.POSITION_CENTERED);
+                MessageNotifier.showError(this.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "");
             } 
             else {
                 listManagerCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));

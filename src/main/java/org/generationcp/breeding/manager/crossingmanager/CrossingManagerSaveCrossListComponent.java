@@ -23,7 +23,6 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window.Notification;
 
 @Deprecated
 @Configurable
@@ -180,14 +179,14 @@ public class CrossingManagerSaveCrossListComponent extends VerticalLayout
         try {
             GermplasmList list = saveAction.saveRecords(source.getCrossesMade());
             MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
-                    messageSource.getMessage(Message.CROSSES_SAVED_SUCCESSFULLY), 3000, Notification.POSITION_CENTERED);
+                    messageSource.getMessage(Message.CROSSES_SAVED_SUCCESSFULLY), 3000);
 //            this.source.viewGermplasmListCreated(list);
             
         } catch (MiddlewareQueryException e) {
             LOG.error(e.getMessage() + " " + e.getStackTrace());
             e.printStackTrace();
             MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), 
-                messageSource.getMessage(Message.ERROR_IN_SAVING_CROSSES_DEFINED), Notification.POSITION_CENTERED);
+                messageSource.getMessage(Message.ERROR_IN_SAVING_CROSSES_DEFINED));
         }
         
     }

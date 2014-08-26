@@ -401,7 +401,7 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
 			nameMatches += germplasmListManager.countGermplasmListByName(listNameText.getValue().toString(), Operation.EQUAL, Database.CENTRAL);
 			if(nameMatches>0){
 				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE),
-		                messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE), Window.Notification.POSITION_CENTERED);
+		                messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));
 				return false;
 			}
 		} catch (MiddlewareQueryException e) {

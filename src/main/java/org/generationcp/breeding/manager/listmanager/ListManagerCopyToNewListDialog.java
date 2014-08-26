@@ -264,9 +264,9 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
         if(proceedWithSave){
         
             if (listNameValue.trim().length() == 0) {
-                MessageNotifier.showError(getWindow(), "Input Error!", "Please specify a List Name before saving", Notification.POSITION_CENTERED);
+                MessageNotifier.showError(getWindow(), "Input Error!", "Please specify a List Name before saving");
             } else if (listNameValue.trim().length() > 50) {
-                MessageNotifier.showError(getWindow(), "Input Error!", "Listname input is too large limit the name only up to 50 characters", Notification.POSITION_CENTERED);
+                MessageNotifier.showError(getWindow(), "Input Error!", "Listname input is too large limit the name only up to 50 characters");
                 comboBoxListName.setValue("");
             } else {
                 
@@ -292,8 +292,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
                             germplasmListManager.deleteGermplasmListByListId(newListid);
                             LOG.error("Error with copying list entries", e);
                             MessageNotifier.showError(getWindow().getParent().getWindow(), "Error with copying list entries."
-                                , "Copying of entries to a new list failed. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
-                                , Notification.POSITION_CENTERED);
+                                , "Copying of entries to a new list failed. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
                         }
                         this.mainWindow.removeWindow(dialogWindow);
     
@@ -302,8 +301,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
                         e.printStackTrace();
                         MessageNotifier.showError(this.getWindow().getParent().getWindow() 
                             , messageSource.getMessage(Message.UNSUCCESSFUL) 
-                            , messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_NEW_LIST_FAILED)
-                            , Notification.POSITION_CENTERED);
+                            , messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_NEW_LIST_FAILED));
                     }
                 } else {
                 
@@ -325,8 +323,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
                             e.printStackTrace();
                             MessageNotifier.showError(this.getWindow().getParent().getWindow() 
                                 , messageSource.getMessage(Message.UNSUCCESSFUL) 
-                                , messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_EXISTING_LIST_FAILED)
-                                , Notification.POSITION_CENTERED);
+                                , messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_EXISTING_LIST_FAILED));
                     }
                 }
             }
@@ -372,9 +369,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 
         MessageNotifier.showMessage(this.getWindow().getParent().getWindow() 
             ,messageSource.getMessage(Message.SUCCESS)
-            ,messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_NEW_LIST_SUCCESS)
-            ,3000
-            ,Notification.POSITION_CENTERED);
+            ,messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_NEW_LIST_SUCCESS),3000);
 
         logCopyToNewListEntriesToWorkbenchProjectActivity();    
     }

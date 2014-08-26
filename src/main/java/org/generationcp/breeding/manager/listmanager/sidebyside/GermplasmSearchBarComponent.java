@@ -197,8 +197,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		if(q.replaceAll(" ", "").trim().equals("")){
 			MessageNotifier.showWarning(getWindow(),
 					messageSource.getMessage(Message.UNABLE_TO_SEARCH),
-					messageSource.getMessage(Message.SEARCH_QUERY_CANNOT_BE_EMPTY),
-					Notification.POSITION_CENTERED);
+					messageSource.getMessage(Message.SEARCH_QUERY_CANNOT_BE_EMPTY));
 			return;
 		}
 		
@@ -211,7 +210,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 			
 			if (germplasms == null || germplasms.isEmpty()) {
 				MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.SEARCH_RESULTS), 
-						messageSource.getMessage(Message.NO_SEARCH_RESULTS), Notification.POSITION_CENTERED);
+						messageSource.getMessage(Message.NO_SEARCH_RESULTS));
 			} 
 			searchResultsComponent.applyGermplasmResults(germplasms);
 			

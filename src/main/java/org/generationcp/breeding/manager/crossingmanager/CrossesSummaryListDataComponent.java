@@ -295,8 +295,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 			
 		} catch(MiddlewareQueryException ex){
 			LOG.error(ex.getMessage() + list.getId());
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), "Error in getting list and/or germplasm information."
-					, Notification.POSITION_CENTERED);
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), "Error in getting list and/or germplasm information.");
 		}
 	}
 	
@@ -367,7 +366,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
             this.getWindow().open(fileDownloadResource);
     
         } catch (CrossingManagerExporterException e) {
-            MessageNotifier.showError(getWindow(), "Error with exporting crossing file.", e.getMessage(), Notification.POSITION_CENTERED);
+            MessageNotifier.showError(getWindow(), "Error with exporting crossing file.", e.getMessage());
         }
 	}
 	

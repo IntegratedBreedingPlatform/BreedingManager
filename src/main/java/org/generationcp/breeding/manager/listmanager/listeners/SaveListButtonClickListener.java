@@ -31,7 +31,6 @@ import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 
 public class SaveListButtonClickListener implements Button.ClickListener{
@@ -64,7 +63,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 		
 		if(listEntries.isEmpty()){
 			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.INVALID_INPUT)
-					, messageSource.getMessage(Message.NO_ENTRIES_ERROR_MESSAGE), Notification.POSITION_CENTERED);
+					, messageSource.getMessage(Message.NO_ENTRIES_ERROR_MESSAGE));
 			return;
 		}
 	
@@ -96,14 +95,12 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 					((ListManagerMain) this.source.getSource()).getBrowseListsComponent().getListManagerTreeComponent().simulateItemClickForNewlyAdded(listId, false);
 				} else{
 					MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
-							, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
-							, Notification.POSITION_CENTERED);
+							, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
 					return;
 				}
 			} catch(MiddlewareQueryException ex){
 				LOG.error("Error in saving germplasm list: " + listToSave, ex);
-				MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
-						, Notification.POSITION_CENTERED);
+				MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
 				return;
 			}
 			
@@ -144,8 +141,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 					
 					if(listId == null){
 						MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
-								, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
-								, Notification.POSITION_CENTERED);
+								, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
 						return;
 					} else{
 						currentlySavedList = listFromDB;
@@ -157,8 +153,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 					}
 				} catch(MiddlewareQueryException ex){
 					LOG.error("Error in updating germplasm list: " + currentlySavedList.getId(), ex);
-					MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
-							, Notification.POSITION_CENTERED);
+					MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
 					return;
 				}
 			}
@@ -214,8 +209,8 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			ex.printStackTrace();
 		}
 		
-		MessageNotifier.showMessage(this.source.getWindow(), messageSource.getMessage(Message.SUCCESS), messageSource.getMessage(Message.LIST_AND_ENTRIES_SAVED_SUCCESS)
-				, 3000, Notification.POSITION_CENTERED);
+		MessageNotifier.showMessage(this.source.getWindow(), messageSource.getMessage(Message.SUCCESS), 
+				messageSource.getMessage(Message.LIST_AND_ENTRIES_SAVED_SUCCESS), 3000);
 	}
 	
 	private void saveListDataColumns(GermplasmList listToSave) {
@@ -223,32 +218,26 @@ public class SaveListButtonClickListener implements Button.ClickListener{
             dataManager.saveListDataColumns(source.getAddColumnContextMenu().getListDataCollectionFromTable(listDataTable)); 
         } catch (MiddlewareQueryException e) {
             LOG.error("Error in saving added germplasm list columns: " + listToSave, e);
-            MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
-                    , Notification.POSITION_CENTERED);
+            MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
             e.printStackTrace();
         }
 	}
 	
 	private boolean validateListDetails(GermplasmList list, GermplasmList currentlySavedList){
 		if(list.getName() == null || list.getName().length() == 0){
-			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.INVALID_INPUT), messageSource.getMessage(Message.NAME_CAN_NOT_BE_BLANK)
-					, Notification.POSITION_CENTERED);
+			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.INVALID_INPUT), messageSource.getMessage(Message.NAME_CAN_NOT_BE_BLANK));
 			return false;
 		} else if(list.getDescription() == null || list.getDescription().length() == 0){
-			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.INVALID_INPUT), messageSource.getMessage(Message.DESCRIPTION_CAN_NOT_BE_BLANK)
-					, Notification.POSITION_CENTERED);
+			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.INVALID_INPUT), messageSource.getMessage(Message.DESCRIPTION_CAN_NOT_BE_BLANK));
 			return false;
 		} else if(list.getName().length() > 50){
-			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.INVALID_INPUT), messageSource.getMessage(Message.NAME_CAN_NOT_BE_LONG)
-					, Notification.POSITION_CENTERED);
+			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.INVALID_INPUT), messageSource.getMessage(Message.NAME_CAN_NOT_BE_LONG));
 			return false;
 		} else if(list.getDescription().length() > 255){
-			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.INVALID_INPUT), messageSource.getMessage(Message.DESCRIPTION_CAN_NOT_BE_LONG)
-					, Notification.POSITION_CENTERED);
+			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.INVALID_INPUT), messageSource.getMessage(Message.DESCRIPTION_CAN_NOT_BE_LONG));
 			return false;
 		} else if(list.getDate() == null){
-			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.INVALID_INPUT), "Please select a date."
-					, Notification.POSITION_CENTERED);
+			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.INVALID_INPUT), "Please select a date.");
 			return false;
 		} else {
 			if(currentlySavedList == null){
@@ -263,22 +252,19 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			List<GermplasmList> centralLists = this.dataManager.getGermplasmListByName(list.getName(), 0, 5, Operation.EQUAL, Database.CENTRAL);
 			if(!centralLists.isEmpty()){
 				MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.INVALID_INPUT)
-						, messageSource.getMessage(Message.EXISTING_LIST_IN_CENTRAL_ERROR_MESSAGE)
-						, Notification.POSITION_CENTERED);
+						, messageSource.getMessage(Message.EXISTING_LIST_IN_CENTRAL_ERROR_MESSAGE));
 				return false;
 			}
 			
 			List<GermplasmList> localLists = this.dataManager.getGermplasmListByName(list.getName(), 0, 5, Operation.EQUAL, Database.LOCAL);
 			if(!localLists.isEmpty()){
 				MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.INVALID_INPUT)
-						, messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE)
-						, Notification.POSITION_CENTERED);
+						, messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));
 				return false;
 			}
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error with getting germplasm list by list name - " + list.getName(), ex);
-			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_VALIDATING_LIST)
-					, Notification.POSITION_CENTERED);
+			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_VALIDATING_LIST));
 			return false;
 		}
 		
@@ -292,8 +278,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			return this.workbenchDataManager.getLocalIbdbUserId(runtimeData.getUserId(), project.getProjectId());
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error with getting the local IBDB user ID of the currently logged in workbench user.", ex);
-			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_GETTING_LOCAL_IBDB_USER_ID)
-					, Notification.POSITION_CENTERED);
+			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_GETTING_LOCAL_IBDB_USER_ID));
 			return null;
 		}
 	}
@@ -329,8 +314,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			return;
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error with getting the saved list entries.", ex);
-			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_GETTING_SAVED_ENTRIES)
-					, Notification.POSITION_CENTERED);
+			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_GETTING_SAVED_ENTRIES));
 			return;
 		}
 	}
@@ -441,16 +425,14 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			
 			if(!(savedEntryPKs.size() == listEntries.size())){
 				MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
-						, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST_ENTRIES)
-						, Notification.POSITION_CENTERED);
+						, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST_ENTRIES));
 				return false;
 			}
 			return true;
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error in saving germplasm list entries.", ex);
 			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
-					, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST_ENTRIES)
-					, Notification.POSITION_CENTERED);
+					, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST_ENTRIES));
 			return false;
 		}
 	}
@@ -461,16 +443,14 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			
 			if(!(savedEntryPKs.size() == listEntries.size())){
 				MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
-						, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST_ENTRIES)
-						, Notification.POSITION_CENTERED);
+						, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST_ENTRIES));
 				return false;
 			}
 			return true;
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error in updating germplasm list entries.", ex);
 			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
-					, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST_ENTRIES)
-					, Notification.POSITION_CENTERED);
+					, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST_ENTRIES));
 			return false;
 		}
 	}
@@ -550,8 +530,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			}
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error with getting the saved list entries.", ex);
-			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_GETTING_SAVED_ENTRIES)
-					, Notification.POSITION_CENTERED);
+			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_GETTING_SAVED_ENTRIES));
 		}
 		
 		return toreturn;
@@ -573,8 +552,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error with getting the saved list entries.", ex);
-			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_GETTING_SAVED_ENTRIES)
-					, Notification.POSITION_CENTERED);
+			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_GETTING_SAVED_ENTRIES));
 		}
 		
 		return toreturn;

@@ -331,7 +331,7 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
                     comboBoxSiteName.setValue(loc.getLname());
                 }else{
                     if(comboBoxSiteName.getValue()!=null || loc==null){
-                        MessageNotifier.showWarning(getWindow(), "Warning!", messageSource.getMessage(Message.INVALID_SITE_ID), Notification.POSITION_CENTERED);
+                        MessageNotifier.showWarning(getWindow(), "Warning!", messageSource.getMessage(Message.INVALID_SITE_ID));
                     }
                     comboBoxSiteName.setValue(comboBoxSiteName.getNullSelectionItemId());
                     siteId.setValue("");
@@ -442,7 +442,7 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
                     comboBoxBreedersName.setValue(name);
                 }else{
                     if(comboBoxBreedersName.getValue()!=null || u==null){
-                        MessageNotifier.showWarning(getWindow(), "Warning!", messageSource.getMessage(Message.INVALID_BREEDER_ID), Notification.POSITION_CENTERED);
+                        MessageNotifier.showWarning(getWindow(), "Warning!", messageSource.getMessage(Message.INVALID_BREEDER_ID));
                     }
                     comboBoxBreedersName.setValue(comboBoxBreedersName.getNullSelectionItemId());
                     breederId.setValue("");
@@ -507,7 +507,7 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
                     comboBoxBreedingMethod.setValue(m.getMname());
                 }else{
                     if(comboBoxBreedingMethod.getValue()!=null || m==null){
-                        MessageNotifier.showWarning(getWindow(), "Warning!", messageSource.getMessage(Message.INVALID_METHOD_ID), Notification.POSITION_CENTERED);
+                        MessageNotifier.showWarning(getWindow(), "Warning!", messageSource.getMessage(Message.INVALID_METHOD_ID));
                     }
                     comboBoxBreedingMethod.setValue(comboBoxBreedingMethod.getNullSelectionItemId());
                     methodId.setValue("");
@@ -590,7 +590,7 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
             this.getWindow().open(fileDownloadResource);
     
         } catch (CrossingManagerExporterException e) {
-            MessageNotifier.showError(getWindow(), e.getMessage(), "", Notification.POSITION_CENTERED);
+            MessageNotifier.showError(getWindow(), e.getMessage(), "");
         }
     }
 

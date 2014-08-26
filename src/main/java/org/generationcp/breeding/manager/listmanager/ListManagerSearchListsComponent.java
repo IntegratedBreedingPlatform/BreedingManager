@@ -185,7 +185,7 @@ public class ListManagerSearchListsComponent extends AbsoluteLayout implements
 			if ((germplasmLists == null || germplasmLists.isEmpty()) &&
 					(germplasms == null || germplasms.isEmpty())){
 				MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.SEARCH_RESULTS), 
-						messageSource.getMessage(Message.NO_SEARCH_RESULTS), Notification.POSITION_CENTERED);
+						messageSource.getMessage(Message.NO_SEARCH_RESULTS));
 			} 
 			searchResultsComponent.applyGermplasmResults(germplasms);
 			

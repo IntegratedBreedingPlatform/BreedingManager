@@ -37,7 +37,6 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Upload.FinishedEvent;
 import com.vaadin.ui.Upload.FinishedListener;
-import com.vaadin.ui.Window.Notification;
 
 @Configurable
 @Deprecated
@@ -222,8 +221,7 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
                     for(Integer entryId : crossingManagerUploader.getInvalidFemaleEntryIds()){
                         errorMessage.append(entryId + ", ");
                     }
-                    MessageNotifier.showError(getWindow(), "Error with nursery template file.", errorMessage.toString()
-                        , Notification.POSITION_CENTERED);
+                    MessageNotifier.showError(getWindow(), "Error with nursery template file.", errorMessage.toString());
                     updateFilenameLabelValue("");
                     nextButton.setEnabled(false);
                 }
@@ -273,14 +271,13 @@ public class CrossingManagerImportFileComponent extends AbsoluteLayout implement
         }
         
         if(crossingManagerUploader.getImportedGermplasmCrosses()==null){
-            MessageNotifier.showError(getWindow(), "Error!", "You must upload a nursery template file before clicking on next.", Notification.POSITION_CENTERED);
+            MessageNotifier.showError(getWindow(), "Error!", "You must upload a nursery template file before clicking on next.");
         } else if(crossesOptionGroup.getValue()==null) {
-            MessageNotifier.showError(getWindow(), "Error!", "You should select an option for specifying crosses.", Notification.POSITION_CENTERED);
+            MessageNotifier.showError(getWindow(), "Error!", "You should select an option for specifying crosses.");
         } else {
             if(crossesOptionGroup.getValue().equals(messageSource.getMessage(Message.I_HAVE_ALREADY_DEFINED_CROSSES_IN_THE_CROSSING_TEMPLATE_FILE))){
                 if(crossingManagerUploader.getImportedGermplasmCrosses().getImportedGermplasmCrosses().size()==0){
-                    MessageNotifier.showError(getWindow(), "Error!", "The nursery template file you uploaded doesn't contain any data on the second sheet."
-                            , Notification.POSITION_CENTERED);
+                    MessageNotifier.showError(getWindow(), "Error!", "The nursery template file you uploaded doesn't contain any data on the second sheet.");
                 //pass uploaded info and Crosses (if any) to next screen
                 } else {
                     if(this.nextNextScreen != null){

@@ -361,15 +361,15 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
                 window.getParent().removeWindow(window);
             } else {
                 MessageNotifier.showWarning(this, messageSource.getMessage(Message.WARNING), 
-                        messageSource.getMessage(Message.YOU_MUST_SELECT_A_GERMPLASM_FROM_THE_SEARCH_RESULTS), Notification.POSITION_CENTERED);
+                        messageSource.getMessage(Message.YOU_MUST_SELECT_A_GERMPLASM_FROM_THE_SEARCH_RESULTS));
             }
         } else if(optionGroup.getValue().equals(OPTION_2_ID)){
         	if(breedingMethodField.getBreedingMethodComboBox().getValue() == null){
         		MessageNotifier.showError(this, messageSource.getMessage(Message.ERROR), 
-                       messageSource.getMessage(Message.YOU_MUST_SELECT_A_METHOD_FOR_THE_GERMPLASM), Notification.POSITION_CENTERED);
+                       messageSource.getMessage(Message.YOU_MUST_SELECT_A_METHOD_FOR_THE_GERMPLASM));
         	} else if(breedingLocationField.getBreedingLocationComboBox().getValue() == null){
             		MessageNotifier.showError(this, messageSource.getMessage(Message.ERROR), 
-                            messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM), Notification.POSITION_CENTERED);
+                            messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM));
         	}else if(this.selectedGids.size()>0){
             	if(doneAction()){
             		Window window = event.getButton().getWindow();
@@ -377,25 +377,24 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
             	}
             } else{
                 MessageNotifier.showWarning(this, messageSource.getMessage(Message.WARNING), 
-                        messageSource.getMessage(Message.YOU_MUST_SELECT_A_GERMPLASM_FROM_THE_SEARCH_RESULTS), Notification.POSITION_CENTERED);
+                        messageSource.getMessage(Message.YOU_MUST_SELECT_A_GERMPLASM_FROM_THE_SEARCH_RESULTS));
             }
         } else if(optionGroup.getValue().equals(OPTION_3_ID)){
             String searchValue = searchBarComponent.getSearchField().getValue().toString();
             
         	if(breedingMethodField.getBreedingMethodComboBox().getValue() == null){
         		MessageNotifier.showError(this, messageSource.getMessage(Message.ERROR), 
-        				messageSource.getMessage(Message.YOU_MUST_SELECT_A_METHOD_FOR_THE_GERMPLASM), Notification.POSITION_CENTERED);
+        				messageSource.getMessage(Message.YOU_MUST_SELECT_A_METHOD_FOR_THE_GERMPLASM));
         	} else if(breedingLocationField.getBreedingLocationComboBox().getValue() == null){
             		MessageNotifier.showError(this, messageSource.getMessage(Message.ERROR), 
-            				messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM), Notification.POSITION_CENTERED);
+            				messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM));
         	} else if(searchValue != null && searchValue.length() != 0){
             	doneAction();
             	Window window = event.getButton().getWindow();
             	window.getParent().removeWindow(window);
             } else {
                 MessageNotifier.showWarning(this, messageSource.getMessage(Message.WARNING), 
-                		messageSource.getMessage(Message.YOU_MUST_ENTER_A_GERMPLASM_NAME_IN_THE_TEXTBOX),
-                        Notification.POSITION_CENTERED);
+                		messageSource.getMessage(Message.YOU_MUST_ENTER_A_GERMPLASM_NAME_IN_THE_TEXTBOX));
             }
         }
     }
@@ -415,13 +414,13 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
 	        
 	        if(dateOfCreation==null){
 	            LOG.error("Invalid date on add list entries! - " + dateOfCreation);
-	            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), messageSource.getMessage(Message.VALIDATION_DATE_FORMAT), Notification.POSITION_CENTERED);
+	            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), messageSource.getMessage(Message.VALIDATION_DATE_FORMAT));
 	            return false;
 	        }
 	        String parsedDate = formatter.format(dateOfCreation);
 	        if(parsedDate==null){
 	            LOG.error("Invalid date on add list entries! - " + parsedDate);
-	            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), messageSource.getMessage(Message.VALIDATION_DATE_FORMAT), Notification.POSITION_CENTERED);
+	            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), messageSource.getMessage(Message.VALIDATION_DATE_FORMAT));
 	            return false;
 	        }
 	        
@@ -444,8 +443,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
 	                } catch(MiddlewareQueryException mex){
 	                    LOG.error("Error with getting germplasm with id: " + selectedGid, mex);
 	                    MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_WITH_GETTING_GERMPLASM_WITH_ID)+": " + selectedGid 
-	                            +". "+messageSource.getMessage(Message.ERROR_REPORT_TO)
-	                            , Notification.POSITION_CENTERED);
+	                            +". "+messageSource.getMessage(Message.ERROR_REPORT_TO));
 	                }
 			        
 			        
@@ -486,8 +484,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
 			            addedGids.add(germplasm.getGid());
 			        } catch(MiddlewareQueryException ex){
 			            LOG.error("Error with saving germplasm and name records!", ex);
-			            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_WITH_SAVING_GERMPLASM_AND_NAME_RECORDS) + messageSource.getMessage(Message.ERROR_REPORT_TO)
-			                    , Notification.POSITION_CENTERED);
+			            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_WITH_SAVING_GERMPLASM_AND_NAME_RECORDS) + messageSource.getMessage(Message.ERROR_REPORT_TO));
 			            return false;
 			        }
 	        	}
@@ -527,8 +524,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
 		            return true;
 		        } catch(MiddlewareQueryException ex){
 		            LOG.error("Error with saving germplasm and name records!", ex);
-		            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_WITH_SAVING_GERMPLASM_AND_NAME_RECORDS) + messageSource.getMessage(Message.ERROR_REPORT_TO)
-		                    , Notification.POSITION_CENTERED);
+		            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_WITH_SAVING_GERMPLASM_AND_NAME_RECORDS) + messageSource.getMessage(Message.ERROR_REPORT_TO));
 		            return false;
 		        }
 	        }
@@ -553,8 +549,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
             }
         } catch (MiddlewareQueryException ex){
             LOG.error("Error with getting germplasm name types!", ex);
-            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_WITH_GETTING_GERMPLASM_NAME_TYPES) + messageSource.getMessage(Message.ERROR_REPORT_TO)
-                    , Notification.POSITION_CENTERED);
+            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_WITH_GETTING_GERMPLASM_NAME_TYPES) + messageSource.getMessage(Message.ERROR_REPORT_TO));
             Integer unknownId = Integer.valueOf(0);
             this.nameTypeComboBox.addItem(unknownId);
             this.nameTypeComboBox.setItemCaption(unknownId, messageSource.getMessage(Message.UNKNOWN));
@@ -574,8 +569,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
             }
        } catch(MiddlewareQueryException ex){
            LOG.error("Error with getting local IBDB user!", ex);
-               MessageNotifier.showError(getWindow(), "Database Error!", messageSource.getMessage(Message.ERROR_REPORT_TO)
-                       , Notification.POSITION_CENTERED);
+               MessageNotifier.showError(getWindow(), "Database Error!", messageSource.getMessage(Message.ERROR_REPORT_TO));
            return -1;
        }
     }

@@ -48,7 +48,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Select;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 
 /**
  * This class contains the absolute layout of UI elements in Cross Name section
@@ -195,7 +194,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     				String prefix = null;
     				if(prefixTextField.getValue() == null || prefixTextField.getValue().toString().length() == 0){
     					MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT)
-    							, messageSource.getMessage(Message.PLEASE_SPECIFY_A_PREFIX), Notification.POSITION_CENTERED);
+    							, messageSource.getMessage(Message.PLEASE_SPECIFY_A_PREFIX));
     					return;
     				} else{
     					prefix = prefixTextField.getValue().toString().trim();
@@ -214,18 +213,18 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     				
     				if(startNumberTextField.getValue() == null || startNumberTextField.getValue().toString().length() == 0){
     					MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT)
-    							, messageSource.getMessage(Message.PLEASE_SPECIFY_A_STARTING_NUMBER), Notification.POSITION_CENTERED);
+    							, messageSource.getMessage(Message.PLEASE_SPECIFY_A_STARTING_NUMBER));
     					return;
     				} else if(startNumberTextField.getValue().toString().length() > 9){
     					MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT) 
-    							, messageSource.getMessage(Message.STARTING_NUMBER_HAS_TOO_MANY_DIGITS), Notification.POSITION_CENTERED);
+    							, messageSource.getMessage(Message.STARTING_NUMBER_HAS_TOO_MANY_DIGITS));
     					return;
     				} else {
     					try{
     						Integer.parseInt(startNumberTextField.getValue().toString());
     					} catch(NumberFormatException ex){
     						MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT) 
-    								, messageSource.getMessage(Message.PLEASE_ENTER_VALID_STARTING_NUMBER), Notification.POSITION_CENTERED);
+    								, messageSource.getMessage(Message.PLEASE_ENTER_VALID_STARTING_NUMBER));
         					return;
     					}
     				}
@@ -257,11 +256,11 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     	            
     	            if(propertyIdToFill.equals(ListDataTablePropertyID.SEED_SOURCE.getName()) && builder.toString().length() > 255){
     	            	MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT), 
-    	            			messageSource.getMessage(Message.SEQUENCE_TOO_LONG_FOR_SEED_SOURCE), Notification.POSITION_CENTERED);
+    	            			messageSource.getMessage(Message.SEQUENCE_TOO_LONG_FOR_SEED_SOURCE));
     					return;
     	            } else if(propertyIdToFill.equals(ListDataTablePropertyID.ENTRY_CODE.getName()) && builder.toString().length() > 47){
     	            	MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT), 
-    	            			messageSource.getMessage(Message.SEQUENCE_TOO_LONG_FOR_ENTRY_CODE), Notification.POSITION_CENTERED);
+    	            			messageSource.getMessage(Message.SEQUENCE_TOO_LONG_FOR_ENTRY_CODE));
     					return;
     	            }
     	            
@@ -385,7 +384,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
                 LOG.error(e.toString() + "\n" + e.getStackTrace());
                 e.printStackTrace();
                 MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE),
-                        messageSource.getMessage(Message.ERROR_IN_GETTING_NEXT_NUMBER_IN_CROSS_NAME_SEQUENCE), Notification.POSITION_CENTERED);
+                        messageSource.getMessage(Message.ERROR_IN_GETTING_NEXT_NUMBER_IN_CROSS_NAME_SEQUENCE));
             }
         }
         
@@ -398,17 +397,17 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
         
         if (StringUtils.isEmpty(prefix)){
             MessageNotifier.showError(window, messageSource.getMessage(Message.ERROR_WITH_CROSS_CODE), 
-            		messageSource.getMessage(Message.ERROR_ENTER_PREFIX_FIRST), Notification.POSITION_CENTERED);
+            		messageSource.getMessage(Message.ERROR_ENTER_PREFIX_FIRST));
             return false;
         
 //        } else if (prefix.contains(" ")){
 //            MessageNotifier.showError(window, messageSource.getMessage(Message.ERROR_WITH_CROSS_CODE), 
-//            		messageSource.getMessage(Message.ERROR_PREFIX_HAS_WHITESPACE), Notification.POSITION_CENTERED);
+//            		messageSource.getMessage(Message.ERROR_PREFIX_HAS_WHITESPACE));
 //            return false;
 //        
 //        } else if (prefix.substring(prefix.length()-1).matches("\\d")){
 //            MessageNotifier.showError(window, messageSource.getMessage(Message.ERROR_WITH_CROSS_CODE),  
-//            		messageSource.getMessage(Message.ERROR_PREFIX_ENDS_IN_NUMBER), Notification.POSITION_CENTERED);
+//            		messageSource.getMessage(Message.ERROR_PREFIX_ENDS_IN_NUMBER));
 //            return false;
         } 
         
@@ -420,8 +419,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
         // if Generate button never pressed
         if (nextNumberInSequence == null ){
             MessageNotifier.showError(getWindow(), "Error with Cross Code", MessageFormat.format(
-                    messageSource.getMessage(Message.ERROR_NEXT_NAME_MUST_BE_GENERATED_FIRST), ""
-                    ), Notification.POSITION_CENTERED);
+                    messageSource.getMessage(Message.ERROR_NEXT_NAME_MUST_BE_GENERATED_FIRST), ""));
             return false;
 
         // if prefix specifications were changed and next name in sequence not generated first
@@ -429,8 +427,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
             String currentPrefixString = buildPrefixString();
             if (!currentPrefixString.equals(lastPrefixUsed)){
                 MessageNotifier.showError(getWindow(), "Error with Cross Code", MessageFormat.format(
-                        messageSource.getMessage(Message.ERROR_NEXT_NAME_MUST_BE_GENERATED_FIRST), " (" + currentPrefixString +")"
-                        ), Notification.POSITION_CENTERED);
+                        messageSource.getMessage(Message.ERROR_NEXT_NAME_MUST_BE_GENERATED_FIRST), " (" + currentPrefixString +")"));
                 return false;
             }
         }

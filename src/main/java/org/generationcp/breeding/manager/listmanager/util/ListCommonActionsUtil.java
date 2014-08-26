@@ -53,7 +53,7 @@ public class ListCommonActionsUtil {
         
         MessageNotifier.showMessage(window,
                 messageSource.getMessage(Message.SUCCESS), 
-                messageSource.getMessage(Message.SUCCESSFULLY_DELETED_ITEM, item), Notification.POSITION_CENTERED);      
+                messageSource.getMessage(Message.SUCCESSFULLY_DELETED_ITEM, item));      
 
 	}
 	

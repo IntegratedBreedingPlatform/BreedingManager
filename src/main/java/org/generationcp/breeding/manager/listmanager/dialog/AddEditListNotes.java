@@ -152,14 +152,12 @@ public class AddEditListNotes extends Window implements InitializingBean, Intern
 			
 			if(listId == null){
 				MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
-						, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
-						, Notification.POSITION_CENTERED);
+						, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
 				return;
 			} 
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error in updating the notes of germplasm list: " + germplasmListId, ex);
-			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST)
-					, Notification.POSITION_CENTERED);
+			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
 			return;
 		}
 	}

@@ -84,7 +84,7 @@ public class GermplasmAttributesComponent extends BreedingManagerTable implement
         } catch(InternationalizableException ex){
         	LOG.error("Error in getting germplasm attributes.", ex);
         	MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
-        			, messageSource.getMessage(Message.ERROR_IN_GETTING_ATTRIBUTES_BY_GERMPLASM_ID), Notification.POSITION_CENTERED);
+        			, messageSource.getMessage(Message.ERROR_IN_GETTING_ATTRIBUTES_BY_GERMPLASM_ID));
         	return;
         }
     }

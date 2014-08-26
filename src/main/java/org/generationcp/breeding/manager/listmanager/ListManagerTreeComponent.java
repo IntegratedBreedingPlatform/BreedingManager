@@ -505,8 +505,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements
         	LOG.error("Error clicking of list.", e);
             MessageNotifier.showWarning(getWindow(), 
                     messageSource.getMessage(Message.ERROR_INVALID_FORMAT),
-                    messageSource.getMessage(Message.ERROR_IN_NUMBER_FORMAT),
-                    Notification.POSITION_CENTERED);
+                    messageSource.getMessage(Message.ERROR_IN_NUMBER_FORMAT));
         }catch (MiddlewareQueryException e){
         	LOG.error("Error in displaying germplasm list details.", e);
             throw new InternationalizableException(e, Message.ERROR_DATABASE,

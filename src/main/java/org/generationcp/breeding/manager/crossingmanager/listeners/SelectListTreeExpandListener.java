@@ -42,7 +42,7 @@ public class SelectListTreeExpandListener implements Tree.ExpandListener{
             } catch (InternationalizableException e) {
                 LOG.error(e.toString() + "\n" + e.getStackTrace());
                 e.printStackTrace();
-                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription(), Notification.POSITION_CENTERED);
+                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
             }
         }
     }

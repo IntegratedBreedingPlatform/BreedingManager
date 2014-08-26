@@ -91,7 +91,6 @@ import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.TableFieldFactory;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
@@ -807,7 +806,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     		e.printStackTrace();
 			LOG.error("Database error!", e);
 			MessageNotifier.showError(getWindow(), "Database Error!", "Error with validating designation."
-					+ messageSource.getMessage(Message.ERROR_REPORT_TO), Notification.POSITION_CENTERED);
+					+ messageSource.getMessage(Message.ERROR_REPORT_TO));
     	}
     	
     	return false; 
@@ -969,8 +968,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
             
             MessageNotifier.showMessage(window, 
                     messageSource.getMessage(Message.SUCCESS), 
-                    messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_SAVING_SUCCESS)
-                    ,3000, Notification.POSITION_CENTERED);
+                    messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_SAVING_SUCCESS),3000);
         } catch (MiddlewareQueryException e) {
             throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_SAVING_GERMPLASMLIST_DATA_CHANGES);
         }
@@ -1006,8 +1004,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
                 listManagerTreeMenu.getBreedingManagerApplication();
 				MessageNotifier.showError(this.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
                             , "Error with exporting list."    
-                            , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO)
-                            , Notification.POSITION_CENTERED);
+                            , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO));
             }
         } else {
 //            MessageNotifier.showError(this.getApplication().getWindow(GermplasmStudyBrowserApplication.GERMPLASMLIST_WINDOW_NAME), "Germplasm List must be locked before exporting it", "");
@@ -1057,14 +1054,13 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
                 } catch (GermplasmListExporterException e) {
                         listManagerTreeMenu.getBreedingManagerApplication();
 						MessageNotifier.showError(this.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME) 
-                                    , "Error with exporting list."
-                                    , e.getMessage(), Notification.POSITION_CENTERED);
+                                    , "Error with exporting list.", e.getMessage());
                 }
         } else {
             listManagerTreeMenu.getBreedingManagerApplication();
 			MessageNotifier.showError(this.getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)
                         , "Error with exporting list."    
-                        , "Germplasm List must be locked before exporting it", Notification.POSITION_CENTERED);
+                        , "Germplasm List must be locked before exporting it");
                     
         }
     }
@@ -1091,7 +1087,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
         	
         }else{
             MessageNotifier.showError(this.getWindow(), "Error with deleteting entries." 
-                    , messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), Notification.POSITION_CENTERED);
+                    , messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
         }
     }
     
@@ -1237,15 +1233,14 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
     private void showMessageInvalidDeletingListEntries(){
     MessageNotifier.showError(this.getWindow()
         , messageSource.getMessage(Message.INVALID_DELETING_LIST_ENTRIES) 
-        , messageSource.getMessage(Message.INVALID_USER_DELETING_LIST_ENTRIES)
-        , Notification.POSITION_CENTERED);
+        , messageSource.getMessage(Message.INVALID_USER_DELETING_LIST_ENTRIES));
     }
 
     /*@Deprecated
     public void copyToNewListAction(){
         Collection<?> listEntries = (Collection<?>) listDataTable.getValue();
         if (listEntries == null || listEntries.isEmpty()){
-            MessageNotifier.showError(this.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "", Notification.POSITION_CENTERED);
+            MessageNotifier.showError(this.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "");
             
         } else {
             listManagerCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
@@ -1290,8 +1285,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
         } catch(MiddlewareQueryException ex){
             LOG.error("Error with getting germplasm list with id: " + germplasmListId, ex);
             MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting germplasm list with id: " + germplasmListId  
-                    + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO)
-                    , Notification.POSITION_CENTERED);
+                    + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO));
             return;
         }
         
@@ -1300,8 +1294,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
         } catch(MiddlewareQueryException ex){
             LOG.error("Error with getting germplasm with id: " + gid, ex);
             MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting germplasm with id: " + gid  
-                    + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO)
-                    , Notification.POSITION_CENTERED);
+                    + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO));
             return;
         }
         
@@ -1466,7 +1459,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
             
             MessageNotifier.showMessage(this.getWindow(), 
                     messageSource.getMessage(Message.SUCCESS), 
-                    "Successful in adding a list entry.", 3000, Notification.POSITION_CENTERED);
+                    "Successful in adding a list entry.", 3000);
             
             User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
 
@@ -1478,8 +1471,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
                 workbenchDataManager.addProjectActivity(projAct);
             } catch (MiddlewareQueryException e) {
                 LOG.error("Error with adding workbench activity log.", e);
-                MessageNotifier.showError(getWindow(), "Database Error!", "Error with adding workbench activity log. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
-                        , Notification.POSITION_CENTERED);
+                MessageNotifier.showError(getWindow(), "Database Error!", "Error with adding workbench activity log. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
             }
             //populateTable();
             //listDataTable.requestRepaint();
@@ -1487,8 +1479,7 @@ public class ListDataComponent extends AbsoluteLayout implements InitializingBea
 //                this.germplasmListAccordionMenu.refreshListData();
         } catch (MiddlewareQueryException ex) {
             LOG.error("Error with adding list entry.", ex);
-            MessageNotifier.showError(getWindow(), "Database Error!", "Error with adding list entry. " + messageSource.getMessage(Message.ERROR_REPORT_TO)
-                    , Notification.POSITION_CENTERED);
+            MessageNotifier.showError(getWindow(), "Database Error!", "Error with adding list entry. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
             return;
         }
     }

@@ -277,7 +277,7 @@ public class SaveCrossListSubComponent extends AbsoluteLayout
 		} catch (InvalidValueException e) {
 			MessageNotifier.showError(getWindow(), 
 					this.messageSource.getMessage(Message.INVALID_INPUT), 
-					section + ": " + e.getMessage(), Notification.POSITION_CENTERED);
+					section + ": " + e.getMessage());
 			return false;
 		}
 	}

@@ -126,8 +126,7 @@ public class SelectGermplasmListTreeComponent extends VerticalLayout implements 
             if (getWindow() != null){
                 MessageNotifier.showWarning(getWindow(), 
                         messageSource.getMessage(Message.ERROR_DATABASE),
-                    messageSource.getMessage(Message.ERROR_IN_GETTING_TOP_LEVEL_FOLDERS)
-                    , Notification.POSITION_CENTERED);
+                    messageSource.getMessage(Message.ERROR_IN_GETTING_TOP_LEVEL_FOLDERS));
             }
             germplasmListParent = new ArrayList<GermplasmList>();
         }
@@ -163,8 +162,7 @@ public class SelectGermplasmListTreeComponent extends VerticalLayout implements 
             e.printStackTrace();
             MessageNotifier.showWarning(getWindow(), 
                     messageSource.getMessage(Message.ERROR_INVALID_FORMAT),
-                    messageSource.getMessage(Message.ERROR_IN_NUMBER_FORMAT),
-                    Notification.POSITION_CENTERED);
+                    messageSource.getMessage(Message.ERROR_IN_NUMBER_FORMAT));
         } catch (MiddlewareQueryException e){
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             throw new InternationalizableException(e, Message.ERROR_DATABASE,
@@ -196,8 +194,7 @@ public class SelectGermplasmListTreeComponent extends VerticalLayout implements 
             e.printStackTrace();
             MessageNotifier.showWarning(getWindow(), 
                     messageSource.getMessage(Message.ERROR_DATABASE), 
-                    messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LISTS_BY_PARENT_FOLDER_ID),
-                    Notification.POSITION_CENTERED);
+                    messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LISTS_BY_PARENT_FOLDER_ID));
             germplasmListChildren = new ArrayList<GermplasmList>();
         }
         
@@ -218,8 +215,7 @@ public class SelectGermplasmListTreeComponent extends VerticalLayout implements 
             LOG.error(e.toString() + "\n" + e.getStackTrace());
             MessageNotifier.showWarning(getWindow(), 
                     messageSource.getMessage(Message.ERROR_DATABASE), 
-                    messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LISTS_BY_PARENT_FOLDER_ID),
-                    Notification.POSITION_CENTERED);
+                    messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LISTS_BY_PARENT_FOLDER_ID));
             listChildren = new ArrayList<GermplasmList>();
         }
         return !listChildren.isEmpty();
