@@ -18,14 +18,12 @@ import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.ListManagerCopyToNewListDialog;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Layout;
 
 public class GermplasmListButtonClickListener implements Button.ClickListener {
 
@@ -33,17 +31,10 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
     private static final long serialVersionUID = 2185217915388685523L;
 
     private Component source;
-    private GermplasmList germplasmList = null;
 
     public GermplasmListButtonClickListener(Component source) {
         this.source = source;
     }
-    
-    public GermplasmListButtonClickListener(Layout source, GermplasmList germplasmList) {
-        this.source = source;
-        this.germplasmList = germplasmList;    
-    }
-    
     
     @Override
     public void buttonClick(ClickEvent event) {

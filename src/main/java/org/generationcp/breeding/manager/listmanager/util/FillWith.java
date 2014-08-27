@@ -622,9 +622,7 @@ public class FillWith implements InternationalizableComponent  {
     
     protected void fillWithLocation(Table targetTable) {
     	
-    	String propertyId = ListDataTablePropertyID.SEED_SOURCE.getName();
-    	
-        try {
+    	try {
             List<Integer> gidList = getGidsFromTable(targetTable);
             Map<Integer, String> gidLocations;
             gidLocations = germplasmDataManager.getLocationNamesByGids(gidList);

@@ -554,8 +554,9 @@ public class DropHandlerMethods {
             targetTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(id);
             
             Property entryCodeProperty = targetTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName());
-           	if(entryCodeProperty!=null || entryCodeProperty.getValue()==null || entryCodeProperty.getValue().toString().equals(""))
+           	if(entryCodeProperty.getValue()==null || entryCodeProperty.getValue().toString().equals("")){
            		targetTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(id);
+           	}
             id++;
         }
     }
@@ -587,9 +588,6 @@ public class DropHandlerMethods {
     }
     
     public Integer getNextListEntryId(Integer lrecId){
-    	
-    	Integer id = 0;
-    	
     	try {
 			GermplasmListData entry = germplasmListManager.getGermplasmListDataByListIdAndLrecId(currentListId, lrecId);
 			
