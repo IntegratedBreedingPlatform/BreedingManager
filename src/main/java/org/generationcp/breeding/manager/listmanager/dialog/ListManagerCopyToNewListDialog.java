@@ -10,7 +10,7 @@
  * 
  *******************************************************************************/
 
-package org.generationcp.breeding.manager.listmanager;
+package org.generationcp.breeding.manager.listmanager.dialog;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.ListTreeComponent;
+import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
 import org.generationcp.commons.exceptions.InternationalizableException;

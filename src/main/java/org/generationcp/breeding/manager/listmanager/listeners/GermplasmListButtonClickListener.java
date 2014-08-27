@@ -14,8 +14,8 @@ package org.generationcp.breeding.manager.listmanager.listeners;
 
 
 import org.generationcp.breeding.manager.customfields.ListTreeComponent;
-import org.generationcp.breeding.manager.listmanager.ListManagerCopyToNewListDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
+import org.generationcp.breeding.manager.listmanager.dialog.ListManagerCopyToNewListDialog;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.pojos.GermplasmList;
