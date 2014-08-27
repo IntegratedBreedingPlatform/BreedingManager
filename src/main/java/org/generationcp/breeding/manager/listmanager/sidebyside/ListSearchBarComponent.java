@@ -5,7 +5,6 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.ListSearchResultsComponent;
-import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListManagerButtonClickListener;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -30,7 +29,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.Window.Notification;
 
 @Configurable
 public class ListSearchBarComponent extends Panel implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
@@ -90,7 +88,6 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
         searchButton.setHeight("24px");
         searchButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
         searchButton.setData(SEARCH_BUTTON);
-        searchButton.addListener(new GermplasmListManagerButtonClickListener(this));
         searchButton.setClickShortcut(KeyCode.ENTER);
 
         Label descLbl = new Label(GUIDE, Label.CONTENT_XHTML);

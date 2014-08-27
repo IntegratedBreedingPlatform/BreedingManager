@@ -12,7 +12,6 @@ import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerTreeActionsListener;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.UnsavedChangesSource;
-import org.generationcp.breeding.manager.listmanager.ListManagerDetailsLayout;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -43,6 +42,8 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 												InternationalizableComponent, CrossingManagerTreeActionsListener, UnsavedChangesSource {
 
 	private static final long serialVersionUID = -5109231715662648484L;
+	
+	public static final String TAB_DESCRIPTION_PREFIX = "List ID: ";
 	
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -240,7 +241,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
             }
 	    } else{
 	    	Tab newTab = listDetailsTabSheet.addTab(new SelectParentsListDataComponent(listId, listName, source.getParentsComponent()), listName);
-	    	newTab.setDescription(ListManagerDetailsLayout.generateTabDescription(listId));
+	    	newTab.setDescription(generateTabDescription(listId));
 	    	newTab.setClosable(true);
 	    	listDetailsTabSheet.setSelectedTab(newTab);
     	}
@@ -265,7 +266,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	
 	public void updateUIForRenamedList(GermplasmList list, String newName){
 		Integer listId = list.getId();
-		String description = ListManagerDetailsLayout.generateTabDescription(listId);
+		String description = generateTabDescription(listId);
 		for(int ctr = 0; ctr < listDetailsTabSheet.getComponentCount(); ctr++){
 			Tab tab = listDetailsTabSheet.getTab(ctr);
 			if(tab != null && tab.getDescription().equals(description)){
@@ -383,4 +384,8 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 			}
 		}
 	}
+	
+    public static String generateTabDescription(Integer listId){
+    	return TAB_DESCRIPTION_PREFIX + listId;
+    }
 }

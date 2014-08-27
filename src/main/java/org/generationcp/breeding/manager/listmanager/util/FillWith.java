@@ -8,10 +8,9 @@ import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.AdditionalDetailsCrossNameComponent;
-import org.generationcp.breeding.manager.listmanager.BuildNewListComponent;
 import org.generationcp.breeding.manager.listmanager.FillWithAttributeWindow;
-import org.generationcp.breeding.manager.listmanager.ListManagerTreeMenu;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
+import org.generationcp.breeding.manager.listmanager.sidebyside.AddColumnContextMenu;
 import org.generationcp.breeding.manager.listmanager.sidebyside.ListTabComponent;
 import org.generationcp.breeding.manager.util.GermplasmDetailModel;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -52,7 +51,6 @@ public class FillWith implements InternationalizableComponent  {
     @Autowired
     private GermplasmDataManager germplasmDataManager;
 
-    private ListManagerTreeMenu listManagerTreeMenu;
     private AbstractLayout parentLayout;
     
     private Table targetTable;
@@ -86,8 +84,6 @@ public class FillWith implements InternationalizableComponent  {
     
     private Integer crossExpansionLevel = Integer.valueOf(1);
     
-    private BuildNewListComponent buildNewListComponent;
-    
     private ListTabComponent listDetailsComponent;
     
     private org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent buildListComponent;
@@ -104,10 +100,9 @@ public class FillWith implements InternationalizableComponent  {
 	 * @param GIDPropertyId - property of GID (button with GID as caption) on that table
 	 * @param propertyIdsContextMenuAvailableTo - list of property ID's where context menu will be available for "right clicking"
 	 */
-    public FillWith(ListManagerTreeMenu listManagerTreeMenu,final SimpleResourceBundleMessageSource messageSource, final Table targetTable, String GIDPropertyId){
+    public FillWith(final SimpleResourceBundleMessageSource messageSource, final Table targetTable, String GIDPropertyId){
     	this.GIDPropertyId = GIDPropertyId;
     	this.targetTable = targetTable;
-    	this.listManagerTreeMenu = listManagerTreeMenu;
     	this.messageSource = messageSource;
     	this.filledWithPropertyIds = new ArrayList<String>();
     	
@@ -128,29 +123,6 @@ public class FillWith implements InternationalizableComponent  {
     	this.parentLayout = parentLayout;
     	this.messageSource = messageSource;
     	this.filledWithPropertyIds = new ArrayList<String>();
-    	
-    	setupContextMenu();
-    }
-    
-	/**
-	 * Add Fill With context menu to a table
-	 * @param parentLayout - contextMenu will attach to this
-	 * @param targetTable - table where data will be manipulated
-	 * @param GIDPropertyId - property of GID (button with GID as caption) on that table
-	 * @param propertyIdsContextMenuAvailableTo - list of property ID's where context menu will be available for "right clicking"
-	 * @param fromBuildNewList - specify if the creation is from BuildNewListComponent
-	 */
-    public FillWith(AbstractLayout parentLayout,final SimpleResourceBundleMessageSource messageSource, final Table targetTable, 
-    		String GIDPropertyId, boolean fromBuildNewList){
-    	this.GIDPropertyId = GIDPropertyId;
-    	this.targetTable = targetTable;
-    	this.parentLayout = parentLayout;
-    	this.messageSource = messageSource;
-    	this.filledWithPropertyIds = new ArrayList<String>();
-    	
-    	if(fromBuildNewList){
-    		buildNewListComponent = ((BuildNewListComponent) parentLayout);
-    	}
     	
     	setupContextMenu();
     }
@@ -310,8 +282,6 @@ public class FillWith implements InternationalizableComponent  {
 	   	 
 	   	 if(parentLayout!=null){
 	   		 parentLayout.addComponent(fillWithMenu);
-	   	 } else {
-	   		 listManagerTreeMenu.addComponent(fillWithMenu);
 	   	 }
 	   	 
 	   	 targetTable.addListener(headerClickListener);
@@ -342,15 +312,6 @@ public class FillWith implements InternationalizableComponent  {
 	
 	private void markHasChangesFlagsAndToggleTableEditable(Table table){
 		//mark flag that changes have been made in listDataTable
-		if(listManagerTreeMenu != null){ 
-			listManagerTreeMenu.setChanged(true); 
-		}
-	       
-	    //mark flag that changes have been made in buildNewListTable
-	    if(buildNewListComponent != null){ 
-	    	buildNewListComponent.setHasChanges(true); 
-	    }
-	    
 	    if(listDetailsComponent != null){
 	    	listDetailsComponent.getListComponent().setHasUnsavedChanges(true);
 	    }
@@ -377,7 +338,7 @@ public class FillWith implements InternationalizableComponent  {
     
     public void fillWithAttribute(Table table, String propertyId) {
         Window mainWindow = table.getWindow();
-        Window attributeWindow = new FillWithAttributeWindow(listManagerTreeMenu, table, GIDPropertyId, propertyId, messageSource, buildNewListComponent, listDetailsComponent
+        Window attributeWindow = new FillWithAttributeWindow(table, GIDPropertyId, propertyId, messageSource, listDetailsComponent
         		, buildListComponent);
         attributeWindow.setStyleName(Reindeer.WINDOW_LIGHT);
         mainWindow.addWindow(attributeWindow);

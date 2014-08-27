@@ -49,7 +49,6 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
     private SimpleResourceBundleMessageSource messageSource;
     
     //private Window mainWindow;
-    private ListManagerTreeMenu listManagerTreeMenu;
     private Table targetTable;
     private String gidPropertyId;
     private String targetPropertyId;
@@ -57,30 +56,27 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
     private ComboBox attributeBox;
     private Button okButton;
     private List<UserDefinedField> attributeList;
-    private BuildNewListComponent buildNewListComponent;
     private ListTabComponent listDetailsComponent;
     private org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent buildListComponent;
     
     @Autowired
     private GermplasmDataManager germplasmDataManager;
     
-    public FillWithAttributeWindow(ListManagerTreeMenu listManagerTreeMenu, Table targetTable, String gidPropertyId, 
+    public FillWithAttributeWindow(Table targetTable, String gidPropertyId, 
             String targetPropertyId, SimpleResourceBundleMessageSource messageSource) {
         this.targetTable = targetTable;
         this.gidPropertyId = gidPropertyId;
         this.targetPropertyId = targetPropertyId;
         this.messageSource = messageSource;
-        this.listManagerTreeMenu = listManagerTreeMenu;
     }
     
-    public FillWithAttributeWindow(ListManagerTreeMenu listManagerTreeMenu, Table targetTable, String gidPropertyId, 
-            String targetPropertyId, SimpleResourceBundleMessageSource messageSource, BuildNewListComponent buildNewListComponent, ListTabComponent listDetailsComponent
+    public FillWithAttributeWindow(Table targetTable, String gidPropertyId, 
+            String targetPropertyId, SimpleResourceBundleMessageSource messageSource, ListTabComponent listDetailsComponent
             ,org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent buildListComponent) {
         this.targetTable = targetTable;
         this.gidPropertyId = gidPropertyId;
         this.targetPropertyId = targetPropertyId;
         this.messageSource = messageSource;
-        this.buildNewListComponent = buildNewListComponent;
         this.listDetailsComponent = listDetailsComponent;
         this.buildListComponent = buildListComponent;
     }
@@ -167,11 +163,6 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
         }
 
         //mark flag that changes have been made in listDataTable
-        if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
-        
-        //mark flag that changes have been made in buildNewListTable
-        if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }	
-
         if(listDetailsComponent != null){
         	listDetailsComponent.getListComponent().setHasUnsavedChanges(true);
         }

@@ -14,9 +14,7 @@ package org.generationcp.breeding.manager.listmanager.listeners;
 
 
 import org.generationcp.breeding.manager.customfields.ListTreeComponent;
-import org.generationcp.breeding.manager.listmanager.ListDetailComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerCopyToNewListDialog;
-import org.generationcp.breeding.manager.listmanager.ListManagerDetailsLayout;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -50,23 +48,9 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
     @Override
     public void buttonClick(ClickEvent event) {
         
-        if (event.getButton().getData().equals(ListTreeComponent .REFRESH_BUTTON_ID) // "Refresh"
+        if (event.getButton().getData().equals(ListTreeComponent.REFRESH_BUTTON_ID) // "Refresh"
                 && (source instanceof ListTreeComponent)) {
             ((ListTreeComponent) source).refreshTree();
-        } else if (event.getButton().getData().equals(ListManagerDetailsLayout.CLOSE_ALL_TABS_ID)
-        		&& (source instanceof ListManagerDetailsLayout)){// "Close" All Tabs
-        	((ListManagerDetailsLayout) source).closeAllListDetailTabButtonClickAction();
-        } else if (event.getButton().getData().equals(ListDetailComponent.LOCK_BUTTON_ID) 
-                && (source instanceof ListDetailComponent)) { // "Lock Germplasm List"
-            ((ListDetailComponent) source).lockGermplasmList();
-
-        } else if (event.getButton().getData().equals(ListDetailComponent.UNLOCK_BUTTON_ID) 
-                && (source instanceof ListDetailComponent)) { // "Unlock Germplasm List"
-            ((ListDetailComponent) source).unlockGermplasmList();            
-            
-        } else if (event.getButton().getData().equals(ListDetailComponent.DELETE_BUTTON_ID)
-                && (source instanceof ListDetailComponent)) { // "Delete Germplasm List"
-            ((ListDetailComponent) source).deleteGermplasmList();
         }else if (event.getButton().getData().equals(ListManagerCopyToNewListDialog.SAVE_BUTTON_ID)
                     && (source instanceof ListManagerCopyToNewListDialog)) { // "Save Germplasm List"
                 ((ListManagerCopyToNewListDialog) source).saveGermplasmListButtonClickAction();
