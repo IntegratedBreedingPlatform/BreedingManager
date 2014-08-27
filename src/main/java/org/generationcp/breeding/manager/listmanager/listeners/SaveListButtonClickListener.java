@@ -1,4 +1,4 @@
-package org.generationcp.breeding.manager.listmanager.sidebyside.listeners;
+package org.generationcp.breeding.manager.listmanager.listeners;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,10 +10,10 @@ import java.util.Map;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
+import org.generationcp.breeding.manager.listmanager.AddColumnContextMenu;
+import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
+import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
-import org.generationcp.breeding.manager.listmanager.sidebyside.AddColumnContextMenu;
 import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;

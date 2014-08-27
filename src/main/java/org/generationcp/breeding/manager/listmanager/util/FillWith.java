@@ -8,10 +8,10 @@ import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.AdditionalDetailsCrossNameComponent;
+import org.generationcp.breeding.manager.listmanager.AddColumnContextMenu;
 import org.generationcp.breeding.manager.listmanager.FillWithAttributeWindow;
+import org.generationcp.breeding.manager.listmanager.ListTabComponent;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
-import org.generationcp.breeding.manager.listmanager.sidebyside.AddColumnContextMenu;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListTabComponent;
 import org.generationcp.breeding.manager.util.GermplasmDetailModel;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -86,7 +86,7 @@ public class FillWith implements InternationalizableComponent  {
     
     private ListTabComponent listDetailsComponent;
     
-    private org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent buildListComponent;
+    private org.generationcp.breeding.manager.listmanager.ListBuilderComponent buildListComponent;
     
     public FillWith(String GIDPropertyId, Table targetTable){
     	this.GIDPropertyId = GIDPropertyId;
@@ -139,7 +139,7 @@ public class FillWith implements InternationalizableComponent  {
     	setupContextMenu();
     }
     
-    public FillWith(org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent buildListComponent, final SimpleResourceBundleMessageSource messageSource
+    public FillWith(org.generationcp.breeding.manager.listmanager.ListBuilderComponent buildListComponent, final SimpleResourceBundleMessageSource messageSource
     		, final Table targetTable, String GIDPropertyId){
     	this.GIDPropertyId = GIDPropertyId;
     	this.targetTable = targetTable;

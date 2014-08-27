@@ -118,9 +118,9 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
     private WorkbenchDataManager workbenchDataManager;
     
     
-    private org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain listManagerMain;
+    private org.generationcp.breeding.manager.listmanager.ListManagerMain listManagerMain;
     
-    public ListManagerCopyToNewListDialog(Window mainWindow, Window dialogWindow,String listName, Table listEntriesTable,int ibdbUserId, org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain listManagerMain, boolean fromBuildNewList) {
+    public ListManagerCopyToNewListDialog(Window mainWindow, Window dialogWindow,String listName, Table listEntriesTable,int ibdbUserId, org.generationcp.breeding.manager.listmanager.ListManagerMain listManagerMain, boolean fromBuildNewList) {
         this.dialogWindow = dialogWindow;
         this.mainWindow = mainWindow;
         this.listEntriesTable = listEntriesTable;

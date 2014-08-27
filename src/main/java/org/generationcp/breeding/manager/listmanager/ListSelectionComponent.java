@@ -1,4 +1,4 @@
-package org.generationcp.breeding.manager.listmanager.sidebyside;
+package org.generationcp.breeding.manager.listmanager;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;

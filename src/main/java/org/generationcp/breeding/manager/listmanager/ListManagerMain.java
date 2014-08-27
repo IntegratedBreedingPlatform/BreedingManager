@@ -1,4 +1,4 @@
-package org.generationcp.breeding.manager.listmanager.sidebyside;
+package org.generationcp.breeding.manager.listmanager;
 
 import java.util.Date;
 import java.util.HashMap;

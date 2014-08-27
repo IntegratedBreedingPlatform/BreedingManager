@@ -12,7 +12,6 @@ import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.tomcat.util.TomcatUtil;
 import org.generationcp.commons.tomcat.util.WebAppStatusInfo;
@@ -90,7 +89,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	
     private Action.Handler rightClickActionHandler;
     
-	private final org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain listManagerMain;
+	private final org.generationcp.breeding.manager.listmanager.ListManagerMain listManagerMain;
 	
 	private boolean viaToolUrl = true;
 	

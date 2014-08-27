@@ -1,7 +1,7 @@
 package org.generationcp.breeding.manager.listmanager.listeners;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent;
+import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 

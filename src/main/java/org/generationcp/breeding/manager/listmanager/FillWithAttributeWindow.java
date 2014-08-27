@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListTabComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -57,7 +56,7 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
     private Button okButton;
     private List<UserDefinedField> attributeList;
     private ListTabComponent listDetailsComponent;
-    private org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent buildListComponent;
+    private org.generationcp.breeding.manager.listmanager.ListBuilderComponent buildListComponent;
     
     @Autowired
     private GermplasmDataManager germplasmDataManager;
@@ -72,7 +71,7 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
     
     public FillWithAttributeWindow(Table targetTable, String gidPropertyId, 
             String targetPropertyId, SimpleResourceBundleMessageSource messageSource, ListTabComponent listDetailsComponent
-            ,org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent buildListComponent) {
+            ,org.generationcp.breeding.manager.listmanager.ListBuilderComponent buildListComponent) {
         this.targetTable = targetTable;
         this.gidPropertyId = gidPropertyId;
         this.targetPropertyId = targetPropertyId;

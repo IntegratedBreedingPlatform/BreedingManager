@@ -15,7 +15,7 @@ package org.generationcp.breeding.manager.listmanager.listeners;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.constants.ModeView;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
+import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.commons.tomcat.util.TomcatUtil;
 import org.generationcp.commons.tomcat.util.WebAppStatusInfo;
 import org.generationcp.commons.util.ContextUtil;

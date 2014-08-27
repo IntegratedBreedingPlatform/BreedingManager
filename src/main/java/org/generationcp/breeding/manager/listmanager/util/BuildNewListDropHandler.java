@@ -1,9 +1,9 @@
 package org.generationcp.breeding.manager.listmanager.util;
 
+import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
+import org.generationcp.breeding.manager.listmanager.ListComponent;
+import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListComponent;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
