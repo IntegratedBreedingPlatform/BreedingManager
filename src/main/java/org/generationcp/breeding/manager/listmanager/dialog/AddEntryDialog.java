@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
+import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.BreedingLocationField;
 import org.generationcp.breeding.manager.customfields.BreedingMethodField;
@@ -57,7 +58,8 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 @Configurable
-public class AddEntryDialog extends Window implements InitializingBean, InternationalizableComponent {
+public class AddEntryDialog extends Window implements InitializingBean, 
+							InternationalizableComponent, BreedingManagerLayout{
     
     private static final long serialVersionUID = -1627453790001229325L;
     
@@ -101,6 +103,9 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     private Button doneButton;
     private Button cancelButton;
     
+    private Label topPartHeader;
+    private Label step2Label;
+    
     private Label germplasmDateLabel;
     private Label nameTypeLabel;
     private Label bottomPartHeader;
@@ -117,27 +122,154 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         this.source = source;
         this.parentWindow = parentWindow;
     }
-    
-
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        // set as modal window, other components are disabled while window is open
-        setModal(true);
-        // define window size, set as not resizable
-        setWidth("800px");
+    	instantiateComponents();
+        initializeValues();
+        addListeners();
+        layoutComponents();
+    }
+    
+	@Override
+	public void instantiateComponents() {
+		//Top Part
+		topPartHeader = new Label(messageSource.getMessage(Message.SELECT_A_GERMPLASM));
+        topPartHeader.addStyleName("bold");
+        topPartHeader.addStyleName("h3");
+        
+        searchResultsComponent = new GermplasmSearchResultsComponent(null, false, false);
+        searchResultsComponent.getMatchingGermplasmsTable().setHeight("150px");
+        searchResultsComponent.getMatchingGermplasmsTableWithSelectAll().setHeight("180px");
+        searchResultsComponent.setRightClickActionHandlerEnabled(false);
+        
+        searchBarComponent = new GermplasmSearchBarComponent(searchResultsComponent);
+        
+        step2Label = new Label(messageSource.getMessage(Message.HOW_DO_YOU_WANT_TO_ADD_THE_GERMPLASM_TO_THE_LIST));
+        step2Label.addStyleName("bold");
+        
+        optionGroup = new OptionGroup();
+        optionGroup.addItem(OPTION_1_ID);
+        optionGroup.setItemCaption(OPTION_1_ID, messageSource.getMessage(Message.USE_SELECTED_GERMPLASM_FOR_THE_LIST_ENTRY));
+        optionGroup.addItem(OPTION_2_ID);
+        optionGroup.setItemCaption(OPTION_2_ID, messageSource.getMessage(Message.CREATE_A_NEW_GERMPLASM_RECORD_FOR_THE_LIST_ENTRY_AND_ASSIGN_THE_SELECTED_GERMPLASM_AS_ITS_SOURCE));
+        optionGroup.addItem(OPTION_3_ID);
+        optionGroup.setItemCaption(OPTION_3_ID, messageSource.getMessage(Message.CREATE_A_NEW_GERMPLASM_RECORD_FOR_THE_LIST_ENTRY));
+        optionGroup.select(OPTION_1_ID);
+        optionGroup.setImmediate(true);
+		
+        //Bottom Part
+        bottomPartHeader = new Label(messageSource.getMessage(Message.SPECIFY_ADDITIONAL_DETAILS));
+        bottomPartHeader.addStyleName("bold");
+        bottomPartHeader.addStyleName("h3");
+        
+        breedingMethodField = new BreedingMethodField(parentWindow);
+                
+        germplasmDateLabel = new Label("Creation Date: ");
+        germplasmDateLabel.addStyleName("bold");
+        
+        germplasmDateField =  new ListDateField("", false);
+        germplasmDateField.getListDtDateField().setValue(new Date());
+        
+        breedingLocationField = new BreedingLocationField(parentWindow);
+        
+        nameTypeLabel = new Label("Name Type: ");
+        nameTypeLabel.addStyleName("bold");
+        
+        nameTypeComboBox = new ComboBox();
+        nameTypeComboBox.setWidth("400px");
+        
+        //Buttons
+        cancelButton = new Button(messageSource.getMessage(Message.CANCEL));
+        cancelButton.setData(CANCEL_BUTTON_ID);
+        
+        doneButton = new Button(messageSource.getMessage(Message.DONE));
+        doneButton.setData(DONE_BUTTON_ID);
+        doneButton.setEnabled(false);
+        doneButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+	}
+
+	@Override
+	public void initializeValues() {
+		populateNameTypeComboBox();
+	}
+
+	@Override
+	public void addListeners() {
+		searchResultsComponent.getMatchingGermplasmsTable().addListener(new GermplasmListValueChangeListener(this));
+        searchResultsComponent.getMatchingGermplasmsTable().addListener(new GermplasmListItemClickListener(this));
+        
+        optionGroup.addListener(new Property.ValueChangeListener() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void valueChange(ValueChangeEvent event) {
+                if(optionGroup.getValue().equals(OPTION_1_ID)){
+                    setSpecifyDetailsVisible(false);
+                    if(selectedGids.size()==0){
+                        doneButton.setEnabled(false);
+                    }
+                } else if(optionGroup.getValue().equals(OPTION_2_ID)){
+                    setSpecifyDetailsVisible(true);
+                    if(selectedGids.size()==0){
+                        doneButton.setEnabled(false);
+                    } else {
+                        doneButton.setEnabled(true);
+                    }
+                } else if(optionGroup.getValue().equals(OPTION_3_ID)){
+                    doneButton.setEnabled(true);
+                    setSpecifyDetailsVisible(true);
+                }
+            }
+        });
+        
+        cancelButton.addListener(new CloseWindowAction());
+        doneButton.addListener(new GermplasmListButtonClickListener(this));
+	}
+
+	@Override
+	public void layoutComponents() {
+		setModal(true);
+		setWidth("800px");
         setResizable(false);
         setCaption(messageSource.getMessage(Message.ADD_LIST_ENTRIES));
-        // center window within the browser
         center();
         
-        assembleTopPart();
+        topPart = new VerticalLayout();
+        topPart.setSpacing(true);
+        topPart.setMargin(false);
+        topPart.addComponent(topPartHeader);
+        topPart.addComponent(searchBarComponent);
+        topPart.addComponent(searchResultsComponent);
+        topPart.addComponent(step2Label);
+        topPart.addComponent(optionGroup);
         
-        assembleBottomPart();
-        setSpeficyDetailsVisible(false);
+        bottomPart = new AbsoluteLayout();
+        bottomPart.setWidth("600px");
+        bottomPart.setHeight("230px");
+        bottomPart.addComponent(bottomPartHeader, "top:15px;left:0px");
+        bottomPart.addComponent(breedingMethodField, "top:50px;left:0px");
+        bottomPart.addComponent(germplasmDateLabel, "top:107px;left:0px");
+        bottomPart.addComponent(germplasmDateField, "top:102px;left:124px");
+        bottomPart.addComponent(breedingLocationField, "top:133px;left:0px");
+        bottomPart.addComponent(nameTypeLabel, "top:185px;left:0px");
+        bottomPart.addComponent(nameTypeComboBox, "top:185px;left:130px");
         
-        assembleButtonLayout();
-    }
+        HorizontalLayout buttonLayout = new HorizontalLayout();
+        buttonLayout.setWidth("100%");
+        buttonLayout.setHeight("50px");
+        buttonLayout.setSpacing(true);
+        buttonLayout.addComponent(cancelButton);
+        buttonLayout.addComponent(doneButton);
+        buttonLayout.setComponentAlignment(cancelButton, Alignment.BOTTOM_RIGHT);
+        buttonLayout.setComponentAlignment(doneButton, Alignment.BOTTOM_LEFT);
+        
+        addComponent(topPart);
+        addComponent(bottomPart);
+        addComponent(buttonLayout);
+        
+        setSpecifyDetailsVisible(false);
+	}
     
     public void resultTableItemClickAction(Table sourceTable) throws InternationalizableException {
     	
@@ -224,132 +356,6 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
 		}
         return addtlParams;
 	}
-    
-    private void assembleTopPart(){
-        topPart = new VerticalLayout();
-        topPart.setSpacing(true);
-        topPart.setMargin(false);
-        
-        Label topPartHeader = new Label(messageSource.getMessage(Message.SELECT_A_GERMPLASM));
-        topPartHeader.addStyleName("bold");
-        topPartHeader.addStyleName("h3");
-        topPart.addComponent(topPartHeader);
-        
-        searchResultsComponent = new GermplasmSearchResultsComponent(null, false, false);
-        searchResultsComponent.getMatchingGermplasmsTable().setHeight("150px");
-        searchResultsComponent.getMatchingGermplasmsTableWithSelectAll().setHeight("180px");
-        searchResultsComponent.setRightClickActionHandlerEnabled(false);
-        
-        searchResultsComponent.getMatchingGermplasmsTable().addListener(new GermplasmListValueChangeListener(this));
-        searchResultsComponent.getMatchingGermplasmsTable().addListener(new GermplasmListItemClickListener(this));
-        
-        searchBarComponent = new GermplasmSearchBarComponent(searchResultsComponent);
-        
-        topPart.addComponent(searchBarComponent);
-        
-        topPart.addComponent(searchResultsComponent);
-        
-        Label step2Label = new Label(messageSource.getMessage(Message.HOW_DO_YOU_WANT_TO_ADD_THE_GERMPLASM_TO_THE_LIST));
-        step2Label.addStyleName("bold");
-        topPart.addComponent(step2Label);
-        
-        optionGroup = new OptionGroup();
-        optionGroup.addItem(OPTION_1_ID);
-        optionGroup.setItemCaption(OPTION_1_ID, messageSource.getMessage(Message.USE_SELECTED_GERMPLASM_FOR_THE_LIST_ENTRY));
-        optionGroup.addItem(OPTION_2_ID);
-        optionGroup.setItemCaption(OPTION_2_ID, messageSource.getMessage(Message.CREATE_A_NEW_GERMPLASM_RECORD_FOR_THE_LIST_ENTRY_AND_ASSIGN_THE_SELECTED_GERMPLASM_AS_ITS_SOURCE));
-        optionGroup.addItem(OPTION_3_ID);
-        optionGroup.setItemCaption(OPTION_3_ID, messageSource.getMessage(Message.CREATE_A_NEW_GERMPLASM_RECORD_FOR_THE_LIST_ENTRY));
-        optionGroup.select(OPTION_1_ID);
-        optionGroup.setImmediate(true);
-        optionGroup.addListener(new Property.ValueChangeListener() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void valueChange(ValueChangeEvent event) {
-                if(optionGroup.getValue().equals(OPTION_1_ID)){
-                    setSpeficyDetailsVisible(false);
-                    if(selectedGids.size()==0){
-                        doneButton.setEnabled(false);
-                    }
-                } else if(optionGroup.getValue().equals(OPTION_2_ID)){
-                    setSpeficyDetailsVisible(true);
-                    if(selectedGids.size()==0){
-                        doneButton.setEnabled(false);
-                    } else {
-                        doneButton.setEnabled(true);
-                    }
-                } else if(optionGroup.getValue().equals(OPTION_3_ID)){
-                    doneButton.setEnabled(true);
-                    setSpeficyDetailsVisible(true);
-                }
-            }
-        });
-        topPart.addComponent(optionGroup);
-        
-        addComponent(topPart);
-    }
-    
-    private void assembleBottomPart(){
-        bottomPart = new AbsoluteLayout();
-        bottomPart.setWidth("600px");
-        bottomPart.setHeight("230px");
-        
-        bottomPartHeader = new Label(messageSource.getMessage(Message.SPECIFY_ADDITIONAL_DETAILS));
-        bottomPartHeader.addStyleName("bold");
-        bottomPartHeader.addStyleName("h3");
-        bottomPart.addComponent(bottomPartHeader, "top:15px;left:0px");
-        
-        breedingMethodField = new BreedingMethodField(parentWindow);
-        bottomPart.addComponent(breedingMethodField, "top:50px;left:0px");
-                
-        germplasmDateLabel = new Label("Creation Date: ");
-        germplasmDateLabel.addStyleName("bold");
-        bottomPart.addComponent(germplasmDateLabel, "top:107px;left:0px");
-        
-        germplasmDateField =  new ListDateField("", false);
-        germplasmDateField.getListDtDateField().setValue(new Date());
-        bottomPart.addComponent(germplasmDateField, "top:102px;left:124px");
-        
-        breedingLocationField = new BreedingLocationField(parentWindow);
-        bottomPart.addComponent(breedingLocationField, "top:133px;left:0px");
-        
-        nameTypeLabel = new Label("Name Type: ");
-        nameTypeLabel.addStyleName("bold");
-        bottomPart.addComponent(nameTypeLabel, "top:185px;left:0px");
-        
-        nameTypeComboBox = new ComboBox();
-        nameTypeComboBox.setWidth("400px");
-        bottomPart.addComponent(nameTypeComboBox, "top:185px;left:130px");
-        populateNameTypeComboBox();
-        
-        addComponent(bottomPart);
-    }
-    
-    
-    public void assembleButtonLayout(){
-        HorizontalLayout buttonLayout = new HorizontalLayout();
-        buttonLayout.setWidth("100%");
-        buttonLayout.setHeight("50px");
-        buttonLayout.setSpacing(true);
-        
-        cancelButton = new Button(messageSource.getMessage(Message.CANCEL));
-        cancelButton.setData(CANCEL_BUTTON_ID);
-        cancelButton.addListener(new CloseWindowAction());
-        buttonLayout.addComponent(cancelButton);
-        
-        doneButton = new Button(messageSource.getMessage(Message.DONE));
-        doneButton.setData(DONE_BUTTON_ID);
-        doneButton.addListener(new GermplasmListButtonClickListener(this));
-        doneButton.setEnabled(false);
-        doneButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-        buttonLayout.addComponent(doneButton);
-        
-        buttonLayout.setComponentAlignment(cancelButton, Alignment.BOTTOM_RIGHT);
-        buttonLayout.setComponentAlignment(doneButton, Alignment.BOTTOM_LEFT);
-        
-        addComponent(buttonLayout);
-    }
     
     public void nextButtonClickAction(ClickEvent event){
     	
@@ -480,7 +486,8 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
 			        name.setUserId(userId);
 			        
 			        try{
-			            Integer gid = this.germplasmDataManager.addGermplasm(germplasm, name);
+			            @SuppressWarnings("unused")
+						Integer gid = this.germplasmDataManager.addGermplasm(germplasm, name);
 			            addedGids.add(germplasm.getGid());
 			        } catch(MiddlewareQueryException ex){
 			            LOG.error("Error with saving germplasm and name records!", ex);
@@ -612,7 +619,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     }    
     
     
-    private void setSpeficyDetailsVisible(Boolean visible){
+    private void setSpecifyDetailsVisible(Boolean visible){
         int height = 530;
     	if(visible){
     	    height += 230 + 10; // add height of bottom part + margin

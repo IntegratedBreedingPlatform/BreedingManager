@@ -167,7 +167,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     private ContextMenu inventoryViewMenu;
 	private ContextMenuItem menuCopyToNewListFromInventory;
 	private ContextMenuItem menuReserveInventory;
-	@SuppressWarnings("unused")
 	private ContextMenuItem menuCancelReservation;
 	
 	private SaveListAsDialog dialog;

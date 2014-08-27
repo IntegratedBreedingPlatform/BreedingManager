@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -41,7 +42,8 @@ import com.vaadin.ui.Window;
  */
 
 @Configurable
-public class FillWithAttributeWindow extends Window implements InternationalizableComponent, InitializingBean {
+public class FillWithAttributeWindow extends Window implements InternationalizableComponent, 
+						InitializingBean, BreedingManagerLayout {
 
     private static final long serialVersionUID = -8850686249688989080L;
     
@@ -82,24 +84,22 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        assemble();
-    }
-    
-    protected void assemble() {
-        initializeComponents();
+        instantiateComponents();
         initializeValues();
-        initializeLayout();
-        initializeActions();
+        addListeners();
+        layoutComponents();
     }
     
-    private void initializeComponents() {
+	@Override
+	public void instantiateComponents() {
         attributeBox = new ComboBox();
         attributeBox.setNullSelectionAllowed(false);
         okButton = new Button();
-    }
-    
-    private void initializeValues() {
-        try {
+	}
+
+	@Override
+	public void initializeValues() {
+		try {
             List<Integer> gids = getGidsFromTable(targetTable);
             attributeList = germplasmDataManager.getAttributeTypesByGIDList(gids);
             
@@ -111,10 +111,25 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-    }
-    
-    private void initializeLayout() {
-        attributeBox.setWidth("300px");
+	}
+
+	@Override
+	public void addListeners() {
+        okButton.addListener(new ClickListener() {
+            private static final long serialVersionUID = -7472646361265849940L;
+            @Override
+            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+                fillWithAttribute((Integer) attributeBox.getValue());
+                // close pop-up
+                Window attributeWindow = ((Button) event.getSource()).getWindow();
+                attributeWindow.getParent().removeWindow(attributeWindow);
+            }
+        });
+	}
+
+	@Override
+	public void layoutComponents() {
+		attributeBox.setWidth("300px");
         
         attributeLayout = new HorizontalLayout();
         attributeLayout.setMargin(true);
@@ -130,20 +145,7 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
         center();
         setResizable(false);
         setModal(true);
-    }
-    
-    private void initializeActions() {
-        okButton.addListener(new ClickListener() {
-            private static final long serialVersionUID = -7472646361265849940L;
-            @Override
-            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-                fillWithAttribute((Integer) attributeBox.getValue());
-                // close pop-up
-                Window attributeWindow = ((Button) event.getSource()).getWindow();
-                attributeWindow.getParent().removeWindow(attributeWindow);
-            }
-        });
-    }
+	}
     
     private void fillWithAttribute(Integer attributeType){
         if (attributeType!=null) {
@@ -198,5 +200,4 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
         messageSource.setCaption(this, Message.FILL_WITH_ATTRIBUTE_WINDOW);
         messageSource.setCaption(okButton, Message.OK);
     }
-
 }

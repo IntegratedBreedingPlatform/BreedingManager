@@ -21,9 +21,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.ListTreeComponent;
-import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -63,11 +63,9 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
-
-
 @Configurable
 public class ListManagerCopyToNewListDialog extends VerticalLayout implements InitializingBean, InternationalizableComponent,
-Property.ValueChangeListener, AbstractSelect.NewItemHandler{
+			 Property.ValueChangeListener, AbstractSelect.NewItemHandler, BreedingManagerLayout{
 
     private static final Logger LOG = LoggerFactory.getLogger(ListManagerCopyToNewListDialog.class);
     private static final long serialVersionUID = 1L;
@@ -77,13 +75,6 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
     public static final Object SAVE_BUTTON_ID = "Save New List Entries";
     public static final String CANCEL_BUTTON_ID = "Cancel Copying New List Entries";
     public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
-    
-//    private static final String GID = "gid";
-//    private static final String ENTRY_ID = "entryId";
-//    private static final String ENTRY_CODE = "entryCode";
-//    private static final String DESIGNATION = "designation";
-//    private static final String GROUP_NAME = "groupName";
-//    private static final String PARENTAGE = "parentage";
     
     private Label labelListName;
     private Label labelDescription;
@@ -133,26 +124,28 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
 
     @Override
     public void afterPropertiesSet() throws Exception {
-    	setSpacing(true);
-    	
-    	GridLayout gridLayout = new GridLayout();
-        gridLayout.setRows(3);
-        gridLayout.setColumns(2);
-        gridLayout.setSpacing(true);
-        
-        labelListName = new Label(messageSource.getMessage(Message.LIST_NAME_LABEL));
+        instantiateComponents();
+        initializeValues();
+        addListeners();
+        layoutComponents();
+    }
+    
+
+	@Override
+	public void instantiateComponents() {
+		labelListName = new Label(messageSource.getMessage(Message.LIST_NAME_LABEL));
         labelListName.addStyleName("bold");
+        
         labelDescription = new Label(messageSource.getMessage(Message.DESCRIPTION_LABEL));
         labelDescription.addStyleName("bold");
+        
         labelType = new Label(messageSource.getMessage(Message.TYPE_LABEL));
         labelType.addStyleName("bold");
-
+        
         comboBoxListName = new ComboBox();
-        populateComboBoxListName();
         comboBoxListName.setNewItemsAllowed(true);
         comboBoxListName.setNewItemHandler(this);
         comboBoxListName.setNullSelectionAllowed(false);
-        comboBoxListName.addListener(this);
         comboBoxListName.setImmediate(true);
 
         txtDescription = new TextField();
@@ -162,27 +155,46 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
         txtType.setWidth("200px");
         
         selectType = new Select();
-        populateSelectType(selectType);
         selectType.setNullSelectionAllowed(false);
         
-        HorizontalLayout hButton = new HorizontalLayout();
-        hButton.setSpacing(true);
         btnSave = new Button(messageSource.getMessage(Message.SAVE_LABEL));
         btnSave.setWidth("80px");
         btnSave.setData(SAVE_BUTTON_ID);
         btnSave.setDescription("Save New Germplasm List ");
-        btnSave.addListener(new GermplasmListButtonClickListener(this));
         btnSave.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
         
         btnCancel = new Button(messageSource.getMessage(Message.CANCEL));
         btnCancel.setWidth("80px");
         btnCancel.setData(CANCEL_BUTTON_ID);
         btnCancel.setDescription("Cancel Saving New Germplasm List");
-        btnCancel.addListener(new GermplasmListButtonClickListener(this));
-        
+	}
+
+	@Override
+	public void initializeValues() {
+		populateComboBoxListName();
+		populateSelectType(selectType);
+	}
+
+	@Override
+	public void addListeners() {
+		comboBoxListName.addListener(this);
+		btnSave.addListener(new GermplasmListButtonClickListener(this));
+		btnCancel.addListener(new GermplasmListButtonClickListener(this));
+	}
+
+	@Override
+	public void layoutComponents() {
+		setSpacing(true);
+		
+		HorizontalLayout hButton = new HorizontalLayout();
+        hButton.setSpacing(true);
         hButton.addComponent(btnCancel);
         hButton.addComponent(btnSave);
         
+		GridLayout gridLayout = new GridLayout();
+        gridLayout.setRows(3);
+        gridLayout.setColumns(2);
+        gridLayout.setSpacing(true);
         gridLayout.addComponent(labelListName, 0, 0);
         gridLayout.addComponent(comboBoxListName, 1, 0);
         gridLayout.addComponent(labelDescription, 0, 1);
@@ -193,21 +205,28 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
         addComponent(gridLayout);
         addComponent(hButton);
         setComponentAlignment(hButton, Alignment.MIDDLE_CENTER);
-    }
+	}
 
 
-    private void populateSelectType(Select selectType) throws MiddlewareQueryException {
-        List<UserDefinedField> listTypes = this.germplasmListManager.getGermplasmListTypes();
-        
-        for (UserDefinedField listType : listTypes) {
-            String typeCode = listType.getFcode();
-            selectType.addItem(typeCode);
-            selectType.setItemCaption(typeCode, listType.getFname());
-            //set "GERMPLASMLISTS" as the default value
-            if ("LST".equals(typeCode)) {
-                selectType.setValue(typeCode);
-            }
-        }
+    private void populateSelectType(Select selectType) {
+        List<UserDefinedField> listTypes;
+		try {
+			listTypes = this.germplasmListManager.getGermplasmListTypes();
+			
+			for (UserDefinedField listType : listTypes) {
+	            String typeCode = listType.getFcode();
+	            selectType.addItem(typeCode);
+	            selectType.setItemCaption(typeCode, listType.getFname());
+	            //set "GERMPLASMLISTS" as the default value
+	            if ("LST".equals(typeCode)) {
+	                selectType.setValue(typeCode);
+	            }
+	        }
+			
+		} catch (MiddlewareQueryException e) {
+			LOG.error(e.toString());
+			e.printStackTrace();
+		}
     }
 
     @Override
@@ -215,21 +234,27 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
         
     }
     
-    private void populateComboBoxListName() throws MiddlewareQueryException {
-        germplasmList = germplasmListManager.getAllGermplasmLists(0, (int) germplasmListManager.countAllGermplasmLists(), Database.LOCAL);
-        mapExistingList = new HashMap<String, Integer>();
-        comboBoxListName.addItem("");
-        for (GermplasmList gList : germplasmList) {
-            if(!gList.getName().equals(listName)){
-                if(!gList.getType().equals(FOLDER_TYPE)){
-                    comboBoxListName.addItem(gList.getName());
-                    mapExistingList.put(gList.getName(), new Integer(gList.getId()));
-                } else{
-                    localFolderNames.add(gList.getName());
-                }
-            }
-        }
-        comboBoxListName.select("");
+    private void populateComboBoxListName() {
+        try {
+			germplasmList = germplasmListManager.getAllGermplasmLists(0, (int) germplasmListManager.countAllGermplasmLists(), Database.LOCAL);
+	        mapExistingList = new HashMap<String, Integer>();
+	        comboBoxListName.addItem("");
+	        for (GermplasmList gList : germplasmList) {
+	            if(!gList.getName().equals(listName)){
+	                if(!gList.getType().equals(FOLDER_TYPE)){
+	                    comboBoxListName.addItem(gList.getName());
+	                    mapExistingList.put(gList.getName(), new Integer(gList.getId()));
+	                } else{
+	                    localFolderNames.add(gList.getName());
+	                }
+	            }
+	        }
+	        comboBoxListName.select("");
+	        
+		} catch (MiddlewareQueryException e) {
+			LOG.error(e.toString());
+			e.printStackTrace();
+		}
     }
 
     public void saveGermplasmListButtonClickAction() throws InternationalizableException, NumberFormatException {
@@ -346,13 +371,13 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
             
             Property pEntryId = listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName());
             Property pGid= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID.getName());
-            Property pEntryCode= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName());
+//            Property pEntryCode= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName());
             Property pDesignation= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName());
 
             Button pGidButton = (Button) pGid.getValue();
             int gid=Integer.valueOf(pGidButton.getCaption().toString());
             String entryIdOfList=String.valueOf(pEntryId.getValue().toString());
-            String entryCode=String.valueOf((pEntryCode.getValue().toString()));
+//			String entryCode=String.valueOf((pEntryCode.getValue().toString()));
             String seedSource=listName+": "+entryIdOfList;
             Button pDesigButton = (Button) pDesignation.getValue();
             String designation=String.valueOf((pDesigButton.getCaption().toString()));
@@ -441,5 +466,4 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler{
         }
         lastAdded = false;
     }
-
 }

@@ -354,6 +354,7 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
        		 + "  <b>" + count + "</b>");
 	}
 	
+	@SuppressWarnings("unused")
 	private void updateNoOfEntries(){
 		int count = 0;
 		count = matchingListsTable.getItemIds().size();

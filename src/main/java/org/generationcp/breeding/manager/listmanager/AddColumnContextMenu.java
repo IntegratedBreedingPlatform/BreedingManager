@@ -23,7 +23,6 @@ import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.data.Item;
-import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.Table;
@@ -36,13 +35,13 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private GermplasmDataManager germplasmDataManager;
 
     private ListTabComponent listDetailsComponent = null;
-    private AbsoluteLayout absoluteLayoutSource;
-    private ComponentContainer cssLayoutSource;
+    
+    @SuppressWarnings("unused")
+	private ComponentContainer cssLayoutSource;
+    
     private final String GIDPropertyId;
-    //private Button addColumnButton;
     private final Table targetTable;
     
-    //private ContextMenu menu;
     private ContextMenu sourceContextMenu;
     private ContextMenuItem addColumnItem;
     private ContextMenuItem menuFillWithPreferredId;
@@ -126,7 +125,8 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     public static Class CROSS_MALE_PREF_NAME_TYPE = String.class;
     public static String CROSS_MALE_PREF_NAME = "CROSS-MALE PREFERRED NAME";
     
-    private boolean fromBuildNewList;
+    @SuppressWarnings("unused")
+	private boolean fromBuildNewList;
     private ListBuilderComponent buildNewListComponent;
     
     public static List<String> ADDABLE_PROPERTY_IDS;
@@ -144,7 +144,6 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
         this.GIDPropertyId = gid;
         this.targetTable = targetTable;
         this.sourceContextMenu = sourceContextMenu;
-        //this.absoluteLayoutSource = absoluteLayoutSource; 
         
         setupContextMenu();
     }
