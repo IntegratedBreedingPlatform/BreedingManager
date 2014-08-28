@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.Button;
 
+@SuppressWarnings("unchecked")
 @Configurable
 public class ActionButton extends Button implements InitializingBean, InternationalizableComponent {
 	private static final long serialVersionUID = 1L;

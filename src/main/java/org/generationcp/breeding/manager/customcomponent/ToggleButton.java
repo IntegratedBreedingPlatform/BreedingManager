@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.themes.Reindeer;
 
+@SuppressWarnings("unchecked")
 @Configurable
 public class ToggleButton  extends Button implements InitializingBean, InternationalizableComponent {
 

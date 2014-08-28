@@ -12,9 +12,6 @@
 
 package org.generationcp.breeding.manager.util;
 
-import java.util.ArrayList;
-
-import org.generationcp.middleware.domain.dms.Study;
 import org.generationcp.middleware.pojos.Bibref;
 //import org.generationcp.middleware.domain.dms.Study;
 

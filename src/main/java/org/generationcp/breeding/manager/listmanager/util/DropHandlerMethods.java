@@ -525,10 +525,10 @@ public class DropHandlerMethods {
      * Iterates through the whole table, and sets the entry code from 1 to n based on the row position
      */
     protected void assignSerializedEntryCode(){
-        List<Integer> itemIds = getItemIds(targetTable);
-        
-        int id = 1;
-        for(Integer itemId : itemIds){
+//        List<Integer> itemIds = getItemIds(targetTable);
+//        
+//        int id = 1;
+//        for(Integer itemId : itemIds){
         	
         	/**
         	 * TODO: If add columns is already implemented, add this checker below
@@ -539,8 +539,8 @@ public class DropHandlerMethods {
             //    targetTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(id);
             //if(!filledWithPropertyIds.contains(ListDataTablePropertyID.ENTRY_CODE.getName()))
             //    targetTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(id);
-            id++;
-        }
+//            id++;
+//        }
     }
     
     /**

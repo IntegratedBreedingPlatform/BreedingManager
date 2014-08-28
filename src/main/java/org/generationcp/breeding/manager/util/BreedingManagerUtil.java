@@ -18,12 +18,10 @@ import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.pojos.dms.ProgramFavorite;
 import org.generationcp.middleware.pojos.dms.ProgramFavorite.FavoriteType;
-import org.generationcp.middleware.pojos.workbench.Project;
 
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 
 
 public class BreedingManagerUtil{
@@ -173,7 +171,8 @@ public class BreedingManagerUtil{
      * @param mapLocation
      * @throws MiddlewareQueryException
      */
-    public static void populateWithFavoriteLocations(WorkbenchDataManager workbenchDataManager, GermplasmDataManager germplasmDataManager, 
+    @SuppressWarnings("deprecation")
+	public static void populateWithFavoriteLocations(WorkbenchDataManager workbenchDataManager, GermplasmDataManager germplasmDataManager, 
     		ComboBox locationComboBox, Map<String, Integer> mapLocation) throws MiddlewareQueryException {
     	
     	locationComboBox.removeAllItems();
@@ -212,7 +211,8 @@ public class BreedingManagerUtil{
      * @param mapLocation
      * @throws MiddlewareQueryException
      */
-    public static void populateWithFavoriteBreedingLocations(WorkbenchDataManager workbenchDataManager, GermplasmDataManager germplasmDataManager, 
+    @SuppressWarnings("deprecation")
+	public static void populateWithFavoriteBreedingLocations(WorkbenchDataManager workbenchDataManager, GermplasmDataManager germplasmDataManager, 
     		ComboBox locationComboBox, Map<String, Integer> mapLocation) throws MiddlewareQueryException {
     	
     	locationComboBox.removeAllItems();

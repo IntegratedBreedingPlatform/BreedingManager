@@ -218,7 +218,8 @@ public class GermplasmQueries implements Serializable, InitializingBean{
 //        }
 //    }
 //
-    public ArrayList<GermplasmAttributeModel> getAttributes(int gid) throws InternationalizableException {
+    @SuppressWarnings("deprecation")
+	public ArrayList<GermplasmAttributeModel> getAttributes(int gid) throws InternationalizableException {
         try {
             ArrayList<Attribute> attr = (ArrayList<Attribute>) germplasmDataManager.getAttributesByGID(gid);
             ArrayList<GermplasmAttributeModel> germplasmAttributes = new ArrayList<GermplasmAttributeModel>();
@@ -295,7 +296,8 @@ public class GermplasmQueries implements Serializable, InitializingBean{
 
     }
 
-    private String getLocation(int locId) {
+    @SuppressWarnings("deprecation")
+	private String getLocation(int locId) {
         try {
             Location x = germplasmDataManager.getLocationByID(locId);
             return x.getLname();

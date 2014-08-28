@@ -3,7 +3,8 @@ package org.generationcp.breeding.manager.customfields;
 import com.vaadin.ui.ComboBox;
 
 public class BreedingManagerYearField extends ComboBox {
-	
+	private static final long serialVersionUID = 1L;
+
 	public BreedingManagerYearField(Integer year){
 		super();
 		
