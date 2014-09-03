@@ -167,7 +167,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     private ContextMenu inventoryViewMenu;
 	private ContextMenuItem menuCopyToNewListFromInventory;
 	private ContextMenuItem menuReserveInventory;
-	@SuppressWarnings("unused")
 	private ContextMenuItem menuCancelReservation;
 	
 	private SaveListAsDialog dialog;
@@ -283,6 +282,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         menuExportList = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST));
         //menuExportForGenotypingOrder = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING));
         menu.addItem(messageSource.getMessage(Message.INVENTORY_VIEW));
+        menu.addItem(messageSource.getMessage(Message.RESET_LIST));
+        menu.addItem(messageSource.getMessage(Message.SAVE_LIST));
         menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
         
         inventoryViewMenu = new ContextMenu();
@@ -290,7 +291,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         menuCancelReservation = inventoryViewMenu.addItem(messageSource.getMessage(Message.CANCEL_RESERVATIONS));
         menuCopyToNewListFromInventory = inventoryViewMenu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST));
         menuReserveInventory = inventoryViewMenu.addItem(messageSource.getMessage(Message.RESERVE_INVENTORY));
+        inventoryViewMenu.addItem(messageSource.getMessage(Message.RESET_LIST));
         inventoryViewMenu.addItem(messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
+        inventoryViewMenu.addItem(messageSource.getMessage(Message.SAVE_LIST));
         inventoryViewMenu.addItem(messageSource.getMessage(Message.SELECT_ALL));
         
         //Temporarily disable to Copy to New List in InventoryView TODO implement the function
@@ -357,17 +360,21 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
                 Table germplasmsTable = tableWithSelectAllLayout.getTable();
                 if(clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))){
                       germplasmsTable.setValue(germplasmsTable.getItemIds());
-                }else if(clickedItem.getName().equals(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES))){
+                } else if(clickedItem.getName().equals(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES))){
                       deleteSelectedEntries();
-                }else if(clickedItem.getName().equals(messageSource.getMessage(Message.EXPORT_LIST))){
+                } else if(clickedItem.getName().equals(messageSource.getMessage(Message.EXPORT_LIST))){
                       exportListAction();
-                }else if(clickedItem.getName().equals(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER))){
+                } else if(clickedItem.getName().equals(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER))){
                       exportListForGenotypingOrderAction();
-                }else if(clickedItem.getName().equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL))){
+                } else if(clickedItem.getName().equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL))){
                       copyToNewListAction();
-                }else if(clickedItem.getName().equals(messageSource.getMessage(Message.INVENTORY_VIEW))){
+                } else if(clickedItem.getName().equals(messageSource.getMessage(Message.INVENTORY_VIEW))){
                 	  viewInventoryAction();
-                }                
+                } else if(clickedItem.getName().equals(messageSource.getMessage(Message.RESET_LIST))){
+                	resetButton.click();
+				} else if(clickedItem.getName().equals(messageSource.getMessage(Message.SAVE_LIST))){
+					saveButton.click();
+				}                 
             }
             
         });
@@ -389,9 +396,13 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
                 	  listInventoryTable.getTable().setValue(listInventoryTable.getTable().getItemIds());
 		          } else if(clickedItem.getName().equals(messageSource.getMessage(Message.CANCEL_RESERVATIONS))){
                 	  cancelReservationsAction();
-		          }      
+		          } else if(clickedItem.getName().equals(messageSource.getMessage(Message.RESET_LIST))){
+                	  resetButton.click();
+		          } else if(clickedItem.getName().equals(messageSource.getMessage(Message.SAVE_LIST))){
+		        	  saveButton.click();
+		          } 
 		    }
-		});		
+		});
 		
 		toolsButton.addListener(new ClickListener() {
 			private static final long serialVersionUID = 1345004576139547723L;
