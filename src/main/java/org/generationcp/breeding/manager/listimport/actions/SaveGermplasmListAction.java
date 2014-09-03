@@ -419,7 +419,7 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
                 Attribute newAttr = new Attribute();
                 newAttr.setGermplasmId(germplasm.getGid());
                 newAttr.setTypeId(getUdfldID(existingUdflds,property));
-                newAttr.setUserId(wbUserId);
+                newAttr.setUserId(ibdbUserId);
                 newAttr.setAval(value);
                 newAttr.setLocationId(germplasm.getLocationId());
                 newAttr.setReferenceId(0);
