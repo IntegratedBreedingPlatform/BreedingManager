@@ -147,11 +147,17 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
 		for(Map.Entry<Integer, Lot> item: gidLotMap.entrySet()){
         	Integer gid = item.getKey();
         	Lot lot = item.getValue();
-        	
+        	Lot existingLot = inventoryDataManager.getLotByEntityTypeAndEntityIdAndLocationIdAndScaleId(
+        			lot.getEntityType(), gid, lot.getLocationId(), lot.getScaleId());    		
         	List<Transaction> listOfTransactions = gidTransactionSetMap.get(gid);
-        	
         	if(listOfTransactions!=null && listOfTransactions.size()>0){
-            	inventoryDataManager.addLot(lot);
+        		if(existingLot==null) {
+        			inventoryDataManager.addLot(lot);
+        		} else {
+        			for (Transaction transaction : listOfTransactions) {
+        				transaction.setLot(existingLot);
+					}
+        		}
         		inventoryDataManager.addTransactions(listOfTransactions);
         	}
         }
