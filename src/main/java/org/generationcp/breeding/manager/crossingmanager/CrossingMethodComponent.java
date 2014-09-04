@@ -85,11 +85,13 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 
 	@Override
 	public void initializeValues() {
+		crossingMethodComboBox.addItem(CrossType.PLEASE_CHOOSE);
+        crossingMethodComboBox.setItemCaption(CrossType.PLEASE_CHOOSE, messageSource.getMessage(Message.MAKE_CROSSES_OPTION_GROUP_ITEM_PLEASE_CHOOSE));
 		crossingMethodComboBox.addItem(CrossType.MULTIPLY);
         crossingMethodComboBox.setItemCaption(CrossType.MULTIPLY, messageSource.getMessage(Message.MAKE_CROSSES_OPTION_GROUP_ITEM_ONE_LABEL));
         crossingMethodComboBox.addItem(CrossType.TOP_TO_BOTTOM);
         crossingMethodComboBox.setItemCaption(CrossType.TOP_TO_BOTTOM, messageSource.getMessage(Message.MAKE_CROSSES_OPTION_GROUP_ITEM_TWO_LABEL));
-        crossingMethodComboBox.select(CrossType.MULTIPLY);
+        crossingMethodComboBox.select(CrossType.PLEASE_CHOOSE);
 	}
 
 	@Override
@@ -126,23 +128,26 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
     	if(makeCrossesMain.getModeView().equals(ModeView.INVENTORY_VIEW)){
     		String message = "Please switch to list view first before making crosses.";
         	MessageNotifier.showError(getWindow(),"Warning!", message);
-    	}
-    	else{
-    		parentsComponent = makeCrossesMain.getParentsComponent();
-        	
-        	Table femaleParents = parentsComponent.getFemaleTable();
-        	Table maleParents = parentsComponent.getMaleTable();
-        	
-        	List<GermplasmListEntry> femaleList = parentsComponent.getCorrectSortedValue(femaleParents);
-        	List<GermplasmListEntry> maleList = parentsComponent.getCorrectSortedValue(maleParents);
-          
+    	}    	
+    	else{    		          
         	CrossType type = (CrossType) crossingMethodComboBox.getValue();
-        	
-        	parentsComponent.updateFemaleListNameForCrosses();
-        	parentsComponent.updateMaleListNameForCrosses();
-        	
-        	makeCrossesMain.makeCrossButtonAction(femaleList, maleList, 
-        			parentsComponent.getFemaleListNameForCrosses(), parentsComponent.getMaleListNameForCrosses(), type, chkBoxMakeReciprocalCrosses.booleanValue());
+        	if (CrossType.PLEASE_CHOOSE.equals(type)){
+            	MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.WARNING)
+    					, messageSource.getMessage(Message.PLEASE_CHOOSE_CROSSING_METHOD));
+        	}else{	
+        		parentsComponent = makeCrossesMain.getParentsComponent();
+            	
+            	Table femaleParents = parentsComponent.getFemaleTable();
+            	Table maleParents = parentsComponent.getMaleTable();
+            	
+            	List<GermplasmListEntry> femaleList = parentsComponent.getCorrectSortedValue(femaleParents);
+            	List<GermplasmListEntry> maleList = parentsComponent.getCorrectSortedValue(maleParents);
+	        	parentsComponent.updateFemaleListNameForCrosses();
+	        	parentsComponent.updateMaleListNameForCrosses();
+	        	
+	        	makeCrossesMain.makeCrossButtonAction(femaleList, maleList, 
+	        			parentsComponent.getFemaleListNameForCrosses(), parentsComponent.getMaleListNameForCrosses(), type, chkBoxMakeReciprocalCrosses.booleanValue());
+        	}
     	}
     }
 
