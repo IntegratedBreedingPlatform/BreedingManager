@@ -584,6 +584,20 @@ public class GermplasmListUploader implements FileFactory {
     	}
     }
     
+	public boolean hasInventoryAmount() {
+		if(importedGermplasmList.getImportedVariates() != null){
+			List<ImportedVariate> importedVariates = new ArrayList<ImportedVariate>();
+			importedVariates.addAll(importedGermplasmList.getImportedVariates());
+					
+			for(ImportedVariate variate : importedVariates){
+				if(isSeedAmountVariable(variate)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+    
     /*
      * Returns true if variate property = "INVENTORY AMOUNT" or any of its synonyms
      */

@@ -102,7 +102,7 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
      * @throws MiddlewareQueryException
      */
     public Integer saveRecords(GermplasmList germplasmList, List<GermplasmName> germplasmNameObjects, List<Name> newNames, String filename
-    		, List<Integer> doNotCreateGermplasmsWithId, ImportedGermplasmList importedGermplasmList)throws MiddlewareQueryException{
+    		, List<Integer> doNotCreateGermplasmsWithId, ImportedGermplasmList importedGermplasmList, Integer seedStorageLocation)throws MiddlewareQueryException{
 
         retrieveIbdbUserId();
         germplasmList.setUserId(ibdbUserId);
@@ -116,7 +116,7 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
         gidTransactionSetMap = new HashMap<Integer, List<Transaction>>();
         
         processGermplasmNamesAndLots(germplasmNameObjects, doNotCreateGermplasmsWithId, germplasmIds,
-				addedGermplasmNameMap);
+				addedGermplasmNameMap,seedStorageLocation);
         
         List<ImportedGermplasm> importedGermplasms = importedGermplasmList.getImportedGermplasms();
         GermplasmList list = saveGermplasmListRecord(germplasmList);
@@ -149,7 +149,8 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
 			List<GermplasmName> germplasmNameObjects,
 			List<Integer> doNotCreateGermplasmsWithId,
 			List<Integer> germplasmIds,
-			Map<Integer, GermplasmName> addedGermplasmNameMap)
+			Map<Integer, GermplasmName> addedGermplasmNameMap,
+			Integer seedStorageLocation)
 			throws MiddlewareQueryException {
 		for(GermplasmName germplasmName : germplasmNameObjects){
             Name name = germplasmName.getName();
@@ -185,7 +186,7 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
             }
             
             if(seedAmountScaleId!=null){
-            	Lot lot = new Lot(null, ibdbUserId, EntityType.GERMPLSM.name(), gid, germplasm.getLocationId(), seedAmountScaleId, 0, 0, INVENTORY_COMMENT);
+            	Lot lot = new Lot(null, ibdbUserId, EntityType.GERMPLSM.name(), gid, seedStorageLocation, seedAmountScaleId, 0, 0, INVENTORY_COMMENT);
             	gidLotMap.put(gid, lot);
             }
         }

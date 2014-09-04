@@ -18,12 +18,10 @@ import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.pojos.dms.ProgramFavorite;
 import org.generationcp.middleware.pojos.dms.ProgramFavorite.FavoriteType;
-import org.generationcp.middleware.pojos.workbench.Project;
 
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 
 
 public class BreedingManagerUtil{
@@ -163,7 +161,6 @@ public class BreedingManagerUtil{
 
     }
     
-    
     /**
      * Queries for program's favorite locations and sets the values to combobox and map
      * 
@@ -171,10 +168,12 @@ public class BreedingManagerUtil{
      * @param germplasmDataManager
      * @param locationComboBox
      * @param mapLocation
+     * @param locationType
      * @throws MiddlewareQueryException
      */
-    public static void populateWithFavoriteLocations(WorkbenchDataManager workbenchDataManager, GermplasmDataManager germplasmDataManager, 
-    		ComboBox locationComboBox, Map<String, Integer> mapLocation) throws MiddlewareQueryException {
+    @SuppressWarnings("deprecation")
+	public static void populateWithFavoriteLocations(WorkbenchDataManager workbenchDataManager, GermplasmDataManager germplasmDataManager, 
+    		ComboBox locationComboBox, Map<String, Integer> mapLocation, Integer locationType) throws MiddlewareQueryException {
     	
     	locationComboBox.removeAllItems();
     	
@@ -193,14 +192,30 @@ public class BreedingManagerUtil{
 	        
 
 		for(Location favoriteLocation : favoriteLocations){
-			Integer locId = favoriteLocation.getLocid();
-			locationComboBox.addItem(locId);
-			locationComboBox.setItemCaption(locId, favoriteLocation.getLname());
-			if (mapLocation != null){
-				mapLocation.put(favoriteLocation.getLname(), new Integer(locId));
+			if((locationType > 0) && (favoriteLocation.getLtype().equals(locationType)) || (locationType == 0)){
+				Integer locId = favoriteLocation.getLocid();
+				locationComboBox.addItem(locId);
+				locationComboBox.setItemCaption(locId, favoriteLocation.getLname());
+				if (mapLocation != null){
+					mapLocation.put(favoriteLocation.getLname(), new Integer(locId));
+				}
 			}
 		}
-		
+    }
+    
+    
+    /**
+     * Queries for program's favorite locations and sets the values to combobox and map
+     * 
+     * @param workbenchDataManager
+     * @param germplasmDataManager
+     * @param locationComboBox
+     * @param mapLocation
+     * @throws MiddlewareQueryException
+     */
+	public static void populateWithFavoriteLocations(WorkbenchDataManager workbenchDataManager, GermplasmDataManager germplasmDataManager, 
+    		ComboBox locationComboBox, Map<String, Integer> mapLocation) throws MiddlewareQueryException {
+    	populateWithFavoriteLocations(workbenchDataManager, germplasmDataManager, locationComboBox, mapLocation, 0);		
     }
     
     /**
@@ -212,7 +227,8 @@ public class BreedingManagerUtil{
      * @param mapLocation
      * @throws MiddlewareQueryException
      */
-    public static void populateWithFavoriteBreedingLocations(WorkbenchDataManager workbenchDataManager, GermplasmDataManager germplasmDataManager, 
+    @SuppressWarnings("deprecation")
+	public static void populateWithFavoriteBreedingLocations(WorkbenchDataManager workbenchDataManager, GermplasmDataManager germplasmDataManager, 
     		ComboBox locationComboBox, Map<String, Integer> mapLocation) throws MiddlewareQueryException {
     	
     	locationComboBox.removeAllItems();

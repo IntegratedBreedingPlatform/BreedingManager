@@ -24,6 +24,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.Property.ConversionException;
 import com.vaadin.data.Property.ReadOnlyException;
 import com.vaadin.ui.AbsoluteLayout;
@@ -47,6 +48,10 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
     
     private BreedingMethodField methodComponent;
     private BreedingLocationField locationComponent;
+    private BreedingLocationField seedLocationComponent;
+    
+    private ComboBox locationComboBox;
+    private ComboBox seedLocationComboBox;
     
     private Label germplasmDateLabel;
     private Label nameTypeLabel;
@@ -73,6 +78,10 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
     private Window parentWindow;
     
     private int leftIndentPixels = 130;
+    
+    private boolean hasInventoryAmounts = false;
+    
+    private final Integer STORAGE_LOCATION_TYPEID = 1500;
     
 
 	public GermplasmFieldsComponent(Window parentWindow) {
@@ -130,6 +139,13 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 		}
 		locationComponent.setCaption(messageSource.getMessage(Message.GERMPLASM_LOCATION_LABEL) + ":");
 		
+		if (parentWindow != null){
+			seedLocationComponent = new BreedingLocationField(parentWindow, 200, true, false,STORAGE_LOCATION_TYPEID);
+		} else {
+			seedLocationComponent = new BreedingLocationField(200, true, false, STORAGE_LOCATION_TYPEID);
+		}
+		seedLocationComponent.setCaption(messageSource.getMessage(Message.SEED_STORAGE_LOCATION_LABEL) + ":");
+		
         germplasmDateLabel = new Label(messageSource.getMessage(Message.GERMPLASM_DATE_LABEL) + ":");
         germplasmDateLabel.addStyleName(CssStyles.BOLD);
         germplasmDateField = new DateField();
@@ -158,11 +174,28 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 
 	@Override
 	public void addListeners() {
+		locationComboBox = locationComponent.getBreedingLocationComboBox();
+		seedLocationComboBox = seedLocationComponent.getBreedingLocationComboBox();
+				
+		locationComboBox.addListener(new ComboBox.ItemSetChangeListener() {
+			private static final long serialVersionUID = 7609274983404661756L;
+
+			@Override
+			public void containerItemSetChange(ItemSetChangeEvent event) {
+				seedLocationComponent.populateHarvestLocation(Integer.valueOf(seedLocationComboBox.getValue().toString()));
+			}
+		});
 	}
 
 	@Override
 	public void layoutComponents() {
-		setHeight("270px");
+		if(hasInventoryAmounts){
+			setHeight("330px");
+		}
+		else{
+			setHeight("270px");
+		}
+		
 		
 		addComponent(addGermplasmDetailsLabel, "top:0px;left:0px");
 		addComponent(addGermplasmDetailsMessage, "top:32px;left:0px");
@@ -171,12 +204,23 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 		
 		addComponent(locationComponent, "top:120px;left:0px");
 		
-		addComponent(germplasmDateLabel, "top:185px;left:0px");
-		addComponent(germplasmDateField, "top:180px;left:" + getLeftIndentPixels() + "px");
-		
-		addComponent(nameTypeLabel, "top:220px;left:0px");
-        addComponent(nameTypeComboBox, "top:215px;left:" + getLeftIndentPixels() + "px");
-		
+		if(hasInventoryAmounts){
+			addComponent(seedLocationComponent, "top:180px;left:0px");
+			
+			addComponent(germplasmDateLabel, "top:245px;left:0px");
+			addComponent(germplasmDateField, "top:240px;left:" + getLeftIndentPixels() + "px");
+			
+			addComponent(nameTypeLabel, "top:280px;left:0px");
+	        addComponent(nameTypeComboBox, "top:275px;left:" + getLeftIndentPixels() + "px");
+
+		}
+		else{
+			addComponent(germplasmDateLabel, "top:185px;left:0px");
+			addComponent(germplasmDateField, "top:180px;left:" + getLeftIndentPixels() + "px");
+			
+			addComponent(nameTypeLabel, "top:220px;left:0px");
+	        addComponent(nameTypeComboBox, "top:215px;left:" + getLeftIndentPixels() + "px");
+		}		
 	}
 	
 	public ComboBox getBreedingMethodComboBox() {
@@ -185,6 +229,10 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 
 	public ComboBox getLocationComboBox() {
 		return locationComponent.getBreedingLocationComboBox();
+	}
+	
+	public ComboBox getSeedLocationComboBox() {
+		return seedLocationComponent.getBreedingLocationComboBox();
 	}
 
 	public ComboBox getNameTypeComboBox() {
@@ -241,5 +289,13 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
     protected int getLeftIndentPixels(){
     	return leftIndentPixels;
     }
+
+	public void refreshLayout(boolean hasInventoryAmount) {
+		this.hasInventoryAmounts = hasInventoryAmount;
+		
+		removeAllComponents();
+		layoutComponents();
+		requestRepaint();
+	}
     
 }

@@ -31,6 +31,8 @@ import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.Name;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -56,6 +58,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 		InternationalizableComponent, BreedingManagerLayout, SaveListAsDialogSource {
 
     private static final long serialVersionUID = 2762965368037453497L;
+    private static final Logger LOG = LoggerFactory.getLogger(SpecifyGermplasmDetailsComponent.class);
     
     public static final String NEXT_BUTTON_ID = "next button";
     public static final String BACK_BUTTON_ID = "back button";
@@ -426,6 +429,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 	public void initializeFromImportFile(ImportedGermplasmList importedGermplasmList){
 		
 		this.importedGermplasmList = importedGermplasmList;
+		this.germplasmFieldsComponent.refreshLayout(germplasmListUploader.hasInventoryAmount());
 		
 		//Clear table contents first (possible that it has some rows in it from previous uploads, and then user went back to upload screen)
 		getGermplasmDetailsTable().removeAllItems();
@@ -458,7 +462,8 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 		
 		try {
 			Integer listId = saveGermplasmListAction.saveRecords(list, getGermplasmNameObjects(), getNewNames(), 
-					germplasmListUploader.getOriginalFilename(), processGermplasmAction.getMatchedGermplasmIds(), importedGermplasmList);
+					germplasmListUploader.getOriginalFilename(), processGermplasmAction.getMatchedGermplasmIds(), 
+					importedGermplasmList, getSeedStorageLocation());
 			
 			if (listId != null){
 				MessageNotifier.showMessage(window, messageSource.getMessage(Message.SUCCESS), 
@@ -487,6 +492,17 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 		
 	}
 	
+	private Integer getSeedStorageLocation() {
+		Integer storageLocationId = 0;
+		try{
+			storageLocationId = Integer.valueOf(germplasmFieldsComponent.getSeedLocationComboBox().getValue().toString());
+		}catch(NumberFormatException e){
+			LOG.error("Error ar SpecifyGermplasmDetailsComponent: getSeedStorageLocation() " + e);
+		}
+		
+		return storageLocationId;
+	}
+
 	private void notifyExternalApplication(Window window, Integer listId){
 		if (window != null){
 			window.executeJavaScript("window.parent.closeImportFrame("+listId+");");

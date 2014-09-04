@@ -173,7 +173,7 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 		wizardStepNames[1] = messageSource.getMessage(Message.SPECIFY_GERMPLASM_DETAILS);
 		
 		tabHeights[0] = "300px";
-		tabHeights[1] = "750px";
+		tabHeights[1] = "810px";
 		
 		wizardDisplay = new GermplasmListImportWizardDisplay(wizardStepNames);
 	}
