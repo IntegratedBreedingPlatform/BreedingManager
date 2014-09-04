@@ -158,11 +158,11 @@ public class CrossingSettingsDetailComponent extends CssLayout
 	@Override
 	public void layoutComponents() {
 		setWidth("900px");
-		setHeight("990px");
+		setHeight("1030px");
 		
 		sectionPanel = new Panel();
 		sectionPanel.setWidth("100%");
-		sectionPanel.setHeight("940px");
+		sectionPanel.setHeight("980px");
 		sectionPanel.addStyleName(AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
 		
 		CssLayout sectionLayout = new CssLayout();
