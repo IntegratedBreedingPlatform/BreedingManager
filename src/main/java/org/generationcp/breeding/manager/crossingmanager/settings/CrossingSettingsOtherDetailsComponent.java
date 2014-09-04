@@ -119,7 +119,7 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 	private void initializeSaveSettingsSection() {
 		saveSettingsLabel = new Label(messageSource.getMessage(Message.SAVE_SETTINGS));
 		saveSettingsLabel.setStyleName(Bootstrap.Typography.H2.styleName());
-		settingsNameTextfield = new TextField(messageSource.getMessage(Message.SAVE_AS));
+		settingsNameTextfield = new TextField(messageSource.getMessage(Message.SAVE_AS_DESC) + ":");
 		setAsDefaultSettingCheckbox = new CheckBox();
 	}
 
@@ -127,10 +127,11 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 		harvestDetailsLabel = new Label(messageSource.getMessage(Message.HARVEST_DETAILS).toUpperCase());
 		harvestDetailsLabel.setStyleName(Bootstrap.Typography.H2.styleName());
 
-		harvestLocations = new ComboBox(messageSource.getMessage(Message.HARVEST_LOCATION));
-        harvestLocations.setNullSelectionAllowed(true);
-
-        harvestDateField = new HarvestDateField(2014,messageSource.getMessage(Message.HARVEST_DATE));
+		harvestLocations = new ComboBox(messageSource.getMessage(Message.HARVEST_LOCATION) + ":");
+        harvestLocations.setNullSelectionAllowed(false);
+        harvestLocations.addStyleName("mandatory-field");
+        
+        harvestDateField = new HarvestDateField(2014,messageSource.getMessage(Message.ESTIMATED_HARVEST_DATE) + ":");
         
         showFavouriteLocations = new CheckBox();
         showFavouriteLocations.setImmediate(true);
@@ -274,9 +275,16 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 	}
 
 	public boolean validateInputFields(){
-
+		
+		if(harvestLocations.getValue()==null || harvestLocations.getValue().equals("")){
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), 
+					messageSource.getMessage(Message.HARVEST_LOCATION_IS_MANDATORY));
+			return false;
+		}
+		
 		if((Boolean) setAsDefaultSettingCheckbox.getValue()==true && (settingsNameTextfield.getValue()==null || settingsNameTextfield.getValue().equals(""))){
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), messageSource.getMessage(Message.PLEASE_ENTER_A_NAME_FOR_THIS_SETTING_IF_YOU_WANT_TO_SET_IT_AS_DEFAULT));
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), 
+					messageSource.getMessage(Message.PLEASE_ENTER_A_NAME_FOR_THIS_SETTING_IF_YOU_WANT_TO_SET_IT_AS_DEFAULT));
 			return false;
 		}
 		

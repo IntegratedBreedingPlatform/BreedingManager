@@ -273,50 +273,21 @@ public class BreedingManagerUtil{
      */
     public static void populateWithFavoriteMethods(WorkbenchDataManager workbenchDataManager, GermplasmDataManager germplasmDataManager, 
     		ComboBox methodComboBox, Map<String, Integer> mapMethods) throws MiddlewareQueryException {
-    	
-		methodComboBox.removeAllItems();
-    	
-        List<Integer> favoriteMethodIds = new ArrayList<Integer>();
-        List<Method> favoriteMethods = new ArrayList<Method>();
-         
-		try {
-			
-			List<ProgramFavorite> list = germplasmDataManager.getProgramFavorites(FavoriteType.METHOD, 1000);
-			for (ProgramFavorite f : list){
-				favoriteMethodIds.add(f.getEntityId());
-			}
-	        
-	        //Get Methods
-	        if (!favoriteMethodIds.isEmpty()){
-	        	favoriteMethods = germplasmDataManager.getMethodsByIDs(favoriteMethodIds);
-	        }
-	        
-		} catch (MiddlewareQueryException e) {
-			e.printStackTrace();
-		}
-
-		for(Method favoriteMethod : favoriteMethods){
-			Integer methodId = favoriteMethod.getMid();
-			methodComboBox.addItem(methodId);
-			methodComboBox.setItemCaption(methodId, favoriteMethod.getMname());
-			if (mapMethods != null){
-				mapMethods.put(favoriteMethod.getMname(), methodId);
-			}
-		}
-		
+    	populateWithFavoriteMethods(workbenchDataManager, germplasmDataManager, methodComboBox, mapMethods, null);
     }
     
     /**
-     * Queries for program's favorite locations and sets the values to combobox and map.  Only selects method with GEN type.
+     * Queries for program's favorite locations and sets the values to combobox and map.  Only selects method with the GIVEN type.
      * 
      * @param workbenchDataManager
      * @param germplasmDataManager
      * @param locationComboBox
      * @param mapLocation
+     * @param mType
      * @throws MiddlewareQueryException
      */
-    public static void populateWithFavoriteMethodsOfTypeGen(WorkbenchDataManager workbenchDataManager, GermplasmDataManager germplasmDataManager, 
-    		ComboBox methodComboBox, Map<String, Integer> mapMethods) throws MiddlewareQueryException {
+    public static void populateWithFavoriteMethods(WorkbenchDataManager workbenchDataManager, GermplasmDataManager germplasmDataManager, 
+    		ComboBox methodComboBox, Map<String, Integer> mapMethods, String mType) throws MiddlewareQueryException {
     	
 		methodComboBox.removeAllItems();
     	
@@ -340,7 +311,8 @@ public class BreedingManagerUtil{
 		}
 
 		for(Method favoriteMethod : favoriteMethods){
-			if(favoriteMethod.getMtype() != null && favoriteMethod.getMtype().equals("GEN")){
+			if( (mType != null && mType.length() > 0 && (favoriteMethod.getMtype() != null && favoriteMethod.getMtype().equals(mType))) ||
+					(mType == null || mType.length() == 0)){
 				Integer methodId = favoriteMethod.getMid();
 				methodComboBox.addItem(methodId);
 				methodComboBox.setItemCaption(methodId, favoriteMethod.getMname());
