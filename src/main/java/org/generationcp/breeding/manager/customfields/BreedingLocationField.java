@@ -254,14 +254,8 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 
         if(showOnlyFavorites){
         	try {
-        		if(locationType > 0){
-        			BreedingManagerUtil.populateWithFavoriteLocations(workbenchDataManager, 
-    						germplasmDataManager, breedingLocationComboBox, null, locationType);
-        		}
-        		else{
-        			BreedingManagerUtil.populateWithFavoriteLocations(workbenchDataManager, 
-    						germplasmDataManager, breedingLocationComboBox, null);
-        		}
+        		BreedingManagerUtil.populateWithFavoriteLocations(workbenchDataManager, 
+						germplasmDataManager, breedingLocationComboBox, null);
         		
 			} catch (MiddlewareQueryException e) {
 				e.printStackTrace();
