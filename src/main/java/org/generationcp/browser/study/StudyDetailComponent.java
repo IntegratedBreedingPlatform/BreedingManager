@@ -67,11 +67,22 @@ public class StudyDetailComponent extends GridLayout implements InitializingBean
         setMargin(true);
 
         lblName = new Label(messageSource.getMessage(Message.NAME_LABEL)); // "Name"
+        lblName.addStyleName("bold");
+        
         lblTitle = new Label(messageSource.getMessage(Message.TITLE_LABEL)); // "Title"
+        lblTitle.addStyleName("bold");
+        
         lblObjective = new Label(messageSource.getMessage(Message.OBJECTIVE_LABEL)); // "Objective"
+        lblObjective.addStyleName("bold");
+        
         lblType = new Label(messageSource.getMessage(Message.TYPE_LABEL)); // "Type"
+        lblType.addStyleName("bold");
+        
         lblStartDate = new Label(messageSource.getMessage(Message.START_DATE_LABEL)); // "Start Date"
+        lblStartDate.addStyleName("bold");
+        
         lblEndDate = new Label(messageSource.getMessage(Message.END_DATE_LABEL)); // "End Date"
+        lblEndDate.addStyleName("bold");
         
         // get Study
         Study study;

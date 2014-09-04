@@ -17,10 +17,12 @@ import org.generationcp.browser.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.HeaderLabelLayout;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -37,7 +39,6 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
 						InternationalizableComponent, GermplasmStudyBrowserLayout  {
 
     private static final long serialVersionUID = 1L;
-    private final static String VERSION = "1.2.0";
     
     private Label applicationTitle;
     private Label headingLabel;
@@ -53,6 +54,8 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+    
+    public static final ThemeResource STUDY_DETAILS_ICON = new ThemeResource("images/study-details.png");
 
     public StudyBrowserMain() {
     }
@@ -67,16 +70,14 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
     
 	@Override
 	public void instantiateComponents() {
-        String title =  "Study Browser  <h2>" + VERSION + "</h2>";
-        applicationTitle = new Label();
+        applicationTitle = new Label(messageSource.getMessage(Message.BROWSE_STUDIES));
         applicationTitle.setStyleName(Bootstrap.Typography.H1.styleName());
         applicationTitle.setContentMode(Label.CONTENT_XHTML);
-        applicationTitle.setValue(title);
         
-    	headingLabel = new Label(messageSource.getMessage(Message.BROWSE_STUDIES));
+    	headingLabel = new Label(messageSource.getMessage(Message.STUDIES));
     	headingLabel.setImmediate(true);
     	headingLabel.setWidth("300px");
-    	headingLabel.setHeight("20px");
+    	headingLabel.setHeight("30px");
     	headingLabel.setStyleName(Bootstrap.Typography.H4.styleName());
     	headingLabel.addStyleName("bold");
     	
@@ -132,6 +133,9 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
 		setSpacing(true);
 		setMargin(false, true, true, true);
 		
+		
+		final HeaderLabelLayout headingLayout = new HeaderLabelLayout(STUDY_DETAILS_ICON, headingLabel);
+		
         HorizontalLayout directionLayout = new HorizontalLayout();
         directionLayout.addStyleName("study-browser-main");
         directionLayout.setHeight("16px");
@@ -144,7 +148,7 @@ public class StudyBrowserMain extends VerticalLayout implements InitializingBean
         directionLayout.setComponentAlignment(searchForStudy, Alignment.BOTTOM_CENTER);
         
         addComponent(applicationTitle);
-        addComponent(headingLabel);
+        addComponent(headingLayout);
         addComponent(directionLayout);
         addComponent(mainLayout);
 	}
