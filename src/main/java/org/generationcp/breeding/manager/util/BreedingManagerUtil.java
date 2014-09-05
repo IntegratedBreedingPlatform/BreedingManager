@@ -192,7 +192,7 @@ public class BreedingManagerUtil{
 	        
 
 		for(Location favoriteLocation : favoriteLocations){
-			if((locationType > 0) && (favoriteLocation.getLtype().equals(locationType)) || (locationType == 0)){
+			if((locationType > 0) && (favoriteLocation.getLtype().equals(locationType)) || (locationType.equals(Integer.valueOf(0)))){
 				Integer locId = favoriteLocation.getLocid();
 				locationComboBox.addItem(locId);
 				locationComboBox.setItemCaption(locId, favoriteLocation.getLname());

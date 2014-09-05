@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.BreedingLocationField;
+import org.generationcp.breeding.manager.customfields.BreedingLocationFieldSource;
 import org.generationcp.breeding.manager.customfields.BreedingMethodField;
 import org.generationcp.breeding.manager.customfields.ListDateField;
 import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
@@ -56,7 +57,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 @Configurable
-public class AddEntryDialog extends Window implements InitializingBean, InternationalizableComponent {
+public class AddEntryDialog extends Window implements InitializingBean, InternationalizableComponent, BreedingLocationFieldSource {
     
     private static final long serialVersionUID = -1627453790001229325L;
     
@@ -295,7 +296,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         germplasmDateField.getListDtDateField().setValue(new Date());
         bottomPart.addComponent(germplasmDateField, "top:102px;left:124px");
         
-        breedingLocationField = new BreedingLocationField(parentWindow);
+        breedingLocationField = new BreedingLocationField(this, parentWindow);
         bottomPart.addComponent(breedingLocationField, "top:133px;left:0px");
         
         nameTypeLabel = new Label("Name Type: ");
@@ -619,5 +620,13 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     public void focusOnSearchField(){
         searchBarComponent.getSearchField().focus();
     }
+
+
+
+	@Override
+	public void updateAllLocationFields() {
+		Object lastValue = breedingLocationField.getBreedingLocationComboBox().getValue();
+		breedingLocationField.populateHarvestLocation(Integer.valueOf(lastValue.toString()));
+	}
     
 }

@@ -8,6 +8,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants.CssStyles;
 import org.generationcp.breeding.manager.customfields.BreedingLocationField;
+import org.generationcp.breeding.manager.customfields.BreedingLocationFieldSource;
 import org.generationcp.breeding.manager.customfields.BreedingMethodField;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -24,7 +25,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.Property.ConversionException;
 import com.vaadin.data.Property.ReadOnlyException;
 import com.vaadin.ui.AbsoluteLayout;
@@ -35,7 +35,7 @@ import com.vaadin.ui.Window;
 
 @Configurable
 public class GermplasmFieldsComponent extends AbsoluteLayout implements
-		InternationalizableComponent, InitializingBean, BreedingManagerLayout {
+		InternationalizableComponent, InitializingBean, BreedingManagerLayout, BreedingLocationFieldSource {
 
 	private static final long serialVersionUID = -1180999883774074687L;
 	
@@ -133,16 +133,16 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 		methodComponent.setCaption(messageSource.getMessage(Message.GERMPLASM_BREEDING_METHOD_LABEL) + ":");
 		
 		if (parentWindow != null){
-			locationComponent = new BreedingLocationField(parentWindow, 200);
+			locationComponent = new BreedingLocationField(this,parentWindow, 200);
 		} else {
-			locationComponent = new BreedingLocationField(200);
+			locationComponent = new BreedingLocationField(this,200);
 		}
 		locationComponent.setCaption(messageSource.getMessage(Message.GERMPLASM_LOCATION_LABEL) + ":");
 		
 		if (parentWindow != null){
-			seedLocationComponent = new BreedingLocationField(parentWindow, 200, STORAGE_LOCATION_TYPEID);
+			seedLocationComponent = new BreedingLocationField(this,parentWindow, 200, STORAGE_LOCATION_TYPEID);
 		} else {
-			seedLocationComponent = new BreedingLocationField(200, STORAGE_LOCATION_TYPEID);
+			seedLocationComponent = new BreedingLocationField(this,200, STORAGE_LOCATION_TYPEID);
 		}
 		seedLocationComponent.setCaption(messageSource.getMessage(Message.SEED_STORAGE_LOCATION_LABEL) + ":");
 		
@@ -174,26 +174,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 
 	@Override
 	public void addListeners() {
-		locationComboBox = locationComponent.getBreedingLocationComboBox();
-		seedLocationComboBox = seedLocationComponent.getBreedingLocationComboBox();
-				
-		locationComboBox.addListener(new ComboBox.ItemSetChangeListener() {
-			private static final long serialVersionUID = 7609274983404661756L;
-
-			@Override
-			public void containerItemSetChange(ItemSetChangeEvent event) {
-				seedLocationComponent.populateHarvestLocation(Integer.valueOf(seedLocationComboBox.getValue().toString()));
-			}
-		});
 		
-		seedLocationComboBox.addListener(new ComboBox.ItemSetChangeListener() {
-			private static final long serialVersionUID = 7609274983404661756L;
-
-			@Override
-			public void containerItemSetChange(ItemSetChangeEvent event) {
-				locationComponent.populateHarvestLocation(Integer.valueOf(locationComboBox.getValue().toString()));
-			}
-		});
 	}
 
 	@Override
@@ -305,6 +286,15 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 		removeAllComponents();
 		layoutComponents();
 		requestRepaint();
+	}
+
+	@Override
+	public void updateAllLocationFields() {
+		locationComboBox = locationComponent.getBreedingLocationComboBox();
+		seedLocationComboBox = seedLocationComponent.getBreedingLocationComboBox();
+		
+		locationComponent.populateHarvestLocation(Integer.valueOf(locationComboBox.getValue().toString()));
+		seedLocationComponent.populateHarvestLocation(Integer.valueOf(seedLocationComboBox.getValue().toString()));
 	}
     
 }

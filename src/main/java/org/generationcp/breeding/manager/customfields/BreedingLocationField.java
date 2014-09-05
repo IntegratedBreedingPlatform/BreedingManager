@@ -52,19 +52,19 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	private boolean changed;
 	private int leftIndentPixels = 130;
 	
-	
     private List<Location> locations;
 	private CheckBox showFavoritesCheckBox;
 	private Button manageFavoritesLink;
 
 	private Window attachToWindow;
 	
-	private int locationType = 0;
+	private Integer locationType = 0;
 	
 	//flags
 	private boolean displayFavoriteMethodsFilter = true;
 	private boolean displayManageMethodLink = true;
 	
+	private BreedingLocationFieldSource source;
 	
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -78,47 +78,51 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	@Autowired
     private LocationDataManager locationDataManager;
 	
-	public BreedingLocationField(){
+	public BreedingLocationField(BreedingLocationFieldSource source){
+		this.source = source;
 		this.caption = "Location: ";
 		this.changed = false;
 	}
 	
-	public BreedingLocationField(Window attachToWindow){
-		this();
+	public BreedingLocationField(BreedingLocationFieldSource source, Window attachToWindow){
+		this(source);
 		this.attachToWindow = attachToWindow;
 	}
 	
-	public BreedingLocationField(Window attachToWindow, int pixels){
-		this(attachToWindow);
+	public BreedingLocationField(BreedingLocationFieldSource source, Window attachToWindow, int pixels){
+		this(source, attachToWindow);
 		this.leftIndentPixels = pixels;
 	}
 	
-	public BreedingLocationField(int pixels){
+	public BreedingLocationField(BreedingLocationFieldSource source, int pixels){
+		this.source = source;
 		this.leftIndentPixels = pixels;
 	}
 	
-	public BreedingLocationField(Window attachToWindow, int pixels, Integer locationType){
-		this(attachToWindow);
-		this.leftIndentPixels = pixels;
-		this.locationType = locationType;
-	}
-	
-	public BreedingLocationField(int pixels, Integer locationType){
+	public BreedingLocationField(BreedingLocationFieldSource source, Window attachToWindow, int pixels, Integer locationType){
+		this(source, attachToWindow);
 		this.leftIndentPixels = pixels;
 		this.locationType = locationType;
 	}
 	
-	public BreedingLocationField(Window attachToWindow, int pixels, 
+	public BreedingLocationField(BreedingLocationFieldSource source, int pixels, Integer locationType){
+		this.source = source;
+		this.leftIndentPixels = pixels;
+		this.locationType = locationType;
+	}
+	
+	public BreedingLocationField(BreedingLocationFieldSource source, Window attachToWindow, int pixels, 
 			boolean displayFavoriteMethodsFilter, boolean displayManageMethodLink, Integer locationType){
-		this(attachToWindow);
+		this(source, attachToWindow);
 		this.leftIndentPixels = pixels;
 		this.displayFavoriteMethodsFilter = displayFavoriteMethodsFilter;
 		this.displayManageMethodLink = displayManageMethodLink;
 		this.locationType = locationType;
 	}
 	
-	public BreedingLocationField(int pixels, boolean displayFavoriteMethodsFilter, 
+	public BreedingLocationField(BreedingLocationFieldSource source, int pixels, boolean displayFavoriteMethodsFilter, 
 			boolean displayManageMethodLink, Integer locationType){
+		this.source = source;
 		this.leftIndentPixels = pixels;
 		this.displayFavoriteMethodsFilter = displayFavoriteMethodsFilter;
 		this.displayManageMethodLink = displayManageMethodLink;
@@ -327,9 +331,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 				private static final long serialVersionUID = 1L;
 				@Override
 				public void windowClose(CloseEvent e) {
-					Object lastValue = breedingLocationComboBox.getValue();
-					populateHarvestLocation(((Boolean) showFavoritesCheckBox.getValue()).equals(true));
-					breedingLocationComboBox.setValue(lastValue);
+					source.updateAllLocationFields();
 				}
 			});
 		} catch (MiddlewareQueryException e){
