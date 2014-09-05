@@ -214,15 +214,16 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
 	protected void processVariates(ImportedGermplasmList importedGermplasmList) throws MiddlewareQueryException {
 		List<UserDefinedField> existingUdflds = getUserDefinedFields(FCODE_TYPE_ATTRIBUTE);
         List<UserDefinedField> newUdflds = new ArrayList<UserDefinedField>();
+        Map<String, String> attributeVariates = importedGermplasmList.getImportedGermplasms().get(0).getAttributeVariates();
         
-		for(ImportedVariate importedVariate : importedGermplasmList.getImportedVariates()){
+        for(ImportedVariate importedVariate : importedGermplasmList.getImportedVariates()){
 			String variate = importedVariate.getVariate();//GCP-10077: use variate name, instead of the property
 			
 	    	if(importedVariate.isSeedStockVariable()){
 	    		processSeedStockVariate(importedVariate);
 	    	}
 	    	else{
-	    		if(!isUdfldsExist(existingUdflds, variate)){
+	    		if(attributeVariates.containsKey(variate) && !isUdfldsExist(existingUdflds, variate)){
 	    			UserDefinedField newUdfld = createNewUserDefinedField(importedVariate);
 	    			newUdflds.add(newUdfld);
 	    		}
