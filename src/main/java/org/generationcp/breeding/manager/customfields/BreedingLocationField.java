@@ -97,6 +97,17 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		this.leftIndentPixels = pixels;
 	}
 	
+	public BreedingLocationField(Window attachToWindow, int pixels, Integer locationType){
+		this(attachToWindow);
+		this.leftIndentPixels = pixels;
+		this.locationType = locationType;
+	}
+	
+	public BreedingLocationField(int pixels, Integer locationType){
+		this.leftIndentPixels = pixels;
+		this.locationType = locationType;
+	}
+	
 	public BreedingLocationField(Window attachToWindow, int pixels, 
 			boolean displayFavoriteMethodsFilter, boolean displayManageMethodLink, Integer locationType){
 		this(attachToWindow);

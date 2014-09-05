@@ -140,9 +140,9 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 		locationComponent.setCaption(messageSource.getMessage(Message.GERMPLASM_LOCATION_LABEL) + ":");
 		
 		if (parentWindow != null){
-			seedLocationComponent = new BreedingLocationField(parentWindow, 200, true, false,STORAGE_LOCATION_TYPEID);
+			seedLocationComponent = new BreedingLocationField(parentWindow, 200, STORAGE_LOCATION_TYPEID);
 		} else {
-			seedLocationComponent = new BreedingLocationField(200, true, false, STORAGE_LOCATION_TYPEID);
+			seedLocationComponent = new BreedingLocationField(200, STORAGE_LOCATION_TYPEID);
 		}
 		seedLocationComponent.setCaption(messageSource.getMessage(Message.SEED_STORAGE_LOCATION_LABEL) + ":");
 		
@@ -183,6 +183,15 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 			@Override
 			public void containerItemSetChange(ItemSetChangeEvent event) {
 				seedLocationComponent.populateHarvestLocation(Integer.valueOf(seedLocationComboBox.getValue().toString()));
+			}
+		});
+		
+		seedLocationComboBox.addListener(new ComboBox.ItemSetChangeListener() {
+			private static final long serialVersionUID = 7609274983404661756L;
+
+			@Override
+			public void containerItemSetChange(ItemSetChangeEvent event) {
+				locationComponent.populateHarvestLocation(Integer.valueOf(locationComboBox.getValue().toString()));
 			}
 		});
 	}
