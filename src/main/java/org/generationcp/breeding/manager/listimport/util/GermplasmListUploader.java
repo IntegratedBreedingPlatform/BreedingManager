@@ -76,6 +76,8 @@ public class GermplasmListUploader implements FileFactory {
     private static final String NAME_PROPERTY = "GERMPLASM ID";
     private static final String NAME_SCALE = "NAME";
     private static final String NAME_METHOD = "ASSIGNED";
+    private static final String ATTRIBUTE_PROPERTY = "ATTRIBUTE";
+    private static final String PASSPORT_PROPERTY = "PASSPORT";
     
     public static final String INVENTORY_AMOUNT_PROPERTY = "INVENTORY AMOUNT";
     
@@ -587,12 +589,15 @@ public class GermplasmListUploader implements FileFactory {
                     ,getCellStringValue(currentSheet,currentRow,5,true));
                 importedGermplasmList.addImportedVariate(importedVariate);
                 
+                String property = importedVariate.getProperty()==null?"":
+                	importedVariate.getProperty().toUpperCase();
+                
                 if(isSeedAmountVariable(importedVariate)){
                 	importedVariate.setSeedStockVariable(true);
                 	seedAmountVariate = importedVariate.getVariate();
                 	LOG.debug("SEED STOCK " + importedVariate.getProperty());
                 }
-                else{
+                else if(property.equals(ATTRIBUTE_PROPERTY) || property.equals(PASSPORT_PROPERTY)){
                 	//initialize
                 	if(attributeVariates == null){
                 		attributeVariates = new ArrayList<String>();

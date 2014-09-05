@@ -66,6 +66,7 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
     private static final String FTYPE_NAME = "NAME";
     private static final String FTABLE_ATTRIBUTE = "ATRIBUTS";
     private static final String FTYPE_ATTRIBUTE = "ATTRIBUTE";
+    private static final String FTYPE_PASSPORT = "PASSPORT";
 
     private static final long serialVersionUID = -6273933938066390358L;
 
@@ -252,7 +253,7 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
 	private UserDefinedField createNewUserDefinedField(ImportedVariate importedVariate){
 		UserDefinedField newUdfld = new UserDefinedField();
 		newUdfld.setFtable(FTABLE_ATTRIBUTE);
-		newUdfld.setFtype(FTYPE_ATTRIBUTE);
+		newUdfld.setFtype(importedVariate.getProperty().toUpperCase());
 		newUdfld.setFcode(importedVariate.getVariate());//GCP-10077 - use name instead of property
 		newUdfld.setFname(importedVariate.getDescription());
 		String fmt = importedVariate.getScale() + "," + importedVariate.getMethod() + "," + importedVariate.getDataType();
@@ -384,22 +385,26 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
     }
     
     private List<UserDefinedField> getUserDefinedFields(int fcodeType) throws MiddlewareQueryException{
-    	String tableName = null;
-    	String fieldType = null;
+    	List<UserDefinedField> udFields = new ArrayList<UserDefinedField>();
     	switch(fcodeType) {
     		case FCODE_TYPE_ATTRIBUTE: 
-    			tableName =  FTABLE_ATTRIBUTE;
-    			fieldType = FTYPE_ATTRIBUTE;
-    			break;
+	    			List<UserDefinedField> list = germplasmManager.
+	    					getUserDefinedFieldByFieldTableNameAndType(FTABLE_ATTRIBUTE, FTYPE_ATTRIBUTE);
+	    			List<UserDefinedField> list2 = germplasmManager.
+	    					getUserDefinedFieldByFieldTableNameAndType(FTABLE_ATTRIBUTE, FTYPE_PASSPORT);
+	    			if(list!=null && !list.isEmpty()) {
+	    				udFields.addAll(list);
+	    			}
+	    			if(list2!=null && !list2.isEmpty()) {
+	    				udFields.addAll(list2);
+	    			}
+	    			break;
     		case FCODE_TYPE_NAME:
-    			tableName =  FTABLE_NAME;
-    			fieldType = FTYPE_NAME;
-    			break;
+    				udFields = germplasmManager.
+						getUserDefinedFieldByFieldTableNameAndType(FTABLE_NAME, FTYPE_NAME);
+    				break;
     	}
-    	if(tableName != null && fieldType != null) {
-    		return germplasmManager.getUserDefinedFieldByFieldTableNameAndType(tableName, fieldType);
-    	}
-    	return null;
+    	return udFields;
     }
 
     private void saveGermplasmListDataRecords( List<GermplasmName> germplasmNameObjects,
