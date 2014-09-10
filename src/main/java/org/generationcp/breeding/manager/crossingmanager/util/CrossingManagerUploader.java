@@ -38,7 +38,6 @@ import org.generationcp.breeding.manager.constants.TemplateCrossingCondition;
 import org.generationcp.breeding.manager.constants.TemplateCrossingFactor;
 import org.generationcp.breeding.manager.constants.TemplateUploadSource;
 import org.generationcp.breeding.manager.crosses.NurseryTemplateImportFileComponent;
-import org.generationcp.breeding.manager.crossingmanager.CrossingManagerImportFileComponent;
 import org.generationcp.breeding.manager.pojos.ImportedCondition;
 import org.generationcp.breeding.manager.pojos.ImportedConstant;
 import org.generationcp.breeding.manager.pojos.ImportedFactor;
@@ -61,7 +60,6 @@ import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Upload.SucceededListener;
-import com.vaadin.ui.Window.Notification;
 
 @Deprecated
 public class CrossingManagerUploader implements Receiver, SucceededListener {
@@ -107,9 +105,7 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
     // TODO: consider renaming class to "NurseryTemplateUploader" or something so that it's a generic uploader utility class
     public CrossingManagerUploader(AbstractLayout source, GermplasmListManager germplasmListManager, GermplasmDataManager germplasmDataManager) {
         // take note of source type
-        if (source instanceof CrossingManagerImportFileComponent) {
-            this.uploadSourceType = TemplateUploadSource.CROSSING_MANAGER;
-        } else if (source instanceof NurseryTemplateImportFileComponent) {
+    	if (source instanceof NurseryTemplateImportFileComponent) {
             this.uploadSourceType = TemplateUploadSource.NURSERY_TEMPLATE;
         }
         
@@ -206,13 +202,13 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
                 
                 if(sheet1 == null || sheet1.getSheetName() == null || !(sheet1.getSheetName().equals("Description"))){
                     MessageNotifier.showError(source.getWindow(), "Error with reading file uploaded."
-                            , "File doesn't have the first sheet - Description", Notification.POSITION_CENTERED);
+                            , "File doesn't have the first sheet - Description");
                     fileIsValid = false;
                     return;
                 }
             } catch(Exception ex){
                 MessageNotifier.showError(source.getWindow(), "Error with reading file uploaded."
-                        , "File doesn't have the first sheet - Description", Notification.POSITION_CENTERED);
+                        , "File doesn't have the first sheet - Description");
                 fileIsValid = false;
                 return;
             }
@@ -222,13 +218,13 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
                 
                 if(sheet2 == null || sheet2.getSheetName() == null || !(sheet2.getSheetName().equals("Observation"))){
                     MessageNotifier.showError(source.getWindow(), "Error with reading file uploaded."
-                            , "File doesn't have the second sheet - Observation", Notification.POSITION_CENTERED);
+                            , "File doesn't have the second sheet - Observation");
                     fileIsValid = false;
                     return;
                 }
             } catch(Exception ex){
                 MessageNotifier.showError(source.getWindow(), "Error with reading file uploaded."
-                        , "File doesn't have the second sheet - Observation", Notification.POSITION_CENTERED);
+                        , "File doesn't have the second sheet - Observation");
                 fileIsValid = false;
                 return;
             }
@@ -253,8 +249,8 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
             } catch (OfficeXmlFileException e){
                 showInvalidFileTypeError();
             } catch (CrossingManagerUploaderException e){
-                MessageNotifier.showError(source.getWindow(), "Error with reading file uploaded."
-                        , e.getMessage(), Notification.POSITION_CENTERED);
+                MessageNotifier.showError(source.getWindow(), 
+                		"Error with reading file uploaded.", e.getMessage());
                 fileIsValid = false;
             }
     }
@@ -794,15 +790,14 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
 
     private void showInvalidFileError(String header, String message){
         if(fileIsValid){
-            MessageNotifier.showError(source.getWindow(), header, message, Notification.POSITION_CENTERED);
+            MessageNotifier.showError(source.getWindow(), header, message);
             fileIsValid = false;
         }
     }
 
     private void showInvalidFileTypeError(){
         if(fileIsValid){
-            MessageNotifier.showError(source.getWindow(), "Error with file uploaded.", "Invalid import file type, you need to upload the correct XLS file."
-                    , Notification.POSITION_CENTERED);
+            MessageNotifier.showError(source.getWindow(), "Error with file uploaded.", "Invalid import file type, you need to upload the correct XLS file.");
             fileIsValid = false;
         }
     }    

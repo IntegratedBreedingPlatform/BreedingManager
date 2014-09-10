@@ -16,8 +16,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListTabComponent;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -42,14 +42,14 @@ import com.vaadin.ui.Window;
  */
 
 @Configurable
-public class FillWithAttributeWindow extends Window implements InternationalizableComponent, InitializingBean {
+public class FillWithAttributeWindow extends Window implements InternationalizableComponent, 
+						InitializingBean, BreedingManagerLayout {
 
     private static final long serialVersionUID = -8850686249688989080L;
     
     private SimpleResourceBundleMessageSource messageSource;
     
     //private Window mainWindow;
-    private ListManagerTreeMenu listManagerTreeMenu;
     private Table targetTable;
     private String gidPropertyId;
     private String targetPropertyId;
@@ -57,54 +57,49 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
     private ComboBox attributeBox;
     private Button okButton;
     private List<UserDefinedField> attributeList;
-    private BuildNewListComponent buildNewListComponent;
     private ListTabComponent listDetailsComponent;
-    private org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent buildListComponent;
+    private org.generationcp.breeding.manager.listmanager.ListBuilderComponent buildListComponent;
     
     @Autowired
     private GermplasmDataManager germplasmDataManager;
     
-    public FillWithAttributeWindow(ListManagerTreeMenu listManagerTreeMenu, Table targetTable, String gidPropertyId, 
+    public FillWithAttributeWindow(Table targetTable, String gidPropertyId, 
             String targetPropertyId, SimpleResourceBundleMessageSource messageSource) {
         this.targetTable = targetTable;
         this.gidPropertyId = gidPropertyId;
         this.targetPropertyId = targetPropertyId;
         this.messageSource = messageSource;
-        this.listManagerTreeMenu = listManagerTreeMenu;
     }
     
-    public FillWithAttributeWindow(ListManagerTreeMenu listManagerTreeMenu, Table targetTable, String gidPropertyId, 
-            String targetPropertyId, SimpleResourceBundleMessageSource messageSource, BuildNewListComponent buildNewListComponent, ListTabComponent listDetailsComponent
-            ,org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent buildListComponent) {
+    public FillWithAttributeWindow(Table targetTable, String gidPropertyId, 
+            String targetPropertyId, SimpleResourceBundleMessageSource messageSource, ListTabComponent listDetailsComponent
+            ,org.generationcp.breeding.manager.listmanager.ListBuilderComponent buildListComponent) {
         this.targetTable = targetTable;
         this.gidPropertyId = gidPropertyId;
         this.targetPropertyId = targetPropertyId;
         this.messageSource = messageSource;
-        this.buildNewListComponent = buildNewListComponent;
         this.listDetailsComponent = listDetailsComponent;
         this.buildListComponent = buildListComponent;
     }
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        assemble();
-    }
-    
-    protected void assemble() {
-        initializeComponents();
+        instantiateComponents();
         initializeValues();
-        initializeLayout();
-        initializeActions();
+        addListeners();
+        layoutComponents();
     }
     
-    private void initializeComponents() {
+	@Override
+	public void instantiateComponents() {
         attributeBox = new ComboBox();
         attributeBox.setNullSelectionAllowed(false);
         okButton = new Button();
-    }
-    
-    private void initializeValues() {
-        try {
+	}
+
+	@Override
+	public void initializeValues() {
+		try {
             List<Integer> gids = getGidsFromTable(targetTable);
             attributeList = germplasmDataManager.getAttributeTypesByGIDList(gids);
             
@@ -116,10 +111,25 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-    }
-    
-    private void initializeLayout() {
-        attributeBox.setWidth("300px");
+	}
+
+	@Override
+	public void addListeners() {
+        okButton.addListener(new ClickListener() {
+            private static final long serialVersionUID = -7472646361265849940L;
+            @Override
+            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+                fillWithAttribute((Integer) attributeBox.getValue());
+                // close pop-up
+                Window attributeWindow = ((Button) event.getSource()).getWindow();
+                attributeWindow.getParent().removeWindow(attributeWindow);
+            }
+        });
+	}
+
+	@Override
+	public void layoutComponents() {
+		attributeBox.setWidth("300px");
         
         attributeLayout = new HorizontalLayout();
         attributeLayout.setMargin(true);
@@ -135,20 +145,7 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
         center();
         setResizable(false);
         setModal(true);
-    }
-    
-    private void initializeActions() {
-        okButton.addListener(new ClickListener() {
-            private static final long serialVersionUID = -7472646361265849940L;
-            @Override
-            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-                fillWithAttribute((Integer) attributeBox.getValue());
-                // close pop-up
-                Window attributeWindow = ((Button) event.getSource()).getWindow();
-                attributeWindow.getParent().removeWindow(attributeWindow);
-            }
-        });
-    }
+	}
     
     private void fillWithAttribute(Integer attributeType){
         if (attributeType!=null) {
@@ -167,11 +164,6 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
         }
 
         //mark flag that changes have been made in listDataTable
-        if(listManagerTreeMenu != null){ listManagerTreeMenu.setChanged(true); }
-        
-        //mark flag that changes have been made in buildNewListTable
-        if(buildNewListComponent != null){ buildNewListComponent.setHasChanges(true); }	
-
         if(listDetailsComponent != null){
         	listDetailsComponent.getListComponent().setHasUnsavedChanges(true);
         }
@@ -208,5 +200,4 @@ public class FillWithAttributeWindow extends Window implements Internationalizab
         messageSource.setCaption(this, Message.FILL_WITH_ATTRIBUTE_WINDOW);
         messageSource.setCaption(okButton, Message.OK);
     }
-
 }

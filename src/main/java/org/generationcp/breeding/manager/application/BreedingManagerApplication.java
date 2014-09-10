@@ -5,10 +5,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.dellroad.stuff.vaadin.SpringContextApplication;
 import org.generationcp.breeding.manager.crosses.NurseryTemplateMain;
-import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
+import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.hibernate.DynamicManagerFactoryProvider;
 import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
@@ -156,7 +155,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 listManagerWindow.setName(name);
                 listManagerWindow.setSizeFull();
 
-                listManagerMain = new org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain();
+                listManagerMain = new org.generationcp.breeding.manager.listmanager.ListManagerMain();
                 
                 listManagerWindow.setContent(listManagerMain);
                 this.addWindow(listManagerWindow);
@@ -170,7 +169,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 	                listManagerWindow.setName(name);
 	                listManagerWindow.setSizeFull();
 	                
-	                listManagerMain = new org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain(listId);
+	                listManagerMain = new org.generationcp.breeding.manager.listmanager.ListManagerMain(listId);
 					
 	                listManagerWindow.setContent(listManagerMain);
 	                this.addWindow(listManagerWindow);
@@ -187,7 +186,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 Window listManagerSideBySideWindow = new Window(messageSource.getMessage(Message.LIST_MANAGER_WINDOW_LABEL));
                 listManagerSideBySideWindow.setName(LIST_MANAGER_SIDEBYSIDE);
                 listManagerSideBySideWindow.setSizeFull();
-                listManagerSideBySideWindow.addComponent(new org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain());
+                listManagerSideBySideWindow.addComponent(new org.generationcp.breeding.manager.listmanager.ListManagerMain());
                 this.setMainWindow(listManagerSideBySideWindow);
                 //this.getMainWindow().getContent().setHeight("100%");
                 return listManagerSideBySideWindow;
@@ -220,7 +219,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
         }
         else if (source.getSelectedTab() == this.rootLayoutForCrossingManager) {
             if (this.rootLayoutForCrossingManager.getComponentCount() == 0) {
-                rootLayoutForCrossingManager.addComponent(new CrossingManagerMain(rootLayoutForCrossingManager));
+                rootLayoutForCrossingManager.addComponent(new ManageCrossingSettingsMain(rootLayoutForCrossingManager));
                 rootLayoutForCrossingManager.addStyleName("addSpacing");
             }
         }

@@ -1,9 +1,9 @@
 package org.generationcp.breeding.manager.util;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListComponent;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListSelectionLayout;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListTabComponent;
+import org.generationcp.breeding.manager.listmanager.ListComponent;
+import org.generationcp.breeding.manager.listmanager.ListSelectionLayout;
+import org.generationcp.breeding.manager.listmanager.ListTabComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.springframework.beans.factory.annotation.Autowired;

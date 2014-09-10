@@ -1,7 +1,6 @@
 package org.generationcp.breeding.manager.customfields;
 
 import java.text.DateFormatSymbols;
-import java.util.Date;
 
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,7 @@ import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.HorizontalLayout;
 
 public class HarvestDateField extends HorizontalLayout {
+	private static final long serialVersionUID = 1L;
 	
 	BreedingManagerYearField harvestYear;
 	BreedingManagerMonthField harvestMonth;

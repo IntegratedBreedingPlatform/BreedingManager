@@ -4,8 +4,8 @@ import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossing
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customfields.ListNameField;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
+import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
+import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.springframework.beans.factory.InitializingBean;

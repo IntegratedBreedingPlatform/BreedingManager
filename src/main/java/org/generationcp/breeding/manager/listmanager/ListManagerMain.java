@@ -1,10 +1,15 @@
 package org.generationcp.breeding.manager.listmanager;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListManagerButtonClickListener;
-import org.generationcp.breeding.manager.listmanager.listeners.ListManagerTabChangeListener;
+import org.generationcp.breeding.manager.constants.ModeView;
+import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
+import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialog;
+import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialogSource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -15,217 +20,659 @@ import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.ProjectActivity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.Alignment;
+import com.vaadin.terminal.Sizeable;
+import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TextField;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class ListManagerMain extends VerticalLayout implements
-		InternationalizableComponent, InitializingBean {
+public class ListManagerMain extends VerticalLayout implements InternationalizableComponent, InitializingBean, 
+										BreedingManagerLayout, UnsavedChangesConfirmDialogSource {
+	
+    private static final long serialVersionUID = 5976245899964745758L;
+    
+    private static final Logger LOG = LoggerFactory.getLogger(ListManagerMain.class);
+    
+    private static final String VERSION_STRING = "<h2>1.0.0</h2>";
+    
+    
+    private AbsoluteLayout titleLayout;
+    private Label mainTitle;
+    public static final String BUILD_NEW_LIST_BUTTON_DATA = "Build new list";
+    
+    // Tabs
+    private HorizontalLayout tabHeaderLayout;
+    private Button listSelectionTabButton;
+    private Button plantSelectionTabButton;
 
-	private static final long serialVersionUID = -1014490637738627810L;
-	private static final String VERSION = "1.0.0";
+    protected Button listBuilderToggleBtn1;   // toggle on list
+    protected Button listBuilderToggleBtn2;   // toggle on germplasm search
 
+    // The tab content will be split between a plant finder component and a list builder component
+    private HorizontalSplitPanel splitPanel;
+    
+    private AbsoluteLayout plantFinderContent;
+    private ListBuilderComponent listBuilderComponent;
+    
+    // You can toggle the plant selection content to display a list view, or a germplasm view
+    private ListSelectionComponent listSelectionComponent;
+    private GermplasmSelectionComponent plantSelectionComponent;
+	
+	private final Integer selectedListId;
+	
+	//Handles Universal Mode View for ListManagerMain
+	private ModeView modeView;
+	private boolean hasChanges; //marks if there are unsaved changes in List from ListComponent and ListBuilderComponent
+	private UnsavedChangesConfirmDialog unsavedChangesDialog;
+	
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+    
+    @Autowired
+    private GermplasmListManager germplasmListManager;
 
     @Autowired
     private WorkbenchDataManager workbenchDataManager;
 
-    @Autowired
-    private GermplasmListManager germplasmListManager;
-
-    
-    private HorizontalLayout titleLayout;
-    private Label mainTitle;
-    private TabSheet tabSheet;
-    
-    private ListManagerBrowseListsComponent browseListsComponent;
-    private ListManagerSearchListsComponent searchListsComponent;
-    private BuildNewListComponent buildNewListComponent;
-    
-    private Label buildNewListTitle;
-    
-    private Button buildNewListButton;
-    public static final String BUILD_NEW_LIST_BUTTON_DATA = "Build new list";
-    
-    private Integer listId;
-    
-    private static final ThemeResource ICON_PLUS = new ThemeResource("images/plus_icon.png");
     
     public ListManagerMain(){
     	super();
-    	this.listId = null;
+    	this.selectedListId = null;
     }
     
-    public ListManagerMain(Integer listId){
+    public ListManagerMain(final Integer selectedListId){
     	super();
-    	this.listId = listId;
+    	this.selectedListId = selectedListId;
     }
-    
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		titleLayout = new HorizontalLayout();
-        titleLayout.setSpacing(true);
-        setTitleContent("");
-        
-        if(listId == null){
-        	browseListsComponent = new ListManagerBrowseListsComponent(this);
-        } else{
-        	browseListsComponent = new ListManagerBrowseListsComponent(this, listId);
-        }
-        
-        searchListsComponent = new ListManagerSearchListsComponent(this);
-        
-        buildNewListComponent = new BuildNewListComponent(this);
-        
-        tabSheet = new TabSheet();
-        tabSheet.addTab(browseListsComponent, messageSource.getMessage(Message.VIEW_LISTS));
-        tabSheet.addTab(searchListsComponent, messageSource.getMessage(Message.VIEW_GERMPLASM));
-        tabSheet.setHeight("580px");
-        tabSheet.addListener(new ListManagerTabChangeListener(this));
-        
-        HorizontalLayout buildNewActionBar = new HorizontalLayout();
-        buildNewActionBar.setWidth("100%");
-        buildNewActionBar.setHeight("30px");
-        
-		buildNewListTitle = new Label();
-		buildNewListTitle.setValue(messageSource.getMessage(Message.BUILD_A_NEW_LIST));
-		buildNewListTitle.addStyleName(Bootstrap.Typography.H3.styleName());
-		buildNewListTitle.setVisible(false);
-        
-        buildNewActionBar.addComponent(buildNewListTitle);
-        buildNewActionBar.setComponentAlignment(buildNewListTitle, Alignment.BOTTOM_LEFT);
-        
-        addComponent(titleLayout);
-        addComponent(tabSheet);
-        addComponent(buildNewActionBar);
-	}
+	
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        instantiateComponents();
+		initializeValues();
+		addListeners();
+		layoutComponents();
+    }
 
 	@Override
 	public void updateLabels() {
-		
+		mainTitle.setValue(messageSource.getMessage(Message.LIST_MANAGER_SCREEN_LABEL) + "  " + VERSION_STRING);
 	}
-	
-	public void showBuildNewListComponent(){
-		if(buildNewListButton.isVisible()){
-			buildNewListButton.setVisible(false);
-			
-			addComponent(buildNewListComponent);
-			buildNewListTitle.setVisible(true);
-			
-			TextField listNameText =  buildNewListComponent.getListNameText();
-			if(listNameText != null){
-				listNameText.focus();
-			}
-			
-		}
-		else{
-			TextField listNameText =  buildNewListComponent.getListNameText();
-			if(listNameText != null){
-				listNameText.focus();
-			}
-		}
-	}
-	
-	private void setTitleContent(String guideMessage){
-        titleLayout.removeAllComponents();
-        titleLayout.setSizeFull();
+
+	@Override
+	public void instantiateComponents() {
+        listBuilderToggleBtn1 = new Button("<span class='bms-fa-chevron-left'" +
+                "style='" +
+                "position: relative;" +
+                " bottom: 3px;" +
+                "'></span>" + "Show List Builder");
+        listBuilderToggleBtn1.setHtmlContentAllowed(true);
+        listBuilderToggleBtn1.setStyleName(Bootstrap.Buttons.BORDERED.styleName() + " lm-toggle");
+
+        listBuilderToggleBtn2 = new Button("<span class='bms-fa-chevron-left'" +
+                "style='" +
+                "position: relative;" +
+                " bottom: 3px;" +
+                "'></span>" + "Show List Builder");
+        listBuilderToggleBtn2.setHtmlContentAllowed(true);
+        listBuilderToggleBtn2.setStyleName(Bootstrap.Buttons.BORDERED.styleName() + " lm-toggle");
+
+        modeView = ModeView.LIST_VIEW;
+        hasChanges = false;
         
-        //TODO put software version in title
-        String title =  messageSource.getMessage(Message.LIST_MANAGER_SCREEN_LABEL)+ "  <h2>" + VERSION + "</h2>";
+        setSizeFull();
+        setTitleContent();
+        setTabHeader();
+        setTabContent();
+	}
+
+	@Override
+	public void initializeValues() {
+		plantFinderContent.setWidth("100%");
+
+		// By default, the list selection component will be opened first
+        plantSelectionComponent.setVisible(false);
+	}
+
+	@Override
+	public void addListeners() {
+
+		listSelectionTabButton.addListener(new ClickListener(){
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				showListSelection();
+				selectTab(listSelectionTabButton);
+				deselectTab(plantSelectionTabButton);
+
+        	}
+
+		});
+
+		plantSelectionTabButton.addListener(new ClickListener(){
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				showPlantSelection();
+				selectTab(plantSelectionTabButton);
+				deselectTab(listSelectionTabButton);
+
+        	}
+		});
+
+
+        listBuilderToggleBtn1.addListener(new Button.ClickListener() {
+			private static final long serialVersionUID = -8178708255873293566L;
+
+			@Override
+            public void buttonClick(ClickEvent event) {
+                ListManagerMain.this.toggleListBuilder();
+            }
+        });
+
+
+        listBuilderToggleBtn2.addListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 4202348847712247508L;
+
+			@Override
+            public void buttonClick(ClickEvent event) {
+                ListManagerMain.this.toggleListBuilder();
+            }
+        });
+	}
+
+    @Override
+	public void layoutComponents() {
+
+        final VerticalLayout titleAndTabContainer = new VerticalLayout();
+        titleAndTabContainer.setMargin(new MarginInfo(false,false,false,true));
+        titleAndTabContainer.setSpacing(true);
+
+        titleAndTabContainer.addComponent(titleLayout);
+        titleAndTabContainer.addComponent(tabHeaderLayout);
+
+        this.addComponent(titleAndTabContainer);
+
+        final Panel splitPanelContainer = new Panel();
+        splitPanelContainer.setScrollable(true);
+        splitPanelContainer.setSizeFull();
+        splitPanelContainer.setStyleName(Reindeer.PANEL_LIGHT + " lm-panel");
+
+        splitPanelContainer.setContent(splitPanel);
+
+        this.addComponent(splitPanelContainer);
+        this.setExpandRatio(splitPanelContainer,1.0F);
+
+        //this.setStyleName("green");
+        this.setMargin(false);
+        this.setSpacing(false);
+	}
+
+	/**
+	 * Loads the specified list in the list builder. Ensures the list is not currently open anywhere else.
+	 *
+	 * @param list the list to load for editing
+	 */
+    public void loadListForEditing(final GermplasmList list){
+    	updateUIForEditingList(list);
+    	listSelectionComponent.getListDetailsLayout().repaintTabsheet();
+    	listBuilderComponent.editList(list);
+    	showListBuilder();
+    }
+
+	/**
+	 * Closes the specified list from any open views.
+	 *
+	 * @param list the list to close
+	 */
+	public void closeList(final GermplasmList list) {
+		listSelectionComponent.getListDetailsLayout().removeTab(list.getId());
+	}
+
+	/**
+	 * Add selected plants to the list open in the list builder.
+	 * @param sourceTable the table to retrieve the selected plants from
+	 */
+	public void addSelectedPlantsToList(Table sourceTable){
+		listBuilderComponent.addFromListDataTable(sourceTable);
+	}
+
+	/**
+	 * Add a plant to the list open in the list builder.
+	 * @param gid ID of the germplasm to add
+	 */
+	public void addPlantToList(final Integer gid) {
+		listBuilderComponent.addGermplasm(gid);
+	}
+
+	public ListBuilderComponent getListBuilderComponent() {
+		return listBuilderComponent;
+	}
+
+	public ListSelectionComponent getListSelectionComponent(){
+		return listSelectionComponent;
+	}
+
+	public GermplasmSelectionComponent getPlantSelectionComponent(){
+		return plantSelectionComponent;
+	}
+
+	protected void showPlantSelection() {
+
+		plantFinderContent.setCaption("100%");
+
+		plantFinderContent.removeAllComponents();
+		plantFinderContent.addComponent(plantSelectionComponent);
+
+		listSelectionComponent.setVisible(false);
+		plantSelectionComponent.setVisible(true);
+		plantSelectionComponent.getSearchBarComponent().focusOnSearchField();
+
+		plantFinderContent.requestRepaint();
+	}
+
+	protected void showListSelection() {
+
+		plantFinderContent.setCaption("100%");
+
+		plantFinderContent.removeAllComponents();
+		plantFinderContent.addComponent(listSelectionComponent);
+
+		listSelectionComponent.setVisible(true);
+		plantSelectionComponent.setVisible(false);
+
+		plantFinderContent.requestRepaint();
+	}
+
+	private void setTitleContent() {
+		titleLayout = new AbsoluteLayout();
+        titleLayout.setWidth("100%");
+        titleLayout.setHeight("40px");
+
         mainTitle = new Label();
         mainTitle.setStyleName(Bootstrap.Typography.H1.styleName());
         mainTitle.setContentMode(Label.CONTENT_XHTML);
-        mainTitle.setValue(title);
-        titleLayout.addComponent(mainTitle);
-        
-        buildNewListButton = new Button();
-        buildNewListButton.setCaption(messageSource.getMessage(Message.START_A_NEW_LIST));
-        buildNewListButton.setData(BUILD_NEW_LIST_BUTTON_DATA);
-        buildNewListButton.setStyleName(Bootstrap.Buttons.INFO.styleName());
-        buildNewListButton.setIcon(ICON_PLUS);
-        buildNewListButton.addListener(new GermplasmListManagerButtonClickListener(this));
-        
-        titleLayout.addComponent(buildNewListButton);
-        titleLayout.setComponentAlignment(buildNewListButton, Alignment.MIDDLE_RIGHT);
-        
-        /**
-        Label descLbl = new Label(guideMessage);
-        descLbl.setWidth("300px");
-        
-        PopupView popup = new PopupView("?",descLbl);
-        popup.setStyleName("gcp-popup-view");
-        titleLayout.addComponent(popup);
-        
-        titleLayout.setComponentAlignment(popup, Alignment.MIDDLE_LEFT);
-        **/
-    }
-	
-	
-	public ListManagerBrowseListsComponent getListManagerBrowseListsComponent(){
-		return browseListsComponent;
-	}
-	
-	public ListManagerSearchListsComponent getListManagerSearchListsComponent(){
-		return searchListsComponent;
-	}
-	
-	public BuildNewListComponent getBuildListComponent(){
-		return buildNewListComponent;
+        mainTitle.setValue(messageSource.getMessage(Message.LIST_MANAGER_SCREEN_LABEL) + "  " + VERSION_STRING);
+
+        //buildNewListButton = new Button();
+        //buildNewListButton.setCaption(messageSource.getMessage(Message.START_A_NEW_LIST));
+        //buildNewListButton.setData(BUILD_NEW_LIST_BUTTON_DATA);
+        //buildNewListButton.setStyleName(Bootstrap.Buttons.INFO.styleName());
+        //buildNewListButton.setIcon(AppConstants.Icons.ICON_PLUS);
+
+        titleLayout.addComponent(mainTitle,"top:0px;left:0px");
+        //titleLayout.addComponent(buildNewListButton,"top:10px;right:0px");
 	}
 
-	public ListManagerBrowseListsComponent getBrowseListsComponent(){
-		return browseListsComponent;
+	private void setTabHeader(){
+        listSelectionTabButton = new Button(messageSource.getMessage(Message.VIEW_LISTS));
+        plantSelectionTabButton = new Button(messageSource.getMessage(Message.VIEW_GERMPLASM));
+        listSelectionTabButton.addStyleName("tabHeaderSelectedStyle");
+        listSelectionTabButton.addStyleName("tabStyleButton");
+        plantSelectionTabButton.addStyleName("tabStyleButton");
+        listSelectionTabButton.setImmediate(true);
+        plantSelectionTabButton.setImmediate(true);
+
+        tabHeaderLayout = new HorizontalLayout();
+        tabHeaderLayout.addStyleName("tabHeaderStyle");
+        tabHeaderLayout.setSpacing(true);
+        tabHeaderLayout.addComponent(listSelectionTabButton);
+        tabHeaderLayout.addComponent(plantSelectionTabButton);
 	}
-	
-	public Label getBuildNewListTitle(){
-		return this.buildNewListTitle;
+
+	private void setTabContent(){
+		splitPanel = new HorizontalSplitPanel();
+		splitPanel.setMargin(false);
+		splitPanel.setMaxSplitPosition(46.5f, Sizeable.UNITS_PERCENTAGE);
+		splitPanel.setSplitPosition(0,Sizeable.UNITS_PERCENTAGE,true);
+
+        splitPanel.setImmediate(true);
+        splitPanel.setStyleName(Reindeer.SPLITPANEL_SMALL);
+        splitPanel.addStyleName("tabContainerStyle");
+
+        listSelectionComponent = new ListSelectionComponent(this, selectedListId);
+		plantSelectionComponent = new GermplasmSelectionComponent(this);
+
+        plantFinderContent = new AbsoluteLayout();
+        plantFinderContent.addComponent(listSelectionComponent,"top:0px;left:0px");
+        plantFinderContent.addComponent(plantSelectionComponent,"top:0px;left:0px");
+        
+        listBuilderComponent = new ListBuilderComponent(this);
+
+		splitPanel.setFirstComponent(plantFinderContent);
+		splitPanel.setSecondComponent(listBuilderComponent);
+
+        splitPanel.setWidth("100%");
+        splitPanel.setHeight("780px");
+
+        addStyleName("lm-list-manager-main");
 	}
-	
-	public void updateUIForDeletedList(GermplasmList germplasmList){
-		Integer listId = germplasmList.getId();
-		//remove from Browse Lists and Search Lists tabsheets
-		this.getListManagerBrowseListsComponent().getListManagerTreeComponent().getListManagerDetailsLayout().removeListTab(listId);
-		//this.getListManagerSearchListsComponent().getSearchResultsComponent().getListManagerDetailsLayout().removeListTab(listId);
+
+	private void selectTab(final Button tabToSelect) {
+		tabToSelect.removeStyleName("tabHeaderStyle");
+		tabToSelect.addStyleName("tabHeaderSelectedStyle");
+	}
+
+	private void deselectTab(final Button tabToUnselect) {
+		tabToUnselect.removeStyleName("tabHeaderSelectedStyle");
+		tabToUnselect.addStyleName("tabHeaderStyle");
+	}
+
+
+	public void updateUIForEditingList(GermplasmList list) {
+		//Check if tab for deleted list is opened
+		listSelectionComponent.getListDetailsLayout().removeTab(list.getId());
+	}
+
+	public void updateUIForDeletedList(GermplasmList list) {
+		SaveListAsDialog saveListAsDialog = null;
 		
-		this.getBrowseListsComponent().getListManagerTreeComponent().removeListFromTree(germplasmList);
-		//TODO remove from Matching Lists table and Build/Edit List screen
-	}
-	
-	public void updateUIForRenamedList(Integer listId, String newName){
-		//remove from Browse Lists and Search Lists tabsheets
-		this.getListManagerBrowseListsComponent().getListManagerTreeComponent().getListManagerDetailsLayout().renameListTab(listId, newName);
-		//this.getListManagerSearchListsComponent().getSearchResultsComponent().getListManagerDetailsLayout().renameListTab(listId, newName);
+		//close the save dialog window in View list if the deleted list is the current selected list
+		ListTabComponent currentListTab = (ListTabComponent)listSelectionComponent.getListDetailsLayout().getDetailsTabsheet().getSelectedTab();
+		if(currentListTab != null){
+			ListComponent listComponent = currentListTab.getListComponent();
+			saveListAsDialog = listComponent.getSaveListAsDialog();
+			if(saveListAsDialog != null){
+				if(listComponent.getCurrentListInSaveDialog().getName().equals(list.getName())){
+					listComponent.getWindow().removeWindow(saveListAsDialog);
+					MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Germplasm List was deleted.");
+				}
+			}
+		}
 		
-		//TODO update Matching Lists table and Build/Edit List screen
+		//Check if tab for deleted list is opened
+		listSelectionComponent.getListDetailsLayout().removeTab(list.getId());
+		
+		//close the save dialog window in List Builder if the deleted list is the current selected list
+		saveListAsDialog = getListBuilderComponent().getSaveListAsDialog();
+		if(saveListAsDialog != null){
+			if(saveListAsDialog.getGermplasmListToSave().getName().equals(list.getName())){
+				getListBuilderComponent().getWindow().removeWindow(saveListAsDialog);
+			}
+		}
+		
+		if(	getListBuilderComponent().getCurrentlySavedGermplasmList() != null
+			&& list != null
+			&& getListBuilderComponent().getCurrentlySavedGermplasmList().getName().equals(list.getName())){
+			getListBuilderComponent().resetList();
+			MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Germplasm List was deleted.");
+		}
+		
+		//Check if deleted list is in the search results
+		listSelectionComponent.getListSearchComponent().getSearchResultsComponent().removeSearchResult(list.getId());
+	}
+
+
+	public Boolean lockGermplasmList(GermplasmList germplasmList){
+	    if(!germplasmList.isLockedList()){
+		    germplasmList.setStatus(germplasmList.getStatus()+100);
+		    try {
+		        germplasmListManager.updateGermplasmList(germplasmList);
+
+		        User user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+		        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()),
+		                workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()),
+		                "Locked a germplasm list.",
+		                "Locked list "+germplasmList.getId()+" - "+germplasmList.getName(),
+		                user,
+		                new Date());
+		        workbenchDataManager.addProjectActivity(projAct);
+		        return true;
+		    } catch (MiddlewareQueryException e) {
+		        LOG.error("Error with locking list.", e);
+	            MessageNotifier.showError(getWindow(), "Database Error!", "Error with locking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
+	            return false;
+		    }
+		}
+	    return false;
+	}
+
+    private boolean isListBuilderShown = false;
+
+    public void setUIForLockedListBuilder(){
+    	plantSelectionComponent.getSearchResultsComponent().setRightClickActionHandlerEnabled(false);
+    	listSelectionComponent.getListSearchComponent().getSearchResultsComponent().refreshActionHandler();
+    }
+
+    public void setUIForUnlockedListBuilder(){
+    	plantSelectionComponent.getSearchResultsComponent().setRightClickActionHandlerEnabled(true);
+    	listSelectionComponent.getListSearchComponent().getSearchResultsComponent().refreshActionHandler();
+    }
+
+    public Boolean unlockGermplasmList(GermplasmList germplasmList){
+	    if(germplasmList.isLockedList()){
+		    germplasmList.setStatus(germplasmList.getStatus() - 100);
+		    try {
+		        germplasmListManager.updateGermplasmList(germplasmList);
+
+		        User user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+		        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()),
+		                workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()),
+		                "Unlocked a germplasm list.",
+		                "Unlocked list "+germplasmList.getId()+" - "+germplasmList.getName(),
+		                user,
+		                new Date());
+		        workbenchDataManager.addProjectActivity(projAct);
+		        return true;
+		    } catch (MiddlewareQueryException e) {
+		        LOG.error("Error with unlocking list.", e);
+	            MessageNotifier.showError(getWindow(), "Database Error!", "Error with unlocking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
+	            return false;
+		    }
+		}
+	    return false;
+	}
+
+    public void toggleListBuilder() {
+        if (!isListBuilderShown) {
+           showListBuilder();
+        }
+        else {
+        	hideListBuilder();
+        }
+
+        listSelectionComponent.getListDetailsLayout().repaintTabsheet();
+    }
+
+    public void showListBuilder() {
+        splitPanel.setSplitPosition(50, Sizeable.UNITS_PERCENTAGE,true);
+
+        String hideTxt = "<span class='bms-fa-chevron-right'" +
+                "style='position: relative;" +
+                " bottom: 3px;'" +
+                "'></span>" + "Hide List Builder";
+
+        listBuilderToggleBtn1.setCaption(hideTxt);
+        listBuilderToggleBtn2.setCaption(hideTxt);
+        
+        isListBuilderShown = true;
+    }
+
+    public void hideListBuilder(){
+    	splitPanel.setSplitPosition(0,Sizeable.UNITS_PIXELS,true);
+
+        String showTxt = "<span class='bms-fa-chevron-left'" +
+                "style='position: relative;" +
+                " bottom: 3px;'" +
+                "'></span>" + "Show List Builder";
+
+        listBuilderToggleBtn1.setCaption(showTxt);
+        listBuilderToggleBtn2.setCaption(showTxt);
+        
+        isListBuilderShown = false;
+    }
+	
+    public Integer getListBuilderStatus(){
+    	if(listBuilderComponent!=null && listBuilderComponent.getCurrentlySavedGermplasmList()!=null)
+    		return listBuilderComponent.getCurrentlySavedGermplasmList().getStatus();
+    	return 0;
+    }
+    
+    public Boolean listBuilderIsLocked(){
+    	if(getListBuilderStatus()>100)
+    		return true;
+    	return false;
+    }
+
+	public ModeView getModeView() {
+		return modeView;
+	}
+
+	public void setModeView(ModeView newModeView) {
+		String message = "";
+		
+		if(this.modeView != newModeView){
+			if(hasChanges){
+				if(this.modeView.equals(ModeView.LIST_VIEW) && newModeView.equals(ModeView.INVENTORY_VIEW)){
+					message = "You have unsaved changes to one or more lists. Do you want to save them before changing views?";
+					showUnsavedChangesConfirmDialog(message,newModeView);
+				}
+				else if(this.modeView.equals(ModeView.INVENTORY_VIEW) && newModeView.equals(ModeView.LIST_VIEW)){
+					message = "You have unsaved reservations to one or more lists. Do you want to save them before changing views?";
+					showUnsavedChangesConfirmDialog(message,newModeView);
+				}
+			}
+			else{
+				modeView = newModeView;
+				updateView(modeView);
+			}
+		}
+		
 	}
 	
-    public void lockList(Integer listId) throws MiddlewareQueryException{
-        GermplasmList germplasmList = germplasmListManager.getGermplasmListById(listId);
-        lockList(germplasmList);
-    }	
-    
-    public void lockList(GermplasmList germplasmList) throws MiddlewareQueryException{
-        germplasmList.setStatus(germplasmList.getStatus()+100);
-        germplasmListManager.updateGermplasmList(germplasmList);
-    
-        User user = (User) workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
-        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()), 
-                workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()), 
-            "Locked a germplasm list.", 
-            "Locked list "+germplasmList.getId()+" - "+germplasmList.getName(), user, new Date());
-        workbenchDataManager.addProjectActivity(projAct);
-    }	
+	public void showUnsavedChangesConfirmDialog(String message, ModeView newModeView){
+		modeView = newModeView;
+		unsavedChangesDialog = new UnsavedChangesConfirmDialog(this, message);
+		this.getWindow().addWindow(unsavedChangesDialog);
+	}
 	
+	public void setModeViewOnly(ModeView newModeView) {
+		this.modeView = newModeView; 
+	}
+
+	public void updateView(ModeView modeView) {
+		listSelectionComponent.getListDetailsLayout().updateViewForAllLists(modeView);
+		
+		if(modeView.equals(ModeView.INVENTORY_VIEW)){
+			listBuilderComponent.viewInventoryActionConfirmed();
+		}
+		else if(modeView.equals(ModeView.LIST_VIEW)){
+			listBuilderComponent.changeToListView();
+		}
+			
+	}
+	
+	@Override
+	public void saveAllListChangesAction() {
+		
+		if(getListSelectionComponent().getListDetailsLayout().hasUnsavedChanges()){
+			Map<ListComponent,Boolean> listToUpdate = new HashMap<ListComponent, Boolean>(); 
+			listToUpdate.putAll(listSelectionComponent.getListDetailsLayout().getListStatusForChanges());
+			
+			for(Map.Entry<ListComponent, Boolean> list : listToUpdate.entrySet()){
+				Boolean isListHasUnsavedChanges = list.getValue();
+				if(isListHasUnsavedChanges){
+					ListComponent toSave = list.getKey();
+					//NOTE: the value of modeView here is the newModeView
+					if(modeView.equals(ModeView.LIST_VIEW)){
+						toSave.saveReservationChangesAction();
+					}
+					else if(modeView.equals(ModeView.INVENTORY_VIEW)){
+						toSave.saveChangesAction();
+					}
+				}
+			}
+		}
+		
+		if(listBuilderComponent.hasUnsavedChanges()){
+			//Save all changes in ListBuilder
+			GermplasmList currentlySavedGermplasmList = listBuilderComponent.getCurrentlySavedGermplasmList();
+			if(currentlySavedGermplasmList == null){
+				listBuilderComponent.openSaveListAsDialog();
+			}
+			else{
+				listBuilderComponent.getSaveListButtonListener().doSaveAction();
+				//Change ListBuilder View to List View
+				listBuilderComponent.viewInventoryActionConfirmed();
+			}	
+		}
+		
+		resetUnsavedStatus();
+		updateView(modeView);
+		
+		this.getWindow().removeWindow(unsavedChangesDialog);
+	}//end of saveAllListChangesAction()
+	
+	@Override
+	public void discardAllListChangesAction(){
+		//cancel all the unsaved changes
+		if(modeView.equals(ModeView.LIST_VIEW)){
+			listSelectionComponent.getListDetailsLayout().resetInventoryViewForCancelledChanges();
+		}
+		else if(modeView.equals(ModeView.INVENTORY_VIEW)){
+			listSelectionComponent.getListDetailsLayout().resetListViewForCancelledChanges();
+		}
+		
+		listSelectionComponent.getListDetailsLayout().updateViewForAllLists(modeView);
+		
+		if(listBuilderComponent.getCurrentlySavedGermplasmList() != null){
+			if(modeView.equals(ModeView.INVENTORY_VIEW)){
+				listBuilderComponent.discardChangesInListView();
+			}
+			else if(modeView.equals(ModeView.LIST_VIEW)){
+				listBuilderComponent.discardChangesInInventoryView();
+			}
+		}
+		else{
+			//if no list save, just reset the list
+			listBuilderComponent.resetList();
+		}
+		
+		resetUnsavedStatus();
+		
+		this.getWindow().removeWindow(unsavedChangesDialog);
+	}//end of discardAllListChangesAction()
+	
+	@Override
+	public void cancelAllListChangesAction(){
+		
+		//Return to Previous Mode View
+		if(modeView.equals(ModeView.LIST_VIEW)){
+			setModeViewOnly(ModeView.INVENTORY_VIEW);
+		}
+		else if(modeView.equals(ModeView.INVENTORY_VIEW)){
+			setModeViewOnly(ModeView.LIST_VIEW);
+		}
+		
+		this.getWindow().removeWindow(unsavedChangesDialog);
+	}//end of cancelAllListChangesAction()
+	
+	public void resetUnsavedStatus(){
+		listSelectionComponent.getListDetailsLayout().updateHasChangesForAllList(false);
+		listBuilderComponent.resetUnsavedChangesFlag();
+	}
+
+	public boolean hasUnsavedChanges() {
+		return hasChanges;
+	}
+
+	public void setHasUnsavedChangesMain(boolean hasChanges) {
+		this.hasChanges = hasChanges;
+	}
+    
 }

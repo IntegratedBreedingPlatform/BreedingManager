@@ -10,12 +10,13 @@ import java.util.Map.Entry;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.inventory.InventoryDropTargetContainer;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.AddColumnContextMenu;
 import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
+import org.generationcp.breeding.manager.listmanager.ListComponent;
+import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.ListSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListComponent;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -524,10 +525,10 @@ public class DropHandlerMethods {
      * Iterates through the whole table, and sets the entry code from 1 to n based on the row position
      */
     protected void assignSerializedEntryCode(){
-        List<Integer> itemIds = getItemIds(targetTable);
-        
-        int id = 1;
-        for(Integer itemId : itemIds){
+//        List<Integer> itemIds = getItemIds(targetTable);
+//        
+//        int id = 1;
+//        for(Integer itemId : itemIds){
         	
         	/**
         	 * TODO: If add columns is already implemented, add this checker below
@@ -538,8 +539,8 @@ public class DropHandlerMethods {
             //    targetTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(id);
             //if(!filledWithPropertyIds.contains(ListDataTablePropertyID.ENTRY_CODE.getName()))
             //    targetTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(id);
-            id++;
-        }
+//            id++;
+//        }
     }
     
     /**
@@ -553,8 +554,9 @@ public class DropHandlerMethods {
             targetTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(id);
             
             Property entryCodeProperty = targetTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName());
-           	if(entryCodeProperty!=null || entryCodeProperty.getValue()==null || entryCodeProperty.getValue().toString().equals(""))
+           	if(entryCodeProperty.getValue()==null || entryCodeProperty.getValue().toString().equals("")){
            		targetTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(id);
+           	}
             id++;
         }
     }
@@ -586,9 +588,6 @@ public class DropHandlerMethods {
     }
     
     public Integer getNextListEntryId(Integer lrecId){
-    	
-    	Integer id = 0;
-    	
     	try {
 			GermplasmListData entry = germplasmListManager.getGermplasmListDataByListIdAndLrecId(currentListId, lrecId);
 			

@@ -1,8 +1,7 @@
 package org.generationcp.breeding.manager.application;
 
 import org.generationcp.breeding.manager.crosses.NurseryTemplateMain;
-import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMain;
-import org.generationcp.breeding.manager.crossingmanager.SelectGermplasmListWindow;
+import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -120,14 +119,9 @@ public class WelcomeTab extends VerticalLayout implements InitializingBean, Inte
         tabSheet.setSelectedTab(this.rootLayoutForGermplasmImport);
     }
     
-    public void selectGermplasmButtonClickAction() {
-        SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow();
-        this.getWindow().addWindow(selectListWindow);
-    }
-
     public void importCrossingManagerDataClickAction() throws InternationalizableException {
         if (rootLayoutForCrossingManager.getComponentCount() == 0) {
-            rootLayoutForCrossingManager.addComponent(new CrossingManagerMain(rootLayoutForCrossingManager));
+            rootLayoutForCrossingManager.addComponent(new ManageCrossingSettingsMain(rootLayoutForCrossingManager));
             rootLayoutForCrossingManager.addStyleName("addSpacing");
             rootLayoutForCrossingManager.setSizeFull();
         }

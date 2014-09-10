@@ -7,6 +7,7 @@ import java.util.Map;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
+import org.generationcp.breeding.manager.crossingmanager.constants.CrossType;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
@@ -25,7 +26,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -63,11 +63,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
 	private ModeView modeView;
 	private boolean hasChanges; //marks if there are unsaved changes in List from ListComponent and ListBuilderComponent
 	private UnsavedChangesConfirmDialog unsavedChangesDialog;
-    
-    public CrossingManagerMakeCrossesComponent(CrossingManagerMain source, Accordion accordion){
-        lastOpenedListId = null;
-    }
-    
+      
     public CrossingManagerMakeCrossesComponent(ManageCrossingSettingsMain manageCrossingSettingsMain){
     	this.source = manageCrossingSettingsMain;
     }

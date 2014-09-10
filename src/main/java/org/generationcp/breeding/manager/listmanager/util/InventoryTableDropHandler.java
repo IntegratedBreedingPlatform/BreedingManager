@@ -9,9 +9,9 @@ import org.generationcp.breeding.manager.customcomponent.listinventory.ListInven
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
 import org.generationcp.breeding.manager.inventory.InventoryDropTargetContainer;
 import org.generationcp.breeding.manager.inventory.ListDataAndLotDetails;
+import org.generationcp.breeding.manager.listmanager.ListComponent;
+import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListComponent;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
@@ -26,7 +26,6 @@ import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
-import com.vaadin.ui.AbstractSelect.AbstractSelectTargetDetails;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -72,7 +71,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 			TableTransferable transferable = (TableTransferable) event.getTransferable();
 	        Table sourceTable = transferable.getSourceComponent();
 	        String sourceTableData = sourceTable.getData().toString();
-	        AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) event.getTargetDetails());
+	        //AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) event.getTargetDetails());
 	        //targetTable = (Table) dropData.getTarget();
 			
 	        if(sourceTableData.equals(MATCHING_GERMPLASMS_TABLE_DATA)){
@@ -192,6 +191,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 	 * @param sourceTable
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	private List<ListEntryLotDetails> getLotDetailsWithEntryId(Integer entryId, Table sourceTable){
         List<ListEntryLotDetails> allLotDetails = new ArrayList<ListEntryLotDetails>();
         List<ListEntryLotDetails> matchingLotDetails = new ArrayList<ListEntryLotDetails>();
@@ -377,18 +377,21 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 	}
 
 	
+	@SuppressWarnings({ "unchecked", "unused" })
 	private List<ListEntryLotDetails> getInventoryTableItemIds(Table table){
 		List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
 		lotDetails.addAll((Collection<? extends ListEntryLotDetails>) table.getItemIds());
 		return lotDetails;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private List<ListEntryLotDetails> getInventoryTableSelectedItemIds(Table table){
 		List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
 		lotDetails.addAll((Collection<? extends ListEntryLotDetails>) table.getValue());
 		return lotDetails;
 	}	
 	
+	@SuppressWarnings("unchecked")
 	private Integer getInventoryTableLastEntryId(){
 		int topId = 0;
 		for(ListEntryLotDetails lotDetails : (Collection<? extends ListEntryLotDetails>) targetTable.getItemIds()){
@@ -409,6 +412,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		return getInventoryTableLastEntryId()+1;
 	}	
 	
+	@SuppressWarnings({ "unchecked", "unused" })
 	private Integer getInventoryTableNextTempLrecId(){
 		int nextId = 0;
 		for(ListEntryLotDetails lotDetails : (Collection<? extends ListEntryLotDetails>) targetTable.getItemIds()){

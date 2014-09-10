@@ -1,10 +1,10 @@
 package org.generationcp.breeding.manager.listimport.listeners;
 
-import com.vaadin.data.Property;
-import com.vaadin.ui.ComboBox;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.vaadin.data.Property;
+import com.vaadin.ui.ComboBox;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,10 +14,11 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 public class MethodValueChangeListener implements  Property.ValueChangeListener{
-
-    ComboBox comboBox;
-    Map<String, String> comboBoxMap = new HashMap();
-    public MethodValueChangeListener(ComboBox comboBox, Map comboBoxMap){
+	private static final long serialVersionUID = 1L;
+	
+	ComboBox comboBox;
+    Map<String, String> comboBoxMap = new HashMap<String,String>();
+    public MethodValueChangeListener(ComboBox comboBox, Map<String,String> comboBoxMap){
         this.comboBox = comboBox;
         this.comboBoxMap = comboBoxMap;
     }

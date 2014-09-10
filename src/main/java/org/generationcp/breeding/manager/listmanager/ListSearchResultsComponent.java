@@ -12,8 +12,6 @@ import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.listmanager.listeners.ListSearchResultsItemClickListener;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListSelectionLayout;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -76,7 +74,7 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
     private ContextMenuItem menuSelectAll;
     private ContextMenuItem menuAddToNewList;
 
-	private final org.generationcp.breeding.manager.listmanager.sidebyside.ListSelectionLayout displayDetailsLayout;
+	private final org.generationcp.breeding.manager.listmanager.ListSelectionLayout displayDetailsLayout;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -356,6 +354,7 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
        		 + "  <b>" + count + "</b>");
 	}
 	
+	@SuppressWarnings("unused")
 	private void updateNoOfEntries(){
 		int count = 0;
 		count = matchingListsTable.getItemIds().size();

@@ -2,8 +2,8 @@ package org.generationcp.breeding.manager.customcomponent.listinventory;
 
 import java.util.List;
 
+import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.util.InventoryTableDropHandler;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;

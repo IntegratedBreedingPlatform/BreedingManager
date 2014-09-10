@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListBuilderComponent;
-import org.generationcp.breeding.manager.listmanager.sidebyside.ListManagerMain;
+import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
+import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -26,7 +26,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 
 public class ListCommonActionsUtil {
 	
@@ -53,7 +52,7 @@ public class ListCommonActionsUtil {
         
         MessageNotifier.showMessage(window,
                 messageSource.getMessage(Message.SUCCESS), 
-                messageSource.getMessage(Message.SUCCESSFULLY_DELETED_ITEM, item), Notification.POSITION_CENTERED);      
+                messageSource.getMessage(Message.SUCCESSFULLY_DELETED_ITEM, item));      
 
 	}
 	

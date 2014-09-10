@@ -9,6 +9,7 @@ import java.util.Map;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerExporter;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerExporterException;
@@ -44,7 +45,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
@@ -295,8 +295,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 			
 		} catch(MiddlewareQueryException ex){
 			LOG.error(ex.getMessage() + list.getId());
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), "Error in getting list and/or germplasm information."
-					, Notification.POSITION_CENTERED);
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), "Error in getting list and/or germplasm information.");
 		}
 	}
 	
@@ -367,7 +366,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
             this.getWindow().open(fileDownloadResource);
     
         } catch (CrossingManagerExporterException e) {
-            MessageNotifier.showError(getWindow(), "Error with exporting crossing file.", e.getMessage(), Notification.POSITION_CENTERED);
+            MessageNotifier.showError(getWindow(), "Error with exporting crossing file.", e.getMessage());
         }
 	}
 	

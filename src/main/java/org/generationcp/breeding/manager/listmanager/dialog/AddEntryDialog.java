@@ -6,17 +6,18 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.BreedingLocationField;
 import org.generationcp.breeding.manager.customfields.BreedingLocationFieldSource;
 import org.generationcp.breeding.manager.customfields.BreedingMethodField;
 import org.generationcp.breeding.manager.customfields.ListDateField;
+import org.generationcp.breeding.manager.listmanager.GermplasmSearchBarComponent;
 import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItemClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListValueChangeListener;
-import org.generationcp.breeding.manager.listmanager.sidebyside.GermplasmSearchBarComponent;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -57,7 +58,9 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 @Configurable
-public class AddEntryDialog extends Window implements InitializingBean, InternationalizableComponent, BreedingLocationFieldSource {
+public class AddEntryDialog extends Window implements InitializingBean, 
+							InternationalizableComponent, BreedingManagerLayout, BreedingLocationFieldSource{
+
     
     private static final long serialVersionUID = -1627453790001229325L;
     
@@ -101,6 +104,9 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     private Button doneButton;
     private Button cancelButton;
     
+    private Label topPartHeader;
+    private Label step2Label;
+    
     private Label germplasmDateLabel;
     private Label nameTypeLabel;
     private Label bottomPartHeader;
@@ -117,27 +123,102 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         this.source = source;
         this.parentWindow = parentWindow;
     }
-    
-
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        // set as modal window, other components are disabled while window is open
-        setModal(true);
-        // define window size, set as not resizable
-        setWidth("800px");
+    	instantiateComponents();
+        initializeValues();
+        addListeners();
+        layoutComponents();
+    }
+    
+	@Override
+	public void instantiateComponents() {
+		assembleTopPart();	
+		assembleBottomPart();
+	}
+
+	@Override
+	public void initializeValues() {
+		populateNameTypeComboBox();
+	}
+
+	@Override
+	public void addListeners() {
+		searchResultsComponent.getMatchingGermplasmsTable().addListener(new GermplasmListValueChangeListener(this));
+        searchResultsComponent.getMatchingGermplasmsTable().addListener(new GermplasmListItemClickListener(this));
+        
+        optionGroup.addListener(new Property.ValueChangeListener() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void valueChange(ValueChangeEvent event) {
+                if(optionGroup.getValue().equals(OPTION_1_ID)){
+                    setSpecifyDetailsVisible(false);
+                    if(selectedGids.size()==0){
+                        doneButton.setEnabled(false);
+                    }
+                } else if(optionGroup.getValue().equals(OPTION_2_ID)){
+                    setSpecifyDetailsVisible(true);
+                    if(selectedGids.size()==0){
+                        doneButton.setEnabled(false);
+                    } else {
+                        doneButton.setEnabled(true);
+                    }
+                } else if(optionGroup.getValue().equals(OPTION_3_ID)){
+                    doneButton.setEnabled(true);
+                    setSpecifyDetailsVisible(true);
+                }
+            }
+        });
+        
+        cancelButton.addListener(new CloseWindowAction());
+        doneButton.addListener(new GermplasmListButtonClickListener(this));
+	}
+
+	@Override
+	public void layoutComponents() {
+		setModal(true);
+		setWidth("800px");
         setResizable(false);
         setCaption(messageSource.getMessage(Message.ADD_LIST_ENTRIES));
-        // center window within the browser
         center();
         
-        assembleTopPart();
+        topPart = new VerticalLayout();
+        topPart.setSpacing(true);
+        topPart.setMargin(false);
+        topPart.addComponent(topPartHeader);
+        topPart.addComponent(searchBarComponent);
+        topPart.addComponent(searchResultsComponent);
+        topPart.addComponent(step2Label);
+        topPart.addComponent(optionGroup);
         
-        assembleBottomPart();
-        setSpeficyDetailsVisible(false);
+        bottomPart = new AbsoluteLayout();
+        bottomPart.setWidth("600px");
+        bottomPart.setHeight("230px");
+        bottomPart.addComponent(bottomPartHeader, "top:15px;left:0px");
+        bottomPart.addComponent(breedingMethodField, "top:50px;left:0px");
+        bottomPart.addComponent(germplasmDateLabel, "top:107px;left:0px");
+        bottomPart.addComponent(germplasmDateField, "top:102px;left:124px");
+        bottomPart.addComponent(breedingLocationField, "top:133px;left:0px");
+        bottomPart.addComponent(nameTypeLabel, "top:185px;left:0px");
+        bottomPart.addComponent(nameTypeComboBox, "top:185px;left:130px");
         
-        assembleButtonLayout();
-    }
+        HorizontalLayout buttonLayout = new HorizontalLayout();
+        buttonLayout.setWidth("100%");
+        buttonLayout.setHeight("50px");
+        buttonLayout.setSpacing(true);
+        buttonLayout.addComponent(cancelButton);
+        buttonLayout.addComponent(doneButton);
+        buttonLayout.setComponentAlignment(cancelButton, Alignment.BOTTOM_RIGHT);
+        buttonLayout.setComponentAlignment(doneButton, Alignment.BOTTOM_LEFT);
+        
+        addComponent(topPart);
+        addComponent(bottomPart);
+        addComponent(buttonLayout);
+        
+        setSpecifyDetailsVisible(false);
+	}
     
     public void resultTableItemClickAction(Table sourceTable) throws InternationalizableException {
     	
@@ -187,8 +268,6 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         
         VerticalLayout layoutForGermplasm = new VerticalLayout();
         layoutForGermplasm.setMargin(false);
-        //layoutForGermplasm.setWidth("640px");
-        //layoutForGermplasm.setHeight("560px");
         layoutForGermplasm.setWidth("98%");
         layoutForGermplasm.setHeight("98%");
         
@@ -210,6 +289,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         this.parentWindow.addWindow(germplasmWindow);
     }
     
+
     private void assembleTopPart(){
         topPart = new VerticalLayout();
         topPart.setSpacing(true);
@@ -253,12 +333,12 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
             @Override
             public void valueChange(ValueChangeEvent event) {
                 if(optionGroup.getValue().equals(OPTION_1_ID)){
-                    setSpeficyDetailsVisible(false);
+                	setSpecifyDetailsVisible(false);
                     if(selectedGids.size()==0){
                         doneButton.setEnabled(false);
                     }
                 } else if(optionGroup.getValue().equals(OPTION_2_ID)){
-                    setSpeficyDetailsVisible(true);
+                    setSpecifyDetailsVisible(true);
                     if(selectedGids.size()==0){
                         doneButton.setEnabled(false);
                     } else {
@@ -266,7 +346,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
                     }
                 } else if(optionGroup.getValue().equals(OPTION_3_ID)){
                     doneButton.setEnabled(true);
-                    setSpeficyDetailsVisible(true);
+                    setSpecifyDetailsVisible(true);
                 }
             }
         });
@@ -335,6 +415,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
         
         addComponent(buttonLayout);
     }
+
     
     public void nextButtonClickAction(ClickEvent event){
     	
@@ -346,15 +427,15 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
                 window.getParent().removeWindow(window);
             } else {
                 MessageNotifier.showWarning(this, messageSource.getMessage(Message.WARNING), 
-                        messageSource.getMessage(Message.YOU_MUST_SELECT_A_GERMPLASM_FROM_THE_SEARCH_RESULTS), Notification.POSITION_CENTERED);
+                        messageSource.getMessage(Message.YOU_MUST_SELECT_A_GERMPLASM_FROM_THE_SEARCH_RESULTS));
             }
         } else if(optionGroup.getValue().equals(OPTION_2_ID)){
         	if(breedingMethodField.getBreedingMethodComboBox().getValue() == null){
         		MessageNotifier.showError(this, messageSource.getMessage(Message.ERROR), 
-                       messageSource.getMessage(Message.YOU_MUST_SELECT_A_METHOD_FOR_THE_GERMPLASM), Notification.POSITION_CENTERED);
+                       messageSource.getMessage(Message.YOU_MUST_SELECT_A_METHOD_FOR_THE_GERMPLASM));
         	} else if(breedingLocationField.getBreedingLocationComboBox().getValue() == null){
             		MessageNotifier.showError(this, messageSource.getMessage(Message.ERROR), 
-                            messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM), Notification.POSITION_CENTERED);
+                            messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM));
         	}else if(this.selectedGids.size()>0){
             	if(doneAction()){
             		Window window = event.getButton().getWindow();
@@ -362,25 +443,24 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
             	}
             } else{
                 MessageNotifier.showWarning(this, messageSource.getMessage(Message.WARNING), 
-                        messageSource.getMessage(Message.YOU_MUST_SELECT_A_GERMPLASM_FROM_THE_SEARCH_RESULTS), Notification.POSITION_CENTERED);
+                        messageSource.getMessage(Message.YOU_MUST_SELECT_A_GERMPLASM_FROM_THE_SEARCH_RESULTS));
             }
         } else if(optionGroup.getValue().equals(OPTION_3_ID)){
             String searchValue = searchBarComponent.getSearchField().getValue().toString();
             
         	if(breedingMethodField.getBreedingMethodComboBox().getValue() == null){
         		MessageNotifier.showError(this, messageSource.getMessage(Message.ERROR), 
-        				messageSource.getMessage(Message.YOU_MUST_SELECT_A_METHOD_FOR_THE_GERMPLASM), Notification.POSITION_CENTERED);
+        				messageSource.getMessage(Message.YOU_MUST_SELECT_A_METHOD_FOR_THE_GERMPLASM));
         	} else if(breedingLocationField.getBreedingLocationComboBox().getValue() == null){
             		MessageNotifier.showError(this, messageSource.getMessage(Message.ERROR), 
-            				messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM), Notification.POSITION_CENTERED);
+            				messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM));
         	} else if(searchValue != null && searchValue.length() != 0){
             	doneAction();
             	Window window = event.getButton().getWindow();
             	window.getParent().removeWindow(window);
             } else {
                 MessageNotifier.showWarning(this, messageSource.getMessage(Message.WARNING), 
-                		messageSource.getMessage(Message.YOU_MUST_ENTER_A_GERMPLASM_NAME_IN_THE_TEXTBOX),
-                        Notification.POSITION_CENTERED);
+                		messageSource.getMessage(Message.YOU_MUST_ENTER_A_GERMPLASM_NAME_IN_THE_TEXTBOX));
             }
         }
     }
@@ -400,13 +480,13 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
 	        
 	        if(dateOfCreation==null){
 	            LOG.error("Invalid date on add list entries! - " + dateOfCreation);
-	            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), messageSource.getMessage(Message.VALIDATION_DATE_FORMAT), Notification.POSITION_CENTERED);
+	            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), messageSource.getMessage(Message.VALIDATION_DATE_FORMAT));
 	            return false;
 	        }
 	        String parsedDate = formatter.format(dateOfCreation);
 	        if(parsedDate==null){
 	            LOG.error("Invalid date on add list entries! - " + parsedDate);
-	            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), messageSource.getMessage(Message.VALIDATION_DATE_FORMAT), Notification.POSITION_CENTERED);
+	            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), messageSource.getMessage(Message.VALIDATION_DATE_FORMAT));
 	            return false;
 	        }
 	        
@@ -429,8 +509,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
 	                } catch(MiddlewareQueryException mex){
 	                    LOG.error("Error with getting germplasm with id: " + selectedGid, mex);
 	                    MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_WITH_GETTING_GERMPLASM_WITH_ID)+": " + selectedGid 
-	                            +". "+messageSource.getMessage(Message.ERROR_REPORT_TO)
-	                            , Notification.POSITION_CENTERED);
+	                            +". "+messageSource.getMessage(Message.ERROR_REPORT_TO));
 	                }
 			        
 			        
@@ -467,12 +546,12 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
 			        name.setUserId(userId);
 			        
 			        try{
-			            Integer gid = this.germplasmDataManager.addGermplasm(germplasm, name);
+			            @SuppressWarnings("unused")
+						Integer gid = this.germplasmDataManager.addGermplasm(germplasm, name);
 			            addedGids.add(germplasm.getGid());
 			        } catch(MiddlewareQueryException ex){
 			            LOG.error("Error with saving germplasm and name records!", ex);
-			            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_WITH_SAVING_GERMPLASM_AND_NAME_RECORDS) + messageSource.getMessage(Message.ERROR_REPORT_TO)
-			                    , Notification.POSITION_CENTERED);
+			            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_WITH_SAVING_GERMPLASM_AND_NAME_RECORDS) + messageSource.getMessage(Message.ERROR_REPORT_TO));
 			            return false;
 			        }
 	        	}
@@ -512,8 +591,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
 		            return true;
 		        } catch(MiddlewareQueryException ex){
 		            LOG.error("Error with saving germplasm and name records!", ex);
-		            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_WITH_SAVING_GERMPLASM_AND_NAME_RECORDS) + messageSource.getMessage(Message.ERROR_REPORT_TO)
-		                    , Notification.POSITION_CENTERED);
+		            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_WITH_SAVING_GERMPLASM_AND_NAME_RECORDS) + messageSource.getMessage(Message.ERROR_REPORT_TO));
 		            return false;
 		        }
 	        }
@@ -538,8 +616,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
             }
         } catch (MiddlewareQueryException ex){
             LOG.error("Error with getting germplasm name types!", ex);
-            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_WITH_GETTING_GERMPLASM_NAME_TYPES) + messageSource.getMessage(Message.ERROR_REPORT_TO)
-                    , Notification.POSITION_CENTERED);
+            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_WITH_GETTING_GERMPLASM_NAME_TYPES) + messageSource.getMessage(Message.ERROR_REPORT_TO));
             Integer unknownId = Integer.valueOf(0);
             this.nameTypeComboBox.addItem(unknownId);
             this.nameTypeComboBox.setItemCaption(unknownId, messageSource.getMessage(Message.UNKNOWN));
@@ -559,8 +636,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
             }
        } catch(MiddlewareQueryException ex){
            LOG.error("Error with getting local IBDB user!", ex);
-               MessageNotifier.showError(getWindow(), "Database Error!", messageSource.getMessage(Message.ERROR_REPORT_TO)
-                       , Notification.POSITION_CENTERED);
+               MessageNotifier.showError(getWindow(), "Database Error!", messageSource.getMessage(Message.ERROR_REPORT_TO));
            return -1;
        }
     }
@@ -603,7 +679,7 @@ public class AddEntryDialog extends Window implements InitializingBean, Internat
     }    
     
     
-    private void setSpeficyDetailsVisible(Boolean visible){
+    private void setSpecifyDetailsVisible(Boolean visible){
         int height = 530;
     	if(visible){
     	    height += 230 + 10; // add height of bottom part + margin

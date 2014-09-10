@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.crossingmanager.SelectGermplasmListWindow;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerExporterException;
 import org.generationcp.breeding.manager.nurserytemplate.listeners.NurseryTemplateButtonClickListener;
 import org.generationcp.breeding.manager.nurserytemplate.util.NurseryTemplateManagerExporter;
@@ -25,6 +24,7 @@ import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -37,7 +37,6 @@ import org.generationcp.middleware.pojos.User;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -51,7 +50,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window.Notification;
 
 /**
  * 
@@ -331,7 +329,7 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
                     comboBoxSiteName.setValue(loc.getLname());
                 }else{
                     if(comboBoxSiteName.getValue()!=null || loc==null){
-                        MessageNotifier.showWarning(getWindow(), "Warning!", messageSource.getMessage(Message.INVALID_SITE_ID), Notification.POSITION_CENTERED);
+                        MessageNotifier.showWarning(getWindow(), "Warning!", messageSource.getMessage(Message.INVALID_SITE_ID));
                     }
                     comboBoxSiteName.setValue(comboBoxSiteName.getNullSelectionItemId());
                     siteId.setValue("");
@@ -442,7 +440,7 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
                     comboBoxBreedersName.setValue(name);
                 }else{
                     if(comboBoxBreedersName.getValue()!=null || u==null){
-                        MessageNotifier.showWarning(getWindow(), "Warning!", messageSource.getMessage(Message.INVALID_BREEDER_ID), Notification.POSITION_CENTERED);
+                        MessageNotifier.showWarning(getWindow(), "Warning!", messageSource.getMessage(Message.INVALID_BREEDER_ID));
                     }
                     comboBoxBreedersName.setValue(comboBoxBreedersName.getNullSelectionItemId());
                     breederId.setValue("");
@@ -507,7 +505,7 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
                     comboBoxBreedingMethod.setValue(m.getMname());
                 }else{
                     if(comboBoxBreedingMethod.getValue()!=null || m==null){
-                        MessageNotifier.showWarning(getWindow(), "Warning!", messageSource.getMessage(Message.INVALID_METHOD_ID), Notification.POSITION_CENTERED);
+                        MessageNotifier.showWarning(getWindow(), "Warning!", messageSource.getMessage(Message.INVALID_METHOD_ID));
                     }
                     comboBoxBreedingMethod.setValue(comboBoxBreedingMethod.getNullSelectionItemId());
                     methodId.setValue("");
@@ -527,8 +525,8 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
 
         public void layoutClick(LayoutClickEvent event) {
                 if (event.getChildComponent() == txtField) {
-                    SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow(getMainClass(),germplasmListFor);
-                    getWindow().addWindow(selectListWindow);
+//                    SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow(getMainClass(),germplasmListFor);
+//                    getWindow().addWindow(selectListWindow);
                 }
             }
         });
@@ -590,7 +588,7 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
             this.getWindow().open(fileDownloadResource);
     
         } catch (CrossingManagerExporterException e) {
-            MessageNotifier.showError(getWindow(), e.getMessage(), "", Notification.POSITION_CENTERED);
+            MessageNotifier.showError(getWindow(), e.getMessage(), "");
         }
     }
 
