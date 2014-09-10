@@ -42,7 +42,7 @@
 }
 
 .gcp-content-help-text {
-	font-style: italic;
+	font-style: none;
 	padding-bottom: 10px;
 }
 
@@ -635,8 +635,9 @@
 
 .cs-form-label input[type="checkbox"],
 .cs-form-label label {
-	float: right;
+	text-align: left;
 }
+
 
 .lm-title {
 	padding-bottom: 4px;

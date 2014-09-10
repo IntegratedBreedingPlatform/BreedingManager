@@ -73,6 +73,11 @@ public class GermplasmListUploader implements FileFactory {
     private static final String CROSS_SCALE = "NAME";
     private static final String SOURCE_PROPERTY = "SEED SOURCE";
     private static final String SOURCE_SCALE = "NAME";
+    private static final String NAME_PROPERTY = "GERMPLASM ID";
+    private static final String NAME_SCALE = "NAME";
+    private static final String NAME_METHOD = "ASSIGNED";
+    private static final String ATTRIBUTE_PROPERTY = "ATTRIBUTE";
+    private static final String PASSPORT_PROPERTY = "PASSPORT";
     
     public static final String INVENTORY_AMOUNT_PROPERTY = "INVENTORY AMOUNT";
     
@@ -85,6 +90,7 @@ public class GermplasmListUploader implements FileFactory {
     private String crossFactor;
     private String sourceFactor;
     private String seedAmountVariate;
+    private List<String> nameFactors;
     private List<String> attributeVariates;
     
     public File file;
@@ -256,7 +262,9 @@ public class GermplasmListUploader implements FileFactory {
                     importedGermplasm.setSource(getCellStringValue(currentSheet, currentRow, col, true));
                 } else if(columnHeader.equals(entryCodeFactor)){
                     importedGermplasm.setEntryCode(getCellStringValue(currentSheet, currentRow, col, true));
-                } else if(columnHeader.equals(seedAmountVariate)){
+                } else if(isANameFactor(columnHeader)){
+                	importedGermplasm.addNameFactor(columnHeader, getCellStringValue(currentSheet, currentRow, col, true));
+            	} else if(columnHeader.equals(seedAmountVariate)){
                 	if(getCellStringValue(currentSheet, currentRow, col, true)!=null && !getCellStringValue(currentSheet, currentRow, col, true).equals(""))
                 		importedGermplasm.setSeedAmount(Double.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
                 } else if(isAnAttributeVariate(columnHeader)){
@@ -301,6 +309,14 @@ public class GermplasmListUploader implements FileFactory {
             currentRow++;
         }
     }
+    
+    private boolean isANameFactor(String columnHeader) {
+		if(nameFactors!=null && nameFactors.contains(columnHeader)){
+			return true;
+		}
+    	
+		return false;
+	}
 
     private boolean isAnAttributeVariate(String columnHeader) {
 		if(attributeVariates!=null && attributeVariates.contains(columnHeader)){
@@ -450,6 +466,7 @@ public class GermplasmListUploader implements FileFactory {
         entryCodeFactor = null;
         sourceFactor = null;
         crossFactor = null;
+        nameFactors = new ArrayList<String>();
         
         //Check if headers are correct
         if(!getCellStringValue(currentSheet,currentRow,0,true).toUpperCase().equals("FACTOR") 
@@ -476,8 +493,12 @@ public class GermplasmListUploader implements FileFactory {
                importedGermplasmList.addImportedFactor(importedFactor);
                             
             //Factors validation
-            String property = importedFactor.getProperty().toUpperCase();
-            String scale = importedFactor.getScale().toUpperCase();
+            String property = importedFactor.getProperty()==null?"":
+            	importedFactor.getProperty().toUpperCase();
+            String scale = importedFactor.getScale()==null?"":
+            	importedFactor.getScale().toUpperCase();
+            String method = importedFactor.getMethod()==null?"":
+            	importedFactor.getMethod().toUpperCase();
             if(property.equals(ENTRY_PROPERTY) && scale.equals(ENTRY_SCALE)){
             	entryColumnIsPresent = true;
             	entryFactor = importedFactor.getFactor();
@@ -494,6 +515,9 @@ public class GermplasmListUploader implements FileFactory {
             	sourceFactor = importedFactor.getFactor();
             } else if(property.equals(CROSS_PROPERTY) && scale.equals(CROSS_SCALE)){
             	crossFactor = importedFactor.getFactor();
+            } else if(property.equals(NAME_PROPERTY) && scale.equals(NAME_SCALE) && 
+            		method.equals(NAME_METHOD)) {
+            	nameFactors.add(importedFactor.getFactor());
             }
             
             currentRow++;
@@ -565,12 +589,15 @@ public class GermplasmListUploader implements FileFactory {
                     ,getCellStringValue(currentSheet,currentRow,5,true));
                 importedGermplasmList.addImportedVariate(importedVariate);
                 
+                String property = importedVariate.getProperty()==null?"":
+                	importedVariate.getProperty().toUpperCase();
+                
                 if(isSeedAmountVariable(importedVariate)){
                 	importedVariate.setSeedStockVariable(true);
                 	seedAmountVariate = importedVariate.getVariate();
                 	LOG.debug("SEED STOCK " + importedVariate.getProperty());
                 }
-                else{
+                else if(property.equals(ATTRIBUTE_PROPERTY) || property.equals(PASSPORT_PROPERTY)){
                 	//initialize
                 	if(attributeVariates == null){
                 		attributeVariates = new ArrayList<String>();
@@ -583,6 +610,20 @@ public class GermplasmListUploader implements FileFactory {
 	        currentRow++;
     	}
     }
+    
+	public boolean hasInventoryAmount() {
+		if(importedGermplasmList.getImportedVariates() != null){
+			List<ImportedVariate> importedVariates = new ArrayList<ImportedVariate>();
+			importedVariates.addAll(importedGermplasmList.getImportedVariates());
+					
+			for(ImportedVariate variate : importedVariates){
+				if(isSeedAmountVariable(variate)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
     
     /*
      * Returns true if variate property = "INVENTORY AMOUNT" or any of its synonyms

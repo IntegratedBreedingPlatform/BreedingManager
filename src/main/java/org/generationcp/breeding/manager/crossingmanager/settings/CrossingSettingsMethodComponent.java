@@ -97,7 +97,7 @@ public class CrossingSettingsMethodComponent extends CssLayout implements
 		breedingMethodDescLabel = new Label(messageSource.getMessage(Message.BREEDING_METHOD_DESC));
 		breedingMethodDescLabel.addStyleName("gcp-content-help-text");
 
-		selectMethod = new CheckBox(messageSource.getMessage(Message.SELECT_A_METHOD_TO_USE_FOR_ALL_CROSSES));
+		selectMethod = new CheckBox(messageSource.getMessage(Message.SELECT_A_METHOD_TO_USE_FOR_ALL_CROSSES) + ":");
 		selectMethod.setImmediate(true);
 
         breedingMethods = new ComboBox();

@@ -13,16 +13,18 @@ public class ImportedGermplasm {
     private String entryCode;
     private Double seedAmount;
     private Map<String, String> attributeVariates;
+    private Map<String, String> nameFactors;
     
     public ImportedGermplasm(){
     	attributeVariates = new HashMap<String, String>();
-        
+    	nameFactors = new HashMap<String, String>();
     }
     
     public ImportedGermplasm(Integer entryId, String desig){
         this.entryId = entryId;
         this.desig = desig;
         attributeVariates = new HashMap<String, String>();
+        nameFactors = new HashMap<String, String>();
     }
     
     public Integer getEntryId(){
@@ -89,7 +91,20 @@ public class ImportedGermplasm {
 		this.attributeVariates = variatesMap;
 	}
 	
-	public void addAttributeVariate(String property, String value){
-		attributeVariates.put(property, value);
+	public void addAttributeVariate(String name, String value){
+		attributeVariates.put(name, value);
 	}
+
+	public Map<String, String> getNameFactors() {
+		return nameFactors;
+	}
+
+	public void setNameFactors(Map<String, String> nameFactors) {
+		this.nameFactors = nameFactors;
+	}
+	
+	public void addNameFactor(String name, String value){
+		nameFactors.put(name, value);
+	}
+	
 };

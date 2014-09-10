@@ -8,6 +8,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants.CssStyles;
 import org.generationcp.breeding.manager.customfields.BreedingLocationField;
+import org.generationcp.breeding.manager.customfields.BreedingLocationFieldSource;
 import org.generationcp.breeding.manager.customfields.BreedingMethodField;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -34,7 +35,7 @@ import com.vaadin.ui.Window;
 
 @Configurable
 public class GermplasmFieldsComponent extends AbsoluteLayout implements
-		InternationalizableComponent, InitializingBean, BreedingManagerLayout {
+		InternationalizableComponent, InitializingBean, BreedingManagerLayout, BreedingLocationFieldSource {
 
 	private static final long serialVersionUID = -1180999883774074687L;
 	
@@ -47,6 +48,10 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
     
     private BreedingMethodField methodComponent;
     private BreedingLocationField locationComponent;
+    private BreedingLocationField seedLocationComponent;
+    
+    private ComboBox locationComboBox;
+    private ComboBox seedLocationComboBox;
     
     private Label germplasmDateLabel;
     private Label nameTypeLabel;
@@ -73,6 +78,10 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
     private Window parentWindow;
     
     private int leftIndentPixels = 130;
+    
+    private boolean hasInventoryAmounts = false;
+    
+    private final Integer STORAGE_LOCATION_TYPEID = 1500;
     
 
 	public GermplasmFieldsComponent(Window parentWindow) {
@@ -124,11 +133,18 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 		methodComponent.setCaption(messageSource.getMessage(Message.GERMPLASM_BREEDING_METHOD_LABEL) + ":");
 		
 		if (parentWindow != null){
-			locationComponent = new BreedingLocationField(parentWindow, 200);
+			locationComponent = new BreedingLocationField(this,parentWindow, 200);
 		} else {
-			locationComponent = new BreedingLocationField(200);
+			locationComponent = new BreedingLocationField(this,200);
 		}
 		locationComponent.setCaption(messageSource.getMessage(Message.GERMPLASM_LOCATION_LABEL) + ":");
+		
+		if (parentWindow != null){
+			seedLocationComponent = new BreedingLocationField(this,parentWindow, 200, STORAGE_LOCATION_TYPEID);
+		} else {
+			seedLocationComponent = new BreedingLocationField(this,200, STORAGE_LOCATION_TYPEID);
+		}
+		seedLocationComponent.setCaption(messageSource.getMessage(Message.SEED_STORAGE_LOCATION_LABEL) + ":");
 		
         germplasmDateLabel = new Label(messageSource.getMessage(Message.GERMPLASM_DATE_LABEL) + ":");
         germplasmDateLabel.addStyleName(CssStyles.BOLD);
@@ -158,11 +174,18 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 
 	@Override
 	public void addListeners() {
+		
 	}
 
 	@Override
 	public void layoutComponents() {
-		setHeight("270px");
+		if(hasInventoryAmounts){
+			setHeight("330px");
+		}
+		else{
+			setHeight("270px");
+		}
+		
 		
 		addComponent(addGermplasmDetailsLabel, "top:0px;left:0px");
 		addComponent(addGermplasmDetailsMessage, "top:32px;left:0px");
@@ -171,12 +194,23 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 		
 		addComponent(locationComponent, "top:120px;left:0px");
 		
-		addComponent(germplasmDateLabel, "top:185px;left:0px");
-		addComponent(germplasmDateField, "top:180px;left:" + getLeftIndentPixels() + "px");
-		
-		addComponent(nameTypeLabel, "top:220px;left:0px");
-        addComponent(nameTypeComboBox, "top:215px;left:" + getLeftIndentPixels() + "px");
-		
+		if(hasInventoryAmounts){
+			addComponent(seedLocationComponent, "top:180px;left:0px");
+			
+			addComponent(germplasmDateLabel, "top:245px;left:0px");
+			addComponent(germplasmDateField, "top:240px;left:" + getLeftIndentPixels() + "px");
+			
+			addComponent(nameTypeLabel, "top:280px;left:0px");
+	        addComponent(nameTypeComboBox, "top:275px;left:" + getLeftIndentPixels() + "px");
+
+		}
+		else{
+			addComponent(germplasmDateLabel, "top:185px;left:0px");
+			addComponent(germplasmDateField, "top:180px;left:" + getLeftIndentPixels() + "px");
+			
+			addComponent(nameTypeLabel, "top:220px;left:0px");
+	        addComponent(nameTypeComboBox, "top:215px;left:" + getLeftIndentPixels() + "px");
+		}		
 	}
 	
 	public ComboBox getBreedingMethodComboBox() {
@@ -185,6 +219,10 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 
 	public ComboBox getLocationComboBox() {
 		return locationComponent.getBreedingLocationComboBox();
+	}
+	
+	public ComboBox getSeedLocationComboBox() {
+		return seedLocationComponent.getBreedingLocationComboBox();
 	}
 
 	public ComboBox getNameTypeComboBox() {
@@ -241,5 +279,22 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
     protected int getLeftIndentPixels(){
     	return leftIndentPixels;
     }
+
+	public void refreshLayout(boolean hasInventoryAmount) {
+		this.hasInventoryAmounts = hasInventoryAmount;
+		
+		removeAllComponents();
+		layoutComponents();
+		requestRepaint();
+	}
+
+	@Override
+	public void updateAllLocationFields() {
+		locationComboBox = locationComponent.getBreedingLocationComboBox();
+		seedLocationComboBox = seedLocationComponent.getBreedingLocationComboBox();
+		
+		locationComponent.populateHarvestLocation(Integer.valueOf(locationComboBox.getValue().toString()));
+		seedLocationComponent.populateHarvestLocation(Integer.valueOf(seedLocationComboBox.getValue().toString()));
+	}
     
 }

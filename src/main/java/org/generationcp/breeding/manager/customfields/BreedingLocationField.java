@@ -52,12 +52,19 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	private boolean changed;
 	private int leftIndentPixels = 130;
 	
-	
     private List<Location> locations;
 	private CheckBox showFavoritesCheckBox;
 	private Button manageFavoritesLink;
 
 	private Window attachToWindow;
+	
+	private Integer locationType = 0;
+	
+	//flags
+	private boolean displayFavoriteMethodsFilter = true;
+	private boolean displayManageMethodLink = true;
+	
+	private BreedingLocationFieldSource source;
 	
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -71,29 +78,60 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	@Autowired
     private LocationDataManager locationDataManager;
 	
-	public BreedingLocationField(){
+	public BreedingLocationField(BreedingLocationFieldSource source){
+		this.source = source;
 		this.caption = "Location: ";
 		this.changed = false;
 	}
 	
-	public BreedingLocationField(Window attachToWindow){
-		this();
+	public BreedingLocationField(BreedingLocationFieldSource source, Window attachToWindow){
+		this(source);
 		this.attachToWindow = attachToWindow;
 	}
 	
-	public BreedingLocationField(Window attachToWindow, int pixels){
-		this(attachToWindow);
+	public BreedingLocationField(BreedingLocationFieldSource source, Window attachToWindow, int pixels){
+		this(source, attachToWindow);
 		this.leftIndentPixels = pixels;
 	}
 	
-	public BreedingLocationField(int pixels){
+	public BreedingLocationField(BreedingLocationFieldSource source, int pixels){
+		this.source = source;
 		this.leftIndentPixels = pixels;
 	}
+	
+	public BreedingLocationField(BreedingLocationFieldSource source, Window attachToWindow, int pixels, Integer locationType){
+		this(source, attachToWindow);
+		this.leftIndentPixels = pixels;
+		this.locationType = locationType;
+	}
+	
+	public BreedingLocationField(BreedingLocationFieldSource source, int pixels, Integer locationType){
+		this.source = source;
+		this.leftIndentPixels = pixels;
+		this.locationType = locationType;
+	}
+	
+	public BreedingLocationField(BreedingLocationFieldSource source, Window attachToWindow, int pixels, 
+			boolean displayFavoriteMethodsFilter, boolean displayManageMethodLink, Integer locationType){
+		this(source, attachToWindow);
+		this.leftIndentPixels = pixels;
+		this.displayFavoriteMethodsFilter = displayFavoriteMethodsFilter;
+		this.displayManageMethodLink = displayManageMethodLink;
+		this.locationType = locationType;
+	}
+	
+	public BreedingLocationField(BreedingLocationFieldSource source, int pixels, boolean displayFavoriteMethodsFilter, 
+			boolean displayManageMethodLink, Integer locationType){
+		this.source = source;
+		this.leftIndentPixels = pixels;
+		this.displayFavoriteMethodsFilter = displayFavoriteMethodsFilter;
+		this.displayManageMethodLink = displayManageMethodLink;
+		this.locationType = locationType;
+	}
+	
 	
 	@Override
 	public void instantiateComponents() {
-		setHeight("250px");
-		
 		captionLabel = new Label(caption);
 		captionLabel.addStyleName("bold");
 		
@@ -149,14 +187,6 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 			}
 		});
         
-        showFavoritesCheckBox.addListener(new Property.ValueChangeListener(){
-			private static final long serialVersionUID = 1L;
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				populateHarvestLocation(((Boolean) event.getProperty().getValue()).equals(true));
-			}
-		});
-        
         manageFavoritesLink.addListener(new ClickListener(){
 			private static final long serialVersionUID = 1L;
 			@Override
@@ -169,13 +199,24 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 
 	@Override
 	public void layoutComponents() {
+		if(displayManageMethodLink || displayFavoriteMethodsFilter){
+			setHeight("250px");
+		}
+		else{
+			setHeight("190px");
+		}
+		
 		addComponent(captionLabel, "top:3px; left:0;");
 		addComponent(breedingLocationComboBox, "top:0; left:" + leftIndentPixels + "px");
 		
-		addComponent(showFavoritesCheckBox, "top:30px; left:" + leftIndentPixels + "px");
+		if(displayFavoriteMethodsFilter){
+			addComponent(showFavoritesCheckBox, "top:30px; left:" + leftIndentPixels + "px");
+		}
 		
-		int pixels = leftIndentPixels + 220;
-		addComponent(manageFavoritesLink, "top:33px; left:" + pixels + "px");
+		if(displayManageMethodLink){
+			int pixels = leftIndentPixels + 220;
+			addComponent(manageFavoritesLink, "top:33px; left:" + pixels + "px");
+		}	
 	}
 
 	@Override
@@ -218,16 +259,19 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		this.changed = changed;
 	}
 	
+	public void populateHarvestLocation(Integer selectedLocation){
+		populateHarvestLocation(showFavoritesCheckBox.getValue().equals(true));
+		breedingLocationComboBox.setValue(selectedLocation);
+	}
 	
     private void populateHarvestLocation(boolean showOnlyFavorites) {
     	breedingLocationComboBox.removeAllItems();
 
         if(showOnlyFavorites){
         	try {
-        		
-				BreedingManagerUtil.populateWithFavoriteLocations(workbenchDataManager, 
+        		BreedingManagerUtil.populateWithFavoriteLocations(workbenchDataManager, 
 						germplasmDataManager, breedingLocationComboBox, null);
-				
+        		
 			} catch (MiddlewareQueryException e) {
 				e.printStackTrace();
 				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), 
@@ -246,7 +290,13 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	private void populateLocations() {
 		
 		try {
-			locations = locationDataManager.getAllLocations();
+			
+			if(locationType > 0){
+				locations = locationDataManager.getLocationsByType(locationType);
+			}
+			else{
+				locations = locationDataManager.getAllLocations();
+			}
 		} catch (MiddlewareQueryException e) {
 			e.printStackTrace();
 			LOG.error("Error on getting all locations", e);
@@ -281,9 +331,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 				private static final long serialVersionUID = 1L;
 				@Override
 				public void windowClose(CloseEvent e) {
-					Object lastValue = breedingLocationComboBox.getValue();
-					populateHarvestLocation(((Boolean) showFavoritesCheckBox.getValue()).equals(true));
-					breedingLocationComboBox.setValue(lastValue);
+					source.updateAllLocationFields();
 				}
 			});
 		} catch (MiddlewareQueryException e){
@@ -301,5 +349,6 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
     protected int getLeftIndentPixels(){
     	return leftIndentPixels;
     }
+    
     
 }

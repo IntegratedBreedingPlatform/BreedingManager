@@ -14,6 +14,7 @@ import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.HeaderLabelLayout;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +74,8 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		toolTitle.setStyleName(Bootstrap.Typography.H1.styleName());
 		
 		makeCrossesLabel = new Label(messageSource.getMessage(Message.MAKE_CROSSES));
-		makeCrossesLabel.setStyleName(Bootstrap.Typography.H3.styleName());
+		makeCrossesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+		makeCrossesLabel.addStyleName(AppConstants.CssStyles.BOLD);
 		
 		Label popupLabel = new Label(messageSource.getMessage(Message.CROSSING_MANAGER_TOOL_DESCRIPTION));
 		popupLabel.setWidth("470px");
@@ -118,9 +120,11 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 		setWidth("100%");
 		setHeight("1250px");
 		
+		HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_MANAGE_SETTINGS, makeCrossesLabel);
+		
 		addComponent(toolTitle);
 		addComponent(toolPopupView, "top:15px; left:240px");
-		addComponent(makeCrossesLabel, "top:40px;");
+		addComponent(headingLayout, "top:40px;");
 		addComponent(wizardDisplay, "top:40px;left:250px");
 		addComponent(tabSheet, "top:80px;");
 	}

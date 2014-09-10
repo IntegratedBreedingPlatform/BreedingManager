@@ -12,10 +12,10 @@ import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.tomcat.util.TomcatUtil;
 import org.generationcp.commons.tomcat.util.WebAppStatusInfo;
-import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -428,7 +428,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
             LOG.error("QueryException", qe);
         }
         
-        String addtlParams = getAdditionalParams();
+        String addtlParams = Util.getAdditionalParams(workbenchDataManager);
         
         ExternalResource germplasmBrowserLink = null;
         if (tool == null) {
@@ -507,22 +507,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
         return germplasmWindow;
 	}
     
-    private String getAdditionalParams() {
-        String addtlParams = "";
-        
-    	try {
-        	Long projectId = ContextUtil.getProjectInContext(workbenchDataManager, BreedingManagerApplication.currentRequest()).getProjectId();
-        	Integer userId =  ContextUtil.getCurrentWorkbenchUserId(workbenchDataManager, BreedingManagerApplication.currentRequest()); 
-        	
-        	addtlParams = ContextUtil.getContextParameterString(userId, projectId);
-		} catch (MiddlewareQueryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        return addtlParams;
-	}
-    
-	private void updateNoOfEntries(long count){
+    private void updateNoOfEntries(long count){
 		totalMatchingGermplasmsLabel.setValue(messageSource.getMessage(Message.TOTAL_RESULTS) + ": " 
        		 + "  <b>" + count + "</b>");
 	}

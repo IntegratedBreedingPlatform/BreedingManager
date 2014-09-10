@@ -23,10 +23,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.exception.BreedingManagerException;
 import org.generationcp.breeding.manager.exception.InvalidDateException;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
+import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
@@ -552,6 +554,21 @@ public class Util {
 			e.printStackTrace();
 		}
 		return germplasmListsMap;
+	}
+	
+	
+	public static String getAdditionalParams(WorkbenchDataManager workbenchDataManager) {
+        String addtlParams = "";
+        
+    	try {
+        	Long projectId = ContextUtil.getProjectInContext(workbenchDataManager, BreedingManagerApplication.currentRequest()).getProjectId();
+        	Integer userId =  ContextUtil.getCurrentWorkbenchUserId(workbenchDataManager, BreedingManagerApplication.currentRequest()); 
+        	
+        	addtlParams = ContextUtil.getContextParameterString(userId, projectId);
+		} catch (MiddlewareQueryException e) {
+			LOG.debug("Error occured while resolving context parameters: " + e.getMessage());
+		}
+        return addtlParams;
 	}
 }
 

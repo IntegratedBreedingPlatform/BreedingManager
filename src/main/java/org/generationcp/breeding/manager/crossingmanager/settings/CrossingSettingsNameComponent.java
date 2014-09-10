@@ -97,32 +97,32 @@ public class CrossingSettingsNameComponent extends CssLayout implements
         addSpaceBetSuffixAndCodeOptionGroup = new OptionGroup(messageSource.getMessage(Message.ADD_SPACE_BETWEEN_SUFFIX_AND_CODE));
         addSpaceBetSuffixAndCodeOptionGroup.setImmediate(true);
         
-        crossNamePrefix = new TextField(messageSource.getMessage(Message.CROSS_NAME_PREFIX));
+        crossNamePrefix = new TextField(messageSource.getMessage(Message.CROSS_NAME_PREFIX) + ":");
         crossNamePrefix.setImmediate(true);
         crossNamePrefix.setMaxLength(MAX_PREFIX_SUFFIX_LENGTH);
         crossNamePrefix.addStyleName("mandatory-field");
 
-        crossNameSuffix = new TextField(messageSource.getMessage(Message.SUFFIX_OPTIONAL));
+        crossNameSuffix = new TextField(messageSource.getMessage(Message.SUFFIX_OPTIONAL) + ":");
         crossNameSuffix.setImmediate(true);
         crossNameSuffix.setMaxLength(MAX_PREFIX_SUFFIX_LENGTH);
 
-        leadingZerosSelect = new Select(messageSource.getMessage(Message.SEQUENCE_NUMBER_SHOULD_HAVE));
+        leadingZerosSelect = new Select(messageSource.getMessage(Message.SEQUENCE_NUMBER_SHOULD_HAVE) + ":");
         leadingZerosSelect.setImmediate(true);
         leadingZerosSelect.setNullSelectionAllowed(true);
 
-        startNumberTextField = new TextField(messageSource.getMessage(Message.SPECIFY_DIFFERENT_STARTING_SEQUENCE_NUMBER));
+        startNumberTextField = new TextField(messageSource.getMessage(Message.SPECIFY_DIFFERENT_STARTING_SEQUENCE_NUMBER) + ":");
         startNumberTextField.setImmediate(true);
         startNumberTextField.setMaxLength(STARTING_NUM_MAX_CHARS_LENGTH);
 
-        separatorTextField = new TextField(messageSource.getMessage(Message.SEPARATOR_FOR_PARENTAGE_DESIGNATION));
+        separatorTextField = new TextField(messageSource.getMessage(Message.SEPARATOR_FOR_PARENTAGE_DESIGNATION) + ":");
         separatorTextField.setImmediate(true);
         separatorTextField.setMaxLength(SEPARATOR_MAX_CHARS_LENGTH);
         separatorTextField.addStyleName("mandatory-field");
 
-        generatedNextName = new TextField(messageSource.getMessage(Message.THE_NEXT_NAME_IN_THE_SEQUENCE_WILL_BE));
+        generatedNextName = new TextField(messageSource.getMessage(Message.THE_NEXT_NAME_IN_THE_SEQUENCE_WILL_BE) + ":");
         generatedNextName.setReadOnly(true);
 
-        generatedExampleParentage = new TextField(messageSource.getMessage(Message.GENERATED_PARENT_DESIGNATION));
+        generatedExampleParentage = new TextField(messageSource.getMessage(Message.GENERATED_PARENT_DESIGNATION) + ":");
         generatedExampleParentage.setReadOnly(true);
 	}
 
@@ -177,13 +177,13 @@ public class CrossingSettingsNameComponent extends CssLayout implements
 		final FormLayout formFields = new FormLayout();
 
 		formFields.addComponent(crossNamePrefix);
+		formFields.addComponent(leadingZerosSelect);
 		formFields.addComponent(crossNameSuffix);
 		formFields.addComponent(addSpaceBetPrefixAndCodeOptionGroup);
 		formFields.addComponent(addSpaceBetSuffixAndCodeOptionGroup);
-		formFields.addComponent(leadingZerosSelect);
+		formFields.addComponent(generatedNextName);
 		formFields.addComponent(startNumberTextField);
 		formFields.addComponent(separatorTextField);
-		formFields.addComponent(generatedNextName);
 		formFields.addComponent(generatedExampleParentage);
 
 		addComponent(namingLabel);

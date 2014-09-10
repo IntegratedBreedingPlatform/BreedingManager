@@ -23,6 +23,7 @@ import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -49,8 +50,9 @@ public class DefineCrossingSettingComponent extends CssLayout implements Breedin
 
 	private Label defineCrossingSettingsLabel;
 	private Label crossingSettingsHelp;
-	private Label settingsComboLabel;
-
+	
+	private CheckBox selectSetting;
+	
 	private ComboBox settingsComboBox;
 	private Button deleteSettingButton;
 
@@ -68,7 +70,6 @@ public class DefineCrossingSettingComponent extends CssLayout implements Breedin
 	public void updateLabels() {
 		defineCrossingSettingsLabel.setValue(messageSource.getMessage(Message.DEFINE_CROSSING_SETTINGS).toUpperCase());
 		crossingSettingsHelp.setValue(messageSource.getMessage(Message.CROSSING_SETTINGS_HELP));
-		settingsComboLabel.setValue(messageSource.getMessage(Message.LOAD_PREVIOUSLY_SAVED_SETTING));
 	}
 
 	@Override
@@ -94,25 +95,49 @@ public class DefineCrossingSettingComponent extends CssLayout implements Breedin
 		crossingSettingsHelp =  new Label(messageSource.getMessage(Message.CROSSING_SETTINGS_HELP), Label.CONTENT_XHTML);
 		crossingSettingsHelp.addStyleName("gcp-content-help-text");
 
-		settingsComboLabel = new Label(messageSource.getMessage(Message.LOAD_PREVIOUSLY_SAVED_SETTING));
+		selectSetting = new CheckBox(messageSource.getMessage(Message.LOAD_PREVIOUSLY_SAVED_SETTING) + ":");
+		selectSetting.setImmediate(true);
+		
 		settingsComboBox = new ComboBox();
 		settingsComboBox.setImmediate(true);
 		settingsComboBox.setNullSelectionAllowed(true);
 		settingsComboBox.setTextInputAllowed(false);
+		settingsComboBox.setVisible(false);
 
 		deleteSettingButton = new Button("<span class='glyphicon glyphicon-trash' style='color: #7c7c7c;font-size: 16px; font-weight: bold;'></span>");
 		deleteSettingButton.setHtmlContentAllowed(true);
 		deleteSettingButton.setDescription("Delete Setting");
 		deleteSettingButton.setStyleName(Reindeer.BUTTON_LINK);
+		deleteSettingButton.setVisible(false);
 	}
 
 	@Override
 	public void initializeValues() {
+		selectSetting.setValue(false);
 		setSettingsComboBox(null);
 	}
 
 	@Override
 	public void addListeners() {
+		
+		selectSetting.addListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = -1282191407425721085L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+
+				final Boolean selectSetting = (Boolean) event.getProperty().getValue();
+
+				showSettingSelection(selectSetting);
+
+				if (selectSetting) {
+					settingsComboBox.focus();
+				} else {
+					settingsComboBox.setValue(null);
+				}
+		    }
+		});
+		
 		settingsComboBox.addListener(new Property.ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 
@@ -139,16 +164,21 @@ public class DefineCrossingSettingComponent extends CssLayout implements Breedin
 		});
 	}
 
+	private void showSettingSelection(Boolean show) {
+		settingsComboBox.setVisible(show);
+		deleteSettingButton.setVisible(show);
+	}
+
 	@Override
 	public void layoutComponents() {
 
 		final HorizontalLayout crossingForm = new HorizontalLayout();
 
-		crossingForm.addComponent(settingsComboLabel);
+		crossingForm.addComponent(selectSetting);
 		crossingForm.addComponent(settingsComboBox);
 		crossingForm.addComponent(deleteSettingButton);
 
-		settingsComboLabel.addStyleName("cs-form-label");
+		selectSetting.addStyleName("cs-form-label");
 		settingsComboBox.addStyleName("cs-form-input");
 		deleteSettingButton.addStyleName("cs-inline-icon");
 
