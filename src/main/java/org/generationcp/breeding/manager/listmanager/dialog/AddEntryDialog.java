@@ -23,6 +23,7 @@ import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -58,7 +59,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 @Configurable
-public class AddEntryDialog extends Window implements InitializingBean, 
+public class AddEntryDialog extends BaseSubWindow implements InitializingBean, 
 							InternationalizableComponent, BreedingManagerLayout, BreedingLocationFieldSource{
 
     
@@ -134,8 +135,9 @@ public class AddEntryDialog extends Window implements InitializingBean,
     
 	@Override
 	public void instantiateComponents() {
-		assembleTopPart();	
-		assembleBottomPart();
+		initializeTopPart();	
+		initializeBottomPart();
+		initializeButtonLayout();
 	}
 
 	@Override
@@ -290,33 +292,24 @@ public class AddEntryDialog extends Window implements InitializingBean,
     }
     
 
-    private void assembleTopPart(){
+    private void initializeTopPart(){
         topPart = new VerticalLayout();
         topPart.setSpacing(true);
         topPart.setMargin(false);
         
-        Label topPartHeader = new Label(messageSource.getMessage(Message.SELECT_A_GERMPLASM));
+        topPartHeader = new Label(messageSource.getMessage(Message.SELECT_A_GERMPLASM));
         topPartHeader.addStyleName("bold");
         topPartHeader.addStyleName("h3");
-        topPart.addComponent(topPartHeader);
         
         searchResultsComponent = new GermplasmSearchResultsComponent(null, false, false);
         searchResultsComponent.getMatchingGermplasmsTable().setHeight("150px");
         searchResultsComponent.getMatchingGermplasmsTableWithSelectAll().setHeight("180px");
         searchResultsComponent.setRightClickActionHandlerEnabled(false);
         
-        searchResultsComponent.getMatchingGermplasmsTable().addListener(new GermplasmListValueChangeListener(this));
-        searchResultsComponent.getMatchingGermplasmsTable().addListener(new GermplasmListItemClickListener(this));
-        
         searchBarComponent = new GermplasmSearchBarComponent(searchResultsComponent);
         
-        topPart.addComponent(searchBarComponent);
-        
-        topPart.addComponent(searchResultsComponent);
-        
-        Label step2Label = new Label(messageSource.getMessage(Message.HOW_DO_YOU_WANT_TO_ADD_THE_GERMPLASM_TO_THE_LIST));
+        step2Label = new Label(messageSource.getMessage(Message.HOW_DO_YOU_WANT_TO_ADD_THE_GERMPLASM_TO_THE_LIST));
         step2Label.addStyleName("bold");
-        topPart.addComponent(step2Label);
         
         optionGroup = new OptionGroup();
         optionGroup.addItem(OPTION_1_ID);
@@ -327,35 +320,9 @@ public class AddEntryDialog extends Window implements InitializingBean,
         optionGroup.setItemCaption(OPTION_3_ID, messageSource.getMessage(Message.CREATE_A_NEW_GERMPLASM_RECORD_FOR_THE_LIST_ENTRY));
         optionGroup.select(OPTION_1_ID);
         optionGroup.setImmediate(true);
-        optionGroup.addListener(new Property.ValueChangeListener() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void valueChange(ValueChangeEvent event) {
-                if(optionGroup.getValue().equals(OPTION_1_ID)){
-                	setSpecifyDetailsVisible(false);
-                    if(selectedGids.size()==0){
-                        doneButton.setEnabled(false);
-                    }
-                } else if(optionGroup.getValue().equals(OPTION_2_ID)){
-                    setSpecifyDetailsVisible(true);
-                    if(selectedGids.size()==0){
-                        doneButton.setEnabled(false);
-                    } else {
-                        doneButton.setEnabled(true);
-                    }
-                } else if(optionGroup.getValue().equals(OPTION_3_ID)){
-                    doneButton.setEnabled(true);
-                    setSpecifyDetailsVisible(true);
-                }
-            }
-        });
-        topPart.addComponent(optionGroup);
-        
-        addComponent(topPart);
     }
     
-    private void assembleBottomPart(){
+    private void initializeBottomPart(){
         bottomPart = new AbsoluteLayout();
         bottomPart.setWidth("600px");
         bottomPart.setHeight("230px");
@@ -363,57 +330,35 @@ public class AddEntryDialog extends Window implements InitializingBean,
         bottomPartHeader = new Label(messageSource.getMessage(Message.SPECIFY_ADDITIONAL_DETAILS));
         bottomPartHeader.addStyleName("bold");
         bottomPartHeader.addStyleName("h3");
-        bottomPart.addComponent(bottomPartHeader, "top:15px;left:0px");
         
         breedingMethodField = new BreedingMethodField(parentWindow);
-        bottomPart.addComponent(breedingMethodField, "top:50px;left:0px");
                 
         germplasmDateLabel = new Label("Creation Date: ");
         germplasmDateLabel.addStyleName("bold");
-        bottomPart.addComponent(germplasmDateLabel, "top:107px;left:0px");
         
         germplasmDateField =  new ListDateField("", false);
         germplasmDateField.getListDtDateField().setValue(new Date());
-        bottomPart.addComponent(germplasmDateField, "top:102px;left:124px");
         
         breedingLocationField = new BreedingLocationField(this, parentWindow);
-        bottomPart.addComponent(breedingLocationField, "top:133px;left:0px");
         
         nameTypeLabel = new Label("Name Type: ");
         nameTypeLabel.addStyleName("bold");
-        bottomPart.addComponent(nameTypeLabel, "top:185px;left:0px");
         
         nameTypeComboBox = new ComboBox();
         nameTypeComboBox.setWidth("400px");
-        bottomPart.addComponent(nameTypeComboBox, "top:185px;left:130px");
-        populateNameTypeComboBox();
-        
-        addComponent(bottomPart);
     }
     
     
-    public void assembleButtonLayout(){
-        HorizontalLayout buttonLayout = new HorizontalLayout();
-        buttonLayout.setWidth("100%");
-        buttonLayout.setHeight("50px");
-        buttonLayout.setSpacing(true);
-        
+    public void initializeButtonLayout(){
         cancelButton = new Button(messageSource.getMessage(Message.CANCEL));
         cancelButton.setData(CANCEL_BUTTON_ID);
         cancelButton.addListener(new CloseWindowAction());
-        buttonLayout.addComponent(cancelButton);
         
         doneButton = new Button(messageSource.getMessage(Message.DONE));
         doneButton.setData(DONE_BUTTON_ID);
         doneButton.addListener(new GermplasmListButtonClickListener(this));
         doneButton.setEnabled(false);
         doneButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-        buttonLayout.addComponent(doneButton);
-        
-        buttonLayout.setComponentAlignment(cancelButton, Alignment.BOTTOM_RIGHT);
-        buttonLayout.setComponentAlignment(doneButton, Alignment.BOTTOM_LEFT);
-        
-        addComponent(buttonLayout);
     }
 
     
