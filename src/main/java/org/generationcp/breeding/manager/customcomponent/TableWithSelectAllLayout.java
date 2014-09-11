@@ -38,7 +38,7 @@ public class TableWithSelectAllLayout extends TableLayout implements BreedingMan
 	}
 
 	@SuppressWarnings("unchecked")
-	private void syncItemCheckBoxes(){
+	public void syncItemCheckBoxes(){
 		Collection<Object> entries = (Collection<Object>) table.getItemIds();
 		Collection<Object> selectedEntries = (Collection<Object>) table.getValue();
 		if(selectedEntries.size() == entries.size() && selectedEntries.size() > 0){

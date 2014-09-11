@@ -765,6 +765,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			public void listUpdated(final ListUpdatedEvent event) {
 				updateNoOfEntries();
 				updateNoOfSelectedEntries();
+				tableWithSelectAllLayout.syncItemCheckBoxes();
 			}
 			
 		});
