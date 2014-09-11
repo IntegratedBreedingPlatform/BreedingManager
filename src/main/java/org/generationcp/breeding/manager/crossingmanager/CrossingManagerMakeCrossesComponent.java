@@ -228,6 +228,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
         addComponent(layoutButtonArea);
         
         setComponentAlignment(layoutButtonArea, Alignment.MIDDLE_CENTER);
+        setStyleName("crosses-select-parents-tab"); 
 	}
 		
 	public void updateCrossesSeedSource(String femaleListName, String maleListName){

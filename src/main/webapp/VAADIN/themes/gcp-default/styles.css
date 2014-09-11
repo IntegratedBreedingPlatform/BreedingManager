@@ -820,3 +820,4 @@ div.unsaved-changes-dialog div.v-window-contents>div {
 .lm-white-window div.v-window-contents {
 	background: #FFFFFF !important;
 }
+.crosses-select-parents-tab{position: absolute; left: -18px}
