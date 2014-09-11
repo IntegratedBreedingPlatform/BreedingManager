@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
+import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -12,7 +13,6 @@ import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
-import org.generationcp.middleware.pojos.workbench.Project;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -51,27 +51,13 @@ public class SaveGermplasmListAction implements Serializable {
 	public GermplasmList saveRecords() throws MiddlewareQueryException{
 		
 		//set the listnms.listuid to the current user
-		Integer userId = getCurrentUserLocalId();
+		Integer userId = Util.getCurrentUserLocalId(workbenchDataManager);
 		germplasmList.setUserId(userId);
 		germplasmList = saveGermplasmListRecord(germplasmList);
 		saveGermplasmListDataRecords(germplasmList,listEntries);
         
         return germplasmList;
 	}
-	
-    private Integer getCurrentUserLocalId() throws MiddlewareQueryException {
-        Integer workbenchUserId = this.workbenchDataManager
-                .getWorkbenchRuntimeData().getUserId();
-        Project lastProject = this.workbenchDataManager
-                .getLastOpenedProject(workbenchUserId);
-        Integer localIbdbUserId = this.workbenchDataManager.getLocalIbdbUserId(workbenchUserId,
-                lastProject.getProjectId());
-        if (localIbdbUserId != null) {
-            return localIbdbUserId;
-        } else {
-            return 1; // TODO: verify actual default value if no workbench_ibdb_user_map was found
-        }
-    }
 	
 	private GermplasmList saveGermplasmListRecord(GermplasmList germplasmList) throws MiddlewareQueryException {
 		int listId = 0;

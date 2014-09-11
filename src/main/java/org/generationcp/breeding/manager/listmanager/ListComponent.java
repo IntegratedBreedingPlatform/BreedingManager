@@ -44,6 +44,7 @@ import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
 import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.breeding.manager.listmanager.util.ListDataPropertiesRenderer;
+import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -64,7 +65,6 @@ import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.User;
-import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.ProjectActivity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -369,7 +369,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		listDataTable.setSelectable(true);
 		listDataTable.setMultiSelect(true);
 		listDataTable.setColumnCollapsingAllowed(true);
-		listDataTable.setColumnReorderingAllowed(true);
 		listDataTable.setWidth("100%");
 		listDataTable.setDragMode(TableDragMode.ROW);
 		listDataTable.setData(LIST_DATA_COMPONENT_TABLE_DATA);
@@ -419,7 +418,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		
 		
 	    try {
-            localUserId = getCurrentUserLocalId();
+            localUserId = Util.getCurrentUserLocalId(workbenchDataManager);
         } catch (MiddlewareQueryException e) {
             LOG.error("Error with retrieving local user ID", e);
             e.printStackTrace();
@@ -1324,7 +1323,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
                         listManagerCopyToNewListDialog,
                         germplasmList.getName(),
                         listDataTable,
-                        getCurrentUserLocalId(),
+                        Util.getCurrentUserLocalId(workbenchDataManager),
                         source,
                         false));
                 parentListDetailsComponent.getWindow().addWindow(listManagerCopyToNewListDialog);
@@ -1339,18 +1338,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
     private void copyToNewListFromInventoryViewAction(){
     	// TODO implement the copy to new list from the selection from listInventoryTable
     }
-    
-    private int getCurrentUserLocalId() throws MiddlewareQueryException {
-        Integer workbenchUserId = this.workbenchDataManager.getWorkbenchRuntimeData().getUserId();
-        Project lastProject = this.workbenchDataManager.getLastOpenedProject(workbenchUserId);
-        Integer localIbdbUserId = this.workbenchDataManager.getLocalIbdbUserId(workbenchUserId,lastProject.getProjectId());
-        if (localIbdbUserId != null) {
-            return localIbdbUserId;
-        } else {
-            return -1; // TODO: verify actual default value if no workbench_ibdb_user_map was found
-        }
-    }
-    
+        
     private void addEntryButtonClickAction(){
         Window parentWindow = this.getWindow();
         AddEntryDialog addEntriesDialog = new AddEntryDialog(this, parentWindow);
@@ -1358,7 +1346,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
         addEntriesDialog.focusOnSearchField();
         parentWindow.addWindow(addEntriesDialog);
     }
-    
     
     @Override
     public void finishAddingEntry(Integer gid) {

@@ -35,6 +35,7 @@ import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.Tool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -570,5 +571,16 @@ public class Util {
 		}
         return addtlParams;
 	}
+	
+	public static int getCurrentUserLocalId(WorkbenchDataManager workbenchDataManager) throws MiddlewareQueryException {
+        Integer workbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+        Project lastProject = workbenchDataManager.getLastOpenedProject(workbenchUserId);
+        Integer localIbdbUserId = workbenchDataManager.getLocalIbdbUserId(workbenchUserId,lastProject.getProjectId());
+        if (localIbdbUserId != null) {
+            return localIbdbUserId;
+        } else {
+            return -1; // TODO: verify actual default value if no workbench_ibdb_user_map was found
+        }
+    }
 }
 

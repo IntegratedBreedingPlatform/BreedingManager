@@ -13,11 +13,7 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
-import org.generationcp.middleware.pojos.Person;
-import org.generationcp.middleware.pojos.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -55,9 +51,6 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
-	
-	@Autowired
-    private UserDataManager userDataManager;
 	
 	private GermplasmList germplasmList;
 	
@@ -123,8 +116,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
             }
             
 			listNotesField.setValue(germplasmList.getNotes());
-			
-			listOwnerField.setValue(getOwnerListName(germplasmList.getUserId()));
+			listOwnerField.setValue(germplasmList.getUserId());
 		}
 	}
 	
@@ -209,7 +201,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	public void setGermplasmListDetails(GermplasmList germplasmList){
 		this.germplasmList = germplasmList;
 		
-		if(germplasmList!=null){
+		if(germplasmList != null){
 			listNameField.setValue(germplasmList.getName());
 			
 			resetListNameFieldForExistingList(germplasmList);
@@ -235,14 +227,14 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 			String notes = (germplasmList.getNotes() == null)? "" : germplasmList.getNotes();
 			listNotesField.setValue(notes);
 			
-			listOwnerField.setValue(getOwnerListName(germplasmList.getUserId()));
+			listOwnerField.setValue(germplasmList.getUserId());
 		} else {
 			listNameField.setValue("");
 			listDescriptionField.setValue("");
 			listDateField.setValue(new Date());
 			listTypeField.setValue(defaultListType);
 			listNotesField.setValue("");
-			listOwnerField.setValue("");
+			listOwnerField.setDefaultValue();
 		}
 	}
 	
@@ -336,31 +328,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	public Panel getContainerPanel(){
 		return containerPanel;
 	}
-	
-	private String getOwnerListName(Integer userId) {
-		try{
-			if(userId != null){
-				User user=userDataManager.getUserById(userId);
-				if(user != null){
-					int personId=user.getPersonid();
-					Person p =userDataManager.getPersonById(personId);
-					
-					if(p!=null){
-						return p.getFirstName()+" "+p.getMiddleName() + " "+p.getLastName();
-					}else{
-						return user.getName();
-					}
-				} else {
-					return "";
-				}
-	        }
-			return "";
-		} catch(MiddlewareQueryException ex){
-			LOG.error("Error with getting list owner name of user with id: " + userId, ex);
-			return "";
-		}
-    }
-	
+		
 	public GermplasmList getCurrentGermplasmList(){
 		return germplasmList;
 	}
