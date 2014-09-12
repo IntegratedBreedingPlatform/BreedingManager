@@ -1,8 +1,6 @@
 package org.generationcp.breeding.manager.pojos;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class ImportedGermplasmList {
 
@@ -17,7 +15,7 @@ public class ImportedGermplasmList {
     private List<ImportedVariate> importedVariates;
     private List<ImportedGermplasm> importedGermplasms;
 
-    public ImportedGermplasmList (String filename, String name, String title, String type, Date date){
+    public ImportedGermplasmList(String filename, String name, String title, String type, Date date) {
         this.filename = filename;
         this.name = name;
         this.title = title;
@@ -29,11 +27,11 @@ public class ImportedGermplasmList {
         this.importedVariates = new ArrayList<ImportedVariate>();
         this.importedGermplasms = new ArrayList<ImportedGermplasm>();
     }
-    
-    public ImportedGermplasmList (String filename, String name, String title, String type, Date date
+
+    public ImportedGermplasmList(String filename, String name, String title, String type, Date date
             , List<ImportedCondition> importedConditions, List<ImportedFactor> importedFactors
             , List<ImportedConstant> importedConstants, List<ImportedVariate> importedVariates
-            , List<ImportedGermplasm> importedGermplasms){
+            , List<ImportedGermplasm> importedGermplasms) {
         this.filename = filename;
         this.name = name;
         this.title = title;
@@ -45,106 +43,120 @@ public class ImportedGermplasmList {
         this.importedVariates = importedVariates;
         this.importedGermplasms = importedGermplasms;
     }
-    
-    public String getFilename(){
+
+    public String getFilename() {
         return filename;
     }
-    
-    public void setFilename(String filename){
+
+    public void setFilename(String filename) {
         this.filename = filename;
     }
-    
-    public String getName(){
+
+    public String getName() {
         return name;
     }
-    
-    public void setName(String name){
+
+    public void setName(String name) {
         this.name = name;
     }
-    
-    public String getTitle(){
+
+    public String getTitle() {
         return title;
     }
-    
-    public void setTitle(String title){
+
+    public void setTitle(String title) {
         this.title = title;
     }
-    
+
     public String getType() {
         return type;
     }
-    
-    public void setType(String type){
+
+    public void setType(String type) {
         this.type = type;
     }
-    
+
     public Date getDate() {
         return date;
     }
-    
-    public void setDate(Date date){
+
+    public void setDate(Date date) {
         this.date = date;
     }
 
-    public List<ImportedCondition> getImportedConditions(){
+    public List<ImportedCondition> getImportedConditions() {
         return importedConditions;
     }
-    
-    public void setImportedConditions(List<ImportedCondition> importedConditions){
+
+    public void setImportedConditions(List<ImportedCondition> importedConditions) {
         this.importedConditions = importedConditions;
     }
-    
-    public void addImportedCondition(ImportedCondition importedCondition){
-   		this.importedConditions.add(importedCondition);
+
+    public void addImportedCondition(ImportedCondition importedCondition) {
+        this.importedConditions.add(importedCondition);
     }
 
-    public List<ImportedFactor> getImportedFactors(){
+    public List<ImportedFactor> getImportedFactors() {
         return importedFactors;
     }
-    
-    public void setImportedFactors(List<ImportedFactor> importedFactors){
+
+    public void setImportedFactors(List<ImportedFactor> importedFactors) {
         this.importedFactors = importedFactors;
     }
 
-    public void addImportedFactor(ImportedFactor importedFactor){
+    public void addImportedFactor(ImportedFactor importedFactor) {
         this.importedFactors.add(importedFactor);
-    }    
-    
-    public List<ImportedConstant> getImportedConstants(){
+    }
+
+    public List<ImportedConstant> getImportedConstants() {
         return importedConstants;
     }
-    
-    public void setImportedConstants(List<ImportedConstant> importedConstants){
+
+    public void setImportedConstants(List<ImportedConstant> importedConstants) {
         this.importedConstants = importedConstants;
     }
 
-    public void addImportedConstant(ImportedConstant importedConstant){
+    public void addImportedConstant(ImportedConstant importedConstant) {
         this.importedConstants.add(importedConstant);
     }
-    
-    public List<ImportedVariate> getImportedVariates(){
+
+    public List<ImportedVariate> getImportedVariates() {
         return importedVariates;
     }
-    
-    public void setImportedVariates(List<ImportedVariate> importedVariates){
+
+    public void setImportedVariates(List<ImportedVariate> importedVariates) {
         this.importedVariates = importedVariates;
     }
 
-    public void addImportedVariate(ImportedVariate importedVariate){
+    public void addImportedVariate(ImportedVariate importedVariate) {
         this.importedVariates.add(importedVariate);
-    }    
+    }
 
-    public List<ImportedGermplasm> getImportedGermplasms(){
+    public List<ImportedGermplasm> getImportedGermplasms() {
         return importedGermplasms;
     }
-    
-    public void setImportedGermplasms(List<ImportedGermplasm> importedGermplasms){
+
+    public void setImportedGermplasms(List<ImportedGermplasm> importedGermplasms) {
         this.importedGermplasms = importedGermplasms;
     }
 
-    public void addImportedGermplasm(ImportedGermplasm importedGermplasm){
+    public void addImportedGermplasm(ImportedGermplasm importedGermplasm) {
         this.importedGermplasms.add(importedGermplasm);
     }
-    
-    
-};
+
+    public void normalizeGermplasmList() {
+        if (importedGermplasms != null) {
+            Collections.sort(importedGermplasms, new ImportedGermplasmSorter());
+        }
+    }
+
+    private class ImportedGermplasmSorter implements Comparator<ImportedGermplasm> {
+
+        @Override
+        public int compare(ImportedGermplasm o1, ImportedGermplasm o2) {
+            return o1.getEntryId().compareTo(o2.getEntryId());
+        }
+
+
+    }
+}

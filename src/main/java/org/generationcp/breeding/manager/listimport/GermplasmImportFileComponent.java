@@ -73,7 +73,8 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
     public void nextButtonClickAction() throws InternationalizableException{
     	try {
     		germplasmListUploader.validate();
-    		MessageNotifier.showMessage(source.getWindow(), "Success", "File was successfully uploaded");
+            germplasmListUploader.readSheets();
+            MessageNotifier.showMessage(source.getWindow(), "Success", "File was successfully uploaded");
     		
     		source.nextStep();
 			

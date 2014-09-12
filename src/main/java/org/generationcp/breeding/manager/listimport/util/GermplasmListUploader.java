@@ -181,9 +181,6 @@ public class GermplasmListUploader implements FileFactory {
             	throw new InvalidValueException("File doesn't have second sheet - Observation");
             }
             
-            readSheet1();
-            readSheet2();
-
         } catch (FileNotFoundException e) {
         	//	"File not found"
         } catch (IOException e) {
@@ -197,6 +194,10 @@ public class GermplasmListUploader implements FileFactory {
         }
     }
 
+    public void readSheets() throws GermplasmImportException {
+        readSheet1();
+        readSheet2();
+    }
 
     private void readSheet1() throws GermplasmImportException{
         readGermplasmListFileInfo();
@@ -308,6 +309,8 @@ public class GermplasmListUploader implements FileFactory {
             importedGermplasmList.addImportedGermplasm(importedGermplasm);
             currentRow++;
         }
+
+        importedGermplasmList.normalizeGermplasmList();
     }
     
     private boolean isANameFactor(String columnHeader) {
@@ -723,4 +726,4 @@ public class GermplasmListUploader implements FileFactory {
         return f;
 	}
 	
-};
+}

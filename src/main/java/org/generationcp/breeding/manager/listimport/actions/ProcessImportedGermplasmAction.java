@@ -140,21 +140,21 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		        // gpid1 and gpid 2 values are default here, actual values will be set below based on matched germplasm
 		        Germplasm germplasm = createGermplasmObject(i, -1, 0, 0, ibdbUserId, dateIntValue);
 		        List<Germplasm> foundGermplasm = new ArrayList<Germplasm>();
-		        
-		        if(isGidSpecified(importedGermplasm)){
-		        	foundGermplasm.add(germplasmDataManager.getGermplasmByGID(importedGermplasm.getGid())); 
-		        } else {
-	        		
-	                if(germplasmMatchesCount==1){
-	                    //If a single match is found, multiple matches will be 
-	                    //   handled by SelectGemrplasmWindow and 
-	                    //   then receiveGermplasmFromWindowAndUpdateGermplasmData()
-	                    foundGermplasm = this.germplasmDataManager.getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
-	                } 
-		                
-		        }
-		        
-				if (foundGermplasm != null && !foundGermplasm.isEmpty() && foundGermplasm.get(0) != null){
+
+                if (isGidSpecified(importedGermplasm)) {
+                    foundGermplasm.add(germplasmDataManager.getGermplasmByGID(importedGermplasm.getGid()));
+                } else {
+
+                    if (germplasmMatchesCount == 1) {
+                        //If a single match is found, multiple matches will be
+                        //   handled by SelectGemrplasmWindow and
+                        //   then receiveGermplasmFromWindowAndUpdateGermplasmData()
+                        foundGermplasm = this.germplasmDataManager.getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
+                    }
+
+                }
+
+                if (foundGermplasm != null && !foundGermplasm.isEmpty() && foundGermplasm.get(0) != null){
                     updatePedigreeConnections(germplasm, foundGermplasm.get(0)); 
 		        }
 

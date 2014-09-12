@@ -107,4 +107,4 @@ public class ImportedGermplasm {
 		nameFactors.put(name, value);
 	}
 	
-};
+}
