@@ -24,8 +24,10 @@ public class CrossingManagerActionHandler implements Handler {
 	private static final Action ACTION_SELECT_ALL = new Action("Select All");
 	private static final Action ACTION_REMOVE_SELECTED_ENTRIES = new Action("Remove selected entries");
 	private static final Action ACTION_DELETE_CROSSES = new Action("Delete selected crosses");
-	private static final Action[] SELECT_LIST_ENTRIES = new Action[] {ACTION_SELECT_ALL, ACTION_REMOVE_SELECTED_ENTRIES};
-	private static final Action[] MAKE_CROSSES_ACTIONS = new Action[] {ACTION_SELECT_ALL, ACTION_DELETE_CROSSES};
+	private static final Action CLEAR_ALL_CROSSES = new Action("Clear All");
+	private static final Action CLEAR_ALL_PARENTS = new Action("Clear All");
+	private static final Action[] SELECT_LIST_ENTRIES = new Action[] {ACTION_SELECT_ALL, ACTION_REMOVE_SELECTED_ENTRIES, CLEAR_ALL_PARENTS};
+	private static final Action[] MAKE_CROSSES_ACTIONS = new Action[] {ACTION_SELECT_ALL, ACTION_DELETE_CROSSES, CLEAR_ALL_CROSSES};
 
 	private Object source;
 	
@@ -68,6 +70,12 @@ public class CrossingManagerActionHandler implements Handler {
 				}
 		} else if (ACTION_DELETE_CROSSES.equals(action)) {
 			((MakeCrossesTableComponent) source).deleteCrossAction();
+		} else if (CLEAR_ALL_PARENTS.equals(action) && sender instanceof Table){
+			handleAction(ACTION_SELECT_ALL, sender, target);
+			handleAction(ACTION_REMOVE_SELECTED_ENTRIES, sender, target);
+		} else if (CLEAR_ALL_CROSSES.equals(action) && sender instanceof Table){
+			handleAction(ACTION_SELECT_ALL, sender, target);
+			handleAction(ACTION_DELETE_CROSSES, sender, target);
 		}
 
 	}
@@ -79,7 +87,7 @@ public class CrossingManagerActionHandler implements Handler {
 			table.setValue(itemIds);
 //			table.setPageLength(0);
 		}
-	}
+	}	
 
 	@SuppressWarnings("unchecked")
 	public void removeSelectedEntriesAction(Table table) {
