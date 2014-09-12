@@ -201,10 +201,11 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		actionMenu = new ContextMenu();
         actionMenu.setWidth("250px");
         actionMenu.addItem(messageSource.getMessage(Message.INVENTORY_VIEW));
-        actionMenu.addItem(messageSource.getMessage(Message.REMOVE_SELECTED_ENTRIES));
+        actionMenu.addItem(messageSource.getMessage(Message.REMOVE_SELECTED_ENTRIES));        
         saveActionMenu = actionMenu.addItem(messageSource.getMessage(Message.SAVE_LIST));
         saveActionMenu.setEnabled(false);
         actionMenu.addItem(messageSource.getMessage(Message.SELECT_ALL));
+        actionMenu.addItem(messageSource.getMessage(Message.CLEAR_ALL));
         
         inventoryViewActionButton = new ActionButton();
         
@@ -330,6 +331,9 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 				 }
 				 else if(clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))){
 					 listDataTable.setValue(listDataTable.getItemIds());
+				 }else if(clickedItem.getName().equals(messageSource.getMessage(Message.CLEAR_ALL))){
+					 listDataTable.setValue(listDataTable.getItemIds());
+					 parentActionListener.removeSelectedEntriesAction(listDataTable);
 				 }
 				
 			}
