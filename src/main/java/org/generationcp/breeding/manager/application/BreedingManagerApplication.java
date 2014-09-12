@@ -13,7 +13,6 @@ import org.generationcp.commons.hibernate.DynamicManagerFactoryProvider;
 import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
 import org.generationcp.commons.vaadin.actions.UpdateComponentLabelsAction;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.commons.vaadin.ui.BaseWindow;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.manager.WorkbenchDataManagerImpl;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -124,7 +123,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
         // these windows are the jumping on points to parts of the application
         if(super.getWindow(name) == null){
             if(name.equals(GERMPLASM_IMPORT_WINDOW_NAME)){
-                Window germplasmImportWindow = new BaseWindow(messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
+                Window germplasmImportWindow = new Window(messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
                 germplasmImportWindow.setName(GERMPLASM_IMPORT_WINDOW_NAME);
                 germplasmImportWindow.setSizeUndefined();
                 germplasmImportWindow.addComponent(new GermplasmImportMain(germplasmImportWindow,false));
@@ -132,7 +131,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 return germplasmImportWindow;
             
             } else if(name.equals(GERMPLASM_IMPORT_WINDOW_NAME_POPUP)){
-                Window germplasmImportWindow = new BaseWindow(messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
+                Window germplasmImportWindow = new Window(messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
                 germplasmImportWindow.setName(GERMPLASM_IMPORT_WINDOW_NAME_POPUP);
                 germplasmImportWindow.setSizeUndefined();
                 germplasmImportWindow.addComponent(new GermplasmImportMain(germplasmImportWindow,false, true));
@@ -140,7 +139,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 return germplasmImportWindow;
 
             } else if(name.equals(NURSERY_TEMPLATE_WINDOW_NAME)){
-                Window nurseryTemplateWindow = new BaseWindow(messageSource.getMessage(Message.NURSERY_TEMPLATE_TAB_LABEL));
+                Window nurseryTemplateWindow = new Window(messageSource.getMessage(Message.NURSERY_TEMPLATE_TAB_LABEL));
                 nurseryTemplateWindow.setName(NURSERY_TEMPLATE_WINDOW_NAME);
                 nurseryTemplateWindow.setSizeUndefined();
                 nurseryTemplateWindow.addComponent(new NurseryTemplateMain());
@@ -148,7 +147,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 return nurseryTemplateWindow;
             
             } else if(name.equals(LIST_MANAGER_WINDOW_NAME)){
-            	Window listManagerWindow = new BaseWindow(messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
+            	Window listManagerWindow = new Window(messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
                 listManagerWindow.setName(name);
                 listManagerWindow.setSizeFull();
 
@@ -163,7 +162,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
             	String listIdPart = name.substring(name.indexOf("-") + 1);
             	try{
 	            	Integer listId = Integer.parseInt(listIdPart);
-	            	Window listManagerWindow = new BaseWindow(messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
+	            	Window listManagerWindow = new Window(messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
 	                listManagerWindow.setName(name);
 	                listManagerWindow.setSizeFull();
 	                
@@ -174,7 +173,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 	                
 	                return listManagerWindow;
             	} catch(NumberFormatException ex){
-            		Window emptyGermplasmListDetailsWindow = new BaseWindow(messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
+            		Window emptyGermplasmListDetailsWindow = new Window(messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
                     emptyGermplasmListDetailsWindow.setSizeUndefined();
                     emptyGermplasmListDetailsWindow.addComponent(new Label(messageSource.getMessage(Message.INVALID_LIST_ID)));
                     this.addWindow(emptyGermplasmListDetailsWindow);
@@ -182,7 +181,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
             	}
             
             } else if(name.equals(CROSSING_MANAGER_WINDOW_NAME)){
-                Window manageCrossingSettings = new BaseWindow(messageSource.getMessage(Message.MANAGE_CROSSES));
+                Window manageCrossingSettings = new Window(messageSource.getMessage(Message.MANAGE_CROSSES));
                 manageCrossingSettings.setName(CROSSING_MANAGER_WINDOW_NAME);
                 manageCrossingSettings.setSizeUndefined();
                 
