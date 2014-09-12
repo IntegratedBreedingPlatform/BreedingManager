@@ -21,15 +21,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.VerticalLayout;
 
 @Configurable
-public class ManageCrossingSettingsMain extends AbsoluteLayout implements
+public class ManageCrossingSettingsMain extends VerticalLayout implements
 		InitializingBean, InternationalizableComponent, BreedingManagerLayout, CrossesMadeContainer {
 	
 	private static final long serialVersionUID = 1L;
@@ -72,6 +75,7 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 	public void instantiateComponents() {
 		toolTitle = new Label(messageSource.getMessage(Message.MANAGE_CROSSES));
 		toolTitle.setStyleName(Bootstrap.Typography.H1.styleName());
+		toolTitle.setWidth("230px");
 		
 		makeCrossesLabel = new Label(messageSource.getMessage(Message.MAKE_CROSSES));
 		makeCrossesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
@@ -119,14 +123,25 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
 	public void layoutComponents() {
 		setWidth("100%");
 		setHeight("1250px");
+		setMargin(false,false,false,true);
 		
-		HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_MANAGE_SETTINGS, makeCrossesLabel);
+		AbsoluteLayout headingLayout = new AbsoluteLayout();
+		headingLayout.setHeight("40px");
+		headingLayout.setWidth("260px");
+		headingLayout.addComponent(toolTitle);
+		headingLayout.addComponent(toolPopupView, "top: 13px;left:240px");
 		
-		addComponent(toolTitle);
-		addComponent(toolPopupView, "top:15px; left:240px");
-		addComponent(headingLayout, "top:40px;");
-		addComponent(wizardDisplay, "top:40px;left:250px");
-		addComponent(tabSheet, "top:80px;");
+		HeaderLabelLayout subHeaderLabel = new HeaderLabelLayout(AppConstants.Icons.ICON_MANAGE_SETTINGS, makeCrossesLabel);
+		
+		HorizontalLayout subHeadingLayout = new HorizontalLayout();
+		subHeadingLayout.setSpacing(true);
+		subHeadingLayout.setWidth("600px");
+		subHeadingLayout.addComponent(subHeaderLabel);
+		subHeadingLayout.addComponent(wizardDisplay);
+		
+		addComponent(headingLayout);
+		addComponent(subHeadingLayout);
+		addComponent(tabSheet);
 	}
 	
 	public void nextStep(){
@@ -167,7 +182,7 @@ public class ManageCrossingSettingsMain extends AbsoluteLayout implements
         this.removeComponent(this.wizardDisplay);
         this.removeComponent(this.tabSheet);
         
-        this.addComponent(summaryComponent, "top:75px");
+        this.addComponent(summaryComponent);
         getWindow().setScrollTop(0);
     }
     

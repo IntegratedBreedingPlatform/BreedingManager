@@ -188,7 +188,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 
                 manageCrossingSettingsMain = new ManageCrossingSettingsMain(manageCrossingSettings);
                 
-                manageCrossingSettings.addComponent(manageCrossingSettingsMain);
+                manageCrossingSettings.setContent(manageCrossingSettingsMain);
                 this.addWindow(manageCrossingSettings);
                 return manageCrossingSettings;
             } 

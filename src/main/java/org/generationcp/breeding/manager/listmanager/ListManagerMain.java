@@ -218,7 +218,6 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
         this.addComponent(splitPanelContainer);
         this.setExpandRatio(splitPanelContainer,1.0F);
 
-        //this.setStyleName("green");
         this.setMargin(false);
         this.setSpacing(false);
 	}
