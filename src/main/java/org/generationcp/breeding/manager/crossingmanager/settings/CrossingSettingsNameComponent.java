@@ -269,8 +269,7 @@ public class CrossingSettingsNameComponent extends CssLayout implements
 		final String prefix = (String) crossNamePrefix.getValue();
 
 		if (prefix == null || prefix.trim().length() == 0) {
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT)
-					, messageSource.getMessage(Message.PLEASE_SPECIFY_A_PREFIX));
+			MessageNotifier.showRequiredFieldError(getWindow(), messageSource.getMessage(Message.PLEASE_SPECIFY_A_PREFIX));
 			return false;
 		}
 		return validateStartNumberField();
@@ -313,13 +312,11 @@ public class CrossingSettingsNameComponent extends CssLayout implements
 
 		if (!StringUtils.isEmpty(startNumberString)){
 			if(startNumberString.length() > 10){
-				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT)
-						, messageSource.getMessage(Message.STARTING_NUMBER_HAS_TOO_MANY_DIGITS));
+				MessageNotifier.showRequiredFieldError(getWindow(), messageSource.getMessage(Message.STARTING_NUMBER_HAS_TOO_MANY_DIGITS));
 				return false;
 			}
 			if (!NumberUtils.isDigits(startNumberString)){
-				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT)
-						, messageSource.getMessage(Message.PLEASE_ENTER_VALID_STARTING_NUMBER));
+				MessageNotifier.showRequiredFieldError(getWindow(), messageSource.getMessage(Message.PLEASE_ENTER_VALID_STARTING_NUMBER));
 				return false;
 			}
 

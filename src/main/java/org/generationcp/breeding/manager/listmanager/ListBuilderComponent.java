@@ -1119,7 +1119,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
             Collection<?> listEntries = (Collection<?>) tableWithSelectAllLayout.getTable().getValue();
             
             if (listEntries == null || listEntries.isEmpty()){
-                MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "");
+                MessageNotifier.showRequiredFieldError(source.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
             } else {
                 listManagerCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
                 listManagerCopyToNewListDialog.setModal(true);
@@ -1527,8 +1527,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		updateLotReservationsToSave(validReservations);
 		
 		if(validReservations.size() == 0){//if there are no valid reservations
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), 
-					messageSource.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES) + ".");
+			MessageNotifier.showRequiredFieldError(getWindow(), messageSource.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES) + ".");
 		
 		} else if(!withInvalidReservations){
 			MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 

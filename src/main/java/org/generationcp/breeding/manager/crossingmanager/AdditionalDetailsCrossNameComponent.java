@@ -193,8 +193,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     				
     				String prefix = null;
     				if(prefixTextField.getValue() == null || prefixTextField.getValue().toString().length() == 0){
-    					MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT)
-    							, messageSource.getMessage(Message.PLEASE_SPECIFY_A_PREFIX));
+    					MessageNotifier.showRequiredFieldError(parentWindow, messageSource.getMessage(Message.PLEASE_SPECIFY_A_PREFIX));
     					return;
     				} else{
     					prefix = prefixTextField.getValue().toString().trim();
@@ -212,20 +211,17 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     				}
     				
     				if(startNumberTextField.getValue() == null || startNumberTextField.getValue().toString().length() == 0){
-    					MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT)
-    							, messageSource.getMessage(Message.PLEASE_SPECIFY_A_STARTING_NUMBER));
+    					MessageNotifier.showRequiredFieldError(parentWindow, messageSource.getMessage(Message.PLEASE_SPECIFY_A_STARTING_NUMBER));		
     					return;
     				} else if(startNumberTextField.getValue().toString().length() > 9){
-    					MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT) 
-    							, messageSource.getMessage(Message.STARTING_NUMBER_HAS_TOO_MANY_DIGITS));
+    					MessageNotifier.showRequiredFieldError(parentWindow, messageSource.getMessage(Message.STARTING_NUMBER_HAS_TOO_MANY_DIGITS));
     					return;
     				} else {
     					try{
     						Integer.parseInt(startNumberTextField.getValue().toString());
     					} catch(NumberFormatException ex){
-    						MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT) 
-    								, messageSource.getMessage(Message.PLEASE_ENTER_VALID_STARTING_NUMBER));
-        					return;
+    						MessageNotifier.showRequiredFieldError(parentWindow, messageSource.getMessage(Message.PLEASE_ENTER_VALID_STARTING_NUMBER));
+    						return;
     					}
     				}
     				int startNumber = Integer.parseInt(startNumberTextField.getValue().toString());
@@ -255,12 +251,10 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     	            }
     	            
     	            if(propertyIdToFill.equals(ListDataTablePropertyID.SEED_SOURCE.getName()) && builder.toString().length() > 255){
-    	            	MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT), 
-    	            			messageSource.getMessage(Message.SEQUENCE_TOO_LONG_FOR_SEED_SOURCE));
-    					return;
+    	            	MessageNotifier.showRequiredFieldError(parentWindow, messageSource.getMessage(Message.SEQUENCE_TOO_LONG_FOR_SEED_SOURCE));
+    	            	return;
     	            } else if(propertyIdToFill.equals(ListDataTablePropertyID.ENTRY_CODE.getName()) && builder.toString().length() > 47){
-    	            	MessageNotifier.showError(parentWindow, messageSource.getMessage(Message.INVALID_INPUT), 
-    	            			messageSource.getMessage(Message.SEQUENCE_TOO_LONG_FOR_ENTRY_CODE));
+    	            	MessageNotifier.showRequiredFieldError(parentWindow, messageSource.getMessage(Message.SEQUENCE_TOO_LONG_FOR_ENTRY_CODE));
     					return;
     	            }
     	            

@@ -167,9 +167,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 			return true;
 			
 		} catch (InvalidValueException e) {
-			MessageNotifier.showError(getWindow(), 
-					this.messageSource.getMessage(Message.INVALID_INPUT), 
-					e.getMessage());
+			MessageNotifier.showRequiredFieldError(getWindow(), e.getMessage());
 			return false;
 		}
 	}

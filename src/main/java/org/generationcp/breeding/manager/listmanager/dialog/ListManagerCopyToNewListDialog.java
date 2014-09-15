@@ -61,7 +61,6 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 
 @Configurable
 public class ListManagerCopyToNewListDialog extends VerticalLayout implements InitializingBean, InternationalizableComponent,
@@ -265,21 +264,21 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
         Boolean proceedWithSave = true;
         
         try {
-//            Long matchingNamesCountOnLocal = germplasmListManager.countGermplasmListByName(listNameValue, Operation.EQUAL, Database.LOCAL);
             Long matchingNamesCountOnCentral = germplasmListManager.countGermplasmListByName(listNameValue, Operation.EQUAL, Database.CENTRAL);
+            String existingListMsg = "There is already an existing germplasm list with that name";
             if(matchingNamesCountOnCentral>0){
-                getWindow().showNotification("There is already an existing germplasm list with that name","",Notification.TYPE_ERROR_MESSAGE);
+            	MessageNotifier.showRequiredFieldError(getWindow(), existingListMsg);
                 proceedWithSave = false;
             }
             
             // if list name from copy source is equal to specified value in combo box
             if (!"".equals(listNameValue) && listName.equals(listNameValue)) {
-                getWindow().showNotification("There is already an existing germplasm list with that name","",Notification.TYPE_ERROR_MESSAGE);
+            	MessageNotifier.showRequiredFieldError(getWindow(), existingListMsg);
                 proceedWithSave = false; 
             }
             
             if(localFolderNames.contains(listNameValue)){
-                getWindow().showNotification("There is already an existing germplasm list folder with that name","",Notification.TYPE_ERROR_MESSAGE);
+            	MessageNotifier.showRequiredFieldError(getWindow(), "There is already an existing germplasm list folder with that name");
                 proceedWithSave = false;
             }
         } catch (MiddlewareQueryException e) {
@@ -290,9 +289,9 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
         if(proceedWithSave){
         
             if (listNameValue.trim().length() == 0) {
-                MessageNotifier.showError(getWindow(), "Input Error!", "Please specify a List Name before saving");
+            	MessageNotifier.showRequiredFieldError(getWindow(), "Please specify a List Name before saving");
             } else if (listNameValue.trim().length() > 50) {
-                MessageNotifier.showError(getWindow(), "Input Error!", "Listname input is too large limit the name only up to 50 characters");
+            	MessageNotifier.showRequiredFieldError(getWindow(), "Listname input is too large limit the name only up to 50 characters");
                 comboBoxListName.setValue("");
             } else {
                 

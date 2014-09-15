@@ -155,8 +155,8 @@ public class BreedingManagerUtil{
         assert messageSource != null;
         
         if (window != null){
-            MessageNotifier.showError(window, MessageFormat.format(
-                    messageSource.getMessage(Message.ERROR_MUST_BE_SPECIFIED), fieldName), "");
+            MessageNotifier.showRequiredFieldError(window, MessageFormat.format(
+                    messageSource.getMessage(Message.ERROR_MUST_BE_SPECIFIED), fieldName));
         }
 
     }

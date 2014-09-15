@@ -235,8 +235,7 @@ public class GermplasmListTreeUtil implements Serializable {
 			
 		} catch (InvalidValueException e) {
 			e.printStackTrace();
-			MessageNotifier.showError(source.getWindow(),
-	                messageSource.getMessage(Message.INVALID_INPUT), e.getMessage());
+			MessageNotifier.showRequiredFieldError(source.getWindow(), e.getMessage());
 		}	
 			
 
@@ -331,11 +330,8 @@ public class GermplasmListTreeUtil implements Serializable {
 						messageSource.getMessage(Message.ERROR_REPORT_TO));
 			}
 
-			
 		} catch (InvalidValueException e) {
-			MessageNotifier.showError(source.getWindow(),
-	                messageSource.getMessage(Message.INVALID_INPUT), 
-	                e.getMessage());
+			MessageNotifier.showRequiredFieldError(source.getWindow(), e.getMessage());
 		}	
 
     }

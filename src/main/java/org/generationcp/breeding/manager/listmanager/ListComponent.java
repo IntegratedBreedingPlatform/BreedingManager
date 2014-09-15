@@ -1307,7 +1307,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
     private void copyToNewListAction(){
         Collection<?> listEntries = (Collection<?>) listDataTable.getValue();
         if (listEntries == null || listEntries.isEmpty()){
-            MessageNotifier.showError(this.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED), "");
+            MessageNotifier.showRequiredFieldError(this.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
             
         } else {
             listManagerCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
@@ -2107,8 +2107,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		menuInventorySaveChanges.setEnabled(true);
 		
 		if(validReservations.size() == 0){//if there are no valid reservations
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), 
-					messageSource.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES) + ".");
+			MessageNotifier.showRequiredFieldError(getWindow(), messageSource.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES) + ".");
 		
 		} else if(!withInvalidReservations){
 			MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 

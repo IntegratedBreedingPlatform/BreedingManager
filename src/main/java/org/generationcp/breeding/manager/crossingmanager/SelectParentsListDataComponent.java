@@ -700,9 +700,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		menuInventorySaveChanges.setEnabled(true);
 		
 		if(validReservations.size() == 0){//if there are no valid reservations
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.INVALID_INPUT), 
-					messageSource.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES) + ".");
-		
+			MessageNotifier.showRequiredFieldError(getWindow(), messageSource.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES) + ".");
 		} else if(!withInvalidReservations){
 			MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), 
 					"All selected entries will be reserved in their respective lots.", 

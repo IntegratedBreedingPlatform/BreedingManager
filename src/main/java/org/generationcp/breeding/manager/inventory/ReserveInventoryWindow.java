@@ -140,8 +140,7 @@ public class ReserveInventoryWindow extends Window implements InitializingBean,
 			return true;
 			
 		} catch (InvalidValueException e) {
-			MessageNotifier.showError(getWindow(), 
-					this.messageSource.getMessage(Message.INVALID_INPUT),e.getMessage());
+			MessageNotifier.showRequiredFieldError(getWindow(), e.getMessage());
 			return false;
 		}
 	}

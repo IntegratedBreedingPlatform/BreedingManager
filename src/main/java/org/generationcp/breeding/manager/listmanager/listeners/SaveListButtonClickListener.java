@@ -208,19 +208,19 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 	private boolean validateListDetails(GermplasmList list, GermplasmList currentlySavedList){
 		
 		if(list.getName() == null || list.getName().length() == 0){
-			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.INVALID_INPUT), messageSource.getMessage(Message.NAME_CAN_NOT_BE_BLANK));
+			MessageNotifier.showRequiredFieldError(this.source.getWindow(), messageSource.getMessage(Message.NAME_CAN_NOT_BE_BLANK));
 			return false;
 		} else if(list.getDescription() == null || list.getDescription().length() == 0){
-			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.INVALID_INPUT), messageSource.getMessage(Message.DESCRIPTION_CAN_NOT_BE_BLANK));
+			MessageNotifier.showRequiredFieldError(this.source.getWindow(), messageSource.getMessage(Message.DESCRIPTION_CAN_NOT_BE_BLANK));
 			return false;
 		} else if(list.getName().length() > 50){
-			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.INVALID_INPUT), messageSource.getMessage(Message.NAME_CAN_NOT_BE_LONG));
+			MessageNotifier.showRequiredFieldError(this.source.getWindow(), messageSource.getMessage(Message.NAME_CAN_NOT_BE_LONG));
 			return false;
 		} else if(list.getDescription().length() > 255){
-			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.INVALID_INPUT), messageSource.getMessage(Message.DESCRIPTION_CAN_NOT_BE_LONG));
+			MessageNotifier.showRequiredFieldError(this.source.getWindow(), messageSource.getMessage(Message.DESCRIPTION_CAN_NOT_BE_LONG));
 			return false;
 		} else if(list.getDate() == null){
-			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.INVALID_INPUT), "Please select a date.");
+			MessageNotifier.showRequiredFieldError(this.source.getWindow(), "Please select a date.");
 			return false;
 		} else {
 			if(currentlySavedList == null){
@@ -235,8 +235,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			List<GermplasmList> centralLists = this.dataManager.getGermplasmListByName(list.getName(), 0, 5, Operation.EQUAL, Database.CENTRAL);
 			if(!centralLists.isEmpty()){
 				if(centralLists.size()==1 && centralLists.get(0).getId()!=list.getId()){
-					MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.INVALID_INPUT)
-						, messageSource.getMessage(Message.EXISTING_LIST_IN_CENTRAL_ERROR_MESSAGE));
+					MessageNotifier.showRequiredFieldError(this.source.getWindow(), messageSource.getMessage(Message.EXISTING_LIST_IN_CENTRAL_ERROR_MESSAGE));
 					return false;
 				}
 			}
@@ -244,8 +243,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			List<GermplasmList> localLists = this.dataManager.getGermplasmListByName(list.getName(), 0, 5, Operation.EQUAL, Database.LOCAL);
 			if(!localLists.isEmpty()){
 				if(localLists.size()==1 && localLists.get(0).getId()!=list.getId()){
-					MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.INVALID_INPUT)
-						, messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));
+					MessageNotifier.showRequiredFieldError(this.source.getWindow(), messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));
 					return false;
 				}
 			}

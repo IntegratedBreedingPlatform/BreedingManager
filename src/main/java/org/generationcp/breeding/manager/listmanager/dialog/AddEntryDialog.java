@@ -376,11 +376,9 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
             }
         } else if(optionGroup.getValue().equals(OPTION_2_ID)){
         	if(breedingMethodField.getBreedingMethodComboBox().getValue() == null){
-        		MessageNotifier.showError(this, messageSource.getMessage(Message.ERROR), 
-                       messageSource.getMessage(Message.YOU_MUST_SELECT_A_METHOD_FOR_THE_GERMPLASM));
+        		MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_SELECT_A_METHOD_FOR_THE_GERMPLASM));
         	} else if(breedingLocationField.getBreedingLocationComboBox().getValue() == null){
-            		MessageNotifier.showError(this, messageSource.getMessage(Message.ERROR), 
-                            messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM));
+        		MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM));
         	}else if(this.selectedGids.size()>0){
             	if(doneAction()){
             		Window window = event.getButton().getWindow();
@@ -394,18 +392,15 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
             String searchValue = searchBarComponent.getSearchField().getValue().toString();
             
         	if(breedingMethodField.getBreedingMethodComboBox().getValue() == null){
-        		MessageNotifier.showError(this, messageSource.getMessage(Message.ERROR), 
-        				messageSource.getMessage(Message.YOU_MUST_SELECT_A_METHOD_FOR_THE_GERMPLASM));
+        		MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_SELECT_A_METHOD_FOR_THE_GERMPLASM));
         	} else if(breedingLocationField.getBreedingLocationComboBox().getValue() == null){
-            		MessageNotifier.showError(this, messageSource.getMessage(Message.ERROR), 
-            				messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM));
+        		MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM));
         	} else if(searchValue != null && searchValue.length() != 0){
             	doneAction();
             	Window window = event.getButton().getWindow();
             	window.getParent().removeWindow(window);
             } else {
-                MessageNotifier.showWarning(this, messageSource.getMessage(Message.WARNING), 
-                		messageSource.getMessage(Message.YOU_MUST_ENTER_A_GERMPLASM_NAME_IN_THE_TEXTBOX));
+            	MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_ENTER_A_GERMPLASM_NAME_IN_THE_TEXTBOX));
             }
         }
     }
@@ -425,13 +420,13 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
 	        
 	        if(dateOfCreation==null){
 	            LOG.error("Invalid date on add list entries! - " + dateOfCreation);
-	            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), messageSource.getMessage(Message.VALIDATION_DATE_FORMAT));
+	            MessageNotifier.showRequiredFieldError(getWindow(), messageSource.getMessage(Message.VALIDATION_DATE_FORMAT));
 	            return false;
 	        }
 	        String parsedDate = formatter.format(dateOfCreation);
 	        if(parsedDate==null){
 	            LOG.error("Invalid date on add list entries! - " + parsedDate);
-	            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), messageSource.getMessage(Message.VALIDATION_DATE_FORMAT));
+	            MessageNotifier.showRequiredFieldError(getWindow(), messageSource.getMessage(Message.VALIDATION_DATE_FORMAT));
 	            return false;
 	        }
 	        
