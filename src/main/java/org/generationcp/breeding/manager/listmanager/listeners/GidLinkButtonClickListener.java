@@ -12,6 +12,8 @@
 
 package org.generationcp.breeding.manager.listmanager.listeners;
 
+import com.vaadin.event.MouseEvents;
+import com.vaadin.event.ShortcutAction;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.constants.ModeView;
@@ -20,6 +22,7 @@ import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.tomcat.util.TomcatUtil;
 import org.generationcp.commons.tomcat.util.WebAppStatusInfo;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
@@ -90,8 +93,6 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
             tool = workbenchDataManager.getToolWithName(ToolName.germplasm_browser.toString());
         } catch (MiddlewareQueryException qe) {
             LOG.error("QueryException", qe);
-            /*MessageNotifier.showError(mainWindow, messageSource.getMessage(Message.DATABASE_ERROR),
-                    "<br />" + messageSource.getMessage(Message.CONTACT_ADMIN_ERROR_DESC));*/
         }
         
         String addtlParams = Util.getAdditionalParams(workbenchDataManager);
@@ -116,36 +117,38 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
         if(preferredName != null){
         	windowTitle = "Germplasm Details: " + preferredName + " (GID: " + gid + ")";
         }
-        final Window germplasmWindow = new Window(windowTitle);
-        
+        final Window germplasmWindow = new BaseSubWindow(windowTitle);
+
         AbsoluteLayout layoutForGermplasm = new AbsoluteLayout();
         layoutForGermplasm.setMargin(false);
         layoutForGermplasm.setWidth("100%");
         layoutForGermplasm.setHeight("100%");
         layoutForGermplasm.addStyleName("no-caption");
 
-        Embedded germplasmInfo = new Embedded("", germplasmBrowserLink);
+        final Embedded germplasmInfo = new Embedded(null, germplasmBrowserLink);
+
         germplasmInfo.setType(Embedded.TYPE_BROWSER);
         germplasmInfo.setSizeFull();
-        
+
+
         if(showAddToList){
 	        Button addToListLink = new Button("Add to list");
 	        if(listManagerMain.listBuilderIsLocked()){
 	        	addToListLink.setEnabled(false);
 	        	addToListLink.setDescription("Cannot add entry to locked list in List Builder section.");
 	        }
-	        
+
 	        if(listManagerMain.getModeView().equals(ModeView.INVENTORY_VIEW)){
 	        	addToListLink.setEnabled(false);
 	        	addToListLink.setDescription("Please switch to list view first before adding a germplasm entry to the list.");
 	        }
-	        
+
 			addToListLink.setImmediate(true);
 			addToListLink.setStyleName(Bootstrap.Buttons.INFO.styleName());
 			addToListLink.setIcon(AppConstants.Icons.ICON_PLUS);
 	        layoutForGermplasm.addComponent(addToListLink, "top:15px; right:15px;");
 	        layoutForGermplasm.addComponent(germplasmInfo, "top:44px; left:0;");
-	        
+
 	        addToListLink.addListener(new ClickListener(){
 				private static final long serialVersionUID = 1L;
 				@Override
@@ -153,7 +156,7 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
 					listManagerMain.getListBuilderComponent().getBuildNewListDropHandler().addGermplasm(Integer.valueOf(gid));
 					mainWindow.removeWindow(germplasmWindow);
 				}
-	        	
+
 	        });
         } else {
         	layoutForGermplasm.addComponent(germplasmInfo, "top:0; left:0;");
@@ -163,11 +166,11 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
         germplasmWindow.setHeight("90%");
         germplasmWindow.center();
         germplasmWindow.setResizable(false);
-        
+        germplasmWindow.setCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
+
         germplasmWindow.setModal(true);
-        germplasmWindow.addStyleName(Reindeer.WINDOW_LIGHT);
         germplasmWindow.addStyleName("graybg");
-        
+
         mainWindow.addWindow(germplasmWindow);
     }
     

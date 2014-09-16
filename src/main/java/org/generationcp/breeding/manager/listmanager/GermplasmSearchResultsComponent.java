@@ -19,6 +19,7 @@ import org.generationcp.commons.tomcat.util.WebAppStatusInfo;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -454,7 +455,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
         	windowTitle = "Germplasm Details: " + preferredName + " (GID: " + gid + ")";
         }
         
-        final Window germplasmWindow = new Window(windowTitle);
+        final Window germplasmWindow = new BaseSubWindow(windowTitle);
         
         AbsoluteLayout layoutForGermplasm = new AbsoluteLayout();
         layoutForGermplasm.setMargin(false);

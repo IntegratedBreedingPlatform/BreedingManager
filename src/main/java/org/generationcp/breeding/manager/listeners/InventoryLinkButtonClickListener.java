@@ -7,6 +7,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
+import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 
 public class InventoryLinkButtonClickListener implements Button.ClickListener {
 	
@@ -36,7 +37,7 @@ public class InventoryLinkButtonClickListener implements Button.ClickListener {
 	public void buttonClick(ClickEvent event) {
 		InventoryViewComponent listInventoryComponent = new InventoryViewComponent(listId,recordId,gid);
 		
-		Window inventoryWindow = new Window("Inventory Details");
+		Window inventoryWindow = new BaseSubWindow("Inventory Details");
 		inventoryWindow.setModal(true);
         inventoryWindow.setWidth("810px");
         inventoryWindow.setHeight("355px");

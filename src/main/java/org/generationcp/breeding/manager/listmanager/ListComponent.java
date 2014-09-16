@@ -50,6 +50,7 @@ import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
@@ -165,7 +166,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
   	private boolean fromUrl;    //this is true if this component is created by accessing the Germplasm List Details page directly from the URL
   	
 	//Theme Resource
-  	private Window listManagerCopyToNewListDialog;
+  	private BaseSubWindow listManagerCopyToNewListDialog;
 	private static final String USER_HOME = "user.home";
 	
 	private Object selectedColumn = "";
@@ -1310,13 +1311,14 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
             MessageNotifier.showRequiredFieldError(this.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
             
         } else {
-            listManagerCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
+            listManagerCopyToNewListDialog = new BaseSubWindow(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
+            listManagerCopyToNewListDialog.setOverrideFocus(true);
             listManagerCopyToNewListDialog.setModal(true);
             listManagerCopyToNewListDialog.setWidth("617px");
             listManagerCopyToNewListDialog.setHeight("230px");
             listManagerCopyToNewListDialog.setResizable(false);
             listManagerCopyToNewListDialog.addStyleName(Reindeer.WINDOW_LIGHT);
-            
+
             try {
                 listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(
                         parentListDetailsComponent.getWindow(),

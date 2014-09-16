@@ -2,6 +2,7 @@ package org.generationcp.breeding.manager.customcomponent;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
+import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -10,7 +11,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class ViewListHeaderWindow extends Window implements BreedingManagerLayout, InitializingBean, InternationalizableComponent {
+public class ViewListHeaderWindow extends BaseSubWindow implements BreedingManagerLayout, InitializingBean, InternationalizableComponent {
 	private static final long serialVersionUID = -8930840553445674785L;
 
 	private GermplasmList germplasmList;

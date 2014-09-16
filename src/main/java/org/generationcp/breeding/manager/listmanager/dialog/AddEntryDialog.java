@@ -121,6 +121,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
     private GermplasmSearchResultsComponent searchResultsComponent;
     
     public AddEntryDialog(AddEntryDialogSource source, Window parentWindow){
+        this.setOverrideFocus(true);
         this.source = source;
         this.parentWindow = parentWindow;
     }

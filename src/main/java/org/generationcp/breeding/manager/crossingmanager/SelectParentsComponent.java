@@ -16,6 +16,7 @@ import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -207,7 +208,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
         layout.addComponent(content);
       
         
-        final Window popupWindow = new Window();
+        final Window popupWindow = new BaseSubWindow();
         popupWindow.setWidth("900px");
         popupWindow.setHeight("575px");
         popupWindow.setModal(true);

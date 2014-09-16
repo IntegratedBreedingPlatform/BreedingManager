@@ -25,6 +25,7 @@ import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -59,7 +60,7 @@ import com.vaadin.ui.themes.Reindeer;
  *
  */
 @Configurable
-public class SelectGermplasmWindow extends Window implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, 
+public class SelectGermplasmWindow extends BaseSubWindow implements InitializingBean, InternationalizableComponent, BreedingManagerLayout,
 		Window.CloseListener, ImportGermplasmEntryActionListener{
 
     private static final String PARENTAGE = "Parentage";

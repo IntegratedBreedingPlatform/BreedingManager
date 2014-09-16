@@ -12,6 +12,7 @@ import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.springframework.beans.factory.InitializingBean;
@@ -30,7 +31,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class ReserveInventoryWindow extends Window implements InitializingBean, 
+public class ReserveInventoryWindow extends BaseSubWindow implements InitializingBean,
 							InternationalizableComponent, BreedingManagerLayout {
 	private static final long serialVersionUID = -5997291617886011653L;
 

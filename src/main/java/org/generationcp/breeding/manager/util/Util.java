@@ -30,6 +30,7 @@ import org.generationcp.breeding.manager.exception.InvalidDateException;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
 import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -392,7 +393,7 @@ public class Util {
 
         layout.addComponent(listInfoPage);
         
-        Window popupWindow = new Window();
+        Window popupWindow = new BaseSubWindow();
         popupWindow.setWidth("95%");
         popupWindow.setHeight("97%");
         popupWindow.setModal(true);
@@ -441,7 +442,7 @@ public class Util {
 
         layout.addComponent(listInfoPage);
         
-        Window popupWindow = new Window();
+        Window popupWindow = new BaseSubWindow();
         popupWindow.setWidth("95%");
         popupWindow.setHeight("97%");
         popupWindow.setModal(true);

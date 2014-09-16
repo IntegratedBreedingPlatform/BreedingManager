@@ -17,6 +17,7 @@ import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -717,7 +718,7 @@ public class FillWith implements InternationalizableComponent  {
     
     private void displayExpansionLevelPopupWindow(final String propertyId){
     	crossExpansionLevel = Integer.valueOf(1);
-    	final Window specifyCrossExpansionLevelWindow = new Window("Specify Expansion Level");
+    	final Window specifyCrossExpansionLevelWindow = new BaseSubWindow("Specify Expansion Level");
     	specifyCrossExpansionLevelWindow.setHeight("135px");
     	specifyCrossExpansionLevelWindow.setWidth("250px");
     	specifyCrossExpansionLevelWindow.setModal(true);
@@ -790,7 +791,7 @@ public class FillWith implements InternationalizableComponent  {
     }
     
     private void displaySequenceNumberPopupWindow(String propertyId){
-    	Window specifySequenceNumberWindow = new Window("Specify Sequence Number");
+    	Window specifySequenceNumberWindow = new BaseSubWindow("Specify Sequence Number");
     	specifySequenceNumberWindow.setHeight("320px");
     	specifySequenceNumberWindow.setWidth("530px");
     	specifySequenceNumberWindow.setModal(true);

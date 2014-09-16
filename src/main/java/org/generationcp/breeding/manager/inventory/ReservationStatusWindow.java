@@ -8,6 +8,7 @@ import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -26,7 +27,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class ReservationStatusWindow extends Window implements InitializingBean, 
+public class ReservationStatusWindow extends BaseSubWindow implements InitializingBean,
 							InternationalizableComponent, BreedingManagerLayout {
 	
 	private static final long serialVersionUID = -8587129181683284005L;

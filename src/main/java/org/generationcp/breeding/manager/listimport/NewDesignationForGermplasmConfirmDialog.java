@@ -4,6 +4,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.listimport.actions.ProcessImportedGermplasmAction;
 import org.generationcp.breeding.manager.listimport.listeners.ImportGermplasmEntryActionListener;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.middleware.pojos.Name;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -18,7 +19,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class NewDesignationForGermplasmConfirmDialog extends Window implements BreedingManagerLayout, InitializingBean, ImportGermplasmEntryActionListener, Window.CloseListener {
+public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow implements BreedingManagerLayout, InitializingBean, ImportGermplasmEntryActionListener, Window.CloseListener {
 
 	/**
 	 * 

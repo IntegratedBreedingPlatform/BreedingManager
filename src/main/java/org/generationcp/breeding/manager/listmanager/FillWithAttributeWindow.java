@@ -20,6 +20,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
@@ -42,7 +43,7 @@ import com.vaadin.ui.Window;
  */
 
 @Configurable
-public class FillWithAttributeWindow extends Window implements InternationalizableComponent, 
+public class FillWithAttributeWindow extends BaseSubWindow implements InternationalizableComponent,
 						InitializingBean, BreedingManagerLayout {
 
     private static final long serialVersionUID = -8850686249688989080L;

@@ -7,6 +7,7 @@ import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -25,7 +26,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class SelectLocationFolderDialog extends Window implements 
+public class SelectLocationFolderDialog extends BaseSubWindow implements
 		InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 	private static final long serialVersionUID = -5502264917037916149L;
 	

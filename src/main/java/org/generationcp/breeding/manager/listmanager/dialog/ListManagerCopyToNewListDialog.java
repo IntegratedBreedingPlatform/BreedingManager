@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.vaadin.event.ShortcutAction;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.ListTreeComponent;
@@ -146,6 +147,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
         comboBoxListName.setNewItemHandler(this);
         comboBoxListName.setNullSelectionAllowed(false);
         comboBoxListName.setImmediate(true);
+        comboBoxListName.focus();
 
         txtDescription = new TextField();
         txtDescription.setWidth("400px");
@@ -166,7 +168,8 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
         btnCancel.setWidth("80px");
         btnCancel.setData(CANCEL_BUTTON_ID);
         btnCancel.setDescription("Cancel Saving New Germplasm List");
-	}
+	    btnCancel.setClickShortcut(ShortcutAction.KeyCode.ESCAPE);
+    }
 
 	@Override
 	public void initializeValues() {

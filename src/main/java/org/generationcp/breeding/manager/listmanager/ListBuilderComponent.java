@@ -47,6 +47,7 @@ import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
@@ -1121,7 +1122,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
             if (listEntries == null || listEntries.isEmpty()){
                 MessageNotifier.showRequiredFieldError(source.getWindow(), messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
             } else {
-                listManagerCopyToNewListDialog = new Window(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
+                listManagerCopyToNewListDialog = new BaseSubWindow(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
                 listManagerCopyToNewListDialog.setModal(true);
                 listManagerCopyToNewListDialog.setWidth("617px");
                 listManagerCopyToNewListDialog.setHeight("230px");

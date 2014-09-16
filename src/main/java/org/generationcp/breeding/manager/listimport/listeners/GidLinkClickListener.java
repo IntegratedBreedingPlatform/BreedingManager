@@ -12,9 +12,11 @@
 
 package org.generationcp.breeding.manager.listimport.listeners;
 
+import com.vaadin.event.ShortcutAction;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.tomcat.util.TomcatUtil;
 import org.generationcp.commons.tomcat.util.WebAppStatusInfo;
+import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
@@ -130,7 +132,7 @@ public class GidLinkClickListener implements Button.ClickListener, ItemClickList
         if(preferredName != null){
         	windowTitle = "Germplasm Details: " + preferredName + " (GID: " + gid + ")";
         }
-        Window germplasmWindow = new Window(windowTitle);
+        Window germplasmWindow = new BaseSubWindow(windowTitle);
         
         VerticalLayout layoutForGermplasm = new VerticalLayout();
         layoutForGermplasm.setMargin(false);
@@ -151,7 +153,7 @@ public class GidLinkClickListener implements Button.ClickListener, ItemClickList
         
         germplasmWindow.setModal(true);
         germplasmWindow.addStyleName(Reindeer.WINDOW_LIGHT);
-        
+        germplasmWindow.setCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
         mainWindow.addWindow(germplasmWindow);
 	}
      

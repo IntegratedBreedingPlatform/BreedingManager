@@ -8,6 +8,7 @@ import org.generationcp.breeding.manager.listimport.GermplasmImportPopupSource;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
@@ -120,7 +121,7 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 
         layout.addComponent(content);
         
-        final Window popupWindow = new Window();
+        final BaseSubWindow popupWindow = new BaseSubWindow();
         popupWindow.setWidth("900px");
         popupWindow.setHeight("550px");
         popupWindow.setModal(true);
@@ -130,13 +131,15 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
         popupWindow.setContent(layout);
         popupWindow.addStyleName(Reindeer.WINDOW_LIGHT);
         popupWindow.addStyleName("lm-list-manager-popup");
-        
-        window.addWindow(popupWindow);
-        
+
         if(caption.equals(messageSource.getMessage(Message.SEARCH_FOR_LISTS))){
-        	listSearchComponent.focusOnSearchField();
+            popupWindow.setOverrideFocus(true);
+            listSearchComponent.focusOnSearchField();
             listSearchComponent.getSearchResultsComponent().updateGermplasmListsMap();
         }
+
+        window.addWindow(popupWindow);
+
         return popupWindow;
 	}
 
@@ -166,9 +169,8 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 
 	public void openListImportDialog() {
 		Window window = getWindow();
-		Window popupWindow = new Window();
-		popupWindow.addStyleName("lm-white-window");
-		
+		Window popupWindow = new BaseSubWindow();
+
 		GermplasmImportMain germplasmImportMain = new GermplasmImportMain(popupWindow,false,this);
 		
 		VerticalLayout content = new VerticalLayout();

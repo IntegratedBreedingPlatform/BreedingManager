@@ -5,6 +5,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -20,7 +21,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class UnsavedChangesConfirmDialog extends Window implements InitializingBean, 
+public class UnsavedChangesConfirmDialog extends BaseSubWindow implements InitializingBean,
 								InternationalizableComponent, BreedingManagerLayout {
 	private static final long serialVersionUID = -7800270790767272974L;
 	
