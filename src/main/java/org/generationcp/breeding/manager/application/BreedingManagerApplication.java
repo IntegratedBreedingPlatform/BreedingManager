@@ -126,7 +126,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 Window germplasmImportWindow = new Window(messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
                 germplasmImportWindow.setName(GERMPLASM_IMPORT_WINDOW_NAME);
                 germplasmImportWindow.setSizeUndefined();
-                germplasmImportWindow.addComponent(new GermplasmImportMain(germplasmImportWindow,false));
+                germplasmImportWindow.setContent(new GermplasmImportMain(germplasmImportWindow,false));
                 this.addWindow(germplasmImportWindow);
                 return germplasmImportWindow;
             
@@ -134,7 +134,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 Window germplasmImportWindow = new Window(messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
                 germplasmImportWindow.setName(GERMPLASM_IMPORT_WINDOW_NAME_POPUP);
                 germplasmImportWindow.setSizeUndefined();
-                germplasmImportWindow.addComponent(new GermplasmImportMain(germplasmImportWindow,false, true));
+                germplasmImportWindow.setContent(new GermplasmImportMain(germplasmImportWindow,false, true));
                 this.addWindow(germplasmImportWindow);
                 return germplasmImportWindow;
 
