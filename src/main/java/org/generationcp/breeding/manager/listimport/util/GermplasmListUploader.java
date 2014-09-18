@@ -209,6 +209,8 @@ public class GermplasmListUploader implements FileFactory {
         currentRow = 0;
 
         ImportedGermplasm importedGermplasm;
+        Boolean atLeastOnePresent = false;
+        Boolean allPresent = false;
         Boolean entryColumnIsPresent = false;
         Boolean desigColumnIsPresent = false;
         Boolean gidColumnIsPresent = false;
@@ -247,8 +249,11 @@ public class GermplasmListUploader implements FileFactory {
                 if (columnHeader.equals(entryFactor)) {
                     String entryStringValue = getCellStringValue(currentSheet, currentRow, col, true);
                     if (entryStringValue.isEmpty()) {
-                        throwInvalidFileError("This file contains duplicate or missing germplasm entry IDs. Please correct the file and upload it again");
+                        allPresent &= false;
+
                     } else {
+                        allPresent &= true;
+                        atLeastOnePresent = true;
                         Integer entryId = Integer.valueOf(entryStringValue);
                         Integer previousEntry = entryNumberMap.put(entryId, entryId);
                         if (previousEntry != null) {
@@ -318,7 +323,13 @@ public class GermplasmListUploader implements FileFactory {
             currentRow++;
         }
 
-        importedGermplasmList.normalizeGermplasmList();
+        if (!allPresent && atLeastOnePresent) {
+            throwInvalidFileError("This file contains duplicate or missing germplasm entry IDs. Please correct the file and upload it again");
+        } else if (allPresent) {
+            importedGermplasmList.normalizeGermplasmList();
+        }
+
+
     }
 
     private boolean isANameFactor(String columnHeader) {
@@ -331,7 +342,7 @@ public class GermplasmListUploader implements FileFactory {
 
     private boolean isAnAttributeVariate(String columnHeader) {
         if (attributeVariates != null && attributeVariates.contains(columnHeader)) {
-            return true;
+            return true;                                                                                       `
         }
 
         return false;
