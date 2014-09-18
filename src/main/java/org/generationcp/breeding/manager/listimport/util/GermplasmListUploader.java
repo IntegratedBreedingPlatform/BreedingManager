@@ -342,7 +342,7 @@ public class GermplasmListUploader implements FileFactory {
 
     private boolean isAnAttributeVariate(String columnHeader) {
         if (attributeVariates != null && attributeVariates.contains(columnHeader)) {
-            return true;                                                                                       `
+            return true;
         }
 
         return false;
