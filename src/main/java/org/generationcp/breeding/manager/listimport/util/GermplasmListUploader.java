@@ -210,7 +210,7 @@ public class GermplasmListUploader implements FileFactory {
 
         ImportedGermplasm importedGermplasm;
         Boolean atLeastOnePresent = false;
-        Boolean allPresent = false;
+        Boolean allPresent = true;
         Boolean entryColumnIsPresent = false;
         Boolean desigColumnIsPresent = false;
         Boolean gidColumnIsPresent = false;

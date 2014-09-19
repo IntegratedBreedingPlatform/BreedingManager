@@ -440,9 +440,12 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
             if(importedGermplasm.getEntryCode() != null && importedGermplasm.getEntryCode().length() > 0){
             	entryCode = importedGermplasm.getEntryCode();
             }
-
+            int curEntryId = entryId;
+            if(importedGermplasm.getEntryId() != null){
+            	curEntryId = importedGermplasm.getEntryId();
+            }
             GermplasmListData germplasmListData = buildGermplasmListData(
-                list, gid, entryId, designation, groupName, source, entryCode);
+                list, gid, curEntryId, designation, groupName, source, entryCode);
 
             listToSave.add(germplasmListData);
             Integer lrecId = germplasmListManager.addGermplasmListData(germplasmListData);

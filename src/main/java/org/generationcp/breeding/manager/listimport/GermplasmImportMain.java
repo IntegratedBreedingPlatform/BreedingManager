@@ -122,7 +122,7 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 	@Override
 	public void instantiateComponents() {
 		setMargin(false,false,true,true);
-		setWidth("710px");
+		setWidth("730px");
 		
 		titleLayout = new HorizontalLayout();
 		titleLayout.setSpacing(true);
