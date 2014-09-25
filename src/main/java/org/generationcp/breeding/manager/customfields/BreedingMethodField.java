@@ -162,7 +162,18 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	@Override
 	public void initializeValues() {
         populateMethods();
-        enableMethodHelp(hasDefaultValue);
+        enableMethodHelp(hasDefaultValue);   
+        initPopulateFavMethod();
+	}
+	
+	public boolean initPopulateFavMethod(){
+		boolean hasFavorite = false;
+		if(!hasDefaultValue && BreedingManagerUtil.hasFavoriteMethods(germplasmDataManager)){
+        	showFavoritesCheckBox.setValue(true);
+        	hasFavorite = true;
+        	populateMethods(true);        	
+        }
+		return hasFavorite;
 	}
 
 	@Override
@@ -185,15 +196,6 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
                 changed = true;
 			}
         });
-        
-        showFavoritesCheckBox.addListener(new Property.ValueChangeListener(){
-			private static final long serialVersionUID = 1L;
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				populateMethods(((Boolean) event.getProperty().getValue()).equals(true));
-				updateComboBoxDescription();
-			}
-		});
         
         showFavoritesCheckBox.addListener(new Property.ValueChangeListener(){
 			private static final long serialVersionUID = 1L;
@@ -375,5 +377,37 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
     protected int getLeftIndentPixels(){
     	return leftIndentPixels;
     }
+
+	public SimpleResourceBundleMessageSource getMessageSource() {
+		return messageSource;
+	}
+
+	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	public WorkbenchDataManager getWorkbenchDataManager() {
+		return workbenchDataManager;
+	}
+
+	public void setWorkbenchDataManager(WorkbenchDataManager workbenchDataManager) {
+		this.workbenchDataManager = workbenchDataManager;
+	}
+
+	public GermplasmDataManager getGermplasmDataManager() {
+		return germplasmDataManager;
+	}
+
+	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
+	}
+
+	public boolean isHasDefaultValue() {
+		return hasDefaultValue;
+	}
+
+	public void setHasDefaultValue(boolean hasDefaultValue) {
+		this.hasDefaultValue = hasDefaultValue;
+	}
     
 }

@@ -276,6 +276,34 @@ public class BreedingManagerUtil{
     	populateWithFavoriteMethods(workbenchDataManager, germplasmDataManager, methodComboBox, mapMethods, null);
     }
     
+    public static boolean hasFavoriteMethods(GermplasmDataManager germplasmDataManager){
+    	boolean hasFavMethod = false;
+    	try {
+			List<ProgramFavorite> list = germplasmDataManager.getProgramFavorites(FavoriteType.METHOD, 1000);
+			if(list != null && !list.isEmpty()){
+				hasFavMethod = true;
+			}			
+		} catch (MiddlewareQueryException e) {
+			e.printStackTrace();
+		}
+    	return hasFavMethod;
+    }
+    
+    public static boolean hasFavoriteLocation(GermplasmDataManager germplasmDataManager, Integer locationType) {
+    	    	        
+        boolean hasFavLocation = false;
+        try {
+        //Get location Id's
+	        List<ProgramFavorite> list = germplasmDataManager.getProgramFavorites(FavoriteType.LOCATION, 1000);
+	        if(list != null && !list.isEmpty()){
+	        	hasFavLocation = true;
+			}
+        } catch (MiddlewareQueryException e) {
+			e.printStackTrace();
+		}
+		
+		return hasFavLocation;
+    }
     /**
      * Queries for program's favorite locations and sets the values to combobox and map.  Only selects method with the GIVEN type.
      * 

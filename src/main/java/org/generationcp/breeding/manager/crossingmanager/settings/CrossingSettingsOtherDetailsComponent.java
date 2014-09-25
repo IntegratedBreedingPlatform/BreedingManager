@@ -49,12 +49,28 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 		implements BreedingManagerLayout, InternationalizableComponent,
 		InitializingBean {
 
+	public SimpleResourceBundleMessageSource getMessageSource() {
+		return messageSource;
+	}
+
+	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	public GermplasmDataManager getGermplasmDataManager() {
+		return germplasmDataManager;
+	}
+
+	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
+	}
+
 	public enum SaveSettingOption {
 		YES, NO
 	}
 	private static final long serialVersionUID = -4119454332332114156L;
 
-	private static final Logger LOG = LoggerFactory.getLogger(CrossingSettingsOtherDetailsComponent.class);
+	private static final Logger LOG = LoggerFactory.getLogger(CrossingSettingsOtherDetailsComponentTest.class);
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -151,6 +167,18 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 					"Error getting breeding locations!");
 		}
 		setFieldsDefaultValue();
+		
+		initPopulateFavLocation();
+	}
+	
+	public boolean initPopulateFavLocation(){
+		boolean hasFavorite = false;
+		if(BreedingManagerUtil.hasFavoriteLocation(germplasmDataManager, 0)){
+			showFavouriteLocations.setValue(true);
+        	populateHarvestLocation(true);
+        	hasFavorite = true;
+        }
+		return hasFavorite;
 	}
 
 	@Override

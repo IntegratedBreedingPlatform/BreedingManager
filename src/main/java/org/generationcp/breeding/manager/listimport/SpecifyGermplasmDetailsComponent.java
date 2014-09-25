@@ -454,6 +454,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
             Integer listId = saveGermplasmListAction.saveRecords(list, getGermplasmNameObjects(), getNewNames(),
                     germplasmListUploader.getOriginalFilename(), processGermplasmAction.getMatchedGermplasmIds(),
                     importedGermplasmList, getSeedStorageLocation());
+            
 
             if (listId != null) {
                 MessageNotifier.showMessage(window, messageSource.getMessage(Message.SUCCESS),
@@ -485,7 +486,9 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
     private Integer getSeedStorageLocation() {
         Integer storageLocationId = 0;
         try {
-            storageLocationId = Integer.valueOf(germplasmFieldsComponent.getSeedLocationComboBox().getValue().toString());
+        	if(germplasmFieldsComponent.getSeedLocationComboBox() != null && germplasmFieldsComponent.getSeedLocationComboBox().getValue() != null){
+        		storageLocationId = Integer.valueOf(germplasmFieldsComponent.getSeedLocationComboBox().getValue().toString());
+        	}
         } catch (NumberFormatException e) {
             LOG.error("Error ar SpecifyGermplasmDetailsComponent: getSeedStorageLocation() " + e);
         }

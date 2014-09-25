@@ -78,6 +78,10 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	@Autowired
     private LocationDataManager locationDataManager;
 	
+	public BreedingLocationField() {
+		
+	}
+	
 	public BreedingLocationField(BreedingLocationFieldSource source){
 		this.source = source;
 		this.caption = "Location: ";
@@ -158,6 +162,17 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	@Override
 	public void initializeValues() {
         populateLocations();
+        initPopulateFavLocations();        
+	}
+	
+	public boolean initPopulateFavLocations(){
+		boolean hasFavorite = false;
+		if(BreedingManagerUtil.hasFavoriteLocation(germplasmDataManager, 0)){
+        	showFavoritesCheckBox.setValue(true);
+        	populateHarvestLocation(true);
+        	hasFavorite = true;
+        }
+		return hasFavorite;
 	}
 
 	@Override
@@ -349,6 +364,37 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
     protected int getLeftIndentPixels(){
     	return leftIndentPixels;
     }
-    
-    
+
+	public SimpleResourceBundleMessageSource getMessageSource() {
+		return messageSource;
+	}
+
+	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	public WorkbenchDataManager getWorkbenchDataManager() {
+		return workbenchDataManager;
+	}
+
+	public void setWorkbenchDataManager(WorkbenchDataManager workbenchDataManager) {
+		this.workbenchDataManager = workbenchDataManager;
+	}
+
+	public GermplasmDataManager getGermplasmDataManager() {
+		return germplasmDataManager;
+	}
+
+	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
+	}
+
+	public LocationDataManager getLocationDataManager() {
+		return locationDataManager;
+	}
+
+	public void setLocationDataManager(LocationDataManager locationDataManager) {
+		this.locationDataManager = locationDataManager;
+	}
+        
 }

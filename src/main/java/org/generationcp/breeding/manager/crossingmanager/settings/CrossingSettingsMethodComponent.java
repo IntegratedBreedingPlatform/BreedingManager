@@ -80,6 +80,17 @@ public class CrossingSettingsMethodComponent extends CssLayout implements
 		initializeValues();
 		addListeners();
 		layoutComponents();
+		initPopulateFavMethod();		
+	}
+	
+	public boolean initPopulateFavMethod(){
+		boolean hasFavorite = false;
+		if(BreedingManagerUtil.hasFavoriteMethods(germplasmDataManager)){
+			favoriteMethodsCheckbox.setValue(true);
+        	populateBreedingMethods(true);
+        	hasFavorite = true;
+        }
+		return hasFavorite;
 	}
 
 	@Override
@@ -358,5 +369,21 @@ public class CrossingSettingsMethodComponent extends CssLayout implements
 			return false;
 		}
 		return true;
+	}
+
+	public SimpleResourceBundleMessageSource getMessageSource() {
+		return messageSource;
+	}
+
+	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	public GermplasmDataManager getGermplasmDataManager() {
+		return germplasmDataManager;
+	}
+
+	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
 	}    
 }
