@@ -70,7 +70,7 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 	}
 	private static final long serialVersionUID = -4119454332332114156L;
 
-	private static final Logger LOG = LoggerFactory.getLogger(CrossingSettingsOtherDetailsComponentTest.class);
+	private static final Logger LOG = LoggerFactory.getLogger(CrossingSettingsOtherDetailsComponent.class);
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
