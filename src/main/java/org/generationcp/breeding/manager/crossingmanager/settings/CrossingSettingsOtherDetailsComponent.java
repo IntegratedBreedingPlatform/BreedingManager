@@ -47,23 +47,7 @@ import com.vaadin.ui.themes.Reindeer;
 @Configurable
 public class CrossingSettingsOtherDetailsComponent extends CssLayout
 		implements BreedingManagerLayout, InternationalizableComponent,
-		InitializingBean {
-
-	public SimpleResourceBundleMessageSource getMessageSource() {
-		return messageSource;
-	}
-
-	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
-		this.messageSource = messageSource;
-	}
-
-	public GermplasmDataManager getGermplasmDataManager() {
-		return germplasmDataManager;
-	}
-
-	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
-		this.germplasmDataManager = germplasmDataManager;
-	}
+		InitializingBean {	
 
 	public enum SaveSettingOption {
 		YES, NO
@@ -345,5 +329,21 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 	public Boolean settingsFileNameProvided() {
 		return settingsNameTextfield.getValue() != null && 
 			!StringUtils.isEmpty((String) settingsNameTextfield.getValue());
+	}
+	
+	public SimpleResourceBundleMessageSource getMessageSource() {
+		return messageSource;
+	}
+
+	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	public GermplasmDataManager getGermplasmDataManager() {
+		return germplasmDataManager;
+	}
+
+	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
 	}
 }
