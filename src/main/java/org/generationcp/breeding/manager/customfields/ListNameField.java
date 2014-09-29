@@ -115,8 +115,8 @@ public class ListNameField extends HorizontalLayout
 		listNameTextField.setValue(listName);
 	}
 
-	public Object getValue(){
-		return listNameTextField.getValue();
+	public String getValue(){
+		return (String)listNameTextField.getValue();
 	}
 	
 	public ListNameValidator getListNameValidator() {
@@ -140,5 +140,7 @@ public class ListNameField extends HorizontalLayout
 	public void setChanged(boolean changed) {
 		this.changed = changed;
 	}
+
+
 
 }

@@ -111,8 +111,8 @@ public class ListDescriptionField extends HorizontalLayout
 		descriptionTextArea.setValue(value);
 	}
 	
-	public Object getValue(){
-		return descriptionTextArea.getValue();
+	public String getValue(){
+		return (String)descriptionTextArea.getValue();
 	}
 	
 	public void validate() throws InvalidValueException {

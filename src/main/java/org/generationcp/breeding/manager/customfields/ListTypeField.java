@@ -141,8 +141,8 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		listTypeComboBox.select(value);
 	}
 	
-	public Object getValue(){
-		return listTypeComboBox.getValue();
+	public String getValue(){
+		return (String)listTypeComboBox.getValue();
 	}
 	
 	public String getDEFAULT_LIST_TYPE() {

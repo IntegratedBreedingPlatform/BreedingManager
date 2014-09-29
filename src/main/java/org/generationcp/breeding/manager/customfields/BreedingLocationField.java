@@ -258,8 +258,8 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		breedingLocationComboBox.select(value);
 	}
 	
-	public Object getValue(){
-		return breedingLocationComboBox.getValue();
+	public String getValue(){
+		return (String)breedingLocationComboBox.getValue();
 	}
 	
 	public void validate() throws InvalidValueException {

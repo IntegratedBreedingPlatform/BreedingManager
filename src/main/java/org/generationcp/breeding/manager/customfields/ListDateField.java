@@ -108,8 +108,8 @@ public class ListDateField extends HorizontalLayout
 		listDtDateField.setValue(date);
 	}
 
-	public Object getValue(){
-		return listDtDateField.getValue();
+	public Date getValue(){
+		return (Date)listDtDateField.getValue();
 	}
 	
 	public void validate() throws InvalidValueException {

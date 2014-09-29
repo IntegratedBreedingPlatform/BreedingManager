@@ -254,8 +254,8 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		breedingMethodComboBox.select(value);
 	}
 	
-	public Object getValue(){
-		return breedingMethodComboBox.getValue();
+	public String getValue(){
+		return (String)breedingMethodComboBox.getValue();
 	}
 	
 	public void validate() throws InvalidValueException {

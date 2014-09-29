@@ -107,8 +107,8 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		listNotesTextArea.setValue(value);
 	}
 	
-	public Object getValue(){
-		return listNotesTextArea.getValue();
+	public String getValue(){
+		return (String)listNotesTextArea.getValue();
 	}
 	
 	public void validate() throws InvalidValueException {
