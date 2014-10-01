@@ -48,7 +48,12 @@
 
     <!-- The Message Source -->
     <bean id="messageSource" class="org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource">
-        <property name="basename" value="I18NMessages"/>
+        <property name="basenames">
+		  <list>
+		    <value>I18NMessages</value>
+		    <value>VaadinCommonMessages</value>
+		  </list>
+		</property>
         <property name="locale">
             <util:constant static-field="java.util.Locale.ENGLISH"/>
         </property>
