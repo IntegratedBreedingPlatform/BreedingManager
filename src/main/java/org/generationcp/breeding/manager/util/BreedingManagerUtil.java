@@ -12,20 +12,21 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.generationcp.middleware.pojos.Location;
-import org.generationcp.middleware.pojos.Method;
-import org.generationcp.middleware.pojos.UserDefinedField;
+import org.generationcp.middleware.pojos.*;
 import org.generationcp.middleware.pojos.dms.ProgramFavorite;
 import org.generationcp.middleware.pojos.dms.ProgramFavorite.FavoriteType;
 
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Window;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class BreedingManagerUtil{
-    
+    private static final Logger LOG = LoggerFactory.getLogger(BreedingManagerUtil.class);
     public static final String[] USER_DEF_FIELD_CROSS_NAME = {"CROSS NAME", "CROSSING NAME"};
 
     /**
@@ -47,8 +48,8 @@ public class BreedingManagerUtil{
         List<UserDefinedField> nameTypes = germplasmListManager.getGermplasmNameTypes();
         for (UserDefinedField type : nameTypes){
             for (String crossNameValue : USER_DEF_FIELD_CROSS_NAME){
-                if (crossNameValue.equals(type.getFcode().toUpperCase()) || 
-                        crossNameValue.equals(type.getFname().toUpperCase())){
+                if (crossNameValue.equalsIgnoreCase(type.getFcode()) ||
+                        crossNameValue.equalsIgnoreCase(type.getFname())){
                     return type.getFldno();
                 }
             }
@@ -80,8 +81,8 @@ public class BreedingManagerUtil{
             return getIDForUserDefinedFieldCrossingName(germplasmListManager);
         
         } catch (MiddlewareQueryException e) {
-            e.printStackTrace();
-            
+            LOG.error(e.getMessage());
+            LOG.error("\n" + e.getStackTrace());
             if (window != null && messageSource != null){
                 MessageNotifier.showError(window, 
                         messageSource.getMessage(Message.ERROR_DATABASE),
@@ -104,8 +105,8 @@ public class BreedingManagerUtil{
      */
     public static boolean validateRequiredField(Window window, AbstractField field, 
             SimpleResourceBundleMessageSource messageSource, String fieldName){
-        
-        assert field.getCaption() !=null || fieldName != null; //either the field caption or fieldName param must be available
+        //either the field caption or fieldName param must be available
+        assert field.getCaption() !=null || fieldName != null;
         
         if (window != null && field.getValue() == null){
             showFieldIsRequiredMessage(window, messageSource, fieldName != null ? fieldName : field.getCaption());
@@ -150,8 +151,8 @@ public class BreedingManagerUtil{
      * 
      */
     public static void showFieldIsRequiredMessage(Window window, SimpleResourceBundleMessageSource messageSource, String fieldName){
-        
-        assert fieldName != null; //either the field caption or fieldName param must be available
+        //either the field caption or fieldName param must be available
+        assert fieldName != null;
         assert messageSource != null;
         
         if (window != null){
@@ -284,7 +285,8 @@ public class BreedingManagerUtil{
 				hasFavMethod = true;
 			}			
 		} catch (MiddlewareQueryException e) {
-			e.printStackTrace();
+            LOG.error(e.getMessage());
+            LOG.error("\n" + e.getStackTrace());
 		}
     	return hasFavMethod;
     }
@@ -299,7 +301,8 @@ public class BreedingManagerUtil{
 	        	hasFavLocation = true;
 			}
         } catch (MiddlewareQueryException e) {
-			e.printStackTrace();
+            LOG.error(e.getMessage());
+            LOG.error("\n" + e.getStackTrace());
 		}
 		
 		return hasFavLocation;
@@ -335,7 +338,7 @@ public class BreedingManagerUtil{
 	        }
 	        
 		} catch (MiddlewareQueryException e) {
-			e.printStackTrace();
+            LOG.error("\n" + e.getStackTrace());
 		}
 
 		for(Method favoriteMethod : favoriteMethods){
@@ -350,6 +353,56 @@ public class BreedingManagerUtil{
 			}
 		}
 		
+    }
+
+    public static String getTypeString(String typeCode, GermplasmListManager germplasmListManager) {
+        try{
+            List<UserDefinedField> listTypes = germplasmListManager.getGermplasmListTypes();
+
+            for (UserDefinedField listType : listTypes) {
+                if(typeCode.equals(listType.getFcode())){
+                    return listType.getFname();
+                }
+            }
+        }catch(MiddlewareQueryException ex){
+            LOG.error("Error in getting list types.", ex);
+            return "Error in getting list types.";
+        }
+
+        return "Germplasm List";
+    }
+
+    public static String getDescriptionForDisplay(GermplasmList germplasmList){
+        String description = "-";
+        if(germplasmList != null && germplasmList.getDescription() != null && germplasmList.getDescription().length() != 0){
+            description = germplasmList.getDescription().replaceAll("<", "&lt;");
+            description = description.replaceAll(">", "&gt;");
+            if(description.length() > 27){
+                description = description.substring(0, 27) + "...";
+            }
+        }
+        return description;
+    }
+
+    public static String getOwnerListName(Integer userId, UserDataManager userDataManager) {
+        try{
+            User user=userDataManager.getUserById(userId);
+            if(user != null){
+                int personId=user.getPersonid();
+                Person p =userDataManager.getPersonById(personId);
+
+                if(p!=null){
+                    return p.getFirstName()+" "+p.getMiddleName() + " "+p.getLastName();
+                }else{
+                    return user.getName();
+                }
+            } else {
+                return "";
+            }
+        } catch(MiddlewareQueryException ex){
+            LOG.error("Error with getting list owner name of user with id: " + userId, ex);
+            return "";
+        }
     }
 
 }

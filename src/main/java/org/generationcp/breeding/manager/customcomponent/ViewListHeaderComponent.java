@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -78,9 +79,10 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 		
 		ownerLabel = new Label(messageSource.getMessage(Message.LIST_OWNER_LABEL) + ":");
 		ownerLabel.addStyleName("bold");
-		
-		ownerValueLabel = new Label(getOwnerListName(germplasmList.getUserId()));
-		ownerValueLabel.setDescription(getOwnerListName(germplasmList.getUserId()));
+
+        String ownerName = BreedingManagerUtil.getOwnerListName(germplasmList.getUserId(), userDataManager);
+		ownerValueLabel = new Label(ownerName);
+		ownerValueLabel.setDescription(ownerName);
 		ownerValueLabel.setWidth("200px");
 		
 		statusLabel = new Label(messageSource.getMessage(Message.STATUS_LABEL) + ":");
@@ -96,14 +98,7 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 		descriptionLabel = new Label(messageSource.getMessage(Message.DESCRIPTION_LABEL) + ":");
 		descriptionLabel.addStyleName("bold");
 		
-		String description = "-";
-		if(germplasmList.getDescription() != null && germplasmList.getDescription().length() != 0){
-			description = germplasmList.getDescription().replaceAll("<", "&lt;");
-			description = description.replaceAll(">", "&gt;");
-			if(description.length() > 27){
-				description = description.substring(0, 27) + "...";
-			}
-		}
+		String description = BreedingManagerUtil.getDescriptionForDisplay(germplasmList);
 		descriptionValueLabel = new Label(description);
 		descriptionValueLabel.setDescription(germplasmList.getDescription());
 		descriptionValueLabel.setWidth("200px");
@@ -111,7 +106,7 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 		typeLabel = new Label(messageSource.getMessage(Message.TYPE_LABEL) + ":");
 		typeLabel.addStyleName("bold");
 		
-		String typeValue = getTypeString(germplasmList.getType());
+		String typeValue = BreedingManagerUtil.getTypeString(germplasmList.getType(), germplasmListManager);
 		typeValueLabel = new Label(typeValue);
 		typeValueLabel.setDescription(typeValue);
 		typeValueLabel.setWidth("200px");
@@ -172,44 +167,6 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 		addComponent(notesValueLabel, 1, 6);
 	}
 
-	private String getOwnerListName(Integer userId) {
-		try{
-	        User user=userDataManager.getUserById(userId);
-	        if(user != null){
-	            int personId=user.getPersonid();
-	            Person p =userDataManager.getPersonById(personId);
-	    
-	            if(p!=null){
-	                return p.getFirstName()+" "+p.getMiddleName() + " "+p.getLastName();
-	            }else{
-	                return user.getName();
-	            }
-	        } else {
-	            return "";
-	        }
-		} catch(MiddlewareQueryException ex){
-			LOG.error("Error with getting list owner name of user with id: " + userId, ex);
-			return "";
-		}
-    }
-	
-	private String getTypeString(String typeCode) {
-		try{
-	        List<UserDefinedField> listTypes = this.germplasmListManager.getGermplasmListTypes();
-	        
-	        for (UserDefinedField listType : listTypes) {
-	            if(typeCode.equals(listType.getFcode())){
-	            	return listType.getFname();
-	            }
-	        }
-		}catch(MiddlewareQueryException ex){
-			LOG.error("Error in getting list types.", ex);
-			return "Error in getting list types.";
-		}
-        
-        return "Germplasm List";
-    }
-
 	@Override
 	public void updateLabels() {
 		
@@ -226,7 +183,7 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 		builder.append("<tr>\n");
 		
 		builder.append("<td><b>List Owner:</b></td>\n");
-		builder.append("<td>" + getOwnerListName(germplasmList.getUserId()) + "</td>\n");
+		builder.append("<td>" + BreedingManagerUtil.getOwnerListName(germplasmList.getUserId(), userDataManager) + "</td>\n");
 		builder.append("</tr>\n");
 		
 		builder.append("<tr>\n");
@@ -240,21 +197,14 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 		
 		builder.append("<tr>\n");
 		builder.append("<td><b>Description:</b></td>\n");
-		String description = "-";
-		if(germplasmList.getDescription() != null && germplasmList.getDescription().length() != 0){
-			description = germplasmList.getDescription().replaceAll("<", "&lt;");
-			description = description.replaceAll(">", "&gt;");
-			if(description.length() > 27){
-				description = description.substring(0, 27) + "...";
-			}
-		}
+		String description =  BreedingManagerUtil.getDescriptionForDisplay(germplasmList);
 		//if(description)
 		builder.append("<td>" + description + "</td>\n");
 		builder.append("</tr>\n");
 		
 		builder.append("<tr>\n");
 		builder.append("<td><b>Type:</b></td>\n");
-		builder.append("<td>" + getTypeString(germplasmList.getType()) + "</td>\n");
+		builder.append("<td>" + BreedingManagerUtil.getTypeString(germplasmList.getType(), germplasmListManager) + "</td>\n");
 		builder.append("</tr>\n");
 		
 		builder.append("<tr>\n");
