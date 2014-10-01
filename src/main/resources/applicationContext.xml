@@ -21,7 +21,7 @@
 <!--             </map> -->
 <!--         </property> -->
 <!--     </bean> -->
-    
+
     <!-- Declare property file locations -->
     <context:property-placeholder location="classpath:workbench.properties" />
     
@@ -147,6 +147,8 @@
     	scope="request">
     	<aop:scoped-proxy/>
     </bean>
+
+    <bean id="breedingManagerService" class="org.generationcp.breeding.manager.service.BreedingManagerServiceImpl"/>
 
     
     <bean id="userDataManager" factory-bean="managerFactory"
