@@ -1,6 +1,5 @@
 package org.generationcp.breeding.manager.service;
 
-import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
@@ -83,7 +82,7 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 		if (localIbdbUserId != null) {
 			return localIbdbUserId;
 		} else {
-			return -1; // TODO: verify actual default value if no workbench_ibdb_user_map was found
+			return -1;
 		}
 	}
 
