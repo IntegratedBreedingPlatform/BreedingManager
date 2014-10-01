@@ -25,8 +25,7 @@ public class ListOwnerField extends HorizontalLayout
 	implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOG = LoggerFactory.getLogger(ListOwnerField.class);
-	
+
 	private Label captionLabel;
 	private String caption;
 	private Label listOwnerLabel;
@@ -34,12 +33,6 @@ public class ListOwnerField extends HorizontalLayout
 	private Label mandatoryMark;
 	private ListNameValidator listNameValidator;
 	private boolean changed;
-	
-	@Autowired
-    private WorkbenchDataManager workbenchDataManager;
-	
-	@Autowired
-    private UserDataManager userDataManager;
 	
 	public ListOwnerField(String caption, boolean isMandatory){
 		this.caption = caption + ": ";
@@ -62,7 +55,7 @@ public class ListOwnerField extends HorizontalLayout
 
 	@Override
 	public void initializeValues() {
-		setDefaultValue();
+
 	}
 
 	@Override
@@ -90,38 +83,7 @@ public class ListOwnerField extends HorizontalLayout
 		
 		addComponent(listOwnerLabel);
 	}
-	
-	public String getOwnerListName(Integer userId) {
-		String username = "";
-		
-		try{
-			User user = null;
-			
-			if(userId != null){
-				user=userDataManager.getUserById(userId);
-	        }
-			else{
-				int currentUser = Util.getCurrentUserLocalId(workbenchDataManager);
-				user=userDataManager.getUserById(currentUser);
-			}
-			
-			if(user != null){
-				int personId=user.getPersonid();
-				Person p = userDataManager.getPersonById(personId);
-				
-				if(p!=null){
-					username = p.getFirstName() + " " + p.getMiddleName() + " " + p.getLastName();
-				}else{
-					username = user.getName();
-				}
-			}
-			
-		} catch(MiddlewareQueryException ex){
-			LOG.error("Error with getting list owner name of user with id: " + userId, ex);
-		}
-		
-		return username;
-    }
+
 
 	@Override
 	public void updateLabels() {
@@ -149,16 +111,9 @@ public class ListOwnerField extends HorizontalLayout
 		listOwnerLabel.setValue(listOwnerName);
 	}
 	
-	public void setDefaultValue(){
-		listOwnerLabel.setValue(getOwnerListName(null));
-	}
-	
-	public void setValue(Integer userId){
-		listOwnerLabel.setValue(getOwnerListName(userId));
-	}
 
-	public Object getValue(){
-		return listOwnerLabel.getValue();
+	public String getValue(){
+		return (String)listOwnerLabel.getValue();
 	}
 	
 	public ListNameValidator getListNameValidator() {

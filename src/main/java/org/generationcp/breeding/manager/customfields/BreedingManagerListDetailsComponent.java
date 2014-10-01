@@ -7,12 +7,15 @@ import java.util.Date;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.service.BreedingManagerService;
+import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.breeding.manager.validator.ListNameValidator;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +54,9 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	
 	@Autowired
     private SimpleResourceBundleMessageSource messageSource;
+
+	@Autowired
+	private BreedingManagerService breedingManagerService;
 	
 	private GermplasmList germplasmList;
 	
@@ -116,7 +122,12 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
             }
             
 			listNotesField.setValue(germplasmList.getNotes());
-			listOwnerField.setValue(germplasmList.getUserId());
+			try {
+				listOwnerField.setValue(breedingManagerService.getOwnerListName(
+						germplasmList.getUserId()));
+			} catch (MiddlewareQueryException e) {
+				// perform application level handling of query exception
+			}
 		}
 	}
 	
@@ -206,9 +217,9 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 			
 			listDescriptionField.setValue(germplasmList.getDescription());
 			
-			Date germplasmDate = new Date();
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtil.DATE_AS_NUMBER_FORMAT);
 	        try {
-	        	germplasmDate = getParsedDate(germplasmList.getDate().toString());
+	            this.listDateField.setValue(simpleDateFormat.parse(germplasmList.getDate().toString()));
 	        } catch (ReadOnlyException e) {
 	            LOG.error("Error in parsing date field.", e);
 	            e.printStackTrace();
@@ -216,47 +227,35 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	            LOG.error("Error in parsing date field.", e);
 	            e.printStackTrace();
 	        } catch (ParseException e) {
-	        	LOG.error("Error in parsing date field.", e);
+	            LOG.error("Error in parsing date field.", e);
 	            e.printStackTrace();
 	        }
-	        this.listDateField.setValue(germplasmDate);
 			
 			listTypeField.setValue(germplasmList.getType());
 			
 			String notes = (germplasmList.getNotes() == null)? "" : germplasmList.getNotes();
 			listNotesField.setValue(notes);
-			
-			listOwnerField.setValue(germplasmList.getUserId());
+
+			try {
+				listOwnerField.setValue(breedingManagerService.getOwnerListName(
+						germplasmList.getUserId()));
+			} catch (MiddlewareQueryException e) {
+				e.printStackTrace();
+			}
 		} else {
 			listNameField.setValue("");
 			listDescriptionField.setValue("");
 			listDateField.setValue(new Date());
 			listTypeField.setValue(defaultListType);
 			listNotesField.setValue("");
-			listOwnerField.setDefaultValue();
+			try {
+				listOwnerField.setValue(breedingManagerService.getDefaultOwnerListName());
+			} catch (MiddlewareQueryException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
-	private Date getParsedDate(String dateToParse) throws ParseException {
-		Date validDate = null;
-		
-		if(dateToParse.length() < 8){
-			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtil.DATE_AS_NUMBER_FORMAT);
-			validDate = simpleDateFormat.parse(getParsableDate(dateToParse));
-		}
-		return validDate;
-	}
-
-	private String getParsableDate(String dateToParse) {
-		int dateLenght = dateToParse.length();
-		
-		for(int i = 1; i <= (8-dateLenght); i++){
-			dateToParse = "0" + dateToParse;
-		}
-		
-		return dateToParse;
-	}
-
 	public void resetListNameFieldForExistingList(GermplasmList germplasmList){
 		ListNameValidator listNameValidator = listNameField.getListNameValidator();
 		listNameValidator.setCurrentListName(germplasmList.getName());
