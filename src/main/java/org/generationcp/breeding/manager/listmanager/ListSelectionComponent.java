@@ -197,7 +197,7 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 
 	@Override
 	public void refreshListTreeAfterListImport() {
-		listTreeComponent.refreshTree();
+		listTreeComponent.refreshComponent();
 	}
 	
 	@Override
