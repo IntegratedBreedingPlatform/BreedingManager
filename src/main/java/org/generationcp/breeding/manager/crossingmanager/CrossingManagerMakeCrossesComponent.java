@@ -61,7 +61,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
     
 	//Handles Universal Mode View for ListManagerMain
 	private ModeView modeView;
-	private boolean hasChanges; //marks if there are unsaved changes in List from ListComponent and ListBuilderComponent
+    //marks if there are unsaved changes in List from ListSelectorComponent and ListBuilderComponent
+	private boolean hasChanges;
 	private UnsavedChangesConfirmDialog unsavedChangesDialog;
       
     public CrossingManagerMakeCrossesComponent(ManageCrossingSettingsMain manageCrossingSettingsMain){
@@ -297,19 +298,16 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
 				if(this.modeView.equals(ModeView.LIST_VIEW) && newModeView.equals(ModeView.INVENTORY_VIEW)){
 					message = "You have unsaved changes to a parent list you are creating."
 							+ " Do you want to save them before changing views?";
-				}
-				else if(this.modeView.equals(ModeView.INVENTORY_VIEW) && newModeView.equals(ModeView.LIST_VIEW)){
+				}else if(this.modeView.equals(ModeView.INVENTORY_VIEW) && newModeView.equals(ModeView.LIST_VIEW)){
 					message = "You have unsaved reservations to one or more lists. Do you want to save them before changing views?";
 				}
-				
-				if(areBothParentsNewListWithUnsavedChanges()){//both parents are not yet saved and has unsaved changes
+                //both parents are not yet saved and has unsaved changes
+				if(areBothParentsNewListWithUnsavedChanges()){
 					MessageNotifier.showError(getWindow(), "Unsaved Parent Lists", "Please save parent lists first before changing view.");
-				}
-				else{
+				}else{
 					showUnsavedChangesConfirmDialog(message,newModeView);
 				}
-			}
-			else{
+			}else{
 				modeView = newModeView;
 				updateView(modeView);
 			}
@@ -365,20 +363,17 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
 			ModeView prevModeView;
 			if(modeView.equals(ModeView.LIST_VIEW)){
 				prevModeView = ModeView.INVENTORY_VIEW;
-			}
-			else{
+			}else{
 				prevModeView = ModeView.LIST_VIEW;
 			}
 			
 			if(femaleParentTab.hasUnsavedChanges() && !maleParentTab.hasUnsavedChanges()){
 				femaleParentTab.setPreviousModeView(prevModeView);
 				femaleParentTab.doSaveActionFromMain();
-			}
-			else if(maleParentTab.hasUnsavedChanges() && !femaleParentTab.hasUnsavedChanges()){
+			}else if(maleParentTab.hasUnsavedChanges() && !femaleParentTab.hasUnsavedChanges()){
 				maleParentTab.setPreviousModeView(prevModeView);
 				maleParentTab.doSaveActionFromMain();
-			}
-			else{
+			}else{
 				//keep track the unsaved changes due to reservation and dragging lots given that the parents have existing lists.
 				if(femaleParentTab.getGermplasmList() != null && maleParentTab.getGermplasmList() != null){
 					
@@ -389,8 +384,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
 					maleParentTab.doSaveActionFromMain();
 				}
 			}
-		}
-		else{
+		}else{
 			updateView(modeView);
 		}
 		
@@ -417,12 +411,10 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
 		if(femaleTabComponent.getGermplasmList() != null){
 			if(modeView.equals(ModeView.INVENTORY_VIEW)){
 				femaleTabComponent.discardChangesInListView();
-			}
-			else if(modeView.equals(ModeView.LIST_VIEW)){
+			}else if(modeView.equals(ModeView.LIST_VIEW)){
 				femaleTabComponent.discardChangesInInventoryView();
 			}
-		}
-		else{
+		}else{
 			//if no list save, just reset the list
 			femaleTabComponent.resetList();
 		}
@@ -432,21 +424,19 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
 		if(maleTabComponent.getGermplasmList() != null){
 			if(modeView.equals(ModeView.INVENTORY_VIEW)){
 				maleTabComponent.discardChangesInListView();
-			}
-			else if(modeView.equals(ModeView.LIST_VIEW)){
+			}else if(modeView.equals(ModeView.LIST_VIEW)){
 				maleTabComponent.discardChangesInInventoryView();
 			}
-		}
-		else{
+		}else{
 			//if no list save, just reset the list
 			maleTabComponent.resetList();
 		}
 		
 		resetUnsavedStatus();
 		updateView(modeView);
-		
 		this.getWindow().removeWindow(unsavedChangesDialog);
-	}//end of discardAllListChangesAction()
+        //end of discardAllListChangesAction()
+	}
 
 	@Override
 	public void cancelAllListChangesAction(){
@@ -454,13 +444,13 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
 		//Return to Previous Mode View
 		if(modeView.equals(ModeView.LIST_VIEW)){
 			setModeViewOnly(ModeView.INVENTORY_VIEW);
-		}
-		else if(modeView.equals(ModeView.INVENTORY_VIEW)){
+		}else if(modeView.equals(ModeView.INVENTORY_VIEW)){
 			setModeViewOnly(ModeView.LIST_VIEW);
 		}
 		
 		this.getWindow().removeWindow(unsavedChangesDialog);
-	}//end of cancelAllListChangesAction()
+        //end of cancelAllListChangesAction()
+	}
 
 	public void setHasUnsavedChangesMain(boolean hasChanges) {
 		this.hasChanges = hasChanges;

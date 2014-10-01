@@ -12,18 +12,13 @@
 
 package org.generationcp.breeding.manager.listmanager.dialog;
 
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.event.ShortcutAction;
+import com.vaadin.ui.*;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.customfields.ListTreeComponent;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
@@ -48,20 +43,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Select;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Configurable
 public class ListManagerCopyToNewListDialog extends VerticalLayout implements InitializingBean, InternationalizableComponent,
@@ -94,7 +78,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
     private String listNameValue;
     private int ibdbUserId;
     private List<GermplasmList> germplasmList;
-    private HashMap<String, Integer> mapExistingList;
+    private Map<String, Integer> mapExistingList;
     private boolean lastAdded = false;
     private boolean existingListSelected = false;
     private boolean fromBuildNewList = false;
@@ -227,13 +211,13 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 			
 		} catch (MiddlewareQueryException e) {
 			LOG.error(e.toString());
-			e.printStackTrace();
+            LOG.error("\n" + e.getStackTrace());
 		}
     }
 
     @Override
     public void updateLabels() {
-        
+        //not needed to override for now
     }
     
     private void populateComboBoxListName() {
@@ -255,7 +239,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 	        
 		} catch (MiddlewareQueryException e) {
 			LOG.error(e.toString());
-			e.printStackTrace();
+            LOG.error("\n" + e.getStackTrace());
 		}
     }
 
@@ -286,7 +270,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
             }
         } catch (MiddlewareQueryException e) {
             LOG.error("Error in counting germplasm list by name.", e);
-            e.printStackTrace();
+            LOG.error("\n" + e.getStackTrace());
         }
         
         if(proceedWithSave){
@@ -313,7 +297,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
                             addGermplasmListData(germList,1);
                             listManagerMain.getListSelectionComponent().getListTreeComponent().createTree();
                             //TODO must accommodate the expanding of the folder up to the parent of the list being opened
-                            listManagerMain.getListSelectionComponent().getListTreeComponent().getGermplasmListTree().expandItem(ListTreeComponent.LOCAL);
+                            listManagerMain.getListSelectionComponent().getListTreeComponent().expandNode(ListTreeComponent.LOCAL);
                             //TODO must accommodate opening in the search screen also
                             listManagerMain.getListSelectionComponent().getListTreeComponent().treeItemClickAction(newListid);
                         } catch (MiddlewareQueryException e){
@@ -326,7 +310,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
     
                     } catch (MiddlewareQueryException e) {
                         LOG.error("Error with copying list entries", e);
-                        e.printStackTrace();
+                        LOG.error("\n" + e.getStackTrace());
                         MessageNotifier.showError(this.getWindow().getParent().getWindow() 
                             , messageSource.getMessage(Message.UNSUCCESSFUL) 
                             , messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_NEW_LIST_FAILED));
@@ -342,13 +326,13 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
                         
                         listManagerMain.getListSelectionComponent().getListTreeComponent().createTree();
                         //TODO must accommodate the expanding of the folder up to the parent of the list being opened
-                        listManagerMain.getListSelectionComponent().getListTreeComponent().getGermplasmListTree().expandItem(ListTreeComponent.LOCAL);
+                        listManagerMain.getListSelectionComponent().getListTreeComponent().expandNode(ListSelectorComponent.LOCAL);
                         //TODO must accommodate opening in the search screen also
                         listManagerMain.getListSelectionComponent().getListDetailsLayout().removeTab(Integer.valueOf(listId));
                         listManagerMain.getListSelectionComponent().getListTreeComponent().treeItemClickAction(Integer.valueOf(listId));
                     } catch (MiddlewareQueryException e) {
                         LOG.error("Error with copying list entries", e);
-                            e.printStackTrace();
+                        LOG.error("\n" + e.getStackTrace());
                             MessageNotifier.showError(this.getWindow().getParent().getWindow() 
                                 , messageSource.getMessage(Message.UNSUCCESSFUL) 
                                 , messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_EXISTING_LIST_FAILED));
@@ -373,18 +357,16 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
             
             Property pEntryId = listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName());
             Property pGid= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID.getName());
-//            Property pEntryCode= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName());
             Property pDesignation= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName());
 
             Button pGidButton = (Button) pGid.getValue();
             int gid=Integer.valueOf(pGidButton.getCaption().toString());
             String entryIdOfList=String.valueOf(pEntryId.getValue().toString());
-//			String entryCode=String.valueOf((pEntryCode.getValue().toString()));
             String seedSource=listName+": "+entryIdOfList;
             Button pDesigButton = (Button) pDesignation.getValue();
-            String designation=String.valueOf((pDesigButton.getCaption().toString()));
+            String designation=String.valueOf(pDesigButton.getCaption().toString());
             designationOfListEntriesCopied+=designation+",";
-            String groupName=String.valueOf((pGroupName.getValue().toString()));
+            String groupName=String.valueOf(pGroupName.getValue().toString());
 
             GermplasmListData germplasmListData = new GermplasmListData(null, germList, gid, entryid, entryIdOfList, seedSource,
                 designation, groupName, status, localRecordId);
@@ -413,7 +395,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
             workbenchDataManager.addProjectActivity(projAct);    
         } catch (MiddlewareQueryException e) {
             LOG.error("Error with logging workbench activity.", e);
-            e.printStackTrace();
+            LOG.error("\n" + e.getStackTrace());
         }
     }
 
@@ -453,7 +435,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
                 }
             } catch (MiddlewareQueryException e) {
                 LOG.error("Error in retrieving germplasm list.", e);
-                e.printStackTrace();
+                LOG.error("\n" + e.getStackTrace());
                 MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE),
                         messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LIST_BY_ID));
             }

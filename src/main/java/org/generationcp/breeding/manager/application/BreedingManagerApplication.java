@@ -32,7 +32,7 @@ import com.vaadin.ui.Window;
 
 
 public class BreedingManagerApplication extends SpringContextApplication implements ApplicationContextAware{
-    private final static Logger LOG = LoggerFactory.getLogger(BreedingManagerApplication.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BreedingManagerApplication.class);
 
     private static final long serialVersionUID = 1L;
     
@@ -44,7 +44,9 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     public static final String LIST_MANAGER_WITH_OPEN_LIST_WINDOW_NAME = "listmanager-";
     public static final String LIST_MANAGER_SIDEBYSIDE = "list-manager-sidebyside";
     public static final String MANAGE_SETTINGS_CROSSING_MANAGER = "crosses-settings";
-    
+
+    private static final String ADD_SPACING = "addSpacing";
+
     private Window window;
     
     private VerticalLayout rootLayoutForImportGermplasmList;
@@ -56,9 +58,6 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     
     @Autowired
     private DynamicManagerFactoryProvider managerFactoryProvider;
-    
-    @Autowired
-    private WorkbenchDataManagerImpl workbenchDataManager;
     
     private UpdateComponentLabelsAction messageSourceListener;
 
@@ -91,24 +90,27 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
         this.rootLayoutForNurseryTemplate = new VerticalLayout();
         rootLayoutForNurseryTemplate.setSizeFull();
         
-        window = new Window(messageSource.getMessage(Message.MAIN_WINDOW_CAPTION)); // "Breeding Manager"
+        window = new Window(messageSource.getMessage(Message.MAIN_WINDOW_CAPTION));
         setMainWindow(window);
         setTheme("gcp-default");
         window.setSizeUndefined();
 
         TabSheet tabSheet = new TabSheet();
         
-        VerticalLayout layouts[] = new VerticalLayout[3];
+        VerticalLayout[] layouts = new VerticalLayout[3];
         layouts[0] = this.rootLayoutForImportGermplasmList;
         layouts[1] = this.rootLayoutForCrossingManager;
         layouts[2] = this.rootLayoutForNurseryTemplate;
         
         WelcomeTab welcomeTab = new WelcomeTab(tabSheet, layouts);
-        
-        tabSheet.addTab(welcomeTab, messageSource.getMessage(Message.WELCOME_TAB_LABEL)); // "Welcome"
-        tabSheet.addTab(rootLayoutForImportGermplasmList, messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL)); // "Import Germlasm List"
-        tabSheet.addTab(rootLayoutForCrossingManager, messageSource.getMessage(Message.CROSSING_MANAGER_LABEL)); // "Crossing Manager"
-        tabSheet.addTab(rootLayoutForNurseryTemplate, messageSource.getMessage(Message.NURSERY_TEMPLATE_CAPTION_LABEL)); // "Nursery Template"
+        // "Welcome"
+        tabSheet.addTab(welcomeTab, messageSource.getMessage(Message.WELCOME_TAB_LABEL));
+        // "Import Germlasm List"
+        tabSheet.addTab(rootLayoutForImportGermplasmList, messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
+        // "Crossing Manager"
+        tabSheet.addTab(rootLayoutForCrossingManager, messageSource.getMessage(Message.CROSSING_MANAGER_LABEL));
+        // "Nursery Template"
+        tabSheet.addTab(rootLayoutForNurseryTemplate, messageSource.getMessage(Message.NURSERY_TEMPLATE_CAPTION_LABEL));
         tabSheet.addListener(new MainApplicationSelectedTabChangeListener(this));
         
         window.addComponent(tabSheet);
@@ -201,20 +203,16 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
         if (source.getSelectedTab() == this.rootLayoutForImportGermplasmList) {
             if (this.rootLayoutForImportGermplasmList.getComponentCount() == 0) {
                 rootLayoutForImportGermplasmList.addComponent(new GermplasmImportMain(rootLayoutForImportGermplasmList,true));
-                rootLayoutForImportGermplasmList.addStyleName("addSpacing");
+                rootLayoutForImportGermplasmList.addStyleName(ADD_SPACING);
             } 
-        }
-        else if (source.getSelectedTab() == this.rootLayoutForCrossingManager) {
+        }else if (source.getSelectedTab() == this.rootLayoutForCrossingManager) {
             if (this.rootLayoutForCrossingManager.getComponentCount() == 0) {
                 rootLayoutForCrossingManager.addComponent(new ManageCrossingSettingsMain(rootLayoutForCrossingManager));
-                rootLayoutForCrossingManager.addStyleName("addSpacing");
+                rootLayoutForCrossingManager.addStyleName(ADD_SPACING);
             }
-        }
-        else if (source.getSelectedTab() == this.rootLayoutForNurseryTemplate) {
-            if (this.rootLayoutForNurseryTemplate.getComponentCount() == 0) {
+        }else if (source.getSelectedTab() == this.rootLayoutForNurseryTemplate && this.rootLayoutForNurseryTemplate.getComponentCount() == 0) {
                 rootLayoutForNurseryTemplate.addComponent(new NurseryTemplateMain());
-                rootLayoutForNurseryTemplate.addStyleName("addSpacing");
-            }
+                rootLayoutForNurseryTemplate.addStyleName(ADD_SPACING);
         }
     }
 
@@ -283,14 +281,14 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     public void refreshListManagerTree(){
 		ListManagerMain listManagerMain = getListManagerMain();
 		if(listManagerMain!=null){
-			listManagerMain.getListSelectionComponent().getListTreeComponent().refreshTree();
+			listManagerMain.getListSelectionComponent().getListTreeComponent().refreshComponent();
 		}
     }
     
     public void refreshCrossingManagerTree(){
 		ManageCrossingSettingsMain manageCrossSettingsMain = getManageCrossingSettingsMain();
 		if(manageCrossSettingsMain!=null){
-			manageCrossSettingsMain.getMakeCrossesComponent().getSelectParentsComponent().getListTreeComponent().refreshTree();
+			manageCrossSettingsMain.getMakeCrossesComponent().getSelectParentsComponent().getListTreeComponent().refreshComponent();
 		}
     }
     
