@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
+import org.generationcp.commons.vaadin.ui.fields.BmsDateField;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -21,7 +22,7 @@ public class ListDateField extends HorizontalLayout
 	
 	private Label captionLabel;
 	private String caption;
-	private BreedingManagerDateField listDtDateField ;
+	private BmsDateField listDtDateField ;
 	private boolean isMandatory;
 	private Label mandatoryMark;
 	private boolean changed;
@@ -39,7 +40,7 @@ public class ListDateField extends HorizontalLayout
 		captionLabel = new Label(caption);
 		captionLabel.addStyleName("bold");
 		
-		listDtDateField = new BreedingManagerDateField(caption);
+		listDtDateField = new BmsDateField();
 		listDtDateField.setImmediate(true);
 		
 		if(isMandatory){
@@ -95,11 +96,11 @@ public class ListDateField extends HorizontalLayout
 		layoutComponents();
 	}
 	
-	public BreedingManagerDateField getListDtDateField() {
+	public BmsDateField getListDtDateField() {
 		return listDtDateField;
 	}
 
-	public void setListDtDateField(BreedingManagerDateField listDtDateField) {
+	public void setListDtDateField(BmsDateField listDtDateField) {
 		this.listDtDateField = listDtDateField;
 	}
 	

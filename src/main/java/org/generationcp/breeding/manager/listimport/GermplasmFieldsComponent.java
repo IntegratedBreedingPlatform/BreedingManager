@@ -13,6 +13,7 @@ import org.generationcp.breeding.manager.customfields.BreedingMethodField;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.fields.BmsDateField;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -29,7 +30,6 @@ import com.vaadin.data.Property.ConversionException;
 import com.vaadin.data.Property.ReadOnlyException;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.DateField;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
 
@@ -58,7 +58,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
   
     private ComboBox nameTypeComboBox;
     
-    private DateField germplasmDateField;
+    private BmsDateField germplasmDateField;
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -148,9 +148,8 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 		
         germplasmDateLabel = new Label(messageSource.getMessage(Message.GERMPLASM_DATE_LABEL) + ":");
         germplasmDateLabel.addStyleName(CssStyles.BOLD);
-        germplasmDateField = new DateField();
-        germplasmDateField.setResolution(DateField.RESOLUTION_DAY);
-        germplasmDateField.setDateFormat(GermplasmImportMain.DATE_FORMAT);    
+        
+        germplasmDateField = new BmsDateField();
         
         nameTypeLabel = new Label(messageSource.getMessage(Message.GERMPLASM_NAME_TYPE_LABEL) + ":");
         nameTypeLabel.addStyleName(CssStyles.BOLD);
@@ -229,7 +228,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 		return nameTypeComboBox;
 	}
 
-	public DateField getGermplasmDateField() {
+	public BmsDateField getGermplasmDateField() {
 		return germplasmDateField;
 	}
 	
