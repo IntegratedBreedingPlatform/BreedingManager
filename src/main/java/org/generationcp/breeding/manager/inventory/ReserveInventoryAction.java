@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.generationcp.breeding.manager.util.Util;
+import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -148,7 +148,7 @@ public class ReserveInventoryAction implements Serializable {
 				ListEntryLotDetails lotDetail = entry.getKey();
 				
 				Integer lotId = lotDetail.getLotId();
-				Integer transactionDate = Util.getCurrentDate();
+				Integer transactionDate = DateUtil.getCurrentDate();
 				Integer transacStatus = 0;
 				Double amountToReserve = -1 * entry.getValue(); //since this is a reserve transaction
 				String comments = "";

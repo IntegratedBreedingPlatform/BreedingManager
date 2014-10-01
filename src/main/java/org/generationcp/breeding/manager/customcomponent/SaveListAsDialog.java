@@ -15,7 +15,7 @@ import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
 import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
 import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
-import org.generationcp.breeding.manager.util.Util;
+import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -31,6 +31,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -164,7 +165,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 				//Call method so that the variables will be updated, values will be used for the logic below
 				getGermplasmListToSave();
 				
-				SimpleDateFormat formatter = new SimpleDateFormat(Util.DATE_AS_NUMBER_FORMAT);
+				SimpleDateFormat formatter = new SimpleDateFormat(DateUtil.DATE_AS_NUMBER_FORMAT);
 				
 				try {
 				    listDetailsComponent.getListDateField().validate();

@@ -36,7 +36,7 @@ import org.generationcp.breeding.manager.pojos.ImportedConstant;
 import org.generationcp.breeding.manager.pojos.ImportedFactor;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCrosses;
 import org.generationcp.breeding.manager.pojos.ImportedVariate;
-import org.generationcp.breeding.manager.util.Util;
+import org.generationcp.commons.util.DateUtil;
 
 
 public class NurseryTemplateManagerExporter{
@@ -353,12 +353,12 @@ public class NurseryTemplateManagerExporter{
                 break;
             }
             case START_DATE : {
-                SimpleDateFormat formatter = new SimpleDateFormat(Util.DATE_AS_NUMBER_FORMAT);
+                SimpleDateFormat formatter = new SimpleDateFormat(DateUtil.DATE_AS_NUMBER_FORMAT);
                 cell.setCellValue(formatter.format(nurseryTemplateData.getStartDate()));
                 break;
             }
             case END_DATE : {
-                SimpleDateFormat formatter = new SimpleDateFormat(Util.DATE_AS_NUMBER_FORMAT);
+                SimpleDateFormat formatter = new SimpleDateFormat(DateUtil.DATE_AS_NUMBER_FORMAT);
                 cell.setCellValue(formatter.format(nurseryTemplateData.getEndDate()));
                 break;
             }
