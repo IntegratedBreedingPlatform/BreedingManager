@@ -41,21 +41,21 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
         
         if (event.getButton().getData().equals(ListTreeComponent.REFRESH_BUTTON_ID) // "Refresh"
                 && (source instanceof ListTreeComponent)) {
-            ((ListTreeComponent) source).refreshTree();
+            ((ListTreeComponent) source).refreshComponent();
         }else if (event.getButton().getData().equals(ListManagerCopyToNewListDialog.SAVE_BUTTON_ID)
-                    && (source instanceof ListManagerCopyToNewListDialog)) { // "Save Germplasm List"
+                    && (source instanceof ListManagerCopyToNewListDialog)) {
+            // "Save Germplasm List"
                 ((ListManagerCopyToNewListDialog) source).saveGermplasmListButtonClickAction();
         }else if (event.getButton().getData().equals(ListManagerCopyToNewListDialog.CANCEL_BUTTON_ID)
-                && (source instanceof ListManagerCopyToNewListDialog)) { // "Cancel Germplasm List"
+                && (source instanceof ListManagerCopyToNewListDialog)) {
+            // "Cancel Germplasm List"
             ((ListManagerCopyToNewListDialog) source).cancelGermplasmListButtonClickAction();
-        }
-        else if (event.getButton().getData().equals(AddEntryDialog.BACK_BUTTON_ID)
+        }else if (event.getButton().getData().equals(AddEntryDialog.BACK_BUTTON_ID)
                 && (source instanceof AddEntryDialog)){
             try {
                 ((AddEntryDialog) source).backButtonClickAction();
             } catch (InternationalizableException e){
                 LOG.error(e.toString() + "\n" + e.getStackTrace());
-                e.printStackTrace();
                 MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
             }
         }else if (event.getButton().getData().equals(AddEntryDialog.DONE_BUTTON_ID)
@@ -64,11 +64,9 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
                 ((AddEntryDialog) source).nextButtonClickAction(event);
             } catch (InternationalizableException e){
                 LOG.error(e.toString() + "\n" + e.getStackTrace());
-                e.printStackTrace();
                 MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
             }
-        }
-        else {
+        }else {
             LOG.error("GermplasmListButtonClickListener: Error with buttonClick action. Source not identified.");
         }
 		

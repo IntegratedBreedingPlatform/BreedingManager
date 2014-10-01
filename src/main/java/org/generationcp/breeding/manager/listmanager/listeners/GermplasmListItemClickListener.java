@@ -12,16 +12,15 @@
 
 package org.generationcp.breeding.manager.listmanager.listeners;
 
-import org.generationcp.breeding.manager.customfields.ListTreeComponent;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.MouseEvents.ClickEvent;
+import com.vaadin.ui.Table;
+import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.MouseEvents.ClickEvent;
-import com.vaadin.ui.Table;
 
 public class GermplasmListItemClickListener implements ItemClickEvent.ItemClickListener{
 
@@ -37,22 +36,21 @@ public class GermplasmListItemClickListener implements ItemClickEvent.ItemClickL
     @Override
     public void itemClick(ItemClickEvent event) {
 
-        if (source instanceof ListTreeComponent) {
+        if (source instanceof ListSelectorComponent) {
         	String item = event.getItemId().toString();
         	
             if (event.getButton() == ClickEvent.BUTTON_LEFT) {
-	        	ListTreeComponent listTreeComponent = (ListTreeComponent) source;
+                ListSelectorComponent listTreeComponent = (ListSelectorComponent) source;
 	        	listTreeComponent.setSelectedListId(event.getItemId());
 	        	listTreeComponent.updateButtons(event.getItemId());
 	        	listTreeComponent.toggleFolderSectionForItemSelected();
 	        	
-	        	if(!item.equals(ListTreeComponent.CENTRAL) && !item.equals(ListTreeComponent.LOCAL)){
+	        	if(!item.equals(ListSelectorComponent.CENTRAL) && !item.equals(ListSelectorComponent.LOCAL)){
 	        		int germplasmListId = Integer.valueOf(event.getItemId().toString());
 	                    try {
 	                        listTreeComponent.treeItemClickAction(germplasmListId);
 	                    } catch (InternationalizableException e) {
 	                        LOG.error(e.toString() + "\n" + e.getStackTrace());
-	                        e.printStackTrace();
 	                        MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
 	                    }
 	        	} else{
@@ -69,7 +67,6 @@ public class GermplasmListItemClickListener implements ItemClickEvent.ItemClickL
                     ((AddEntryDialog) source).resultTableItemDoubleClickAction((Table) event.getSource(), event.getItemId(), event.getItem());
                 } catch (InternationalizableException e) {  
                     LOG.error(e.toString() + "\n" + e.getStackTrace());
-                    e.printStackTrace();
                     MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
                 }
             } else if (event.getButton() == ClickEvent.BUTTON_LEFT) {
@@ -77,7 +74,6 @@ public class GermplasmListItemClickListener implements ItemClickEvent.ItemClickL
                     ((AddEntryDialog) source).resultTableItemClickAction((Table) event.getSource());
                 } catch (InternationalizableException e) {  
                     LOG.error(e.toString() + "\n" + e.getStackTrace());
-                    e.printStackTrace();
                     MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
                 }
             }
