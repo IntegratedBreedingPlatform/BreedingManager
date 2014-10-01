@@ -1,20 +1,20 @@
 package org.generationcp.breeding.manager.listmanager;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.customfields.ListTreeComponent;
+import org.generationcp.breeding.manager.customfields.ListTreeTableComponent;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
 
 @Configurable
-public class ListManagerTreeComponent extends ListTreeComponent implements InitializingBean{
+public class ListManagerTreeComponent extends ListTreeTableComponent implements InitializingBean{
 
 	private static final long serialVersionUID = -1013380483927558222L;
-	
-	public ListManagerTreeComponent(final ListTreeActionsListener treeActionsListener) {
-		super(treeActionsListener);
-	}
-	
+
+    public ListManagerTreeComponent(){
+        super();
+    }
+
 	public ListManagerTreeComponent(final ListTreeActionsListener treeActionListener, Integer listId){
 		super(treeActionListener, listId);
 	}
@@ -55,8 +55,8 @@ public class ListManagerTreeComponent extends ListTreeComponent implements Initi
 	}
 	
 	@Override
-	protected String getTreeStyleName() {
+	public String getTreeStyleName() {
 		return "listManagerTree";
-	}
+	}	
 	
 }

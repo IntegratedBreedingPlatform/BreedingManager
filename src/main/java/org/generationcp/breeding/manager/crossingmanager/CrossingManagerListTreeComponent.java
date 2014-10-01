@@ -1,25 +1,21 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
-import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.constants.ModeView;
-import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerTreeActionsListener;
-import org.generationcp.breeding.manager.customfields.ListTreeComponent;
-import org.generationcp.breeding.manager.listmanager.util.InventoryTableDropHandler;
-import org.generationcp.commons.vaadin.theme.Bootstrap;
-import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
-import org.generationcp.middleware.manager.api.InventoryDataManager;
-import org.generationcp.middleware.pojos.GermplasmList;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Window;
+import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.ModeView;
+import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerTreeActionsListener;
+import org.generationcp.breeding.manager.customfields.ListTreeTableComponent;
+import org.generationcp.breeding.manager.listmanager.util.InventoryTableDropHandler;
+import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.pojos.GermplasmList;
+import org.springframework.beans.factory.annotation.Configurable;
 
 @Configurable
-public class CrossingManagerListTreeComponent extends ListTreeComponent {
+public class CrossingManagerListTreeComponent extends ListTreeTableComponent {
 	
 	private static final long serialVersionUID = 8112173851252075693L;
 	
@@ -30,12 +26,6 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 	private CrossingManagerMakeCrossesComponent source;
 	private CrossingManagerTreeActionsListener crossingTreeActionsListener;
 
-	@Autowired
-	private GermplasmDataManager germplasmDataManager;
-	
-	@Autowired
-	private InventoryDataManager inventoryDataManager;	
-	
 	public CrossingManagerListTreeComponent(
 			CrossingManagerTreeActionsListener treeActionsListener,
 			CrossingManagerMakeCrossesComponent source) {
@@ -56,17 +46,15 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				
-				Integer germplasmListId = (Integer) germplasmListTree.getValue();
+				Integer germplasmListId = (Integer) getGermplasmListSource().getValue();
 				
 				if(source.getModeView().equals(ModeView.INVENTORY_VIEW)){
-					//showWarningInInventoryView();
-					
 					if(crossingTreeActionsListener instanceof SelectParentsComponent){
 						MakeCrossesParentsComponent parentsComponent = ((SelectParentsComponent) crossingTreeActionsListener).getCrossingManagerMakeCrossesComponent().getParentsComponent();
 						InventoryTableDropHandler inventoryTableDropHandler = parentsComponent.getFemaleParentTab().getInventoryTableDropHandler();
 						inventoryTableDropHandler.addGermplasmListInventoryData(germplasmListId);
 						
-						if(parentsComponent.getFemaleTable().getItemIds().size()==0){
+						if(parentsComponent.getFemaleTable().getItemIds().isEmpty()){
 							crossingTreeActionsListener.addListToFemaleList(germplasmListId);
 						} else {
 							source.getParentsComponent().getFemaleParentTab().setHasUnsavedChanges(true);
@@ -76,8 +64,7 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 					}
 					
 					closeTreeWindow(event);
-				}
-				else{
+				}else{
 					crossingTreeActionsListener.addListToFemaleList(germplasmListId);
 					closeTreeWindow(event);
 				}
@@ -91,17 +78,16 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				
-				Integer germplasmListId = (Integer) germplasmListTree.getValue();
+				Integer germplasmListId = (Integer) getGermplasmListSource().getValue();
 				
 				if(source.getModeView().equals(ModeView.INVENTORY_VIEW)){
-					//showWarningInInventoryView();
-					
+
 					if(crossingTreeActionsListener instanceof SelectParentsComponent){
 						MakeCrossesParentsComponent parentsComponent = ((SelectParentsComponent) crossingTreeActionsListener).getCrossingManagerMakeCrossesComponent().getParentsComponent();
 						InventoryTableDropHandler inventoryTableDropHandler = parentsComponent.getMaleParentTab().getInventoryTableDropHandler();
 						inventoryTableDropHandler.addGermplasmListInventoryData(germplasmListId);
 						
-						if(parentsComponent.getMaleTable().getItemIds().size()==0){
+						if(parentsComponent.getMaleTable().getItemIds().isEmpty()){
 							crossingTreeActionsListener.addListToMaleList(germplasmListId);
 						} else {
 							source.getParentsComponent().getMaleParentTab().setHasUnsavedChanges(true);
@@ -111,8 +97,7 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 					}
 					
 					closeTreeWindow(event);
-				}
-				else{
+				}else{
 					crossingTreeActionsListener.addListToMaleList(germplasmListId);
 					closeTreeWindow(event);
 				}
@@ -225,17 +210,18 @@ public class CrossingManagerListTreeComponent extends ListTreeComponent {
 	}
 
 	@Override
-	protected boolean doShowFoldersOnly() {
+    public boolean doShowFoldersOnly() {
 		return false;
 	}
 	
 	@Override
-	protected String getTreeStyleName() {
+	public String getTreeStyleName() {
 		return "crossingManagerTree";
 	}
 	
 	@Override
 	public void refreshRemoteTree(){
+        //current does not do anything, since there is no remote tree in the screen to be refresh
 	}
 	
 	@Override
