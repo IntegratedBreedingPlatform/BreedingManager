@@ -206,9 +206,9 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 			
 			listDescriptionField.setValue(germplasmList.getDescription());
 			
-			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(Util.DATE_AS_NUMBER_FORMAT);
+			Date germplasmDate = new Date();
 	        try {
-	            this.listDateField.setValue(simpleDateFormat.parse(germplasmList.getDate().toString()));
+	        	germplasmDate = getParsedDate(germplasmList.getDate().toString());
 	        } catch (ReadOnlyException e) {
 	            LOG.error("Error in parsing date field.", e);
 	            e.printStackTrace();
@@ -216,9 +216,10 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	            LOG.error("Error in parsing date field.", e);
 	            e.printStackTrace();
 	        } catch (ParseException e) {
-	            LOG.error("Error in parsing date field.", e);
+	        	LOG.error("Error in parsing date field.", e);
 	            e.printStackTrace();
 	        }
+	        this.listDateField.setValue(germplasmDate);
 			
 			listTypeField.setValue(germplasmList.getType());
 			
@@ -236,6 +237,26 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		}
 	}
 	
+	private Date getParsedDate(String dateToParse) throws ParseException {
+		Date validDate = null;
+		
+		if(dateToParse.length() < 8){
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtil.DATE_AS_NUMBER_FORMAT);
+			validDate = simpleDateFormat.parse(getParsableDate(dateToParse));
+		}
+		return validDate;
+	}
+
+	private String getParsableDate(String dateToParse) {
+		int dateLenght = dateToParse.length();
+		
+		for(int i = 1; i <= (8-dateLenght); i++){
+			dateToParse = "0" + dateToParse;
+		}
+		
+		return dateToParse;
+	}
+
 	public void resetListNameFieldForExistingList(GermplasmList germplasmList){
 		ListNameValidator listNameValidator = listNameField.getListNameValidator();
 		listNameValidator.setCurrentListName(germplasmList.getName());
