@@ -92,12 +92,12 @@ public class LocalListFoldersTreeComponent extends ListTreeComponent {
 	}
 	
 	@Override
-	protected boolean doIncludeTreeHeadingIcon() {
+	public boolean doIncludeTreeHeadingIcon() {
 		return false;
 	}
 	
 	@Override
-	protected String getTreeStyleName() {
+	public String getTreeStyleName() {
 		return "saveListTree";
 	}
 	
