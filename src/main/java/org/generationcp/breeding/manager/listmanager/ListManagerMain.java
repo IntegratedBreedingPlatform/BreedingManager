@@ -59,8 +59,10 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
     private Button listSelectionTabButton;
     private Button plantSelectionTabButton;
 
-    protected Button listBuilderToggleBtn1;   // toggle on list
-    protected Button listBuilderToggleBtn2;   // toggle on germplasm search
+    // toggle on list
+    protected Button listBuilderToggleBtn1;
+    // toggle on germplasm search
+    protected Button listBuilderToggleBtn2;
 
     // The tab content will be split between a plant finder component and a list builder component
     private HorizontalSplitPanel splitPanel;
@@ -76,7 +78,8 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	
 	//Handles Universal Mode View for ListManagerMain
 	private ModeView modeView;
-	private boolean hasChanges; //marks if there are unsaved changes in List from ListComponent and ListBuilderComponent
+    //marks if there are unsaved changes in List from ListSelectorComponent and ListBuilderComponent
+	private boolean hasChanges;
 	private UnsavedChangesConfirmDialog unsavedChangesDialog;
 	
     @Autowired
@@ -88,7 +91,8 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
     @Autowired
     private WorkbenchDataManager workbenchDataManager;
 
-    
+    private boolean isListBuilderShown = false;
+
     public ListManagerMain(){
     	super();
     	this.selectedListId = null;
@@ -308,14 +312,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
         mainTitle.setContentMode(Label.CONTENT_XHTML);
         mainTitle.setValue(messageSource.getMessage(Message.LIST_MANAGER_SCREEN_LABEL) + "  " + VERSION_STRING);
 
-        //buildNewListButton = new Button();
-        //buildNewListButton.setCaption(messageSource.getMessage(Message.START_A_NEW_LIST));
-        //buildNewListButton.setData(BUILD_NEW_LIST_BUTTON_DATA);
-        //buildNewListButton.setStyleName(Bootstrap.Buttons.INFO.styleName());
-        //buildNewListButton.setIcon(AppConstants.Icons.ICON_PLUS);
-
         titleLayout.addComponent(mainTitle,"top:0px;left:0px");
-        //titleLayout.addComponent(buildNewListButton,"top:10px;right:0px");
 	}
 
 	private void setTabHeader(){
@@ -386,11 +383,9 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		if(currentListTab != null){
 			ListComponent listComponent = currentListTab.getListComponent();
 			saveListAsDialog = listComponent.getSaveListAsDialog();
-			if(saveListAsDialog != null){
-				if(listComponent.getCurrentListInSaveDialog().getName().equals(list.getName())){
-					listComponent.getWindow().removeWindow(saveListAsDialog);
-					MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Germplasm List was deleted.");
-				}
+			if(saveListAsDialog != null && listComponent.getCurrentListInSaveDialog().getName().equals(list.getName())){
+                listComponent.getWindow().removeWindow(saveListAsDialog);
+                MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS), "Germplasm List was deleted.");
 			}
 		}
 		
@@ -399,10 +394,8 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		
 		//close the save dialog window in List Builder if the deleted list is the current selected list
 		saveListAsDialog = getListBuilderComponent().getSaveListAsDialog();
-		if(saveListAsDialog != null){
-			if(saveListAsDialog.getGermplasmListToSave().getName().equals(list.getName())){
-				getListBuilderComponent().getWindow().removeWindow(saveListAsDialog);
-			}
+		if(saveListAsDialog != null && saveListAsDialog.getGermplasmListToSave().getName().equals(list.getName())){
+            getListBuilderComponent().getWindow().removeWindow(saveListAsDialog);
 		}
 		
 		if(	getListBuilderComponent().getCurrentlySavedGermplasmList() != null
@@ -441,8 +434,6 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	    return false;
 	}
 
-    private boolean isListBuilderShown = false;
-
     public void setUIForLockedListBuilder(){
     	plantSelectionComponent.getSearchResultsComponent().setRightClickActionHandlerEnabled(false);
     	listSelectionComponent.getListSearchComponent().getSearchResultsComponent().refreshActionHandler();
@@ -480,8 +471,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
     public void toggleListBuilder() {
         if (!isListBuilderShown) {
            showListBuilder();
-        }
-        else {
+        }else {
         	hideListBuilder();
         }
 
@@ -517,14 +507,16 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
     }
 	
     public Integer getListBuilderStatus(){
-    	if(listBuilderComponent!=null && listBuilderComponent.getCurrentlySavedGermplasmList()!=null)
-    		return listBuilderComponent.getCurrentlySavedGermplasmList().getStatus();
+    	if(listBuilderComponent!=null && listBuilderComponent.getCurrentlySavedGermplasmList()!=null) {
+            return listBuilderComponent.getCurrentlySavedGermplasmList().getStatus();
+        }
     	return 0;
     }
     
     public Boolean listBuilderIsLocked(){
-    	if(getListBuilderStatus()>100)
-    		return true;
+    	if(getListBuilderStatus()>100) {
+            return true;
+        }
     	return false;
     }
 
@@ -540,13 +532,11 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 				if(this.modeView.equals(ModeView.LIST_VIEW) && newModeView.equals(ModeView.INVENTORY_VIEW)){
 					message = "You have unsaved changes to one or more lists. Do you want to save them before changing views?";
 					showUnsavedChangesConfirmDialog(message,newModeView);
-				}
-				else if(this.modeView.equals(ModeView.INVENTORY_VIEW) && newModeView.equals(ModeView.LIST_VIEW)){
+				}else if(this.modeView.equals(ModeView.INVENTORY_VIEW) && newModeView.equals(ModeView.LIST_VIEW)){
 					message = "You have unsaved reservations to one or more lists. Do you want to save them before changing views?";
 					showUnsavedChangesConfirmDialog(message,newModeView);
 				}
-			}
-			else{
+			}else{
 				modeView = newModeView;
 				updateView(modeView);
 			}
@@ -569,8 +559,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		
 		if(modeView.equals(ModeView.INVENTORY_VIEW)){
 			listBuilderComponent.viewInventoryActionConfirmed();
-		}
-		else if(modeView.equals(ModeView.LIST_VIEW)){
+		}else if(modeView.equals(ModeView.LIST_VIEW)){
 			listBuilderComponent.changeToListView();
 		}
 			
@@ -590,8 +579,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 					//NOTE: the value of modeView here is the newModeView
 					if(modeView.equals(ModeView.LIST_VIEW)){
 						toSave.saveReservationChangesAction();
-					}
-					else if(modeView.equals(ModeView.INVENTORY_VIEW)){
+					}else if(modeView.equals(ModeView.INVENTORY_VIEW)){
 						toSave.saveChangesAction();
 					}
 				}
@@ -603,8 +591,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 			GermplasmList currentlySavedGermplasmList = listBuilderComponent.getCurrentlySavedGermplasmList();
 			if(currentlySavedGermplasmList == null){
 				listBuilderComponent.openSaveListAsDialog();
-			}
-			else{
+			}else{
 				listBuilderComponent.getSaveListButtonListener().doSaveAction();
 				//Change ListBuilder View to List View
 				listBuilderComponent.viewInventoryActionConfirmed();
@@ -615,15 +602,15 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		updateView(modeView);
 		
 		this.getWindow().removeWindow(unsavedChangesDialog);
-	}//end of saveAllListChangesAction()
+    //end of saveAllListChangesAction()
+	}
 	
 	@Override
 	public void discardAllListChangesAction(){
 		//cancel all the unsaved changes
 		if(modeView.equals(ModeView.LIST_VIEW)){
 			listSelectionComponent.getListDetailsLayout().resetInventoryViewForCancelledChanges();
-		}
-		else if(modeView.equals(ModeView.INVENTORY_VIEW)){
+		}else if(modeView.equals(ModeView.INVENTORY_VIEW)){
 			listSelectionComponent.getListDetailsLayout().resetListViewForCancelledChanges();
 		}
 		
@@ -632,12 +619,10 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		if(listBuilderComponent.getCurrentlySavedGermplasmList() != null){
 			if(modeView.equals(ModeView.INVENTORY_VIEW)){
 				listBuilderComponent.discardChangesInListView();
-			}
-			else if(modeView.equals(ModeView.LIST_VIEW)){
+			}else if(modeView.equals(ModeView.LIST_VIEW)){
 				listBuilderComponent.discardChangesInInventoryView();
 			}
-		}
-		else{
+		}else{
 			//if no list save, just reset the list
 			listBuilderComponent.resetList();
 		}
@@ -645,7 +630,8 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		resetUnsavedStatus();
 		
 		this.getWindow().removeWindow(unsavedChangesDialog);
-	}//end of discardAllListChangesAction()
+        //end of discardAllListChangesAction()
+	}
 	
 	@Override
 	public void cancelAllListChangesAction(){
@@ -653,13 +639,13 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		//Return to Previous Mode View
 		if(modeView.equals(ModeView.LIST_VIEW)){
 			setModeViewOnly(ModeView.INVENTORY_VIEW);
-		}
-		else if(modeView.equals(ModeView.INVENTORY_VIEW)){
+		}else if(modeView.equals(ModeView.INVENTORY_VIEW)){
 			setModeViewOnly(ModeView.LIST_VIEW);
 		}
 		
 		this.getWindow().removeWindow(unsavedChangesDialog);
-	}//end of cancelAllListChangesAction()
+    //end of cancelAllListChangesAction()
+	}
 	
 	public void resetUnsavedStatus(){
 		listSelectionComponent.getListDetailsLayout().updateHasChangesForAllList(false);

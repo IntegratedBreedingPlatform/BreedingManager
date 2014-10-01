@@ -114,7 +114,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private static final Logger LOG = LoggerFactory.getLogger(ListComponent.class);
 	
 	private static final int MINIMUM_WIDTH = 10;
-	private final HashMap<Object,HashMap<Object,Field>> fields = new HashMap<Object,HashMap<Object,Field>>();
+	private final Map<Object,HashMap<Object,Field>> fields = new HashMap<Object,HashMap<Object,Field>>();
 
 	private final ListManagerMain source;
 	private final ListTabComponent parentListDetailsComponent;
@@ -159,11 +159,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private ContextMenuItem menuCancelReservation;
 
     //Tooltips
-  	public static String TOOLS_BUTTON_ID = "Actions";
-  	public static String LIST_DATA_COMPONENT_TABLE_DATA = "List Data Component Table";
-  	private final String CHECKBOX_COLUMN_ID="Checkbox Column ID";
-  	
-  	private boolean fromUrl;    //this is true if this component is created by accessing the Germplasm List Details page directly from the URL
+  	public static final String TOOLS_BUTTON_ID = "Actions";
+  	public static final String LIST_DATA_COMPONENT_TABLE_DATA = "List Data Component Table";
+  	private static final String CHECKBOX_COLUMN_ID="Checkbox Column ID";
+
+    //this is true if this component is created by accessing the Germplasm List Details page directly from the URL
+  	private boolean fromUrl;
   	
 	//Theme Resource
   	private BaseSubWindow listManagerCopyToNewListDialog;
@@ -185,10 +186,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
     
     private Button inventoryViewToolsButton;
     
-    public static String LOCK_BUTTON_ID = "Lock Germplasm List";
-    public static String UNLOCK_BUTTON_ID = "Unlock Germplasm List";
+    public static final String LOCK_BUTTON_ID = "Lock Germplasm List";
+    public static final String UNLOCK_BUTTON_ID = "Unlock Germplasm List";
 	
-    private static String LOCK_TOOLTIP = "Click to lock or unlock this germplasm list.";
+    private static final String LOCK_TOOLTIP = "Click to lock or unlock this germplasm list.";
 
     private ContextMenu tableContextMenu;
 
@@ -254,8 +255,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		
 		if(source.getModeView().equals(ModeView.LIST_VIEW)){
 			changeToListView();
-		}
-		else if(source.getModeView().equals(ModeView.INVENTORY_VIEW)){
+		}else if(source.getModeView().equals(ModeView.INVENTORY_VIEW)){
 			viewInventoryActionConfirmed();
 		}
 	}
@@ -422,7 +422,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
             localUserId = Util.getCurrentUserLocalId(workbenchDataManager);
         } catch (MiddlewareQueryException e) {
             LOG.error("Error with retrieving local user ID", e);
-            e.printStackTrace();
+            LOG.error("\n" + e.getStackTrace());
         }
 	    
 	    loadEntriesToListDataTable();
@@ -505,7 +505,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		//Inventory Related Columns
 		
 		//#1 Available Inventory
-		String avail_inv = "-"; //default value
+        //default value
+		String avail_inv = "-";
 		if(entry.getInventoryInfo().getLotCount().intValue() != 0){
 			avail_inv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
 		}
@@ -984,8 +985,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 												if (!dialog.isConfirmed()) {
 													tf.setReadOnly(false);
 													tf.setValue(lastCellvalue);
-												}
-												else{
+												}else{
 													Double d = computeTextFieldWidth(tf.getValue().toString());
 													tf.setWidth(d.floatValue(), UNITS_EM);
 												}
@@ -995,8 +995,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 										}
 									);
 								}
-		        			}
-		        			else{
+		        			}else{
 		        				Double d = computeTextFieldWidth(f.getValue().toString());
 								f.setWidth(d.floatValue(), UNITS_EM);
 		        				f.setReadOnly(true);
@@ -1004,8 +1003,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		                }
 		            }
 		        });
-		        
-		        tf.addListener(new Property.ValueChangeListener() {//this area can be used for validation
+                //this area can be used for validation
+		        tf.addListener(new Property.ValueChangeListener() {
 					private static final long serialVersionUID = 1L;
 
 					@Override
@@ -1041,8 +1040,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		        int length = 1; 
 		        if (value != null && !value.isEmpty()){
 		        	length = value.length();
-		        	if (value.equals(value.toUpperCase())){ 
-		        		multiplier = 0.75;  // if all caps, provide bigger space
+		        	if (value.equals(value.toUpperCase())){
+                        // if all caps, provide bigger space
+		        		multiplier = 0.75;
 		        	}	
 		        }		        
 				Double d = length * multiplier;
@@ -1119,8 +1119,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	        		}
 	        		
 	        	});
-        	}
-        	else{
+        	}else{
         		removeRowsInListDataTable(selectedIdsToDelete);
         	}
         	
@@ -1160,17 +1159,17 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
     	
     	if(listDataTable.getItemIds().size() == selectedIds.size()){
     		listDataTable.getContainerDataSource().removeAllItems();
-    	}
-    	else{
+    	}else{
     		//marks the entryId and designationId of the list entries to delete
         	for(final Object itemId : selectedIds){
                 Button desigButton = (Button) listDataTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue();
-                String designation = String.valueOf((desigButton.getCaption().toString()));
+                String designation = String.valueOf(desigButton.getCaption().toString());
         		itemsToDelete.put(itemId, designation);
         		listDataTable.getContainerDataSource().removeItem(itemId);
         	}
     	}
-    	listDataTable.setValue(null);//reset selection
+        //reset selection
+    	listDataTable.setValue(null);
     	
     	renumberEntryIds();
         listDataTable.requestRepaint();
@@ -1215,8 +1214,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
     		String buildNewListTitle = ListBuilderComponent.getBuildNewListTitle().getValue().toString();
     		if(buildNewListTitle.equals(messageSource.getMessage(Message.BUILD_A_NEW_LIST))){
         		message = "You have unsaved changes to the current list you are building. Do you want to save your changes before proceeding to your next list to edit?";
-        	}
-        	else {
+        	}else {
         		message = "You have unsaved changes to the list you are editing. Do you want to save your changes before proceeding to your next list to edit?";
         	}
     		
@@ -1232,8 +1230,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 					source.loadListForEditing(getGermplasmList());
 				}
 			});
-    	}
-    	else{
+    	}else{
     		source.loadListForEditing(getGermplasmList());
     	}
 	}
@@ -1332,7 +1329,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
                 listManagerCopyToNewListDialog.center();
             } catch (MiddlewareQueryException e) {
                 LOG.error("Error copying list entries.", e);
-                e.printStackTrace();
+                LOG.error("\n" + e.getStackTrace());
             }
         }
     }
@@ -1401,6 +1398,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
         try{
             groupName = this.germplasmDataManager.getCrossExpansion(gid, 1);
         } catch(MiddlewareQueryException ex){
+            LOG.error("\n" + ex.getStackTrace());
             groupName = "-";
         }
         listData.setGroupName(groupName);
@@ -1599,8 +1597,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		setHasUnsavedChanges(false);
         
 		return true;
-		
-    } // end of saveChangesAction
+        // end of saveChangesAction
+    }
 
 	//TODO review this method as there are redundant codes here that is also in saveChangesAction()
     //might be possible to eliminate this method altogether and reduce the number of middleware calls
@@ -1619,7 +1617,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
                     germplasmListManager.deleteGermplasmListDataByListIdLrecId(germplasmList.getId(), lrecId);
                 } catch (MiddlewareQueryException e) {
                     LOG.error("Error with deleting list entries.", e);
-                    e.printStackTrace();
+                    LOG.error("\n" + e.getStackTrace());
                 }
             }
             
@@ -1640,7 +1638,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
                 logDeletedListEntriesToWorkbenchProjectActivity();
             } catch (MiddlewareQueryException e) {
                 LOG.error("Error logging workbench activity.", e);
-                e.printStackTrace();
+                LOG.error("\n" + e.getStackTrace());
             }
 
             //reset items to delete in listDataTable
@@ -1648,13 +1646,13 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
                 
         } catch (NumberFormatException e) {
             LOG.error("Error with deleting list entries.", e);
-            e.printStackTrace();
+            LOG.error("\n" + e.getStackTrace());
         } catch (MiddlewareQueryException e) {
             LOG.error("Error with deleting list entries.", e);
-            e.printStackTrace();
+            LOG.error("\n" + e.getStackTrace());
         }
-        
-    } // end of performListEntriesDeletion
+    // end of performListEntriesDeletion
+    }
     
     protected void deleteGermplasmDialogBox(final List<Integer> gidsWithoutChildren) throws NumberFormatException, MiddlewareQueryException {
 
@@ -1796,7 +1794,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			}
 		}
 		//Refresh tree on save
-		((BreedingManagerApplication) getApplication()).getListManagerMain().getListSelectionComponent().getListTreeComponent().refreshTree();
+		((BreedingManagerApplication) getApplication()).getListManagerMain().getListSelectionComponent().getListTreeComponent().refreshComponent();
 	}
 	
 	public void openViewListHeaderWindow(){
