@@ -169,8 +169,8 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 				
 				try {
 				    listDetailsComponent.getListDateField().validate();
-				} catch (Exception e) {
-					MessageNotifier.showRequiredFieldError(getWindow().getParent().getWindow(), messageSource.getMessage(Message.DATE_MUST_BE_IN_THIS_FORMAT));
+				} catch (InvalidValueException e) {
+					MessageNotifier.showRequiredFieldError(getWindow().getParent().getWindow(), e.getMessage());
 					return;
 				}
 				
