@@ -1,4 +1,4 @@
-package org.generationcp.breeding.manager.customfields.test;
+package org.generationcp.breeding.manager.customfields;
 
 import java.util.Calendar;
 import java.util.Collection;
