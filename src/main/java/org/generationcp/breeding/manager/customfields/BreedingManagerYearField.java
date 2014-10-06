@@ -5,6 +5,8 @@ import com.vaadin.ui.ComboBox;
 public class BreedingManagerYearField extends ComboBox {
 	private static final long serialVersionUID = 1L;
 
+	private static final Integer RANGE_INTERVAL_FROM_BASE_YEAR = 30;  
+	
 	public BreedingManagerYearField(Integer year){
 		super();
 		
@@ -18,7 +20,10 @@ public class BreedingManagerYearField extends ComboBox {
 	private void initializeValues(Integer year) {
 		addItem("Year");
 		
-		for(int i = (year-10); i <= (year+10); i++){
+		int minYear = year - RANGE_INTERVAL_FROM_BASE_YEAR;
+		int maxYear = year + RANGE_INTERVAL_FROM_BASE_YEAR;
+		
+		for(int i = minYear; i <= maxYear; i++){
 			addItem(i);
 		}
 	}
