@@ -2,9 +2,6 @@ package org.generationcp.breeding.manager.customfields;
 
 import java.text.DateFormatSymbols;
 
-import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.HorizontalLayout;
 
@@ -13,10 +10,7 @@ public class HarvestDateField extends HorizontalLayout {
 	
 	BreedingManagerYearField harvestYear;
 	BreedingManagerMonthField harvestMonth;
-	
-	@Autowired
-	private SimpleResourceBundleMessageSource messageSource;
-	
+		
 	public HarvestDateField(Integer year, String caption){
 		super();
 		setCaption(caption);
@@ -44,19 +38,17 @@ public class HarvestDateField extends HorizontalLayout {
 				
 		if(harvestDate ==  null || harvestDate.length() == 0){
 			reset();
-		}
-		else{
-			if(harvestDate.length() > 8){//is in the date format
+		}else{
+			//is in the date format
+			if(harvestDate.length() > 8){
 				setValueUsingDateString(harvestDate);
-			}
-			else{
+			}else{
 				//set Month
 				int month = Integer.valueOf(harvestDate.substring(4, 6));
 				if(month >= 1 && month <= 12){
 					String monthString = new DateFormatSymbols().getMonths()[month-1];
 					harvestMonth.setValue(monthString);
-				}
-				else{
+				}else{
 					harvestMonth.setValue("Month"); //default
 				}
 				
@@ -71,8 +63,7 @@ public class HarvestDateField extends HorizontalLayout {
 
 		if(harvestDate ==  null){
 			reset();
-		}
-		else{
+		} else {
 			//Date String to parse: 2016-02-01T07:52:14.109+08:00
 			
 			//set Month
