@@ -337,7 +337,7 @@ public class GermplasmListTreeUtil implements Serializable {
 	}
 
     protected boolean isListLocked(GermplasmList gpList) {
-		if (gpList.getStatus()>100){
+    	if (gpList != null && gpList.getStatus()>100){
 			return true;
 		}
 		return false;
