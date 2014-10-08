@@ -58,7 +58,16 @@ public class AdditionalDetailsSetting implements Serializable {
 	public String getHarvestYear(){ 
 		return harvestDate.substring(0,4);
 	}
-	
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((harvestDate == null) ? 0 : harvestDate.hashCode());
+		result = prime * result + ((harvestLocationId == null) ? 0 : harvestLocationId.hashCode());
+		return result;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {

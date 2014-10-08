@@ -100,6 +100,20 @@ public class CrossNameSetting implements Serializable {
 	public void setSeparator(String separator) {
 		this.separator = separator;
 	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (addSpaceBetweenPrefixAndCode ? 1231 : 1237);
+		result = prime * result + (addSpaceBetweenSuffixAndCode ? 1231 : 1237);
+		result = prime * result + ((numOfDigits == null) ? 0 : numOfDigits.hashCode());
+		result = prime * result + ((prefix == null) ? 0 : prefix.hashCode());
+		result = prime * result + ((separator == null) ? 0 : separator.hashCode());
+		result = prime * result + ((startNumber == null) ? 0 : startNumber.hashCode());
+		result = prime * result + ((suffix == null) ? 0 : suffix.hashCode());
+		return result;
+	}
 
 	@Override
 	public boolean equals(Object obj) {

@@ -92,6 +92,19 @@ public class CrossingManagerSetting implements Serializable {
         		.append(additionalDetailsSetting, rhs.additionalDetailsSetting)
         		.isEquals();
     }
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((additionalDetailsSetting == null) ? 0 : additionalDetailsSetting.hashCode());
+		result = prime * result
+				+ ((breedingMethodSetting == null) ? 0 : breedingMethodSetting.hashCode());
+		result = prime * result + ((crossNameSetting == null) ? 0 : crossNameSetting.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
 
 	@Override
 	public String toString() {

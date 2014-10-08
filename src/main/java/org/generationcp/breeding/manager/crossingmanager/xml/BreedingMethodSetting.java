@@ -60,7 +60,16 @@ public class BreedingMethodSetting implements Serializable {
         		.append(methodId, rhs.methodId)
         		.append(isBasedOnStatusOfParentalLines, rhs.isBasedOnStatusOfParentalLines)
         		.isEquals();
-    }
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (isBasedOnStatusOfParentalLines ? 1231 : 1237);
+		result = prime * result + ((methodId == null) ? 0 : methodId.hashCode());
+		return result;
+	}
 
 	@Override
 	public String toString() {
