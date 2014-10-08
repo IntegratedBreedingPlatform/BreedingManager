@@ -48,9 +48,9 @@ public class AdditionalDetailsSetting implements Serializable {
 		
 		if(month == 0){
 			return "";
-		}
-		else{
-			String monthString = new DateFormatSymbols().getMonths()[month - 1];
+		} else{
+			DateFormatSymbols dateFormat = new DateFormatSymbols(); 
+			String monthString = dateFormat.getMonths()[month - 1];
 			return monthString;
 		}
 	}
