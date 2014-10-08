@@ -1,8 +1,10 @@
 package org.generationcp.breeding.manager.listmanager.util;
 
-import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.Window;
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Deque;
+
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.GermplasmListSource;
@@ -10,6 +12,7 @@ import org.generationcp.breeding.manager.customcomponent.handler.GermplasmListSo
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
+import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -22,10 +25,9 @@ import org.generationcp.middleware.pojos.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Deque;
+import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.Window;
 
 @Configurable
 public class GermplasmListTreeUtil implements Serializable {
@@ -34,8 +36,6 @@ public class GermplasmListTreeUtil implements Serializable {
 
 	private ListSelectorComponent source;
 	private GermplasmListSource targetListSource;
-	private static final String NO_SELECTION = "Please select a folder item";
-    public final static String HAS_CHILDREN = "Folder has child items.";
 
 	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
 	
@@ -243,85 +243,121 @@ public class GermplasmListTreeUtil implements Serializable {
         	mainWindow = source.getWindow().getParent();
         } else {        	
         	mainWindow = source.getWindow();   	
-        }  
-		 
-		GermplasmList gpList = null; 
-		try {
-			if (lastItemId== null) {
-				throw new Error(NO_SELECTION);
-			}
-
-			try {
-				gpList = germplasmListManager.getGermplasmListById(lastItemId);
-
-			} catch (MiddlewareQueryException e) {
-				throw new Error(messageSource.getMessage(Message.ERROR_DATABASE));
-			}
-
-			if (gpList == null) {
-				throw new Error(messageSource.getMessage(Message.ERROR_DATABASE));
-			}
-			
-			if (gpList.getStatus()>100){
-				throw new Error(messageSource.getMessage(Message.ERROR_UNABLE_TO_DELETE_LOCKED_LIST));
-			}
-
-			try {
-				User user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
-	            Integer projectId= workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue();
-	            Integer ibdbUserId=workbenchDataManager.getLocalIbdbUserId(user.getUserid(),Long.valueOf(projectId));
-	            
-				if (!gpList.getUserId().equals(ibdbUserId)) {
-					throw new Error(messageSource.getMessage(Message.ERROR_UNABLE_TO_DELETE_LIST_NON_OWNER));
-				}
-			} catch (MiddlewareQueryException e) {
-				throw new Error(messageSource.getMessage(Message.ERROR_DATABASE));
-			}
-			
-			try {
-				if (hasChildren(gpList.getId())) {
-					throw new Error(HAS_CHILDREN);
-				}
-			} catch (MiddlewareQueryException e) {
-				throw new Error(messageSource.getMessage(Message.ERROR_DATABASE));
-			}
-
-		} catch (Error e) {
-			MessageNotifier.showError(mainWindow,messageSource.getMessage(Message.ERROR),e.getMessage());
-			return;
+        }
+        
+        try{
+        	validateItemToDelete(lastItemId);	
+        } catch (InvalidValueException e) {
+        	MessageNotifier.showRequiredFieldError(mainWindow, e.getMessage());
+        	LOG.error("Error validation for deleting a list.", e);
+        	return;
 		}
-
-		final GermplasmList finalGpList = gpList;
+    
+		final GermplasmList finalGpList = getGermplasmList(lastItemId);
 		ConfirmDialog.show(mainWindow,
 			messageSource.getMessage(Message.DELETE_ITEM),
 			messageSource.getMessage(Message.DELETE_ITEM_CONFIRM),
-			messageSource.getMessage(Message.YES),messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
+			messageSource.getMessage(Message.YES),
+			messageSource.getMessage(Message.NO), 
+			new ConfirmDialog.Listener() {
 				private static final long serialVersionUID = -6164460688355101277L;
-
-			@Override
-			public void onClose(ConfirmDialog dialog) {
-				if (dialog.isConfirmed()) {
-					try {
-						ListCommonActionsUtil.deleteGermplasmList(germplasmListManager, finalGpList, 
-								workbenchDataManager, source.getWindow(), messageSource, "item");
-                        listSelectorComponent.removeListFromTree(finalGpList);
-						
-						((BreedingManagerApplication) mainWindow.getApplication()).updateUIForDeletedList(finalGpList);
-						source.refreshRemoteTree();
-						
-					} catch (Error e) {
-						MessageNotifier.showError(mainWindow, e.getMessage(), "");
-					} catch (MiddlewareQueryException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+				@Override
+				public void onClose(ConfirmDialog dialog) {
+					if (dialog.isConfirmed()) {
+						try {
+							ListCommonActionsUtil.deleteGermplasmList(germplasmListManager, finalGpList, 
+									workbenchDataManager, source.getWindow(), messageSource, "item");
+	                        listSelectorComponent.removeListFromTree(finalGpList);
+							
+							((BreedingManagerApplication) mainWindow.getApplication()).updateUIForDeletedList(finalGpList);
+							source.refreshRemoteTree();
+						} catch (MiddlewareQueryException e) {
+							MessageNotifier.showError(mainWindow, messageSource.getMessage(Message.INVALID_OPERATION) , e.getMessage());
+							LOG.error("Error with deleting a germplasm list.", e);
+						}
 					}
 				}
-			}
 		});
 		
 	}    
 	
-    public boolean hasChildren(Integer id) throws MiddlewareQueryException {
+    protected void validateItemToDelete(Integer lastItemId) {
+    	GermplasmList gpList = getGermplasmList(lastItemId);
+    	
+    	validateIfItemExist(lastItemId,gpList);
+    	validateItemByStatusAndUser(gpList);
+    	validateItemIfItIsAFolderWithContent(gpList);
+	}
+
+    private void validateIfItemExist(Integer lastItemId, GermplasmList gpList) {
+    	if (lastItemId == null) {
+    		throw new InvalidValueException(messageSource.getMessage(Message.ERROR_NO_SELECTION));
+		}
+    	
+    	if(!doesGermplasmListExist(gpList)){
+    		throw new InvalidValueException(messageSource.getMessage(Message.ERROR_ITEM_DOES_NOT_EXISTS));
+    	}
+	}
+    
+    private void validateItemByStatusAndUser(GermplasmList gpList) {
+    	if(isListLocked(gpList)){
+    		throw new InvalidValueException(messageSource.getMessage(Message.ERROR_UNABLE_TO_DELETE_LOCKED_LIST));
+    	}
+    	
+    	if(!isListOwnedByTheUser(gpList)){
+    		throw new InvalidValueException(messageSource.getMessage(Message.ERROR_UNABLE_TO_DELETE_LIST_NON_OWNER));
+    	}
+	}
+    
+    private void validateItemIfItIsAFolderWithContent(GermplasmList gpList) {
+    	try {
+			if (hasChildren(gpList.getId())) {
+				throw new InvalidValueException(messageSource.getMessage(Message.ERROR_HAS_CHILDREN));
+			}
+		} catch (MiddlewareQueryException e) {
+			LOG.error("Error retrieving children items of a parent item.", e);
+		}
+	}
+
+    protected boolean isListOwnedByTheUser(GermplasmList gpList) {
+		try {
+			Integer ibdbUserId = Util.getCurrentUserLocalId(workbenchDataManager);
+			if (!gpList.getUserId().equals(ibdbUserId)) {
+				return false;
+			}
+		} catch (MiddlewareQueryException e) {
+			LOG.error("Error retrieving workbench user id.", e);
+		}
+		return true;
+	}
+
+    protected boolean isListLocked(GermplasmList gpList) {
+		if (gpList.getStatus()>100){
+			return true;
+		}
+		return false;
+	}
+
+    protected GermplasmList getGermplasmList(Integer lastItemId) {
+		GermplasmList gpList = null;
+		
+		try {
+			gpList = germplasmListManager.getGermplasmListById(lastItemId);
+		} catch (MiddlewareQueryException e) {
+			LOG.error("Error retrieving germplasm list by Id.", e);
+		}
+		
+		return gpList;
+	}
+
+    protected boolean doesGermplasmListExist(GermplasmList germplasmList) {
+		if (germplasmList == null) {
+			return false;
+		}
+		return true;
+	}
+
+	public boolean hasChildren(Integer id) throws MiddlewareQueryException {
         return !germplasmListManager.getGermplasmListByParentFolderId(id,0,Integer.MAX_VALUE).isEmpty();
     }
     
