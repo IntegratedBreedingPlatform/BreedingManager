@@ -22,6 +22,8 @@ import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -33,6 +35,8 @@ import com.vaadin.ui.Window;
 public class GermplasmListTreeUtil implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
+	
+	private static final Logger LOG = LoggerFactory.getLogger(GermplasmListTreeUtil.class);
 
 	private ListSelectorComponent source;
 	private GermplasmListSource targetListSource;
@@ -113,7 +117,7 @@ public class GermplasmListTreeUtil implements Serializable {
 			MessageNotifier.showError(source.getWindow(), 
                     messageSource.getMessage(Message.ERROR_INTERNAL), 
                     messageSource.getMessage(Message.ERROR_REPORT_TO));
-			e.printStackTrace();
+			LOG.error("Error with update the germplasm list.", e);
 		}
         
         //apply to UI
@@ -176,7 +180,7 @@ public class GermplasmListTreeUtil implements Serializable {
 				MessageNotifier.showError(source.getWindow(), 
 						messageSource.getMessage(Message.ERROR_INTERNAL), 
 						messageSource.getMessage(Message.ERROR_REPORT_TO));
-				e.printStackTrace();
+				LOG.error("Error with adding the new germplasm list.",e);
 			}
 
 			//update UI
@@ -184,8 +188,8 @@ public class GermplasmListTreeUtil implements Serializable {
 			
 			
 		} catch (InvalidValueException e) {
-			e.printStackTrace();
 			MessageNotifier.showRequiredFieldError(source.getWindow(), e.getMessage());
+			LOG.error("Error adding new folder.",e);
 		}
     }
 
