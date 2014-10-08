@@ -83,11 +83,12 @@ public class GermplasmListTreeUtil implements Serializable {
     	Integer sourceId = null;
     	Integer targetId = null;
     	
-    	if(sourceItemId!=null && !sourceItemId.equals(ListSelectorComponent.LOCAL) && !sourceItemId.equals(ListSelectorComponent.CENTRAL))
+    	if(sourceItemId!=null && !sourceItemId.equals(ListSelectorComponent.LOCAL) && !sourceItemId.equals(ListSelectorComponent.CENTRAL)){
     		sourceId = Integer.valueOf(sourceItemId.toString());
-    	if(targetItemId!=null && !targetItemId.equals(ListSelectorComponent.LOCAL) && !targetItemId.equals(ListSelectorComponent.CENTRAL))
+    	}
+    	if(targetItemId!=null && !targetItemId.equals(ListSelectorComponent.LOCAL) && !targetItemId.equals(ListSelectorComponent.CENTRAL)){
     		targetId = Integer.valueOf(targetItemId.toString());
-    	
+    	}
 		if(sourceId!=null && sourceId>0){
 			MessageNotifier.showWarning(source.getWindow(), 
 					messageSource.getMessage(Message.ERROR_WITH_MODIFYING_LIST_TREE), 
@@ -407,8 +408,9 @@ public class GermplasmListTreeUtil implements Serializable {
             } else if (newFolder.getParent() != null && targetListSource.getItem(parentItemId)!=null && source.isFolder(parentItemId)) {
                 targetListSource.setChildrenAllowed(parentItemId, true);
                 Boolean parentSet = targetListSource.setParent(newFolderId, parentItemId);
-                if(!parentSet)
+                if(!parentSet){
                     parentSet = targetListSource.setParent(newFolderId, ListSelectorComponent.LOCAL);
+                }
                 //If list, add to parent
             } else if (newFolder.getParent() != null && targetListSource.getItem(parentItemId)!=null) {
                 targetListSource.setChildrenAllowed(parentList.getParentId(), true);
@@ -420,8 +422,9 @@ public class GermplasmListTreeUtil implements Serializable {
             }
 
             if (targetListSource.getValue() != null) {
-                if (!targetListSource.isExpanded(targetListSource.getValue()))
+                if (!targetListSource.isExpanded(targetListSource.getValue())){
                     targetListSource.expandItem(parentItemId);
+                }
             } else {
                 targetListSource.expandItem(ListSelectorComponent.LOCAL);
             }
