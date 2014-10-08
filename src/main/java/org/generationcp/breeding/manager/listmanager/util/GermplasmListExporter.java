@@ -396,7 +396,6 @@ public class GermplasmListExporter {
             
             int i = 1;
             for (GermplasmListData listData : listDatas) {
-                //Name preferredId = germplasmDataManager.getPreferredIdByGID(listData.getGid());
                 HSSFRow listEntry = observationSheet.createRow(i);
                 listEntry.createCell(0).setCellValue(listData.getEntryId());
                 listEntry.createCell(1).setCellValue(listData.getGid());
@@ -404,7 +403,6 @@ public class GermplasmListExporter {
                 listEntry.createCell(3).setCellValue(listData.getDesignation());
                 listEntry.createCell(4).setCellValue(listData.getGroupName());
                 listEntry.createCell(5).setCellValue(listData.getSeedSource());
-                //listEntry.createCell(6).setCellValue(preferredId == null ? "" : preferredId.getNval());
                 listEntry.createCell(6).setCellValue(preferredIdsMap.containsKey(listData.getGid()) 
                         ? preferredIdsMap.get(listData.getGid()) : "");
                 i+=1;

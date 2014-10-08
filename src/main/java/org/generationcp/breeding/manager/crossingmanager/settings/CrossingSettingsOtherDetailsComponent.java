@@ -73,8 +73,6 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 	private ComboBox harvestLocations;
 	private CheckBox showFavouriteLocations;
 	private Button manageFavoriteLocations;
-
-	//private DateField harvestDate;
 	
 	private HarvestDateField harvestDateField;
 

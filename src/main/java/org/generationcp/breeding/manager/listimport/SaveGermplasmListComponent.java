@@ -14,7 +14,6 @@ import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportBut
 import org.generationcp.breeding.manager.listmanager.dialog.SelectLocationFolderDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.SelectLocationFolderDialogSource;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
-import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -242,30 +241,10 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
     }
 
     public void nextButtonClickAction() throws InternationalizableException {
-         //do the saving now
-    	
-
-    	
         if (validateListName() && validateRequiredFields()){
-
-        saveRecords();
-        
-//                    ConfirmDialog.show(this.getWindow(), messageSource.getMessage(Message.SAVE_GERMPLASM_LIST),
-//                            messageSource.getMessage(Message.CONFIRM_RECORDS_WILL_BE_SAVED_FOR_GERMPLASM),
-//                            messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL),
-//                            new ConfirmDialog.Listener() {
-//
-//                                public void onClose(ConfirmDialog dialog) {
-//                                    if (dialog.isConfirmed()) {
-//                                        saveRecords();
-//                                    }
-//                                }
-//
-//                            }
-//                    );
-                }
+        	saveRecords();
+        }
     }
-
 
     private boolean validateRequiredFields(){
 
@@ -307,22 +286,6 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
              germplasmList.setParent((GermplasmList) folderToSaveListTo.getData());
              germplasmList.setStatus(1);
              
-             //LinkedHashMap<Germplasm, Name> germplasmNameMap = new LinkedHashMap<Germplasm, Name>();
-//             for(int i = 0 ; i < this.getNameList().size() ; i++){
-//                 if(doNotCreateGermplasmsWithId.contains(this.getGermplasmList().get(i).getGid())){
-//                     //Get germplasm using temporarily set GID, then create map
-//                     Germplasm germplasmToBeUsed = germplasmDataManager.getGermplasmByGID(this.getGermplasmList().get(i).getGid());
-//                     germplasmNameMap.put(germplasmToBeUsed, this.getNameList().get(i));
-//                     
-//                     List<Germplasm> germplasmListToBeUsed = this.getGermplasmList();
-//                     germplasmListToBeUsed.set(i, germplasmToBeUsed);
-//                     this.setGermplasmList(germplasmListToBeUsed);
-//                 } else {
-//                     //Create map from data from previous screen
-//                     germplasmNameMap.put(this.getGermplasmList().get(i), this.getNameList().get(i));
-//                 }
-//             }
-             
              List<GermplasmName> germplasmNameObjects = ((SpecifyGermplasmDetailsComponent) previousScreen).getGermplasmNameObjects();
              List<GermplasmName> germplasmNameObjectsToBeSaved = new ArrayList<GermplasmName>();
              
@@ -330,21 +293,10 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
                  if(doNotCreateGermplasmsWithId.contains(germplasmNameObjects.get(i).getGermplasm().getGid())){
                      //Get germplasm using temporarily set GID, then create map
                      Germplasm germplasmToBeUsed = germplasmDataManager.getGermplasmByGID(germplasmNameObjects.get(i).getGermplasm().getGid());
-                     //germplasmNameMap.put(germplasmToBeUsed, germplasmNameObjects.get(i).getName());
-                     
                      germplasmNameObjectsToBeSaved.add(new GermplasmName(germplasmToBeUsed, germplasmNameObjects.get(i).getName()));
                      
-                     //List<Germplasm> germplasmListToBeUsed = this.getGermplasmList();
-                     //germplasmListToBeUsed.set(i, germplasmToBeUsed);
-                     //this.setGermplasmList(germplasmListToBeUsed);
                  } else {
                      //Create map from data from previous screen
-                     //germplasmNameMap.put(germplasmNameObjects.get(i).getGermplasm(), germplasmNameObjects.get(i).getName());
-                	 
-                	 //if(breedingMethod.getMtype().equals("DER")
-                	 //|| breedingMethod.getMtype().equals("MAN")
-                	 //)
-                	 
                 	 if(germplasmNameObjects.get(i).getGermplasm().getGpid1()==0 && germplasmNameObjects.get(i).getGermplasm().getGpid2()==0)
                 		 germplasmNameObjects.get(i).getGermplasm().setGnpgs(-1);
                 	 

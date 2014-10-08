@@ -73,7 +73,6 @@ public class ListTabComponent extends VerticalLayout implements InitializingBean
 	
 	public void setListNameLabel(String name){
 	    //TODO implement changing of List Name in details section for Rename List
-        //lblName.setValue("<b>"+messageSource.getMessage(Message.NAME_LABEL)+":</b>&nbsp;&nbsp;"+name);
     }
 	
 	public ListSelectionLayout getListSelectionLayout() {

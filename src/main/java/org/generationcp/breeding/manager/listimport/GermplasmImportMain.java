@@ -211,7 +211,6 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 	public void reset(){
 		this.parent.removeAllComponents();
 		this.parent.addComponent(new GermplasmImportMain(this.parent, viaToolURL, viaPopup));
-        //this.parent.replaceComponent(this, new GermplasmImportMain(this.parent, viaToolURL, viaPopup));
     }
 	
 	private void initializeSpecifyGermplasmDetailsPage(){

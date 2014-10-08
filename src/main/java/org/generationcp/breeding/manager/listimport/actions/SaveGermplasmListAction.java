@@ -422,7 +422,7 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
         	
             int entryId = ctr++;
             ImportedGermplasm importedGermplasm = importedGermplasms.get(entryId - 1);
-            Integer gid = germplasmName.getGermplasm().getGid(); //germplasmIdIterator.next();
+            Integer gid = germplasmName.getGermplasm().getGid(); 
             
             String designation = germplasmName.getName().getNval();
             

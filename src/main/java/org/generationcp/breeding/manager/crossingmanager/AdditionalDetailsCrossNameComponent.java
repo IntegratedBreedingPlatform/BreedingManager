@@ -393,16 +393,6 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
             MessageNotifier.showError(window, messageSource.getMessage(Message.ERROR_WITH_CROSS_CODE), 
             		messageSource.getMessage(Message.ERROR_ENTER_PREFIX_FIRST));
             return false;
-        
-//        } else if (prefix.contains(" ")){
-//            MessageNotifier.showError(window, messageSource.getMessage(Message.ERROR_WITH_CROSS_CODE), 
-//            		messageSource.getMessage(Message.ERROR_PREFIX_HAS_WHITESPACE));
-//            return false;
-//        
-//        } else if (prefix.substring(prefix.length()-1).matches("\\d")){
-//            MessageNotifier.showError(window, messageSource.getMessage(Message.ERROR_WITH_CROSS_CODE),  
-//            		messageSource.getMessage(Message.ERROR_PREFIX_ENDS_IN_NUMBER));
-//            return false;
         } 
         
         return true;

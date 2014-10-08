@@ -237,8 +237,6 @@ public class CrossingSettingsDetailComponent extends CssLayout
 				methodComponent.setFields(templateSetting.getBreedingMethodSetting());
 				nameComponent.setFields(templateSetting.getCrossNameSetting());
 				additionalDetailsComponent.setFields(templateSetting.getAdditionalDetailsSetting(), templateSetting.getName(), currentSetting.isDefault());
-				//set name text field
-//				additionalDetailsComponent.getSettingsNameTextfield().setValue(currentSetting.getName());
 				
 			} catch (JAXBException e) {
 				LOG.error("Error with retrieving template setting.",e);

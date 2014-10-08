@@ -46,7 +46,6 @@ import com.vaadin.ui.themes.Reindeer;
 public class FillWith implements InternationalizableComponent  {
 	private static final Logger LOG = LoggerFactory.getLogger(FillWith.class);
 
-	//@Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
     @Autowired
@@ -298,7 +297,6 @@ public class FillWith implements InternationalizableComponent  {
     	List<Integer> gids = new ArrayList<Integer>();
     	List<Integer> listDataItemIds = getItemIds(table);
     	for(Integer itemId: listDataItemIds){
-    		//gids.add((Integer) table.getItem(itemId).getItemProperty(GID_VALUE).getValue());
     		gids.add(Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString()));
     	}
     	return gids;
@@ -551,7 +549,6 @@ public class FillWith implements InternationalizableComponent  {
   		   List<Integer> itemIds = getItemIds(table);
   		   for(Integer itemId: itemIds){
   			   if(!onlyFillWithThoseHavingEmptyValues || (table.getItem(itemId).getItemProperty(propertyId).getValue() == null || table.getItem(itemId).getItemProperty(propertyId).getValue().equals(""))){
-	  			   //Integer gid = (Integer) table.getItem(itemId).getItemProperty(GID_VALUE).getValue();
 	  			   Integer gid = Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
 	  			   Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
 	  			   List<Integer> parentGids = new ArrayList<Integer>();

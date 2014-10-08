@@ -1,21 +1,13 @@
 package org.generationcp.breeding.manager.customcomponent;
 
-import java.util.List;
-
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
-import org.generationcp.middleware.pojos.Person;
-import org.generationcp.middleware.pojos.User;
-import org.generationcp.middleware.pojos.UserDefinedField;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -25,7 +17,6 @@ import com.vaadin.ui.Label;
 
 @Configurable
 public class ViewListHeaderComponent extends GridLayout implements BreedingManagerLayout, InitializingBean, InternationalizableComponent{
-	private static final Logger LOG = LoggerFactory.getLogger(ViewListHeaderComponent.class);
 	
 	private static final long serialVersionUID = 4690756426750044929L;
 	
@@ -198,7 +189,7 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 		builder.append("<tr>\n");
 		builder.append("<td><b>Description:</b></td>\n");
 		String description =  BreedingManagerUtil.getDescriptionForDisplay(germplasmList);
-		//if(description)
+
 		builder.append("<td>" + description + "</td>\n");
 		builder.append("</tr>\n");
 		

@@ -762,8 +762,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	@Override
 	public void layoutComponents() {
-		//this.setSizeFull();
-
 		headerLayout = new HorizontalLayout();
 		headerLayout.setWidth("100%");
 		headerLayout.setSpacing(true);
@@ -814,7 +812,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		addComponent(headerLayout);
 		addComponent(subHeaderLayout);
 		
-		//listDataTableWithSelectAll.setHeight("410px");
 		listDataTable.setHeight("480px");
 		
 		addComponent(listDataTableWithSelectAll);
@@ -1245,9 +1242,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
                 String listName = germplasmList.getName();
                 fileDownloadResource.setFilename(listName.replace(" ", "_") + ".xls");
                 source.getWindow().open(fileDownloadResource);
+                
                 //TODO must figure out other way to clean-up file because deleting it here makes it unavailable for download
-                    //File tempFile = new File(tempFileName);
-                    //tempFile.delete();
+                
             } catch (GermplasmListExporterException e) {
                 LOG.error(messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
                 MessageNotifier.showError(source.getWindow()
@@ -1288,8 +1285,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
                 source.getWindow().open(fileDownloadResource);
                 
                 //TODO must figure out other way to clean-up file because deleting it here makes it unavailable for download
-                //File tempFile = new File(tempFileName);
-                //tempFile.delete();
+                
             } catch (GermplasmListExporterException e) {
                 MessageNotifier.showError(source.getWindow()
                         , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)

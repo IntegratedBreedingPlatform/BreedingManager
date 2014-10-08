@@ -333,10 +333,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
             ctr++;
         }
         
-        //update list of crosses to export in CrossingManagerUploader
-//        container.getCrossesMade().getCrossingManagerUploader()
-//                .getImportedGermplasmCrosses().setImportedGermplasmCross(crossesToExport);
-        
         return crossesMadeMap;
     }
     
@@ -402,8 +398,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
         tableCrossesMade.setColumnCollapsed(FEMALE_PARENT_COLUMN, true);
         tableCrossesMade.setColumnCollapsed(MALE_PARENT_COLUMN, true);
         tableCrossesMade.setColumnCollapsed(SOURCE, true);
-        
-        //tableCrossesMade.setVisibleColumns(new Object[]{NUMBER,PARENTAGE, FEMALE_PARENT_COLUMN, MALE_PARENT_COLUMN, SOURCE});
         
         tableCrossesMade.addActionHandler(new CrossingManagerActionHandler(this));
 	}
@@ -563,19 +557,15 @@ public class MakeCrossesTableComponent extends VerticalLayout
     			
     			GermplasmListEntry femaleParent = crossParents.getFemaleParent();
     			GermplasmListEntry maleParent = crossParents.getMaleParent();
-//				String maleSource = maleParent.getSeedSource();
-//				String femaleSource = femaleParent.getSeedSource();
-//    			String[] femaleSourceArray = femaleSource.split(":");
-//    			String[] maleSourceArray =maleSource.split(":");
 
     			String newFemaleSource = "";
     			String newMaleSource = "";
     			if(femaleParent.isFromFemaleTable()){
     				newFemaleSource = femaleListName + ":" + femaleParent.getEntryId();
-    				newMaleSource = maleListName + ":" + maleParent.getEntryId();// maleSourceArray[1].trim();
+    				newMaleSource = maleListName + ":" + maleParent.getEntryId();
     			} else{
     				newFemaleSource = maleListName + ":" + femaleParent.getEntryId();
-    				newMaleSource = femaleListName + ":" + maleParent.getEntryId();// maleSourceArray[1].trim();
+    				newMaleSource = femaleListName + ":" + maleParent.getEntryId();
     			}
     			
     			femaleParent.setSeedSource(newFemaleSource);

@@ -46,7 +46,6 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 			+ " The <b>Exact matches only</b> checkbox shows results that match the search "
 			+ " term exactly when checked. If you uncheck this option, the search  "
 			+ " will show results that contain the search term you enter.";
-	        //+ " <br/><br/>The <b>Search public data</b> checkbox allows you to search public (central) data, in addition to the local germplasm list data.";
 
 	private HorizontalLayout searchBarLayout;
 	private TextField searchField;

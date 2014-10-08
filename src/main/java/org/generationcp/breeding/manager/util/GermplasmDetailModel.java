@@ -13,7 +13,6 @@
 package org.generationcp.breeding.manager.util;
 
 import org.generationcp.middleware.pojos.Bibref;
-//import org.generationcp.middleware.domain.dms.Study;
 
 public class GermplasmDetailModel {
 

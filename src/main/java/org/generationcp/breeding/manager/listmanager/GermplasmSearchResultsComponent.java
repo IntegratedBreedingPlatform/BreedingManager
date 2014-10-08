@@ -468,7 +468,6 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
         germplasmInfo.setSizeFull();
         
         Button addToListLink = new Button("Add to list");
-		//addToListLink.setData(ADD_TO_LIST);
 		addToListLink.setImmediate(true);
 		addToListLink.setStyleName(Bootstrap.Buttons.INFO.styleName());
 		addToListLink.setIcon(AppConstants.Icons.ICON_PLUS);
@@ -572,12 +571,10 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	            }
 	        }
 	        catch (Exception e) {
-	           //e.printStackTrace();
 	        }
 			
 		} catch (MiddlewareQueryException e2) {
 			// TODO Auto-generated catch block
-			//e2.printStackTrace();
 		}
     	
     }

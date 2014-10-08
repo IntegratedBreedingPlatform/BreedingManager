@@ -280,8 +280,6 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
         layoutForGermplasm.addComponent(germplasmInfo);
         
         germplasmWindow.setContent(layoutForGermplasm);
-        //germplasmWindow.setWidth("645px");
-        //germplasmWindow.setHeight("600px");
         germplasmWindow.setWidth("90%");
         germplasmWindow.setHeight("90%");
         germplasmWindow.center();

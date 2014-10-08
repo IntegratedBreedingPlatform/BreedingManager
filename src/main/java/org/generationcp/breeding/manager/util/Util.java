@@ -183,7 +183,7 @@ public class Util {
     public static File getDefaultBrowseDirectory(Application application) throws BreedingManagerException{
 
         // Initially gets the Desktop path of the user
-        String desktopPath = System.getProperty(USER_HOME) + File.separator + "Desktop";// + File.separator ;
+        String desktopPath = System.getProperty(USER_HOME) + File.separator + "Desktop";
         File file = new File(desktopPath);
         
         // If desktop path is inaccessible, get the applicaton's base directory

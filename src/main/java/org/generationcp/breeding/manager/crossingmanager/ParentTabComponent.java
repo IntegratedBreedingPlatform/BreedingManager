@@ -361,7 +361,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 				} else if(clickedItem.getName().equals(messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))){
 					viewListAction();
 				} else if(clickedItem.getName().equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST))){
-					//copyToNewListFromInventoryViewAction();
+					// no implementation yet for this condition
 				} else if(clickedItem.getName().equals(messageSource.getMessage(Message.RESERVE_INVENTORY))){
 					reserveInventoryAction();
 				} else if(clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))){
@@ -462,8 +462,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		for(ListDataAndLotDetails listDataAndLotDetail : listDataAndLotDetails){
 			
 			if(!alreadyAddedEntryIds.contains(listDataAndLotDetail.getEntryId())){
-				//dropHandler.addGermplasmFromList(listDataAndLotDetail.getListId(), listDataAndLotDetail.getSourceLrecId());
-				
 				try {
 
 					GermplasmListData germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndLrecId(listDataAndLotDetail.getListId(), listDataAndLotDetail.getSourceLrecId());
@@ -472,9 +470,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 						
 						Integer entryId = getListDataTableNextEntryId();
         				GermplasmListEntry entryObject = new GermplasmListEntry(germplasmListData.getId(),germplasmListData.getGid(), (listDataTable.size()+1), germplasmListData.getDesignation(), germplasmListData.getSeedSource());
-        				
-//        				//if the item is already existing in the target table, remove the existing item then add a new entry
-//    		            listDataTable.removeItem(entryObject);
         				
     					Item newItem = listDataTable.getContainerDataSource().addItem(entryObject);
 
@@ -678,13 +673,12 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	                    			saveActionMenu.setEnabled(false);
 	                    			setHasUnsavedChanges(false);
 	                    			
-	                    			//updates the crossesMade.savebutton if both parents are save at least once;
+	                    			//updates the crossesMade save button if both parents are save at least once
 	                        		makeCrossesMain.getCrossesTableComponent().updateCrossesMadeSaveButton();
 	                        		
 	                    		} else {
 	                    			saveActionMenu.setEnabled(true);
 	                    			setHasUnsavedChanges(true);
-	                    			//femaleParentList = null;
 	                    		}
 	                    	}
 	                    } catch(MiddlewareQueryException e) {

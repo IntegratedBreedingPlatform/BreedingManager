@@ -71,8 +71,6 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 			TableTransferable transferable = (TableTransferable) event.getTransferable();
 	        Table sourceTable = transferable.getSourceComponent();
 	        String sourceTableData = sourceTable.getData().toString();
-	        //AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) event.getTargetDetails());
-	        //targetTable = (Table) dropData.getTarget();
 			
 	        if(sourceTableData.equals(MATCHING_GERMPLASMS_TABLE_DATA)){
 	        	String message = "Please switch to list view first before adding a germplasm entry to the list.";
@@ -254,7 +252,6 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 				for(GermplasmListData inventoryDetail : inventoryDetails){
 					
 					listDataAndLotDetails.add(new ListDataAndLotDetails(listId, inventoryDetail.getId(), inventoryDetail.getEntryId()));
-					//listDataAndLotDetails.add(new ListDataAndLotDetails(listId, inventoryDetail.getId(), listDataAndLotDetails.size()+1));
 					
 					Integer entryId = lastEntryId+inventoryDetail.getEntryId();
 					String designation = inventoryDetail.getDesignation();

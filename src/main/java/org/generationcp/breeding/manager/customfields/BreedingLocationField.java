@@ -320,7 +320,6 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		Integer firstId = null;
 		boolean hasDefault = false;
 		for(Location location : locations){
-		   //method.getMcode()
 		   if(firstId == null){
 		       firstId = location.getLocid();
 		   }

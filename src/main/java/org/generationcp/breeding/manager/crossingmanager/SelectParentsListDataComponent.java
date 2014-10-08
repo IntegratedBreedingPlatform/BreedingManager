@@ -445,7 +445,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
                   } else if(clickedItem.getName().equals(messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))){
                 	  viewListAction();
                   } else if(clickedItem.getName().equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST))){
-                	  //copyToNewListFromInventoryViewAction();
+                	  // no implementation yet for this method
 				  } else if(clickedItem.getName().equals(messageSource.getMessage(Message.RESERVE_INVENTORY))){
 		          	  reserveInventoryAction();
                   } else if(clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))){

@@ -1,7 +1,6 @@
 package org.generationcp.breeding.manager.customcomponent;
 
 import com.vaadin.data.Item;
-import com.vaadin.data.Property;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.terminal.Resource;

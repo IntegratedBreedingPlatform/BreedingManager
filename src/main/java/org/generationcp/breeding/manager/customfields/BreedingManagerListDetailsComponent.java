@@ -196,7 +196,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
             list.setDescription(listDescription);
         
         if(listTypeField!=null && listTypeField.getValue()!=null)
-        	list.setType(listTypeField.getValue().toString()); // value = fCOde
+        	list.setType(listTypeField.getValue().toString());
         
         if(date!=null && formatter.format(date)!=null)
         	list.setDate(Long.parseLong(formatter.format(date)));

@@ -36,7 +36,6 @@ public class ToggleButton  extends Button implements InitializingBean, Internati
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		//setCaption("<span class='fa fa-bars' style='left: 2px; color: #717171;font-size: 18px; font-weight: bold;'></span>");
         setHtmlContentAllowed(true);
 		setDescription(description);
 		setStyleName(Reindeer.BUTTON_LINK);

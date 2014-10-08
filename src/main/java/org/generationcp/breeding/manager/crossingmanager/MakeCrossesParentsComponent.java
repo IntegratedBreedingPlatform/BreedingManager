@@ -238,7 +238,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     			maleParentTab.setHasUnsavedChanges(false);
     		}
     		
-    		//updates the crossesMade.savebutton if both parents are save at least once;
+    		//updates the crosses made save button if both parents are save at least once
     		makeCrossesMain.getCrossesTableComponent().updateCrossesMadeSaveButton();
     		
     	} else {//drag some entries of a list to the parent list
@@ -335,7 +335,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		makeCrossesMain.getSelectParentsComponent().selectListInTree(list.getId());
 		makeCrossesMain.getSelectParentsComponent().updateUIForDeletedList(list);
 		
-		//updates the crossesMade.savebutton if both parents are save at least once;
+		//updates the crosses made save button if both parents are save at least once
 		makeCrossesMain.getCrossesTableComponent().updateCrossesMadeSaveButton();
 	}
 	
@@ -484,13 +484,12 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         			maleParentTab.getSaveActionMenu().setEnabled(false);
         			maleParentTab.setHasUnsavedChanges(false);
         			
-        			//updates the crossesMade.savebutton if both parents are save at least once;
+        			//updates the crosses made save button if both parents are save at least once
             		makeCrossesMain.getCrossesTableComponent().updateCrossesMadeSaveButton();
         		} else {
         			maleParentTab.getSaveActionMenu().setEnabled(true);
         			maleParentTab.setHasUnsavedChanges(true);
         			clearSeedReservationValues(maleParents);
-        			//maleParentList = null;
         		}
         	}
         	
@@ -586,7 +585,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         			femaleParentTab.getSaveActionMenu().setEnabled(false);
         			femaleParentTab.setHasUnsavedChanges(false);
         			
-        			//updates the crossesMade.savebutton if both parents are save at least once;
+        			//updates the crosses made save button if both parents are save at least once
             		makeCrossesMain.getCrossesTableComponent().updateCrossesMadeSaveButton();
         			
         		} else {

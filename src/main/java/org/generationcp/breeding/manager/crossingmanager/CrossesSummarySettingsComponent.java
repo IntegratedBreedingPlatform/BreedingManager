@@ -52,7 +52,6 @@ public class CrossesSummarySettingsComponent extends HorizontalLayout implements
 
 	@Override
 	public void instantiateComponents() {
-//		initializeBreedingMethodComponent();
 		initializeAdditionalDetailsComponent();
 	}
 

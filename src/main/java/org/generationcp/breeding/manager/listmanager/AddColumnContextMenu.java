@@ -247,121 +247,6 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
             }
             
         });
-        
-        //FIXME: sidebyside
-        //Attach menu to whatever source passed to the constructor of this class/util
-        /*if(absoluteLayoutSource!=null)
-            absoluteLayoutSource.addComponent(menu);*/
-        
-        //Attach listener to the "Add Column" button passed to the constructor of this class/util
-        /*if(this.sourceContextMenu!=null){
-            sourceContextMenu.addListener(new ContextMenu.ClickListener() {
-    
-                private static final long serialVersionUID = -6399264383924196725L;
-
-                @Override
-                public void contextItemClick(ClickEvent event) {
-                    ContextMenuItem clickedItem = event.getClickedItem();
-                    if(clickedItem.getName().equals(ADD_COLUMN_MENU)){
-                      //Check if columns already exist in the table
-                        if(propertyExists(PREFERRED_ID)){
-                            menuFillWithPreferredId.setEnabled(false);
-                        } else {
-                            menuFillWithPreferredId.setEnabled(true);
-                        }
-                        
-                        if(propertyExists(PREFERRED_NAME)){
-                            menuFillWithPreferredName.setEnabled(false);
-                        } else {
-                            menuFillWithPreferredName.setEnabled(true);
-                        }
-                        
-                        if(propertyExists(GERMPLASM_DATE)){
-                            menuFillWithGermplasmDate.setEnabled(false);
-                        } else {
-                            menuFillWithGermplasmDate.setEnabled(true);
-                        }
-                        
-                        if(propertyExists(LOCATIONS)){
-                            menuFillWithLocations.setEnabled(false);
-                        } else {
-                            menuFillWithLocations.setEnabled(true);
-                        }
-                        
-                        if(propertyExists(METHOD_NAME)){
-                            menuFillWithMethodName.setEnabled(false);
-                        } else {
-                            menuFillWithMethodName.setEnabled(true);
-                        }
-                        
-                        if(propertyExists(METHOD_ABBREV)){
-                            menuFillWithMethodAbbrev.setEnabled(false);
-                        } else {
-                            menuFillWithMethodAbbrev.setEnabled(true);
-                        }
-                        
-                        if(propertyExists(METHOD_NUMBER)){
-                            menuFillWithMethodNumber.setEnabled(false);
-                        } else {
-                            menuFillWithMethodNumber.setEnabled(true);
-                        }
-                        
-                        if(propertyExists(METHOD_GROUP)){
-                            menuFillWithMethodGroup.setEnabled(false);
-                        } else {
-                            menuFillWithMethodGroup.setEnabled(true);
-                        }
-                        
-                        if(propertyExists(METHOD_NAME) && propertyExists(METHOD_ABBREV)
-                                && propertyExists(METHOD_NUMBER) && propertyExists(METHOD_GROUP)){
-                            menuFillWithMethodInfo.setEnabled(false);
-                        } else {
-                            menuFillWithMethodInfo.setEnabled(true);
-                        }
-                        
-                        if(propertyExists(CROSS_FEMALE_GID)){
-                            menuFillWithCrossFemaleGID.setEnabled(false);
-                        } else {
-                            menuFillWithCrossFemaleGID.setEnabled(true);
-                        }
-                        
-                        if(propertyExists(CROSS_FEMALE_PREF_NAME)){
-                            menuFillWithCrossFemalePrefName.setEnabled(false);
-                        } else {
-                            menuFillWithCrossFemalePrefName.setEnabled(true);
-                        }
-                        
-                        if(propertyExists(CROSS_FEMALE_GID) && propertyExists(CROSS_FEMALE_PREF_NAME)){
-                            menuFillWithCrossFemaleInfo.setEnabled(false);
-                        } else {
-                            menuFillWithCrossFemaleInfo.setEnabled(true);
-                        }
-                        
-                        if(propertyExists(CROSS_MALE_GID)){
-                            menuFillWithCrossMaleGID.setEnabled(false);
-                        } else {
-                            menuFillWithCrossMaleGID.setEnabled(true);
-                        }
-                        
-                        if(propertyExists(CROSS_MALE_PREF_NAME)){
-                            menuFillWithCrossMalePrefName.setEnabled(false);
-                        } else {
-                            menuFillWithCrossMalePrefName.setEnabled(true);
-                        }
-                        
-                        if(propertyExists(CROSS_MALE_GID) && propertyExists(CROSS_MALE_PREF_NAME)){
-                            menuFillWithCrossMaleInfo.setEnabled(false);
-                        } else {
-                            menuFillWithCrossMaleInfo.setEnabled(true);
-                        }
-                        
-                        //Display context menu
-                        //menu.show(event.getClientX(), event.getClientY());
-                        //sourceContextMenu.requestRepaint();
-                    }
-                }
-            });
-        }*/
     }
     
     public void initializeAddableProperties(){
@@ -900,7 +785,6 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
         List<Integer> gids = new ArrayList<Integer>();
         List<Integer> listDataItemIds = getItemIds(table);
         for(Integer itemId: listDataItemIds){
-            //gids.add((Integer) table.getItem(itemId).getItemProperty(GID_VALUE).getValue());
             gids.add(Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString()));
         }
         return gids;
@@ -969,7 +853,6 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
         	List<ListDataColumn> columns = new ArrayList<ListDataColumn>();
 	        for(String propertyId : propertyIds){
 	        	if(ADDABLE_PROPERTY_IDS.contains(propertyId)){
-	        		//System.out.println("Columns TO Save: " + propertyId);
 	        		if(item.getItemProperty(propertyId).getValue()!=null)
 	                    columns.add(new ListDataColumn(propertyId, item.getItemProperty(propertyId).getValue().toString()));
 	                else

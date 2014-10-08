@@ -216,7 +216,6 @@ public class DefineCrossingSettingComponent extends CssLayout implements Breedin
 
 		} catch (MiddlewareQueryException e) {
 			//commenting out code for showing error notification because at this point this component is not yet attached to a window and so getWindow() returns null
-			//MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), "Error getting crossing templates!");
 			LOG.error("Error with retrieving Workbench template settings for Crossing Manager tool.", e);
 		}
 	}

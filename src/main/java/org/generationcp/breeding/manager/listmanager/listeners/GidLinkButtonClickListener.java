@@ -12,8 +12,6 @@
 
 package org.generationcp.breeding.manager.listmanager.listeners;
 
-import com.vaadin.event.MouseEvents;
-import com.vaadin.event.ShortcutAction;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.constants.ModeView;
@@ -33,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
@@ -40,7 +39,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class GidLinkButtonClickListener implements Button.ClickListener {
@@ -212,12 +210,10 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
 	            }
 	        }
 	        catch (Exception e) {
-	           //e.printStackTrace();
 	        }
 			
 		} catch (MiddlewareQueryException e2) {
 			// TODO Auto-generated catch block
-			//e2.printStackTrace();
 		}
     	
     	        

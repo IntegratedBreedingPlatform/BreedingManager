@@ -13,11 +13,6 @@ import com.vaadin.ui.Window;
 
 public class CreatePedigreeGraph
 {
-
-    /**
-     * 
-     */
-
     private GermplasmQueries qQuery;
     private GraphVizUtility gv;
     private int gid;
@@ -56,37 +51,14 @@ public class CreatePedigreeGraph
         gv.setImageOutputPath(GraphVizUtility.createImageOutputPathForWindow(window));
         gv.addln(gv.start_graph());
 
-        // used for testing
-        /*
-        gv.addln("50544 [shape=box];");
-        gv.addln("50547 [shape=box];");
-        gv.addln("50547 [URL=\"http://www.google.com\"];");
-        gv.addln("50544 [label=\"A 64(50544)\"];");
-        gv.addln("50547 [label=\"A 87(50594)\"];");
-        gv.addln("50544->50547;");
-        gv.addln("50566 [shape=box];");
-        gv.addln("50566 [label=\"A 89(50594)\",URL=\"http://www.google.com\"];");
-        gv.addln("50544->50566;");
-        gv.addln("nodeB [shape=none];");
-        gv.addln("nodeB [label=\"\"];");
-        gv.addln("50566->nodeB [style=\"dashed\"];");
-        */
-
         createDiGraphNode();
         gv.addln(gv.end_graph());
 
-        //      String type = "gif";
-        //      String type = "dot";
-        //      String type = "fig";    // open with xfig
-        //      String type = "pdf";
-        //      String type = "ps";
-        //      String type = "svg";    // open with inkscape
         String type = "png";
 
-
         // Load the directory as a resource
-
         File out = new File(gv.graphVizOutputPath(graphName+"."+type));    // Windows
+        
         //create graph
         gv.writeGraphToFile( gv.getGraph( gv.getDotSource(), type ), out );
 
@@ -129,7 +101,6 @@ public class CreatePedigreeGraph
 
                     gv.addln(leafNodeGID+" [shape=box];");
                     gv.addln(leafNodeGID+" [label=\""+leafNodeLabel+"\", fontname=\"Helvetica\", fontsize=12.0];");
-//                    gv.addln(leafNodeGID+" [URL=http://google.com];");
 
                     String parentNodeGID=node.getGermplasm().getGid().toString();
                     String parentNodeLabel= node.getGermplasm().getPreferredName().getNval() + "\n" + 
@@ -145,18 +116,9 @@ public class CreatePedigreeGraph
                         		"GID: " + node.getGermplasm().getGid().toString();
                         gv.addln(leafNodeGIDRoot+" [shape=box];");
                         gv.addln(leafNodeGIDRoot+" [label=\""+leafNodeLabelRoot+"\", fontname=\"Helvetica\", fontsize=12.0];");
-//                        gv.addln(leafNodeGIDRoot+" [URL=http://google.com];");
                         gv.addln(leafNodeGID+"->"+ leafNodeGIDRoot +";");
                     }
                     gv.addln(leafNodeGID+"->"+ parentNodeGID+";");
-                    
-//                    if(parent.getLinkedNodes().isEmpty()){
-//                        
-//                        gv.addln(leafNodeGID+level+"[shape=none];");
-//                        gv.addln(leafNodeGID+level+"[label=\"\"];");
-////                        gv.addln(leafNodeGID+level+"[URL=\"http://google.com\"];");
-//                        gv.addln(leafNodeGID+"->"+leafNodeGID+level +" [style=\"dashed\"];");
-//                    }
                 }
                 addNode(parent, level + 1);
             }catch(Exception e){
@@ -164,7 +126,5 @@ public class CreatePedigreeGraph
             }
         }
     }
-
-
 }
 

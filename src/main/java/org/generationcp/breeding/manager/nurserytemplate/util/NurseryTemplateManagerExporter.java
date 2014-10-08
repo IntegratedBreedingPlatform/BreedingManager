@@ -64,21 +64,18 @@ public class NurseryTemplateManagerExporter{
         HSSFSheet descriptionSheet = wb.createSheet("Description");
         HSSFSheet observationSheet = wb.createSheet("Observation");  
         
-//        Map<Germplasm, Name> crossesMap = crossesMade.getCrossesMap();
-//        if (crossesMap != null && !crossesMap.isEmpty()){
-            HashMap<String, CellStyle> sheetStyles = createStyles(wb);
-                
-            //write Description sheet
-            int lastRow = 0;
-            lastRow = writeStudyDetailsSection(sheetStyles, descriptionSheet, 1);
-            lastRow = writeConditionSection(sheetStyles, descriptionSheet, lastRow + 1);
-            lastRow = writeFactorSection(sheetStyles, descriptionSheet, lastRow + 2); //two rows before section
-            lastRow = writeConstantsSection(sheetStyles, descriptionSheet, lastRow + 1);
-            lastRow = writeVariateSection(sheetStyles, descriptionSheet, lastRow + 1);
+        HashMap<String, CellStyle> sheetStyles = createStyles(wb);
             
-            //write Observation sheet
-            writeObservationsSheet(sheetStyles, observationSheet, 1);
-//        }
+        //write Description sheet
+        int lastRow = 0;
+        lastRow = writeStudyDetailsSection(sheetStyles, descriptionSheet, 1);
+        lastRow = writeConditionSection(sheetStyles, descriptionSheet, lastRow + 1);
+        lastRow = writeFactorSection(sheetStyles, descriptionSheet, lastRow + 2); //two rows before section
+        lastRow = writeConstantsSection(sheetStyles, descriptionSheet, lastRow + 1);
+        lastRow = writeVariateSection(sheetStyles, descriptionSheet, lastRow + 1);
+        
+        //write Observation sheet
+        writeObservationsSheet(sheetStyles, observationSheet, 1);
     
         //adjust column widths of description sheet to fit contents
         for(int ctr = 0; ctr < NUM_OF_COLUMNS; ctr++) {
@@ -266,7 +263,6 @@ public class NurseryTemplateManagerExporter{
             conditionRow.createCell(3).setCellValue(variate.getScale());
             conditionRow.createCell(4).setCellValue(variate.getMethod());
             conditionRow.createCell(5).setCellValue(variate.getDataType());
-//            conditionRow.createCell(6).setCellValue(variate.getValue()); // empty column in template
             conditionRow.createCell(7).setCellValue(variate.getSampleLevel());
         }
     

@@ -241,7 +241,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		updateNoOfEntries(0);
 		
 		totalSelectedListEntriesLabel = new Label("", Label.CONTENT_XHTML);
-//		totalSelectedListEntriesLabel.setWidth("95px");
 		updateNoOfSelectedEntries(0);
 
         editHeaderButton = new Button(messageSource.getMessage(Message.EDIT_HEADER));
@@ -281,7 +280,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         menuCopyToList = menu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
         menuDeleteSelectedEntries = menu.addItem(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
         menuExportList = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST));
-        //menuExportForGenotypingOrder = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING));
+        
         menu.addItem(messageSource.getMessage(Message.INVENTORY_VIEW));
         menu.addItem(messageSource.getMessage(Message.RESET_LIST));
         menu.addItem(messageSource.getMessage(Message.SAVE_LIST));
@@ -1068,9 +1067,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
                     String listName = currentlySavedGermplasmList.getName();
                     fileDownloadResource.setFilename(listName.replace(" ", "_") + ".xls");
                     source.getWindow().open(fileDownloadResource);
+                    
                     //TODO must figure out other way to clean-up file because deleting it here makes it unavailable for download
-                        //File tempFile = new File(tempFileName);
-                        //tempFile.delete();
+                    
                 } catch (GermplasmListExporterException e) {
                     LOG.error(messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
                     MessageNotifier.showError(source.getWindow()
@@ -1100,8 +1099,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
                     source.getWindow().open(fileDownloadResource);
                     
                     //TODO must figure out other way to clean-up file because deleting it here makes it unavailable for download
-                    //File tempFile = new File(tempFileName);
-                    //tempFile.delete();
+                    
                 } catch (GermplasmListExporterException e) {
                     MessageNotifier.showError(source.getWindow() 
                             , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)

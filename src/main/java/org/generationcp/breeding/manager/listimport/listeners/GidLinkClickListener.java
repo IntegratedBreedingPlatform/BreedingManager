@@ -107,8 +107,6 @@ public class GidLinkClickListener implements Button.ClickListener, ItemClickList
             tool = workbenchDataManager.getToolWithName(ToolName.germplasm_browser.toString());
         } catch (MiddlewareQueryException qe) {
             LOG.error("QueryException", qe);
-            /*MessageNotifier.showError(mainWindow, messageSource.getMessage(Message.DATABASE_ERROR),
-                    "<br />" + messageSource.getMessage(Message.CONTACT_ADMIN_ERROR_DESC));*/
         }
         String addtlParams = Util.getAdditionalParams(workbenchDataManager);
         
@@ -195,12 +193,10 @@ public class GidLinkClickListener implements Button.ClickListener, ItemClickList
 	            }
 	        }
 	        catch (Exception e) {
-	           //e.printStackTrace();
 	        }
 			
 		} catch (MiddlewareQueryException e2) {
 			// TODO Auto-generated catch block
-			//e2.printStackTrace();
 		}
     }
 }

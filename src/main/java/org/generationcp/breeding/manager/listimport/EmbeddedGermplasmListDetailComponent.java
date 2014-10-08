@@ -90,11 +90,6 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
         layoutForList.addComponent(listInfoPage);
   
         GermplasmImportButtonClickListener listener = new GermplasmImportButtonClickListener(this);
-        /*
-        exportButton = new Button();
-        exportButton.setData(EXPORT_BUTTON_ID);
-        exportButton.addListener(listener);
-        */
         makeImportButton = new Button();
         makeImportButton.setData(NEW_IMPORT_BUTTON_ID);
         makeImportButton.addListener(listener);

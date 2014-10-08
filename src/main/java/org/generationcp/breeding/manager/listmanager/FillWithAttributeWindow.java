@@ -50,7 +50,6 @@ public class FillWithAttributeWindow extends BaseSubWindow implements Internatio
     
     private SimpleResourceBundleMessageSource messageSource;
     
-    //private Window mainWindow;
     private Table targetTable;
     private String gidPropertyId;
     private String targetPropertyId;

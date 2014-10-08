@@ -139,8 +139,6 @@ public class ListSelectionLayout extends VerticalLayout implements International
         btnCloseAllTabs.setData(CLOSE_ALL_TABS_ID);
         btnCloseAllTabs.setImmediate(true);
         btnCloseAllTabs.setStyleName(Reindeer.BUTTON_LINK);
-        //btnCloseAllTabs.addStyleName("closeAllTabsListManagerPosition");
-        //btnCloseAllTabs.addStyleName("closeAllTabsListManagerPadding");
         
         browseForLists = new Button();
         browseForLists.setImmediate(true);
@@ -394,7 +392,6 @@ public class ListSelectionLayout extends VerticalLayout implements International
     
     public void renameTab(Integer listId, String newName){
     	
-    	//dennis put change header name here
         String tabDescription = generateTabDescription(listId);
         Tab tab = Util.getTabWithDescription(detailsTabSheet, tabDescription);
         if (tab != null){

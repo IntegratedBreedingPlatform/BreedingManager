@@ -137,11 +137,9 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		setWidth("100%");
 		
 		searchBarLayoutLeft = new HorizontalLayout();
-		//searchBarLayoutLeft.setHeight("24px");
 		searchBarLayoutLeft.setSpacing(true);
 		
 		searchBarLayoutRight = new CssLayout();
-		//searchBarLayoutRight.setHeight("24px");
 		
 		// To allow for all of the elements to fit in the default width of the search bar. There may be a better way..
 		searchField.setWidth("120px");		
@@ -160,10 +158,6 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		
 		searchBarLayoutLeft.setComponentAlignment(popup, Alignment.MIDDLE_CENTER);
 		
-		//searchBarLayoutRight.setComponentAlignment(exactMatchesOnlyCheckBox, Alignment.MIDDLE_CENTER);
-        //searchBarLayoutRight.setComponentAlignment(includeParentsCheckBox, Alignment.MIDDLE_CENTER);
-        //searchBarLayoutRight.setComponentAlignment(searchPublicDataCheckBox, Alignment.MIDDLE_CENTER);
-        
         addComponent(searchBarLayoutLeft);
         addComponent(searchBarLayoutRight);
         

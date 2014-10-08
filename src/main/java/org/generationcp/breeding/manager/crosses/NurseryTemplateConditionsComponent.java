@@ -59,9 +59,6 @@ import com.vaadin.ui.VerticalLayout;
 @Configurable
 public class NurseryTemplateConditionsComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent{
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 6926035577490148208L;
     
     public static final String BACK_BUTTON_ID = "NurseryTemplateConditionsComponent Back Button";
@@ -525,8 +522,7 @@ public class NurseryTemplateConditionsComponent extends VerticalLayout implement
 
         public void layoutClick(LayoutClickEvent event) {
                 if (event.getChildComponent() == txtField) {
-//                    SelectGermplasmListWindow selectListWindow = new SelectGermplasmListWindow(getMainClass(),germplasmListFor);
-//                    getWindow().addWindow(selectListWindow);
+                	// currently does nothing
                 }
             }
         });

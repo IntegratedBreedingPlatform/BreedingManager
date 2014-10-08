@@ -525,22 +525,9 @@ public class DropHandlerMethods {
      * Iterates through the whole table, and sets the entry code from 1 to n based on the row position
      */
     protected void assignSerializedEntryCode(){
-//        List<Integer> itemIds = getItemIds(targetTable);
-//        
-//        int id = 1;
-//        for(Integer itemId : itemIds){
-        	
-        	/**
-        	 * TODO: If add columns is already implemented, add this checker below
-        	 */
-        	
-            //Check if filled with was used for this column, if so, do not change values to serialized numbers
-            //if(!filledWithPropertyIds.contains(ListDataTablePropertyID.ENTRY_ID.getName()))
-            //    targetTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(id);
-            //if(!filledWithPropertyIds.contains(ListDataTablePropertyID.ENTRY_CODE.getName()))
-            //    targetTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(id);
-//            id++;
-//        }
+		/**
+		 * TODO: If add columns is already implemented, add this checker below
+		 */
     }
     
     /**
