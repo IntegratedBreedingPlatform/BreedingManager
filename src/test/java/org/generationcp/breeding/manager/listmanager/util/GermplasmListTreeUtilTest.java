@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.listmanager.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -14,43 +15,52 @@ import org.generationcp.middleware.pojos.workbench.WorkbenchRuntimeData;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.vaadin.data.Validator.InvalidValueException;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:testApplicationContext.xml" })
 public class GermplasmListTreeUtilTest {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmListTreeUtilTest.class);
+
+	private static final String ERROR_NO_SELECTION = "Please select a folder item";
+	private static final String ERROR_ITEM_DOES_NOT_EXISTS = "Item does not exists";
+	private static final String ERROR_UNABLE_TO_DELETE_LOCKED_LIST = "Unable to delete a locked list";
+	private static final String ERROR_UNABLE_TO_DELETE_LIST_NON_OWNER = "You cannot delete a list that you do not own";
+	private static final String ERROR_HAS_CHILDREN = "Folder has child items";
 
 	private GermplasmListTreeUtil util;
 	private GermplasmListManager germplasmListManager;
 	private WorkbenchDataManager workbenchDataManager;
 
-	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
-	private static Integer IBDB_USER_ID = (int) (Math.random() * 100);
-	private static Integer OTHER_IBDB_USER_ID = (int) (Math.random() * 100);
-	private static Integer GERMPLASM_LIST_ID = (int) (Math.random() * 100);
-	private static Integer GERMPLASM_LIST_ID_WITH_CHILDREN = (int) (Math.random() * 100);
+	private static final Integer IBDB_USER_ID = (int) (Math.random() * 100);
+	private static final Integer OTHER_IBDB_USER_ID = (int) (Math.random() * 100);
+	private static final Integer GERMPLASM_LIST_ID = (int) (Math.random() * 100);
+	private static final Integer GERMPLASM_LIST_ID_WITH_CHILDREN = (int) (Math.random() * 100);
 	private GermplasmList germplasmList;
 
 	@Before
 	public void setUp() {
 		this.util = new GermplasmListTreeUtil();
-		this.util.setMessageSource(this.messageSource);
-		this.mockIBDBUserId(GermplasmListTreeUtilTest.IBDB_USER_ID);
+		this.setUpMessageSource();		
+		this.setUpIBDBUserId(GermplasmListTreeUtilTest.IBDB_USER_ID);
 	}
 
-	private void mockIBDBUserId(Integer userId) {
+	private void setUpMessageSource() {
+		messageSource = Mockito.mock(SimpleResourceBundleMessageSource.class);
+		Mockito.when(messageSource.getMessage(Message.ERROR_NO_SELECTION)).thenReturn(ERROR_NO_SELECTION);
+		Mockito.when(messageSource.getMessage(Message.ERROR_ITEM_DOES_NOT_EXISTS)).thenReturn(ERROR_ITEM_DOES_NOT_EXISTS);
+		Mockito.when(messageSource.getMessage(Message.ERROR_UNABLE_TO_DELETE_LOCKED_LIST)).thenReturn(ERROR_UNABLE_TO_DELETE_LOCKED_LIST);
+		Mockito.when(messageSource.getMessage(Message.ERROR_UNABLE_TO_DELETE_LIST_NON_OWNER)).thenReturn(ERROR_UNABLE_TO_DELETE_LIST_NON_OWNER);
+		Mockito.when(messageSource.getMessage(Message.ERROR_HAS_CHILDREN)).thenReturn(ERROR_HAS_CHILDREN);
+		this.util.setMessageSource(messageSource);
+	}
+
+	private void setUpIBDBUserId(Integer userId) {
 		WorkbenchRuntimeData runtimeDate = new WorkbenchRuntimeData();
 		runtimeDate.setUserId(new Integer(5));
 
@@ -82,11 +92,11 @@ public class GermplasmListTreeUtilTest {
 		}
 	}
 
-	private void mockGermplasmListDataManager(Integer itemId, boolean isExistingList) {
-		this.mockGermplasmListDataManager(itemId, isExistingList, false);
+	private void setUpGermplasmListDataManager(Integer itemId, boolean isExistingList) {
+		this.setUpGermplasmListDataManager(itemId, isExistingList, false);
 	}
 
-	private void mockGermplasmListDataManager(Integer itemId, boolean isExistingList,
+	private void setUpGermplasmListDataManager(Integer itemId, boolean isExistingList,
 			boolean isAFolder) {
 		this.germplasmListManager = Mockito.mock(GermplasmListManager.class);
 		this.util.setGermplasmListManager(this.germplasmListManager);
@@ -127,7 +137,8 @@ public class GermplasmListTreeUtilTest {
 
 	@Test
 	public void testValidateItemToDeleteThrowsNothingIfGermplasmListExist() {
-		this.mockGermplasmListDataManager(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID, true);
+		this.setUpGermplasmListDataManager(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID, true);
+		
 		try {
 			this.util.validateItemToDelete(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID);
 		} catch (InvalidValueException e) {
@@ -137,73 +148,68 @@ public class GermplasmListTreeUtilTest {
 
 	@Test
 	public void testValidateItemToDeleteThrowsExceptionIfGermplasmListIDDoesNotExist() {
-		this.mockGermplasmListDataManager(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID, true);
-		String expectedException = "Please select a folder item";
+		this.setUpGermplasmListDataManager(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID, true);
+
 		try {
 			this.util.validateItemToDelete(null);
 		} catch (InvalidValueException e) {
 			Assert.assertEquals(
 					"Expecting an exception is returned for validating item to delete using a list ID that does not exist.",
-					expectedException, e.getMessage());
+					ERROR_NO_SELECTION, e.getMessage());
 		}
 	}
 
 	@Test
 	public void testValidateItemToDeleteThrowsExceptionIfGermplasmListDoesNotExist() {
-		this.mockGermplasmListDataManager(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID, false);
-		String expectedException = "Item does not exists";
+		this.setUpGermplasmListDataManager(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID, false);
+		
 		try {
 			this.util.validateItemToDelete(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID);
 		} catch (InvalidValueException e) {
 			Assert.assertEquals(
 					"Expecting an exception is returned for validating item to delete using a list that does not exist.",
-					expectedException, e.getMessage());
+					ERROR_ITEM_DOES_NOT_EXISTS, e.getMessage());
 		}
 	}
 
 	@Test
 	public void testValidateItemToDeleteThrowsExceptionIfGermplasmListIsLocked() {
-		this.mockGermplasmListDataManager(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID, true);
+		this.setUpGermplasmListDataManager(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID, true);
 		this.germplasmList.setStatus(101);
 
-		String expectedException = "Unable to delete a locked list";
 		try {
 			this.util.validateItemToDelete(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID);
 		} catch (InvalidValueException e) {
 			Assert.assertEquals(
 					"Expecting an exception is returned for validating item to delete using a list that is locked.",
-					expectedException, e.getMessage());
+					ERROR_UNABLE_TO_DELETE_LOCKED_LIST, e.getMessage());
 		}
 	}
 
 	@Test
 	public void testValidateItemToDeleteThrowsExceptionIfGermplasmListIsNotOwnedByTheCurrentUser() {
-		this.mockGermplasmListDataManager(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID, true);
-		this.mockIBDBUserId(GermplasmListTreeUtilTest.OTHER_IBDB_USER_ID);
+		this.setUpGermplasmListDataManager(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID, true);
+		this.setUpIBDBUserId(GermplasmListTreeUtilTest.OTHER_IBDB_USER_ID);
 
-		String expectedException = "You cannot delete a list that you do not own";
 		try {
 			this.util.validateItemToDelete(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID);
 		} catch (InvalidValueException e) {
 			Assert.assertEquals(
 					"Expecting an exception is returned for validating item to delete using a list that is not owned by the current user.",
-					expectedException, e.getMessage());
+					ERROR_UNABLE_TO_DELETE_LIST_NON_OWNER, e.getMessage());
 		}
 	}
 
 	@Test
 	public void testValidateItemToDeleteThrowsExceptionIfItemHasContent() {
-		this.mockGermplasmListDataManager(
-				GermplasmListTreeUtilTest.GERMPLASM_LIST_ID_WITH_CHILDREN, true, true);
-
-		String expectedException = "Folder has child items";
+		this.setUpGermplasmListDataManager(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID_WITH_CHILDREN, true, true);
+		
 		try {
-			this.util
-					.validateItemToDelete(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID_WITH_CHILDREN);
+			this.util.validateItemToDelete(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID_WITH_CHILDREN);
 		} catch (InvalidValueException e) {
 			Assert.assertEquals(
 					"Expecting an exception is returned for validating item to delete which is a folder and has content.",
-					expectedException, e.getMessage());
+					ERROR_HAS_CHILDREN, e.getMessage());
 		}
 	}
 
