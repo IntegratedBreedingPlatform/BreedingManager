@@ -448,6 +448,10 @@ public class GermplasmListTreeUtil implements Serializable {
 	public void setGermplasmListManager(GermplasmListManager germplasmListManager) {
 		this.germplasmListManager = germplasmListManager;
 	}
+	
+	public void setWorkbenchDataManager(WorkbenchDataManager workbenchDataManager){
+		this.workbenchDataManager = workbenchDataManager;
+	}
 
 	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
