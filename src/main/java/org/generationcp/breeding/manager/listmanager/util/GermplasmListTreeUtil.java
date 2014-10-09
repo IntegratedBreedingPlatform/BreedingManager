@@ -304,6 +304,13 @@ public class GermplasmListTreeUtil implements Serializable {
     	}
 	}
     
+    private boolean doesGermplasmListExist(GermplasmList germplasmList) {
+		if (germplasmList == null) {
+			return false;
+		}
+		return true;
+	}
+    
     private void validateItemByStatusAndUser(GermplasmList gpList) {
     	if(isListLocked(gpList)){
     		throw new InvalidValueException(messageSource.getMessage(Message.ERROR_UNABLE_TO_DELETE_LOCKED_LIST));
@@ -312,6 +319,25 @@ public class GermplasmListTreeUtil implements Serializable {
     	if(!isListOwnedByTheUser(gpList)){
     		throw new InvalidValueException(messageSource.getMessage(Message.ERROR_UNABLE_TO_DELETE_LIST_NON_OWNER));
     	}
+	}
+    
+    private boolean isListOwnedByTheUser(GermplasmList gpList) {
+		try {
+			Integer ibdbUserId = Util.getCurrentUserLocalId(workbenchDataManager);
+			if (!gpList.getUserId().equals(ibdbUserId)) {
+				return false;
+			}
+		} catch (MiddlewareQueryException e) {
+			LOG.error("Error retrieving workbench user id.", e);
+		}
+		return true;
+	}
+    
+    private boolean isListLocked(GermplasmList gpList) {
+    	if (gpList != null && gpList.getStatus()>100){
+			return true;
+		}
+		return false;
 	}
     
     private void validateItemIfItIsAFolderWithContent(GermplasmList gpList) {
@@ -323,27 +349,12 @@ public class GermplasmListTreeUtil implements Serializable {
 			LOG.error("Error retrieving children items of a parent item.", e);
 		}
 	}
+    
+	public boolean hasChildren(Integer id) throws MiddlewareQueryException {
+        return !germplasmListManager.getGermplasmListByParentFolderId(id,0,Integer.MAX_VALUE).isEmpty();
+    }
 
-    protected boolean isListOwnedByTheUser(GermplasmList gpList) {
-		try {
-			Integer ibdbUserId = Util.getCurrentUserLocalId(workbenchDataManager);
-			if (!gpList.getUserId().equals(ibdbUserId)) {
-				return false;
-			}
-		} catch (MiddlewareQueryException e) {
-			LOG.error("Error retrieving workbench user id.", e);
-		}
-		return true;
-	}
-
-    protected boolean isListLocked(GermplasmList gpList) {
-    	if (gpList != null && gpList.getStatus()>100){
-			return true;
-		}
-		return false;
-	}
-
-    protected GermplasmList getGermplasmList(Integer lastItemId) {
+    private GermplasmList getGermplasmList(Integer lastItemId) {
 		GermplasmList gpList = null;
 		
 		try {
@@ -354,17 +365,6 @@ public class GermplasmListTreeUtil implements Serializable {
 		
 		return gpList;
 	}
-
-    protected boolean doesGermplasmListExist(GermplasmList germplasmList) {
-		if (germplasmList == null) {
-			return false;
-		}
-		return true;
-	}
-
-	public boolean hasChildren(Integer id) throws MiddlewareQueryException {
-        return !germplasmListManager.getGermplasmListByParentFolderId(id,0,Integer.MAX_VALUE).isEmpty();
-    }
     
     public static void traverseParentsOfList(GermplasmListManager germplasmListManager, GermplasmList list, Deque<GermplasmList> parents) throws MiddlewareQueryException{
     	if(list == null){
