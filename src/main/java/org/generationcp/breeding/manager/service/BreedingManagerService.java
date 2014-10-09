@@ -14,5 +14,4 @@ public interface BreedingManagerService {
 
 	public String getDefaultOwnerListName() throws MiddlewareQueryException;
 
-	public Integer getCurrentUserLocalId() throws MiddlewareQueryException;
 }

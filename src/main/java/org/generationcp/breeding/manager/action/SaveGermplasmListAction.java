@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.util.Util;
+import org.generationcp.commons.util.UserUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -51,7 +52,7 @@ public class SaveGermplasmListAction implements Serializable {
 	public GermplasmList saveRecords() throws MiddlewareQueryException{
 		
 		//set the listnms.listuid to the current user
-		Integer userId = Util.getCurrentUserLocalId(workbenchDataManager);
+		Integer userId = UserUtil.getCurrentUserLocalId(workbenchDataManager);
 		germplasmList.setUserId(userId);
 		germplasmList = saveGermplasmListRecord(germplasmList);
 		saveGermplasmListDataRecords(germplasmList,listEntries);

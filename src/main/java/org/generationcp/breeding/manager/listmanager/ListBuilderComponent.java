@@ -45,6 +45,7 @@ import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.util.FileDownloadResource;
+import org.generationcp.commons.util.UserUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
@@ -59,7 +60,6 @@ import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.User;
-import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.ProjectActivity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1133,7 +1133,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
                         listManagerCopyToNewListDialog,
                         currentlySavedGermplasmList.getName(),
                         tableWithSelectAllLayout.getTable(),
-                        getCurrentUserLocalId(),
+                        UserUtil.getCurrentUserLocalId(workbenchDataManager),
                         source,
                         true));
                     source.getWindow().addWindow(listManagerCopyToNewListDialog);
@@ -1150,17 +1150,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     	// TODO implement the copy to new list from the selection from listInventoryTable
     }
     
-    private int getCurrentUserLocalId() throws MiddlewareQueryException {
-        Integer workbenchUserId = this.workbenchDataManager.getWorkbenchRuntimeData().getUserId();
-        Project lastProject = this.workbenchDataManager.getLastOpenedProject(workbenchUserId);
-        Integer localIbdbUserId = this.workbenchDataManager.getLocalIbdbUserId(workbenchUserId,lastProject.getProjectId());
-        if (localIbdbUserId != null) {
-            return localIbdbUserId;
-        } else {
-            return -1; // TODO: verify actual default value if no workbench_ibdb_user_map was found
-        }
-    }
-	
 	/* SETTERS AND GETTERS */
 
 	public Label getBuildNewListTitle() {
@@ -1673,9 +1662,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		if(currentlySavedGermplasmList==null)
 			return true;
         try {
-			return currentlySavedGermplasmList.getUserId().equals(getCurrentUserLocalId());
+        	Integer userId = UserUtil.getCurrentUserLocalId(workbenchDataManager);
+			return currentlySavedGermplasmList.getUserId().equals(userId);
 		} catch (MiddlewareQueryException e) {
-			e.printStackTrace();
+			LOG.error(e.getMessage(),e);
 		}
         return false;
     }

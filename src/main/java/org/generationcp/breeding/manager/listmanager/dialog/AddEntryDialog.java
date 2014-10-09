@@ -20,6 +20,7 @@ import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItem
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListValueChangeListener;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.commons.util.UserUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -32,7 +33,6 @@ import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.UserDefinedField;
-import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.Tool;
 import org.generationcp.middleware.pojos.workbench.ToolName;
 import org.slf4j.Logger;
@@ -432,6 +432,13 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
 	        Integer date = Integer.parseInt(parsedDate);
             String germplasmName = searchBarComponent.getSearchField().getValue().toString();
 	        
+            Integer currentUserLocalId = -1;
+			try {
+				currentUserLocalId = Integer.valueOf(UserUtil.getCurrentUserLocalId(workbenchDataManager));
+			} catch (MiddlewareQueryException e) {
+				LOG.error(e.getMessage(), e);
+			}
+            
 	        if(this.optionGroup.getValue().equals(OPTION_2_ID)){
 		        
 	        	List<Integer> addedGids = new ArrayList<Integer>();
@@ -450,9 +457,6 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
 	                    MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_WITH_GETTING_GERMPLASM_WITH_ID)+": " + selectedGid 
 	                            +". "+messageSource.getMessage(Message.ERROR_REPORT_TO));
 	                }
-			        
-			        
-			        Integer userId = Integer.valueOf(getCurrentUserLocalId());
 			                
 			        Germplasm germplasm = new Germplasm();
 			        germplasm.setGdate(date);
@@ -464,7 +468,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
 			        germplasm.setMethodId(breedingMethodId);
 			        germplasm.setMgid(Integer.valueOf(0));
 			        germplasm.setReferenceId(Integer.valueOf(0));
-			        germplasm.setUserId(userId);
+			        germplasm.setUserId(currentUserLocalId);
 			         
 		        	if(selectedGermplasm != null){
 		                if(selectedGermplasm.getGnpgs()<2){
@@ -482,7 +486,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
 			        name.setNstat(Integer.valueOf(1));
 			        name.setReferenceId(Integer.valueOf(0));
 			        name.setTypeId(nameTypeId);
-			        name.setUserId(userId);
+			        name.setUserId(currentUserLocalId);
 			        
 			        try{
 			            @SuppressWarnings("unused")
@@ -500,8 +504,6 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
 		        return true;
 		        
 	        } else {
-		        Integer userId = Integer.valueOf(getCurrentUserLocalId());
-                
 		        Germplasm germplasm = new Germplasm();
 		        germplasm.setGdate(date);
 		        germplasm.setGnpgs(Integer.valueOf(-1));
@@ -513,7 +515,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
 		        germplasm.setMethodId(breedingMethodId);
 		        germplasm.setMgid(Integer.valueOf(0));
 		        germplasm.setReferenceId(Integer.valueOf(0));
-		        germplasm.setUserId(userId);
+		        germplasm.setUserId(currentUserLocalId);
 	        	
 		        Name name = new Name();
 		        name.setNval(germplasmName);
@@ -522,7 +524,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
 		        name.setNstat(Integer.valueOf(1));
 		        name.setReferenceId(Integer.valueOf(0));
 		        name.setTypeId(nameTypeId);
-		        name.setUserId(userId);
+		        name.setUserId(currentUserLocalId);
 		        
 		        try{
 		            Integer gid = this.germplasmDataManager.addGermplasm(germplasm, name);
@@ -561,23 +563,6 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
             this.nameTypeComboBox.setItemCaption(unknownId, messageSource.getMessage(Message.UNKNOWN));
         }
         this.nameTypeComboBox.setNullSelectionAllowed(false);
-    }
-    
-    private int getCurrentUserLocalId(){
-        try{
-            Integer workbenchUserId = this.workbenchDataManager.getWorkbenchRuntimeData().getUserId();
-            Project lastProject = this.workbenchDataManager.getLastOpenedProject(workbenchUserId);
-            Integer localIbdbUserId = this.workbenchDataManager.getLocalIbdbUserId(workbenchUserId,lastProject.getProjectId());
-            if (localIbdbUserId != null) {
-                return localIbdbUserId;
-            } else {
-                return -1;
-            }
-       } catch(MiddlewareQueryException ex){
-           LOG.error("Error with getting local IBDB user!", ex);
-               MessageNotifier.showError(getWindow(), "Database Error!", messageSource.getMessage(Message.ERROR_REPORT_TO));
-           return -1;
-       }
     }
     
     @Override

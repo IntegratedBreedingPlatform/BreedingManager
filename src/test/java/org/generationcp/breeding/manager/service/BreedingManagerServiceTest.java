@@ -139,15 +139,6 @@ public class BreedingManagerServiceTest {
 		when(workbenchDataManager.getLocalIbdbUserId(DUMMY_USER_ID, dummyProjectId)).thenReturn(DUMMY_USER_ID);
 	}
 
-	@Test
-	public void testGetCurrentUserLocalId() throws MiddlewareQueryException {
-		setUpGetCurrentUserLocalId();
-		Integer currentLocalId = dut.getCurrentUserLocalId();
-
-		assertEquals("Returned the wrong value for current user local id", DUMMY_USER_ID, currentLocalId);
-	}
-
-
 	protected Person createDummyPerson() {
 		final String firstName = "FIRST NAME";
 		final String middleName = "MIDDLE NAME";

@@ -1,11 +1,11 @@
 package org.generationcp.breeding.manager.service;
 
+import org.generationcp.commons.util.UserUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Person;
 import org.generationcp.middleware.pojos.User;
-import org.generationcp.middleware.pojos.workbench.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,25 +64,12 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 	@Override
 	public String getDefaultOwnerListName() throws MiddlewareQueryException{
 		try {
-			int currentUser = getCurrentUserLocalId();
+			int currentUser = UserUtil.getCurrentUserLocalId(workbenchDataManager);
 
 			return computeListName(userDataManager.getUserById(currentUser));
 		} catch (MiddlewareQueryException e) {
 			LOG.error("Error with getting list owner name of default user ", e);
 						throw e;
-		}
-	}
-
-	@Override
-	public Integer getCurrentUserLocalId() throws MiddlewareQueryException {
-		Integer workbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
-		Project lastProject = workbenchDataManager.getLastOpenedProject(workbenchUserId);
-		Integer localIbdbUserId = workbenchDataManager
-				.getLocalIbdbUserId(workbenchUserId, lastProject.getProjectId());
-		if (localIbdbUserId != null) {
-			return localIbdbUserId;
-		} else {
-			return -1;
 		}
 	}
 

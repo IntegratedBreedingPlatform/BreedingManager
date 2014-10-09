@@ -44,9 +44,9 @@ import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
 import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.breeding.manager.listmanager.util.ListDataPropertiesRenderer;
-import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.util.FileDownloadResource;
+import org.generationcp.commons.util.UserUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -417,16 +417,14 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	@Override
 	public void initializeValues() {
 		
-		
 	    try {
-            localUserId = Util.getCurrentUserLocalId(workbenchDataManager);
+            localUserId = UserUtil.getCurrentUserLocalId(workbenchDataManager);
         } catch (MiddlewareQueryException e) {
             LOG.error("Error with retrieving local user ID", e);
             LOG.error("\n" + e.getStackTrace());
         }
 	    
 	    loadEntriesToListDataTable();
-	   
 	}
 	
 	public void resetListDataTableValues(){
@@ -1318,7 +1316,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
                         listManagerCopyToNewListDialog,
                         germplasmList.getName(),
                         listDataTable,
-                        Util.getCurrentUserLocalId(workbenchDataManager),
+                        UserUtil.getCurrentUserLocalId(workbenchDataManager),
                         source,
                         false));
                 parentListDetailsComponent.getWindow().addWindow(listManagerCopyToNewListDialog);

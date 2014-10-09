@@ -12,7 +12,7 @@ import org.generationcp.breeding.manager.customcomponent.handler.GermplasmListSo
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
-import org.generationcp.breeding.manager.util.Util;
+import org.generationcp.commons.util.UserUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -323,7 +323,7 @@ public class GermplasmListTreeUtil implements Serializable {
     
     private boolean isListOwnedByTheUser(GermplasmList gpList) {
 		try {
-			Integer ibdbUserId = Util.getCurrentUserLocalId(workbenchDataManager);
+			Integer ibdbUserId = UserUtil.getCurrentUserLocalId(workbenchDataManager);
 			if (!gpList.getUserId().equals(ibdbUserId)) {
 				return false;
 			}

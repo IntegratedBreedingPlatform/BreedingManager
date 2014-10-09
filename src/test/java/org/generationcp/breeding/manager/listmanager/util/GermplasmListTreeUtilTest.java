@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.util.Util;
+import org.generationcp.commons.util.UserUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -85,7 +85,7 @@ public class GermplasmListTreeUtilTest {
 		}
 
 		try {
-			Mockito.when(Util.getCurrentUserLocalId(this.workbenchDataManager)).thenReturn(userId);
+			Mockito.when(UserUtil.getCurrentUserLocalId(this.workbenchDataManager)).thenReturn(userId);
 		} catch (MiddlewareQueryException e) {
 			GermplasmListTreeUtilTest.LOG.error(e.getMessage(), e);
 			Assert.fail("Failed to create a ibdbuser data.");
