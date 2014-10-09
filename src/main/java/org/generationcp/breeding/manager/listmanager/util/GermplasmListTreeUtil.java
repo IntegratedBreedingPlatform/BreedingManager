@@ -286,16 +286,16 @@ public class GermplasmListTreeUtil implements Serializable {
 		
 	}    
 	
-    protected void validateItemToDelete(Integer lastItemId) {
-    	GermplasmList gpList = getGermplasmList(lastItemId);
+    protected void validateItemToDelete(Integer itemId) {
+    	GermplasmList gpList = getGermplasmList(itemId);
     	
-    	validateIfItemExist(lastItemId,gpList);
+    	validateIfItemExist(itemId,gpList);
     	validateItemByStatusAndUser(gpList);
     	validateItemIfItIsAFolderWithContent(gpList);
 	}
 
-    private void validateIfItemExist(Integer lastItemId, GermplasmList gpList) {
-    	if (lastItemId == null) {
+    private void validateIfItemExist(Integer itemId, GermplasmList gpList) {
+    	if (itemId == null) {
     		throw new InvalidValueException(messageSource.getMessage(Message.ERROR_NO_SELECTION));
 		}
     	
@@ -354,11 +354,11 @@ public class GermplasmListTreeUtil implements Serializable {
         return !germplasmListManager.getGermplasmListByParentFolderId(id,0,Integer.MAX_VALUE).isEmpty();
     }
 
-    private GermplasmList getGermplasmList(Integer lastItemId) {
+    private GermplasmList getGermplasmList(Integer itemId) {
 		GermplasmList gpList = null;
 		
 		try {
-			gpList = germplasmListManager.getGermplasmListById(lastItemId);
+			gpList = germplasmListManager.getGermplasmListById(itemId);
 		} catch (MiddlewareQueryException e) {
 			LOG.error("Error retrieving germplasm list by Id.", e);
 		}
