@@ -284,7 +284,7 @@ public class GermplasmListUploader implements FileFactory {
                 } else if (isAnAttributeVariate(columnHeader)) {
                     importedGermplasm.addAttributeVariate(columnHeader, getCellStringValue(currentSheet, currentRow, col, true));
                 } else {
-                    System.out.println("Unknown column " + columnHeader);
+                    LOG.warn("Unknown column " + columnHeader);
                 }
             }
 
