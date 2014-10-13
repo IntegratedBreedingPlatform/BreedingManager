@@ -21,7 +21,6 @@ import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
-import org.generationcp.middleware.pojos.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -151,13 +150,9 @@ public class GermplasmListTreeUtil implements Serializable {
 		try {
 			folderTextField.validate();
 			String folderName = folderTextField.getValue().toString().trim();
-				
-			User user;
+			
 			try {
-				user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
-				Integer projectId= workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue();
-				Integer ibdbUserId=workbenchDataManager.getLocalIbdbUserId(user.getUserid(),Long.valueOf(projectId));
-				
+				Integer ibdbUserId = UserUtil.getCurrentUserLocalId(workbenchDataManager);
 				
 				newFolder.setName(folderName);
 				newFolder.setDescription(folderName);
