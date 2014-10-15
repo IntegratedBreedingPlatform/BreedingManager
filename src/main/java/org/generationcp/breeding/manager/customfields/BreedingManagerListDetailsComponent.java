@@ -236,23 +236,24 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtil.DATE_AS_NUMBER_FORMAT);
 		if(dateToParse.length() < 8){
-			validDate = simpleDateFormat.parse(getParsableDate(dateToParse));
-		}
-		else{
+			validDate = simpleDateFormat.parse(getParsableDateString(dateToParse));
+		} else {
 			validDate = simpleDateFormat.parse(dateToParse);
 		}
 		
 		return validDate;
 	}
 
-	private String getParsableDate(String dateToParse) {
+	protected String getParsableDateString(String dateToParse) {
 		int dateLenght = dateToParse.length();
 		
+		StringBuilder parsedDate = new StringBuilder();
 		for(int i = 1; i <= (8-dateLenght); i++){
-			dateToParse = "0" + dateToParse;
+			parsedDate.append("0");
 		}
+		parsedDate.append(dateToParse);
 		
-		return dateToParse;
+		return parsedDate.toString();
 	}
 	
 	public void resetListNameFieldForExistingList(GermplasmList germplasmList){
