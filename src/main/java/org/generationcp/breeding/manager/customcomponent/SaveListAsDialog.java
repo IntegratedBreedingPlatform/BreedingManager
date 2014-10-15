@@ -150,6 +150,8 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 		if(germplasmList != null){		
 			germplasmListTree.createTree();
 			listDetailsComponent.setGermplasmListDetails(germplasmList);
+		} else {
+			listDetailsComponent.setGermplasmListDetails(null);
 		}
 	}
 
