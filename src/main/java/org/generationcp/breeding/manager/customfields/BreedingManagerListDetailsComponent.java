@@ -106,7 +106,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	
 	@Override
 	public void addListeners() {
-		// TODO Auto-generated method stub
+		// do nothing
 		
 	}
 
@@ -136,7 +136,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	}
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
+		// do nothing
 		
 	}
 	
@@ -152,6 +152,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 			
 		} catch (InvalidValueException e) {
 			MessageNotifier.showRequiredFieldError(getWindow(), e.getMessage());
+			LOG.error(e.getMessage(),e);
 			return false;
 		}
 	}
@@ -166,14 +167,17 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
         
         list.setName(listName);
         
-        if(listDescription!=null)
+        if(listDescription!=null){
             list.setDescription(listDescription);
+        }
         
-        if(listTypeField!=null && listTypeField.getValue()!=null)
+        if(listTypeField!=null && listTypeField.getValue()!=null){
         	list.setType(listTypeField.getValue().toString());
+        }
         
-        if(date!=null && formatter.format(date)!=null)
+        if(date!=null && formatter.format(date)!=null){
         	list.setDate(Long.parseLong(formatter.format(date)));
+        }
         list.setNotes(listNotesField.getValue().toString());
         list.setUserId(0);
 
