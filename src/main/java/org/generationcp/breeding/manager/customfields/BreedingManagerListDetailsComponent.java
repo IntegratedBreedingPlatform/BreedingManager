@@ -101,33 +101,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	
 	@Override
 	public void initializeValues() {
-		if(germplasmList != null){
-			listNameField.setValue(germplasmList.getName());
-			listDescriptionField.setValue(germplasmList.getDescription());
-			listTypeField.setValue(germplasmList.getType());
-			
-			Date germplasmDate = new Date();
-            try {
-                germplasmDate = getParsedDate(germplasmList.getDate().toString());
-            } catch (ReadOnlyException e) {
-                LOG.error("Error in parsing date field.", e);
-                e.printStackTrace();
-            } catch (ConversionException e) {
-                LOG.error("Error in parsing date field.", e);
-                e.printStackTrace();
-            } catch (ParseException e) {
-                LOG.error("Error in parsing date field.", e);
-                e.printStackTrace();
-            }
-            listDateField.setValue(germplasmDate);
-			listNotesField.setValue(germplasmList.getNotes());
-			try {
-				listOwnerField.setValue(breedingManagerService.getOwnerListName(
-						germplasmList.getUserId()));
-			} catch (MiddlewareQueryException e) {
-				// perform application level handling of query exception
-			}
-		}
+		setGermplasmListDetails(germplasmList);
 	}
 	
 	@Override
@@ -211,51 +185,53 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		
 		if(germplasmList != null){
 			listNameField.setValue(germplasmList.getName());
-			
 			resetListNameFieldForExistingList(germplasmList);
-			
 			listDescriptionField.setValue(germplasmList.getDescription());
-			
-			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtil.DATE_AS_NUMBER_FORMAT);
-	        try {
-	            this.listDateField.setValue(simpleDateFormat.parse(germplasmList.getDate().toString()));
-	        } catch (ReadOnlyException e) {
-	            LOG.error("Error in parsing date field.", e);
-	            e.printStackTrace();
-	        } catch (ConversionException e) {
-	            LOG.error("Error in parsing date field.", e);
-	            e.printStackTrace();
-	        } catch (ParseException e) {
-	            LOG.error("Error in parsing date field.", e);
-	            e.printStackTrace();
-	        }
-			
 			listTypeField.setValue(germplasmList.getType());
 			
-			String notes = (germplasmList.getNotes() == null)? "" : germplasmList.getNotes();
+			Date germplasmDate = new Date();
+            try {
+                germplasmDate = getParsedDate(germplasmList.getDate().toString());
+            } catch (ReadOnlyException e) {
+                LOG.error(e.getMessage(), e);
+            } catch (ConversionException e) {
+            	LOG.error(e.getMessage(), e);
+            } catch (ParseException e) {
+            	LOG.error(e.getMessage(), e);
+            }
+            listDateField.setValue(germplasmDate);
+		
+            String notes = (germplasmList.getNotes() == null)? "" : germplasmList.getNotes();
 			listNotesField.setValue(notes);
-
-			try {
-				listOwnerField.setValue(breedingManagerService.getOwnerListName(
-						germplasmList.getUserId()));
-			} catch (MiddlewareQueryException e) {
-				e.printStackTrace();
-			}
 		} else {
 			listNameField.setValue("");
 			listDescriptionField.setValue("");
 			listDateField.setValue(new Date());
 			listTypeField.setValue(defaultListType);
 			listNotesField.setValue("");
-			try {
-				listOwnerField.setValue(breedingManagerService.getDefaultOwnerListName());
-			} catch (MiddlewareQueryException e) {
-				e.printStackTrace();
-			}
 		}
+		
+		//set list owner
+		String listOwner = getListOwnerValue(germplasmList);
+		listOwnerField.setValue(listOwner);
 	}
 	
-	private Date getParsedDate(String dateToParse) throws ParseException {
+	protected String getListOwnerValue(GermplasmList germplasmList) {
+		String listOwner = "";
+		try {
+			if(germplasmList != null){
+				listOwner = breedingManagerService.getOwnerListName(germplasmList.getUserId());
+			} else {
+				listOwner = breedingManagerService.getDefaultOwnerListName();
+			}
+		} catch (MiddlewareQueryException e) {
+			LOG.error(e.getMessage(),e);
+		}
+		
+		return listOwner;
+	}
+
+	protected Date getParsedDate(String dateToParse) throws ParseException {
 		Date validDate = null;
 		
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtil.DATE_AS_NUMBER_FORMAT);
