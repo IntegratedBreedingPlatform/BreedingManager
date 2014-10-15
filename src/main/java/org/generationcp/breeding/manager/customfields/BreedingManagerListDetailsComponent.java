@@ -354,4 +354,9 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	public GermplasmList getCurrentGermplasmList(){
 		return germplasmList;
 	}
+
+	public void setBreedingManagerService(BreedingManagerService breedingManagerService) {
+		this.breedingManagerService = breedingManagerService;
+	}
+	
 }
