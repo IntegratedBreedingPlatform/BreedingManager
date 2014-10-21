@@ -94,7 +94,7 @@ public class CrossingManagerSummaryComponent extends VerticalLayout implements
 
 	@Override
 	public void initializeValues() {
-
+		// do nothing
 	}
 
 	@Override
@@ -139,7 +139,9 @@ public class CrossingManagerSummaryComponent extends VerticalLayout implements
 		tabContentLayout.setSpacing(true);
 		tabContentLayout.setMargin(true);
 		tabContentLayout.addComponent(crossListComponent);
-		tabContentLayout.addComponent(spacingLayout); // for spacing only
+		
+		// for spacing only
+		tabContentLayout.addComponent(spacingLayout);
 		tabContentLayout.addComponent(parentsLayout);
 		tabContentLayout.addComponent(settingsComponent);
 		tabContentLayout.addComponent(buttonLayout);

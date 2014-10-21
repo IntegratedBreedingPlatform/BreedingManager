@@ -60,6 +60,7 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements
 	
 	@Override
 	public void updateLabels() {
+		// do nothing
 	}
 
 	@Override
@@ -90,7 +91,9 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements
 		
 		// use tab approach to display which step to display
 		tabSheet = new TabSheet();
-		tabSheet.hideTabs(true); //tab names are not actually shown
+		
+		//tab names are not actually shown
+		tabSheet.hideTabs(true); 
 		
 		tabSheet.setHeight("1250px");
 		tabSheet.setWidth("100%");
@@ -112,10 +115,12 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements
 
 	@Override
 	public void initializeValues() {
+		//do nothing
 	}
 
 	@Override
 	public void addListeners() {
+		// do nothing
 	}
 
 	@Override
@@ -218,4 +223,5 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements
 	public CrossingManagerMakeCrossesComponent getMakeCrossesComponent(){
 		return makeCrossesComponent;
 	}
+	
 }
