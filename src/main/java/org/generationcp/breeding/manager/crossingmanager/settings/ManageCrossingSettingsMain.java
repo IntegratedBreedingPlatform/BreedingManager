@@ -121,7 +121,6 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements
 	@Override
 	public void layoutComponents() {
 		setWidth("100%");
-		setHeight("1250px");
 		setMargin(false,false,false,true);
 		
 		AbsoluteLayout headingLayout = new AbsoluteLayout();
@@ -186,8 +185,19 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements
     }
     
     public void reset(){
-    	this.parent.getWindow().setScrollTop(0);
-        this.parent.replaceComponent(this, new ManageCrossingSettingsMain(this.parent));
+    	
+    	if(this.parent.getWindow() != null){
+    		this.parent.getWindow().setScrollTop(0);
+    	}
+    	
+        this.parent.removeAllComponents();
+    	
+    	ManageCrossingSettingsMain crossingManagerMain = new ManageCrossingSettingsMain(this.parent);
+    	
+    	//remove the redundant left margin after reloading the choose setting page
+    	crossingManagerMain.setMargin(false); 
+    	
+    	this.parent.addComponent(crossingManagerMain);
     }
     
     //SETTER AND GETTERS
