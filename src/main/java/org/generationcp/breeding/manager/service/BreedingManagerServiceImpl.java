@@ -1,15 +1,23 @@
 package org.generationcp.breeding.manager.service;
 
+import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.util.UserUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.Operation;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.Person;
 import org.generationcp.middleware.pojos.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,6 +32,12 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 
 	@Autowired
 	private WorkbenchDataManager workbenchDataManager;
+
+    @Autowired
+    private GermplasmDataManager germplasmDataManager;
+
+    @Autowired
+    private GermplasmListManager germplasmListManager;
 
 	@Autowired
 	private UserDataManager userDataManager;
@@ -73,11 +87,54 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 		}
 	}
 
-	public void setWorkbenchDataManager(WorkbenchDataManager workbenchDataManager) {
-		this.workbenchDataManager = workbenchDataManager;
-	}
+    @Override
+    public List<Germplasm> doGermplasmSearch(String q, Operation o, boolean includeParents, boolean searchPublicData) throws BreedingManagerSearchException {
+        validateEmptySearchString(q);
+        try {
+            List<Germplasm> results = germplasmDataManager.searchForGermplasm(q, o, includeParents, searchPublicData);
 
-	public void setUserDataManager(UserDataManager userDataManager) {
-		this.userDataManager = userDataManager;
-	}
+            if (null == results || results.isEmpty()) {
+                if (!searchPublicData) {
+                    throw new BreedingManagerSearchException(Message.NO_SEARCH_RESULTS_UNCHECKED_PUBLIC_DATA);
+                }else {
+                    throw new BreedingManagerSearchException(Message.NO_SEARCH_RESULTS);
+                }
+            }
+
+            return results;
+
+        } catch (MiddlewareQueryException e) {
+            LOG.error(e.getMessage(),e);
+            throw new BreedingManagerSearchException(Message.ERROR_DATABASE,e);
+        }
+    }
+
+    @Override
+    public List<GermplasmList> doGermplasmListSearch(String q, Operation o, boolean searchPublicData) throws BreedingManagerSearchException {
+        validateEmptySearchString(q);
+
+        try {
+            List<GermplasmList> results = germplasmListManager.searchForGermplasmList(q, o, searchPublicData);
+
+            if (null == results || results.isEmpty()) {
+                if (!searchPublicData) {
+                    throw new BreedingManagerSearchException(Message.NO_SEARCH_RESULTS_UNCHECKED_PUBLIC_DATA);
+                }else {
+                    throw new BreedingManagerSearchException(Message.NO_SEARCH_RESULTS);
+                }
+            }
+
+            return results;
+
+        } catch (MiddlewareQueryException e) {
+            LOG.error(e.getMessage(),e);
+            throw new BreedingManagerSearchException(Message.ERROR_DATABASE,e);
+        }
+    }
+
+    protected void validateEmptySearchString(String q) throws BreedingManagerSearchException {
+        if("".equals(q.replaceAll(" ", "").trim())) {
+            throw new BreedingManagerSearchException(Message.SEARCH_QUERY_CANNOT_BE_EMPTY);
+        }
+    }
 }

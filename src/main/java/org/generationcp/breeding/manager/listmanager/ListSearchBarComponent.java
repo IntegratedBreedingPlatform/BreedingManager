@@ -1,38 +1,29 @@
 package org.generationcp.breeding.manager.listmanager;
 
-import java.util.List;
-
+import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.event.ShortcutListener;
+import com.vaadin.ui.*;
+import com.vaadin.ui.Button.ClickEvent;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.service.BreedingManagerSearchException;
+import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
-import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.pojos.GermplasmList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.event.ShortcutListener;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.PopupView;
-import com.vaadin.ui.TextField;
-
 @Configurable
 public class ListSearchBarComponent extends Panel implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
 
-	private static final long serialVersionUID = 1L;
+    private static final Logger LOG = LoggerFactory.getLogger(ListSearchBarComponent.class);
+    private static final long serialVersionUID = 1L;
 
 	public static final String SEARCH_BUTTON = "List Manager Search Button";
 	private static final String GUIDE = "You may search for germplasm lists using partial or full germplasm names or list names, or GIDs."
@@ -59,7 +50,7 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 	private SimpleResourceBundleMessageSource messageSource;
 
 	@Autowired
-	private GermplasmListManager germplasmListManager;
+    private BreedingManagerService breedingManagerService;
 
 	public ListSearchBarComponent(final ListSearchResultsComponent searchResultsComponent) {
 		super();
@@ -103,7 +94,7 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 
 	@Override
 	public void initializeValues() {
-		// TODO Auto-generated method stub
+		//Auto-generated method stub
 
 	}
 
@@ -156,7 +147,7 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
+		//Auto-generated method stub
 	}
 
 	public void searchButtonClickAction() {
@@ -165,38 +156,25 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 	}
 
 	public void doSearch(String q) {
-		
-		if(q.replaceAll(" ", "").trim().equals("")){
-			MessageNotifier.showWarning(getWindow(),
-					messageSource.getMessage(Message.UNABLE_TO_SEARCH),
-					messageSource.getMessage(Message.SEARCH_QUERY_CANNOT_BE_EMPTY));
-			return;
-		}
-		
+        boolean searchPublicData = (Boolean) searchPublicDataCheckBox.getValue();
+        boolean exactMatchedOnly = (Boolean) exactMatchesOnlyCheckBox.getValue();
+
 		try {
-			boolean searchPublicData = (Boolean) searchPublicDataCheckBox.getValue();
-			boolean exactMatchedOnly = (Boolean) exactMatchesOnlyCheckBox.getValue();
-				
-			List<GermplasmList> germplasmLists = doGermplasmListSearch(q, exactMatchedOnly ? Operation.EQUAL : Operation.LIKE, searchPublicData);
+			searchResultsComponent.applyGermplasmListResults(breedingManagerService.doGermplasmListSearch(q, exactMatchedOnly ? Operation.EQUAL : Operation.LIKE, searchPublicData));
 
-			if (germplasmLists == null || germplasmLists.isEmpty()) {
-				MessageNotifier.showWarning(getWindow(),
-						messageSource.getMessage(Message.SEARCH_RESULTS),
-						messageSource.getMessage(Message.NO_SEARCH_RESULTS));
-			}
-			searchResultsComponent.applyGermplasmListResults(germplasmLists);
-
-		} catch (MiddlewareQueryException e) {
-			e.printStackTrace();
+		} catch (BreedingManagerSearchException e) {
+            if (Message.SEARCH_QUERY_CANNOT_BE_EMPTY.equals(e.getErrorMessage())) {
+                // invalid search string
+                MessageNotifier.showWarning(this.getWindow(),messageSource.getMessage(Message.UNABLE_TO_SEARCH),messageSource.getMessage(e.getErrorMessage()));
+            } else {
+                // case for no results, database error
+                MessageNotifier.showWarning(this.getWindow(),messageSource.getMessage(Message.SEARCH_RESULTS),messageSource.getMessage(e.getErrorMessage()));
+            }
+            LOG.info(e.getMessage(),e);
 		}
 	}
 
-	private List<GermplasmList> doGermplasmListSearch(String q, Operation o, boolean searchPublicData)
-			throws MiddlewareQueryException {
-		return germplasmListManager.searchForGermplasmList(q, o, searchPublicData);
-	}
-
-	public TextField getSearchField(){
+    public TextField getSearchField(){
 		return searchField;
 	}
 	

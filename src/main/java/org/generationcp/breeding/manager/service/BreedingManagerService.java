@@ -1,6 +1,11 @@
 package org.generationcp.breeding.manager.service;
 
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.Operation;
+import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.GermplasmList;
+
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,4 +19,7 @@ public interface BreedingManagerService {
 
 	public String getDefaultOwnerListName() throws MiddlewareQueryException;
 
+    public List<GermplasmList> doGermplasmListSearch(String q, Operation o, boolean searchPublicData) throws BreedingManagerSearchException;
+
+    public List<Germplasm> doGermplasmSearch(String q, Operation o, boolean includeParents, boolean searchPublicData) throws BreedingManagerSearchException;
 }
