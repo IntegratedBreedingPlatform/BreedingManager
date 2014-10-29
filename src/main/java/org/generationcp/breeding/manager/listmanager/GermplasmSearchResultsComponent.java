@@ -264,8 +264,9 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 	public void setRightClickActionHandlerEnabled(Boolean isEnabled){
 		matchingGermplasmsTable.removeActionHandler(rightClickActionHandler);
-		if(isEnabled)
-			matchingGermplasmsTable.addActionHandler(rightClickActionHandler);
+		if(isEnabled) {
+            matchingGermplasmsTable.addActionHandler(rightClickActionHandler);
+        }
 	}
 	
 	@Override
@@ -309,8 +310,9 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
             String crossExpansion = "";
             if(germplasm!=null){
             	try {
-            		if(germplasmDataManager!=null)
-            			crossExpansion = germplasmDataManager.getCrossExpansion(germplasm.getGid(), 1);
+            		if(germplasmDataManager!=null) {
+                        crossExpansion = germplasmDataManager.getCrossExpansion(germplasm.getGid(), 1);
+                    }
             	} catch(MiddlewareQueryException ex){
                     crossExpansion = "-";
                 }

@@ -418,8 +418,9 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
     private void validateMethodInput() {
     	
     	//Do not check if file is not uploaded
-    	if(originalFilename==null || originalFilename.equals(""))
-    		return;
+    	if(originalFilename==null || originalFilename.equals("")) {
+            return;
+        }
     	
     	Method method = null; 
     	String methodFromFile = "";
@@ -730,8 +731,9 @@ public class CrossingManagerUploader implements Receiver, SucceededListener {
                     throw new CrossingManagerUploaderException("The female list specified on the Description sheet does not exist.");
                 }
                 
-                if(maleFound==false || femaleFound==false)
-                    germplasmListDataAreValid = false;                              
+                if(maleFound==false || femaleFound==false) {
+                    germplasmListDataAreValid = false;
+                }
                 
                 currentRow++;
             }

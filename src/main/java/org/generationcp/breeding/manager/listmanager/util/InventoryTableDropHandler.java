@@ -144,18 +144,20 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		int lastLrecId = allLotDetailsToBeAdded.get(0).getId();
 		
 		for(ListEntryLotDetails lotDetail : allLotDetailsToBeAdded){
-			if(lastLrecId!=lotDetail.getId())
-				nextId++;
+			if(lastLrecId!=lotDetail.getId()) {
+                nextId++;
+            }
 			
 			addItemToDestinationTable(lotDetail, nextId, sourceTable, targetTable);
 			lastLrecId = lotDetail.getId();
 		}
 	
 		//Update counter
-		if(listManagerMain!=null)
-			listManagerMain.getListBuilderComponent().refreshListInventoryItemCount();
-		else if(inventoryDropTargetContainer!=null)
-			inventoryDropTargetContainer.refreshListInventoryItemCount();
+		if(listManagerMain!=null) {
+            listManagerMain.getListBuilderComponent().refreshListInventoryItemCount();
+        } else if(inventoryDropTargetContainer!=null) {
+            inventoryDropTargetContainer.refreshListInventoryItemCount();
+        }
 		
 	}
     
@@ -174,8 +176,9 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 			Item item = sourceTable.getItem(lotDetail);
 			if(item!=null){
 				int currentEntryId = (Integer) item.getItemProperty(ListInventoryTable.ENTRY_NUMBER_COLUMN_ID).getValue();
-				if(!uniqueEntryIds.contains(currentEntryId))
-					uniqueEntryIds.add(currentEntryId);
+				if(!uniqueEntryIds.contains(currentEntryId)) {
+                    uniqueEntryIds.add(currentEntryId);
+                }
 			}
 		
 		}
@@ -222,8 +225,9 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 	   for(ListEntryLotDetails itemId : itemIds){
 		  try {
 			 GermplasmListData listData = germplasmListManager.getGermplasmListDataByListIdAndEntryId(listId, entryId);
-			 if(listData!=null)
-				 itemId.setId(listData.getId());
+			 if(listData!=null) {
+                 itemId.setId(listData.getId());
+             }
 		  } catch (MiddlewareQueryException e) {
 			 e.printStackTrace();
           }
@@ -240,8 +244,9 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		
 		List<GermplasmListData> inventoryDetails;
 		
-		if(inventoryDropTargetContainer!=null)
-			inventoryDropTargetContainer.setHasUnsavedChanges(true);
+		if(inventoryDropTargetContainer!=null) {
+            inventoryDropTargetContainer.setHasUnsavedChanges(true);
+        }
 		
 		try {
 			inventoryDetails = inventoryDataManager.getLotDetailsForList(listId,0,Integer.MAX_VALUE);
@@ -303,10 +308,11 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 			}
 
 			//Update counter
-			if(listManagerMain!=null)
-				listManagerMain.getListBuilderComponent().refreshListInventoryItemCount();
-			else if(inventoryDropTargetContainer!=null)
-				inventoryDropTargetContainer.refreshListInventoryItemCount();
+			if(listManagerMain!=null) {
+                listManagerMain.getListBuilderComponent().refreshListInventoryItemCount();
+            } else if(inventoryDropTargetContainer!=null) {
+                inventoryDropTargetContainer.refreshListInventoryItemCount();
+            }
 
 		} catch (MiddlewareQueryException e) {
 			// TODO Auto-generated catch block
@@ -395,11 +401,13 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 			
 			Integer entryId = 0;
 			Item item = targetTable.getItem(lotDetails);
-			if(item!=null)
-				entryId = (Integer) item.getItemProperty(ListInventoryTable.ENTRY_NUMBER_COLUMN_ID).getValue();
+			if(item!=null) {
+                entryId = (Integer) item.getItemProperty(ListInventoryTable.ENTRY_NUMBER_COLUMN_ID).getValue();
+            }
 			
-			if(entryId > topId)
-				topId = entryId;
+			if(entryId > topId) {
+                topId = entryId;
+            }
 			
 		}
 		return topId;

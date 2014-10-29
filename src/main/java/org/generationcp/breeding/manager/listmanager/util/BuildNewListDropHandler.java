@@ -46,21 +46,23 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 				super.setHasUnsavedChanges(true);
 				
 				//If table has selected items, add selected items
-				if(hasSelectedItems(sourceTable))
-					addSelectedGermplasmsFromTable(sourceTable);
-				//If none, add what was dropped
-				else
-					addGermplasm((Integer) transferable.getItemId());
+				if(hasSelectedItems(sourceTable)) {
+                    addSelectedGermplasmsFromTable(sourceTable);
+                } else {
+                    //If none, add what was dropped
+                    addGermplasm((Integer) transferable.getItemId());
+                }
 				
 			} else if (sourceTableData.equals(MATCHING_LISTS_TABLE_DATA)){
 				super.setHasUnsavedChanges(true);
 				
 				//If table has selected items, add selected items
-				if(hasSelectedItems(sourceTable))
-					addSelectedGermplasmListsFromTable(sourceTable);
-				//If none, add what was dropped
-				else
-					addGermplasmList((Integer) transferable.getItemId());
+				if(hasSelectedItems(sourceTable)) {
+                    addSelectedGermplasmListsFromTable(sourceTable);
+                } else {
+                    //If none, add what was dropped
+                    addGermplasmList((Integer) transferable.getItemId());
+                }
 	
 			} else if (sourceTableData.equals(LIST_DATA_TABLE_DATA)){
 				super.setHasUnsavedChanges(true);
@@ -68,8 +70,8 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 				//If table has selected items, add selected items
 				if(hasSelectedItems(sourceTable)){
 					addFromListDataTable(sourceTable);
-				} //If none, add what was dropped
-				else if(transferable.getSourceComponent().getParent().getParent() instanceof ListComponent){
+				} else if(transferable.getSourceComponent().getParent().getParent() instanceof ListComponent){
+                    //If none, add what was dropped
 					Integer listId = ((ListComponent) transferable.getSourceComponent().getParent().getParent()).getGermplasmListId();
 					addGermplasmFromList(listId, (Integer) transferable.getItemId());
 				}
@@ -112,8 +114,8 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 				LOG.error("Error During Drop: Unknown table data: "+sourceTableData);
 			}
 					
-		//If source is from tree
 		} else {
+            //If source is from tree
 			Transferable transferable = event.getTransferable();
 			addGermplasmList((Integer) transferable.getData("itemId"));
 		}

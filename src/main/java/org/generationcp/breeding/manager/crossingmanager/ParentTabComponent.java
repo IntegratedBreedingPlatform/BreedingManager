@@ -1167,8 +1167,9 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		List<GermplasmListData> germplasmListDataEntries = new ArrayList<GermplasmListData>();
 		
 		try {
-			if (!entryIds.isEmpty())
-				germplasmListDataEntries = this.inventoryDataManager.getLotCountsForListEntries(germplasmList.getId(), new ArrayList<Integer>(entryIds));
+			if (!entryIds.isEmpty()) {
+                germplasmListDataEntries = this.inventoryDataManager.getLotCountsForListEntries(germplasmList.getId(), new ArrayList<Integer>(entryIds));
+            }
 		} catch (MiddlewareQueryException e) {
 			e.printStackTrace();
 		}
@@ -1320,11 +1321,13 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			
 			Integer entryId = 0;
 			Item item = listDataTable.getItem(entry);
-			if(item!=null)
-				entryId = (Integer) item.getItemProperty(ENTRY_NUMBER_COLUMN_ID).getValue();
+			if(item!=null) {
+                entryId = (Integer) item.getItemProperty(ENTRY_NUMBER_COLUMN_ID).getValue();
+            }
 			
-			if(entryId > nextId)
-				nextId = entryId;
+			if(entryId > nextId) {
+                nextId = entryId;
+            }
 			
 		}
 		return nextId+1;

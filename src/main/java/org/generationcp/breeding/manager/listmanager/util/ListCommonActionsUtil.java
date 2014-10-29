@@ -100,9 +100,10 @@ public class ListCommonActionsUtil {
     		}
 			
 			if(listId == null){
-				if(showMessages)
-				    MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
-						, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
+				if(showMessages) {
+                    MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
+                            , messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
+                }
 				return null;
 			} else{
 				savedList = listFromDB;
@@ -126,8 +127,9 @@ public class ListCommonActionsUtil {
 			}
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error in updating germplasm list: " + listToSave.getId(), ex);
-			if(showMessages)
-			    MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
+			if(showMessages) {
+                MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
+            }
 			return null;
 		}
     	return savedList;

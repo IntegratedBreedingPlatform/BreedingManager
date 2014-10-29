@@ -780,8 +780,9 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		List<GermplasmListData> germplasmListDataEntries = new ArrayList<GermplasmListData>();
 		
 		try {
-			if (!entryIds.isEmpty())
-				germplasmListDataEntries = this.inventoryDataManager.getLotCountsForListEntries(germplasmList.getId(), new ArrayList<Integer>(entryIds));
+			if (!entryIds.isEmpty()) {
+                germplasmListDataEntries = this.inventoryDataManager.getLotCountsForListEntries(germplasmList.getId(), new ArrayList<Integer>(entryIds));
+            }
 		} catch (MiddlewareQueryException e) {
 			e.printStackTrace();
 		}

@@ -93,12 +93,13 @@ public class GidLinkClickListener implements Button.ClickListener, ItemClickList
 	private void openDetailsWindow (final Component component) {
 		Window mainWindow;
 		
-		if(parentWindow!=null)
-			mainWindow = parentWindow;
-		else if(viaToolURL)
-    		mainWindow = component.getWindow();
-    	else
-    		mainWindow = component.getApplication().getWindow(GERMPLASM_IMPORT_WINDOW_NAME);
+		if(parentWindow!=null) {
+            mainWindow = parentWindow;
+        } else if(viaToolURL) {
+            mainWindow = component.getWindow();
+        } else {
+            mainWindow = component.getApplication().getWindow(GERMPLASM_IMPORT_WINDOW_NAME);
+        }
         
     	launchWebTool();
     	

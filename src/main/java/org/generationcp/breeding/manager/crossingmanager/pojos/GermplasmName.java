@@ -48,8 +48,9 @@ public class GermplasmName implements Comparable<GermplasmName>, Serializable{
 
     @Override
     public int compareTo(GermplasmName entry) {
-    	if(germplasm.getGid()==entry.getGermplasm().getGid() && name.getNval().equals(entry.getName().getNval()))
-    		return 1;
+    	if(germplasm.getGid()==entry.getGermplasm().getGid() && name.getNval().equals(entry.getName().getNval())) {
+            return 1;
+        }
     	return 0;
     }
 
@@ -70,12 +71,15 @@ public class GermplasmName implements Comparable<GermplasmName>, Serializable{
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         return true;
     }
     

@@ -80,18 +80,23 @@ public class GermplasmInventory implements Serializable{
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) {
+            return true;
+        }
+		if (obj == null) {
+            return false;
+        }
+		if (getClass() != obj.getClass()) {
+            return false;
+        }
 		GermplasmInventory other = (GermplasmInventory) obj;
 		if (gid == null) {
-			if (other.gid != null)
-				return false;
-		} else if (!gid.equals(other.gid))
-			return false;
+			if (other.gid != null) {
+                return false;
+            }
+		} else if (!gid.equals(other.gid)) {
+            return false;
+        }
 		return true;
 	}
 

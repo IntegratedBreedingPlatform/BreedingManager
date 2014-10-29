@@ -189,8 +189,9 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 			}
 			tabSheet.setHeight(tabHeights[step]);
 			
-			if(getWindow()!=null)
-				getWindow().setScrollTop(0);
+			if(getWindow()!=null) {
+                getWindow().setScrollTop(0);
+            }
 		}
 	}
 	

@@ -260,10 +260,11 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         
         tableWithSelectAllLayout = new TableWithSelectAllLayout(ListDataTablePropertyID.TAG.getName());
 
-        if(currentlySavedGermplasmList!=null)
-        	listInventoryTable = new ListManagerInventoryTable(source, currentlySavedGermplasmList.getId(), false, true);
-        else
-        	listInventoryTable = new ListManagerInventoryTable(source, null, false, true);
+        if(currentlySavedGermplasmList!=null) {
+            listInventoryTable = new ListManagerInventoryTable(source, currentlySavedGermplasmList.getId(), false, true);
+        } else {
+            listInventoryTable = new ListManagerInventoryTable(source, null, false, true);
+        }
         listInventoryTable.setVisible(false);
         
         listDataTable = tableWithSelectAllLayout.getTable();
@@ -570,8 +571,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 	
 	public Action[] getContextMenuActions(){
-		if(currentlySavedGermplasmList!=null && currentlySavedGermplasmList.isLockedList())
-			return GERMPLASMS_TABLE_CONTEXT_MENU_LOCKED;
+		if(currentlySavedGermplasmList!=null && currentlySavedGermplasmList.isLockedList()) {
+            return GERMPLASMS_TABLE_CONTEXT_MENU_LOCKED;
+        }
 		return GERMPLASMS_TABLE_CONTEXT_MENU;
 	}
 	
@@ -1442,8 +1444,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	private void refreshInventoryColumns(Set<Integer> entryIds) {
 		List<GermplasmListData> germplasmListDataEntries = new ArrayList<GermplasmListData>();
 		try {
-			if (!entryIds.isEmpty())
-				germplasmListDataEntries = this.inventoryDataManager.getLotCountsForListEntries(currentlySavedGermplasmList.getId(), new ArrayList<Integer>(entryIds));
+			if (!entryIds.isEmpty()) {
+                germplasmListDataEntries = this.inventoryDataManager.getLotCountsForListEntries(currentlySavedGermplasmList.getId(), new ArrayList<Integer>(entryIds));
+            }
 		} catch (MiddlewareQueryException e) {
 			e.printStackTrace();
 		}
@@ -1473,8 +1476,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			Button gidButton = (Button) item.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue(); 
 			String gidString = "";
 			
-			if(gidButton!=null)
-				gidString = gidButton.getCaption();
+			if(gidButton!=null) {
+                gidString = gidButton.getCaption();
+            }
 			
 			updateAvailInvValues(Integer.valueOf(gidString), avail_inv);
 
@@ -1659,8 +1663,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 	
 	private boolean localUserIsListOwner() {
-		if(currentlySavedGermplasmList==null)
-			return true;
+		if(currentlySavedGermplasmList==null) {
+            return true;
+        }
         try {
         	Integer userId = UserUtil.getCurrentUserLocalId(workbenchDataManager);
 			return currentlySavedGermplasmList.getUserId().equals(userId);

@@ -210,8 +210,9 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		            newAvailInvButton.setDescription("Click to view Inventory Details");
 		            
 		            String seed_res = "-";
-		            if(sourceTable.getItemIds().size() == selectedListEntries.size())
-		            	seed_res = sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.SEED_RESERVATION.getName()).getValue().toString();
+		            if(sourceTable.getItemIds().size() == selectedListEntries.size()) {
+                        seed_res = sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.SEED_RESERVATION.getName()).getValue().toString();
+                    }
 		            
 		            item.getItemProperty(AVAIL_INV_COLUMN_ID).setValue(newAvailInvButton);
 		            item.getItemProperty(SEED_RES_COLUMN_ID).setValue(seed_res);
@@ -403,8 +404,9 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     	
     	for(GermplasmListEntry itemId : allItemIds){
     		for(GermplasmListEntry selectedItemId : selectedItemIds){
-    			if(itemId.equals(selectedItemId))
-    				sortedSelectedValues.add(selectedItemId);    			
+    			if(itemId.equals(selectedItemId)) {
+                    sortedSelectedValues.add(selectedItemId);
+                }
     		}
     	}
     	return sortedSelectedValues;
@@ -503,8 +505,9 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         assignEntryNumber(maleParents);
 		parentTabSheet.setSelectedTab(1);
 		
-		if(makeCrossesMain.getModeView().equals(ModeView.LIST_VIEW))
-			maleParentTab.updateNoOfEntries(maleParents.size());
+		if(makeCrossesMain.getModeView().equals(ModeView.LIST_VIEW)) {
+            maleParentTab.updateNoOfEntries(maleParents.size());
+        }
 
 	}
 	
@@ -605,8 +608,9 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         assignEntryNumber(femaleParents);
         parentTabSheet.setSelectedTab(0);
         
-        if(makeCrossesMain.getModeView().equals(ModeView.LIST_VIEW))
-			femaleParentTab.updateNoOfEntries(femaleParents.size());
+        if(makeCrossesMain.getModeView().equals(ModeView.LIST_VIEW)) {
+            femaleParentTab.updateNoOfEntries(femaleParents.size());
+        }
 	}
 
 	private void updateMaleParentList(GermplasmList listFromTree) {

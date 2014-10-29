@@ -488,8 +488,9 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
 			Transaction transaction = new Transaction(null, 
 					wbUserId, gidLotMap.get(gid), intDate, TransactionStatus.DEPOSITED.getIntValue(), importedGermplasm.getSeedAmount(), 
 					INVENTORY_COMMENT, 0, "LIST", list.getId(), lrecId, Double.valueOf(0), 0);
-			if(importedGermplasm.getSeedAmount()!=null)
-				gidTransactionSetMap.get(gid).add(transaction);
+			if(importedGermplasm.getSeedAmount()!=null) {
+                gidTransactionSetMap.get(gid).add(transaction);
+            }
 		}
 	}
 	

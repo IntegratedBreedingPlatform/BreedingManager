@@ -37,8 +37,9 @@ public class GermplasmListSourceDropHandler implements DropHandler {
 
     public void drop(DragAndDropEvent dropEvent) {
         Transferable t = dropEvent.getTransferable();
-        if (t.getSourceComponent() != targetListSource)
+        if (t.getSourceComponent() != targetListSource) {
             return;
+        }
 
         AbstractSelect.AbstractSelectTargetDetails target = (AbstractSelect.AbstractSelectTargetDetails) dropEvent.getTargetDetails();
 

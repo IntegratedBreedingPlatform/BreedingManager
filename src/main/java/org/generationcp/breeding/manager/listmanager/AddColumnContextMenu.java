@@ -397,8 +397,9 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                     Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
                     String preferredID = "";
                     Name name = germplasmDataManager.getPreferredIdByGID(gid);
-                    if(name!=null && name.getNval()!=null)
+                    if(name!=null && name.getNval()!=null) {
                         preferredID = name.getNval();
+                    }
                     targetTable.getItem(itemId).getItemProperty(PREFERRED_ID).setValue(preferredID);
                 }
                
@@ -427,8 +428,9 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                     Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
                     
                     String preferredName = "";
-                    if(germplasmDataManager.getPreferredNameByGID(gid)!=null && germplasmDataManager.getPreferredNameByGID(gid).getNval()!=null)
-                            preferredName = germplasmDataManager.getPreferredNameByGID(gid).getNval();
+                    if(germplasmDataManager.getPreferredNameByGID(gid)!=null && germplasmDataManager.getPreferredNameByGID(gid).getNval()!=null) {
+                        preferredName = germplasmDataManager.getPreferredNameByGID(gid).getNval();
+                    }
                     targetTable.getItem(itemId).getItemProperty(PREFERRED_NAME).setValue(preferredName);
                 }
 
@@ -466,10 +468,11 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                     //TODO can make better use of the middleware method by just calling it once and not have it inside a loop
                     Map<Integer,Integer> germplasmGidDateMap = germplasmDataManager.getGermplasmDatesByGids(gids);
                     
-                    if(germplasmGidDateMap.get(gid)==null)
+                    if(germplasmGidDateMap.get(gid)==null) {
                         targetTable.getItem(itemId).getItemProperty(GERMPLASM_DATE).setValue("");
-                    else
+                    } else {
                         targetTable.getItem(itemId).getItemProperty(GERMPLASM_DATE).setValue(germplasmGidDateMap.get(gid));
+                    }
                 }
                 
                 //To trigger TableFieldFactory (fix for truncated data)
@@ -506,10 +509,11 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                     Map<Integer, String> locationNamesMap = germplasmDataManager.getLocationNamesByGids(gids);
                     allLocationNamesMap.putAll(locationNamesMap);
                     
-                    if(locationNamesMap.get(gid)==null)
+                    if(locationNamesMap.get(gid)==null) {
                         targetTable.getItem(itemId).getItemProperty(LOCATIONS).setValue("");
-                    else
+                    } else {
                         targetTable.getItem(itemId).getItemProperty(LOCATIONS).setValue(locationNamesMap.get(gid));
+                    }
                 }
 
                 //To trigger TableFieldFactory (fix for truncated data)
@@ -853,10 +857,11 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
         	List<ListDataColumn> columns = new ArrayList<ListDataColumn>();
 	        for(String propertyId : propertyIds){
 	        	if(ADDABLE_PROPERTY_IDS.contains(propertyId)){
-	        		if(item.getItemProperty(propertyId).getValue()!=null)
-	                    columns.add(new ListDataColumn(propertyId, item.getItemProperty(propertyId).getValue().toString()));
-	                else
-	                    columns.add(new ListDataColumn(propertyId, null));
+	        		if(item.getItemProperty(propertyId).getValue()!=null) {
+                        columns.add(new ListDataColumn(propertyId, item.getItemProperty(propertyId).getValue().toString()));
+                    } else {
+                        columns.add(new ListDataColumn(propertyId, null));
+                    }
 	        	}
 	        }
 	        listDataCollection.add(new ListDataInfo(Integer.valueOf(itemId.toString()),columns));

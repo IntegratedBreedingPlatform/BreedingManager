@@ -149,22 +149,27 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         GermplasmListEntry other = (GermplasmListEntry) obj;
         if (listDataId == null) {
-            if (other.listDataId != null)
+            if (other.listDataId != null) {
                 return false;
+            }
         } else if (!listDataId.equals(other.listDataId) || !gid.equals(other.gid)){
             return false;
         }
         
-        if(other.listDataId!=listDataId || other.seedSource!=seedSource || other.gid!=gid || other.entryId!=entryId || other.designation!=designation)
-        	return false;
+        if(other.listDataId!=listDataId || other.seedSource!=seedSource || other.gid!=gid || other.entryId!=entryId || other.designation!=designation) {
+            return false;
+        }
         
         return true;
     }

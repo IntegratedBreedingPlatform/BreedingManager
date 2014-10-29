@@ -108,13 +108,15 @@ public class ListManagerInventoryTable extends ListInventoryTable {
 	
 	public void setDropHandler(){
 		inventoryTableDropHandler = new InventoryTableDropHandler(listManagerMain, germplasmDataManager, germplasmListManager, inventoryDataManager, listInventoryTable);
-		if(enableDropHandler)
-			listInventoryTable.setDropHandler(inventoryTableDropHandler);
+		if(enableDropHandler) {
+            listInventoryTable.setDropHandler(inventoryTableDropHandler);
+        }
 	}
 	
 	public void setDragSource(){
-		if(enableDragSource)
-			listInventoryTable.setDragMode(TableDragMode.ROW);
+		if(enableDragSource) {
+            listInventoryTable.setDragMode(TableDragMode.ROW);
+        }
 	}
 	
 	public InventoryTableDropHandler getInventoryTableDropHandler(){

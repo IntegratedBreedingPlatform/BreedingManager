@@ -289,8 +289,9 @@ public class FillWith implements InternationalizableComponent  {
 
     public void setContextMenuEnabled(Boolean isEnabled){
     	targetTable.removeListener(headerClickListener);
-    	if(isEnabled)
-    		targetTable.addListener(headerClickListener);
+    	if(isEnabled) {
+            targetTable.addListener(headerClickListener);
+        }
     }
     
     public List<Integer> getGidsFromTable(Table table){
@@ -842,8 +843,9 @@ public class FillWith implements InternationalizableComponent  {
 	}
 
 	public void trackFillWith(String propertyId){
-		if(!filledWithPropertyIds.contains(propertyId))
-			filledWithPropertyIds.add(propertyId);
+		if(!filledWithPropertyIds.contains(propertyId)) {
+            filledWithPropertyIds.add(propertyId);
+        }
 	}
 
 	private void setCommonOptionsForEntryCodeAndSeedSourceToBeVisible(boolean visibility){

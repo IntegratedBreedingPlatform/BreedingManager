@@ -574,8 +574,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	   			  menuCopyToList.setVisible(false);
 	   			 }
 	   			 
-	   			 if(source!=null)
-	   				 menuCopyToList.setVisible(!source.listBuilderIsLocked());
+	   			 if(source!=null) {
+                     menuCopyToList.setVisible(!source.listBuilderIsLocked());
+                 }
 	   			 
 				 // Show items only when Germplasm List open is a local IBDB record (negative ID),
 	   			 // when the Germplasm List is not locked, and when not accessed directly from URL or popup window
@@ -848,19 +849,22 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
                     		|| selectedColumn.equals(ListDataTablePropertyID.AVAIL_INV.getName())){
                             tableContextMenu_DeleteEntries.setVisible(!germplasmList.isLockedList());
                             tableContextMenu_EditCell.setVisible(false);
-                            if(source!=null)
-                            	tableContextMenu_CopyToNewList.setVisible(!source.listBuilderIsLocked());
+                            if(source!=null) {
+                                tableContextMenu_CopyToNewList.setVisible(!source.listBuilderIsLocked());
+                            }
                     } else if (germplasmList.isLocalList() && !germplasmList.isLockedList()){
                             tableContextMenu_DeleteEntries.setVisible(true);
                             tableContextMenu_EditCell.setVisible(true);
-                            if(source!=null)
-                            	tableContextMenu_CopyToNewList.setVisible(!source.listBuilderIsLocked());
+                            if(source!=null) {
+                                tableContextMenu_CopyToNewList.setVisible(!source.listBuilderIsLocked());
+                            }
                             doneInitializing = true;
                     } else {
                             tableContextMenu_DeleteEntries.setVisible(false);
                             tableContextMenu_EditCell.setVisible(false);
-                            if(source!=null)
-                            	tableContextMenu_CopyToNewList.setVisible(!source.listBuilderIsLocked());
+                            if(source!=null) {
+                                tableContextMenu_CopyToNewList.setVisible(!source.listBuilderIsLocked());
+                            }
                     }
                 }
 			}
@@ -2025,8 +2029,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private void refreshInventoryColumns(Set<Integer> entryIds){
 		List<GermplasmListData> germplasmListDataEntries = new ArrayList<GermplasmListData>();
 		try {
-			if (!entryIds.isEmpty())
-				germplasmListDataEntries = this.inventoryDataManager.getLotCountsForListEntries(germplasmList.getId(), new ArrayList<Integer>(entryIds));
+			if (!entryIds.isEmpty()) {
+                germplasmListDataEntries = this.inventoryDataManager.getLotCountsForListEntries(germplasmList.getId(), new ArrayList<Integer>(entryIds));
+            }
 		} catch (MiddlewareQueryException e) {
 			e.printStackTrace();
 		}
@@ -2056,8 +2061,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			Button gidButton = (Button) item.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue(); 
 			String gidString = "";
 			
-			if(gidButton!=null)
-				gidString = gidButton.getCaption();
+			if(gidButton!=null) {
+                gidString = gidButton.getCaption();
+            }
 			
 			updateAvailInvValues(Integer.valueOf(gidString), avail_inv);
 			

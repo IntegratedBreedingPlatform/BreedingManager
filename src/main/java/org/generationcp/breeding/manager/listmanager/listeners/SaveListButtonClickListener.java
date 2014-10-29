@@ -115,8 +115,9 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 				}
 			} catch(MiddlewareQueryException ex){
 				LOG.error("Error in saving germplasm list: " + listToSave, ex);
-				if(showMessages)
-				    MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
+				if(showMessages) {
+                    MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
+                }
 				return;
 			}
 			
@@ -182,12 +183,14 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			ex.printStackTrace();
 		}
 		
-		if(showMessages)
-		    MessageNotifier.showMessage(this.source.getWindow(), messageSource.getMessage(Message.SUCCESS), messageSource.getMessage(Message.LIST_DATA_SAVED_SUCCESS)
-				, 3000);
+		if(showMessages) {
+            MessageNotifier.showMessage(this.source.getWindow(), messageSource.getMessage(Message.SUCCESS), messageSource.getMessage(Message.LIST_DATA_SAVED_SUCCESS)
+                    , 3000);
+        }
 		
-		if(callSaveReservation)
-			source.saveReservationChangesAction();
+		if(callSaveReservation) {
+            source.saveReservationChangesAction();
+        }
 		
 		source.resetUnsavedChangesFlag();
 		

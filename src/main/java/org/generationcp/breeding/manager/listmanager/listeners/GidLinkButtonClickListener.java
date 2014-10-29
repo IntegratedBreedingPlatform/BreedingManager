@@ -79,10 +79,11 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
     public void buttonClick(ClickEvent event) {
         
     	final Window mainWindow;
-    	if(viaToolURL)
-    		mainWindow = event.getComponent().getWindow();
-    	else
-    		mainWindow = event.getComponent().getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME);
+    	if(viaToolURL) {
+            mainWindow = event.getComponent().getWindow();
+        } else {
+            mainWindow = event.getComponent().getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME);
+        }
         
     	launchWebTool();
     	

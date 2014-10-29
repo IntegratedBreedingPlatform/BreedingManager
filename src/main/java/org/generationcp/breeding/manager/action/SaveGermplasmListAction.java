@@ -109,8 +109,9 @@ public class SaveGermplasmListAction implements Serializable {
 			listToAdd.addAll(currentListDataEntries);
 		}
 
-		if(listToAdd.size()>0)
-			this.germplasmListManager.addGermplasmListData(listToAdd); // ADD the newly created
+		if(listToAdd.size()>0) {
+            this.germplasmListManager.addGermplasmListData(listToAdd); // ADD the newly created
+        }
 		 
 		// DELETE non entries not part of list anymore
         this.germplasmListManager.deleteGermplasmListData(listToDelete);

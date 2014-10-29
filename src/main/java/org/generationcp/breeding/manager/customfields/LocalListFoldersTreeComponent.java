@@ -104,8 +104,9 @@ public class LocalListFoldersTreeComponent extends ListTreeComponent {
 	@Override
 	public void refreshRemoteTree(){
 
-		if(!refreshTreeOnAddEditOrDeleteAction)
-			return;
+		if(!refreshTreeOnAddEditOrDeleteAction) {
+            return;
+        }
 		
 		BreedingManagerApplication breedingManagerApplication = (BreedingManagerApplication) getApplication();
 		if(breedingManagerApplication!=null){

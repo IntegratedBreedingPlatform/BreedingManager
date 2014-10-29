@@ -44,23 +44,30 @@ public class CrossParents {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) {
+            return true;
+        }
+		if (obj == null) {
+            return false;
+        }
+		if (getClass() != obj.getClass()) {
+            return false;
+        }
 		CrossParents other = (CrossParents) obj;
 		if (femaleParent == null) {
-			if (other.femaleParent != null)
-				return false;
-		} else if (!femaleParent.hasEqualGidWith(other.femaleParent))
-			return false;
+			if (other.femaleParent != null) {
+                return false;
+            }
+		} else if (!femaleParent.hasEqualGidWith(other.femaleParent)) {
+            return false;
+        }
 		if (maleParent == null) {
-			if (other.maleParent != null)
-				return false;
-		} else if (!maleParent.hasEqualGidWith(other.maleParent))
-			return false;
+			if (other.maleParent != null) {
+                return false;
+            }
+		} else if (!maleParent.hasEqualGidWith(other.maleParent)) {
+            return false;
+        }
 		return true;
 	}
 

@@ -360,20 +360,23 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
                 String crossExpansion = "";
                 if(germplasm!=null){
                 	try {
-                		if(germplasmDataManager!=null)
-                			crossExpansion = germplasmDataManager.getCrossExpansion(germplasm.getGid(), 1);
+                		if(germplasmDataManager!=null) {
+                            crossExpansion = germplasmDataManager.getCrossExpansion(germplasm.getGid(), 1);
+                        }
                 	} catch(MiddlewareQueryException ex){
                         crossExpansion = "-";
                     }
             	}
                 
                 String locationName = "";
-                if(location!=null && location.getLname()!=null)
-                	locationName = location.getLname();
+                if(location!=null && location.getLname()!=null) {
+                    locationName = location.getLname();
+                }
 
                 String methodName = "";
-                if(method!=null && method.getMname()!=null)
-                	methodName = method.getMname();
+                if(method!=null && method.getMname()!=null) {
+                    methodName = method.getMname();
+                }
                 
                 this.germplasmTable.addItem(new Object[]{desigButton, gidButton, locationName, methodName, crossExpansion}, germplasm.getGid());
             }

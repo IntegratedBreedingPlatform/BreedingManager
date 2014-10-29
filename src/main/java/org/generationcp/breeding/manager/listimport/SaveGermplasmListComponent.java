@@ -297,8 +297,9 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
                      
                  } else {
                      //Create map from data from previous screen
-                	 if(germplasmNameObjects.get(i).getGermplasm().getGpid1()==0 && germplasmNameObjects.get(i).getGermplasm().getGpid2()==0)
-                		 germplasmNameObjects.get(i).getGermplasm().setGnpgs(-1);
+                	 if(germplasmNameObjects.get(i).getGermplasm().getGpid1()==0 && germplasmNameObjects.get(i).getGermplasm().getGpid2()==0) {
+                         germplasmNameObjects.get(i).getGermplasm().setGnpgs(-1);
+                     }
                 	 
                      germplasmNameObjectsToBeSaved.add(new GermplasmName(germplasmNameObjects.get(i).getGermplasm(), germplasmNameObjects.get(i).getName()));
                  }
@@ -308,10 +309,11 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
             		 ((SpecifyGermplasmDetailsComponent) previousScreen).getImportedGermplasmList(), 0);
              MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS),
                     messageSource.getMessage(Message.GERMPLASM_LIST_SAVED_SUCCESSFULLY));
-             if(viaPopup)
-            	 notifyExternalApplication(listId);
-             else
-            	 this.source.reset();
+             if(viaPopup) {
+                 notifyExternalApplication(listId);
+             } else {
+                 this.source.reset();
+             }
             
         } catch (MiddlewareQueryException e) {
             LOG.error(e.getMessage() + " " + e.getStackTrace());
@@ -323,8 +325,9 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
     }
 
     public void setListDetails(String name, String description, Date date, String listType){
-    	if(name.length()>50)
-    		name = name.substring(0, 50);
+    	if(name.length()>50) {
+            name = name.substring(0, 50);
+        }
         listNameText.setValue(name);
         descriptionText.setValue(description);
         listDateField.setValue(date);

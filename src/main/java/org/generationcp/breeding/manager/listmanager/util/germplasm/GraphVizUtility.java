@@ -127,8 +127,9 @@ public class GraphVizUtility
             if (dot != null)
             {
                 img_stream = get_img_stream(dot, type);
-                if (dot.delete() == false) 
+                if (dot.delete() == false) {
                     System.err.println("Warning: " + dot.getAbsolutePath() + " could not be deleted!");
+                }
                 return img_stream;
             }
             return null;
@@ -188,10 +189,13 @@ public class GraphVizUtility
             img_stream = new byte[in.available()];
             in.read(img_stream);
             // Close it if we need to
-            if( in != null ) in.close();
+            if( in != null ) {
+                in.close();
+            }
 
-            if (img.delete() == false) 
+            if (img.delete() == false) {
                 System.err.println("Warning: " + img.getAbsolutePath() + " could not be deleted!");
+            }
         }
         catch (java.io.IOException ioe) {
             System.err.println("Error:    in I/O processing of tempfile in dir " + GraphVizUtility.TEMP_DIR+"\n");

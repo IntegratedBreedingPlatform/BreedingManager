@@ -279,8 +279,9 @@ public class GermplasmListUploader implements FileFactory {
                 } else if (isANameFactor(columnHeader)) {
                     importedGermplasm.addNameFactor(columnHeader, getCellStringValue(currentSheet, currentRow, col, true));
                 } else if (columnHeader.equals(seedAmountVariate)) {
-                    if (getCellStringValue(currentSheet, currentRow, col, true) != null && !getCellStringValue(currentSheet, currentRow, col, true).equals(""))
+                    if (getCellStringValue(currentSheet, currentRow, col, true) != null && !getCellStringValue(currentSheet, currentRow, col, true).equals("")) {
                         importedGermplasm.setSeedAmount(Double.valueOf(getCellStringValue(currentSheet, currentRow, col, true)));
+                    }
                 } else if (isAnAttributeVariate(columnHeader)) {
                     importedGermplasm.addAttributeVariate(columnHeader, getCellStringValue(currentSheet, currentRow, col, true));
                 } else {
@@ -305,8 +306,9 @@ public class GermplasmListUploader implements FileFactory {
 
                         Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(importedGermplasmGids);
 
-                        if (preferredNames.get(importedGermplasm.getGid()) != null)
+                        if (preferredNames.get(importedGermplasm.getGid()) != null) {
                             importedGermplasm.setDesig(preferredNames.get(importedGermplasm.getGid()));
+                        }
 
                     }
                 } catch (MiddlewareQueryException e) {
@@ -690,8 +692,9 @@ public class GermplasmListUploader implements FileFactory {
 
     private Boolean rowIsEmpty(Integer sheet, Integer row) {
         for (int col = 0; col < 8; col++) {
-            if (getCellStringValue(sheet, row, col) != "" && getCellStringValue(sheet, row, col) != null)
+            if (getCellStringValue(sheet, row, col) != "" && getCellStringValue(sheet, row, col) != null) {
                 return false;
+            }
         }
         return true;
     }
