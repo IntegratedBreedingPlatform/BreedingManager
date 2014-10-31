@@ -139,6 +139,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 		saveButton = new Button(messageSource.getMessage(Message.SAVE_LABEL));
 		saveButton.setWidth("80px");
 		saveButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+		saveButton.setDebugId("vaadin-save-btn");
 	}
 	
 	public String defaultListType(){

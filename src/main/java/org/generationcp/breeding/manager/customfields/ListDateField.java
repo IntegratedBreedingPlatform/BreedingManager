@@ -50,6 +50,7 @@ public class ListDateField extends HorizontalLayout
 			listDtDateField.setRequired(true);
 			listDtDateField.setRequiredError("Date must be specified in the YYYY-MM-DD format");
 		}
+		listDtDateField.setDebugId("vaadin-listdate-date");
 	}
 
 	@Override

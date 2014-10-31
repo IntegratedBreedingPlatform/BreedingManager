@@ -47,6 +47,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 			listNotesTextArea.setRequired(true);
 			listNotesTextArea.setRequiredError("Please specify the notes of the list.");
 		}
+		listNotesTextArea.setDebugId("vaadin-notes-txtarea");
 	}
 
 	@Override

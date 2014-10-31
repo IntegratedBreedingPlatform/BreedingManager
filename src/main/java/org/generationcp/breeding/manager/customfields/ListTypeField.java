@@ -60,6 +60,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 			listTypeComboBox.setRequired(true);
 			listTypeComboBox.setRequiredError("Please specify the type of the list.");
 		}
+		listTypeComboBox.setDebugId("vaadin-listtype-select");
 	}
 
 	@Override

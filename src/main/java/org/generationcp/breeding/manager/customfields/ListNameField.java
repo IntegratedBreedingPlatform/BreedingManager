@@ -54,6 +54,7 @@ public class ListNameField extends HorizontalLayout
 			listNameTextField.setRequired(true);
 			listNameTextField.setRequiredError("Please specify the name of the list.");
 		}
+		listNameTextField.setDebugId("vaadin-listname-txt");
 	}
 
 	@Override

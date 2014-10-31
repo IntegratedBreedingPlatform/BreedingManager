@@ -51,6 +51,7 @@ public class ListDescriptionField extends HorizontalLayout
 			descriptionTextArea.setRequired(true);
 			descriptionTextArea.setRequiredError("Please specify the description of the list.");
 		}
+		descriptionTextArea.setDebugId("vaadin-listdescrip-txtarea");
 	}
 
 	@Override
