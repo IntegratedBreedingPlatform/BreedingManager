@@ -324,7 +324,7 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
 			storedIn.setId(TermId.OBSERVATION_VARIATE.getId());
 			
 			stdVariable = new StandardVariable(traitTerm, scaleTerm, methodTerm, dataType, storedIn, null, 
-					PhenotypicType.VARIATE, null, null);
+					PhenotypicType.VARIATE);
 			stdVariable.setName(importedVariate.getVariate());
 			stdVariable.setDescription(importedVariate.getDescription());
 			
