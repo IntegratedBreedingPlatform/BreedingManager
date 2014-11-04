@@ -1785,6 +1785,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						source, messageSource, true);
 				source.closeList(list);
 			} else {
+				germplasmList = list;
 				viewListHeaderWindow = new ViewListHeaderWindow(list);
 				if(viewHeaderButton!=null) {
 					viewHeaderButton.setDescription(viewListHeaderWindow.getListHeaderComponent().toString());
