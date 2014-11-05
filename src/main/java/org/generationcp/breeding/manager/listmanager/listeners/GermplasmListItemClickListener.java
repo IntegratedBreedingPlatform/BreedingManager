@@ -12,15 +12,16 @@
 
 package org.generationcp.breeding.manager.listmanager.listeners;
 
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.MouseEvents.ClickEvent;
-import com.vaadin.ui.Table;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.MouseEvents.ClickEvent;
+import com.vaadin.ui.Table;
 
 public class GermplasmListItemClickListener implements ItemClickEvent.ItemClickListener{
 
@@ -47,12 +48,12 @@ public class GermplasmListItemClickListener implements ItemClickEvent.ItemClickL
 	        	
 	        	if(!item.equals(ListSelectorComponent.CENTRAL) && !item.equals(ListSelectorComponent.LOCAL)){
 	        		int germplasmListId = Integer.valueOf(event.getItemId().toString());
-	                    try {
-	                        listTreeComponent.treeItemClickAction(germplasmListId);
-	                    } catch (InternationalizableException e) {
-	                        LOG.error(e.toString() + "\n" + e.getStackTrace());
-	                        MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
-	                    }
+                    try {
+                        listTreeComponent.treeItemClickAction(germplasmListId);
+                    } catch (InternationalizableException e) {
+                        LOG.error(e.getMessage(),e);
+                        MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+                    }
 	        	} else{
 	        		listTreeComponent.expandOrCollapseListTreeNode(item);
 	        		listTreeComponent.folderClickedAction(null);
@@ -66,14 +67,14 @@ public class GermplasmListItemClickListener implements ItemClickEvent.ItemClickL
                 try {
                     ((AddEntryDialog) source).resultTableItemDoubleClickAction((Table) event.getSource(), event.getItemId(), event.getItem());
                 } catch (InternationalizableException e) {  
-                    LOG.error(e.toString() + "\n" + e.getStackTrace());
+                    LOG.error(e.getMessage(),e);
                     MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
                 }
             } else if (event.getButton() == ClickEvent.BUTTON_LEFT) {
                 try {
                     ((AddEntryDialog) source).resultTableItemClickAction((Table) event.getSource());
                 } catch (InternationalizableException e) {  
-                    LOG.error(e.toString() + "\n" + e.getStackTrace());
+                	LOG.error(e.getMessage(),e);
                     MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
                 }
             }

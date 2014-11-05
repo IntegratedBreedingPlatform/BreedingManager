@@ -40,7 +40,7 @@ public class GermplasmListTreeExpandListener implements Tree.ExpandListener{
 	            try {
 	           		((ListSelectorComponent) source).addGermplasmListNode(Integer.valueOf(event.getItemId().toString()));
 	            } catch (InternationalizableException e) {
-	                LOG.error(e.toString() + "\n" + e.getStackTrace());
+	                LOG.error(e.getMessage(),e);
 	                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
 	            }
         	}
