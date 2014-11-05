@@ -44,8 +44,10 @@ public class GermplasmListTreeExpandListener implements Tree.ExpandListener{
 	                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
 	            }
         	}
-       		((ListSelectorComponent) source).setSelectedListId(event.getItemId());
-       		((ListSelectorComponent) source).updateButtons(event.getItemId());
+        	ListSelectorComponent listSelectorComponent = (ListSelectorComponent) source;
+        	listSelectorComponent.setSelectedListId(event.getItemId());
+        	listSelectorComponent.updateButtons(event.getItemId());
+       		listSelectorComponent.toggleFolderSectionForItemSelected();
         }
     }
     
