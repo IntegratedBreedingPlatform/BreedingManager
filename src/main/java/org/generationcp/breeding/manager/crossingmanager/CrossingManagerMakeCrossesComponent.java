@@ -191,7 +191,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
 
 	@Override
 	public void initializeValues() {
-		
+		// do nothing
 	}
 
 	@Override

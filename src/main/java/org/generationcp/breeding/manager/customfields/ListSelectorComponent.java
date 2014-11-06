@@ -348,7 +348,7 @@ public abstract class ListSelectorComponent extends CssLayout implements
             return currentGermplasmList.getType().equalsIgnoreCase(AppConstants.DB.FOLDER);
         } catch (MiddlewareQueryException e){
             LOG.debug("Checking is folder, cause the MW exception");
-            LOG.error("\n" + e.getStackTrace());
+            LOG.error(e.getMessage(),e);
             return false;
         } catch (NumberFormatException e){
             boolean returnVal = false;

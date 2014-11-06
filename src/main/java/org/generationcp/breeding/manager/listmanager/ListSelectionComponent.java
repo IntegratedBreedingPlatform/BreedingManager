@@ -154,8 +154,7 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 
 	@Override
 	public void folderClicked(GermplasmList list) {
-		// TODO Auto-generated method stub
-		
+		// do nothing
 	}
 	
 	public void showNodeOnTree(Integer listId){

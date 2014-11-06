@@ -265,7 +265,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 		try {
 			managerFactoryProvider.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error(e.getMessage(),e);
 		}
     }
 

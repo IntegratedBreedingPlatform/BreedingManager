@@ -29,7 +29,7 @@ public class ListDateField extends HorizontalLayout
 	
 	public ListDateField(String caption, boolean isMandatory){
 		this.isMandatory = isMandatory;
-		if(!caption.equals("")) {
+		if(!"".equals(caption)) {
             this.caption = caption + ": ";
         }
 		this.changed = false;
@@ -86,8 +86,7 @@ public class ListDateField extends HorizontalLayout
 
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
-		
+		// do nothing
 	}
 
 	@Override
