@@ -20,7 +20,7 @@
         <gwt.version>2.3.0</gwt.version>
         <ibpcommons.version>3.0.0.RELEASE</ibpcommons.version>
         <spring.version>3.1.1.RELEASE</spring.version>
-        <spring.security.version>3.1.1.RELEASE</spring.security.version>
+        <spring.security.version>3.1.7.RELEASE</spring.security.version>
     </properties>
     
     <dependencies>
