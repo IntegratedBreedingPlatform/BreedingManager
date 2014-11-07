@@ -109,6 +109,10 @@ import com.vaadin.ui.themes.Reindeer;
 @Configurable
 public class ListComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
         BreedingManagerLayout, AddEntryDialogSource, SaveListAsDialogSource, ReserveInventorySource {
+	private static final String CLICK_TO_VIEW_INVENTORY_DETAILS = "Click to view Inventory Details";
+
+	private static final String DATABASE_ERROR = "Database Error!";
+
 	private static final long serialVersionUID = -3367108805414232721L;
 
 	private static final Logger LOG = LoggerFactory.getLogger(ListComponent.class);
@@ -510,14 +514,14 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		}
 		Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(parentListDetailsComponent,germplasmList.getId(),entry.getId(), entry.getGid()));
 		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-		inventoryButton.setDescription("Click to view Inventory Details");
+		inventoryButton.setDescription(CLICK_TO_VIEW_INVENTORY_DETAILS);
 		newItem.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).setValue(inventoryButton);
 		
-		if(availInv.equals("-")){
+		if("-".equals(availInv)){
 			inventoryButton.setEnabled(false);
 			inventoryButton.setDescription("No Lot for this Germplasm");
 		} else {
-			inventoryButton.setDescription("Click to view Inventory Details");
+			inventoryButton.setDescription(CLICK_TO_VIEW_INVENTORY_DETAILS);
 		}
 		
 		//#2 Seed Reserved
@@ -952,10 +956,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		                	
 		                	
 		                	// mark list as changed if value for the cell was changed
-		                	if (column.equals(selectedColumn)) {
-		                	    if (!f.isReadOnly() && !fieldValue.toString().equals(lastCellvalue)) {
-		                	    	setHasUnsavedChanges(true);
-		                	    }
+		                	if (column.equals(selectedColumn) 
+		                			&& !f.isReadOnly() 
+		                			&& !fieldValue.toString().equals(lastCellvalue)) {
+		                	    setHasUnsavedChanges(true);
 		                	}
 		                	
 		                	// validate for designation
@@ -1092,7 +1096,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
     		
     	}catch(Exception e){
     		LOG.error("Database error!", e);
-			MessageNotifier.showError(getWindow(), "Database Error!", "Error with validating designation."
+			MessageNotifier.showError(getWindow(), DATABASE_ERROR, "Error with validating designation."
 					+ messageSource.getMessage(Message.ERROR_REPORT_TO));
     	}
     	
@@ -1150,10 +1154,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	        	});
 			}
 		} catch (NumberFormatException e) {
-			LOG.error("Error with deleting list entries.", e);
+			LOG.error(e.getMessage(), e);
 			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), "Error with deleting list entries.");
 		} catch (MiddlewareQueryException e) {
-			LOG.error("Error with deleting list entries.", e);
+			LOG.error(e.getMessage(), e);
 			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), "Error with deleting list entries.");
 		}
     	
@@ -1360,7 +1364,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
             germplasm = germplasmDataManager.getGermplasmWithPrefName(gid);
         } catch(MiddlewareQueryException ex){
             LOG.error("Error with getting germplasm with id: " + gid, ex);
-            MessageNotifier.showError(getWindow(), "Database Error!", "Error with getting germplasm with id: " + gid  
+            MessageNotifier.showError(getWindow(), DATABASE_ERROR, "Error with getting germplasm with id: " + gid  
                     + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO));
             return false;
         }
@@ -1399,7 +1403,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
         try{
             groupName = this.germplasmDataManager.getCrossExpansion(gid, 1);
         } catch(MiddlewareQueryException ex){
-            LOG.error("\n" + ex.getStackTrace());
+            LOG.error(ex.getMessage(),ex);
             groupName = "-";
         }
         listData.setGroupName(groupName);
@@ -1480,7 +1484,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
             
         } catch (MiddlewareQueryException ex) {
             LOG.error("Error with adding list entry.", ex);
-            MessageNotifier.showError(getWindow(), "Database Error!", "Error with adding list entry. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
+            MessageNotifier.showError(getWindow(), DATABASE_ERROR, "Error with adding list entry. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
             return false;
         }
 		
@@ -1751,7 +1755,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		        workbenchDataManager.addProjectActivity(projAct);
 		    } catch (MiddlewareQueryException e) {
 		        LOG.error("Error with unlocking list.", e);
-		        MessageNotifier.showError(getWindow(), "Database Error!", "Error with unlocking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
+		        MessageNotifier.showError(getWindow(), DATABASE_ERROR, "Error with unlocking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
 		    }
         }
     }
@@ -1826,17 +1830,16 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}
 	
 	private void updateNoOfEntries(long count){
+		String countLabel = "  <b>" + count + "</b>";
 		if(source.getModeView().equals(ModeView.LIST_VIEW)){
 			if(count == 0) {
 				totalListEntriesLabel.setValue(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
 			} else {
-				totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " 
-		        		 + "  <b>" + count + "</b>");
+				totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " + countLabel);
 	        }
 		} else {
 			//Inventory View
-			totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LOTS) + ": " 
-	        		 + "  <b>" + count + "</b>");
+			totalListEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LOTS) + ": " + countLabel);
 		}
 	}
 	
@@ -2055,13 +2058,13 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			}
 			Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(parentListDetailsComponent,germplasmList.getId(),listData.getId(), listData.getGid()));
 			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-			inventoryButton.setDescription("Click to view Inventory Details");
+			inventoryButton.setDescription(CLICK_TO_VIEW_INVENTORY_DETAILS);
 			
-			if(availInv.equals("-")){
+			if("-".equals(availInv)){
 				inventoryButton.setEnabled(false);
 				inventoryButton.setDescription("No Lot for this Germplasm");
 			} else {
-				inventoryButton.setDescription("Click to view Inventory Details");
+				inventoryButton.setDescription(CLICK_TO_VIEW_INVENTORY_DETAILS);
 			}
 			item.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).setValue(inventoryButton);
 			
