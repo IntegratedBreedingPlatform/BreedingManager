@@ -42,12 +42,12 @@ import com.vaadin.ui.Panel;
 @Configurable
 public class CrossingSettingsDetailComponent extends CssLayout 
 	implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
-	
+
 	private static final long serialVersionUID = -7733004867121978697L;
 	
 	private static final Logger LOG = LoggerFactory.getLogger(CrossingSettingsDetailComponent.class);
 	private static final int SETTING_NAME_MAX_LENGTH = 64;
-	
+
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
@@ -208,7 +208,7 @@ public class CrossingSettingsDetailComponent extends CssLayout
 			message = "Are you sure you want to reset the current setting ?";
 		}
 		
-		ConfirmDialog.show(getWindow(), "Reset Crossing Manage Setting",  message,
+		ConfirmDialog.show(getWindow(), messageSource.getMessage(Message.CONFIRM_RESET_CROSSING_MANAGER_SETTINGS_TITLE),  message,
 				"Yes", "No", new ConfirmDialog.Listener() {	
 				private static final long serialVersionUID = 1L;	
 				@Override
@@ -402,7 +402,7 @@ public class CrossingSettingsDetailComponent extends CssLayout
 				}
 			);
 	}//end of confirmCrossingSettingOverwrite
-	
+
 	public void overwriteSetting(){
 		CrossingManagerSetting currentlyDefinedSettingsInUi = getCurrentlyDefinedSetting();
 		
@@ -414,7 +414,7 @@ public class CrossingSettingsDetailComponent extends CssLayout
 		
 		manageCrossingSettingsMain.nextStep();
 	}// end of ovewriteSetting
-	
+
 	
 	public void updateSetting(CrossingManagerSetting currentlyDefinedSettingsInUi, boolean thereIsAChange){
 		try{
