@@ -2,92 +2,77 @@
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-	id="WebApp_ID" version="2.5">
+	id="breeding-manager" version="2.5">
+	
 	<display-name>breeding-manager</display-name>
 	<context-param>
 		<description>Vaadin production mode</description>
 		<param-name>productionMode</param-name>
 		<param-value>true</param-value>
 	</context-param>
+	
 	<context-param>
     	<param-name>contextConfigLocation</param-name>
-    	<param-value>classpath*:applicationContext.xml</param-value>
+    	<param-value>
+    		classpath*:applicationContext.xml
+    		/WEB-INF/spring-security.xml
+    	</param-value>
     </context-param>
-		
-   <listener>
-    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-  </listener>
-  <listener>
-      <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
-  </listener> 	
-    	
-	  <session-config>
-	    <session-timeout>-1</session-timeout>
-	  </session-config>
-	
-  <servlet>
-    <servlet-name>MainApplication</servlet-name>
-    <servlet-class>org.generationcp.commons.vaadin.spring.SpringApplicationServlet</servlet-class>
-   	<init-param>
-     		<param-name>application</param-name>
-     		<param-value>org.generationcp.breeding.manager.application.BreedingManagerApplication</param-value>
-   	</init-param>
-   	<init-param>
-   		<description>
-   		Application widgetset</description>
-   		<param-name>widgetset</param-name>
-   		<param-value>org.generationcp.breeding.manager.application.widgetset.BreedingmanagerWidgetset</param-value>
-   	</init-param>
-    
-   	<init-param>
-   		<description>
-   		Application widgetset</description>
-   		<param-name>widgetset</param-name>
-   		<param-value>org.generationcp.breeding.manager.application.widgetset.BreedingmanagerWidgetset</param-value>
-   	</init-param>
-   	
-<!-- 	<init-param>
-		<param-name>applicationBeanName</param-name>
-		<param-value>germplasm_study_browser_application</param-value>
-	</init-param>	 -->	    
-  </servlet>
-  <servlet>
-  	<servlet-name>Breedingmanager Application</servlet-name>
-  	<servlet-class>com.vaadin.server.VaadinServlet</servlet-class>
-  	<init-param>
-  		<description>
-  		Vaadin UI class to use</description>
-  		<param-name>UI</param-name>
-  		<param-value>com.example.breedingmanager.BreedingmanagerUI</param-value>
-  	</init-param>
-  	<init-param>
-  		<description>
-  		Legacy mode to return the value of the property as a string from AbstractProperty.toString()</description>
-  		<param-name>legacyPropertyToString</param-name>
-  		<param-value>false</param-value>
-  	</init-param>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>MainApplication</servlet-name>
-    <url-pattern>/main/*</url-pattern>
-  </servlet-mapping>
+
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+	</listener>
+
+	<session-config>
+		<session-timeout>-1</session-timeout>
+	</session-config>
+
+	<servlet>
+		<servlet-name>MainApplication</servlet-name>
+		<servlet-class>org.generationcp.commons.vaadin.spring.SpringApplicationServlet</servlet-class>
+		<init-param>
+			<param-name>application</param-name>
+			<param-value>org.generationcp.breeding.manager.application.BreedingManagerApplication</param-value>
+		</init-param>
+		<init-param>
+			<description>Application widgetset</description>
+			<param-name>widgetset</param-name>
+			<param-value>org.generationcp.breeding.manager.application.widgetset.BreedingmanagerWidgetset</param-value>
+		</init-param>
+		<init-param>
+			<description>Application widgetset</description>
+			<param-name>widgetset</param-name>
+			<param-value>org.generationcp.breeding.manager.application.widgetset.BreedingmanagerWidgetset</param-value>
+		</init-param>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>MainApplication</servlet-name>
+		<url-pattern>/main/*</url-pattern>
+	</servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>MainApplication</servlet-name>
 		<url-pattern>/VAADIN/*</url-pattern>
 	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>Breedingmanager Application</servlet-name>
-		<url-pattern>/*</url-pattern>
-	</servlet-mapping>
 	
-    <filter>
-        <filter-name>ContextFilter</filter-name>
-        <filter-class>org.generationcp.commons.context.ContextFilter</filter-class>
-    </filter>
-
-    <filter-mapping>
-        <filter-name>ContextFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>	
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class> 
+	</filter>
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter>
+		<filter-name>ContextFilter</filter-name>
+		<filter-class>org.generationcp.commons.context.ContextFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>ContextFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
 </web-app>
