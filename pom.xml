@@ -20,6 +20,7 @@
         <gwt.version>2.3.0</gwt.version>
         <ibpcommons.version>3.0.0.RELEASE</ibpcommons.version>
         <spring.version>3.1.1.RELEASE</spring.version>
+        <spring.security.version>3.1.1.RELEASE</spring.security.version>
     </properties>
     
     <dependencies>
@@ -124,7 +125,34 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
+		
+		<!-- Spring Security -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-taglibs</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-aspects</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+		
         <!-- these two below are needed by TableExport addon -->
         <dependency>
             <groupId>org.apache.poi</groupId>
