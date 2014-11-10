@@ -20,6 +20,8 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customcomponent.ActionButton;
+import org.generationcp.breeding.manager.customcomponent.ExportListAsDialog;
+import org.generationcp.breeding.manager.customcomponent.ExportListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.IconButton;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
@@ -107,15 +109,17 @@ import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class ListComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
-        BreedingManagerLayout, AddEntryDialogSource, SaveListAsDialogSource, ReserveInventorySource {
-	private static final String CLICK_TO_VIEW_INVENTORY_DETAILS = "Click to view Inventory Details";
-
-	private static final String DATABASE_ERROR = "Database Error!";
+public class ListComponent extends VerticalLayout implements InitializingBean, 
+							InternationalizableComponent, BreedingManagerLayout, AddEntryDialogSource, 
+							SaveListAsDialogSource, ReserveInventorySource, ExportListAsDialogSource {
 
 	private static final long serialVersionUID = -3367108805414232721L;
 
 	private static final Logger LOG = LoggerFactory.getLogger(ListComponent.class);
+	
+	//String Literals
+	private static final String CLICK_TO_VIEW_INVENTORY_DETAILS = "Click to view Inventory Details";
+	private static final String DATABASE_ERROR = "Database Error!";
 	
 	private static final int MINIMUM_WIDTH = 10;
 	private final Map<Object,Map<Object,Field>> fields = new HashMap<Object,Map<Object,Field>>();
@@ -567,15 +571,15 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		toolsButton.addListener(new ClickListener() {
 	   		 private static final long serialVersionUID = 272707576878821700L;
 	
-				 @Override
+	   		 @Override
 	   		 public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 				 addColumnContextMenu.refreshAddColumnMenu();
 	   			 menu.show(event.getClientX(), event.getClientY());
 	   			 
 	   			 if(fromUrl){
-	   			  menuExportForGenotypingOrder.setVisible(false);
-	   			  menuExportList.setVisible(false);
-	   			  menuCopyToList.setVisible(false);
+	   				 menuExportForGenotypingOrder.setVisible(false);
+	   				 menuExportList.setVisible(false);
+	   				 menuCopyToList.setVisible(false);
 	   			 }
 	   			 
 	   			 if(source!=null) {
@@ -1241,29 +1245,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}
 	
     private void exportListAction() {
-        if(!germplasmList.isLocalList() || (germplasmList.isLocalList() && germplasmList.isLockedList())){
-            String tempFileName = System.getProperty( USER_HOME ) + "/temp.xls";
-            GermplasmListExporter listExporter = new GermplasmListExporter(germplasmList.getId());
-            try {
-                listExporter.exportGermplasmListExcel(tempFileName);
-                FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), source.getApplication());
-                String listName = germplasmList.getName();
-                fileDownloadResource.setFilename(listName.replace(" ", "_") + ".xls");
-                source.getWindow().open(fileDownloadResource);
-                
-                //TODO must figure out other way to clean-up file because deleting it here makes it unavailable for download
-                
-            } catch (GermplasmListExporterException e) {
-                LOG.error(messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
-                MessageNotifier.showError(source.getWindow()
-                            , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)    
-                            , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO));
-            }
-        } else {
-            MessageNotifier.showError(source.getWindow()
-                    , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
-                    , messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED));
-        }
+        ExportListAsDialog exportListAsDialog = new ExportListAsDialog(source,germplasmList);
+    	this.getWindow().addWindow(exportListAsDialog);
     }
     
     private void setLockedState(boolean locked) {

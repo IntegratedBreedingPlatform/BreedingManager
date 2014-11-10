@@ -17,6 +17,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customcomponent.ActionButton;
+import org.generationcp.breeding.manager.customcomponent.ExportListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.IconButton;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
@@ -1056,32 +1057,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         return toreturn;
     }
     
-    private void exportListAction() throws InternationalizableException {
-        if (currentlySavedGermplasmList != null) {
-            if(!currentlySavedGermplasmList.isLocalList() || (currentlySavedGermplasmList.isLocalList() && currentlySavedGermplasmList.isLockedList())){
-                String tempFileName = System.getProperty( USER_HOME ) + "/temp.xls";
-                GermplasmListExporter listExporter = new GermplasmListExporter(currentlySavedGermplasmList.getId());
-                try {
-                    listExporter.exportGermplasmListExcel(tempFileName);
-                    FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), source.getApplication());
-                    String listName = currentlySavedGermplasmList.getName();
-                    fileDownloadResource.setFilename(listName.replace(" ", "_") + ".xls");
-                    source.getWindow().open(fileDownloadResource);
-                    
-                    //TODO must figure out other way to clean-up file because deleting it here makes it unavailable for download
-                    
-                } catch (GermplasmListExporterException e) {
-                    LOG.error(messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
-                    MessageNotifier.showError(source.getWindow()
-                                , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
-                                , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO));
-                }
-            } else {
-                MessageNotifier.showError(source.getWindow()
-                        , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
-                        , messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED));
-            }
-        }
+    private void exportListAction() {
+    	ExportListAsDialog exportListAsDialog = new ExportListAsDialog(source,currentlySavedGermplasmList);
+    	this.getWindow().addWindow(exportListAsDialog);
     }
     
     private void exportListForGenotypingOrderAction() throws InternationalizableException {
