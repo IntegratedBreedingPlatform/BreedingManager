@@ -438,7 +438,7 @@ public enum Message{
     ,SELECTED
     ,EXACT_MATCHES_ONLY
     ,INCLUDE_PARENTS
-    ,SEARCH_PUBLIC_DATA
+    ,INCLUDE_PUBLIC_DATA
     
     //General error msg
     ,ERROR_REPORT_TO

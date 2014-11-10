@@ -43,7 +43,7 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 	private final ListSearchResultsComponent searchResultsComponent;
 	private Button searchButton;
 	private CheckBox exactMatchesOnlyCheckBox;
-	private CheckBox searchPublicDataCheckBox;
+	private CheckBox includePublicDataCheckBox;
 	private PopupView popup;
 
 	@Autowired
@@ -88,8 +88,8 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
         exactMatchesOnlyCheckBox.setValue(false);
         exactMatchesOnlyCheckBox.setCaption(messageSource.getMessage(Message.EXACT_MATCHES_ONLY));
         
-        searchPublicDataCheckBox = new CheckBox();
-        searchPublicDataCheckBox.setCaption(messageSource.getMessage(Message.SEARCH_PUBLIC_DATA));
+        includePublicDataCheckBox = new CheckBox();
+        includePublicDataCheckBox.setCaption(messageSource.getMessage(Message.INCLUDE_PUBLIC_DATA));
 	}
 
 	@Override
@@ -135,11 +135,11 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
         searchBarLayout.addComponent(searchButton);
         searchBarLayout.addComponent(popup);
         searchBarLayout.addComponent(exactMatchesOnlyCheckBox);
-        searchBarLayout.addComponent(searchPublicDataCheckBox);
+        searchBarLayout.addComponent(includePublicDataCheckBox);
 
         searchBarLayout.setComponentAlignment(exactMatchesOnlyCheckBox, Alignment.MIDDLE_CENTER);
         searchBarLayout.setComponentAlignment(popup, Alignment.MIDDLE_CENTER);
-        searchBarLayout.setComponentAlignment(searchPublicDataCheckBox, Alignment.MIDDLE_CENTER);
+        searchBarLayout.setComponentAlignment(includePublicDataCheckBox, Alignment.MIDDLE_CENTER);
 
         panelLayout.addComponent(searchBarLayout);
         setContent(panelLayout);
@@ -156,7 +156,7 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 	}
 
 	public void doSearch(String q) {
-        boolean searchPublicData = (Boolean) searchPublicDataCheckBox.getValue();
+        boolean searchPublicData = (Boolean) includePublicDataCheckBox.getValue();
         boolean exactMatchedOnly = (Boolean) exactMatchesOnlyCheckBox.getValue();
 
 		try {

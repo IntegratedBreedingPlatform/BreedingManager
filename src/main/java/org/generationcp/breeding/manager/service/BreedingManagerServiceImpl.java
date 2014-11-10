@@ -137,4 +137,14 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
             throw new BreedingManagerSearchException(Message.SEARCH_QUERY_CANNOT_BE_EMPTY);
         }
     }
+
+	public GermplasmDataManager getGermplasmDataManager() {
+		return germplasmDataManager;
+	}
+
+	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
+	}
+    
+    
 }
