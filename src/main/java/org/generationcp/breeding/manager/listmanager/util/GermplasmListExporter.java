@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -75,7 +76,7 @@ public class GermplasmListExporter {
         }
         
         if (germplasmList != null) {
-            HashMap<String, CellStyle> sheetStyles = createStyles(wb);
+            Map<String, CellStyle> sheetStyles = createStyles(wb);
             writeListDetailsSection(sheetStyles, descriptionSheet, 1);
             writeListConditionSection(sheetStyles, descriptionSheet, 6);
             writeListFactorSection(sheetStyles, descriptionSheet, 12);
@@ -103,8 +104,8 @@ public class GermplasmListExporter {
         }
     }
     
-    private HashMap<String, CellStyle> createStyles(HSSFWorkbook wb) {
-        HashMap<String, CellStyle> styles = new HashMap<String, CellStyle>();
+    private Map<String, CellStyle> createStyles(HSSFWorkbook wb) {
+        Map<String, CellStyle> styles = new HashMap<String, CellStyle>();
         
         // set cell style for labels in the description sheet
         CellStyle labelStyle = wb.createCellStyle();
@@ -134,7 +135,7 @@ public class GermplasmListExporter {
         return styles;
     }
     
-    private void writeListDetailsSection(HashMap<String, CellStyle> styles, HSSFSheet descriptionSheet, int startingRow) {
+    private void writeListDetailsSection(Map<String, CellStyle> styles, HSSFSheet descriptionSheet, int startingRow) {
         int actualRow = startingRow - 1;
         
         HSSFRow nameRow = descriptionSheet.createRow(actualRow);
@@ -168,7 +169,7 @@ public class GermplasmListExporter {
         dateCell.setCellStyle(styles.get(NUMERIC_STYLE));
     }
     
-    private void writeListConditionSection(HashMap<String, CellStyle> styles, HSSFSheet descriptionSheet, int startingRow) throws GermplasmListExporterException {
+    private void writeListConditionSection(Map<String, CellStyle> styles, HSSFSheet descriptionSheet, int startingRow) throws GermplasmListExporterException {
         int actualRow = startingRow - 1;
         
         // write user details
@@ -270,7 +271,7 @@ public class GermplasmListExporter {
         localIdCell.setCellStyle(styles.get(NUMERIC_STYLE));
     }
     
-    private void writeListFactorSection(HashMap<String, CellStyle> styles, HSSFSheet descriptionSheet, int startingRow) {
+    private void writeListFactorSection(Map<String, CellStyle> styles, HSSFSheet descriptionSheet, int startingRow) {
         int actualRow = startingRow - 1;
         
         HSSFRow factorDetailsHeader = descriptionSheet.createRow(actualRow);
@@ -360,7 +361,7 @@ public class GermplasmListExporter {
         uniqueIdRow.createCell(6).setCellValue("");
     }
     
-    private void writeObservationSheet(HashMap<String, CellStyle> styles, HSSFSheet observationSheet) throws GermplasmListExporterException {
+    private void writeObservationSheet(Map<String, CellStyle> styles, HSSFSheet observationSheet) throws GermplasmListExporterException {
         HSSFRow listEntriesHeader = observationSheet.createRow(0);
         Cell entryIdCell = listEntriesHeader.createCell(0);
         entryIdCell.setCellValue("ENTRY");
@@ -389,7 +390,7 @@ public class GermplasmListExporter {
             long listDataCount = germplasmListManager.countGermplasmListDataByListId(listId);
             listDatas = germplasmListManager.getGermplasmListDataByListId(listId, 0, (int) listDataCount);
             List<Name> preferredIds = germplasmDataManager.getPreferredIdsByListId(listId);
-            HashMap<Integer, String> preferredIdsMap = new HashMap<Integer, String>();
+            Map<Integer, String> preferredIdsMap = new HashMap<Integer, String>();
             for (Name name : preferredIds) {
                 preferredIdsMap.put(name.getGermplasmId(), name.getNval());
             }
@@ -414,7 +415,7 @@ public class GermplasmListExporter {
     }
     
     public FileOutputStream exportListForKBioScienceGenotypingOrder(String filename, int plateSize) throws GermplasmListExporterException{
-        String wellLetters[] = {"A", "B", "C", "D", "E", "F", "G", "H"};
+        String[] wellLetters = {"A", "B", "C", "D", "E", "F", "G", "H"};
         HSSFWorkbook wb = new HSSFWorkbook();
         
         HSSFSheet sheet = wb.createSheet("List"); 
@@ -447,11 +448,9 @@ public class GermplasmListExporter {
             
             String plateName = listName;
             int plateNum = 0;
-            if(plateSize == 96){
-                if(listDataCount > 95){
-                    plateNum = 1;
-                    plateName = plateName + "-" + plateNum;
-                }
+            if(plateSize == 96 && listDataCount > 95){
+                plateNum = 1;
+                plateName = plateName + "-" + plateNum;
             }
             
             int wellLetterIndex = 0;
