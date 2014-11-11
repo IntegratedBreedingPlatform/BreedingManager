@@ -1,6 +1,7 @@
 package org.generationcp.breeding.manager.listmanager.util;
 
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -16,6 +17,11 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
+import org.generationcp.commons.pojo.ExportColumnHeader;
+import org.generationcp.commons.pojo.ExportColumnValue;
+import org.generationcp.commons.service.ExportService;
+import org.generationcp.commons.service.impl.ExportServiceImpl;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -32,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
 
 @Configurable
@@ -51,6 +58,11 @@ public class GermplasmListExporter {
     @Autowired
     private GermplasmDataManager germplasmDataManager;
     
+    @Autowired
+    private SimpleResourceBundleMessageSource messageSource;
+    
+    private ExportService exportService;
+    
     private GermplasmList germplasmList = null;
     private Integer listId;
     
@@ -60,9 +72,10 @@ public class GermplasmListExporter {
     
     public GermplasmListExporter(Integer germplasmListId) {
         this.listId = germplasmListId;
+        this.exportService = new ExportServiceImpl();
     }
-    
-    public FileOutputStream exportGermplasmListExcel(String filename, Table listDataTable) throws GermplasmListExporterException {
+
+	public FileOutputStream exportGermplasmListExcel(String filename, Table listDataTable) throws GermplasmListExporterException {
     	
     	Map<String,Boolean> visibleColumnMap =  getVisibleColumnMap(listDataTable);
     	
@@ -598,4 +611,96 @@ public class GermplasmListExporter {
             throw new GermplasmListExporterException("Error with writing to: " + filename, ex);
         }
     }
+    
+    
+	public void exportGermplasmListCSV(String fileName, Table listDataTable)
+			throws GermplasmListExporterException {
+
+		List<Map<Integer, ExportColumnValue>> exportColumnValues = getExportColumnValuesFromTable(listDataTable);
+		List<ExportColumnHeader> exportColumnHeaders = getExportColumnHeadersFromTable(listDataTable);
+
+		try {
+
+			exportService.generateCSVFile(exportColumnValues, exportColumnHeaders, fileName);
+
+		} catch (IOException e) {
+			throw new GermplasmListExporterException("Error with exporting list to CSV File.", e);
+		}
+
+	}
+
+	protected List<ExportColumnHeader> getExportColumnHeadersFromTable(Table listDataTable) {
+
+		Map<String, Boolean> visibleColumns = this.getVisibleColumnMap(listDataTable);
+
+		List<ExportColumnHeader> exportColumnHeaders = new ArrayList<>();
+
+		exportColumnHeaders.add(new ExportColumnHeader(0, messageSource
+				.getMessage(ListDataTablePropertyID.ENTRY_ID.getColumnDisplay()), visibleColumns
+				.get(ListDataTablePropertyID.ENTRY_ID.getName())));
+
+		exportColumnHeaders.add(new ExportColumnHeader(1, messageSource
+				.getMessage(ListDataTablePropertyID.GID.getColumnDisplay()), visibleColumns
+				.get(ListDataTablePropertyID.GID.getName())));
+
+		exportColumnHeaders.add(new ExportColumnHeader(2, messageSource
+				.getMessage(ListDataTablePropertyID.ENTRY_CODE.getColumnDisplay()), visibleColumns
+				.get(ListDataTablePropertyID.ENTRY_CODE.getName())));
+
+		exportColumnHeaders.add(new ExportColumnHeader(3, messageSource
+				.getMessage(ListDataTablePropertyID.DESIGNATION.getColumnDisplay()), visibleColumns
+				.get(ListDataTablePropertyID.DESIGNATION.getName())));
+
+		exportColumnHeaders.add(new ExportColumnHeader(4, messageSource
+				.getMessage(ListDataTablePropertyID.PARENTAGE.getColumnDisplay()), visibleColumns
+				.get(ListDataTablePropertyID.PARENTAGE.getName())));
+
+		exportColumnHeaders.add(new ExportColumnHeader(5, messageSource
+				.getMessage(ListDataTablePropertyID.SEED_SOURCE.getColumnDisplay()), visibleColumns
+				.get(ListDataTablePropertyID.SEED_SOURCE.getName())));
+
+		return exportColumnHeaders;
+	}
+
+	protected List<Map<Integer, ExportColumnValue>> getExportColumnValuesFromTable(Table listDataTable) {
+
+		List<Map<Integer, ExportColumnValue>> exportColumnValues = new ArrayList<>();
+
+		for (Object itemId : listDataTable.getItemIds()) {
+			Map<Integer, ExportColumnValue> row = new HashMap<>();
+
+			String entryIdValue = listDataTable.getItem(itemId)
+					.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).getValue()
+					.toString();
+			String gidValue = ((Button) listDataTable.getItem(itemId)
+					.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption();
+			String entryCodeValue = listDataTable.getItem(itemId)
+					.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue()
+					.toString();
+			String designationValue = ((Button) listDataTable.getItem(itemId)
+					.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue()).getCaption();
+			String parentageValue = listDataTable.getItem(itemId)
+					.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).getValue()
+					.toString();
+			String seedSourceValue = listDataTable.getItem(itemId)
+					.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).getValue()
+					.toString();
+
+			row.put(0, new ExportColumnValue(0, entryIdValue));
+			row.put(1, new ExportColumnValue(1, gidValue));
+			row.put(2, new ExportColumnValue(2, entryCodeValue));
+			row.put(3, new ExportColumnValue(3, designationValue));
+			row.put(4, new ExportColumnValue(4, parentageValue));
+			row.put(5, new ExportColumnValue(5, seedSourceValue));
+
+			exportColumnValues.add(row);
+		}
+
+		return exportColumnValues;
+	}
+	
+	public void setExportService(ExportService exportService) {
+		this.exportService = exportService;
+	}
+    
 }

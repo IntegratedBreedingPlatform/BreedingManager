@@ -176,7 +176,22 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	}
 	
 	protected void exportListAsCSV() {
-		// implement csv export
+		String tempFileName = System.getProperty( USER_HOME ) + "/temp.csv";
+		GermplasmListExporter listExporter = new GermplasmListExporter(germplasmList.getId());
+        try {
+            listExporter.exportGermplasmListCSV(tempFileName, listDataTable);
+            FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), source.getApplication());
+            String listName = germplasmList.getName();
+            fileDownloadResource.setFilename(listName.replace(" ", "_") + CSV_FORMAT);
+            source.getWindow().open(fileDownloadResource);
+            
+            //must figure out other way to clean-up file because deleting it here makes it unavailable for download
+        } catch (GermplasmListExporterException e) {
+            LOG.error(messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
+            MessageNotifier.showError(this.getWindow()
+                        , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)    
+                        , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO));
+        }
 		
 	}
 	
