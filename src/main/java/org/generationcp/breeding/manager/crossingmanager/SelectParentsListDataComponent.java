@@ -256,7 +256,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		listDataTable.setColumnHeader(ListDataTablePropertyID.DESIGNATION.getName(), messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER));
 		listDataTable.setColumnHeader(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName(), messageSource.getMessage(Message.AVAIL_INV));
 		listDataTable.setColumnHeader(ListDataTablePropertyID.SEED_RESERVATION.getName(), messageSource.getMessage(Message.SEED_RES));
-		listDataTable.setColumnHeader(ListDataTablePropertyID.PARENTAGE.getName(), messageSource.getMessage(Message.LISTDATA_GROUPNAME_HEADER));
+		listDataTable.setColumnHeader(ListDataTablePropertyID.PARENTAGE.getName(), messageSource.getMessage(Message.LISTDATA_PARENTAGE_HEADER));
 		listDataTable.setColumnHeader(ListDataTablePropertyID.ENTRY_CODE.getName(), messageSource.getMessage(Message.LISTDATA_ENTRY_CODE_HEADER));
 		listDataTable.setColumnHeader(ListDataTablePropertyID.GID.getName(), messageSource.getMessage(Message.LISTDATA_GID_HEADER));
 		listDataTable.setColumnHeader(ListDataTablePropertyID.SEED_SOURCE.getName(), messageSource.getMessage(Message.LISTDATA_SEEDSOURCE_HEADER));
@@ -806,7 +806,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 			else{
 				inventoryButton.setDescription("Click to view Inventory Details");
 			}
-			item.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).setValue(inventoryButton);
+			item.getItemProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
 			
 		
 			// Seed Reserved
@@ -815,7 +815,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	   			seed_res = listData.getInventoryInfo().getReservedLotCount().toString().trim();
 	   		}
 			
-	   		item.getItemProperty(ListDataTablePropertyID.SEED_RES.getName()).setValue(seed_res);
+	   		item.getItemProperty(ListDataTablePropertyID.SEED_RESERVATION.getName()).setValue(seed_res);
 		}		
 	}
 	

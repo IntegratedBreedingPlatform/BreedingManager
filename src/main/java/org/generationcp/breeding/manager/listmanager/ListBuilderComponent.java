@@ -729,21 +729,21 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     	table.addContainerProperty(ListDataTablePropertyID.ENTRY_ID.getName(), Integer.class, null);
     	table.addContainerProperty(ListDataTablePropertyID.DESIGNATION.getName(), Button.class, null);
     	table.addContainerProperty(ListDataTablePropertyID.PARENTAGE.getName(), String.class, null);
-    	table.addContainerProperty(ListDataTablePropertyID.AVAIL_INV.getName(), Button.class, null);
-    	table.addContainerProperty(ListDataTablePropertyID.SEED_RES.getName(), String.class, null);
+    	table.addContainerProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName(), Button.class, null);
+    	table.addContainerProperty(ListDataTablePropertyID.SEED_RESERVATION.getName(), String.class, null);
     	table.addContainerProperty(ListDataTablePropertyID.ENTRY_CODE.getName(), String.class, null);
     	table.addContainerProperty(ListDataTablePropertyID.GID.getName(), Button.class, null);
     	table.addContainerProperty(ListDataTablePropertyID.SEED_SOURCE.getName(), String.class, null);
     	
-        messageSource.setColumnHeader(table, ListDataTablePropertyID.TAG.getName(), Message.CHECK_ICON);
-        messageSource.setColumnHeader(table, ListDataTablePropertyID.ENTRY_ID.getName(), Message.HASHTAG);
-        messageSource.setColumnHeader(table, ListDataTablePropertyID.DESIGNATION.getName(), Message.LISTDATA_DESIGNATION_HEADER);
-        messageSource.setColumnHeader(table, ListDataTablePropertyID.PARENTAGE.getName(), Message.LISTDATA_GROUPNAME_HEADER);
-		messageSource.setColumnHeader(table, ListDataTablePropertyID.AVAIL_INV.getName(), Message.LISTDATA_AVAIL_INV_HEADER);
-		messageSource.setColumnHeader(table, ListDataTablePropertyID.SEED_RES.getName(), Message.LISTDATA_SEED_RES_HEADER);
-        messageSource.setColumnHeader(table, ListDataTablePropertyID.ENTRY_CODE.getName(), Message.LISTDATA_ENTRY_CODE_HEADER);
-        messageSource.setColumnHeader(table, ListDataTablePropertyID.GID.getName(), Message.LISTDATA_GID_HEADER);
-        messageSource.setColumnHeader(table, ListDataTablePropertyID.SEED_SOURCE.getName(), Message.LISTDATA_SEEDSOURCE_HEADER);
+    	messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.TAG.getName(), ListDataTablePropertyID.TAG.getColumnDisplay());
+		messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.ENTRY_ID.getName(), ListDataTablePropertyID.ENTRY_ID.getColumnDisplay());
+		messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.DESIGNATION.getName(), ListDataTablePropertyID.DESIGNATION.getColumnDisplay());
+		messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.PARENTAGE.getName(), ListDataTablePropertyID.PARENTAGE.getColumnDisplay());
+		messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.AVAILABLE_INVENTORY.getName(), ListDataTablePropertyID.AVAILABLE_INVENTORY.getColumnDisplay());
+		messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.SEED_RESERVATION.getName(), ListDataTablePropertyID.SEED_RESERVATION.getColumnDisplay());
+		messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.ENTRY_CODE.getName(), ListDataTablePropertyID.ENTRY_CODE.getColumnDisplay());
+		messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.GID.getName(), ListDataTablePropertyID.GID.getColumnDisplay());
+		messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.SEED_SOURCE.getName(), ListDataTablePropertyID.SEED_SOURCE.getColumnDisplay());
 	}
 	
     private void createGermplasmTable(final Table table){
@@ -1113,8 +1113,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
                         currentlySavedGermplasmList.getName(),
                         tableWithSelectAllLayout.getTable(),
                         UserUtil.getCurrentUserLocalId(workbenchDataManager),
-                        source,
-                        true));
+                        source));
                     source.getWindow().addWindow(listManagerCopyToNewListDialog);
                     listManagerCopyToNewListDialog.center();
                 } catch (MiddlewareQueryException e) {
@@ -1442,7 +1441,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			} else {
 				inventoryButton.setDescription("Click to view Inventory Details");
 			}
-			item.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).setValue(inventoryButton);
+			item.getItemProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
 			
 			
 			Button gidButton = (Button) item.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue(); 
@@ -1462,7 +1461,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	   			seedRes = listData.getInventoryInfo().getReservedLotCount().toString().trim();
 	   		}
 			
-	   		item.getItemProperty(ListDataTablePropertyID.SEED_RES.getName()).setValue(seedRes);
+	   		item.getItemProperty(ListDataTablePropertyID.SEED_RESERVATION.getName()).setValue(seedRes);
 		}
 	}
 	
@@ -1625,7 +1624,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			}
 			
 			if(currentGid.equals(gid)){
-				((Button) item.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).getValue()).setCaption(availInv);
+				((Button) item.getItemProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName()).getValue()).setCaption(availInv);
 			}
 		}
 		listDataTable.requestRepaint();
