@@ -57,7 +57,6 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	private GermplasmList germplasmList;
 	
 	private Table listDataTable;
-	private Object[] visibleColumns;
 	
 	private static final String USER_HOME = "user.home";
 	
@@ -80,8 +79,6 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 
 	@Override
 	public void instantiateComponents() {
-		visibleColumns = listDataTable.getVisibleColumns();
-		
 		exportFormalLbl = new Label(messageSource.getMessage(Message.EXPORT_FORMAT).toUpperCase());
 		exportFormalLbl.setStyleName(Bootstrap.Typography.H2.styleName());
 		
@@ -187,7 +184,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
         String tempFileName = System.getProperty( USER_HOME ) + "/temp.xls";
         GermplasmListExporter listExporter = new GermplasmListExporter(germplasmList.getId());
         try {
-            listExporter.exportGermplasmListExcel(tempFileName,visibleColumns);
+            listExporter.exportGermplasmListExcel(tempFileName,listDataTable);
             FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), source.getApplication());
             String listName = germplasmList.getName();
             fileDownloadResource.setFilename(listName.replace(" ", "_") + XLS_FORMAT);
@@ -203,7 +200,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	}
 
 	private void showWarningMessage() {
-		if(isARequiredColumnHidden(visibleColumns)){
+		if(isARequiredColumnHidden(listDataTable)){
 			String message = "The export file will leave out contain columns that you have marked as hidden in the table view, "
 					+ "with the exception of key columns that are necessary to identify your data when you import it back into the system.";
 			
@@ -211,17 +208,24 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 		}
 	}
 	
-	protected boolean isARequiredColumnHidden(Object[] visibleColumns){
+	protected boolean isARequiredColumnHidden(Table listDataTable){
 		int visibleRequiredColumns = 0;
+		Object[] visibleColumns = listDataTable.getVisibleColumns();
+		
 		for(Object column : visibleColumns){
-			if(ListDataTablePropertyID.ENTRY_ID.getName().equalsIgnoreCase(column.toString())
-				|| ListDataTablePropertyID.GID.getName().equalsIgnoreCase(column.toString())
-				|| ListDataTablePropertyID.DESIGNATION.getName().equalsIgnoreCase(column.toString())){
+			if(isARequiredColumn(column.toString())
+					&& !listDataTable.isColumnCollapsed(column)){
 				visibleRequiredColumns++;
 			}
 		}
 		
 		return visibleRequiredColumns < NO_OF_REQUIRED_COLUMNS;
+	}
+
+	private boolean isARequiredColumn(String column) {
+		return ListDataTablePropertyID.ENTRY_ID.getName().equalsIgnoreCase(column)
+				|| ListDataTablePropertyID.GID.getName().equalsIgnoreCase(column)
+				|| ListDataTablePropertyID.DESIGNATION.getName().equalsIgnoreCase(column);
 	}
 
 }
