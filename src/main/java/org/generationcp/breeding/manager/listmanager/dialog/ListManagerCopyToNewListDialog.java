@@ -50,9 +50,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.ui.*;
 
 @Configurable
 public class ListManagerCopyToNewListDialog extends VerticalLayout implements InitializingBean, InternationalizableComponent,
