@@ -28,6 +28,8 @@
 	<bean:bean id="bmsPreAuthenticationFilter" class="org.generationcp.commons.security.BMSPreAuthenticationFilter">
 		<bean:property name="authenticationManager" ref="bmsAuthenticationManager" />
 		<bean:property name="authenticationDetailsSource" ref="bmsPreAuthenticatedUsersRolePopulator"/>
+		<bean:property name="checkForPrincipalChanges" value="true"/>
+		<bean:property name="invalidateSessionOnPrincipalChange" value="false"/>
 	</bean:bean>
 	
 	<authentication-manager alias="bmsAuthenticationManager">
