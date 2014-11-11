@@ -58,7 +58,11 @@ public class GermplasmListExporter {
         this.listId = germplasmListId;
     }
     
-    public FileOutputStream exportGermplasmListExcel(String filename) throws GermplasmListExporterException {
+    public FileOutputStream exportGermplasmListExcel(String filename, Object[] visibleColumns) throws GermplasmListExporterException {
+    	
+    	List<String> visibleColumnList =  getVisibleColumnList(visibleColumns);
+    	
+    	
         //create workbook
         HSSFWorkbook wb = new HSSFWorkbook();
 

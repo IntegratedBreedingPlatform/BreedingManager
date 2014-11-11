@@ -21,7 +21,6 @@ import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.ExportListAsDialog;
-import org.generationcp.breeding.manager.customcomponent.ExportListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.IconButton;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
@@ -111,7 +110,7 @@ import com.vaadin.ui.themes.Reindeer;
 @Configurable
 public class ListComponent extends VerticalLayout implements InitializingBean, 
 							InternationalizableComponent, BreedingManagerLayout, AddEntryDialogSource, 
-							SaveListAsDialogSource, ReserveInventorySource, ExportListAsDialogSource {
+							SaveListAsDialogSource, ReserveInventorySource {
 
 	private static final long serialVersionUID = -3367108805414232721L;
 
@@ -1244,7 +1243,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 	}
 	
     private void exportListAction() {
-        ExportListAsDialog exportListAsDialog = new ExportListAsDialog(source,germplasmList);
+        ExportListAsDialog exportListAsDialog = new ExportListAsDialog(source, germplasmList, listDataTable);
     	this.getWindow().addWindow(exportListAsDialog);
     }
     

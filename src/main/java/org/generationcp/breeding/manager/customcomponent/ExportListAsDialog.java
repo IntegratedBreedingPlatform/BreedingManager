@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
@@ -27,12 +28,15 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class ExportListAsDialog extends BaseSubWindow implements InitializingBean,
 						InternationalizableComponent, BreedingManagerLayout {
+
+	private static final int NO_OF_REQUIRED_COLUMNS = 3;
 
 	private static final String CSV_FORMAT = ".csv";
 
@@ -52,14 +56,18 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	private Component source;
 	private GermplasmList germplasmList;
 	
+	private Table listDataTable;
+	private Object[] visibleColumns;
+	
 	private static final String USER_HOME = "user.home";
 	
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 	
-	public ExportListAsDialog(Component source, GermplasmList germplasmList){
+	public ExportListAsDialog(Component source, GermplasmList germplasmList, Table listDataTable){
 		this.source = source;
 		this.germplasmList = germplasmList;
+		this.listDataTable = listDataTable;
 	}
 	
 	@Override
@@ -72,6 +80,8 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 
 	@Override
 	public void instantiateComponents() {
+		visibleColumns = listDataTable.getVisibleColumns();
+		
 		exportFormalLbl = new Label(messageSource.getMessage(Message.EXPORT_FORMAT).toUpperCase());
 		exportFormalLbl.setStyleName(Bootstrap.Typography.H2.styleName());
 		
@@ -109,11 +119,25 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if(XLS_FORMAT.equalsIgnoreCase(formatOptionsCbx.getValue().toString())){
-					exportListAsXLS();
-				}			
+				exportListAction();
 			}
 		});
+	}
+
+	protected void exportListAction() {
+		if(!germplasmList.isLocalList() || (germplasmList.isLocalList() && germplasmList.isLockedList())){
+			showWarningMessage();
+			//do the export
+			if(XLS_FORMAT.equalsIgnoreCase(formatOptionsCbx.getValue().toString())){
+				exportListAsXLS();
+			} else if(CSV_FORMAT.equalsIgnoreCase(formatOptionsCbx.getValue().toString())){
+				exportListAsCSV();
+			}
+		 } else {
+            MessageNotifier.showError(this.getWindow()
+                    , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
+                    , messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED));
+        }
 	}
 
 	@Override
@@ -154,29 +178,50 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 		//do nothing
 	}
 	
-	public void exportListAsXLS(){
-		if(!germplasmList.isLocalList() || (germplasmList.isLocalList() && germplasmList.isLockedList())){
-            String tempFileName = System.getProperty( USER_HOME ) + "/temp.xls";
-            GermplasmListExporter listExporter = new GermplasmListExporter(germplasmList.getId());
-            try {
-                listExporter.exportGermplasmListExcel(tempFileName);
-                FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), source.getApplication());
-                String listName = germplasmList.getName();
-                fileDownloadResource.setFilename(listName.replace(" ", "_") + XLS_FORMAT);
-                source.getWindow().open(fileDownloadResource);
-                
-                //must figure out other way to clean-up file because deleting it here makes it unavailable for download
-            } catch (GermplasmListExporterException e) {
-                LOG.error(messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
-                MessageNotifier.showError(this.getWindow()
-                            , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)    
-                            , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO));
-            }
-        } else {
+	protected void exportListAsCSV() {
+		// implement csv export
+		
+	}
+	
+	public void exportListAsXLS(){	
+        String tempFileName = System.getProperty( USER_HOME ) + "/temp.xls";
+        GermplasmListExporter listExporter = new GermplasmListExporter(germplasmList.getId());
+        try {
+            listExporter.exportGermplasmListExcel(tempFileName,visibleColumns);
+            FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), source.getApplication());
+            String listName = germplasmList.getName();
+            fileDownloadResource.setFilename(listName.replace(" ", "_") + XLS_FORMAT);
+            source.getWindow().open(fileDownloadResource);
+            
+            //must figure out other way to clean-up file because deleting it here makes it unavailable for download
+        } catch (GermplasmListExporterException e) {
+            LOG.error(messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
             MessageNotifier.showError(this.getWindow()
-                    , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
-                    , messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED));
+                        , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)    
+                        , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO));
         }
+	}
+
+	private void showWarningMessage() {
+		if(isARequiredColumnHidden(visibleColumns)){
+			String message = "The export file will leave out contain columns that you have marked as hidden in the table view, "
+					+ "with the exception of key columns that are necessary to identify your data when you import it back into the system.";
+			
+			MessageNotifier.showWarning(this.getWindow(), messageSource.getMessage(Message.WARNING), message);
+		}
+	}
+	
+	protected boolean isARequiredColumnHidden(Object[] visibleColumns){
+		int visibleRequiredColumns = 0;
+		for(Object column : visibleColumns){
+			if(ListDataTablePropertyID.ENTRY_ID.getName().equalsIgnoreCase(column.toString())
+				|| ListDataTablePropertyID.GID.getName().equalsIgnoreCase(column.toString())
+				|| ListDataTablePropertyID.DESIGNATION.getName().equalsIgnoreCase(column.toString())){
+				visibleRequiredColumns++;
+			}
+		}
+		
+		return visibleRequiredColumns < NO_OF_REQUIRED_COLUMNS;
 	}
 
 }

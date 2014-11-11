@@ -1058,7 +1058,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     }
     
     private void exportListAction() {
-    	ExportListAsDialog exportListAsDialog = new ExportListAsDialog(source,currentlySavedGermplasmList);
+    	ExportListAsDialog exportListAsDialog = new ExportListAsDialog(source,currentlySavedGermplasmList,listDataTable);
     	this.getWindow().addWindow(exportListAsDialog);
     }
     
