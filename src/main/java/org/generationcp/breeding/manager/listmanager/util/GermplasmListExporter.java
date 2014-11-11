@@ -108,7 +108,15 @@ public class GermplasmListExporter {
         }
     }
     
-    private Map<String, CellStyle> createStyles(HSSFWorkbook wb) {
+    private List<String> getVisibleColumnList(Object[] visibleColumns) {
+		List<String> columnList = new ArrayList<String>();
+		for(Object column : visibleColumns){
+			columnList.add(column.toString());
+		}
+		return columnList;
+	}
+
+	private Map<String, CellStyle> createStyles(HSSFWorkbook wb) {
         Map<String, CellStyle> styles = new HashMap<String, CellStyle>();
         
         // set cell style for labels in the description sheet
