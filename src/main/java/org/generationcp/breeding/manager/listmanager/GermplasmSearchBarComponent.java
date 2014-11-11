@@ -45,7 +45,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 	private Button searchButton;
     private CheckBox exactMatchesOnlyCheckBox;
     private CheckBox includeParentsCheckBox;
-    private CheckBox searchPublicDataCheckBox;
+    private CheckBox includePublicDataCheckBox;
     private PopupView popup;
 
 	@Autowired
@@ -97,8 +97,8 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
         includeParentsCheckBox = new CheckBox();
         includeParentsCheckBox.setCaption(messageSource.getMessage(Message.INCLUDE_PARENTS));
         
-        searchPublicDataCheckBox = new CheckBox();
-        searchPublicDataCheckBox.setCaption(messageSource.getMessage(Message.SEARCH_PUBLIC_DATA));
+        includePublicDataCheckBox = new CheckBox();
+        includePublicDataCheckBox.setCaption(messageSource.getMessage(Message.INCLUDE_PUBLIC_DATA));
     }
 
 	@Override
@@ -138,11 +138,11 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		
 		exactMatchesOnlyCheckBox.addStyleName(LM_COMPONENT_WRAP);
 		includeParentsCheckBox.addStyleName(LM_COMPONENT_WRAP);
-		searchPublicDataCheckBox.addStyleName(LM_COMPONENT_WRAP);
+		includePublicDataCheckBox.addStyleName(LM_COMPONENT_WRAP);
 		
 		searchBarLayoutRight.addComponent(exactMatchesOnlyCheckBox);
 		searchBarLayoutRight.addComponent(includeParentsCheckBox);
-		searchBarLayoutRight.addComponent(searchPublicDataCheckBox);
+		searchBarLayoutRight.addComponent(includePublicDataCheckBox);
 		
 		searchBarLayoutLeft.setComponentAlignment(popup, Alignment.MIDDLE_CENTER);
 		
@@ -173,7 +173,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 	
 	public void doSearch(String q) {
         boolean includeParents = (Boolean) includeParentsCheckBox.getValue();
-        boolean searchPublicData = (Boolean) searchPublicDataCheckBox.getValue();
+        boolean searchPublicData = (Boolean) includePublicDataCheckBox.getValue();
         boolean exactMatchesOnly = (Boolean) exactMatchesOnlyCheckBox.getValue();
 
         try {
@@ -189,4 +189,47 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
             LOG.info(e.getMessage(), e);
         }
 	}
+
+	public CheckBox getExactMatchesOnlyCheckBox() {
+		return exactMatchesOnlyCheckBox;
+	}
+
+	public void setExactMatchesOnlyCheckBox(CheckBox exactMatchesOnlyCheckBox) {
+		this.exactMatchesOnlyCheckBox = exactMatchesOnlyCheckBox;
+	}
+
+	public CheckBox getIncludeParentsCheckBox() {
+		return includeParentsCheckBox;
+	}
+
+	public void setIncludeParentsCheckBox(CheckBox includeParentsCheckBox) {
+		this.includeParentsCheckBox = includeParentsCheckBox;
+	}
+
+	public CheckBox getIncludePublicDataCheckBox() {
+		return includePublicDataCheckBox;
+	}
+
+	public void setIncludePublicDataCheckBox(CheckBox includePublicDataCheckBox) {
+		this.includePublicDataCheckBox = includePublicDataCheckBox;
+	}
+
+	public SimpleResourceBundleMessageSource getMessageSource() {
+		return messageSource;
+	}
+
+	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	public BreedingManagerService getBreedingManagerService() {
+		return breedingManagerService;
+	}
+
+	public void setBreedingManagerService(
+			BreedingManagerService breedingManagerService) {
+		this.breedingManagerService = breedingManagerService;
+	}
+	
+	
 }

@@ -91,8 +91,8 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 	                Object oldSeedSource = oldItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).getValue();
 	                Object oldDesignation = oldItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue();
 	                Object oldParentage = oldItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).getValue();
-	                Object oldAvailInv = oldItem.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).getValue();
-	                Object oldSeedRes = oldItem.getItemProperty(ListDataTablePropertyID.SEED_RES.getName()).getValue();
+	                Object oldAvailInv = oldItem.getItemProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName()).getValue();
+	                Object oldSeedRes = oldItem.getItemProperty(ListDataTablePropertyID.SEED_RESERVATION.getName()).getValue();
 	                
 	                sourceTable.removeItem(transferable.getItemId());
 	                
@@ -103,8 +103,8 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 	                newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(oldSeedSource);
 	                newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(oldDesignation);
 	                newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(oldParentage);
-	                newItem.getItemProperty(ListDataTablePropertyID.AVAIL_INV.getName()).setValue(oldAvailInv);
-	                newItem.getItemProperty(ListDataTablePropertyID.SEED_RES.getName()).setValue(oldSeedRes);
+	                newItem.getItemProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName()).setValue(oldAvailInv);
+	                newItem.getItemProperty(ListDataTablePropertyID.SEED_RESERVATION.getName()).setValue(oldSeedRes);
 	                
 	                assignSerializedEntryNumber();
 	                

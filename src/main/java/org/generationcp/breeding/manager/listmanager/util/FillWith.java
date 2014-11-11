@@ -198,7 +198,7 @@ public class FillWith implements InternationalizableComponent  {
             			menuFillWithCrossExpansion.setVisible(false);
             			setCommonOptionsForEntryCodeAndSeedSourceToBeVisible(true);
             			fillWithMenu.show(event.getClientX(), event.getClientY());
-            		} else if(column.equals(ListDataTablePropertyID.GROUP_NAME.getName()) || column.equals(ListDataTablePropertyID.PARENTAGE.getName())){
+            		} else if(column.equals(ListDataTablePropertyID.PARENTAGE.getName())){
             			setCommonOptionsForEntryCodeAndSeedSourceToBeVisible(false);
             			menuFillWithLocationName.setVisible(false);
             			menuFillWithCrossExpansion.setVisible(true);

@@ -12,14 +12,21 @@
 
 package org.generationcp.breeding.manager.listmanager.dialog;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.ui.*;
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.customfields.ListTreeComponent;
+import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -43,9 +50,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.ui.*;
 
 @Configurable
 public class ListManagerCopyToNewListDialog extends VerticalLayout implements InitializingBean, InternationalizableComponent,
@@ -94,16 +102,16 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
     private WorkbenchDataManager workbenchDataManager;
     
     
-    private org.generationcp.breeding.manager.listmanager.ListManagerMain listManagerMain;
+    private ListManagerMain listManagerMain;
     
-    public ListManagerCopyToNewListDialog(Window mainWindow, Window dialogWindow,String listName, Table listEntriesTable,int ibdbUserId, org.generationcp.breeding.manager.listmanager.ListManagerMain listManagerMain, boolean fromBuildNewList) {
+    public ListManagerCopyToNewListDialog(Window mainWindow, Window dialogWindow,String listName, 
+    		Table listEntriesTable, int ibdbUserId, ListManagerMain listManagerMain) {
         this.dialogWindow = dialogWindow;
         this.mainWindow = mainWindow;
         this.listEntriesTable = listEntriesTable;
         this.listName = listName;
         this.ibdbUserId = ibdbUserId;
         this.listManagerMain = listManagerMain;
-        this.fromBuildNewList = fromBuildNewList;
     }
 
     @Override
@@ -348,13 +356,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
         designationOfListEntriesCopied="";
         Collection<?> selectedIds = (Collection<?>)listEntriesTable.getValue();
         for (final Object itemId : selectedIds) {
-            Property pGroupName = null;
-            if(fromBuildNewList){
-                pGroupName= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.PARENTAGE.getName());
-            }else{
-                pGroupName= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GROUP_NAME.getName());
-            }
-            
+            Property pParentage = listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.PARENTAGE.getName());
             Property pEntryId = listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName());
             Property pGid= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID.getName());
             Property pDesignation= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName());
@@ -366,7 +368,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
             Button pDesigButton = (Button) pDesignation.getValue();
             String designation=String.valueOf(pDesigButton.getCaption().toString());
             designationOfListEntriesCopied+=designation+",";
-            String groupName=String.valueOf(pGroupName.getValue().toString());
+            String groupName=String.valueOf(pParentage.getValue().toString());
 
             GermplasmListData germplasmListData = new GermplasmListData(null, germList, gid, entryid, entryIdOfList, seedSource,
                 designation, groupName, status, localRecordId);
