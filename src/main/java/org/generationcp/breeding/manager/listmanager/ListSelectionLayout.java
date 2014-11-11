@@ -28,6 +28,7 @@ import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -36,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.security.access.AccessDeniedException;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -298,7 +300,13 @@ public class ListSelectionLayout extends VerticalLayout implements International
 
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				source.getListSelectionComponent().openListImportDialog();
+				try {
+					source.getListSelectionComponent().openListImportDialog();
+				} catch (AccessDeniedException ade) {
+					MessageNotifier.showWarning(getWindow(), 
+							"Access Denied", "Sorry! Germplasm import is not accessible for your role.");
+					return;
+				}
 			}
         });        
         
