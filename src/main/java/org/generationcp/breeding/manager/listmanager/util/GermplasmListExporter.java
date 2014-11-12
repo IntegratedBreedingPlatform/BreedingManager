@@ -61,7 +61,7 @@ public class GermplasmListExporter {
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
-    private ExportService exportService;
+	private ExportService exportService;
     
     private GermplasmList germplasmList = null;
     private Integer listId;
@@ -699,8 +699,13 @@ public class GermplasmListExporter {
 		return exportColumnValues;
 	}
 	
-	public void setExportService(ExportService exportService) {
+	protected void setExportService(ExportService exportService) {
 		this.exportService = exportService;
 	}
+	
+	protected void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
     
 }
