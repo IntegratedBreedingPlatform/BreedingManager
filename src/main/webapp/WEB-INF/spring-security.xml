@@ -5,7 +5,8 @@
 	http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 	
 	<http auto-config="true" use-expressions="true">
-		<intercept-url pattern="/**" access="isAuthenticated()" />
+		<intercept-url pattern="/main/germplasm-import/" access="hasAnyRole('ROLE_ADMIN', 'ROLE_BREEDER')"/>
+		<intercept-url pattern="/**" access="isAuthenticated()" />		
 		<custom-filter position="PRE_AUTH_FILTER" ref="bmsPreAuthenticationFilter" />
 	</http>
 	
