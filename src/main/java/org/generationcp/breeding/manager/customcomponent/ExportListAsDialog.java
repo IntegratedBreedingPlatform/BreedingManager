@@ -36,6 +36,10 @@ import com.vaadin.ui.themes.Reindeer;
 public class ExportListAsDialog extends BaseSubWindow implements InitializingBean,
 						InternationalizableComponent, BreedingManagerLayout {
 
+	private static final String XLS_EXT = ".xls";
+
+	private static final String CSV_EXT = ".csv";
+
 	private static final int NO_OF_REQUIRED_COLUMNS = 3;
 
 	private static final String CSV_FORMAT = "CSV";
@@ -187,7 +191,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
             listExporter.exportGermplasmListCSV(TEMP_FILENAME, table);
             FileDownloadResource fileDownloadResource = createFileDownloadResource();
             String listName = germplasmList.getName();
-            fileDownloadResource.setFilename(listName.replace(" ", "_") + CSV_FORMAT);
+            fileDownloadResource.setFilename(listName.replace(" ", "_") + CSV_EXT);
             source.getWindow().open(fileDownloadResource);
             
             //must figure out other way to clean-up file because deleting it here makes it unavailable for download
@@ -205,7 +209,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
             listExporter.exportGermplasmListXLS(TEMP_FILENAME,table);
             FileDownloadResource fileDownloadResource = createFileDownloadResource();
             String listName = germplasmList.getName();
-            fileDownloadResource.setFilename(listName.replace(" ", "_") + XLS_FORMAT);
+            fileDownloadResource.setFilename(listName.replace(" ", "_") + XLS_EXT);
             source.getWindow().open(fileDownloadResource);
             
             //must figure out other way to clean-up file because deleting it here makes it unavailable for download
