@@ -1,5 +1,7 @@
 package org.generationcp.breeding.manager.customcomponent;
 
+import static org.mockito.Mockito.when;
+
 import java.util.Calendar;
 
 import junit.framework.Assert;
@@ -115,5 +117,64 @@ public class SaveListAsDialogTest {
 		originalGermplasmList.setId(-2);
 		
 		Assert.assertTrue("Expecting the selected list is not the original list in the save dialog but didn't.",dialog.isSelectedListSameWithTheOriginalList());
+	}
+	
+	@Test
+	public void testIsSelectedListAnExistingListButNotItself() {
+		SaveListAsDialog proxy = Mockito.spy(dialog);
+		
+		when(proxy.isSelectedListAnExistingList()).thenReturn(true);
+		
+		boolean result = proxy.isSelectedListAnExistingListButNotItself();
+		Assert.assertTrue("Given it is an existing list, the existing list will be overwritten",
+				result);
+	}
+	
+	@Test
+	public void testIsSelectedListAnExistingListButNotItself_NoListToOverwrite() {
+		SaveListAsDialog proxy = Mockito.spy(dialog);
+		
+		when(proxy.isSelectedListAnExistingList()).thenReturn(false);
+		GermplasmList listToOverWrite = null;
+		proxy.setOriginalGermplasmList(listToOverWrite);
+		when(proxy.isSelectedListSameWithTheOriginalList()).thenReturn(true);
+		
+		boolean result = proxy.isSelectedListAnExistingListButNotItself();
+		Assert.assertFalse("Given it is not an existing list " +
+				"and the selected list to overwrite is null, " +
+				"the list to save is a new record",
+				result);
+	}
+	@Test
+	public void testIsSelectedListAnExistingListButNotItself_AnExistingListWithListToOverwrite() {
+		SaveListAsDialog proxy = Mockito.spy(dialog);
+		
+		when(proxy.isSelectedListAnExistingList()).thenReturn(false);
+		GermplasmList listToOverWrite = new GermplasmList(-1000);
+		proxy.setOriginalGermplasmList(listToOverWrite);
+		when(proxy.isSelectedListSameWithTheOriginalList()).thenReturn(true);
+		
+		boolean result = proxy.isSelectedListAnExistingListButNotItself();
+		Assert.assertFalse("Given it is not an existing list " +
+				"and the selected list to overwrite is the same as the list to save, " +
+				"the list to save is an existing record",
+				result);
+	}
+	
+	@Test
+	public void testIsSelectedListAnExistingListButNotItself_ANewListWithListToOverwrite() {
+		SaveListAsDialog proxy = Mockito.spy(dialog);
+		
+		when(proxy.isSelectedListAnExistingList()).thenReturn(false);
+		GermplasmList listToOverWrite = new GermplasmList(-1000);
+		proxy.setOriginalGermplasmList(listToOverWrite);
+		when(proxy.isSelectedListSameWithTheOriginalList()).thenReturn(false);
+		
+		boolean result = proxy.isSelectedListAnExistingListButNotItself();
+		Assert.assertTrue("Given it is not an existing list " +
+				"and the selected list to overwrite is not the same as the list to save, " +
+				"the selected list will be overwritten",
+				result);
+		
 	}
 }
