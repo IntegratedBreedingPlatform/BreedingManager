@@ -33,7 +33,9 @@
 		<bean:property name="invalidateSessionOnPrincipalChange" value="false"/>
 	</bean:bean>
 	
-	<bean:bean id="workbenchUserDetailsService" class="org.generationcp.commons.security.WorkbenchUserDetailsService" />
+	<bean:bean id="workbenchUserDetailsService" class="org.generationcp.commons.security.WorkbenchUserDetailsService">
+		<bean:property name="workbenchDataManager" ref="workbenchDataManager" />
+	</bean:bean>
 	
 	<authentication-manager alias="bmsAuthenticationManager">
 		<authentication-provider ref="preAuthenticatedAuthenticationProvider" />
