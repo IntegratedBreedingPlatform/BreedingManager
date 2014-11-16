@@ -7,7 +7,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
-import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
+import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -36,16 +36,20 @@ import com.vaadin.ui.themes.Reindeer;
 public class ExportListAsDialog extends BaseSubWindow implements InitializingBean,
 						InternationalizableComponent, BreedingManagerLayout {
 
+	private static final String XLS_EXT = ".xls";
+
+	private static final String CSV_EXT = ".csv";
+
 	private static final int NO_OF_REQUIRED_COLUMNS = 3;
 
-	private static final String CSV_FORMAT = ".csv";
+	private static final String CSV_FORMAT = "CSV";
 
-	private static final String XLS_FORMAT = ".xls";
+	private static final String XLS_FORMAT = "Excel";
 
 	private static final long serialVersionUID = -4214986909789479904L;
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ExportListAsDialog.class);
-	
+
 	private VerticalLayout mainLayout;
 	private Label exportFormalLbl;
 	private Label chooseAnExportLbl;
@@ -55,10 +59,13 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	
 	private Component source;
 	private GermplasmList germplasmList;
+	private GermplasmListExporter listExporter;
 	
 	private Table listDataTable;
 	
+	public static String EXPORT_WARNING_MESSAGE;
 	private static final String USER_HOME = "user.home";
+	public static final String TEMP_FILENAME = System.getProperty( USER_HOME ) + "/temp.csv";
 	
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -79,6 +86,8 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 
 	@Override
 	public void instantiateComponents() {
+		EXPORT_WARNING_MESSAGE = messageSource.getMessage(Message.EXPORT_WARNING_MESSAGE);
+		
 		exportFormalLbl = new Label(messageSource.getMessage(Message.EXPORT_FORMAT).toUpperCase());
 		exportFormalLbl.setStyleName(Bootstrap.Typography.H2.styleName());
 		
@@ -96,6 +105,8 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 		finishButton = new Button(messageSource.getMessage(Message.FINISH));
 		finishButton.setWidth("80px");
 		finishButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+		
+		listExporter = new GermplasmListExporter(germplasmList.getId());
 	}
 
 	@Override
@@ -116,19 +127,19 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				exportListAction();
+				exportListAction(listDataTable);
 			}
 		});
 	}
 
-	protected void exportListAction() {
+	protected void exportListAction(Table table) {
 		if(!germplasmList.isLocalList() || (germplasmList.isLocalList() && germplasmList.isLockedList())){
-			showWarningMessage();
+			showWarningMessage(table);
 			//do the export
 			if(XLS_FORMAT.equalsIgnoreCase(formatOptionsCbx.getValue().toString())){
-				exportListAsXLS();
+				exportListAsXLS(table);
 			} else if(CSV_FORMAT.equalsIgnoreCase(formatOptionsCbx.getValue().toString())){
-				exportListAsCSV();
+				exportListAsCSV(table);
 			}
 		 } else {
             MessageNotifier.showError(this.getWindow()
@@ -175,14 +186,12 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 		//do nothing
 	}
 	
-	protected void exportListAsCSV() {
-		String tempFileName = System.getProperty( USER_HOME ) + "/temp.csv";
-		GermplasmListExporter listExporter = new GermplasmListExporter(germplasmList.getId());
+	protected void exportListAsCSV(Table table) {
         try {
-            listExporter.exportGermplasmListCSV(tempFileName, listDataTable);
-            FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), source.getApplication());
+            listExporter.exportGermplasmListCSV(TEMP_FILENAME, table);
+            FileDownloadResource fileDownloadResource = createFileDownloadResource();
             String listName = germplasmList.getName();
-            fileDownloadResource.setFilename(listName.replace(" ", "_") + CSV_FORMAT);
+            fileDownloadResource.setFilename(listName.replace(" ", "_") + CSV_EXT);
             source.getWindow().open(fileDownloadResource);
             
             //must figure out other way to clean-up file because deleting it here makes it unavailable for download
@@ -195,14 +204,12 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 		
 	}
 	
-	public void exportListAsXLS(){	
-        String tempFileName = System.getProperty( USER_HOME ) + "/temp.xls";
-        GermplasmListExporter listExporter = new GermplasmListExporter(germplasmList.getId());
+	protected void exportListAsXLS(Table table){
         try {
-            listExporter.exportGermplasmListExcel(tempFileName,listDataTable);
-            FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), source.getApplication());
+            listExporter.exportGermplasmListXLS(TEMP_FILENAME,table);
+            FileDownloadResource fileDownloadResource = createFileDownloadResource();
             String listName = germplasmList.getName();
-            fileDownloadResource.setFilename(listName.replace(" ", "_") + XLS_FORMAT);
+            fileDownloadResource.setFilename(listName.replace(" ", "_") + XLS_EXT);
             source.getWindow().open(fileDownloadResource);
             
             //must figure out other way to clean-up file because deleting it here makes it unavailable for download
@@ -214,13 +221,19 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
         }
 	}
 
-	private void showWarningMessage() {
-		if(isARequiredColumnHidden(listDataTable)){
-			String message = "The export file will leave out contain columns that you have marked as hidden in the table view, "
-					+ "with the exception of key columns that are necessary to identify your data when you import it back into the system.";
-			
-			MessageNotifier.showWarning(this.getWindow(), messageSource.getMessage(Message.WARNING), message);
+	protected FileDownloadResource createFileDownloadResource() {
+		FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(TEMP_FILENAME), source.getApplication());
+		return fileDownloadResource;
+	}
+
+	protected void showWarningMessage(Table table) {
+		if(isARequiredColumnHidden(table)){
+			showMessage(ExportListAsDialog.EXPORT_WARNING_MESSAGE);
 		}
+	}
+
+	protected void showMessage(String message) {
+		MessageNotifier.showWarning(this.getWindow(), messageSource.getMessage(Message.WARNING), message);
 	}
 	
 	protected boolean isARequiredColumnHidden(Table listDataTable){
@@ -237,10 +250,17 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 		return visibleRequiredColumns < NO_OF_REQUIRED_COLUMNS;
 	}
 
-	private boolean isARequiredColumn(String column) {
+	protected boolean isARequiredColumn(String column) {
 		return ListDataTablePropertyID.ENTRY_ID.getName().equalsIgnoreCase(column)
 				|| ListDataTablePropertyID.GID.getName().equalsIgnoreCase(column)
 				|| ListDataTablePropertyID.DESIGNATION.getName().equalsIgnoreCase(column);
 	}
 
+	public void setListExporter(GermplasmListExporter listExporter) {
+		this.listExporter = listExporter;
+	}
+
+	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
 }

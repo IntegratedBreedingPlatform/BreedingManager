@@ -390,9 +390,9 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 		gl.setNotes(listDetailsComponent.getListNotesField().getValue().toString());
 	}
 
-	private boolean isSelectedListAnExistingListButNotItself() {
+	protected boolean isSelectedListAnExistingListButNotItself() {
 		return isSelectedListAnExistingList() || 
-				!isSelectedListSameWithTheOriginalList();
+				(originalGermplasmList!=null && !isSelectedListSameWithTheOriginalList());
 	}
 
 	protected boolean isSelectedListSameWithTheOriginalList() {

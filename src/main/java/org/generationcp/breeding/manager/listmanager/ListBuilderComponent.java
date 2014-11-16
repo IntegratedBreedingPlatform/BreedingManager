@@ -43,7 +43,7 @@ import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandle
 import org.generationcp.breeding.manager.listmanager.util.DropHandlerMethods.ListUpdatedEvent;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
-import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporterException;
+import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.util.UserUtil;
@@ -1069,7 +1069,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
                 GermplasmListExporter listExporter = new GermplasmListExporter(currentlySavedGermplasmList.getId());
                 
                 try {
-                    listExporter.exportListForKBioScienceGenotypingOrder(tempFileName, 96);
+                    listExporter.exportKBioScienceGenotypingOrderXLS(tempFileName, 96);
                     FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), source.getApplication());
                     String listName = currentlySavedGermplasmList.getName();
                     fileDownloadResource.setFilename(listName.replace(" ", "_") + "ForGenotyping.xls");
