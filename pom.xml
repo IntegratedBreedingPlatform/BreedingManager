@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.generationcp</groupId>
     <artifactId>BreedingManager</artifactId>
-    <version>3.0.0.RELEASE</version>
+    <version>3.1.0-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>Breeding Manager</name>
 
@@ -18,9 +18,22 @@
     <properties>
         <vaadin.version>6.8.13</vaadin.version>
         <gwt.version>2.3.0</gwt.version>
-        <ibpcommons.version>3.0.0.RELEASE</ibpcommons.version>
+        <ibpcommons.version>3.1.0-SNAPSHOT</ibpcommons.version>
         <spring.version>3.1.1.RELEASE</spring.version>
     </properties>
+
+    <distributionManagement>
+        <repository>
+            <id>efficio-nexus</id>
+            <name>Releases</name>
+            <url>http://gcp.efficio.us.com:8081/nexus/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>efficio-nexus</id>
+            <name>Snapshots</name>
+            <url>http://gcp.efficio.us.com:8081/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
     
     <dependencies>
         <!-- VAADIN DEPENDENCIES -->
