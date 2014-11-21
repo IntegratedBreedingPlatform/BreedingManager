@@ -5,8 +5,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.pojos.ImportedFactor;
@@ -123,7 +125,7 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
         //Create new udfld records as needed
         processFactors(importedGermplasmList);
         
-        List<Integer> germplasmIds = new ArrayList<Integer>();
+        Set<Integer> germplasmIds = new HashSet<Integer>();
         Map<Integer, GermplasmName> addedGermplasmNameMap = new HashMap<Integer, GermplasmName>();
         gidLotMap = new HashMap<Integer, Lot>();
         gidTransactionSetMap = new HashMap<Integer, List<Transaction>>();
@@ -167,7 +169,7 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
 	protected void processGermplasmNamesAndLots(
 			List<GermplasmName> germplasmNameObjects,
 			List<Integer> doNotCreateGermplasmsWithId,
-			List<Integer> germplasmIds,
+			Set<Integer> germplasmIds,
 			Map<Integer, GermplasmName> addedGermplasmNameMap,
 			Integer seedStorageLocation)
 			throws MiddlewareQueryException {
@@ -179,7 +181,7 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
             Integer gid = null;
             Germplasm germplasm;
             
-            if(doNotCreateGermplasmsWithId.contains(germplasmName.getGermplasm().getGid()) || germplasmIds.contains(germplasmName.getGermplasm().getGid())){
+            if(doNotCreateGermplasmsWithId.contains(germplasmName.getGermplasm().getGid())) {
                 //If do not create new germplasm
             	gid = germplasmName.getGermplasm().getGid();
             	germplasm = germplasmManager.getGermplasmByGID(gid);
@@ -409,7 +411,7 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
     }
 
     private void saveGermplasmListDataRecords( List<GermplasmName> germplasmNameObjects,
-        List<Integer> germplasmIds, GermplasmList list, String filename, List<ImportedGermplasm> importedGermplasms) throws MiddlewareQueryException {
+        Set<Integer> germplasmIds, GermplasmList list, String filename, List<ImportedGermplasm> importedGermplasms) throws MiddlewareQueryException {
     	
         List<GermplasmListData> listToSave = new ArrayList<GermplasmListData>();
         List<UserDefinedField> existingAttrUdflds = getUserDefinedFields(FCODE_TYPE_ATTRIBUTE);
