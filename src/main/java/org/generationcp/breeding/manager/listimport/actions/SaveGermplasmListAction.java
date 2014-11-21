@@ -125,17 +125,14 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
         //Create new udfld records as needed
         processFactors(importedGermplasmList);
         
-        Set<Integer> germplasmIds = new HashSet<Integer>();
-        Map<Integer, GermplasmName> addedGermplasmNameMap = new HashMap<Integer, GermplasmName>();
         gidLotMap = new HashMap<Integer, Lot>();
         gidTransactionSetMap = new HashMap<Integer, List<Transaction>>();
         
-        processGermplasmNamesAndLots(germplasmNameObjects, doNotCreateGermplasmsWithId, germplasmIds,
-				addedGermplasmNameMap,seedStorageLocation);
+        processGermplasmNamesAndLots(germplasmNameObjects, doNotCreateGermplasmsWithId,	seedStorageLocation);
         
         List<ImportedGermplasm> importedGermplasms = importedGermplasmList.getImportedGermplasms();
         GermplasmList list = saveGermplasmListRecord(germplasmList);
-        saveGermplasmListDataRecords(germplasmNameObjects, germplasmIds, list, filename, importedGermplasms);
+        saveGermplasmListDataRecords(germplasmNameObjects, list, filename, importedGermplasms);
         addNewNamesToExistingGermplasm(newNames);
         
         saveInventory();
@@ -169,11 +166,12 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
 	protected void processGermplasmNamesAndLots(
 			List<GermplasmName> germplasmNameObjects,
 			List<Integer> doNotCreateGermplasmsWithId,
-			Set<Integer> germplasmIds,
-			Map<Integer, GermplasmName> addedGermplasmNameMap,
 			Integer seedStorageLocation)
 			throws MiddlewareQueryException {
-		for(GermplasmName germplasmName : germplasmNameObjects){
+		
+		Map<Integer, GermplasmName> addedGermplasmNameMap = new HashMap<Integer, GermplasmName>();
+		
+		for(GermplasmName germplasmName : germplasmNameObjects) {
             Name name = germplasmName.getName();
             name.setNid(null);
             name.setNstat(Integer.valueOf(1));
@@ -186,17 +184,15 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
             	gid = germplasmName.getGermplasm().getGid();
             	germplasm = germplasmManager.getGermplasmByGID(gid);
             	germplasmName.setGermplasm(germplasm);
-                germplasmIds.add(gid);
                 name.setGermplasmId(gid);
             } else {
             	Germplasm addedGermplasmMatch = getAlreadyAddedGermplasm(germplasmName, addedGermplasmNameMap);
         		germplasmName.getGermplasm().setLgid(Integer.valueOf(0));
             	//not yet added, create new germplasm record
-            	if(addedGermplasmMatch==null){
+            	if(addedGermplasmMatch == null) {
             		germplasm = germplasmName.getGermplasm();
             		germplasmName.getGermplasm().setGid(null);
             		gid = germplasmManager.addGermplasm(germplasm, name);
-                    germplasmIds.add(gid);
             		addedGermplasmNameMap.put(germplasmName.getGermplasm().getGid(), germplasmName);
             	//if already addded (re-use that one)
             	} else {
@@ -206,7 +202,7 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
             	}
             }
             
-            if(seedAmountScaleId!=null){
+            if(seedAmountScaleId != null){
             	Lot lot = new Lot(null, ibdbUserId, EntityType.GERMPLSM.name(), gid, seedStorageLocation, seedAmountScaleId, 0, 0, INVENTORY_COMMENT);
             	gidLotMap.put(gid, lot);
             }
@@ -369,12 +365,13 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
 
     private Germplasm getAlreadyAddedGermplasm(GermplasmName germplasmName, Map<Integer, GermplasmName> addedGermplasmNameMap){
     	Germplasm germplasm = germplasmName.getGermplasm();
-    	for(Integer gid : addedGermplasmNameMap.keySet()){
-    		if(addedGermplasmNameMap.get(gid).getGermplasm().getGpid1().equals(germplasm.getGpid1()) 
-        			&& addedGermplasmNameMap.get(gid).getGermplasm().getGpid2().equals(germplasm.getGpid2())
+    	for(Integer gid : addedGermplasmNameMap.keySet()) {
+    		Germplasm addedGermplasm = addedGermplasmNameMap.get(gid).getGermplasm();
+			if(addedGermplasm.getGpid1().equals(germplasm.getGpid1()) 
+        			&& addedGermplasm.getGpid2().equals(germplasm.getGpid2())
         			&& addedGermplasmNameMap.get(gid).getName().getNval().equals(germplasmName.getName().getNval())
     		  ){
-    			return addedGermplasmNameMap.get(gid).getGermplasm();
+    			return addedGermplasm;
     		}
     	}
     	return null;
@@ -410,8 +407,7 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
     	return udFields;
     }
 
-    private void saveGermplasmListDataRecords( List<GermplasmName> germplasmNameObjects,
-        Set<Integer> germplasmIds, GermplasmList list, String filename, List<ImportedGermplasm> importedGermplasms) throws MiddlewareQueryException {
+    private void saveGermplasmListDataRecords( List<GermplasmName> germplasmNameObjects, GermplasmList list, String filename, List<ImportedGermplasm> importedGermplasms) throws MiddlewareQueryException {
     	
         List<GermplasmListData> listToSave = new ArrayList<GermplasmListData>();
         List<UserDefinedField> existingAttrUdflds = getUserDefinedFields(FCODE_TYPE_ATTRIBUTE);
