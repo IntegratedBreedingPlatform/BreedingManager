@@ -148,10 +148,16 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
 
 	@Override
 	public void addListeners() {
-		searchResultsComponent.getMatchingGermplasmsTable().addListener(new GermplasmListValueChangeListener(this));
-        searchResultsComponent.getMatchingGermplasmsTable().addListener(new GermplasmListItemClickListener(this));
+		addSearchResultsListeners();
         
-        optionGroup.addListener(new Property.ValueChangeListener() {
+        addListenerToOptionGroup();
+        
+        cancelButton.addListener(new CloseWindowAction());
+        doneButton.addListener(new GermplasmListButtonClickListener(this));
+	}
+
+	protected void addListenerToOptionGroup() {
+		optionGroup.addListener(new Property.ValueChangeListener() {
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -174,9 +180,11 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
                 }
             }
         });
-        
-        cancelButton.addListener(new CloseWindowAction());
-        doneButton.addListener(new GermplasmListButtonClickListener(this));
+	}
+
+	protected void addSearchResultsListeners() {
+		searchResultsComponent.getMatchingGermplasmsTable().addListener(new GermplasmListValueChangeListener(this));
+        searchResultsComponent.getMatchingGermplasmsTable().addListener(new GermplasmListItemClickListener(this));
 	}
 
 	@Override
@@ -291,7 +299,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
     }
     
 
-    private void initializeTopPart(){
+    protected void initializeTopPart(){
         topPart = new VerticalLayout();
         topPart.setSpacing(true);
         topPart.setMargin(false);
@@ -321,7 +329,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
         optionGroup.setImmediate(true);
     }
     
-    private void initializeBottomPart(){
+    protected void initializeBottomPart(){
         bottomPart = new AbsoluteLayout();
         bottomPart.setWidth("600px");
         bottomPart.setHeight("230px");
@@ -351,18 +359,15 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
     public void initializeButtonLayout(){
         cancelButton = new Button(messageSource.getMessage(Message.CANCEL));
         cancelButton.setData(CANCEL_BUTTON_ID);
-        cancelButton.addListener(new CloseWindowAction());
         
         doneButton = new Button(messageSource.getMessage(Message.DONE));
         doneButton.setData(DONE_BUTTON_ID);
-        doneButton.addListener(new GermplasmListButtonClickListener(this));
         doneButton.setEnabled(false);
         doneButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
     }
 
     
     public void nextButtonClickAction(ClickEvent event){
-    	
         if(optionGroup.getValue().equals(OPTION_1_ID)){
             // add the germplasm selected as the list entry
             if(this.selectedGids.size()>0){
@@ -627,6 +632,26 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
 	public void updateAllLocationFields() {
 		Object lastValue = breedingLocationField.getBreedingLocationComboBox().getValue();
 		breedingLocationField.populateHarvestLocation(Integer.valueOf(lastValue.toString()));
+	}
+	
+	public void setOptionGroup(OptionGroup optionGroup){
+		this.optionGroup = optionGroup;
+	}
+	
+	public void setSelectedGids(List<Integer> selectedGids){
+		this.selectedGids = selectedGids;
+	}
+	
+	public Button getDoneButton(){
+		return this.doneButton;
+	}
+	
+	public Button getCancelButton(){
+		return this.cancelButton;
+	}
+	
+	public void setMessageSource(SimpleResourceBundleMessageSource msgSource){
+		this.messageSource = msgSource;
 	}
     
 }
