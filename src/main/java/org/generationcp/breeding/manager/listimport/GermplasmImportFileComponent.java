@@ -6,7 +6,6 @@ import org.generationcp.breeding.manager.customfields.UploadField;
 import org.generationcp.breeding.manager.listimport.exceptions.GermplasmImportException;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
 import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
-import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -20,19 +19,19 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Upload;
+import com.vaadin.ui.Window;
 
 @Configurable
 public class GermplasmImportFileComponent extends AbsoluteLayout implements InitializingBean, 
 		InternationalizableComponent, BreedingManagerLayout {
     
-    private static final long serialVersionUID = 9097810121003895303L;
-    @SuppressWarnings("unused")
-	private final static Logger LOG = LoggerFactory.getLogger(GermplasmImportFileComponent.class);
+    public  static final String FB_CLOSE_WINDOW_JS_CALL = "window.parent.cancelImportGermplasm()";
+	private static final long serialVersionUID = 9097810121003895303L;
+	private static final Logger LOG = LoggerFactory.getLogger(GermplasmImportFileComponent.class);
     
     private GermplasmImportMain source;
 
@@ -70,7 +69,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
         messageSource.setCaption(nextButton, Message.NEXT);
     }
     
-    public void nextButtonClickAction() throws InternationalizableException{
+    public void nextButtonClickAction() {
     	try {
     		germplasmListUploader.validate();
             germplasmListUploader.readSheets();
@@ -79,6 +78,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
     		source.nextStep();
 			
 		} catch (GermplasmImportException e) {
+			LOG.debug("Error importing " + e.getMessage(), e);
 			MessageNotifier.showError(getWindow(), e.getCaption(), e.getMessage());
 		}
     }
@@ -133,7 +133,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 
 	@Override
 	public void initializeValues() {
-		
+		//do nothing
 	}
 
 	public void addListenersForUploadField(){
@@ -154,15 +154,13 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 		
 		addListenersForUploadField();
 		
+		
 		cancelButton.addListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if (source.getGermplasmImportPopupSource() == null){
-					source.reset();
-				} else {
-					source.getGermplasmImportPopupSource().getParentWindow().removeWindow(((Window) source.getComponentContainer()));
-				}
+				cancelButtonAction();
 			}
+
 		});
 		
 		nextButton.addListener(new GermplasmImportButtonClickListener(this));
@@ -189,5 +187,18 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 	
 	public GermplasmListUploader getGermplasmListUploader(){
 		return this.germplasmListUploader;
+	}
+	
+	protected void cancelButtonAction() {
+		Window window = source.getWindow();
+		if (source.getGermplasmImportPopupSource() == null){
+			source.reset();
+			//if called by Fieldbook
+			if (source.isViaPopup() && window != null){
+				window.executeJavaScript(FB_CLOSE_WINDOW_JS_CALL);
+			}
+		} else {
+			source.getGermplasmImportPopupSource().getParentWindow().removeWindow((Window) source.getComponentContainer());
+		}
 	}
 }

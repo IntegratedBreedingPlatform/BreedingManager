@@ -65,14 +65,13 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
     
     private static final long serialVersionUID = -1627453790001229325L;
     
-    private final static Logger LOG = LoggerFactory.getLogger(AddEntryDialog.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AddEntryDialog.class);
     
     public static final String OPTION_1_ID = "AddEntryDialog Option 1";
     public static final String OPTION_2_ID = "AddEntryDialog Option 2";
     public static final String OPTION_3_ID = "AddEntryDialog Option 3";
     public static final String NEXT_BUTTON_ID = "AddEntryDialog Next Button";
     public static final String CANCEL_BUTTON_ID = "AddEntryDialog Cancel Button";
-    public static final String BACK_BUTTON_ID = "AddEntryDialog Back Button";
     public static final String DONE_BUTTON_ID = "AddEntryDialog Done Button";
     private static final String GID = "gid";
     private static final String DEFAULT_NAME_TYPE_CODE = "LNAME";
@@ -148,35 +147,39 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
 
 	@Override
 	public void addListeners() {
-		searchResultsComponent.getMatchingGermplasmsTable().addListener(new GermplasmListValueChangeListener(this));
-        searchResultsComponent.getMatchingGermplasmsTable().addListener(new GermplasmListItemClickListener(this));
+		addSearchResultsListeners();
         
-        optionGroup.addListener(new Property.ValueChangeListener() {
+        addListenerToOptionGroup();
+        
+        cancelButton.addListener(new CloseWindowAction());
+        doneButton.addListener(new GermplasmListButtonClickListener(this));
+	}
+
+	protected void addListenerToOptionGroup() {
+		optionGroup.addListener(new Property.ValueChangeListener() {
             private static final long serialVersionUID = 1L;
 
             @Override
             public void valueChange(ValueChangeEvent event) {
                 if(optionGroup.getValue().equals(OPTION_1_ID)){
                     setSpecifyDetailsVisible(false);
-                    if(selectedGids.size()==0){
+                    if(selectedGids.isEmpty()){
                         doneButton.setEnabled(false);
                     }
                 } else if(optionGroup.getValue().equals(OPTION_2_ID)){
                     setSpecifyDetailsVisible(true);
-                    if(selectedGids.size()==0){
-                        doneButton.setEnabled(false);
-                    } else {
-                        doneButton.setEnabled(true);
-                    }
+                    doneButton.setEnabled(!selectedGids.isEmpty());
                 } else if(optionGroup.getValue().equals(OPTION_3_ID)){
                     doneButton.setEnabled(true);
                     setSpecifyDetailsVisible(true);
                 }
             }
         });
-        
-        cancelButton.addListener(new CloseWindowAction());
-        doneButton.addListener(new GermplasmListButtonClickListener(this));
+	}
+
+	protected void addSearchResultsListeners() {
+		searchResultsComponent.getMatchingGermplasmsTable().addListener(new GermplasmListValueChangeListener(this));
+        searchResultsComponent.getMatchingGermplasmsTable().addListener(new GermplasmListItemClickListener(this));
 	}
 
 	@Override
@@ -223,21 +226,21 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
         setSpecifyDetailsVisible(false);
 	}
     
-    public void resultTableItemClickAction(Table sourceTable) throws InternationalizableException {
+    public void resultTableItemClickAction(Table sourceTable) {
     	
     	this.selectedGids = getSelectedItemIds(sourceTable);
     	
-    	if(selectedGids.size()>0){
+    	if(!selectedGids.isEmpty()){
     		this.doneButton.setEnabled(true);
     	} else {
     		this.doneButton.setEnabled(false);    		
     	}
     }
     
-    public void resultTableValueChangeAction() throws InternationalizableException {
+    public void resultTableValueChangeAction() {
     	this.selectedGids = getSelectedItemIds(searchResultsComponent.getMatchingGermplasmsTable());
     	if(doneButton!=null){
-	    	if(selectedGids.size()>0){
+	    	if(!selectedGids.isEmpty()){
 	    		this.doneButton.setEnabled(true);
 	    	} else {
 	    		this.doneButton.setEnabled(false);    		
@@ -245,7 +248,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
     	}
     }    
     
-    public void resultTableItemDoubleClickAction(Table sourceTable, Object itemId, Item item) throws InternationalizableException {
+    public void resultTableItemDoubleClickAction(Table sourceTable, Object itemId, Item item) {
         sourceTable.select(itemId);
         int gid = Integer.valueOf(item.getItemProperty(GID).getValue().toString());
         
@@ -291,7 +294,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
     }
     
 
-    private void initializeTopPart(){
+    protected void initializeTopPart(){
         topPart = new VerticalLayout();
         topPart.setSpacing(true);
         topPart.setMargin(false);
@@ -321,7 +324,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
         optionGroup.setImmediate(true);
     }
     
-    private void initializeBottomPart(){
+    protected void initializeBottomPart(){
         bottomPart = new AbsoluteLayout();
         bottomPart.setWidth("600px");
         bottomPart.setHeight("230px");
@@ -351,21 +354,18 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
     public void initializeButtonLayout(){
         cancelButton = new Button(messageSource.getMessage(Message.CANCEL));
         cancelButton.setData(CANCEL_BUTTON_ID);
-        cancelButton.addListener(new CloseWindowAction());
         
         doneButton = new Button(messageSource.getMessage(Message.DONE));
         doneButton.setData(DONE_BUTTON_ID);
-        doneButton.addListener(new GermplasmListButtonClickListener(this));
         doneButton.setEnabled(false);
         doneButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
     }
 
     
     public void nextButtonClickAction(ClickEvent event){
-    	
         if(optionGroup.getValue().equals(OPTION_1_ID)){
             // add the germplasm selected as the list entry
-            if(this.selectedGids.size()>0){
+            if(!selectedGids.isEmpty()){
                 this.source.finishAddingEntry(selectedGids);
                 Window window = event.getButton().getWindow();
                 window.getParent().removeWindow(window);
@@ -378,7 +378,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
         		MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_SELECT_A_METHOD_FOR_THE_GERMPLASM));
         	} else if(breedingLocationField.getBreedingLocationComboBox().getValue() == null){
         		MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM));
-        	}else if(this.selectedGids.size()>0){
+        	}else if(!selectedGids.isEmpty()){
             	if(doneAction()){
             		Window window = event.getButton().getWindow();
             		window.getParent().removeWindow(window);
@@ -402,9 +402,6 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
             	MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_ENTER_A_GERMPLASM_NAME_IN_THE_TEXTBOX));
             }
         }
-    }
-    
-    public void backButtonClickAction(){
     }
     
     public Boolean doneAction(){
@@ -489,8 +486,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
 			        name.setUserId(currentUserLocalId);
 			        
 			        try{
-			            @SuppressWarnings("unused")
-						Integer gid = this.germplasmDataManager.addGermplasm(germplasm, name);
+						this.germplasmDataManager.addGermplasm(germplasm, name);
 			            addedGids.add(germplasm.getGid());
 			        } catch(MiddlewareQueryException ex){
 			            LOG.error("Error with saving germplasm and name records!", ex);
@@ -567,6 +563,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
     
     @Override
     public void updateLabels() {
+    	//do nothing
     }
 
     /**
@@ -606,7 +603,8 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
     private void setSpecifyDetailsVisible(Boolean visible){
         int height = 530;
     	if(visible){
-    	    height += 230 + 10; // add height of bottom part + margin
+    		// add height of bottom part + margin
+    	    height += 230 + 10;
     		setHeight(height + "px");
     		bottomPart.setVisible(true);
     		center();
@@ -627,6 +625,26 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
 	public void updateAllLocationFields() {
 		Object lastValue = breedingLocationField.getBreedingLocationComboBox().getValue();
 		breedingLocationField.populateHarvestLocation(Integer.valueOf(lastValue.toString()));
+	}
+	
+	public void setOptionGroup(OptionGroup optionGroup){
+		this.optionGroup = optionGroup;
+	}
+	
+	public void setSelectedGids(List<Integer> selectedGids){
+		this.selectedGids = selectedGids;
+	}
+	
+	public Button getDoneButton(){
+		return this.doneButton;
+	}
+	
+	public Button getCancelButton(){
+		return this.cancelButton;
+	}
+	
+	public void setMessageSource(SimpleResourceBundleMessageSource msgSource){
+		this.messageSource = msgSource;
 	}
     
 }

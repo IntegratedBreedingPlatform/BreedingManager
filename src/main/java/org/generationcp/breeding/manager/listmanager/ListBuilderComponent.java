@@ -756,7 +756,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         table.setWidth("100%");
         table.setHeight("280px");
         table.setImmediate(true);
-        
+        table.setDebugId("vaadin-newlistdata-tbl");
         setContextMenuActionHandler(table);
     }
     

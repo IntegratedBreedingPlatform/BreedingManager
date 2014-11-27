@@ -380,6 +380,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		listDataTable.setDragMode(TableDragMode.ROW);
 		listDataTable.setData(LIST_DATA_COMPONENT_TABLE_DATA);
 		listDataTable.setColumnReorderingAllowed(false);
+		listDataTable.setDebugId("vaadin-listdata-tbl");
 		
 		listDataTable.addContainerProperty(ListDataTablePropertyID.TAG.getName(), CheckBox.class, null);
 		listDataTable.addContainerProperty(ListDataTablePropertyID.ENTRY_ID.getName(), Integer.class, null);
