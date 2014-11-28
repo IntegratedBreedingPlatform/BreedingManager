@@ -22,7 +22,7 @@
         <gwt.plugin.version>2.5.1</gwt.plugin.version>
         <ibpcommons.version>3.1.0.SNAPSHOT</ibpcommons.version>
         <spring.version>3.2.11.RELEASE</spring.version>
-        <spring.security.version>3.1.7.RELEASE</spring.security.version>
+        <spring.security.version>3.2.5.RELEASE</spring.security.version>
         <webapp.path>C:/Breeding Management System/infrastructure/tomcat/webapps</webapp.path>
     </properties>
 
