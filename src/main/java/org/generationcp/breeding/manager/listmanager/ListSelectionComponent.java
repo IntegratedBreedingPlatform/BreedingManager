@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
@@ -167,7 +166,6 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 		return listSearchComponent;
 	}
 
-	@PreAuthorize("hasRole('ROLE_ADMIN')") 
 	public void openListImportDialog() {
 		Window window = getWindow();
 		Window popupWindow = new BaseSubWindow();
