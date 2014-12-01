@@ -35,6 +35,7 @@
 		<mapping class="org.generationcp.middleware.pojos.workbench.WorkbenchRuntimeData"/>
         <mapping class="org.generationcp.middleware.pojos.Person"/> 
         <mapping class="org.generationcp.middleware.pojos.User"/>
+        <mapping class="org.generationcp.middleware.pojos.workbench.UserRole"/>
         <mapping class="org.generationcp.middleware.pojos.workbench.TemplateSetting"/>
         
     </session-factory>

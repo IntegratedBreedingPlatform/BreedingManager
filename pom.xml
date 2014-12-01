@@ -22,6 +22,8 @@
         <gwt.plugin.version>2.5.1</gwt.plugin.version>
         <ibpcommons.version>3.1.0.SNAPSHOT</ibpcommons.version>
         <spring.version>3.2.11.RELEASE</spring.version>
+        <spring.security.version>3.2.5.RELEASE</spring.security.version>
+        <webapp.path>C:/Breeding Management System/infrastructure/tomcat/webapps</webapp.path>
     </properties>
 
     <distributionManagement>
@@ -134,7 +136,34 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
+		
+		<!-- Spring Security -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-taglibs</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-aspects</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+		
         <!-- these two below are needed by TableExport addon -->
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -276,7 +305,7 @@
                 <version>1.7</version>
                 <executions>
                     <execution>
-                        <id>default-cli</id>
+                        <id>copy-properties</id>
                         <phase>generate-resources</phase>
                         <configuration>
                             <tasks>
@@ -284,6 +313,21 @@
                                     <fileset dir="pipeline/config/${envConfig}" id="fromDir">
                                         <include name="workbench.properties"/>
                                     </fileset>
+                                </copy>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>default-cli</id>
+                        <phase>install</phase>
+                        <configuration>
+                            <tasks>
+                                <delete dir="${webapp.path}/${project.artifactId}"/>
+                                <copy todir="${webapp.path}/${project.artifactId}">
+                                    <fileset dir="target/${project.artifactId}" includes="**/*"/>
                                 </copy>
                             </tasks>
                         </configuration>
