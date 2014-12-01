@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.generationcp</groupId>
@@ -17,9 +18,10 @@
 
     <properties>
         <vaadin.version>6.8.13</vaadin.version>
-        <gwt.version>2.3.0</gwt.version>
+        <gwt.version>2.5.1</gwt.version>
+        <gwt.plugin.version>2.5.1</gwt.plugin.version>
         <ibpcommons.version>3.1.0.SNAPSHOT</ibpcommons.version>
-        <spring.version>3.1.1.RELEASE</spring.version>
+        <spring.version>3.2.11.RELEASE</spring.version>
     </properties>
 
     <distributionManagement>
@@ -34,7 +36,7 @@
             <url>http://gcp.efficio.us.com:8081/nexus/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
-    
+
     <dependencies>
         <!-- VAADIN DEPENDENCIES -->
         <dependency>
@@ -73,7 +75,7 @@
             <artifactId>easyuploads</artifactId>
             <version>0.5.3</version>
         </dependency>
-        
+
 
         <!-- Spring Dependency -->
         <dependency>
@@ -123,11 +125,6 @@
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-asm</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <version>${spring.version}</version>
             <exclusions>
@@ -157,8 +154,8 @@
             <version>4.8.1</version>
             <scope>test</scope>
         </dependency>
-        
-		<!-- Mockito -->
+
+        <!-- Mockito -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
@@ -188,7 +185,7 @@
             <artifactId>javassist</artifactId>
             <version>3.12.1.GA</version>
         </dependency>
-        
+
         <!-- Logging dependencies -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -219,16 +216,10 @@
             <version>3.1.0</version>
         </dependency>
 
-        <dependency>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-            <version>2.2</version>
-        </dependency>
-
     </dependencies>
 
     <build>
-    	<finalName>${project.artifactId}</finalName>
+        <finalName>${project.artifactId}</finalName>
         <resources>
             <resource>
                 <filtering>false</filtering>
@@ -302,26 +293,26 @@
                     </execution>
                 </executions>
             </plugin>
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.7.1.201405082137</version>
-				<executions>
-					<execution>
-						<id>default-prepare-agent</id>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>default-report</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>            
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.7.1.201405082137</version>
+                <executions>
+                    <execution>
+                        <id>default-prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>default-report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
