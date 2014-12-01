@@ -322,7 +322,6 @@
                     </execution>
                     <execution>
                         <id>default-cli</id>
-                        <phase>install</phase>
                         <configuration>
                             <tasks>
                                 <delete dir="${webapp.path}/${project.artifactId}"/>
