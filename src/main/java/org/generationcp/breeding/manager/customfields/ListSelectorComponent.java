@@ -606,7 +606,7 @@ public abstract class ListSelectorComponent extends CssLayout implements
         updateButtons(this.selectedListId);
     }
 
-    public void treeItemClickAction(int germplasmListId) throws InternationalizableException{
+    public void treeItemClickAction(int germplasmListId) {
 
         try {
 

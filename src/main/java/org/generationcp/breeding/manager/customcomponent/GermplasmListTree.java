@@ -5,7 +5,10 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.Tree;
 
 public class GermplasmListTree extends Tree implements GermplasmListSource {
-    public GermplasmListTree(){
+
+	private static final long serialVersionUID = 366024615188199034L;
+
+	public GermplasmListTree(){
         super();
     }
 
