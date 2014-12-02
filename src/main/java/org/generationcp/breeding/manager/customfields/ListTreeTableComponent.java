@@ -83,4 +83,9 @@ public abstract class ListTreeTableComponent extends ListSelectorComponent {
             getGermplasmListSource().setItemIcon(itemId, leafResource);
         }
     }
+    
+    @Override
+    public void addListTreeItemDescription() {
+    	//override so that list details is not shown upon hover on tree table
+    }
 }
