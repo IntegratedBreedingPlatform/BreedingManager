@@ -9,7 +9,10 @@ import com.vaadin.ui.TreeTable;
  * Created by EfficioDaniel on 9/26/2014.
  */
 public class GermplasmListTreeTable extends TreeTable implements GermplasmListSource {
-    public static final String NAME_COL = "Name";
+	
+	private static final long serialVersionUID = 3171881413482637854L;
+	
+	public static final String NAME_COL = "Name";
     public static final String OWNER_COL = "Owner";
     public static final String DESCRIPTION_COL = "Description";
     public static final String LIST_TYPE_COL = "Type";
