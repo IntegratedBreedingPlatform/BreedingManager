@@ -56,7 +56,7 @@ public class SaveListAsDialogTest {
 	}
 	
 	private String appendZeroForSingleDigitMonthOrDay(int digit){
-		return (digit < 9)? String.valueOf("0" + digit) : String.valueOf(digit);
+		return (digit <= 9)? String.valueOf("0" + digit) : String.valueOf(digit);
 	}
 	
 	@Test
