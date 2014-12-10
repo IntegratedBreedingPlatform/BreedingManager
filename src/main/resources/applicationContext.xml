@@ -160,6 +160,7 @@
     <bean id="workbenchDataManager"
         class="org.generationcp.middleware.manager.WorkbenchDataManagerImpl">
         <constructor-arg ref="workbenchHibernateSessionProvider" />
+        <property name="installationDirectory" value="${workbench.installation_dir}"/>
     </bean>
     
      <bean id="tomcatUtil" class="org.generationcp.commons.tomcat.util.TomcatUtil">

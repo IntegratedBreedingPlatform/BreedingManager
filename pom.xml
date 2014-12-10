@@ -19,6 +19,7 @@
         <vaadin.version>6.8.13</vaadin.version>
         <gwt.version>2.3.0</gwt.version>
         <ibpcommons.version>3.0.0.RELEASE</ibpcommons.version>
+        <webapp.path>C:/Breeding Management System/infrastructure/tomcat/webapps</webapp.path>
     </properties>
     
     <dependencies>
@@ -271,7 +272,7 @@
                 <version>1.7</version>
                 <executions>
                     <execution>
-                        <id>default-cli</id>
+                        <id>copy-properties</id>
                         <phase>generate-resources</phase>
                         <configuration>
                             <tasks>
@@ -279,6 +280,20 @@
                                     <fileset dir="pipeline/config/${envConfig}" id="fromDir">
                                         <include name="workbench.properties"/>
                                     </fileset>
+                                </copy>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>default-cli</id>
+                        <configuration>
+                            <tasks>
+                                <delete dir="${webapp.path}/${project.artifactId}"/>
+                                <copy todir="${webapp.path}/${project.artifactId}">
+                                    <fileset dir="target/${project.artifactId}" includes="**/*"/>
                                 </copy>
                             </tasks>
                         </configuration>
