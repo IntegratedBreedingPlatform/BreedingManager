@@ -659,5 +659,12 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	public void setHasUnsavedChangesMain(boolean hasChanges) {
 		this.hasChanges = hasChanges;
 	}
-    
+
+	public void setGermplasmListManager(GermplasmListManager germplasmListManager) {
+		this.germplasmListManager = germplasmListManager;
+	}
+
+	public void setWorkbenchDataManager(WorkbenchDataManager workbenchDataManager) {
+		this.workbenchDataManager = workbenchDataManager;
+	}
 }
