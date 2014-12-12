@@ -391,13 +391,12 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 	}
 
 	protected boolean isSelectedListAnExistingListButNotItself() {
-		return isSelectedListAnExistingList() || 
-				(originalGermplasmList!=null && !isSelectedListSameWithTheOriginalList());
+		return isSelectedListAnExistingList() || isSelectedListNotSameWithTheOriginalList();
 	}
 
-	protected boolean isSelectedListSameWithTheOriginalList() {
+	protected boolean isSelectedListNotSameWithTheOriginalList() {
 		return germplasmList.getId()!=null && originalGermplasmList!=null 
-		&& germplasmList.getId() == originalGermplasmList.getId();
+		&& germplasmList.getId() != originalGermplasmList.getId();
 	}
 
 	protected boolean isSelectedListAnExistingList() {
