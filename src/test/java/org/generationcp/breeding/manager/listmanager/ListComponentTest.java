@@ -1,21 +1,36 @@
 package org.generationcp.breeding.manager.listmanager;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import junit.framework.Assert;
+
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.pojos.workbench.Project;
+import org.generationcp.middleware.pojos.workbench.WorkbenchRuntimeData;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.vaadin.ui.Window;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 public class ListComponentTest {
 	
@@ -30,7 +45,6 @@ public class ListComponentTest {
 	private static final long GERMPLASM_LIST_DATE = (long) 20141104;
 	private static final String GERMPLASM_LIST_TYPE = "LST";
 
-	@Mock
 	private ListManagerMain source;
 	
 	@Mock
@@ -40,15 +54,26 @@ public class ListComponentTest {
 	private GermplasmListManager germplasmListManager;
 	
 	@Mock
+	private WorkbenchDataManager workbenchDataManager;
+	
+	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
 	
 	private ListComponent listComponent;
 	
 	private GermplasmList germplasmList;
 	
+	private Integer EXPECTED_USER_ID = 1;
+	
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
+		
+		setUpWorkbench();
+		
+		source = spy(new ListManagerMain());
+		source.setGermplasmListManager(germplasmListManager);
+		source.setWorkbenchDataManager(workbenchDataManager);
 		
 		germplasmList = new GermplasmList();
 		germplasmList.setId(1);
@@ -59,6 +84,7 @@ public class ListComponentTest {
 		germplasmList.setType(GERMPLASM_LIST_TYPE);
 		germplasmList.setStatus(1);
 		
+		
 		List<GermplasmListData> listEntries = new ArrayList<GermplasmListData>();
 		listEntries.add(mock(GermplasmListData.class));
 		
@@ -66,13 +92,35 @@ public class ListComponentTest {
 		listComponent.setGermplasmListManager(germplasmListManager);
 		listComponent.setMessageSource(messageSource);
 		listComponent.setListEntries(listEntries);
-		
+	
 		doReturn(mock(Window.class)).when(source).getWindow();
 		doReturn(mock(ListSelectionComponent.class)).when(source).getListSelectionComponent();
 		doNothing().when(listComponent).refreshTreeOnSave();
-		
 	}
 	
+	private void setUpWorkbench() {
+		workbenchDataManager = Mockito.mock(WorkbenchDataManager.class);
+		
+		WorkbenchRuntimeData runtimeDate = new WorkbenchRuntimeData();
+		runtimeDate.setUserId(new Integer(5));
+
+		Project dummyProject = new Project();
+		dummyProject.setProjectId(new Long(5));
+
+		try {
+			Mockito.when(this.workbenchDataManager.getWorkbenchRuntimeData()).thenReturn(
+					runtimeDate);
+			Mockito.when(this.workbenchDataManager.getLastOpenedProject(runtimeDate.getUserId()))
+					.thenReturn(dummyProject);
+			Mockito.when(
+					this.workbenchDataManager.getLocalIbdbUserId(runtimeDate.getUserId(),
+							dummyProject.getProjectId())).thenReturn(EXPECTED_USER_ID);
+
+		} catch (MiddlewareQueryException e) {
+			Assert.fail("Failed to create an ibdbuser instance.");
+		}
+	}
+
 	@Test
 	public void testSaveList_OverwriteExistingGermplasmList(){
 		
@@ -121,6 +169,7 @@ public class ListComponentTest {
 		germplasmListToBeSaved.setStatus(1);	
 		
 		try{
+			doNothing().when(source).closeList(germplasmListToBeSaved);
 			doReturn(germplasmListToBeSaved).when(germplasmListManager).getGermplasmListById(anyInt());
 			
 			//this will overwrite the list entries of the current germplasm list. Germplasm List Details will not be updated.
@@ -138,7 +187,7 @@ public class ListComponentTest {
 			assertSame(savedList, germplasmList);
 			
 		}catch(Exception e){
-			
+			e.printStackTrace();
 			fail(e.getMessage());
 		}
 		
@@ -177,6 +226,22 @@ public class ListComponentTest {
 			fail(e.getMessage());
 		}
 		
+	}
+	
+	@Test
+	public void testLockGermplasmList(){
+		//set up
+		try {
+			doReturn(germplasmList).when(germplasmListManager).getGermplasmListById(germplasmList.getId().intValue());
+		} catch (MiddlewareQueryException e) {
+			fail(e.getMessage());
+		}
+		
+		doNothing().when(listComponent).setLockedState(true);
+		
+		listComponent.lockGermplasmList(germplasmList);
+		
+		Assert.assertEquals("Expecting the that the germplasmList status was changed to locked(101) but returned (" + germplasmList.getStatus() + ")", Integer.valueOf(101), germplasmList.getStatus());
 	}
 	
 	

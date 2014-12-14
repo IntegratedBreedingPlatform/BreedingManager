@@ -56,7 +56,7 @@ public class SaveListAsDialogTest {
 	}
 	
 	private String appendZeroForSingleDigitMonthOrDay(int digit){
-		return (digit < 9)? String.valueOf("0" + digit) : String.valueOf(digit);
+		return (digit <= 9)? String.valueOf("0" + digit) : String.valueOf(digit);
 	}
 	
 	@Test
@@ -103,20 +103,20 @@ public class SaveListAsDialogTest {
 	}
 	
 	@Test
-	public void testIsSelectedListSameWithTheOriginalListReturnsTrueForAList(){
+	public void testisSelectedListNotSameWithTheOriginalListReturnsTrueForAList(){
 		germplasmList.setId(-1);
 		dialog.setOriginalGermplasmList(germplasmList);
 		
-		Assert.assertTrue("Expecting the selected list is the original list in the save dialog but didn't.",dialog.isSelectedListSameWithTheOriginalList());
+		Assert.assertFalse("Expecting the selected list is the original list in the save dialog but didn't.",dialog.isSelectedListNotSameWithTheOriginalList());
 	}
 	
 	@Test
-	public void testIsSelectedListSameWithTheOriginalListReturnsFalseForAList(){
+	public void testisSelectedListNotSameWithTheOriginalListReturnsFalseForAList(){
 		germplasmList.setId(-1);
 		originalGermplasmList = dialog.getOriginalGermplasmList();
 		originalGermplasmList.setId(-2);
 		
-		Assert.assertTrue("Expecting the selected list is not the original list in the save dialog but didn't.",dialog.isSelectedListSameWithTheOriginalList());
+		Assert.assertFalse("Expecting the selected list is not the original list in the save dialog but didn't.",dialog.isSelectedListNotSameWithTheOriginalList());
 	}
 	
 	@Test
@@ -137,7 +137,7 @@ public class SaveListAsDialogTest {
 		when(proxy.isSelectedListAnExistingList()).thenReturn(false);
 		GermplasmList listToOverWrite = null;
 		proxy.setOriginalGermplasmList(listToOverWrite);
-		when(proxy.isSelectedListSameWithTheOriginalList()).thenReturn(true);
+		when(proxy.isSelectedListNotSameWithTheOriginalList()).thenReturn(false);
 		
 		boolean result = proxy.isSelectedListAnExistingListButNotItself();
 		Assert.assertFalse("Given it is not an existing list " +
@@ -152,7 +152,7 @@ public class SaveListAsDialogTest {
 		when(proxy.isSelectedListAnExistingList()).thenReturn(false);
 		GermplasmList listToOverWrite = new GermplasmList(-1000);
 		proxy.setOriginalGermplasmList(listToOverWrite);
-		when(proxy.isSelectedListSameWithTheOriginalList()).thenReturn(true);
+		when(proxy.isSelectedListNotSameWithTheOriginalList()).thenReturn(false);
 		
 		boolean result = proxy.isSelectedListAnExistingListButNotItself();
 		Assert.assertFalse("Given it is not an existing list " +
@@ -168,7 +168,7 @@ public class SaveListAsDialogTest {
 		when(proxy.isSelectedListAnExistingList()).thenReturn(false);
 		GermplasmList listToOverWrite = new GermplasmList(-1000);
 		proxy.setOriginalGermplasmList(listToOverWrite);
-		when(proxy.isSelectedListSameWithTheOriginalList()).thenReturn(false);
+		when(proxy.isSelectedListNotSameWithTheOriginalList()).thenReturn(true);
 		
 		boolean result = proxy.isSelectedListAnExistingListButNotItself();
 		Assert.assertTrue("Given it is not an existing list " +
