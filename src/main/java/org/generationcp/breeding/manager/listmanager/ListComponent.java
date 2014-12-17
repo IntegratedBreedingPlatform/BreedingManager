@@ -1712,13 +1712,15 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		return germplasmList.getId();
 	}
 	
-    public void lockGermplasmList(GermplasmList germplasmList) {
-    	Integer listId = germplasmList.getId();
+    public void lockGermplasmList(GermplasmList list) {
+    	Integer listId = list.getId();
     	try {
-			germplasmList = germplasmListManager.getGermplasmListById(listId);
+    		list = germplasmListManager.getGermplasmListById(listId);
 		} catch (MiddlewareQueryException e) {
 			LOG.error(e.getMessage());
 		}
+    	
+    	germplasmList = list;
     	
     	if(source.lockGermplasmList(germplasmList)){
 	        setLockedState(germplasmList.isLockedList());
