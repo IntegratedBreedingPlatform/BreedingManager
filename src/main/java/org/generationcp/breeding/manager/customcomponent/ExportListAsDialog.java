@@ -133,7 +133,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	}
 
 	protected void exportListAction(Table table) {
-		if(!germplasmList.isLocalList() || (germplasmList.isLocalList() && germplasmList.isLockedList())){
+		if(germplasmList.isLockedList()){
 			showWarningMessage(table);
 			//do the export
 			if(XLS_FORMAT.equalsIgnoreCase(formatOptionsCbx.getValue().toString())){

@@ -559,14 +559,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 			}
 		});
 		
-		if(germplasmList.isLocalList() && !germplasmList.isLockedList()){
+		if(!germplasmList.isLockedList()){
 	        fillWith = new FillWith(parentListDetailsComponent, parentListDetailsComponent, messageSource, listDataTable, ListDataTablePropertyID.GID.getName());
 	    }
 		
 		makeTableEditable();
-	
 
-	
 		toolsButton.addListener(new ClickListener() {
 	   		 private static final long serialVersionUID = 272707576878821700L;
 	
@@ -585,9 +583,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
                      menuCopyToList.setVisible(!source.listBuilderIsLocked());
                  }
 	   			 
-				 // Show items only when Germplasm List open is a local IBDB record (negative ID),
 	   			 // when the Germplasm List is not locked, and when not accessed directly from URL or popup window
-	   			 if (germplasmList.isLocalList() && !germplasmList.isLockedList() && !fromUrl) {
+	   			 if (!germplasmList.isLockedList() && !fromUrl) {
                      menuEditList.setVisible(true);
                      //show only Delete List when user is owner
                      menuDeleteList.setVisible(localUserIsListOwner());
@@ -779,15 +776,13 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		headerLayout.addComponent(viewHeaderButton);
 		headerLayout.setComponentAlignment(viewHeaderButton, Alignment.BOTTOM_RIGHT);
 		
-		if(germplasmList.isLocalList()){
-			headerLayout.addComponent(editHeaderButton);
-			headerLayout.setComponentAlignment(editHeaderButton, Alignment.BOTTOM_LEFT);
-		}
+		headerLayout.addComponent(editHeaderButton);
+		headerLayout.setComponentAlignment(editHeaderButton, Alignment.BOTTOM_LEFT);
 		
-		if(germplasmList.isLocalList() && localUserIsListOwner()){
+		if(localUserIsListOwner()){
 			headerLayout.addComponent(lockButton);
 			headerLayout.setComponentAlignment(lockButton, Alignment.BOTTOM_LEFT);
-	
+			
 			headerLayout.addComponent(unlockButton);
 			headerLayout.setComponentAlignment(unlockButton, Alignment.BOTTOM_LEFT);
 		}
@@ -861,7 +856,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
                             if(source!=null) {
                                 tableContextMenuCopyToNewList.setVisible(!source.listBuilderIsLocked());
                             }
-                    } else if (germplasmList.isLocalList() && !germplasmList.isLockedList()){
+                    } else if (!germplasmList.isLockedList()){
                             tableContextMenuDeleteEntries.setVisible(true);
                             tableContextMenuEditCell.setVisible(true);
                             if(source!=null) {
@@ -1252,9 +1247,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
         lockButton.setVisible(!locked);
         unlockButton.setVisible(locked);
         
-        if (germplasmList.isLocalList()) {
-            editHeaderButton.setVisible(!locked);
-        }
+        editHeaderButton.setVisible(!locked);
         
         if (fillWith != null) {
             fillWith.setContextMenuEnabled(!locked);
@@ -1262,7 +1255,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
     }
     
     private void exportListForGenotypingOrderAction() {
-        if(!germplasmList.isLocalList() || (germplasmList.isLocalList() && germplasmList.isLockedList())){
+        if(germplasmList.isLockedList()){
             String tempFileName = System.getProperty( USER_HOME ) + "/tempListForGenotyping.xls";
             GermplasmListExporter listExporter = new GermplasmListExporter(germplasmList.getId());
             

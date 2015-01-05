@@ -579,7 +579,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 	
 	public void setUIForLockedList(){
-		if(currentlySavedGermplasmList.isLocalList() && localUserIsListOwner()){
+		if(localUserIsListOwner()){
     	    lockButton.setVisible(false);
     	    unlockButton.setVisible(true);
 		} else {
@@ -603,7 +603,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 	
 	public void setUIForUnlockedList(){
-		if(currentlySavedGermplasmList.isLocalList() && localUserIsListOwner()){
+		if(localUserIsListOwner()){
     	    lockButton.setVisible(true);
         	unlockButton.setVisible(false);
 		} else {
@@ -1064,7 +1064,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     
     private void exportListForGenotypingOrderAction() throws InternationalizableException {
         if (isCurrentListSaved()) {
-            if(!currentlySavedGermplasmList.isLocalList() || (currentlySavedGermplasmList.isLocalList() && currentlySavedGermplasmList.isLockedList())){
+            if(currentlySavedGermplasmList.isLockedList()){
                 String tempFileName = System.getProperty( USER_HOME ) + "/tempListForGenotyping.xls";
                 GermplasmListExporter listExporter = new GermplasmListExporter(currentlySavedGermplasmList.getId());
                 

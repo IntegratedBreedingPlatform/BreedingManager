@@ -33,6 +33,8 @@ import com.vaadin.ui.Window;
 @Configurable
 public class GermplasmListTreeUtil implements Serializable {
 	
+	private static final String FOLDER_TYPE = "FOLDER";
+
 	private static final long serialVersionUID = 1L;
 	
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmListTreeUtil.class);
@@ -131,41 +133,37 @@ public class GermplasmListTreeUtil implements Serializable {
 			folderTextField.validate();
 			String folderName = folderTextField.getValue().toString().trim();
 			
-			try {
-				Integer ibdbUserId = UserUtil.getCurrentUserLocalId(workbenchDataManager);
-				
-				newFolder.setName(folderName);
-				newFolder.setDescription(folderName);
-				newFolder.setType("FOLDER");
-				newFolder.setStatus(0);
-				newFolder.setUserId(ibdbUserId);
-				newFolder.setDate(Long.valueOf((new SimpleDateFormat(DATE_AS_NUMBER_FORMAT)).format(Calendar.getInstance().getTime())));
-				
-				if (parentItemId==null || parentItemId instanceof String || targetListSource.getItem(parentItemId)==null) {
-					newFolder.setParent(null);
-				} else if (!source.isFolder(parentItemId)) {
-					parentList = germplasmListManager.getGermplasmListById((Integer) parentItemId);
-					newFolder.setParent(germplasmListManager.getGermplasmListById(parentList.getParentId()));
-				} else {
-					newFolder.setParent(germplasmListManager.getGermplasmListById((Integer) parentItemId));
-				}
-				
-				newFolderId = germplasmListManager.addGermplasmList(newFolder);
-				
-			} catch (MiddlewareQueryException e) {
-				MessageNotifier.showError(source.getWindow(), 
-						messageSource.getMessage(Message.ERROR_INTERNAL), 
-						messageSource.getMessage(Message.ERROR_REPORT_TO));
-				LOG.error("Error with adding the new germplasm list.",e);
+			Integer ibdbUserId = UserUtil.getCurrentUserLocalId(workbenchDataManager);
+			
+			newFolder.setName(folderName);
+			newFolder.setDescription(folderName);
+			newFolder.setType(FOLDER_TYPE);
+			newFolder.setStatus(0);
+			newFolder.setUserId(ibdbUserId);
+			newFolder.setDate(Long.valueOf((new SimpleDateFormat(DATE_AS_NUMBER_FORMAT)).format(Calendar.getInstance().getTime())));
+			
+			if (parentItemId==null || parentItemId instanceof String || targetListSource.getItem(parentItemId)==null) {
+				newFolder.setParent(null);
+			} else if (!source.isFolder(parentItemId)) {
+				parentList = germplasmListManager.getGermplasmListById((Integer) parentItemId);
+				newFolder.setParent(germplasmListManager.getGermplasmListById(parentList.getParentId()));
+			} else {
+				newFolder.setParent(germplasmListManager.getGermplasmListById((Integer) parentItemId));
 			}
+			
+			newFolderId = germplasmListManager.addGermplasmList(newFolder);
 
 			//update UI
 			addFolderToTree(parentItemId, folderName, newFolderId, newFolder, parentList);
-			
-			
+						
 		} catch (InvalidValueException e) {
 			MessageNotifier.showRequiredFieldError(source.getWindow(), e.getMessage());
 			LOG.error("Error adding new folder.",e);
+		} catch (MiddlewareQueryException e) {
+			MessageNotifier.showError(source.getWindow(), 
+					messageSource.getMessage(Message.ERROR_INTERNAL), 
+					messageSource.getMessage(Message.ERROR_REPORT_TO));
+			LOG.error("Error with adding the new germplasm list.",e);
 		}
     }
 

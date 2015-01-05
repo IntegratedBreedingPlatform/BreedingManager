@@ -63,7 +63,7 @@ public class GermplasmListSourceDropHandler implements DropHandler {
         }
 
         //Dropped on a folder / public or program list folder
-        if (targetItemId instanceof String || targetList == null || targetList.getType().equals("FOLDER")){
+        if (targetItemId instanceof String || targetList == null || "FOLDER".equalsIgnoreCase(targetList.getType())){
             utilSource.setParent(sourceItemId, targetItemId);
             //Dropped on a list
         } else if (targetList!=null){

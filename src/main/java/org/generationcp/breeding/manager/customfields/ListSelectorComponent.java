@@ -61,11 +61,7 @@ public abstract class ListSelectorComponent extends CssLayout implements
 
     public static final int BATCH_SIZE = 50;
     public static final String REFRESH_BUTTON_ID = "ListManagerTreeComponent Refresh Button";
-    
-    public static String LISTS = "";
-
-    public static final String PROGRAM_LISTS = "Program Lists";
-    public static final String PUBLIC_LISTS = "Public Lists";
+    public static final String LISTS = "Lists";
 
     protected enum FolderSaveMode {
         ADD, RENAME
@@ -517,8 +513,6 @@ public abstract class ListSelectorComponent extends CssLayout implements
 
     @Override
     public void instantiateComponents() {
-    	LISTS = messageSource.getMessage(Message.LISTS);
-    	
         setHeight("580px");
         setWidth("880px");
 
@@ -832,7 +826,5 @@ public abstract class ListSelectorComponent extends CssLayout implements
 	}
 	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
-	}  
-	
-	
+	}
 }
