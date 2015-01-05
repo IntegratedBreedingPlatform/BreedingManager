@@ -5,6 +5,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customcomponent.GermplasmListSource;
 import org.generationcp.breeding.manager.customcomponent.GermplasmListTreeTable;
@@ -38,6 +39,8 @@ public class ListSelectorComponentTest {
         messageSource = Mockito.mock(SimpleResourceBundleMessageSource.class);
         listSelectorComponent = Mockito.mock(ListSelectorComponent.class);
         germplasmListManager = Mockito.mock(GermplasmListManager.class);
+        
+        Mockito.when(messageSource.getMessage(Message.LISTS)).thenReturn("Lists");
     }
 	
     @Test
@@ -153,49 +156,7 @@ public class ListSelectorComponentTest {
     	listManagerTreeComponent.removeListFromTree(germplasmList);
     	Assert.assertNull("Should not return an object since the folder in the tree was deleted already", listManagerTreeComponent.getGermplasmListSource().getItem(germplasmListId));
     }
-    
-    @Test
-    public void testMoveGermplasmListIfSourceIsLocalRootNode(){
-    	GermplasmListTreeUtil treeUtil = new GermplasmListTreeUtil();
 
-    	Mockito.when(listSelectorComponent.getWindow()).thenReturn(new Window());
-    	
-    	treeUtil.setSource(listSelectorComponent);
-    	treeUtil.setMessageSource(messageSource);
-    	
-    	String sourceItemId = ListSelectorComponent.LOCAL;
-    	String targetItemId = ListSelectorComponent.CENTRAL;
-    	boolean result = treeUtil.setParent(sourceItemId,targetItemId);
-    	Assert.assertFalse("Should not be able to move ROOT Local folder", result);
-    }
-    @Test
-    public void testMoveGermplasmListIfSourceIsPublicRootNode(){
-    	GermplasmListTreeUtil treeUtil = new GermplasmListTreeUtil();
-
-    	Mockito.when(listSelectorComponent.getWindow()).thenReturn(new Window());
-    	
-    	treeUtil.setSource(listSelectorComponent);
-    	treeUtil.setMessageSource(messageSource);
-    	
-    	String sourceItemId = ListSelectorComponent.CENTRAL;
-    	String targetItemId = ListSelectorComponent.LOCAL;
-    	boolean result = treeUtil.setParent(sourceItemId,targetItemId);
-    	Assert.assertFalse("Should not be able to move ROOT Public folder", result);
-    }
-    @Test
-    public void testMoveGermplasmListIfSourceIsAChildPublicNode(){
-    	GermplasmListTreeUtil treeUtil = new GermplasmListTreeUtil();
-
-    	Mockito.when(listSelectorComponent.getWindow()).thenReturn(new Window());
-    	
-    	treeUtil.setSource(listSelectorComponent);
-    	treeUtil.setMessageSource(messageSource);
-    	
-    	String sourceItemId = "1";
-    	String targetItemId = ListSelectorComponent.LOCAL;
-    	boolean result = treeUtil.setParent(sourceItemId,targetItemId);
-    	Assert.assertFalse("Should not be able to move Child Public folder", result);
-    }
     @Test
     public void testMoveGermplasmListIfSourceIsAChildLocalNode() throws MiddlewareQueryException{
         //start: setup for the scenario

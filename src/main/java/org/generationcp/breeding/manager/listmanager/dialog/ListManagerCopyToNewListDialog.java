@@ -53,7 +53,18 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.ui.*;
+import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Select;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 @Configurable
 public class ListManagerCopyToNewListDialog extends VerticalLayout implements InitializingBean, InternationalizableComponent,
@@ -305,7 +316,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
                             addGermplasmListData(germList,1);
                             listManagerMain.getListSelectionComponent().getListTreeComponent().createTree();
                             //TODO must accommodate the expanding of the folder up to the parent of the list being opened
-                            listManagerMain.getListSelectionComponent().getListTreeComponent().expandNode(ListTreeComponent.LOCAL);
+                            listManagerMain.getListSelectionComponent().getListTreeComponent().expandNode(ListTreeComponent.LISTS);
                             //TODO must accommodate opening in the search screen also
                             listManagerMain.getListSelectionComponent().getListTreeComponent().treeItemClickAction(newListid);
                         } catch (MiddlewareQueryException e){
@@ -334,7 +345,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
                         
                         listManagerMain.getListSelectionComponent().getListTreeComponent().createTree();
                         //TODO must accommodate the expanding of the folder up to the parent of the list being opened
-                        listManagerMain.getListSelectionComponent().getListTreeComponent().expandNode(ListSelectorComponent.LOCAL);
+                        listManagerMain.getListSelectionComponent().getListTreeComponent().expandNode(ListSelectorComponent.LISTS);
                         //TODO must accommodate opening in the search screen also
                         listManagerMain.getListSelectionComponent().getListDetailsLayout().removeTab(Integer.valueOf(listId));
                         listManagerMain.getListSelectionComponent().getListTreeComponent().treeItemClickAction(Integer.valueOf(listId));

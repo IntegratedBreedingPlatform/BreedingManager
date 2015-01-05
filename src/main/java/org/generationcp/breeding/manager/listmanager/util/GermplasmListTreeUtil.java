@@ -65,43 +65,23 @@ public class GermplasmListTreeUtil implements Serializable {
 	
     public boolean setParent(Object sourceItemId, Object targetItemId){
 
-    	if(sourceItemId.equals(ListSelectorComponent.LOCAL) || sourceItemId.equals(ListSelectorComponent.CENTRAL)){
+    	if(sourceItemId.equals(ListSelectorComponent.LISTS)){
     		MessageNotifier.showWarning(source.getWindow(), 
                     messageSource.getMessage(Message.ERROR_WITH_MODIFYING_LIST_TREE), 
                     messageSource.getMessage(Message.UNABLE_TO_MOVE_ROOT_FOLDERS));
     		return false;
     	}
     	
-    	if(targetItemId!=null && targetItemId.equals(ListSelectorComponent.CENTRAL)){
-    		MessageNotifier.showWarning(source.getWindow(), 
-                    messageSource.getMessage(Message.ERROR_WITH_MODIFYING_LIST_TREE), 
-                    messageSource.getMessage(Message.UNABLE_TO_MOVE_YOUR_LISTS_TO_PUBLIC_FOLDERS));
-    		return false;
-    	}
-    	
     	Integer sourceId = null;
     	Integer targetId = null;
     	
-    	if(sourceItemId!=null && !sourceItemId.equals(ListSelectorComponent.LOCAL) && !sourceItemId.equals(ListSelectorComponent.CENTRAL)){
+    	if(sourceItemId!=null && !sourceItemId.equals(ListSelectorComponent.LISTS)){
     		sourceId = Integer.valueOf(sourceItemId.toString());
     	}
-    	if(targetItemId!=null && !targetItemId.equals(ListSelectorComponent.LOCAL) && !targetItemId.equals(ListSelectorComponent.CENTRAL)){
+    	if(targetItemId!=null && !targetItemId.equals(ListSelectorComponent.LISTS)){
     		targetId = Integer.valueOf(targetItemId.toString());
     	}
-		if(sourceId!=null && sourceId>0){
-			MessageNotifier.showWarning(source.getWindow(), 
-					messageSource.getMessage(Message.ERROR_WITH_MODIFYING_LIST_TREE), 
-					messageSource.getMessage(Message.UNABLE_TO_MOVE_PUBLIC_LISTS));
-			return false;
-		}    	
-	
-    	if(targetId!=null && targetId>0){
-    		MessageNotifier.showWarning(source.getWindow(),
-                    messageSource.getMessage(Message.ERROR_WITH_MODIFYING_LIST_TREE), 
-                    messageSource.getMessage(Message.UNABLE_TO_MOVE_YOUR_LISTS_TO_PUBLIC_FOLDERS));
-    		return false;
-    	}    	
-    	
+		
 		//Apply to back-end data    	
     	try {
             GermplasmList sourceGermplasmList = germplasmListManager.getGermplasmListById(sourceId);
@@ -123,8 +103,8 @@ public class GermplasmListTreeUtil implements Serializable {
         //apply to UI
         if(targetItemId==null || targetListSource.getItem(targetItemId)==null){
             targetListSource.setChildrenAllowed(sourceItemId, true);
-            targetListSource.setParent(sourceItemId, ListSelectorComponent.LOCAL);
-            targetListSource.expandItem(ListSelectorComponent.LOCAL);
+            targetListSource.setParent(sourceItemId, ListSelectorComponent.LISTS);
+            targetListSource.expandItem(ListSelectorComponent.LISTS);
 		} else {
             targetListSource.setChildrenAllowed(targetItemId, true);
             targetListSource.setParent(sourceItemId, targetItemId);
@@ -394,18 +374,18 @@ public class GermplasmListTreeUtil implements Serializable {
 
             //If parent of list does not exist
             if (parentList==null && !source.isFolder(parentItemId)){
-                targetListSource.setChildrenAllowed(ListSelectorComponent.LOCAL, true);
-                targetListSource.setParent(newFolderId, ListSelectorComponent.LOCAL);
+                targetListSource.setChildrenAllowed(ListSelectorComponent.LISTS, true);
+                targetListSource.setParent(newFolderId, ListSelectorComponent.LISTS);
                 //If parent of list is root node
             } else if (parentList!=null && !source.isFolder(parentItemId) && (parentList.getParentId()==null || parentList.getParentId()==0)){
-                targetListSource.setChildrenAllowed(ListSelectorComponent.LOCAL, true);
-                targetListSource.setParent(newFolderId, ListSelectorComponent.LOCAL);
+                targetListSource.setChildrenAllowed(ListSelectorComponent.LISTS, true);
+                targetListSource.setParent(newFolderId, ListSelectorComponent.LISTS);
                 //If folder
             } else if (newFolder.getParent() != null && targetListSource.getItem(parentItemId)!=null && source.isFolder(parentItemId)) {
                 targetListSource.setChildrenAllowed(parentItemId, true);
                 Boolean parentSet = targetListSource.setParent(newFolderId, parentItemId);
                 if(!parentSet){
-                    parentSet = targetListSource.setParent(newFolderId, ListSelectorComponent.LOCAL);
+                    parentSet = targetListSource.setParent(newFolderId, ListSelectorComponent.LISTS);
                 }
                 //If list, add to parent
             } else if (newFolder.getParent() != null && targetListSource.getItem(parentItemId)!=null) {
@@ -413,8 +393,8 @@ public class GermplasmListTreeUtil implements Serializable {
                 targetListSource.setParent(newFolderId, parentList.getParentId());
                 //All else, add to LOCAL list
             } else {
-                targetListSource.setChildrenAllowed(ListSelectorComponent.LOCAL, true);
-                targetListSource.setParent(newFolderId, ListSelectorComponent.LOCAL);
+                targetListSource.setChildrenAllowed(ListSelectorComponent.LISTS, true);
+                targetListSource.setParent(newFolderId, ListSelectorComponent.LISTS);
             }
 
             if (targetListSource.getValue() != null) {
@@ -422,7 +402,7 @@ public class GermplasmListTreeUtil implements Serializable {
                     targetListSource.expandItem(parentItemId);
                 }
             } else {
-                targetListSource.expandItem(ListSelectorComponent.LOCAL);
+                targetListSource.expandItem(ListSelectorComponent.LISTS);
             }
 
             targetListSource.select(newFolderId);

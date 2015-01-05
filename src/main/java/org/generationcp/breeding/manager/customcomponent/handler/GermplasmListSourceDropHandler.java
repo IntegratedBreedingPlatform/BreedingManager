@@ -1,12 +1,5 @@
 package org.generationcp.breeding.manager.customcomponent.handler;
 
-import com.vaadin.event.Transferable;
-import com.vaadin.event.dd.DragAndDropEvent;
-import com.vaadin.event.dd.DropHandler;
-import com.vaadin.event.dd.acceptcriteria.AcceptAll;
-import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
-import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
-import com.vaadin.ui.AbstractSelect;
 import org.generationcp.breeding.manager.customcomponent.GermplasmListSource;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
@@ -17,6 +10,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+
+import com.vaadin.event.Transferable;
+import com.vaadin.event.dd.DragAndDropEvent;
+import com.vaadin.event.dd.DropHandler;
+import com.vaadin.event.dd.acceptcriteria.AcceptAll;
+import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
+import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
+import com.vaadin.ui.AbstractSelect;
 
 @Configurable
 public class GermplasmListSourceDropHandler implements DropHandler {
@@ -67,9 +68,7 @@ public class GermplasmListSourceDropHandler implements DropHandler {
             //Dropped on a list
         } else if (targetList!=null){
             if(targetList.getParentId()==null && ((Integer)targetItemId)>0) {
-                targetItemId = ListSelectorComponent.CENTRAL;
-            } else if(targetList.getParentId()==null && ((Integer)targetItemId)<0) {
-                targetItemId = ListSelectorComponent.LOCAL;
+                targetItemId = ListSelectorComponent.LISTS;
             } else {
                 targetItemId = targetList.getParentId();
             }

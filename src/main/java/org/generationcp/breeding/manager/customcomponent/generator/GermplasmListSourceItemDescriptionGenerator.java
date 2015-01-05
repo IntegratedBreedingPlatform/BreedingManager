@@ -27,7 +27,7 @@ public class GermplasmListSourceItemDescriptionGenerator implements AbstractSele
         GermplasmList germplasmList;
 
         try {
-            if (!itemId.toString().equals(ListSelectorComponent.CENTRAL) && !itemId.toString().equals(ListSelectorComponent.LOCAL)) {
+            if (!itemId.toString().equals(ListSelectorComponent.LISTS)) {
                 germplasmList = listSelectorComponent.getGermplasmListsMap().get(Integer.valueOf(itemId.toString()));
                 if (germplasmList != null && !"FOLDER".equalsIgnoreCase(germplasmList.getType())) {
                         ViewListHeaderWindow viewListHeaderWindow = new ViewListHeaderWindow(germplasmList);

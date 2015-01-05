@@ -36,7 +36,7 @@ public class GermplasmListSourceItemStyleGenerator implements Tree.ItemStyleGene
             currentList = null;
         }
 
-        if(itemId.equals(ListSelectorComponent.LOCAL) || itemId.equals(ListSelectorComponent.CENTRAL)){
+        if(itemId.equals(ListSelectorComponent.LISTS)){
             return AppConstants.CssStyles.TREE_ROOT_NODE;
         } else if(currentList!=null && currentList.getType().equals(AppConstants.DB.FOLDER)){
             return AppConstants.CssStyles.TREE_REGULAR_PARENT_NODE;
