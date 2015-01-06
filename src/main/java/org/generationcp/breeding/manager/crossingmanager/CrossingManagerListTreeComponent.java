@@ -203,12 +203,7 @@ public class CrossingManagerListTreeComponent extends ListTreeTableComponent {
 	protected boolean isTreeItemsDraggable() {
 		return true;
 	}
-
-	@Override
-	protected boolean doIncludeCentralLists() {
-		return true;
-	}
-
+	
 	@Override
     public boolean doShowFoldersOnly() {
 		return false;

@@ -235,20 +235,10 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 	
 	private boolean validateListName(GermplasmList list){
 		try{
-			List<GermplasmList> centralLists = this.dataManager.getGermplasmListByName(list.getName(), 0, 5, Operation.EQUAL, Database.CENTRAL);
-			if(!centralLists.isEmpty()){
-				if(centralLists.size()==1 && centralLists.get(0).getId()!=list.getId()){
-					MessageNotifier.showRequiredFieldError(this.source.getWindow(), messageSource.getMessage(Message.EXISTING_LIST_IN_CENTRAL_ERROR_MESSAGE));
-					return false;
-				}
-			}
-			
-			List<GermplasmList> localLists = this.dataManager.getGermplasmListByName(list.getName(), 0, 5, Operation.EQUAL, Database.LOCAL);
-			if(!localLists.isEmpty()){
-				if(localLists.size()==1 && localLists.get(0).getId()!=list.getId()){
-					MessageNotifier.showRequiredFieldError(this.source.getWindow(), messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));
-					return false;
-				}
+			List<GermplasmList> lists = this.dataManager.getGermplasmListByName(list.getName(), 0, 5, Operation.EQUAL);
+			if(!lists.isEmpty() && lists.size()==1 && lists.get(0).getId()!=list.getId()){
+				MessageNotifier.showRequiredFieldError(this.source.getWindow(), messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));
+				return false;
 			}
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error with getting germplasm list by list name - " + list.getName(), ex);

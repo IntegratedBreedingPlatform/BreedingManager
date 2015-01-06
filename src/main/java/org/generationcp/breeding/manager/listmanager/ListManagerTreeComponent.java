@@ -35,11 +35,6 @@ public class ListManagerTreeComponent extends ListTreeTableComponent implements 
 	}
 
 	@Override
-	protected boolean doIncludeCentralLists() {
-		return true;
-	}
-
-	@Override
 	protected boolean doShowFoldersOnly() {
 		return false;
 	}

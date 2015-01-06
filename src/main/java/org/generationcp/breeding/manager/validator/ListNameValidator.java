@@ -53,7 +53,6 @@ public class ListNameValidator implements Validator {
 	
 	@Override
 	public void validate(Object value) {
-		
 		if (!isValid(value)){
 			throw new InvalidValueException(this.errorDetails);
 		}
@@ -90,12 +89,13 @@ public class ListNameValidator implements Validator {
 		} else if (ListTreeComponent.LISTS.equalsIgnoreCase(listName)){
 			this.errorDetails = "Cannot use \"Lists\" as item name.";
 			isValid = false;
+			
 		} else {
 			try{
 				List<GermplasmList> lists = this.germplasmListManager.getGermplasmListByName(listName, 0, 5, Operation.EQUAL);
 				
 				if((lists.size() == 1 && !lists.get(0).getName().trim().equals(currentListName))
-						|| !lists.isEmpty()){
+						|| (!lists.isEmpty() && lists.size() > 1)){
 					this.errorDetails = messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE);
 					isValid = false;
 				}

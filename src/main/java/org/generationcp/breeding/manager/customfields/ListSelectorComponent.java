@@ -117,7 +117,6 @@ public abstract class ListSelectorComponent extends CssLayout implements
     protected abstract boolean doIncludeActionsButtons();
     protected abstract boolean doIncludeRefreshButton();
     protected abstract boolean isTreeItemsDraggable();
-    protected abstract boolean doIncludeCentralLists();
     protected abstract boolean doShowFoldersOnly();
     protected abstract String getTreeStyleName();
     public abstract String getMainTreeStyleName();
