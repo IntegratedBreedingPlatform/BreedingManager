@@ -6,6 +6,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -245,32 +246,16 @@ public abstract class ListSelectorComponent extends CssLayout implements
 
     public void updateButtons(Object itemId){
         setSelectedListId(itemId);
-        if (doIncludeActionsButtons()){
-            try {
-                //If any of the central lists/folders is selected
-                if(Integer.valueOf(itemId.toString())>0){
-                    addFolderBtn.setEnabled(true);
-                    renameFolderBtn.setEnabled(true);
-                    deleteFolderBtn.setEnabled(true);
-                    //The rest of the local lists
-                } else {
-                    addFolderBtn.setEnabled(true);
-                    renameFolderBtn.setEnabled(true);
-                    deleteFolderBtn.setEnabled(false);
-                }
-            } catch(NumberFormatException e) {
-                //If selected item is "Shared Lists"
-                if(itemId.toString().equals(LISTS)) {
-                    addFolderBtn.setEnabled(true);
-                    renameFolderBtn.setEnabled(false);
-                    deleteFolderBtn.setEnabled(false);
-                    //Any non-numeric itemID (nothing goes here as of the moment)
-                } else {
-                    addFolderBtn.setEnabled(false);
-                    renameFolderBtn.setEnabled(false);
-                    deleteFolderBtn.setEnabled(false);
-                }
-            }
+        
+    	//If any of the lists/folders is selected
+    	if(NumberUtils.isNumber(itemId.toString())){
+            addFolderBtn.setEnabled(true);
+            renameFolderBtn.setEnabled(true);
+            deleteFolderBtn.setEnabled(true);        		
+    	} else if(itemId.toString().equals(LISTS)) {
+            addFolderBtn.setEnabled(true);
+            renameFolderBtn.setEnabled(false);
+            deleteFolderBtn.setEnabled(false);
         }
     }
 
@@ -825,5 +810,15 @@ public abstract class ListSelectorComponent extends CssLayout implements
 	}
 	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
+	}
+	
+	public Button getAddFolderBtn() {
+		return addFolderBtn;
+	}
+	public Button getDeleteFolderBtn() {
+		return deleteFolderBtn;
+	}
+	public Button getRenameFolderBtn() {
+		return renameFolderBtn;
 	}
 }

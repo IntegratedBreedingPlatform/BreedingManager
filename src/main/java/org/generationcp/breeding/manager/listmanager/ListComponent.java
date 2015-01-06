@@ -1710,7 +1710,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
     	try {
 			germplasmList = germplasmListManager.getGermplasmListById(listId);
 		} catch (MiddlewareQueryException e) {
-			LOG.error(e.getMessage());
+			LOG.error(e.getMessage(),e);
 		}
     	
     	if(source.lockGermplasmList(germplasmList)){

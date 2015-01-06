@@ -57,9 +57,9 @@ public class GermplasmListSourceDropHandler implements DropHandler {
         try {
             targetList = germplasmListManager.getGermplasmListById((Integer) targetItemId);
         } catch (MiddlewareQueryException e) {
-            LOG.error(e.toString() + "\n" + e.getStackTrace());
+            LOG.error(e.getMessage(),e);
         } catch (ClassCastException e) {
-            LOG.error(e.toString() + "\n" + e.getStackTrace());
+            LOG.error(e.getMessage(),e);
         }
 
         //Dropped on a folder / public or program list folder

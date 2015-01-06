@@ -45,7 +45,7 @@ public class ListManagerTreeComponent extends ListTreeTableComponent implements 
 	}
 	
 	@Override
-	protected String getTreeHeading() {
+	public String getTreeHeading() {
 		return messageSource.getMessage(Message.ALL_LISTS);
 	}
 	

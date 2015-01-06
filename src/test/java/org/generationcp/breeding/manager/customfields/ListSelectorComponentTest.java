@@ -20,6 +20,7 @@ import org.generationcp.middleware.pojos.GermplasmList;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import static org.mockito.Mockito.*;
 
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
@@ -179,6 +180,46 @@ public class ListSelectorComponentTest {
     	boolean result = treeUtil.setParent(sourceItemId,targetItemId);
     	
     	Assert.assertTrue("Should be able to move Child to any children local folder", result);
+    }
+    
+    @Test
+    public void testUpdateButtonsWhenTheSelectedItemisAListOrFolder() throws MiddlewareQueryException{
+    	Mockito.when(messageSource.getMessage(Message.ALL_LISTS)).thenReturn("All Lists");	
+    	Mockito.when(germplasmListManager.getAllTopLevelListsBatched(10)).thenReturn(new ArrayList<GermplasmList>());
+    	
+    	ListManagerTreeComponent listManagerTreeComponent = Mockito.spy(new ListManagerTreeComponent());
+    	listManagerTreeComponent.setMessageSource(messageSource);
+    	listManagerTreeComponent.setGermplasmListManager(germplasmListManager);
+    	doReturn("All Lists").when(listManagerTreeComponent).getTreeHeading();
+    	listManagerTreeComponent.instantiateComponents();
+    	
+    	
+    	//Root Folder in Browse Lists
+    	listManagerTreeComponent.updateButtons("1");
+    	
+    	Assert.assertTrue("Add Item button must be enabled but didn't.",listManagerTreeComponent.getAddFolderBtn().isEnabled());
+    	Assert.assertTrue("Rename Item button must be enabled but didn't.",listManagerTreeComponent.getRenameFolderBtn().isEnabled());
+    	Assert.assertTrue("Delete Item button must be enabled but didn't.",listManagerTreeComponent.getDeleteFolderBtn().isEnabled());
+    }
+    
+    @Test
+    public void testUpdateButtonsWhenTheSelectedItemisARootFolder() throws MiddlewareQueryException{
+    	Mockito.when(messageSource.getMessage(Message.ALL_LISTS)).thenReturn("All Lists");	
+    	Mockito.when(germplasmListManager.getAllTopLevelListsBatched(10)).thenReturn(new ArrayList<GermplasmList>());
+    	
+    	ListManagerTreeComponent listManagerTreeComponent = Mockito.spy(new ListManagerTreeComponent());
+    	listManagerTreeComponent.setMessageSource(messageSource);
+    	listManagerTreeComponent.setGermplasmListManager(germplasmListManager);
+    	doReturn("All Lists").when(listManagerTreeComponent).getTreeHeading();
+    	listManagerTreeComponent.instantiateComponents();
+    	
+    	
+    	//Root Folder in Browse Lists
+    	listManagerTreeComponent.updateButtons("Lists");
+    	
+    	Assert.assertTrue("Add Item button must be enabled but didn't.",listManagerTreeComponent.getAddFolderBtn().isEnabled());
+    	Assert.assertFalse("Rename Item button must be disabled but didn't.",listManagerTreeComponent.getRenameFolderBtn().isEnabled());
+    	Assert.assertFalse("Delete Item button must be disabled but didn't.",listManagerTreeComponent.getDeleteFolderBtn().isEnabled());
     }
     
 }

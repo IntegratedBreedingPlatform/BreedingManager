@@ -80,7 +80,7 @@ public class ListNameValidator implements Validator {
 		return true;
 	}
 	
-	private boolean validateListName(String listName){
+	protected boolean validateListName(String listName){
 		boolean isValid = true;
 		if (listName.isEmpty()){
 			this.errorDetails = messageSource.getMessage(Message.INVALID_ITEM_NAME);
@@ -124,4 +124,13 @@ public class ListNameValidator implements Validator {
 	public void setParentFolder(String parentFolder) {
 		this.parentFolder = parentFolder;
 	}
+
+	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	public void setGermplasmListManager(GermplasmListManager germplasmListManager) {
+		this.germplasmListManager = germplasmListManager;
+	}
+	
 }
