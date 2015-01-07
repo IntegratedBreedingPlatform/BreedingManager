@@ -209,6 +209,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		addListeners();
 		layoutComponents();
 		initializeHandlers();
+		
+		//reset the marker for unsaved changes on initial loading
+		resetUnsavedChangesFlag();
     }
     
 	@Override
