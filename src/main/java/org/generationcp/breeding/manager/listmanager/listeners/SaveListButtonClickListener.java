@@ -63,7 +63,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 		this.workbenchDataManager = workbenchDataManager;
 		this.inventoryDataManager = inventoryDataManager;
 	}
-	
+
 	@Override
 	public void buttonClick(ClickEvent event) {
 		doSaveAction();
@@ -136,10 +136,8 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 		} else if(currentlySavedList != null){
 			
 			if(areThereChangesToList(currentlySavedList, listToSave) || forceHasChanges){
-				if(!currentlySavedList.getName().equals(listToSave.getName())){
-					if(!validateListName(listToSave)){
-						return;
-					}
+				if(!currentlySavedList.getName().equals(listToSave.getName()) && !validateListName(listToSave)){
+					return;
 				}
 				
 				listToSave = ListCommonActionsUtil.overwriteList(
@@ -180,7 +178,6 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error with saving Workbench activity.", ex);
-			ex.printStackTrace();
 		}
 		
 		if(showMessages) {
@@ -203,7 +200,6 @@ public class SaveListButtonClickListener implements Button.ClickListener{
         } catch (MiddlewareQueryException e) {
             LOG.error("Error in saving added germplasm list columns: " + listToSave, e);
             MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
-            e.printStackTrace();
         }
 	}
 	
@@ -300,27 +296,26 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 				//Inventory Related Columns
 	
 				//#1 Available Inventory
-				String avail_inv = "-"; //default value
+				String availInv = "-";
 				if(entry.getInventoryInfo().getActualInventoryLotCount() != null && entry.getInventoryInfo().getActualInventoryLotCount() != 0){
-					avail_inv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
+					availInv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
 				}
-				Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(source,currentlySavedList.getId(),entry.getId(), entry.getGid()));
+				Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(source,currentlySavedList.getId(),entry.getId(), entry.getGid()));
 				inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 				inventoryButton.setDescription("Click to view Inventory Details");
 	
 	
-				if(avail_inv.equals("-")){
+				if("-".equalsIgnoreCase(availInv)){
 					inventoryButton.setEnabled(false);
 					inventoryButton.setDescription("No Lot for this Germplasm");
-				}
-				else{
+				} else {
 					inventoryButton.setDescription("Click to view Inventory Details");
 				}
 	
 				//#2 Seed Reserved
-				String seed_res = "-"; //default value
+				String seedRes = "-";
 				if(entry.getInventoryInfo().getReservedLotCount() != null && entry.getInventoryInfo().getReservedLotCount() != 0){
-					seed_res = entry.getInventoryInfo().getReservedLotCount().toString().trim();
+					seedRes = entry.getInventoryInfo().getReservedLotCount().toString().trim();
 				}
 
 
@@ -332,21 +327,20 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 	            item.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(entry.getGroupName());
 	            item.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
 	            item.getItemProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-	            item.getItemProperty(ListDataTablePropertyID.SEED_RESERVATION.getName()).setValue(seed_res);
+	            item.getItemProperty(ListDataTablePropertyID.SEED_RESERVATION.getName()).setValue(seedRes);
 	            
 			}
 
 			copyAddedColumnsFromTemp(tempTable);
-			
             this.listDataTable.requestRepaint();
-			return;
+            
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error with getting the saved list entries.", ex);
 			MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_GETTING_SAVED_ENTRIES));
-			return;
 		}
+		
+		return;
 	}
-
 	
 	private Table cloneAddedColumnsToTemp(Table sourceTable) {
 	    Table newTable = new Table();

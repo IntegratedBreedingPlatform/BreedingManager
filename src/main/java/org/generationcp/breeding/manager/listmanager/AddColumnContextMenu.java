@@ -60,70 +60,70 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private ContextMenuItem menuFillWithCrossMaleGID;
     private ContextMenuItem menuFillWithCrossMalePrefName;
     
-    public static String ADD_COLUMN_MENU = "Add Column";
-    public static String FILL_WITH_PREFERRED_ID = "Fill with Preferred ID";
-    public static String FILL_WITH_PREFERRED_NAME = "Fill with Preferred Name";
-    public static String FILL_WITH_GERMPLASM_DATE = "Fill with Germplasm Dates";
-    public static String FILL_WITH_LOCATION = "Fill with Location";
-    public static String FILL_WITH_METHOD_INFO = "Fill with Breeding Method Information";
-    public static String FILL_WITH_METHOD_NAME = "Fill with Breeding Method Name";
-    public static String FILL_WITH_METHOD_ABBREV = "Fill with Breeding Method Abbreviation";
-    public static String FILL_WITH_METHOD_NUMBER = "Fill with Breeding Method Number";
-    public static String FILL_WITH_METHOD_GROUP = "Fill with Breeding Method Group";
-    public static String FILL_WITH_CROSS_FEMALE_INFO = "Fill with Cross-Female Information";
-    public static String FILL_WITH_CROSS_FEMALE_GID = "Fill with Cross-Female GID";
-    public static String FILL_WITH_CROSS_FEMALE_PREF_NAME = "Fill with Cross-Female Preferred Name";
-    public static String FILL_WITH_CROSS_MALE_INFO = "Fill with Cross-Male Information";
-    public static String FILL_WITH_CROSS_MALE_GID = "Fill with Cross-Male GID";
-    public static String FILL_WITH_CROSS_MALE_PREF_NAME = "Fill with Cross-Male Preferred Name";
+    public static final String ADD_COLUMN_MENU = "Add Column";
+    public static final String FILL_WITH_PREFERRED_ID = "Fill with Preferred ID";
+    public static final String FILL_WITH_PREFERRED_NAME = "Fill with Preferred Name";
+    public static final String FILL_WITH_GERMPLASM_DATE = "Fill with Germplasm Dates";
+    public static final String FILL_WITH_LOCATION = "Fill with Location";
+    public static final String FILL_WITH_METHOD_INFO = "Fill with Breeding Method Information";
+    public static final String FILL_WITH_METHOD_NAME = "Fill with Breeding Method Name";
+    public static final String FILL_WITH_METHOD_ABBREV = "Fill with Breeding Method Abbreviation";
+    public static final String FILL_WITH_METHOD_NUMBER = "Fill with Breeding Method Number";
+    public static final String FILL_WITH_METHOD_GROUP = "Fill with Breeding Method Group";
+    public static final String FILL_WITH_CROSS_FEMALE_INFO = "Fill with Cross-Female Information";
+    public static final String FILL_WITH_CROSS_FEMALE_GID = "Fill with Cross-Female GID";
+    public static final String FILL_WITH_CROSS_FEMALE_PREF_NAME = "Fill with Cross-Female Preferred Name";
+    public static final String FILL_WITH_CROSS_MALE_INFO = "Fill with Cross-Male Information";
+    public static final String FILL_WITH_CROSS_MALE_GID = "Fill with Cross-Male GID";
+    public static final String FILL_WITH_CROSS_MALE_PREF_NAME = "Fill with Cross-Male Preferred Name";
     
     @SuppressWarnings("rawtypes")
-    public static Class PREFERRED_ID_TYPE = String.class;
-    public static String PREFERRED_ID = "PREFERRED ID";
+    public static final Class PREFERRED_ID_TYPE = String.class;
+    public static final String PREFERRED_ID = "PREFERRED ID";
     
     @SuppressWarnings("rawtypes")
-    public static Class PREFERRED_NAME_TYPE = String.class;
-    public static String PREFERRED_NAME = "PREFERRED NAME";
+    public static final Class PREFERRED_NAME_TYPE = String.class;
+    public static final String PREFERRED_NAME = "PREFERRED NAME";
     
     @SuppressWarnings("rawtypes")
-    public static Class GERMPLASM_DATE_TYPE = String.class;
-    public static String GERMPLASM_DATE = "GERMPLASM DATE";
+    public static final Class GERMPLASM_DATE_TYPE = String.class;
+    public static final String GERMPLASM_DATE = "GERMPLASM DATE";
     
     @SuppressWarnings("rawtypes")
-    public static Class LOCATIONS_TYPE = String.class;
-    public static String LOCATIONS = "LOCATIONS";
+    public static final Class LOCATIONS_TYPE = String.class;
+    public static final String LOCATIONS = "LOCATIONS";
     
     @SuppressWarnings("rawtypes")
-    public static Class METHOD_NAME_TYPE = String.class;
-    public static String METHOD_NAME = "METHOD NAME";
+    public static final Class METHOD_NAME_TYPE = String.class;
+    public static final String METHOD_NAME = "METHOD NAME";
     
     @SuppressWarnings("rawtypes")
-    public static Class METHOD_ABBREV_TYPE = String.class;
-    public static String METHOD_ABBREV = "METHOD ABBREV";
+    public static final Class METHOD_ABBREV_TYPE = String.class;
+    public static final String METHOD_ABBREV = "METHOD ABBREV";
     
     @SuppressWarnings("rawtypes")
-    public static Class METHOD_NUMBER_TYPE = String.class;
-    public static String METHOD_NUMBER = "METHOD NUMBER";
+    public static final Class METHOD_NUMBER_TYPE = String.class;
+    public static final String METHOD_NUMBER = "METHOD NUMBER";
     
     @SuppressWarnings("rawtypes")
-    public static Class METHOD_GROUP_TYPE = String.class;
-    public static String METHOD_GROUP = "METHOD GROUP";
+    public static final Class METHOD_GROUP_TYPE = String.class;
+    public static final String METHOD_GROUP = "METHOD GROUP";
     
     @SuppressWarnings("rawtypes")
-    public static Class CROSS_FEMALE_GID_TYPE = String.class;
-    public static String CROSS_FEMALE_GID = "CROSS-FEMALE GID";
+    public static final Class CROSS_FEMALE_GID_TYPE = String.class;
+    public static final String CROSS_FEMALE_GID = "CROSS-FEMALE GID";
     
     @SuppressWarnings("rawtypes")
-    public static Class CROSS_FEMALE_PREF_NAME_TYPE = String.class;
-    public static String CROSS_FEMALE_PREF_NAME = "CROSS-FEMALE PREFERRED NAME";
+    public static final Class CROSS_FEMALE_PREF_NAME_TYPE = String.class;
+    public static final String CROSS_FEMALE_PREF_NAME = "CROSS-FEMALE PREFERRED NAME";
     
     @SuppressWarnings("rawtypes")
-    public static Class CROSS_MALE_GID_TYPE = String.class;
-    public static String CROSS_MALE_GID = "CROSS-MALE GID";
+    public static final Class CROSS_MALE_GID_TYPE = String.class;
+    public static final String CROSS_MALE_GID = "CROSS-MALE GID";
     
     @SuppressWarnings("rawtypes")
-    public static Class CROSS_MALE_PREF_NAME_TYPE = String.class;
-    public static String CROSS_MALE_PREF_NAME = "CROSS-MALE PREFERRED NAME";
+    public static final Class CROSS_MALE_PREF_NAME_TYPE = String.class;
+    public static final String CROSS_MALE_PREF_NAME = "CROSS-MALE PREFERRED NAME";
     
     @SuppressWarnings("unused")
 	private boolean fromBuildNewList;
@@ -625,8 +625,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
 	                    	} else{
 	                    		targetTable.getItem(itemId).getItemProperty(CROSS_MALE_GID).setValue("-");
 	                    	}
-	                    }
-	                    else {
+	                    } else {
 	                        targetTable.getItem(itemId).getItemProperty(CROSS_MALE_GID).setValue("-");
 	                    }
                     } else{
@@ -672,11 +671,10 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
 	                        	itemIdsInMap = new ArrayList<Integer>();
 	                        	itemIdsInMap.add(itemId);
 	                        	gidToItemIdMap.put(germplasm.getGpid2(), itemIdsInMap);
-	                        } else{
+	                        } else {
 	                        	itemIdsInMap.add(itemId);
 	                        }
-	                    }
-	                    else {
+	                    } else {
 	                        targetTable.getItem(itemId).getItemProperty(CROSS_MALE_PREF_NAME).setValue("-");
 	                    }
                     } else{

@@ -112,6 +112,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 							InternationalizableComponent, BreedingManagerLayout, AddEntryDialogSource, 
 							SaveListAsDialogSource, ReserveInventorySource {
 
+	private static final String ERROR_WITH_DELETING_LIST_ENTRIES = "Error with deleting list entries.";
+
+	private static final String CONTEXT_MENU_WIDTH = "295px";
+
 	private static final long serialVersionUID = -3367108805414232721L;
 
 	private static final Logger LOG = LoggerFactory.getLogger(ListComponent.class);
@@ -313,7 +317,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
         lockButton.setData(LOCK_BUTTON_ID);
         		
         menu = new ContextMenu();
-		menu.setWidth("295px");
+		menu.setWidth(CONTEXT_MENU_WIDTH);
 		
 		// Add Column menu will be initialized after list data table is created
         initializeListDataTable(); //listDataTable
@@ -332,7 +336,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
 		
 		inventoryViewMenu = new ContextMenu();
-		inventoryViewMenu.setWidth("295px");
+		inventoryViewMenu.setWidth(CONTEXT_MENU_WIDTH);
 		menuCancelReservation = inventoryViewMenu.addItem(messageSource.getMessage(Message.CANCEL_RESERVATIONS));
 		menuCopyToNewListFromInventory = inventoryViewMenu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST));
         menuReserveInventory = inventoryViewMenu.addItem(messageSource.getMessage(Message.RESERVE_INVENTORY));
@@ -343,7 +347,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
         resetInventoryMenuOptions();
         
 		tableContextMenu = new ContextMenu();
-		tableContextMenu.setWidth("295px");
+		tableContextMenu.setWidth(CONTEXT_MENU_WIDTH);
         tableContextMenuSelectAll = tableContextMenu.addItem(messageSource.getMessage(Message.SELECT_ALL));
         tableContextMenuDeleteEntries = tableContextMenu.addItem(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
         tableContextMenuEditCell = tableContextMenu.addItem(messageSource.getMessage(Message.EDIT_VALUE));
@@ -1153,10 +1157,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 			}
 		} catch (NumberFormatException e) {
 			LOG.error(e.getMessage(), e);
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), "Error with deleting list entries.");
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), ERROR_WITH_DELETING_LIST_ENTRIES);
 		} catch (MiddlewareQueryException e) {
 			LOG.error(e.getMessage(), e);
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), "Error with deleting list entries.");
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), ERROR_WITH_DELETING_LIST_ENTRIES);
 		}
     	
     	if(listDataTable.getItemIds().size() == selectedIds.size()){
@@ -1595,7 +1599,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
                     designationOfListEntriesDeleted += sDesignation +",";
                     germplasmListManager.deleteGermplasmListDataByListIdLrecId(germplasmList.getId(), lrecId);
                 } catch (MiddlewareQueryException e) {
-                    LOG.error("Error with deleting list entries.", e);
+                    LOG.error(ERROR_WITH_DELETING_LIST_ENTRIES, e);
                     LOG.error("\n" + e.getStackTrace());
                 }
             }
@@ -1624,10 +1628,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
             itemsToDelete.clear(); 
                 
         } catch (NumberFormatException e) {
-            LOG.error("Error with deleting list entries.", e);
+            LOG.error(ERROR_WITH_DELETING_LIST_ENTRIES, e);
             LOG.error("\n" + e.getStackTrace());
         } catch (MiddlewareQueryException e) {
-            LOG.error("Error with deleting list entries.", e);
+            LOG.error(ERROR_WITH_DELETING_LIST_ENTRIES, e);
             LOG.error("\n" + e.getStackTrace());
         }
     // end of performListEntriesDeletion
