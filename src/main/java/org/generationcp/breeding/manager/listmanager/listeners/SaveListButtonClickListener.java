@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.AddColumnContextMenuOption;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listmanager.AddColumnContextMenu;
@@ -15,7 +16,6 @@ import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -107,17 +107,12 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 					((ListManagerMain) this.source.getSource()).getListSelectionComponent().showNodeOnTree(listId);
 					
 				} else{
-					if(showMessages){
-					    MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
-							, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
-					}
+					showErrorOnSavingGermplasmList(showMessages);
 					return;
 				}
 			} catch(MiddlewareQueryException ex){
 				LOG.error("Error in saving germplasm list: " + listToSave, ex);
-				if(showMessages) {
-                    MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
-                }
+				showErrorOnSavingGermplasmList(showMessages);
 				return;
 			}
 			
@@ -193,6 +188,13 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 		
 		((ListManagerMain) this.source.getSource()).closeList(currentlySavedList);
 	}
+
+	public void showErrorOnSavingGermplasmList(Boolean showMessages) {
+		if(showMessages){
+		    MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE)
+				, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
+		}
+	}
 	
 	private void saveListDataColumns(GermplasmList listToSave) {
 	    try {
@@ -204,29 +206,29 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 	}
 	
 	
-	private boolean validateListDetails(GermplasmList list, GermplasmList currentlySavedList){
-		
+	public boolean validateListDetails(GermplasmList list, GermplasmList currentlySavedList){
+		boolean isValid = true;
 		if(list.getName() == null || list.getName().length() == 0){
 			MessageNotifier.showRequiredFieldError(this.source.getWindow(), messageSource.getMessage(Message.NAME_CAN_NOT_BE_BLANK));
-			return false;
+			isValid = false;
 		} else if(list.getDescription() == null || list.getDescription().length() == 0){
 			MessageNotifier.showRequiredFieldError(this.source.getWindow(), messageSource.getMessage(Message.DESCRIPTION_CAN_NOT_BE_BLANK));
-			return false;
+			isValid = false;
 		} else if(list.getName().length() > 50){
 			MessageNotifier.showRequiredFieldError(this.source.getWindow(), messageSource.getMessage(Message.NAME_CAN_NOT_BE_LONG));
-			return false;
+			isValid = false;
 		} else if(list.getDescription().length() > 255){
 			MessageNotifier.showRequiredFieldError(this.source.getWindow(), messageSource.getMessage(Message.DESCRIPTION_CAN_NOT_BE_LONG));
-			return false;
+			isValid = false;
 		} else if(list.getDate() == null){
 			MessageNotifier.showRequiredFieldError(this.source.getWindow(), "Please select a date.");
-			return false;
+			isValid = false;
 		} else {
 			if(currentlySavedList == null){
-				return validateListName(list);
+				isValid = validateListName(list);
 			}
 		}
-		return true;
+		return isValid;
 	}
 	
 	private boolean validateListName(GermplasmList list){
@@ -245,7 +247,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 		return true;
 	}
 	
-	private Integer getLocalIBDBUserId(){
+	public Integer getLocalIBDBUserId(){
 		try{
 			WorkbenchRuntimeData runtimeData = this.workbenchDataManager.getWorkbenchRuntimeData();
 			Project project = this.workbenchDataManager.getLastOpenedProject(runtimeData.getUserId());
@@ -279,14 +281,8 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 						private static final long serialVersionUID = 1L;
 						@Override
 						public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-							CheckBox itemCheckBox = (CheckBox) event.getButton();
-							if(((Boolean) itemCheckBox.getValue()).equals(true)){
-								listDataTable.select(entry.getId());
-							} else {
-								listDataTable.unselect(entry.getId());
-							}
+							toggleRowTagInListDataTable(entry, event);
 						}
-		
 					});
 
 	            Button designationButton = new Button(entry.getDesignation(), new GidLinkClickListener(entry.getGid().toString(), true));
@@ -342,6 +338,15 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 		return;
 	}
 	
+	private void toggleRowTagInListDataTable(final GermplasmListData entry, com.vaadin.ui.Button.ClickEvent event) {
+		CheckBox itemCheckBox = (CheckBox) event.getButton();
+		if(((Boolean) itemCheckBox.getValue()).equals(true)){
+			listDataTable.select(entry.getId());
+		} else {
+			listDataTable.unselect(entry.getId());
+		}
+	}
+
 	private Table cloneAddedColumnsToTemp(Table sourceTable) {
 	    Table newTable = new Table();
 	    
@@ -354,31 +359,8 @@ public class SaveListButtonClickListener implements Button.ClickListener{
                 // copy only addable properties present in source table
                 if(AddColumnContextMenu.propertyExists(addablePropertyId, sourceTable)){
                     // setup added columns first before copying values
-                    if(addablePropertyId.equals(AddColumnContextMenu.PREFERRED_ID)){
-                        newTable.addContainerProperty(AddColumnContextMenu.PREFERRED_ID, AddColumnContextMenu.PREFERRED_ID_TYPE, "");
-                    } else if(addablePropertyId.equals(AddColumnContextMenu.PREFERRED_NAME)){
-                        newTable.addContainerProperty(AddColumnContextMenu.PREFERRED_NAME, AddColumnContextMenu.PREFERRED_NAME_TYPE, "");
-                    } else if(addablePropertyId.equals(AddColumnContextMenu.GERMPLASM_DATE)){
-                        newTable.addContainerProperty(AddColumnContextMenu.GERMPLASM_DATE, AddColumnContextMenu.GERMPLASM_DATE_TYPE, "");
-                    } else if(addablePropertyId.equals(AddColumnContextMenu.LOCATIONS)){
-                        newTable.addContainerProperty(AddColumnContextMenu.LOCATIONS, AddColumnContextMenu.LOCATIONS_TYPE, "");
-                    } else if(addablePropertyId.equals(AddColumnContextMenu.METHOD_NAME)){
-                        newTable.addContainerProperty(AddColumnContextMenu.METHOD_NAME, AddColumnContextMenu.METHOD_NAME_TYPE, "");
-                    } else if(addablePropertyId.equals(AddColumnContextMenu.METHOD_ABBREV)){
-                        newTable.addContainerProperty(AddColumnContextMenu.METHOD_ABBREV, AddColumnContextMenu.METHOD_ABBREV_TYPE, "");
-                    } else if(addablePropertyId.equals(AddColumnContextMenu.METHOD_NUMBER)){
-                        newTable.addContainerProperty(AddColumnContextMenu.METHOD_NUMBER, AddColumnContextMenu.METHOD_NUMBER_TYPE, "");
-                    } else if(addablePropertyId.equals(AddColumnContextMenu.METHOD_GROUP)){
-                        newTable.addContainerProperty(AddColumnContextMenu.METHOD_GROUP, AddColumnContextMenu.METHOD_GROUP_TYPE, "");
-                    } else if(addablePropertyId.equals(AddColumnContextMenu.CROSS_FEMALE_GID)){
-                        newTable.addContainerProperty(AddColumnContextMenu.CROSS_FEMALE_GID, AddColumnContextMenu.CROSS_FEMALE_GID_TYPE, "");
-                    } else if(addablePropertyId.equals(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME)){
-                        newTable.addContainerProperty(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME, AddColumnContextMenu.CROSS_FEMALE_PREF_NAME_TYPE, "");
-                    } else if(addablePropertyId.equals(AddColumnContextMenu.CROSS_MALE_GID)){
-                        newTable.addContainerProperty(AddColumnContextMenu.CROSS_MALE_GID, AddColumnContextMenu.CROSS_MALE_GID_TYPE, "");
-                    } else if(addablePropertyId.equals(AddColumnContextMenu.CROSS_MALE_PREF_NAME)){
-                        newTable.addContainerProperty(AddColumnContextMenu.CROSS_MALE_PREF_NAME, AddColumnContextMenu.CROSS_MALE_PREF_NAME_TYPE, "");
-                    }
+                    createContainerPropertyOfAddedColumnToTempTable(newTable,
+							addablePropertyId);
 
                     // copy value to new table
                     Property sourceItemProperty = sourceItem.getItemProperty(addablePropertyId);
@@ -388,6 +370,14 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 	    }
 	    
 	    return newTable;
+	}
+
+	public void createContainerPropertyOfAddedColumnToTempTable(Table newTable,
+			String addablePropertyId) {
+		
+		if(AddColumnContextMenuOption.isPartOfAddColumnContextMenuOption(addablePropertyId)){
+			newTable.addContainerProperty(addablePropertyId, AddColumnContextMenuOption.getClassProperty(addablePropertyId), "");
+		}
 	}
 	
 	private void copyAddedColumnsFromTemp(Table tempTable) {
@@ -451,7 +441,25 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 	public void setForceHasChanges(Boolean hasChanges){
 		forceHasChanges = hasChanges;
 	}
-	
-    
+
+	public void setDataManager(GermplasmListManager dataManager) {
+		this.dataManager = dataManager;
+	}
+
+	public void setWorkbenchDataManager(WorkbenchDataManager workbenchDataManager) {
+		this.workbenchDataManager = workbenchDataManager;
+	}
+
+	public void setInventoryDataManager(InventoryDataManager inventoryDataManager) {
+		this.inventoryDataManager = inventoryDataManager;
+	}
+
+	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	public void setSource(ListBuilderComponent source) {
+		this.source = source;
+	}
 }
 
