@@ -16,6 +16,9 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.customcomponent.ViewListHeaderComponent;
+import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -34,6 +37,7 @@ import com.vaadin.ui.Window;
 
 public class ListComponentTest {
 	
+	private static final String DUMMY_OPTION = "Dummy Option";
 	private static final String UPDATED_GERMPLASM_LIST_NOTE = "UPDATED Germplasm List Note";
 	private static final String UPDATED_GERMPLASM_LIST_NAME = "UPDATED Germplasm List Name";
 	private static final String UPDATED_GERMPLASM_LIST_DESCRIPTION_VALUE = "UPDATED Germplasm List Description Value";
@@ -245,5 +249,68 @@ public class ListComponentTest {
 	}
 	
 	
-
+	@Test
+	public void testAddListeners(){
+		ViewListHeaderComponent viewListHeaderComponent = Mockito.mock(ViewListHeaderComponent.class);
+		ViewListHeaderWindow viewListHeaderWindow = spy(new ViewListHeaderWindow(germplasmList));
+		doReturn(viewListHeaderComponent).when(viewListHeaderWindow).getListHeaderComponent();
+		doNothing().when(listComponent).instantiateViewListHeaderWindow();
+		doNothing().when(listComponent).initializeListDataTable();
+		doNothing().when(listComponent).updateListStatusWhenLaunchFromDashboard();
+		doNothing().when(listComponent).addFillWithForUnLockedList();
+		doNothing().when(listComponent).makeTableEditable();
+		doNothing().when(listComponent).addListenerForUpdatingSelectedEntriesInListDataAndInventoryTable();
+		
+		Mockito.when(messageSource.getMessage(Message.ADD_ENTRIES)).thenReturn(DUMMY_OPTION);
+		Mockito.when(messageSource.getMessage(Message.COPY_TO_NEW_LIST)).thenReturn(DUMMY_OPTION);
+		Mockito.when(messageSource.getMessage(Message.DELETE_LIST)).thenReturn(DUMMY_OPTION);
+		Mockito.when(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES)).thenReturn(DUMMY_OPTION);
+		Mockito.when(messageSource.getMessage(Message.EDIT_LIST)).thenReturn(DUMMY_OPTION);
+		Mockito.when(messageSource.getMessage(Message.EXPORT_LIST)).thenReturn(DUMMY_OPTION);
+		Mockito.when(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER)).thenReturn(DUMMY_OPTION);
+		Mockito.when(messageSource.getMessage(Message.INVENTORY_VIEW)).thenReturn(DUMMY_OPTION);
+		Mockito.when(messageSource.getMessage(Message.SAVE_CHANGES)).thenReturn(DUMMY_OPTION);
+		Mockito.when(messageSource.getMessage(Message.SELECT_ALL)).thenReturn(DUMMY_OPTION);
+		
+		Mockito.when(messageSource.getMessage(Message.CANCEL_RESERVATIONS)).thenReturn(DUMMY_OPTION);
+		Mockito.when(messageSource.getMessage(Message.COPY_TO_NEW_LIST)).thenReturn(DUMMY_OPTION);
+		Mockito.when(messageSource.getMessage(Message.RESERVE_INVENTORY)).thenReturn(DUMMY_OPTION);
+		Mockito.when(messageSource.getMessage(Message.RETURN_TO_LIST_VIEW)).thenReturn(DUMMY_OPTION);
+		Mockito.when(messageSource.getMessage(Message.SAVE_RESERVATIONS)).thenReturn(DUMMY_OPTION);
+		
+		Mockito.when(messageSource.getMessage(Message.EDIT_VALUE)).thenReturn(DUMMY_OPTION);
+		Mockito.when(messageSource.getMessage(Message.ADD_SELECTED_ENTRIES_TO_NEW_LIST)).thenReturn(DUMMY_OPTION);
+		
+		listComponent.setViewListHeaderWindow(viewListHeaderWindow);
+		listComponent.instantiateComponents();
+		Mockito.verify(listComponent, Mockito.times(1)).instantiateViewListHeaderWindow();
+		Mockito.verify(listComponent, Mockito.times(1)).updateListStatusWhenLaunchFromDashboard();
+		
+		//Trigger the function to test
+		listComponent.addListeners();
+		
+		Mockito.verify(listComponent, Mockito.times(1)).addFillWithForUnLockedList();
+		Mockito.verify(listComponent, Mockito.times(1)).makeTableEditable();
+		Mockito.verify(listComponent, Mockito.times(1)).addListenerToActionButton();
+		Mockito.verify(listComponent, Mockito.times(1)).addListenerToActionMenuInListView();
+		Mockito.verify(listComponent, Mockito.times(1)).addListenerToActionMenuInInventoryView();
+		Mockito.verify(listComponent, Mockito.times(1)).addListenerToLockUnlockButton();
+		Mockito.verify(listComponent, Mockito.times(1)).addListenerToListDataTableContextMenu();
+		Mockito.verify(listComponent, Mockito.times(1)).addListenerForUpdatingSelectedEntriesInListDataAndInventoryTable();
+	}
+	
+	@Test
+	public void TestIsANonEditableColumnInListDataTable(){
+		Assert.assertTrue("GID column must be a non editable column.",listComponent.isANonEditableColumnInListDataTable("gid"));
+		Assert.assertTrue("ENTRY_ID column must be a non editable column.",listComponent.isANonEditableColumnInListDataTable("entryId"));
+		Assert.assertTrue("DESIGNATION column must be a non editable column.",listComponent.isANonEditableColumnInListDataTable("desig"));
+		Assert.assertFalse("PARENTAGE column must be an editable column.",listComponent.isANonEditableColumnInListDataTable("parentage"));
+	}
+	
+	@Test
+	public void TestIsAnInventoryRelatedColumn(){
+		Assert.assertTrue("SEED_RESERVATION column is an inventory column.",listComponent.isAnInventoryRelatedColumn("seedRes"));
+		Assert.assertTrue("AVAIL_INV column is an inventory column.",listComponent.isAnInventoryRelatedColumn("availInv"));
+		Assert.assertFalse("PARENTAGE column is not an inventory column.",listComponent.isAnInventoryRelatedColumn("parentage"));
+	}
 }
