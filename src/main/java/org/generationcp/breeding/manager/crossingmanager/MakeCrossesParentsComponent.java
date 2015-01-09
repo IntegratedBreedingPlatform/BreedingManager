@@ -242,38 +242,23 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     		//updates the crosses made save button if both parents are save at least once
     		makeCrossesMain.getCrossesTableComponent().updateCrossesMadeSaveButton();
     		
-    	} else {//drag some entries of a list to the parent list
-    		
-    		//just add the new entry to the parent table
-    		if(targetTable.equals(femaleParents)){
-    			
-    			if(femaleParentTab.getGermplasmList() != null){
-    				//if the current list in the female parent tab is a central list, create a new list for unsaved changes
-        			if(femaleParentTab.getGermplasmList().getId() > 0){
-        				femaleParentTab.setListNameForCrosses("");
-        				femaleParentTab.setGermplasmList(null);
-        			}
-    			}
-    			
-    			femaleParentTab.getSaveActionMenu().setEnabled(true);
-    			femaleParentTab.setHasUnsavedChanges(true);
-    			clearSeedReservationValues(femaleParents);
-    		} else{
-    			
-    			if(maleParentTab.getGermplasmList() != null){
-    				//if the current list in the male parent tab is a central list, create a new list for unsaved changes
-        			if(maleParentTab.getGermplasmList().getId() > 0){
-        				maleParentTab.setListNameForCrosses("");
-        				maleParentTab.setGermplasmList(null);
-        			}
-    			}
-    			
-    			maleParentTab.getSaveActionMenu().setEnabled(true);
-    			maleParentTab.setHasUnsavedChanges(true);
-    			clearSeedReservationValues(maleParents);
-    		}
+    	} else {
+    		//drag some entries of a list to the parent list
+    		updateParentTabForUnsavedChanges(targetTable);
     	}
-    	
+	}
+
+	private void updateParentTabForUnsavedChanges(Table targetTable) {
+		//just add the new entry to the parent table
+		if(targetTable.equals(femaleParents)){
+			femaleParentTab.getSaveActionMenu().setEnabled(true);
+			femaleParentTab.setHasUnsavedChanges(true);
+			clearSeedReservationValues(femaleParents);
+		} else{
+			maleParentTab.getSaveActionMenu().setEnabled(true);
+			maleParentTab.setHasUnsavedChanges(true);
+			clearSeedReservationValues(maleParents);
+		}
 	}
 
 	private void clearSeedReservationValues(Table table){
@@ -613,55 +598,28 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
         }
 	}
 
-	private void updateMaleParentList(GermplasmList listFromTree) {
+	protected void updateMaleParentList(GermplasmList listFromTree) {
     	//whenever we add a list to male parent tab, only the first list added will be marked as the working list
 		if(maleParentTab.getGermplasmList() == null){
 			maleParentTab.setGermplasmList(listFromTree);
 			maleParentTab.setListNameForCrosses(listFromTree.getName());
     	    updateCrossesSeedSource(maleParentTab, listFromTree);
-    	    maleParentTab.enableReserveInventory();
-    	    
-    	    if(listFromTree.getId() < 0){//if it is a local list
-    	    	maleParentTab.enableEditListHeaderOption();
-    	    }
-		}
-		else{
-			//if the current list in the parent tab is central list
-			if(maleParentTab.getGermplasmList().getId() > 0){
-				maleParentTab.setListNameForCrosses("");
-				maleParentTab.setGermplasmList(null);
-				
-				maleParentTab.getSaveActionMenu().setEnabled(true);
-				maleParentTab.setHasUnsavedChanges(true);
-			}
+    	    maleParentTab.enableReserveInventory();    	    
+    	    maleParentTab.enableEditListHeaderOption();
 		}
 		
 		maleParentTab.updateNoOfEntries();
 	}
 
-	private void updateFemaleParentList(GermplasmList listFromTree) {
+	protected void updateFemaleParentList(GermplasmList listFromTree) {
     	//whenever we add a list to female parent tab, only the first list added will be marked as the working list
 		if(femaleParentTab.getGermplasmList() == null){
 			femaleParentTab.setGermplasmList(listFromTree);
 			femaleParentTab.setListNameForCrosses(listFromTree.getName());
     	    updateCrossesSeedSource(femaleParentTab, listFromTree);
 			femaleParentTab.enableReserveInventory();
-			
-			if(listFromTree.getId() < 0){//if it is a local list
-				femaleParentTab.enableEditListHeaderOption();
-    	    }
+			femaleParentTab.enableEditListHeaderOption();
 		}
-		else{
-			//if the current list in the parent tab is central list
-			if(femaleParentTab.getGermplasmList().getId() > 0){
-				femaleParentTab.setListNameForCrosses("");
-				femaleParentTab.setGermplasmList(null);
-				
-				femaleParentTab.getSaveActionMenu().setEnabled(true);
-				femaleParentTab.setHasUnsavedChanges(true);
-			}
-		}
-		
 		femaleParentTab.updateNoOfEntries();
 	}
 
