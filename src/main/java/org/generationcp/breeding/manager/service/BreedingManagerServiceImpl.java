@@ -88,17 +88,13 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 	}
 
     @Override
-    public List<Germplasm> doGermplasmSearch(String q, Operation o, boolean includeParents, boolean searchPublicData) throws BreedingManagerSearchException {
+    public List<Germplasm> doGermplasmSearch(String q, Operation o, boolean includeParents) throws BreedingManagerSearchException {
         validateEmptySearchString(q);
         try {
-            List<Germplasm> results = germplasmDataManager.searchForGermplasm(q, o, includeParents, searchPublicData);
+            List<Germplasm> results = germplasmDataManager.searchForGermplasm(q, o, includeParents);
 
             if (null == results || results.isEmpty()) {
-                if (!searchPublicData) {
-                    throw new BreedingManagerSearchException(Message.NO_SEARCH_RESULTS_UNCHECKED_PUBLIC_DATA);
-                }else {
-                    throw new BreedingManagerSearchException(Message.NO_SEARCH_RESULTS);
-                }
+            	throw new BreedingManagerSearchException(Message.NO_SEARCH_RESULTS);
             }
 
             return results;
@@ -110,18 +106,14 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
     }
 
     @Override
-    public List<GermplasmList> doGermplasmListSearch(String q, Operation o, boolean searchPublicData) throws BreedingManagerSearchException {
+    public List<GermplasmList> doGermplasmListSearch(String q, Operation o) throws BreedingManagerSearchException {
         validateEmptySearchString(q);
 
         try {
-            List<GermplasmList> results = germplasmListManager.searchForGermplasmList(q, o, searchPublicData);
+            List<GermplasmList> results = germplasmListManager.searchForGermplasmList(q, o);
 
             if (null == results || results.isEmpty()) {
-                if (!searchPublicData) {
-                    throw new BreedingManagerSearchException(Message.NO_SEARCH_RESULTS_UNCHECKED_PUBLIC_DATA);
-                }else {
-                    throw new BreedingManagerSearchException(Message.NO_SEARCH_RESULTS);
-                }
+            	throw new BreedingManagerSearchException(Message.NO_SEARCH_RESULTS);
             }
 
             return results;

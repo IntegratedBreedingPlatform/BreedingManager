@@ -640,7 +640,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 
             @Override
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-                lockGermplasmList(germplasmList);
+                lockGermplasmList(germplasmList.getId());
             }
         });
         
@@ -1769,8 +1769,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		return germplasmList.getId();
 	}
 	
-    public void lockGermplasmList(GermplasmList germplasmList) {
-    	Integer listId = germplasmList.getId();
+    public void lockGermplasmList(Integer listId) {
     	try {
 			germplasmList = germplasmListManager.getGermplasmListById(listId);
 		} catch (MiddlewareQueryException e) {

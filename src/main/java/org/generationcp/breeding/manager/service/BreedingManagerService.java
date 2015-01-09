@@ -19,7 +19,7 @@ public interface BreedingManagerService {
 
 	public String getDefaultOwnerListName() throws MiddlewareQueryException;
 
-    public List<GermplasmList> doGermplasmListSearch(String q, Operation o, boolean searchPublicData) throws BreedingManagerSearchException;
+    public List<GermplasmList> doGermplasmListSearch(String q, Operation o) throws BreedingManagerSearchException;
 
-    public List<Germplasm> doGermplasmSearch(String q, Operation o, boolean includeParents, boolean searchPublicData) throws BreedingManagerSearchException;
+    public List<Germplasm> doGermplasmSearch(String q, Operation o, boolean includeParents) throws BreedingManagerSearchException;
 }

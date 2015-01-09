@@ -243,7 +243,7 @@ public class ListComponentTest {
 		
 		doNothing().when(listComponent).setLockedState(true);
 		
-		listComponent.lockGermplasmList(germplasmList);
+		listComponent.lockGermplasmList(germplasmList.getId());
 		
 		Assert.assertEquals("Expecting the that the germplasmList status was changed to locked(101) but returned (" + germplasmList.getStatus() + ")", Integer.valueOf(101), germplasmList.getStatus());
 	}

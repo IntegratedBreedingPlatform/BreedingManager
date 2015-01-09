@@ -213,12 +213,7 @@ public class ListCommonActionsUtil {
 		
 		
 		for(GermplasmListData entry: listEntries){
-			if(entry.getId() > 0 || forceHasChanges){
-				GermplasmListData listEntry = new GermplasmListData();
-				copyFieldsToNewListEntry(listEntry,entry,listToSave);
-				newEntries.add(listEntry);
-			}
-			if(entry.getId() < 0 && !savedListEntriesMap.isEmpty()){
+			if(entry.getId() > 0 && !savedListEntriesMap.isEmpty()){
 				GermplasmListData matchingSavedEntry = savedListEntriesMap.get(entry.getId());
 				if(matchingSavedEntry != null){
 					//check if it will be updated
