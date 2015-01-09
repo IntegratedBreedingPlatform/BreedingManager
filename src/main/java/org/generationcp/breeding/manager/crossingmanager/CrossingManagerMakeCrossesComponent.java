@@ -36,9 +36,6 @@ import com.vaadin.ui.VerticalLayout;
 public class CrossingManagerMakeCrossesComponent extends VerticalLayout 
         implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, 
         				StepChangeListener, UnsavedChangesConfirmDialogSource{
-    
-	@SuppressWarnings("unused")
-	private static final Logger LOG = LoggerFactory.getLogger(CrossingManagerMakeCrossesComponent.class);
 	
     public static final String NEXT_BUTTON_ID = "next button";
     public static final String BACK_BUTTON_ID = "back button";

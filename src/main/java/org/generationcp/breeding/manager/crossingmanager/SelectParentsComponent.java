@@ -68,8 +68,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
-		
+		// do nothing
 	}
 
 	@Override
@@ -108,6 +107,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 
 	@Override
 	public void initializeValues() {
+		// do nothing
 	}
 
 	@Override
@@ -279,8 +279,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 
 	@Override
 	public void folderClicked(GermplasmList list) {
-		// TODO Auto-generated method stub
-		
+		// do nothing
 	}
 	
 	// SETTERS AND GETTERS
@@ -311,8 +310,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 			for(SelectParentsListDataComponent selectParentComponent : selectParentComponents){
 				selectParentComponent.changeToListView();
 			}
-		}
-		else if(modeView.equals(ModeView.INVENTORY_VIEW)){
+		} else if(modeView.equals(ModeView.INVENTORY_VIEW)){
 			for(SelectParentsListDataComponent selectParentComponent : selectParentComponents){
 				selectParentComponent.viewInventoryActionConfirmed();
 			}
@@ -331,8 +329,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 		
 		if(hasUnsavedChanges()){
 			setHasUnsavedChangesMain(true);
-		}
-		else{
+		} else {
 			setHasUnsavedChangesMain(false);
 		}
 	}
