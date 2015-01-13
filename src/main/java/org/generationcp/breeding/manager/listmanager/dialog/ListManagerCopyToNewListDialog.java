@@ -35,7 +35,6 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
@@ -241,7 +240,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
     
     private void populateComboBoxListName() {
         try {
-			germplasmList = germplasmListManager.getAllGermplasmLists(0, (int) germplasmListManager.countAllGermplasmLists(), Database.LOCAL);
+			germplasmList = germplasmListManager.getAllGermplasmLists(0, (int) germplasmListManager.countAllGermplasmLists());
 	        mapExistingList = new HashMap<String, Integer>();
 	        comboBoxListName.addItem("");
 	        for (GermplasmList gList : germplasmList) {
@@ -270,9 +269,9 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
         Boolean proceedWithSave = true;
         
         try {
-            Long matchingNamesCountOnCentral = germplasmListManager.countGermplasmListByName(listNameValue, Operation.EQUAL, Database.CENTRAL);
+            Long matchingNamesCount = germplasmListManager.countGermplasmListByName(listNameValue, Operation.EQUAL);
             String existingListMsg = "There is already an existing germplasm list with that name";
-            if(matchingNamesCountOnCentral>0){
+            if(matchingNamesCount>0){
             	MessageNotifier.showRequiredFieldError(getWindow(), existingListMsg);
                 proceedWithSave = false;
             }
