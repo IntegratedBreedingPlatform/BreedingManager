@@ -27,7 +27,6 @@ import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
 import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -394,24 +393,13 @@ public class Util {
 		List<GermplasmList> lists = new ArrayList<GermplasmList>();
 		
 		try {
-			//LOCAL
-			lists = germplasmListManager.getAllGermplasmLists(0, Integer.MAX_VALUE, Database.LOCAL);
+			lists = germplasmListManager.getAllGermplasmLists(0, Integer.MAX_VALUE);
 			for(GermplasmList list : lists){
 				Integer listId = list.getId();
 				if(germplasmListIds.contains(listId)){
 					germplasmListsMap.put(listId, list);
 				}
 			}
-			
-			//CENTRAL			
-			lists = germplasmListManager.getAllGermplasmLists(0, Integer.MAX_VALUE, Database.CENTRAL);
-			for(GermplasmList list : lists){
-				Integer listId = list.getId();
-				if(germplasmListIds.contains(listId)){
-					germplasmListsMap.put(listId, list);
-				}
-			}
-			
 		} catch (MiddlewareQueryException e) {
 			LOG.error("Error retrieving all germplasm list", e);
 		}
@@ -423,20 +411,11 @@ public class Util {
 		List<GermplasmList> lists = new ArrayList<GermplasmList>();
 		
 		try {
-			//LOCAL
-			lists = germplasmListManager.getAllGermplasmLists(0, Integer.MAX_VALUE, Database.LOCAL);
+			lists = germplasmListManager.getAllGermplasmLists(0, Integer.MAX_VALUE);
 			for(GermplasmList list : lists){
 				Integer listId = list.getId();
 				germplasmListsMap.put(listId, list);
 			}
-			
-			//CENTRAL			
-			lists = germplasmListManager.getAllGermplasmLists(0, Integer.MAX_VALUE, Database.CENTRAL);
-			for(GermplasmList list : lists){
-				Integer listId = list.getId();
-				germplasmListsMap.put(listId, list);
-			}
-			
 		} catch (MiddlewareQueryException e) {
 			LOG.error("Error retrieving all germplasm lists.", e);
 		}
