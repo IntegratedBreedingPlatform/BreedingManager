@@ -220,5 +220,31 @@ public class GermplasmListTreeUtilTest {
 		germplasmList.setUserId(GermplasmListTreeUtilTest.IBDB_USER_ID);
 		return germplasmList;
 	}
-
+	
+	@Test
+	public void testIsSourceItemHasChildrenForItemWithChildren() throws MiddlewareQueryException{
+		Integer sourceId = GermplasmListTreeUtilTest.GERMPLASM_LIST_ID;
+		this.setUpGermplasmListDataManager(sourceId, true);
+		
+		GermplasmList parent = getSampleGermplasmList(sourceId);
+		GermplasmList child1 = getSampleGermplasmList(2);
+		child1.setParent(parent);
+		
+		List<GermplasmList> items = new ArrayList<GermplasmList>();
+		items.add(child1);
+		
+		Mockito.when(germplasmListManager.getGermplasmListByParentFolderId(sourceId, 0, 1)).thenReturn(items);
+		
+		Assert.assertTrue("Expecting true is returned when checking an item with children but didn't.", util.isSourceItemHasChildren(sourceId));
+	}
+	
+	@Test
+	public void testIsSourceItemHasChildrenForItemWithNoChildren() throws MiddlewareQueryException{
+		Integer sourceId = GermplasmListTreeUtilTest.GERMPLASM_LIST_ID;
+		this.setUpGermplasmListDataManager(sourceId, true);
+		
+		Mockito.when(germplasmListManager.getGermplasmListByParentFolderId(sourceId, 0, 1)).thenReturn(new ArrayList<GermplasmList>());
+		
+		Assert.assertFalse("Expecting false is returned when checking an item with no children but didn't.", util.isSourceItemHasChildren(sourceId));
+	}
 }
