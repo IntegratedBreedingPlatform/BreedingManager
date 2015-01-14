@@ -2,8 +2,10 @@ package org.generationcp.breeding.manager.listmanager.util;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Deque;
+import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
@@ -76,6 +78,15 @@ public class GermplasmListTreeUtil implements Serializable {
     		MessageNotifier.showWarning(source.getWindow(), 
                     messageSource.getMessage(Message.ERROR_WITH_MODIFYING_LIST_TREE), 
                     messageSource.getMessage(Message.UNABLE_TO_MOVE_YOUR_LISTS_TO_PUBLIC_FOLDERS));
+
+    		return false;
+    	}
+    	
+    	if(isSourceItemHasChildren(sourceItemId)){
+    		MessageNotifier.showWarning(source.getWindow(), 
+                    messageSource.getMessage(Message.ERROR_WITH_MODIFYING_LIST_TREE), 
+                    messageSource.getMessage(Message.ITEM_HAS_A_CHILD));
+
     		return false;
     	}
     	
@@ -88,6 +99,7 @@ public class GermplasmListTreeUtil implements Serializable {
     	if(targetItemId!=null && !targetItemId.equals(ListSelectorComponent.LOCAL) && !targetItemId.equals(ListSelectorComponent.CENTRAL)){
     		targetId = Integer.valueOf(targetItemId.toString());
     	}
+
 		if(sourceId!=null && sourceId>0){
 			MessageNotifier.showWarning(source.getWindow(), 
 					messageSource.getMessage(Message.ERROR_WITH_MODIFYING_LIST_TREE), 
@@ -101,7 +113,7 @@ public class GermplasmListTreeUtil implements Serializable {
                     messageSource.getMessage(Message.UNABLE_TO_MOVE_YOUR_LISTS_TO_PUBLIC_FOLDERS));
     		return false;
     	}    	
-    	
+    
 		//Apply to back-end data    	
     	try {
             GermplasmList sourceGermplasmList = germplasmListManager.getGermplasmListById(sourceId);
@@ -137,7 +149,20 @@ public class GermplasmListTreeUtil implements Serializable {
         return true;
     }
 
-    public void setupTreeDragAndDropHandler(){
+	protected boolean isSourceItemHasChildren(Object sourceItemId) {
+		List<GermplasmList> listChildren = new ArrayList<GermplasmList>();
+
+        try {
+            listChildren = this.germplasmListManager.getGermplasmListByParentFolderId(Integer.valueOf(sourceItemId.toString()), 0, 1);
+        } catch (MiddlewareQueryException e) {
+            LOG.error("Error in getting germplasm lists by parent id.", e);
+            listChildren = new ArrayList<GermplasmList>();
+        }
+
+        return !listChildren.isEmpty();
+	}
+
+	public void setupTreeDragAndDropHandler(){
         targetListSource.setDropHandler(new GermplasmListSourceDropHandler(targetListSource, source, this));
     }
     
