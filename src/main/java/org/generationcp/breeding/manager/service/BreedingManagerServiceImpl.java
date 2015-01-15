@@ -1,6 +1,10 @@
 package org.generationcp.breeding.manager.service;
 
+import java.util.List;
+
+import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.commons.util.UserUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
@@ -12,12 +16,11 @@ import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.Person;
 import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.workbench.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-
-import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -137,6 +140,10 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
 		this.germplasmDataManager = germplasmDataManager;
 	}
-    
+
+	@Override
+	public Project getCurrentProject() throws MiddlewareQueryException {
+    	return ContextUtil.getProjectInContext(workbenchDataManager, BreedingManagerApplication.currentRequest());
+    }
     
 }

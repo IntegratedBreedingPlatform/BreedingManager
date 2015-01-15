@@ -4,6 +4,7 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.workbench.Project;
 
 import java.util.List;
 
@@ -22,4 +23,6 @@ public interface BreedingManagerService {
     public List<GermplasmList> doGermplasmListSearch(String q, Operation o) throws BreedingManagerSearchException;
 
     public List<Germplasm> doGermplasmSearch(String q, Operation o, boolean includeParents) throws BreedingManagerSearchException;
+    
+    public Project getCurrentProject() throws MiddlewareQueryException;
 }
