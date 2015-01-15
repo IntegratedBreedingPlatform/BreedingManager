@@ -688,7 +688,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 			Double new_res = entry.getValue();
 			
 			Item itemToUpdate = listInventoryTable.getTable().getItem(lot);
-			itemToUpdate.getItemProperty(ListInventoryTable.NEWLY_RESERVED_COLUMN_ID).setValue(new_res);
+			itemToUpdate.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(new_res);
 		}
 		
 		removeReserveInventoryWindow(reserveInventory);

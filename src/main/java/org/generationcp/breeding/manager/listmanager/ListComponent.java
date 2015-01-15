@@ -2270,7 +2270,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 			Double newRes = entry.getValue();
 
 			Item itemToUpdate = listInventoryTable.getTable().getItem(lot);
-			itemToUpdate.getItemProperty(ListInventoryTable.NEWLY_RESERVED_COLUMN_ID).setValue(
+			itemToUpdate.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(
 					newRes);
 		}
 

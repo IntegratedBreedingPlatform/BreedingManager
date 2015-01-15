@@ -7,6 +7,7 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
@@ -14,6 +15,7 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
+import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,39 +33,6 @@ import com.vaadin.ui.themes.BaseTheme;
 public class ListInventoryTable extends TableWithSelectAllLayout implements InitializingBean {
 
 	private static final long serialVersionUID = 1L;
-
-	public static Class<?> TAG_COLUMN_TYPE = CheckBox.class;
-  	public static String TAG_COLUMN_ID="Tag";
-	
-	public static Class<?> ENTRY_NUMBER_COLUMN_TYPE = Integer.class;
-	public static String ENTRY_NUMBER_COLUMN_ID = "#";
-	
-	public static Class<?> DESIGNATION_COLUMN_TYPE = Button.class;
-	public static String DESIGNATION_COLUMN_ID = "DESIGNATION";
-	
-	public static Class<?> LOCATION_COLUMN_TYPE = String.class;
-	public static String LOCATION_COLUMN_ID = "LOCATION";
-	
-	public static Class<?> UNITS_COLUMN_TYPE = String.class;
-	public static String UNITS_COLUMN_ID = "UNITS";
-
-	public static Class<?> AVAIL_COLUMN_TYPE = Double.class;
-	public static String AVAIL_COLUMN_ID = "AVAIL";
-	
-	public static Class<?> TOTAL_COLUMN_TYPE = Double.class;
-	public static String TOTAL_COLUMN_ID = "TOTAL";
-	
-	public static Class<?> RESERVED_COLUMN_TYPE = Double.class;
-	public static String RESERVED_COLUMN_ID = "RES";
-	
-	public static Class<?> NEWLY_RESERVED_COLUMN_TYPE = Double.class;
-	public static String NEWLY_RESERVED_COLUMN_ID = "NEW_RES";	
-	
-	public static Class<?> COMMENT_COLUMN_TYPE = String.class;
-	public static String COMMENT_COLUMN_ID = "COMMENT";
-	
-	public static Class<?> LOT_ID_COLUMN_TYPE = Integer.class;
-	public static String LOT_ID_COLUMN_ID = "LOT_ID";
 	
 	protected Table listInventoryTable;
 	protected Integer listId;
@@ -77,11 +46,14 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 	@Autowired
 	protected InventoryDataManager inventoryDataManager;
 	
+	@Autowired
+	protected OntologyDataManager ontologyDataManager;
+	
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
 	
 	public ListInventoryTable(Integer listId) {
-		super(TAG_COLUMN_ID);
+		super(ColumnLabels.TAG.getName());
 		this.listId = listId;
 	}
 	
@@ -101,29 +73,29 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		listInventoryTable.setSelectable(true);
 		listInventoryTable.setMultiSelect(true);
 		
-		listInventoryTable.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
-		listInventoryTable.addContainerProperty(ENTRY_NUMBER_COLUMN_ID, ENTRY_NUMBER_COLUMN_TYPE, null);
-		listInventoryTable.addContainerProperty(DESIGNATION_COLUMN_ID, DESIGNATION_COLUMN_TYPE, null);
-		listInventoryTable.addContainerProperty(LOCATION_COLUMN_ID, LOCATION_COLUMN_TYPE, null);
-		listInventoryTable.addContainerProperty(UNITS_COLUMN_ID, UNITS_COLUMN_TYPE, null);
-		listInventoryTable.addContainerProperty(AVAIL_COLUMN_ID, AVAIL_COLUMN_TYPE, null);
-		listInventoryTable.addContainerProperty(TOTAL_COLUMN_ID, TOTAL_COLUMN_TYPE, null);
-		listInventoryTable.addContainerProperty(RESERVED_COLUMN_ID, RESERVED_COLUMN_TYPE, null);
-		listInventoryTable.addContainerProperty(NEWLY_RESERVED_COLUMN_ID, NEWLY_RESERVED_COLUMN_TYPE, null);
-		listInventoryTable.addContainerProperty(COMMENT_COLUMN_ID, COMMENT_COLUMN_TYPE, null);
-		listInventoryTable.addContainerProperty(LOT_ID_COLUMN_ID, LOT_ID_COLUMN_TYPE, null);
+		listInventoryTable.addContainerProperty(ColumnLabels.TAG.getName(), CheckBox.class, null);
+		listInventoryTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
+		listInventoryTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
+		listInventoryTable.addContainerProperty(ColumnLabels.LOT_LOCATION.getName(), String.class, null);
+		listInventoryTable.addContainerProperty(ColumnLabels.UNITS.getName(), String.class, null);
+		listInventoryTable.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Double.class, null);
+		listInventoryTable.addContainerProperty(ColumnLabels.TOTAL.getName(), Double.class, null);
+		listInventoryTable.addContainerProperty(ColumnLabels.RESERVED.getName(), Double.class, null);
+		listInventoryTable.addContainerProperty(ColumnLabels.NEWLY_RESERVED.getName(), Double.class, null);
+		listInventoryTable.addContainerProperty(ColumnLabels.COMMENT.getName(), String.class, null);
+		listInventoryTable.addContainerProperty(ColumnLabels.LOT_ID.getName(), Integer.class, null);
 		
-		messageSource.setColumnHeader(listInventoryTable, TAG_COLUMN_ID, Message.CHECK_ICON);
-		messageSource.setColumnHeader(listInventoryTable, ENTRY_NUMBER_COLUMN_ID, Message.HASHTAG);
-		messageSource.setColumnHeader(listInventoryTable, DESIGNATION_COLUMN_ID, Message.LISTDATA_DESIGNATION_HEADER);
-		messageSource.setColumnHeader(listInventoryTable, LOCATION_COLUMN_ID, Message.LOCATION);
-		messageSource.setColumnHeader(listInventoryTable, UNITS_COLUMN_ID, Message.UNITS);
-		messageSource.setColumnHeader(listInventoryTable, AVAIL_COLUMN_ID, Message.AVAIL);
-		messageSource.setColumnHeader(listInventoryTable, TOTAL_COLUMN_ID, Message.TOTAL);
-		messageSource.setColumnHeader(listInventoryTable, RESERVED_COLUMN_ID, Message.RES);
-		messageSource.setColumnHeader(listInventoryTable, NEWLY_RESERVED_COLUMN_ID, Message.NEW_RES);
-		messageSource.setColumnHeader(listInventoryTable, COMMENT_COLUMN_ID, Message.COMM);
-		messageSource.setColumnHeader(listInventoryTable, LOT_ID_COLUMN_ID, Message.LOT_ID);
+		listInventoryTable.setColumnHeader(ColumnLabels.TAG.getName(), messageSource.getMessage(Message.CHECK_ICON));
+		listInventoryTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), messageSource.getMessage(Message.HASHTAG));
+		listInventoryTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(), ColumnLabels.DESIGNATION.getTermNameFromOntology(ontologyDataManager));
+		listInventoryTable.setColumnHeader(ColumnLabels.LOT_LOCATION.getName(), ColumnLabels.LOT_LOCATION.getTermNameFromOntology(ontologyDataManager));
+		listInventoryTable.setColumnHeader(ColumnLabels.UNITS.getName(), ColumnLabels.UNITS.getTermNameFromOntology(ontologyDataManager));
+		listInventoryTable.setColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName(), ColumnLabels.AVAILABLE_INVENTORY.getTermNameFromOntology(ontologyDataManager));
+		listInventoryTable.setColumnHeader(ColumnLabels.TOTAL.getName(), ColumnLabels.TOTAL.getTermNameFromOntology(ontologyDataManager));
+		listInventoryTable.setColumnHeader(ColumnLabels.RESERVED.getName(), ColumnLabels.RESERVED.getTermNameFromOntology(ontologyDataManager));
+		listInventoryTable.setColumnHeader(ColumnLabels.NEWLY_RESERVED.getName(), ColumnLabels.NEWLY_RESERVED.getTermNameFromOntology(ontologyDataManager));
+		listInventoryTable.setColumnHeader(ColumnLabels.COMMENT.getName(), ColumnLabels.COMMENT.getTermNameFromOntology(ontologyDataManager));
+		listInventoryTable.setColumnHeader(ColumnLabels.LOT_ID.getName(), ColumnLabels.LOT_ID.getTermNameFromOntology(ontologyDataManager));
 	}
 
 	public void loadInventoryData(){
@@ -176,17 +148,17 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 			   					new GidLinkButtonClickListener(inventoryDetail.getGid().toString(), true));
 		            desigButton.setStyleName(BaseTheme.BUTTON_LINK);
 			   		
-			   		newItem.getItemProperty(TAG_COLUMN_ID).setValue(itemCheckBox);
-					newItem.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(entryId);
-					newItem.getItemProperty(DESIGNATION_COLUMN_ID).setValue(desigButton);
-					newItem.getItemProperty(LOCATION_COLUMN_ID).setValue(lotDetail.getLocationOfLot().getLname());
-					newItem.getItemProperty(UNITS_COLUMN_ID).setValue(lotDetail.getScaleOfLot().getName());
-					newItem.getItemProperty(AVAIL_COLUMN_ID).setValue(lotDetail.getAvailableLotBalance());
-					newItem.getItemProperty(TOTAL_COLUMN_ID).setValue(lotDetail.getActualLotBalance());
-					newItem.getItemProperty(RESERVED_COLUMN_ID).setValue(lotDetail.getReservedTotalForEntry());
-					newItem.getItemProperty(NEWLY_RESERVED_COLUMN_ID).setValue(0);
-					newItem.getItemProperty(COMMENT_COLUMN_ID).setValue(lotDetail.getCommentOfLot());
-					newItem.getItemProperty(LOT_ID_COLUMN_ID).setValue(lotDetail.getLotId());
+			   		newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(itemCheckBox);
+					newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entryId);
+					newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(desigButton);
+					newItem.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).setValue(lotDetail.getLocationOfLot().getLname());
+					newItem.getItemProperty(ColumnLabels.UNITS.getName()).setValue(lotDetail.getScaleOfLot().getName());
+					newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(lotDetail.getAvailableLotBalance());
+					newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(lotDetail.getActualLotBalance());
+					newItem.getItemProperty(ColumnLabels.RESERVED.getName()).setValue(lotDetail.getReservedTotalForEntry());
+					newItem.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(0);
+					newItem.getItemProperty(ColumnLabels.COMMENT.getName()).setValue(lotDetail.getCommentOfLot());
+					newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotDetail.getLotId());
 				}
 			}
 		}
@@ -203,22 +175,22 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		for(ListEntryLotDetails lotDetail : lotDetailsToCancel){
 			Item item = listInventoryTable.getItem(lotDetail);
 			
-			Double avail_column = (Double) item.getItemProperty(AVAIL_COLUMN_ID).getValue();
-			Double reserved_column = (Double) item.getItemProperty(RESERVED_COLUMN_ID).getValue();
+			Double avail_column = (Double) item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue();
+			Double reserved_column = (Double) item.getItemProperty(ColumnLabels.RESERVED.getName()).getValue();
 			Double newAvailVal = avail_column + reserved_column; 
 			
 			lotDetail.setAvailableLotBalance(newAvailVal);
-			item.getItemProperty(AVAIL_COLUMN_ID).setValue(newAvailVal);
-			item.getItemProperty(RESERVED_COLUMN_ID).setValue(0);
-			item.getItemProperty(NEWLY_RESERVED_COLUMN_ID).setValue(0);
+			item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(newAvailVal);
+			item.getItemProperty(ColumnLabels.RESERVED.getName()).setValue(0);
+			item.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(0);
 		}
 	}
 	
 	public boolean isSelectedEntriesHasReservation(List<ListEntryLotDetails> lotDetailsGid) {
 		for(ListEntryLotDetails lotDetails : lotDetailsGid){
 			Item item = listInventoryTable.getItem(lotDetails);
-			Double res_column = (Double)item.getItemProperty(RESERVED_COLUMN_ID).getValue();
-			Double new_res_column = (Double)item.getItemProperty(NEWLY_RESERVED_COLUMN_ID).getValue();
+			Double res_column = (Double)item.getItemProperty(ColumnLabels.RESERVED.getName()).getValue();
+			Double new_res_column = (Double)item.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).getValue();
 			
 			if(res_column > 0 || new_res_column > 0){
 				return true;

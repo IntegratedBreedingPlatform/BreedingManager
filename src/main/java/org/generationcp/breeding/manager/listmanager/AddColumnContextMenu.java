@@ -342,6 +342,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private void addPreferredIdColumn(){
         if(!propertyExists(ColumnLabels.PREFERRED_ID.getName())){
             targetTable.addContainerProperty(ColumnLabels.PREFERRED_ID.getName(), String.class, "");
+            targetTable.setColumnHeader(ColumnLabels.PREFERRED_ID.getName(), ColumnLabels.PREFERRED_ID.getTermNameFromOntology(ontologyDataManager));
             setPreferredIdColumnValues(true);
         }
     }
@@ -373,6 +374,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private void addPreferredNameColumn(){
         if(!propertyExists(ColumnLabels.PREFERRED_NAME.getName())){
             targetTable.addContainerProperty(ColumnLabels.PREFERRED_NAME.getName(), String.class, "");
+            targetTable.setColumnHeader(ColumnLabels.PREFERRED_NAME.getName(), ColumnLabels.PREFERRED_NAME.getTermNameFromOntology(ontologyDataManager));
             setPreferredNameColumnValues(true);
         }
     }
@@ -405,6 +407,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private void addGermplasmDateColumn(){
         if(!propertyExists(ColumnLabels.GERMPLASM_DATE.getName())){
             targetTable.addContainerProperty(ColumnLabels.GERMPLASM_DATE.getName(), String.class, "");
+            targetTable.setColumnHeader(ColumnLabels.GERMPLASM_DATE.getName(), ColumnLabels.GERMPLASM_DATE.getTermNameFromOntology(ontologyDataManager));
             //TODO: can create separate method for adding container property and the actual setting of column values,
             //      so that the middleware call below can be called only once without having the gids become null
             setGermplasmDateColumnValues(true);
@@ -446,6 +449,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private void addLocationColumn(){
         if(!propertyExists(ColumnLabels.GERMPLASM_LOCATION.getName())){
             targetTable.addContainerProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class, "");
+            targetTable.setColumnHeader(ColumnLabels.GERMPLASM_LOCATION.getName(), ColumnLabels.GERMPLASM_LOCATION.getTermNameFromOntology(ontologyDataManager));
             setLocationColumnValues(true);
         }
     }
@@ -487,6 +491,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private void addMethodNameColumn(){
         if(!propertyExists(ColumnLabels.BREEDING_METHOD_NAME.getName())){
             targetTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, "");
+            targetTable.setColumnHeader(ColumnLabels.BREEDING_METHOD_NAME.getName(), ColumnLabels.BREEDING_METHOD_NAME.getTermNameFromOntology(ontologyDataManager));
             setMethodInfoColumnValues(true, ColumnLabels.BREEDING_METHOD_NAME.getName());
         }
     }
@@ -494,6 +499,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private void addMethodAbbrevColumn(){
         if(!propertyExists(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName())){
             targetTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(), String.class, "");
+            targetTable.setColumnHeader(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(), ColumnLabels.BREEDING_METHOD_ABBREVIATION.getTermNameFromOntology(ontologyDataManager));
             setMethodInfoColumnValues(true, ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName());
         }
     }
@@ -501,6 +507,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private void addMethodNumberColumn(){
         if(!propertyExists(ColumnLabels.BREEDING_METHOD_NUMBER.getName())){
             targetTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_NUMBER.getName(), String.class, "");
+            targetTable.setColumnHeader(ColumnLabels.BREEDING_METHOD_NUMBER.getName(), ColumnLabels.BREEDING_METHOD_NUMBER.getTermNameFromOntology(ontologyDataManager));
             setMethodInfoColumnValues(true, ColumnLabels.BREEDING_METHOD_NUMBER.getName());
         }
     }
@@ -508,6 +515,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private void addMethodGroupColumn(){
         if(!propertyExists(ColumnLabels.BREEDING_METHOD_GROUP.getName())){
             targetTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_GROUP.getName(), String.class, "");
+            targetTable.setColumnHeader(ColumnLabels.BREEDING_METHOD_GROUP.getName(), ColumnLabels.BREEDING_METHOD_GROUP.getTermNameFromOntology(ontologyDataManager));
             setMethodInfoColumnValues(true, ColumnLabels.BREEDING_METHOD_GROUP.getName());
         }
     }
@@ -561,6 +569,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private void addCrossMaleGIDColumn(){
         if(!propertyExists(ColumnLabels.CROSS_MALE_GID.getName())){
             targetTable.addContainerProperty(ColumnLabels.CROSS_MALE_GID.getName(), String.class, "-");
+            targetTable.setColumnHeader(ColumnLabels.CROSS_MALE_GID.getName(), ColumnLabels.CROSS_MALE_GID.getTermNameFromOntology(ontologyDataManager));
             setCrossMaleGIDColumnValues(true);
         }
     }
@@ -605,6 +614,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private void addCrossMalePrefNameColumn(){
         if(!propertyExists(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName())){
             targetTable.addContainerProperty(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(), String.class, "-");
+            targetTable.setColumnHeader(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(), ColumnLabels.CROSS_MALE_PREFERRED_NAME.getTermNameFromOntology(ontologyDataManager));
             setCrossMalePrefNameColumnValues(true);
         }
     }
@@ -667,6 +677,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private void addCrossFemaleGidColumn(){
         if(!propertyExists(ColumnLabels.CROSS_FEMALE_GID.getName())){
             targetTable.addContainerProperty(ColumnLabels.CROSS_FEMALE_GID.getName(), String.class, "");
+            targetTable.setColumnHeader(ColumnLabels.CROSS_FEMALE_GID.getName(), ColumnLabels.CROSS_FEMALE_GID.getTermNameFromOntology(ontologyDataManager));
             setCrossFemaleInfoColumnValues(true, ColumnLabels.CROSS_FEMALE_GID.getName());
         }
     }
@@ -674,6 +685,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private void addCrossFemalePrefNameColumn(){
         if(!propertyExists(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName())){
             targetTable.addContainerProperty(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(), String.class, "");
+            targetTable.setColumnHeader(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(), ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getTermNameFromOntology(ontologyDataManager));
             setCrossFemaleInfoColumnValues(true, ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName());
         }
     }

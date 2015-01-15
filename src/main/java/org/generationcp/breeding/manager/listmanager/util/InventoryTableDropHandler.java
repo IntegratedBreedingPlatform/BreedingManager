@@ -12,6 +12,7 @@ import org.generationcp.breeding.manager.inventory.ListDataAndLotDetails;
 import org.generationcp.breeding.manager.listmanager.ListComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
@@ -175,7 +176,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 			
 			Item item = sourceTable.getItem(lotDetail);
 			if(item!=null){
-				int currentEntryId = (Integer) item.getItemProperty(ListInventoryTable.ENTRY_NUMBER_COLUMN_ID).getValue();
+				int currentEntryId = (Integer) item.getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue();
 				if(!uniqueEntryIds.contains(currentEntryId)) {
                     uniqueEntryIds.add(currentEntryId);
                 }
@@ -202,7 +203,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 
 			Item item = sourceTable.getItem(lotDetail);
 			if(item!=null){
-				int currentEntryId = (Integer) item.getItemProperty(ListInventoryTable.ENTRY_NUMBER_COLUMN_ID).getValue();
+				int currentEntryId = (Integer) item.getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue();
 				if(currentEntryId == entryId){
 					matchingLotDetails.add(lotDetail);
 				}
@@ -290,17 +291,17 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 					   					new GidLinkButtonClickListener(inventoryDetail.getGid().toString(), true));
 				            desigButton.setStyleName(BaseTheme.BUTTON_LINK);
 					   		
-					   		newItem.getItemProperty(ListInventoryTable.TAG_COLUMN_ID).setValue(itemCheckBox);
-							newItem.getItemProperty(ListInventoryTable.ENTRY_NUMBER_COLUMN_ID).setValue(entryId);
-							newItem.getItemProperty(ListInventoryTable.DESIGNATION_COLUMN_ID).setValue(desigButton);
-							newItem.getItemProperty(ListInventoryTable.LOCATION_COLUMN_ID).setValue(lotDetail.getLocationOfLot().getLname());
-							newItem.getItemProperty(ListInventoryTable.UNITS_COLUMN_ID).setValue(lotDetail.getScaleOfLot().getName());
-							newItem.getItemProperty(ListInventoryTable.AVAIL_COLUMN_ID).setValue(lotDetail.getAvailableLotBalance());
-							newItem.getItemProperty(ListInventoryTable.TOTAL_COLUMN_ID).setValue(lotDetail.getActualLotBalance());
-							newItem.getItemProperty(ListInventoryTable.RESERVED_COLUMN_ID).setValue(lotDetail.getReservedTotalForEntry());
-							newItem.getItemProperty(ListInventoryTable.NEWLY_RESERVED_COLUMN_ID).setValue(0);
-							newItem.getItemProperty(ListInventoryTable.COMMENT_COLUMN_ID).setValue(lotDetail.getCommentOfLot());
-							newItem.getItemProperty(ListInventoryTable.LOT_ID_COLUMN_ID).setValue(lotDetail.getLotId());
+					   		newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(itemCheckBox);
+							newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entryId);
+							newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(desigButton);
+							newItem.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).setValue(lotDetail.getLocationOfLot().getLname());
+							newItem.getItemProperty(ColumnLabels.UNITS.getName()).setValue(lotDetail.getScaleOfLot().getName());
+							newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(lotDetail.getAvailableLotBalance());
+							newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(lotDetail.getActualLotBalance());
+							newItem.getItemProperty(ColumnLabels.RESERVED.getName()).setValue(lotDetail.getReservedTotalForEntry());
+							newItem.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(0);
+							newItem.getItemProperty(ColumnLabels.COMMENT.getName()).setValue(lotDetail.getCommentOfLot());
+							newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotDetail.getLotId());
 							
 						}
 					}
@@ -352,7 +353,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
    		
    		Item itemFromSourceTable = sourceTable.getItem(lotDetail);
    		if(itemFromSourceTable!=null){
-   			sourceDesigButton = (Button) itemFromSourceTable.getItemProperty(ListInventoryTable.DESIGNATION_COLUMN_ID).getValue();
+   			sourceDesigButton = (Button) itemFromSourceTable.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue();
    			if(sourceDesigButton!=null){
    				desigButton.setValue(sourceDesigButton.getValue());
    				desigButton.setCaption(sourceDesigButton.getCaption());
@@ -364,17 +365,17 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
    		
         desigButton.setStyleName(BaseTheme.BUTTON_LINK);
    		
-   		newItem.getItemProperty(ListInventoryTable.TAG_COLUMN_ID).setValue(itemCheckBox);
-		newItem.getItemProperty(ListInventoryTable.ENTRY_NUMBER_COLUMN_ID).setValue(entryId);
-		newItem.getItemProperty(ListInventoryTable.DESIGNATION_COLUMN_ID).setValue(desigButton);
-		newItem.getItemProperty(ListInventoryTable.LOCATION_COLUMN_ID).setValue(lotDetail.getLocationOfLot().getLname());
-		newItem.getItemProperty(ListInventoryTable.UNITS_COLUMN_ID).setValue(lotDetail.getScaleOfLot().getName());
-		newItem.getItemProperty(ListInventoryTable.AVAIL_COLUMN_ID).setValue(lotDetail.getAvailableLotBalance());
-		newItem.getItemProperty(ListInventoryTable.TOTAL_COLUMN_ID).setValue(lotDetail.getActualLotBalance());
-		newItem.getItemProperty(ListInventoryTable.RESERVED_COLUMN_ID).setValue(0);
-		newItem.getItemProperty(ListInventoryTable.NEWLY_RESERVED_COLUMN_ID).setValue(0);
-		newItem.getItemProperty(ListInventoryTable.COMMENT_COLUMN_ID).setValue(lotDetail.getCommentOfLot());
-		newItem.getItemProperty(ListInventoryTable.LOT_ID_COLUMN_ID).setValue(lotDetail.getLotId());
+   		newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(itemCheckBox);
+		newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entryId);
+		newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(desigButton);
+		newItem.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).setValue(lotDetail.getLocationOfLot().getLname());
+		newItem.getItemProperty(ColumnLabels.UNITS.getName()).setValue(lotDetail.getScaleOfLot().getName());
+		newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(lotDetail.getAvailableLotBalance());
+		newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(lotDetail.getActualLotBalance());
+		newItem.getItemProperty(ColumnLabels.RESERVED.getName()).setValue(0);
+		newItem.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(0);
+		newItem.getItemProperty(ColumnLabels.COMMENT.getName()).setValue(lotDetail.getCommentOfLot());
+		newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotDetail.getLotId());
 		
 		return newItem;
 	}
@@ -402,7 +403,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 			Integer entryId = 0;
 			Item item = targetTable.getItem(lotDetails);
 			if(item!=null) {
-                entryId = (Integer) item.getItemProperty(ListInventoryTable.ENTRY_NUMBER_COLUMN_ID).getValue();
+                entryId = (Integer) item.getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue();
             }
 			
 			if(entryId > topId) {

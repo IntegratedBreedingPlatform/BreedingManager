@@ -1487,7 +1487,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			Double newRes = entry.getValue();
 			
 			Item itemToUpdate = listInventoryTable.getTable().getItem(lot);
-			itemToUpdate.getItemProperty(ListManagerInventoryTable.NEWLY_RESERVED_COLUMN_ID).setValue(newRes);
+			itemToUpdate.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(newRes);
 		}
 		
 		removeReserveInventoryWindow(reserveInventory);
