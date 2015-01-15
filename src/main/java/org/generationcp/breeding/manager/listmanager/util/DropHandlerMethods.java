@@ -15,8 +15,8 @@ import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsCompo
 import org.generationcp.breeding.manager.listmanager.ListComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.ListSearchResultsComponent;
-import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -188,7 +188,7 @@ public class DropHandlerMethods {
 	   		Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(listManagerMain,gid));
 	   		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 	   		inventoryButton.setDescription("Click to view Inventory Details");
-	   		newItem.getItemProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
+	   		newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
 	   		
 	   		if(avail_inv.equals("-")){
 	   			inventoryButton.setEnabled(false);
@@ -200,20 +200,20 @@ public class DropHandlerMethods {
 	   		
 	   		//#2 Seed Reserved
 	   		String seed_res = "-";
-	   		newItem.getItemProperty(ListDataTablePropertyID.SEED_RESERVATION.getName()).setValue(seed_res);
+	   		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seed_res);
 	   		
             
-            newItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(tagCheckBox);
+            newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(tagCheckBox);
             if(newItem!=null && gidButton!=null) {
-                newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
+                newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
             }
-            newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue("Germplasm Search");
-            newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(designationButton);
-            newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(crossExpansion);
+            newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue("Germplasm Search");
+            newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
+            newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(crossExpansion);
             
             assignSerializedEntryNumber();
             
-            FillWith FW = new FillWith(ListDataTablePropertyID.GID.getName(), targetTable);
+            FillWith FW = new FillWith(ColumnLabels.GID.getName(), targetTable);
             
         	for(String column : AddColumnContextMenu.getTablePropertyIds(targetTable)){
 				FW.fillWith(targetTable, column, true);
@@ -330,18 +330,18 @@ public class DropHandlerMethods {
 	            designationButton.setStyleName(BaseTheme.BUTTON_LINK);
 	            designationButton.setDescription("Click to view Germplasm information");
 	            
-	            newItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(tagCheckBox);
+	            newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(tagCheckBox);
 	            if(newItem!=null && gidButton!=null) {
-                    newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
+                    newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
                 }
-	            newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(germplasmListData.getEntryCode());
+	            newItem.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(germplasmListData.getEntryCode());
 	            if(forEditList.equals(true)){
-	            	newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(germplasmListData.getSeedSource());
+	            	newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(germplasmListData.getSeedSource());
 	            } else {
-	            	newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(germplasmList.getName()+": "+germplasmListData.getEntryId());
+	            	newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(germplasmList.getName()+": "+germplasmListData.getEntryId());
 	            }
-	            newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(designationButton);
-	            newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(germplasmListData.getGroupName());
+	            newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
+	            newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(germplasmListData.getGroupName());
 	            
 	            //Inventory Related Columns
     	   		
@@ -352,7 +352,7 @@ public class DropHandlerMethods {
     	   		}
     	   		Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(listManagerMain,germplasmListData.getGid()));
     	   		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-    	   		newItem.getItemProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
+    	   		newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
     	   		
     	   		if(avail_inv.equals("-")){
     	   			inventoryButton.setEnabled(false);
@@ -369,7 +369,7 @@ public class DropHandlerMethods {
         	   			seed_res = germplasmListData.getInventoryInfo().getReservedLotCount().toString().trim();
         	   		}
     	   		}
-    	   		newItem.getItemProperty(ListDataTablePropertyID.SEED_RESERVATION.getName()).setValue(seed_res);
+    	   		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seed_res);
     	   		
 	            
 	    		for (Entry<String, List<ListDataColumnValues>> columnEntry: currentColumnsInfo.getColumnValuesMap().entrySet()){
@@ -384,7 +384,7 @@ public class DropHandlerMethods {
 	    			
 	            assignSerializedEntryNumber();
 
-	            FillWith FW = new FillWith(ListDataTablePropertyID.GID.getName(), targetTable);
+	            FillWith FW = new FillWith(ColumnLabels.GID.getName(), targetTable);
 	            
 	        	for(String column : AddColumnContextMenu.getTablePropertyIds(targetTable)){
     				FW.fillWith(targetTable, column, true);
@@ -466,16 +466,16 @@ public class DropHandlerMethods {
 	 			 
 	 		});
 	   		
-	   		String seedSource = (String) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).getValue();
+	   		String seedSource = (String) itemFromSourceTable.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue();
 	   		
 	   		String designation = getDesignationFromButtonCaption(sourceTable,itemId);
 	   		Button designationButton = new Button(designation, new GidLinkButtonClickListener(listManagerMain,gid.toString(), true, true));
 	   		designationButton.setStyleName(BaseTheme.BUTTON_LINK);
 	   		designationButton.setDescription("Click to view Germplasm information");
 	   		
-	   		String parentage = (String) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).getValue();
-	   		Integer entryId = (Integer) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).getValue();
-	   		String entryCode = (String) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue();
+	   		String parentage = (String) itemFromSourceTable.getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue();
+	   		Integer entryId = (Integer) itemFromSourceTable.getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue();
+	   		String entryCode = (String) itemFromSourceTable.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).getValue();
 	   		
 	   		//Inventory Related Columns
 	   		
@@ -496,14 +496,14 @@ public class DropHandlerMethods {
 	   		//#2 Seed Reserved
 	   		String seed_res = "-";
 	   		
-	   		newItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(itemCheckBox);
-	   		newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
-	   		newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(germplasmList.getName()+": "+entryId);
-	   		newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(designationButton);
-	   		newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(parentage);
-	   		newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(entryCode);
-	   		newItem.getItemProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-	   		newItem.getItemProperty(ListDataTablePropertyID.SEED_RESERVATION.getName()).setValue(seed_res);
+	   		newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(itemCheckBox);
+	   		newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
+	   		newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(germplasmList.getName()+": "+entryId);
+	   		newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
+	   		newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(parentage);
+	   		newItem.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(entryCode);
+	   		newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
+	   		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seed_res);
     		for (Entry<String, List<ListDataColumnValues>> columnEntry: currentColumnsInfo.getColumnValuesMap().entrySet()){
     			String column = columnEntry.getKey();
     			for (ListDataColumnValues columnValue : columnEntry.getValue()){
@@ -518,7 +518,7 @@ public class DropHandlerMethods {
 		
 		assignSerializedEntryNumber();
 		
-        FillWith FW = new FillWith(ListDataTablePropertyID.GID.getName(), targetTable);
+        FillWith FW = new FillWith(ColumnLabels.GID.getName(), targetTable);
         
     	for(String column : AddColumnContextMenu.getTablePropertyIds(targetTable)){
 			FW.fillWith(targetTable, column, true);
@@ -546,11 +546,11 @@ public class DropHandlerMethods {
                 
         int id = 1;
         for(Integer itemId : itemIds){
-            targetTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(id);
+            targetTable.getItem(itemId).getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(id);
             
-            Property entryCodeProperty = targetTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName());
+            Property entryCodeProperty = targetTable.getItem(itemId).getItemProperty(ColumnLabels.ENTRY_CODE.getName());
            	if(entryCodeProperty.getValue()==null || entryCodeProperty.getValue().toString().equals("")){
-           		targetTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(id);
+           		targetTable.getItem(itemId).getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(id);
            	}
             id++;
         }
@@ -625,7 +625,7 @@ public class DropHandlerMethods {
     public Integer getGidFromButtonCaption(Table table, Integer itemId){
     	Item item = table.getItem(itemId);
    	    if(item!=null){
-    	    String buttonCaption = ((Button) item.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption().toString();
+    	    String buttonCaption = ((Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue()).getCaption().toString();
     	    return Integer.valueOf(buttonCaption);
     	}
     	return null;	
@@ -634,7 +634,7 @@ public class DropHandlerMethods {
     protected String getAvailInvFromButtonCaption(Table table, Integer itemId){
     	Item item = table.getItem(itemId);
    	    if(item!=null){
-    	    String buttonCaption = ((Button) item.getItemProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName()).getValue()).getCaption().toString();
+    	    String buttonCaption = ((Button) item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue()).getCaption().toString();
     	    return buttonCaption;
     	}
     	return null;
@@ -643,7 +643,7 @@ public class DropHandlerMethods {
     protected String getDesignationFromButtonCaption(Table table, Integer itemId){
     	Item item = table.getItem(itemId);
    	    if(item!=null){
-    	    String buttonCaption = ((Button) item.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue()).getCaption().toString();
+    	    String buttonCaption = ((Button) item.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue()).getCaption().toString();
     	    return buttonCaption;
     	}
     	return null;	

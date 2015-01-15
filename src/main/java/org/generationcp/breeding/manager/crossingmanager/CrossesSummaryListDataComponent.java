@@ -17,7 +17,7 @@ import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
-import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -313,24 +313,24 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 		listDataTable.setColumnReorderingAllowed(true);
 		listDataTable.setImmediate(true);
 		
-		listDataTable.addContainerProperty(ListDataTablePropertyID.ENTRY_ID.getName(), Integer.class, null);
-		listDataTable.addContainerProperty(ListDataTablePropertyID.DESIGNATION.getName(), Button.class, null);
-		listDataTable.addContainerProperty(ListDataTablePropertyID.PARENTAGE.getName(), String.class, null);
-		listDataTable.addContainerProperty(ListDataTablePropertyID.ENTRY_CODE.getName(), String.class, null);
-		listDataTable.addContainerProperty(ListDataTablePropertyID.GID.getName(), Button.class, null);
-		listDataTable.addContainerProperty(ListDataTablePropertyID.SEED_SOURCE.getName(), String.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
 		listDataTable.addContainerProperty(CrossListDataColumn.FEMALE_PARENT, Button.class, null);
 		listDataTable.addContainerProperty(CrossListDataColumn.FGID, Button.class, null);
 		listDataTable.addContainerProperty(CrossListDataColumn.MALE_PARENT, Button.class, null);
 		listDataTable.addContainerProperty(CrossListDataColumn.MGID, Button.class, null);
 		listDataTable.addContainerProperty(CrossListDataColumn.METHOD, String.class, null);
 		
-		listDataTable.setColumnHeader(ListDataTablePropertyID.ENTRY_ID.getName(), messageSource.getMessage(Message.HASHTAG));
-		listDataTable.setColumnHeader(ListDataTablePropertyID.DESIGNATION.getName(), messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER));
-		listDataTable.setColumnHeader(ListDataTablePropertyID.PARENTAGE.getName(), messageSource.getMessage(Message.LISTDATA_PARENTAGE_HEADER));
-		listDataTable.setColumnHeader(ListDataTablePropertyID.ENTRY_CODE.getName(), messageSource.getMessage(Message.LISTDATA_ENTRY_CODE_HEADER));
-		listDataTable.setColumnHeader(ListDataTablePropertyID.GID.getName(), messageSource.getMessage(Message.LISTDATA_GID_HEADER));
-		listDataTable.setColumnHeader(ListDataTablePropertyID.SEED_SOURCE.getName(), messageSource.getMessage(Message.LISTDATA_SEEDSOURCE_HEADER));
+		listDataTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), messageSource.getMessage(Message.HASHTAG));
+		listDataTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(), messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER));
+		listDataTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(), messageSource.getMessage(Message.LISTDATA_PARENTAGE_HEADER));
+		listDataTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(), messageSource.getMessage(Message.LISTDATA_ENTRY_CODE_HEADER));
+		listDataTable.setColumnHeader(ColumnLabels.GID.getName(), messageSource.getMessage(Message.LISTDATA_GID_HEADER));
+		listDataTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(), messageSource.getMessage(Message.LISTDATA_SEEDSOURCE_HEADER));
 		listDataTable.setColumnHeader(CrossListDataColumn.FEMALE_PARENT, messageSource.getMessage(Message.LABEL_FEMALE_PARENT));
 		listDataTable.setColumnHeader(CrossListDataColumn.FGID, messageSource.getMessage(Message.FGID));
 		listDataTable.setColumnHeader(CrossListDataColumn.MALE_PARENT, messageSource.getMessage(Message.LABEL_MALE_PARENT));
@@ -338,12 +338,12 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 		listDataTable.setColumnHeader(CrossListDataColumn.METHOD, messageSource.getMessage(Message.METHOD_LABEL));
 		
 		listDataTable.setVisibleColumns(new Object[] { 
-        		ListDataTablePropertyID.ENTRY_ID.getName()
-        		,ListDataTablePropertyID.DESIGNATION.getName()
-        		,ListDataTablePropertyID.PARENTAGE.getName()
-        		,ListDataTablePropertyID.ENTRY_CODE.getName()
-        		,ListDataTablePropertyID.GID.getName()
-        		,ListDataTablePropertyID.SEED_SOURCE.getName()
+        		ColumnLabels.ENTRY_ID.getName()
+        		,ColumnLabels.DESIGNATION.getName()
+        		,ColumnLabels.PARENTAGE.getName()
+        		,ColumnLabels.ENTRY_CODE.getName()
+        		,ColumnLabels.GID.getName()
+        		,ColumnLabels.SEED_SOURCE.getName()
         		,CrossListDataColumn.FEMALE_PARENT
         		,CrossListDataColumn.FGID
         		,CrossListDataColumn.MALE_PARENT

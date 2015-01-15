@@ -8,7 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
+import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportColumnValue;
@@ -17,8 +18,10 @@ import org.generationcp.commons.service.ExportService;
 import org.generationcp.commons.service.impl.ExportServiceImpl;
 import org.generationcp.commons.util.UserUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.domain.dms.StandardVariable;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -49,6 +52,9 @@ public class GermplasmListExporter {
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+    
+    @Autowired
+    private OntologyDataManager ontologyDataManager;
     
 	private ExportService exportService;
     private Integer listId;
@@ -161,6 +167,8 @@ public class GermplasmListExporter {
         
         input.setVisibleColumnMap(getVisibleColumnMap(listDataTable));
         
+        input.setColumnStandardVariableMap(getColumnStandardVariableMap(listDataTable));
+        
         return exportService.generateGermplasmListExcelFile(input);
     }
 
@@ -247,9 +255,9 @@ public class GermplasmListExporter {
 		for(Object column : columnHeaders){
 			String columnHeader = column.toString();
 			// always set to true for required columns
-			if(ListDataTablePropertyID.ENTRY_ID.getName().equalsIgnoreCase(columnHeader)
-					|| ListDataTablePropertyID.GID.getName().equalsIgnoreCase(columnHeader)
-					|| ListDataTablePropertyID.DESIGNATION.getName().equalsIgnoreCase(columnHeader)){
+			if(ColumnLabels.ENTRY_ID.getName().equalsIgnoreCase(columnHeader)
+					|| ColumnLabels.GID.getName().equalsIgnoreCase(columnHeader)
+					|| ColumnLabels.DESIGNATION.getName().equalsIgnoreCase(columnHeader)){
 				columnHeaderMap.put(columnHeader, true);
 			} else {
 				columnHeaderMap.put(columnHeader, visibleColumnList.contains(columnHeader));
@@ -257,6 +265,31 @@ public class GermplasmListExporter {
 		}
 		return columnHeaderMap;
 	}
+    
+    protected Map<Integer, StandardVariable> getColumnStandardVariableMap(Table listDataTable) {
+    	
+    	Map<Integer, StandardVariable> columnStandardVariableMap = new HashMap<>();
+    	Collection<?> columnHeaders = listDataTable.getContainerPropertyIds();
+    	
+    	for(Object column : columnHeaders){
+			String columnHeader = column.toString();
+			ColumnLabels columnLabel = ColumnLabels.get(columnHeader);
+			if (columnLabel!=null && columnLabel.getTermId()!=null){
+				try {
+					StandardVariable standardVar = ontologyDataManager.getStandardVariable(columnLabel.getTermId().getId());
+					if (standardVar!=null){
+						columnStandardVariableMap.put(standardVar.getId(), standardVar);
+					}
+					
+				} catch (MiddlewareQueryException e) {
+					//do nothing
+				}
+			}
+    	}
+    	
+    	
+    	return columnStandardVariableMap;
+    }
     
 	public void exportGermplasmListCSV(String fileName, Table listDataTable)
 			throws GermplasmListExporterException {
@@ -281,28 +314,23 @@ public class GermplasmListExporter {
 		List<ExportColumnHeader> exportColumnHeaders = new ArrayList<>();
 
 		exportColumnHeaders.add(new ExportColumnHeader(0, messageSource
-				.getMessage(ListDataTablePropertyID.ENTRY_ID.getColumnDisplay()), visibleColumns
-				.get(ListDataTablePropertyID.ENTRY_ID.getName())));
+				.getMessage(Message.HASHTAG), visibleColumns
+				.get(ColumnLabels.ENTRY_ID.getName())));
 
-		exportColumnHeaders.add(new ExportColumnHeader(1, messageSource
-				.getMessage(ListDataTablePropertyID.GID.getColumnDisplay()), visibleColumns
-				.get(ListDataTablePropertyID.GID.getName())));
+		exportColumnHeaders.add(new ExportColumnHeader(1, getTermNameFromOntology(ColumnLabels.GID), visibleColumns
+				.get(ColumnLabels.GID.getName())));
 
-		exportColumnHeaders.add(new ExportColumnHeader(2, messageSource
-				.getMessage(ListDataTablePropertyID.ENTRY_CODE.getColumnDisplay()), visibleColumns
-				.get(ListDataTablePropertyID.ENTRY_CODE.getName())));
+		exportColumnHeaders.add(new ExportColumnHeader(2, getTermNameFromOntology(ColumnLabels.ENTRY_CODE), visibleColumns
+				.get(ColumnLabels.ENTRY_CODE.getName())));
 
-		exportColumnHeaders.add(new ExportColumnHeader(3, messageSource
-				.getMessage(ListDataTablePropertyID.DESIGNATION.getColumnDisplay()), visibleColumns
-				.get(ListDataTablePropertyID.DESIGNATION.getName())));
+		exportColumnHeaders.add(new ExportColumnHeader(3, getTermNameFromOntology(ColumnLabels.DESIGNATION), visibleColumns
+				.get(ColumnLabels.DESIGNATION.getName())));
 
-		exportColumnHeaders.add(new ExportColumnHeader(4, messageSource
-				.getMessage(ListDataTablePropertyID.PARENTAGE.getColumnDisplay()), visibleColumns
-				.get(ListDataTablePropertyID.PARENTAGE.getName())));
+		exportColumnHeaders.add(new ExportColumnHeader(4, getTermNameFromOntology(ColumnLabels.PARENTAGE), visibleColumns
+				.get(ColumnLabels.PARENTAGE.getName())));
 
-		exportColumnHeaders.add(new ExportColumnHeader(5, messageSource
-				.getMessage(ListDataTablePropertyID.SEED_SOURCE.getColumnDisplay()), visibleColumns
-				.get(ListDataTablePropertyID.SEED_SOURCE.getName())));
+		exportColumnHeaders.add(new ExportColumnHeader(5, getTermNameFromOntology(ColumnLabels.SEED_SOURCE), visibleColumns
+				.get(ColumnLabels.SEED_SOURCE.getName())));
 
 		return exportColumnHeaders;
 	}
@@ -315,20 +343,20 @@ public class GermplasmListExporter {
 			Map<Integer, ExportColumnValue> row = new HashMap<>();
 
 			String entryIdValue = listDataTable.getItem(itemId)
-					.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).getValue()
+					.getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue()
 					.toString();
 			String gidValue = ((Button) listDataTable.getItem(itemId)
-					.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption();
+					.getItemProperty(ColumnLabels.GID.getName()).getValue()).getCaption();
 			String entryCodeValue = listDataTable.getItem(itemId)
-					.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue()
+					.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).getValue()
 					.toString();
 			String designationValue = ((Button) listDataTable.getItem(itemId)
-					.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue()).getCaption();
+					.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue()).getCaption();
 			String parentageValue = listDataTable.getItem(itemId)
-					.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).getValue()
+					.getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue()
 					.toString();
 			String seedSourceValue = listDataTable.getItem(itemId)
-					.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).getValue()
+					.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue()
 					.toString();
 
 			row.put(0, new ExportColumnValue(0, entryIdValue));
@@ -358,5 +386,13 @@ public class GermplasmListExporter {
 
 	protected void setUserDataManager(UserDataManager userDataManager) {
 		this.userDataManager = userDataManager;
+	}
+	
+	protected void setOntologyDataManager(OntologyDataManager ontologyDataManager) {
+		this.ontologyDataManager = ontologyDataManager;
+	}
+	
+	protected String getTermNameFromOntology(ColumnLabels columnLabel){
+		return columnLabel.getTermNameFromOntology(ontologyDataManager);
 	}
 }

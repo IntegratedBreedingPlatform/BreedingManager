@@ -14,7 +14,7 @@ import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.UnsavedChangesSource;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
-import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -161,12 +161,12 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     	
     	for(Integer itemId : entryIdsInSourceTable){
     		if(selectedListEntries.contains(itemId)){
-	    		Integer entryId = (Integer) sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).getValue();
+	    		Integer entryId = (Integer) sourceTable.getItem(itemId).getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue();
 	    		
-	    		Button designationBtn = (Button) sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue(); 
+	    		Button designationBtn = (Button) sourceTable.getItem(itemId).getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue(); 
 	    		String designation = designationBtn.getCaption();
 	    		
-	    		Button gidBtn = (Button) sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
+	    		Button gidBtn = (Button) sourceTable.getItem(itemId).getItemProperty(ColumnLabels.GID.getName()).getValue();
 	    		Integer gid = Integer.valueOf(Integer.parseInt(gidBtn.getCaption()));
 	    		
 	    		String seedSource = getSeedSource(sourceTable,entryId);
@@ -201,7 +201,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		            tag.setImmediate(true);
 		            item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
 		            
-		            Button sourceAvailInvButton = ((Button) sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName()).getValue());
+		            Button sourceAvailInvButton = ((Button) sourceTable.getItem(itemId).getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue());
 		            Button newAvailInvButton = new Button();
 		            
 		            newAvailInvButton.setCaption(sourceAvailInvButton.getCaption());
@@ -211,7 +211,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		            
 		            String seed_res = "-";
 		            if(sourceTable.getItemIds().size() == selectedListEntries.size()) {
-                        seed_res = sourceTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.SEED_RESERVATION.getName()).getValue().toString();
+                        seed_res = sourceTable.getItem(itemId).getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue().toString();
                     }
 		            
 		            item.getItemProperty(AVAIL_INV_COLUMN_ID).setValue(newAvailInvButton);

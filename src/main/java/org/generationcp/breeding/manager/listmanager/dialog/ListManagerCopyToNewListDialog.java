@@ -27,8 +27,8 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.customfields.ListTreeComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
-import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -356,10 +356,10 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
         designationOfListEntriesCopied="";
         Collection<?> selectedIds = (Collection<?>)listEntriesTable.getValue();
         for (final Object itemId : selectedIds) {
-            Property pParentage = listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.PARENTAGE.getName());
-            Property pEntryId = listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName());
-            Property pGid= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.GID.getName());
-            Property pDesignation= listEntriesTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.DESIGNATION.getName());
+            Property pParentage = listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.PARENTAGE.getName());
+            Property pEntryId = listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.ENTRY_ID.getName());
+            Property pGid= listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.GID.getName());
+            Property pDesignation= listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.DESIGNATION.getName());
 
             Button pGidButton = (Button) pGid.getValue();
             int gid=Integer.valueOf(pGidButton.getCaption().toString());

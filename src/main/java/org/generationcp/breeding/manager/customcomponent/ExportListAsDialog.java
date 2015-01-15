@@ -4,9 +4,9 @@ import java.io.File;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -251,9 +251,9 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	}
 
 	protected boolean isARequiredColumn(String column) {
-		return ListDataTablePropertyID.ENTRY_ID.getName().equalsIgnoreCase(column)
-				|| ListDataTablePropertyID.GID.getName().equalsIgnoreCase(column)
-				|| ListDataTablePropertyID.DESIGNATION.getName().equalsIgnoreCase(column);
+		return ColumnLabels.ENTRY_ID.getName().equalsIgnoreCase(column)
+				|| ColumnLabels.GID.getName().equalsIgnoreCase(column)
+				|| ColumnLabels.DESIGNATION.getName().equalsIgnoreCase(column);
 	}
 
 	public void setListExporter(GermplasmListExporter listExporter) {

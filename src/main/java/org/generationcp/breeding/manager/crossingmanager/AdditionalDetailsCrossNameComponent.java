@@ -21,8 +21,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
-import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -250,10 +250,10 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     	            	builder.append(suffix);
     	            }
     	            
-    	            if(propertyIdToFill.equals(ListDataTablePropertyID.SEED_SOURCE.getName()) && builder.toString().length() > 255){
+    	            if(propertyIdToFill.equals(ColumnLabels.SEED_SOURCE.getName()) && builder.toString().length() > 255){
     	            	MessageNotifier.showRequiredFieldError(parentWindow, messageSource.getMessage(Message.SEQUENCE_TOO_LONG_FOR_SEED_SOURCE));
     	            	return;
-    	            } else if(propertyIdToFill.equals(ListDataTablePropertyID.ENTRY_CODE.getName()) && builder.toString().length() > 47){
+    	            } else if(propertyIdToFill.equals(ColumnLabels.ENTRY_CODE.getName()) && builder.toString().length() > 47){
     	            	MessageNotifier.showRequiredFieldError(parentWindow, messageSource.getMessage(Message.SEQUENCE_TOO_LONG_FOR_ENTRY_CODE));
     					return;
     	            }

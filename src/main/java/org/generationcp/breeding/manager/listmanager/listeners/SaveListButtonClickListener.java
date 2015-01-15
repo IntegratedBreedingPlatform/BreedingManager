@@ -10,8 +10,8 @@ import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListen
 import org.generationcp.breeding.manager.listmanager.AddColumnContextMenu;
 import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
-import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -334,15 +334,15 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 				}
 
 
-	            item.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(tagCheckBox);
-	            item.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
-	            item.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(designationButton);
-	            item.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(entry.getEntryCode());
-	            item.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(entry.getEntryId());
-	            item.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(entry.getGroupName());
-	            item.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
-	            item.getItemProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-	            item.getItemProperty(ListDataTablePropertyID.SEED_RESERVATION.getName()).setValue(seed_res);
+	            item.getItemProperty(ColumnLabels.TAG.getName()).setValue(tagCheckBox);
+	            item.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
+	            item.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
+	            item.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(entry.getEntryCode());
+	            item.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entry.getEntryId());
+	            item.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(entry.getGroupName());
+	            item.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
+	            item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
+	            item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seed_res);
 	            
 			}
 
@@ -370,30 +370,30 @@ public class SaveListButtonClickListener implements Button.ClickListener{
                 // copy only addable properties present in source table
                 if(AddColumnContextMenu.propertyExists(addablePropertyId, sourceTable)){
                     // setup added columns first before copying values
-                    if(addablePropertyId.equals(AddColumnContextMenu.PREFERRED_ID)){
-                        newTable.addContainerProperty(AddColumnContextMenu.PREFERRED_ID, AddColumnContextMenu.PREFERRED_ID_TYPE, "");
-                    } else if(addablePropertyId.equals(AddColumnContextMenu.PREFERRED_NAME)){
-                        newTable.addContainerProperty(AddColumnContextMenu.PREFERRED_NAME, AddColumnContextMenu.PREFERRED_NAME_TYPE, "");
-                    } else if(addablePropertyId.equals(AddColumnContextMenu.GERMPLASM_DATE)){
-                        newTable.addContainerProperty(AddColumnContextMenu.GERMPLASM_DATE, AddColumnContextMenu.GERMPLASM_DATE_TYPE, "");
-                    } else if(addablePropertyId.equals(AddColumnContextMenu.LOCATIONS)){
-                        newTable.addContainerProperty(AddColumnContextMenu.LOCATIONS, AddColumnContextMenu.LOCATIONS_TYPE, "");
-                    } else if(addablePropertyId.equals(AddColumnContextMenu.METHOD_NAME)){
-                        newTable.addContainerProperty(AddColumnContextMenu.METHOD_NAME, AddColumnContextMenu.METHOD_NAME_TYPE, "");
-                    } else if(addablePropertyId.equals(AddColumnContextMenu.METHOD_ABBREV)){
-                        newTable.addContainerProperty(AddColumnContextMenu.METHOD_ABBREV, AddColumnContextMenu.METHOD_ABBREV_TYPE, "");
-                    } else if(addablePropertyId.equals(AddColumnContextMenu.METHOD_NUMBER)){
-                        newTable.addContainerProperty(AddColumnContextMenu.METHOD_NUMBER, AddColumnContextMenu.METHOD_NUMBER_TYPE, "");
-                    } else if(addablePropertyId.equals(AddColumnContextMenu.METHOD_GROUP)){
-                        newTable.addContainerProperty(AddColumnContextMenu.METHOD_GROUP, AddColumnContextMenu.METHOD_GROUP_TYPE, "");
-                    } else if(addablePropertyId.equals(AddColumnContextMenu.CROSS_FEMALE_GID)){
-                        newTable.addContainerProperty(AddColumnContextMenu.CROSS_FEMALE_GID, AddColumnContextMenu.CROSS_FEMALE_GID_TYPE, "");
-                    } else if(addablePropertyId.equals(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME)){
-                        newTable.addContainerProperty(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME, AddColumnContextMenu.CROSS_FEMALE_PREF_NAME_TYPE, "");
-                    } else if(addablePropertyId.equals(AddColumnContextMenu.CROSS_MALE_GID)){
-                        newTable.addContainerProperty(AddColumnContextMenu.CROSS_MALE_GID, AddColumnContextMenu.CROSS_MALE_GID_TYPE, "");
-                    } else if(addablePropertyId.equals(AddColumnContextMenu.CROSS_MALE_PREF_NAME)){
-                        newTable.addContainerProperty(AddColumnContextMenu.CROSS_MALE_PREF_NAME, AddColumnContextMenu.CROSS_MALE_PREF_NAME_TYPE, "");
+                    if(addablePropertyId.equals(ColumnLabels.PREFERRED_ID.getName())){
+                        newTable.addContainerProperty(ColumnLabels.PREFERRED_ID.getName(), String.class, "");
+                    } else if(addablePropertyId.equals(ColumnLabels.PREFERRED_NAME.getName())){
+                        newTable.addContainerProperty(ColumnLabels.PREFERRED_NAME.getName(), String.class, "");
+                    } else if(addablePropertyId.equals(ColumnLabels.GERMPLASM_DATE.getName())){
+                        newTable.addContainerProperty(ColumnLabels.GERMPLASM_DATE.getName(), String.class, "");
+                    } else if(addablePropertyId.equals(ColumnLabels.GERMPLASM_LOCATION.getName())){
+                        newTable.addContainerProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class, "");
+                    } else if(addablePropertyId.equals(ColumnLabels.BREEDING_METHOD_NAME.getName())){
+                        newTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, "");
+                    } else if(addablePropertyId.equals(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName())){
+                        newTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(), String.class, "");
+                    } else if(addablePropertyId.equals(ColumnLabels.BREEDING_METHOD_NUMBER.getName())){
+                        newTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_NUMBER.getName(), String.class, "");
+                    } else if(addablePropertyId.equals(ColumnLabels.BREEDING_METHOD_GROUP.getName())){
+                        newTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_GROUP.getName(), String.class, "");
+                    } else if(addablePropertyId.equals(ColumnLabels.CROSS_FEMALE_GID.getName())){
+                        newTable.addContainerProperty(ColumnLabels.CROSS_FEMALE_GID.getName(), String.class, "");
+                    } else if(addablePropertyId.equals(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName())){
+                        newTable.addContainerProperty(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(), String.class, "");
+                    } else if(addablePropertyId.equals(ColumnLabels.CROSS_MALE_GID.getName())){
+                        newTable.addContainerProperty(ColumnLabels.CROSS_MALE_GID.getName(), String.class, "");
+                    } else if(addablePropertyId.equals(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName())){
+                        newTable.addContainerProperty(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(), String.class, "");
                     }
 
                     // copy value to new table

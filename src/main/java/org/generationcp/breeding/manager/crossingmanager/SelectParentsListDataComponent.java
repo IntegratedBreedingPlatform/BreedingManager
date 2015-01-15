@@ -26,7 +26,7 @@ import org.generationcp.breeding.manager.inventory.ReserveInventoryUtil;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
-import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -242,45 +242,45 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		listDataTable.setDragMode(TableDragMode.MULTIROW);
 		
 		listDataTable.addContainerProperty(CHECKBOX_COLUMN_ID, CheckBox.class, null);
-		listDataTable.addContainerProperty(ListDataTablePropertyID.ENTRY_ID.getName(), Integer.class, null);
-		listDataTable.addContainerProperty(ListDataTablePropertyID.DESIGNATION.getName(), Button.class, null);
-		listDataTable.addContainerProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName(), Button.class, null);
-		listDataTable.addContainerProperty(ListDataTablePropertyID.SEED_RESERVATION.getName(), String.class, null);
-		listDataTable.addContainerProperty(ListDataTablePropertyID.PARENTAGE.getName(), String.class, null);
-		listDataTable.addContainerProperty(ListDataTablePropertyID.ENTRY_CODE.getName(), String.class, null);
-		listDataTable.addContainerProperty(ListDataTablePropertyID.GID.getName(), Button.class, null);
-		listDataTable.addContainerProperty(ListDataTablePropertyID.SEED_SOURCE.getName(), String.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Button.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
 		
 		listDataTable.setColumnHeader(CHECKBOX_COLUMN_ID, messageSource.getMessage(Message.CHECK_ICON));
-		listDataTable.setColumnHeader(ListDataTablePropertyID.ENTRY_ID.getName(), messageSource.getMessage(Message.HASHTAG));
-		listDataTable.setColumnHeader(ListDataTablePropertyID.DESIGNATION.getName(), messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER));
-		listDataTable.setColumnHeader(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName(), messageSource.getMessage(Message.AVAIL_INV));
-		listDataTable.setColumnHeader(ListDataTablePropertyID.SEED_RESERVATION.getName(), messageSource.getMessage(Message.SEED_RES));
-		listDataTable.setColumnHeader(ListDataTablePropertyID.PARENTAGE.getName(), messageSource.getMessage(Message.LISTDATA_PARENTAGE_HEADER));
-		listDataTable.setColumnHeader(ListDataTablePropertyID.ENTRY_CODE.getName(), messageSource.getMessage(Message.LISTDATA_ENTRY_CODE_HEADER));
-		listDataTable.setColumnHeader(ListDataTablePropertyID.GID.getName(), messageSource.getMessage(Message.LISTDATA_GID_HEADER));
-		listDataTable.setColumnHeader(ListDataTablePropertyID.SEED_SOURCE.getName(), messageSource.getMessage(Message.LISTDATA_SEEDSOURCE_HEADER));
+		listDataTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), messageSource.getMessage(Message.HASHTAG));
+		listDataTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(), messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER));
+		listDataTable.setColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName(), messageSource.getMessage(Message.AVAIL_INV));
+		listDataTable.setColumnHeader(ColumnLabels.SEED_RESERVATION.getName(), messageSource.getMessage(Message.SEED_RES));
+		listDataTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(), messageSource.getMessage(Message.LISTDATA_PARENTAGE_HEADER));
+		listDataTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(), messageSource.getMessage(Message.LISTDATA_ENTRY_CODE_HEADER));
+		listDataTable.setColumnHeader(ColumnLabels.GID.getName(), messageSource.getMessage(Message.LISTDATA_GID_HEADER));
+		listDataTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(), messageSource.getMessage(Message.LISTDATA_SEEDSOURCE_HEADER));
 		
 		listDataTable.setColumnWidth(CHECKBOX_COLUMN_ID, 25);
-		listDataTable.setColumnWidth(ListDataTablePropertyID.ENTRY_ID.getName(), 25);
-		listDataTable.setColumnWidth(ListDataTablePropertyID.DESIGNATION.getName(), 130);
-		listDataTable.setColumnWidth(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName(), 70);
-		listDataTable.setColumnWidth(ListDataTablePropertyID.SEED_RESERVATION.getName(), 70);
-		listDataTable.setColumnWidth(ListDataTablePropertyID.PARENTAGE.getName(), 130);
-		listDataTable.setColumnWidth(ListDataTablePropertyID.ENTRY_CODE.getName(), 100);
-		listDataTable.setColumnWidth(ListDataTablePropertyID.GID.getName(), 60);
-		listDataTable.setColumnWidth(ListDataTablePropertyID.SEED_SOURCE.getName(), 110);
+		listDataTable.setColumnWidth(ColumnLabels.ENTRY_ID.getName(), 25);
+		listDataTable.setColumnWidth(ColumnLabels.DESIGNATION.getName(), 130);
+		listDataTable.setColumnWidth(ColumnLabels.AVAILABLE_INVENTORY.getName(), 70);
+		listDataTable.setColumnWidth(ColumnLabels.SEED_RESERVATION.getName(), 70);
+		listDataTable.setColumnWidth(ColumnLabels.PARENTAGE.getName(), 130);
+		listDataTable.setColumnWidth(ColumnLabels.ENTRY_CODE.getName(), 100);
+		listDataTable.setColumnWidth(ColumnLabels.GID.getName(), 60);
+		listDataTable.setColumnWidth(ColumnLabels.SEED_SOURCE.getName(), 110);
 		
 		listDataTable.setVisibleColumns(new String[] { 
         		CHECKBOX_COLUMN_ID
-        		,ListDataTablePropertyID.ENTRY_ID.getName()
-        		,ListDataTablePropertyID.DESIGNATION.getName()
-        		,ListDataTablePropertyID.AVAILABLE_INVENTORY.getName()
-        		,ListDataTablePropertyID.SEED_RESERVATION.getName()
-        		,ListDataTablePropertyID.PARENTAGE.getName()
-        		,ListDataTablePropertyID.ENTRY_CODE.getName()
-        		,ListDataTablePropertyID.GID.getName()
-        		,ListDataTablePropertyID.SEED_SOURCE.getName()});
+        		,ColumnLabels.ENTRY_ID.getName()
+        		,ColumnLabels.DESIGNATION.getName()
+        		,ColumnLabels.AVAILABLE_INVENTORY.getName()
+        		,ColumnLabels.SEED_RESERVATION.getName()
+        		,ColumnLabels.PARENTAGE.getName()
+        		,ColumnLabels.ENTRY_CODE.getName()
+        		,ColumnLabels.GID.getName()
+        		,ColumnLabels.SEED_SOURCE.getName()});
 	}
 	
 	private void initializeListInventoryTable(){
@@ -361,14 +361,14 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
     	   		
     	   		Item newItem = listDataTable.getContainerDataSource().addItem(entry.getId());    			
     	   		newItem.getItemProperty(CHECKBOX_COLUMN_ID).setValue(itemCheckBox);
-    	   		newItem.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(entry.getEntryId());
-    	   		newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(desigButton);
-    	   		newItem.getItemProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-    	   		newItem.getItemProperty(ListDataTablePropertyID.SEED_RESERVATION.getName()).setValue(seed_res);
-    	   		newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(entry.getGroupName());
-    	   		newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(entry.getEntryCode());
-    	   		newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
-    	   		newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
+    	   		newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entry.getEntryId());
+    	   		newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(desigButton);
+    	   		newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
+    	   		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seed_res);
+    	   		newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(entry.getGroupName());
+    	   		newItem.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(entry.getEntryCode());
+    	   		newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
+    	   		newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
 			}
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error with getting list entries for list: " + germplasmListId);
@@ -806,7 +806,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 			else{
 				inventoryButton.setDescription("Click to view Inventory Details");
 			}
-			item.getItemProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
+			item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
 			
 		
 			// Seed Reserved
@@ -815,7 +815,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	   			seed_res = listData.getInventoryInfo().getReservedLotCount().toString().trim();
 	   		}
 			
-	   		item.getItemProperty(ListDataTablePropertyID.SEED_RESERVATION.getName()).setValue(seed_res);
+	   		item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seed_res);
 		}		
 	}
 	

@@ -8,11 +8,10 @@ import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.AdditionalDetailsCrossNameComponent;
-import org.generationcp.breeding.manager.listmanager.AddColumnContextMenu;
 import org.generationcp.breeding.manager.listmanager.FillWithAttributeWindow;
 import org.generationcp.breeding.manager.listmanager.ListTabComponent;
-import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.util.GermplasmDetailModel;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -152,29 +151,29 @@ public class FillWith implements InternationalizableComponent  {
     }
     
     public void fillWith(Table table, String propertyId, Boolean onlyFillWithThoseHavingEmptyValues){
-		 if(propertyId.equals(AddColumnContextMenu.PREFERRED_ID)){
+		 if(propertyId.equals(ColumnLabels.PREFERRED_ID.getName())){
 			 fillWithPreferredID(table, propertyId, onlyFillWithThoseHavingEmptyValues);
-		 } else if(propertyId.equals(AddColumnContextMenu.PREFERRED_NAME)) {
+		 } else if(propertyId.equals(ColumnLabels.PREFERRED_NAME.getName())) {
 			 fillWithPreferredName(table, propertyId, onlyFillWithThoseHavingEmptyValues);
-		 } else if(propertyId.equals(AddColumnContextMenu.GERMPLASM_DATE)) {
+		 } else if(propertyId.equals(ColumnLabels.GERMPLASM_DATE.getName())) {
 			 fillWithGermplasmDate(table, propertyId, onlyFillWithThoseHavingEmptyValues);
-		 } else if(propertyId.equals(AddColumnContextMenu.LOCATIONS)) {
+		 } else if(propertyId.equals(ColumnLabels.GERMPLASM_LOCATION.getName())) {
 			 fillWithLocation(table, propertyId, onlyFillWithThoseHavingEmptyValues);			 
-		 } else if(propertyId.equals(AddColumnContextMenu.METHOD_NAME)) {
+		 } else if(propertyId.equals(ColumnLabels.BREEDING_METHOD_NAME.getName())) {
 			 fillWithMethodName(table, propertyId, onlyFillWithThoseHavingEmptyValues);
-		 } else if(propertyId.equals(AddColumnContextMenu.METHOD_ABBREV)) {			 
+		 } else if(propertyId.equals(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName())) {			 
 			 fillWithMethodAbbreviation(table, propertyId, onlyFillWithThoseHavingEmptyValues);
-		 } else if(propertyId.equals(AddColumnContextMenu.METHOD_NUMBER)) {			 
+		 } else if(propertyId.equals(ColumnLabels.BREEDING_METHOD_NUMBER.getName())) {			 
 			 fillWithMethodNumber(table, propertyId, onlyFillWithThoseHavingEmptyValues);			 
-		 } else if(propertyId.equals(AddColumnContextMenu.METHOD_GROUP)) {			 
+		 } else if(propertyId.equals(ColumnLabels.BREEDING_METHOD_GROUP.getName())) {			 
 			 fillWithMethodGroup(table, propertyId, onlyFillWithThoseHavingEmptyValues);			 
-		 } else if(propertyId.equals(AddColumnContextMenu.CROSS_FEMALE_GID)) {			 
+		 } else if(propertyId.equals(ColumnLabels.CROSS_FEMALE_GID.getName())) {			 
 			 fillWithCrossFemaleGID(table, propertyId, onlyFillWithThoseHavingEmptyValues);
-		 } else if(propertyId.equals(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME)) {			 
+		 } else if(propertyId.equals(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName())) {			 
 			 fillWithCrossFemalePreferredName(table, propertyId, onlyFillWithThoseHavingEmptyValues);
-		 } else if(propertyId.equals(AddColumnContextMenu.CROSS_MALE_GID)) {			 
+		 } else if(propertyId.equals(ColumnLabels.CROSS_MALE_GID.getName())) {			 
 			 fillWithCrossMaleGID(table, propertyId, onlyFillWithThoseHavingEmptyValues);
-		 } else if(propertyId.equals(AddColumnContextMenu.CROSS_MALE_PREF_NAME)) {			 
+		 } else if(propertyId.equals(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName())) {			 
 			 fillWithCrossMalePreferredName(table, propertyId, onlyFillWithThoseHavingEmptyValues);	 
 		 }
     }
@@ -188,17 +187,17 @@ public class FillWith implements InternationalizableComponent  {
         		if(event.getButton() == HeaderClickEvent.BUTTON_RIGHT){
         			String column = (String) event.getPropertyId();
         			fillWithMenu.setData(column);
-        			if(column.equals(ListDataTablePropertyID.ENTRY_CODE.getName())){
+        			if(column.equals(ColumnLabels.ENTRY_CODE.getName())){
             			menuFillWithLocationName.setVisible(false);
             			menuFillWithCrossExpansion.setVisible(false);
             			setCommonOptionsForEntryCodeAndSeedSourceToBeVisible(true);
             			fillWithMenu.show(event.getClientX(), event.getClientY());
-            		} else if(column.equals(ListDataTablePropertyID.SEED_SOURCE.getName())){
+            		} else if(column.equals(ColumnLabels.SEED_SOURCE.getName())){
             			menuFillWithLocationName.setVisible(true);
             			menuFillWithCrossExpansion.setVisible(false);
             			setCommonOptionsForEntryCodeAndSeedSourceToBeVisible(true);
             			fillWithMenu.show(event.getClientX(), event.getClientY());
-            		} else if(column.equals(ListDataTablePropertyID.PARENTAGE.getName())){
+            		} else if(column.equals(ColumnLabels.PARENTAGE.getName())){
             			setCommonOptionsForEntryCodeAndSeedSourceToBeVisible(false);
             			menuFillWithLocationName.setVisible(false);
             			menuFillWithCrossExpansion.setVisible(true);
@@ -632,7 +631,7 @@ public class FillWith implements InternationalizableComponent  {
            		Object gidObject = item.getItemProperty(GIDPropertyId).getValue();
            		Button b= (Button) gidObject;
            		String gid=b.getCaption();
-           		item.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(gidLocations.get(new Integer(gid)));
+           		item.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(gidLocations.get(new Integer(gid)));
             }
     		
     	    markHasChangesFlagsAndToggleTableEditable(targetTable);	

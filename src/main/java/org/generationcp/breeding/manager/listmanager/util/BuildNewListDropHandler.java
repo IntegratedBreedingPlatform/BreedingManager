@@ -3,7 +3,7 @@ package org.generationcp.breeding.manager.listmanager.util;
 import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.ListComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
-import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -85,26 +85,26 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 					super.setHasUnsavedChanges(true);
 					
 	                Item oldItem = sourceTable.getItem(transferable.getItemId());
-	                Object oldCheckBox = oldItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).getValue();
-	                Object oldGid = oldItem.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
-	                Object oldEntryCode = oldItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue();
-	                Object oldSeedSource = oldItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).getValue();
-	                Object oldDesignation = oldItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue();
-	                Object oldParentage = oldItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).getValue();
-	                Object oldAvailInv = oldItem.getItemProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName()).getValue();
-	                Object oldSeedRes = oldItem.getItemProperty(ListDataTablePropertyID.SEED_RESERVATION.getName()).getValue();
+	                Object oldCheckBox = oldItem.getItemProperty(ColumnLabels.TAG.getName()).getValue();
+	                Object oldGid = oldItem.getItemProperty(ColumnLabels.GID.getName()).getValue();
+	                Object oldEntryCode = oldItem.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).getValue();
+	                Object oldSeedSource = oldItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue();
+	                Object oldDesignation = oldItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue();
+	                Object oldParentage = oldItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue();
+	                Object oldAvailInv = oldItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue();
+	                Object oldSeedRes = oldItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue();
 	                
 	                sourceTable.removeItem(transferable.getItemId());
 	                
 	                Item newItem = sourceTable.addItemAfter(droppedOverItemId, transferable.getItemId());
-	                newItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(oldCheckBox);
-	                newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(oldGid);
-	                newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(oldEntryCode);
-	                newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(oldSeedSource);
-	                newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(oldDesignation);
-	                newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(oldParentage);
-	                newItem.getItemProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName()).setValue(oldAvailInv);
-	                newItem.getItemProperty(ListDataTablePropertyID.SEED_RESERVATION.getName()).setValue(oldSeedRes);
+	                newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(oldCheckBox);
+	                newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(oldGid);
+	                newItem.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(oldEntryCode);
+	                newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(oldSeedSource);
+	                newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(oldDesignation);
+	                newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(oldParentage);
+	                newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(oldAvailInv);
+	                newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(oldSeedRes);
 	                
 	                assignSerializedEntryNumber();
 	                
