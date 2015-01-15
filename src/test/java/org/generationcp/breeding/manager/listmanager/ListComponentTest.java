@@ -16,6 +16,9 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -30,9 +33,20 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
 
 public class ListComponentTest {
+	
+	private static final String SEED_RES = "SEED_RES";
+	private static final String AVAIL_INV = "AVAIL_INV";
+	private static final String HASH = "#";
+	private static final String CHECK = "CHECK";
+	private static final String SEED_SOURCE = "SEED_SOURCE";
+	private static final String CROSS = "CROSS";
+	private static final String DESIG = "DESIG";
+	private static final String ENTRY_CODE = "ENTRY_CODE";
+	private static final String GID = "GID";
 	
 	private static final String UPDATED_GERMPLASM_LIST_NOTE = "UPDATED Germplasm List Note";
 	private static final String UPDATED_GERMPLASM_LIST_NAME = "UPDATED Germplasm List Name";
@@ -84,11 +98,21 @@ public class ListComponentTest {
 		germplasmList.setType(GERMPLASM_LIST_TYPE);
 		germplasmList.setStatus(1);
 		
-		
 		List<GermplasmListData> listEntries = new ArrayList<GermplasmListData>();
 		listEntries.add(mock(GermplasmListData.class));
 		
 		listComponent = spy(new ListComponent(source,  parentListDetailsComponent,  germplasmList));
+		
+		doReturn(CHECK).when(messageSource).getMessage(Message.CHECK_ICON);
+		doReturn(HASH).when(messageSource).getMessage(Message.HASHTAG);
+		doReturn(AVAIL_INV).when(listComponent).getTermNameFromOntology(ColumnLabels.AVAILABLE_INVENTORY);
+		doReturn(SEED_RES).when(listComponent).getTermNameFromOntology(ColumnLabels.SEED_RESERVATION);
+		doReturn(GID).when(listComponent).getTermNameFromOntology(ColumnLabels.GID);
+		doReturn(ENTRY_CODE).when(listComponent).getTermNameFromOntology(ColumnLabels.ENTRY_CODE);
+		doReturn(DESIG).when(listComponent).getTermNameFromOntology(ColumnLabels.DESIGNATION);
+		doReturn(CROSS).when(listComponent).getTermNameFromOntology(ColumnLabels.PARENTAGE);
+		doReturn(SEED_SOURCE).when(listComponent).getTermNameFromOntology(ColumnLabels.SEED_SOURCE);
+		
 		listComponent.setGermplasmListManager(germplasmListManager);
 		listComponent.setMessageSource(messageSource);
 		listComponent.setListEntries(listEntries);
@@ -225,6 +249,31 @@ public class ListComponentTest {
 			
 			fail(e.getMessage());
 		}
+		
+	}
+	
+	@Test
+	public void testInitializeListDataTable(){
+		
+		TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
+		tableWithSelectAll.instantiateComponents();
+		
+		doReturn(tableWithSelectAll).when(listComponent).getListDataTableWithSelectAll();
+		doNothing().when(listComponent).initializeAddColumnContextMenu();
+		
+		listComponent.initializeListDataTable();
+		
+		Table table = tableWithSelectAll.getTable();
+		
+		assertEquals(CHECK ,table.getColumnHeader(ColumnLabels.TAG.getName()));
+		assertEquals(HASH ,table.getColumnHeader(ColumnLabels.ENTRY_ID.getName()));
+		assertEquals(AVAIL_INV ,table.getColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName()));
+		assertEquals(SEED_RES ,table.getColumnHeader(ColumnLabels.SEED_RESERVATION.getName()));
+		assertEquals(GID ,table.getColumnHeader(ColumnLabels.GID.getName()));
+		assertEquals(ENTRY_CODE ,table.getColumnHeader(ColumnLabels.ENTRY_CODE.getName()));
+		assertEquals(DESIG ,table.getColumnHeader(ColumnLabels.DESIGNATION.getName()));
+		assertEquals(CROSS ,table.getColumnHeader(ColumnLabels.PARENTAGE.getName()));
+		assertEquals(SEED_SOURCE ,table.getColumnHeader(ColumnLabels.SEED_SOURCE.getName()));
 		
 	}
 	
