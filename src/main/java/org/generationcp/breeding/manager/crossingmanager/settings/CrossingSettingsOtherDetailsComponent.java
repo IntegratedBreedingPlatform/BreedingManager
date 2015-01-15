@@ -9,6 +9,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.xml.AdditionalDetailsSetting;
 import org.generationcp.breeding.manager.customfields.HarvestDateField;
+import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -83,6 +84,10 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 
     private Map<String, Integer> mapLocation;
     private List<Location> locations;
+    
+    @Autowired
+	private BreedingManagerService breedingManagerService;
+	private String programUniqueId;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -110,6 +115,11 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 
 	@Override
 	public void instantiateComponents() {
+		try {
+			programUniqueId = breedingManagerService.getCurrentProject().getUniqueID();
+		} catch (MiddlewareQueryException e) {
+			LOG.error(e.getMessage(),e);
+		}
 		initializeHarvestDetailsSection();
 		initializeSaveSettingsSection();
 	}
@@ -143,21 +153,20 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 		try {
 			locations = locationDataManager.getAllLocations();
 		} catch (MiddlewareQueryException e) {
-			e.printStackTrace();
-			LOG.error(e.getMessage());
+			LOG.error(e.getMessage(),e);
 			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR),
 					"Error getting breeding locations!");
 		}
 		setFieldsDefaultValue();
 		
-		initPopulateFavLocation();
+		initPopulateFavLocation(programUniqueId);
 	}
 	
-	public boolean initPopulateFavLocation(){
+	public boolean initPopulateFavLocation(String programUUID){
 		boolean hasFavorite = false;
-		if(BreedingManagerUtil.hasFavoriteLocation(germplasmDataManager, 0)){
+		if(BreedingManagerUtil.hasFavoriteLocation(germplasmDataManager, 0, programUUID )){
 			showFavouriteLocations.setValue(true);
-        	populateHarvestLocation(true);
+        	populateHarvestLocation(true,programUUID);
         	hasFavorite = true;
         }
 		return hasFavorite;
@@ -169,7 +178,7 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				populateHarvestLocation(((Boolean) event.getProperty().getValue()).equals(true));
+				populateHarvestLocation(((Boolean) event.getProperty().getValue()).equals(true),programUniqueId);
 			}
 
 		});
@@ -188,7 +197,7 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 						@Override
 						public void windowClose(CloseEvent e) {
 							Object lastValue = harvestLocations.getValue();
-							populateHarvestLocation(((Boolean) showFavouriteLocations.getValue()).equals(true));
+							populateHarvestLocation(((Boolean) showFavouriteLocations.getValue()).equals(true),programUniqueId);
 							harvestLocations.setValue(lastValue);
 						}
 					});
@@ -221,18 +230,18 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 		addComponent(settingsFormFields);
 	}
 
-	private void populateHarvestLocation() {
-    	populateHarvestLocation(((Boolean) showFavouriteLocations.getValue()).equals(true));
+	private void populateHarvestLocation(String programUUID) {
+    	populateHarvestLocation(((Boolean) showFavouriteLocations.getValue()).equals(true),programUUID);
     }
 
-    private void populateHarvestLocation(boolean showOnlyFavorites) {
+    private void populateHarvestLocation(boolean showOnlyFavorites, String programUUID) {
         harvestLocations.removeAllItems();
         mapLocation = new HashMap<String, Integer>();
 
         if(showOnlyFavorites){
         	try {
 				BreedingManagerUtil.populateWithFavoriteLocations(workbenchDataManager,
-						germplasmDataManager, harvestLocations, mapLocation);
+						germplasmDataManager, harvestLocations, mapLocation, programUUID);
 			} catch (MiddlewareQueryException e) {
 				e.printStackTrace();
 				LOG.error(e.getMessage());
@@ -309,7 +318,7 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 
 	public void setFields(AdditionalDetailsSetting additionalDetailsSetting, String name, Boolean isDefault ) {
 		showFavouriteLocations.setValue(false);
-		populateHarvestLocation();
+		populateHarvestLocation(programUniqueId);
 		harvestLocations.select(additionalDetailsSetting.getHarvestLocationId());
 		settingsNameTextfield.setValue(name);
 		setAsDefaultSettingCheckbox.setValue(isDefault);
@@ -321,7 +330,7 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 		setAsDefaultSettingCheckbox.setValue(false);
 		showFavouriteLocations.setValue(false);
 
-		populateHarvestLocation();
+		populateHarvestLocation(programUniqueId);
 	}
 
 	public Boolean settingsFileNameProvided() {
@@ -343,5 +352,10 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 
 	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
 		this.germplasmDataManager = germplasmDataManager;
+	}
+
+	public void setBreedingManagerService(
+			BreedingManagerService breedingManagerService) {
+		this.breedingManagerService = breedingManagerService;
 	}
 }

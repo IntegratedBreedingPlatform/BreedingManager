@@ -10,6 +10,7 @@ import org.generationcp.breeding.manager.constants.AppConstants.CssStyles;
 import org.generationcp.breeding.manager.customfields.BreedingLocationField;
 import org.generationcp.breeding.manager.customfields.BreedingLocationFieldSource;
 import org.generationcp.breeding.manager.customfields.BreedingMethodField;
+import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -81,8 +82,11 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
     
     private boolean hasInventoryAmounts = false;
     
-    private final Integer STORAGE_LOCATION_TYPEID = 1500;
+    private static final Integer STORAGE_LOCATION_TYPEID = 1500;
     
+    @Autowired
+	private BreedingManagerService breedingManagerService;
+	private String programUniqueId;
 
 	public GermplasmFieldsComponent(Window parentWindow) {
 		super();
@@ -157,6 +161,12 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
         nameTypeComboBox.setWidth("400px");
         nameTypeComboBox.setNullSelectionAllowed(false);
         nameTypeComboBox.setImmediate(true);
+        
+        try {
+			programUniqueId = breedingManagerService.getCurrentProject().getUniqueID();
+		} catch (MiddlewareQueryException e) {
+			LOG.error(e.getMessage(),e);
+		}
 	}
 
 	@Override
@@ -165,8 +175,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
         try {
 			populateNameTypes();
 		} catch (MiddlewareQueryException e) {
-			LOG.error("Error getting name types " + e.getMessage());
-			e.printStackTrace();
+			LOG.error(e.getMessage(),e);
 		}
 		
 	}
@@ -292,8 +301,8 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 		locationComboBox = locationComponent.getBreedingLocationComboBox();
 		seedLocationComboBox = seedLocationComponent.getBreedingLocationComboBox();
 		
-		locationComponent.populateHarvestLocation(Integer.valueOf(locationComboBox.getValue().toString()));
-		seedLocationComponent.populateHarvestLocation(Integer.valueOf(seedLocationComboBox.getValue().toString()));
+		locationComponent.populateHarvestLocation(Integer.valueOf(locationComboBox.getValue().toString()),programUniqueId);
+		seedLocationComponent.populateHarvestLocation(Integer.valueOf(seedLocationComboBox.getValue().toString()),programUniqueId);
 	}
     
 }

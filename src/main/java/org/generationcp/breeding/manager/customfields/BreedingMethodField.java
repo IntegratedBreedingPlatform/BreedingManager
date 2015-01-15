@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -74,6 +75,10 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	
 	@Autowired
     private GermplasmDataManager germplasmDataManager;	
+	
+	@Autowired
+	private BreedingManagerService breedingManagerService;
+	private String programUniqueId;
 	
 	public BreedingMethodField(){
 		this.caption = "Breeding Method: ";
@@ -157,21 +162,27 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
         methodDescription.setWidth("300px");
         popup = new PopupView(" ? ", methodDescription);
         popup.setStyleName("gcp-popup-view");
+        
+        try {
+			programUniqueId = breedingManagerService.getCurrentProject().getUniqueID();
+		} catch (MiddlewareQueryException e) {
+			LOG.error(e.getMessage(),e);
+		}
 	}
 
 	@Override
 	public void initializeValues() {
         populateMethods();
         enableMethodHelp(hasDefaultValue);   
-        initPopulateFavMethod();
+        initPopulateFavMethod(programUniqueId);
 	}
 	
-	public boolean initPopulateFavMethod(){
+	public boolean initPopulateFavMethod(String programUUID){
 		boolean hasFavorite = false;
-		if(!hasDefaultValue && BreedingManagerUtil.hasFavoriteMethods(germplasmDataManager)){
+		if(!hasDefaultValue && BreedingManagerUtil.hasFavoriteMethods(germplasmDataManager,programUUID)){
         	showFavoritesCheckBox.setValue(true);
         	hasFavorite = true;
-        	populateMethods(true);        	
+        	populateMethods(true,programUniqueId);        	
         }
 		return hasFavorite;
 	}
@@ -201,7 +212,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				populateMethods(((Boolean) event.getProperty().getValue()).equals(true));
+				populateMethods(((Boolean) event.getProperty().getValue()).equals(true),programUniqueId);
 				updateComboBoxDescription();
 			}
 		});
@@ -330,12 +341,12 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		return methodMap;
 	}    
 	
-    private void populateMethods(boolean showOnlyFavorites) {
+    private void populateMethods(boolean showOnlyFavorites, String programUUID) {
     	breedingMethodComboBox.removeAllItems();
         if(showOnlyFavorites){
         	try {
 				BreedingManagerUtil.populateWithFavoriteMethods(workbenchDataManager, 
-						germplasmDataManager, breedingMethodComboBox, null);
+						germplasmDataManager, breedingMethodComboBox, null, programUUID);
 			} catch (MiddlewareQueryException e) {
 				e.printStackTrace();
 				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), 
@@ -358,7 +369,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 				@Override
 				public void windowClose(CloseEvent e) {
 					Object lastValue = breedingMethodComboBox.getValue();
-					populateMethods(((Boolean) showFavoritesCheckBox.getValue()).equals(true));
+					populateMethods(((Boolean) showFavoritesCheckBox.getValue()).equals(true),programUniqueId);
 					breedingMethodComboBox.setValue(lastValue);
 				}
 			});
@@ -409,5 +420,9 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	public void setHasDefaultValue(boolean hasDefaultValue) {
 		this.hasDefaultValue = hasDefaultValue;
 	}
-    
+
+	public void setBreedingManagerService(
+			BreedingManagerService breedingManagerService) {
+		this.breedingManagerService = breedingManagerService;
+	}
 }

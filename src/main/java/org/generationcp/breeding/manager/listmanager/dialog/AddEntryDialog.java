@@ -18,6 +18,7 @@ import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItemClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListValueChangeListener;
+import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.util.UserUtil;
@@ -119,6 +120,11 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
     
     private GermplasmSearchResultsComponent searchResultsComponent;
     
+    @Autowired
+	private BreedingManagerService breedingManagerService;
+	private String programUniqueId;
+
+    
     public AddEntryDialog(AddEntryDialogSource source, Window parentWindow){
         this.setOverrideFocus(true);
         this.source = source;
@@ -135,6 +141,13 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
     
 	@Override
 	public void instantiateComponents() {
+		
+		try {
+			programUniqueId = breedingManagerService.getCurrentProject().getUniqueID();
+		} catch (MiddlewareQueryException e) {
+			LOG.error(e.getMessage(),e);
+		}
+		
 		initializeTopPart();	
 		initializeBottomPart();
 		initializeButtonLayout();
@@ -624,7 +637,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
 	@Override
 	public void updateAllLocationFields() {
 		Object lastValue = breedingLocationField.getBreedingLocationComboBox().getValue();
-		breedingLocationField.populateHarvestLocation(Integer.valueOf(lastValue.toString()));
+		breedingLocationField.populateHarvestLocation(Integer.valueOf(lastValue.toString()),programUniqueId);
 	}
 	
 	public void setOptionGroup(OptionGroup optionGroup){

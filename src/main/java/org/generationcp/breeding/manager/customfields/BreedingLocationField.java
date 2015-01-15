@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -77,6 +78,10 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	
 	@Autowired
     private LocationDataManager locationDataManager;
+	
+	@Autowired
+	private BreedingManagerService breedingManagerService;
+	private String programUniqueId;
 	
 	public BreedingLocationField() {
 		
@@ -157,19 +162,24 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
         manageFavoritesLink.setStyleName(BaseTheme.BUTTON_LINK);
         manageFavoritesLink.setCaption(messageSource.getMessage(Message.MANAGE_LOCATIONS));
 
+        try {
+			programUniqueId = breedingManagerService.getCurrentProject().getUniqueID();
+		} catch (MiddlewareQueryException e) {
+			LOG.error(e.getMessage(),e);
+		}
 	}
 
 	@Override
 	public void initializeValues() {
         populateLocations();
-        initPopulateFavLocations();        
+		initPopulateFavLocations(programUniqueId);
 	}
 	
-	public boolean initPopulateFavLocations(){
+	public boolean initPopulateFavLocations(String programUUID){
 		boolean hasFavorite = false;
-		if(BreedingManagerUtil.hasFavoriteLocation(germplasmDataManager, 0)){
+		if(BreedingManagerUtil.hasFavoriteLocation(germplasmDataManager, 0, programUUID)){
         	showFavoritesCheckBox.setValue(true);
-        	populateHarvestLocation(true);
+        	populateHarvestLocation(true,programUniqueId);
         	hasFavorite = true;
         }
 		return hasFavorite;
@@ -198,7 +208,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				populateHarvestLocation(((Boolean) event.getProperty().getValue()).equals(true));
+				populateHarvestLocation(((Boolean) event.getProperty().getValue()).equals(true), programUniqueId);
 			}
 		});
         
@@ -274,18 +284,18 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		this.changed = changed;
 	}
 	
-	public void populateHarvestLocation(Integer selectedLocation){
-		populateHarvestLocation(showFavoritesCheckBox.getValue().equals(true));
+	public void populateHarvestLocation(Integer selectedLocation, String programUUID){
+		populateHarvestLocation(showFavoritesCheckBox.getValue().equals(true), programUUID);
 		breedingLocationComboBox.setValue(selectedLocation);
 	}
 	
-    private void populateHarvestLocation(boolean showOnlyFavorites) {
+    private void populateHarvestLocation(boolean showOnlyFavorites, String programUUID) {
     	breedingLocationComboBox.removeAllItems();
 
         if(showOnlyFavorites){
         	try {
         		BreedingManagerUtil.populateWithFavoriteLocations(workbenchDataManager, 
-						germplasmDataManager, breedingLocationComboBox, null);
+						germplasmDataManager, breedingLocationComboBox, null, programUUID);
         		
 			} catch (MiddlewareQueryException e) {
 				e.printStackTrace();
@@ -395,5 +405,9 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	public void setLocationDataManager(LocationDataManager locationDataManager) {
 		this.locationDataManager = locationDataManager;
 	}
-        
+
+	public void setBreedingManagerService(
+			BreedingManagerService breedingManagerService) {
+		this.breedingManagerService = breedingManagerService;
+	}    
 }

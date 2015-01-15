@@ -7,6 +7,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
+import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -73,6 +74,10 @@ public class CrossingSettingsMethodComponent extends CssLayout implements
 
     private HashMap<String, Integer> mapMethods;
     private List<Method> methods;
+    
+    @Autowired
+	private BreedingManagerService breedingManagerService;
+	private String programUniqueId;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -80,14 +85,14 @@ public class CrossingSettingsMethodComponent extends CssLayout implements
 		initializeValues();
 		addListeners();
 		layoutComponents();
-		initPopulateFavMethod();		
+		initPopulateFavMethod(programUniqueId);		
 	}
 	
-	public boolean initPopulateFavMethod(){
+	public boolean initPopulateFavMethod(String programUUID){
 		boolean hasFavorite = false;
-		if(BreedingManagerUtil.hasFavoriteMethods(germplasmDataManager)){
+		if(BreedingManagerUtil.hasFavoriteMethods(germplasmDataManager,programUUID)){
 			favoriteMethodsCheckbox.setValue(true);
-        	populateBreedingMethods(true);
+        	populateBreedingMethods(true,programUniqueId);
         	hasFavorite = true;
         }
 		return hasFavorite;
@@ -128,6 +133,12 @@ public class CrossingSettingsMethodComponent extends CssLayout implements
         manageFavoriteMethodsLink = new Button();
         manageFavoriteMethodsLink.setStyleName(BaseTheme.BUTTON_LINK);
         manageFavoriteMethodsLink.setCaption(messageSource.getMessage(Message.MANAGE_METHODS));
+        
+        try {
+			programUniqueId = breedingManagerService.getCurrentProject().getUniqueID();
+		} catch (MiddlewareQueryException e) {
+			LOG.error(e.getMessage(),e);
+		}
 	}
 
 	@Override
@@ -158,7 +169,7 @@ public class CrossingSettingsMethodComponent extends CssLayout implements
 				showBreedingMethodSelection(selectMethod);
 
 				if (selectMethod) {
-					populateBreedingMethods((Boolean)favoriteMethodsCheckbox.getValue());
+					populateBreedingMethods((Boolean)favoriteMethodsCheckbox.getValue(),programUniqueId);
 					breedingMethods.focus();
 					enableMethodHelp(false);
 				} else {
@@ -186,7 +197,7 @@ public class CrossingSettingsMethodComponent extends CssLayout implements
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				populateBreedingMethods(((Boolean) event.getProperty().getValue()));
+				populateBreedingMethods(((Boolean) event.getProperty().getValue()),programUniqueId);
 			}
 
 		});
@@ -205,13 +216,12 @@ public class CrossingSettingsMethodComponent extends CssLayout implements
 						@Override
 						public void windowClose(CloseEvent e) {
 							Object lastValue = breedingMethods.getValue();
-							populateBreedingMethods(((Boolean) favoriteMethodsCheckbox.getValue()).equals(true));
+							populateBreedingMethods(((Boolean) favoriteMethodsCheckbox.getValue()).equals(true),programUniqueId);
 							breedingMethods.setValue(lastValue);
 						}
 					});
 				} catch (MiddlewareQueryException e){
-					e.printStackTrace();
-					LOG.error("Error on manageFavoriteMethods click", e);
+					LOG.error(e.getMessage(),e);
 				}
 			}
         });
@@ -250,11 +260,11 @@ public class CrossingSettingsMethodComponent extends CssLayout implements
 			
 			if(!isMethodGen(methodId)){
 				favoriteMethodsCheckbox.setValue(true);
-				populateBreedingMethods(true);
+				populateBreedingMethods(true,programUniqueId);
 			}
 			else{
 				favoriteMethodsCheckbox.setValue(false);
-				populateBreedingMethods(false);
+				populateBreedingMethods(false,programUniqueId);
 			}
 			breedingMethods.select(methodId);
 			showMethodDescription(methodId);
@@ -324,7 +334,7 @@ public class CrossingSettingsMethodComponent extends CssLayout implements
     	methodPopupView.setVisible(show);
 	}
 
-    private void populateBreedingMethods(boolean showOnlyFavorites) {
+    private void populateBreedingMethods(boolean showOnlyFavorites, String programUUID) {
         breedingMethods.removeAllItems();
 
         mapMethods = new HashMap<String, Integer>();
@@ -332,7 +342,7 @@ public class CrossingSettingsMethodComponent extends CssLayout implements
         if(showOnlyFavorites){
         	try {
 				BreedingManagerUtil.populateWithFavoriteMethods(workbenchDataManager, germplasmDataManager,
-						breedingMethods, mapMethods);
+						breedingMethods, mapMethods, programUUID);
 			} catch (MiddlewareQueryException e) {
 				e.printStackTrace();
 				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR),
@@ -385,5 +395,10 @@ public class CrossingSettingsMethodComponent extends CssLayout implements
 
 	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
 		this.germplasmDataManager = germplasmDataManager;
-	}    
+	}
+
+	public void setBreedingManagerService(
+			BreedingManagerService breedingManagerService) {
+		this.breedingManagerService = breedingManagerService;
+	}
 }

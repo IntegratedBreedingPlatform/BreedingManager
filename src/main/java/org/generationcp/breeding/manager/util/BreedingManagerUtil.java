@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -14,15 +15,20 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.generationcp.middleware.pojos.*;
+import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.Location;
+import org.generationcp.middleware.pojos.Method;
+import org.generationcp.middleware.pojos.Person;
+import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.pojos.dms.ProgramFavorite;
 import org.generationcp.middleware.pojos.dms.ProgramFavorite.FavoriteType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Window;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 public class BreedingManagerUtil{
@@ -174,7 +180,7 @@ public class BreedingManagerUtil{
      */
     @SuppressWarnings("deprecation")
 	public static void populateWithFavoriteLocations(WorkbenchDataManager workbenchDataManager, GermplasmDataManager germplasmDataManager, 
-    		ComboBox locationComboBox, Map<String, Integer> mapLocation, Integer locationType) throws MiddlewareQueryException {
+    		ComboBox locationComboBox, Map<String, Integer> mapLocation, Integer locationType, String programUUID) throws MiddlewareQueryException {
     	
     	locationComboBox.removeAllItems();
     	
@@ -183,7 +189,7 @@ public class BreedingManagerUtil{
          
 		
         //Get location Id's
-        List<ProgramFavorite> list = germplasmDataManager.getProgramFavorites(FavoriteType.LOCATION, 1000);
+        List<ProgramFavorite> list = germplasmDataManager.getProgramFavorites(FavoriteType.LOCATION, 1000, programUUID);
 		for (ProgramFavorite f : list){
 			favoriteLocationIds.add(f.getEntityId());
 		}
@@ -215,8 +221,8 @@ public class BreedingManagerUtil{
      * @throws MiddlewareQueryException
      */
 	public static void populateWithFavoriteLocations(WorkbenchDataManager workbenchDataManager, GermplasmDataManager germplasmDataManager, 
-    		ComboBox locationComboBox, Map<String, Integer> mapLocation) throws MiddlewareQueryException {
-    	populateWithFavoriteLocations(workbenchDataManager, germplasmDataManager, locationComboBox, mapLocation, 0);		
+    		ComboBox locationComboBox, Map<String, Integer> mapLocation, String programUUID) throws MiddlewareQueryException {
+    	populateWithFavoriteLocations(workbenchDataManager, germplasmDataManager, locationComboBox, mapLocation, 0, programUUID);		
     }
     
     /**
@@ -230,7 +236,7 @@ public class BreedingManagerUtil{
      */
     @SuppressWarnings("deprecation")
 	public static void populateWithFavoriteBreedingLocations(WorkbenchDataManager workbenchDataManager, GermplasmDataManager germplasmDataManager, 
-    		ComboBox locationComboBox, Map<String, Integer> mapLocation) throws MiddlewareQueryException {
+    		ComboBox locationComboBox, Map<String, Integer> mapLocation, String programUUID) throws MiddlewareQueryException {
     	
     	locationComboBox.removeAllItems();
     	
@@ -238,7 +244,7 @@ public class BreedingManagerUtil{
         List<Location> favoriteLocations = new ArrayList<Location>();
         
         //Get location Id's
-        List<ProgramFavorite> list = germplasmDataManager.getProgramFavorites(FavoriteType.LOCATION, 1000);
+        List<ProgramFavorite> list = germplasmDataManager.getProgramFavorites(FavoriteType.LOCATION, 1000, programUUID);
 		for (ProgramFavorite f : list){
 			favoriteLocationIds.add(f.getEntityId());
 		}
@@ -273,14 +279,14 @@ public class BreedingManagerUtil{
      * @throws MiddlewareQueryException
      */
     public static void populateWithFavoriteMethods(WorkbenchDataManager workbenchDataManager, GermplasmDataManager germplasmDataManager, 
-    		ComboBox methodComboBox, Map<String, Integer> mapMethods) throws MiddlewareQueryException {
-    	populateWithFavoriteMethods(workbenchDataManager, germplasmDataManager, methodComboBox, mapMethods, null);
+    		ComboBox methodComboBox, Map<String, Integer> mapMethods, String programUUID) throws MiddlewareQueryException {
+    	populateWithFavoriteMethods(workbenchDataManager, germplasmDataManager, methodComboBox, mapMethods, null, programUUID);
     }
     
-    public static boolean hasFavoriteMethods(GermplasmDataManager germplasmDataManager){
+    public static boolean hasFavoriteMethods(GermplasmDataManager germplasmDataManager, String programUUID){
     	boolean hasFavMethod = false;
     	try {
-			List<ProgramFavorite> list = germplasmDataManager.getProgramFavorites(FavoriteType.METHOD, 1000);
+			List<ProgramFavorite> list = germplasmDataManager.getProgramFavorites(FavoriteType.METHOD, 1000, programUUID);
 			if(list != null && !list.isEmpty()){
 				hasFavMethod = true;
 			}			
@@ -291,12 +297,12 @@ public class BreedingManagerUtil{
     	return hasFavMethod;
     }
     
-    public static boolean hasFavoriteLocation(GermplasmDataManager germplasmDataManager, Integer locationType) {
+    public static boolean hasFavoriteLocation(GermplasmDataManager germplasmDataManager, Integer locationType, String programUUID) {
     	    	        
         boolean hasFavLocation = false;
         try {
         //Get location Id's
-	        List<ProgramFavorite> list = germplasmDataManager.getProgramFavorites(FavoriteType.LOCATION, 1000);
+	        List<ProgramFavorite> list = germplasmDataManager.getProgramFavorites(FavoriteType.LOCATION, 1000, programUUID);
 	        if(list != null && !list.isEmpty()){
 	        	hasFavLocation = true;
 			}
@@ -307,6 +313,7 @@ public class BreedingManagerUtil{
 		
 		return hasFavLocation;
     }
+    
     /**
      * Queries for program's favorite locations and sets the values to combobox and map.  Only selects method with the GIVEN type.
      * 
@@ -318,7 +325,7 @@ public class BreedingManagerUtil{
      * @throws MiddlewareQueryException
      */
     public static void populateWithFavoriteMethods(WorkbenchDataManager workbenchDataManager, GermplasmDataManager germplasmDataManager, 
-    		ComboBox methodComboBox, Map<String, Integer> mapMethods, String mType) throws MiddlewareQueryException {
+    		ComboBox methodComboBox, Map<String, Integer> mapMethods, String mType, String programUUID) throws MiddlewareQueryException {
     	
 		methodComboBox.removeAllItems();
     	
@@ -327,7 +334,7 @@ public class BreedingManagerUtil{
          
 		try {
 
-			List<ProgramFavorite> list = germplasmDataManager.getProgramFavorites(FavoriteType.METHOD, 1000);
+			List<ProgramFavorite> list = germplasmDataManager.getProgramFavorites(FavoriteType.METHOD, 1000, programUUID);
 			for (ProgramFavorite f : list){
 				favoriteMethodIds.add(f.getEntityId());
 			}
