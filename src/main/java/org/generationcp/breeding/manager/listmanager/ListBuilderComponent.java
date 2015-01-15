@@ -35,7 +35,6 @@ import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryUtil;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
-import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.dialog.ListManagerCopyToNewListDialog;
 import org.generationcp.breeding.manager.listmanager.listeners.ResetListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.SaveListButtonClickListener;
@@ -43,6 +42,7 @@ import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandle
 import org.generationcp.breeding.manager.listmanager.util.DropHandlerMethods.ListUpdatedEvent;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.util.FileDownloadResource;
@@ -57,6 +57,7 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
+import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
@@ -113,6 +114,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     
 	@Autowired
 	private InventoryDataManager inventoryDataManager;
+	
+	@Autowired
+	private OntologyDataManager ontologyDataManager;
     
     public static final String GERMPLASMS_TABLE_DATA = "Germplasms Table Data";
     static final Action ACTION_SELECT_ALL = new Action("Select All");
@@ -259,7 +263,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         
         breedingManagerListDetailsComponent = new BreedingManagerListDetailsComponent();
         
-        tableWithSelectAllLayout = new TableWithSelectAllLayout(ListDataTablePropertyID.TAG.getName());
+        tableWithSelectAllLayout = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
 
         if(currentlySavedGermplasmList!=null) {
             listInventoryTable = new ListManagerInventoryTable(source, currentlySavedGermplasmList.getId(), false, true);
@@ -278,7 +282,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         menu.setWidth("300px");
         
         addColumnContextMenu = new AddColumnContextMenu(this, menu, 
-        		tableWithSelectAllLayout.getTable(), ListDataTablePropertyID.GID.getName(),true);
+        		tableWithSelectAllLayout.getTable(), ColumnLabels.GID.getName(),true);
         menuCopyToList = menu.addItem(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
         menuDeleteSelectedEntries = menu.addItem(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
         menuExportList = menu.addItem(messageSource.getMessage(Message.EXPORT_LIST));
@@ -351,7 +355,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	@Override
 	public void addListeners() {
 		
-		fillWith = new FillWith(this, messageSource, tableWithSelectAllLayout.getTable(), ListDataTablePropertyID.GID.getName());
+		fillWith = new FillWith(this, messageSource, tableWithSelectAllLayout.getTable(), ColumnLabels.GID.getName());
 		
 		menu.addListener(new ContextMenu.ClickListener() {
 			private static final long serialVersionUID = -2331333436994090161L;
@@ -723,27 +727,27 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	}
     
-	private void addBasicTableColumns(Table table){
+	protected void addBasicTableColumns(Table table){
     	table.setData(GERMPLASMS_TABLE_DATA);
-    	table.addContainerProperty(ListDataTablePropertyID.TAG.getName(), CheckBox.class, null);
-    	table.addContainerProperty(ListDataTablePropertyID.ENTRY_ID.getName(), Integer.class, null);
-    	table.addContainerProperty(ListDataTablePropertyID.DESIGNATION.getName(), Button.class, null);
-    	table.addContainerProperty(ListDataTablePropertyID.PARENTAGE.getName(), String.class, null);
-    	table.addContainerProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName(), Button.class, null);
-    	table.addContainerProperty(ListDataTablePropertyID.SEED_RESERVATION.getName(), String.class, null);
-    	table.addContainerProperty(ListDataTablePropertyID.ENTRY_CODE.getName(), String.class, null);
-    	table.addContainerProperty(ListDataTablePropertyID.GID.getName(), Button.class, null);
-    	table.addContainerProperty(ListDataTablePropertyID.SEED_SOURCE.getName(), String.class, null);
+    	table.addContainerProperty(ColumnLabels.TAG.getName(), CheckBox.class, null);
+    	table.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
+    	table.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
+    	table.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
+    	table.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Button.class, null);
+    	table.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
+    	table.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
+    	table.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
+    	table.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
     	
-    	messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.TAG.getName(), ListDataTablePropertyID.TAG.getColumnDisplay());
-		messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.ENTRY_ID.getName(), ListDataTablePropertyID.ENTRY_ID.getColumnDisplay());
-		messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.DESIGNATION.getName(), ListDataTablePropertyID.DESIGNATION.getColumnDisplay());
-		messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.PARENTAGE.getName(), ListDataTablePropertyID.PARENTAGE.getColumnDisplay());
-		messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.AVAILABLE_INVENTORY.getName(), ListDataTablePropertyID.AVAILABLE_INVENTORY.getColumnDisplay());
-		messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.SEED_RESERVATION.getName(), ListDataTablePropertyID.SEED_RESERVATION.getColumnDisplay());
-		messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.ENTRY_CODE.getName(), ListDataTablePropertyID.ENTRY_CODE.getColumnDisplay());
-		messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.GID.getName(), ListDataTablePropertyID.GID.getColumnDisplay());
-		messageSource.setColumnHeader(listDataTable, ListDataTablePropertyID.SEED_SOURCE.getName(), ListDataTablePropertyID.SEED_SOURCE.getColumnDisplay());
+    	table.setColumnHeader(ColumnLabels.TAG.getName(), messageSource.getMessage(Message.CHECK_ICON));
+    	table.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), messageSource.getMessage(Message.HASHTAG));
+    	table.setColumnHeader(ColumnLabels.DESIGNATION.getName(), getTermNameFromOntology(ColumnLabels.DESIGNATION));
+    	table.setColumnHeader(ColumnLabels.PARENTAGE.getName(), getTermNameFromOntology(ColumnLabels.PARENTAGE));
+    	table.setColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName(), getTermNameFromOntology(ColumnLabels.AVAILABLE_INVENTORY));
+    	table.setColumnHeader(ColumnLabels.SEED_RESERVATION.getName(), getTermNameFromOntology(ColumnLabels.SEED_RESERVATION));
+    	table.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(), getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
+    	table.setColumnHeader(ColumnLabels.GID.getName(),  getTermNameFromOntology(ColumnLabels.GID));
+    	table.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(),  getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
 	}
 	
     private void createGermplasmTable(final Table table){
@@ -848,7 +852,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
                 
         int id = 1;
         for(Integer itemId : itemIds){
-        	tableWithSelectAllLayout.getTable().getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(id);
+        	tableWithSelectAllLayout.getTable().getItem(itemId).getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(id);
             id++;
         }
     }
@@ -1014,7 +1018,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
             listEntry.setId(entryId);
             
             
-            Button designationButton = (Button)  item.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue();
+            Button designationButton = (Button)  item.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue();
             String designation = designationButton.getCaption();
             if(designation != null){
                 listEntry.setDesignation(designation);
@@ -1022,17 +1026,17 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
                 listEntry.setDesignation("-");
             }
             
-            Object entryCode = item.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue();
+            Object entryCode = item.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).getValue();
             if(entryCode != null){
                 listEntry.setEntryCode(entryCode.toString());
             } else{
                 listEntry.setEntryCode("-");
             }
             
-            Button gidButton = (Button) item.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
+            Button gidButton = (Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue();
             listEntry.setGid(Integer.parseInt(gidButton.getCaption()));
             
-            Object groupName = item.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).getValue();
+            Object groupName = item.getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue();
             if(groupName != null){
                 String groupNameString = groupName.toString();
                 if(groupNameString.length() > 255){
@@ -1043,9 +1047,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
                 listEntry.setGroupName("-");
             }
             
-            listEntry.setEntryId((Integer) item.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).getValue());
+            listEntry.setEntryId((Integer) item.getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue());
             
-            Object seedSource = item.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).getValue();
+            Object seedSource = item.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue();
             if(seedSource != null){
                 listEntry.setSeedSource(seedSource.toString());
             } else{
@@ -1441,10 +1445,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			} else {
 				inventoryButton.setDescription("Click to view Inventory Details");
 			}
-			item.getItemProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
+			item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
 			
 			
-			Button gidButton = (Button) item.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue(); 
+			Button gidButton = (Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue(); 
 			String gidString = "";
 			
 			if(gidButton!=null) {
@@ -1461,7 +1465,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	   			seedRes = listData.getInventoryInfo().getReservedLotCount().toString().trim();
 	   		}
 			
-	   		item.getItemProperty(ListDataTablePropertyID.SEED_RESERVATION.getName()).setValue(seedRes);
+	   		item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 		}
 	}
 	
@@ -1616,7 +1620,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		List<Integer> itemIds = getItemIds(listDataTable);
 		for(Integer itemId : itemIds){
 			Item item = listDataTable.getItem(itemId);
-			Button gidButton = (Button) item.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue();
+			Button gidButton = (Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue();
 			
 			String currentGid = "";
 			if(gidButton!=null){
@@ -1624,7 +1628,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			}
 			
 			if(currentGid.equals(gid)){
-				((Button) item.getItemProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName()).getValue()).setCaption(availInv);
+				((Button) item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue()).setCaption(availInv);
 			}
 		}
 		listDataTable.requestRepaint();
@@ -1667,6 +1671,14 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	public void refreshListInventoryItemCount() {
 		updateNoOfEntries();
 		updateNoOfSelectedEntries();
+	}
+	
+	protected String getTermNameFromOntology(ColumnLabels columnLabel){
+		return columnLabel.getTermNameFromOntology(ontologyDataManager);
+	}
+
+	protected void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
 	}
 	
 }
