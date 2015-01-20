@@ -328,8 +328,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
         	if(defaultMethod != null){
                 breedingMethodComboBox.setValue(defaultMethod.getMid());
                 methodDescription.setValue(defaultMethod.getMdesc());
-        	}
-        	else{
+        	} else {
         		//if the list of methods has no default method, just select the first item from the list
         		if(breedingMethodComboBox.getValue()==null && methods.size() > 0 && methods.get(0) != null){
                 	breedingMethodComboBox.setValue(methods.get(0).getMid());
@@ -348,7 +347,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 				BreedingManagerUtil.populateWithFavoriteMethods(workbenchDataManager, 
 						germplasmDataManager, breedingMethodComboBox, null, programUUID);
 			} catch (MiddlewareQueryException e) {
-				e.printStackTrace();
+				LOG.error(e.getMessage(),e);
 				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), 
 						"Error getting favorite methods!");
 			}

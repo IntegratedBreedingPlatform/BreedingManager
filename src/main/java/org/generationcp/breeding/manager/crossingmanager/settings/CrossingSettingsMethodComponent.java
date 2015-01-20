@@ -312,11 +312,9 @@ public class CrossingSettingsMethodComponent extends CssLayout implements
 			    breedingMethods.setDescription(methodDescription);
 
 			} catch (MiddlewareQueryException e) {
-			    e.printStackTrace();
-			    LOG.error("Error getting method.");
+			    LOG.error(e.getMessage(),e);
 			} catch (ClassCastException e) {
-				e.printStackTrace();
-				LOG.error("Error getting method");
+				LOG.error(e.getMessage(),e);
 			}
 		}
 	}

@@ -87,8 +87,7 @@ public class BreedingManagerUtil{
             return getIDForUserDefinedFieldCrossingName(germplasmListManager);
         
         } catch (MiddlewareQueryException e) {
-            LOG.error(e.getMessage());
-            LOG.error("\n" + e.getStackTrace());
+            LOG.error(e.getMessage(),e);
             if (window != null && messageSource != null){
                 MessageNotifier.showError(window, 
                         messageSource.getMessage(Message.ERROR_DATABASE),

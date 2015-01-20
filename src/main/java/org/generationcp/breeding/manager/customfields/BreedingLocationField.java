@@ -298,7 +298,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 						germplasmDataManager, breedingLocationComboBox, null, programUUID);
         		
 			} catch (MiddlewareQueryException e) {
-				e.printStackTrace();
+				LOG.error(e.getMessage(),e);
 				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), 
 						"Error getting favorite locations!");
 			}
@@ -323,8 +323,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 				locations = locationDataManager.getAllLocations();
 			}
 		} catch (MiddlewareQueryException e) {
-			e.printStackTrace();
-			LOG.error("Error on getting all locations", e);
+			LOG.error(e.getMessage(),e);
 		}
 		
 		Integer firstId = null;

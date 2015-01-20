@@ -243,8 +243,7 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 				BreedingManagerUtil.populateWithFavoriteLocations(workbenchDataManager,
 						germplasmDataManager, harvestLocations, mapLocation, programUUID);
 			} catch (MiddlewareQueryException e) {
-				e.printStackTrace();
-				LOG.error(e.getMessage());
+				LOG.error(e.getMessage(),e);
 				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR),
 						"Error getting favorite locations!");
 			}
@@ -258,8 +257,7 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 		try {
 			locations = locationDataManager.getAllLocations();
 		} catch (MiddlewareQueryException e) {
-			e.printStackTrace();
-			LOG.error(e.getMessage());
+			LOG.error(e.getMessage(),e);
 			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR),
 					"Error getting breeding locations!");
 		}
