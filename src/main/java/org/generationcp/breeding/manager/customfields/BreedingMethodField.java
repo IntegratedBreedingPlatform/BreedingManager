@@ -172,7 +172,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 
 	@Override
 	public void initializeValues() {
-        populateMethods();
+        populateMethods(programUniqueId);
         enableMethodHelp(hasDefaultValue);   
         initPopulateFavMethod(programUniqueId);
 	}
@@ -297,13 +297,11 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
     	popup.setEnabled(enable);
     }
     
-    private Map<String, String> populateMethods() {
+    private Map<String, String> populateMethods(String programUUID) {
         try {
-            methods = germplasmDataManager.getAllMethods();
-        }
-        catch (MiddlewareQueryException e) {
-            e.printStackTrace();
-            LOG.error("Error on gettingAllMethods", e);
+            methods = germplasmDataManager.getMethodsByUniqueID(programUUID);
+        } catch (MiddlewareQueryException e) {
+            LOG.error(e.getMessage(),e);
         }
         
         if (methods == null) {
@@ -352,7 +350,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 						"Error getting favorite methods!");
 			}
         } else {
-        	populateMethods();
+        	populateMethods(programUUID);
         }
 
     }

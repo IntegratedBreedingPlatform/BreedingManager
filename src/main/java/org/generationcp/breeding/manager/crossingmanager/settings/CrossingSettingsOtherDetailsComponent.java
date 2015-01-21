@@ -151,7 +151,7 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 	@Override
 	public void initializeValues() {
 		try {
-			locations = locationDataManager.getAllLocations();
+			locations = locationDataManager.getLocationsByUniqueID(programUniqueId);
 		} catch (MiddlewareQueryException e) {
 			LOG.error(e.getMessage(),e);
 			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR),
@@ -248,14 +248,14 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 						"Error getting favorite locations!");
 			}
         } else {
-        	populateWithLocations();
+        	populateWithLocations(programUUID);
         }
     }
 
-    private void populateWithLocations(){
+    private void populateWithLocations(String programUUID){
     	
 		try {
-			locations = locationDataManager.getAllLocations();
+			locations = locationDataManager.getLocationsByUniqueID(programUUID);
 		} catch (MiddlewareQueryException e) {
 			LOG.error(e.getMessage(),e);
 			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR),

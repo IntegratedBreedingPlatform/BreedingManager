@@ -149,7 +149,7 @@ public class CrossingSettingsMethodComponent extends CssLayout implements
 
 		// Retrieve breeding methods
         try {
-			methods = germplasmDataManager.getMethodsByType("GEN");
+			methods = germplasmDataManager.getMethodsByType("GEN",programUniqueId);
 		} catch (MiddlewareQueryException e) {
 			LOG.error(e.getMessage());
 		}
@@ -348,14 +348,14 @@ public class CrossingSettingsMethodComponent extends CssLayout implements
 			}
 
         } else {
-        	populateBreedingMethod();
+        	populateBreedingMethod(programUUID);
         }
     }
 
-    private void populateBreedingMethod(){
+    private void populateBreedingMethod(String programUUID){
     	
         try {
-			methods = germplasmDataManager.getMethodsByType("GEN");
+			methods = germplasmDataManager.getMethodsByType("GEN", programUUID);
 		} catch (MiddlewareQueryException e) {
 			LOG.error(e.getMessage());
 		}

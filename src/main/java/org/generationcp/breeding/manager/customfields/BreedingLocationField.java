@@ -171,7 +171,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 
 	@Override
 	public void initializeValues() {
-        populateLocations();
+        populateLocations(programUniqueId);
 		initPopulateFavLocations(programUniqueId);
 	}
 	
@@ -304,7 +304,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 			}
 			
         } else {
-        	populateLocations();
+        	populateLocations(programUUID);
         }
 
     }
@@ -312,15 +312,14 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
     /*
      * Fill with all locations
      */
-	private void populateLocations() {
+	private void populateLocations(String programUUID) {
 		
 		try {
 			
 			if(locationType > 0){
-				locations = locationDataManager.getLocationsByType(locationType);
-			}
-			else{
-				locations = locationDataManager.getAllLocations();
+				locations = locationDataManager.getLocationsByType(locationType,programUUID);
+			} else {
+				locations = locationDataManager.getLocationsByUniqueID(programUUID);
 			}
 		} catch (MiddlewareQueryException e) {
 			LOG.error(e.getMessage(),e);
@@ -339,7 +338,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		       hasDefault = true;
 		   }
          }
-		if(hasDefault == false && firstId != null){
+		if(!hasDefault && firstId != null){
 		    breedingLocationComboBox.setValue(firstId);
 		}
 	}
