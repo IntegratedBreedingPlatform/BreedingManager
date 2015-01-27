@@ -302,10 +302,12 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
         	Button gidButton = new Button(String.format("%s", germplasm.getGid().toString()), listener);
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 			
-            String shortenedNames = getShortenedGermplasmNames(germplasm.getGid());
+            String germplasmFullName = getGermplasmNames(germplasm.getGid());
+            String shortenedNames = germplasmFullName.length() > 20 ? germplasmFullName.substring(0, 20) + "..." : germplasmFullName;
+            
         	Button namesButton = new Button(shortenedNames, listener);
         	namesButton.setStyleName(BaseTheme.BUTTON_LINK);
-        	namesButton.setDescription(getGermplasmNames(germplasm.getGid()));
+			namesButton.setDescription(germplasmFullName);
             
             String crossExpansion = "";
             if(germplasm!=null){
@@ -388,30 +390,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
             return null;
         }
     }	
-	
-    private String getShortenedGermplasmNames(int gid) throws InternationalizableException {
-        try {
-            List<Name> names = germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
-            StringBuffer germplasmNames = new StringBuffer("");
-            int i = 0;
-            for (Name n : names) {
-                if (i < names.size() - 1) {
-                    germplasmNames.append(n.getNval() + ", ");
-                } else {
-                    germplasmNames.append(n.getNval());
-                }
-                i++;
-            }
-            String n = germplasmNames.toString();
-            if(n.length()>20){
-            	n = n.substring(0, 20) + "...";
-            }
-            return n;
-        } catch (MiddlewareQueryException e) {
-            return null;
-        }
-    }
-    
+  
     public TableWithSelectAllLayout getMatchingGermplasmsTableWithSelectAll() {
         return matchingGermplasmsTableWithSelectAll;
     }
