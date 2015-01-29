@@ -38,6 +38,8 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -294,6 +296,8 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	}
 		
 	public void applyGermplasmResults(List<Germplasm> germplasms){
+		
+		Monitor monitor = MonitorFactory.start("GermplasmSearchResultsComponent.applyGermplasmResults()");
 		updateNoOfEntries(germplasms.size());
 		matchingGermplasmsTable.removeAllItems();
 		for(Germplasm germplasm:germplasms){
@@ -368,6 +372,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		if(matchingGermplasmsTable.getItemIds().size() > 0){
 			updateActionMenuOptions(true);
 		}
+		LOG.debug("" + monitor.stop());
 	}
 
     private String getGermplasmNames(int gid) throws InternationalizableException {
