@@ -96,6 +96,130 @@ import com.vaadin.ui.themes.Reindeer;
 @Configurable
 public class ListBuilderComponent extends VerticalLayout implements InitializingBean, 
 				BreedingManagerLayout, SaveListAsDialogSource, ReserveInventorySource, UnsavedChangesSource, InventoryDropTargetContainer {
+	private final class LockButtonClickListener implements ClickListener {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+			if(!currentlySavedGermplasmList.isLockedList()){
+				currentlySavedGermplasmList.setStatus(currentlySavedGermplasmList.getStatus() + 100);
+			    try {
+			    	currentlySetGermplasmInfo = currentlySavedGermplasmList;
+			    	saveListButtonListener.doSaveAction(false);
+			
+			        User user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+			        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()),
+			                workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()),
+			                "Locked a germplasm list.",
+			                "Locked list "+currentlySavedGermplasmList.getId()+" - "+currentlySavedGermplasmList.getName(),
+			                user,
+			                new Date());
+			        workbenchDataManager.addProjectActivity(projAct);
+			    } catch (MiddlewareQueryException e) {
+			        LOG.error("Error with unlocking list.", e);
+		            MessageNotifier.showError(getWindow(), "Database Error!", "Error with loocking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
+			    }
+		    	setUIForLockedList();
+			}
+		}
+	}
+
+	private final class UnlockButtonClickListener implements ClickListener {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+			if(currentlySavedGermplasmList.isLockedList()){
+				currentlySavedGermplasmList.setStatus(currentlySavedGermplasmList.getStatus() - 100);
+			    try {
+			    	currentlySetGermplasmInfo = currentlySavedGermplasmList;
+			    	saveListButtonListener.doSaveAction(false);
+			
+			        User user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
+			        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()),
+			                workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()),
+			                "Unlocked a germplasm list.",
+			                "Unlocked list "+currentlySavedGermplasmList.getId()+" - "+currentlySavedGermplasmList.getName(),
+			                user,
+			                new Date());
+			        workbenchDataManager.addProjectActivity(projAct);
+			    } catch (MiddlewareQueryException e) {
+			        LOG.error("Error with unlocking list.", e);
+		            MessageNotifier.showError(getWindow(), "Database Error!", "Error with unlocking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
+			    }
+		    	setUIForUnlockedList();
+			}
+		}
+	}
+
+	private final class ToolsButtonClickListener implements ClickListener {
+		private static final long serialVersionUID = 1345004576139547723L;
+
+		@Override
+		public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+			
+		    if(isCurrentListSaved()){
+		        enableMenuOptionsAfterSave();
+		    }
+		    
+		    addColumnContextMenu.refreshAddColumnMenu();
+		    menu.show(event.getClientX(), event.getClientY());
+		    
+		}
+	}
+
+	private final class InventoryViewMenuClickListener implements ContextMenu.ClickListener {
+		private static final long serialVersionUID = -2343109406180457070L;
+
+		@Override
+		public void contextItemClick(ClickEvent event) {
+		      // Get reference to clicked item
+		      ContextMenuItem clickedItem = event.getClickedItem();
+		      if(clickedItem.getName().equals(messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))){
+		    	  viewListAction();
+		      } else if(clickedItem.getName().equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST))){
+		    	  copyToNewListFromInventoryViewAction();
+			  } else if(clickedItem.getName().equals(messageSource.getMessage(Message.RESERVE_INVENTORY))){
+		      	  reserveInventoryAction();
+		      } else if(clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))){
+		    	  listInventoryTable.getTable().setValue(listInventoryTable.getTable().getItemIds());
+		      } else if(clickedItem.getName().equals(messageSource.getMessage(Message.CANCEL_RESERVATIONS))){
+		    	  cancelReservationsAction();
+		      } else if(clickedItem.getName().equals(messageSource.getMessage(Message.RESET_LIST))){
+		    	  resetButton.click();
+		      } else if(clickedItem.getName().equals(messageSource.getMessage(Message.SAVE_LIST))){
+		    	  saveButton.click();
+		      } 
+		}
+	}
+
+	private final class MenuClickListener implements ContextMenu.ClickListener {
+		private static final long serialVersionUID = -2331333436994090161L;
+
+		@Override
+		public void contextItemClick(ClickEvent event) {
+		    ContextMenuItem clickedItem = event.getClickedItem();
+		    Table germplasmsTable = tableWithSelectAllLayout.getTable();
+		    if(clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))){
+		          germplasmsTable.setValue(germplasmsTable.getItemIds());
+		    } else if(clickedItem.getName().equals(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES))){
+		          deleteSelectedEntries();
+		    } else if(clickedItem.getName().equals(messageSource.getMessage(Message.EXPORT_LIST))){
+		          exportListAction();
+		    } else if(clickedItem.getName().equals(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER))){
+		          exportListForGenotypingOrderAction();
+		    } else if(clickedItem.getName().equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL))){
+		          copyToNewListAction();
+		    } else if(clickedItem.getName().equals(messageSource.getMessage(Message.INVENTORY_VIEW))){
+		    	  viewInventoryAction();
+		    } else if(clickedItem.getName().equals(messageSource.getMessage(Message.RESET_LIST))){
+		    	resetButton.click();
+			} else if(clickedItem.getName().equals(messageSource.getMessage(Message.SAVE_LIST))){
+				saveButton.click();
+			}                 
+		}
+	}
+
 	private static final long serialVersionUID = 4997159450197570044L;
 
 	private static final Logger LOG = LoggerFactory.getLogger(ListBuilderComponent.class);
@@ -302,7 +426,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         inventoryViewMenu.addItem(messageSource.getMessage(Message.SAVE_LIST));
         inventoryViewMenu.addItem(messageSource.getMessage(Message.SELECT_ALL));
         
-        //Temporarily disable to Copy to New List in InventoryView TODO implement the function
+        //Temporarily disable to Copy to New List in InventoryView
         menuCopyToNewListFromInventory.setEnabled(false);
         
         resetMenuOptions();
@@ -338,7 +462,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     }
     
     private void resetInventoryMenuOptions() {
-        //Temporarily disable to Copy to New List in InventoryView TODO implement the function
+        //Temporarily disable to Copy to New List in InventoryView
         menuCopyToNewListFromInventory.setEnabled(false);
         
         if(!isCurrentListSaved()){
@@ -348,7 +472,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	@Override
 	public void initializeValues() {
-		// TODO Auto-generated method stub
+		//do nothing
 		
 	}
 
@@ -357,74 +481,11 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		
 		fillWith = new FillWith(this, messageSource, tableWithSelectAllLayout.getTable(), ColumnLabels.GID.getName());
 		
-		menu.addListener(new ContextMenu.ClickListener() {
-			private static final long serialVersionUID = -2331333436994090161L;
-
-            @Override
-            public void contextItemClick(ClickEvent event) {
-                ContextMenuItem clickedItem = event.getClickedItem();
-                Table germplasmsTable = tableWithSelectAllLayout.getTable();
-                if(clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))){
-                      germplasmsTable.setValue(germplasmsTable.getItemIds());
-                } else if(clickedItem.getName().equals(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES))){
-                      deleteSelectedEntries();
-                } else if(clickedItem.getName().equals(messageSource.getMessage(Message.EXPORT_LIST))){
-                      exportListAction();
-                } else if(clickedItem.getName().equals(messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER))){
-                      exportListForGenotypingOrderAction();
-                } else if(clickedItem.getName().equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL))){
-                      copyToNewListAction();
-                } else if(clickedItem.getName().equals(messageSource.getMessage(Message.INVENTORY_VIEW))){
-                	  viewInventoryAction();
-                } else if(clickedItem.getName().equals(messageSource.getMessage(Message.RESET_LIST))){
-                	resetButton.click();
-				} else if(clickedItem.getName().equals(messageSource.getMessage(Message.SAVE_LIST))){
-					saveButton.click();
-				}                 
-            }
-            
-        });
+		menu.addListener(new MenuClickListener());
 		
-		inventoryViewMenu.addListener(new ContextMenu.ClickListener() {
-			private static final long serialVersionUID = -2343109406180457070L;
-	
-			@Override
-			public void contextItemClick(ClickEvent event) {
-			      // Get reference to clicked item
-			      ContextMenuItem clickedItem = event.getClickedItem();
-			      if(clickedItem.getName().equals(messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))){
-                	  viewListAction();
-                  } else if(clickedItem.getName().equals(messageSource.getMessage(Message.COPY_TO_NEW_LIST))){
-                	  copyToNewListFromInventoryViewAction();
-				  } else if(clickedItem.getName().equals(messageSource.getMessage(Message.RESERVE_INVENTORY))){
-		          	  reserveInventoryAction();
-                  } else if(clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))){
-                	  listInventoryTable.getTable().setValue(listInventoryTable.getTable().getItemIds());
-		          } else if(clickedItem.getName().equals(messageSource.getMessage(Message.CANCEL_RESERVATIONS))){
-                	  cancelReservationsAction();
-		          } else if(clickedItem.getName().equals(messageSource.getMessage(Message.RESET_LIST))){
-                	  resetButton.click();
-		          } else if(clickedItem.getName().equals(messageSource.getMessage(Message.SAVE_LIST))){
-		        	  saveButton.click();
-		          } 
-		    }
-		});
+		inventoryViewMenu.addListener(new InventoryViewMenuClickListener());
 		
-		toolsButton.addListener(new ClickListener() {
-			private static final long serialVersionUID = 1345004576139547723L;
-
-            @Override
-            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-            	
-                if(isCurrentListSaved()){
-                    enableMenuOptionsAfterSave();
-                }
-                
-                addColumnContextMenu.refreshAddColumnMenu();
-                menu.show(event.getClientX(), event.getClientY());
-                
-            }
-         });
+		toolsButton.addListener(new ToolsButtonClickListener());
 
 		inventoryViewToolsButton.addListener(new ClickListener() {
 			private static final long serialVersionUID = 1345004576139547723L;
@@ -472,62 +533,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		resetButton.addListener(new ResetListButtonClickListener(this, messageSource));
 
 		//Lock button action
-		lockButton.addListener(new ClickListener(){
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-            	if(!currentlySavedGermplasmList.isLockedList()){
-            		currentlySavedGermplasmList.setStatus(currentlySavedGermplasmList.getStatus() + 100);
-        		    try {
-        		    	currentlySetGermplasmInfo = currentlySavedGermplasmList;
-        		    	saveListButtonListener.doSaveAction(false);
-        		
-        		        User user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
-        		        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()),
-        		                workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()),
-        		                "Locked a germplasm list.",
-        		                "Locked list "+currentlySavedGermplasmList.getId()+" - "+currentlySavedGermplasmList.getName(),
-        		                user,
-        		                new Date());
-        		        workbenchDataManager.addProjectActivity(projAct);
-        		    } catch (MiddlewareQueryException e) {
-        		        LOG.error("Error with unlocking list.", e);
-        	            MessageNotifier.showError(getWindow(), "Database Error!", "Error with loocking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
-        		    }
-                	setUIForLockedList();
-        		}
-            }
-        });
+		lockButton.addListener(new LockButtonClickListener());
         
 		//Unlock button action
-        unlockButton.addListener(new ClickListener(){
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-            	if(currentlySavedGermplasmList.isLockedList()){
-            		currentlySavedGermplasmList.setStatus(currentlySavedGermplasmList.getStatus() - 100);
-        		    try {
-        		    	currentlySetGermplasmInfo = currentlySavedGermplasmList;
-        		    	saveListButtonListener.doSaveAction(false);
-        		
-        		        User user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
-        		        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()),
-        		                workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()),
-        		                "Unlocked a germplasm list.",
-        		                "Unlocked list "+currentlySavedGermplasmList.getId()+" - "+currentlySavedGermplasmList.getName(),
-        		                user,
-        		                new Date());
-        		        workbenchDataManager.addProjectActivity(projAct);
-        		    } catch (MiddlewareQueryException e) {
-        		        LOG.error("Error with unlocking list.", e);
-        	            MessageNotifier.showError(getWindow(), "Database Error!", "Error with unlocking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
-        		    }
-                	setUIForUnlockedList();
-        		}
-            }
-        });
+        unlockButton.addListener(new UnlockButtonClickListener());
         
         tableWithSelectAllLayout.getTable().addListener(new Property.ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
@@ -1066,7 +1075,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     	this.getWindow().addWindow(exportListAsDialog);
     }
     
-    private void exportListForGenotypingOrderAction() throws InternationalizableException {
+    private void exportListForGenotypingOrderAction() {
         if (isCurrentListSaved()) {
             if(!currentlySavedGermplasmList.isLocalList() || (currentlySavedGermplasmList.isLocalList() && currentlySavedGermplasmList.isLockedList())){
                 String tempFileName = System.getProperty( USER_HOME ) + "/tempListForGenotyping.xls";
@@ -1080,7 +1089,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
                     
                     source.getWindow().open(fileDownloadResource);
                     
-                    //TODO must figure out other way to clean-up file because deleting it here makes it unavailable for download
+                    // must figure out other way to clean-up file because deleting it here makes it unavailable for download
                     
                 } catch (GermplasmListExporterException e) {
                     MessageNotifier.showError(source.getWindow() 
@@ -1128,7 +1137,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     }
     
     private void copyToNewListFromInventoryViewAction(){
-    	// TODO implement the copy to new list from the selection from listInventoryTable
+    	// do nothing
     }
     
 	/* SETTERS AND GETTERS */
@@ -1603,8 +1612,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		if(listInventoryTable.getInventoryTableDropHandler().isChanged()){
 			setHasUnsavedChanges(true);
 		}		
-		
-		// TODO mark the changes in germplasmListDataTable during fill with and add column functions
 		
 		return hasChanges;
 	}
