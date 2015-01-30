@@ -89,7 +89,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
     private Map<String, Integer> mapExistingList;
     private boolean lastAdded = false;
     private boolean existingListSelected = false;
-    private boolean fromBuildNewList = false;
+    
     private Set<String> localFolderNames = new HashSet<String>();
 
     @Autowired
@@ -218,8 +218,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 	        }
 			
 		} catch (MiddlewareQueryException e) {
-			LOG.error(e.toString());
-            LOG.error("\n" + e.getStackTrace());
+			LOG.error(e.getMessage(), e);
 		}
     }
 
@@ -246,12 +245,11 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 	        comboBoxListName.select("");
 	        
 		} catch (MiddlewareQueryException e) {
-			LOG.error(e.toString());
-            LOG.error("\n" + e.getStackTrace());
+			LOG.error(e.getMessage(), e);
 		}
     }
 
-    public void saveGermplasmListButtonClickAction() throws InternationalizableException, NumberFormatException {
+    public void saveGermplasmListButtonClickAction() {
 
         listNameValue = comboBoxListName.getValue().toString();
         String description=txtDescription.getValue().toString();
@@ -300,20 +298,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
     
                     try {
                         newListid = germplasmListManager.addGermplasmList(listNameData);
-                        try{
-                            GermplasmList germList = germplasmListManager.getGermplasmListById(newListid);
-                            addGermplasmListData(germList,1);
-                            listManagerMain.getListSelectionComponent().getListTreeComponent().createTree();
-                            //TODO must accommodate the expanding of the folder up to the parent of the list being opened
-                            listManagerMain.getListSelectionComponent().getListTreeComponent().expandNode(ListTreeComponent.LOCAL);
-                            //TODO must accommodate opening in the search screen also
-                            listManagerMain.getListSelectionComponent().getListTreeComponent().treeItemClickAction(newListid);
-                        } catch (MiddlewareQueryException e){
-                            germplasmListManager.deleteGermplasmListByListId(newListid);
-                            LOG.error("Error with copying list entries", e);
-                            MessageNotifier.showError(getWindow().getParent().getWindow(), "Error with copying list entries."
-                                , "Copying of entries to a new list failed. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
-                        }
+                        addGermplasm();
                         this.mainWindow.removeWindow(dialogWindow);
     
                     } catch (MiddlewareQueryException e) {
@@ -333,11 +318,10 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
                         this.mainWindow.removeWindow(dialogWindow);
                         
                         listManagerMain.getListSelectionComponent().getListTreeComponent().createTree();
-                        //TODO must accommodate the expanding of the folder up to the parent of the list being opened
-                        listManagerMain.getListSelectionComponent().getListTreeComponent().expandNode(ListSelectorComponent.LOCAL);
-                        //TODO must accommodate opening in the search screen also
+                        listManagerMain.getListSelectionComponent().getListTreeComponent().expandNode(ListSelectorComponent.LOCAL);   
                         listManagerMain.getListSelectionComponent().getListDetailsLayout().removeTab(Integer.valueOf(listId));
                         listManagerMain.getListSelectionComponent().getListTreeComponent().treeItemClickAction(Integer.valueOf(listId));
+                        
                     } catch (MiddlewareQueryException e) {
                         LOG.error("Error with copying list entries", e);
                         LOG.error("\n" + e.getStackTrace());
@@ -348,6 +332,21 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
                 }
             }
         }
+    }
+    
+    private void addGermplasm() throws MiddlewareQueryException{
+    	 try {
+             GermplasmList germList = germplasmListManager.getGermplasmListById(newListid);
+             addGermplasmListData(germList,1);
+             listManagerMain.getListSelectionComponent().getListTreeComponent().createTree();
+             listManagerMain.getListSelectionComponent().getListTreeComponent().expandNode(ListTreeComponent.LOCAL);
+             listManagerMain.getListSelectionComponent().getListTreeComponent().treeItemClickAction(newListid);
+         } catch (MiddlewareQueryException e){
+             germplasmListManager.deleteGermplasmListByListId(newListid);
+             LOG.error("Error with copying list entries", e);
+             MessageNotifier.showError(getWindow().getParent().getWindow(), "Error with copying list entries."
+                 , "Copying of entries to a new list failed. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
+         }
     }
 
     private void addGermplasmListData(GermplasmList germList,int entryid) throws MiddlewareQueryException {
@@ -422,7 +421,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
         if (!lastAdded) {
             try {
                 String listNameId = String.valueOf(mapExistingList.get(comboBoxListName.getValue()));
-                if (listNameId != "null") {
+                if (!"null".equals(listNameId)) {
                     GermplasmList gList = germplasmListManager.getGermplasmListById(Integer.valueOf(listNameId));
                     txtDescription.setValue(gList.getDescription());
                     txtDescription.setEnabled(false);

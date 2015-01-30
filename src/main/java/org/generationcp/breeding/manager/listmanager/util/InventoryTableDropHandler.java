@@ -21,6 +21,8 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
 import com.vaadin.event.dd.DragAndDropEvent;
@@ -37,6 +39,7 @@ import com.vaadin.ui.themes.BaseTheme;
 
 public class InventoryTableDropHandler extends DropHandlerMethods implements DropHandler {
 
+	private static final Logger LOG = LoggerFactory.getLogger(InventoryTableDropHandler.class);
 	private static final long serialVersionUID = 1L;
 	private Integer lastDroppedListId;
 	

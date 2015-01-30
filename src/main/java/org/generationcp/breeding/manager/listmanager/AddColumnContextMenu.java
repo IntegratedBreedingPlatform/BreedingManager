@@ -31,7 +31,42 @@ import com.vaadin.ui.Table;
 
 @Configurable
 public class AddColumnContextMenu implements InternationalizableComponent  {
-    private static final Logger LOG = LoggerFactory.getLogger(AddColumnContextMenu.class);
+    private final class SourceContextMenuClickListener implements ContextMenu.ClickListener {
+		private static final long serialVersionUID = 1L;
+
+		//Handle clicks on menu items
+		@Override
+		public void contextItemClick(ClickEvent event) {
+		    ContextMenuItem clickedItem = event.getClickedItem();
+		    if(clickedItem.getName().equals(FILL_WITH_PREFERRED_ID)){
+		          addPreferredIdColumn();
+		    }else if(clickedItem.getName().equals(FILL_WITH_PREFERRED_NAME)){
+		        addPreferredNameColumn();
+		    }else if(clickedItem.getName().equals(FILL_WITH_GERMPLASM_DATE)){
+		        addGermplasmDateColumn();
+		    }else if(clickedItem.getName().equals(FILL_WITH_LOCATION)){
+		        addLocationColumn();
+		    }else if(clickedItem.getName().equals(FILL_WITH_METHOD_NAME)){
+		        addMethodNameColumn();
+		    }else if(clickedItem.getName().equals(FILL_WITH_METHOD_ABBREV)){
+		        addMethodAbbrevColumn();
+		    }else if(clickedItem.getName().equals(FILL_WITH_METHOD_NUMBER)){
+		        addMethodNumberColumn();
+		    }else if(clickedItem.getName().equals(FILL_WITH_METHOD_GROUP)){
+		        addMethodGroupColumn();
+		    }else if(clickedItem.getName().equals(FILL_WITH_CROSS_FEMALE_GID)){
+		        addCrossFemaleGidColumn();
+		    }else if(clickedItem.getName().equals(FILL_WITH_CROSS_FEMALE_PREF_NAME)){
+		        addCrossFemalePrefNameColumn();
+		    }else if(clickedItem.getName().equals(FILL_WITH_CROSS_MALE_GID)){
+		    	addCrossMaleGIDColumn();
+		    }else if(clickedItem.getName().equals(FILL_WITH_CROSS_MALE_PREF_NAME)){
+		    	addCrossMalePrefNameColumn();
+		    }
+		}
+	}
+
+	private static final Logger LOG = LoggerFactory.getLogger(AddColumnContextMenu.class);
 
     @Autowired
     private GermplasmDataManager germplasmDataManager;
@@ -44,7 +79,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     @SuppressWarnings("unused")
 	private ComponentContainer cssLayoutSource;
     
-    private final String GIDPropertyId;
+    private final String gidPropertyId;
     private final Table targetTable;
     
     private ContextMenu sourceContextMenu;
@@ -65,22 +100,22 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private ContextMenuItem menuFillWithCrossMaleGID;
     private ContextMenuItem menuFillWithCrossMalePrefName;
     
-    public static String ADD_COLUMN_MENU = "Add Column";
-    public static String FILL_WITH_PREFERRED_ID = "Fill with Preferred ID";
-    public static String FILL_WITH_PREFERRED_NAME = "Fill with Preferred Name";
-    public static String FILL_WITH_GERMPLASM_DATE = "Fill with Germplasm Dates";
-    public static String FILL_WITH_LOCATION = "Fill with Location";
-    public static String FILL_WITH_METHOD_INFO = "Fill with Breeding Method Information";
-    public static String FILL_WITH_METHOD_NAME = "Fill with Breeding Method Name";
-    public static String FILL_WITH_METHOD_ABBREV = "Fill with Breeding Method Abbreviation";
-    public static String FILL_WITH_METHOD_NUMBER = "Fill with Breeding Method Number";
-    public static String FILL_WITH_METHOD_GROUP = "Fill with Breeding Method Group";
-    public static String FILL_WITH_CROSS_FEMALE_INFO = "Fill with Cross-Female Information";
-    public static String FILL_WITH_CROSS_FEMALE_GID = "Fill with Cross-Female GID";
-    public static String FILL_WITH_CROSS_FEMALE_PREF_NAME = "Fill with Cross-Female Preferred Name";
-    public static String FILL_WITH_CROSS_MALE_INFO = "Fill with Cross-Male Information";
-    public static String FILL_WITH_CROSS_MALE_GID = "Fill with Cross-Male GID";
-    public static String FILL_WITH_CROSS_MALE_PREF_NAME = "Fill with Cross-Male Preferred Name";
+    private static final String ADD_COLUMN_MENU = "Add Column";
+    private static final String FILL_WITH_PREFERRED_ID = "Fill with Preferred ID";
+    private static final String FILL_WITH_PREFERRED_NAME = "Fill with Preferred Name";
+    private static final String FILL_WITH_GERMPLASM_DATE = "Fill with Germplasm Dates";
+    private static final String FILL_WITH_LOCATION = "Fill with Location";
+    private static final String FILL_WITH_METHOD_INFO = "Fill with Breeding Method Information";
+    private static final String FILL_WITH_METHOD_NAME = "Fill with Breeding Method Name";
+    private static final String FILL_WITH_METHOD_ABBREV = "Fill with Breeding Method Abbreviation";
+    private static final String FILL_WITH_METHOD_NUMBER = "Fill with Breeding Method Number";
+    private static final String FILL_WITH_METHOD_GROUP = "Fill with Breeding Method Group";
+    private static final String FILL_WITH_CROSS_FEMALE_INFO = "Fill with Cross-Female Information";
+    private static final String FILL_WITH_CROSS_FEMALE_GID = "Fill with Cross-Female GID";
+    private static final String FILL_WITH_CROSS_FEMALE_PREF_NAME = "Fill with Cross-Female Preferred Name";
+    private static final String FILL_WITH_CROSS_MALE_INFO = "Fill with Cross-Male Information";
+    private static final String FILL_WITH_CROSS_MALE_GID = "Fill with Cross-Male GID";
+    private static final String FILL_WITH_CROSS_MALE_PREF_NAME = "Fill with Cross-Male Preferred Name";
     
     @SuppressWarnings("unused")
 	private boolean fromBuildNewList;
@@ -98,7 +133,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     public AddColumnContextMenu(ListTabComponent listDetailsComponent, 
             ContextMenu sourceContextMenu, Table targetTable, String gid){
         this.listDetailsComponent = listDetailsComponent;
-        this.GIDPropertyId = gid;
+        this.gidPropertyId = gid;
         this.targetTable = targetTable;
         this.sourceContextMenu = sourceContextMenu;
         
@@ -115,7 +150,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
      */
     public AddColumnContextMenu(ComponentContainer cssLayoutSource,
             ContextMenu sourceContextMenu, Table targetTable, String gid, boolean fromBuildNewList){
-        this.GIDPropertyId = gid;
+        this.gidPropertyId = gid;
         this.targetTable = targetTable;
         this.sourceContextMenu = sourceContextMenu;
         this.cssLayoutSource = cssLayoutSource;
@@ -136,7 +171,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
      * @param gid - property of GID (button with GID as caption) on that table
      */
     public AddColumnContextMenu(Table targetTable, String gid){
-        this.GIDPropertyId = gid;
+        this.gidPropertyId = gid;
         this.targetTable = targetTable;
         
         setupContextMenu();
@@ -169,41 +204,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
         menuFillWithCrossMaleGID = menuFillWithCrossMaleInfo.addItem(FILL_WITH_CROSS_MALE_GID);
         menuFillWithCrossMalePrefName = menuFillWithCrossMaleInfo.addItem(FILL_WITH_CROSS_MALE_PREF_NAME);
         
-        sourceContextMenu.addListener(new ContextMenu.ClickListener() {
-            private static final long serialVersionUID = 1L;
-
-            //Handle clicks on menu items
-            @Override
-            public void contextItemClick(ClickEvent event) {
-                ContextMenuItem clickedItem = event.getClickedItem();
-                if(clickedItem.getName().equals(FILL_WITH_PREFERRED_ID)){
-                      addPreferredIdColumn();
-                }else if(clickedItem.getName().equals(FILL_WITH_PREFERRED_NAME)){
-                    addPreferredNameColumn();
-                }else if(clickedItem.getName().equals(FILL_WITH_GERMPLASM_DATE)){
-                    addGermplasmDateColumn();
-                }else if(clickedItem.getName().equals(FILL_WITH_LOCATION)){
-                    addLocationColumn();
-                }else if(clickedItem.getName().equals(FILL_WITH_METHOD_NAME)){
-                    addMethodNameColumn();
-                }else if(clickedItem.getName().equals(FILL_WITH_METHOD_ABBREV)){
-                    addMethodAbbrevColumn();
-                }else if(clickedItem.getName().equals(FILL_WITH_METHOD_NUMBER)){
-                    addMethodNumberColumn();
-                }else if(clickedItem.getName().equals(FILL_WITH_METHOD_GROUP)){
-                    addMethodGroupColumn();
-                }else if(clickedItem.getName().equals(FILL_WITH_CROSS_FEMALE_GID)){
-                    addCrossFemaleGidColumn();
-                }else if(clickedItem.getName().equals(FILL_WITH_CROSS_FEMALE_PREF_NAME)){
-                    addCrossFemalePrefNameColumn();
-                }else if(clickedItem.getName().equals(FILL_WITH_CROSS_MALE_GID)){
-                	addCrossMaleGIDColumn();
-                }else if(clickedItem.getName().equals(FILL_WITH_CROSS_MALE_PREF_NAME)){
-                	addCrossMalePrefNameColumn();
-                }
-            }
-            
-        });
+        sourceContextMenu.addListener(new SourceContextMenuClickListener());
     }
     
     public void initializeAddableProperties(){
@@ -352,7 +353,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
             try {
                 List<Integer> itemIds = getItemIds(targetTable);
                 for(Integer itemId: itemIds){
-                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(gidPropertyId).getValue()).getCaption().toString());
                     String preferredID = "";
                     Name name = germplasmDataManager.getPreferredIdByGID(gid);
                     if(name!=null && name.getNval()!=null) {
@@ -384,7 +385,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
             try {
                 List<Integer> itemIds = getItemIds(targetTable);
                 for(Integer itemId: itemIds){
-                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(gidPropertyId).getValue()).getCaption().toString());
                     
                     String preferredName = "";
                     if(germplasmDataManager.getPreferredNameByGID(gid)!=null && germplasmDataManager.getPreferredNameByGID(gid).getNval()!=null) {
@@ -408,7 +409,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
         if(!propertyExists(ColumnLabels.GERMPLASM_DATE.getName())){
             targetTable.addContainerProperty(ColumnLabels.GERMPLASM_DATE.getName(), String.class, "");
             targetTable.setColumnHeader(ColumnLabels.GERMPLASM_DATE.getName(), ColumnLabels.GERMPLASM_DATE.getTermNameFromOntology(ontologyDataManager));
-            //TODO: can create separate method for adding container property and the actual setting of column values,
+            //can create separate method for adding container property and the actual setting of column values,
             //      so that the middleware call below can be called only once without having the gids become null
             setGermplasmDateColumnValues(true);
         }
@@ -420,12 +421,12 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                 List<Integer> itemIds = getItemIds(targetTable);
                 
                 for(Integer itemId: itemIds){
-                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(gidPropertyId).getValue()).getCaption().toString());
                     
                     List<Integer> gids = new ArrayList<Integer>();
                     gids.add(gid);
                     
-                    //TODO can make better use of the middleware method by just calling it once and not have it inside a loop
+                    //can make better use of the middleware method by just calling it once and not have it inside a loop
                     Map<Integer,Integer> germplasmGidDateMap = germplasmDataManager.getGermplasmDatesByGids(gids);
                     
                     if(germplasmGidDateMap.get(gid)==null) {
@@ -462,7 +463,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                 final Map<Integer, String> allLocationNamesMap = new HashMap<Integer, String>();
                 
                 for(Integer itemId: itemIds){
-                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(gidPropertyId).getValue()).getCaption().toString());
                     
                     List<Integer> gids = new ArrayList<Integer>();
                     gids.add(gid);
@@ -528,7 +529,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                 final Map<Integer, Object> allMethodsMap = new HashMap<Integer, Object>();
                 
                 for(Integer itemId: itemIds){
-                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(gidPropertyId).getValue()).getCaption().toString());
                     
                     List<Integer> gids = new ArrayList<Integer>();
                     gids.add(gid);
@@ -580,7 +581,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                 List<Integer> itemIds = getItemIds(targetTable);
                 
                 for(Integer itemId: itemIds){
-                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(gidPropertyId).getValue()).getCaption().toString());
                     
                     Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
                     
@@ -591,8 +592,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
 	                    	} else{
 	                    		targetTable.getItem(itemId).getItemProperty(ColumnLabels.CROSS_MALE_GID.getName()).setValue("-");
 	                    	}
-	                    }
-	                    else {
+	                    } else {
 	                        targetTable.getItem(itemId).getItemProperty(ColumnLabels.CROSS_MALE_GID.getName()).setValue("-");
 	                    }
                     } else{
@@ -627,7 +627,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                 List<Integer> gidsToUseForQuery = new ArrayList<Integer>();
                 
                 for(Integer itemId: itemIds){
-                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(gidPropertyId).getValue()).getCaption().toString());
                     
                     Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
                     
@@ -642,8 +642,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
 	                        } else{
 	                        	itemIdsInMap.add(itemId);
 	                        }
-	                    }
-	                    else {
+	                    } else {
 	                        targetTable.getItem(itemId).getItemProperty(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName()).setValue("-");
 	                    }
                     } else{
@@ -696,7 +695,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                 List<Integer> itemIds = getItemIds(targetTable);
                 
                 for(Integer itemId: itemIds){
-                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(gidPropertyId).getValue()).getCaption().toString());
                     
                     Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
                     Germplasm femaleParent = null;
@@ -728,7 +727,6 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                 
             } catch (MiddlewareQueryException e) {
                 LOG.error("Error in filling with Cross Female Info values.", e);
-                e.printStackTrace();
             }       
         }
     }
@@ -758,7 +756,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
         List<Integer> gids = new ArrayList<Integer>();
         List<Integer> listDataItemIds = getItemIds(table);
         for(Integer itemId: listDataItemIds){
-            gids.add(Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString()));
+            gids.add(Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(gidPropertyId).getValue()).getCaption().toString()));
         }
         return gids;
     }
@@ -773,7 +771,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     
     @Override
     public void updateLabels() {
-        
+        //do nothing
     } 
     
     /**

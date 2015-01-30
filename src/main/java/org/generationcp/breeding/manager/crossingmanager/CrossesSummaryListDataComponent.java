@@ -91,11 +91,14 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 
 	private List<GermplasmListData> listEntries;
 	private Map<Integer, Germplasm> germplasmMap;
-	private Map<Integer, CrossParents> parentsInfo; //list data id, CrossParents info
+	//list data id, CrossParents info
+	private Map<Integer, CrossParents> parentsInfo; 
 
 	//Used maps to make use of existing Middleware methods
-	private Map<Integer, String> parentGermplasmNames; // gid of parent, preferred name
-	private Map<Integer, Object> methodMap; // Gid, Method of germplasm
+	// gid of parent, preferred name
+	private Map<Integer, String> parentGermplasmNames; 
+	// Gid, Method of germplasm
+	private Map<Integer, Object> methodMap; 
 	
 	public CrossesSummaryListDataComponent(GermplasmList list){
 		this.list = list;
@@ -294,7 +297,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 			parentGermplasmNames = germplasmDataManager.getPreferredNamesByGids(parentIds);
 			
 		} catch(MiddlewareQueryException ex){
-			LOG.error(ex.getMessage() + list.getId());
+			LOG.error(ex.getMessage() + list.getId(), ex);
 			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), "Error in getting list and/or germplasm information.");
 		}
 	}
@@ -304,8 +307,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 		try {
 			count = germplasmListManager.countGermplasmListDataByListId(this.list.getId());
 		} catch (MiddlewareQueryException e) {
-			LOG.error(e.getMessage());
-			e.printStackTrace();
+			LOG.error(e.getMessage(), e);
 		}
 		
 		listDataTable = new BreedingManagerTable(count.intValue(), 8);
@@ -366,6 +368,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
             this.getWindow().open(fileDownloadResource);
     
         } catch (CrossingManagerExporterException e) {
+	        LOG.error(e.getMessage(), e);
             MessageNotifier.showError(getWindow(), "Error with exporting crossing file.", e.getMessage());
         }
 	}

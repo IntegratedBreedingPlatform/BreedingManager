@@ -63,7 +63,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	
 	private Table listDataTable;
 	
-	public static String EXPORT_WARNING_MESSAGE;
+	public static String EXPORT_WARNING_MESSAGE = "";
 	private static final String USER_HOME = "user.home";
 	public static final String TEMP_FILENAME = System.getProperty( USER_HOME ) + "/temp.csv";
 	

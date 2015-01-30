@@ -7,13 +7,11 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.commons.util.StringUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.*;
@@ -29,8 +27,13 @@ import org.slf4j.LoggerFactory;
 
 
 public class BreedingManagerUtil{
+	
     private static final Logger LOG = LoggerFactory.getLogger(BreedingManagerUtil.class);
     public static final String[] USER_DEF_FIELD_CROSS_NAME = {"CROSS NAME", "CROSSING NAME"};
+    
+    private BreedingManagerUtil(){
+    	
+    }
 
     /**
      * Get the id for UserDefinedField of Germplasm Name type for Crossing Name
@@ -84,8 +87,7 @@ public class BreedingManagerUtil{
             return getIDForUserDefinedFieldCrossingName(germplasmListManager);
         
         } catch (MiddlewareQueryException e) {
-            LOG.error(e.getMessage());
-            LOG.error("\n" + e.getStackTrace());
+        	LOG.error(e.getMessage(), e);
             if (window != null && messageSource != null){
                 MessageNotifier.showError(window, 
                         messageSource.getMessage(Message.ERROR_DATABASE),
@@ -288,8 +290,7 @@ public class BreedingManagerUtil{
 				hasFavMethod = true;
 			}			
 		} catch (MiddlewareQueryException e) {
-            LOG.error(e.getMessage());
-            LOG.error("\n" + e.getStackTrace());
+			LOG.error(e.getMessage(), e);
 		}
     	return hasFavMethod;
     }
@@ -304,8 +305,7 @@ public class BreedingManagerUtil{
 	        	hasFavLocation = true;
 			}
         } catch (MiddlewareQueryException e) {
-            LOG.error(e.getMessage());
-            LOG.error("\n" + e.getStackTrace());
+        	LOG.error(e.getMessage(), e);
 		}
 		
 		return hasFavLocation;
@@ -341,7 +341,7 @@ public class BreedingManagerUtil{
 	        }
 	        
 		} catch (MiddlewareQueryException e) {
-            LOG.error("\n" + e.getStackTrace());
+            LOG.error(e.getMessage(), e);
 		}
 
 		for(Method favoriteMethod : favoriteMethods){

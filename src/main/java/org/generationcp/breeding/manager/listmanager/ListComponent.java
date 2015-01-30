@@ -27,7 +27,6 @@ import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
-import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
 import org.generationcp.breeding.manager.inventory.ReservationStatusWindow;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
@@ -392,7 +391,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		// disable the save button at first since there are no reservations yet
 		menuInventorySaveChanges.setEnabled(false);
 
-		// Temporarily disable to Copy to New List in InventoryView TODO
+		// Temporarily disable to Copy to New List in InventoryView
 		// implement the function
 		menuCopyToNewListFromInventory.setEnabled(false);
 	}
@@ -634,47 +633,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 
 		makeTableEditable();
 
-		toolsButton.addListener(new ClickListener() {
-			private static final long serialVersionUID = 272707576878821700L;
-
-			@Override
-			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-				addColumnContextMenu.refreshAddColumnMenu();
-				menu.show(event.getClientX(), event.getClientY());
-
-				if (fromUrl) {
-					menuExportForGenotypingOrder.setVisible(false);
-					menuExportList.setVisible(false);
-					menuCopyToList.setVisible(false);
-				}
-
-				if (source != null) {
-					menuCopyToList.setVisible(!source.listBuilderIsLocked());
-				}
-
-				// Show items only when Germplasm List open is a local IBDB
-				// record (negative ID),
-				// when the Germplasm List is not locked, and when not accessed
-				// directly from URL or popup window
-				if (germplasmList.isLocalList() && !germplasmList.isLockedList() && !fromUrl) {
-					menuEditList.setVisible(true);
-					// show only Delete List when user is owner
-					menuDeleteList.setVisible(localUserIsListOwner());
-					menuDeleteEntries.setVisible(true);
-					menuSaveChanges.setVisible(true);
-					menuAddEntry.setVisible(true);
-					addColumnContextMenu.showHideAddColumnMenu(true);
-				} else {
-					menuEditList.setVisible(false);
-					menuDeleteList.setVisible(false);
-					menuDeleteEntries.setVisible(false);
-					menuSaveChanges.setVisible(false);
-					menuAddEntry.setVisible(false);
-					addColumnContextMenu.showHideAddColumnMenu(false);
-				}
-
-			}
-		});
+		toolsButton.addListener(new ToolsButtonClickListener());
 
 		inventoryViewToolsButton.addListener(new ClickListener() {
 			private static final long serialVersionUID = 272707576878821700L;
@@ -685,76 +644,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 			}
 		});
 
-		menu.addListener(new ContextMenu.ClickListener() {
-			private static final long serialVersionUID = -2343109406180457070L;
+		menu.addListener(new MenuClickListener());
 
-			@Override
-			public void contextItemClick(ClickEvent event) {
-				// Get reference to clicked item
-				ContextMenuItem clickedItem = event.getClickedItem();
-				if (clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))) {
-					listDataTable.setValue(listDataTable.getItemIds());
-				} else if (clickedItem.getName().equals(
-						messageSource.getMessage(Message.EXPORT_LIST))) {
-					exportListAction();
-				} else if (clickedItem.getName().equals(
-						messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER))) {
-					exportListForGenotypingOrderAction();
-				} else if (clickedItem.getName().equals(
-						messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
-					copyToNewListAction();
-				} else if (clickedItem.getName().equals(
-						messageSource.getMessage(Message.ADD_ENTRIES))) {
-					addEntryButtonClickAction();
-				} else if (clickedItem.getName().equals(
-						messageSource.getMessage(Message.SAVE_CHANGES))) {
-					saveChangesAction();
-				} else if (clickedItem.getName().equals(
-						messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES))) {
-					deleteEntriesButtonClickAction();
-				} else if (clickedItem.getName()
-						.equals(messageSource.getMessage(Message.EDIT_LIST))) {
-					editListButtonClickAction();
-				} else if (clickedItem.getName().equals(
-						messageSource.getMessage(Message.DELETE_LIST))) {
-					deleteListButtonClickAction();
-				} else if (clickedItem.getName().equals(
-						messageSource.getMessage(Message.INVENTORY_VIEW))) {
-					viewInventoryAction();
-				}
-
-			}
-		});
-
-		inventoryViewMenu.addListener(new ContextMenu.ClickListener() {
-			private static final long serialVersionUID = -2343109406180457070L;
-
-			@Override
-			public void contextItemClick(ClickEvent event) {
-				// Get reference to clicked item
-				ContextMenuItem clickedItem = event.getClickedItem();
-				if (clickedItem.getName().equals(
-						messageSource.getMessage(Message.SAVE_RESERVATIONS))) {
-					saveReservationChangesAction();
-				} else if (clickedItem.getName().equals(
-						messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
-					viewListAction();
-				} else if (clickedItem.getName().equals(
-						messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
-					copyToNewListFromInventoryViewAction();
-				} else if (clickedItem.getName().equals(
-						messageSource.getMessage(Message.RESERVE_INVENTORY))) {
-					reserveInventoryAction();
-				} else if (clickedItem.getName().equals(
-						messageSource.getMessage(Message.SELECT_ALL))) {
-					listInventoryTable.getTable().setValue(
-							listInventoryTable.getTable().getItemIds());
-				} else if (clickedItem.getName().equals(
-						messageSource.getMessage(Message.CANCEL_RESERVATIONS))) {
-					cancelReservationsAction();
-				}
-			}
-		});
+		inventoryViewMenu.addListener(new InventoryViewMenuClickListner());
 
 		editHeaderButton.addListener(new ClickListener() {
 			private static final long serialVersionUID = -788407324474054727L;
@@ -783,58 +675,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 			}
 		});
 
-		tableContextMenu.addListener(new ContextMenu.ClickListener() {
-			private static final long serialVersionUID = -2343109406180457070L;
-
-			public void contextItemClick(ClickEvent event) {
-				String action = event.getClickedItem().getName();
-				if (action.equals(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES))) {
-					deleteEntriesButtonClickAction();
-				} else if (action.equals(messageSource.getMessage(Message.SELECT_ALL))) {
-					listDataTable.setValue(listDataTable.getItemIds());
-				} else if (action.equals(messageSource.getMessage(Message.EDIT_VALUE))) {
-
-					Map<Object, Field> itemMap = fields.get(selectedItemId);
-
-					// go through each field, set previous edited fields to
-					// blurred/readonly
-					for (Map.Entry<Object, Field> entry : itemMap.entrySet()) {
-						Field f = entry.getValue();
-						Object fieldValue = f.getValue();
-						if (!f.isReadOnly()) {
-							f.setReadOnly(true);
-
-							if (!fieldValue.equals(lastCellvalue)) {
-								setHasUnsavedChanges(true);
-							}
-						}
-					}
-
-					// Make the entire item editable
-
-					if (itemMap != null) {
-						for (Map.Entry<Object, Field> entry : itemMap.entrySet()) {
-							Object column = entry.getKey();
-							if (column.equals(selectedColumn)) {
-								Field f = entry.getValue();
-								if (f.isReadOnly()) {
-									Object fieldValue = f.getValue();
-									lastCellvalue = (fieldValue != null) ? fieldValue.toString()
-											: "";
-									f.setReadOnly(false);
-									f.focus();
-								}
-							}
-						}
-					}
-
-					listDataTable.select(selectedItemId);
-				} else if (action.equals(messageSource
-						.getMessage(Message.ADD_SELECTED_ENTRIES_TO_NEW_LIST))) {
-					source.addSelectedPlantsToList(listDataTable);
-				}
-			}
-		});
+		tableContextMenu.addListener(new TableContextMenuClickListener());
 
 		getListDataTableWithSelectAll().getTable().addListener(new Property.ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
@@ -932,240 +773,436 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 	}
 
 	public void makeTableEditable() {
-		listDataTable.addListener(new ItemClickListener() {
-			private static final long serialVersionUID = 1L;
+		
+		listDataTable.addListener(new ListDataTableItemClickListener());
 
-			@Override
-			public void itemClick(ItemClickEvent event) {
-				selectedColumn = event.getPropertyId();
-				selectedItemId = event.getItemId();
+		listDataTable.setTableFieldFactory(new ListDataTableFieldFactory());
 
-				if (event.getButton() == ItemClickEvent.BUTTON_RIGHT) {
+		listDataTable.setEditable(true);
+	}
 
-					tableContextMenu.show(event.getClientX(), event.getClientY());
+	private final class ListDataTableFieldFactory implements TableFieldFactory {
+		private static final long serialVersionUID = 1L;
 
-					if (selectedColumn.equals(ColumnLabels.TAG.getName())
-							|| selectedColumn.equals(ColumnLabels.GID.getName())
-							|| selectedColumn.equals(ColumnLabels.ENTRY_ID.getName())
-							|| selectedColumn.equals(ColumnLabels.DESIGNATION.getName())
-							|| selectedColumn.equals(ColumnLabels.SEED_RESERVATION
-									.getName())
-							|| selectedColumn.equals(ColumnLabels.AVAILABLE_INVENTORY
-									.getName())) {
-						tableContextMenuDeleteEntries.setVisible(!germplasmList.isLockedList());
-						tableContextMenuEditCell.setVisible(false);
-						if (source != null) {
-							tableContextMenuCopyToNewList.setVisible(!source.listBuilderIsLocked());
-						}
-					} else if (germplasmList.isLocalList() && !germplasmList.isLockedList()) {
-						tableContextMenuDeleteEntries.setVisible(true);
-						tableContextMenuEditCell.setVisible(true);
-						if (source != null) {
-							tableContextMenuCopyToNewList.setVisible(!source.listBuilderIsLocked());
-						}
-						doneInitializing = true;
-					} else {
-						tableContextMenuDeleteEntries.setVisible(false);
-						tableContextMenuEditCell.setVisible(false);
-						if (source != null) {
-							tableContextMenuCopyToNewList.setVisible(!source.listBuilderIsLocked());
-						}
+		@Override
+		public Field createField(Container container, final Object itemId,
+				final Object propertyId, Component uiContext) {
+
+			if (propertyId.equals(ColumnLabels.GID.getName())
+					|| propertyId.equals(ColumnLabels.ENTRY_ID.getName())
+					|| propertyId.equals(ColumnLabels.DESIGNATION.getName())
+					|| propertyId.equals(ColumnLabels.AVAILABLE_INVENTORY.getName())
+					|| propertyId.equals(ColumnLabels.SEED_RESERVATION.getName())) {
+				return null;
+			}
+
+			final TextField tf = new TextField();
+			tf.setData(new ItemPropertyId(itemId, propertyId));
+
+			// set the size of textfield based on text of cell
+			String value = (String) container.getItem(itemId).getItemProperty(propertyId)
+					.getValue();
+			Double d = computeTextFieldWidth(value);
+			tf.setWidth(d.floatValue(), UNITS_EM);
+
+			// Needed for the generated column
+			tf.setImmediate(true);
+
+			// Manage the field in the field storage
+			Map<Object, Field> itemMap = fields.get(itemId);
+			if (itemMap == null) {
+				itemMap = new HashMap<Object, Field>();
+				fields.put(itemId, itemMap);
+			}
+			itemMap.put(propertyId, tf);
+
+			tf.setReadOnly(true);
+
+			tf.addListener(new FocusListener() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void focus(FocusEvent event) {
+					listDataTable.select(itemId);
+				}
+			});
+
+			tf.addListener(new FocusListener() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void focus(FocusEvent event) {
+					lastCellvalue = ((TextField) event.getComponent()).getValue().toString();
+				}
+			});
+
+			tf.addListener(new TextFieldBlurListener(tf, itemId));
+			// this area can be used for validation
+			tf.addListener(new Property.ValueChangeListener() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void valueChange(ValueChangeEvent event) {
+					Double d = computeTextFieldWidth(tf.getValue().toString());
+					tf.setWidth(d.floatValue(), UNITS_EM);
+					tf.setReadOnly(true);
+
+					if (doneInitializing && !tf.getValue().toString().equals(lastCellvalue)) {
+						setHasUnsavedChanges(true);
+					}
+				}
+			});
+
+			tf.addShortcutListener(new ShortcutListener("ENTER", ShortcutAction.KeyCode.ENTER,
+					null) {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void handleAction(Object sender, Object target) {
+					Double d = computeTextFieldWidth(tf.getValue().toString());
+					tf.setWidth(d.floatValue(), UNITS_EM);
+					tf.setReadOnly(true);
+					listDataTable.focus();
+
+				}
+			});
+
+			return tf;
+		}
+
+		private Double computeTextFieldWidth(String value) {
+			double multiplier = 0.55;
+			int length = 1;
+			if (value != null && !value.isEmpty()) {
+				length = value.length();
+				if (value.equalsIgnoreCase(value)) {
+					// if all caps, provide bigger space
+					multiplier = 0.75;
+				}
+			}
+			Double d = length * multiplier;
+			// set a minimum textfield width
+			return NumberUtils.max(new double[] { MINIMUM_WIDTH, d });
+		}
+	}
+
+	private final class InventoryViewMenuClickListner implements ContextMenu.ClickListener {
+		private static final long serialVersionUID = -2343109406180457070L;
+
+		@Override
+		public void contextItemClick(ClickEvent event) {
+			// Get reference to clicked item
+			ContextMenuItem clickedItem = event.getClickedItem();
+			if (clickedItem.getName().equals(
+					messageSource.getMessage(Message.SAVE_RESERVATIONS))) {
+				saveReservationChangesAction();
+			} else if (clickedItem.getName().equals(
+					messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
+				viewListAction();
+			} else if (clickedItem.getName().equals(
+					messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
+				copyToNewListFromInventoryViewAction();
+			} else if (clickedItem.getName().equals(
+					messageSource.getMessage(Message.RESERVE_INVENTORY))) {
+				reserveInventoryAction();
+			} else if (clickedItem.getName().equals(
+					messageSource.getMessage(Message.SELECT_ALL))) {
+				listInventoryTable.getTable().setValue(
+						listInventoryTable.getTable().getItemIds());
+			} else if (clickedItem.getName().equals(
+					messageSource.getMessage(Message.CANCEL_RESERVATIONS))) {
+				cancelReservationsAction();
+			}
+		}
+	}
+
+	private final class MenuClickListener implements ContextMenu.ClickListener {
+		private static final long serialVersionUID = -2343109406180457070L;
+
+		@Override
+		public void contextItemClick(ClickEvent event) {
+			// Get reference to clicked item
+			ContextMenuItem clickedItem = event.getClickedItem();
+			if (clickedItem.getName().equals(messageSource.getMessage(Message.SELECT_ALL))) {
+				listDataTable.setValue(listDataTable.getItemIds());
+			} else if (clickedItem.getName().equals(
+					messageSource.getMessage(Message.EXPORT_LIST))) {
+				exportListAction();
+			} else if (clickedItem.getName().equals(
+					messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER))) {
+				exportListForGenotypingOrderAction();
+			} else if (clickedItem.getName().equals(
+					messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
+				copyToNewListAction();
+			} else if (clickedItem.getName().equals(
+					messageSource.getMessage(Message.ADD_ENTRIES))) {
+				addEntryButtonClickAction();
+			} else if (clickedItem.getName().equals(
+					messageSource.getMessage(Message.SAVE_CHANGES))) {
+				saveChangesAction();
+			} else if (clickedItem.getName().equals(
+					messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES))) {
+				deleteEntriesButtonClickAction();
+			} else if (clickedItem.getName()
+					.equals(messageSource.getMessage(Message.EDIT_LIST))) {
+				editListButtonClickAction();
+			} else if (clickedItem.getName().equals(
+					messageSource.getMessage(Message.DELETE_LIST))) {
+				deleteListButtonClickAction();
+			} else if (clickedItem.getName().equals(
+					messageSource.getMessage(Message.INVENTORY_VIEW))) {
+				viewInventoryAction();
+			}
+
+		}
+	}
+
+	private final class ToolsButtonClickListener implements ClickListener {
+		private static final long serialVersionUID = 272707576878821700L;
+
+		@Override
+		public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+			addColumnContextMenu.refreshAddColumnMenu();
+			menu.show(event.getClientX(), event.getClientY());
+
+			if (fromUrl) {
+				menuExportForGenotypingOrder.setVisible(false);
+				menuExportList.setVisible(false);
+				menuCopyToList.setVisible(false);
+			}
+
+			if (source != null) {
+				menuCopyToList.setVisible(!source.listBuilderIsLocked());
+			}
+
+			// Show items only when Germplasm List open is a local IBDB
+			// record (negative ID),
+			// when the Germplasm List is not locked, and when not accessed
+			// directly from URL or popup window
+			if (germplasmList.isLocalList() && !germplasmList.isLockedList() && !fromUrl) {
+				menuEditList.setVisible(true);
+				// show only Delete List when user is owner
+				menuDeleteList.setVisible(localUserIsListOwner());
+				menuDeleteEntries.setVisible(true);
+				menuSaveChanges.setVisible(true);
+				menuAddEntry.setVisible(true);
+				addColumnContextMenu.showHideAddColumnMenu(true);
+			} else {
+				menuEditList.setVisible(false);
+				menuDeleteList.setVisible(false);
+				menuDeleteEntries.setVisible(false);
+				menuSaveChanges.setVisible(false);
+				menuAddEntry.setVisible(false);
+				addColumnContextMenu.showHideAddColumnMenu(false);
+			}
+
+		}
+	}
+
+	private final class ListDataTableItemClickListener implements ItemClickListener {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void itemClick(ItemClickEvent event) {
+			selectedColumn = event.getPropertyId();
+			selectedItemId = event.getItemId();
+
+			if (event.getButton() == ItemClickEvent.BUTTON_RIGHT) {
+
+				tableContextMenu.show(event.getClientX(), event.getClientY());
+
+				if (selectedColumn.equals(ColumnLabels.TAG.getName())
+						|| selectedColumn.equals(ColumnLabels.GID.getName())
+						|| selectedColumn.equals(ColumnLabels.ENTRY_ID.getName())
+						|| selectedColumn.equals(ColumnLabels.DESIGNATION.getName())
+						|| selectedColumn.equals(ColumnLabels.SEED_RESERVATION
+								.getName())
+						|| selectedColumn.equals(ColumnLabels.AVAILABLE_INVENTORY
+								.getName())) {
+					tableContextMenuDeleteEntries.setVisible(!germplasmList.isLockedList());
+					tableContextMenuEditCell.setVisible(false);
+					if (source != null) {
+						tableContextMenuCopyToNewList.setVisible(!source.listBuilderIsLocked());
+					}
+				} else if (germplasmList.isLocalList() && !germplasmList.isLockedList()) {
+					tableContextMenuDeleteEntries.setVisible(true);
+					tableContextMenuEditCell.setVisible(true);
+					if (source != null) {
+						tableContextMenuCopyToNewList.setVisible(!source.listBuilderIsLocked());
+					}
+					doneInitializing = true;
+				} else {
+					tableContextMenuDeleteEntries.setVisible(false);
+					tableContextMenuEditCell.setVisible(false);
+					if (source != null) {
+						tableContextMenuCopyToNewList.setVisible(!source.listBuilderIsLocked());
 					}
 				}
 			}
-		});
+		}
+	}
 
-		listDataTable.setTableFieldFactory(new TableFieldFactory() {
-			private static final long serialVersionUID = 1L;
+	private final class TableContextMenuClickListener implements ContextMenu.ClickListener {
+		private static final long serialVersionUID = -2343109406180457070L;
 
-			@Override
-			public Field createField(Container container, final Object itemId,
-					final Object propertyId, Component uiContext) {
+		public void contextItemClick(ClickEvent event) {
+			String action = event.getClickedItem().getName();
+			if (action.equals(messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES))) {
+				deleteEntriesButtonClickAction();
+			} else if (action.equals(messageSource.getMessage(Message.SELECT_ALL))) {
+				listDataTable.setValue(listDataTable.getItemIds());
+			} else if (action.equals(messageSource.getMessage(Message.EDIT_VALUE))) {
 
-				if (propertyId.equals(ColumnLabels.GID.getName())
-						|| propertyId.equals(ColumnLabels.ENTRY_ID.getName())
-						|| propertyId.equals(ColumnLabels.DESIGNATION.getName())
-						|| propertyId.equals(ColumnLabels.AVAILABLE_INVENTORY.getName())
-						|| propertyId.equals(ColumnLabels.SEED_RESERVATION.getName())) {
-					return null;
-				}
+				Map<Object, Field> itemMap = fields.get(selectedItemId);
 
-				final TextField tf = new TextField();
-				tf.setData(new ItemPropertyId(itemId, propertyId));
+				// go through each field, set previous edited fields to
+				// blurred/readonly
+				for (Map.Entry<Object, Field> entry : itemMap.entrySet()) {
+					Field f = entry.getValue();
+					Object fieldValue = f.getValue();
+					if (!f.isReadOnly()) {
+						f.setReadOnly(true);
 
-				// set the size of textfield based on text of cell
-				String value = (String) container.getItem(itemId).getItemProperty(propertyId)
-						.getValue();
-				Double d = computeTextFieldWidth(value);
-				tf.setWidth(d.floatValue(), UNITS_EM);
-
-				// Needed for the generated column
-				tf.setImmediate(true);
-
-				// Manage the field in the field storage
-				Map<Object, Field> itemMap = fields.get(itemId);
-				if (itemMap == null) {
-					itemMap = new HashMap<Object, Field>();
-					fields.put(itemId, itemMap);
-				}
-				itemMap.put(propertyId, tf);
-
-				tf.setReadOnly(true);
-
-				tf.addListener(new FocusListener() {
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					public void focus(FocusEvent event) {
-						listDataTable.select(itemId);
-					}
-				});
-
-				tf.addListener(new FocusListener() {
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					public void focus(FocusEvent event) {
-						lastCellvalue = ((TextField) event.getComponent()).getValue().toString();
-					}
-				});
-
-				tf.addListener(new BlurListener() {
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					public void blur(BlurEvent event) {
-						Map<Object, Field> itemMap = fields.get(itemId);
-
-						// go through each field, set previous edited fields to
-						// blurred/readonly
-						for (Map.Entry<Object, Field> entry : itemMap.entrySet()) {
-							Field f = entry.getValue();
-							Object fieldValue = f.getValue();
-							if (!f.isReadOnly()) {
-								f.setReadOnly(true);
-								if (!fieldValue.equals(lastCellvalue)) {
-									setHasUnsavedChanges(true);
-								}
-							}
-						}
-
-						for (Map.Entry<Object, Field> entry : itemMap.entrySet()) {
-							Object column = entry.getKey();
-							Field f = entry.getValue();
-							Object fieldValue = f.getValue();
-
-							// mark list as changed if value for the cell was
-							// changed
-							if (column.equals(selectedColumn) && !f.isReadOnly()
-									&& !fieldValue.toString().equals(lastCellvalue)) {
-								setHasUnsavedChanges(true);
-							}
-
-							// validate for designation
-							if (column.equals(selectedColumn)
-									&& selectedColumn.equals(ColumnLabels.DESIGNATION
-											.getName())) {
-								Object eventSource = event.getSource();
-								String designation = eventSource.toString();
-
-								// retrieve item id at event source
-								ItemPropertyId itemProp = (ItemPropertyId) ((TextField) eventSource)
-										.getData();
-								Object sourceItemId = itemProp.getItemId();
-
-								String[] items = listDataTable.getItem(sourceItemId).toString()
-										.split(" ");
-								int gid = Integer.valueOf(items[2]);
-
-								if (isDesignationValid(designation, gid)) {
-									Double d = computeTextFieldWidth(f.getValue().toString());
-									f.setWidth(d.floatValue(), UNITS_EM);
-									f.setReadOnly(true);
-									listDataTable.focus();
-								} else {
-									ConfirmDialog
-											.show(getWindow(),
-													"Update Designation",
-													"The value you entered is not one of the germplasm names. "
-															+ "Are you sure you want to update Designation with new value?",
-													"Yes", "No", new ConfirmDialog.Listener() {
-														private static final long serialVersionUID = 1L;
-
-														@Override
-														public void onClose(ConfirmDialog dialog) {
-															if (!dialog.isConfirmed()) {
-																tf.setReadOnly(false);
-																tf.setValue(lastCellvalue);
-															} else {
-																Double d = computeTextFieldWidth(tf
-																		.getValue().toString());
-																tf.setWidth(d.floatValue(),
-																		UNITS_EM);
-															}
-															tf.setReadOnly(true);
-															listDataTable.focus();
-														}
-													});
-								}
-							} else {
-								Double d = computeTextFieldWidth(f.getValue().toString());
-								f.setWidth(d.floatValue(), UNITS_EM);
-								f.setReadOnly(true);
-							}
-						}
-					}
-				});
-				// this area can be used for validation
-				tf.addListener(new Property.ValueChangeListener() {
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					public void valueChange(ValueChangeEvent event) {
-						Double d = computeTextFieldWidth(tf.getValue().toString());
-						tf.setWidth(d.floatValue(), UNITS_EM);
-						tf.setReadOnly(true);
-
-						if (doneInitializing && !tf.getValue().toString().equals(lastCellvalue)) {
+						if (!fieldValue.equals(lastCellvalue)) {
 							setHasUnsavedChanges(true);
 						}
 					}
-				});
+				}
 
-				tf.addShortcutListener(new ShortcutListener("ENTER", ShortcutAction.KeyCode.ENTER,
-						null) {
-					private static final long serialVersionUID = 1L;
+				// Make the entire item editable
 
-					@Override
-					public void handleAction(Object sender, Object target) {
-						Double d = computeTextFieldWidth(tf.getValue().toString());
-						tf.setWidth(d.floatValue(), UNITS_EM);
-						tf.setReadOnly(true);
-						listDataTable.focus();
-
-					}
-				});
-
-				return tf;
-			}
-
-			private Double computeTextFieldWidth(String value) {
-				double multiplier = 0.55;
-				int length = 1;
-				if (value != null && !value.isEmpty()) {
-					length = value.length();
-					if (value.equalsIgnoreCase(value)) {
-						// if all caps, provide bigger space
-						multiplier = 0.75;
+				if (itemMap != null) {
+					for (Map.Entry<Object, Field> entry : itemMap.entrySet()) {
+						Object column = entry.getKey();
+						if (column.equals(selectedColumn)) {
+							Field f = entry.getValue();
+							if (f.isReadOnly()) {
+								Object fieldValue = f.getValue();
+								lastCellvalue = (fieldValue != null) ? fieldValue.toString()
+										: "";
+								f.setReadOnly(false);
+								f.focus();
+							}
+						}
 					}
 				}
-				Double d = length * multiplier;
-				// set a minimum textfield width
-				return NumberUtils.max(new double[] { MINIMUM_WIDTH, d });
-			}
-		});
 
-		listDataTable.setEditable(true);
+				listDataTable.select(selectedItemId);
+			} else if (action.equals(messageSource
+					.getMessage(Message.ADD_SELECTED_ENTRIES_TO_NEW_LIST))) {
+				source.addSelectedPlantsToList(listDataTable);
+			}
+		}
+	}
+
+	private final class TextFieldBlurListener implements BlurListener {
+		private final TextField tf;
+		private final Object itemId;
+		private static final long serialVersionUID = 1L;
+
+		private TextFieldBlurListener(TextField tf, Object itemId) {
+			this.tf = tf;
+			this.itemId = itemId;
+		}
+
+		@Override
+		public void blur(BlurEvent event) {
+			Map<Object, Field> itemMap = fields.get(itemId);
+
+			// go through each field, set previous edited fields to
+			// blurred/readonly
+			for (Map.Entry<Object, Field> entry : itemMap.entrySet()) {
+				Field f = entry.getValue();
+				Object fieldValue = f.getValue();
+				if (!f.isReadOnly()) {
+					f.setReadOnly(true);
+					if (!fieldValue.equals(lastCellvalue)) {
+						setHasUnsavedChanges(true);
+					}
+				}
+			}
+
+			for (Map.Entry<Object, Field> entry : itemMap.entrySet()) {
+				Object column = entry.getKey();
+				Field f = entry.getValue();
+				Object fieldValue = f.getValue();
+
+				// mark list as changed if value for the cell was
+				// changed
+				if (column.equals(selectedColumn) && !f.isReadOnly()
+						&& !fieldValue.toString().equals(lastCellvalue)) {
+					setHasUnsavedChanges(true);
+				}
+
+				// validate for designation
+				if (column.equals(selectedColumn)
+						&& selectedColumn.equals(ColumnLabels.DESIGNATION
+								.getName())) {
+					Object eventSource = event.getSource();
+					String designation = eventSource.toString();
+
+					// retrieve item id at event source
+					ItemPropertyId itemProp = (ItemPropertyId) ((TextField) eventSource)
+							.getData();
+					Object sourceItemId = itemProp.getItemId();
+
+					String[] items = listDataTable.getItem(sourceItemId).toString()
+							.split(" ");
+					int gid = Integer.valueOf(items[2]);
+
+					if (isDesignationValid(designation, gid)) {
+						Double d = computeTextFieldWidth(f.getValue().toString());
+						f.setWidth(d.floatValue(), UNITS_EM);
+						f.setReadOnly(true);
+						listDataTable.focus();
+					} else {
+						ConfirmDialog
+								.show(getWindow(),
+										"Update Designation",
+										"The value you entered is not one of the germplasm names. "
+												+ "Are you sure you want to update Designation with new value?",
+										"Yes", "No", new ConfirmDialog.Listener() {
+											private static final long serialVersionUID = 1L;
+
+											@Override
+											public void onClose(ConfirmDialog dialog) {
+												if (!dialog.isConfirmed()) {
+													tf.setReadOnly(false);
+													tf.setValue(lastCellvalue);
+												} else {
+													Double d = computeTextFieldWidth(tf
+															.getValue().toString());
+													tf.setWidth(d.floatValue(),
+															UNITS_EM);
+												}
+												tf.setReadOnly(true);
+												listDataTable.focus();
+											}
+										});
+					}
+				} else {
+					Double d = computeTextFieldWidth(f.getValue().toString());
+					f.setWidth(d.floatValue(), UNITS_EM);
+					f.setReadOnly(true);
+				}
+			}
+		
+		}
+		
+		private Double computeTextFieldWidth(String value) {
+			double multiplier = 0.55;
+			int length = 1;
+			if (value != null && !value.isEmpty()) {
+				length = value.length();
+				if (value.equalsIgnoreCase(value)) {
+					// if all caps, provide bigger space
+					multiplier = 0.75;
+				}
+			}
+			Double d = length * multiplier;
+			// set a minimum textfield width
+			return NumberUtils.max(new double[] { MINIMUM_WIDTH, d });
+		}
 	}
 
 	// This is needed for storing back-references
@@ -1401,9 +1438,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 
 				source.getWindow().open(fileDownloadResource);
 
-				// TODO must figure out other way to clean-up file because
-				// deleting it here makes it unavailable for download
-
 			} catch (GermplasmListExporterException e) {
 				LOG.error(e.getMessage(), e);
 				MessageNotifier.showError(source.getWindow(),
@@ -1447,8 +1481,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 	}
 
 	private void copyToNewListFromInventoryViewAction() {
-		// TODO implement the copy to new list from the selection from
-		// listInventoryTable
+		// do nothing
 	}
 
 	private void addEntryButtonClickAction() {
@@ -1731,7 +1764,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		// end of saveChangesAction
 	}
 
-	// TODO review this method as there are redundant codes here that is also in
 	// saveChangesAction()
 	// might be possible to eliminate this method altogether and reduce the
 	// number of middleware calls
@@ -1743,16 +1775,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 
 				Object sLRecId = item.getKey();
 				String sDesignation = item.getValue();
-
-				try {
-					int lrecId = Integer.valueOf(sLRecId.toString());
-					designationOfListEntriesDeleted += sDesignation + ",";
-					germplasmListManager.deleteGermplasmListDataByListIdLrecId(
-							germplasmList.getId(), lrecId);
-				} catch (MiddlewareQueryException e) {
-					LOG.error("Error with deleting list entries.", e);
-					LOG.error("\n" + e.getStackTrace());
-				}
+				int lrecId = Integer.valueOf(sLRecId.toString());
+				designationOfListEntriesDeleted += sDesignation + ",";
+				deleteGermplasmListDataByListIdLrecId(germplasmList.getId(), lrecId);
+				
 			}
 
 			deleteGermplasmDialogBox(gidsWithoutChildrenToDelete);
@@ -1770,13 +1796,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 			}
 			germplasmListManager.updateGermplasmListData(listDatas);
 
-			try {
-				logDeletedListEntriesToWorkbenchProjectActivity();
-			} catch (MiddlewareQueryException e) {
-				LOG.error("Error logging workbench activity.", e);
-				LOG.error("\n" + e.getStackTrace());
-			}
-
+			logDeletedListEntriesToWorkbenchProjectActivity();
+			
 			// reset items to delete in listDataTable
 			itemsToDelete.clear();
 
@@ -1788,6 +1809,15 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 			LOG.error("\n" + e.getStackTrace());
 		}
 		// end of performListEntriesDeletion
+	}
+	
+	private void deleteGermplasmListDataByListIdLrecId(int listId, int lrecId){
+		try {
+			germplasmListManager.deleteGermplasmListDataByListIdLrecId(
+					germplasmList.getId(), lrecId);
+		} catch (MiddlewareQueryException e) {
+			LOG.error(e.getMessage(), e);
+		}
 	}
 
 	protected void deleteGermplasmDialogBox(final List<Integer> gidsWithoutChildren)
@@ -1811,21 +1841,26 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		}
 	}
 
-	private void logDeletedListEntriesToWorkbenchProjectActivity() throws MiddlewareQueryException {
-		User user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData()
-				.getUserId());
-
-		ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager
-				.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId())
-				.getProjectId().intValue()),
-				workbenchDataManager.getLastOpenedProject(workbenchDataManager
-						.getWorkbenchRuntimeData().getUserId()), "Deleted list entries.",
-				"Deleted list entries from the list id " + germplasmList.getId() + " - "
-						+ germplasmList.getName(), user, new Date());
+	private void logDeletedListEntriesToWorkbenchProjectActivity() {
+	
+		
+		User user;
 		try {
+			user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData()
+					.getUserId());
+
+			ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager
+					.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId())
+					.getProjectId().intValue()),
+					workbenchDataManager.getLastOpenedProject(workbenchDataManager
+							.getWorkbenchRuntimeData().getUserId()), "Deleted list entries.",
+					"Deleted list entries from the list id " + germplasmList.getId() + " - "
+							+ germplasmList.getName(), user, new Date());
+			
 			workbenchDataManager.addProjectActivity(projAct);
+		
 		} catch (MiddlewareQueryException e) {
-			LOG.error("Error with logging workbench activity.", e);
+			LOG.error(e.getMessage(), e);
 		}
 	}
 
@@ -1876,7 +1911,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		try {
 			list = germplasmListManager.getGermplasmListById(listId);
 		} catch (MiddlewareQueryException e) {
-			LOG.error(e.getMessage());
+			LOG.error(e.getMessage(), e);
 		}
 
 		germplasmList = list;

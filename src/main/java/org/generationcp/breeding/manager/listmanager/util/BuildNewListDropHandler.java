@@ -7,6 +7,8 @@ import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
 import com.vaadin.event.Transferable;
@@ -20,6 +22,7 @@ import com.vaadin.ui.Table.TableTransferable;
 
 public class BuildNewListDropHandler extends DropHandlerMethods implements DropHandler {
 
+	private static final Logger LOG = LoggerFactory.getLogger(BuildNewListDropHandler.class);
 	private static final long serialVersionUID = 1L;
 	
 	
@@ -39,7 +42,7 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 			TableTransferable transferable = (TableTransferable) event.getTransferable();
 	        Table sourceTable = transferable.getSourceComponent();
 	        String sourceTableData = sourceTable.getData().toString();
-	        AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) event.getTargetDetails());
+	        AbstractSelectTargetDetails dropData = (AbstractSelectTargetDetails) event.getTargetDetails();
 	        targetTable = (Table) dropData.getTarget();
 			
 			if(sourceTableData.equals(MATCHING_GERMPLASMS_TABLE_DATA)){

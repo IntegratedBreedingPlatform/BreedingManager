@@ -275,20 +275,24 @@ public class GermplasmListExporter {
 			String columnHeader = column.toString();
 			ColumnLabels columnLabel = ColumnLabels.get(columnHeader);
 			if (columnLabel!=null && columnLabel.getTermId()!=null){
-				try {
-					StandardVariable standardVar = ontologyDataManager.getStandardVariable(columnLabel.getTermId().getId());
-					if (standardVar!=null){
-						columnStandardVariableMap.put(standardVar.getId(), standardVar);
-					}
-					
-				} catch (MiddlewareQueryException e) {
-					//do nothing
-				}
+				addStandardVariable(columnStandardVariableMap, columnLabel);
 			}
     	}
     	
     	
     	return columnStandardVariableMap;
+    }
+    
+    private void addStandardVariable(Map<Integer, StandardVariable> columnStandardVariableMap, ColumnLabels columnLabel){
+    	try {
+			StandardVariable standardVar = ontologyDataManager.getStandardVariable(columnLabel.getTermId().getId());
+			if (standardVar!=null){
+				columnStandardVariableMap.put(standardVar.getId(), standardVar);
+			}
+			
+		} catch (MiddlewareQueryException e) {
+			LOG.error(e.getMessage(), e);
+		}
     }
     
 	public void exportGermplasmListCSV(String fileName, Table listDataTable)
