@@ -10,6 +10,8 @@ import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
 import com.vaadin.ui.Button;
@@ -20,6 +22,8 @@ import com.vaadin.ui.themes.BaseTheme;
 
 public class ListManagerInventoryTable extends ListInventoryTable {
 
+	private static final Logger LOG = LoggerFactory.getLogger(ListManagerInventoryTable.class);
+	
 	private static final long serialVersionUID = 7827387488704418083L;
 	public static final String INVENTORY_TABLE_DATA = "BuildNewListInventoryTableData";
 	
@@ -84,7 +88,7 @@ public class ListManagerInventoryTable extends ListInventoryTable {
 			   		try {
 						germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndLrecId(listId, lotDetail.getId());
 					} catch (MiddlewareQueryException e) {
-						e.printStackTrace();
+						LOG.error(e.getMessage(), e);
 					}
 			   		
 			   		Button desigButton = new Button(String.format("%s", designation), 

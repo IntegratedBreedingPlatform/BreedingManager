@@ -17,6 +17,8 @@ import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -32,6 +34,8 @@ import com.vaadin.ui.themes.BaseTheme;
 @Configurable
 public class ListInventoryTable extends TableWithSelectAllLayout implements InitializingBean {
 
+	private static final Logger LOG = LoggerFactory.getLogger(ListInventoryTable.class);
+	
 	private static final long serialVersionUID = 1L;
 	
 	protected Table listInventoryTable;
@@ -104,7 +108,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 				List<GermplasmListData> inventoryDetails = inventoryDataManager.getLotDetailsForList(listId,0,Integer.MAX_VALUE);
 				displayInventoryDetails(inventoryDetails);
 			} catch (MiddlewareQueryException e) {
-				e.printStackTrace();
+				LOG.error(e.getMessage(), e);
 			}
 		}
 		
@@ -175,9 +179,9 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		for(ListEntryLotDetails lotDetail : lotDetailsToCancel){
 			Item item = listInventoryTable.getItem(lotDetail);
 			
-			Double avail_column = (Double) item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue();
-			Double reserved_column = (Double) item.getItemProperty(ColumnLabels.RESERVED.getName()).getValue();
-			Double newAvailVal = avail_column + reserved_column; 
+			Double availColumn = (Double) item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue();
+			Double reservedColumn = (Double) item.getItemProperty(ColumnLabels.RESERVED.getName()).getValue();
+			Double newAvailVal = availColumn + reservedColumn; 
 			
 			lotDetail.setAvailableLotBalance(newAvailVal);
 			item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(newAvailVal);
@@ -189,10 +193,10 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 	public boolean isSelectedEntriesHasReservation(List<ListEntryLotDetails> lotDetailsGid) {
 		for(ListEntryLotDetails lotDetails : lotDetailsGid){
 			Item item = listInventoryTable.getItem(lotDetails);
-			Double res_column = (Double)item.getItemProperty(ColumnLabels.RESERVED.getName()).getValue();
-			Double new_res_column = (Double)item.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).getValue();
+			Double resColumn = (Double)item.getItemProperty(ColumnLabels.RESERVED.getName()).getValue();
+			Double newResColumn = (Double)item.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).getValue();
 			
-			if(res_column > 0 || new_res_column > 0){
+			if(resColumn > 0 || newResColumn > 0){
 				return true;
 			}
 		}

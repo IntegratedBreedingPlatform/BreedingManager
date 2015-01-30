@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.generationcp.breeding.manager.crossingmanager.SelectParentsListDataComponent;
-import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
 import org.generationcp.breeding.manager.inventory.InventoryDropTargetContainer;
 import org.generationcp.breeding.manager.inventory.ListDataAndLotDetails;
@@ -45,7 +44,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 	
 	private List<ListDataAndLotDetails> listDataAndLotDetails;
 	
-	private boolean hasChanges = false; // TODO this will be REMOVED after refactoring the DropHandler Method
+	private boolean hasChanges = false; 
 	
 	public InventoryTableDropHandler(ListManagerMain listManagerMain, GermplasmDataManager germplasmDataManager, GermplasmListManager germplasmListManager, InventoryDataManager inventoryDataManager, Table targetTable) {
 		this.listManagerMain = listManagerMain;
@@ -91,8 +90,8 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 				//If table has selected items, add selected items
 				if(hasSelectedItems(sourceTable)){
 					lotDetails.addAll(getInventoryTableSelectedItemIds(sourceTable));
-				} //If none, add what was dropped
-				else if(transferable.getSourceComponent().getParent().getParent() instanceof ListComponent){
+				//If none, add what was dropped
+				} else if(transferable.getSourceComponent().getParent().getParent() instanceof ListComponent){
 					lotDetails.add((ListEntryLotDetails) transferable.getItemId());
 				}
 				addSelectedInventoryDetails(lotDetails, sourceTable);
@@ -108,8 +107,8 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 				//If table has selected items, add selected items
 				if(hasSelectedItems(sourceTable)){
 					lotDetails.addAll(getInventoryTableSelectedItemIds(sourceTable));
-				} //If none, add what was dropped
-				else if(transferable.getSourceComponent().getParent().getParent() instanceof SelectParentsListDataComponent){
+				//If none, add what was dropped
+				} else if(transferable.getSourceComponent().getParent().getParent() instanceof SelectParentsListDataComponent){
 					lotDetails.add((ListEntryLotDetails) transferable.getItemId());
 				}
 				addSelectedInventoryDetails(lotDetails, sourceTable);
@@ -233,7 +232,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
                  itemId.setId(listData.getId());
              }
 		  } catch (MiddlewareQueryException e) {
-			 e.printStackTrace();
+			  LOG.error(e.getMessage(), e);
           }
 	   }
 	}
@@ -319,8 +318,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
             }
 
 		} catch (MiddlewareQueryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error(e.getMessage(), e);
 		}
 		
 	}
@@ -445,9 +443,6 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		this.listDataAndLotDetails.clear();
 	}
 
-	/*
-	 * TODO this methods will be removed after successfull refactoring of code in DROP HANDLER CLASS
-	 * */
 	public boolean hasChanges() {
 		return hasChanges;
 	}
