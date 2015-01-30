@@ -15,6 +15,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -174,7 +176,8 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
     }
 	
 	public void doSearch(String q) {
-        boolean includeParents = (Boolean) includeParentsCheckBox.getValue();
+		Monitor monitor = MonitorFactory.start("GermplasmSearchBarComponent.doSearch()");
+		boolean includeParents = (Boolean) includeParentsCheckBox.getValue();
         boolean exactMatchesOnly = (Boolean) exactMatchesOnlyCheckBox.getValue();
 
         try {
@@ -188,6 +191,8 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
                 MessageNotifier.showWarning(this.getWindow(),messageSource.getMessage(Message.SEARCH_RESULTS),messageSource.getMessage(e.getErrorMessage()));
             }
             LOG.info(e.getMessage(), e);
+        } finally {
+        	LOG.debug("" + monitor.stop());
         }
 	}
 
