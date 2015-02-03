@@ -63,6 +63,7 @@ public class GermplasmListExporterTest {
 	private static final String DESIG = "DESIG";
 	private static final String ENTRY_CODE = "ENTRY_CODE";
 	private static final String GID = "GID";
+	private static final String ENTRY_ID = "ENTRY_ID";
 	private static final String OWNER_NAME = "User User";
 	private static final String FILE_NAME = "testGermplasmListExporter.csv";
 	private static Integer LIST_ID = 1;
@@ -350,7 +351,7 @@ public class GermplasmListExporterTest {
 		
 		
 		//make sure the header in CSV is same as the header in table
-		assertEquals(messageSource.getMessage(Message.HASHTAG), exportColumnHeaders.get(0).getName());
+		assertEquals(ENTRY_ID, exportColumnHeaders.get(0).getName());
 		assertEquals(GID, exportColumnHeaders.get(1).getName());
 		assertEquals(ENTRY_CODE, exportColumnHeaders.get(2).getName());
 		assertEquals(DESIG, exportColumnHeaders.get(3).getName());
@@ -386,7 +387,7 @@ public class GermplasmListExporterTest {
 		
 		
 		//make sure the header in CSV is same as the header in table
-		assertEquals(messageSource.getMessage(Message.HASHTAG), exportColumnHeaders.get(0).getName());
+		assertEquals(ENTRY_ID, exportColumnHeaders.get(0).getName());
 		assertEquals(GID, exportColumnHeaders.get(1).getName());
 		assertEquals(ENTRY_CODE, exportColumnHeaders.get(2).getName());
 		assertEquals(DESIG, exportColumnHeaders.get(3).getName());
