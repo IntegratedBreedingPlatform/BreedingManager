@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.ExportColumnHeader;
@@ -317,8 +316,7 @@ public class GermplasmListExporter {
 
 		List<ExportColumnHeader> exportColumnHeaders = new ArrayList<>();
 
-		exportColumnHeaders.add(new ExportColumnHeader(0, messageSource
-				.getMessage(Message.HASHTAG), visibleColumns
+		exportColumnHeaders.add(new ExportColumnHeader(0, getTermNameFromOntology(ColumnLabels.ENTRY_ID), visibleColumns
 				.get(ColumnLabels.ENTRY_ID.getName())));
 
 		exportColumnHeaders.add(new ExportColumnHeader(1, getTermNameFromOntology(ColumnLabels.GID), visibleColumns
