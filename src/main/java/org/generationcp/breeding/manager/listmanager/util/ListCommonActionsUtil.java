@@ -180,7 +180,7 @@ public class ListCommonActionsUtil {
 				showMessages);
     }
     
-    private static void getNewEntriesToSaveUpdateDelete(
+    protected static void getNewEntriesToSaveUpdateDelete(
     		GermplasmList listToSave, 
     		List<GermplasmListData> listEntries, 
     		Boolean forceHasChanges,
@@ -191,26 +191,9 @@ public class ListCommonActionsUtil {
     		Component source,
     		SimpleResourceBundleMessageSource messageSource){
     	
-    	Map<Integer,GermplasmListData> savedListEntriesMap = new HashMap<Integer, GermplasmListData>();
-    	try {
-			int listDataCount = (int) dataManager.countGermplasmListDataByListId(listToSave.getId());
-			List<GermplasmListData> savedListEntries = dataManager.getGermplasmListDataByListId(listToSave.getId(), 0, listDataCount);
-			if(savedListEntries!=null) {
-				for (GermplasmListData savedEntry : savedListEntries) {
-					//check entries to be deleted
-					if(!listEntries.contains(savedEntry) || forceHasChanges){
-						savedEntry.setStatus(Integer.valueOf(9));
-						entriesToDelete.add(savedEntry);
-					} else {//add to map for possible update
-						savedListEntriesMap.put(savedEntry.getId(), savedEntry);
-					}
-				}
-			}
-		} catch (MiddlewareQueryException ex) {
-			LOG.error("Error with getting the saved list entries.", ex);
-			MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_GETTING_SAVED_ENTRIES));
-		}
-		
+    	Map<Integer, GermplasmListData> savedListEntriesMap = getSavedListEntriesMap(
+				listToSave, listEntries, forceHasChanges, entriesToDelete,
+				dataManager, source, messageSource);
 		
 		for(GermplasmListData entry: listEntries){
 			if(entry.getId() > 0 && !savedListEntriesMap.isEmpty()){
@@ -269,11 +252,43 @@ public class ListCommonActionsUtil {
 					if(thereIsAChange){
 						entriesToUpdate.add(matchingSavedEntry);
 					}
+				} else {
+					// add to new entries to add
+					GermplasmListData listEntry = new GermplasmListData();
+					copyFieldsToNewListEntry(listEntry,entry,listToSave);
+					newEntries.add(listEntry);
 				}
 			}
 		}
 		
 		
+	}
+
+	private static Map<Integer, GermplasmListData> getSavedListEntriesMap(
+			GermplasmList listToSave, List<GermplasmListData> listEntries,
+			Boolean forceHasChanges, List<GermplasmListData> entriesToDelete,
+			GermplasmListManager dataManager, Component source,
+			SimpleResourceBundleMessageSource messageSource) {
+		Map<Integer,GermplasmListData> savedListEntriesMap = new HashMap<Integer, GermplasmListData>();
+    	try {
+			int listDataCount = (int) dataManager.countGermplasmListDataByListId(listToSave.getId());
+			List<GermplasmListData> savedListEntries = dataManager.getGermplasmListDataByListId(listToSave.getId(), 0, listDataCount);
+			if(savedListEntries!=null) {
+				for (GermplasmListData savedEntry : savedListEntries) {
+					//check entries to be deleted
+					if(!listEntries.contains(savedEntry) || forceHasChanges){
+						savedEntry.setStatus(Integer.valueOf(9));
+						entriesToDelete.add(savedEntry);
+					} else {//add to map for possible update
+						savedListEntriesMap.put(savedEntry.getId(), savedEntry);
+					}
+				}
+			}
+		} catch (MiddlewareQueryException ex) {
+			LOG.error("Error with getting the saved list entries.", ex);
+			MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_GETTING_SAVED_ENTRIES));
+		}
+		return savedListEntriesMap;
 	}
 
     private static void copyFieldsToNewListEntry(GermplasmListData destination,
