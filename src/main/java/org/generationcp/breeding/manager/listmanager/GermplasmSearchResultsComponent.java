@@ -13,6 +13,7 @@ import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.util.Util;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.tomcat.util.TomcatUtil;
 import org.generationcp.commons.tomcat.util.WebAppStatusInfo;
@@ -23,6 +24,7 @@ import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Location;
@@ -64,6 +66,8 @@ import com.vaadin.ui.themes.Reindeer;
 @Configurable
 public class GermplasmSearchResultsComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
+	
+
 	private static final long serialVersionUID = 5314653969843976836L;
 
 	private Label totalMatchingGermplasmsLabel;
@@ -79,7 +83,8 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	
 	private final static Logger LOG = LoggerFactory.getLogger(GermplasmSearchResultsComponent.class);
 	
-	private static final String CHECKBOX_COLUMN_ID = "Tag All Column";
+	public static final String CHECKBOX_COLUMN_ID = "Tag All Column";
+	public static final String NAMES = "NAMES";
 	
 	public static final String MATCHING_GEMRPLASMS_TABLE_DATA = "Matching Germplasms Table";
 	public static final String GERMPLASM_BROWSER_LINK = "http://localhost:18080/GermplasmStudyBrowser/main/germplasm-";
@@ -106,7 +111,14 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
     private WorkbenchDataManager workbenchDataManager;
     
     @Autowired
+    private OntologyDataManager ontologyDataManager;
+    
+    @Autowired
     private TomcatUtil tomcatUtil;
+    
+    public GermplasmSearchResultsComponent(){
+    	listManagerMain = null;
+    }
 
 	public GermplasmSearchResultsComponent(final ListManagerMain listManagerMain) {
 		this.listManagerMain = listManagerMain;
@@ -152,17 +164,17 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		menuSelectAll = menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
 		updateActionMenuOptions(false);		
 		
-		matchingGermplasmsTableWithSelectAll = new TableWithSelectAllLayout(10, CHECKBOX_COLUMN_ID);
+		matchingGermplasmsTableWithSelectAll = getTableWithSelectAllLayout();
 		matchingGermplasmsTableWithSelectAll.setHeight("500px");
 
 		matchingGermplasmsTable = matchingGermplasmsTableWithSelectAll.getTable();
 		matchingGermplasmsTable.setData(MATCHING_GEMRPLASMS_TABLE_DATA);
 		matchingGermplasmsTable.addContainerProperty(CHECKBOX_COLUMN_ID, CheckBox.class, null);
-		matchingGermplasmsTable.addContainerProperty("NAMES", Button.class,null);
-		matchingGermplasmsTable.addContainerProperty("PARENTAGE", String.class,null);
-		matchingGermplasmsTable.addContainerProperty("GID", Button.class, null);
-		matchingGermplasmsTable.addContainerProperty("LOCATION", String.class,null);
-		matchingGermplasmsTable.addContainerProperty("METHOD", String.class,null);
+		matchingGermplasmsTable.addContainerProperty(NAMES, Button.class,null);
+		matchingGermplasmsTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class,null);
+		matchingGermplasmsTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
+		matchingGermplasmsTable.addContainerProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class,null);
+		matchingGermplasmsTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class,null);
 		matchingGermplasmsTable.setWidth("100%");
 		matchingGermplasmsTable.setMultiSelect(true);
 		matchingGermplasmsTable.setSelectable(true);
@@ -171,6 +183,10 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		matchingGermplasmsTable.setHeight("470px");
 
 		messageSource.setColumnHeader(matchingGermplasmsTable, CHECKBOX_COLUMN_ID, Message.CHECK_ICON);
+		matchingGermplasmsTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(), ColumnLabels.PARENTAGE.getTermNameFromOntology(ontologyDataManager));
+		matchingGermplasmsTable.setColumnHeader(ColumnLabels.GID.getName(), ColumnLabels.GID.getTermNameFromOntology(ontologyDataManager));
+		matchingGermplasmsTable.setColumnHeader(ColumnLabels.GERMPLASM_LOCATION.getName(), ColumnLabels.GERMPLASM_LOCATION.getTermNameFromOntology(ontologyDataManager));
+		matchingGermplasmsTable.setColumnHeader(ColumnLabels.BREEDING_METHOD_NAME.getName(), ColumnLabels.BREEDING_METHOD_NAME.getTermNameFromOntology(ontologyDataManager));
 		
 		matchingGermplasmsTable.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
 			private static final long serialVersionUID = 1L;
@@ -178,9 +194,9 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 			@Override
 			public String generateDescription(Component source, Object itemId,
 					Object propertyId) {
-				if(propertyId=="NAMES"){
+				if(propertyId==NAMES){
 					Item item = matchingGermplasmsTable.getItem(itemId);
-					Integer gid = Integer.valueOf(((Button) item.getItemProperty("GID").getValue()).getCaption());
+					Integer gid = Integer.valueOf(((Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue()).getCaption());
 					return getGermplasmNames(gid);
 				} else {
 					return null;
@@ -207,6 +223,10 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 				}
 			};
 		
+	}
+
+	protected TableWithSelectAllLayout getTableWithSelectAllLayout() {
+		return new TableWithSelectAllLayout(10, CHECKBOX_COLUMN_ID);
 	}
 
 	private void updateActionMenuOptions(boolean status) {
