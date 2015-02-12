@@ -9,11 +9,15 @@ import static org.mockito.Mockito.verify;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
+import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.pojos.workbench.Project;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -25,12 +29,20 @@ public class AddEntryDialogTest {
 	private AddEntryDialogSource dialogSource;
 	private AddEntryDialog addEntryDialog;
 	private Window parentWindow;
+	private BreedingManagerService breedingManagerService;
 	
 	@Before
 	public void setUp() throws Exception{
 		dialogSource = mock(AddEntryDialogSource.class);
 		parentWindow = new Window();
 		addEntryDialog = new AddEntryDialog(dialogSource, parentWindow);
+		breedingManagerService = Mockito.mock(BreedingManagerService.class);
+		
+		Project testProject = new Project();
+		testProject.setUniqueID(UUID.randomUUID().toString());
+		
+		Mockito.when(breedingManagerService.getCurrentProject()).thenReturn(testProject);
+		addEntryDialog.setBreedingManagerService(breedingManagerService);
 	}
 	
 	

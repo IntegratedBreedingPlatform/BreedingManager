@@ -20,7 +20,6 @@ import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItem
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListValueChangeListener;
 import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.breeding.manager.util.Util;
-import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.util.UserUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -659,5 +658,8 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
 	public void setMessageSource(SimpleResourceBundleMessageSource msgSource){
 		this.messageSource = msgSource;
 	}
-    
+
+	public void setBreedingManagerService(BreedingManagerService breedingManagerService) {
+		this.breedingManagerService = breedingManagerService;
+	}
 }
