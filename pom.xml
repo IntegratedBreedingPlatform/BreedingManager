@@ -373,7 +373,7 @@
         </repository>
         <repository>
             <id>gcp-efficio-repo</id>
-            <url>http://gcp.efficio.us.com:8081/nexus/content/repositories/thirdparty/</url>
+            <url>http://apps.leafnode.io:8081/nexus/content/repositories/thirdparty/</url>
         </repository>
     </repositories>
 
