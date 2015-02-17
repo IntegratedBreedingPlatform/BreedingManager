@@ -51,11 +51,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	private static final int PARENTS_TABLE_ROW_COUNT = 9;
     
     private static final String TAG_COLUMN_ID = "Tag";
-    private static final String ENTRY_NUMBER_COLUMN_ID = "Entry Number Column ID";
-    private static final String DESIGNATION_ID = "Designation";
-    private static final String AVAIL_INV_COLUMN_ID = "Avail Inv";
-    private static final String SEED_RES_COLUMN_ID = "Seed Res";
-        
+    
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
@@ -183,7 +179,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	    			newGidButton.setStyleName(BaseTheme.BUTTON_LINK);
 	    			newGidButton.setDescription(CLICK_TO_VIEW_GERMPLASM_INFORMATION);
 	    			
-	    			item.getItemProperty(DESIGNATION_ID).setValue(newGidButton);
+	    			item.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(newGidButton);
 		    		if(targetTable.equals(femaleParents)){
 		    			entryObject.setFromFemaleTable(true);
 		    			femaleParentTab.getSaveActionMenu().setEnabled(true);
@@ -218,8 +214,8 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
                         seedRes = sourceTable.getItem(itemId).getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue().toString();
                     }
 		            
-		            item.getItemProperty(AVAIL_INV_COLUMN_ID).setValue(newAvailInvButton);
-		            item.getItemProperty(SEED_RES_COLUMN_ID).setValue(seedRes);
+		            item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(newAvailInvButton);
+		            item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 		        }
 	    	}
 
@@ -284,7 +280,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 
 	private void clearSeedReservationValues(Table table){
 		for(Object itemId : table.getItemIds()){
-			table.getItem(itemId).getItemProperty(SEED_RES_COLUMN_ID).setValue(STRING_DASH);
+			table.getItem(itemId).getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(STRING_DASH);
 		}
 	}
 	
@@ -308,7 +304,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		
 		for(GermplasmListEntry entry : itemIds){
 			Item item = parentsTable.getItem(entry);
-    		item.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(Integer.valueOf(entryNumber));
+    		item.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(Integer.valueOf(entryNumber));
     		entry.setEntryId(entryNumber);
 			entryNumber++;
 		}
@@ -475,11 +471,11 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     	    	   		}
     		            
         				Item item = maleParents.addItem(entryObject);
-        				item.getItemProperty(DESIGNATION_ID).setValue(gidButton);
+        				item.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(gidButton);
         				item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
         				
-        				item.getItemProperty(AVAIL_INV_COLUMN_ID).setValue(inventoryButton);
-        				item.getItemProperty(SEED_RES_COLUMN_ID).setValue(seedRes);
+        				item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
+        				item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
     		            
         				addedCount++;
         			} 
@@ -578,11 +574,11 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
     		            
     		            
         				Item item = femaleParents.addItem(entryObject);
-        				item.getItemProperty(DESIGNATION_ID).setValue(gidButton);
+        				item.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(gidButton);
         				item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
         				
-        				item.getItemProperty(AVAIL_INV_COLUMN_ID).setValue(inventoryButton);
-        				item.getItemProperty(SEED_RES_COLUMN_ID).setValue(seedRes);
+        				item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
+        				item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
         				
         				addedCount++;
         			} 

@@ -118,19 +118,19 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		            	
 		            	Item oldItem = sourceTable.getItem(transferable.getItemId());
 		            	Object oldCheckBox = oldItem.getItemProperty(TAG_COLUMN_ID).getValue();
-		                Object oldEntryCode = oldItem.getItemProperty(ENTRY_NUMBER_COLUMN_ID).getValue();
-		                Object oldDesignation = oldItem.getItemProperty(DESIGNATION_ID).getValue();
-		                Object oldAvailInv = oldItem.getItemProperty(AVAIL_INV_COLUMN_ID).getValue();
-		                Object oldSeedRes = oldItem.getItemProperty(SEED_RES_COLUMN_ID).getValue();
+		                Object oldEntryCode = oldItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue();
+		                Object oldDesignation = oldItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue();
+		                Object oldAvailInv = oldItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue();
+		                Object oldSeedRes = oldItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue();
 		                
 		        		sourceTable.removeItem(transferable.getItemId());
 		        		
 						Item newItem = targetTable.addItemAfter(targetItemId, transferable.getItemId());
 						newItem.getItemProperty(TAG_COLUMN_ID).setValue(oldCheckBox);
-						newItem.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(oldEntryCode);
-						newItem.getItemProperty(DESIGNATION_ID).setValue(oldDesignation);
-						newItem.getItemProperty(AVAIL_INV_COLUMN_ID).setValue(oldAvailInv);
-						newItem.getItemProperty(SEED_RES_COLUMN_ID).setValue(oldSeedRes);
+						newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(oldEntryCode);
+						newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(oldDesignation);
+						newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(oldAvailInv);
+						newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(oldSeedRes);
 
 						saveActionMenu.setEnabled(true);
 						setHasUnsavedChanges(true);
@@ -182,7 +182,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		    		            
 		        				Item item = targetTable.getContainerDataSource().addItem(entryObject);
 		        				
-		        				item.getItemProperty(DESIGNATION_ID).setValue(gidButton);
+		        				item.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(gidButton);
 		        				item.getItemProperty(TAG_COLUMN_ID).setValue(tag);
 		        				
 		        				addedCount++;
@@ -299,10 +299,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	private ContextMenuItem menuReserveInventory;
 	
 	private static final String TAG_COLUMN_ID = "Tag";
-    private static final String ENTRY_NUMBER_COLUMN_ID = "Entry Number Column ID";
-    private static final String DESIGNATION_ID = "Designation";
-    private static final String AVAIL_INV_COLUMN_ID = "Avail Inv";
-    private static final String SEED_RES_COLUMN_ID = "Seed Res";
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -627,12 +623,12 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 				            
 	    		            newItem.getItemProperty(TAG_COLUMN_ID).setValue(tag);
 	        				
-							newItem.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(entryId);
+							newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entryId);
 							
 							Button desigButton = new Button(germplasmListData.getDesignation(), new GidLinkClickListener(germplasmListData.getGid().toString(),true));
 		                    desigButton.setStyleName(BaseTheme.BUTTON_LINK);
 		                    desigButton.setDescription("Click to view Germplasm information");
-		                    newItem.getItemProperty(DESIGNATION_ID).setValue(desigButton);
+		                    newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(desigButton);
     					}
 					}
 					
@@ -771,7 +767,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		
 		for(GermplasmListEntry entry : itemIds){
 			Item item = parentTable.getItem(entry);
-    		item.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(Integer.valueOf(entryNumber));
+    		item.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(Integer.valueOf(entryNumber));
     		entry.setEntryId(entryNumber);
 			entryNumber++;
 		}
@@ -922,10 +918,10 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 				seedRes = entry.getInventoryInfo().getReservedLotCount().toString().trim();
 			}
 			
-			newItem.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(entry.getEntryId());
-			newItem.getItemProperty(DESIGNATION_ID).setValue(designationButton);
-			newItem.getItemProperty(AVAIL_INV_COLUMN_ID).setValue(inventoryButton);
-			newItem.getItemProperty(SEED_RES_COLUMN_ID).setValue(seedRes);
+			newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entry.getEntryId());
+			newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
+			newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
+			newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 
 		}
 		
@@ -1213,7 +1209,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 				inventoryButton.setDescription(CLICK_TO_VIEW_INVENTORY_DETAILS);
 			}
 
-			item.getItemProperty(AVAIL_INV_COLUMN_ID).setValue(inventoryButton);
+			item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
 			
 		
 			// Seed Reserved
@@ -1223,7 +1219,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	   			seedRes = listData.getInventoryInfo().getReservedLotCount().toString().trim();
 	   		}
 			
-	   		item.getItemProperty(SEED_RES_COLUMN_ID).setValue(seedRes);
+	   		item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 		}
 		
 	}
@@ -1339,7 +1335,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			Integer entryId = 0;
 			Item item = listDataTable.getItem(entry);
 			if(item!=null) {
-                entryId = (Integer) item.getItemProperty(ENTRY_NUMBER_COLUMN_ID).getValue();
+                entryId = (Integer) item.getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue();
             }
 			
 			if(entryId > nextId) {
