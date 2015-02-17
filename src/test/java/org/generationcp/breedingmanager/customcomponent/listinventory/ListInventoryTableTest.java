@@ -45,7 +45,7 @@ public class ListInventoryTableTest {
 		
 		doReturn(createTerm("DESIGNATION")).when(ontologyDataManager).getTermById(ColumnLabels.DESIGNATION.getTermId().getId());
 		doReturn(createTerm("LOCATION")).when(ontologyDataManager).getTermById(ColumnLabels.LOT_LOCATION.getTermId().getId());
-		doReturn(createTerm("UNITS")).when(ontologyDataManager).getTermById(ColumnLabels.UNITS.getTermId().getId());
+		doReturn(createTerm("SCALE")).when(ontologyDataManager).getTermById(ColumnLabels.SCALE.getTermId().getId());
 		doReturn(createTerm("AVAIL_INV")).when(ontologyDataManager).getTermById(ColumnLabels.AVAILABLE_INVENTORY.getTermId().getId());
 		doReturn(createTerm("TOTAL")).when(ontologyDataManager).getTermById(ColumnLabels.TOTAL.getTermId().getId());
 		doReturn(createTerm("RES")).when(ontologyDataManager).getTermById(ColumnLabels.RESERVED.getTermId().getId());
@@ -60,7 +60,7 @@ public class ListInventoryTableTest {
 		assertEquals("#", table.getColumnHeader(ColumnLabels.ENTRY_ID.getName()));
 		assertEquals("DESIGNATION", table.getColumnHeader(ColumnLabels.DESIGNATION.getName()));
 		assertEquals("LOCATION", table.getColumnHeader(ColumnLabels.LOT_LOCATION.getName()));
-		assertEquals("UNITS", table.getColumnHeader(ColumnLabels.UNITS.getName()));
+		assertEquals("SCALE", table.getColumnHeader(ColumnLabels.SCALE.getName()));
 		assertEquals("AVAIL_INV", table.getColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName()));
 		assertEquals("TOTAL", table.getColumnHeader(ColumnLabels.TOTAL.getName()));
 		assertEquals("RES", table.getColumnHeader(ColumnLabels.RESERVED.getName()));
@@ -74,7 +74,7 @@ public class ListInventoryTableTest {
 		
 		doReturn(null).when(ontologyDataManager).getTermById(ColumnLabels.DESIGNATION.getTermId().getId());
 		doReturn(null).when(ontologyDataManager).getTermById(ColumnLabels.LOT_LOCATION.getTermId().getId());
-		doReturn(null).when(ontologyDataManager).getTermById(ColumnLabels.UNITS.getTermId().getId());
+		doReturn(null).when(ontologyDataManager).getTermById(ColumnLabels.SCALE.getTermId().getId());
 		doReturn(null).when(ontologyDataManager).getTermById(ColumnLabels.AVAILABLE_INVENTORY.getTermId().getId());
 		doReturn(null).when(ontologyDataManager).getTermById(ColumnLabels.TOTAL.getTermId().getId());
 		doReturn(null).when(ontologyDataManager).getTermById(ColumnLabels.RESERVED.getTermId().getId());
@@ -89,7 +89,7 @@ public class ListInventoryTableTest {
 		assertEquals("#", table.getColumnHeader(ColumnLabels.ENTRY_ID.getName()));
 		assertEquals(ColumnLabels.DESIGNATION.getName(), table.getColumnHeader(ColumnLabels.DESIGNATION.getName()));
 		assertEquals(ColumnLabels.LOT_LOCATION.getName(), table.getColumnHeader(ColumnLabels.LOT_LOCATION.getName()));
-		assertEquals(ColumnLabels.UNITS.getName(), table.getColumnHeader(ColumnLabels.UNITS.getName()));
+		assertEquals(ColumnLabels.SCALE.getName(), table.getColumnHeader(ColumnLabels.SCALE.getName()));
 		assertEquals(ColumnLabels.AVAILABLE_INVENTORY.getName(), table.getColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName()));
 		assertEquals(ColumnLabels.TOTAL.getName(), table.getColumnHeader(ColumnLabels.TOTAL.getName()));
 		assertEquals(ColumnLabels.RESERVED.getName(), table.getColumnHeader(ColumnLabels.RESERVED.getName()));
