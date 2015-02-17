@@ -24,7 +24,6 @@ import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.listinventory.CrossingManagerInventoryTable;
-import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
 import org.generationcp.breeding.manager.inventory.InventoryDropTargetContainer;
 import org.generationcp.breeding.manager.inventory.ListDataAndLotDetails;
 import org.generationcp.breeding.manager.inventory.ReservationStatusWindow;
@@ -45,6 +44,7 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
+import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.slf4j.Logger;
@@ -90,6 +90,9 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	private static final String STRING_DASH = "-";
 	private static final String FEMALE_PARENTS = "Female Parents";
 	private static final String MALE_PARENTS = "Male Parents";
+	
+	@Autowired
+	private OntologyDataManager ontologyDataManager;
 
 	private final class ListDataTableDropHandler implements DropHandler {
 		private static final String CLICK_TO_VIEW_GERMPLASM_INFORMATION = "Click to view Germplasm information";
@@ -415,10 +418,15 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
         }
 	}
 
-	private void initializeParentTable() {
-		tableWithSelectAllLayout = new TableWithSelectAllLayout(rowCount, TAG_COLUMN_ID);
-        listDataTable = tableWithSelectAllLayout.getTable();
-        selectAll = tableWithSelectAllLayout.getCheckBox();
+	public void setRowCount(Integer rowCount) {
+		this.rowCount = rowCount;
+	}
+
+	protected void initializeParentTable() {
+		setTableWithSelectAllLayout(new TableWithSelectAllLayout(rowCount, TAG_COLUMN_ID));
+		
+        listDataTable = getTableWithSelectAllLayout().getTable();
+        selectAll = getTableWithSelectAllLayout().getCheckBox();
         
         listDataTable.setWidth("100%");
         listDataTable.setNullSelectionAllowed(true);
@@ -426,16 +434,16 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
         listDataTable.setMultiSelect(true);
         listDataTable.setImmediate(true);
         listDataTable.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
-        listDataTable.addContainerProperty(ENTRY_NUMBER_COLUMN_ID, Integer.class, Integer.valueOf(0));
-        listDataTable.addContainerProperty(DESIGNATION_ID, Button.class, null);
-        listDataTable.addContainerProperty(AVAIL_INV_COLUMN_ID, Button.class, null);
-        listDataTable.addContainerProperty(SEED_RES_COLUMN_ID, String.class, null);
+        listDataTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, Integer.valueOf(0));
+        listDataTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
+        listDataTable.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Button.class, null);
+        listDataTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
 
         listDataTable.setColumnHeader(TAG_COLUMN_ID, messageSource.getMessage(Message.CHECK_ICON));
-        listDataTable.setColumnHeader(ENTRY_NUMBER_COLUMN_ID, messageSource.getMessage(Message.HASHTAG));
-        listDataTable.setColumnHeader(DESIGNATION_ID, messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER));
-        listDataTable.setColumnHeader(AVAIL_INV_COLUMN_ID, messageSource.getMessage(Message.AVAIL_INV));
-        listDataTable.setColumnHeader(SEED_RES_COLUMN_ID, messageSource.getMessage(Message.SEED_RES));
+        listDataTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), messageSource.getMessage(Message.HASHTAG));
+        listDataTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(), getTermNameFromOntology(ColumnLabels.DESIGNATION));
+        listDataTable.setColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName(), getTermNameFromOntology(ColumnLabels.AVAILABLE_INVENTORY));
+        listDataTable.setColumnHeader(ColumnLabels.SEED_RESERVATION.getName(), getTermNameFromOntology(ColumnLabels.SEED_RESERVATION));
         
         listDataTable.setColumnWidth(TAG_COLUMN_ID, 25);
         listDataTable.setDragMode(TableDragMode.ROW);
@@ -443,16 +451,25 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			private static final long serialVersionUID = -3207714818504151649L;
 
 			public String generateDescription(Component source, Object itemId, Object propertyId) {
-				if(propertyId != null && propertyId == DESIGNATION_ID) {
+				if(propertyId != null && propertyId == ColumnLabels.DESIGNATION.getName()) {
 			    	Table theTable = (Table) source;
 			    	Item item = theTable.getItem(itemId);
-			    	return (String) item.getItemProperty(DESIGNATION_ID).getValue();
+			    	return (String) item.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue();
 			    }                                                                       
 			    return null;
 			}
 		});
 	}
 	
+	public TableWithSelectAllLayout getTableWithSelectAllLayout() {
+		return tableWithSelectAllLayout;
+	}
+
+	public void setTableWithSelectAllLayout(
+			TableWithSelectAllLayout tableWithSelectAllLayout) {
+		this.tableWithSelectAllLayout = tableWithSelectAllLayout;
+	}
+
 	private void initializeListInventoryTable(){
 		
         if(germplasmList!=null){
@@ -1363,7 +1380,11 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	
 	public void enableEditListHeaderOption() {
 		editHeaderButton.setVisible(true);
-	}	
+	}
+	
+	protected String getTermNameFromOntology(ColumnLabels columnLabels) {
+		return columnLabels.getTermNameFromOntology(ontologyDataManager);
+	}
 	
 	public CrossingManagerInventoryTable getListInventoryTable(){
 		return listInventoryTable;
@@ -1372,5 +1393,12 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	public InventoryTableDropHandler getInventoryTableDropHandler(){
 		return inventoryTableDropHandler;
 	}
-	
+
+	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	public void setOntologyDataManager(OntologyDataManager ontologyDataManager) {
+		this.ontologyDataManager = ontologyDataManager;
+	}
 }
