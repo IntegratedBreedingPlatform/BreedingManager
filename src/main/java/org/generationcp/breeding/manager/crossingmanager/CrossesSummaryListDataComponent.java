@@ -25,6 +25,7 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
@@ -82,6 +83,9 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 	private ContextMenuItem menuExportList;
 	
 	private ViewListHeaderWindow viewListHeaderWindow;
+	
+	@Autowired
+	private OntologyDataManager ontologyDataManager;
 	
 	private enum CrossListDataColumn {
 		FGID, FEMALE_PARENT, MGID, MALE_PARENT, METHOD
@@ -302,7 +306,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 		}
 	}
 	
-	private void initializeListEntriesTable(){
+	protected void initializeListEntriesTable(){
 		count = Long.valueOf(0);
 		try {
 			count = germplasmListManager.countGermplasmListDataByListId(this.list.getId());
@@ -310,7 +314,8 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 			LOG.error(e.getMessage(), e);
 		}
 		
-		listDataTable = new BreedingManagerTable(count.intValue(), 8);
+		setListDataTable(new BreedingManagerTable(count.intValue(), 8));
+		listDataTable = getListDataTable();
 		listDataTable.setColumnCollapsingAllowed(true);
 		listDataTable.setColumnReorderingAllowed(true);
 		listDataTable.setImmediate(true);
@@ -328,16 +333,16 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 		listDataTable.addContainerProperty(CrossListDataColumn.METHOD, String.class, null);
 		
 		listDataTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), messageSource.getMessage(Message.HASHTAG));
-		listDataTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(), messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER));
-		listDataTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(), messageSource.getMessage(Message.LISTDATA_PARENTAGE_HEADER));
-		listDataTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(), messageSource.getMessage(Message.LISTDATA_ENTRY_CODE_HEADER));
-		listDataTable.setColumnHeader(ColumnLabels.GID.getName(), messageSource.getMessage(Message.LISTDATA_GID_HEADER));
-		listDataTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(), messageSource.getMessage(Message.LISTDATA_SEEDSOURCE_HEADER));
+		listDataTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(), getTermNameFromOntology(ColumnLabels.DESIGNATION));
+		listDataTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(), getTermNameFromOntology(ColumnLabels.PARENTAGE));
+		listDataTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(),  getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
+		listDataTable.setColumnHeader(ColumnLabels.GID.getName(), getTermNameFromOntology(ColumnLabels.GID));
+		listDataTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(), getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
 		listDataTable.setColumnHeader(CrossListDataColumn.FEMALE_PARENT, messageSource.getMessage(Message.LABEL_FEMALE_PARENT));
 		listDataTable.setColumnHeader(CrossListDataColumn.FGID, messageSource.getMessage(Message.FGID));
 		listDataTable.setColumnHeader(CrossListDataColumn.MALE_PARENT, messageSource.getMessage(Message.LABEL_MALE_PARENT));
 		listDataTable.setColumnHeader(CrossListDataColumn.MGID, messageSource.getMessage(Message.MGID));
-		listDataTable.setColumnHeader(CrossListDataColumn.METHOD, messageSource.getMessage(Message.METHOD_LABEL));
+		listDataTable.setColumnHeader(CrossListDataColumn.METHOD, getTermNameFromOntology(ColumnLabels.BREEDING_METHOD_NAME));
 		
 		listDataTable.setVisibleColumns(new Object[] { 
         		ColumnLabels.ENTRY_ID.getName()
@@ -379,6 +384,30 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 	
 	public void focus(){
 		listDataTable.focus();
+	}
+	
+	protected String getTermNameFromOntology(ColumnLabels columnLabels) {
+		return columnLabels.getTermNameFromOntology(ontologyDataManager);
+	}
+
+	public Table getListDataTable() {
+		return listDataTable;
+	}
+
+	public void setListDataTable(Table listDataTable) {
+		this.listDataTable = listDataTable;
+	}
+
+	public void setOntologyDataManager(OntologyDataManager ontologyDataManager) {
+		this.ontologyDataManager = ontologyDataManager;
+	}
+
+	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	public void setGermplasmListManager(GermplasmListManager germplasmListManager) {
+		this.germplasmListManager = germplasmListManager;
 	}
 
 }
