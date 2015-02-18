@@ -2,16 +2,13 @@ package org.generationcp.breeding.manager.service;
 
 import java.util.List;
 
-import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.commons.util.ContextUtil;
-import org.generationcp.commons.util.UserUtil;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.Person;
@@ -21,6 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+
+import javax.annotation.Resource;
 
 /**
  * Created by IntelliJ IDEA.
@@ -33,9 +32,6 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(BreedingManagerServiceImpl.class);
 
-	@Autowired
-	private WorkbenchDataManager workbenchDataManager;
-
     @Autowired
     private GermplasmDataManager germplasmDataManager;
 
@@ -44,6 +40,9 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 
 	@Autowired
 	private UserDataManager userDataManager;
+
+	@Resource
+	private ContextUtil contextUtil;
 
 	@Override
 	public String getOwnerListName(Integer userId) throws MiddlewareQueryException {
@@ -81,7 +80,7 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 	@Override
 	public String getDefaultOwnerListName() throws MiddlewareQueryException{
 		try {
-			int currentUser = UserUtil.getCurrentUserLocalId(workbenchDataManager);
+			int currentUser = contextUtil.getCurrentUserLocalId();
 
 			return computeListName(userDataManager.getUserById(currentUser));
 		} catch (MiddlewareQueryException e) {
@@ -143,7 +142,7 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 
 	@Override
 	public Project getCurrentProject() throws MiddlewareQueryException {
-    	return ContextUtil.getProjectInContext(workbenchDataManager, BreedingManagerApplication.currentRequest());
+    	return contextUtil.getProjectInContext();
     }
     
 }

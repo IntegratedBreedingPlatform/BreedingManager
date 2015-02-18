@@ -14,7 +14,7 @@ import org.generationcp.breeding.manager.customcomponent.handler.GermplasmListSo
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
-import org.generationcp.commons.util.UserUtil;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -31,6 +31,8 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
+
+import javax.annotation.Resource;
 
 @Configurable
 public class GermplasmListTreeUtil implements Serializable {
@@ -56,6 +58,9 @@ public class GermplasmListTreeUtil implements Serializable {
 
     @Autowired
     private WorkbenchDataManager workbenchDataManager;
+
+	@Resource
+	private ContextUtil contextUtil;
     
     public GermplasmListTreeUtil(){
 		
@@ -156,7 +161,7 @@ public class GermplasmListTreeUtil implements Serializable {
 			folderTextField.validate();
 			String folderName = folderTextField.getValue().toString().trim();
 			
-			Integer ibdbUserId = UserUtil.getCurrentUserLocalId(workbenchDataManager);
+			Integer ibdbUserId = contextUtil.getCurrentUserLocalId();
 			
 			newFolder.setName(folderName);
 			newFolder.setDescription(folderName);
@@ -320,7 +325,7 @@ public class GermplasmListTreeUtil implements Serializable {
     
     private boolean isListOwnedByTheUser(GermplasmList gpList) {
 		try {
-			Integer ibdbUserId = UserUtil.getCurrentUserLocalId(workbenchDataManager);
+			Integer ibdbUserId = contextUtil.getCurrentUserLocalId();
 			if (!gpList.getUserId().equals(ibdbUserId)) {
 				return false;
 			}

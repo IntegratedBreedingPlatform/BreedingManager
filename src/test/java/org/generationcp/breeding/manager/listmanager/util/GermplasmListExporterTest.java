@@ -6,11 +6,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,6 +22,7 @@ import org.generationcp.commons.pojo.ExportColumnValue;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.service.ExportService;
 import org.generationcp.commons.service.impl.ExportServiceImpl;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -39,6 +36,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -63,7 +61,11 @@ public class GermplasmListExporterTest {
 	
     @Mock
     private UserDataManager userDataManager;
-    
+
+	@Mock
+	private ContextUtil contextUtil;
+
+	@InjectMocks
 	private GermplasmListExporter germplasmListExporter;
 	
 	private ExportService exportService;
@@ -102,9 +104,11 @@ public class GermplasmListExporterTest {
 		doReturn("CROSS").when(messageSource).getMessage(ListDataTablePropertyID.PARENTAGE.getColumnDisplay());
 		doReturn("ENTRY CODE").when(messageSource).getMessage(ListDataTablePropertyID.ENTRY_CODE.getColumnDisplay());
 		doReturn("GID").when(messageSource).getMessage(ListDataTablePropertyID.GID.getColumnDisplay());
-		doReturn("SOURCE").when(messageSource).getMessage(ListDataTablePropertyID.SEED_SOURCE.getColumnDisplay());
-		doReturn(USER_ID).when(germplasmListExporter).getCurrentLocaUserId();
-		
+		doReturn("SOURCE").when(messageSource).getMessage(
+				ListDataTablePropertyID.SEED_SOURCE.getColumnDisplay());
+
+		when(contextUtil.getCurrentUserLocalId()).thenReturn(USER_ID);
+
 		// set up test data for germplasm list
 		doReturn(getGermplasmList()).when(germplasmListManager).getGermplasmListById(LIST_ID);
 		doReturn(NO_OF_LIST_ENTRIES).when(germplasmListManager).countGermplasmListDataByListId(LIST_ID);
@@ -286,20 +290,17 @@ public class GermplasmListExporterTest {
 	}
 	
 	@Test
-	public void testExportGermplasmListXLS(){
-		try {
-			
-			germplasmListExporter.exportGermplasmListXLS(FILE_NAME, listDataTable);
-			//make sure that generateGermplasmListExcelFile is called and without errors
-			verify(exportService, times(1)).generateGermplasmListExcelFile(any(GermplasmListExportInputValues.class));
-			
-		} catch (GermplasmListExporterException e) {
-			fail(e.getMessage());
-		}
+	public void testExportGermplasmListXLS()
+			throws MiddlewareQueryException, GermplasmListExporterException {
+		germplasmListExporter.exportGermplasmListXLS(FILE_NAME, listDataTable);
+		//make sure that generateGermplasmListExcelFile is called and without errors
+		verify(exportService, times(1)).generateGermplasmListExcelFile(any(GermplasmListExportInputValues.class));
+
 	}
 	
 	@Test(expected = GermplasmListExporterException.class)
-	public void testExportGermplasmListXLSWithException() throws GermplasmListExporterException {
+	public void testExportGermplasmListXLSWithException()
+			throws GermplasmListExporterException, MiddlewareQueryException {
 			
 		doThrow(new GermplasmListExporterException()).when(exportService).generateGermplasmListExcelFile(any(GermplasmListExportInputValues.class));
 		germplasmListExporter.exportGermplasmListXLS(FILE_NAME, new Table());

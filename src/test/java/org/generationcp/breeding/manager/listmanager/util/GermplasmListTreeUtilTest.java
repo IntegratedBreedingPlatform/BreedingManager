@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.commons.util.UserUtil;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -15,12 +15,17 @@ import org.generationcp.middleware.pojos.workbench.WorkbenchRuntimeData;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Validator.InvalidValueException;
 
+@RunWith(MockitoJUnitRunner.class)
 public class GermplasmListTreeUtilTest {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmListTreeUtilTest.class);
@@ -31,11 +36,18 @@ public class GermplasmListTreeUtilTest {
 	private static final String ERROR_UNABLE_TO_DELETE_LIST_NON_OWNER = "You cannot delete a list that you do not own";
 	private static final String ERROR_HAS_CHILDREN = "Folder has child items";
 
-	private GermplasmListTreeUtil util;
+
 	private GermplasmListManager germplasmListManager;
 	private WorkbenchDataManager workbenchDataManager;
 
 	private SimpleResourceBundleMessageSource messageSource;
+
+	@Mock
+	private ContextUtil contextUtil;
+
+	@InjectMocks
+	private GermplasmListTreeUtil util = new GermplasmListTreeUtil();
+
 
 	private static final Integer IBDB_USER_ID = (int) (Math.random() * 100);
 	private static final Integer OTHER_IBDB_USER_ID = (int) (Math.random() * 100);
@@ -44,9 +56,8 @@ public class GermplasmListTreeUtilTest {
 	private GermplasmList germplasmList;
 
 	@Before
-	public void setUp() {
-		this.util = new GermplasmListTreeUtil();
-		this.setUpMessageSource();		
+	public void setUp() throws MiddlewareQueryException {
+		this.setUpMessageSource();
 		this.setUpIBDBUserId(GermplasmListTreeUtilTest.IBDB_USER_ID);
 	}
 
@@ -60,36 +71,25 @@ public class GermplasmListTreeUtilTest {
 		this.util.setMessageSource(messageSource);
 	}
 
-	private void setUpIBDBUserId(Integer userId) {
+	private void setUpIBDBUserId(Integer userId) throws MiddlewareQueryException {
 		WorkbenchRuntimeData runtimeDate = new WorkbenchRuntimeData();
-		runtimeDate.setUserId(new Integer(5));
+		runtimeDate.setUserId(5);
 
 		this.workbenchDataManager = Mockito.mock(WorkbenchDataManager.class);
 		this.util.setWorkbenchDataManager(this.workbenchDataManager);
 
 		Project dummyProject = new Project();
-		dummyProject.setProjectId(new Long(5));
+		dummyProject.setProjectId(5L);
 
-		try {
-			Mockito.when(this.workbenchDataManager.getWorkbenchRuntimeData()).thenReturn(
-					runtimeDate);
-			Mockito.when(this.workbenchDataManager.getLastOpenedProject(runtimeDate.getUserId()))
-					.thenReturn(dummyProject);
-			Mockito.when(
-					this.workbenchDataManager.getLocalIbdbUserId(runtimeDate.getUserId(),
-							dummyProject.getProjectId())).thenReturn(userId);
+		Mockito.when(this.workbenchDataManager.getWorkbenchRuntimeData()).thenReturn(
+				runtimeDate);
+		Mockito.when(this.workbenchDataManager.getLastOpenedProject(runtimeDate.getUserId()))
+				.thenReturn(dummyProject);
+		Mockito.when(
+				this.workbenchDataManager.getLocalIbdbUserId(runtimeDate.getUserId(),
+						dummyProject.getProjectId())).thenReturn(userId);
 
-		} catch (MiddlewareQueryException e) {
-			GermplasmListTreeUtilTest.LOG.error(e.getMessage(), e);
-			Assert.fail("Failed to create an ibdbuser instance.");
-		}
-
-		try {
-			Mockito.when(UserUtil.getCurrentUserLocalId(this.workbenchDataManager)).thenReturn(userId);
-		} catch (MiddlewareQueryException e) {
-			GermplasmListTreeUtilTest.LOG.error(e.getMessage(), e);
-			Assert.fail("Failed to create a ibdbuser data.");
-		}
+		Mockito.when(contextUtil.getCurrentUserLocalId()).thenReturn(userId);
 	}
 
 	private void setUpGermplasmListDataManager(Integer itemId, boolean isExistingList) {
@@ -187,7 +187,8 @@ public class GermplasmListTreeUtilTest {
 	}
 
 	@Test
-	public void testValidateItemToDeleteThrowsExceptionIfGermplasmListIsNotOwnedByTheCurrentUser() {
+	public void testValidateItemToDeleteThrowsExceptionIfGermplasmListIsNotOwnedByTheCurrentUser()
+			throws MiddlewareQueryException {
 		this.setUpGermplasmListDataManager(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID, true);
 		this.setUpIBDBUserId(GermplasmListTreeUtilTest.OTHER_IBDB_USER_ID);
 

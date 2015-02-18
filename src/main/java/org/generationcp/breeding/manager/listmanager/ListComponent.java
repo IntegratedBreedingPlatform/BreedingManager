@@ -46,8 +46,8 @@ import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.breeding.manager.listmanager.util.ListDataPropertiesRenderer;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.FileDownloadResource;
-import org.generationcp.commons.util.UserUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -106,6 +106,8 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
+
+import javax.annotation.Resource;
 
 @Configurable
 public class ListComponent extends VerticalLayout implements InitializingBean, 
@@ -239,7 +241,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 	
 	@Autowired
 	private InventoryDataManager inventoryDataManager;
-	
+
+	@Resource
+	private ContextUtil contextUtil;
+
 	private Integer localUserId = null;
 
     private FillWith fillWith;
@@ -435,14 +440,14 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 
 	@Override
 	public void initializeValues() {
-		
+
 	    try {
-            localUserId = UserUtil.getCurrentUserLocalId(workbenchDataManager);
+            localUserId = contextUtil.getCurrentUserLocalId();
         } catch (MiddlewareQueryException e) {
             LOG.error("Error with retrieving local user ID", e);
             LOG.error("\n" + e.getStackTrace());
         }
-	    
+
 	    loadEntriesToListDataTable();
 	}
 	
@@ -1360,20 +1365,16 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
             listManagerCopyToNewListDialog.setResizable(false);
             listManagerCopyToNewListDialog.addStyleName(Reindeer.WINDOW_LIGHT);
 
-            try {
-                listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(
-                        parentListDetailsComponent.getWindow(),
-                        listManagerCopyToNewListDialog,
-                        germplasmList.getName(),
-                        listDataTable,
-                        UserUtil.getCurrentUserLocalId(workbenchDataManager),
-                        source));
-                parentListDetailsComponent.getWindow().addWindow(listManagerCopyToNewListDialog);
-                listManagerCopyToNewListDialog.center();
-            } catch (MiddlewareQueryException e) {
-                LOG.error("Error copying list entries.", e);
-                LOG.error("\n" + e.getStackTrace());
-            }
+			listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(
+					parentListDetailsComponent.getWindow(),
+					listManagerCopyToNewListDialog,
+					germplasmList.getName(),
+					listDataTable,
+					localUserId,
+					source));
+			parentListDetailsComponent.getWindow().addWindow(listManagerCopyToNewListDialog);
+			listManagerCopyToNewListDialog.center();
+
         }
     }
     

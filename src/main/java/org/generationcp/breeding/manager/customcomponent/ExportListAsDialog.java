@@ -14,6 +14,7 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -213,7 +214,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
             source.getWindow().open(fileDownloadResource);
             
             //must figure out other way to clean-up file because deleting it here makes it unavailable for download
-        } catch (GermplasmListExporterException e) {
+        } catch (GermplasmListExporterException | MiddlewareQueryException e) {
             LOG.error(messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
             MessageNotifier.showError(this.getWindow()
                         , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)    

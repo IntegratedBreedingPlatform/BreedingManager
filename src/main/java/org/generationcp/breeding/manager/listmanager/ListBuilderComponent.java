@@ -45,8 +45,8 @@ import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.FileDownloadResource;
-import org.generationcp.commons.util.UserUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
@@ -60,8 +60,6 @@ import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
-import org.generationcp.middleware.pojos.User;
-import org.generationcp.middleware.pojos.workbench.ProjectActivity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -91,6 +89,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
+import javax.annotation.Resource;
 
 @Configurable
 public class ListBuilderComponent extends VerticalLayout implements InitializingBean, 
@@ -107,12 +106,15 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
     
     @Autowired
     private GermplasmListManager germplasmListManager;
-    
+
     @Autowired
     private WorkbenchDataManager workbenchDataManager;
     
 	@Autowired
 	private InventoryDataManager inventoryDataManager;
+
+	@Resource
+	private ContextUtil contextUtil;
     
     public static final String GERMPLASMS_TABLE_DATA = "Germplasms Table Data";
     static final Action ACTION_SELECT_ALL = new Action("Select All");
@@ -481,15 +483,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         		    try {
         		    	currentlySetGermplasmInfo = currentlySavedGermplasmList;
         		    	saveListButtonListener.doSaveAction(false);
-        		
-        		        User user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
-        		        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()),
-        		                workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()),
-        		                "Locked a germplasm list.",
-        		                "Locked list "+currentlySavedGermplasmList.getId()+" - "+currentlySavedGermplasmList.getName(),
-        		                user,
-        		                new Date());
-        		        workbenchDataManager.addProjectActivity(projAct);
+
+						contextUtil.logProgramActivity("Locked a germplasm list.","Locked list "+currentlySavedGermplasmList.getId()+" - "+currentlySavedGermplasmList.getName());
+
         		    } catch (MiddlewareQueryException e) {
         		        LOG.error("Error with unlocking list.", e);
         	            MessageNotifier.showError(getWindow(), "Database Error!", "Error with loocking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
@@ -510,15 +506,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
         		    try {
         		    	currentlySetGermplasmInfo = currentlySavedGermplasmList;
         		    	saveListButtonListener.doSaveAction(false);
-        		
-        		        User user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
-        		        ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()),
-        		                workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()),
-        		                "Unlocked a germplasm list.",
-        		                "Unlocked list "+currentlySavedGermplasmList.getId()+" - "+currentlySavedGermplasmList.getName(),
-        		                user,
-        		                new Date());
-        		        workbenchDataManager.addProjectActivity(projAct);
+
+						contextUtil.logProgramActivity("Unlocked a germplasm list.","Unlocked list "+currentlySavedGermplasmList.getId()+" - "+currentlySavedGermplasmList.getName());
+
         		    } catch (MiddlewareQueryException e) {
         		        LOG.error("Error with unlocking list.", e);
         	            MessageNotifier.showError(getWindow(), "Database Error!", "Error with unlocking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
@@ -1115,7 +1105,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
                         listManagerCopyToNewListDialog,
                         currentlySavedGermplasmList.getName(),
                         tableWithSelectAllLayout.getTable(),
-                        UserUtil.getCurrentUserLocalId(workbenchDataManager),
+                        contextUtil.getCurrentUserLocalId(),
                         source));
                     source.getWindow().addWindow(listManagerCopyToNewListDialog);
                     listManagerCopyToNewListDialog.center();
@@ -1644,7 +1634,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
             return true;
         }
         try {
-        	Integer userId = UserUtil.getCurrentUserLocalId(workbenchDataManager);
+        	Integer userId = contextUtil.getCurrentUserLocalId();
 			return currentlySavedGermplasmList.getUserId().equals(userId);
 		} catch (MiddlewareQueryException e) {
 			LOG.error(e.getMessage(),e);

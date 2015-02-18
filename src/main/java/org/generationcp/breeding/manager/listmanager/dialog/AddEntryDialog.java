@@ -20,7 +20,7 @@ import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItem
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListValueChangeListener;
 import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.breeding.manager.util.Util;
-import org.generationcp.commons.util.UserUtil;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -58,6 +58,8 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+import javax.annotation.Resource;
+
 @Configurable
 public class AddEntryDialog extends BaseSubWindow implements InitializingBean, 
 							InternationalizableComponent, BreedingManagerLayout, BreedingLocationFieldSource{
@@ -90,6 +92,9 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+
+	@Resource
+	private ContextUtil contextUtil;
     
     private Window parentWindow;
     private VerticalLayout topPart;
@@ -443,7 +448,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
 	        
             Integer currentUserLocalId = -1;
 			try {
-				currentUserLocalId = Integer.valueOf(UserUtil.getCurrentUserLocalId(workbenchDataManager));
+				currentUserLocalId = contextUtil.getCurrentUserLocalId();
 			} catch (MiddlewareQueryException e) {
 				LOG.error(e.getMessage(), e);
 			}
