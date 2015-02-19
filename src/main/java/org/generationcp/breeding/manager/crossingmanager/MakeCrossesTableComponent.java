@@ -33,12 +33,14 @@ import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.Name;
@@ -74,12 +76,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
         		SaveListAsDialogSource {
 
     public static final String PARENTS_DELIMITER = ",";
-    public static final String SOURCE = "Source Column" ;
-    public static final String NUMBER = "Number" ;
-    public static final String PARENTAGE = "Parentage Column" ;
-    public static final String FEMALE_PARENT_COLUMN = "Female Parent Column" ;
-    public static final String MALE_PARENT_COLUMN = "Male Parent Column" ;
-    
     private static final long serialVersionUID = 3702324761498666369L;
 	private static final Logger LOG = LoggerFactory.getLogger(MakeCrossesTableComponent.class);
      
@@ -88,6 +84,9 @@ public class MakeCrossesTableComponent extends VerticalLayout
     
     @Autowired
     private GermplasmListManager germplasmListManager;
+    
+    @Autowired
+	private OntologyDataManager ontologyDataManager;
      
     private Label lblReviewCrosses;
     private Table tableCrossesMade;
@@ -148,8 +147,9 @@ public class MakeCrossesTableComponent extends VerticalLayout
     	
         ListIterator<GermplasmListEntry> femaleListIterator = femaleParents.listIterator();
         ListIterator<GermplasmListEntry> maleListIterator = maleParents.listIterator();
-
-        tableCrossesMade.setVisibleColumns(new Object[]{NUMBER,PARENTAGE,FEMALE_PARENT_COLUMN,MALE_PARENT_COLUMN,SOURCE});
+        
+        setMakeCrossesTableVisibleColumn();
+        
         separator = makeCrossesMain.getSeparatorString();
 
         while (femaleListIterator.hasNext()){
@@ -178,7 +178,16 @@ public class MakeCrossesTableComponent extends VerticalLayout
         updateCrossesMadeUI();
     }
     
-    
+	private void setMakeCrossesTableVisibleColumn() {
+		tableCrossesMade.setVisibleColumns(new Object[]{
+				ColumnLabels.ENTRY_ID.getName(),
+				ColumnLabels.PARENTAGE.getName(),
+				ColumnLabels.FEMALE_PARENT.getName(),
+				ColumnLabels.MALE_PARENT.getName(),
+				ColumnLabels.SEED_SOURCE.getName()
+				});
+	}
+	
 	private void updateCrossesMadeUI() {
 		int crossesCount = tableCrossesMade.size();
 		generateTotalCrossesLabel(crossesCount);
@@ -193,11 +202,10 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		boolean isFemaleListSave = makeCrossesMain.getParentsComponent().isFemaleListSaved();
 		boolean isMaleListSave = makeCrossesMain.getParentsComponent().isMaleListSaved();
 		
-		if( isFemaleListSave && isMaleListSave && (tableCrossesMade.size() > 0) ){
+		if( isFemaleListSave && isMaleListSave && (!tableCrossesMade.getItemIds().isEmpty()) ){
 			saveButton.setEnabled(true);
 	        saveButton.setDescription("");
-		}
-		else{
+		} else {
 			saveButton.setEnabled(false);
 	        saveButton.setDescription(messageSource.getMessage(Message.SAVE_CROSS_LIST_DESCRIPTION));
 		}
@@ -221,7 +229,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
     	femaleParents.addAll(parents1);
     	maleParents.addAll(parents2);
     	
-    	tableCrossesMade.setVisibleColumns(new Object[]{NUMBER,PARENTAGE,FEMALE_PARENT_COLUMN,MALE_PARENT_COLUMN,SOURCE});
+    	setMakeCrossesTableVisibleColumn();
     	separator = makeCrossesMain.getSeparatorString();
 
     	for (GermplasmListEntry femaleParent : femaleParents){
@@ -255,7 +263,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
     	
     	int counter=1;
     	 for (Object itemId : tableCrossesMade.getItemIds()){
-			tableCrossesMade.getItem(itemId).getItemProperty(NUMBER).setValue(counter);
+			tableCrossesMade.getItem(itemId).getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(counter);
 			counter++;
     	 }
 	}
@@ -282,7 +290,8 @@ public class MakeCrossesTableComponent extends VerticalLayout
         } else {
             MessageNotifier.showWarning(this.getWindow(), "Warning!", messageSource.getMessage(Message.ERROR_CROSS_MUST_BE_SELECTED));
         }
-        if(tableCrossesMade.size()==0 && getParent() instanceof CrossingManagerMakeCrossesComponent) {
+        
+        if(tableCrossesMade.getItemIds().isEmpty() && getParent() instanceof CrossingManagerMakeCrossesComponent) {
             ((CrossingManagerMakeCrossesComponent) getParent()).disableNextButton();
         }
 
@@ -299,8 +308,8 @@ public class MakeCrossesTableComponent extends VerticalLayout
         
         int ctr = 1;
         for (Object itemId : tableCrossesMade.getItemIds()){
-            Property crossNameProp = tableCrossesMade.getItem(itemId).getItemProperty(PARENTAGE);
-            Property crossSourceProp=tableCrossesMade.getItem(itemId).getItemProperty(SOURCE);
+            Property crossNameProp = tableCrossesMade.getItem(itemId).getItemProperty(ColumnLabels.PARENTAGE.getName());
+            Property crossSourceProp=tableCrossesMade.getItem(itemId).getItemProperty(ColumnLabels.SEED_SOURCE.getName());
             String crossName = String.valueOf(crossNameProp.toString());
             String crossSource= String.valueOf(crossSourceProp.toString());
             
@@ -371,8 +380,9 @@ public class MakeCrossesTableComponent extends VerticalLayout
         initializeCrossesMadeTable();
 	}
 
-	private void initializeCrossesMadeTable() {
-		tableCrossesMade = new Table();
+	protected void initializeCrossesMadeTable() {
+		setTableCrossesMade(new Table());
+		tableCrossesMade = getTableCrossesMade();
         tableCrossesMade.setWidth("100%");
         tableCrossesMade.setHeight("407px");
         tableCrossesMade.setImmediate(true);
@@ -380,25 +390,25 @@ public class MakeCrossesTableComponent extends VerticalLayout
         tableCrossesMade.setMultiSelect(true);
         tableCrossesMade.setPageLength(0);
         
-        tableCrossesMade.addContainerProperty(NUMBER, Integer.class, null);
-        tableCrossesMade.addContainerProperty(PARENTAGE, String.class, null);
-        tableCrossesMade.addContainerProperty(FEMALE_PARENT_COLUMN, String.class, null);
-        tableCrossesMade.addContainerProperty(MALE_PARENT_COLUMN, String.class, null);
-        tableCrossesMade.addContainerProperty(SOURCE, String.class, null);
+        tableCrossesMade.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
+        tableCrossesMade.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
+        tableCrossesMade.addContainerProperty(ColumnLabels.FEMALE_PARENT.getName(), String.class, null);
+        tableCrossesMade.addContainerProperty(ColumnLabels.MALE_PARENT.getName(), String.class, null);
+        tableCrossesMade.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
         
-        tableCrossesMade.setColumnHeader(NUMBER, "#");
-        tableCrossesMade.setColumnHeader(PARENTAGE, messageSource.getMessage(Message.PARENTAGE));
-        tableCrossesMade.setColumnHeader(FEMALE_PARENT_COLUMN, messageSource.getMessage(Message.LABEL_FEMALE_PARENT));
-        tableCrossesMade.setColumnHeader(MALE_PARENT_COLUMN, messageSource.getMessage(Message.LABEL_MALE_PARENT));
-        tableCrossesMade.setColumnHeader(SOURCE, "SOURCE");
+        tableCrossesMade.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), "#");
+        tableCrossesMade.setColumnHeader(ColumnLabels.PARENTAGE.getName(), getTermNameFromOntology(ColumnLabels.PARENTAGE));
+        tableCrossesMade.setColumnHeader(ColumnLabels.FEMALE_PARENT.getName(), getTermNameFromOntology(ColumnLabels.FEMALE_PARENT));
+        tableCrossesMade.setColumnHeader(ColumnLabels.MALE_PARENT.getName(), getTermNameFromOntology(ColumnLabels.MALE_PARENT));
+        tableCrossesMade.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(), getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
         
-        tableCrossesMade.setColumnWidth(SOURCE, 200);
+        tableCrossesMade.setColumnWidth(ColumnLabels.SEED_SOURCE.getName(), 200);
         
         tableCrossesMade.setColumnCollapsingAllowed(true);
         
-        tableCrossesMade.setColumnCollapsed(FEMALE_PARENT_COLUMN, true);
-        tableCrossesMade.setColumnCollapsed(MALE_PARENT_COLUMN, true);
-        tableCrossesMade.setColumnCollapsed(SOURCE, true);
+        tableCrossesMade.setColumnCollapsed(ColumnLabels.FEMALE_PARENT.getName(), true);
+        tableCrossesMade.setColumnCollapsed(ColumnLabels.MALE_PARENT.getName(), true);
+        tableCrossesMade.setColumnCollapsed(ColumnLabels.SEED_SOURCE.getName(), true);
         
         tableCrossesMade.addActionHandler(new CrossingManagerActionHandler(this));
 	}
@@ -491,8 +501,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
     	saveListAsWindow = null;
     	if(crossList != null){
     		saveListAsWindow = new SaveCrossListAsDialog(this, crossList);
-    	}
-    	else{
+    	} else {
     		saveListAsWindow = new SaveCrossListAsDialog(this,null);
     	}
         
@@ -534,8 +543,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
             makeCrossesMain.toggleNextButton();
             
         } catch (MiddlewareQueryException e) {
-            LOG.error(e.getMessage() + " " + e.getStackTrace());
-            e.printStackTrace();
+            LOG.error(e.getMessage(),e);
             MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), 
                 messageSource.getMessage(Message.ERROR_IN_SAVING_CROSSES_DEFINED));
         }
@@ -554,7 +562,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
     	if (!tableCrossesMade.getItemIds().isEmpty()){
     		for (Object itemId : tableCrossesMade.getItemIds()){
     			CrossParents crossParents = (CrossParents) itemId;
-    			Property crossSourceProp=tableCrossesMade.getItem(itemId).getItemProperty(SOURCE);
+    			Property crossSourceProp=tableCrossesMade.getItem(itemId).getItemProperty(ColumnLabels.SEED_SOURCE.getName());
     			
     			GermplasmListEntry femaleParent = crossParents.getFemaleParent();
     			GermplasmListEntry maleParent = crossParents.getMaleParent();
@@ -585,7 +593,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
     			try {
     				saveAction.updateSeedSource((Collection<CrossParents>) tableCrossesMade.getItemIds());
     			} catch (MiddlewareQueryException e) {
-    				e.printStackTrace();
+    				LOG.error(e.getMessage(),e);
     				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), 
     						messageSource.getMessage(Message.ERROR_IN_SAVING_GERMPLASMLIST_DATA_CHANGES));
     			}
@@ -600,12 +608,12 @@ public class MakeCrossesTableComponent extends VerticalLayout
     	for (Object crossItem : tableCrossesMade.getItemIds()){
     		CrossParents parents = (CrossParents) crossItem;
     		
-    		Property parentageProperty = tableCrossesMade.getItem(crossItem).getItemProperty(PARENTAGE);
+    		Property parentageProperty = tableCrossesMade.getItem(crossItem).getItemProperty(ColumnLabels.PARENTAGE.getName());
     		String femaleName = parents.getFemaleParent().getDesignation();
     		String maleName = parents.getMaleParent().getDesignation();
     		parentageProperty.setValue(appendWithSeparator(femaleName, maleName));
     		
-    		Property seedSourceProperty = tableCrossesMade.getItem(crossItem).getItemProperty(SOURCE);
+    		Property seedSourceProperty = tableCrossesMade.getItem(crossItem).getItemProperty(ColumnLabels.SEED_SOURCE.getName());
     		String femaleSource = parents.getFemaleParent().getSeedSource();
     		String maleSource = parents.getMaleParent().getSeedSource();
     		String newSeedSource = appendWithSeparator(femaleSource,maleSource);
@@ -634,6 +642,22 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	@Override
 	public Component getParentComponent() {
 		return makeCrossesMain.getSource();
+	}
+	
+	public Table getTableCrossesMade() {
+		return tableCrossesMade;
+	}
+	
+	public void setTableCrossesMade(Table tableCrossesMade) {
+		this.tableCrossesMade = tableCrossesMade;
+	}
+	
+	protected String getTermNameFromOntology(ColumnLabels columnLabels) {
+		return columnLabels.getTermNameFromOntology(ontologyDataManager);
+	}
+	
+	public void setOntologyDataManager(OntologyDataManager ontologyDataManager) {
+		this.ontologyDataManager = ontologyDataManager;
 	}
 
 }
