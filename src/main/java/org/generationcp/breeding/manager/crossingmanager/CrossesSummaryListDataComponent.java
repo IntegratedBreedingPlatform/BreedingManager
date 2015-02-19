@@ -87,10 +87,6 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
 	
-	private enum CrossListDataColumn {
-		FGID, FEMALE_PARENT, MGID, MALE_PARENT, METHOD
-	}
-	
 	private GermplasmList list;
 
 	private List<GermplasmListData> listEntries;
@@ -326,11 +322,11 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 		listDataTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
 		listDataTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
 		listDataTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
-		listDataTable.addContainerProperty(CrossListDataColumn.FEMALE_PARENT, Button.class, null);
-		listDataTable.addContainerProperty(CrossListDataColumn.FGID, Button.class, null);
-		listDataTable.addContainerProperty(CrossListDataColumn.MALE_PARENT, Button.class, null);
-		listDataTable.addContainerProperty(CrossListDataColumn.MGID, Button.class, null);
-		listDataTable.addContainerProperty(CrossListDataColumn.METHOD, String.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.FEMALE_PARENT.getName(), Button.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.FGID.getName(), Button.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.MALE_PARENT.getName(), Button.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.MGID.getName(), Button.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, null);
 		
 		listDataTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), messageSource.getMessage(Message.HASHTAG));
 		listDataTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(), getTermNameFromOntology(ColumnLabels.DESIGNATION));
@@ -338,11 +334,11 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 		listDataTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(),  getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
 		listDataTable.setColumnHeader(ColumnLabels.GID.getName(), getTermNameFromOntology(ColumnLabels.GID));
 		listDataTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(), getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
-		listDataTable.setColumnHeader(CrossListDataColumn.FEMALE_PARENT, messageSource.getMessage(Message.LABEL_FEMALE_PARENT));
-		listDataTable.setColumnHeader(CrossListDataColumn.FGID, messageSource.getMessage(Message.FGID));
-		listDataTable.setColumnHeader(CrossListDataColumn.MALE_PARENT, messageSource.getMessage(Message.LABEL_MALE_PARENT));
-		listDataTable.setColumnHeader(CrossListDataColumn.MGID, messageSource.getMessage(Message.MGID));
-		listDataTable.setColumnHeader(CrossListDataColumn.METHOD, getTermNameFromOntology(ColumnLabels.BREEDING_METHOD_NAME));
+		listDataTable.setColumnHeader(ColumnLabels.FEMALE_PARENT.getName(), getTermNameFromOntology(ColumnLabels.FEMALE_PARENT));
+		listDataTable.setColumnHeader(ColumnLabels.FGID.getName(), getTermNameFromOntology(ColumnLabels.FGID));
+		listDataTable.setColumnHeader(ColumnLabels.MALE_PARENT.getName(), getTermNameFromOntology(ColumnLabels.MALE_PARENT));
+		listDataTable.setColumnHeader(ColumnLabels.MGID.getName(), getTermNameFromOntology(ColumnLabels.MGID));
+		listDataTable.setColumnHeader(ColumnLabels.BREEDING_METHOD_NAME.getName(), getTermNameFromOntology(ColumnLabels.BREEDING_METHOD_NAME));
 		
 		listDataTable.setVisibleColumns(new Object[] { 
         		ColumnLabels.ENTRY_ID.getName()
@@ -351,11 +347,11 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
         		,ColumnLabels.ENTRY_CODE.getName()
         		,ColumnLabels.GID.getName()
         		,ColumnLabels.SEED_SOURCE.getName()
-        		,CrossListDataColumn.FEMALE_PARENT
-        		,CrossListDataColumn.FGID
-        		,CrossListDataColumn.MALE_PARENT
-        		,CrossListDataColumn.MGID
-        		,CrossListDataColumn.METHOD
+        		,ColumnLabels.FEMALE_PARENT.getName()
+        		,ColumnLabels.FGID.getName()
+        		,ColumnLabels.MALE_PARENT.getName()
+        		,ColumnLabels.MGID.getName()
+        		,ColumnLabels.BREEDING_METHOD_NAME.getName()
     		}
 		);
 	}

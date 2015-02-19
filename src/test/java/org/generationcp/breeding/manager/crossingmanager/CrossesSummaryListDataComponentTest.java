@@ -32,10 +32,6 @@ public class CrossesSummaryListDataComponentTest {
 	
 	private GermplasmList germplasmList;
 	
-	private enum CrossListDataColumn {
-		FGID, FEMALE_PARENT, MGID, MALE_PARENT, METHOD
-	}
-	
 	@Before
 	public void setUp(){
 		MockitoAnnotations.initMocks(this);
@@ -59,10 +55,6 @@ public class CrossesSummaryListDataComponentTest {
 		BreedingManagerTable table = new BreedingManagerTable(10,8);
 		
 		when(messageSource.getMessage(Message.HASHTAG)).thenReturn(DUMMY_LABEL);
-		when(messageSource.getMessage(Message.LABEL_FEMALE_PARENT)).thenReturn(DUMMY_LABEL);
-		when(messageSource.getMessage(Message.FGID)).thenReturn(DUMMY_LABEL);
-		when(messageSource.getMessage(Message.LABEL_MALE_PARENT)).thenReturn(DUMMY_LABEL);
-		when(messageSource.getMessage(Message.MGID)).thenReturn(DUMMY_LABEL);
 		when(crossesSummaryListDataComponent.getListDataTable()).thenReturn(table);
 		when(germplasmListManager.countGermplasmListDataByListId(germplasmList.getId())).thenReturn(10L);
 		
@@ -73,17 +65,17 @@ public class CrossesSummaryListDataComponentTest {
 		assertEquals("ENTRY CODE", table.getColumnHeader(ColumnLabels.ENTRY_CODE.getName()));
 		assertEquals("GID", table.getColumnHeader(ColumnLabels.GID.getName()));
 		assertEquals("SEED SOURCE", table.getColumnHeader(ColumnLabels.SEED_SOURCE.getName()));
+		assertEquals("Female Parent", table.getColumnHeader(ColumnLabels.FEMALE_PARENT.getName()));
+		assertEquals("Male Parent", table.getColumnHeader(ColumnLabels.MALE_PARENT.getName()));
+		assertEquals("FGID", table.getColumnHeader(ColumnLabels.FGID.getName()));
+		assertEquals("MGID", table.getColumnHeader(ColumnLabels.MGID.getName()));
+		assertEquals("METHOD NAME", table.getColumnHeader(ColumnLabels.BREEDING_METHOD_NAME.getName()));
 	}
 	
 	@Test
 	public void testInitializeListEntriesTable_returnsTheValueFromOntologyManager() throws MiddlewareQueryException{
 		BreedingManagerTable table = new BreedingManagerTable(10,8);
 		
-		when(messageSource.getMessage(Message.HASHTAG)).thenReturn(DUMMY_LABEL);
-		when(messageSource.getMessage(Message.LABEL_FEMALE_PARENT)).thenReturn(DUMMY_LABEL);
-		when(messageSource.getMessage(Message.FGID)).thenReturn(DUMMY_LABEL);
-		when(messageSource.getMessage(Message.LABEL_MALE_PARENT)).thenReturn(DUMMY_LABEL);
-		when(messageSource.getMessage(Message.MGID)).thenReturn(DUMMY_LABEL);
 		when(crossesSummaryListDataComponent.getListDataTable()).thenReturn(table);
 		when(germplasmListManager.countGermplasmListDataByListId(germplasmList.getId())).thenReturn(10L);
 		
@@ -94,6 +86,10 @@ public class CrossesSummaryListDataComponentTest {
 		when(ontologyDataManager.getTermById(TermId.ENTRY_CODE.getId())).thenReturn(fromOntology);
 		when(ontologyDataManager.getTermById(TermId.GID.getId())).thenReturn(fromOntology);
 		when(ontologyDataManager.getTermById(TermId.SEED_SOURCE.getId())).thenReturn(fromOntology);
+		when(ontologyDataManager.getTermById(TermId.FEMALE_PARENT.getId())).thenReturn(fromOntology);
+		when(ontologyDataManager.getTermById(TermId.MALE_PARENT.getId())).thenReturn(fromOntology);
+		when(ontologyDataManager.getTermById(TermId.FGID.getId())).thenReturn(fromOntology);
+		when(ontologyDataManager.getTermById(TermId.MGID.getId())).thenReturn(fromOntology);
 		when(ontologyDataManager.getTermById(TermId.BREEDING_METHOD_NAME.getId())).thenReturn(fromOntology);
 		
 		crossesSummaryListDataComponent.initializeListEntriesTable();
@@ -103,5 +99,10 @@ public class CrossesSummaryListDataComponentTest {
 		assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.ENTRY_CODE.getName()));
 		assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.GID.getName()));
 		assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.SEED_SOURCE.getName()));
+		assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.FEMALE_PARENT.getName()));
+		assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.MALE_PARENT.getName()));
+		assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.FGID.getName()));
+		assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.MGID.getName()));
+		assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.BREEDING_METHOD_NAME.getName()));
 	}
 }
