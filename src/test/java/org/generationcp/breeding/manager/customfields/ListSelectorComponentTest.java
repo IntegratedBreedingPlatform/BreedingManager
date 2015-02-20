@@ -1,5 +1,7 @@
 package org.generationcp.breeding.manager.customfields;
 
+import static org.mockito.Mockito.doReturn;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,9 +21,10 @@ import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import static org.mockito.Mockito.*;
 
+import com.vaadin.data.Item;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
 
@@ -102,8 +105,38 @@ public class ListSelectorComponentTest {
         listManagerTreeComponent.addGermplasmListNode(parentGermplasmListId);        
         
         Assert.assertNotNull("Returns same child germplasm list for the germplasm list that was added in the list source", listManagerTreeComponent.getGermplasmListSource().getItem(childGermplasmListId));
+        
     }
     
+    @Test
+    public void testAddGermplasmListNodeWithEntries() throws MiddlewareQueryException{
+    	Integer parentGermplasmListId = new Integer(5);
+    	Integer childGermplasmListId = new Integer(50);
+        ListManagerTreeComponent listManagerTreeComponent = new ListManagerTreeComponent();
+        
+        UserDataManager userDataManager = Mockito.mock(UserDataManager.class);        
+        GermplasmList germplasmList = Mockito.mock(GermplasmList.class);
+        
+        Mockito.when(germplasmList.getType()).thenReturn(AppConstants.DB.LST);
+        Mockito.when(germplasmList.getId()).thenReturn(childGermplasmListId);
+        
+        List<GermplasmList> germplasmListChildren = new ArrayList<GermplasmList>();
+        germplasmListChildren.add(germplasmList);
+        Mockito.when(germplasmListManager.getGermplasmListByParentFolderIdBatched(parentGermplasmListId, ListSelectorComponent.BATCH_SIZE)).thenReturn(germplasmListChildren);
+        Long expectedNoOfEntries = 10L;
+		Mockito.when(germplasmListManager.countGermplasmListDataByListId(childGermplasmListId)).thenReturn(expectedNoOfEntries );
+        
+        listManagerTreeComponent.instantiateGermplasmListSourceComponent();
+        listManagerTreeComponent.setGermplasmListManager(germplasmListManager);
+        listManagerTreeComponent.setUserDataManager(userDataManager);
+        listManagerTreeComponent.addGermplasmListNode(parentGermplasmListId);    
+        Item item = listManagerTreeComponent.getGermplasmListSource().getItem(childGermplasmListId);
+        Long actualNoOfEntries = Long.parseLong(
+        		(String)item.getItemProperty(GermplasmListTreeTable.NUMBER_OF_ENTRIES_COL).getValue());
+        Assert.assertEquals("The number of entries should be the same", 
+        		expectedNoOfEntries,actualNoOfEntries);
+        
+    }
     @Test
     public void testRenameGermplasmListFolderIsSuccess() throws MiddlewareQueryException{
     	String newFolderName = "New Folder Name";
@@ -222,4 +255,32 @@ public class ListSelectorComponentTest {
     	Assert.assertFalse("Delete Item button must be disabled but didn't.",listManagerTreeComponent.getDeleteFolderBtn().isEnabled());
     }
     
+    @Test
+    public void testCreateGermplasmList_TestNoOfEntries() throws Exception {
+    	UserDataManager userDataManager = Mockito.mock(UserDataManager.class);
+    	ListManagerTreeComponent listManagerTreeComponent = new ListManagerTreeComponent();
+        listManagerTreeComponent.setGermplasmListManager(germplasmListManager);
+        listManagerTreeComponent.setUserDataManager(userDataManager);
+        
+        Integer childGermplasmListId = new Integer(50);
+        Integer userId = 1;
+        GermplasmList germplasmList = new GermplasmList();
+        germplasmList.setType(AppConstants.DB.LST);
+        germplasmList.setId(childGermplasmListId);
+        germplasmList.setUserId(userId);
+        List<GermplasmList> germplasmListChildren = new ArrayList<GermplasmList>();
+        germplasmListChildren.add(germplasmList);
+        
+        Mockito.when(germplasmListManager.getAllTopLevelListsBatched(ListSelectorComponent.BATCH_SIZE)).
+        	thenReturn(germplasmListChildren);
+        Long expectedNoOfEntries = 10L;
+		Mockito.when(germplasmListManager.countGermplasmListDataByListId(childGermplasmListId)).thenReturn(expectedNoOfEntries );
+        Mockito.when(userDataManager.getUserById(userId)).thenReturn(null);
+        listManagerTreeComponent.createGermplasmList();    
+        Item item = listManagerTreeComponent.getGermplasmListSource().getItem(childGermplasmListId);
+        Long actualNoOfEntries = Long.parseLong(
+        		(String)item.getItemProperty(GermplasmListTreeTable.NUMBER_OF_ENTRIES_COL).getValue());
+        Assert.assertEquals("The number of entries should be the same", 
+        		expectedNoOfEntries,actualNoOfEntries);
+    }
 }

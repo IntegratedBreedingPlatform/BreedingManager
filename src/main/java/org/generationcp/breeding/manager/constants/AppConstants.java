@@ -62,6 +62,7 @@ public final class AppConstants {
 	
 	public static class DB {
 		public static final String FOLDER = "FOLDER";
+		public static final String LST = "LST";
 	}
 
 }
