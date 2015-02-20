@@ -1,8 +1,13 @@
 package org.generationcp.breeding.manager.crossingmanager.settings;
 
-import java.util.HashMap;
-import java.util.List;
-
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.ui.*;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Window.CloseEvent;
+import com.vaadin.ui.Window.CloseListener;
+import com.vaadin.ui.themes.BaseTheme;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -10,6 +15,7 @@ import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetti
 import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.breeding.manager.util.Util;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -25,22 +31,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.PopupView;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.CloseEvent;
-import com.vaadin.ui.Window.CloseListener;
-import com.vaadin.ui.themes.BaseTheme;
+import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.List;
 
 @Configurable
 public class CrossingSettingsMethodComponent extends CssLayout implements
@@ -48,34 +41,38 @@ public class CrossingSettingsMethodComponent extends CssLayout implements
 		BreedingManagerLayout {
 
 	private static final long serialVersionUID = 8287596386088188565L;
-	private static final Logger LOG = LoggerFactory.getLogger(CrossingSettingsMethodComponent.class);
+	private static final Logger LOG = LoggerFactory
+			.getLogger(CrossingSettingsMethodComponent.class);
 
-    @Autowired
-    private SimpleResourceBundleMessageSource messageSource;
+	@Autowired
+	private SimpleResourceBundleMessageSource messageSource;
 
-    @Autowired
-    private GermplasmDataManager germplasmDataManager;
+	@Autowired
+	private GermplasmDataManager germplasmDataManager;
 
-    @Autowired
-    private WorkbenchDataManager workbenchDataManager;
+	@Autowired
+	private WorkbenchDataManager workbenchDataManager;
 
-    private Label breedingMethodLabel;
-    private Label breedingMethodDescLabel;
+	@Resource
+	private ContextUtil contextUtil;
 
-    private CheckBox selectMethod;
+	private Label breedingMethodLabel;
+	private Label breedingMethodDescLabel;
 
-    private ComboBox breedingMethods;
+	private CheckBox selectMethod;
 
-    private CheckBox favoriteMethodsCheckbox;
-    private Button manageFavoriteMethodsLink;
+	private ComboBox breedingMethods;
 
-    private PopupView methodPopupView;
-    private Label breedingMethodsHelpPopup;
+	private CheckBox favoriteMethodsCheckbox;
+	private Button manageFavoriteMethodsLink;
 
-    private HashMap<String, Integer> mapMethods;
-    private List<Method> methods;
-    
-    @Autowired
+	private PopupView methodPopupView;
+	private Label breedingMethodsHelpPopup;
+
+	private HashMap<String, Integer> mapMethods;
+	private List<Method> methods;
+
+	@Autowired
 	private BreedingManagerService breedingManagerService;
 	private String programUniqueId;
 
@@ -85,59 +82,63 @@ public class CrossingSettingsMethodComponent extends CssLayout implements
 		initializeValues();
 		addListeners();
 		layoutComponents();
-		initPopulateFavMethod(programUniqueId);		
+		initPopulateFavMethod(programUniqueId);
 	}
-	
-	public boolean initPopulateFavMethod(String programUUID){
+
+	public boolean initPopulateFavMethod(String programUUID) {
 		boolean hasFavorite = false;
-		if(BreedingManagerUtil.hasFavoriteMethods(germplasmDataManager,programUUID)){
+		if (BreedingManagerUtil.hasFavoriteMethods(germplasmDataManager, programUUID)) {
 			favoriteMethodsCheckbox.setValue(true);
-        	populateBreedingMethods(true,programUniqueId);
-        	hasFavorite = true;
-        }
+			populateBreedingMethods(true, programUniqueId);
+			hasFavorite = true;
+		}
 		return hasFavorite;
 	}
 
 	@Override
 	public void updateLabels() {
-		breedingMethodLabel.setValue(messageSource.getMessage(Message.BREEDING_METHOD).toUpperCase());
+		breedingMethodLabel
+				.setValue(messageSource.getMessage(Message.BREEDING_METHOD).toUpperCase());
 		breedingMethodDescLabel.setValue(messageSource.getMessage(Message.BREEDING_METHOD_DESC));
 	}
 
 	@Override
 	public void instantiateComponents() {
 
-		breedingMethodLabel = new Label(messageSource.getMessage(Message.BREEDING_METHOD).toUpperCase());
+		breedingMethodLabel = new Label(
+				messageSource.getMessage(Message.BREEDING_METHOD).toUpperCase());
 		breedingMethodLabel.setStyleName(Bootstrap.Typography.H2.styleName());
 
 		breedingMethodDescLabel = new Label(messageSource.getMessage(Message.BREEDING_METHOD_DESC));
 		breedingMethodDescLabel.addStyleName("gcp-content-help-text");
 
-		selectMethod = new CheckBox(messageSource.getMessage(Message.SELECT_A_METHOD_TO_USE_FOR_ALL_CROSSES) + ":");
+		selectMethod = new CheckBox(
+				messageSource.getMessage(Message.SELECT_A_METHOD_TO_USE_FOR_ALL_CROSSES) + ":");
 		selectMethod.setImmediate(true);
 
-        breedingMethods = new ComboBox();
-        breedingMethods.setImmediate(true);
-        breedingMethods.setNullSelectionAllowed(false);
+		breedingMethods = new ComboBox();
+		breedingMethods.setImmediate(true);
+		breedingMethods.setNullSelectionAllowed(false);
 
-        breedingMethodsHelpPopup = new Label();
-        breedingMethodsHelpPopup.setEnabled(false);
-        breedingMethodsHelpPopup.setWidth("500px");
+		breedingMethodsHelpPopup = new Label();
+		breedingMethodsHelpPopup.setEnabled(false);
+		breedingMethodsHelpPopup.setWidth("500px");
 
-        methodPopupView = new PopupView("?", breedingMethodsHelpPopup);
-        methodPopupView.addStyleName(AppConstants.CssStyles.POPUP_VIEW);
+		methodPopupView = new PopupView("?", breedingMethodsHelpPopup);
+		methodPopupView.addStyleName(AppConstants.CssStyles.POPUP_VIEW);
 
-        favoriteMethodsCheckbox = new CheckBox(messageSource.getMessage(Message.SHOW_ONLY_FAVORITE_METHODS));
-        favoriteMethodsCheckbox.setImmediate(true);
+		favoriteMethodsCheckbox = new CheckBox(
+				messageSource.getMessage(Message.SHOW_ONLY_FAVORITE_METHODS));
+		favoriteMethodsCheckbox.setImmediate(true);
 
-        manageFavoriteMethodsLink = new Button();
-        manageFavoriteMethodsLink.setStyleName(BaseTheme.BUTTON_LINK);
-        manageFavoriteMethodsLink.setCaption(messageSource.getMessage(Message.MANAGE_METHODS));
-        
-        try {
+		manageFavoriteMethodsLink = new Button();
+		manageFavoriteMethodsLink.setStyleName(BaseTheme.BUTTON_LINK);
+		manageFavoriteMethodsLink.setCaption(messageSource.getMessage(Message.MANAGE_METHODS));
+
+		try {
 			programUniqueId = breedingManagerService.getCurrentProject().getUniqueID();
 		} catch (MiddlewareQueryException e) {
-			LOG.error(e.getMessage(),e);
+			LOG.error(e.getMessage(), e);
 		}
 	}
 
@@ -148,8 +149,8 @@ public class CrossingSettingsMethodComponent extends CssLayout implements
 		showBreedingMethodSelection(false);
 
 		// Retrieve breeding methods
-        try {
-			methods = germplasmDataManager.getMethodsByType("GEN",programUniqueId);
+		try {
+			methods = germplasmDataManager.getMethodsByType("GEN", programUniqueId);
 		} catch (MiddlewareQueryException e) {
 			LOG.error(e.getMessage());
 		}
@@ -169,62 +170,68 @@ public class CrossingSettingsMethodComponent extends CssLayout implements
 				showBreedingMethodSelection(selectMethod);
 
 				if (selectMethod) {
-					populateBreedingMethods((Boolean)favoriteMethodsCheckbox.getValue(),programUniqueId);
+					populateBreedingMethods((Boolean) favoriteMethodsCheckbox.getValue(),
+							programUniqueId);
 					breedingMethods.focus();
 					enableMethodHelp(false);
 				} else {
 					breedingMethods.setValue(null);
 				}
-		    }
+			}
 		});
 
 		breedingMethods.addListener(new Property.ValueChangeListener() {
 			private static final long serialVersionUID = 6294894800193942274L;
 
 			@Override
-		    public void valueChange(ValueChangeEvent event) {
-    			if (breedingMethods.size() > 0) {
-            		showMethodDescription((Integer) event.getProperty().getValue());
-    			}
+			public void valueChange(ValueChangeEvent event) {
+				if (breedingMethods.size() > 0) {
+					showMethodDescription((Integer) event.getProperty().getValue());
+				}
 
-    			final Boolean methodSelected = breedingMethods.getValue() != null;
-    			enableMethodHelp(methodSelected);
-		    }
+				final Boolean methodSelected = breedingMethods.getValue() != null;
+				enableMethodHelp(methodSelected);
+			}
 		});
 
-		favoriteMethodsCheckbox.addListener(new Property.ValueChangeListener(){
+		favoriteMethodsCheckbox.addListener(new Property.ValueChangeListener() {
 			private static final long serialVersionUID = -4064520391948241747L;
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				populateBreedingMethods(((Boolean) event.getProperty().getValue()),programUniqueId);
+				populateBreedingMethods(((Boolean) event.getProperty().getValue()),
+						programUniqueId);
 			}
 
 		});
 
-		manageFavoriteMethodsLink.addListener(new ClickListener(){
+		manageFavoriteMethodsLink.addListener(new ClickListener() {
 			private static final long serialVersionUID = 1525347479193533974L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
 				try {
-					Integer wbUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
-	                Project project = workbenchDataManager.getLastOpenedProject(wbUserId);
-					Window manageFavoriteMethodsWindow = Util.launchMethodManager(workbenchDataManager, project.getProjectId(), getWindow(), messageSource.getMessage(Message.MANAGE_METHODS));
-					manageFavoriteMethodsWindow.addListener(new CloseListener(){
+					Project project = contextUtil.getProjectInContext();
+					Window manageFavoriteMethodsWindow = Util.launchMethodManager(
+							workbenchDataManager, project.getProjectId(), getWindow(),
+							messageSource.getMessage(Message.MANAGE_METHODS));
+					manageFavoriteMethodsWindow.addListener(new CloseListener() {
 						private static final long serialVersionUID = 1L;
+
 						@Override
 						public void windowClose(CloseEvent e) {
 							Object lastValue = breedingMethods.getValue();
-							populateBreedingMethods(((Boolean) favoriteMethodsCheckbox.getValue()).equals(true),programUniqueId);
+							populateBreedingMethods(
+									((Boolean) favoriteMethodsCheckbox.getValue()).equals(true),
+									programUniqueId);
 							breedingMethods.setValue(lastValue);
 						}
 					});
-				} catch (MiddlewareQueryException e){
-					LOG.error(e.getMessage(),e);
+				} catch (MiddlewareQueryException e) {
+					LOG.error(e.getMessage(), e);
 				}
 			}
-        });
+		});
 	}
 
 	@Override
@@ -257,14 +264,13 @@ public class CrossingSettingsMethodComponent extends CssLayout implements
 		} else {
 			selectMethod.setValue(true);
 			final Integer methodId = breedingMethodSetting.getMethodId();
-			
-			if(!isMethodGen(methodId)){
+
+			if (!isMethodGen(methodId)) {
 				favoriteMethodsCheckbox.setValue(true);
-				populateBreedingMethods(true,programUniqueId);
-			}
-			else{
+				populateBreedingMethods(true, programUniqueId);
+			} else {
 				favoriteMethodsCheckbox.setValue(false);
-				populateBreedingMethods(false,programUniqueId);
+				populateBreedingMethods(false, programUniqueId);
 			}
 			breedingMethods.select(methodId);
 			showMethodDescription(methodId);
@@ -272,8 +278,8 @@ public class CrossingSettingsMethodComponent extends CssLayout implements
 	}
 
 	private boolean isMethodGen(Integer methodId) {
-		for(Method method : methods){
-			if(method.getMid().equals(methodId)){
+		for (Method method : methods) {
+			if (method.getMid().equals(methodId)) {
 				return true;
 			}
 		}
@@ -304,76 +310,79 @@ public class CrossingSettingsMethodComponent extends CssLayout implements
 		return (Integer) breedingMethods.getValue();
 	}
 
-	private void showMethodDescription(Integer methodId){
-		if(methodId != null){
-			try {				
-			    final String methodDescription = germplasmDataManager.getMethodByID(methodId).getMdesc();
-			    breedingMethodsHelpPopup.setValue(methodDescription);
-			    breedingMethods.setDescription(methodDescription);
+	private void showMethodDescription(Integer methodId) {
+		if (methodId != null) {
+			try {
+				final String methodDescription = germplasmDataManager.getMethodByID(methodId)
+						.getMdesc();
+				breedingMethodsHelpPopup.setValue(methodDescription);
+				breedingMethods.setDescription(methodDescription);
 
 			} catch (MiddlewareQueryException e) {
-			    LOG.error(e.getMessage(),e);
+				LOG.error(e.getMessage(), e);
 			} catch (ClassCastException e) {
-				LOG.error(e.getMessage(),e);
+				LOG.error(e.getMessage(), e);
 			}
 		}
 	}
 
-	private void enableMethodHelp (final Boolean enable) {
-    	breedingMethodsHelpPopup.setEnabled(enable);
-    	methodPopupView.setEnabled(enable);
-    }
-
-	private void showBreedingMethodSelection (final Boolean show) {
-		breedingMethods.setVisible(show);
-    	favoriteMethodsCheckbox.setVisible(show);
-    	manageFavoriteMethodsLink.setVisible(show);
-    	breedingMethodsHelpPopup.setVisible(show);
-    	methodPopupView.setVisible(show);
+	private void enableMethodHelp(final Boolean enable) {
+		breedingMethodsHelpPopup.setEnabled(enable);
+		methodPopupView.setEnabled(enable);
 	}
 
-    private void populateBreedingMethods(boolean showOnlyFavorites, String programUUID) {
-        breedingMethods.removeAllItems();
+	private void showBreedingMethodSelection(final Boolean show) {
+		breedingMethods.setVisible(show);
+		favoriteMethodsCheckbox.setVisible(show);
+		manageFavoriteMethodsLink.setVisible(show);
+		breedingMethodsHelpPopup.setVisible(show);
+		methodPopupView.setVisible(show);
+	}
 
-        mapMethods = new HashMap<String, Integer>();
+	private void populateBreedingMethods(boolean showOnlyFavorites, String programUUID) {
+		breedingMethods.removeAllItems();
 
-        if(showOnlyFavorites){
-        	try {
-				BreedingManagerUtil.populateWithFavoriteMethods(workbenchDataManager, germplasmDataManager,
-						breedingMethods, mapMethods, programUUID);
+		mapMethods = new HashMap<String, Integer>();
+
+		if (showOnlyFavorites) {
+			try {
+				BreedingManagerUtil
+						.populateWithFavoriteMethods(workbenchDataManager, germplasmDataManager,
+								breedingMethods, mapMethods, programUUID);
 			} catch (MiddlewareQueryException e) {
 				e.printStackTrace();
 				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR),
-				"Error getting favorite methods!");
+						"Error getting favorite methods!");
 			}
 
-        } else {
-        	populateBreedingMethod(programUUID);
-        }
-    }
+		} else {
+			populateBreedingMethod(programUUID);
+		}
+	}
 
-    private void populateBreedingMethod(String programUUID){
-    	
-        try {
+	private void populateBreedingMethod(String programUUID) {
+
+		try {
 			methods = germplasmDataManager.getMethodsByType("GEN", programUUID);
 		} catch (MiddlewareQueryException e) {
 			LOG.error(e.getMessage());
 		}
-        
-    	breedingMethods.removeAllItems();
-        mapMethods = new HashMap<String, Integer>();
 
-        for (Method m : methods) {
-        	Integer methodId = m.getMid();
-        	breedingMethods.addItem(methodId);
-            breedingMethods.setItemCaption(methodId, m.getMname());
+		breedingMethods.removeAllItems();
+		mapMethods = new HashMap<String, Integer>();
+
+		for (Method m : methods) {
+			Integer methodId = m.getMid();
+			breedingMethods.addItem(methodId);
+			breedingMethods.setItemCaption(methodId, m.getMname());
 			mapMethods.put(m.getMname(), new Integer(methodId));
-        }
-    }
-    
-	public boolean validateInputFields(){
-		if(((Boolean) selectMethod.getValue()) && breedingMethods.getValue()==null) {
-			MessageNotifier.showRequiredFieldError(getWindow(), messageSource.getMessage(Message.PLEASE_CHOOSE_CROSSING_METHOD));
+		}
+	}
+
+	public boolean validateInputFields() {
+		if (((Boolean) selectMethod.getValue()) && breedingMethods.getValue() == null) {
+			MessageNotifier.showRequiredFieldError(getWindow(),
+					messageSource.getMessage(Message.PLEASE_CHOOSE_CROSSING_METHOD));
 			return false;
 		}
 		return true;
