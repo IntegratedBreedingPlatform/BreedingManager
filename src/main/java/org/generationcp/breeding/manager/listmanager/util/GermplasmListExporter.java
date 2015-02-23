@@ -13,6 +13,7 @@ import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportColumnValue;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
+import org.generationcp.commons.pojo.GermplasmParents;
 import org.generationcp.commons.service.ExportService;
 import org.generationcp.commons.service.impl.ExportServiceImpl;
 import org.generationcp.commons.util.UserUtil;
@@ -37,6 +38,8 @@ import com.vaadin.ui.Table;
 
 @Configurable
 public class GermplasmListExporter {
+
+	private static final String FEMALE_PARENT = "FEMALE PARENT";
 
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmListExporter.class);
 	
@@ -168,8 +171,55 @@ public class GermplasmListExporter {
         
         input.setColumnStandardVariableMap(getColumnStandardVariableMap(listDataTable));
         
+        input.setGermplasmParents(getGermplasmParentsMap(listDataTable, listId));
+        
         return exportService.generateGermplasmListExcelFile(input);
     }
+
+	@SuppressWarnings("unchecked")
+	private Map<Integer, GermplasmParents> getGermplasmParentsMap(
+			Table listDataTable, Integer listId) {
+		Map<Integer, GermplasmParents> germplasmParentsMap = new HashMap<Integer,GermplasmParents>();
+		
+		List<Integer> itemIds = new ArrayList<Integer>();
+		itemIds.addAll((Collection<? extends Integer>) listDataTable.getItemIds());
+		
+		if(hasParentsColumn(listDataTable)){
+			for(Integer itemId : itemIds){
+				Button femaleParentButton = (Button)listDataTable.getItem(itemId).getItemProperty(ColumnLabels.FEMALE_PARENT.getName()).getValue(); 
+				String femaleParentName = femaleParentButton.getCaption();
+				
+				Button maleParentButton = (Button)listDataTable.getItem(itemId).getItemProperty(ColumnLabels.MALE_PARENT.getName()).getValue();
+				String maleParentName = maleParentButton.getCaption();
+				
+				Button fgidButton = (Button)listDataTable.getItem(itemId).getItemProperty(ColumnLabels.FGID.getName()).getValue();
+				Integer fgid = Integer.valueOf(fgidButton.getCaption());
+				
+				Button mgidButton = (Button)listDataTable.getItem(itemId).getItemProperty(ColumnLabels.MGID.getName()).getValue();
+				Integer mgid = Integer.valueOf(mgidButton.getCaption());
+				
+				Button gidButton = (Button)listDataTable.getItem(itemId).getItemProperty(ColumnLabels.GID.getName()).getValue();
+				Integer gid = Integer.valueOf(gidButton.getCaption());
+				
+				germplasmParentsMap.put(gid, new GermplasmParents(gid, femaleParentName, maleParentName, fgid, mgid));
+			}
+		}
+		
+		return germplasmParentsMap;
+	}
+
+	protected boolean hasParentsColumn(Table listDataTable) {
+		String[] columnHeaders = listDataTable.getColumnHeaders();
+		
+		for(int i = 0; i < columnHeaders.length; i++){
+			// only checks if the existence of the female parent to determine if the export came from crossing manager
+			if(columnHeaders[i].equals(FEMALE_PARENT)){
+				return true;
+			}
+		}
+		
+		return false;
+	}
 
 	protected String getExporterName(Integer currentLocalIbdbUserId)
 			throws GermplasmListExporterException {
@@ -262,6 +312,7 @@ public class GermplasmListExporter {
 				columnHeaderMap.put(columnHeader, visibleColumnList.contains(columnHeader));
 			}
 		}
+		
 		return columnHeaderMap;
 	}
     
@@ -283,6 +334,7 @@ public class GermplasmListExporter {
     }
     
     private void addStandardVariable(Map<Integer, StandardVariable> columnStandardVariableMap, ColumnLabels columnLabel){
+    	
     	try {
 			StandardVariable standardVar = ontologyDataManager.getStandardVariable(columnLabel.getTermId().getId());
 			if (standardVar!=null){

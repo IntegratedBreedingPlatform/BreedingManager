@@ -415,6 +415,19 @@ public class GermplasmListExporterTest {
 		
 	}
 	
+	@Test
+	public void testHasParentsColumn_returnsFalseForTableWithoutFemaleParentColumnHeader(){
+		Table listDataTable = generateTestTable();
+		Assert.assertFalse("Expected to return false for table without Parents Column but didn't.",germplasmListExporter.hasParentsColumn(listDataTable));
+	}
+	
+	@Test
+	public void testHasParentsColumn_returnsTrueForTableWithFemaleParentColumnHeader(){
+		Table listDataTable = generateTestTable();
+		listDataTable.addContainerProperty(ColumnLabels.FEMALE_PARENT.getName(), Button.class, null);
+		Assert.assertFalse("Expected to return true for table with Parents Column but didn't.",germplasmListExporter.hasParentsColumn(listDataTable));
+	}
+	
 	private static Table generateTestTable(){
 		Table listDataTable = new Table();
 		

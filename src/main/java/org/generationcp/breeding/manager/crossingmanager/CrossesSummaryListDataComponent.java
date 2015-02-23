@@ -11,13 +11,13 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
-import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerExporter;
-import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerExporterException;
 import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
+import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -357,21 +357,20 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 	}
 	
 	private void exportCrossesMadeAction(){
-		CrossingManagerExporter exporter = new CrossingManagerExporter(list, listEntries, 
-				parentsInfo);
+		GermplasmListExporter exporter = new GermplasmListExporter(list.getId());
 		 String tempFileName = System.getProperty(AppConstants.USER_HOME) + "/temp.xls";
 		 
         try {
-            exporter.exportCrossingManagerExcel(tempFileName);
+        	exporter.exportGermplasmListXLS(tempFileName, listDataTable);
             FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
             fileDownloadResource.setFilename(list.getName().replace(" ", "_") + ".xls");
 
             this.getWindow().open(fileDownloadResource);
     
-        } catch (CrossingManagerExporterException e) {
-	        LOG.error(e.getMessage(), e);
+        } catch (GermplasmListExporterException e) {
+        	LOG.error(e.getMessage(), e);
             MessageNotifier.showError(getWindow(), "Error with exporting crossing file.", e.getMessage());
-        }
+		}
 	}
 	
 	public void openViewListHeaderWindow(){
