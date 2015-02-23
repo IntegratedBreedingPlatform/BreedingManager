@@ -67,12 +67,6 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
     private GermplasmDataManager germplasmDataManager;
     
     @Autowired
-    private WorkbenchDataManager workbenchDataManager;
-    
-    @Autowired
-    private LocationDataManager locationDataManager;
-    
-    @Autowired
     private GermplasmListManager germplasmListManager;
     
     private Window parentWindow;
@@ -81,7 +75,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
     
     private boolean hasInventoryAmounts = false;
     
-    private final Integer STORAGE_LOCATION_TYPEID = 1500;
+    private static final Integer STORAGE_LOCATION_TYPEID = 1500;
     
 
 	public GermplasmFieldsComponent(Window parentWindow) {
@@ -165,8 +159,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
         try {
 			populateNameTypes();
 		} catch (MiddlewareQueryException e) {
-			LOG.error("Error getting name types " + e.getMessage());
-			e.printStackTrace();
+			LOG.error(e.getMessage(),e);
 		}
 		
 	}
@@ -180,8 +173,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 	public void layoutComponents() {
 		if(hasInventoryAmounts){
 			setHeight("330px");
-		}
-		else{
+		} else {
 			setHeight("270px");
 		}
 		
@@ -202,8 +194,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 			addComponent(nameTypeLabel, "top:280px;left:0px");
 	        addComponent(nameTypeComboBox, "top:275px;left:" + getLeftIndentPixels() + "px");
 
-		}
-		else{
+		} else {
 			addComponent(germplasmDateLabel, "top:185px;left:0px");
 			addComponent(germplasmDateField, "top:180px;left:" + getLeftIndentPixels() + "px");
 			
@@ -247,7 +238,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
             	hasDefault = true;
             }
         }
-        if(hasDefault == false && firstId != null){
+        if(!hasDefault && firstId != null){
             nameTypeComboBox.setValue(firstId);
         }
 	}
@@ -259,7 +250,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
         getBreedingMethodComboBox().setValue(breedingMethod);
     }
 	
-	public void setGermplasmDate(Date germplasmDate) throws ReadOnlyException, ConversionException, ParseException{
+	public void setGermplasmDate(Date germplasmDate) throws ParseException{
         germplasmDateField.setValue(germplasmDate);
 	}
 	

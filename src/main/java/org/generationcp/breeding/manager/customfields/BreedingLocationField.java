@@ -42,13 +42,13 @@ public class BreedingLocationField extends AbsoluteLayout
 implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 4506866031376540836L;
-	private final static Logger LOG = LoggerFactory.getLogger(BreedingLocationField.class);
+	private static final Logger LOG = LoggerFactory.getLogger(BreedingLocationField.class);
 
 	private Label captionLabel;
 	private String caption;
 	private ComboBox breedingLocationComboBox;
 	private boolean isMandatory;
-	private String DEFAULT_LOCATION = "Unknown";
+	private static final String DEFAULT_LOCATION = "Unknown";
 	private boolean changed;
 	private int leftIndentPixels = 130;
 	
@@ -216,8 +216,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	public void layoutComponents() {
 		if(displayManageMethodLink || displayFavoriteMethodsFilter){
 			setHeight("250px");
-		}
-		else{
+		} else {
 			setHeight("190px");
 		}
 		
@@ -236,6 +235,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 
 	@Override
 	public void updateLabels() {
+		// do nothing
 	}
 
 	@Override
@@ -262,7 +262,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		return (String)breedingLocationComboBox.getValue();
 	}
 	
-	public void validate() throws InvalidValueException {
+	public void validate() {
 		breedingLocationComboBox.validate();
 	}
 	
@@ -288,7 +288,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 						germplasmDataManager, breedingLocationComboBox, null);
         		
 			} catch (MiddlewareQueryException e) {
-				e.printStackTrace();
+				LOG.error(e.getMessage(),e);
 				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR), 
 						"Error getting favorite locations!");
 			}
@@ -305,16 +305,13 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	private void populateLocations() {
 		
 		try {
-			
 			if(locationType > 0){
 				locations = locationDataManager.getLocationsByType(locationType);
-			}
-			else{
+			} else {
 				locations = locationDataManager.getAllLocations();
 			}
 		} catch (MiddlewareQueryException e) {
-			e.printStackTrace();
-			LOG.error("Error on getting all locations", e);
+			LOG.error(e.getMessage(),e);
 		}
 		
 		Integer firstId = null;
@@ -330,7 +327,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		       hasDefault = true;
 		   }
          }
-		if(hasDefault == false && firstId != null){
+		if(!hasDefault && firstId != null){
 		    breedingLocationComboBox.setValue(firstId);
 		}
 	}
