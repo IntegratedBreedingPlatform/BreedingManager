@@ -183,17 +183,20 @@ public class ListSelectorComponentTest {
     	Assert.assertFalse("Should not be able to move ROOT Public folder", result);
     }
     @Test
-    public void testMoveGermplasmListIfSourceIsAChildPublicNode(){
-    	GermplasmListTreeUtil treeUtil = new GermplasmListTreeUtil();
-
-    	Mockito.when(listSelectorComponent.getWindow()).thenReturn(new Window());
-    	
-    	treeUtil.setSource(listSelectorComponent);
-    	treeUtil.setMessageSource(messageSource);
-    	
+    public void testMoveGermplasmListIfSourceIsAChildPublicNode() throws MiddlewareQueryException{
     	String sourceItemId = "1";
     	String targetItemId = ListSelectorComponent.LOCAL;
+
+    	GermplasmListTreeUtil treeUtil = new GermplasmListTreeUtil();
+    	treeUtil.setGermplasmListManager(germplasmListManager);
+    	treeUtil.setSource(listSelectorComponent);
+    	treeUtil.setMessageSource(messageSource);
+
+    	Mockito.when(germplasmListManager.getGermplasmListByParentFolderId(1, 0, 1)).thenReturn(new ArrayList<GermplasmList>());
+    	Mockito.when(listSelectorComponent.getWindow()).thenReturn(new Window());
+    	
     	boolean result = treeUtil.setParent(sourceItemId,targetItemId);
+    	
     	Assert.assertFalse("Should not be able to move Child Public folder", result);
     }
     @Test

@@ -664,7 +664,13 @@ public abstract class ListSelectorComponent extends CssLayout implements
             if(doAddItem(listChild)){
                 String size = "";
                 if(!listChild.isFolder()) {
-                    size = listChild.getListData() != null ? Integer.toString(listChild.getListData().size()) : "0";
+                    try {
+    					long numberOfEntries = this.germplasmListManager.countGermplasmListDataByListId(listChild.getId());
+    					size = Long.toString(numberOfEntries);
+                    } catch (MiddlewareQueryException e) {
+    					LOG.error("Error in getting number of entries for list id "+listChild.getId(), e);
+    		            size = "0";
+    				}
                 }
                 getGermplasmListSource().addItem(generateCellInfo(listChild.getName(), BreedingManagerUtil.getOwnerListName(listChild.getUserId(), userDataManager),BreedingManagerUtil.getDescriptionForDisplay(listChild), BreedingManagerUtil.getTypeString(listChild.getType(), germplasmListManager), size), listChild.getId());
                 setNodeItemIcon(listChild.getId(), listChild.isFolder());
@@ -797,8 +803,19 @@ public abstract class ListSelectorComponent extends CssLayout implements
 
         for (GermplasmList localParentList : localGermplasmListParent) {
             if(doAddItem(localParentList)){
-                int size = localParentList.getListData() != null ? localParentList.getListData().size() : 0;
-                getGermplasmListSource().addItem(generateCellInfo(localParentList.getName(), BreedingManagerUtil.getOwnerListName(localParentList.getUserId(), userDataManager), BreedingManagerUtil.getDescriptionForDisplay(localParentList), BreedingManagerUtil.getTypeString(localParentList.getType(), germplasmListManager), localParentList.isFolder() ? "" : Integer.toString(size)), localParentList.getId());
+                long size;
+				try {
+					size = this.germplasmListManager.countGermplasmListDataByListId(localParentList.getId());
+				} catch (MiddlewareQueryException e) {
+					LOG.error(e.getMessage(), e);
+		            if (getWindow() != null){
+		                MessageNotifier.showWarning(getWindow(),
+		                        messageSource.getMessage(Message.ERROR_DATABASE),
+		                        messageSource.getMessage(Message.ERROR_IN_GETTING_TOP_LEVEL_FOLDERS));
+		            }
+		            return;
+				}
+                getGermplasmListSource().addItem(generateCellInfo(localParentList.getName(), BreedingManagerUtil.getOwnerListName(localParentList.getUserId(), userDataManager), BreedingManagerUtil.getDescriptionForDisplay(localParentList), BreedingManagerUtil.getTypeString(localParentList.getType(), germplasmListManager), localParentList.isFolder() ? "" : Long.toString(size)), localParentList.getId());
                 setNodeItemIcon(localParentList.getId(), localParentList.isFolder());
                 getGermplasmListSource().setItemCaption(localParentList.getId(), localParentList.getName());
                 getGermplasmListSource().setChildrenAllowed(localParentList.getId(), hasChildList(localParentList.getId()));
