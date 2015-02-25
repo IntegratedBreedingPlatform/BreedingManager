@@ -136,10 +136,8 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 		} else if(currentlySavedList != null){
 			
 			if(areThereChangesToList(currentlySavedList, listToSave) || forceHasChanges){
-				if(!currentlySavedList.getName().equals(listToSave.getName())){
-					if(!validateListName(listToSave)){
-						return;
-					}
+				if(!currentlySavedList.getName().equals(listToSave.getName()) && (!validateListName(listToSave))){
+					return;
 				}
 				
 				listToSave = ListCommonActionsUtil.overwriteList(
@@ -180,7 +178,6 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 			
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error with saving Workbench activity.", ex);
-			ex.printStackTrace();
 		}
 		
 		if(showMessages) {
@@ -203,52 +200,49 @@ public class SaveListButtonClickListener implements Button.ClickListener{
         } catch (MiddlewareQueryException e) {
             LOG.error("Error in saving added germplasm list columns: " + listToSave, e);
             MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
-            e.printStackTrace();
         }
 	}
 	
 	
 	private boolean validateListDetails(GermplasmList list, GermplasmList currentlySavedList){
-		
+		boolean isValid = true;
 		if(list.getName() == null || list.getName().length() == 0){
 			MessageNotifier.showRequiredFieldError(this.source.getWindow(), messageSource.getMessage(Message.NAME_CAN_NOT_BE_BLANK));
-			return false;
+			isValid = false;
 		} else if(list.getDescription() == null || list.getDescription().length() == 0){
 			MessageNotifier.showRequiredFieldError(this.source.getWindow(), messageSource.getMessage(Message.DESCRIPTION_CAN_NOT_BE_BLANK));
-			return false;
+			isValid = false;
 		} else if(list.getName().length() > 50){
 			MessageNotifier.showRequiredFieldError(this.source.getWindow(), messageSource.getMessage(Message.NAME_CAN_NOT_BE_LONG));
-			return false;
+			isValid = false;
 		} else if(list.getDescription().length() > 255){
 			MessageNotifier.showRequiredFieldError(this.source.getWindow(), messageSource.getMessage(Message.DESCRIPTION_CAN_NOT_BE_LONG));
-			return false;
+			isValid = false;
 		} else if(list.getDate() == null){
 			MessageNotifier.showRequiredFieldError(this.source.getWindow(), "Please select a date.");
-			return false;
+			isValid = false;
 		} else {
 			if(currentlySavedList == null){
 				return validateListName(list);
 			}
 		}
-		return true;
+		return isValid;
 	}
 	
 	private boolean validateListName(GermplasmList list){
 		try{
 			List<GermplasmList> centralLists = this.dataManager.getGermplasmListByName(list.getName(), 0, 5, Operation.EQUAL, Database.CENTRAL);
-			if(!centralLists.isEmpty()){
-				if(centralLists.size()==1 && centralLists.get(0).getId()!=list.getId()){
-					MessageNotifier.showRequiredFieldError(this.source.getWindow(), messageSource.getMessage(Message.EXISTING_LIST_IN_CENTRAL_ERROR_MESSAGE));
-					return false;
-				}
+			if(!centralLists.isEmpty() && centralLists.size()==1 
+					&& centralLists.get(0).getId()!=list.getId()){
+				MessageNotifier.showRequiredFieldError(this.source.getWindow(), messageSource.getMessage(Message.EXISTING_LIST_IN_CENTRAL_ERROR_MESSAGE));
+				return false;
 			}
 			
 			List<GermplasmList> localLists = this.dataManager.getGermplasmListByName(list.getName(), 0, 5, Operation.EQUAL, Database.LOCAL);
-			if(!localLists.isEmpty()){
-				if(localLists.size()==1 && localLists.get(0).getId()!=list.getId()){
-					MessageNotifier.showRequiredFieldError(this.source.getWindow(), messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));
-					return false;
-				}
+			if(!localLists.isEmpty() && localLists.size()==1 
+					&& localLists.get(0).getId()!=list.getId()){
+				MessageNotifier.showRequiredFieldError(this.source.getWindow(), messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));
+				return false;
 			}
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error with getting germplasm list by list name - " + list.getName(), ex);
@@ -310,7 +304,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 				//Inventory Related Columns
 	
 				//#1 Available Inventory
-				String avail_inv = "-"; //default value
+				String avail_inv = "-";
 				if(entry.getInventoryInfo().getActualInventoryLotCount() != null && entry.getInventoryInfo().getActualInventoryLotCount() != 0){
 					avail_inv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
 				}
@@ -328,7 +322,7 @@ public class SaveListButtonClickListener implements Button.ClickListener{
 				}
 	
 				//#2 Seed Reserved
-				String seed_res = "-"; //default value
+				String seed_res = "-";
 				if(entry.getInventoryInfo().getReservedLotCount() != null && entry.getInventoryInfo().getReservedLotCount() != 0){
 					seed_res = entry.getInventoryInfo().getReservedLotCount().toString().trim();
 				}
