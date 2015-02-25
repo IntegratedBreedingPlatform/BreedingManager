@@ -48,12 +48,15 @@
         </property>
     </bean>
     
-    <bean id="workbenchDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="${workbench.driver}"/>
-        <property name="url" value="${workbench.url}"/>
-        <property name="username" value="${workbench.username}"/>
-        <property name="password" value="${workbench.password}"/>
-    </bean>
+    <bean id="workbenchDataSource" class = "com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" value="${workbench.driver}" />
+        <property name="jdbcUrl" value="${workbench.url}" />
+        <property name="user" value="${workbench.username}" />
+        <property name="password" value="${workbench.password}" /> 
+
+        <!-- C3P0 properties -->
+        <property name="maxPoolSize" value="30" />
+ 	</bean>
     
     <bean id="workbenchSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
         <property name="dataSource" ref="workbenchDataSource"/>
