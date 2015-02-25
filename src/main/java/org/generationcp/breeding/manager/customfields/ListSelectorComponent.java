@@ -664,13 +664,7 @@ public abstract class ListSelectorComponent extends CssLayout implements
             if(doAddItem(listChild)){
                 String size = "";
                 if(!listChild.isFolder()) {
-                    try {
-    					long numberOfEntries = this.germplasmListManager.countGermplasmListDataByListId(listChild.getId());
-    					size = Long.toString(numberOfEntries);
-                    } catch (MiddlewareQueryException e) {
-    					LOG.error("Error in getting number of entries for list id "+listChild.getId(), e);
-    		            size = "0";
-    				}
+                    size = countGermplasmListDataByListId(listChild.getId());
                 }
                 getGermplasmListSource().addItem(generateCellInfo(listChild.getName(), BreedingManagerUtil.getOwnerListName(listChild.getUserId(), userDataManager),BreedingManagerUtil.getDescriptionForDisplay(listChild), BreedingManagerUtil.getTypeString(listChild.getType(), germplasmListManager), size), listChild.getId());
                 setNodeItemIcon(listChild.getId(), listChild.isFolder());
@@ -683,7 +677,17 @@ public abstract class ListSelectorComponent extends CssLayout implements
         selectListSourceDetails(parentGermplasmListId, false);
     }    
 
-    private void selectListSourceDetails(Object itemId, boolean nullSelectAllowed){
+    private String countGermplasmListDataByListId(Integer id) {
+    	String size = "0";
+    	try {
+			long numberOfEntries = this.germplasmListManager.countGermplasmListDataByListId(id);
+			size = Long.toString(numberOfEntries);
+        } catch (MiddlewareQueryException e) {
+			LOG.error("Error in getting number of entries for list id "+id, e);
+		}
+    	return size;
+	}
+	private void selectListSourceDetails(Object itemId, boolean nullSelectAllowed){
         getGermplasmListSource().setNullSelectionAllowed(nullSelectAllowed);
         getGermplasmListSource().select(itemId);
         getGermplasmListSource().setValue(itemId);
@@ -803,19 +807,8 @@ public abstract class ListSelectorComponent extends CssLayout implements
 
         for (GermplasmList localParentList : localGermplasmListParent) {
             if(doAddItem(localParentList)){
-                long size;
-				try {
-					size = this.germplasmListManager.countGermplasmListDataByListId(localParentList.getId());
-				} catch (MiddlewareQueryException e) {
-					LOG.error(e.getMessage(), e);
-		            if (getWindow() != null){
-		                MessageNotifier.showWarning(getWindow(),
-		                        messageSource.getMessage(Message.ERROR_DATABASE),
-		                        messageSource.getMessage(Message.ERROR_IN_GETTING_TOP_LEVEL_FOLDERS));
-		            }
-		            return;
-				}
-                getGermplasmListSource().addItem(generateCellInfo(localParentList.getName(), BreedingManagerUtil.getOwnerListName(localParentList.getUserId(), userDataManager), BreedingManagerUtil.getDescriptionForDisplay(localParentList), BreedingManagerUtil.getTypeString(localParentList.getType(), germplasmListManager), localParentList.isFolder() ? "" : Long.toString(size)), localParentList.getId());
+                String size = countGermplasmListDataByListId(localParentList.getId());
+                getGermplasmListSource().addItem(generateCellInfo(localParentList.getName(), BreedingManagerUtil.getOwnerListName(localParentList.getUserId(), userDataManager), BreedingManagerUtil.getDescriptionForDisplay(localParentList), BreedingManagerUtil.getTypeString(localParentList.getType(), germplasmListManager), localParentList.isFolder() ? "" : size), localParentList.getId());
                 setNodeItemIcon(localParentList.getId(), localParentList.isFolder());
                 getGermplasmListSource().setItemCaption(localParentList.getId(), localParentList.getName());
                 getGermplasmListSource().setChildrenAllowed(localParentList.getId(), hasChildList(localParentList.getId()));

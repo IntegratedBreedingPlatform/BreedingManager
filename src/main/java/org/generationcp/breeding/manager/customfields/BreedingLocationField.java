@@ -321,7 +321,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		       firstId = location.getLocid();
 		   }
 		   breedingLocationComboBox.addItem(location.getLocid());
-		   breedingLocationComboBox.setItemCaption(location.getLocid(), location.getLname());
+		   breedingLocationComboBox.setItemCaption(location.getLocid(), BreedingManagerUtil.getLocationNameDisplay(location));
 		   if(DEFAULT_LOCATION.equalsIgnoreCase(location.getLname())){
 		       breedingLocationComboBox.setValue(location.getLocid());
 		       hasDefault = true;
