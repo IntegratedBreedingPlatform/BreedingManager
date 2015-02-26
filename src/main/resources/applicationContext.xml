@@ -55,7 +55,9 @@
         <property name="password" value="${workbench.password}" /> 
 
         <!-- C3P0 properties -->
-        <property name="maxPoolSize" value="30" />
+        <property name="maxPoolSize" value="300" />
+        <property name="debugUnreturnedConnectionStackTraces" value="true" />
+        <property name="unreturnedConnectionTimeout" value="240" />
  	</bean>
     
     <bean id="workbenchSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
