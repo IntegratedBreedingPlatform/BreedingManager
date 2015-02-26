@@ -1582,6 +1582,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		
 		setHasUnsavedChanges(false);
 		
+		refreshTreeOnSave();
+        
 		return true;
     }
 
@@ -1795,7 +1797,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 	}
 	
 	protected void refreshTreeOnSave(){
-		((BreedingManagerApplication) getApplication()).getListManagerMain().getListSelectionComponent().getListTreeComponent().refreshComponent();
+		((BreedingManagerApplication) getApplication()).refreshListManagerTree();
 	}
 	
 	public void openViewListHeaderWindow(){
@@ -1832,7 +1834,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		}
 	}
 	
-	private void updateNoOfEntries(){
+	protected void updateNoOfEntries(){
 		int count = 0;
 		if(source.getModeView().equals(ModeView.LIST_VIEW)){
 			count = listDataTable.getItemIds().size();
@@ -2236,6 +2238,18 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 
 	public void setListEntries(List<GermplasmListData> listEntries) {
 		this.listEntries = listEntries;	
+	}
+
+	public Table getListDataTable() {
+		return listDataTable;
+	}
+
+	public void setListDataTable(Table listDataTable) {
+		this.listDataTable = listDataTable;
+	}
+
+	public void setAddColumnContextMenu(AddColumnContextMenu addColumnContextMenu) {
+		this.addColumnContextMenu = addColumnContextMenu;
 	}
 	
 }

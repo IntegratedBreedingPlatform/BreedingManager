@@ -6,10 +6,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +14,7 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.domain.gms.ListDataInfo;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
@@ -30,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
 
 public class ListComponentTest {
@@ -58,6 +57,12 @@ public class ListComponentTest {
 	
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
+	
+	@Mock
+	private Window window;
+	
+	@Mock
+	private AddColumnContextMenu addColumnContextMenu;
 	
 	private ListComponent listComponent;
 	
@@ -244,6 +249,18 @@ public class ListComponentTest {
 		Assert.assertEquals("Expecting the that the germplasmList status was changed to locked(101) but returned (" + germplasmList.getStatus() + ")", Integer.valueOf(101), germplasmList.getStatus());
 	}
 	
-	
+	@Test
+	public void testSaveChangesAction_verifyIfTheListTreeIsRefreshedAfterSavingList(){
+		Table listDataTable = new Table();
+		listComponent.setAddColumnContextMenu(addColumnContextMenu);
+		when(addColumnContextMenu.getListDataCollectionFromTable(listDataTable)).thenReturn(new ArrayList<ListDataInfo>());
+		doNothing().when(listComponent).setHasUnsavedChanges(true);
+		doNothing().when(listComponent).setHasUnsavedChanges(false);
+		doNothing().when(listComponent).updateNoOfEntries();
+		listComponent.setListDataTable(listDataTable);
+		
+		listComponent.saveChangesAction(window, false);
+		verify(listComponent,times(1)).refreshTreeOnSave();
+	}
 
 }
