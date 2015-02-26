@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -201,7 +200,7 @@ public class BreedingManagerUtil{
 			if((locationType > 0) && (favoriteLocation.getLtype().equals(locationType)) || (locationType.equals(Integer.valueOf(0)))){
 				Integer locId = favoriteLocation.getLocid();
 				locationComboBox.addItem(locId);
-				locationComboBox.setItemCaption(locId, favoriteLocation.getLname());
+				locationComboBox.setItemCaption(locId, BreedingManagerUtil.getLocationNameDisplay(favoriteLocation));
 				if (mapLocation != null){
 					mapLocation.put(favoriteLocation.getLname(), new Integer(locId));
 				}
@@ -209,6 +208,13 @@ public class BreedingManagerUtil{
 		}
     }
     
+    public static String getLocationNameDisplay(Location loc){
+    	String locNameDisplay = loc.getLname();
+    	if(loc.getLabbr() != null && !"".equalsIgnoreCase(loc.getLabbr()) && !"-".equalsIgnoreCase(loc.getLabbr())){
+    		locNameDisplay += " - (" + loc.getLabbr() + ")";    		
+    	}
+    	return locNameDisplay;
+    }
     
     /**
      * Queries for program's favorite locations and sets the values to combobox and map
@@ -258,7 +264,7 @@ public class BreedingManagerUtil{
 					|| favoriteLocation.getLtype().equals(Integer.valueOf(412)))){
 				Integer locId = favoriteLocation.getLocid();
 				locationComboBox.addItem(locId);
-				locationComboBox.setItemCaption(locId, favoriteLocation.getLname());
+				locationComboBox.setItemCaption(locId, BreedingManagerUtil.getLocationNameDisplay(favoriteLocation));
 				if (mapLocation != null){
 					mapLocation.put(favoriteLocation.getLname(), new Integer(locId));
 				}

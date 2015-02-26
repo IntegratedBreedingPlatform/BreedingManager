@@ -226,8 +226,8 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 					messageSource.getMessage(Message.DESCRIPTION_CAN_NOT_BE_LONG));
 			isValid = false;
 		} else if (list.getDate() == null) {
-			MessageNotifier
-					.showRequiredFieldError(this.source.getWindow(), "Please select a date.");
+			MessageNotifier.showRequiredFieldError(this.source.getWindow(), 
+					"Please select a date.");
 			isValid = false;
 		} else {
 			if (currentlySavedList == null) {

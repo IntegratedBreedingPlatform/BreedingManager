@@ -104,7 +104,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 	private Button viewHeaderButton;
 	private Label totalListEntriesLabel;
 	private Label totalSelectedListEntriesLabel;
-	private Button toolsButton;
+	private Button actionsButton;
 	private Table listDataTable;
 	private TableWithSelectAllLayout listDataTableWithSelectAll;
 
@@ -247,14 +247,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		viewHeaderButton = new Button(messageSource.getMessage(Message.VIEW_HEADER));
 		viewHeaderButton.addStyleName(Reindeer.BUTTON_LINK);
 		viewHeaderButton.setDescription(viewListHeaderWindow.getListHeaderComponent().toString());
-
-		editHeaderButton = new IconButton(
-				"<span class='glyphicon glyphicon-pencil' style='left: 2px; top:10px; color: #7c7c7c;font-size: 16px; font-weight: bold;'></span>",
-				"Edit List Header");
-
-		toolsButton = new ActionButton();
-		toolsButton.setData(TOOLS_BUTTON_ID);
-
+		
+		editHeaderButton = new IconButton("<span class='glyphicon glyphicon-pencil' style='left: 2px; top:10px; color: #7c7c7c;font-size: 16px; font-weight: bold;'></span>","Edit List Header");
+		
+		actionsButton = new ActionButton();
+		actionsButton.setData(TOOLS_BUTTON_ID);
+			
 		inventoryViewToolsButton = new ActionButton();
 		inventoryViewToolsButton.setData(TOOLS_BUTTON_ID);
 
@@ -605,7 +603,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		makeTableEditable();
 
 		addListenerToActionButton();
-
+		
 		inventoryViewToolsButton.addListener(new ClickListener() {
 			private static final long serialVersionUID = 272707576878821700L;
 
@@ -685,7 +683,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 	}
 
 	protected void addListenerToActionButton() {
-		toolsButton.addListener(new ClickListener() {
+		actionsButton.addListener(new ClickListener() {
 			private static final long serialVersionUID = 272707576878821700L;
 
 			@Override
@@ -720,7 +718,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 					menuAddEntry.setVisible(false);
 					addColumnContextMenu.showHideAddColumnMenu(false);
 				}
-
 			}
 		});
 	}
@@ -881,10 +878,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		headerLayout.setExpandRatio(headingLayout, 1.0f);
 
 		toolsMenuContainer = new HorizontalLayout();
-		toolsMenuContainer.setWidth("90px");
-		toolsMenuContainer.setHeight("27px");
-		toolsMenuContainer.addComponent(toolsButton);
-
+        toolsMenuContainer.setWidth("90px");
+        toolsMenuContainer.setHeight("27px");
+        toolsMenuContainer.addComponent(actionsButton);
+        
 		HorizontalLayout leftSubHeaderLayout = new HorizontalLayout();
 		leftSubHeaderLayout.setSpacing(true);
 		leftSubHeaderLayout.addComponent(totalListEntriesLabel);
@@ -1716,10 +1713,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		updateNoOfEntries();
 
 		setHasUnsavedChanges(false);
-
+		
 		return true;
-		// end of saveChangesAction
-	}
+    }
 
 	//TODO review this method as there are redundant codes here that is also in saveChangesAction()
 	//might be possible to eliminate this method altogether and reduce the number of middleware calls
@@ -2029,25 +2025,25 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		if (listInventoryTable.isVisible()) {
 			listDataTableWithSelectAll.setVisible(true);
 			listInventoryTable.setVisible(false);
-			toolsMenuContainer.addComponent(toolsButton);
-			toolsMenuContainer.removeComponent(inventoryViewToolsButton);
-
-			topLabel.setValue(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
-			updateNoOfEntries();
-			updateNoOfSelectedEntries();
-			setHasUnsavedChanges(false);
+	        toolsMenuContainer.addComponent(actionsButton);
+	        toolsMenuContainer.removeComponent(inventoryViewToolsButton);
+	        
+	        topLabel.setValue(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
+	        updateNoOfEntries();
+	        updateNoOfSelectedEntries();
+	        setHasUnsavedChanges(false);
 		}
 	}
-
-	public void changeToInventoryView() {
-		if (listDataTableWithSelectAll.isVisible()) {
+	
+	public void changeToInventoryView(){
+		if(listDataTableWithSelectAll.isVisible()){
 			listDataTableWithSelectAll.setVisible(false);
 			listInventoryTable.setVisible(true);
-			toolsMenuContainer.removeComponent(toolsButton);
-			toolsMenuContainer.addComponent(inventoryViewToolsButton);
-
-			topLabel.setValue(messageSource.getMessage(Message.LOTS));
-			updateNoOfEntries();
+			toolsMenuContainer.removeComponent(actionsButton);
+	        toolsMenuContainer.addComponent(inventoryViewToolsButton);
+	        
+	        topLabel.setValue(messageSource.getMessage(Message.LOTS));
+	        updateNoOfEntries();
 			updateNoOfSelectedEntries();
 			setHasUnsavedChanges(false);
 		}

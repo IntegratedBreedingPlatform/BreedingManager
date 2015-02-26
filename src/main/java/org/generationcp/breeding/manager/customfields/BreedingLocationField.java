@@ -331,19 +331,19 @@ public class BreedingLocationField extends AbsoluteLayout
 
 		Integer firstId = null;
 		boolean hasDefault = false;
-		for (Location location : locations) {
-			if (firstId == null) {
-				firstId = location.getLocid();
-			}
-			breedingLocationComboBox.addItem(location.getLocid());
-			breedingLocationComboBox.setItemCaption(location.getLocid(), location.getLname());
-			if (DEFAULT_LOCATION.equalsIgnoreCase(location.getLname())) {
-				breedingLocationComboBox.setValue(location.getLocid());
-				hasDefault = true;
-			}
-		}
-		if (!hasDefault && firstId != null) {
-			breedingLocationComboBox.setValue(firstId);
+		for(Location location : locations){
+		   if(firstId == null){
+		       firstId = location.getLocid();
+		   }
+		   breedingLocationComboBox.addItem(location.getLocid());
+		   breedingLocationComboBox.setItemCaption(location.getLocid(), BreedingManagerUtil.getLocationNameDisplay(location));
+		   if(DEFAULT_LOCATION.equalsIgnoreCase(location.getLname())){
+		       breedingLocationComboBox.setValue(location.getLocid());
+		       hasDefault = true;
+		   }
+         }
+		if(hasDefault == false && firstId != null){
+		    breedingLocationComboBox.setValue(firstId);
 		}
 	}
 

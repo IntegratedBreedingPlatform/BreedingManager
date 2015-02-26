@@ -275,12 +275,12 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
 
 		harvestLocations.removeAllItems();
 
-		for (Location loc : locations) {
-			harvestLocations.addItem(loc.getLocid());
-			harvestLocations.setItemCaption(loc.getLocid(), loc.getLname());
-			mapLocation.put(loc.getLname(), new Integer(loc.getLocid()));
-		}
-	}
+        for (Location loc : locations) {
+        	harvestLocations.addItem(loc.getLocid());        	
+    		harvestLocations.setItemCaption(loc.getLocid(), BreedingManagerUtil.getLocationNameDisplay(loc));
+    		mapLocation.put(loc.getLname(), new Integer(loc.getLocid()));
+        }
+    }
 
 	public TextField getSettingsNameTextfield() {
 		return settingsNameTextfield;
