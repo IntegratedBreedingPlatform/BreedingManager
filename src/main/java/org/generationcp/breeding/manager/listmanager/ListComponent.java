@@ -881,16 +881,16 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
         toolsMenuContainer.setWidth("90px");
         toolsMenuContainer.setHeight("27px");
         toolsMenuContainer.addComponent(actionsButton);
-        
+
 		HorizontalLayout leftSubHeaderLayout = new HorizontalLayout();
 		leftSubHeaderLayout.setSpacing(true);
 		leftSubHeaderLayout.addComponent(totalListEntriesLabel);
 		leftSubHeaderLayout.addComponent(totalSelectedListEntriesLabel);
 		leftSubHeaderLayout.setComponentAlignment(totalListEntriesLabel, Alignment.MIDDLE_LEFT);
-		leftSubHeaderLayout
-				.setComponentAlignment(totalSelectedListEntriesLabel, Alignment.MIDDLE_LEFT);
+		leftSubHeaderLayout.setComponentAlignment(totalSelectedListEntriesLabel, Alignment.MIDDLE_LEFT);
 
 		subHeaderLayout = new HorizontalLayout();
+
 		subHeaderLayout.setWidth("100%");
 		subHeaderLayout.setSpacing(true);
 		subHeaderLayout.addStyleName("lm-list-desc");
@@ -1714,6 +1714,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 
 		setHasUnsavedChanges(false);
 		
+		refreshTreeOnSave();
 		return true;
     }
 
@@ -1926,10 +1927,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		refreshTreeOnSave();
 
 	}
-
-	protected void refreshTreeOnSave() {
-		((BreedingManagerApplication) getApplication()).getListManagerMain()
-				.getListSelectionComponent().getListTreeComponent().refreshComponent();
+	
+	protected void refreshTreeOnSave(){
+		((BreedingManagerApplication) getApplication()).refreshListManagerTree();
 	}
 
 	public void openViewListHeaderWindow() {
@@ -1968,8 +1968,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 					.setValue(messageSource.getMessage(Message.TOTAL_LOTS) + ": " + countLabel);
 		}
 	}
-
-	private void updateNoOfEntries() {
+	
+	protected void updateNoOfEntries(){
 		int count = 0;
 		if (source.getModeView().equals(ModeView.LIST_VIEW)) {
 			count = listDataTable.getItemIds().size();
@@ -2394,6 +2394,18 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		this.listEntries = listEntries;
 	}
 
+	public Table getListDataTable() {
+		return listDataTable;
+	}
+
+	public void setListDataTable(Table listDataTable) {
+		this.listDataTable = listDataTable;
+	}
+
+	public void setAddColumnContextMenu(AddColumnContextMenu addColumnContextMenu) {
+		this.addColumnContextMenu = addColumnContextMenu;
+	}
+	
 }
 
 

@@ -8,6 +8,7 @@ import org.generationcp.breeding.manager.customcomponent.ViewListHeaderComponent
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.domain.gms.ListDataInfo;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -26,6 +27,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
+import com.vaadin.ui.Table;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ListComponentTest {
@@ -56,7 +58,13 @@ public class ListComponentTest {
 
 	@Mock
 	private ContextUtil contextUtil;
-
+	
+	@Mock
+	private Window window;
+	
+	@Mock
+	private AddColumnContextMenu addColumnContextMenu;
+	
 	private ListComponent listComponent;
 
 	private GermplasmList germplasmList;
@@ -222,6 +230,20 @@ public class ListComponentTest {
 				"Expecting the that the germplasmList status was changed to locked(101) but returned ("
 						+ germplasmList.getStatus() + ")", Integer.valueOf(101),
 				germplasmList.getStatus());
+	}
+	
+	@Test
+	public void testSaveChangesAction_verifyIfTheListTreeIsRefreshedAfterSavingList(){
+		Table listDataTable = new Table();
+		listComponent.setAddColumnContextMenu(addColumnContextMenu);
+		when(addColumnContextMenu.getListDataCollectionFromTable(listDataTable)).thenReturn(new ArrayList<ListDataInfo>());
+		doNothing().when(listComponent).setHasUnsavedChanges(true);
+		doNothing().when(listComponent).setHasUnsavedChanges(false);
+		doNothing().when(listComponent).updateNoOfEntries();
+		listComponent.setListDataTable(listDataTable);
+		
+		listComponent.saveChangesAction(window, false);
+		verify(listComponent,times(1)).refreshTreeOnSave();
 	}
 
 	@Test
