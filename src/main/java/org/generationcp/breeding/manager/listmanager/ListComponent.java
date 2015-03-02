@@ -134,7 +134,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 	private Button viewHeaderButton;
 	private Label totalListEntriesLabel;
 	private Label totalSelectedListEntriesLabel;
-	private Button toolsButton;
+	private Button actionsButton;
 	private Table listDataTable;
 	private TableWithSelectAllLayout listDataTableWithSelectAll;
 
@@ -286,8 +286,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 				"<span class='glyphicon glyphicon-pencil' style='left: 2px; top:10px; color: #7c7c7c;font-size: 16px; font-weight: bold;'></span>",
 				"Edit List Header");
 
-		toolsButton = new ActionButton();
-		toolsButton.setData(TOOLS_BUTTON_ID);
+		actionsButton = new ActionButton();
+		actionsButton.setData(TOOLS_BUTTON_ID);
 
 		inventoryViewToolsButton = new ActionButton();
 		inventoryViewToolsButton.setData(TOOLS_BUTTON_ID);
@@ -633,7 +633,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 
 		makeTableEditable();
 
-		toolsButton.addListener(new ToolsButtonClickListener());
+		actionsButton.addListener(new ToolsButtonClickListener());
 
 		inventoryViewToolsButton.addListener(new ClickListener() {
 			private static final long serialVersionUID = 272707576878821700L;
@@ -731,7 +731,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		toolsMenuContainer = new HorizontalLayout();
 		toolsMenuContainer.setWidth("90px");
 		toolsMenuContainer.setHeight("27px");
-		toolsMenuContainer.addComponent(toolsButton);
+		toolsMenuContainer.addComponent(actionsButton);
 
 		HorizontalLayout leftSubHeaderLayout = new HorizontalLayout();
 		leftSubHeaderLayout.setSpacing(true);
@@ -1759,9 +1759,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		updateNoOfEntries();
 
 		setHasUnsavedChanges(false);
-
+		
+		refreshTreeOnSave();
+        
 		return true;
-		// end of saveChangesAction
 	}
 
 	// saveChangesAction()
@@ -1991,7 +1992,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 	}
 
 	protected void refreshTreeOnSave() {
-		((BreedingManagerApplication) getApplication()).getListManagerMain()
+		((BreedingManagerApplication) getApplication()).refreshListManagerTree();
 				.getListSelectionComponent().getListTreeComponent().refreshComponent();
 	}
 
@@ -2030,7 +2031,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		}
 	}
 
-	private void updateNoOfEntries() {
+	protected void updateNoOfEntries(){
 		int count = 0;
 		if (source.getModeView().equals(ModeView.LIST_VIEW)) {
 			count = listDataTable.getItemIds().size();
@@ -2085,7 +2086,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		if (listInventoryTable.isVisible()) {
 			getListDataTableWithSelectAll().setVisible(true);
 			listInventoryTable.setVisible(false);
-			toolsMenuContainer.addComponent(toolsButton);
+			toolsMenuContainer.addComponent(actionsButton);
 			toolsMenuContainer.removeComponent(inventoryViewToolsButton);
 
 			topLabel.setValue(messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
@@ -2099,7 +2100,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		if (getListDataTableWithSelectAll().isVisible()) {
 			getListDataTableWithSelectAll().setVisible(false);
 			listInventoryTable.setVisible(true);
-			toolsMenuContainer.removeComponent(toolsButton);
+			toolsMenuContainer.removeComponent(actionsButton);
 			toolsMenuContainer.addComponent(inventoryViewToolsButton);
 
 			topLabel.setValue(messageSource.getMessage(Message.LOTS));
@@ -2448,6 +2449,18 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 
 	public void setListEntries(List<GermplasmListData> listEntries) {
 		this.listEntries = listEntries;
+	}
+
+	public Table getListDataTable() {
+		return listDataTable;
+	}
+
+	public void setListDataTable(Table listDataTable) {
+		this.listDataTable = listDataTable;
+	}
+
+	public void setAddColumnContextMenu(AddColumnContextMenu addColumnContextMenu) {
+		this.addColumnContextMenu = addColumnContextMenu;
 	}
 
 	protected TableWithSelectAllLayout getListDataTableWithSelectAll() {
