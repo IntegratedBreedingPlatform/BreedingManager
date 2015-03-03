@@ -10,6 +10,7 @@ import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.hibernate.DynamicManagerFactoryProvider;
+import org.generationcp.commons.hibernate.DynamicManagerFactoryProviderConcurrency;
 import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
 import org.generationcp.commons.vaadin.actions.UpdateComponentLabelsAction;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -56,7 +57,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     private SimpleResourceBundleMessageSource messageSource;
     
     @Autowired
-    private DynamicManagerFactoryProvider managerFactoryProvider;
+    private DynamicManagerFactoryProviderConcurrency managerFactoryProvider;
     
     private UpdateComponentLabelsAction messageSourceListener;
 

@@ -73,7 +73,7 @@
         <aop:scoped-proxy proxy-target-class="false"/>
     </bean>
     
-    <bean id="managerFactoryProvider" class="org.generationcp.commons.hibernate.DynamicManagerFactoryProvider">
+    <bean id="managerFactoryProvider" class="org.generationcp.commons.hibernate.DynamicManagerFactoryProviderConcurrency">
     	<constructor-arg ref="workbenchDataManager" />
     	<property name="maxCachedSessionFactories" value="5" />
     	<property name="dbPort" value="${workbench.port}" />
@@ -85,7 +85,7 @@
     <bean id="managerFactory" name="managerFactory"
     	factory-bean="managerFactoryProvider"
     	factory-method="createInstance"
-    	scope="request">
+    	scope="request" destroy-method="close">
     	<aop:scoped-proxy/>
     </bean>
     
@@ -152,7 +152,7 @@
     </bean>
     
     <bean id="workbenchDataManager"
-        class="org.generationcp.middleware.manager.WorkbenchDataManagerImpl">
+        class="org.generationcp.middleware.manager.WorkbenchDataManagerImpl" destroy-method="close">
         <constructor-arg ref="workbenchHibernateSessionProvider" />
     </bean>
     
