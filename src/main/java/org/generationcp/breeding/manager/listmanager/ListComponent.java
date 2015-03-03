@@ -1993,7 +1993,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 
 	protected void refreshTreeOnSave() {
 		((BreedingManagerApplication) getApplication()).refreshListManagerTree();
-				.getListSelectionComponent().getListTreeComponent().refreshComponent();
 	}
 
 	public void openViewListHeaderWindow() {
