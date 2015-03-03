@@ -12,7 +12,7 @@
 >
     
     <!-- Declare property file locations -->
-    <context:property-placeholder location="classpath:workbench.properties" />
+    <context:property-placeholder location="classpath:workbench.properties,classpath:c3p0.properties" />
     
     <!-- Enable Spring annotations -->
     <context:annotation-config/>
@@ -55,9 +55,10 @@
         <property name="password" value="${workbench.password}" /> 
 
         <!-- C3P0 properties -->
-        <property name="maxPoolSize" value="300" />
-        <property name="debugUnreturnedConnectionStackTraces" value="true" />
-        <property name="unreturnedConnectionTimeout" value="240" />
+        <property name="minPoolSize" value="${c3p0.minPoolSize}" />
+        <property name="maxPoolSize" value="${c3p0.maxPoolSize}" />
+        <property name="debugUnreturnedConnectionStackTraces" value="${c3p0.debugUnreturnedConnectionStackTraces}" />
+        <property name="unreturnedConnectionTimeout" value="${c3p0.unreturnedConnectionTimeout}" />
  	</bean>
     
     <bean id="workbenchSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
