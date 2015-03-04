@@ -37,9 +37,6 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
     private static final long serialVersionUID = -6656072296236475385L;
     public static final String DATE_FORMAT = "yyyy-MM-dd";
     private static final int NUMBER_OF_STEPS = 2;
-
-    @SuppressWarnings("unused")
-	private final static Logger LOG = LoggerFactory.getLogger(GermplasmImportMain.class);
     
     private static final String GUIDE_MESSAGE = "The Germplasm Import Import tool allows you to create a new list of germplasm from an import file. "
     		+ "Sample import file templates are available in the Examples folder in the documentation provided with the BMS.";
@@ -92,6 +89,7 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
     
     @Override
     public void updateLabels() {
+		// do nothing
     }
     
     public GermplasmImportFileComponent getWizardScreenOne() {
@@ -136,7 +134,9 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 
 	protected void initializeWizardSteps() {
 		tabSheet = new TabSheet();
-		tabSheet.hideTabs(true); //tab names are not actually shown
+		
+		//tab names are not actually shown
+		tabSheet.hideTabs(true); 
 		
 		tabSheet.setHeight(tabHeights[0]);
 		tabSheet.setWidth("100%");
@@ -152,12 +152,12 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 
 	@Override
 	public void initializeValues() {
-		
+		// do nothing
 	}
 
 	@Override
 	public void addListeners() {
-		
+		// do nothing		
 	}
 
 	@Override
