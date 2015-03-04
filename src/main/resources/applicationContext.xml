@@ -59,6 +59,10 @@
         <property name="maxPoolSize" value="${c3p0.maxPoolSize}" />
         <property name="debugUnreturnedConnectionStackTraces" value="${c3p0.debugUnreturnedConnectionStackTraces}" />
         <property name="unreturnedConnectionTimeout" value="${c3p0.unreturnedConnectionTimeout}" />
+        <property name="maxConnectionAge" value="${c3p0.maxConnectionAge}" />
+        <property name="maxIdleTime" value="${c3p0.maxIdleTime}" />
+        <property name="preferredTestQuery" value="${c3p0.preferredTestQuery}" />
+        <property name="testConnectionOnCheckout" value="${c3p0.testConnectionOnCheckout}" />
  	</bean>
     
     <bean id="workbenchSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
