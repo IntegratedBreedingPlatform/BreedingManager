@@ -80,7 +80,7 @@
     
     <bean id="managerFactoryProvider" class="org.generationcp.commons.hibernate.DynamicManagerFactoryProviderConcurrency">
     	<constructor-arg ref="workbenchDataManager" />
-    	<property name="maxCachedSessionFactories" value="5" />
+    	<property name="maxCachedSessionFactories" value="10" />
     	<property name="dbPort" value="${workbench.port}" />
     	<property name="dbHost" value="${workbench.host}" />
     	<property name="dbUsername" value="${workbench.username}"/>
