@@ -63,7 +63,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	
 	private Table listDataTable;
 	
-	public static String EXPORT_WARNING_MESSAGE = "";
+	public String exportWarningMessage = "";
 	private static final String USER_HOME = "user.home";
 	public static final String TEMP_FILENAME = System.getProperty( USER_HOME ) + "/temp.csv";
 	
@@ -86,7 +86,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 
 	@Override
 	public void instantiateComponents() {
-		EXPORT_WARNING_MESSAGE = messageSource.getMessage(Message.EXPORT_WARNING_MESSAGE);
+		exportWarningMessage = messageSource.getMessage(Message.EXPORT_WARNING_MESSAGE);
 		
 		exportFormalLbl = new Label(messageSource.getMessage(Message.EXPORT_FORMAT).toUpperCase());
 		exportFormalLbl.setStyleName(Bootstrap.Typography.H2.styleName());
@@ -228,7 +228,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 
 	protected void showWarningMessage(Table table) {
 		if(isARequiredColumnHidden(table)){
-			showMessage(ExportListAsDialog.EXPORT_WARNING_MESSAGE);
+			showMessage(this.exportWarningMessage);
 		}
 	}
 

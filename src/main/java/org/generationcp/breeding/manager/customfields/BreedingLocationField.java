@@ -250,7 +250,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		return breedingLocationComboBox;
 	}
 	
-	public void setbreedingLocationComboBox(ComboBox breedingLocationComboBox) {
+	public void setBreedingLocationComboBox(ComboBox breedingLocationComboBox) {
 		this.breedingLocationComboBox = breedingLocationComboBox;
 	}
 	

@@ -15,7 +15,6 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.fields.BmsDateField;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.slf4j.Logger;
@@ -35,7 +34,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 
 	private static final long serialVersionUID = -1180999883774074687L;
 	
-	private final static Logger LOG = LoggerFactory.getLogger(GermplasmFieldsComponent.class);
+	private static final Logger LOG = LoggerFactory.getLogger(GermplasmFieldsComponent.class);
 	 
 	private  static final String DEFAULT_NAME_TYPE = "Line Name";
 	
@@ -58,9 +57,6 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
-    
-    @Autowired
-    private GermplasmDataManager germplasmDataManager;
     
     @Autowired
     private GermplasmListManager germplasmListManager;
@@ -90,7 +86,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 		this.leftIndentPixels = pixels;
 	}
 
-	public void afterPropertiesSet() throws Exception {
+	public void afterPropertiesSet() {
 		instantiateComponents();
         initializeValues();
         addListeners();
@@ -105,6 +101,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 
 	@Override
 	public void updateLabels() {
+		// do nothing
 	}
 
 	@Override
@@ -162,7 +159,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 
 	@Override
 	public void addListeners() {
-		
+		// do nothing
 	}
 
 	@Override

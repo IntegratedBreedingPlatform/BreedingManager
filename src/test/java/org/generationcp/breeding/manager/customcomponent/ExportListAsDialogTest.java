@@ -43,6 +43,7 @@ public class ExportListAsDialogTest {
 
 	private static final int NO_OF_LIST_ENTRIES = 10;
 	private static final Integer USER_ID = 1;
+	private String exportWarningMessages = "";
 	
 	private static Table listDataTable;
 	private static List<GermplasmListData>  listEntries;
@@ -86,7 +87,7 @@ public class ExportListAsDialogTest {
 		dialog.setListExporter(listExporter);
 		dialog.setMessageSource(messageSource);
 		
-		doNothing().when(dialog).showMessage(ExportListAsDialog.EXPORT_WARNING_MESSAGE);
+		doNothing().when(dialog).showMessage(exportWarningMessages);
 		doReturn(Mockito.mock(FileOutputStream.class)).when(listExporter).exportGermplasmListXLS(ExportListAsDialog.TEMP_FILENAME,listDataTable);
 		
 		doReturn(fileDownloadResource).when(dialog).createFileDownloadResource();
@@ -117,14 +118,14 @@ public class ExportListAsDialogTest {
 		
 		Assert.assertTrue(dialog.isARequiredColumnHidden(listDataTable));
 		dialog.showWarningMessage(listDataTable);
-		verify(dialog,times(1)).showMessage(ExportListAsDialog.EXPORT_WARNING_MESSAGE);
+		verify(dialog,times(1)).showMessage(exportWarningMessages);
 	}
 	
 	@Test
 	public void testShowWarningMessageWhenListDataTableDoNotHaveHiddenRequiredColumns(){
 		Assert.assertFalse(dialog.isARequiredColumnHidden(listDataTable));
 		dialog.showWarningMessage(listDataTable);
-		verify(dialog,times(0)).showMessage(ExportListAsDialog.EXPORT_WARNING_MESSAGE);
+		verify(dialog,times(0)).showMessage(exportWarningMessages);
 	}
 	
 	@Test
