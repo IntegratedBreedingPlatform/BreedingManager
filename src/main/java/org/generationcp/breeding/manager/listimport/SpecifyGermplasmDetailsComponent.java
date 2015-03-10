@@ -20,6 +20,7 @@ import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -42,6 +43,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.annotation.Resource;
 
 @Configurable
 public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements InitializingBean,
@@ -91,6 +94,9 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 
     @Autowired
     private WorkbenchDataManager workbenchDataManager;
+    
+    @Resource
+	private ContextUtil contextUtil;
 
     private Boolean viaToolURL;
 
@@ -169,6 +175,11 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         germplasmList.setType(germplasmListUploader.getListType());
         germplasmList.setDescription(germplasmListUploader.getListTitle());
         germplasmList.setStatus(1);
+        try {
+			germplasmList.setUserId(contextUtil.getCurrentUserLocalId());
+		} catch (MiddlewareQueryException e) {
+			LOG.error(e.getMessage(),e);
+		}
 
         List<GermplasmName> germplasmNameObjects = getGermplasmNameObjects();
         List<GermplasmName> germplasmNameObjectsToBeSaved = new ArrayList<GermplasmName>();
