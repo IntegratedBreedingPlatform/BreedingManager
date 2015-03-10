@@ -13,9 +13,11 @@ import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.util.Util;
+import org.generationcp.commons.constant.DefaultGermplasmStudyBrowserPath;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.tomcat.util.TomcatUtil;
 import org.generationcp.commons.tomcat.util.WebAppStatusInfo;
+import org.generationcp.commons.util.WorkbenchAppPathResolver;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -84,8 +86,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	private static final String CHECKBOX_COLUMN_ID = "Tag All Column";
 	
 	public static final String MATCHING_GEMRPLASMS_TABLE_DATA = "Matching Germplasms Table";
-	public static final String GERMPLASM_BROWSER_LINK = "http://localhost:18080/GermplasmStudyBrowser/main/germplasm-";
-	
+
     static final Action ACTION_COPY_TO_NEW_LIST= new Action("Add Selected Entries to New List");
     static final Action ACTION_SELECT_ALL= new Action("Select All");
     static final Action[] GERMPLASMS_TABLE_CONTEXT_MENU = new Action[] { ACTION_COPY_TO_NEW_LIST, ACTION_SELECT_ALL };
@@ -416,15 +417,15 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
         }
         
         String addtlParams = Util.getAdditionalParams(workbenchDataManager);
-        
-        ExternalResource germplasmBrowserLink = null;
-        if (tool == null) {
-            germplasmBrowserLink = new ExternalResource(GERMPLASM_BROWSER_LINK + gid+ "?restartApplication"+
-            		addtlParams);
-        } else {
-            germplasmBrowserLink = new ExternalResource(tool.getPath().replace("germplasm/", "germplasm-") + gid+ "?restartApplication"+
-            		addtlParams);
-        }
+		ExternalResource germplasmBrowserLink;
+		if (tool == null) {
+			germplasmBrowserLink = new ExternalResource(
+					WorkbenchAppPathResolver.getFullWebAddress(
+							DefaultGermplasmStudyBrowserPath.GERMPLASM_BROWSER_LINK + gid,
+							"?restartApplication" + addtlParams));
+		} else {
+			germplasmBrowserLink = new ExternalResource(WorkbenchAppPathResolver.getWorkbenchAppPath(tool,String.valueOf(gid),"?restartApplication" + addtlParams));
+		}
         
         String preferredName = null;
         try{

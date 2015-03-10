@@ -17,8 +17,10 @@ import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.util.Util;
+import org.generationcp.commons.constant.DefaultGermplasmStudyBrowserPath;
 import org.generationcp.commons.tomcat.util.TomcatUtil;
 import org.generationcp.commons.tomcat.util.WebAppStatusInfo;
+import org.generationcp.commons.util.WorkbenchAppPathResolver;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -46,8 +48,7 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
     private static final long serialVersionUID = -6751894969990825730L;
     private final static Logger LOG = LoggerFactory.getLogger(GidLinkButtonClickListener.class);
     public static final String GERMPLASM_IMPORT_WINDOW_NAME = "germplasm-import";
-	public static final String GERMPLASM_BROWSER_LINK = "http://localhost:18080/GermplasmStudyBrowser/main/germplasm-";
-    
+
     @Autowired
     private WorkbenchDataManager workbenchDataManager;
     
@@ -93,17 +94,17 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
         } catch (MiddlewareQueryException qe) {
             LOG.error("QueryException", qe);
         }
-        
-        String addtlParams = Util.getAdditionalParams(workbenchDataManager);
-        
-        ExternalResource germplasmBrowserLink = null;
-        if (tool == null) {
-            germplasmBrowserLink = new ExternalResource(GERMPLASM_BROWSER_LINK + gid+ "?restartApplication"+
-            		addtlParams);
-        } else {
-            germplasmBrowserLink = new ExternalResource(tool.getPath().replace("germplasm/", "germplasm-") + gid+ "?restartApplication"+
-            		addtlParams);
-        }
+
+		String addtlParams = Util.getAdditionalParams(workbenchDataManager);
+		ExternalResource germplasmBrowserLink;
+		if (tool == null) {
+			germplasmBrowserLink = new ExternalResource(
+					WorkbenchAppPathResolver.getFullWebAddress(
+							DefaultGermplasmStudyBrowserPath.GERMPLASM_BROWSER_LINK + gid,
+							"?restartApplication" + addtlParams));
+		} else {
+			germplasmBrowserLink = new ExternalResource(WorkbenchAppPathResolver.getWorkbenchAppPath(tool,String.valueOf(gid),"?restartApplication" + addtlParams));
+		}
         
         String preferredName = null;
         try{
