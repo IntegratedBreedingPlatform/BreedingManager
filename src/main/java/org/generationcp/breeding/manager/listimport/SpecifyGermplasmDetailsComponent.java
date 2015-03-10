@@ -2,8 +2,6 @@ package org.generationcp.breeding.manager.listimport;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.data.Property.ConversionException;
-import com.vaadin.data.Property.ReadOnlyException;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.*;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -27,8 +25,6 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
-import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.Name;
@@ -89,12 +85,6 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
     @Autowired
     private GermplasmDataManager germplasmDataManager;
 
-    @Autowired
-    private GermplasmListManager germplasmListManager;
-
-    @Autowired
-    private WorkbenchDataManager workbenchDataManager;
-    
     @Resource
 	private ContextUtil contextUtil;
 
@@ -193,7 +183,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
                     germplasmToBeUsed = germplasmDataManager.getGermplasmByGID(gid);
                     germplasmNameObjectsToBeSaved.add(new GermplasmName(germplasmToBeUsed, germplasmNameObjects.get(i).getName()));
                 } catch (MiddlewareQueryException e) {
-                    e.printStackTrace();
+                	LOG.error(e.getMessage(),e);
                 }
             } else {
                 germplasmNameObjectsToBeSaved.add(new GermplasmName(germplasmNameObjects.get(i).getGermplasm(), germplasmNameObjects.get(i).getName()));
@@ -242,7 +232,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         germplasmFieldsComponent.setGermplasmBreedingMethod(breedingMethod);
     }
 
-    public void setGermplasmDate(Date germplasmDate) throws ReadOnlyException, ConversionException, ParseException {
+    public void setGermplasmDate(Date germplasmDate) throws ParseException {
         germplasmFieldsComponent.setGermplasmDate(germplasmDate);
     }
 
@@ -418,7 +408,8 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
     }
 
     protected void toggleAcceptSingleMatchesCheckbox() {
-        automaticallyAcceptSingleMatchesCheckbox.setVisible(false); //by default hide it
+    	//by default hide it
+        automaticallyAcceptSingleMatchesCheckbox.setVisible(false);
         automaticallyAcceptSingleMatchesCheckbox.setValue(true);
 
         if (pedigreeOptionComboBox.getValue() != null) {
@@ -434,16 +425,16 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 
         //Clear table contents first (possible that it has some rows in it from previous uploads, and then user went back to upload screen)
         getGermplasmDetailsTable().removeAllItems();
-        String source;
+        String germplasmSource;
         for (int i = 0; i < importedGermplasms.size(); i++) {
             ImportedGermplasm importedGermplasm = importedGermplasms.get(i);
             if (importedGermplasm.getSource() == null) {
-                source = importedGermplasmList.getFilename() + ":" + (i + 1);
+            	germplasmSource = importedGermplasmList.getFilename() + ":" + (i + 1);
             } else {
-                source = importedGermplasm.getSource();
+            	germplasmSource = importedGermplasm.getSource();
             }
             getGermplasmDetailsTable().addItem(new Object[]{importedGermplasm.getEntryId(),
-                    importedGermplasm.getEntryCode(), importedGermplasm.getDesig(), importedGermplasm.getCross(), importedGermplasm.getGid(), source}, new Integer(i + 1));
+                    importedGermplasm.getEntryCode(), importedGermplasm.getDesig(), importedGermplasm.getCross(), importedGermplasm.getGid(), germplasmSource}, new Integer(i + 1));
         }
         updateTotalEntriesLabel();
 
@@ -479,7 +470,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
                 } else {
                     source.getGermplasmImportPopupSource().openSavedGermplasmList(list);
                     source.getGermplasmImportPopupSource().refreshListTreeAfterListImport();
-                    source.getGermplasmImportPopupSource().getParentWindow().removeWindow(((Window) source.getComponentContainer()));
+                    source.getGermplasmImportPopupSource().getParentWindow().removeWindow((Window) source.getComponentContainer());
                 }
 
                 if (source.isViaPopup()) {
@@ -489,7 +480,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 
         } catch (MiddlewareQueryException e) {
             MessageNotifier.showError(window, "ERROR", "Error with saving germplasm list. Please see log for details.");
-            e.printStackTrace();
+            LOG.error(e.getMessage(),e);
         }
 
     }
