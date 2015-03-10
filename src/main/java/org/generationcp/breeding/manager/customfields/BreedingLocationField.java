@@ -276,7 +276,9 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	
 	public void populateHarvestLocation(Integer selectedLocation){
 		populateHarvestLocation(showFavoritesCheckBox.getValue().equals(true));
-		breedingLocationComboBox.setValue(selectedLocation);
+		if(selectedLocation != null){
+			breedingLocationComboBox.setValue(selectedLocation);
+		}
 	}
 	
     private void populateHarvestLocation(boolean showOnlyFavorites) {

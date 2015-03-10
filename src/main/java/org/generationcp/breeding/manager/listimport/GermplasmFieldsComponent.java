@@ -216,6 +216,22 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 		return germplasmDateField;
 	}
 	
+	public void setLocationComponent(BreedingLocationField locationComponent) {
+		this.locationComponent = locationComponent;
+	}
+
+	public BreedingLocationField getLocationComponent() {
+		return locationComponent;
+	}
+
+	public void setSeedLocationComponent(BreedingLocationField seedLocationComponent) {
+		this.seedLocationComponent = seedLocationComponent;
+	}
+	
+	public BreedingLocationField getSeedLocationComponent() {
+		return seedLocationComponent;
+	}
+
 	protected void populateNameTypes() throws MiddlewareQueryException {
 		List<UserDefinedField> userDefinedFieldList = germplasmListManager.getGermplasmNameTypes();
         Integer firstId = null;
@@ -273,11 +289,23 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 
 	@Override
 	public void updateAllLocationFields() {
-		locationComboBox = locationComponent.getBreedingLocationComboBox();
-		seedLocationComboBox = seedLocationComponent.getBreedingLocationComboBox();
-		
-		locationComponent.populateHarvestLocation(Integer.valueOf(locationComboBox.getValue().toString()));
-		seedLocationComponent.populateHarvestLocation(Integer.valueOf(seedLocationComboBox.getValue().toString()));
+		/** NOTE merging to merged-db branch, make sure to add programUniqueID 
+		 * as an additional parameter for populateHarvestLocation() method */
+
+		if(getLocationComboBox().getValue() != null){
+			getLocationComponent().populateHarvestLocation(Integer.valueOf(getLocationComboBox().getValue().toString()));
+		} else {
+			getLocationComponent().populateHarvestLocation(null);
+		}
+
+		if(getSeedLocationComboBox().getValue() != null){
+			getSeedLocationComponent().populateHarvestLocation(Integer.valueOf(getSeedLocationComboBox().getValue().toString()));
+		} else {
+			getSeedLocationComponent().populateHarvestLocation(null);
+		}
 	}
-    
+
+	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
 }
