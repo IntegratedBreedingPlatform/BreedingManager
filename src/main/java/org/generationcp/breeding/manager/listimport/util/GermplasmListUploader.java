@@ -746,4 +746,22 @@ public class GermplasmListUploader implements FileFactory {
         return f;
     }
 
+	public void setListName(String listName) {
+		this.listName = listName;
+	}
+
+	public void setListTitle(String listTitle) {
+		this.listTitle = listTitle;
+	}
+
+	public void setListType(String listType) {
+		this.listType = listType;
+	}
+
+	public void setListDate(Date listDate) {
+		this.listDate = listDate;
+	}
+    
+    
+
 }

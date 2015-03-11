@@ -358,5 +358,15 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	public void setBreedingManagerService(BreedingManagerService breedingManagerService) {
 		this.breedingManagerService = breedingManagerService;
 	}
+
+	public ListOwnerField getListOwnerField() {
+		return listOwnerField;
+	}
+
+	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+	
+	
 	
 }

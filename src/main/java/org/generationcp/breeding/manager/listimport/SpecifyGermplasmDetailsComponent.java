@@ -531,4 +531,15 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
     public ImportedGermplasmList getImportedGermplasmList() {
         return importedGermplasmList;
     }
+    
+    public void setProcessGermplasmAction(
+			ProcessImportedGermplasmAction processGermplasmAction) {
+		this.processGermplasmAction = processGermplasmAction;
+	}
+
+	public void setContextUtil(ContextUtil contextUtil) {
+		this.contextUtil = contextUtil;
+	}
+    
+    
 }
