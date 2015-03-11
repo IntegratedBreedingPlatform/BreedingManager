@@ -22,6 +22,7 @@ import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.commons.util.UserUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -175,6 +176,11 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         germplasmList.setType(germplasmListUploader.getListType());
         germplasmList.setDescription(germplasmListUploader.getListTitle());
         germplasmList.setStatus(1);
+        try {
+			germplasmList.setUserId(UserUtil.getCurrentUserLocalId(workbenchDataManager));
+		} catch (MiddlewareQueryException e) {
+			LOG.error(e.getMessage(),e);
+		}
 
         List<GermplasmName> germplasmNameObjects = getGermplasmNameObjects();
         List<GermplasmName> germplasmNameObjectsToBeSaved = new ArrayList<GermplasmName>();
