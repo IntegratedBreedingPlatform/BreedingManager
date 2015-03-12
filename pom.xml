@@ -20,7 +20,7 @@
         <vaadin.version>6.8.13</vaadin.version>
         <gwt.version>2.5.1</gwt.version>
         <gwt.plugin.version>2.5.1</gwt.plugin.version>
-        <ibpcommons.version>4.0.1.RELEASE</ibpcommons.version>
+        <ibpcommons.version>4.1.0.SNAPSHOT</ibpcommons.version>
         <spring.version>3.2.11.RELEASE</spring.version>
         <spring.security.version>3.2.5.RELEASE</spring.security.version>
         <webapp.path>C:/Breeding Management System/infrastructure/tomcat/webapps</webapp.path>
@@ -38,7 +38,7 @@
             <url>http://apps.leafnode.io:8081/nexus/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
-    
+
     <repositories>
         <repository>
             <id>vaadin-addons</id>
@@ -147,7 +147,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-		
+
 		<!-- Spring Security -->
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -174,7 +174,7 @@
 			<artifactId>spring-security-aspects</artifactId>
 			<version>${spring.security.version}</version>
 		</dependency>
-		
+
         <!-- these two below are needed by TableExport addon -->
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -255,8 +255,8 @@
             <artifactId>contextmenu</artifactId>
             <version>3.1.0</version>
         </dependency>
-        
-       	<!--  JAMon performance monitoring. -->		
+
+       	<!--  JAMon performance monitoring. -->
         <dependency>
             <groupId>com.jamonapi</groupId>
             <artifactId>jamon</artifactId>
