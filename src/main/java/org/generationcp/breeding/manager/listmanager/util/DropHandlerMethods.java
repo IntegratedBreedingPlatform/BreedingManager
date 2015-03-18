@@ -15,8 +15,8 @@ import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsCompo
 import org.generationcp.breeding.manager.listmanager.ListComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.ListSearchResultsComponent;
-import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -39,13 +39,23 @@ import com.vaadin.ui.themes.BaseTheme;
 
 public class DropHandlerMethods {
 	
+	private static final String CLICK_TO_VIEW_GERMPLASM_INFORMATION = "Click to view Germplasm information";
+
+	private static final String CLICK_TO_VIEW_INVENTORY_DETAILS = "Click to view Inventory Details";
+
+	private static final String NO_LOT_FOR_THIS_GERMPLASM = "No Lot for this Germplasm";
+
+	private static final String STRING_EMPTY = "";
+
+	private static final String STRING_DASH = "-";
+
 	protected Table targetTable;
 	
 	protected GermplasmDataManager germplasmDataManager;
 	protected GermplasmListManager germplasmListManager;
 	protected InventoryDataManager inventoryDataManager;
 	
-	protected static final Logger LOG = LoggerFactory.getLogger(DropHandlerMethods.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DropHandlerMethods.class);
 	
 	/** 
 	 * Temporary data holders / caching instead of loading it all the time
@@ -59,15 +69,15 @@ public class DropHandlerMethods {
 	
     protected List<ListUpdatedListener> listeners = null;
 	
-    protected final String MATCHING_GERMPLASMS_TABLE_DATA = GermplasmSearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA;
-    protected final String MATCHING_LISTS_TABLE_DATA = ListSearchResultsComponent.MATCHING_LISTS_TABLE_DATA;
-    protected final String LIST_DATA_TABLE_DATA = ListComponent.LIST_DATA_COMPONENT_TABLE_DATA;
+    protected static final String MATCHING_GERMPLASMS_TABLE_DATA = GermplasmSearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA;
+    protected static final String MATCHING_LISTS_TABLE_DATA = ListSearchResultsComponent.MATCHING_LISTS_TABLE_DATA;
+    protected static final String LIST_DATA_TABLE_DATA = ListComponent.LIST_DATA_COMPONENT_TABLE_DATA;
 	
 	@SuppressWarnings("unchecked")
 	protected Boolean hasSelectedItems(Table table){
 		List<Integer> selectedItemIds = new ArrayList<Integer>();
         selectedItemIds.addAll((Collection<? extends Integer>) table.getValue());
-        if(selectedItemIds.size()>0) {
+        if(!selectedItemIds.isEmpty()) {
             return true;
         }
         return false;
@@ -107,11 +117,11 @@ public class DropHandlerMethods {
 				addGermplasmFromList(listId, listData.getId(), germplasmList, fromEditList);
 			}
 			
-			changed = true;// mark that there is changes in a list that is currently building
+			// mark that there is changes in a list that is currently building
+			changed = true;
 			
 		} catch (MiddlewareQueryException e) {
 			LOG.error("Error in getting germplasm list.", e);
-			e.printStackTrace();
 		}
 		
 		currentColumnsInfo = null;
@@ -139,16 +149,9 @@ public class DropHandlerMethods {
             Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(listManagerMain,gid.toString(), true, true));
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
             
-            String crossExpansion = "";
+            String crossExpansion = STRING_EMPTY;
             if(germplasm!=null){
-                try {
-                    if(germplasmDataManager!=null) {
-                        crossExpansion = germplasmDataManager.getCrossExpansion(germplasm.getGid(), 1);
-                    }
-                } catch(MiddlewareQueryException ex){
-                    LOG.error("Error in retrieving cross expansion data for GID: " + germplasm.getGid() + ".", ex);
-                    crossExpansion = "-";
-                }
+                crossExpansion = getCrossExpansion(germplasm);
             }
 
             List<Integer> importedGermplasmGids = new ArrayList<Integer>();
@@ -157,7 +160,7 @@ public class DropHandlerMethods {
             String preferredName = preferredNames.get(gid);
             Button designationButton = new Button(preferredName, new GidLinkButtonClickListener(listManagerMain,gid.toString(), true, true));
             designationButton.setStyleName(BaseTheme.BUTTON_LINK);
-            designationButton.setDescription("Click to view Germplasm information");
+            designationButton.setDescription(CLICK_TO_VIEW_GERMPLASM_INFORMATION);
             
 
             CheckBox tagCheckBox = new CheckBox();
@@ -179,44 +182,43 @@ public class DropHandlerMethods {
             //Inventory Related Columns
             
 	   		//#1 Available Inventory
-            String avail_inv = "";
+            String availInv = STRING_EMPTY;
             Integer availInvGid = getAvailInvForGID(gid); 
             if(availInvGid!=null) {
-                avail_inv = availInvGid.toString();
+                availInv = availInvGid.toString();
             }
             	
-	   		Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(listManagerMain,gid));
+	   		Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(listManagerMain,gid));
 	   		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-	   		inventoryButton.setDescription("Click to view Inventory Details");
-	   		newItem.getItemProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
+	   		inventoryButton.setDescription(CLICK_TO_VIEW_INVENTORY_DETAILS);
+	   		newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
 	   		
-	   		if(avail_inv.equals("-")){
+	   		if(availInv.equals(STRING_DASH)){
 	   			inventoryButton.setEnabled(false);
-	   			inventoryButton.setDescription("No Lot for this Germplasm");
-	   		}
-	   		else{
-	   			inventoryButton.setDescription("Click to view Inventory Details");
+	   			inventoryButton.setDescription(NO_LOT_FOR_THIS_GERMPLASM);
+	   		} else {
+	   			inventoryButton.setDescription(CLICK_TO_VIEW_INVENTORY_DETAILS);
 	   		}
 	   		
 	   		//#2 Seed Reserved
-	   		String seed_res = "-";
-	   		newItem.getItemProperty(ListDataTablePropertyID.SEED_RESERVATION.getName()).setValue(seed_res);
+	   		String seedRes = STRING_DASH;
+	   		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 	   		
             
-            newItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(tagCheckBox);
+            newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(tagCheckBox);
             if(newItem!=null && gidButton!=null) {
-                newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
+                newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
             }
-            newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue("Germplasm Search");
-            newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(designationButton);
-            newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(crossExpansion);
+            newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue("Germplasm Search");
+            newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
+            newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(crossExpansion);
             
             assignSerializedEntryNumber();
             
-            FillWith FW = new FillWith(ListDataTablePropertyID.GID.getName(), targetTable);
+            FillWith fillWith = new FillWith(ColumnLabels.GID.getName(), targetTable);
             
         	for(String column : AddColumnContextMenu.getTablePropertyIds(targetTable)){
-				FW.fillWith(targetTable, column, true);
+				fillWith.fillWith(targetTable, column, true);
         	}
             
         	fireListUpdatedEvent();
@@ -227,20 +229,33 @@ public class DropHandlerMethods {
             
         } catch (MiddlewareQueryException e) {
             LOG.error("Error in adding germplasm to germplasm table.", e);
-            e.printStackTrace();
             return null;
         }
         
 	}
 	
+	private String getCrossExpansion(Germplasm germplasm){
+		String crossExpansion =STRING_EMPTY;
+		try {
+            if(germplasmDataManager!=null) {
+                crossExpansion = germplasmDataManager.getCrossExpansion(germplasm.getGid(), 1);
+            }
+        } catch(MiddlewareQueryException ex){
+            LOG.error("Error in retrieving cross expansion data for GID: " + germplasm.getGid() + ".", ex);
+            crossExpansion = STRING_DASH;
+        }
+		
+		return crossExpansion;
+	}
+	
 	
 	protected Integer getAvailInvForGID(Integer gid) {
-		Integer avail_inv;
+		Integer availInv;
 		try {
-			avail_inv = inventoryDataManager.countLotsWithAvailableBalanceForGermplasm(gid);
-			return avail_inv;
+			availInv = inventoryDataManager.countLotsWithAvailableBalanceForGermplasm(gid);
+			return availInv;
 		} catch (MiddlewareQueryException e) {
-			e.printStackTrace();
+			LOG.error(e.getMessage(), e);
 		}
 		return null;
 	}
@@ -267,7 +282,7 @@ public class DropHandlerMethods {
     		for (Entry<String, List<ListDataColumnValues>> columnEntry: currentColumnsInfo.getColumnValuesMap().entrySet()){
     			String column = columnEntry.getKey();
     			if(!AddColumnContextMenu.propertyExists(column, targetTable)){
-    				targetTable.addContainerProperty(column, String.class, "");
+    				targetTable.addContainerProperty(column, String.class, STRING_EMPTY);
     				targetTable.setColumnWidth(column, 250);
     			}
     		}
@@ -279,14 +294,13 @@ public class DropHandlerMethods {
     		
     		GermplasmListData germplasmListData = null;
     		
-    		if(germplasmList.getListData() != null && germplasmList.getListData().size() > 0){
+    		if(germplasmList.getListData() != null && !germplasmList.getListData().isEmpty()){
     			for(GermplasmListData listData : germplasmList.getListData()){
         			if(listData.getId().equals(lrecid)){
         				germplasmListData = listData;
         			}
         		}
-        	}
-    		else{
+        	} else {
         		germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndLrecId(listId, lrecid);
     		}
     		
@@ -328,48 +342,47 @@ public class DropHandlerMethods {
 	            
 	            Button designationButton = new Button(germplasmListData.getDesignation(), new GidLinkButtonClickListener(listManagerMain,gid.toString(), true, true));
 	            designationButton.setStyleName(BaseTheme.BUTTON_LINK);
-	            designationButton.setDescription("Click to view Germplasm information");
+	            designationButton.setDescription(CLICK_TO_VIEW_GERMPLASM_INFORMATION);
 	            
-	            newItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(tagCheckBox);
+	            newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(tagCheckBox);
 	            if(newItem!=null && gidButton!=null) {
-                    newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
+                    newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
                 }
-	            newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(germplasmListData.getEntryCode());
+	            newItem.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(germplasmListData.getEntryCode());
 	            if(forEditList.equals(true)){
-	            	newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(germplasmListData.getSeedSource());
+	            	newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(germplasmListData.getSeedSource());
 	            } else {
-	            	newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(germplasmList.getName()+": "+germplasmListData.getEntryId());
+	            	newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(germplasmList.getName()+": "+germplasmListData.getEntryId());
 	            }
-	            newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(designationButton);
-	            newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(germplasmListData.getGroupName());
+	            newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
+	            newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(germplasmListData.getGroupName());
 	            
 	            //Inventory Related Columns
     	   		
     	   		//#1 Available Inventory
-    	   		String avail_inv = "-";
+    	   		String availInv = STRING_DASH;
     	   		if(germplasmListData.getInventoryInfo().getLotCount().intValue() != 0){
-    	   			avail_inv = germplasmListData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
+    	   			availInv = germplasmListData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
     	   		}
-    	   		Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(listManagerMain,germplasmListData.getGid()));
+    	   		Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(listManagerMain,germplasmListData.getGid()));
     	   		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-    	   		newItem.getItemProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
+    	   		newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
     	   		
-    	   		if(avail_inv.equals("-")){
+    	   		if(availInv.equals(STRING_DASH)){
     	   			inventoryButton.setEnabled(false);
-    	   			inventoryButton.setDescription("No Lot for this Germplasm");
-    	   		}
-    	   		else{
-    	   			inventoryButton.setDescription("Click to view Inventory Details");
+    	   			inventoryButton.setDescription(NO_LOT_FOR_THIS_GERMPLASM);
+    	   		} else {
+    	   			inventoryButton.setDescription(CLICK_TO_VIEW_INVENTORY_DETAILS);
     	   		}
     	   		
     	   		//#2 Seed Reserved
-    	   		String seed_res = "-";
-    	   		if(forEditList){
-    	   			if(germplasmListData.getInventoryInfo().getReservedLotCount().intValue() != 0){
-        	   			seed_res = germplasmListData.getInventoryInfo().getReservedLotCount().toString().trim();
-        	   		}
+    	   		String seedRes = STRING_DASH;
+    	   		if(forEditList && germplasmListData.getInventoryInfo().getReservedLotCount().intValue() != 0){
+    	 
+    	   			seedRes = germplasmListData.getInventoryInfo().getReservedLotCount().toString().trim();
+        	   		
     	   		}
-    	   		newItem.getItemProperty(ListDataTablePropertyID.SEED_RESERVATION.getName()).setValue(seed_res);
+    	   		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
     	   		
 	            
 	    		for (Entry<String, List<ListDataColumnValues>> columnEntry: currentColumnsInfo.getColumnValuesMap().entrySet()){
@@ -377,17 +390,17 @@ public class DropHandlerMethods {
 	    			for (ListDataColumnValues columnValue : columnEntry.getValue()){
 	    				if (columnValue.getListDataId().equals(germplasmListData.getId())){
 	    					String value = columnValue.getValue();
-	    					newItem.getItemProperty(column).setValue(value == null ? "" : value);
+	    					newItem.getItemProperty(column).setValue(value == null ? STRING_EMPTY : value);
 	    				}
 	    			}
 	    		}
 	    			
 	            assignSerializedEntryNumber();
 
-	            FillWith FW = new FillWith(ListDataTablePropertyID.GID.getName(), targetTable);
+	            FillWith fillWith = new FillWith(ColumnLabels.GID.getName(), targetTable);
 	            
 	        	for(String column : AddColumnContextMenu.getTablePropertyIds(targetTable)){
-    				FW.fillWith(targetTable, column, true);
+    				fillWith.fillWith(targetTable, column, true);
 	        	}
 	            
 	            currentListId = null;
@@ -401,8 +414,6 @@ public class DropHandlerMethods {
         	
         } catch (MiddlewareQueryException e) {
             LOG.error("Error in adding germplasm to germplasm table.", e);
-            e.printStackTrace();
-            
 			currentColumnsInfo = null;
             currentListId = null;
             
@@ -433,7 +444,7 @@ public class DropHandlerMethods {
 		for (Entry<String, List<ListDataColumnValues>> columnEntry: currentColumnsInfo.getColumnValuesMap().entrySet()){
 			String column = columnEntry.getKey();
 			if(!AddColumnContextMenu.propertyExists(column, targetTable)){
-				targetTable.addContainerProperty(column, String.class, "");
+				targetTable.addContainerProperty(column, String.class, STRING_EMPTY);
 				targetTable.setColumnWidth(column, 250);
 			}
 		}
@@ -447,7 +458,7 @@ public class DropHandlerMethods {
 			Integer gid = getGidFromButtonCaption(sourceTable, itemId);
 			Button gidButton = new Button(String.format("%s", gid), new GidLinkButtonClickListener(listManagerMain,gid.toString(), true, true));
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
-            gidButton.setDescription("Click to view Germplasm information");
+            gidButton.setDescription(CLICK_TO_VIEW_GERMPLASM_INFORMATION);
             
             CheckBox itemCheckBox = new CheckBox();
             itemCheckBox.setData(newItemId);
@@ -466,50 +477,47 @@ public class DropHandlerMethods {
 	 			 
 	 		});
 	   		
-	   		String seedSource = (String) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).getValue();
-	   		
 	   		String designation = getDesignationFromButtonCaption(sourceTable,itemId);
 	   		Button designationButton = new Button(designation, new GidLinkButtonClickListener(listManagerMain,gid.toString(), true, true));
 	   		designationButton.setStyleName(BaseTheme.BUTTON_LINK);
-	   		designationButton.setDescription("Click to view Germplasm information");
+	   		designationButton.setDescription(CLICK_TO_VIEW_GERMPLASM_INFORMATION);
 	   		
-	   		String parentage = (String) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).getValue();
-	   		Integer entryId = (Integer) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).getValue();
-	   		String entryCode = (String) itemFromSourceTable.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).getValue();
+	   		String parentage = (String) itemFromSourceTable.getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue();
+	   		Integer entryId = (Integer) itemFromSourceTable.getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue();
+	   		String entryCode = (String) itemFromSourceTable.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).getValue();
 	   		
 	   		//Inventory Related Columns
 	   		
 	   		//#1 Available Inventory
-	   		String avail_inv = getAvailInvFromButtonCaption(sourceTable, itemId);
-	   		Button inventoryButton = new Button(avail_inv, new InventoryLinkButtonClickListener(listManagerMain,gid));
+	   		String availInv = getAvailInvFromButtonCaption(sourceTable, itemId);
+	   		Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(listManagerMain,gid));
 	   		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-	   		inventoryButton.setDescription("Click to view Inventory Details");
+	   		inventoryButton.setDescription(CLICK_TO_VIEW_INVENTORY_DETAILS);
 	   		
-	   		if(avail_inv.equals("-")){
+	   		if(availInv.equals(STRING_DASH)){
 	   			inventoryButton.setEnabled(false);
-	   			inventoryButton.setDescription("No Lot for this Germplasm");
-	   		}
-	   		else{
-	   			inventoryButton.setDescription("Click to view Inventory Details");
+	   			inventoryButton.setDescription(NO_LOT_FOR_THIS_GERMPLASM);
+	   		} else {
+	   			inventoryButton.setDescription(CLICK_TO_VIEW_INVENTORY_DETAILS);
 	   		}
 	   		
 	   		//#2 Seed Reserved
-	   		String seed_res = "-";
+	   		String seedRes = STRING_DASH;
 	   		
-	   		newItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(itemCheckBox);
-	   		newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
-	   		newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(germplasmList.getName()+": "+entryId);
-	   		newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(designationButton);
-	   		newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(parentage);
-	   		newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(entryCode);
-	   		newItem.getItemProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-	   		newItem.getItemProperty(ListDataTablePropertyID.SEED_RESERVATION.getName()).setValue(seed_res);
+	   		newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(itemCheckBox);
+	   		newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
+	   		newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(germplasmList.getName()+": "+entryId);
+	   		newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
+	   		newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(parentage);
+	   		newItem.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(entryCode);
+	   		newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
+	   		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
     		for (Entry<String, List<ListDataColumnValues>> columnEntry: currentColumnsInfo.getColumnValuesMap().entrySet()){
     			String column = columnEntry.getKey();
     			for (ListDataColumnValues columnValue : columnEntry.getValue()){
     				if (columnValue.getListDataId().equals(itemId)){
     					String value = columnValue.getValue();
-    					newItem.getItemProperty(column).setValue(value == null ? "" : value);
+    					newItem.getItemProperty(column).setValue(value == null ? STRING_EMPTY : value);
     				}
     			}
     		}
@@ -518,10 +526,10 @@ public class DropHandlerMethods {
 		
 		assignSerializedEntryNumber();
 		
-        FillWith FW = new FillWith(ListDataTablePropertyID.GID.getName(), targetTable);
+        FillWith fillWith = new FillWith(ColumnLabels.GID.getName(), targetTable);
         
     	for(String column : AddColumnContextMenu.getTablePropertyIds(targetTable)){
-			FW.fillWith(targetTable, column, true);
+			fillWith.fillWith(targetTable, column, true);
     	}
     	fireListUpdatedEvent();
     	
@@ -534,7 +542,7 @@ public class DropHandlerMethods {
      */
     protected void assignSerializedEntryCode(){
 		/**
-		 * TODO: If add columns is already implemented, add this checker below
+		 * 
 		 */
     }
     
@@ -546,11 +554,11 @@ public class DropHandlerMethods {
                 
         int id = 1;
         for(Integer itemId : itemIds){
-            targetTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(id);
+            targetTable.getItem(itemId).getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(id);
             
-            Property entryCodeProperty = targetTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName());
-           	if(entryCodeProperty.getValue()==null || entryCodeProperty.getValue().toString().equals("")){
-           		targetTable.getItem(itemId).getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(id);
+            Property entryCodeProperty = targetTable.getItem(itemId).getItemProperty(ColumnLabels.ENTRY_CODE.getName());
+           	if(entryCodeProperty.getValue()==null || entryCodeProperty.getValue().toString().equals(STRING_EMPTY)){
+           		targetTable.getItem(itemId).getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(id);
            	}
             id++;
         }
@@ -589,13 +597,11 @@ public class DropHandlerMethods {
 			
 			if(entry != null){
 				return entry.getId();
-			}
-			else{
+			} else {
 				return getNextListEntryId();
 			}
 		} catch (MiddlewareQueryException e) {
 			LOG.error("Error retrieving germplasm list data",e);
-			e.printStackTrace();
 		}
     	
     	return getNextListEntryId();
@@ -625,7 +631,7 @@ public class DropHandlerMethods {
     public Integer getGidFromButtonCaption(Table table, Integer itemId){
     	Item item = table.getItem(itemId);
    	    if(item!=null){
-    	    String buttonCaption = ((Button) item.getItemProperty(ListDataTablePropertyID.GID.getName()).getValue()).getCaption().toString();
+    	    String buttonCaption = ((Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue()).getCaption().toString();
     	    return Integer.valueOf(buttonCaption);
     	}
     	return null;	
@@ -634,8 +640,8 @@ public class DropHandlerMethods {
     protected String getAvailInvFromButtonCaption(Table table, Integer itemId){
     	Item item = table.getItem(itemId);
    	    if(item!=null){
-    	    String buttonCaption = ((Button) item.getItemProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName()).getValue()).getCaption().toString();
-    	    return buttonCaption;
+    	    return ((Button) item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue()).getCaption().toString();
+    	    
     	}
     	return null;
     }
@@ -643,8 +649,8 @@ public class DropHandlerMethods {
     protected String getDesignationFromButtonCaption(Table table, Integer itemId){
     	Item item = table.getItem(itemId);
    	    if(item!=null){
-    	    String buttonCaption = ((Button) item.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).getValue()).getCaption().toString();
-    	    return buttonCaption;
+    	    return ((Button) item.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue()).getCaption().toString();
+    	    
     	}
     	return null;	
     }
@@ -694,7 +700,7 @@ public class DropHandlerMethods {
 			germplasmList.setListData(germplasmListData);
 			
 		} catch (MiddlewareQueryException e) {
-			e.printStackTrace();
+			LOG.error(e.getMessage(), e);
 		}
 
     	return germplasmList;

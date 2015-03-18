@@ -6,11 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.middleware.domain.gms.ListDataColumn;
 import org.generationcp.middleware.domain.gms.ListDataInfo;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
@@ -29,17 +31,55 @@ import com.vaadin.ui.Table;
 
 @Configurable
 public class AddColumnContextMenu implements InternationalizableComponent  {
-    private static final Logger LOG = LoggerFactory.getLogger(AddColumnContextMenu.class);
+    private final class SourceContextMenuClickListener implements ContextMenu.ClickListener {
+		private static final long serialVersionUID = 1L;
+
+		//Handle clicks on menu items
+		@Override
+		public void contextItemClick(ClickEvent event) {
+		    ContextMenuItem clickedItem = event.getClickedItem();
+		    if(clickedItem.getName().equals(FILL_WITH_PREFERRED_ID)){
+		          addPreferredIdColumn();
+		    }else if(clickedItem.getName().equals(FILL_WITH_PREFERRED_NAME)){
+		        addPreferredNameColumn();
+		    }else if(clickedItem.getName().equals(FILL_WITH_GERMPLASM_DATE)){
+		        addGermplasmDateColumn();
+		    }else if(clickedItem.getName().equals(FILL_WITH_LOCATION)){
+		        addLocationColumn();
+		    }else if(clickedItem.getName().equals(FILL_WITH_METHOD_NAME)){
+		        addMethodNameColumn();
+		    }else if(clickedItem.getName().equals(FILL_WITH_METHOD_ABBREV)){
+		        addMethodAbbrevColumn();
+		    }else if(clickedItem.getName().equals(FILL_WITH_METHOD_NUMBER)){
+		        addMethodNumberColumn();
+		    }else if(clickedItem.getName().equals(FILL_WITH_METHOD_GROUP)){
+		        addMethodGroupColumn();
+		    }else if(clickedItem.getName().equals(FILL_WITH_CROSS_FEMALE_GID)){
+		        addCrossFemaleGidColumn();
+		    }else if(clickedItem.getName().equals(FILL_WITH_CROSS_FEMALE_PREF_NAME)){
+		        addCrossFemalePrefNameColumn();
+		    }else if(clickedItem.getName().equals(FILL_WITH_CROSS_MALE_GID)){
+		    	addCrossMaleGIDColumn();
+		    }else if(clickedItem.getName().equals(FILL_WITH_CROSS_MALE_PREF_NAME)){
+		    	addCrossMalePrefNameColumn();
+		    }
+		}
+	}
+
+	private static final Logger LOG = LoggerFactory.getLogger(AddColumnContextMenu.class);
 
     @Autowired
     private GermplasmDataManager germplasmDataManager;
+    
+    @Autowired
+    private OntologyDataManager ontologyDataManager;
 
     private ListTabComponent listDetailsComponent = null;
     
     @SuppressWarnings("unused")
 	private ComponentContainer cssLayoutSource;
     
-    private final String GIDPropertyId;
+    private final String gidPropertyId;
     private final Table targetTable;
     
     private ContextMenu sourceContextMenu;
@@ -60,70 +100,22 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     private ContextMenuItem menuFillWithCrossMaleGID;
     private ContextMenuItem menuFillWithCrossMalePrefName;
     
-    public static final String ADD_COLUMN_MENU = "Add Column";
-    public static final String FILL_WITH_PREFERRED_ID = "Fill with Preferred ID";
-    public static final String FILL_WITH_PREFERRED_NAME = "Fill with Preferred Name";
-    public static final String FILL_WITH_GERMPLASM_DATE = "Fill with Germplasm Dates";
-    public static final String FILL_WITH_LOCATION = "Fill with Location";
-    public static final String FILL_WITH_METHOD_INFO = "Fill with Breeding Method Information";
-    public static final String FILL_WITH_METHOD_NAME = "Fill with Breeding Method Name";
-    public static final String FILL_WITH_METHOD_ABBREV = "Fill with Breeding Method Abbreviation";
-    public static final String FILL_WITH_METHOD_NUMBER = "Fill with Breeding Method Number";
-    public static final String FILL_WITH_METHOD_GROUP = "Fill with Breeding Method Group";
-    public static final String FILL_WITH_CROSS_FEMALE_INFO = "Fill with Cross-Female Information";
-    public static final String FILL_WITH_CROSS_FEMALE_GID = "Fill with Cross-Female GID";
-    public static final String FILL_WITH_CROSS_FEMALE_PREF_NAME = "Fill with Cross-Female Preferred Name";
-    public static final String FILL_WITH_CROSS_MALE_INFO = "Fill with Cross-Male Information";
-    public static final String FILL_WITH_CROSS_MALE_GID = "Fill with Cross-Male GID";
-    public static final String FILL_WITH_CROSS_MALE_PREF_NAME = "Fill with Cross-Male Preferred Name";
-    
-    @SuppressWarnings("rawtypes")
-    public static final Class PREFERRED_ID_TYPE = String.class;
-    public static final String PREFERRED_ID = "PREFERRED ID";
-    
-    @SuppressWarnings("rawtypes")
-    public static final Class PREFERRED_NAME_TYPE = String.class;
-    public static final String PREFERRED_NAME = "PREFERRED NAME";
-    
-    @SuppressWarnings("rawtypes")
-    public static final Class GERMPLASM_DATE_TYPE = String.class;
-    public static final String GERMPLASM_DATE = "GERMPLASM DATE";
-    
-    @SuppressWarnings("rawtypes")
-    public static final Class LOCATIONS_TYPE = String.class;
-    public static final String LOCATIONS = "LOCATIONS";
-    
-    @SuppressWarnings("rawtypes")
-    public static final Class METHOD_NAME_TYPE = String.class;
-    public static final String METHOD_NAME = "METHOD NAME";
-    
-    @SuppressWarnings("rawtypes")
-    public static final Class METHOD_ABBREV_TYPE = String.class;
-    public static final String METHOD_ABBREV = "METHOD ABBREV";
-    
-    @SuppressWarnings("rawtypes")
-    public static final Class METHOD_NUMBER_TYPE = String.class;
-    public static final String METHOD_NUMBER = "METHOD NUMBER";
-    
-    @SuppressWarnings("rawtypes")
-    public static final Class METHOD_GROUP_TYPE = String.class;
-    public static final String METHOD_GROUP = "METHOD GROUP";
-    
-    @SuppressWarnings("rawtypes")
-    public static final Class CROSS_FEMALE_GID_TYPE = String.class;
-    public static final String CROSS_FEMALE_GID = "CROSS-FEMALE GID";
-    
-    @SuppressWarnings("rawtypes")
-    public static final Class CROSS_FEMALE_PREF_NAME_TYPE = String.class;
-    public static final String CROSS_FEMALE_PREF_NAME = "CROSS-FEMALE PREFERRED NAME";
-    
-    @SuppressWarnings("rawtypes")
-    public static final Class CROSS_MALE_GID_TYPE = String.class;
-    public static final String CROSS_MALE_GID = "CROSS-MALE GID";
-    
-    @SuppressWarnings("rawtypes")
-    public static final Class CROSS_MALE_PREF_NAME_TYPE = String.class;
-    public static final String CROSS_MALE_PREF_NAME = "CROSS-MALE PREFERRED NAME";
+    private static final String ADD_COLUMN_MENU = "Add Column";
+    private static final String FILL_WITH_PREFERRED_ID = "Fill with Preferred ID";
+    private static final String FILL_WITH_PREFERRED_NAME = "Fill with Preferred Name";
+    private static final String FILL_WITH_GERMPLASM_DATE = "Fill with Germplasm Dates";
+    private static final String FILL_WITH_LOCATION = "Fill with Location";
+    private static final String FILL_WITH_METHOD_INFO = "Fill with Breeding Method Information";
+    private static final String FILL_WITH_METHOD_NAME = "Fill with Breeding Method Name";
+    private static final String FILL_WITH_METHOD_ABBREV = "Fill with Breeding Method Abbreviation";
+    private static final String FILL_WITH_METHOD_NUMBER = "Fill with Breeding Method Number";
+    private static final String FILL_WITH_METHOD_GROUP = "Fill with Breeding Method Group";
+    private static final String FILL_WITH_CROSS_FEMALE_INFO = "Fill with Cross-Female Information";
+    private static final String FILL_WITH_CROSS_FEMALE_GID = "Fill with Cross-Female GID";
+    private static final String FILL_WITH_CROSS_FEMALE_PREF_NAME = "Fill with Cross-Female Preferred Name";
+    private static final String FILL_WITH_CROSS_MALE_INFO = "Fill with Cross-Male Information";
+    private static final String FILL_WITH_CROSS_MALE_GID = "Fill with Cross-Male GID";
+    private static final String FILL_WITH_CROSS_MALE_PREF_NAME = "Fill with Cross-Male Preferred Name";
     
     @SuppressWarnings("unused")
 	private boolean fromBuildNewList;
@@ -141,7 +133,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     public AddColumnContextMenu(ListTabComponent listDetailsComponent, 
             ContextMenu sourceContextMenu, Table targetTable, String gid){
         this.listDetailsComponent = listDetailsComponent;
-        this.GIDPropertyId = gid;
+        this.gidPropertyId = gid;
         this.targetTable = targetTable;
         this.sourceContextMenu = sourceContextMenu;
         
@@ -158,7 +150,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
      */
     public AddColumnContextMenu(ComponentContainer cssLayoutSource,
             ContextMenu sourceContextMenu, Table targetTable, String gid, boolean fromBuildNewList){
-        this.GIDPropertyId = gid;
+        this.gidPropertyId = gid;
         this.targetTable = targetTable;
         this.sourceContextMenu = sourceContextMenu;
         this.cssLayoutSource = cssLayoutSource;
@@ -179,7 +171,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
      * @param gid - property of GID (button with GID as caption) on that table
      */
     public AddColumnContextMenu(Table targetTable, String gid){
-        this.GIDPropertyId = gid;
+        this.gidPropertyId = gid;
         this.targetTable = targetTable;
         
         setupContextMenu();
@@ -212,149 +204,115 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
         menuFillWithCrossMaleGID = menuFillWithCrossMaleInfo.addItem(FILL_WITH_CROSS_MALE_GID);
         menuFillWithCrossMalePrefName = menuFillWithCrossMaleInfo.addItem(FILL_WITH_CROSS_MALE_PREF_NAME);
         
-        sourceContextMenu.addListener(new ContextMenu.ClickListener() {
-            private static final long serialVersionUID = 1L;
-
-            //Handle clicks on menu items
-            @Override
-            public void contextItemClick(ClickEvent event) {
-                ContextMenuItem clickedItem = event.getClickedItem();
-                if(clickedItem.getName().equals(FILL_WITH_PREFERRED_ID)){
-                      addPreferredIdColumn();
-                }else if(clickedItem.getName().equals(FILL_WITH_PREFERRED_NAME)){
-                    addPreferredNameColumn();
-                }else if(clickedItem.getName().equals(FILL_WITH_GERMPLASM_DATE)){
-                    addGermplasmDateColumn();
-                }else if(clickedItem.getName().equals(FILL_WITH_LOCATION)){
-                    addLocationColumn();
-                }else if(clickedItem.getName().equals(FILL_WITH_METHOD_NAME)){
-                    addMethodNameColumn();
-                }else if(clickedItem.getName().equals(FILL_WITH_METHOD_ABBREV)){
-                    addMethodAbbrevColumn();
-                }else if(clickedItem.getName().equals(FILL_WITH_METHOD_NUMBER)){
-                    addMethodNumberColumn();
-                }else if(clickedItem.getName().equals(FILL_WITH_METHOD_GROUP)){
-                    addMethodGroupColumn();
-                }else if(clickedItem.getName().equals(FILL_WITH_CROSS_FEMALE_GID)){
-                    addCrossFemaleGidColumn();
-                }else if(clickedItem.getName().equals(FILL_WITH_CROSS_FEMALE_PREF_NAME)){
-                    addCrossFemalePrefNameColumn();
-                }else if(clickedItem.getName().equals(FILL_WITH_CROSS_MALE_GID)){
-                	addCrossMaleGIDColumn();
-                }else if(clickedItem.getName().equals(FILL_WITH_CROSS_MALE_PREF_NAME)){
-                	addCrossMalePrefNameColumn();
-                }
-            }
-            
-        });
+        sourceContextMenu.addListener(new SourceContextMenuClickListener());
     }
     
     public void initializeAddableProperties(){
     	
     	ADDABLE_PROPERTY_IDS = new ArrayList<String>();
     	
-    	ADDABLE_PROPERTY_IDS.add(PREFERRED_ID);
-    	ADDABLE_PROPERTY_IDS.add(PREFERRED_NAME);
-    	ADDABLE_PROPERTY_IDS.add(GERMPLASM_DATE);
-    	ADDABLE_PROPERTY_IDS.add(LOCATIONS);
-    	ADDABLE_PROPERTY_IDS.add(METHOD_NAME);
-    	ADDABLE_PROPERTY_IDS.add(METHOD_ABBREV);
-    	ADDABLE_PROPERTY_IDS.add(METHOD_NUMBER);
-    	ADDABLE_PROPERTY_IDS.add(METHOD_GROUP);
-    	ADDABLE_PROPERTY_IDS.add(CROSS_FEMALE_GID);
-    	ADDABLE_PROPERTY_IDS.add(CROSS_FEMALE_PREF_NAME);
-    	ADDABLE_PROPERTY_IDS.add(CROSS_MALE_GID);
-    	ADDABLE_PROPERTY_IDS.add(CROSS_MALE_PREF_NAME);
+    	ADDABLE_PROPERTY_IDS.add(ColumnLabels.PREFERRED_ID.getName());
+    	ADDABLE_PROPERTY_IDS.add(ColumnLabels.PREFERRED_NAME.getName());
+    	ADDABLE_PROPERTY_IDS.add(ColumnLabels.GERMPLASM_DATE.getName());
+    	ADDABLE_PROPERTY_IDS.add(ColumnLabels.GERMPLASM_LOCATION.getName());
+    	ADDABLE_PROPERTY_IDS.add(ColumnLabels.BREEDING_METHOD_NAME.getName());
+    	ADDABLE_PROPERTY_IDS.add(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName());
+    	ADDABLE_PROPERTY_IDS.add(ColumnLabels.BREEDING_METHOD_NUMBER.getName());
+    	ADDABLE_PROPERTY_IDS.add(ColumnLabels.BREEDING_METHOD_GROUP.getName());
+    	ADDABLE_PROPERTY_IDS.add(ColumnLabels.CROSS_FEMALE_GID.getName());
+    	ADDABLE_PROPERTY_IDS.add(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName());
+    	ADDABLE_PROPERTY_IDS.add(ColumnLabels.CROSS_MALE_GID.getName());
+    	ADDABLE_PROPERTY_IDS.add(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName());
     }
     
     public void refreshAddColumnMenu() {
       //Check if columns already exist in the table
-        if(propertyExists(PREFERRED_ID)){
+        if(propertyExists(ColumnLabels.PREFERRED_ID.getName())){
             menuFillWithPreferredId.setEnabled(false);
         } else {
             menuFillWithPreferredId.setEnabled(true);
         }
         
-        if(propertyExists(PREFERRED_NAME)){
+        if(propertyExists(ColumnLabels.PREFERRED_NAME.getName())){
             menuFillWithPreferredName.setEnabled(false);
         } else {
             menuFillWithPreferredName.setEnabled(true);
         }
         
-        if(propertyExists(GERMPLASM_DATE)){
+        if(propertyExists(ColumnLabels.GERMPLASM_DATE.getName())){
             menuFillWithGermplasmDate.setEnabled(false);
         } else {
             menuFillWithGermplasmDate.setEnabled(true);
         }
         
-        if(propertyExists(LOCATIONS)){
+        if(propertyExists(ColumnLabels.GERMPLASM_LOCATION.getName())){
             menuFillWithLocations.setEnabled(false);
         } else {
             menuFillWithLocations.setEnabled(true);
         }
         
-        if(propertyExists(METHOD_NAME)){
+        if(propertyExists(ColumnLabels.BREEDING_METHOD_NAME.getName())){
             menuFillWithMethodName.setEnabled(false);
         } else {
             menuFillWithMethodName.setEnabled(true);
         }
         
-        if(propertyExists(METHOD_ABBREV)){
+        if(propertyExists(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName())){
             menuFillWithMethodAbbrev.setEnabled(false);
         } else {
             menuFillWithMethodAbbrev.setEnabled(true);
         }
         
-        if(propertyExists(METHOD_NUMBER)){
+        if(propertyExists(ColumnLabels.BREEDING_METHOD_NUMBER.getName())){
             menuFillWithMethodNumber.setEnabled(false);
         } else {
             menuFillWithMethodNumber.setEnabled(true);
         }
         
-        if(propertyExists(METHOD_GROUP)){
+        if(propertyExists(ColumnLabels.BREEDING_METHOD_GROUP.getName())){
             menuFillWithMethodGroup.setEnabled(false);
         } else {
             menuFillWithMethodGroup.setEnabled(true);
         }
         
-        if(propertyExists(METHOD_NAME) && propertyExists(METHOD_ABBREV)
-                && propertyExists(METHOD_NUMBER) && propertyExists(METHOD_GROUP)){
+        if(propertyExists(ColumnLabels.BREEDING_METHOD_NAME.getName()) && propertyExists(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName())
+                && propertyExists(ColumnLabels.BREEDING_METHOD_NUMBER.getName()) && propertyExists(ColumnLabels.BREEDING_METHOD_GROUP.getName())){
             menuFillWithMethodInfo.setEnabled(false);
         } else {
             menuFillWithMethodInfo.setEnabled(true);
         }
         
-        if(propertyExists(CROSS_FEMALE_GID)){
+        if(propertyExists(ColumnLabels.CROSS_FEMALE_GID.getName())){
             menuFillWithCrossFemaleGID.setEnabled(false);
         } else {
             menuFillWithCrossFemaleGID.setEnabled(true);
         }
         
-        if(propertyExists(CROSS_FEMALE_PREF_NAME)){
+        if(propertyExists(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName())){
             menuFillWithCrossFemalePrefName.setEnabled(false);
         } else {
             menuFillWithCrossFemalePrefName.setEnabled(true);
         }
         
-        if(propertyExists(CROSS_FEMALE_GID) && propertyExists(CROSS_FEMALE_PREF_NAME)){
+        if(propertyExists(ColumnLabels.CROSS_FEMALE_GID.getName()) && propertyExists(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName())){
             menuFillWithCrossFemaleInfo.setEnabled(false);
         } else {
             menuFillWithCrossFemaleInfo.setEnabled(true);
         }
         
-        if(propertyExists(CROSS_MALE_GID)){
+        if(propertyExists(ColumnLabels.CROSS_MALE_GID.getName())){
             menuFillWithCrossMaleGID.setEnabled(false);
         } else {
             menuFillWithCrossMaleGID.setEnabled(true);
         }
         
-        if(propertyExists(CROSS_MALE_PREF_NAME)){
+        if(propertyExists(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName())){
             menuFillWithCrossMalePrefName.setEnabled(false);
         } else {
             menuFillWithCrossMalePrefName.setEnabled(true);
         }
         
-        if(propertyExists(CROSS_MALE_GID) && propertyExists(CROSS_MALE_PREF_NAME)){
+        if(propertyExists(ColumnLabels.CROSS_MALE_GID.getName()) && propertyExists(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName())){
             menuFillWithCrossMaleInfo.setEnabled(false);
         } else {
             menuFillWithCrossMaleInfo.setEnabled(true);
@@ -383,24 +341,25 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     }
     
     private void addPreferredIdColumn(){
-        if(!propertyExists(PREFERRED_ID)){
-            targetTable.addContainerProperty(PREFERRED_ID, PREFERRED_ID_TYPE, "");
+        if(!propertyExists(ColumnLabels.PREFERRED_ID.getName())){
+            targetTable.addContainerProperty(ColumnLabels.PREFERRED_ID.getName(), String.class, "");
+            targetTable.setColumnHeader(ColumnLabels.PREFERRED_ID.getName(), ColumnLabels.PREFERRED_ID.getTermNameFromOntology(ontologyDataManager));
             setPreferredIdColumnValues(true);
         }
     }
     
     public void setPreferredIdColumnValues(boolean fromAddColumn){
-        if(propertyExists(PREFERRED_ID)){
+        if(propertyExists(ColumnLabels.PREFERRED_ID.getName())){
             try {
                 List<Integer> itemIds = getItemIds(targetTable);
                 for(Integer itemId: itemIds){
-                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(gidPropertyId).getValue()).getCaption().toString());
                     String preferredID = "";
                     Name name = germplasmDataManager.getPreferredIdByGID(gid);
                     if(name!=null && name.getNval()!=null) {
                         preferredID = name.getNval();
                     }
-                    targetTable.getItem(itemId).getItemProperty(PREFERRED_ID).setValue(preferredID);
+                    targetTable.getItem(itemId).getItemProperty(ColumnLabels.PREFERRED_ID.getName()).setValue(preferredID);
                 }
                
                 //To trigger TableFieldFactory (fix for truncated data)
@@ -414,24 +373,25 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     }
     
     private void addPreferredNameColumn(){
-        if(!propertyExists(PREFERRED_NAME)){
-            targetTable.addContainerProperty(PREFERRED_NAME, PREFERRED_NAME_TYPE, "");
+        if(!propertyExists(ColumnLabels.PREFERRED_NAME.getName())){
+            targetTable.addContainerProperty(ColumnLabels.PREFERRED_NAME.getName(), String.class, "");
+            targetTable.setColumnHeader(ColumnLabels.PREFERRED_NAME.getName(), ColumnLabels.PREFERRED_NAME.getTermNameFromOntology(ontologyDataManager));
             setPreferredNameColumnValues(true);
         }
     }
     
     public void setPreferredNameColumnValues(boolean fromAddColumn){
-        if(propertyExists(PREFERRED_NAME)){
+        if(propertyExists(ColumnLabels.PREFERRED_NAME.getName())){
             try {
                 List<Integer> itemIds = getItemIds(targetTable);
                 for(Integer itemId: itemIds){
-                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(gidPropertyId).getValue()).getCaption().toString());
                     
                     String preferredName = "";
                     if(germplasmDataManager.getPreferredNameByGID(gid)!=null && germplasmDataManager.getPreferredNameByGID(gid).getNval()!=null) {
                         preferredName = germplasmDataManager.getPreferredNameByGID(gid).getNval();
                     }
-                    targetTable.getItem(itemId).getItemProperty(PREFERRED_NAME).setValue(preferredName);
+                    targetTable.getItem(itemId).getItemProperty(ColumnLabels.PREFERRED_NAME.getName()).setValue(preferredName);
                 }
 
                 //To trigger TableFieldFactory (fix for truncated data)
@@ -446,32 +406,33 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     }
     
     private void addGermplasmDateColumn(){
-        if(!propertyExists(GERMPLASM_DATE)){
-            targetTable.addContainerProperty(GERMPLASM_DATE, GERMPLASM_DATE_TYPE, "");
-            //TODO: can create separate method for adding container property and the actual setting of column values,
+        if(!propertyExists(ColumnLabels.GERMPLASM_DATE.getName())){
+            targetTable.addContainerProperty(ColumnLabels.GERMPLASM_DATE.getName(), String.class, "");
+            targetTable.setColumnHeader(ColumnLabels.GERMPLASM_DATE.getName(), ColumnLabels.GERMPLASM_DATE.getTermNameFromOntology(ontologyDataManager));
+            //can create separate method for adding container property and the actual setting of column values,
             //      so that the middleware call below can be called only once without having the gids become null
             setGermplasmDateColumnValues(true);
         }
     }
     
     public void setGermplasmDateColumnValues(boolean fromAddColumn){
-        if(propertyExists(GERMPLASM_DATE)){
+        if(propertyExists(ColumnLabels.GERMPLASM_DATE.getName())){
             try {
                 List<Integer> itemIds = getItemIds(targetTable);
                 
                 for(Integer itemId: itemIds){
-                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(gidPropertyId).getValue()).getCaption().toString());
                     
                     List<Integer> gids = new ArrayList<Integer>();
                     gids.add(gid);
                     
-                    //TODO can make better use of the middleware method by just calling it once and not have it inside a loop
+                    //can make better use of the middleware method by just calling it once and not have it inside a loop
                     Map<Integer,Integer> germplasmGidDateMap = germplasmDataManager.getGermplasmDatesByGids(gids);
                     
                     if(germplasmGidDateMap.get(gid)==null) {
-                        targetTable.getItem(itemId).getItemProperty(GERMPLASM_DATE).setValue("");
+                        targetTable.getItem(itemId).getItemProperty(ColumnLabels.GERMPLASM_DATE.getName()).setValue("");
                     } else {
-                        targetTable.getItem(itemId).getItemProperty(GERMPLASM_DATE).setValue(germplasmGidDateMap.get(gid));
+                        targetTable.getItem(itemId).getItemProperty(ColumnLabels.GERMPLASM_DATE.getName()).setValue(germplasmGidDateMap.get(gid));
                     }
                 }
                 
@@ -487,21 +448,22 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     }
     
     private void addLocationColumn(){
-        if(!propertyExists(LOCATIONS)){
-            targetTable.addContainerProperty(LOCATIONS, LOCATIONS_TYPE, "");
+        if(!propertyExists(ColumnLabels.GERMPLASM_LOCATION.getName())){
+            targetTable.addContainerProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class, "");
+            targetTable.setColumnHeader(ColumnLabels.GERMPLASM_LOCATION.getName(), ColumnLabels.GERMPLASM_LOCATION.getTermNameFromOntology(ontologyDataManager));
             setLocationColumnValues(true);
         }
     }
     
     public void setLocationColumnValues(boolean fromAddColumn){
-        if(propertyExists(LOCATIONS)){
+        if(propertyExists(ColumnLabels.GERMPLASM_LOCATION.getName())){
             try {
                 List<Integer> itemIds = getItemIds(targetTable);
                 
                 final Map<Integer, String> allLocationNamesMap = new HashMap<Integer, String>();
                 
                 for(Integer itemId: itemIds){
-                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(gidPropertyId).getValue()).getCaption().toString());
                     
                     List<Integer> gids = new ArrayList<Integer>();
                     gids.add(gid);
@@ -510,9 +472,9 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                     allLocationNamesMap.putAll(locationNamesMap);
                     
                     if(locationNamesMap.get(gid)==null) {
-                        targetTable.getItem(itemId).getItemProperty(LOCATIONS).setValue("");
+                        targetTable.getItem(itemId).getItemProperty(ColumnLabels.GERMPLASM_LOCATION.getName()).setValue("");
                     } else {
-                        targetTable.getItem(itemId).getItemProperty(LOCATIONS).setValue(locationNamesMap.get(gid));
+                        targetTable.getItem(itemId).getItemProperty(ColumnLabels.GERMPLASM_LOCATION.getName()).setValue(locationNamesMap.get(gid));
                     }
                 }
 
@@ -528,30 +490,34 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     }
     
     private void addMethodNameColumn(){
-        if(!propertyExists(METHOD_NAME)){
-            targetTable.addContainerProperty(METHOD_NAME, METHOD_NAME_TYPE, "");
-            setMethodInfoColumnValues(true, METHOD_NAME);
+        if(!propertyExists(ColumnLabels.BREEDING_METHOD_NAME.getName())){
+            targetTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, "");
+            targetTable.setColumnHeader(ColumnLabels.BREEDING_METHOD_NAME.getName(), ColumnLabels.BREEDING_METHOD_NAME.getTermNameFromOntology(ontologyDataManager));
+            setMethodInfoColumnValues(true, ColumnLabels.BREEDING_METHOD_NAME.getName());
         }
     }
     
     private void addMethodAbbrevColumn(){
-        if(!propertyExists(METHOD_ABBREV)){
-            targetTable.addContainerProperty(METHOD_ABBREV, METHOD_ABBREV_TYPE, "");
-            setMethodInfoColumnValues(true, METHOD_ABBREV);
+        if(!propertyExists(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName())){
+            targetTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(), String.class, "");
+            targetTable.setColumnHeader(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName(), ColumnLabels.BREEDING_METHOD_ABBREVIATION.getTermNameFromOntology(ontologyDataManager));
+            setMethodInfoColumnValues(true, ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName());
         }
     }
     
     private void addMethodNumberColumn(){
-        if(!propertyExists(METHOD_NUMBER)){
-            targetTable.addContainerProperty(METHOD_NUMBER, METHOD_NUMBER_TYPE, "");
-            setMethodInfoColumnValues(true, METHOD_NUMBER);
+        if(!propertyExists(ColumnLabels.BREEDING_METHOD_NUMBER.getName())){
+            targetTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_NUMBER.getName(), String.class, "");
+            targetTable.setColumnHeader(ColumnLabels.BREEDING_METHOD_NUMBER.getName(), ColumnLabels.BREEDING_METHOD_NUMBER.getTermNameFromOntology(ontologyDataManager));
+            setMethodInfoColumnValues(true, ColumnLabels.BREEDING_METHOD_NUMBER.getName());
         }
     }
     
     private void addMethodGroupColumn(){
-        if(!propertyExists(METHOD_GROUP)){
-            targetTable.addContainerProperty(METHOD_GROUP, METHOD_GROUP_TYPE, "");
-            setMethodInfoColumnValues(true, METHOD_GROUP);
+        if(!propertyExists(ColumnLabels.BREEDING_METHOD_GROUP.getName())){
+            targetTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_GROUP.getName(), String.class, "");
+            targetTable.setColumnHeader(ColumnLabels.BREEDING_METHOD_GROUP.getName(), ColumnLabels.BREEDING_METHOD_GROUP.getTermNameFromOntology(ontologyDataManager));
+            setMethodInfoColumnValues(true, ColumnLabels.BREEDING_METHOD_GROUP.getName());
         }
     }
     
@@ -563,7 +529,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                 final Map<Integer, Object> allMethodsMap = new HashMap<Integer, Object>();
                 
                 for(Integer itemId: itemIds){
-                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(gidPropertyId).getValue()).getCaption().toString());
                     
                     List<Integer> gids = new ArrayList<Integer>();
                     gids.add(gid);
@@ -576,13 +542,13 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                     } else {
                         String value = "";
                         
-                        if (columnName.equals(METHOD_NAME)) {
+                        if (columnName.equals(ColumnLabels.BREEDING_METHOD_NAME.getName())) {
                             value = ((Method)methodsMap.get(gid)).getMname();
-                        } else if (columnName.equals(METHOD_ABBREV)) {
+                        } else if (columnName.equals(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName())) {
                             value = ((Method)methodsMap.get(gid)).getMcode();
-                        } else if (columnName.equals(METHOD_NUMBER)) {
+                        } else if (columnName.equals(ColumnLabels.BREEDING_METHOD_NUMBER.getName())) {
                             value = ((Method)methodsMap.get(gid)).getMid().toString();
-                        } else if (columnName.equals(METHOD_GROUP)) {
+                        } else if (columnName.equals(ColumnLabels.BREEDING_METHOD_GROUP.getName())) {
                             value = ((Method)methodsMap.get(gid)).getMgrp();
                         }
                         
@@ -602,34 +568,35 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     }
     
     private void addCrossMaleGIDColumn(){
-        if(!propertyExists(CROSS_MALE_GID)){
-            targetTable.addContainerProperty(CROSS_MALE_GID, CROSS_MALE_GID_TYPE, "-");
+        if(!propertyExists(ColumnLabels.CROSS_MALE_GID.getName())){
+            targetTable.addContainerProperty(ColumnLabels.CROSS_MALE_GID.getName(), String.class, "-");
+            targetTable.setColumnHeader(ColumnLabels.CROSS_MALE_GID.getName(), ColumnLabels.CROSS_MALE_GID.getTermNameFromOntology(ontologyDataManager));
             setCrossMaleGIDColumnValues(true);
         }
     }
     
     public void setCrossMaleGIDColumnValues(boolean fromAddColumn){
-        if(propertyExists(CROSS_MALE_GID)){
+        if(propertyExists(ColumnLabels.CROSS_MALE_GID.getName())){
             try {
                 List<Integer> itemIds = getItemIds(targetTable);
                 
                 for(Integer itemId: itemIds){
-                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(gidPropertyId).getValue()).getCaption().toString());
                     
                     Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
                     
                     if(germplasm != null){
 	                    if(germplasm.getGnpgs() >= 2) {
 	                    	if(germplasm.getGpid2() != null && germplasm.getGpid2() != 0){
-	                    		targetTable.getItem(itemId).getItemProperty(CROSS_MALE_GID).setValue(germplasm.getGpid2().toString());
+	                    		targetTable.getItem(itemId).getItemProperty(ColumnLabels.CROSS_MALE_GID.getName()).setValue(germplasm.getGpid2().toString());
 	                    	} else{
-	                    		targetTable.getItem(itemId).getItemProperty(CROSS_MALE_GID).setValue("-");
+	                    		targetTable.getItem(itemId).getItemProperty(ColumnLabels.CROSS_MALE_GID.getName()).setValue("-");
 	                    	}
 	                    } else {
-	                        targetTable.getItem(itemId).getItemProperty(CROSS_MALE_GID).setValue("-");
+	                        targetTable.getItem(itemId).getItemProperty(ColumnLabels.CROSS_MALE_GID.getName()).setValue("-");
 	                    }
                     } else{
-                    	targetTable.getItem(itemId).getItemProperty(CROSS_MALE_GID).setValue("-");
+                    	targetTable.getItem(itemId).getItemProperty(ColumnLabels.CROSS_MALE_GID.getName()).setValue("-");
                     }
                 }
                 
@@ -645,21 +612,22 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     }
     
     private void addCrossMalePrefNameColumn(){
-        if(!propertyExists(CROSS_MALE_PREF_NAME)){
-            targetTable.addContainerProperty(CROSS_MALE_PREF_NAME, CROSS_MALE_PREF_NAME_TYPE, "-");
+        if(!propertyExists(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName())){
+            targetTable.addContainerProperty(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(), String.class, "-");
+            targetTable.setColumnHeader(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName(), ColumnLabels.CROSS_MALE_PREFERRED_NAME.getTermNameFromOntology(ontologyDataManager));
             setCrossMalePrefNameColumnValues(true);
         }
     }
     
     public void setCrossMalePrefNameColumnValues(boolean fromAddColumn){
-        if(propertyExists(CROSS_MALE_PREF_NAME)){
+        if(propertyExists(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName())){
             try {
                 List<Integer> itemIds = getItemIds(targetTable);
                 Map<Integer, List<Integer>> gidToItemIdMap = new HashMap<Integer, List<Integer>>();
                 List<Integer> gidsToUseForQuery = new ArrayList<Integer>();
                 
                 for(Integer itemId: itemIds){
-                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(gidPropertyId).getValue()).getCaption().toString());
                     
                     Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
                     
@@ -675,10 +643,10 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
 	                        	itemIdsInMap.add(itemId);
 	                        }
 	                    } else {
-	                        targetTable.getItem(itemId).getItemProperty(CROSS_MALE_PREF_NAME).setValue("-");
+	                        targetTable.getItem(itemId).getItemProperty(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName()).setValue("-");
 	                    }
                     } else{
-                    	targetTable.getItem(itemId).getItemProperty(CROSS_MALE_PREF_NAME).setValue("-");
+                    	targetTable.getItem(itemId).getItemProperty(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName()).setValue("-");
                     }
                 }
                 
@@ -689,7 +657,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                 		String prefName = gidToNameMap.get(gid);
                 		List<Integer> itemIdsInMap = gidToItemIdMap.get(gid);
                 		for(Integer itemId : itemIdsInMap){
-                			targetTable.getItem(itemId).getItemProperty(CROSS_MALE_PREF_NAME).setValue(prefName);
+                			targetTable.getItem(itemId).getItemProperty(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName()).setValue(prefName);
                 		}
                 	}
                 }
@@ -706,16 +674,18 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     }
     
     private void addCrossFemaleGidColumn(){
-        if(!propertyExists(CROSS_FEMALE_GID)){
-            targetTable.addContainerProperty(CROSS_FEMALE_GID, CROSS_FEMALE_GID_TYPE, "");
-            setCrossFemaleInfoColumnValues(true, CROSS_FEMALE_GID);
+        if(!propertyExists(ColumnLabels.CROSS_FEMALE_GID.getName())){
+            targetTable.addContainerProperty(ColumnLabels.CROSS_FEMALE_GID.getName(), String.class, "");
+            targetTable.setColumnHeader(ColumnLabels.CROSS_FEMALE_GID.getName(), ColumnLabels.CROSS_FEMALE_GID.getTermNameFromOntology(ontologyDataManager));
+            setCrossFemaleInfoColumnValues(true, ColumnLabels.CROSS_FEMALE_GID.getName());
         }
     }
     
     private void addCrossFemalePrefNameColumn(){
-        if(!propertyExists(CROSS_FEMALE_PREF_NAME)){
-            targetTable.addContainerProperty(CROSS_FEMALE_PREF_NAME, CROSS_FEMALE_PREF_NAME_TYPE, "");
-            setCrossFemaleInfoColumnValues(true, CROSS_FEMALE_PREF_NAME);
+        if(!propertyExists(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName())){
+            targetTable.addContainerProperty(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(), String.class, "");
+            targetTable.setColumnHeader(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName(), ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getTermNameFromOntology(ontologyDataManager));
+            setCrossFemaleInfoColumnValues(true, ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName());
         }
     }
     
@@ -725,7 +695,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                 List<Integer> itemIds = getItemIds(targetTable);
                 
                 for(Integer itemId: itemIds){
-                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString());
+                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(gidPropertyId).getValue()).getCaption().toString());
                     
                     Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
                     Germplasm femaleParent = null;
@@ -738,9 +708,9 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                         targetTable.getItem(itemId).getItemProperty(columnName).setValue("-");
                     } else {
                         String value = "-";
-                        if (columnName.equals(CROSS_FEMALE_GID)) {
+                        if (columnName.equals(ColumnLabels.CROSS_FEMALE_GID.getName())) {
                             value = femaleParent.getGid().toString();
-                        } else if (columnName.equals(CROSS_FEMALE_PREF_NAME)) {
+                        } else if (columnName.equals(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName())) {
                             Name prefName = germplasmDataManager.getPreferredNameByGID(femaleParent.getGid());
                             if (prefName != null) {
                                 value = prefName.getNval();
@@ -757,7 +727,6 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
                 
             } catch (MiddlewareQueryException e) {
                 LOG.error("Error in filling with Cross Female Info values.", e);
-                e.printStackTrace();
             }       
         }
     }
@@ -787,7 +756,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
         List<Integer> gids = new ArrayList<Integer>();
         List<Integer> listDataItemIds = getItemIds(table);
         for(Integer itemId: listDataItemIds){
-            gids.add(Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(GIDPropertyId).getValue()).getCaption().toString()));
+            gids.add(Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(gidPropertyId).getValue()).getCaption().toString()));
         }
         return gids;
     }
@@ -802,7 +771,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     
     @Override
     public void updateLabels() {
-        
+        //do nothing
     } 
     
     /**
@@ -811,29 +780,29 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
     public void populateAddedColumns(){
         for(String propertyId: AddColumnContextMenu.ADDABLE_PROPERTY_IDS){
             if(propertyExists(propertyId)){
-                if(propertyId.equals(AddColumnContextMenu.PREFERRED_ID)){
+                if(propertyId.equals(ColumnLabels.PREFERRED_ID.getName())){
                     setPreferredIdColumnValues(false);
-                } else if(propertyId.equals(AddColumnContextMenu.PREFERRED_NAME)){
+                } else if(propertyId.equals(ColumnLabels.PREFERRED_NAME.getName())){
                     setPreferredNameColumnValues(false);
-                } else if(propertyId.equals(AddColumnContextMenu.GERMPLASM_DATE)){
+                } else if(propertyId.equals(ColumnLabels.GERMPLASM_DATE.getName())){
                     setGermplasmDateColumnValues(false);
-                } else if(propertyId.equals(AddColumnContextMenu.LOCATIONS)){
+                } else if(propertyId.equals(ColumnLabels.GERMPLASM_LOCATION.getName())){
                     setLocationColumnValues(false);
-                } else if(propertyId.equals(AddColumnContextMenu.METHOD_NAME)){
-                    setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_NAME);
-                } else if(propertyId.equals(AddColumnContextMenu.METHOD_ABBREV)){
-                    setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_ABBREV);
-                } else if(propertyId.equals(AddColumnContextMenu.METHOD_NUMBER)){
-                    setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_NUMBER);
-                } else if(propertyId.equals(AddColumnContextMenu.METHOD_GROUP)){
-                    setMethodInfoColumnValues(false, AddColumnContextMenu.METHOD_GROUP);
-                } else if(propertyId.equals(AddColumnContextMenu.CROSS_FEMALE_GID)){
-                    setCrossFemaleInfoColumnValues(false, AddColumnContextMenu.CROSS_FEMALE_GID);
-                } else if(propertyId.equals(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME)){
-                    setCrossFemaleInfoColumnValues(false, AddColumnContextMenu.CROSS_FEMALE_PREF_NAME);
-                } else if(propertyId.equals(AddColumnContextMenu.CROSS_MALE_GID)){
+                } else if(propertyId.equals(ColumnLabels.BREEDING_METHOD_NAME.getName())){
+                    setMethodInfoColumnValues(false, ColumnLabels.BREEDING_METHOD_NAME.getName());
+                } else if(propertyId.equals(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName())){
+                    setMethodInfoColumnValues(false, ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName());
+                } else if(propertyId.equals(ColumnLabels.BREEDING_METHOD_NUMBER.getName())){
+                    setMethodInfoColumnValues(false, ColumnLabels.BREEDING_METHOD_NUMBER.getName());
+                } else if(propertyId.equals(ColumnLabels.BREEDING_METHOD_GROUP.getName())){
+                    setMethodInfoColumnValues(false, ColumnLabels.BREEDING_METHOD_GROUP.getName());
+                } else if(propertyId.equals(ColumnLabels.CROSS_FEMALE_GID.getName())){
+                    setCrossFemaleInfoColumnValues(false, ColumnLabels.CROSS_FEMALE_GID.getName());
+                } else if(propertyId.equals(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName())){
+                    setCrossFemaleInfoColumnValues(false, ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName());
+                } else if(propertyId.equals(ColumnLabels.CROSS_MALE_GID.getName())){
                 	setCrossMaleGIDColumnValues(false);
-                } else if(propertyId.equals(AddColumnContextMenu.CROSS_MALE_PREF_NAME)){
+                } else if(propertyId.equals(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName())){
                 	setCrossMalePrefNameColumnValues(false);
                 }
 
@@ -873,29 +842,29 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
      * This can be used to add columns given a property ID (should be one of the addable ID's)
      */
     public void addColumn(String propertyId){
-        if(propertyId.equals(AddColumnContextMenu.PREFERRED_ID)){
+        if(propertyId.equals(ColumnLabels.PREFERRED_ID.getName())){
             addPreferredIdColumn();
-        } else if(propertyId.equals(AddColumnContextMenu.PREFERRED_NAME)){
+        } else if(propertyId.equals(ColumnLabels.PREFERRED_NAME.getName())){
             addPreferredNameColumn();
-        } else if(propertyId.equals(AddColumnContextMenu.GERMPLASM_DATE)){
+        } else if(propertyId.equals(ColumnLabels.GERMPLASM_DATE.getName())){
             addGermplasmDateColumn();
-        } else if(propertyId.equals(AddColumnContextMenu.LOCATIONS)){
+        } else if(propertyId.equals(ColumnLabels.GERMPLASM_LOCATION.getName())){
             addLocationColumn();
-        } else if(propertyId.equals(AddColumnContextMenu.METHOD_NAME)){
+        } else if(propertyId.equals(ColumnLabels.BREEDING_METHOD_NAME.getName())){
             addMethodNameColumn();
-        } else if(propertyId.equals(AddColumnContextMenu.METHOD_ABBREV)){
+        } else if(propertyId.equals(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName())){
             addMethodAbbrevColumn();
-        } else if(propertyId.equals(AddColumnContextMenu.METHOD_NUMBER)){
+        } else if(propertyId.equals(ColumnLabels.BREEDING_METHOD_NUMBER.getName())){
             addMethodNumberColumn();
-        } else if(propertyId.equals(AddColumnContextMenu.METHOD_GROUP)){
+        } else if(propertyId.equals(ColumnLabels.BREEDING_METHOD_GROUP.getName())){
             addMethodGroupColumn();
-        } else if(propertyId.equals(AddColumnContextMenu.CROSS_FEMALE_GID)){
+        } else if(propertyId.equals(ColumnLabels.CROSS_FEMALE_GID.getName())){
             addCrossFemaleGidColumn();
-        } else if(propertyId.equals(AddColumnContextMenu.CROSS_FEMALE_PREF_NAME)){
+        } else if(propertyId.equals(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName())){
             addCrossFemalePrefNameColumn();
-        } else if(propertyId.equals(AddColumnContextMenu.CROSS_MALE_GID)){
+        } else if(propertyId.equals(ColumnLabels.CROSS_MALE_GID.getName())){
         	addCrossMaleGIDColumn();
-        } else if(propertyId.equals(AddColumnContextMenu.CROSS_MALE_PREF_NAME)){
+        } else if(propertyId.equals(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName())){
         	addCrossMalePrefNameColumn();
         }
 

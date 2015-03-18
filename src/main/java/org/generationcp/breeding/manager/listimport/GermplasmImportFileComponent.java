@@ -20,10 +20,12 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class GermplasmImportFileComponent extends AbsoluteLayout implements InitializingBean, 
@@ -41,6 +43,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
     private UploadField uploadComponents;
     private Button cancelButton;
     private Button nextButton;
+    private Button openTemplateButton;
     private GermplasmListUploader germplasmListUploader;
     
     @Autowired
@@ -67,6 +70,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
     @Override
     public void updateLabels() {
         messageSource.setCaption(nextButton, Message.NEXT);
+        messageSource.setCaption(openTemplateButton, Message.HERE);
     }
     
     public void nextButtonClickAction() {
@@ -128,7 +132,11 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
         nextButton.setData(NEXT_BUTTON_ID);
         nextButton.setEnabled(false);
         nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-		
+        
+        openTemplateButton = new Button();
+        openTemplateButton.setImmediate(true);
+        openTemplateButton.setStyleName(Reindeer.BUTTON_LINK);
+        
 	}
 
 	@Override
@@ -164,11 +172,21 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 		});
 		
 		nextButton.addListener(new GermplasmImportButtonClickListener(this));
+		
+		openTemplateButton.addListener(new ClickListener() {
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				ExportGermplasmListTemplateDialog exportGermplasmTemplateDialog = new ExportGermplasmListTemplateDialog(source);
+				source.getWindow().addWindow(exportGermplasmTemplateDialog);
+			}
+		});
 	}
 
 	@Override
 	public void layoutComponents() {
 		addComponent(selectFileLabel, "top:20px");
+		addComponent(openTemplateButton, "top:21px;left:520px;");
 
 		addComponent(uploadComponents, "top:50px");
 

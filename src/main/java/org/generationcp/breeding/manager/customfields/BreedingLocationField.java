@@ -3,7 +3,6 @@ package org.generationcp.breeding.manager.customfields;
 import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -39,12 +38,12 @@ public class BreedingLocationField extends AbsoluteLayout
 		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 4506866031376540836L;
-	private final static Logger LOG = LoggerFactory.getLogger(BreedingLocationField.class);
+	private static final Logger LOG = LoggerFactory.getLogger(BreedingLocationField.class);
 
 	private Label captionLabel;
 	private String caption;
 	private ComboBox breedingLocationComboBox;
-	private String DEFAULT_LOCATION = "Unknown";
+	private static final String DEFAULT_LOCATION = "Unknown";
 	private boolean changed;
 	private int leftIndentPixels = 130;
 
@@ -250,6 +249,7 @@ public class BreedingLocationField extends AbsoluteLayout
 
 	@Override
 	public void updateLabels() {
+		// do nothing
 	}
 
 	@Override
@@ -264,7 +264,7 @@ public class BreedingLocationField extends AbsoluteLayout
 		return breedingLocationComboBox;
 	}
 
-	public void setbreedingLocationComboBox(ComboBox breedingLocationComboBox) {
+	public void setBreedingLocationComboBox(ComboBox breedingLocationComboBox) {
 		this.breedingLocationComboBox = breedingLocationComboBox;
 	}
 
@@ -276,7 +276,7 @@ public class BreedingLocationField extends AbsoluteLayout
 		return (String) breedingLocationComboBox.getValue();
 	}
 
-	public void validate() throws InvalidValueException {
+	public void validate() {
 		breedingLocationComboBox.validate();
 	}
 
@@ -290,7 +290,9 @@ public class BreedingLocationField extends AbsoluteLayout
 
 	public void populateHarvestLocation(Integer selectedLocation, String programUUID) {
 		populateHarvestLocation(showFavoritesCheckBox.getValue().equals(true), programUUID);
-		breedingLocationComboBox.setValue(selectedLocation);
+		if(selectedLocation != null){
+			breedingLocationComboBox.setValue(selectedLocation);
+		}
 	}
 
 	private void populateHarvestLocation(boolean showOnlyFavorites, String programUUID) {
@@ -319,12 +321,7 @@ public class BreedingLocationField extends AbsoluteLayout
 	private void populateLocations(String programUUID) {
 
 		try {
-
-			if (locationType > 0) {
-				locations = locationDataManager.getLocationsByType(locationType, programUUID);
-			} else {
-				locations = locationDataManager.getLocationsByUniqueID(programUUID);
-			}
+			locations = locationDataManager.getLocationsByUniqueID(programUUID);
 		} catch (MiddlewareQueryException e) {
 			LOG.error(e.getMessage(), e);
 		}
@@ -342,7 +339,7 @@ public class BreedingLocationField extends AbsoluteLayout
 		       hasDefault = true;
 		   }
          }
-		if(hasDefault == false && firstId != null){
+		if(!hasDefault && firstId != null){
 		    breedingLocationComboBox.setValue(firstId);
 		}
 	}

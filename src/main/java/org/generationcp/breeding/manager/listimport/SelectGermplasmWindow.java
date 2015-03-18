@@ -21,7 +21,7 @@ import org.generationcp.breeding.manager.listimport.listeners.CloseWindowAction;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.ImportGermplasmEntryActionListener;
-import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -30,10 +30,13 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.LocationDataManager;
+import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -62,21 +65,13 @@ import com.vaadin.ui.themes.Reindeer;
 @Configurable
 public class SelectGermplasmWindow extends BaseSubWindow implements InitializingBean, InternationalizableComponent, BreedingManagerLayout,
 		Window.CloseListener, ImportGermplasmEntryActionListener{
-
-    private static final String PARENTAGE = "Parentage";
-
-	private static final String BREEDING_METHOD = "Breeding Method";
-
-	private static final String LOCATION = "Location";
-
-	private static final String GID = "GID";
-
-	private static final String DESIGNATION = "Designation";
+	
+	private static final Logger LOG = LoggerFactory.getLogger(SelectGermplasmWindow.class);
 
 	private static final long serialVersionUID = -8113004135173349534L;
     
-    public final static String CANCEL_BUTTON_ID = "SelectGermplasmWindow Cancel Button";
-    public final static String DONE_BUTTON_ID = "SelectGermplasmWindow Done Button";
+    public static final String CANCEL_BUTTON_ID = "SelectGermplasmWindow Cancel Button";
+    public static final String DONE_BUTTON_ID = "SelectGermplasmWindow Done Button";
     
     private VerticalLayout mainLayout;
     private Button cancelButton;
@@ -106,6 +101,9 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
     private CheckBox ignoreMatchesCheckbox;
     private CheckBox ignoreRemainingMatchesCheckbox;
     private Window parentWindow;
+    
+	@Autowired
+	private OntologyDataManager ontologyDataManager;
     
     public SelectGermplasmWindow(ProcessImportedGermplasmAction source, String germplasmName, int index, Germplasm germplasm, Window parentWindow) {
         this.germplasmName = germplasmName;
@@ -142,8 +140,7 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
         	}
             removeWindow(this);            
         } catch (MiddlewareQueryException e) {
-            // TODO Add proper logging
-            e.printStackTrace();
+        	LOG.error(e.getMessage(),e);
         }        
     }
     
@@ -165,11 +162,11 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
         messageSource.setCaption(cancelButton, Message.CANCEL);
     }
 
-    private String getGermplasmNames(int gid) throws InternationalizableException {
+    private String getGermplasmNames(int gid) {
 
         try {
             List<Name> names = germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
-            StringBuffer germplasmNames = new StringBuffer("");
+            StringBuilder germplasmNames = new StringBuilder("");
             int i = 0;
             for (Name n : names) {
                 if (i < names.size() - 1) {
@@ -182,6 +179,7 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 
             return germplasmNames.toString();
         } catch (MiddlewareQueryException e) {
+        	LOG.error(e.getMessage(),e);
             return null;
         }
     }
@@ -205,18 +203,7 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
         doneButton.setEnabled(false);
         doneButton.setData(DONE_BUTTON_ID);
         
-        germplasmTable = new Table();
-        germplasmTable.addContainerProperty(DESIGNATION, Button.class, null);
-        germplasmTable.addContainerProperty(GID, Button.class, null);
-        germplasmTable.addContainerProperty(LOCATION, String.class, null);
-        germplasmTable.addContainerProperty(BREEDING_METHOD, String.class, null);
-        germplasmTable.addContainerProperty(PARENTAGE, String.class, null);
-        germplasmTable.setHeight("200px");
-        germplasmTable.setWidth("750px");
-        germplasmTable.setSelectable(true);
-        germplasmTable.setMultiSelect(false);
-        germplasmTable.setNullSelectionAllowed(false);
-        germplasmTable.setImmediate(true);
+        initGermplasmTable();
         
         useSameGidCheckbox = new CheckBox("Use this match for other instances of this name in the import list");
         useSameGidCheckbox.setImmediate(true);
@@ -224,6 +211,35 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
         ignoreMatchesCheckbox.setImmediate(true);
         ignoreRemainingMatchesCheckbox = new CheckBox("Ignore remaining matches and add new entries for all");
         ignoreRemainingMatchesCheckbox.setImmediate(true);
+	}
+
+	protected void initGermplasmTable() {
+		setGermplasmTable(new Table());
+		
+		germplasmTable = getGermplasmTable();
+		germplasmTable.setHeight("200px");
+        germplasmTable.setWidth("750px");
+        germplasmTable.setSelectable(true);
+        germplasmTable.setMultiSelect(false);
+        germplasmTable.setNullSelectionAllowed(false);
+        germplasmTable.setImmediate(true);
+        
+        germplasmTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
+        germplasmTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
+        germplasmTable.addContainerProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class, null);
+        germplasmTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, null);
+        germplasmTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
+        
+        germplasmTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(),getTermNameFromOntology(ColumnLabels.DESIGNATION));
+        germplasmTable.setColumnHeader(ColumnLabels.GID.getName(),getTermNameFromOntology(ColumnLabels.GID));
+        germplasmTable.setColumnHeader(ColumnLabels.GERMPLASM_LOCATION.getName(),getTermNameFromOntology(ColumnLabels.GERMPLASM_LOCATION));
+        germplasmTable.setColumnHeader(ColumnLabels.BREEDING_METHOD_NAME.getName(),getTermNameFromOntology(ColumnLabels.BREEDING_METHOD_NAME));
+        germplasmTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(),getTermNameFromOntology(ColumnLabels.PARENTAGE));
+        
+	}
+	
+	protected String getTermNameFromOntology(ColumnLabels columnLabels) {
+		return columnLabels.getTermNameFromOntology(ontologyDataManager);
 	}
 
 	@Override
@@ -345,23 +361,23 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
             this.germplasms = this.germplasmDataManager.getGermplasmByName(germplasmName, 0, germplasmCount, Operation.EQUAL);
             for (int i=0; i<this.germplasms.size(); i++){
             	
-                Germplasm germplasm = germplasms.get(i);
-                Location location = locationDataManager.getLocationByID(germplasm.getLocationId());
-                Method method = germplasmDataManager.getMethodByID(germplasm.getMethodId());
-            	Name preferredName = germplasmDataManager.getPreferredNameByGID(germplasm.getGid());
+                Germplasm currentGermplasm = germplasms.get(i);
+                Location location = locationDataManager.getLocationByID(currentGermplasm.getLocationId());
+                Method method = germplasmDataManager.getMethodByID(currentGermplasm.getMethodId());
+            	Name preferredName = germplasmDataManager.getPreferredNameByGID(currentGermplasm.getGid());
             	
-            	Button gidButton = new Button(String.format("%s", germplasm.getGid().toString()), new GidLinkClickListener(germplasm.getGid().toString(), parentWindow));
+            	Button gidButton = new Button(String.format("%s", currentGermplasm.getGid().toString()), new GidLinkClickListener(currentGermplasm.getGid().toString(), parentWindow));
                 gidButton.setStyleName(BaseTheme.BUTTON_LINK); 
                 
                 
-                Button desigButton = new Button(preferredName.getNval(), new GidLinkClickListener(germplasm.getGid().toString(), parentWindow));
+                Button desigButton = new Button(preferredName.getNval(), new GidLinkClickListener(currentGermplasm.getGid().toString(), parentWindow));
                 desigButton.setStyleName(BaseTheme.BUTTON_LINK); 
                 
                 String crossExpansion = "";
-                if(germplasm!=null){
+                if(currentGermplasm!=null){
                 	try {
                 		if(germplasmDataManager!=null) {
-                            crossExpansion = germplasmDataManager.getCrossExpansion(germplasm.getGid(), 1);
+                            crossExpansion = germplasmDataManager.getCrossExpansion(currentGermplasm.getGid(), 1);
                         }
                 	} catch(MiddlewareQueryException ex){
                         crossExpansion = "-";
@@ -378,7 +394,7 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
                     methodName = method.getMname();
                 }
                 
-                this.germplasmTable.addItem(new Object[]{desigButton, gidButton, locationName, methodName, crossExpansion}, germplasm.getGid());
+                this.germplasmTable.addItem(new Object[]{desigButton, gidButton, locationName, methodName, crossExpansion}, currentGermplasm.getGid());
             }
             
             germplasmTable.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
@@ -386,9 +402,9 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 
     			public String generateDescription(Component source, Object itemId,
     					Object propertyId) {
-    				if(propertyId==DESIGNATION){
+    				if(propertyId==ColumnLabels.DESIGNATION.getName()){
     					Item item = germplasmTable.getItem(itemId);
-    					Integer gid = Integer.valueOf(((Button) item.getItemProperty(GID).getValue()).getCaption());
+    					Integer gid = Integer.valueOf(((Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue()).getCaption());
     					return getGermplasmNames(gid);
     				} else {
     					return null;
@@ -397,8 +413,7 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
             });
             
         } catch (MiddlewareQueryException e) {
-            //TODO add proper logging
-        	e.printStackTrace();
+        	LOG.error(e.getMessage(),e);
         }
 	}
 
@@ -424,6 +439,18 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 
 	public void setGermplasmIndex(int germplasmIndex) {
 		this.germplasmIndex = germplasmIndex;
+	}
+
+	public Table getGermplasmTable() {
+		return germplasmTable;
+	}
+
+	public void setGermplasmTable(Table germplasmTable) {
+		this.germplasmTable = germplasmTable;
+	}
+
+	public void setOntologyDataManager(OntologyDataManager ontologyDataManager) {
+		this.ontologyDataManager = ontologyDataManager;
 	}
 
 	@Override

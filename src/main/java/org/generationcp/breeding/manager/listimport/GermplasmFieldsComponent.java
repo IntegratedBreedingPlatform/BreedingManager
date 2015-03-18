@@ -16,10 +16,7 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.fields.BmsDateField;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.manager.api.LocationDataManager;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +24,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.data.Property.ConversionException;
-import com.vaadin.data.Property.ReadOnlyException;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
@@ -40,7 +35,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 
 	private static final long serialVersionUID = -1180999883774074687L;
 	
-	private final static Logger LOG = LoggerFactory.getLogger(GermplasmFieldsComponent.class);
+	private static final Logger LOG = LoggerFactory.getLogger(GermplasmFieldsComponent.class);
 	 
 	private  static final String DEFAULT_NAME_TYPE = "Line Name";
 	
@@ -63,15 +58,6 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
-    
-    @Autowired
-    private GermplasmDataManager germplasmDataManager;
-    
-    @Autowired
-    private WorkbenchDataManager workbenchDataManager;
-    
-    @Autowired
-    private LocationDataManager locationDataManager;
     
     @Autowired
     private GermplasmListManager germplasmListManager;
@@ -104,7 +90,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 		this.leftIndentPixels = pixels;
 	}
 
-	public void afterPropertiesSet() throws Exception {
+	public void afterPropertiesSet() {
 		instantiateComponents();
         initializeValues();
         addListeners();
@@ -119,6 +105,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 
 	@Override
 	public void updateLabels() {
+		// do nothing
 	}
 
 	@Override
@@ -166,7 +153,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 			programUniqueId = breedingManagerService.getCurrentProject().getUniqueID();
 		} catch (MiddlewareQueryException e) {
 			LOG.error(e.getMessage(),e);
-		}
+	}
 	}
 
 	@Override
@@ -182,15 +169,14 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 
 	@Override
 	public void addListeners() {
-		
+		// do nothing
 	}
 
 	@Override
 	public void layoutComponents() {
 		if(hasInventoryAmounts){
 			setHeight("330px");
-		}
-		else{
+		} else {
 			setHeight("270px");
 		}
 		
@@ -211,8 +197,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 			addComponent(nameTypeLabel, "top:280px;left:0px");
 	        addComponent(nameTypeComboBox, "top:275px;left:" + getLeftIndentPixels() + "px");
 
-		}
-		else{
+		} else {
 			addComponent(germplasmDateLabel, "top:185px;left:0px");
 			addComponent(germplasmDateField, "top:180px;left:" + getLeftIndentPixels() + "px");
 			
@@ -241,6 +226,22 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 		return germplasmDateField;
 	}
 	
+	public void setLocationComponent(BreedingLocationField locationComponent) {
+		this.locationComponent = locationComponent;
+	}
+
+	public BreedingLocationField getLocationComponent() {
+		return locationComponent;
+	}
+
+	public void setSeedLocationComponent(BreedingLocationField seedLocationComponent) {
+		this.seedLocationComponent = seedLocationComponent;
+	}
+	
+	public BreedingLocationField getSeedLocationComponent() {
+		return seedLocationComponent;
+	}
+
 	protected void populateNameTypes() throws MiddlewareQueryException {
 		List<UserDefinedField> userDefinedFieldList = germplasmListManager.getGermplasmNameTypes();
         Integer firstId = null;
@@ -256,7 +257,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
             	hasDefault = true;
             }
         }
-        if(hasDefault == false && firstId != null){
+        if(!hasDefault && firstId != null){
             nameTypeComboBox.setValue(firstId);
         }
 	}
@@ -268,7 +269,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
         getBreedingMethodComboBox().setValue(breedingMethod);
     }
 	
-	public void setGermplasmDate(Date germplasmDate) throws ReadOnlyException, ConversionException, ParseException{
+	public void setGermplasmDate(Date germplasmDate) throws ParseException{
         germplasmDateField.setValue(germplasmDate);
 	}
 	
@@ -298,11 +299,23 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 
 	@Override
 	public void updateAllLocationFields() {
-		locationComboBox = locationComponent.getBreedingLocationComboBox();
-		seedLocationComboBox = seedLocationComponent.getBreedingLocationComboBox();
+		/** NOTE merging to merged-db branch, make sure to add programUniqueID 
+		 * as an additional parameter for populateHarvestLocation() method */
 		
-		locationComponent.populateHarvestLocation(Integer.valueOf(locationComboBox.getValue().toString()),programUniqueId);
-		seedLocationComponent.populateHarvestLocation(Integer.valueOf(seedLocationComboBox.getValue().toString()),programUniqueId);
+		if(getLocationComboBox().getValue() != null){
+			getLocationComponent().populateHarvestLocation(Integer.valueOf(getLocationComboBox().getValue().toString()),programUniqueId);
+		} else {
+			getLocationComponent().populateHarvestLocation(null,programUniqueId);
+		}
+
+		if(getSeedLocationComboBox().getValue() != null){
+			getSeedLocationComponent().populateHarvestLocation(Integer.valueOf(getSeedLocationComboBox().getValue().toString()),programUniqueId);
+		} else {
+			getSeedLocationComponent().populateHarvestLocation(null,programUniqueId);
+		}
 	}
     
+	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
 }
