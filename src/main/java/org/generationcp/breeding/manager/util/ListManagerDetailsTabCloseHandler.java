@@ -63,8 +63,8 @@ public class ListManagerDetailsTabCloseHandler implements TabSheet.CloseHandler,
         final ListTabComponent listDetails = (ListTabComponent) tabContent;
         boolean valuesModified = listDetails.getListComponent().hasUnsavedChanges();
         
-        // check if the list in the tab to be closed is from local and has values that were modified
-        if (listDetails.getGermplasmList()!=null && listDetails.getGermplasmList().getId()<0 && valuesModified) {
+        // check if the list in the tab to be closed has values that were modified
+        if (listDetails.getGermplasmList()!=null && valuesModified) {
             String confirmDialogCaption = messageSource.getMessage(Message.WARNING);
             String confirmDialogMessage = messageSource.getMessage(Message.UNSAVED_CHANGES_LISTDATA);
             String okCaption = messageSource.getMessage(Message.YES);
