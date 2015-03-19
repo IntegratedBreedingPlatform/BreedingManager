@@ -452,7 +452,7 @@ public abstract class ListSelectorComponent extends CssLayout implements
             }
 
             if (!doSaveNewFolder()){
-                if (currentListId != null && currentListId < 0){
+                if (currentListId != null){
                     folderTextField.setValue(getSelectedItemCaption());
                     folderTextField.focus();
                 } else if (LISTS.equals(selectedListId)){
