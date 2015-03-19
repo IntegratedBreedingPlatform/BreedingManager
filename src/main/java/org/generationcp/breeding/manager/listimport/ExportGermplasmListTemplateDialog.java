@@ -3,13 +3,11 @@ package org.generationcp.breeding.manager.listimport;
 import java.io.File;
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.generationcp.breeding.manager.application.BreedingManagerApplication;
+import javax.annotation.Resource;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
-import org.generationcp.commons.util.ContextUtil;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.util.StringUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -55,6 +53,9 @@ public class ExportGermplasmListTemplateDialog extends BaseSubWindow implements 
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
+
+	@Resource
+	private ContextUtil contextUtil;
 	
 	private VerticalLayout mainLayout;
 	private Label templateFormalLbl;
@@ -168,7 +169,7 @@ public class ExportGermplasmListTemplateDialog extends BaseSubWindow implements 
 	}
 	
 	private String getCurrentProjectCropType() throws MiddlewareQueryException {
-		Project currentProject = getCurrentOpenedProject();
+		Project currentProject = contextUtil.getProjectInContext();
 		String cropType = currentProject.getCropType().getCropName();
 		// if it is a custom crop
 		if(!isADefaultCrop(cropType)){
@@ -186,17 +187,6 @@ public class ExportGermplasmListTemplateDialog extends BaseSubWindow implements 
 		}
 		
 		return false;
-	}
-
-	/**
-	 *  NOTE this function must be replaced by spring contextUtil when merged to merged-db branch
-	 * */
-	protected Project getCurrentOpenedProject() throws MiddlewareQueryException {
-		return ContextUtil.getProjectInContext(workbenchDataManager, getCurrentRequest());
-    }
-
-	protected HttpServletRequest getCurrentRequest() {
-		return BreedingManagerApplication.currentRequest();
 	}
 
 	protected String getInstallationDirectory() throws MiddlewareQueryException {

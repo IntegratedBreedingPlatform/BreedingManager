@@ -107,14 +107,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 					currentlySetGermplasmInfo = currentlySavedGermplasmList;
 					saveListButtonListener.doSaveAction(false);
 
-					User user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
-					ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()),
-							workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()),
-							"Locked a germplasm list.",
-							"Locked list "+currentlySavedGermplasmList.getId()+" - "+currentlySavedGermplasmList.getName(),
-							user,
-							new Date());
-					workbenchDataManager.addProjectActivity(projAct);
+					contextUtil.logProgramActivity("Locked a germplasm list.","Locked list "+currentlySavedGermplasmList.getId()+" - "+currentlySavedGermplasmList.getName());
+
 				} catch (MiddlewareQueryException e) {
 					LOG.error("Error with unlocking list.", e);
 					MessageNotifier.showError(getWindow(), "Database Error!", "Error with loocking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
@@ -135,14 +129,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 					currentlySetGermplasmInfo = currentlySavedGermplasmList;
 					saveListButtonListener.doSaveAction(false);
 
-					User user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData().getUserId());
-					ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()).getProjectId().intValue()),
-							workbenchDataManager.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId()),
-							"Unlocked a germplasm list.",
-							"Unlocked list "+currentlySavedGermplasmList.getId()+" - "+currentlySavedGermplasmList.getName(),
-							user,
-							new Date());
-					workbenchDataManager.addProjectActivity(projAct);
+					contextUtil.logProgramActivity("Unlocked a germplasm list.","Unlocked list "+currentlySavedGermplasmList.getId()+" - "+currentlySavedGermplasmList.getName());
+
 				} catch (MiddlewareQueryException e) {
 					LOG.error("Error with unlocking list.", e);
 					MessageNotifier.showError(getWindow(), "Database Error!", "Error with unlocking list. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
@@ -837,14 +825,15 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 
 	private void updateNoOfSelectedEntries(int count){
-		totalSelectedListEntriesLabel.setValue("<i>" + messageSource.getMessage(Message.SELECTED) + ": "
-				+ "  <b>" + count + "</b></i>");
+		totalSelectedListEntriesLabel
+				.setValue("<i>" + messageSource.getMessage(Message.SELECTED) + ": "
+						+ "  <b>" + count + "</b></i>");
 	}
 
 	private void updateNoOfSelectedEntries(){
 		int count = 0;
 
-		if(source.getModeView().equals(ModeView.LIST_VIEW)){
+		if (source.getModeView().equals(ModeView.LIST_VIEW)){
 			Collection<?> selectedItems = (Collection<?>)listDataTable.getValue();
 			count = selectedItems.size();
 		} else {
@@ -975,7 +964,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 
 	public void updateView(ModeView modeView) {
-		if(modeView.equals(ModeView.LIST_VIEW)){
+		if (modeView.equals(ModeView.LIST_VIEW)){
 			changeToListView();
 		} else if(modeView.equals(ModeView.INVENTORY_VIEW)){
 			changeToInventoryView();

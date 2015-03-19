@@ -61,13 +61,10 @@ import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.PedigreeDataManager;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
-import org.generationcp.middleware.pojos.User;
-import org.generationcp.middleware.pojos.workbench.ProjectActivity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -232,9 +229,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 
 	@Autowired
 	private PedigreeDataManager pedigreeDataManager;
-
-	@Autowired
-	private WorkbenchDataManager workbenchDataManager;
 
 	@Autowired
 	private InventoryDataManager inventoryDataManager;
@@ -1795,7 +1789,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 			}
 			germplasmListManager.updateGermplasmListData(listDatas);
 
-			logDeletedListEntriesToWorkbenchProjectActivity();
+			contextUtil.logProgramActivity("Deleted list entries.",
+					"Deleted list entries from the list id " + germplasmList.getId() + " - "
+							+ germplasmList.getName());
 
 			// reset items to delete in listDataTable
 			itemsToDelete.clear();
@@ -1837,29 +1833,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 			} catch (MiddlewareQueryException e) {
 				LOG.error(e.getMessage(), e);
 			}
-		}
-	}
-
-	private void logDeletedListEntriesToWorkbenchProjectActivity() {
-
-
-		User user;
-		try {
-			user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData()
-					.getUserId());
-
-			ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager
-					.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId())
-					.getProjectId().intValue()),
-					workbenchDataManager.getLastOpenedProject(workbenchDataManager
-							.getWorkbenchRuntimeData().getUserId()), "Deleted list entries.",
-					"Deleted list entries from the list id " + germplasmList.getId() + " - "
-							+ germplasmList.getName(), user, new Date());
-
-			workbenchDataManager.addProjectActivity(projAct);
-
-		} catch (MiddlewareQueryException e) {
-			LOG.error(e.getMessage(), e);
 		}
 	}
 
@@ -1931,17 +1904,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 
 				setLockedState(germplasmList.isLockedList());
 
-				User user = workbenchDataManager.getUserById(workbenchDataManager
-						.getWorkbenchRuntimeData().getUserId());
-				ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager
-						.getLastOpenedProject(
-								workbenchDataManager.getWorkbenchRuntimeData().getUserId())
-						.getProjectId().intValue()),
-						workbenchDataManager.getLastOpenedProject(workbenchDataManager
-								.getWorkbenchRuntimeData().getUserId()),
-						"Unlocked a germplasm list.", "Unlocked list " + germplasmList.getId()
-						+ " - " + germplasmList.getName(), user, new Date());
-				workbenchDataManager.addProjectActivity(projAct);
+				contextUtil.logProgramActivity("Unlocked a germplasm list.", "Unlocked list " + germplasmList.getId()
+						+ " - " + germplasmList.getName());
+
 			} catch (MiddlewareQueryException e) {
 				LOG.error("Error with unlocking list.", e);
 				MessageNotifier.showError(

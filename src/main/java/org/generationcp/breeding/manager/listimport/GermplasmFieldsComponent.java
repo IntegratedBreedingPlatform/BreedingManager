@@ -299,9 +299,6 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 
 	@Override
 	public void updateAllLocationFields() {
-		/** NOTE merging to merged-db branch, make sure to add programUniqueID 
-		 * as an additional parameter for populateHarvestLocation() method */
-		
 		if(getLocationComboBox().getValue() != null){
 			getLocationComponent().populateHarvestLocation(Integer.valueOf(getLocationComboBox().getValue().toString()),programUniqueId);
 		} else {
