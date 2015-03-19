@@ -580,9 +580,6 @@ public class DropHandlerMethods {
         int maxId = 0;
         for(Object id : targetTable.getItemIds()){
             Integer itemId = (Integer) id;
-            if(itemId<0){
-                itemId*=-1;
-            }
             if(itemId>maxId) {
                 maxId = itemId;
             }
