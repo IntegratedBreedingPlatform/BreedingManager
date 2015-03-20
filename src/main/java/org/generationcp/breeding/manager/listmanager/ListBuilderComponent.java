@@ -443,6 +443,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 		//Inventory Related Variables
 		validReservationsToSave = new HashMap<ListEntryLotDetails, Double>();
+		
+		//reset the marker for unsaved changes on initial loading
+		resetUnsavedChangesFlag();
 	}
 
 	public void resetMenuOptions(){
