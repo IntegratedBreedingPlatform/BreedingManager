@@ -66,7 +66,7 @@ public class ExportGermplasmListTemplateDialogTest {
 		exportDialog = spy(exportDialog);
 
 
-		when(messageSources.getMessage(Message.TEMPLATE_FORMAT)).thenReturn(DUMMY_STRING);
+		when(messageSource.getMessage(Message.TEMPLATE_FORMAT)).thenReturn(DUMMY_STRING);
 		when(messageSource.getMessage(Message.CHOOSE_A_TEMPLATE_FORMAT)).thenReturn(DUMMY_STRING);
 		when(messageSource.getMessage(Message.CANCEL)).thenReturn(DUMMY_STRING);
 		when(messageSource.getMessage(Message.EXPORT)).thenReturn(DUMMY_STRING);
