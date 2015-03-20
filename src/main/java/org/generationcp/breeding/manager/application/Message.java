@@ -12,6 +12,7 @@ public enum Message{
     ,UNKNOWN
     ,CANCEL
     ,DISPLAY
+    ,HERE
     
     //Validation Messages
     ,VALIDATION_DATE_FORMAT
@@ -406,6 +407,13 @@ public enum Message{
     ,GID_LABEL
     ,METHOD_LABEL
     ,LOCATION_LABEL
+    
+    //Export Germplasm Template
+    ,EXPORT
+    ,TEMPLATE_FORMAT
+    ,CHOOSE_A_TEMPLATE_FORMAT
+    ,GERMPLASM_LIST_EXPORT_TEMPLATE
+    ,ERROR_EXPORTING_TEMPLATE
 
     //Export List
     ,EXPORT_FORMAT

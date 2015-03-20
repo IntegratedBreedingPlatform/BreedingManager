@@ -5,10 +5,13 @@ import java.util.List;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.InventoryTableDropHandler;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
 import com.vaadin.ui.Button;
@@ -19,6 +22,8 @@ import com.vaadin.ui.themes.BaseTheme;
 
 public class ListManagerInventoryTable extends ListInventoryTable {
 
+	private static final Logger LOG = LoggerFactory.getLogger(ListManagerInventoryTable.class);
+	
 	private static final long serialVersionUID = 7827387488704418083L;
 	public static final String INVENTORY_TABLE_DATA = "BuildNewListInventoryTableData";
 	
@@ -83,24 +88,24 @@ public class ListManagerInventoryTable extends ListInventoryTable {
 			   		try {
 						germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndLrecId(listId, lotDetail.getId());
 					} catch (MiddlewareQueryException e) {
-						e.printStackTrace();
+						LOG.error(e.getMessage(), e);
 					}
 			   		
 			   		Button desigButton = new Button(String.format("%s", designation), 
 			   					new GidLinkButtonClickListener(listManagerMain,germplasmListData.getGid().toString(), true, true));
 		            desigButton.setStyleName(BaseTheme.BUTTON_LINK);
 			   		
-			   		newItem.getItemProperty(TAG_COLUMN_ID).setValue(itemCheckBox);
-					newItem.getItemProperty(ENTRY_NUMBER_COLUMN_ID).setValue(entryId);
-					newItem.getItemProperty(DESIGNATION_COLUMN_ID).setValue(desigButton);
-					newItem.getItemProperty(LOCATION_COLUMN_ID).setValue(lotDetail.getLocationOfLot().getLname());
-					newItem.getItemProperty(UNITS_COLUMN_ID).setValue(lotDetail.getScaleOfLot().getName());
-					newItem.getItemProperty(AVAIL_COLUMN_ID).setValue(lotDetail.getAvailableLotBalance());
-					newItem.getItemProperty(TOTAL_COLUMN_ID).setValue(lotDetail.getActualLotBalance());
-					newItem.getItemProperty(RESERVED_COLUMN_ID).setValue(lotDetail.getReservedTotalForEntry());
-					newItem.getItemProperty(NEWLY_RESERVED_COLUMN_ID).setValue(0);
-					newItem.getItemProperty(COMMENT_COLUMN_ID).setValue(lotDetail.getCommentOfLot());
-					newItem.getItemProperty(LOT_ID_COLUMN_ID).setValue(lotDetail.getLotId());
+			   		newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(itemCheckBox);
+					newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entryId);
+					newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(desigButton);
+					newItem.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).setValue(lotDetail.getLocationOfLot().getLname());
+					newItem.getItemProperty(ColumnLabels.SCALE.getName()).setValue(lotDetail.getScaleOfLot().getName());
+					newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(lotDetail.getAvailableLotBalance());
+					newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(lotDetail.getActualLotBalance());
+					newItem.getItemProperty(ColumnLabels.RESERVED.getName()).setValue(lotDetail.getReservedTotalForEntry());
+					newItem.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(0);
+					newItem.getItemProperty(ColumnLabels.COMMENT.getName()).setValue(lotDetail.getCommentOfLot());
+					newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotDetail.getLotId());
 				}
 			}
 		}

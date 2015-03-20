@@ -4,6 +4,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.*;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -18,6 +19,7 @@ import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -25,6 +27,7 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.Name;
@@ -84,6 +87,9 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 
     @Autowired
     private GermplasmDataManager germplasmDataManager;
+
+	@Resource
+	private OntologyDataManager ontologyDataManager;
 
     @Resource
 	private ContextUtil contextUtil;
@@ -183,7 +189,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
                     germplasmToBeUsed = germplasmDataManager.getGermplasmByGID(gid);
                     germplasmNameObjectsToBeSaved.add(new GermplasmName(germplasmToBeUsed, germplasmNameObjects.get(i).getName()));
                 } catch (MiddlewareQueryException e) {
-                	LOG.error(e.getMessage(),e);
+                    LOG.error(e.getMessage(),e);
                 }
             } else {
                 germplasmNameObjectsToBeSaved.add(new GermplasmName(germplasmNameObjects.get(i).getGermplasm(), germplasmNameObjects.get(i).getName()));
@@ -294,17 +300,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 
         totalEntriesLabel = new Label("Total Entries: 0", Label.CONTENT_XHTML);
 
-        germplasmDetailsTable = new Table();
-        germplasmDetailsTable.addContainerProperty(1, Integer.class, null);
-        germplasmDetailsTable.addContainerProperty(2, String.class, null);
-        germplasmDetailsTable.addContainerProperty(3, String.class, null);
-        germplasmDetailsTable.addContainerProperty(4, String.class, null);
-        germplasmDetailsTable.addContainerProperty(5, Integer.class, null);
-        germplasmDetailsTable.addContainerProperty(6, String.class, null);
-        germplasmDetailsTable.setColumnCollapsingAllowed(true);
-        germplasmDetailsTable.setColumnHeaders(new String[]{"Entry_No", "Entry_Code", "Designation", "Parentage", "GID", "Source"});
-        germplasmDetailsTable.setHeight("200px");
-        germplasmDetailsTable.setWidth("700px");
+        initGermplasmDetailsTable();
 
         selectPedigreeOptionsLabel = new Label(messageSource.getMessage(Message.SELECT_PEDIGREE_OPTIONS).toUpperCase());
         selectPedigreeOptionsLabel.addStyleName(Bootstrap.Typography.H4.styleName());
@@ -332,8 +328,33 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         nextButton.setData(NEXT_BUTTON_ID);
         nextButton.addListener(clickListener);
         nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-
     }
+
+	protected void initGermplasmDetailsTable() {
+        setGermplasmDetailsTable(new Table());
+        germplasmDetailsTable = getGermplasmDetailsTable();
+        germplasmDetailsTable.setHeight("200px");
+        germplasmDetailsTable.setWidth("700px");
+        
+        germplasmDetailsTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
+        germplasmDetailsTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
+        germplasmDetailsTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), String.class, null);
+        germplasmDetailsTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
+        germplasmDetailsTable.addContainerProperty(ColumnLabels.GID.getName(), Integer.class, null);
+        germplasmDetailsTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
+        germplasmDetailsTable.setColumnCollapsingAllowed(true);
+        
+        germplasmDetailsTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(),getTermNameFromOntology(ColumnLabels.ENTRY_ID));
+        germplasmDetailsTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(),getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
+        germplasmDetailsTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(),getTermNameFromOntology(ColumnLabels.DESIGNATION));
+        germplasmDetailsTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(),getTermNameFromOntology(ColumnLabels.PARENTAGE));
+        germplasmDetailsTable.setColumnHeader(ColumnLabels.GID.getName(),getTermNameFromOntology(ColumnLabels.GID));
+        germplasmDetailsTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(),getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
+    }
+
+	protected String getTermNameFromOntology(ColumnLabels columnLabels) {
+		return columnLabels.getTermNameFromOntology(ontologyDataManager);
+	}
 
     @Override
     public void initializeValues() {
@@ -531,7 +552,12 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
     public ImportedGermplasmList getImportedGermplasmList() {
         return importedGermplasmList;
     }
-    
+
+    public void setGermplasmDetailsTable(Table germplasmDetailsTable) {
+		this.germplasmDetailsTable = germplasmDetailsTable;
+	}
+
+
     public void setProcessGermplasmAction(
 			ProcessImportedGermplasmAction processGermplasmAction) {
 		this.processGermplasmAction = processGermplasmAction;

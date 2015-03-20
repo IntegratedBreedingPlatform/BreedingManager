@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
-import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -43,6 +43,7 @@ public class ExportListAsDialogTest {
 
 	private static final int NO_OF_LIST_ENTRIES = 10;
 	private static final Integer USER_ID = 1;
+	private String exportWarningMessages = "";
 	
 	private static Table listDataTable;
 	private static List<GermplasmListData>  listEntries;
@@ -86,7 +87,7 @@ public class ExportListAsDialogTest {
 		dialog.setListExporter(listExporter);
 		dialog.setMessageSource(messageSource);
 		
-		doNothing().when(dialog).showMessage(ExportListAsDialog.EXPORT_WARNING_MESSAGE);
+		doNothing().when(dialog).showMessage(exportWarningMessages);
 		doReturn(Mockito.mock(FileOutputStream.class)).when(listExporter).exportGermplasmListXLS(ExportListAsDialog.TEMP_FILENAME,listDataTable);
 		
 		doReturn(fileDownloadResource).when(dialog).createFileDownloadResource();
@@ -96,35 +97,35 @@ public class ExportListAsDialogTest {
 	
 	@Test
 	public void testIsARequiredColumn(){
-		Assert.assertTrue("GID is a required column.",dialog.isARequiredColumn(ListDataTablePropertyID.GID.getName()));
-		Assert.assertTrue("ENTRY_ID is a required column.",dialog.isARequiredColumn(ListDataTablePropertyID.ENTRY_ID.getName()));
-		Assert.assertTrue("DESIGNATION is a required column.",dialog.isARequiredColumn(ListDataTablePropertyID.DESIGNATION.getName()));
-		Assert.assertFalse("SEED_SOURCE is a not required column.",dialog.isARequiredColumn(ListDataTablePropertyID.SEED_SOURCE.getName()));
+		Assert.assertTrue("GID is a required column.",dialog.isARequiredColumn(ColumnLabels.GID.getName()));
+		Assert.assertTrue("ENTRY_ID is a required column.",dialog.isARequiredColumn(ColumnLabels.ENTRY_ID.getName()));
+		Assert.assertTrue("DESIGNATION is a required column.",dialog.isARequiredColumn(ColumnLabels.DESIGNATION.getName()));
+		Assert.assertFalse("SEED_SOURCE is a not required column.",dialog.isARequiredColumn(ColumnLabels.SEED_SOURCE.getName()));
 	}
 	
 	@Test
 	public void testIsARequiredColumnHidden(){
 		Assert.assertFalse("Expecting no required columns is hidden but didn't.",dialog.isARequiredColumnHidden(listDataTable));
 		
-		listDataTable.setColumnCollapsed(ListDataTablePropertyID.GID.getName(), true);
+		listDataTable.setColumnCollapsed(ColumnLabels.GID.getName(), true);
 		Assert.assertTrue("Expecting one of the required columns is hidden but didn't.",dialog.isARequiredColumnHidden(listDataTable));
 	}
 
 	
 	@Test
 	public void testShowWarningMessageWhenListDataTableHasHiddenRequiredColumns(){
-		listDataTable.setColumnCollapsed(ListDataTablePropertyID.GID.getName(), true);
+		listDataTable.setColumnCollapsed(ColumnLabels.GID.getName(), true);
 		
 		Assert.assertTrue(dialog.isARequiredColumnHidden(listDataTable));
 		dialog.showWarningMessage(listDataTable);
-		verify(dialog,times(1)).showMessage(ExportListAsDialog.EXPORT_WARNING_MESSAGE);
+		verify(dialog,times(1)).showMessage(exportWarningMessages);
 	}
 	
 	@Test
 	public void testShowWarningMessageWhenListDataTableDoNotHaveHiddenRequiredColumns(){
 		Assert.assertFalse(dialog.isARequiredColumnHidden(listDataTable));
 		dialog.showWarningMessage(listDataTable);
-		verify(dialog,times(0)).showMessage(ExportListAsDialog.EXPORT_WARNING_MESSAGE);
+		verify(dialog,times(0)).showMessage(exportWarningMessages);
 	}
 	
 	@Test
@@ -172,15 +173,15 @@ public class ExportListAsDialogTest {
 	private static Table generateTestTable(){
 		Table listDataTable = new Table();
 		
-		listDataTable.addContainerProperty(ListDataTablePropertyID.TAG.getName(), CheckBox.class, null);
-		listDataTable.addContainerProperty(ListDataTablePropertyID.ENTRY_ID.getName(), Integer.class, null);
-		listDataTable.addContainerProperty(ListDataTablePropertyID.DESIGNATION.getName(), Button.class, null);
-		listDataTable.addContainerProperty(ListDataTablePropertyID.PARENTAGE.getName(), String.class, null);
-		listDataTable.addContainerProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName(), Button.class, null);
-		listDataTable.addContainerProperty(ListDataTablePropertyID.SEED_RESERVATION.getName(), String.class, null);
-		listDataTable.addContainerProperty(ListDataTablePropertyID.ENTRY_CODE.getName(), String.class, null);
-		listDataTable.addContainerProperty(ListDataTablePropertyID.GID.getName(), Button.class, null);
-		listDataTable.addContainerProperty(ListDataTablePropertyID.SEED_SOURCE.getName(), String.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.TAG.getName(), CheckBox.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Button.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
 		listDataTable.setColumnCollapsingAllowed(true);
 		
 		loadEntriesToListDataTable(listDataTable);
@@ -195,15 +196,15 @@ public class ExportListAsDialogTest {
     		GermplasmListData germplasmListData = new GermplasmListData();
     		germplasmListData.setId(x);
     		germplasmListData.setEntryId(x);
-    		germplasmListData.setDesignation(ListDataTablePropertyID.DESIGNATION.getName() + x);
-    		germplasmListData.setGroupName(ListDataTablePropertyID.PARENTAGE.getName() + x);
+    		germplasmListData.setDesignation(ColumnLabels.DESIGNATION.getName() + x);
+    		germplasmListData.setGroupName(ColumnLabels.PARENTAGE.getName() + x);
     		ListDataInventory inventoryInfo = new ListDataInventory(x,x);
     		inventoryInfo.setLotCount(1);
     		inventoryInfo.setReservedLotCount(1);
     		inventoryInfo.setActualInventoryLotCount(1);
     		germplasmListData.setInventoryInfo(inventoryInfo);
-    		germplasmListData.setEntryCode(ListDataTablePropertyID.ENTRY_CODE.getName() + x);
-    		germplasmListData.setSeedSource(ListDataTablePropertyID.SEED_SOURCE.getName() + x);
+    		germplasmListData.setEntryCode(ColumnLabels.ENTRY_CODE.getName() + x);
+    		germplasmListData.setSeedSource(ColumnLabels.SEED_SOURCE.getName() + x);
     		germplasmListData.setGid(x);
     		entries.add(germplasmListData);
     	}
@@ -216,7 +217,7 @@ public class ExportListAsDialogTest {
 			addListEntryToTable(entry, listDataTable);
 	   	}
 		
-		listDataTable.sort(new Object[]{ListDataTablePropertyID.ENTRY_ID.getName()}, new boolean[]{true});    
+		listDataTable.sort(new Object[]{ColumnLabels.ENTRY_ID.getName()}, new boolean[]{true});    
 	}
 
 	private static void addListEntryToTable(GermplasmListData entry, final Table listDataTable) {
@@ -247,13 +248,13 @@ public class ExportListAsDialogTest {
 		});
 		
 		Item newItem = listDataTable.getContainerDataSource().addItem(entry.getId());
-		newItem.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(itemCheckBox);
-		newItem.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName()).setValue(entry.getEntryId());
-		newItem.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName()).setValue(desigButton);
-		newItem.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName()).setValue(entry.getGroupName());
-		newItem.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName()).setValue(entry.getEntryCode());
-		newItem.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
-		newItem.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
+		newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(itemCheckBox);
+		newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entry.getEntryId());
+		newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(desigButton);
+		newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(entry.getGroupName());
+		newItem.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(entry.getEntryCode());
+		newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
+		newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
 		
 		//#1 Available Inventory
         //default value
@@ -264,7 +265,7 @@ public class ExportListAsDialogTest {
 		Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(null,null,entry.getId(), entry.getGid()));
 		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 		inventoryButton.setDescription(null);
-		newItem.getItemProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
+		newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
 		
 		if("-".equals(availInv)){
 			inventoryButton.setEnabled(false);
@@ -279,7 +280,7 @@ public class ExportListAsDialogTest {
 		if(entry.getInventoryInfo().getReservedLotCount().intValue() != 0){
 			seedRes = entry.getInventoryInfo().getReservedLotCount().toString().trim();
 		}
-		newItem.getItemProperty(ListDataTablePropertyID.SEED_RESERVATION.getName()).setValue(seedRes);
+		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 	}
 
 }

@@ -10,7 +10,6 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +27,6 @@ public class SaveGermplasmListAction implements Serializable {
 	
     @Autowired
     private GermplasmDataManager germplasmManager;
-    
-    @Autowired
-    private WorkbenchDataManager workbenchDataManager;
 
 	@Resource
 	private ContextUtil contextUtil;

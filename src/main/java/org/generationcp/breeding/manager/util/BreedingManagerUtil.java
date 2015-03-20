@@ -30,9 +30,15 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Window;
 
 
+
 public class BreedingManagerUtil{
+	
     private static final Logger LOG = LoggerFactory.getLogger(BreedingManagerUtil.class);
     public static final String[] USER_DEF_FIELD_CROSS_NAME = {"CROSS NAME", "CROSSING NAME"};
+    
+    private BreedingManagerUtil(){
+    	
+    }
 
     /**
      * Get the id for UserDefinedField of Germplasm Name type for Crossing Name
@@ -296,8 +302,7 @@ public class BreedingManagerUtil{
 				hasFavMethod = true;
 			}			
 		} catch (MiddlewareQueryException e) {
-            LOG.error(e.getMessage());
-            LOG.error("\n" + e.getStackTrace());
+			LOG.error(e.getMessage(), e);
 		}
     	return hasFavMethod;
     }
@@ -312,8 +317,7 @@ public class BreedingManagerUtil{
 	        	hasFavLocation = true;
 			}
         } catch (MiddlewareQueryException e) {
-            LOG.error(e.getMessage());
-            LOG.error("\n" + e.getStackTrace());
+        	LOG.error(e.getMessage(), e);
 		}
 		
 		return hasFavLocation;
@@ -350,7 +354,7 @@ public class BreedingManagerUtil{
 	        }
 	        
 		} catch (MiddlewareQueryException e) {
-            LOG.error("\n" + e.getStackTrace());
+            LOG.error(e.getMessage(), e);
 		}
 
 		for(Method favoriteMethod : favoriteMethods){

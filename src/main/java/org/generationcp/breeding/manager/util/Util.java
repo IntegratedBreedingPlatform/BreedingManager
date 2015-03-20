@@ -56,7 +56,11 @@ public class Util {
 	public static final String METHOD_MANAGER_TOOL_NAME = "methodmanager";
 	public static final String METHOD_MANAGER_DEFAULT_URL = "/ibpworkbench/content/ProgramMethods?programId=";
 	
-    public static boolean isTabExist(TabSheet tabSheet, String tabCaption) {
+    private Util() {
+    	// do nothing
+	}
+
+	public static boolean isTabExist(TabSheet tabSheet, String tabCaption) {
 
         int countTabSheet = tabSheet.getComponentCount();
         for (int i = 0; i < countTabSheet; i++) {
@@ -162,9 +166,10 @@ public class Util {
     public static boolean isDirectory(String path){
         boolean isValid = true;
         File f = new File(path);
-        if (!f.exists()) {  // The directory does not exist
+        if (!f.exists()) {  
             isValid = false;
-        } else if (!f.isDirectory()) { // The path is not a directory (it is a file)
+        } else if (!f.isDirectory()) { 
+        	// The path is not a directory (it is a file)
             isValid = false;
         }        
         return isValid;
@@ -233,11 +238,13 @@ public class Util {
             try{
                 newPath = path.substring(0, path.lastIndexOf(File.separator));
             }catch (StringIndexOutOfBoundsException e){
-                newPath = "";
+                LOG.error(e.getMessage(),e);
+            	newPath = "";
             }
         }
             
-        if (newPath.equals("")) { // already at the root directory
+        // already at the root directory
+        if ("".equalsIgnoreCase(newPath)) { 
                 newPath = File.separator; 
         }
                 
@@ -362,8 +369,7 @@ public class Util {
         StringBuilder locationFolderString = new StringBuilder();
         locationFolderString.append("Program Lists");
         
-        while(!parentFolders.isEmpty())
-        {
+        while(!parentFolders.isEmpty()){
         	locationFolderString.append(" > ");
         	GermplasmList parentFolder = parentFolders.pop();
         	locationFolderString.append(parentFolder.getName());
@@ -380,7 +386,7 @@ public class Util {
         	
         } else if(locationFolderString.length() > 47){
         	int lengthOfFolderName = folder.getName().length();
-        	returnString = locationFolderString.substring(0, (47 - lengthOfFolderName - 6)) + "... > " + folder.getName();
+        	returnString = locationFolderString.substring(0, 47 - lengthOfFolderName - 6) + "... > " + folder.getName();
         } 
         
         returnString += " > ";
@@ -432,7 +438,7 @@ public class Util {
         	
         	addtlParams = ContextUtil.getContextParameterString(userId, projectId);
 		} catch (MiddlewareQueryException e) {
-			LOG.debug("Error occured while resolving context parameters: " + e.getMessage());
+			LOG.error("Error occured while resolving context parameters: " + e.getMessage(),e);
 		}
         return addtlParams;
 	}

@@ -21,8 +21,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
-import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -60,7 +60,89 @@ import com.vaadin.ui.Window;
 public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout 
         implements InitializingBean, InternationalizableComponent, CrossesMadeContainerUpdateListener{
     
-    public static final String GENERATE_BUTTON_ID = "Generate Next Name Id";
+    private final class OKButtonClickListener implements Button.ClickListener {
+		private static final long serialVersionUID = -3519880320817778816L;
+
+		@Override
+		public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+			boolean spaceBetweenPrefixAndCode = addSpaceCheckBox.booleanValue();
+			boolean spaceBetweenSuffixAndCode = addSpaceAfterSuffixCheckBox.booleanValue();
+			
+			String prefix = null;
+			if(prefixTextField.getValue() == null || prefixTextField.getValue().toString().length() == 0){
+				MessageNotifier.showRequiredFieldError(parentWindow, messageSource.getMessage(Message.PLEASE_SPECIFY_A_PREFIX));
+				return;
+			} else{
+				prefix = prefixTextField.getValue().toString().trim();
+			}
+			
+			String suffix = null;
+			if(suffixTextField.getValue() != null){
+				suffix = suffixTextField.getValue().toString().trim();
+			}
+			
+			int numOfZerosNeeded = 0;
+			boolean isNumOfZerosNeeded = sequenceNumCheckBox.booleanValue();
+			if(isNumOfZerosNeeded){
+				numOfZerosNeeded = ((Integer) leadingZerosSelect.getValue()).intValue();
+			}
+			
+			if(startNumberTextField.getValue() == null || startNumberTextField.getValue().toString().length() == 0){
+				MessageNotifier.showRequiredFieldError(parentWindow, messageSource.getMessage(Message.PLEASE_SPECIFY_A_STARTING_NUMBER));		
+				return;
+			} else if(startNumberTextField.getValue().toString().length() > 9){
+				MessageNotifier.showRequiredFieldError(parentWindow, messageSource.getMessage(Message.STARTING_NUMBER_HAS_TOO_MANY_DIGITS));
+				return;
+			} else {
+				try{
+					Integer.parseInt(startNumberTextField.getValue().toString());
+				} catch(NumberFormatException ex){
+					MessageNotifier.showRequiredFieldError(parentWindow, messageSource.getMessage(Message.PLEASE_ENTER_VALID_STARTING_NUMBER));
+					return;
+				}
+			}
+			int startNumber = Integer.parseInt(startNumberTextField.getValue().toString());
+			
+			int numberOfEntries = fillWithSource.getNumberOfEntries();
+			StringBuilder builder = new StringBuilder();
+		    builder.append(prefix);
+		    if(spaceBetweenPrefixAndCode){
+		    	builder.append(" ");
+		    }
+		    
+		    if(numOfZerosNeeded > 0){
+		        for (int i = 0; i < numOfZerosNeeded; i++){
+		        builder.append("0");
+		        }
+		    }
+		    int lastNumber = startNumber + numberOfEntries;
+		    builder.append(lastNumber);
+		   
+		    
+		    if(suffix != null && spaceBetweenSuffixAndCode){
+		    	builder.append(" ");
+		    }
+		    
+		    if(suffix != null){
+		    	builder.append(suffix);
+		    }
+		    
+		    if(propertyIdToFill.equals(ColumnLabels.SEED_SOURCE.getName()) && builder.toString().length() > 255){
+		    	MessageNotifier.showRequiredFieldError(parentWindow, messageSource.getMessage(Message.SEQUENCE_TOO_LONG_FOR_SEED_SOURCE));
+		    	return;
+		    } else if(propertyIdToFill.equals(ColumnLabels.ENTRY_CODE.getName()) && builder.toString().length() > 47){
+		    	MessageNotifier.showRequiredFieldError(parentWindow, messageSource.getMessage(Message.SEQUENCE_TOO_LONG_FOR_ENTRY_CODE));
+				return;
+		    }
+		    
+			fillWithSource.fillWithSequence(propertyIdToFill, prefix, suffix, startNumber, numOfZerosNeeded, spaceBetweenPrefixAndCode, spaceBetweenSuffixAndCode);
+			Window parent = parentWindow.getParent();
+			parent.removeWindow(parentWindow);
+		}
+	}
+
+
+	public static final String GENERATE_BUTTON_ID = "Generate Next Name Id";
 
     private static final long serialVersionUID = -1197900610042529900L;
     private static final Logger LOG = LoggerFactory.getLogger(AdditionalDetailsCrossNameComponent.class);
@@ -93,7 +175,8 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
     private AbstractComponent[] digitsToggableComponents = new AbstractComponent[2];
     private AbstractComponent[] otherToggableComponents = new AbstractComponent[9];
 
-    private String lastPrefixUsed; //store prefix used for MW method including zeros, if any
+    //store prefix used for MW method including zeros, if any
+    private String lastPrefixUsed; 
     private Integer nextNumberInSequence;
     
     private CrossesMadeContainer container;
@@ -183,86 +266,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 
         	okButton = new Button();
         	okButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-        	okButton.addListener(new Button.ClickListener() {
-    			private static final long serialVersionUID = -3519880320817778816L;
-
-    			@Override
-    			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-    				boolean spaceBetweenPrefixAndCode = addSpaceCheckBox.booleanValue();
-    				boolean spaceBetweenSuffixAndCode = addSpaceAfterSuffixCheckBox.booleanValue();
-    				
-    				String prefix = null;
-    				if(prefixTextField.getValue() == null || prefixTextField.getValue().toString().length() == 0){
-    					MessageNotifier.showRequiredFieldError(parentWindow, messageSource.getMessage(Message.PLEASE_SPECIFY_A_PREFIX));
-    					return;
-    				} else{
-    					prefix = prefixTextField.getValue().toString().trim();
-    				}
-    				
-    				String suffix = null;
-    				if(suffixTextField.getValue() != null){
-    					suffix = suffixTextField.getValue().toString().trim();
-    				}
-    				
-    				int numOfZerosNeeded = 0;
-    				boolean isNumOfZerosNeeded = sequenceNumCheckBox.booleanValue();
-    				if(isNumOfZerosNeeded){
-    					numOfZerosNeeded = ((Integer) leadingZerosSelect.getValue()).intValue();
-    				}
-    				
-    				if(startNumberTextField.getValue() == null || startNumberTextField.getValue().toString().length() == 0){
-    					MessageNotifier.showRequiredFieldError(parentWindow, messageSource.getMessage(Message.PLEASE_SPECIFY_A_STARTING_NUMBER));		
-    					return;
-    				} else if(startNumberTextField.getValue().toString().length() > 9){
-    					MessageNotifier.showRequiredFieldError(parentWindow, messageSource.getMessage(Message.STARTING_NUMBER_HAS_TOO_MANY_DIGITS));
-    					return;
-    				} else {
-    					try{
-    						Integer.parseInt(startNumberTextField.getValue().toString());
-    					} catch(NumberFormatException ex){
-    						MessageNotifier.showRequiredFieldError(parentWindow, messageSource.getMessage(Message.PLEASE_ENTER_VALID_STARTING_NUMBER));
-    						return;
-    					}
-    				}
-    				int startNumber = Integer.parseInt(startNumberTextField.getValue().toString());
-    				
-    				int numberOfEntries = fillWithSource.getNumberOfEntries();
-    				StringBuilder builder = new StringBuilder();
-    	            builder.append(prefix);
-    	            if(spaceBetweenPrefixAndCode){
-    	            	builder.append(" ");
-    	            }
-    	            
-    	            if(numOfZerosNeeded > 0){
-    	                for (int i = 0; i < numOfZerosNeeded; i++){
-    	                builder.append("0");
-    	                }
-    	            }
-    	            int lastNumber = startNumber + numberOfEntries;
-    	            builder.append(lastNumber);
-    	           
-    	            
-    	            if(suffix != null && spaceBetweenSuffixAndCode){
-    	            	builder.append(" ");
-    	            }
-    	            
-    	            if(suffix != null){
-    	            	builder.append(suffix);
-    	            }
-    	            
-    	            if(propertyIdToFill.equals(ListDataTablePropertyID.SEED_SOURCE.getName()) && builder.toString().length() > 255){
-    	            	MessageNotifier.showRequiredFieldError(parentWindow, messageSource.getMessage(Message.SEQUENCE_TOO_LONG_FOR_SEED_SOURCE));
-    	            	return;
-    	            } else if(propertyIdToFill.equals(ListDataTablePropertyID.ENTRY_CODE.getName()) && builder.toString().length() > 47){
-    	            	MessageNotifier.showRequiredFieldError(parentWindow, messageSource.getMessage(Message.SEQUENCE_TOO_LONG_FOR_ENTRY_CODE));
-    					return;
-    	            }
-    	            
-    				fillWithSource.fillWithSequence(propertyIdToFill, prefix, suffix, startNumber, numOfZerosNeeded, spaceBetweenPrefixAndCode, spaceBetweenSuffixAndCode);
-    				Window parent = parentWindow.getParent();
-    				parent.removeWindow(parentWindow);
-    			}
-    		});
+        	okButton.addListener(new OKButtonClickListener());
 
         }
 
@@ -375,8 +379,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
                 generatedNameLabel.setCaption(buildNextNameInSequence(lastPrefixUsed, suffix, nextNumberInSequence));
                 
             } catch (MiddlewareQueryException e) {
-                LOG.error(e.toString() + "\n" + e.getStackTrace());
-                e.printStackTrace();
+                LOG.error(e.toString() + "\n" + e.getStackTrace(), e);
                 MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE),
                         messageSource.getMessage(Message.ERROR_IN_GETTING_NEXT_NUMBER_IN_CROSS_NAME_SEQUENCE));
             }

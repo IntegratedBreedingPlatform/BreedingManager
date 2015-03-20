@@ -281,6 +281,8 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout
     		mapLocation.put(loc.getLname(), new Integer(loc.getLocid()));
         }
     }
+    
+    
 
 	public TextField getSettingsNameTextfield() {
 		return settingsNameTextfield;

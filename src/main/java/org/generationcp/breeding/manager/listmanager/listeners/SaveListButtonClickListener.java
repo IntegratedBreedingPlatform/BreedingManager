@@ -14,8 +14,8 @@ import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListe
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listmanager.AddColumnContextMenu;
 import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
-import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
 import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -40,6 +40,8 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 	private static final long serialVersionUID = -2641642996209640461L;
 
 	private static final Logger LOG = LoggerFactory.getLogger(SaveListButtonClickListener.class);
+
+	private static final String STRING_DASH = "-";
 
 	private ListBuilderComponent source;
 
@@ -272,42 +274,42 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 			for (final GermplasmListData entry : savedListEntries) {
 				final Item item = this.listDataTable.addItem(entry.getId());
 
-				Button gidButton = new Button(String.format("%s", entry.getGid()),
-						new GidLinkClickListener(entry.getGid().toString(), true));
+				Button gidButton = new Button(String.format("%s", entry.getGid()), new GidLinkClickListener(entry.getGid().toString(), true));
 				gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 
 				CheckBox tagCheckBox = new CheckBox();
 				tagCheckBox.setImmediate(true);
 				tagCheckBox.addListener(new ClickListener() {
 					private static final long serialVersionUID = 1L;
-
 					@Override
 					public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-						toggleRowTagInListDataTable(entry, event);
+						CheckBox itemCheckBox = (CheckBox) event.getButton();
+						if(((Boolean) itemCheckBox.getValue()).equals(true)){
+							listDataTable.select(entry.getId());
+						} else {
+							listDataTable.unselect(entry.getId());
+						}
 					}
+
 				});
 
-				Button designationButton = new Button(entry.getDesignation(),
-						new GidLinkClickListener(entry.getGid().toString(), true));
+				Button designationButton = new Button(entry.getDesignation(), new GidLinkClickListener(entry.getGid().toString(), true));
 				designationButton.setStyleName(BaseTheme.BUTTON_LINK);
 				designationButton.setDescription("Click to view Germplasm information");
 
 				//Inventory Related Columns
 
 				//#1 Available Inventory
-				String availInv = "-";
-				if (entry.getInventoryInfo().getActualInventoryLotCount() != null
-						&& entry.getInventoryInfo().getActualInventoryLotCount() != 0) {
-					availInv = entry.getInventoryInfo().getActualInventoryLotCount().toString()
-							.trim();
+				String availInv = STRING_DASH;
+				if(entry.getInventoryInfo().getActualInventoryLotCount() != null && entry.getInventoryInfo().getActualInventoryLotCount() != 0){
+					availInv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
 				}
-				Button inventoryButton = new Button(availInv,
-						new InventoryLinkButtonClickListener(source, currentlySavedList.getId(),
-								entry.getId(), entry.getGid()));
+				Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(source,currentlySavedList.getId(),entry.getId(), entry.getGid()));
 				inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 				inventoryButton.setDescription("Click to view Inventory Details");
 
-				if ("-".equalsIgnoreCase(availInv)) {
+
+				if(availInv.equals(STRING_DASH)){
 					inventoryButton.setEnabled(false);
 					inventoryButton.setDescription("No Lot for this Germplasm");
 				} else {
@@ -315,28 +317,24 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 				}
 
 				//#2 Seed Reserved
-				String seedRes = "-";
-				if (entry.getInventoryInfo().getReservedLotCount() != null
-						&& entry.getInventoryInfo().getReservedLotCount() != 0) {
+				String seedRes = STRING_DASH;
+				if(entry.getInventoryInfo().getReservedLotCount() != null && entry.getInventoryInfo().getReservedLotCount() != 0){
 					seedRes = entry.getInventoryInfo().getReservedLotCount().toString().trim();
 				}
 
-				item.getItemProperty(ListDataTablePropertyID.TAG.getName()).setValue(tagCheckBox);
-				item.getItemProperty(ListDataTablePropertyID.GID.getName()).setValue(gidButton);
-				item.getItemProperty(ListDataTablePropertyID.DESIGNATION.getName())
-						.setValue(designationButton);
-				item.getItemProperty(ListDataTablePropertyID.ENTRY_CODE.getName())
-						.setValue(entry.getEntryCode());
-				item.getItemProperty(ListDataTablePropertyID.ENTRY_ID.getName())
-						.setValue(entry.getEntryId());
-				item.getItemProperty(ListDataTablePropertyID.PARENTAGE.getName())
-						.setValue(entry.getGroupName());
-				item.getItemProperty(ListDataTablePropertyID.SEED_SOURCE.getName())
-						.setValue(entry.getSeedSource());
-				item.getItemProperty(ListDataTablePropertyID.AVAILABLE_INVENTORY.getName())
-						.setValue(inventoryButton);
-				item.getItemProperty(ListDataTablePropertyID.SEED_RESERVATION.getName())
-						.setValue(seedRes);
+				item.getItemProperty(ColumnLabels.TAG.getName()).setValue(tagCheckBox);
+				item.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
+				item.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
+				item.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(
+						entry.getEntryCode());
+				item.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entry.getEntryId());
+				item.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(
+						entry.getGroupName());
+				item.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(
+						entry.getSeedSource());
+				item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(
+						inventoryButton);
+				item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 
 			}
 
@@ -348,18 +346,6 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 			MessageNotifier.showError(this.source.getWindow(),
 					messageSource.getMessage(Message.ERROR_DATABASE),
 					messageSource.getMessage(Message.ERROR_GETTING_SAVED_ENTRIES));
-		}
-
-		return;
-	}
-
-	private void toggleRowTagInListDataTable(final GermplasmListData entry,
-			com.vaadin.ui.Button.ClickEvent event) {
-		CheckBox itemCheckBox = (CheckBox) event.getButton();
-		if (((Boolean) itemCheckBox.getValue()).equals(true)) {
-			listDataTable.select(entry.getId());
-		} else {
-			listDataTable.unselect(entry.getId());
 		}
 	}
 

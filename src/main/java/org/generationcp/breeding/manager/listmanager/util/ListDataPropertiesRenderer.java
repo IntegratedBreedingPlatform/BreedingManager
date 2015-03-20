@@ -3,10 +3,12 @@ package org.generationcp.breeding.manager.listmanager.util;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -25,6 +27,9 @@ public class ListDataPropertiesRenderer {
 	
 	@Autowired
 	private GermplasmListManager listManager; 
+	
+	@Autowired
+	private OntologyDataManager ontologyDataManager; 
 
 	private Integer listId;
 	private Table targetTable;
@@ -39,6 +44,7 @@ public class ListDataPropertiesRenderer {
 		for (Entry<String, List<ListDataColumnValues>> columnEntry: columnsInfo.getColumnValuesMap().entrySet()){
 			String column = columnEntry.getKey();
 			targetTable.addContainerProperty(column, String.class, "");
+			targetTable.setColumnHeader(column, ColumnLabels.get(column).getTermNameFromOntology(ontologyDataManager));
 			targetTable.setColumnWidth(column, 250);
 			setColumnValues(column, columnEntry.getValue());
 		}

@@ -11,13 +11,13 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
-import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerExporter;
-import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerExporterException;
 import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
-import org.generationcp.breeding.manager.listmanager.constants.ListDataTablePropertyID;
+import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
+import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -25,6 +25,7 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
@@ -83,19 +84,21 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 	
 	private ViewListHeaderWindow viewListHeaderWindow;
 	
-	private enum CrossListDataColumn {
-		FGID, FEMALE_PARENT, MGID, MALE_PARENT, METHOD
-	}
+	@Autowired
+	private OntologyDataManager ontologyDataManager;
 	
 	private GermplasmList list;
 
 	private List<GermplasmListData> listEntries;
 	private Map<Integer, Germplasm> germplasmMap;
-	private Map<Integer, CrossParents> parentsInfo; //list data id, CrossParents info
+	//list data id, CrossParents info
+	private Map<Integer, CrossParents> parentsInfo; 
 
 	//Used maps to make use of existing Middleware methods
-	private Map<Integer, String> parentGermplasmNames; // gid of parent, preferred name
-	private Map<Integer, Object> methodMap; // Gid, Method of germplasm
+	// gid of parent, preferred name
+	private Map<Integer, String> parentGermplasmNames; 
+	// Gid, Method of germplasm
+	private Map<Integer, Object> methodMap; 
 	
 	public CrossesSummaryListDataComponent(GermplasmList list){
 		this.list = list;
@@ -294,80 +297,80 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 			parentGermplasmNames = germplasmDataManager.getPreferredNamesByGids(parentIds);
 			
 		} catch(MiddlewareQueryException ex){
-			LOG.error(ex.getMessage() + list.getId());
+			LOG.error(ex.getMessage() + list.getId(), ex);
 			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), "Error in getting list and/or germplasm information.");
 		}
 	}
 	
-	private void initializeListEntriesTable(){
+	protected void initializeListEntriesTable(){
 		count = Long.valueOf(0);
 		try {
 			count = germplasmListManager.countGermplasmListDataByListId(this.list.getId());
 		} catch (MiddlewareQueryException e) {
-			LOG.error(e.getMessage());
-			e.printStackTrace();
+			LOG.error(e.getMessage(), e);
 		}
 		
-		listDataTable = new BreedingManagerTable(count.intValue(), 8);
+		setListDataTable(new BreedingManagerTable(count.intValue(), 8));
+		listDataTable = getListDataTable();
 		listDataTable.setColumnCollapsingAllowed(true);
 		listDataTable.setColumnReorderingAllowed(true);
 		listDataTable.setImmediate(true);
 		
-		listDataTable.addContainerProperty(ListDataTablePropertyID.ENTRY_ID.getName(), Integer.class, null);
-		listDataTable.addContainerProperty(ListDataTablePropertyID.DESIGNATION.getName(), Button.class, null);
-		listDataTable.addContainerProperty(ListDataTablePropertyID.PARENTAGE.getName(), String.class, null);
-		listDataTable.addContainerProperty(ListDataTablePropertyID.ENTRY_CODE.getName(), String.class, null);
-		listDataTable.addContainerProperty(ListDataTablePropertyID.GID.getName(), Button.class, null);
-		listDataTable.addContainerProperty(ListDataTablePropertyID.SEED_SOURCE.getName(), String.class, null);
-		listDataTable.addContainerProperty(CrossListDataColumn.FEMALE_PARENT, Button.class, null);
-		listDataTable.addContainerProperty(CrossListDataColumn.FGID, Button.class, null);
-		listDataTable.addContainerProperty(CrossListDataColumn.MALE_PARENT, Button.class, null);
-		listDataTable.addContainerProperty(CrossListDataColumn.MGID, Button.class, null);
-		listDataTable.addContainerProperty(CrossListDataColumn.METHOD, String.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.FEMALE_PARENT.getName(), Button.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.FGID.getName(), Button.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.MALE_PARENT.getName(), Button.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.MGID.getName(), Button.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, null);
 		
-		listDataTable.setColumnHeader(ListDataTablePropertyID.ENTRY_ID.getName(), messageSource.getMessage(Message.HASHTAG));
-		listDataTable.setColumnHeader(ListDataTablePropertyID.DESIGNATION.getName(), messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER));
-		listDataTable.setColumnHeader(ListDataTablePropertyID.PARENTAGE.getName(), messageSource.getMessage(Message.LISTDATA_PARENTAGE_HEADER));
-		listDataTable.setColumnHeader(ListDataTablePropertyID.ENTRY_CODE.getName(), messageSource.getMessage(Message.LISTDATA_ENTRY_CODE_HEADER));
-		listDataTable.setColumnHeader(ListDataTablePropertyID.GID.getName(), messageSource.getMessage(Message.LISTDATA_GID_HEADER));
-		listDataTable.setColumnHeader(ListDataTablePropertyID.SEED_SOURCE.getName(), messageSource.getMessage(Message.LISTDATA_SEEDSOURCE_HEADER));
-		listDataTable.setColumnHeader(CrossListDataColumn.FEMALE_PARENT, messageSource.getMessage(Message.LABEL_FEMALE_PARENT));
-		listDataTable.setColumnHeader(CrossListDataColumn.FGID, messageSource.getMessage(Message.FGID));
-		listDataTable.setColumnHeader(CrossListDataColumn.MALE_PARENT, messageSource.getMessage(Message.LABEL_MALE_PARENT));
-		listDataTable.setColumnHeader(CrossListDataColumn.MGID, messageSource.getMessage(Message.MGID));
-		listDataTable.setColumnHeader(CrossListDataColumn.METHOD, messageSource.getMessage(Message.METHOD_LABEL));
+		listDataTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), messageSource.getMessage(Message.HASHTAG));
+		listDataTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(), getTermNameFromOntology(ColumnLabels.DESIGNATION));
+		listDataTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(), getTermNameFromOntology(ColumnLabels.PARENTAGE));
+		listDataTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(),  getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
+		listDataTable.setColumnHeader(ColumnLabels.GID.getName(), getTermNameFromOntology(ColumnLabels.GID));
+		listDataTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(), getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
+		listDataTable.setColumnHeader(ColumnLabels.FEMALE_PARENT.getName(), getTermNameFromOntology(ColumnLabels.FEMALE_PARENT));
+		listDataTable.setColumnHeader(ColumnLabels.FGID.getName(), getTermNameFromOntology(ColumnLabels.FGID));
+		listDataTable.setColumnHeader(ColumnLabels.MALE_PARENT.getName(), getTermNameFromOntology(ColumnLabels.MALE_PARENT));
+		listDataTable.setColumnHeader(ColumnLabels.MGID.getName(), getTermNameFromOntology(ColumnLabels.MGID));
+		listDataTable.setColumnHeader(ColumnLabels.BREEDING_METHOD_NAME.getName(), getTermNameFromOntology(ColumnLabels.BREEDING_METHOD_NAME));
 		
 		listDataTable.setVisibleColumns(new Object[] { 
-        		ListDataTablePropertyID.ENTRY_ID.getName()
-        		,ListDataTablePropertyID.DESIGNATION.getName()
-        		,ListDataTablePropertyID.PARENTAGE.getName()
-        		,ListDataTablePropertyID.ENTRY_CODE.getName()
-        		,ListDataTablePropertyID.GID.getName()
-        		,ListDataTablePropertyID.SEED_SOURCE.getName()
-        		,CrossListDataColumn.FEMALE_PARENT
-        		,CrossListDataColumn.FGID
-        		,CrossListDataColumn.MALE_PARENT
-        		,CrossListDataColumn.MGID
-        		,CrossListDataColumn.METHOD
+        		ColumnLabels.ENTRY_ID.getName()
+        		,ColumnLabels.DESIGNATION.getName()
+        		,ColumnLabels.PARENTAGE.getName()
+        		,ColumnLabels.ENTRY_CODE.getName()
+        		,ColumnLabels.GID.getName()
+        		,ColumnLabels.SEED_SOURCE.getName()
+        		,ColumnLabels.FEMALE_PARENT.getName()
+        		,ColumnLabels.FGID.getName()
+        		,ColumnLabels.MALE_PARENT.getName()
+        		,ColumnLabels.MGID.getName()
+        		,ColumnLabels.BREEDING_METHOD_NAME.getName()
     		}
 		);
 	}
 	
 	private void exportCrossesMadeAction(){
-		CrossingManagerExporter exporter = new CrossingManagerExporter(list, listEntries, 
-				parentsInfo);
+		GermplasmListExporter exporter = new GermplasmListExporter(list.getId());
 		 String tempFileName = System.getProperty(AppConstants.USER_HOME) + "/temp.xls";
 		 
         try {
-            exporter.exportCrossingManagerExcel(tempFileName);
+        	exporter.exportGermplasmListXLS(tempFileName, listDataTable);
             FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
             fileDownloadResource.setFilename(list.getName().replace(" ", "_") + ".xls");
 
             this.getWindow().open(fileDownloadResource);
     
-        } catch (CrossingManagerExporterException e) {
+        } catch (GermplasmListExporterException | MiddlewareQueryException e) {
+        	LOG.error(e.getMessage(), e);
             MessageNotifier.showError(getWindow(), "Error with exporting crossing file.", e.getMessage());
-        }
+		}
 	}
 	
 	public void openViewListHeaderWindow(){
@@ -376,6 +379,30 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
 	
 	public void focus(){
 		listDataTable.focus();
+	}
+	
+	protected String getTermNameFromOntology(ColumnLabels columnLabels) {
+		return columnLabels.getTermNameFromOntology(ontologyDataManager);
+	}
+
+	public Table getListDataTable() {
+		return listDataTable;
+	}
+
+	public void setListDataTable(Table listDataTable) {
+		this.listDataTable = listDataTable;
+	}
+
+	public void setOntologyDataManager(OntologyDataManager ontologyDataManager) {
+		this.ontologyDataManager = ontologyDataManager;
+	}
+
+	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	public void setGermplasmListManager(GermplasmListManager germplasmListManager) {
+		this.germplasmListManager = germplasmListManager;
 	}
 
 }
