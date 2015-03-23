@@ -20,8 +20,6 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -36,9 +34,6 @@ import com.vaadin.ui.VerticalLayout;
 public class CrossingManagerMakeCrossesComponent extends VerticalLayout 
         implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, 
         				StepChangeListener, UnsavedChangesConfirmDialogSource{
-    
-	@SuppressWarnings("unused")
-	private static final Logger LOG = LoggerFactory.getLogger(CrossingManagerMakeCrossesComponent.class);
 	
     public static final String NEXT_BUTTON_ID = "next button";
     public static final String BACK_BUTTON_ID = "back button";

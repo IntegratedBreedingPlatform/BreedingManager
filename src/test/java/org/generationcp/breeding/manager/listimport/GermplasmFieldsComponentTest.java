@@ -1,5 +1,7 @@
 package org.generationcp.breeding.manager.listimport;
 
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -62,8 +64,8 @@ public class GermplasmFieldsComponentTest {
 		verify(germplasmFieldsComponent,times(1)).getLocationComponent();
 		verify(germplasmFieldsComponent,times(1)).getSeedLocationComponent();
 		
-		verify(locationComponent,times(1)).populateHarvestLocation(null);
-		verify(seedLoctionComponent,times(1)).populateHarvestLocation(null);
+		verify(locationComponent,times(1)).populateHarvestLocation(null,anyString());
+		verify(seedLoctionComponent,times(1)).populateHarvestLocation(null,anyString());
 	}
 	
 	@Test
@@ -88,7 +90,9 @@ public class GermplasmFieldsComponentTest {
 		verify(germplasmFieldsComponent,times(1)).getLocationComponent();
 		verify(germplasmFieldsComponent,times(1)).getSeedLocationComponent();
 		
-		verify(locationComponent,times(1)).populateHarvestLocation(1);
-		verify(seedLoctionComponent,times(1)).populateHarvestLocation(2);
+		verify(locationComponent,times(1)).populateHarvestLocation(eq(1),anyString());
+		verify(seedLoctionComponent,times(1)).populateHarvestLocation(eq(2),anyString());
 	}
+
+
 }	

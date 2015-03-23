@@ -13,6 +13,9 @@ package org.generationcp.breeding.manager.listimport;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
+import org.generationcp.breeding.manager.util.Util;
+import org.generationcp.commons.constant.DefaultGermplasmStudyBrowserPath;
+import org.generationcp.commons.util.WorkbenchAppPathResolver;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
@@ -41,8 +44,7 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
     private static final long serialVersionUID = -8889276342164300525L;
     
     public static final String NEW_IMPORT_BUTTON_ID = "Make New Import Button ID";
-	public static final String LIST_BROWSER_LINK = "http://localhost:18080/GermplasmStudyBrowser/main/germplasmlist-";
-    
+
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
@@ -71,13 +73,15 @@ public class EmbeddedGermplasmListDetailComponent extends VerticalLayout
         } catch (MiddlewareQueryException qe) {
             LOG.error("QueryException", qe);
         }
-        
-        ExternalResource listBrowserLink = null;
-        if (tool == null) {
-            listBrowserLink = new ExternalResource(LIST_BROWSER_LINK + listId);
-        } else {
-            listBrowserLink = new ExternalResource(tool.getPath().replace("germplasmlist/", "germplasmlist-") + listId);
-        }
+
+		String addtlParams = Util.getAdditionalParams(workbenchDataManager);
+		ExternalResource listBrowserLink;
+		if (tool == null) {
+			listBrowserLink = new ExternalResource(
+					WorkbenchAppPathResolver.getFullWebAddress(DefaultGermplasmStudyBrowserPath.LIST_BROWSER_LINK + listId,"?restartApplication" + addtlParams));
+		} else {
+			listBrowserLink = new ExternalResource(WorkbenchAppPathResolver.getWorkbenchAppPath(tool,String.valueOf(listId),"?restartApplication" + addtlParams));
+		}
         
         VerticalLayout layoutForList = new VerticalLayout();
         layoutForList.setMargin(false);

@@ -21,7 +21,6 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -351,8 +350,7 @@ public class SaveGermplasmListComponent extends AbsoluteLayout implements Initia
     private Boolean validateListName(){
     	Long nameMatches = Long.valueOf(0);
     	try {
-			nameMatches += germplasmListManager.countGermplasmListByName(listNameText.getValue().toString(), Operation.EQUAL, Database.LOCAL);
-			nameMatches += germplasmListManager.countGermplasmListByName(listNameText.getValue().toString(), Operation.EQUAL, Database.CENTRAL);
+			nameMatches += germplasmListManager.countGermplasmListByName(listNameText.getValue().toString(), Operation.EQUAL);
 			if(nameMatches>0){
 				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE),
 		                messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));

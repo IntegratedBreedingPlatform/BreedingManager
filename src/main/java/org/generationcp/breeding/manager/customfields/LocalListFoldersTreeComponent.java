@@ -77,11 +77,6 @@ public class LocalListFoldersTreeComponent extends ListTreeComponent {
 	}
 
 	@Override
-	protected boolean doIncludeCentralLists() {
-		return false;
-	}
-
-	@Override
 	protected boolean doShowFoldersOnly() {
 		return showFoldersOnly;
 	}

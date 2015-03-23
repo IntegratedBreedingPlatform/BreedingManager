@@ -6,7 +6,6 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.ListTreeComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -53,10 +52,8 @@ public class ListNameValidator implements Validator {
 	}
 	
 	@Override
-	public void validate(Object value) throws InvalidValueException {
-		
+	public void validate(Object value) {
 		if (!isValid(value)){
-			
 			throw new InvalidValueException(this.errorDetails);
 		}
 	}
@@ -76,53 +73,40 @@ public class ListNameValidator implements Validator {
 			}
 		}
 
-		if(!validateListName(value.toString())){
+		if(!validateListName(value.toString().trim())){
 			return false;
 		}
 		
 		return true;
 	}
 	
-	private boolean validateListName(String listName){
-		listName = listName.trim();
+	protected boolean validateListName(String listName){
+		boolean isValid = true;
 		if (listName.isEmpty()){
 			this.errorDetails = messageSource.getMessage(Message.INVALID_ITEM_NAME);
-			return false;
+			isValid = false;
 			
-		} else if (ListTreeComponent.PROGRAM_LISTS.equalsIgnoreCase(listName) || 
-				ListTreeComponent.PUBLIC_LISTS.equalsIgnoreCase(listName) ){
-			this.errorDetails = "Cannot use \"Program Lists\" and \"Public Lists\" as item name.";
-			return false;
-		}
-		
-		try{
-			List<GermplasmList> centralLists = this.germplasmListManager.getGermplasmListByName(listName, 0, 5, Operation.EQUAL, Database.CENTRAL);
+		} else if (ListTreeComponent.LISTS.equalsIgnoreCase(listName)){
+			this.errorDetails = "Cannot use \"Lists\" as item name.";
+			isValid = false;
 			
-			if(!centralLists.isEmpty()){
-				this.errorDetails = messageSource.getMessage(Message.EXISTING_LIST_IN_CENTRAL_ERROR_MESSAGE);
-				return false;
-			}
-			
-			List<GermplasmList> localLists = this.germplasmListManager.getGermplasmListByName(listName, 0, 5, Operation.EQUAL, Database.LOCAL);
-			
-			if(localLists.size() == 1){
-				if(!localLists.get(0).getName().trim().equals(currentListName)){
+		} else {
+			try{
+				List<GermplasmList> lists = this.germplasmListManager.getGermplasmListByName(listName, 0, 5, Operation.EQUAL);
+				
+				if((lists.size() == 1 && !lists.get(0).getName().trim().equals(currentListName))
+						|| (!lists.isEmpty() && lists.size() > 1)){
 					this.errorDetails = messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE);
-					return false;
+					isValid = false;
 				}
+				
+			} catch(MiddlewareQueryException ex){
+				LOG.error("Error with getting germplasm list by list name - " + listName, ex);
+				this.errorDetails = messageSource.getMessage(Message.ERROR_VALIDATING_LIST);
+				isValid = false;
 			}
-			else if(!localLists.isEmpty()){
-				this.errorDetails = messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE);
-				return false;
-			}
-			
-		} catch(MiddlewareQueryException ex){
-			LOG.error("Error with getting germplasm list by list name - " + listName, ex);
-			this.errorDetails = messageSource.getMessage(Message.ERROR_VALIDATING_LIST);
-			return false;
 		}
-		
-		return true;
+		return isValid;
 	}
 
 	public String getCurrentListName() {
@@ -140,4 +124,13 @@ public class ListNameValidator implements Validator {
 	public void setParentFolder(String parentFolder) {
 		this.parentFolder = parentFolder;
 	}
+
+	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	public void setGermplasmListManager(GermplasmListManager germplasmListManager) {
+		this.germplasmListManager = germplasmListManager;
+	}
+	
 }

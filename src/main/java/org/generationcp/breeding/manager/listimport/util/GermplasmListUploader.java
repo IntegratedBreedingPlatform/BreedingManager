@@ -7,7 +7,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -27,7 +31,6 @@ import org.generationcp.middleware.domain.dms.NameSynonym;
 import org.generationcp.middleware.domain.oms.CvId;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.Database;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -405,10 +408,9 @@ public class GermplasmListUploader implements FileFactory {
 
         if (listName != null && listName.length() > 0) {
             try {
-                Long matchingNamesCountOnLocal = germplasmListManager.countGermplasmListByName(listName, Operation.EQUAL, Database.LOCAL);
-                Long matchingNamesCountOnCentral = germplasmListManager.countGermplasmListByName(listName, Operation.EQUAL, Database.CENTRAL);
+                Long matchingNamesCount = germplasmListManager.countGermplasmListByName(listName, Operation.EQUAL);
 
-                if (matchingNamesCountOnLocal > 0 || matchingNamesCountOnCentral > 0) {
+                if (matchingNamesCount > 0) {
                     throwInvalidFileError("There is already an existing germplasm list with the name specified on the file");
                 }
             } catch (MiddlewareQueryException e1) {
@@ -743,5 +745,23 @@ public class GermplasmListUploader implements FileFactory {
         originalFilename = fileName;
         return f;
     }
+
+	public void setListName(String listName) {
+		this.listName = listName;
+	}
+
+	public void setListTitle(String listTitle) {
+		this.listTitle = listTitle;
+	}
+
+	public void setListType(String listType) {
+		this.listType = listType;
+	}
+
+	public void setListDate(Date listDate) {
+		this.listDate = listDate;
+	}
+    
+    
 
 }

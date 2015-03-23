@@ -639,7 +639,7 @@ public class AddColumnContextMenu implements InternationalizableComponent  {
 	                        	itemIdsInMap = new ArrayList<Integer>();
 	                        	itemIdsInMap.add(itemId);
 	                        	gidToItemIdMap.put(germplasm.getGpid2(), itemIdsInMap);
-	                        } else{
+	                        } else {
 	                        	itemIdsInMap.add(itemId);
 	                        }
 	                    } else {

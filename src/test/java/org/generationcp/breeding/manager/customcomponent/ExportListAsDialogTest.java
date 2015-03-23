@@ -129,13 +129,15 @@ public class ExportListAsDialogTest {
 	}
 	
 	@Test
-	public void testExportListAsXLS() throws GermplasmListExporterException{
+	public void testExportListAsXLS()
+			throws GermplasmListExporterException, MiddlewareQueryException {
 		dialog.exportListAsXLS(listDataTable);
 		verify(listExporter,times(1)).exportGermplasmListXLS(ExportListAsDialog.TEMP_FILENAME, listDataTable);
 	}
 	
 	@Test
-	public void testExportListAsXLSWithException() throws GermplasmListExporterException{
+	public void testExportListAsXLSWithException()
+			throws GermplasmListExporterException, MiddlewareQueryException {
 		doThrow(new GermplasmListExporterException()).when(listExporter).exportGermplasmListXLS(ExportListAsDialog.TEMP_FILENAME,emptyTable);
 		dialog.exportListAsXLS(emptyTable);
 		verify(window,times(0)).open(fileDownloadResource);

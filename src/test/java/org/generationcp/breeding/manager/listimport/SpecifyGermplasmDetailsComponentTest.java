@@ -9,37 +9,33 @@ import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import com.vaadin.ui.Table;
+import org.mockito.runners.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class SpecifyGermplasmDetailsComponentTest {
-	
-	private SpecifyGermplasmDetailsComponent specifyGermplasmDetailsComponent;
-	
 	@Mock
 	private GermplasmImportMain source;
+
 	@Mock
 	private OntologyDataManager ontologyDataManager;
-	
-	@Before
-	public void setUp(){
-		MockitoAnnotations.initMocks(this);
-		specifyGermplasmDetailsComponent = spy(new SpecifyGermplasmDetailsComponent(source, false));
-		specifyGermplasmDetailsComponent.setOntologyDataManager(ontologyDataManager);
-	}
-	
+
+	@InjectMocks
+	private SpecifyGermplasmDetailsComponent specifyGermplasmDetailsComponent = spy(new SpecifyGermplasmDetailsComponent(source, false));
+
 	@Test
 	public void testInitGermplasmDetailsTable_returnsTheValueFromColumLabelDefaultName(){
 		Table table = new Table();
 		specifyGermplasmDetailsComponent.setGermplasmDetailsTable(table);
 		when(specifyGermplasmDetailsComponent.getGermplasmDetailsTable()).thenReturn(table);
-		
+
 		specifyGermplasmDetailsComponent.initGermplasmDetailsTable();
-		
+
 		assertEquals("ENTRY_ID", table.getColumnHeader(ColumnLabels.ENTRY_ID.getName()));
 		assertEquals("ENTRY CODE", table.getColumnHeader(ColumnLabels.ENTRY_CODE.getName()));
 		assertEquals("DESIGNATION", table.getColumnHeader(ColumnLabels.DESIGNATION.getName()));
@@ -47,13 +43,13 @@ public class SpecifyGermplasmDetailsComponentTest {
 		assertEquals("GID", table.getColumnHeader(ColumnLabels.GID.getName()));
 		assertEquals("SEED SOURCE", table.getColumnHeader(ColumnLabels.SEED_SOURCE.getName()));
 	}
-	
+
 	@Test
 	public void testInitGermplasmDetailsTable_returnsTheValueFromOntologyManager() throws MiddlewareQueryException{
 		Table table = new Table();
 		specifyGermplasmDetailsComponent.setGermplasmDetailsTable(table);
 		when(specifyGermplasmDetailsComponent.getGermplasmDetailsTable()).thenReturn(table);
-		
+
 		Term fromOntology = new Term();
 		fromOntology.setName("Ontology Name");
 		when(ontologyDataManager.getTermById(TermId.ENTRY_NO.getId())).thenReturn(fromOntology);
@@ -62,9 +58,9 @@ public class SpecifyGermplasmDetailsComponentTest {
 		when(ontologyDataManager.getTermById(TermId.CROSS.getId())).thenReturn(fromOntology);
 		when(ontologyDataManager.getTermById(TermId.GID.getId())).thenReturn(fromOntology);
 		when(ontologyDataManager.getTermById(TermId.SEED_SOURCE.getId())).thenReturn(fromOntology);
-		
+
 		specifyGermplasmDetailsComponent.initGermplasmDetailsTable();
-		
+
 		assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.ENTRY_ID.getName()));
 		assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.ENTRY_CODE.getName()));
 		assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.DESIGNATION.getName()));

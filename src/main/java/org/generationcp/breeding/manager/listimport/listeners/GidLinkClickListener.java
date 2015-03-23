@@ -14,8 +14,10 @@ package org.generationcp.breeding.manager.listimport.listeners;
 
 import com.vaadin.event.ShortcutAction;
 import org.generationcp.breeding.manager.util.Util;
+import org.generationcp.commons.constant.DefaultGermplasmStudyBrowserPath;
 import org.generationcp.commons.tomcat.util.TomcatUtil;
 import org.generationcp.commons.tomcat.util.WebAppStatusInfo;
+import org.generationcp.commons.util.WorkbenchAppPathResolver;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -44,8 +46,7 @@ public class GidLinkClickListener implements Button.ClickListener, ItemClickList
     private static final long serialVersionUID = -6751894969990825730L;
     private final static Logger LOG = LoggerFactory.getLogger(GidLinkClickListener.class);
     public static final String GERMPLASM_IMPORT_WINDOW_NAME = "germplasm-import";
-	public static final String GERMPLASM_BROWSER_LINK = "http://localhost:18080/GermplasmStudyBrowser/main/germplasm-";
-    
+
     @Autowired
     private WorkbenchDataManager workbenchDataManager;
     
@@ -113,11 +114,10 @@ public class GidLinkClickListener implements Button.ClickListener, ItemClickList
         
         ExternalResource germplasmBrowserLink = null;
         if (tool == null) {
-            germplasmBrowserLink = new ExternalResource(GERMPLASM_BROWSER_LINK + gid + "?restartApplication"+
-            		addtlParams);
+            germplasmBrowserLink = new ExternalResource(
+					WorkbenchAppPathResolver.getFullWebAddress(DefaultGermplasmStudyBrowserPath.GERMPLASM_BROWSER_LINK + gid,"?restartApplication" + addtlParams));
         } else {
-            germplasmBrowserLink = new ExternalResource(tool.getPath().replace("germplasm/", "germplasm-") + gid + "?restartApplication"+
-            		addtlParams);
+            germplasmBrowserLink = new ExternalResource(WorkbenchAppPathResolver.getWorkbenchAppPath(tool,gid,"?restartApplication" + addtlParams));
         }
         
         String preferredName = null;

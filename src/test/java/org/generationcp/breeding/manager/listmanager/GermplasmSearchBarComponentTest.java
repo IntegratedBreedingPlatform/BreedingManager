@@ -1,7 +1,11 @@
 package org.generationcp.breeding.manager.listmanager;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 
@@ -71,20 +75,18 @@ public class GermplasmSearchBarComponentTest {
 		
 		CheckBox includeParentsCheckBox = spyComponent.getIncludeParentsCheckBox();
 		CheckBox exactMatchesOnlyCheckBox = spyComponent.getExactMatchesOnlyCheckBox();
-		CheckBox includePublicDataCheckBox = spyComponent.getIncludePublicDataCheckBox();
 		boolean includeParents = (Boolean) includeParentsCheckBox.getValue();
-        boolean includePublicData = (Boolean) includePublicDataCheckBox.getValue();
         boolean exactMatchesOnly = (Boolean) exactMatchesOnlyCheckBox.getValue();
         
         Operation operation = exactMatchesOnly ? Operation.EQUAL : Operation.LIKE;
         List<Germplasm> results = null;
         try {
         	when(germplasmDataManager.searchForGermplasm(TEST_SEARCH_STRING, operation, 
-				includeParents, includePublicData)).thenReturn(null);
+				includeParents)).thenReturn(null);
 			doNothing().when(germplasmSearchResultsComponent).applyGermplasmResults(results);
 			spyComponent.doSearch(TEST_SEARCH_STRING);
 			verify(breedingManagerService).doGermplasmSearch(TEST_SEARCH_STRING, 
-					operation, includeParents, includePublicData);
+					operation, includeParents);
 		} catch (BreedingManagerSearchException e) {
 			Message errorMessage = e.getErrorMessage();
 			assertEquals("Error message should be "+NO_SEARCH_RESULTS_UNCHECKED_PUBLIC_DATA,
@@ -94,36 +96,4 @@ public class GermplasmSearchBarComponentTest {
 			fail("Test fails with error : "+ e.getMessage());
 		}
 	}
-	
-	@Test
-	public void testDoSearchIncludePublicData() {
-		
-		CheckBox includeParentsCheckBox = spyComponent.getIncludeParentsCheckBox();
-		CheckBox exactMatchesOnlyCheckBox = spyComponent.getExactMatchesOnlyCheckBox();
-		CheckBox includePublicDataCheckBox = spyComponent.getIncludePublicDataCheckBox();
-		includePublicDataCheckBox.setValue(true);
-		boolean includeParents = (Boolean) includeParentsCheckBox.getValue();
-        boolean searchPublicData = (Boolean) includePublicDataCheckBox.getValue();
-        boolean exactMatchesOnly = (Boolean) exactMatchesOnlyCheckBox.getValue();
-        
-        Operation operation = exactMatchesOnly ? Operation.EQUAL : Operation.LIKE;
-        List<Germplasm> results = null;
-        try {
-        	when(germplasmDataManager.searchForGermplasm(TEST_SEARCH_STRING, operation, 
-				includeParents, searchPublicData)).thenReturn(null);
-			doNothing().when(germplasmSearchResultsComponent).applyGermplasmResults(results);
-			spyComponent.doSearch(TEST_SEARCH_STRING);
-			verify(breedingManagerService).doGermplasmSearch(TEST_SEARCH_STRING, 
-					operation, includeParents, searchPublicData);
-		} catch (BreedingManagerSearchException e) {
-			Message errorMessage = e.getErrorMessage();
-			assertEquals("Error message should be "+NO_SEARCH_RESULTS,
-				NO_SEARCH_RESULTS,
-				messageSource.getMessage(errorMessage));
-		} catch(Exception e) {
-			fail("Test fails with error : "+ e.getMessage());
-		}
-	}
-	
-
 }

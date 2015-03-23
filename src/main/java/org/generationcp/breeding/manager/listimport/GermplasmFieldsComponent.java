@@ -10,6 +10,7 @@ import org.generationcp.breeding.manager.constants.AppConstants.CssStyles;
 import org.generationcp.breeding.manager.customfields.BreedingLocationField;
 import org.generationcp.breeding.manager.customfields.BreedingLocationFieldSource;
 import org.generationcp.breeding.manager.customfields.BreedingMethodField;
+import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -69,6 +70,9 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
     
     private static final Integer STORAGE_LOCATION_TYPEID = 1500;
     
+    @Autowired
+	private BreedingManagerService breedingManagerService;
+	private String programUniqueId;
 
 	public GermplasmFieldsComponent(Window parentWindow) {
 		super();
@@ -144,6 +148,12 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
         nameTypeComboBox.setWidth("400px");
         nameTypeComboBox.setNullSelectionAllowed(false);
         nameTypeComboBox.setImmediate(true);
+        
+        try {
+			programUniqueId = breedingManagerService.getCurrentProject().getUniqueID();
+		} catch (MiddlewareQueryException e) {
+			LOG.error(e.getMessage(),e);
+	}
 	}
 
 	@Override
@@ -289,22 +299,19 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 
 	@Override
 	public void updateAllLocationFields() {
-		/** NOTE merging to merged-db branch, make sure to add programUniqueID 
-		 * as an additional parameter for populateHarvestLocation() method */
-
 		if(getLocationComboBox().getValue() != null){
-			getLocationComponent().populateHarvestLocation(Integer.valueOf(getLocationComboBox().getValue().toString()));
+			getLocationComponent().populateHarvestLocation(Integer.valueOf(getLocationComboBox().getValue().toString()),programUniqueId);
 		} else {
-			getLocationComponent().populateHarvestLocation(null);
+			getLocationComponent().populateHarvestLocation(null,programUniqueId);
 		}
 
 		if(getSeedLocationComboBox().getValue() != null){
-			getSeedLocationComponent().populateHarvestLocation(Integer.valueOf(getSeedLocationComboBox().getValue().toString()));
+			getSeedLocationComponent().populateHarvestLocation(Integer.valueOf(getSeedLocationComboBox().getValue().toString()),programUniqueId);
 		} else {
-			getSeedLocationComponent().populateHarvestLocation(null);
+			getSeedLocationComponent().populateHarvestLocation(null,programUniqueId);
 		}
 	}
-
+    
 	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}

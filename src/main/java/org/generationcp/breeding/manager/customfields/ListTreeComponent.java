@@ -12,18 +12,18 @@ public abstract class ListTreeComponent extends ListSelectorComponent {
 
     public ListTreeComponent(Integer selectListId){
     	this.listId = selectListId;
-    	selectProgramListsByDefault = false;
+    	selectListsFolderByDefault = false;
     }
 
     public ListTreeComponent(ListTreeActionsListener treeActionsListener){
     	this.treeActionsListener = treeActionsListener;
-    	selectProgramListsByDefault = false;
+    	selectListsFolderByDefault = false;
     }
     
     public ListTreeComponent(ListTreeActionsListener treeActionsListener, Integer selectedListId){
     	this.treeActionsListener = treeActionsListener;
     	this.listId = selectedListId;
-    	selectProgramListsByDefault = true;
+    	selectListsFolderByDefault = true;
     }
 
     @Override

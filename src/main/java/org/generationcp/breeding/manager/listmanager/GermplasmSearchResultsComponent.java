@@ -10,6 +10,12 @@ import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.breeding.manager.util.Util;
+import org.generationcp.commons.constant.DefaultGermplasmStudyBrowserPath;
+import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.commons.tomcat.util.TomcatUtil;
+import org.generationcp.commons.tomcat.util.WebAppStatusInfo;
+import org.generationcp.commons.util.WorkbenchAppPathResolver;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -28,6 +34,8 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -67,8 +75,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	public static final String NAMES = "NAMES";
 	
 	public static final String MATCHING_GEMRPLASMS_TABLE_DATA = "Matching Germplasms Table";
-	public static final String GERMPLASM_BROWSER_LINK = "http://localhost:18080/GermplasmStudyBrowser/main/germplasm-";
-	
+
     static final Action ACTION_COPY_TO_NEW_LIST= new Action("Add Selected Entries to New List");
     static final Action ACTION_SELECT_ALL= new Action("Select All");
     static final Action[] GERMPLASMS_TABLE_CONTEXT_MENU = new Action[] { ACTION_COPY_TO_NEW_LIST, ACTION_SELECT_ALL };
@@ -288,6 +295,8 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	}
 		
 	public void applyGermplasmResults(List<Germplasm> germplasms){
+		
+		Monitor monitor = MonitorFactory.start("GermplasmSearchResultsComponent.applyGermplasmResults()");
 		updateNoOfEntries(germplasms.size());
 		matchingGermplasmsTable.removeAllItems();
 		for(Germplasm germplasm:germplasms){
@@ -296,10 +305,12 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
         	Button gidButton = new Button(String.format("%s", germplasm.getGid().toString()), listener);
             gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 			
-            String shortenedNames = getShortenedGermplasmNames(germplasm.getGid());
+            String germplasmFullName = getGermplasmNames(germplasm.getGid());
+            String shortenedNames = germplasmFullName.length() > 20 ? germplasmFullName.substring(0, 20) + "..." : germplasmFullName;
+            
         	Button namesButton = new Button(shortenedNames, listener);
         	namesButton.setStyleName(BaseTheme.BUTTON_LINK);
-        	namesButton.setDescription(getGermplasmNames(germplasm.getGid()));
+			namesButton.setDescription(germplasmFullName);
             
             String crossExpansion = "";
             if(germplasm!=null){
@@ -359,6 +370,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		if(!matchingGermplasmsTable.getItemIds().isEmpty()){
 			updateActionMenuOptions(true);
 		}
+		LOG.debug("" + monitor.stop());
 	}
 
     private String getGermplasmNames(int gid) {
@@ -382,31 +394,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
             return null;
         }
     }	
-	
-    private String getShortenedGermplasmNames(int gid) {
-        try {
-            List<Name> names = germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
-            StringBuilder germplasmNames = new StringBuilder("");
-            int i = 0;
-            for (Name n : names) {
-                if (i < names.size() - 1) {
-                    germplasmNames.append(n.getNval() + ", ");
-                } else {
-                    germplasmNames.append(n.getNval());
-                }
-                i++;
-            }
-            String n = germplasmNames.toString();
-            if(n.length()>20){
-            	n = n.substring(0, 20) + "...";
-            }
-            return n;
-        } catch (MiddlewareQueryException e) {
-        	LOG.error(e.getMessage(), e);
-            return null;
-        }
-    }
-    
+  
     public TableWithSelectAllLayout getMatchingGermplasmsTableWithSelectAll() {
         return matchingGermplasmsTableWithSelectAll;
     }

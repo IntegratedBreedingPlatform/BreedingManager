@@ -38,5 +38,4 @@ public class GermplasmListTreeCollapseListener implements Tree.CollapseListener{
         }		
 	}
     
-
 }

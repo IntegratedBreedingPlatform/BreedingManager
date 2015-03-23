@@ -5,17 +5,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
-import org.generationcp.breeding.manager.util.Util;
-import org.generationcp.commons.util.UserUtil;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+
+import javax.annotation.Resource;
 
 @Configurable
 public class SaveGermplasmListAction implements Serializable {
@@ -27,9 +27,9 @@ public class SaveGermplasmListAction implements Serializable {
 	
     @Autowired
     private GermplasmDataManager germplasmManager;
-    
-    @Autowired
-    private WorkbenchDataManager workbenchDataManager;
+
+	@Resource
+	private ContextUtil contextUtil;
     
     @Autowired
 	private InventoryDataManager inventoryDataManager;
@@ -52,7 +52,7 @@ public class SaveGermplasmListAction implements Serializable {
 	public GermplasmList saveRecords() throws MiddlewareQueryException{
 		
 		//set the listnms.listuid to the current user
-		Integer userId = UserUtil.getCurrentUserLocalId(workbenchDataManager);
+		Integer userId = contextUtil.getCurrentUserLocalId();
 		germplasmList.setUserId(userId);
 		germplasmList = saveGermplasmListRecord(germplasmList);
 		saveGermplasmListDataRecords(germplasmList,listEntries);

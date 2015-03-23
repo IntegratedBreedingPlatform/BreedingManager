@@ -35,7 +35,7 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
 
 public class ListComponentTest {
-	
+
 	private static final String SEED_RES = "SEED_RES";
 	private static final String AVAIL_INV = "AVAIL_INV";
 	private static final String HASH = "#";
@@ -45,7 +45,7 @@ public class ListComponentTest {
 	private static final String DESIG = "DESIG";
 	private static final String ENTRY_CODE = "ENTRY_CODE";
 	private static final String GID = "GID";
-	
+
 	private static final String UPDATED_GERMPLASM_LIST_NOTE = "UPDATED Germplasm List Note";
 	private static final String UPDATED_GERMPLASM_LIST_NAME = "UPDATED Germplasm List Name";
 	private static final String UPDATED_GERMPLASM_LIST_DESCRIPTION_VALUE = "UPDATED Germplasm List Description Value";
@@ -58,41 +58,39 @@ public class ListComponentTest {
 	private static final String GERMPLASM_LIST_TYPE = "LST";
 
 	private ListManagerMain source;
-	
+
 	@Mock
 	private ListTabComponent parentListDetailsComponent;
-	
+
 	@Mock
 	private GermplasmListManager germplasmListManager;
-	
+
 	@Mock
 	private WorkbenchDataManager workbenchDataManager;
-	
+
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
-	
+
 	@Mock
 	private Window window;
-	
+
 	@Mock
 	private AddColumnContextMenu addColumnContextMenu;
-	
+
 	private ListComponent listComponent;
-	
+
 	private GermplasmList germplasmList;
-	
+
 	private Integer EXPECTED_USER_ID = 1;
-	
+
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		
+
 		setUpWorkbench();
-		
+
 		source = spy(new ListManagerMain());
-		source.setGermplasmListManager(germplasmListManager);
-		source.setWorkbenchDataManager(workbenchDataManager);
-		
+
 		germplasmList = new GermplasmList();
 		germplasmList.setId(1);
 		germplasmList.setDescription(GERMPLASM_LIST_DESCRIPTION_VALUE);
@@ -101,12 +99,12 @@ public class ListComponentTest {
 		germplasmList.setDate(GERMPLASM_LIST_DATE);
 		germplasmList.setType(GERMPLASM_LIST_TYPE);
 		germplasmList.setStatus(1);
-		
+
 		List<GermplasmListData> listEntries = new ArrayList<GermplasmListData>();
 		listEntries.add(mock(GermplasmListData.class));
-		
+
 		listComponent = spy(new ListComponent(source,  parentListDetailsComponent,  germplasmList));
-		
+
 		doReturn(CHECK).when(messageSource).getMessage(Message.CHECK_ICON);
 		doReturn(HASH).when(messageSource).getMessage(Message.HASHTAG);
 		doReturn(AVAIL_INV).when(listComponent).getTermNameFromOntology(ColumnLabels.AVAILABLE_INVENTORY);
@@ -116,19 +114,19 @@ public class ListComponentTest {
 		doReturn(DESIG).when(listComponent).getTermNameFromOntology(ColumnLabels.DESIGNATION);
 		doReturn(CROSS).when(listComponent).getTermNameFromOntology(ColumnLabels.PARENTAGE);
 		doReturn(SEED_SOURCE).when(listComponent).getTermNameFromOntology(ColumnLabels.SEED_SOURCE);
-		
+
 		listComponent.setGermplasmListManager(germplasmListManager);
 		listComponent.setMessageSource(messageSource);
 		listComponent.setListEntries(listEntries);
-	
+
 		doReturn(mock(Window.class)).when(source).getWindow();
 		doReturn(mock(ListSelectionComponent.class)).when(source).getListSelectionComponent();
 		doNothing().when(listComponent).refreshTreeOnSave();
 	}
-	
+
 	private void setUpWorkbench() {
 		workbenchDataManager = Mockito.mock(WorkbenchDataManager.class);
-		
+
 		WorkbenchRuntimeData runtimeDate = new WorkbenchRuntimeData();
 		runtimeDate.setUserId(new Integer(5));
 
@@ -151,7 +149,7 @@ public class ListComponentTest {
 
 	@Test
 	public void testSaveList_OverwriteExistingGermplasmList(){
-		
+
 		GermplasmList germplasmListToBeSaved = new GermplasmList();
 		germplasmListToBeSaved.setId(1);
 		germplasmListToBeSaved.setDescription(UPDATED_GERMPLASM_LIST_DESCRIPTION_VALUE);
@@ -160,14 +158,14 @@ public class ListComponentTest {
 		germplasmListToBeSaved.setDate(UPDATED_GERMPLASM_LIST_DATE);
 		germplasmListToBeSaved.setType(UPDATED_GERMPLASM_LIST_TYPE);
 		germplasmListToBeSaved.setStatus(1);
-		
+
 		try{
 			doReturn(germplasmList).when(germplasmListManager).getGermplasmListById(germplasmList.getId().intValue());
-			
+
 			listComponent.saveList(germplasmListToBeSaved);
-			
+
 			GermplasmList savedList = listComponent.getGermplasmList();
-			
+
 			assertEquals(savedList.getId(), germplasmListToBeSaved.getId());
 			assertEquals(savedList.getDescription(), germplasmListToBeSaved.getDescription());
 			assertEquals(savedList.getName(), germplasmListToBeSaved.getName());
@@ -175,18 +173,18 @@ public class ListComponentTest {
 			assertEquals(savedList.getDate(), germplasmListToBeSaved.getDate());
 			assertEquals(savedList.getType(), germplasmListToBeSaved.getType());
 			assertEquals(savedList.getStatus(), germplasmListToBeSaved.getStatus());
-			
+
 			assertSame(savedList, germplasmList);
-			
+
 		}catch(Exception e){
 			fail(e.getMessage());
 		}
-		
+
 	}
-	
+
 	@Test
 	public void testSaveList_OverwriteExistingGermplasmListWithDifferentID(){
-		
+
 		GermplasmList germplasmListToBeSaved = new GermplasmList();
 		germplasmListToBeSaved.setId(1000);
 		germplasmListToBeSaved.setDescription(UPDATED_GERMPLASM_LIST_DESCRIPTION_VALUE);
@@ -194,36 +192,36 @@ public class ListComponentTest {
 		germplasmListToBeSaved.setNotes(UPDATED_GERMPLASM_LIST_NOTE);
 		germplasmListToBeSaved.setDate(UPDATED_GERMPLASM_LIST_DATE);
 		germplasmListToBeSaved.setType(UPDATED_GERMPLASM_LIST_TYPE);
-		germplasmListToBeSaved.setStatus(1);	
-		
+		germplasmListToBeSaved.setStatus(1);
+
 		try{
 			doNothing().when(source).closeList(germplasmListToBeSaved);
 			doReturn(germplasmListToBeSaved).when(germplasmListManager).getGermplasmListById(anyInt());
-			
+
 			//this will overwrite the list entries of the current germplasm list. Germplasm List Details will not be updated.
 			listComponent.saveList(germplasmListToBeSaved);
-			
+
 			GermplasmList savedList = listComponent.getGermplasmList();
-			
+
 			assertFalse("",savedList.getId().equals(germplasmListToBeSaved.getId()));
 			assertFalse(savedList.getDescription().equals(germplasmListToBeSaved.getDescription()));
 			assertFalse(savedList.getName().equals(germplasmListToBeSaved.getName()));
 			assertFalse(savedList.getNotes().equals(germplasmListToBeSaved.getNotes()));
 			assertFalse(savedList.getDate().equals(germplasmListToBeSaved.getDate()));
 			assertFalse(savedList.getType().equals(germplasmListToBeSaved.getType()));
-			
+
 			assertSame(savedList, germplasmList);
-			
+
 		}catch(Exception e){
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
-		
+
 	}
-	
+
 	@Test
 	public void testSaveList_OverwriteNonExistingGermplasmList(){
-		
+
 		GermplasmList germplasmListToBeSaved = new GermplasmList();
 		germplasmListToBeSaved.setId(1);
 		germplasmListToBeSaved.setDescription(UPDATED_GERMPLASM_LIST_DESCRIPTION_VALUE);
@@ -232,43 +230,43 @@ public class ListComponentTest {
 		germplasmListToBeSaved.setDate(UPDATED_GERMPLASM_LIST_DATE);
 		germplasmListToBeSaved.setType(UPDATED_GERMPLASM_LIST_TYPE);
 		germplasmListToBeSaved.setStatus(1);
-		
+
 		try{
 			doReturn(null).when(germplasmListManager).getGermplasmListById(germplasmList.getId().intValue());
-			
+
 			listComponent.saveList(germplasmListToBeSaved);
-			
+
 			GermplasmList savedList = listComponent.getGermplasmList();
-			
+
 			assertTrue(savedList.getId().equals(germplasmListToBeSaved.getId()));
 			assertFalse(savedList.getDescription().equals(germplasmListToBeSaved.getDescription()));
 			assertFalse(savedList.getName().equals(germplasmListToBeSaved.getName()));
 			assertFalse(savedList.getNotes().equals(germplasmListToBeSaved.getNotes()));
 			assertFalse(savedList.getDate().equals(germplasmListToBeSaved.getDate()));
 			assertFalse(savedList.getType().equals(germplasmListToBeSaved.getType()));
-			
+
 			assertSame(savedList, germplasmList);
-			
+
 		}catch(Exception e){
-			
+
 			fail(e.getMessage());
 		}
-		
+
 	}
-	
+
 	@Test
 	public void testInitializeListDataTable(){
-		
+
 		TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
 		tableWithSelectAll.instantiateComponents();
-		
+
 		doReturn(tableWithSelectAll).when(listComponent).getListDataTableWithSelectAll();
 		doNothing().when(listComponent).initializeAddColumnContextMenu();
-		
+
 		listComponent.initializeListDataTable();
-		
+
 		Table table = tableWithSelectAll.getTable();
-		
+
 		assertEquals(CHECK ,table.getColumnHeader(ColumnLabels.TAG.getName()));
 		assertEquals(HASH ,table.getColumnHeader(ColumnLabels.ENTRY_ID.getName()));
 		assertEquals(AVAIL_INV ,table.getColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName()));
@@ -278,9 +276,9 @@ public class ListComponentTest {
 		assertEquals(DESIG ,table.getColumnHeader(ColumnLabels.DESIGNATION.getName()));
 		assertEquals(CROSS ,table.getColumnHeader(ColumnLabels.PARENTAGE.getName()));
 		assertEquals(SEED_SOURCE ,table.getColumnHeader(ColumnLabels.SEED_SOURCE.getName()));
-		
+
 	}
-	
+
 	@Test
 	public void testLockGermplasmList(){
 		//set up
@@ -289,14 +287,14 @@ public class ListComponentTest {
 		} catch (MiddlewareQueryException e) {
 			fail(e.getMessage());
 		}
-		
+
 		doNothing().when(listComponent).setLockedState(true);
-		
+
 		listComponent.lockGermplasmList(germplasmList);
-		
+
 		Assert.assertEquals("Expecting the that the germplasmList status was changed to locked(101) but returned (" + germplasmList.getStatus() + ")", Integer.valueOf(101), germplasmList.getStatus());
 	}
-	
+
 	@Test
 	public void testSaveChangesAction_verifyIfTheListTreeIsRefreshedAfterSavingList(){
 		Table listDataTable = new Table();
@@ -306,7 +304,7 @@ public class ListComponentTest {
 		doNothing().when(listComponent).setHasUnsavedChanges(false);
 		doNothing().when(listComponent).updateNoOfEntries();
 		listComponent.setListDataTable(listDataTable);
-		
+
 		listComponent.saveChangesAction(window, false);
 		verify(listComponent,times(1)).refreshTreeOnSave();
 	}

@@ -1,8 +1,5 @@
 package org.generationcp.breeding.manager.listmanager;
 
-import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.ui.*;
-import com.vaadin.ui.Button.ClickEvent;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.service.BreedingManagerSearchException;
@@ -17,6 +14,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
+import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.PopupView;
+import com.vaadin.ui.TextField;
 
 @Configurable
 public class GermplasmSearchBarComponent extends CssLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
@@ -34,8 +44,8 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 	        "<li>Parents of the matching germplasm (if selected)</li>" +
 	        "</ul>" +
 	        "The <b>Exact matches only</b> checkbox shows results that match the search term exactly when checked. " +
-	        " If you uncheck this option, the search will show results that contain the search term you enter." + 
-	        " <br/><br/>The <b>Search public data</b> checkbox allows you to search public (central) data, in addition to the local germplasm data.";
+	        " If you uncheck this option, the search will show results that contain the search term you enter.";
+	
     public static final String LM_COMPONENT_WRAP = "lm-component-wrap";
 
     private HorizontalLayout searchBarLayoutLeft;
@@ -45,7 +55,6 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 	private Button searchButton;
     private CheckBox exactMatchesOnlyCheckBox;
     private CheckBox includeParentsCheckBox;
-    private CheckBox includePublicDataCheckBox;
     private PopupView popup;
 
 	@Autowired
@@ -96,9 +105,6 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
         
         includeParentsCheckBox = new CheckBox();
         includeParentsCheckBox.setCaption(messageSource.getMessage(Message.INCLUDE_PARENTS));
-        
-        includePublicDataCheckBox = new CheckBox();
-        includePublicDataCheckBox.setCaption(messageSource.getMessage(Message.INCLUDE_PUBLIC_DATA));
     }
 
 	@Override
@@ -138,11 +144,9 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		
 		exactMatchesOnlyCheckBox.addStyleName(LM_COMPONENT_WRAP);
 		includeParentsCheckBox.addStyleName(LM_COMPONENT_WRAP);
-		includePublicDataCheckBox.addStyleName(LM_COMPONENT_WRAP);
 		
 		searchBarLayoutRight.addComponent(exactMatchesOnlyCheckBox);
 		searchBarLayoutRight.addComponent(includeParentsCheckBox);
-		searchBarLayoutRight.addComponent(includePublicDataCheckBox);
 		
 		searchBarLayoutLeft.setComponentAlignment(popup, Alignment.MIDDLE_CENTER);
 		
@@ -172,12 +176,12 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
     }
 	
 	public void doSearch(String q) {
-        boolean includeParents = (Boolean) includeParentsCheckBox.getValue();
-        boolean searchPublicData = (Boolean) includePublicDataCheckBox.getValue();
+		Monitor monitor = MonitorFactory.start("GermplasmSearchBarComponent.doSearch()");
+		boolean includeParents = (Boolean) includeParentsCheckBox.getValue();
         boolean exactMatchesOnly = (Boolean) exactMatchesOnlyCheckBox.getValue();
 
         try {
-            searchResultsComponent.applyGermplasmResults(breedingManagerService.doGermplasmSearch(q, exactMatchesOnly ? Operation.EQUAL : Operation.LIKE, includeParents, searchPublicData));
+            searchResultsComponent.applyGermplasmResults(breedingManagerService.doGermplasmSearch(q, exactMatchesOnly ? Operation.EQUAL : Operation.LIKE, includeParents));
         } catch (BreedingManagerSearchException e) {
             if (Message.SEARCH_QUERY_CANNOT_BE_EMPTY.equals(e.getErrorMessage())) {
                 // invalid search string
@@ -187,6 +191,8 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
                 MessageNotifier.showWarning(this.getWindow(),messageSource.getMessage(Message.SEARCH_RESULTS),messageSource.getMessage(e.getErrorMessage()));
             }
             LOG.info(e.getMessage(), e);
+        } finally {
+        	LOG.debug("" + monitor.stop());
         }
 	}
 
@@ -204,14 +210,6 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 
 	public void setIncludeParentsCheckBox(CheckBox includeParentsCheckBox) {
 		this.includeParentsCheckBox = includeParentsCheckBox;
-	}
-
-	public CheckBox getIncludePublicDataCheckBox() {
-		return includePublicDataCheckBox;
-	}
-
-	public void setIncludePublicDataCheckBox(CheckBox includePublicDataCheckBox) {
-		this.includePublicDataCheckBox = includePublicDataCheckBox;
 	}
 
 	public SimpleResourceBundleMessageSource getMessageSource() {

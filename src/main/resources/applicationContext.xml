@@ -12,7 +12,7 @@
 >
     
     <!-- Declare property file locations -->
-    <context:property-placeholder location="classpath:workbench.properties" />
+    <context:property-placeholder location="classpath:workbench.properties,classpath:c3p0.properties" />
     
     <!-- Enable Spring annotations -->
     <context:annotation-config/>
@@ -48,12 +48,22 @@
         </property>
     </bean>
     
-    <bean id="workbenchDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="${workbench.driver}"/>
-        <property name="url" value="${workbench.url}"/>
-        <property name="username" value="${workbench.username}"/>
-        <property name="password" value="${workbench.password}"/>
-    </bean>
+    <bean id="workbenchDataSource" class = "com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" value="${workbench.driver}" />
+        <property name="jdbcUrl" value="${workbench.url}" />
+        <property name="user" value="${workbench.username}" />
+        <property name="password" value="${workbench.password}" /> 
+
+        <!-- C3P0 properties -->
+        <property name="minPoolSize" value="${c3p0.minPoolSize}" />
+        <property name="maxPoolSize" value="${c3p0.maxPoolSize}" />
+        <property name="debugUnreturnedConnectionStackTraces" value="${c3p0.debugUnreturnedConnectionStackTraces}" />
+        <property name="unreturnedConnectionTimeout" value="${c3p0.unreturnedConnectionTimeout}" />
+        <property name="maxConnectionAge" value="${c3p0.maxConnectionAge}" />
+        <property name="maxIdleTime" value="${c3p0.maxIdleTime}" />
+        <property name="preferredTestQuery" value="${c3p0.preferredTestQuery}" />
+        <property name="testConnectionOnCheckout" value="${c3p0.testConnectionOnCheckout}" />
+ 	</bean>
     
     <bean id="workbenchSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
         <property name="dataSource" ref="workbenchDataSource"/>
@@ -61,31 +71,26 @@
     </bean>
     
     
-    <bean id="workbenchHibernateSessionProvider" class="org.generationcp.middleware.hibernate.HibernateSessionPerRequestProvider" scope="request">
+    <bean id="workbenchHibernateSessionProvider" class="org.generationcp.middleware.hibernate.HibernateSessionPerRequestProvider" scope="request" destroy-method="close">
         <property name="sessionFactory" ref="workbenchSessionFactory"/>
         
         <!-- JDK Standard Proxy around this request scoped bean, so we can use it on longer scoped beans -->
         <aop:scoped-proxy proxy-target-class="false"/>
     </bean>
     
-    <bean id="managerFactoryProvider" 
-    	class="org.generationcp.commons.hibernate.DynamicManagerFactoryProvider">
+    <bean id="managerFactoryProvider" class="org.generationcp.commons.hibernate.DynamicManagerFactoryProviderConcurrency">
     	<constructor-arg ref="workbenchDataManager" />
-    	<property name="maxCachedLocalSessionFactories" value="5" />
-    	<property name="localPort" value="${workbench.port}" />
-    	<property name="localHost" value="${workbench.host}" />
-    	<property name="localUsername" value="${workbench.username}"/>
-        <property name="localPassword" value="${workbench.password}"/>
-    	<property name="centralPort" value="${workbench.port}" />
-    	<property name="centralHost" value="${workbench.host}" />
-    	<property name="centralUsername" value="${workbench.username}"/>
-        <property name="centralPassword" value="${workbench.password}"/>
+    	<property name="maxCachedSessionFactories" value="10" />
+    	<property name="dbPort" value="${workbench.port}" />
+    	<property name="dbHost" value="${workbench.host}" />
+    	<property name="dbUsername" value="${workbench.username}"/>
+        <property name="dbPassword" value="${workbench.password}"/>
     </bean>
     
     <bean id="managerFactory" name="managerFactory"
     	factory-bean="managerFactoryProvider"
     	factory-method="createInstance"
-    	scope="request">
+    	scope="request" destroy-method="close">
     	<aop:scoped-proxy/>
     </bean>
     
@@ -145,9 +150,14 @@
     	scope="request">
     	<aop:scoped-proxy/>
     </bean>
+
+    <bean id="contextUtil" class="org.generationcp.commons.spring.util.ContextUtil"
+          scope="request">
+        <aop:scoped-proxy/>
+    </bean>
     
     <bean id="workbenchDataManager"
-        class="org.generationcp.middleware.manager.WorkbenchDataManagerImpl">
+        class="org.generationcp.middleware.manager.WorkbenchDataManagerImpl" destroy-method="close">
         <constructor-arg ref="workbenchHibernateSessionProvider" />
     </bean>
     

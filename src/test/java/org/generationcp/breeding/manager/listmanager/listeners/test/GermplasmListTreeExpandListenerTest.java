@@ -12,31 +12,21 @@ import com.vaadin.ui.Tree.ExpandEvent;
 
 public class GermplasmListTreeExpandListenerTest {
 
-	private static final String LOCAL_ITEM = "LOCAL";
-	private static final String CENTRAL_ITEM = "CENTRAL";
 	private static GermplasmListTreeExpandListener listener;
 	private static ListSelectorComponent listSelectorComponent;
 	private static ExpandEvent event;
 
 	@Before
 	public void setUp() {
-		GermplasmListTreeExpandListenerTest.listSelectorComponent = Mockito
-				.mock(ListSelectorComponent.class);
-		GermplasmListTreeExpandListenerTest.listener = new GermplasmListTreeExpandListener(
-				GermplasmListTreeExpandListenerTest.listSelectorComponent);
+		GermplasmListTreeExpandListenerTest.listSelectorComponent = Mockito.mock(ListSelectorComponent.class);
+		GermplasmListTreeExpandListenerTest.listener 
+			= new GermplasmListTreeExpandListener(GermplasmListTreeExpandListenerTest.listSelectorComponent);
 		GermplasmListTreeExpandListenerTest.event = Mockito.mock(ExpandEvent.class);
 	}
 
 	@Test
-	public void testIfAddRenameItemOptionIsHiddenAfterClickingExpandArrowForCentral() {
-		setUpCurrentItem(CENTRAL_ITEM);
-		triggerExpand();
-		assertIfToggleFolderSectionForItemSelectedIsCalled();
-	}
-	
-	@Test
-	public void testIfAddRenameItemOptionIsHiddenAfterClickingExpandArrowForLocal() {
-		setUpCurrentItem(LOCAL_ITEM);
+	public void testAddRenameItemOptionIsHiddenAfterClickingExpandArrow() {
+		Mockito.when(GermplasmListTreeExpandListenerTest.event.getItemId()).thenReturn(ListSelectorComponent.LISTS);
 		triggerExpand();
 		assertIfToggleFolderSectionForItemSelectedIsCalled();
 	}
@@ -51,12 +41,6 @@ public class GermplasmListTreeExpandListenerTest {
 	}
 
 	private void triggerExpand() {
-		GermplasmListTreeExpandListenerTest.listener
-		.nodeExpand(GermplasmListTreeExpandListenerTest.event);		
+		GermplasmListTreeExpandListenerTest.listener.nodeExpand(GermplasmListTreeExpandListenerTest.event);		
 	}
-
-	private void setUpCurrentItem(String item){
-		Mockito.when(GermplasmListTreeExpandListenerTest.event.getItemId()).thenReturn(item);
-	}
-
 }

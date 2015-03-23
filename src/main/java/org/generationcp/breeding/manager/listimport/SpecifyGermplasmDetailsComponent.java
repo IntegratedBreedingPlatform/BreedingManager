@@ -2,8 +2,6 @@ package org.generationcp.breeding.manager.listimport;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.data.Property.ConversionException;
-import com.vaadin.data.Property.ReadOnlyException;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.*;
 
@@ -22,7 +20,7 @@ import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
-import org.generationcp.commons.util.UserUtil;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -30,7 +28,6 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.Name;
@@ -45,6 +42,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.annotation.Resource;
 
 @Configurable
 public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements InitializingBean,
@@ -89,11 +88,11 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
     @Autowired
     private GermplasmDataManager germplasmDataManager;
 
-    @Autowired
-    private WorkbenchDataManager workbenchDataManager;
-    
-	@Autowired
+	@Resource
 	private OntologyDataManager ontologyDataManager;
+
+    @Resource
+	private ContextUtil contextUtil;
 
     private Boolean viaToolURL;
 
@@ -173,7 +172,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         germplasmList.setDescription(germplasmListUploader.getListTitle());
         germplasmList.setStatus(1);
         try {
-			germplasmList.setUserId(UserUtil.getCurrentUserLocalId(workbenchDataManager));
+			germplasmList.setUserId(contextUtil.getCurrentUserLocalId());
 		} catch (MiddlewareQueryException e) {
 			LOG.error(e.getMessage(),e);
 		}
@@ -300,7 +299,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         reviewImportDetailsLabel.addStyleName(Bootstrap.Typography.H4.styleName());
 
         totalEntriesLabel = new Label("Total Entries: 0", Label.CONTENT_XHTML);
-        
+
         initGermplasmDetailsTable();
 
         selectPedigreeOptionsLabel = new Label(messageSource.getMessage(Message.SELECT_PEDIGREE_OPTIONS).toUpperCase());
@@ -330,7 +329,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         nextButton.addListener(clickListener);
         nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
     }
-    
+
 	protected void initGermplasmDetailsTable() {
         setGermplasmDetailsTable(new Table());
         germplasmDetailsTable = getGermplasmDetailsTable();
@@ -351,7 +350,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         germplasmDetailsTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(),getTermNameFromOntology(ColumnLabels.PARENTAGE));
         germplasmDetailsTable.setColumnHeader(ColumnLabels.GID.getName(),getTermNameFromOntology(ColumnLabels.GID));
         germplasmDetailsTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(),getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
-	}
+    }
 
 	protected String getTermNameFromOntology(ColumnLabels columnLabels) {
 		return columnLabels.getTermNameFromOntology(ontologyDataManager);
@@ -546,11 +545,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         }
     }
 
-    public void setGermplasmDetailsTable(Table germplasmDetailsTable) {
-		this.germplasmDetailsTable = germplasmDetailsTable;
-	}
-
-	public Boolean automaticallyAcceptSingleMatchesCheckbox() {
+    public Boolean automaticallyAcceptSingleMatchesCheckbox() {
         return (Boolean) automaticallyAcceptSingleMatchesCheckbox.getValue();
     }
 
@@ -558,7 +553,19 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         return importedGermplasmList;
     }
 
-	public void setOntologyDataManager(OntologyDataManager ontologyDataManager) {
-		this.ontologyDataManager = ontologyDataManager;
+    public void setGermplasmDetailsTable(Table germplasmDetailsTable) {
+		this.germplasmDetailsTable = germplasmDetailsTable;
 	}
+
+
+    public void setProcessGermplasmAction(
+			ProcessImportedGermplasmAction processGermplasmAction) {
+		this.processGermplasmAction = processGermplasmAction;
+	}
+
+	public void setContextUtil(ContextUtil contextUtil) {
+		this.contextUtil = contextUtil;
+	}
+    
+    
 }

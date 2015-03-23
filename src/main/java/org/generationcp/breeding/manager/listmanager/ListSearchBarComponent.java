@@ -43,7 +43,6 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 	private final ListSearchResultsComponent searchResultsComponent;
 	private Button searchButton;
 	private CheckBox exactMatchesOnlyCheckBox;
-	private CheckBox includePublicDataCheckBox;
 	private PopupView popup;
 
 	@Autowired
@@ -87,9 +86,6 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
         exactMatchesOnlyCheckBox = new CheckBox();
         exactMatchesOnlyCheckBox.setValue(false);
         exactMatchesOnlyCheckBox.setCaption(messageSource.getMessage(Message.EXACT_MATCHES_ONLY));
-        
-        includePublicDataCheckBox = new CheckBox();
-        includePublicDataCheckBox.setCaption(messageSource.getMessage(Message.INCLUDE_PUBLIC_DATA));
 	}
 
 	@Override
@@ -135,11 +131,9 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
         searchBarLayout.addComponent(searchButton);
         searchBarLayout.addComponent(popup);
         searchBarLayout.addComponent(exactMatchesOnlyCheckBox);
-        searchBarLayout.addComponent(includePublicDataCheckBox);
 
         searchBarLayout.setComponentAlignment(exactMatchesOnlyCheckBox, Alignment.MIDDLE_CENTER);
         searchBarLayout.setComponentAlignment(popup, Alignment.MIDDLE_CENTER);
-        searchBarLayout.setComponentAlignment(includePublicDataCheckBox, Alignment.MIDDLE_CENTER);
 
         panelLayout.addComponent(searchBarLayout);
         setContent(panelLayout);
@@ -156,11 +150,10 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 	}
 
 	public void doSearch(String q) {
-        boolean searchPublicData = (Boolean) includePublicDataCheckBox.getValue();
         boolean exactMatchedOnly = (Boolean) exactMatchesOnlyCheckBox.getValue();
 
 		try {
-			searchResultsComponent.applyGermplasmListResults(breedingManagerService.doGermplasmListSearch(q, exactMatchedOnly ? Operation.EQUAL : Operation.LIKE, searchPublicData));
+			searchResultsComponent.applyGermplasmListResults(breedingManagerService.doGermplasmListSearch(q, exactMatchedOnly ? Operation.EQUAL : Operation.LIKE));
 
 		} catch (BreedingManagerSearchException e) {
             if (Message.SEARCH_QUERY_CANNOT_BE_EMPTY.equals(e.getErrorMessage())) {

@@ -366,8 +366,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
             fileDownloadResource.setFilename(list.getName().replace(" ", "_") + ".xls");
 
             this.getWindow().open(fileDownloadResource);
-    
-        } catch (GermplasmListExporterException e) {
+        } catch (GermplasmListExporterException | MiddlewareQueryException e) {
         	LOG.error(e.getMessage(), e);
             MessageNotifier.showError(getWindow(), "Error with exporting crossing file.", e.getMessage());
 		}

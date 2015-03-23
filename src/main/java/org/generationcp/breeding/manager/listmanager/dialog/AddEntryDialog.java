@@ -18,9 +18,11 @@ import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItemClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListValueChangeListener;
+import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.breeding.manager.util.Util;
-import org.generationcp.commons.exceptions.InternationalizableException;
-import org.generationcp.commons.util.UserUtil;
+import org.generationcp.commons.constant.DefaultGermplasmStudyBrowserPath;
+import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.commons.util.WorkbenchAppPathResolver;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -58,6 +60,8 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+import javax.annotation.Resource;
+
 @Configurable
 public class AddEntryDialog extends BaseSubWindow implements InitializingBean, 
 							InternationalizableComponent, BreedingManagerLayout, BreedingLocationFieldSource{
@@ -77,9 +81,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
     private static final String DEFAULT_NAME_TYPE_CODE = "LNAME";
     private static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
 
-	public static final String GERMPLASM_BROWSER_LINK = "http://localhost:18080/GermplasmStudyBrowser/main/germplasm-";
-    
-    @Autowired
+	@Autowired
     private GermplasmDataManager germplasmDataManager;
     
     @Autowired
@@ -90,6 +92,9 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
     
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+
+	@Resource
+	private ContextUtil contextUtil;
     
     private Window parentWindow;
     private VerticalLayout topPart;
@@ -119,6 +124,11 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
     
     private GermplasmSearchResultsComponent searchResultsComponent;
     
+    @Autowired
+	private BreedingManagerService breedingManagerService;
+	private String programUniqueId;
+
+    
     public AddEntryDialog(AddEntryDialogSource source, Window parentWindow){
         this.setOverrideFocus(true);
         this.source = source;
@@ -135,6 +145,13 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
     
 	@Override
 	public void instantiateComponents() {
+		
+		try {
+			programUniqueId = breedingManagerService.getCurrentProject().getUniqueID();
+		} catch (MiddlewareQueryException e) {
+			LOG.error(e.getMessage(),e);
+		}
+		
 		initializeTopPart();	
 		initializeBottomPart();
 		initializeButtonLayout();
@@ -258,17 +275,17 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
         } catch (MiddlewareQueryException qe) {
             LOG.error(messageSource.getMessage(Message.QUERY_EXCEPTION), qe);
         }
-        
-        String addtlParams = Util.getAdditionalParams(workbenchDataManager);
-        
-        ExternalResource germplasmBrowserLink = null;
-        if (tool == null) {
-            germplasmBrowserLink = new ExternalResource(GERMPLASM_BROWSER_LINK + gid+ "?restartApplication"+
-            		addtlParams);
-        } else {
-            germplasmBrowserLink = new ExternalResource(tool.getPath().replace("germplasm/", "germplasm-") + gid+ "?restartApplication"+
-            		addtlParams);
-        }
+
+		String addtlParams = Util.getAdditionalParams(workbenchDataManager);
+		ExternalResource germplasmBrowserLink;
+		if (tool == null) {
+			germplasmBrowserLink = new ExternalResource(
+					WorkbenchAppPathResolver.getFullWebAddress(
+							DefaultGermplasmStudyBrowserPath.GERMPLASM_BROWSER_LINK + gid,
+							"?restartApplication" + addtlParams));
+		} else {
+			germplasmBrowserLink = new ExternalResource(WorkbenchAppPathResolver.getWorkbenchAppPath(tool,String.valueOf(gid),"?restartApplication" + addtlParams));
+		}
         
         Window germplasmWindow = new Window(messageSource.getMessage(Message.GERMPLASM_INFORMATION) + " - " + gid);
         
@@ -431,7 +448,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
 	        
             Integer currentUserLocalId = -1;
 			try {
-				currentUserLocalId = Integer.valueOf(UserUtil.getCurrentUserLocalId(workbenchDataManager));
+				currentUserLocalId = contextUtil.getCurrentUserLocalId();
 			} catch (MiddlewareQueryException e) {
 				LOG.error(e.getMessage(), e);
 			}
@@ -624,7 +641,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
 	@Override
 	public void updateAllLocationFields() {
 		Object lastValue = breedingLocationField.getBreedingLocationComboBox().getValue();
-		breedingLocationField.populateHarvestLocation(Integer.valueOf(lastValue.toString()));
+		breedingLocationField.populateHarvestLocation(Integer.valueOf(lastValue.toString()),programUniqueId);
 	}
 	
 	public void setOptionGroup(OptionGroup optionGroup){
@@ -646,5 +663,8 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
 	public void setMessageSource(SimpleResourceBundleMessageSource msgSource){
 		this.messageSource = msgSource;
 	}
-    
+
+	public void setBreedingManagerService(BreedingManagerService breedingManagerService) {
+		this.breedingManagerService = breedingManagerService;
+	}
 }

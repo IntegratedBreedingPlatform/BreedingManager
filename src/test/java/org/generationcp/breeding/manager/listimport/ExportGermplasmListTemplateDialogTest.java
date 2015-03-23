@@ -9,7 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import junit.framework.Assert;
 
+import org.apache.commons.lang.reflect.FieldUtils;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
@@ -37,7 +39,7 @@ public class ExportGermplasmListTemplateDialogTest {
 	private static final String INSTALLATION_DIRECTORY = "C:\\InstallationDirectory";
 
 	private ExportGermplasmListTemplateDialog exportDialog;
-	
+
 	@Mock
 	private Component source;
 	
@@ -46,17 +48,24 @@ public class ExportGermplasmListTemplateDialogTest {
 	
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
+
+	@Mock
+	private ContextUtil contextUtil;
 	
 	@Mock
 	private HttpServletRequest request;
-	
+
 	@Before
-	public void setUp() throws MiddlewareQueryException{
+	public void setUp() throws MiddlewareQueryException, IllegalAccessException {
 		MockitoAnnotations.initMocks(this);
-		exportDialog = spy(new ExportGermplasmListTemplateDialog(source));
+		exportDialog = new ExportGermplasmListTemplateDialog(source);
 		exportDialog.setWorkbenchDataManager(workbenchDataManager);
 		exportDialog.setMessageSource(messageSource);
-		
+		FieldUtils.writeDeclaredField(exportDialog,"contextUtil",contextUtil,true);
+
+		exportDialog = spy(exportDialog);
+
+
 		when(messageSource.getMessage(Message.TEMPLATE_FORMAT)).thenReturn(DUMMY_STRING);
 		when(messageSource.getMessage(Message.CHOOSE_A_TEMPLATE_FORMAT)).thenReturn(DUMMY_STRING);
 		when(messageSource.getMessage(Message.CANCEL)).thenReturn(DUMMY_STRING);
@@ -65,14 +74,12 @@ public class ExportGermplasmListTemplateDialogTest {
 		exportDialog.instantiateComponents();
 		exportDialog.initializeValues();
 		
-		doReturn(request).when(exportDialog).getCurrentRequest();
-		
 		Project project = new Project();
 		project.setProjectId(1L);
 		CropType cropType = new CropType();
 		cropType.setCropName(CROP_TYPE);
 		project.setCropType(cropType);
-		doReturn(project).when(exportDialog).getCurrentOpenedProject();
+		doReturn(project).when(contextUtil).getProjectInContext();
 	}
 	
 	@Test

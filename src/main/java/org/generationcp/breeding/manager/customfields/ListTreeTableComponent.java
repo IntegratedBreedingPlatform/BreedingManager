@@ -15,18 +15,18 @@ public abstract class ListTreeTableComponent extends ListSelectorComponent {
     private ThemeResource leafResource = new ThemeResource("images/document-icon.png");
 
     public ListTreeTableComponent(){
-        selectProgramListsByDefault = false;
+        selectListsFolderByDefault = false;
     }
 
     public ListTreeTableComponent(ListTreeActionsListener treeActionsListener){
     	this.treeActionsListener = treeActionsListener;
-    	selectProgramListsByDefault = false;
+    	selectListsFolderByDefault = false;
     }
 
     public ListTreeTableComponent(ListTreeActionsListener treeActionsListener, Integer selectedListId){
     	this.treeActionsListener = treeActionsListener;
     	this.listId = selectedListId;
-    	selectProgramListsByDefault = true;
+    	selectListsFolderByDefault = true;
     }
 
 	/* #########################################################################

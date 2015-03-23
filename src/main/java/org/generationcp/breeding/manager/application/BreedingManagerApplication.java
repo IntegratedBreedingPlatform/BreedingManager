@@ -9,7 +9,7 @@ import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossing
 import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.commons.exceptions.InternationalizableException;
-import org.generationcp.commons.hibernate.DynamicManagerFactoryProvider;
+import org.generationcp.commons.hibernate.DynamicManagerFactoryProviderConcurrency;
 import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
 import org.generationcp.commons.vaadin.actions.UpdateComponentLabelsAction;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -56,7 +56,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     private SimpleResourceBundleMessageSource messageSource;
     
     @Autowired
-    private DynamicManagerFactoryProvider managerFactoryProvider;
+    private DynamicManagerFactoryProviderConcurrency managerFactoryProvider;
     
     private UpdateComponentLabelsAction messageSourceListener;
 
@@ -66,7 +66,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     private ManageCrossingSettingsMain manageCrossingSettingsMain;
     
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
     
@@ -278,7 +278,6 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     }
     
     public void refreshListManagerTree(){
-		ListManagerMain listManagerMain = getListManagerMain();
 		if(listManagerMain!=null){
 			listManagerMain.getListSelectionComponent().getListTreeComponent().refreshComponent();
 		}

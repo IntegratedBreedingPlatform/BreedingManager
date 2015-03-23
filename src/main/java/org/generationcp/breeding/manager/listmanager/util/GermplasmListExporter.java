@@ -16,14 +16,13 @@ import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.pojo.GermplasmParents;
 import org.generationcp.commons.service.ExportService;
 import org.generationcp.commons.service.impl.ExportServiceImpl;
-import org.generationcp.commons.util.UserUtil;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.dms.StandardVariable;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Person;
@@ -36,6 +35,8 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
 
+import javax.annotation.Resource;
+
 @Configurable
 public class GermplasmListExporter {
 
@@ -45,9 +46,6 @@ public class GermplasmListExporter {
 	
     @Autowired
     private GermplasmListManager germplasmListManager;
-    
-    @Autowired
-    private WorkbenchDataManager workbenchDataManager;
 
 	@Autowired
     private UserDataManager userDataManager;
@@ -58,6 +56,10 @@ public class GermplasmListExporter {
     @Autowired
     private OntologyDataManager ontologyDataManager;
     
+
+	@Resource
+	private ContextUtil contextUtil;
+
 	private ExportService exportService;
     private Integer listId;
     
@@ -152,7 +154,8 @@ public class GermplasmListExporter {
 		return exportColumnValues;
 	}
 
-	public FileOutputStream exportGermplasmListXLS(String fileName, Table listDataTable) throws GermplasmListExporterException {
+	public FileOutputStream exportGermplasmListXLS(String fileName, Table listDataTable)
+			throws GermplasmListExporterException, MiddlewareQueryException {
     	
 		GermplasmListExportInputValues input = new GermplasmListExportInputValues();
 		input.setFileName(fileName);
@@ -162,7 +165,7 @@ public class GermplasmListExporter {
 		
 		input.setOwnerName(getOwnerName(germplasmList.getUserId()));
 		
-		Integer currentLocalIbdbUserId = getCurrentLocaUserId();
+		Integer currentLocalIbdbUserId = contextUtil.getCurrentUserLocalId();
 		input.setCurrentLocalIbdbUserId(currentLocalIbdbUserId);
 		
         input.setExporterName(getExporterName(currentLocalIbdbUserId));
@@ -234,16 +237,6 @@ public class GermplasmListExporter {
         	LOG.error("Error with getting user information for exporter with id = " + currentLocalIbdbUserId, ex);
         }
 		return exporterName;
-	}
-
-	protected Integer getCurrentLocaUserId() {
-		Integer currentLocalIbdbUserId = 0;
-		try {
-			currentLocalIbdbUserId = UserUtil.getCurrentUserLocalId(workbenchDataManager);
-		} catch (MiddlewareQueryException e) {
-			LOG.error(e.getMessage(),e);
-		}
-		return currentLocalIbdbUserId;
 	}
 
 	protected String getOwnerName(Integer userId) throws GermplasmListExporterException {
@@ -441,7 +434,7 @@ public class GermplasmListExporter {
 	protected void setUserDataManager(UserDataManager userDataManager) {
 		this.userDataManager = userDataManager;
 	}
-	
+
 	protected void setOntologyDataManager(OntologyDataManager ontologyDataManager) {
 		this.ontologyDataManager = ontologyDataManager;
 	}

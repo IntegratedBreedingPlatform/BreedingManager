@@ -45,8 +45,8 @@ import org.generationcp.breeding.manager.listmanager.util.ListDataPropertiesRend
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.FileDownloadResource;
-import org.generationcp.commons.util.UserUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -61,13 +61,10 @@ import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.PedigreeDataManager;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
-import org.generationcp.middleware.pojos.User;
-import org.generationcp.middleware.pojos.workbench.ProjectActivity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -106,6 +103,8 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
+
+import javax.annotation.Resource;
 
 @Configurable
 public class ListComponent extends VerticalLayout implements InitializingBean,
@@ -232,13 +231,13 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 	private PedigreeDataManager pedigreeDataManager;
 
 	@Autowired
-	private WorkbenchDataManager workbenchDataManager;
-
-	@Autowired
 	private InventoryDataManager inventoryDataManager;
 
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
+
+	@Resource
+	private ContextUtil contextUtil;
 
 	private Integer localUserId = null;
 
@@ -479,7 +478,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 	public void initializeValues() {
 
 		try {
-			localUserId = UserUtil.getCurrentUserLocalId(workbenchDataManager);
+			localUserId = contextUtil.getCurrentUserLocalId();
 		} catch (MiddlewareQueryException e) {
 			LOG.error("Error with retrieving local user ID", e);
 			LOG.error("\n" + e.getStackTrace());
@@ -626,10 +625,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 			}
 		});
 
-		if (germplasmList.isLocalList() && !germplasmList.isLockedList()) {
-			fillWith = new FillWith(parentListDetailsComponent, parentListDetailsComponent,
-					messageSource, listDataTable, ColumnLabels.GID.getName());
-		}
+		setFillWith();
 
 		makeTableEditable();
 
@@ -697,7 +693,14 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 
 	}
 
-	// end of addListeners
+	private void setFillWith() {
+		if (!germplasmList.isLockedList()) {
+			fillWith = new FillWith(parentListDetailsComponent, parentListDetailsComponent,
+					messageSource, listDataTable, ColumnLabels.GID.getName());
+		} else {
+			fillWith = null;
+		}
+	}
 
 	@Override
 	public void layoutComponents() {
@@ -711,12 +714,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		headerLayout.addComponent(viewHeaderButton);
 		headerLayout.setComponentAlignment(viewHeaderButton, Alignment.BOTTOM_RIGHT);
 
-		if (germplasmList.isLocalList()) {
-			headerLayout.addComponent(editHeaderButton);
-			headerLayout.setComponentAlignment(editHeaderButton, Alignment.BOTTOM_LEFT);
-		}
+		headerLayout.addComponent(editHeaderButton);
+		headerLayout.setComponentAlignment(editHeaderButton, Alignment.BOTTOM_LEFT);
 
-		if (germplasmList.isLocalList() && localUserIsListOwner()) {
+		if (localUserIsListOwner()) {
 			headerLayout.addComponent(lockButton);
 			headerLayout.setComponentAlignment(lockButton, Alignment.BOTTOM_LEFT);
 
@@ -773,7 +774,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 	}
 
 	public void makeTableEditable() {
-		
+
 		listDataTable.addListener(new ListDataTableItemClickListener());
 
 		listDataTable.setTableFieldFactory(new ListDataTableFieldFactory());
@@ -975,11 +976,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 				menuCopyToList.setVisible(!source.listBuilderIsLocked());
 			}
 
-			// Show items only when Germplasm List open is a local IBDB
-			// record (negative ID),
 			// when the Germplasm List is not locked, and when not accessed
 			// directly from URL or popup window
-			if (germplasmList.isLocalList() && !germplasmList.isLockedList() && !fromUrl) {
+			if (!germplasmList.isLockedList() && !fromUrl) {
 				menuEditList.setVisible(true);
 				// show only Delete List when user is owner
 				menuDeleteList.setVisible(localUserIsListOwner());
@@ -1016,15 +1015,15 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 						|| selectedColumn.equals(ColumnLabels.ENTRY_ID.getName())
 						|| selectedColumn.equals(ColumnLabels.DESIGNATION.getName())
 						|| selectedColumn.equals(ColumnLabels.SEED_RESERVATION
-								.getName())
+						.getName())
 						|| selectedColumn.equals(ColumnLabels.AVAILABLE_INVENTORY
-								.getName())) {
+						.getName())) {
 					tableContextMenuDeleteEntries.setVisible(!germplasmList.isLockedList());
 					tableContextMenuEditCell.setVisible(false);
 					if (source != null) {
 						tableContextMenuCopyToNewList.setVisible(!source.listBuilderIsLocked());
 					}
-				} else if (germplasmList.isLocalList() && !germplasmList.isLockedList()) {
+				} else if (!germplasmList.isLockedList()) {
 					tableContextMenuDeleteEntries.setVisible(true);
 					tableContextMenuEditCell.setVisible(true);
 					if (source != null) {
@@ -1137,7 +1136,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 				// validate for designation
 				if (column.equals(selectedColumn)
 						&& selectedColumn.equals(ColumnLabels.DESIGNATION
-								.getName())) {
+						.getName())) {
 					Object eventSource = event.getSource();
 					String designation = eventSource.toString();
 
@@ -1186,9 +1185,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 					f.setReadOnly(true);
 				}
 			}
-		
+
 		}
-		
+
 		private Double computeTextFieldWidth(String value) {
 			double multiplier = 0.55;
 			int length = 1;
@@ -1347,12 +1346,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 					.getItemProperty(ColumnLabels.GID.getName()).getValue();
 			Integer germplasmID = Integer.parseInt(gidButton.getCaption());
 
-			// only allow deletions for local germplasms
-			if (germplasmID.toString().contains("-")) {
-				long count = pedigreeDataManager.countDescendants(germplasmID);
-				if (count == 0) {
-					gids.add(germplasmID);
-				}
+			long count = pedigreeDataManager.countDescendants(germplasmID);
+			if (count == 0) {
+				gids.add(germplasmID);
 			}
 		}
 
@@ -1414,9 +1410,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		lockButton.setVisible(!locked);
 		unlockButton.setVisible(locked);
 
-		if (germplasmList.isLocalList()) {
-			editHeaderButton.setVisible(!locked);
-		}
+		editHeaderButton.setVisible(!locked);
 
 		if (fillWith != null) {
 			fillWith.setContextMenuEnabled(!locked);
@@ -1424,8 +1418,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 	}
 
 	private void exportListForGenotypingOrderAction() {
-		if (!germplasmList.isLocalList()
-				|| (germplasmList.isLocalList() && germplasmList.isLockedList())) {
+		if (germplasmList.isLockedList()) {
 			String tempFileName = System.getProperty(USER_HOME) + "/tempListForGenotyping.xls";
 			GermplasmListExporter listExporter = new GermplasmListExporter(germplasmList.getId());
 
@@ -1469,8 +1462,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 			try {
 				listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(
 						parentListDetailsComponent.getWindow(), listManagerCopyToNewListDialog,
-						germplasmList.getName(), listDataTable, UserUtil
-								.getCurrentUserLocalId(workbenchDataManager), source));
+						germplasmList.getName(), listDataTable, contextUtil.getCurrentUserLocalId(), source));
 				parentListDetailsComponent.getWindow().addWindow(listManagerCopyToNewListDialog);
 				listManagerCopyToNewListDialog.center();
 			} catch (MiddlewareQueryException e) {
@@ -1759,9 +1751,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		updateNoOfEntries();
 
 		setHasUnsavedChanges(false);
-		
+
 		refreshTreeOnSave();
-        
+
 		return true;
 	}
 
@@ -1779,7 +1771,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 				int lrecId = Integer.valueOf(sLRecId.toString());
 				designationOfListEntriesDeleted += sDesignation + ",";
 				deleteGermplasmListDataByListIdLrecId(germplasmList.getId(), lrecId);
-				
+
 			}
 
 			deleteGermplasmDialogBox(gidsWithoutChildrenToDelete);
@@ -1797,8 +1789,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 			}
 			germplasmListManager.updateGermplasmListData(listDatas);
 
-			logDeletedListEntriesToWorkbenchProjectActivity();
-			
+			contextUtil.logProgramActivity("Deleted list entries.",
+					"Deleted list entries from the list id " + germplasmList.getId() + " - "
+							+ germplasmList.getName());
+
 			// reset items to delete in listDataTable
 			itemsToDelete.clear();
 
@@ -1811,7 +1805,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		}
 		// end of performListEntriesDeletion
 	}
-	
+
 	private void deleteGermplasmListDataByListIdLrecId(int listId, int lrecId){
 		try {
 			germplasmListManager.deleteGermplasmListDataByListIdLrecId(
@@ -1842,29 +1836,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		}
 	}
 
-	private void logDeletedListEntriesToWorkbenchProjectActivity() {
-	
-		
-		User user;
-		try {
-			user = workbenchDataManager.getUserById(workbenchDataManager.getWorkbenchRuntimeData()
-					.getUserId());
-
-			ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager
-					.getLastOpenedProject(workbenchDataManager.getWorkbenchRuntimeData().getUserId())
-					.getProjectId().intValue()),
-					workbenchDataManager.getLastOpenedProject(workbenchDataManager
-							.getWorkbenchRuntimeData().getUserId()), "Deleted list entries.",
-					"Deleted list entries from the list id " + germplasmList.getId() + " - "
-							+ germplasmList.getName(), user, new Date());
-			
-			workbenchDataManager.addProjectActivity(projAct);
-		
-		} catch (MiddlewareQueryException e) {
-			LOG.error(e.getMessage(), e);
-		}
-	}
-
 	public void deleteListButtonClickAction() {
 		ConfirmDialog.show(this.getWindow(), "Delete Germplasm List:",
 				"Are you sure that you want to delete this list?", "Yes", "No",
@@ -1884,7 +1855,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		if (!germplasmList.isLockedList()) {
 			try {
 				ListCommonActionsUtil.deleteGermplasmList(germplasmListManager, germplasmList,
-						workbenchDataManager, getWindow(), messageSource, "list");
+						contextUtil, getWindow(), messageSource, "list");
 
 				source.getListSelectionComponent().getListTreeComponent()
 						.removeListFromTree(germplasmList);
@@ -1925,22 +1896,17 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 	public void unlockGermplasmList() {
 		if (germplasmList.isLockedList()) {
 			germplasmList.setStatus(germplasmList.getStatus() - 100);
+
+			setFillWith();
+			
 			try {
 				germplasmListManager.updateGermplasmList(germplasmList);
 
 				setLockedState(germplasmList.isLockedList());
 
-				User user = workbenchDataManager.getUserById(workbenchDataManager
-						.getWorkbenchRuntimeData().getUserId());
-				ProjectActivity projAct = new ProjectActivity(new Integer(workbenchDataManager
-						.getLastOpenedProject(
-								workbenchDataManager.getWorkbenchRuntimeData().getUserId())
-						.getProjectId().intValue()),
-						workbenchDataManager.getLastOpenedProject(workbenchDataManager
-								.getWorkbenchRuntimeData().getUserId()),
-						"Unlocked a germplasm list.", "Unlocked list " + germplasmList.getId()
-								+ " - " + germplasmList.getName(), user, new Date());
-				workbenchDataManager.addProjectActivity(projAct);
+				contextUtil.logProgramActivity("Unlocked a germplasm list.", "Unlocked list " + germplasmList.getId()
+						+ " - " + germplasmList.getName());
+
 			} catch (MiddlewareQueryException e) {
 				LOG.error("Error with unlocking list.", e);
 				MessageNotifier.showError(
@@ -1974,7 +1940,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		if (savedList != null) {
 			if (!savedList.getId().equals(germplasmList.getId())) {
 				ListCommonActionsUtil.overwriteListEntries(savedList, listEntries, germplasmList
-						.getId().intValue() != savedList.getId().intValue(), germplasmListManager,
+								.getId().intValue() != savedList.getId().intValue(), germplasmListManager,
 						source, messageSource, true);
 				source.closeList(savedList);
 			} else {
