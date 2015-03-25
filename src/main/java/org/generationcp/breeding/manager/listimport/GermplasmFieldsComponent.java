@@ -11,6 +11,7 @@ import org.generationcp.breeding.manager.customfields.BreedingLocationField;
 import org.generationcp.breeding.manager.customfields.BreedingLocationFieldSource;
 import org.generationcp.breeding.manager.customfields.BreedingMethodField;
 import org.generationcp.breeding.manager.service.BreedingManagerService;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -46,9 +47,6 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
     private BreedingLocationField locationComponent;
     private BreedingLocationField seedLocationComponent;
     
-    private ComboBox locationComboBox;
-    private ComboBox seedLocationComboBox;
-    
     private Label germplasmDateLabel;
     private Label nameTypeLabel;
   
@@ -61,6 +59,9 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
     
     @Autowired
     private GermplasmListManager germplasmListManager;
+
+	@Autowired
+	private ContextUtil contextUtil;
     
     private Window parentWindow;
     
@@ -148,12 +149,9 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
         nameTypeComboBox.setWidth("400px");
         nameTypeComboBox.setNullSelectionAllowed(false);
         nameTypeComboBox.setImmediate(true);
-        
-        try {
-			programUniqueId = breedingManagerService.getCurrentProject().getUniqueID();
-		} catch (MiddlewareQueryException e) {
-			LOG.error(e.getMessage(),e);
-	}
+
+		programUniqueId = contextUtil.getCurrentProgramUUID();
+
 	}
 
 	@Override
@@ -225,18 +223,11 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements
 	public BmsDateField getGermplasmDateField() {
 		return germplasmDateField;
 	}
-	
-	public void setLocationComponent(BreedingLocationField locationComponent) {
-		this.locationComponent = locationComponent;
-	}
 
 	public BreedingLocationField getLocationComponent() {
 		return locationComponent;
 	}
 
-	public void setSeedLocationComponent(BreedingLocationField seedLocationComponent) {
-		this.seedLocationComponent = seedLocationComponent;
-	}
 	
 	public BreedingLocationField getSeedLocationComponent() {
 		return seedLocationComponent;

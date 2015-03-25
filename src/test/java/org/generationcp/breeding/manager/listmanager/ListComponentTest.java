@@ -13,9 +13,11 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.apache.commons.lang.reflect.FieldUtils;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.gms.ListDataInfo;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -77,6 +79,9 @@ public class ListComponentTest {
 	@Mock
 	private AddColumnContextMenu addColumnContextMenu;
 
+	@Mock
+	private ContextUtil contextUtil;
+
 	private ListComponent listComponent;
 
 	private GermplasmList germplasmList;
@@ -84,12 +89,17 @@ public class ListComponentTest {
 	private Integer EXPECTED_USER_ID = 1;
 
 	@Before
-	public void setUp() {
+	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 
 		setUpWorkbench();
 
-		source = spy(new ListManagerMain());
+		ListManagerMain listManagerMain = new ListManagerMain();
+		FieldUtils.writeDeclaredField(listManagerMain, "germplasmListManager", germplasmListManager,
+				true);
+		FieldUtils.writeDeclaredField(listManagerMain,"contextUtil",contextUtil,true);
+
+		source = spy(listManagerMain);
 
 		germplasmList = new GermplasmList();
 		germplasmList.setId(1);
@@ -107,7 +117,8 @@ public class ListComponentTest {
 
 		doReturn(CHECK).when(messageSource).getMessage(Message.CHECK_ICON);
 		doReturn(HASH).when(messageSource).getMessage(Message.HASHTAG);
-		doReturn(AVAIL_INV).when(listComponent).getTermNameFromOntology(ColumnLabels.AVAILABLE_INVENTORY);
+		doReturn(AVAIL_INV).when(listComponent).getTermNameFromOntology(
+				ColumnLabels.AVAILABLE_INVENTORY);
 		doReturn(SEED_RES).when(listComponent).getTermNameFromOntology(ColumnLabels.SEED_RESERVATION);
 		doReturn(GID).when(listComponent).getTermNameFromOntology(ColumnLabels.GID);
 		doReturn(ENTRY_CODE).when(listComponent).getTermNameFromOntology(ColumnLabels.ENTRY_CODE);
@@ -122,6 +133,7 @@ public class ListComponentTest {
 		doReturn(mock(Window.class)).when(source).getWindow();
 		doReturn(mock(ListSelectionComponent.class)).when(source).getListSelectionComponent();
 		doNothing().when(listComponent).refreshTreeOnSave();
+		doNothing().when(contextUtil).logProgramActivity(anyString(), anyString());
 	}
 
 	private void setUpWorkbench() {

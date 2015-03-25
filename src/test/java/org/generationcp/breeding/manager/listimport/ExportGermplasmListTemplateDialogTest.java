@@ -36,7 +36,7 @@ public class ExportGermplasmListTemplateDialogTest {
 
 	private static final String EMPTY_STRING = "";
 
-	private static final String INSTALLATION_DIRECTORY = "C:\\InstallationDirectory";
+	private static final String INSTALLATION_DIRECTORY = "C:"+ File.separator +"InstallationDirectory";
 
 	private ExportGermplasmListTemplateDialog exportDialog;
 
@@ -64,7 +64,6 @@ public class ExportGermplasmListTemplateDialogTest {
 		FieldUtils.writeDeclaredField(exportDialog,"contextUtil",contextUtil,true);
 
 		exportDialog = spy(exportDialog);
-
 
 		when(messageSource.getMessage(Message.TEMPLATE_FORMAT)).thenReturn(DUMMY_STRING);
 		when(messageSource.getMessage(Message.CHOOSE_A_TEMPLATE_FORMAT)).thenReturn(DUMMY_STRING);
@@ -110,8 +109,8 @@ public class ExportGermplasmListTemplateDialogTest {
 		
 		String fileToDownloadPath = exportDialog.getFileToDownloadPath(BASIC_FILENAME);
 		
-		String expectedPath = INSTALLATION_DIRECTORY + "\\Examples\\maize\\templates\\GermplasmImportTemplate-Basic-rev4.xls";
-		
+		String expectedPath = INSTALLATION_DIRECTORY + ""+ File.separator +"Examples"+ File.separator +"maize"+ File.separator +"templates"+ File.separator +"GermplasmImportTemplate-Basic-rev4.xls";
+		                       
 		Assert.assertEquals("Expected to return " + expectedPath + " but returned " + fileToDownloadPath,expectedPath, fileToDownloadPath);
 	}
 	
@@ -124,7 +123,7 @@ public class ExportGermplasmListTemplateDialogTest {
 		
 		String fileToDownloadPath = exportDialog.getFileToDownloadPath(BASIC_FILENAME);
 		
-		String expectedPath = "C:\\Breeding Management System\\Examples\\maize\\templates\\GermplasmImportTemplate-Basic-rev4.xls";
+		String expectedPath = "C:"+ File.separator +"Breeding Management System"+ File.separator +"Examples"+ File.separator +"maize"+ File.separator +"templates"+ File.separator +"GermplasmImportTemplate-Basic-rev4.xls";
 		
 		Assert.assertEquals("Expected to return " + expectedPath + " but returned " + fileToDownloadPath,expectedPath, fileToDownloadPath);
 	}
@@ -133,7 +132,7 @@ public class ExportGermplasmListTemplateDialogTest {
 	public void testCreateFileDownloadResource(){
 		doReturn(mock(Application.class)).when(source).getApplication();
 		
-		String fileToDownloadPath = "C:\\Breeding Management System\\Examples\\maize\\templates\\GermplasmImportTemplate-Basic-rev4.xls";
+		String fileToDownloadPath = "C:"+ File.separator +"Breeding Management System"+ File.separator +"Examples"+ File.separator +"maize"+ File.separator +"templates"+ File.separator +"GermplasmImportTemplate-Basic-rev4.xls";
 		
 		File fileToDownload = new File(fileToDownloadPath);
 		if(fileToDownload.exists()){

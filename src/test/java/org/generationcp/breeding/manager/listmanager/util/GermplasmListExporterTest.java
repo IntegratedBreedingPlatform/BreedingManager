@@ -21,7 +21,6 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.dms.StandardVariable;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.oms.Term;
-import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
@@ -105,13 +104,12 @@ public class GermplasmListExporterTest {
 	public void setUp() throws MiddlewareQueryException, IllegalAccessException {
 
 		MockitoAnnotations.initMocks(this);
-		
-		exportService = spy(new ExportServiceImpl());
-		germplasmListExporter = spy(new GermplasmListExporter(LIST_ID));
-		germplasmListExporter.setExportService(exportService);
-		germplasmListExporter.setMessageSource(messageSource);
-		germplasmListExporter.setGermplasmListManager(germplasmListManager);
-		germplasmListExporter.setUserDataManager(userDataManager);
+
+		_germplasmListExporter.setExportService(exportService);
+		_germplasmListExporter.setMessageSource(messageSource);
+		_germplasmListExporter.setGermplasmListManager(germplasmListManager);
+		_germplasmListExporter.setUserDataManager(userDataManager);
+		germplasmListExporter = spy(_germplasmListExporter);
 
 		doReturn("#").when(messageSource).getMessage(Message.HASHTAG);
 		
