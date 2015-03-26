@@ -18,8 +18,6 @@ import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.constant.DefaultGermplasmStudyBrowserPath;
-import org.generationcp.commons.tomcat.util.TomcatUtil;
-import org.generationcp.commons.tomcat.util.WebAppStatusInfo;
 import org.generationcp.commons.util.WorkbenchAppPathResolver;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
@@ -54,10 +52,7 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
     
     @Autowired
     private GermplasmDataManager germplasmDataManager;
-    
-    @Autowired
-    private TomcatUtil tomcatUtil;
-    
+
     private ListManagerMain listManagerMain;
     private String gid;
     private Boolean viaToolURL;
@@ -85,13 +80,10 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
         } else {
             mainWindow = event.getComponent().getApplication().getWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME);
         }
-        
-    	launchWebTool();
-    	
     	Tool tool = null;
         try {
             tool = workbenchDataManager.getToolWithName(ToolName.germplasm_browser.toString());
-        } catch (MiddlewareQueryException qe) {
+		} catch (MiddlewareQueryException qe) {
             LOG.error("QueryException", qe);
         }
 
@@ -173,52 +165,4 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
 
         mainWindow.addWindow(germplasmWindow);
     }
-    
-	private void launchWebTool(){
-    	
-		try {
-			Tool germplasmBrowserTool;
-			germplasmBrowserTool = workbenchDataManager.getToolWithName(ToolName.germplasm_browser.name());
-			
-			String url = germplasmBrowserTool.getPath();
-	    	
-	        WebAppStatusInfo statusInfo = null;
-	        String contextPath = null;
-	        String localWarPath = null;
-	        try {
-	        	
-	            statusInfo = tomcatUtil.getWebAppStatus();
-	            contextPath = TomcatUtil.getContextPathFromUrl(url);
-	            localWarPath = TomcatUtil.getLocalWarPathFromUrl(url);
-	            
-	        }
-	        catch (Exception e1) {
-	          e1.printStackTrace();
-	        }
-	    	        
-	    	      
-	        try {
-	            boolean deployed = statusInfo.isDeployed(contextPath);
-	            boolean running = statusInfo.isRunning(contextPath);
-	            
-	            if (!running) {
-	                if (!deployed) {
-	                    // deploy the webapp
-	                    tomcatUtil.deployLocalWar(contextPath, localWarPath);
-	                } else {
-	                    // start the webapp
-	                    tomcatUtil.startWebApp(contextPath);
-	                }
-	            }
-	        }
-	        catch (Exception e) {
-	        }
-			
-		} catch (MiddlewareQueryException e2) {
-			// TODO Auto-generated catch block
-		}
-    	
-    	        
-    }
-
 }
