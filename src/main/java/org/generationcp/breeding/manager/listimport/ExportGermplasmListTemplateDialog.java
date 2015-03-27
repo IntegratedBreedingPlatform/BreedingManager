@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.annotation.Resource;
+
+import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
@@ -130,7 +132,7 @@ public class ExportGermplasmListTemplateDialog extends BaseSubWindow implements 
 			String fileToDownloadPath = getFileToDownloadPath(fileName);
 			
 			FileDownloadResource fileDownloadResource = createFileDownloadResource(fileToDownloadPath);
-			fileDownloadResource.setFilename(fileName);
+			fileDownloadResource.setFilename(FileDownloadResource.getDownloadFileName(fileName, BreedingManagerApplication.get().currentRequest()));
 	        source.getWindow().open(fileDownloadResource);
 		} catch (IOException e) {
 			LOG.error(e.getMessage(),e);

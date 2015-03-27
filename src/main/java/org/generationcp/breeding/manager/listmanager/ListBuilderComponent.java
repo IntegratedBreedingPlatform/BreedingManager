@@ -3,13 +3,14 @@ package org.generationcp.breeding.manager.listmanager;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -60,8 +61,6 @@ import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
-import org.generationcp.middleware.pojos.User;
-import org.generationcp.middleware.pojos.workbench.ProjectActivity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -90,8 +89,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
-
-import javax.annotation.Resource;
 
 @Configurable
 public class ListBuilderComponent extends VerticalLayout implements InitializingBean,
@@ -1078,7 +1075,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 					listExporter.exportKBioScienceGenotypingOrderXLS(tempFileName, 96);
 					FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), source.getApplication());
 					String listName = currentlySavedGermplasmList.getName();
-					fileDownloadResource.setFilename(listName.replace(" ", "_") + "ForGenotyping.xls");
+					fileDownloadResource.setFilename(FileDownloadResource.getDownloadFileName(listName, BreedingManagerApplication.get().currentRequest()).replace(" ", "_") + "ForGenotyping.xls");
 
 					source.getWindow().open(fileDownloadResource);
 

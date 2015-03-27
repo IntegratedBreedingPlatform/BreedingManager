@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -363,7 +364,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements
         try {
         	exporter.exportGermplasmListXLS(tempFileName, listDataTable);
             FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
-            fileDownloadResource.setFilename(list.getName().replace(" ", "_") + ".xls");
+            fileDownloadResource.setFilename(FileDownloadResource.getDownloadFileName(list.getName(),  BreedingManagerApplication.get().currentRequest()).replace(" ", "_") + ".xls");
 
             this.getWindow().open(fileDownloadResource);
         } catch (GermplasmListExporterException | MiddlewareQueryException e) {

@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -12,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import javax.annotation.Resource;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
@@ -103,8 +104,6 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
-
-import javax.annotation.Resource;
 
 @Configurable
 public class ListComponent extends VerticalLayout implements InitializingBean,
@@ -1427,7 +1426,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 				FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(
 						tempFileName), source.getApplication());
 				String listName = germplasmList.getName();
-				fileDownloadResource.setFilename(listName.replace(" ", "_") + "ForGenotyping.xls");
+				fileDownloadResource.setFilename(FileDownloadResource.getDownloadFileName(listName, BreedingManagerApplication.get().currentRequest()).replace(" ", "_") + "ForGenotyping.xls");
 
 				source.getWindow().open(fileDownloadResource);
 
