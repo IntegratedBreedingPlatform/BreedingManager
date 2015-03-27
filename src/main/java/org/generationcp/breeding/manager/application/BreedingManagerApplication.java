@@ -39,8 +39,6 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     public static final String LIST_MANAGER_SIDEBYSIDE = "list-manager-sidebyside";
     public static final String MANAGE_SETTINGS_CROSSING_MANAGER = "crosses-settings";
 
-    private static final String ADD_SPACING = "addSpacing";
-
     private Window window;
     
     @Autowired

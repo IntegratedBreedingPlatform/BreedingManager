@@ -52,7 +52,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
     private MakeCrossesParentsComponent parentsComponent;
     private CrossingMethodComponent crossingMethodComponent;
     private MakeCrossesTableComponent crossesTableComponent;
-    private Integer lastOpenedListId;
     
 	//Handles Universal Mode View for ListManagerMain
 	private ModeView modeView;
