@@ -144,23 +144,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout
     	}
     }
 
-    @Deprecated
-    public Integer getLastOpenedListId() {
-        return this.lastOpenedListId;
-    }
-    
-    @Deprecated
-    public void setLastOpenedListId(Integer lastOpenedListId) {
-        this.lastOpenedListId = lastOpenedListId;
-    }
-    
     public void disableNextButton(){
         nextButton.setEnabled(false);
-    }
-
-    @Deprecated
-    public void clearParentsListsAndCrossesTable(){
-        this.crossesTableComponent.clearCrossesTable();
     }
 
 	@Override

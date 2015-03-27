@@ -15,7 +15,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUploader;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -36,8 +35,6 @@ public class CrossesMade implements Serializable{
     
     //for storing old cross names when generated name is chosen by user
     private List<GermplasmListEntry> oldCrossNames; 
-    
-    private CrossingManagerUploader crossingManagerUploader;
     
     private CrossingManagerSetting setting;
     private GermplasmList germplasmList;
@@ -70,15 +67,6 @@ public class CrossesMade implements Serializable{
         return oldCrossNames;
     }
     
-    public CrossingManagerUploader getCrossingManagerUploader() {
-        return crossingManagerUploader;
-    }
-
-    public void setCrossingManagerUploader(
-            CrossingManagerUploader crossingManagerUploader) {
-        this.crossingManagerUploader = crossingManagerUploader;
-    }
-
     public GermplasmList getGermplasmList() {
         return germplasmList;
     }
