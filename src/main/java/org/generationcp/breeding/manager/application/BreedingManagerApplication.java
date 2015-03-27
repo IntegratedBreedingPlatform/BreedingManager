@@ -4,7 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.dellroad.stuff.vaadin.SpringContextApplication;
-import org.generationcp.breeding.manager.crosses.NurseryTemplateMain;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
@@ -17,7 +16,6 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -50,7 +48,6 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
     
     private VerticalLayout rootLayoutForImportGermplasmList;
     private VerticalLayout rootLayoutForCrossingManager;
-    private VerticalLayout rootLayoutForNurseryTemplate;
 
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
@@ -86,9 +83,6 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
         this.rootLayoutForCrossingManager = new VerticalLayout();
         rootLayoutForCrossingManager.setSizeFull();
         
-        this.rootLayoutForNurseryTemplate = new VerticalLayout();
-        rootLayoutForNurseryTemplate.setSizeFull();
-        
         window = new Window(messageSource.getMessage(Message.MAIN_WINDOW_CAPTION));
         setMainWindow(window);
         setTheme("gcp-default");
@@ -99,7 +93,6 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
         VerticalLayout[] layouts = new VerticalLayout[3];
         layouts[0] = this.rootLayoutForImportGermplasmList;
         layouts[1] = this.rootLayoutForCrossingManager;
-        layouts[2] = this.rootLayoutForNurseryTemplate;
         
         WelcomeTab welcomeTab = new WelcomeTab(tabSheet, layouts);
         // "Welcome"
@@ -108,9 +101,6 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
         tabSheet.addTab(rootLayoutForImportGermplasmList, messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
         // "Crossing Manager"
         tabSheet.addTab(rootLayoutForCrossingManager, messageSource.getMessage(Message.CROSSING_MANAGER_LABEL));
-        // "Nursery Template"
-        tabSheet.addTab(rootLayoutForNurseryTemplate, messageSource.getMessage(Message.NURSERY_TEMPLATE_CAPTION_LABEL));
-        tabSheet.addListener(new MainApplicationSelectedTabChangeListener(this));
         
         window.addComponent(tabSheet);
         
@@ -139,14 +129,6 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 this.addWindow(germplasmImportWindow);
                 return germplasmImportWindow;
 
-            } else if(name.equals(NURSERY_TEMPLATE_WINDOW_NAME)){
-                Window nurseryTemplateWindow = new Window(messageSource.getMessage(Message.NURSERY_TEMPLATE_TAB_LABEL));
-                nurseryTemplateWindow.setName(NURSERY_TEMPLATE_WINDOW_NAME);
-                nurseryTemplateWindow.setSizeUndefined();
-                nurseryTemplateWindow.addComponent(new NurseryTemplateMain());
-                this.addWindow(nurseryTemplateWindow);
-                return nurseryTemplateWindow;
-            
             } else if(name.equals(LIST_MANAGER_WINDOW_NAME)){
             	Window listManagerWindow = new Window(messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
                 listManagerWindow.setName(name);
@@ -209,9 +191,6 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 rootLayoutForCrossingManager.addComponent(new ManageCrossingSettingsMain(rootLayoutForCrossingManager));
                 rootLayoutForCrossingManager.addStyleName(ADD_SPACING);
             }
-        }else if (source.getSelectedTab() == this.rootLayoutForNurseryTemplate && this.rootLayoutForNurseryTemplate.getComponentCount() == 0) {
-                rootLayoutForNurseryTemplate.addComponent(new NurseryTemplateMain());
-                rootLayoutForNurseryTemplate.addStyleName(ADD_SPACING);
         }
     }
 
