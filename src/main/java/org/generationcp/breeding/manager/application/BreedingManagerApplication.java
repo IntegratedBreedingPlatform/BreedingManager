@@ -7,7 +7,6 @@ import org.dellroad.stuff.vaadin.SpringContextApplication;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
-import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.hibernate.DynamicManagerFactoryProviderConcurrency;
 import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
 import org.generationcp.commons.vaadin.actions.UpdateComponentLabelsAction;
@@ -23,8 +22,6 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 import com.vaadin.terminal.Terminal;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 
@@ -46,9 +43,6 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 
     private Window window;
     
-    private VerticalLayout rootLayoutForImportGermplasmList;
-    private VerticalLayout rootLayoutForCrossingManager;
-
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
     
@@ -77,32 +71,10 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
         messageSourceListener = new UpdateComponentLabelsAction(this);
         messageSource.addListener(messageSourceListener);
         
-        this.rootLayoutForImportGermplasmList = new VerticalLayout();
-        rootLayoutForImportGermplasmList.setSizeFull();
-
-        this.rootLayoutForCrossingManager = new VerticalLayout();
-        rootLayoutForCrossingManager.setSizeFull();
-        
-        window = new Window(messageSource.getMessage(Message.MAIN_WINDOW_CAPTION));
+        window = instantiateListManagerWindow(LIST_MANAGER_WINDOW_NAME);
         setMainWindow(window);
         setTheme("gcp-default");
         window.setSizeUndefined();
-
-        TabSheet tabSheet = new TabSheet();
-        
-        VerticalLayout[] layouts = new VerticalLayout[3];
-        layouts[0] = this.rootLayoutForImportGermplasmList;
-        layouts[1] = this.rootLayoutForCrossingManager;
-        
-        WelcomeTab welcomeTab = new WelcomeTab(tabSheet, layouts);
-        // "Welcome"
-        tabSheet.addTab(welcomeTab, messageSource.getMessage(Message.WELCOME_TAB_LABEL));
-        // "Import Germlasm List"
-        tabSheet.addTab(rootLayoutForImportGermplasmList, messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
-        // "Crossing Manager"
-        tabSheet.addTab(rootLayoutForCrossingManager, messageSource.getMessage(Message.CROSSING_MANAGER_LABEL));
-        
-        window.addComponent(tabSheet);
         
         // Override the existing error handler that shows the stack trace
         setErrorHandler(this);
@@ -130,13 +102,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
                 return germplasmImportWindow;
 
             } else if(name.equals(LIST_MANAGER_WINDOW_NAME)){
-            	Window listManagerWindow = new Window(messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
-                listManagerWindow.setName(name);
-                listManagerWindow.setSizeFull();
-
-                listManagerMain = new org.generationcp.breeding.manager.listmanager.ListManagerMain();
-                
-                listManagerWindow.setContent(listManagerMain);
+            	Window listManagerWindow = instantiateListManagerWindow(name);
                 this.addWindow(listManagerWindow);
 
                 return listManagerWindow;
@@ -178,23 +144,18 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
         
         return super.getWindow(name);
     }
+
+	private Window instantiateListManagerWindow(String name) {
+		Window listManagerWindow = new Window(messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
+		listManagerWindow.setName(name);
+		listManagerWindow.setSizeFull();
+
+		listManagerMain = new org.generationcp.breeding.manager.listmanager.ListManagerMain();
+		
+		listManagerWindow.setContent(listManagerMain);
+		return listManagerWindow;
+	}
     
-    public void tabSheetSelectedTabChangeAction(TabSheet source) throws InternationalizableException {
-
-        if (source.getSelectedTab() == this.rootLayoutForImportGermplasmList) {
-            if (this.rootLayoutForImportGermplasmList.getComponentCount() == 0) {
-                rootLayoutForImportGermplasmList.addComponent(new GermplasmImportMain(rootLayoutForImportGermplasmList,true));
-                rootLayoutForImportGermplasmList.addStyleName(ADD_SPACING);
-            } 
-        }else if (source.getSelectedTab() == this.rootLayoutForCrossingManager) {
-            if (this.rootLayoutForCrossingManager.getComponentCount() == 0) {
-                rootLayoutForCrossingManager.addComponent(new ManageCrossingSettingsMain(rootLayoutForCrossingManager));
-                rootLayoutForCrossingManager.addStyleName(ADD_SPACING);
-            }
-        }
-    }
-
-
     /** 
      * Override terminalError() to handle terminal errors, to avoid showing the stack trace in the application 
      */
