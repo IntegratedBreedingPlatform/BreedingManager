@@ -7,6 +7,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.util.FileDownloadResource;
@@ -195,7 +196,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
             listExporter.exportGermplasmListCSV(TEMP_FILENAME, table);
             FileDownloadResource fileDownloadResource = createFileDownloadResource();
             String listName = germplasmList.getName();
-            fileDownloadResource.setFilename(FileDownloadResource.getDownloadFileName(listName,  BreedingManagerApplication.get().currentRequest()).replace(" ", "_") + CSV_EXT);
+            fileDownloadResource.setFilename(FileDownloadResource.getDownloadFileName(listName, BreedingManagerUtil.getApplicationRequest()).replace(" ", "_") + CSV_EXT);
             source.getWindow().open(fileDownloadResource);
             //must figure out other way to clean-up file because deleting it here makes it unavailable for download            
             
@@ -212,8 +213,8 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
         try {
             listExporter.exportGermplasmListXLS(TEMP_FILENAME,table);
             FileDownloadResource fileDownloadResource = createFileDownloadResource();
-            String listName = germplasmList.getName();
-            fileDownloadResource.setFilename(FileDownloadResource.getDownloadFileName(listName, BreedingManagerApplication.get().currentRequest()).replace(" ", "_") + XLS_EXT);            
+            String listName = germplasmList.getName();            
+            fileDownloadResource.setFilename(FileDownloadResource.getDownloadFileName(listName, BreedingManagerUtil.getApplicationRequest()).replace(" ", "_") + XLS_EXT);            
             source.getWindow().open(fileDownloadResource);
             //must figure out other way to clean-up file because deleting it here makes it unavailable for download
         } catch (GermplasmListExporterException | MiddlewareQueryException e) {

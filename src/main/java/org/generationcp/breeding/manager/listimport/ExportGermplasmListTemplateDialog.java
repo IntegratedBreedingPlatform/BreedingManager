@@ -9,6 +9,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.util.StringUtil;
@@ -132,7 +133,7 @@ public class ExportGermplasmListTemplateDialog extends BaseSubWindow implements 
 			String fileToDownloadPath = getFileToDownloadPath(fileName);
 			
 			FileDownloadResource fileDownloadResource = createFileDownloadResource(fileToDownloadPath);
-			fileDownloadResource.setFilename(FileDownloadResource.getDownloadFileName(fileName, BreedingManagerApplication.get().currentRequest()));
+			fileDownloadResource.setFilename(FileDownloadResource.getDownloadFileName(fileName, BreedingManagerUtil.getApplicationRequest()));
 	        source.getWindow().open(fileDownloadResource);
 		} catch (IOException e) {
 			LOG.error(e.getMessage(),e);

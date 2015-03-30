@@ -43,6 +43,7 @@ import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.breeding.manager.listmanager.util.ListDataPropertiesRenderer;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -1426,7 +1427,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 				FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(
 						tempFileName), source.getApplication());
 				String listName = germplasmList.getName();
-				fileDownloadResource.setFilename(FileDownloadResource.getDownloadFileName(listName, BreedingManagerApplication.get().currentRequest()).replace(" ", "_") + "ForGenotyping.xls");
+				fileDownloadResource.setFilename(FileDownloadResource.getDownloadFileName(listName, BreedingManagerUtil.getApplicationRequest()).replace(" ", "_") + "ForGenotyping.xls");
 
 				source.getWindow().open(fileDownloadResource);
 

@@ -1,5 +1,7 @@
 package org.generationcp.breeding.manager.util;
 
+import javax.servlet.http.HttpServletRequest;
+
 import junit.framework.Assert;
 
 import org.generationcp.middleware.pojos.Location;
@@ -25,5 +27,11 @@ public class BreedingManagerUtilTest {
 		loc.setLname(lname);
 		loc.setLabbr(labbr);
 		Assert.assertEquals("Abbreviation should be appended", lname + " - ("+labbr+")", BreedingManagerUtil.getLocationNameDisplay(loc) );
+	}
+	
+	@Test
+	public void testGetCurrentApplication(){
+		HttpServletRequest req = BreedingManagerUtil.getApplicationRequest();
+		Assert.assertNull("Request should be null since there is not application context", req);
 	}
 }

@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
+import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -420,5 +423,13 @@ public class BreedingManagerUtil{
             return "";
         }
     }
-
+    public static HttpServletRequest getApplicationRequest(){
+    	HttpServletRequest req = null;
+    	try{
+    		req = BreedingManagerApplication.get().currentRequest();
+    	}catch(IllegalStateException e){
+    		LOG.error(e.getMessage(), e);
+    	}
+    	return req;
+    }
 }
