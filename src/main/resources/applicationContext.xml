@@ -12,11 +12,10 @@
 >
     
     <!-- Declare property file locations -->
-    <context:property-placeholder location="classpath:workbench.properties,classpath:c3p0.properties" />
+    <context:property-placeholder location="classpath:workbench.properties,classpath:c3p0.properties,classpath:crossing.properties" />
     
     <!-- Enable Spring annotations -->
     <context:annotation-config/>
-    
     <!--
         Enable load-time-weaving so we can use @Configurable annotation.
         To make this work, we need to set the -java.agent VM argument to the spring-instrument JAR file's path.
@@ -47,7 +46,8 @@
             <util:constant static-field="java.util.Locale.ENGLISH"/>
         </property>
     </bean>
-    
+
+
     <bean id="workbenchDataSource" class = "com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
         <property name="driverClass" value="${workbench.driver}" />
         <property name="jdbcUrl" value="${workbench.url}" />
@@ -171,4 +171,13 @@
         Reuseable UI components can be declared here, but don't do it just so you can have auto-wiring.
         Add @Configurable annotation to your class if you only need auto-wiring.
     -->
+    
+    <bean id="crossExpansionRule" class = "org.generationcp.commons.util.CrossExpansionRule">
+        <property name="wheatMaxLevel" value="${cross.expansion.wheat.max.generation.level}" />
+        <property name="wheatNameType" value="${cross.expansion.wheat.name.type}" />
+        <property name="nonWheatMaxLevel" value="${cross.expansion.non.wheat.max.generation.level}" />
+        <property name="nonWheatNameType" value="${cross.expansion.non.wheat.name.type}" />
+    </bean>
+    
+    
 </beans>
