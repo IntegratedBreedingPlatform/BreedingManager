@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.annotation.Resource;
+
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.inventory.InventoryDropTargetContainer;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
@@ -17,6 +19,7 @@ import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.ListSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.commons.util.CrossExpansionRule;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -72,6 +75,9 @@ public class DropHandlerMethods {
     protected static final String MATCHING_GERMPLASMS_TABLE_DATA = GermplasmSearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA;
     protected static final String MATCHING_LISTS_TABLE_DATA = ListSearchResultsComponent.MATCHING_LISTS_TABLE_DATA;
     protected static final String LIST_DATA_TABLE_DATA = ListComponent.LIST_DATA_COMPONENT_TABLE_DATA;
+    
+    @Resource
+	private CrossExpansionRule crossExpansionRule;
 	
 	@SuppressWarnings("unchecked")
 	protected Boolean hasSelectedItems(Table table){
@@ -238,7 +244,7 @@ public class DropHandlerMethods {
 		String crossExpansion =STRING_EMPTY;
 		try {
             if(germplasmDataManager!=null) {
-                crossExpansion = germplasmDataManager.getCrossExpansion(germplasm.getGid(), 1);
+                crossExpansion = germplasmDataManager.getCrossExpansion(germplasm.getGid(), this.crossExpansionRule.getMaxLevelStoppageRule(), this.crossExpansionRule.getNameTypeStoppageRule());
             }
         } catch(MiddlewareQueryException ex){
             LOG.error("Error in retrieving cross expansion data for GID: " + germplasm.getGid() + ".", ex);

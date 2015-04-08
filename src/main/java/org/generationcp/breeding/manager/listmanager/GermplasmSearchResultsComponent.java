@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.ActionButton;
@@ -15,6 +17,7 @@ import org.generationcp.commons.constant.DefaultGermplasmStudyBrowserPath;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.tomcat.util.TomcatUtil;
 import org.generationcp.commons.tomcat.util.WebAppStatusInfo;
+import org.generationcp.commons.util.CrossExpansionRule;
 import org.generationcp.commons.util.WorkbenchAppPathResolver;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -96,6 +99,9 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
     
     @Autowired
     private OntologyDataManager ontologyDataManager;
+    
+    @Resource
+	private CrossExpansionRule crossExpansionRule;
     
     
     public GermplasmSearchResultsComponent(){
@@ -316,7 +322,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
             if(germplasm!=null){
             	try {
             		if(germplasmDataManager!=null) {
-                        crossExpansion = germplasmDataManager.getCrossExpansion(germplasm.getGid(), 1);
+                        crossExpansion = germplasmDataManager.getCrossExpansion(germplasm.getGid(), this.crossExpansionRule.getMaxLevelStoppageRule(), this.crossExpansionRule.getNameTypeStoppageRule());
                     }
             	} catch(MiddlewareQueryException ex){
             		LOG.error(ex.getMessage(), ex);

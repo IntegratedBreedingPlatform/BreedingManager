@@ -48,6 +48,7 @@ import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.commons.util.CrossExpansionRule;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -244,6 +245,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 	private FillWith fillWith;
 
 	private SaveListAsDialog dialog;
+	
+	@Resource
+	private CrossExpansionRule crossExpansionRule;
 
 	public ListComponent(ListManagerMain source, ListTabComponent parentListDetailsComponent,
 			GermplasmList germplasmList) {
@@ -1537,7 +1541,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 
 		String groupName = "-";
 		try {
-			groupName = this.germplasmDataManager.getCrossExpansion(gid, 1);
+			groupName = this.germplasmDataManager.getCrossExpansion(gid, this.crossExpansionRule.getMaxLevelStoppageRule(), this.crossExpansionRule.getNameTypeStoppageRule());
 		} catch (MiddlewareQueryException ex) {
 			LOG.error(ex.getMessage(), ex);
 			groupName = "-";
