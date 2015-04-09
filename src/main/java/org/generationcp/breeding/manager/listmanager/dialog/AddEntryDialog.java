@@ -380,44 +380,55 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
 
     
     public void nextButtonClickAction(ClickEvent event){
-        if(optionGroup.getValue().equals(OPTION_1_ID)){
-            // add the germplasm selected as the list entry
-            if(!selectedGids.isEmpty()){
-                this.source.finishAddingEntry(selectedGids);
-                Window window = event.getButton().getWindow();
-                window.getParent().removeWindow(window);
-            } else {
-                MessageNotifier.showWarning(this, messageSource.getMessage(Message.WARNING), 
-                        messageSource.getMessage(Message.YOU_MUST_SELECT_A_GERMPLASM_FROM_THE_SEARCH_RESULTS));
-            }
-        } else if(optionGroup.getValue().equals(OPTION_2_ID)){
-        	if(breedingMethodField.getBreedingMethodComboBox().getValue() == null){
-        		MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_SELECT_A_METHOD_FOR_THE_GERMPLASM));
-        	} else if(breedingLocationField.getBreedingLocationComboBox().getValue() == null){
-        		MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM));
-        	}else if(!selectedGids.isEmpty()){
-            	if(doneAction()){
-            		Window window = event.getButton().getWindow();
-            		window.getParent().removeWindow(window);
-            	}
-            } else{
-                MessageNotifier.showWarning(this, messageSource.getMessage(Message.WARNING), 
-                        messageSource.getMessage(Message.YOU_MUST_SELECT_A_GERMPLASM_FROM_THE_SEARCH_RESULTS));
-            }
-        } else if(optionGroup.getValue().equals(OPTION_3_ID)){
-            String searchValue = searchBarComponent.getSearchField().getValue().toString();
-            
-        	if(breedingMethodField.getBreedingMethodComboBox().getValue() == null){
-        		MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_SELECT_A_METHOD_FOR_THE_GERMPLASM));
-        	} else if(breedingLocationField.getBreedingLocationComboBox().getValue() == null){
-        		MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM));
-        	} else if(searchValue != null && searchValue.length() != 0){
-            	doneAction();
-            	Window window = event.getButton().getWindow();
-            	window.getParent().removeWindow(window);
-            } else {
-            	MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_ENTER_A_GERMPLASM_NAME_IN_THE_TEXTBOX));
-            }
+    	if (optionGroup.getValue().equals(OPTION_1_ID)) {
+			// add the germplasm selected as the list entry
+			validateInputForOption1(event);
+		} else if (optionGroup.getValue().equals(OPTION_2_ID)) {
+			validateInputForOption2(event);
+		} else if (optionGroup.getValue().equals(OPTION_3_ID)) {
+			validateInputForOption3(event);
+		}
+    }
+    
+    private void validateInputForOption1(ClickEvent event) {
+    	if(!selectedGids.isEmpty()){
+            this.source.finishAddingEntry(selectedGids);
+            Window window = event.getButton().getWindow();
+            window.getParent().removeWindow(window);
+        } else {
+            MessageNotifier.showWarning(this, messageSource.getMessage(Message.WARNING), 
+                    messageSource.getMessage(Message.YOU_MUST_SELECT_A_GERMPLASM_FROM_THE_SEARCH_RESULTS));
+        }
+	}
+    
+    private void validateInputForOption2(ClickEvent event) {
+    	if(breedingMethodField.getBreedingMethodComboBox().getValue() == null){
+    		MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_SELECT_A_METHOD_FOR_THE_GERMPLASM));
+    	} else if(breedingLocationField.getBreedingLocationComboBox().getValue() == null){
+    		MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM));
+    	}else if(!selectedGids.isEmpty()){
+        	if(doneAction()){
+        		Window window = event.getButton().getWindow();
+        		window.getParent().removeWindow(window);
+        	}
+        } else{
+            MessageNotifier.showWarning(this, messageSource.getMessage(Message.WARNING), 
+                    messageSource.getMessage(Message.YOU_MUST_SELECT_A_GERMPLASM_FROM_THE_SEARCH_RESULTS));
+        }
+	}
+    
+    private void validateInputForOption3(ClickEvent event) {
+    	String searchValue = searchBarComponent.getSearchField().getValue().toString();
+    	if(breedingMethodField.getBreedingMethodComboBox().getValue() == null){
+    		MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_SELECT_A_METHOD_FOR_THE_GERMPLASM));
+    	} else if(breedingLocationField.getBreedingLocationComboBox().getValue() == null){
+    		MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM));
+    	} else if(searchValue != null && searchValue.length() != 0){
+        	doneAction();
+        	Window window = event.getButton().getWindow();
+        	window.getParent().removeWindow(window);
+        } else {
+        	MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_ENTER_A_GERMPLASM_NAME_IN_THE_TEXTBOX));
         }
     }
     
