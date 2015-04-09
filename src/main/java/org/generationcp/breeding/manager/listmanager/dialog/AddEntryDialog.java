@@ -640,8 +640,11 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
 
 	@Override
 	public void updateAllLocationFields() {
-		Object lastValue = breedingLocationField.getBreedingLocationComboBox().getValue();
-		breedingLocationField.populateHarvestLocation(Integer.valueOf(lastValue.toString()),programUniqueId);
+		if(breedingLocationField!=null && breedingLocationField.getBreedingLocationComboBox()!=null &&
+				breedingLocationField.getBreedingLocationComboBox().getValue()!=null) {
+			Object lastValue = breedingLocationField.getBreedingLocationComboBox().getValue();
+			breedingLocationField.populateHarvestLocation(Integer.valueOf(lastValue.toString()),programUniqueId);
+		}
 	}
 	
 	public void setOptionGroup(OptionGroup optionGroup){
