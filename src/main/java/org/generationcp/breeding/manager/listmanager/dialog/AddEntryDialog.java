@@ -133,6 +133,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
         this.setOverrideFocus(true);
         this.source = source;
         this.parentWindow = parentWindow;
+        this.selectedGids = new ArrayList<Integer>();
     }
 
     @Override
