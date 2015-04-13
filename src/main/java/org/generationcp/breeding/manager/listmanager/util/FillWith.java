@@ -14,7 +14,7 @@ import org.generationcp.breeding.manager.listmanager.FillWithAttributeWindow;
 import org.generationcp.breeding.manager.listmanager.ListTabComponent;
 import org.generationcp.breeding.manager.util.GermplasmDetailModel;
 import org.generationcp.commons.constant.ColumnLabels;
-import org.generationcp.commons.util.CrossExpansionRule;
+import org.generationcp.commons.util.CrossExpansionProperties;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -25,6 +25,8 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.service.api.PedigreeService;
+import org.generationcp.middleware.util.CrossExpansionRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +51,7 @@ public class FillWith implements InternationalizableComponent  {
 	private static final String EMPTY_STRING = "";
 	
 	@Resource
-	private CrossExpansionRule crossExpansionRule;
+	private CrossExpansionProperties crossExpansionProperties;
 
 	private final class TableHeaderClickListener implements Table.HeaderClickListener {
 		private static final long serialVersionUID = 4792602001489368804L;
@@ -129,6 +131,8 @@ public class FillWith implements InternationalizableComponent  {
 	
     @Autowired
     private GermplasmDataManager germplasmDataManager;
+    @Autowired
+    private PedigreeService pedigreeService;
 
     private AbstractLayout parentLayout;
     
@@ -785,7 +789,9 @@ public class FillWith implements InternationalizableComponent  {
 	            Button b= (Button) gidObject;
 	            String gid=b.getCaption();
 	            try{
-	            	String crossExpansion = this.germplasmDataManager.getCrossExpansion(Integer.parseInt(gid), crossExpansionLevel.intValue(), this.crossExpansionRule.getNameTypeStoppageRule());
+	            	CrossExpansionRule crossExpansionRule = this.crossExpansionProperties.getCrossExpansionRule();
+	            	crossExpansionRule.setStopLevel(crossExpansionLevel.intValue());
+	            	String crossExpansion = this.pedigreeService.getCrossExpansion(Integer.parseInt(gid), crossExpansionRule);
 	            	item.getItemProperty(propertyId).setValue(crossExpansion);
 	            } catch(MiddlewareQueryException ex){
 	            	LOG.error("Error with getting cross expansion: gid=" + gid + " level=" + crossExpansionLevel, ex);

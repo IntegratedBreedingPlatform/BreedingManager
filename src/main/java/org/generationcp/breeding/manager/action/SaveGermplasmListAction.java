@@ -6,13 +6,14 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.commons.spring.util.ContextUtil;
-import org.generationcp.commons.util.CrossExpansionRule;
+import org.generationcp.commons.util.CrossExpansionProperties;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.service.api.PedigreeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -28,12 +29,15 @@ public class SaveGermplasmListAction implements Serializable {
 	
     @Autowired
     private GermplasmDataManager germplasmManager;
+    
+    @Autowired
+    private PedigreeService pedigreeService;
 
 	@Resource
 	private ContextUtil contextUtil;
 	
 	@Resource
-	private CrossExpansionRule crossExpansionRule;
+	private CrossExpansionProperties crossExpansionProperties;
     
     @Autowired
 	private InventoryDataManager inventoryDataManager;
@@ -90,7 +94,7 @@ public class SaveGermplasmListAction implements Serializable {
             int gid = listEntry.getGid();
             int entryId = listEntry.getEntryId(); 
             String designation = listEntry.getDesignation();
-            String groupName = germplasmManager.getCrossExpansion(gid, this.crossExpansionRule.getMaxLevelStoppageRule(), this.crossExpansionRule.getNameTypeStoppageRule());
+            String groupName = pedigreeService.getCrossExpansion(gid, this.crossExpansionProperties.getCrossExpansionRule());
             String seedSource = listEntry.getSeedSource();
             	
             GermplasmListData germplasmListData = buildGermplasmListData(

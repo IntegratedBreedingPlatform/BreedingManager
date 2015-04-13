@@ -17,7 +17,7 @@ import org.generationcp.commons.constant.DefaultGermplasmStudyBrowserPath;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.tomcat.util.TomcatUtil;
 import org.generationcp.commons.tomcat.util.WebAppStatusInfo;
-import org.generationcp.commons.util.CrossExpansionRule;
+import org.generationcp.commons.util.CrossExpansionProperties;
 import org.generationcp.commons.util.WorkbenchAppPathResolver;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -29,6 +29,7 @@ import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.service.api.PedigreeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -96,12 +97,15 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
+	
+    @Autowired
+    private PedigreeService pedigreeService;
     
     @Autowired
     private OntologyDataManager ontologyDataManager;
     
     @Resource
-	private CrossExpansionRule crossExpansionRule;
+	private CrossExpansionProperties crossExpansionProperties;
     
     
     public GermplasmSearchResultsComponent(){
@@ -322,7 +326,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
             if(germplasm!=null){
             	try {
             		if(germplasmDataManager!=null) {
-                        crossExpansion = germplasmDataManager.getCrossExpansion(germplasm.getGid(), this.crossExpansionRule.getMaxLevelStoppageRule(), this.crossExpansionRule.getNameTypeStoppageRule());
+                        crossExpansion = pedigreeService.getCrossExpansion(germplasm.getGid(), this.crossExpansionProperties.getCrossExpansionRule());
                     }
             	} catch(MiddlewareQueryException ex){
             		LOG.error(ex.getMessage(), ex);

@@ -19,7 +19,7 @@ import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.ListSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
-import org.generationcp.commons.util.CrossExpansionRule;
+import org.generationcp.commons.util.CrossExpansionProperties;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -29,6 +29,7 @@ import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.service.api.PedigreeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +58,7 @@ public class DropHandlerMethods {
 	protected GermplasmDataManager germplasmDataManager;
 	protected GermplasmListManager germplasmListManager;
 	protected InventoryDataManager inventoryDataManager;
+	protected PedigreeService pedigreeService;
 	
 	private static final Logger LOG = LoggerFactory.getLogger(DropHandlerMethods.class);
 	
@@ -77,7 +79,7 @@ public class DropHandlerMethods {
     protected static final String LIST_DATA_TABLE_DATA = ListComponent.LIST_DATA_COMPONENT_TABLE_DATA;
     
     @Resource
-	private CrossExpansionRule crossExpansionRule;
+	private CrossExpansionProperties crossExpansionProperties;
 	
 	@SuppressWarnings("unchecked")
 	protected Boolean hasSelectedItems(Table table){
@@ -244,7 +246,7 @@ public class DropHandlerMethods {
 		String crossExpansion =STRING_EMPTY;
 		try {
             if(germplasmDataManager!=null) {
-                crossExpansion = germplasmDataManager.getCrossExpansion(germplasm.getGid(), this.crossExpansionRule.getMaxLevelStoppageRule(), this.crossExpansionRule.getNameTypeStoppageRule());
+                crossExpansion = pedigreeService.getCrossExpansion(germplasm.getGid(), this.crossExpansionProperties.getCrossExpansionRule());
             }
         } catch(MiddlewareQueryException ex){
             LOG.error("Error in retrieving cross expansion data for GID: " + germplasm.getGid() + ".", ex);
