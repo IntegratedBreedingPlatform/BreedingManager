@@ -12,6 +12,7 @@ import org.generationcp.breeding.manager.listmanager.ListComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.commons.util.CrossExpansionProperties;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
@@ -20,6 +21,7 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.service.api.PedigreeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,23 +48,25 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 	
 	private boolean hasChanges = false; 
 	
-	public InventoryTableDropHandler(ListManagerMain listManagerMain, GermplasmDataManager germplasmDataManager, GermplasmListManager germplasmListManager, InventoryDataManager inventoryDataManager, Table targetTable) {
+	public InventoryTableDropHandler(ListManagerMain listManagerMain, GermplasmDataManager germplasmDataManager, GermplasmListManager germplasmListManager, InventoryDataManager inventoryDataManager, PedigreeService pedigreeService, CrossExpansionProperties crossExpansionProperties, Table targetTable) {
 		this.listManagerMain = listManagerMain;
 		this.germplasmDataManager = germplasmDataManager;
 		this.germplasmListManager = germplasmListManager;
 		this.inventoryDataManager = inventoryDataManager;
 		this.targetTable = targetTable;
-		
+		this.pedigreeService = pedigreeService;
+		this.crossExpansionProperties = crossExpansionProperties;
 		listDataAndLotDetails = new ArrayList<ListDataAndLotDetails>();
 	}
 	
-	public InventoryTableDropHandler(InventoryDropTargetContainer inventoryDropTargetContainer, GermplasmDataManager germplasmDataManager, GermplasmListManager germplasmListManager, InventoryDataManager inventoryDataManager, Table targetTable) {
+	public InventoryTableDropHandler(InventoryDropTargetContainer inventoryDropTargetContainer, GermplasmDataManager germplasmDataManager, GermplasmListManager germplasmListManager, InventoryDataManager inventoryDataManager, PedigreeService pedigreeService, CrossExpansionProperties crossExpansionProperties, Table targetTable) {
 		this.inventoryDropTargetContainer = inventoryDropTargetContainer;
 		this.germplasmDataManager = germplasmDataManager;
 		this.germplasmListManager = germplasmListManager;
 		this.inventoryDataManager = inventoryDataManager;
 		this.targetTable = targetTable;
-		
+		this.pedigreeService = pedigreeService;
+		this.crossExpansionProperties = crossExpansionProperties;
 		listDataAndLotDetails = new ArrayList<ListDataAndLotDetails>();
 	}
 

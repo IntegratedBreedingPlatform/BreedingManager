@@ -78,8 +78,8 @@ public class DropHandlerMethods {
     protected static final String MATCHING_LISTS_TABLE_DATA = ListSearchResultsComponent.MATCHING_LISTS_TABLE_DATA;
     protected static final String LIST_DATA_TABLE_DATA = ListComponent.LIST_DATA_COMPONENT_TABLE_DATA;
     
-    @Resource
-	private CrossExpansionProperties crossExpansionProperties;
+    
+	protected CrossExpansionProperties crossExpansionProperties;
 	
 	@SuppressWarnings("unchecked")
 	protected Boolean hasSelectedItems(Table table){
