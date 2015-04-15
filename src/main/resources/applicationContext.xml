@@ -181,9 +181,7 @@
     <bean id="crossExpansionProperties" class = "org.generationcp.commons.util.CrossExpansionProperties">
     	<property name="cimmytUser" value="${cimmyt.user}" />
         <property name="wheatMaxLevel" value="${cross.expansion.wheat.max.generation.level}" />
-        <property name="wheatNameType" value="${cross.expansion.wheat.name.type}" />
         <property name="nonWheatMaxLevel" value="${cross.expansion.non.wheat.max.generation.level}" />
-        <property name="nonWheatNameType" value="${cross.expansion.non.wheat.name.type}" />
     </bean>
     
     
