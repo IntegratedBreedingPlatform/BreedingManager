@@ -370,7 +370,7 @@ public class GermplasmListUploader implements FileFactory {
             } else if (header.equals(LIST_DATE_HEADER_LABEL)) {
                 try {
                     if (value != null && value.length() > 0) {
-                        listDate = DateUtil.getDate(value, DateUtil.DATE_AS_NUMBER_FORMAT);
+                        listDate = DateUtil.parseDate(value, DateUtil.DATE_AS_NUMBER_FORMAT);
                     } else {
                         listDate = null;
                     }

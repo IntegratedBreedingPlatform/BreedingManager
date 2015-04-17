@@ -373,7 +373,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		Date dateFieldValue = (Date) getGermplasmFieldsComponent().getGermplasmDateField()
 				.getValue();
 		if (dateFieldValue != null && !dateFieldValue.toString().equals("")) {
-			sDate = DateUtil.getDateAsStringValue(dateFieldValue, GermplasmImportMain.DATE_FORMAT);
+			sDate = DateUtil.formatDateAsStringValue(dateFieldValue, GermplasmImportMain.DATE_FORMAT);
 			dateIntValue = Integer.parseInt(sDate.replace("-", ""));
 		}
 		return dateIntValue;

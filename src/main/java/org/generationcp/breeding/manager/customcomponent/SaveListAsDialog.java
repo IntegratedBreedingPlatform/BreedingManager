@@ -428,12 +428,12 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 	protected Long getCurrentParsedListDate(String listDate) {
 		Date date;
 		try {
-			date = DateUtil.getDate(listDate, "E MMM dd HH:mm:ss Z yyyy");
+			date = DateUtil.parseDate(listDate, "E MMM dd HH:mm:ss Z yyyy");
 		} catch (ParseException e) {
 			date = new Date();
 			LOG.error(e.getMessage(),e);
 		}
-		String dateAsString = DateUtil.getDateAsStringValue(date, DateUtil.DATE_AS_NUMBER_FORMAT);
+		String dateAsString = DateUtil.formatDateAsStringValue(date, DateUtil.DATE_AS_NUMBER_FORMAT);
 		return Long.parseLong(dateAsString);
 	}
 }

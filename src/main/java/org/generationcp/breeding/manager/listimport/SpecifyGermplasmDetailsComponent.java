@@ -162,7 +162,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 
         germplasmList = new GermplasmList();
 
-        String sDate = DateUtil.getDateAsStringValue(germplasmListUploader.getListDate(), 
+        String sDate = DateUtil.formatDateAsStringValue(germplasmListUploader.getListDate(), 
         		DateUtil.DATE_AS_NUMBER_FORMAT);
         germplasmList.setName(germplasmListUploader.getListName());
         germplasmList.setDate(Long.parseLong(sDate));

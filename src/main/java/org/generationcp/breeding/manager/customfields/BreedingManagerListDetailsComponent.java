@@ -238,7 +238,7 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 		if(finalDateToParse.length() < 8){
 			finalDateToParse = getParsableDateString(finalDateToParse);
 		}
-		return DateUtil.getDate(finalDateToParse, DateUtil.DATE_AS_NUMBER_FORMAT);
+		return DateUtil.parseDate(finalDateToParse, DateUtil.DATE_AS_NUMBER_FORMAT);
 	}
 
 	protected String getParsableDateString(String dateToParse) {

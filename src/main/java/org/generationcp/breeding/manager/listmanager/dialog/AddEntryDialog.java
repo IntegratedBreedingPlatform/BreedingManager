@@ -489,7 +489,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
             MessageNotifier.showRequiredFieldError(getWindow(), messageSource.getMessage(Message.VALIDATION_DATE_FORMAT));
             return null;
         }
-        String parsedDate = DateUtil.getDateAsStringValue(dateOfCreation, DateUtil.DATE_AS_NUMBER_FORMAT);
+        String parsedDate = DateUtil.formatDateAsStringValue(dateOfCreation, DateUtil.DATE_AS_NUMBER_FORMAT);
         if(parsedDate==null){
             LOG.error("Invalid date on add list entries! - " + parsedDate);
             MessageNotifier.showRequiredFieldError(getWindow(), messageSource.getMessage(Message.VALIDATION_DATE_FORMAT));
