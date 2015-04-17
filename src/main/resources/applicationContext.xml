@@ -78,7 +78,8 @@
         <aop:scoped-proxy proxy-target-class="false"/>
     </bean>
     
-	<bean id="crossExpansionProperties" class = "org.generationcp.middleware.util.CrossExpansionProperties">
+	<bean id="crossExpansionProperties" class = "org.generationcp.middleware.util.CrossExpansionProperties" 
+		scope="request">
     	<property name="wheatLevel" value="${wheat.generation.level}" />
         <property name="defaultLevel" value="${default.generation.level}" />
     </bean>
