@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,6 +26,7 @@ import org.generationcp.breeding.manager.pojos.ImportedFactor;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.pojos.ImportedVariate;
+import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.domain.dms.NameSynonym;
 import org.generationcp.middleware.domain.oms.CvId;
 import org.generationcp.middleware.domain.oms.Term;
@@ -80,8 +80,6 @@ public class GermplasmListUploader implements FileFactory {
     private static final String PASSPORT_PROPERTY = "PASSPORT";
 
     public static final String INVENTORY_AMOUNT_PROPERTY = "INVENTORY AMOUNT";
-
-    public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
 
     private String entryFactor;
     private String desigFactor;
@@ -370,12 +368,9 @@ public class GermplasmListUploader implements FileFactory {
                 listTitle = value.trim();
                 listDescHeaderFound = true;
             } else if (header.equals(LIST_DATE_HEADER_LABEL)) {
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
-                simpleDateFormat.setLenient(false);
-
                 try {
                     if (value != null && value.length() > 0) {
-                        listDate = simpleDateFormat.parse(value);
+                        listDate = DateUtil.getDate(value, DateUtil.DATE_AS_NUMBER_FORMAT);
                     } else {
                         listDate = null;
                     }

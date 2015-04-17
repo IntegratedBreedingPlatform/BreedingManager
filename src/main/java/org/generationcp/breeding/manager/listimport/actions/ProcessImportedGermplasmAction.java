@@ -6,6 +6,7 @@ import org.generationcp.breeding.manager.listimport.*;
 import org.generationcp.breeding.manager.listimport.listeners.ImportGermplasmEntryActionListener;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.GermplasmDataManagerUtil;
@@ -21,7 +22,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import javax.annotation.Resource;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Configurable
@@ -368,14 +368,12 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	}
 
 	protected Integer getGermplasmDateValue() {
-		SimpleDateFormat formatter = new SimpleDateFormat(GermplasmImportMain.DATE_FORMAT);
-
 		String sDate = "";
 		Integer dateIntValue = 0;
 		Date dateFieldValue = (Date) getGermplasmFieldsComponent().getGermplasmDateField()
 				.getValue();
 		if (dateFieldValue != null && !dateFieldValue.toString().equals("")) {
-			sDate = formatter.format(dateFieldValue);
+			sDate = DateUtil.getDateAsStringValue(dateFieldValue, GermplasmImportMain.DATE_FORMAT);
 			dateIntValue = Integer.parseInt(sDate.replace("-", ""));
 		}
 		return dateIntValue;

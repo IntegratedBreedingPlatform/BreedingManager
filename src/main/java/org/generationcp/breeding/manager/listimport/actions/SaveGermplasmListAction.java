@@ -6,6 +6,7 @@ import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.pojos.ImportedVariate;
 import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.domain.dms.PhenotypicType;
 import org.generationcp.middleware.domain.dms.StandardVariable;
 import org.generationcp.middleware.domain.oms.CvId;
@@ -28,7 +29,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import javax.annotation.Resource;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -261,7 +261,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		newUdfld.setFdesc("-");
 		newUdfld.setLfldno(0);
 		newUdfld.setUser(new User(contextUtil.getCurrentUserLocalId()));
-		newUdfld.setFdate(Util.getCurrentDate());
+		newUdfld.setFdate(Util.getCurrentDateAsIntegerValue());
 		newUdfld.setScaleid(0);
 
 		return newUdfld;
@@ -281,7 +281,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		newUdfld.setFdesc("-");
 		newUdfld.setLfldno(0);
 		newUdfld.setUser(new User(contextUtil.getCurrentUserLocalId()));
-		newUdfld.setFdate(Util.getCurrentDate());
+		newUdfld.setFdate(Util.getCurrentDateAsIntegerValue());
 		newUdfld.setScaleid(0);
 
 		return newUdfld;
@@ -500,9 +500,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 				gidTransactionSetMap.put(gid, new ArrayList<Transaction>());
 			}
 
-			SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
-			Date date = new Date();
-			Integer intDate = Integer.valueOf(df.format(date));
+			Integer intDate = DateUtil.getCurrentDateAsIntegerValue();
 
 			Transaction transaction = new Transaction(null,
 					contextUtil.getCurrentWorkbenchUserId(), gidLotMap.get(gid), intDate,
@@ -534,7 +532,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 					newAttr.setAval(value);
 					newAttr.setLocationId(germplasm.getLocationId());
 					newAttr.setReferenceId(0);
-					newAttr.setAdate(Util.getCurrentDate());
+					newAttr.setAdate(Util.getCurrentDateAsIntegerValue());
 
 					attrs.add(newAttr);
 				}
@@ -565,7 +563,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 					newName.setNval(value);
 					newName.setLocationId(germplasm.getLocationId());
 					newName.setReferenceId(0);
-					newName.setNdate(Util.getCurrentDate());
+					newName.setNdate(Util.getCurrentDateAsIntegerValue());
 
 					names.add(newName);
 				}

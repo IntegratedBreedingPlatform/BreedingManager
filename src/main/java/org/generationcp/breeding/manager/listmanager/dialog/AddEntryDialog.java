@@ -1,6 +1,5 @@
 package org.generationcp.breeding.manager.listmanager.dialog;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -22,6 +21,7 @@ import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.constant.DefaultGermplasmStudyBrowserPath;
 import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.util.WorkbenchAppPathResolver;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -79,7 +79,6 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
     public static final String DONE_BUTTON_ID = "AddEntryDialog Done Button";
     private static final String GID = "gid";
     private static final String DEFAULT_NAME_TYPE_CODE = "LNAME";
-    private static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
 
 	@Autowired
     private GermplasmDataManager germplasmDataManager;
@@ -357,7 +356,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
         germplasmDateLabel.addStyleName("bold");
         
         germplasmDateField =  new ListDateField("", false);
-        germplasmDateField.getListDtDateField().setValue(new Date());
+        germplasmDateField.getListDtDateField().setValue(DateUtil.getCurrentDate());
         
         breedingLocationField = new BreedingLocationField(this, parentWindow);
         
@@ -485,14 +484,12 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
     
     private Integer getGermplasmDate() {
     	Date dateOfCreation = (Date) this.germplasmDateField.getValue();
-        SimpleDateFormat formatter = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
-        
         if(dateOfCreation==null){
             LOG.error("Invalid date on add list entries! - " + dateOfCreation);
             MessageNotifier.showRequiredFieldError(getWindow(), messageSource.getMessage(Message.VALIDATION_DATE_FORMAT));
             return null;
         }
-        String parsedDate = formatter.format(dateOfCreation);
+        String parsedDate = DateUtil.getDateAsStringValue(dateOfCreation, DateUtil.DATE_AS_NUMBER_FORMAT);
         if(parsedDate==null){
             LOG.error("Invalid date on add list entries! - " + parsedDate);
             MessageNotifier.showRequiredFieldError(getWindow(), messageSource.getMessage(Message.VALIDATION_DATE_FORMAT));

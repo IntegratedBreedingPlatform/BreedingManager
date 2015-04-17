@@ -24,6 +24,7 @@ import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -41,8 +42,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import javax.annotation.Resource;
-import java.text.Format;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Configurable
@@ -282,12 +281,10 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout
             } else {
                 
 				if (!existingListSelected) {
-                    Date date = new Date();
-                    Format formatter = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
-                    Long currentDate = Long.valueOf(formatter.format(date));
                     GermplasmList parent = null;
                     int statusListName = 1;
-					GermplasmList listNameData = new GermplasmList(null, listNameValue, currentDate,
+					GermplasmList listNameData = new GermplasmList(null, listNameValue, 
+							DateUtil.getCurrentDateAsLongValue(),
 							selectType.getValue().toString(), ibdbUserId, description, parent,
 							statusListName);
     
