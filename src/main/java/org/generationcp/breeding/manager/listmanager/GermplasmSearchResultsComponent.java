@@ -12,13 +12,7 @@ import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
-import org.generationcp.breeding.manager.util.Util;
-import org.generationcp.commons.constant.DefaultGermplasmStudyBrowserPath;
-import org.generationcp.commons.exceptions.InternationalizableException;
-import org.generationcp.commons.tomcat.util.TomcatUtil;
-import org.generationcp.commons.tomcat.util.WebAppStatusInfo;
-import org.generationcp.commons.util.CrossExpansionProperties;
-import org.generationcp.commons.util.WorkbenchAppPathResolver;
+import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -326,7 +320,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
             if(germplasm!=null){
             	try {
             		if(germplasmDataManager!=null) {
-                        crossExpansion = pedigreeService.getCrossExpansion(germplasm.getGid(), this.crossExpansionProperties.getCrossExpansionRule());
+                        crossExpansion = pedigreeService.getCrossExpansion(germplasm.getGid(), this.crossExpansionProperties);
                     }
             	} catch(MiddlewareQueryException ex){
             		LOG.error(ex.getMessage(), ex);

@@ -24,7 +24,7 @@ import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportBut
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.ImportGermplasmEntryActionListener;
 import org.generationcp.commons.constant.ColumnLabels;
-import org.generationcp.commons.util.CrossExpansionProperties;
+import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -387,7 +387,7 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
                 if(currentGermplasm!=null){
                 	try {
                 		if(germplasmDataManager!=null) {
-                            crossExpansion = pedigreeService.getCrossExpansion(currentGermplasm.getGid(), this.crossExpansionProperties.getCrossExpansionRule());
+                            crossExpansion = pedigreeService.getCrossExpansion(currentGermplasm.getGid(), this.crossExpansionProperties);
                         }
                 	} catch(MiddlewareQueryException ex){
                         crossExpansion = "-";

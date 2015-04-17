@@ -19,7 +19,7 @@ import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.ListSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
-import org.generationcp.commons.util.CrossExpansionProperties;
+import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -246,7 +246,7 @@ public class DropHandlerMethods {
 		String crossExpansion =STRING_EMPTY;
 		try {
             if(germplasmDataManager!=null) {
-                crossExpansion = pedigreeService.getCrossExpansion(germplasm.getGid(), this.crossExpansionProperties.getCrossExpansionRule());
+                crossExpansion = pedigreeService.getCrossExpansion(germplasm.getGid(), this.crossExpansionProperties);
             }
         } catch(MiddlewareQueryException ex){
             LOG.error("Error in retrieving cross expansion data for GID: " + germplasm.getGid() + ".", ex);

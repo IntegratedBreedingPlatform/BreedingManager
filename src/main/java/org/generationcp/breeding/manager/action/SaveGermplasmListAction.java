@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.commons.spring.util.ContextUtil;
-import org.generationcp.commons.util.CrossExpansionProperties;
+import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -94,7 +94,7 @@ public class SaveGermplasmListAction implements Serializable {
             int gid = listEntry.getGid();
             int entryId = listEntry.getEntryId(); 
             String designation = listEntry.getDesignation();
-            String groupName = pedigreeService.getCrossExpansion(gid, this.crossExpansionProperties.getCrossExpansionRule());
+            String groupName = pedigreeService.getCrossExpansion(gid, this.crossExpansionProperties);
             String seedSource = listEntry.getSeedSource();
             	
             GermplasmListData germplasmListData = buildGermplasmListData(

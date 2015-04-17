@@ -48,7 +48,7 @@ import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.spring.util.ContextUtil;
-import org.generationcp.commons.util.CrossExpansionProperties;
+import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -1545,7 +1545,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 
 		String groupName = "-";
 		try {
-			groupName = this.pedigreeService.getCrossExpansion(gid, this.crossExpansionProperties.getCrossExpansionRule());
+			groupName = this.pedigreeService.getCrossExpansion(gid, this.crossExpansionProperties);
 		} catch (MiddlewareQueryException ex) {
 			LOG.error(ex.getMessage(), ex);
 			groupName = "-";
