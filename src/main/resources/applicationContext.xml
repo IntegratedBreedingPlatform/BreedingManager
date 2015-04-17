@@ -78,6 +78,11 @@
         <aop:scoped-proxy proxy-target-class="false"/>
     </bean>
     
+	<bean id="crossExpansionProperties" class = "org.generationcp.middleware.util.CrossExpansionProperties">
+    	<property name="wheatLevel" value="${wheat.generation.level}" />
+        <property name="defaultLevel" value="${default.generation.level}" />
+    </bean>
+    
     <bean id="managerFactoryProvider" class="org.generationcp.commons.hibernate.DynamicManagerFactoryProviderConcurrency">
     	<constructor-arg ref="workbenchDataManager" />
     	<property name="maxCachedSessionFactories" value="10" />
@@ -85,6 +90,7 @@
     	<property name="dbHost" value="${workbench.host}" />
     	<property name="dbUsername" value="${workbench.username}"/>
         <property name="dbPassword" value="${workbench.password}"/>
+        <property name="pedigreeProfile" value="${pedigree.profile}"/>
     </bean>
     
     <bean id="managerFactory" name="managerFactory"
@@ -177,12 +183,6 @@
           scope="request">
         <aop:scoped-proxy/>
     </bean>
-    
-    <bean id="crossExpansionProperties" class = "org.generationcp.commons.util.CrossExpansionProperties">
-    	<property name="cimmytUser" value="${cimmyt.user}" />
-        <property name="wheatMaxLevel" value="${cross.expansion.wheat.max.generation.level}" />
-        <property name="nonWheatMaxLevel" value="${cross.expansion.non.wheat.max.generation.level}" />
-    </bean>
-    
+        
     
 </beans>
