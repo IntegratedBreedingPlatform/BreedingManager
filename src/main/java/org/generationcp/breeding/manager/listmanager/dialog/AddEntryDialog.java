@@ -133,6 +133,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
         this.setOverrideFocus(true);
         this.source = source;
         this.parentWindow = parentWindow;
+        this.selectedGids = new ArrayList<Integer>();
     }
 
     @Override
@@ -380,181 +381,203 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
 
     
     public void nextButtonClickAction(ClickEvent event){
-        if(optionGroup.getValue().equals(OPTION_1_ID)){
-            // add the germplasm selected as the list entry
-            if(!selectedGids.isEmpty()){
-                this.source.finishAddingEntry(selectedGids);
-                Window window = event.getButton().getWindow();
-                window.getParent().removeWindow(window);
-            } else {
-                MessageNotifier.showWarning(this, messageSource.getMessage(Message.WARNING), 
-                        messageSource.getMessage(Message.YOU_MUST_SELECT_A_GERMPLASM_FROM_THE_SEARCH_RESULTS));
-            }
-        } else if(optionGroup.getValue().equals(OPTION_2_ID)){
-        	if(breedingMethodField.getBreedingMethodComboBox().getValue() == null){
-        		MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_SELECT_A_METHOD_FOR_THE_GERMPLASM));
-        	} else if(breedingLocationField.getBreedingLocationComboBox().getValue() == null){
-        		MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM));
-        	}else if(!selectedGids.isEmpty()){
-            	if(doneAction()){
-            		Window window = event.getButton().getWindow();
-            		window.getParent().removeWindow(window);
-            	}
-            } else{
-                MessageNotifier.showWarning(this, messageSource.getMessage(Message.WARNING), 
-                        messageSource.getMessage(Message.YOU_MUST_SELECT_A_GERMPLASM_FROM_THE_SEARCH_RESULTS));
-            }
-        } else if(optionGroup.getValue().equals(OPTION_3_ID)){
-            String searchValue = searchBarComponent.getSearchField().getValue().toString();
-            
-        	if(breedingMethodField.getBreedingMethodComboBox().getValue() == null){
-        		MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_SELECT_A_METHOD_FOR_THE_GERMPLASM));
-        	} else if(breedingLocationField.getBreedingLocationComboBox().getValue() == null){
-        		MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM));
-        	} else if(searchValue != null && searchValue.length() != 0){
-            	doneAction();
-            	Window window = event.getButton().getWindow();
-            	window.getParent().removeWindow(window);
-            } else {
-            	MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_ENTER_A_GERMPLASM_NAME_IN_THE_TEXTBOX));
-            }
+    	if (optionGroup.getValue().equals(OPTION_1_ID)) {
+			// add the germplasm selected as the list entry
+			validateInputForOption1(event);
+		} else if (optionGroup.getValue().equals(OPTION_2_ID)) {
+			validateInputForOption2(event);
+		} else if (optionGroup.getValue().equals(OPTION_3_ID)) {
+			validateInputForOption3(event);
+		}
+    }
+    
+    private void validateInputForOption1(ClickEvent event) {
+    	if(!selectedGids.isEmpty()){
+            this.source.finishAddingEntry(selectedGids);
+            Window window = event.getButton().getWindow();
+            window.getParent().removeWindow(window);
+        } else {
+            MessageNotifier.showWarning(this, messageSource.getMessage(Message.WARNING), 
+                    messageSource.getMessage(Message.YOU_MUST_SELECT_A_GERMPLASM_FROM_THE_SEARCH_RESULTS));
+        }
+	}
+    
+    private void validateInputForOption2(ClickEvent event) {
+    	if(breedingMethodField.getBreedingMethodComboBox().getValue() == null){
+    		MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_SELECT_A_METHOD_FOR_THE_GERMPLASM));
+    	} else if(breedingLocationField.getBreedingLocationComboBox().getValue() == null){
+    		MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM));
+    	}else if(!selectedGids.isEmpty()){
+        	if(doneAction()){
+        		Window window = event.getButton().getWindow();
+        		window.getParent().removeWindow(window);
+        	}
+        } else{
+            MessageNotifier.showWarning(this, messageSource.getMessage(Message.WARNING), 
+                    messageSource.getMessage(Message.YOU_MUST_SELECT_A_GERMPLASM_FROM_THE_SEARCH_RESULTS));
+        }
+	}
+    
+    private void validateInputForOption3(ClickEvent event) {
+    	String searchValue = searchBarComponent.getSearchField().getValue().toString();
+    	if(breedingMethodField.getBreedingMethodComboBox().getValue() == null){
+    		MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_SELECT_A_METHOD_FOR_THE_GERMPLASM));
+    	} else if(breedingLocationField.getBreedingLocationComboBox().getValue() == null){
+    		MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM));
+    	} else if(searchValue != null && searchValue.length() != 0){
+        	doneAction();
+        	Window window = event.getButton().getWindow();
+        	window.getParent().removeWindow(window);
+        } else {
+        	MessageNotifier.showRequiredFieldError(this, messageSource.getMessage(Message.YOU_MUST_ENTER_A_GERMPLASM_NAME_IN_THE_TEXTBOX));
         }
     }
     
     public Boolean doneAction(){
-    	
-        if(this.optionGroup.getValue().equals(OPTION_2_ID) || this.optionGroup.getValue().equals(OPTION_3_ID)){
-        	
-	        Integer breedingMethodId = (Integer) this.breedingMethodField.getBreedingMethodComboBox().getValue();
-	        Integer nameTypeId = (Integer) this.nameTypeComboBox.getValue();
-	        Integer locationId = (Integer) this.breedingLocationField.getBreedingLocationComboBox().getValue();
-	        Date dateOfCreation = (Date) this.germplasmDateField.getValue();
-	        SimpleDateFormat formatter = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
-	        
-	        if(dateOfCreation==null){
-	            LOG.error("Invalid date on add list entries! - " + dateOfCreation);
-	            MessageNotifier.showRequiredFieldError(getWindow(), messageSource.getMessage(Message.VALIDATION_DATE_FORMAT));
-	            return false;
-	        }
-	        String parsedDate = formatter.format(dateOfCreation);
-	        if(parsedDate==null){
-	            LOG.error("Invalid date on add list entries! - " + parsedDate);
-	            MessageNotifier.showRequiredFieldError(getWindow(), messageSource.getMessage(Message.VALIDATION_DATE_FORMAT));
-	            return false;
-	        }
-	        
-	        Integer date = Integer.parseInt(parsedDate);
-            String germplasmName = searchBarComponent.getSearchField().getValue().toString();
-	        
-            Integer currentUserLocalId = -1;
-			try {
-				currentUserLocalId = contextUtil.getCurrentUserLocalId();
-			} catch (MiddlewareQueryException e) {
-				LOG.error(e.getMessage(), e);
+    	if (!this.optionGroup.getValue().equals(OPTION_2_ID)
+				&& !this.optionGroup.getValue().equals(OPTION_3_ID)) {
+			return false;
+		}
+    	if (this.optionGroup.getValue().equals(OPTION_2_ID)) {
+			List<Integer> addedGids = new ArrayList<Integer>();
+			for (Integer selectedGid : selectedGids) {
+				Integer newlyCreatedGid = addGermplasm(selectedGid);
+				if(newlyCreatedGid==null) {
+					return false;
+				}
+				addedGids.add(newlyCreatedGid);
 			}
-            
-	        if(this.optionGroup.getValue().equals(OPTION_2_ID)){
-		        
-	        	List<Integer> addedGids = new ArrayList<Integer>();
-	        	
-		        for(Integer selectedGid : selectedGids){
-		        
-		        	Germplasm selectedGermplasm = null;
-		        	
-	                try{
-	                    selectedGermplasm = this.germplasmDataManager.getGermplasmWithPrefName(selectedGid);
-	                    if(selectedGermplasm.getPreferredName() != null){
-	                        germplasmName = selectedGermplasm.getPreferredName().getNval();
-	                    }
-	                } catch(MiddlewareQueryException mex){
-	                    LOG.error("Error with getting germplasm with id: " + selectedGid, mex);
-	                    MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_WITH_GETTING_GERMPLASM_WITH_ID)+": " + selectedGid 
-	                            +". "+messageSource.getMessage(Message.ERROR_REPORT_TO));
-	                }
-			                
-			        Germplasm germplasm = new Germplasm();
-			        germplasm.setGdate(date);
-			        germplasm.setGnpgs(Integer.valueOf(-1));
-			        germplasm.setGpid1(Integer.valueOf(0));
-			        germplasm.setGrplce(Integer.valueOf(0));
-			        germplasm.setLgid(Integer.valueOf(0));
-			        germplasm.setLocationId(locationId);
-			        germplasm.setMethodId(breedingMethodId);
-			        germplasm.setMgid(Integer.valueOf(0));
-			        germplasm.setReferenceId(Integer.valueOf(0));
-			        germplasm.setUserId(currentUserLocalId);
-			         
-		        	if(selectedGermplasm != null){
-		                if(selectedGermplasm.getGnpgs()<2){
-		                	germplasm.setGpid1(selectedGermplasm.getGpid1());
-		                } else {
-		                	germplasm.setGpid1(selectedGermplasm.getGid());                            	
-		                }
-		        	}
-		            germplasm.setGpid2(selectedGid);
-			        
-			        Name name = new Name();
-			        name.setNval(germplasmName);
-			        name.setLocationId(locationId);
-			        name.setNdate(date);
-			        name.setNstat(Integer.valueOf(1));
-			        name.setReferenceId(Integer.valueOf(0));
-			        name.setTypeId(nameTypeId);
-			        name.setUserId(currentUserLocalId);
-			        
-			        try{
-						this.germplasmDataManager.addGermplasm(germplasm, name);
-			            addedGids.add(germplasm.getGid());
-			        } catch(MiddlewareQueryException ex){
-			            LOG.error("Error with saving germplasm and name records!", ex);
-			            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_WITH_SAVING_GERMPLASM_AND_NAME_RECORDS) + messageSource.getMessage(Message.ERROR_REPORT_TO));
-			            return false;
-			        }
-	        	}
-
-		        this.source.finishAddingEntry(addedGids);
-		        
-		        return true;
-		        
-	        } else {
-		        Germplasm germplasm = new Germplasm();
-		        germplasm.setGdate(date);
-		        germplasm.setGnpgs(Integer.valueOf(-1));
-		        germplasm.setGpid1(Integer.valueOf(0));
-		        germplasm.setGpid2(Integer.valueOf(0));
-		        germplasm.setGrplce(Integer.valueOf(0));
-		        germplasm.setLgid(Integer.valueOf(0));
-		        germplasm.setLocationId(locationId);
-		        germplasm.setMethodId(breedingMethodId);
-		        germplasm.setMgid(Integer.valueOf(0));
-		        germplasm.setReferenceId(Integer.valueOf(0));
-		        germplasm.setUserId(currentUserLocalId);
-	        	
-		        Name name = new Name();
-		        name.setNval(germplasmName);
-		        name.setLocationId(locationId);
-		        name.setNdate(date);
-		        name.setNstat(Integer.valueOf(1));
-		        name.setReferenceId(Integer.valueOf(0));
-		        name.setTypeId(nameTypeId);
-		        name.setUserId(currentUserLocalId);
-		        
-		        try{
-		            Integer gid = this.germplasmDataManager.addGermplasm(germplasm, name);
-		            this.source.finishAddingEntry(gid);
-		            return true;
-		        } catch(MiddlewareQueryException ex){
-		            LOG.error("Error with saving germplasm and name records!", ex);
-		            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_WITH_SAVING_GERMPLASM_AND_NAME_RECORDS) + messageSource.getMessage(Message.ERROR_REPORT_TO));
-		            return false;
-		        }
-	        }
-        
-    	}
-        
-        return false;
+			this.source.finishAddingEntry(addedGids);
+		} else {
+			Integer newlyCreatedGid = addGermplasm(null);
+			if(newlyCreatedGid==null) {
+				return false;
+			}
+			this.source.finishAddingEntry(newlyCreatedGid);
+		}
+		return true;
     }
     
+    private Integer addGermplasm(Integer selectedGid) {
+    	Integer breedingMethodId = (Integer) this.breedingMethodField.getBreedingMethodComboBox().getValue();
+        Integer nameTypeId = (Integer) this.nameTypeComboBox.getValue();
+        Integer locationId = (Integer) this.breedingLocationField.getBreedingLocationComboBox().getValue();
+
+		Integer date = getGermplasmDate();
+		if (date == null) {
+			return null;
+		}
+
+		Integer currentUserLocalId = getCurrentUserLocalId();
+		Germplasm selectedGermplasm = getSelectedGermplasm(selectedGid);
+		String germplasmName = searchBarComponent.getSearchField().getValue()
+				.toString();
+		if (selectedGermplasm!=null && selectedGermplasm.getPreferredName() != null) {
+			germplasmName = selectedGermplasm.getPreferredName().getNval();
+		}
+		
+		Germplasm germplasm = createGermplasm(selectedGermplasm, date,
+				locationId, breedingMethodId, currentUserLocalId);
+		Name name = createName(germplasmName, locationId, date,
+				nameTypeId, currentUserLocalId);
+		return saveGermplasmToDatabase(germplasm, name);
+	}
+    
+    private Integer getGermplasmDate() {
+    	Date dateOfCreation = (Date) this.germplasmDateField.getValue();
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_AS_NUMBER_FORMAT);
+        
+        if(dateOfCreation==null){
+            LOG.error("Invalid date on add list entries! - " + dateOfCreation);
+            MessageNotifier.showRequiredFieldError(getWindow(), messageSource.getMessage(Message.VALIDATION_DATE_FORMAT));
+            return null;
+        }
+        String parsedDate = formatter.format(dateOfCreation);
+        if(parsedDate==null){
+            LOG.error("Invalid date on add list entries! - " + parsedDate);
+            MessageNotifier.showRequiredFieldError(getWindow(), messageSource.getMessage(Message.VALIDATION_DATE_FORMAT));
+            return null;
+        }
+		return Integer.parseInt(parsedDate);
+	}
+    
+    private Integer getCurrentUserLocalId() {
+		Integer currentUserLocalId = -1;
+		try {
+			currentUserLocalId = contextUtil.getCurrentUserLocalId();
+		} catch (MiddlewareQueryException e) {
+			LOG.error(e.getMessage(), e);
+		}
+		return currentUserLocalId;
+	}
+    
+    private Germplasm getSelectedGermplasm(Integer selectedGid) {
+		if (selectedGid == null) {
+			return null;
+		}
+		try{
+            return this.germplasmDataManager.getGermplasmWithPrefName(selectedGid);
+        } catch(MiddlewareQueryException mex){
+            LOG.error("Error with getting germplasm with id: " + selectedGid, mex);
+            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_WITH_GETTING_GERMPLASM_WITH_ID)+": " + selectedGid 
+                    +". "+messageSource.getMessage(Message.ERROR_REPORT_TO));
+        }
+		return null;
+	}
+    
+    private Germplasm createGermplasm(Germplasm selectedGermplasm, Integer date,
+			Integer locationId, Integer breedingMethodId,
+			Integer currentUserLocalId) {
+
+		Germplasm germplasm = new Germplasm();
+        germplasm.setGdate(date);
+        germplasm.setGnpgs(Integer.valueOf(-1));
+        germplasm.setGpid1(Integer.valueOf(0));
+        germplasm.setGpid2(Integer.valueOf(0));
+        germplasm.setGrplce(Integer.valueOf(0));
+        germplasm.setLgid(Integer.valueOf(0));
+        germplasm.setLocationId(locationId);
+        germplasm.setMethodId(breedingMethodId);
+        germplasm.setMgid(Integer.valueOf(0));
+        germplasm.setReferenceId(Integer.valueOf(0));
+        germplasm.setUserId(currentUserLocalId);
+        
+        if (selectedGermplasm != null) {
+			if (selectedGermplasm.getGnpgs() < 2) {
+				germplasm.setGpid1(selectedGermplasm.getGpid1());
+			} else {
+				germplasm.setGpid1(selectedGermplasm.getGid());
+			}
+			germplasm.setGpid2(selectedGermplasm.getGid());
+		}
+		
+		return germplasm;
+	} 
+    
+    private Name createName(String germplasmName, Integer locationId,
+			Integer date, Integer nameTypeId, Integer currentUserLocalId) {
+		Name name = new Name();
+		name.setNval(germplasmName);
+		name.setLocationId(locationId);
+		name.setNdate(date);
+		name.setNstat(Integer.valueOf(1));
+		name.setReferenceId(Integer.valueOf(0));
+		name.setTypeId(nameTypeId);
+		name.setUserId(currentUserLocalId);
+		return name;
+	}
+    
+    private Integer saveGermplasmToDatabase(Germplasm germplasm, Name name) {
+		try {
+			this.germplasmDataManager.addGermplasm(germplasm, name);
+			return germplasm.getGid();
+		} catch (MiddlewareQueryException ex) {
+			LOG.error("Error with saving germplasm and name records!", ex);
+			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), messageSource.getMessage(Message.ERROR_WITH_SAVING_GERMPLASM_AND_NAME_RECORDS) + messageSource.getMessage(Message.ERROR_REPORT_TO));
+            return null;
+		}
+	}
+	        
     private void populateNameTypeComboBox(){
         try{
             List<UserDefinedField> nameTypes = this.germplasmListManager.getGermplasmNameTypes();
@@ -640,8 +663,11 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
 
 	@Override
 	public void updateAllLocationFields() {
-		Object lastValue = breedingLocationField.getBreedingLocationComboBox().getValue();
-		breedingLocationField.populateHarvestLocation(Integer.valueOf(lastValue.toString()),programUniqueId);
+		if(breedingLocationField!=null && breedingLocationField.getBreedingLocationComboBox()!=null &&
+				breedingLocationField.getBreedingLocationComboBox().getValue()!=null) {
+			Object lastValue = breedingLocationField.getBreedingLocationComboBox().getValue();
+			breedingLocationField.populateHarvestLocation(Integer.valueOf(lastValue.toString()),programUniqueId);
+		}
 	}
 	
 	public void setOptionGroup(OptionGroup optionGroup){
