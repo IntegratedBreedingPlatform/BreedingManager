@@ -294,8 +294,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout
                         this.mainWindow.removeWindow(dialogWindow);
     
                     } catch (MiddlewareQueryException e) {
-                        LOG.error("Error with copying list entries", e);
-                        LOG.error("\n" + e.getStackTrace());
+                        LOG.error(e.getMessage(), e);
                         MessageNotifier.showError(this.getWindow().getParent().getWindow() 
                             , messageSource.getMessage(Message.UNSUCCESSFUL) 
 								, messageSource.getMessage(
@@ -319,12 +318,11 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout
                         listManagerMain.getListSelectionComponent().getListTreeComponent().treeItemClickAction(Integer.valueOf(listId));
                         
                     } catch (MiddlewareQueryException e) {
-                        LOG.error("Error with copying list entries", e);
-                        LOG.error("\n" + e.getStackTrace());
-                            MessageNotifier.showError(this.getWindow().getParent().getWindow() 
-                                , messageSource.getMessage(Message.UNSUCCESSFUL) 
-								, messageSource.getMessage(
-								Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_EXISTING_LIST_FAILED));
+                    	LOG.error(e.getMessage(), e);
+                        MessageNotifier.showError(this.getWindow().getParent().getWindow() 
+                            , messageSource.getMessage(Message.UNSUCCESSFUL) 
+							, messageSource.getMessage(
+							Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_EXISTING_LIST_FAILED));
                     }
                 }
             }
@@ -340,7 +338,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout
              listManagerMain.getListSelectionComponent().getListTreeComponent().treeItemClickAction(newListid);
          } catch (MiddlewareQueryException e){
              germplasmListManager.deleteGermplasmListByListId(newListid);
-             LOG.error("Error with copying list entries", e);
+             LOG.error(e.getMessage(), e);
              MessageNotifier.showError(getWindow().getParent().getWindow(), "Error with copying list entries."
                  , "Copying of entries to a new list failed. " + messageSource.getMessage(Message.ERROR_REPORT_TO));
          }
@@ -350,6 +348,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout
 			throws MiddlewareQueryException {
         int status = 0;
         int localRecordId = 0;
+        int germplasmListDataEntryId = entryid;
 		designationOfListEntriesCopied = "";
 		Collection<?> selectedIds = (Collection<?>) listEntriesTable.getValue();
         for (final Object itemId : selectedIds) {
@@ -368,11 +367,11 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout
 			String groupName = String.valueOf(pParentage.getValue().toString());
 
 			GermplasmListData germplasmListData = new GermplasmListData(null, germList, gid,
-					entryid, entryIdOfList, seedSource,
+					germplasmListDataEntryId, entryIdOfList, seedSource,
                 designation, groupName, status, localRecordId);
             germplasmListManager.addGermplasmListData(germplasmListData);
             
-            entryid++;
+            germplasmListDataEntryId++;
         }
         
 		designationOfListEntriesCopied = designationOfListEntriesCopied

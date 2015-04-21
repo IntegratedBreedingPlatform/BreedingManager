@@ -207,9 +207,7 @@ public class GermplasmListTreeUtil implements Serializable {
 		try {
 			folderTextField.validate();
 
-			GermplasmList germplasmList;
-			try {
-				germplasmList = germplasmListManager.getGermplasmListById(listId);
+			GermplasmList germplasmList = germplasmListManager.getGermplasmListById(listId);
 
 				germplasmList.setName(newName);
 				germplasmListManager.updateGermplasmList(germplasmList);
@@ -232,13 +230,13 @@ public class GermplasmListTreeUtil implements Serializable {
 							"Item renamed successfully.");
 				}
 				return targetListSource.getItemCaption(listId);
-			} catch (MiddlewareQueryException e) {
-				MessageNotifier.showWarning(source.getWindow(),
-						messageSource.getMessage(Message.ERROR_DATABASE),
-						messageSource.getMessage(Message.ERROR_REPORT_TO));
-				LOG.error(e.getMessage(), e);
-			}
+			
 
+		} catch (MiddlewareQueryException e) {
+			MessageNotifier.showWarning(source.getWindow(),
+					messageSource.getMessage(Message.ERROR_DATABASE),
+					messageSource.getMessage(Message.ERROR_REPORT_TO));
+			LOG.error(e.getMessage(), e);
 		} catch (InvalidValueException e) {
 			MessageNotifier.showRequiredFieldError(source.getWindow(), e.getMessage());
 			LOG.error(e.getMessage(), e);

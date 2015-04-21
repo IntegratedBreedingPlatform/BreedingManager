@@ -39,7 +39,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	private List<Name> newDesignationsForExistingGermplasm = new ArrayList<Name>();
 
 	private Map<String, Germplasm> nameGermplasmMap = new HashMap<String, Germplasm>();
-	private final Integer UNKNOWN_DERIVATIVE_METHOD = 31;
+	private static final Integer UNKNOWN_DERIVATIVE_METHOD = 31;
 
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
@@ -64,11 +64,11 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		newDesignationsForExistingGermplasm = new ArrayList<Name>();
 
 		String pedigreeOptionChosen = germplasmDetailsComponent.getPedigreeOption();
-		if (pedigreeOptionChosen.equalsIgnoreCase("1") && getImportedGermplasms() != null) {
+		if ("1".equalsIgnoreCase(pedigreeOptionChosen) && getImportedGermplasms() != null) {
 			performFirstPedigreeAction();
-		} else if (pedigreeOptionChosen.equalsIgnoreCase("2") && getImportedGermplasms() != null) {
+		} else if ("2".equalsIgnoreCase(pedigreeOptionChosen) && getImportedGermplasms() != null) {
 			performSecondPedigreeAction();
-		} else if (pedigreeOptionChosen.equalsIgnoreCase("3") && getImportedGermplasms() != null) {
+		} else if ("3".equalsIgnoreCase(pedigreeOptionChosen) && getImportedGermplasms() != null) {
 			performThirdPedigreeAction();
 		}
 		if (importEntryListeners.isEmpty()) {
@@ -103,7 +103,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 			}
 
 		} catch (MiddlewareQueryException mqe) {
-			mqe.printStackTrace();
+			LOG.error(mqe.getMessage(),mqe);
 		}
 	}
 
@@ -127,16 +127,13 @@ public class ProcessImportedGermplasmAction implements Serializable {
 				if (isGidSpecified(importedGermplasm)) {
 					foundGermplasm.add(germplasmDataManager
 							.getGermplasmByGID(importedGermplasm.getGid()));
-				} else {
-
-					if (germplasmMatchesCount == 1) {
-						//If a single match is found, multiple matches will be
-						//   handled by SelectGemrplasmWindow and
-						//   then receiveGermplasmFromWindowAndUpdateGermplasmData()
-						foundGermplasm = this.germplasmDataManager
-								.getGermplasmByName(importedGermplasm.getDesig(), 0, 1,
-										Operation.EQUAL);
-					}
+				} else if (germplasmMatchesCount == 1) {
+					//If a single match is found, multiple matches will be
+					//   handled by SelectGemrplasmWindow and
+					//   then receiveGermplasmFromWindowAndUpdateGermplasmData()
+					foundGermplasm = this.germplasmDataManager
+							.getGermplasmByName(importedGermplasm.getDesig(), 0, 1,
+									Operation.EQUAL);
 
 				}
 
@@ -167,7 +164,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 			}
 
 		} catch (MiddlewareQueryException mqe) {
-			mqe.printStackTrace();
+			LOG.error(mqe.getMessage(),mqe);
 		}
 	}
 
@@ -358,7 +355,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 			gnpgs = -1;
 		} else {
 			Method selectedMethod = germplasmDataManager.getMethodByID(methodId);
-			if (selectedMethod.getMtype().equals("GEN")) {
+			if ("GEN".equals(selectedMethod.getMtype())) {
 				gnpgs = 2;
 			} else {
 				gnpgs = prevGnpgs;
@@ -372,7 +369,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		Integer dateIntValue = 0;
 		Date dateFieldValue = (Date) getGermplasmFieldsComponent().getGermplasmDateField()
 				.getValue();
-		if (dateFieldValue != null && !dateFieldValue.toString().equals("")) {
+		if (dateFieldValue != null && !"".equals(dateFieldValue.toString())) {
 			sDate = DateUtil.formatDateAsStringValue(dateFieldValue, GermplasmImportMain.DATE_FORMAT);
 			dateIntValue = Integer.parseInt(sDate.replace("-", ""));
 		}
@@ -458,13 +455,13 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	public void receiveGermplasmFromWindowAndUpdateGermplasmData(int index,
 			Germplasm importedGermplasm, Germplasm selectedGermplasm) {
 		String pedigreeOption = germplasmDetailsComponent.getPedigreeOption();
-		if (pedigreeOption.equalsIgnoreCase("2")) {
+		if ("2".equalsIgnoreCase(pedigreeOption)) {
 			//Update GPID 1 & 2 to values of selected germplasm, and update germplasmList using the updated germplasm
 			updatePedigreeConnections(importedGermplasm, selectedGermplasm);
 
 			germplasmNameObjects.get(index).setGermplasm(importedGermplasm);
 
-		} else if (pedigreeOption.equalsIgnoreCase("3")) {
+		} else if ("3".equalsIgnoreCase(pedigreeOption)) {
 			//Add logic here to not insert new record on DB when saved, maybe use existing GID?
 			importedGermplasm.setGid(selectedGermplasm.getGid());
 			doNotCreateGermplasmsWithId.add(selectedGermplasm.getGid());
