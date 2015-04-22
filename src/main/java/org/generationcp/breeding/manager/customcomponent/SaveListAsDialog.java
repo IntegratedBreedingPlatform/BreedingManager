@@ -1,6 +1,7 @@
 package org.generationcp.breeding.manager.customcomponent;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -428,7 +429,10 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 	protected Long getCurrentParsedListDate(String listDate) {
 		Date date;
 		try {
-			date = DateUtil.parseDate(listDate, "E MMM dd HH:mm:ss Z yyyy");
+			SimpleDateFormat sdf = (SimpleDateFormat) 
+					DateUtil.getSimpleDateFormat("E MMM dd HH:mm:ss Z yyyy").clone();
+			sdf.setLenient(true);
+			date = sdf.parse(listDate);
 		} catch (ParseException e) {
 			date = new Date();
 			LOG.error(e.getMessage(),e);

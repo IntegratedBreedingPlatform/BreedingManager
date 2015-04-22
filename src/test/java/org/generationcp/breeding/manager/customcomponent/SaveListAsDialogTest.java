@@ -3,8 +3,6 @@ package org.generationcp.breeding.manager.customcomponent;
 import static org.mockito.Mockito.when;
 
 import java.util.Calendar;
-import java.util.Locale;
-
 import junit.framework.Assert;
 
 import org.generationcp.commons.util.DateUtil;
