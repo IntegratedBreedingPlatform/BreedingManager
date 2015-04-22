@@ -800,7 +800,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 					|| propertyId.equals(ColumnLabels.ENTRY_ID.getName())
 					|| propertyId.equals(ColumnLabels.DESIGNATION.getName())
 					|| propertyId.equals(ColumnLabels.AVAILABLE_INVENTORY.getName())
-					|| propertyId.equals(ColumnLabels.SEED_RESERVATION.getName())) {
+					|| propertyId.equals(ColumnLabels.SEED_RESERVATION.getName())
+					|| propertyId.equals(ColumnLabels.STOCKID.getName())) {
 				return null;
 			}
 
