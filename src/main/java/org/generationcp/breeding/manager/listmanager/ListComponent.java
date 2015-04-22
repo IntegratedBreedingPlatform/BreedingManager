@@ -54,6 +54,7 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
+import org.generationcp.commons.vaadin.util.DataDisplayUtil;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -426,7 +427,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 				String.class, null);
 		listDataTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class,
 				null);
-		listDataTable.addContainerProperty(ColumnLabels.STOCKID.getName(), String.class,
+		listDataTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class,
 				null);
 		listDataTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(),
 				String.class, null);
@@ -604,7 +605,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(
 				seedRes);
 		
-		newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(entry.getInventoryInfo().getStockIDs());
+		String stockIds = entry.getInventoryInfo().getStockIDs();
+		Label stockIdsLbl = new Label(DataDisplayUtil.truncateDisplay(stockIds,35));
+		stockIdsLbl.setDescription(stockIds);
+		newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdsLbl);
 		
 	}
 
