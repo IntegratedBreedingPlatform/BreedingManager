@@ -787,11 +787,8 @@ public class FillWith implements InternationalizableComponent  {
 	            Object gidObject = item.getItemProperty(gidPropertyId).getValue();
 	            Button b= (Button) gidObject;
 	            String gid=b.getCaption();
-	            try{
-	            	
-	            	this.crossExpansionProperties.setWheatLevel(crossExpansionLevel.intValue());
-	            	this.crossExpansionProperties.setDefaultLevel(crossExpansionLevel.intValue());
-	            	String crossExpansion = this.pedigreeService.getCrossExpansion(Integer.parseInt(gid), this.crossExpansionProperties);
+	            try{	            		            
+	            	String crossExpansion = this.pedigreeService.getCrossExpansion(Integer.parseInt(gid), crossExpansionLevel.intValue(), this.crossExpansionProperties);
 	            	item.getItemProperty(propertyId).setValue(crossExpansion);
 	            } catch(MiddlewareQueryException ex){
 	            	LOG.error("Error with getting cross expansion: gid=" + gid + " level=" + crossExpansionLevel, ex);
