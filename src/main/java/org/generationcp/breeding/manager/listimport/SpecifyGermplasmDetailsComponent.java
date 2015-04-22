@@ -21,6 +21,7 @@ import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -38,7 +39,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -162,12 +162,10 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 
         germplasmList = new GermplasmList();
 
-        SimpleDateFormat formatter = new SimpleDateFormat(GermplasmImportMain.DATE_FORMAT);
-        String sDate = formatter.format(germplasmListUploader.getListDate());
-
-        Long dataLongValue = Long.parseLong(sDate.replace("-", ""));
+        String sDate = DateUtil.formatDateAsStringValue(germplasmListUploader.getListDate(), 
+        		DateUtil.DATE_AS_NUMBER_FORMAT);
         germplasmList.setName(germplasmListUploader.getListName());
-        germplasmList.setDate(dataLongValue);
+        germplasmList.setDate(Long.parseLong(sDate));
         germplasmList.setType(germplasmListUploader.getListType());
         germplasmList.setDescription(germplasmListUploader.getListTitle());
         germplasmList.setStatus(1);

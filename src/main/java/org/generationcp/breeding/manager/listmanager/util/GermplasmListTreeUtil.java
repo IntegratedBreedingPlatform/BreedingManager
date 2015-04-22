@@ -11,6 +11,7 @@ import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -25,9 +26,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import javax.annotation.Resource;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Deque;
 import java.util.List;
 
@@ -166,8 +165,7 @@ public class GermplasmListTreeUtil implements Serializable {
 			newFolder.setType(FOLDER_TYPE);
 			newFolder.setStatus(0);
 			newFolder.setUserId(ibdbUserId);
-			newFolder.setDate(Long.valueOf((new SimpleDateFormat(DATE_AS_NUMBER_FORMAT))
-					.format(Calendar.getInstance().getTime())));
+			newFolder.setDate(DateUtil.getCurrentDateAsLongValue());
 
 			if (parentItemId == null || parentItemId instanceof String
 					|| targetListSource.getItem(parentItemId) == null) {
@@ -209,9 +207,7 @@ public class GermplasmListTreeUtil implements Serializable {
 		try {
 			folderTextField.validate();
 
-			GermplasmList germplasmList;
-			try {
-				germplasmList = germplasmListManager.getGermplasmListById(listId);
+			GermplasmList germplasmList = germplasmListManager.getGermplasmListById(listId);
 
 				germplasmList.setName(newName);
 				germplasmListManager.updateGermplasmList(germplasmList);
@@ -234,13 +230,13 @@ public class GermplasmListTreeUtil implements Serializable {
 							"Item renamed successfully.");
 				}
 				return targetListSource.getItemCaption(listId);
-			} catch (MiddlewareQueryException e) {
-				MessageNotifier.showWarning(source.getWindow(),
-						messageSource.getMessage(Message.ERROR_DATABASE),
-						messageSource.getMessage(Message.ERROR_REPORT_TO));
-				LOG.error(e.getMessage(), e);
-			}
+			
 
+		} catch (MiddlewareQueryException e) {
+			MessageNotifier.showWarning(source.getWindow(),
+					messageSource.getMessage(Message.ERROR_DATABASE),
+					messageSource.getMessage(Message.ERROR_REPORT_TO));
+			LOG.error(e.getMessage(), e);
 		} catch (InvalidValueException e) {
 			MessageNotifier.showRequiredFieldError(source.getWindow(), e.getMessage());
 			LOG.error(e.getMessage(), e);

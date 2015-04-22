@@ -1,7 +1,6 @@
 package org.generationcp.breeding.manager.customfields;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -160,7 +159,6 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	public GermplasmList getGermplasmList(){
 		String listName = listNameField.getValue().toString();
         String listDescription = listDescriptionField.getValue().toString();
-        SimpleDateFormat formatter = new SimpleDateFormat(DateUtil.DATE_AS_NUMBER_FORMAT);
         Date date = (Date) listDateField.getValue();
         
         GermplasmList list = new GermplasmList();
@@ -175,8 +173,8 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
         	list.setType(listTypeField.getValue().toString());
         }
         
-        if(date!=null && formatter.format(date)!=null){
-        	list.setDate(Long.parseLong(formatter.format(date)));
+        if(date!=null){
+        	list.setDate(DateUtil.getCurrentDateAsLongValue());
         }
         list.setNotes(listNotesField.getValue().toString());
         list.setUserId(0);
@@ -236,16 +234,11 @@ implements InitializingBean, InternationalizableComponent, BreedingManagerLayout
 	}
 
 	protected Date getParsedDate(String dateToParse) throws ParseException {
-		Date validDate = null;
-		
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtil.DATE_AS_NUMBER_FORMAT);
-		if(dateToParse.length() < 8){
-			validDate = simpleDateFormat.parse(getParsableDateString(dateToParse));
-		} else {
-			validDate = simpleDateFormat.parse(dateToParse);
+		String finalDateToParse = dateToParse;
+		if(finalDateToParse.length() < 8){
+			finalDateToParse = getParsableDateString(finalDateToParse);
 		}
-		
-		return validDate;
+		return DateUtil.parseDate(finalDateToParse, DateUtil.DATE_AS_NUMBER_FORMAT);
 	}
 
 	protected String getParsableDateString(String dateToParse) {
