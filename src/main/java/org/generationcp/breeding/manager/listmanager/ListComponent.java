@@ -426,6 +426,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 				String.class, null);
 		listDataTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class,
 				null);
+		listDataTable.addContainerProperty(ColumnLabels.STOCKID.getName(), String.class,
+				null);
 		listDataTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(),
 				String.class, null);
 
@@ -445,6 +447,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 				getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
 		listDataTable.setColumnHeader(ColumnLabels.GID.getName(),
 				getTermNameFromOntology(ColumnLabels.GID));
+		listDataTable.setColumnHeader(ColumnLabels.STOCKID.getName(),
+				getTermNameFromOntology(ColumnLabels.STOCKID));
 		listDataTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(),
 				getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
 
@@ -599,6 +603,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		}
 		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(
 				seedRes);
+		
+		newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(entry.getInventoryInfo().getStockIDs());
+		
 	}
 
 	private void getAllListEntries() {

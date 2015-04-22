@@ -737,6 +737,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		table.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
 		table.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
 		table.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
+		table.addContainerProperty(ColumnLabels.STOCKID.getName(), String.class, null);
 		table.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
 
 		table.setColumnHeader(ColumnLabels.TAG.getName(), messageSource.getMessage(Message.CHECK_ICON));
@@ -747,6 +748,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		table.setColumnHeader(ColumnLabels.SEED_RESERVATION.getName(), getTermNameFromOntology(ColumnLabels.SEED_RESERVATION));
 		table.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(), getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
 		table.setColumnHeader(ColumnLabels.GID.getName(),  getTermNameFromOntology(ColumnLabels.GID));
+		table.setColumnHeader(ColumnLabels.STOCKID.getName(),  getTermNameFromOntology(ColumnLabels.STOCKID));
 		table.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(),  getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
 	}
 
