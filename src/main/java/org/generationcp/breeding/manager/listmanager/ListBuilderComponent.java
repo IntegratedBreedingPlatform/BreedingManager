@@ -737,7 +737,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		table.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
 		table.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
 		table.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
-		table.addContainerProperty(ColumnLabels.STOCKID.getName(), String.class, null);
+		table.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
 		table.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
 
 		table.setColumnHeader(ColumnLabels.TAG.getName(), messageSource.getMessage(Message.CHECK_ICON));
