@@ -320,5 +320,13 @@ public class ListComponentTest {
 		listComponent.saveChangesAction(window, false);
 		verify(listComponent,times(1)).refreshTreeOnSave();
 	}
+	
+	@Test
+	public void testIsInventoryColumn(){
+		Assert.assertTrue("Expecting AVAILABLE_INVENTORY as an inventory column.",listComponent.isInventoryColumn(ColumnLabels.AVAILABLE_INVENTORY.getName()));
+		Assert.assertTrue("Expecting SEED_RESERVATION as an inventory column.",listComponent.isInventoryColumn(ColumnLabels.SEED_RESERVATION.getName()));
+		Assert.assertTrue("Expecting STOCKID as an inventory column.",listComponent.isInventoryColumn(ColumnLabels.STOCKID.getName()));
+		Assert.assertFalse("Expecting ENTRY_ID as an inventory column.",listComponent.isInventoryColumn(ColumnLabels.ENTRY_ID.getName()));
+	}
 
 }
