@@ -54,7 +54,6 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
-import org.generationcp.commons.vaadin.util.DataDisplayUtil;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -452,7 +451,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 				getTermNameFromOntology(ColumnLabels.STOCKID));
 		listDataTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(),
 				getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
-
+		
 		initializeAddColumnContextMenu();
 
 	}
@@ -606,7 +605,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 				seedRes);
 		
 		String stockIds = entry.getInventoryInfo().getStockIDs();
-		Label stockIdsLbl = new Label(DataDisplayUtil.truncateDisplay(stockIds,35));
+		Label stockIdsLbl = new Label(stockIds);
 		stockIdsLbl.setDescription(stockIds);
 		newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdsLbl);
 		
@@ -1029,7 +1028,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 						|| selectedColumn.equals(ColumnLabels.SEED_RESERVATION
 						.getName())
 						|| selectedColumn.equals(ColumnLabels.AVAILABLE_INVENTORY
-						.getName())) {
+						.getName())
+						|| selectedColumn.equals(ColumnLabels.STOCKID
+								.getName())) {
 					tableContextMenuDeleteEntries.setVisible(!germplasmList.isLockedList());
 					tableContextMenuEditCell.setVisible(false);
 					if (source != null) {
