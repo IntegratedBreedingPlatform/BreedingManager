@@ -38,6 +38,7 @@ import com.vaadin.ui.Window;
 
 public class ListComponentTest {
 
+	private static final String STOCKID = "STOCKID";
 	private static final String SEED_RES = "SEED_RES";
 	private static final String AVAIL_INV = "AVAIL_INV";
 	private static final String HASH = "#";
@@ -125,6 +126,7 @@ public class ListComponentTest {
 		doReturn(DESIG).when(listComponent).getTermNameFromOntology(ColumnLabels.DESIGNATION);
 		doReturn(CROSS).when(listComponent).getTermNameFromOntology(ColumnLabels.PARENTAGE);
 		doReturn(SEED_SOURCE).when(listComponent).getTermNameFromOntology(ColumnLabels.SEED_SOURCE);
+		doReturn(STOCKID).when(listComponent).getTermNameFromOntology(ColumnLabels.STOCKID);
 
 		listComponent.setGermplasmListManager(germplasmListManager);
 		listComponent.setMessageSource(messageSource);
@@ -283,6 +285,7 @@ public class ListComponentTest {
 		assertEquals(HASH ,table.getColumnHeader(ColumnLabels.ENTRY_ID.getName()));
 		assertEquals(AVAIL_INV ,table.getColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName()));
 		assertEquals(SEED_RES ,table.getColumnHeader(ColumnLabels.SEED_RESERVATION.getName()));
+		assertEquals(STOCKID ,table.getColumnHeader(ColumnLabels.STOCKID.getName()));
 		assertEquals(GID ,table.getColumnHeader(ColumnLabels.GID.getName()));
 		assertEquals(ENTRY_CODE ,table.getColumnHeader(ColumnLabels.ENTRY_CODE.getName()));
 		assertEquals(DESIG ,table.getColumnHeader(ColumnLabels.DESIGNATION.getName()));
