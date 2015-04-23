@@ -648,8 +648,7 @@ public class DropHandlerMethods {
     public String getStockIDFromStockIDLabel(Table table, Integer itemId){
     	Item item = table.getItem(itemId);
    	    if(item!=null){
-    	    String labelCaption = ((Label) item.getItemProperty(ColumnLabels.STOCKID.getName()).getValue()).getValue().toString();
-    	    return labelCaption;
+    	    return ((Label) item.getItemProperty(ColumnLabels.STOCKID.getName()).getValue()).getValue().toString();
     	}
     	return null;	
     }
