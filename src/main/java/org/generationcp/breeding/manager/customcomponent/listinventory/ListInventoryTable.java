@@ -142,13 +142,9 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 			 			@Override
 			 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 			 				CheckBox itemCheckBox = (CheckBox) event.getButton();
-			 				if(((Boolean) itemCheckBox.getValue()).equals(true)){
-			 					listInventoryTable.select(itemCheckBox.getData());
-			 				} else {
-			 					listInventoryTable.unselect(itemCheckBox.getData());
-			 				}
+			 				toggleSelectOnLotEntries(itemCheckBox);
 			 			}
-			 			 
+
 			 		});
 					
 			   		Button desigButton = new Button(String.format("%s", designation), 
@@ -176,6 +172,15 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 			}
 		}
 		
+	}
+	
+	protected void toggleSelectOnLotEntries(
+			CheckBox itemCheckBox) {
+		if(((Boolean) itemCheckBox.getValue()).equals(true)){
+				listInventoryTable.select(itemCheckBox.getData());
+			} else {
+				listInventoryTable.unselect(itemCheckBox.getData());
+			}
 	}
 	
 	public void updateListInventoryTableAfterSave(){

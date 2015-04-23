@@ -15,9 +15,9 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.themes.BaseTheme;
 
@@ -75,22 +75,12 @@ public class ListManagerInventoryTable extends ListInventoryTable {
 			 			@Override
 			 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 			 				CheckBox itemCheckBox = (CheckBox) event.getButton();
-			 				if(((Boolean) itemCheckBox.getValue()).equals(true)){
-			 					listInventoryTable.select(itemCheckBox.getData());
-			 				} else {
-			 					listInventoryTable.unselect(itemCheckBox.getData());
-			 				}
+			 				toggleSelectOnLotEntries(itemCheckBox);
 			 			}
-			 			 
+
 			 		});
 					
-			   		GermplasmListData germplasmListData = null;
-			   		
-			   		try {
-						germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndLrecId(listId, lotDetail.getId());
-					} catch (MiddlewareQueryException e) {
-						LOG.error(e.getMessage(), e);
-					}
+			   		GermplasmListData germplasmListData = retrieveGermplasmListDataUsingLrecId(lotDetail);
 			   		
 			   		Button desigButton = new Button(String.format("%s", designation), 
 			   					new GidLinkButtonClickListener(listManagerMain,germplasmListData.getGid().toString(), true, true));
@@ -116,6 +106,25 @@ public class ListManagerInventoryTable extends ListInventoryTable {
 				}
 			}
 		}
+	}
+
+	protected GermplasmListData retrieveGermplasmListDataUsingLrecId(
+			ListEntryLotDetails lotDetail) {
+		try {
+			return germplasmListManager.getGermplasmListDataByListIdAndLrecId(listId, lotDetail.getId());
+		} catch (MiddlewareQueryException e) {
+			LOG.error(e.getMessage(), e);
+		}
+		return null;
+	}
+	
+	protected void toggleSelectOnLotEntries(
+			CheckBox itemCheckBox) {
+		if(((Boolean) itemCheckBox.getValue()).equals(true)){
+				listInventoryTable.select(itemCheckBox.getData());
+			} else {
+				listInventoryTable.unselect(itemCheckBox.getData());
+			}
 	}
 	
 	public void setDropHandler(){
