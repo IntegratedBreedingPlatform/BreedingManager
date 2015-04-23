@@ -25,6 +25,7 @@ public class ListBuilderComponentTest {
 	private static final String DESIG = "DESIG";
 	private static final String ENTRY_CODE = "ENTRY_CODE";
 	private static final String GID = "GID";
+	private static final String STOCKID = "STOCKID";
 	
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
@@ -47,6 +48,7 @@ public class ListBuilderComponentTest {
 		doReturn(DESIG).when(listBuilderComponent).getTermNameFromOntology(ColumnLabels.DESIGNATION);
 		doReturn(CROSS).when(listBuilderComponent).getTermNameFromOntology(ColumnLabels.PARENTAGE);
 		doReturn(SEED_SOURCE).when(listBuilderComponent).getTermNameFromOntology(ColumnLabels.SEED_SOURCE);
+		doReturn(STOCKID).when(listBuilderComponent).getTermNameFromOntology(ColumnLabels.STOCKID);
 		
 	}
 	
@@ -65,6 +67,7 @@ public class ListBuilderComponentTest {
 		assertEquals(DESIG ,table.getColumnHeader(ColumnLabels.DESIGNATION.getName()));
 		assertEquals(CROSS ,table.getColumnHeader(ColumnLabels.PARENTAGE.getName()));
 		assertEquals(SEED_SOURCE ,table.getColumnHeader(ColumnLabels.SEED_SOURCE.getName()));
+		assertEquals(STOCKID ,table.getColumnHeader(ColumnLabels.STOCKID.getName()));
 		
 	}
 
