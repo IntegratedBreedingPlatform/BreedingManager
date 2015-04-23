@@ -107,6 +107,7 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 	                newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(oldDesignation);
 	                newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(oldParentage);
 	                newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(oldAvailInv);
+	                newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue("");
 	                newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(oldSeedRes);
 	                
 	                assignSerializedEntryNumber();

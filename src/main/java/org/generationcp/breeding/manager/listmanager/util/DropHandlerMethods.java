@@ -385,10 +385,13 @@ public class DropHandlerMethods {
     	   		}
     	   		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
     	   		
-    	   		String stockIds = germplasmListData.getInventoryInfo().getStockIDs();
-	    	   	Label stockIdsLbl = new Label(stockIds);
-	    	   	stockIdsLbl.setDescription(stockIds);
-	    	   	newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdsLbl);
+
+    	   		if (forEditList){
+    	   			newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(germplasmListData.getInventoryInfo().getStockIDs());
+    	   		}else{
+    	   			newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(STRING_EMPTY);
+    	   		}
+	    	   	
 	            
 	    		for (Entry<String, List<ListDataColumnValues>> columnEntry: currentColumnsInfo.getColumnValuesMap().entrySet()){
 	    			String column = columnEntry.getKey();
@@ -518,10 +521,14 @@ public class DropHandlerMethods {
 	   		newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
 	   		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 	   		
+<<<<<<< HEAD
 	   		String stockIds = getStockIDFromStockIDLabel(sourceTable, itemId);
     	   	Label stockIdsLbl = new Label(stockIds);
     	   	stockIdsLbl.setDescription(stockIds);
     	   	newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdsLbl);
+=======
+    	   	newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(STRING_EMPTY);
+>>>>>>> When adding entries to List Builder, set the stockid column to blank
 	   		
 	   		
     		for (Entry<String, List<ListDataColumnValues>> columnEntry: currentColumnsInfo.getColumnValuesMap().entrySet()){
@@ -649,7 +656,7 @@ public class DropHandlerMethods {
     public String getStockIDFromStockIDLabel(Table table, Integer itemId){
     	Item item = table.getItem(itemId);
    	    if(item!=null){
-    	    String labelCaption = ((Label) item.getItemProperty(ColumnLabels.STOCKID.getName()).getValue()).getCaption().toString();
+    	    String labelCaption = ((Label) item.getItemProperty(ColumnLabels.STOCKID.getName()).getValue()).getValue().toString();
     	    return labelCaption;
     	}
     	return null;	
