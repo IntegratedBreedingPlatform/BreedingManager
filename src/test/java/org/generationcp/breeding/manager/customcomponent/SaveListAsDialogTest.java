@@ -3,9 +3,9 @@ package org.generationcp.breeding.manager.customcomponent;
 import static org.mockito.Mockito.when;
 
 import java.util.Calendar;
-
 import junit.framework.Assert;
 
+import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +44,7 @@ public class SaveListAsDialogTest {
 	
 	@Test
 	public void testGetCurrentParsedListDateForInvalidDateFormat(){
-		Calendar currentDate = Calendar.getInstance();
+		Calendar currentDate = DateUtil.getCalendarInstance();
 		String currentDateString = String.valueOf(currentDate.get(Calendar.YEAR))
 				+ appendZeroForSingleDigitMonthOrDay(currentDate.get(Calendar.MONTH) + 1) 
 				+ appendZeroForSingleDigitMonthOrDay(currentDate.get(Calendar.DAY_OF_MONTH));

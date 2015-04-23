@@ -3,7 +3,6 @@ package org.generationcp.breeding.manager.customcomponent;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
@@ -430,14 +429,15 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 	protected Long getCurrentParsedListDate(String listDate) {
 		Date date;
 		try {
-			date = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy", Locale.ENGLISH).parse(listDate);
+			SimpleDateFormat sdf = (SimpleDateFormat) 
+					DateUtil.getSimpleDateFormat("E MMM dd HH:mm:ss Z yyyy").clone();
+			sdf.setLenient(true);
+			date = sdf.parse(listDate);
 		} catch (ParseException e) {
 			date = new Date();
 			LOG.error(e.getMessage(),e);
 		}
-		
-		SimpleDateFormat formatter = new SimpleDateFormat(DateUtil.DATE_AS_NUMBER_FORMAT);
-		
-		return Long.parseLong(formatter.format(date));
+		String dateAsString = DateUtil.formatDateAsStringValue(date, DateUtil.DATE_AS_NUMBER_FORMAT);
+		return Long.parseLong(dateAsString);
 	}
 }

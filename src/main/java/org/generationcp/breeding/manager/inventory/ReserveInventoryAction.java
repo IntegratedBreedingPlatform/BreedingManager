@@ -24,7 +24,7 @@ import java.util.Map;
 @Configurable
 public class ReserveInventoryAction implements Serializable {
 	private static final long serialVersionUID = -6868930047867345575L;
-	private final static Logger LOG = LoggerFactory.getLogger(ReserveInventoryAction.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ReserveInventoryAction.class);
 
 	@Autowired
 	private InventoryDataManager inventoryDataManager;
@@ -67,7 +67,8 @@ public class ReserveInventoryAction implements Serializable {
 				Double availBalance = lot.getAvailableLotBalance();
 
 				if (checkedLots.contains(
-						lot.getLotId())) { // duplicated lots mapped to GID that has multiple entries in list entries
+						lot.getLotId())) { 
+					// duplicated lots mapped to GID that has multiple entries in list entries
 					Double totalAmountReserved = duplicatedLots.get(lot.getLotId());
 					if (availBalance < totalAmountReserved) {
 						removeAllLotfromReservationLists(lot.getLotId());
@@ -75,21 +76,20 @@ public class ReserveInventoryAction implements Serializable {
 					} else {
 						validLotReservations.put(lot, amountReserved);
 					}
+				} else if (availBalance < amountReserved) {
+					invalidLotReservations.put(lot, amountReserved);
 				} else {
-					if (availBalance < amountReserved) {
-						invalidLotReservations.put(lot, amountReserved);
-					} else {
-						validLotReservations.put(lot, amountReserved);
-					}
+					validLotReservations.put(lot, amountReserved);
 				}
-
-				checkedLots.add(lot.getLotId()); //marked all checked lots
+				//marked all checked lots
+				checkedLots.add(lot.getLotId());
 			}
 		}
 
 		boolean withInvalidReservations = false;
-		if (validLotReservations.size() > 0
-				&& invalidLotReservations.size() > 0) {//if there is an invalid reservation
+		if (!validLotReservations.isEmpty()
+				&& !invalidLotReservations.isEmpty()) {
+			//if there is an invalid reservation
 			reservationStatus = new ReservationStatusWindow(invalidLotReservations);
 			source.addReservationStatusWindow(reservationStatus);
 			withInvalidReservations = true;
@@ -124,7 +124,8 @@ public class ReserveInventoryAction implements Serializable {
 
 			for (ListEntryLotDetails lot : lotList) {
 				Integer lotId = lot.getLotId();
-				if (duplicatedLots.containsKey(lotId)) {//sum up the reservations
+				if (duplicatedLots.containsKey(lotId)) {
+					//sum up the reservations
 					Double totalAmount = Double.valueOf(duplicatedLots.get(lotId)) + amountReserved;
 
 					duplicatedLots.remove(lotId);
@@ -147,7 +148,7 @@ public class ReserveInventoryAction implements Serializable {
 				ListEntryLotDetails lotDetail = entry.getKey();
 
 				Integer lotId = lotDetail.getLotId();
-				Integer transactionDate = DateUtil.getCurrentDate();
+				Integer transactionDate = DateUtil.getCurrentDateAsIntegerValue();
 				Integer transacStatus = 0;
 
 				//since this is a reserve transaction
@@ -156,7 +157,6 @@ public class ReserveInventoryAction implements Serializable {
 				String sourceType = "LIST";
 				Integer lrecId = lotDetail.getId();
 
-				// FIXME still needs to verify the final value, for now set to 0
 				Double prevAmount = 0D;
 				Integer ibdbUserId = contextUtil.getCurrentUserLocalId();
 				Integer personId = userDataManager.getPersonById(ibdbUserId).getId();
