@@ -17,7 +17,6 @@ import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.ListSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
-import org.generationcp.commons.vaadin.util.DataDisplayUtil;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -387,7 +386,7 @@ public class DropHandlerMethods {
     	   		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
     	   		
     	   		String stockIds = germplasmListData.getInventoryInfo().getStockIDs();
-	    	   	Label stockIdsLbl = new Label(DataDisplayUtil.truncateDisplay(stockIds,35));
+	    	   	Label stockIdsLbl = new Label(stockIds);
 	    	   	stockIdsLbl.setDescription(stockIds);
 	    	   	newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdsLbl);
 	            
@@ -520,7 +519,7 @@ public class DropHandlerMethods {
 	   		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 	   		
 	   		String stockIds = getStockIDFromStockIDLabel(sourceTable, itemId);
-    	   	Label stockIdsLbl = new Label(DataDisplayUtil.truncateDisplay(stockIds,35));
+    	   	Label stockIdsLbl = new Label(stockIds);
     	   	stockIdsLbl.setDescription(stockIds);
     	   	newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdsLbl);
 	   		
