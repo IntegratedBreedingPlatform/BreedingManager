@@ -521,16 +521,8 @@ public class DropHandlerMethods {
 	   		newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
 	   		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 	   		
-<<<<<<< HEAD
-	   		String stockIds = getStockIDFromStockIDLabel(sourceTable, itemId);
-    	   	Label stockIdsLbl = new Label(stockIds);
-    	   	stockIdsLbl.setDescription(stockIds);
-    	   	newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdsLbl);
-=======
     	   	newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(STRING_EMPTY);
->>>>>>> When adding entries to List Builder, set the stockid column to blank
-	   		
-	   		
+
     		for (Entry<String, List<ListDataColumnValues>> columnEntry: currentColumnsInfo.getColumnValuesMap().entrySet()){
     			String column = columnEntry.getKey();
     			for (ListDataColumnValues columnValue : columnEntry.getValue()){
