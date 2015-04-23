@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Table.TableDragMode;
@@ -105,6 +106,12 @@ public class ListManagerInventoryTable extends ListInventoryTable {
 					newItem.getItemProperty(ColumnLabels.RESERVED.getName()).setValue(lotDetail.getReservedTotalForEntry());
 					newItem.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(0);
 					newItem.getItemProperty(ColumnLabels.COMMENT.getName()).setValue(lotDetail.getCommentOfLot());
+					
+					String stockIds = lotDetail.getStockIds();
+					Label stockIdsLbl = new Label(stockIds);
+					stockIdsLbl.setDescription(stockIds);
+					newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdsLbl);
+					
 					newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotDetail.getLotId());
 				}
 			}

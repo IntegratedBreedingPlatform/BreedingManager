@@ -51,6 +51,7 @@ public class ListInventoryTableTest {
 		doReturn(createTerm("RES")).when(ontologyDataManager).getTermById(ColumnLabels.RESERVED.getTermId().getId());
 		doReturn(createTerm("NEW RES")).when(ontologyDataManager).getTermById(ColumnLabels.NEWLY_RESERVED.getTermId().getId());
 		doReturn(createTerm("COMMENT")).when(ontologyDataManager).getTermById(ColumnLabels.COMMENT.getTermId().getId());
+		doReturn(createTerm("STOCKID")).when(ontologyDataManager).getTermById(ColumnLabels.STOCKID.getTermId().getId());
 		doReturn(createTerm("LOT_ID")).when(ontologyDataManager).getTermById(ColumnLabels.LOT_ID.getTermId().getId());
 		
 		listInventoryTable.instantiateComponents();
@@ -66,6 +67,7 @@ public class ListInventoryTableTest {
 		assertEquals("RES", table.getColumnHeader(ColumnLabels.RESERVED.getName()));
 		assertEquals("NEW RES", table.getColumnHeader(ColumnLabels.NEWLY_RESERVED.getName()));
 		assertEquals("COMMENT", table.getColumnHeader(ColumnLabels.COMMENT.getName()));
+		assertEquals("STOCKID", table.getColumnHeader(ColumnLabels.STOCKID.getName()));
 		assertEquals("LOT_ID", table.getColumnHeader(ColumnLabels.LOT_ID.getName()));
 	}
 	
