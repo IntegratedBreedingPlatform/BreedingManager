@@ -155,6 +155,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		matchingGermplasmsTable.addContainerProperty(CHECKBOX_COLUMN_ID, CheckBox.class, null);
 		matchingGermplasmsTable.addContainerProperty(NAMES, Button.class,null);
 		matchingGermplasmsTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class,null);
+		matchingGermplasmsTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
 		matchingGermplasmsTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
 		matchingGermplasmsTable.addContainerProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class,null);
 		matchingGermplasmsTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class,null);
@@ -167,6 +168,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 		messageSource.setColumnHeader(matchingGermplasmsTable, CHECKBOX_COLUMN_ID, Message.CHECK_ICON);
 		matchingGermplasmsTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(), ColumnLabels.PARENTAGE.getTermNameFromOntology(ontologyDataManager));
+		matchingGermplasmsTable.setColumnHeader(ColumnLabels.STOCKID.getName(), ColumnLabels.STOCKID.getTermNameFromOntology(ontologyDataManager));
 		matchingGermplasmsTable.setColumnHeader(ColumnLabels.GID.getName(), ColumnLabels.GID.getTermNameFromOntology(ontologyDataManager));
 		matchingGermplasmsTable.setColumnHeader(ColumnLabels.GERMPLASM_LOCATION.getName(), ColumnLabels.GERMPLASM_LOCATION.getTermNameFromOntology(ontologyDataManager));
 		matchingGermplasmsTable.setColumnHeader(ColumnLabels.BREEDING_METHOD_NAME.getName(), ColumnLabels.BREEDING_METHOD_NAME.getTermNameFromOntology(ontologyDataManager));
@@ -362,7 +364,10 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
                 LOG.error(e.getMessage(), e);
             }
             
-            matchingGermplasmsTable.addItem(new Object[]{itemCheckBox, namesButton, crossExpansion, gidButton, locationName, methodName},germplasm.getGid());
+	   		String stockIDs = germplasm.getStockIDs();
+			Label stockLabel = new Label(stockIDs);
+	   		stockLabel.setDescription(stockIDs);
+            matchingGermplasmsTable.addItem(new Object[]{itemCheckBox, namesButton, crossExpansion, stockLabel, gidButton, locationName, methodName},germplasm.getGid());
 		}
 		
 		updateNoOfEntries();
