@@ -117,6 +117,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		                Object oldDesignation = oldItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue();
 		                Object oldAvailInv = oldItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue();
 		                Object oldSeedRes = oldItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue();
+		                Object oldStockId = oldItem.getItemProperty(ColumnLabels.STOCKID.getName()).getValue();
 		                
 		        		sourceTable.removeItem(transferable.getItemId());
 		        		
@@ -126,6 +127,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 						newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(oldDesignation);
 						newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(oldAvailInv);
 						newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(oldSeedRes);
+						newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(oldStockId);
 
 						saveActionMenu.setEnabled(true);
 						setHasUnsavedChanges(true);
@@ -435,12 +437,14 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
         listDataTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
         listDataTable.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Button.class, null);
         listDataTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
+        listDataTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
 
         listDataTable.setColumnHeader(TAG_COLUMN_ID, messageSource.getMessage(Message.CHECK_ICON));
         listDataTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), messageSource.getMessage(Message.HASHTAG));
         listDataTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(), getTermNameFromOntology(ColumnLabels.DESIGNATION));
         listDataTable.setColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName(), getTermNameFromOntology(ColumnLabels.AVAILABLE_INVENTORY));
         listDataTable.setColumnHeader(ColumnLabels.SEED_RESERVATION.getName(), getTermNameFromOntology(ColumnLabels.SEED_RESERVATION));
+        listDataTable.setColumnHeader(ColumnLabels.STOCKID.getName(), getTermNameFromOntology(ColumnLabels.STOCKID));
         
         listDataTable.setColumnWidth(TAG_COLUMN_ID, 25);
         listDataTable.setDragMode(TableDragMode.ROW);
@@ -924,6 +928,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
 			newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
 			newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
+			newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(entry.getInventoryInfo().getStockIDs());
 
 		}
 		

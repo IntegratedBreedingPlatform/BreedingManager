@@ -309,6 +309,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		listDataTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
 		listDataTable.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Button.class, null);
 		listDataTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
+		listDataTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, new Label(""));
 		listDataTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
 		listDataTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
 		listDataTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
@@ -319,16 +320,20 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		listDataTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(), getTermNameFromOntology(ColumnLabels.DESIGNATION));
 		listDataTable.setColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName(), getTermNameFromOntology(ColumnLabels.AVAILABLE_INVENTORY));
 		listDataTable.setColumnHeader(ColumnLabels.SEED_RESERVATION.getName(), getTermNameFromOntology(ColumnLabels.SEED_RESERVATION));
+		listDataTable.setColumnHeader(ColumnLabels.STOCKID.getName(), getTermNameFromOntology(ColumnLabels.STOCKID));
 		listDataTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(), getTermNameFromOntology(ColumnLabels.PARENTAGE));
 		listDataTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(), getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
 		listDataTable.setColumnHeader(ColumnLabels.GID.getName(), getTermNameFromOntology(ColumnLabels.GID));
 		listDataTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(), getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
+		
+		
 		
 		listDataTable.setColumnWidth(CHECKBOX_COLUMN_ID, 25);
 		listDataTable.setColumnWidth(ColumnLabels.ENTRY_ID.getName(), 25);
 		listDataTable.setColumnWidth(ColumnLabels.DESIGNATION.getName(), 130);
 		listDataTable.setColumnWidth(ColumnLabels.AVAILABLE_INVENTORY.getName(), 70);
 		listDataTable.setColumnWidth(ColumnLabels.SEED_RESERVATION.getName(), 70);
+		listDataTable.setColumnWidth(ColumnLabels.SEED_RESERVATION.getName(), 130);
 		listDataTable.setColumnWidth(ColumnLabels.PARENTAGE.getName(), 130);
 		listDataTable.setColumnWidth(ColumnLabels.ENTRY_CODE.getName(), 100);
 		listDataTable.setColumnWidth(ColumnLabels.GID.getName(), 60);
@@ -340,6 +345,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
         		,ColumnLabels.DESIGNATION.getName()
         		,ColumnLabels.AVAILABLE_INVENTORY.getName()
         		,ColumnLabels.SEED_RESERVATION.getName()
+        		,ColumnLabels.STOCKID.getName()
         		,ColumnLabels.PARENTAGE.getName()
         		,ColumnLabels.ENTRY_CODE.getName()
         		,ColumnLabels.GID.getName()
@@ -422,6 +428,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
     	   			seedRes = entry.getInventoryInfo().getReservedLotCount().toString().trim();
     	   		}
     	   		
+    	   		
     	   		Item newItem = listDataTable.getContainerDataSource().addItem(entry.getId());    			
     	   		newItem.getItemProperty(CHECKBOX_COLUMN_ID).setValue(itemCheckBox);
     	   		newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entry.getEntryId());
@@ -432,6 +439,13 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
     	   		newItem.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(entry.getEntryCode());
     	   		newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
     	   		newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
+    	   		
+    	   		if (entry.getInventoryInfo().getStockIDs() != null){
+    	   			Label stockIdsLabel = new Label(entry.getInventoryInfo().getStockIDs());
+        	   		stockIdsLabel.setDescription(entry.getInventoryInfo().getStockIDs());
+        	   		newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdsLabel);
+    	   		}
+    	   		
 			}
 		} catch(MiddlewareQueryException ex){
 			LOG.error("Error with getting list entries for list: " + germplasmListId, ex);
