@@ -65,6 +65,7 @@ public class ParentTabComponentTest {
 		assertEquals("DESIGNATION", table.getColumnHeader(ColumnLabels.DESIGNATION.getName()));
 		assertEquals("AVAIL INV", table.getColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName()));
 		assertEquals("SEED RES", table.getColumnHeader(ColumnLabels.SEED_RESERVATION.getName()));
+		assertEquals("STOCKID", table.getColumnHeader(ColumnLabels.STOCKID.getName()));
 	}
 	
 	@Test
@@ -78,6 +79,7 @@ public class ParentTabComponentTest {
 		when(ontologyDataManager.getTermById(TermId.DESIG.getId())).thenReturn(fromOntology);
 		when(ontologyDataManager.getTermById(TermId.AVAILABLE_INVENTORY.getId())).thenReturn(fromOntology);
 		when(ontologyDataManager.getTermById(TermId.SEED_RESERVATION.getId())).thenReturn(fromOntology);
+		when(ontologyDataManager.getTermById(TermId.STOCKID.getId())).thenReturn(fromOntology);
 		
 		when(messageSource.getMessage(Message.CHECK_ICON)).thenReturn("TAG");
 		when(messageSource.getMessage(Message.HASHTAG)).thenReturn("HASHTAG");
@@ -96,5 +98,6 @@ public class ParentTabComponentTest {
 		assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.DESIGNATION.getName()));
 		assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName()));
 		assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.SEED_RESERVATION.getName()));
+		assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.STOCKID.getName()));
 	}
 }
