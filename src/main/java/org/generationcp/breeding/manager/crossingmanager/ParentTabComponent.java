@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.annotation.Resource;
+
 import org.generationcp.breeding.manager.action.SaveGermplasmListAction;
 import org.generationcp.breeding.manager.action.SaveGermplasmListActionSource;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -35,6 +37,7 @@ import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListe
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listmanager.util.InventoryTableDropHandler;
 import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -47,6 +50,7 @@ import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.service.api.PedigreeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -311,6 +315,12 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
     
     @Autowired
     private GermplasmDataManager germplasmDataManager;
+    
+    @Autowired
+	protected PedigreeService pedigreeService;
+	
+    @Resource
+    protected CrossExpansionProperties crossExpansionProperties;
     
     @Autowired
     private InventoryDataManager inventoryDataManager;  
@@ -720,7 +730,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	private void setupDropHandler() {
 		listDataTable.setDropHandler(new ListDataTableDropHandler());
 		
-		inventoryTableDropHandler = new InventoryTableDropHandler(this, germplasmDataManager, germplasmListManager, inventoryDataManager, listInventoryTable.getTable());
+		inventoryTableDropHandler = new InventoryTableDropHandler(this, germplasmDataManager, germplasmListManager, inventoryDataManager, pedigreeService, this.crossExpansionProperties,listInventoryTable.getTable());
 		listInventoryTable.getTable().setDropHandler(inventoryTableDropHandler);
 	}
 

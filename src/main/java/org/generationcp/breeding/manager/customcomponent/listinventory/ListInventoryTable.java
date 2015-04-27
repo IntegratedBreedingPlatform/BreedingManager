@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
@@ -17,6 +20,7 @@ import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.service.api.PedigreeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -56,6 +60,12 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 	
     @Autowired
     private SimpleResourceBundleMessageSource messageSource;
+    
+	@Autowired
+	protected PedigreeService pedigreeService;
+	
+    @Resource
+    protected CrossExpansionProperties crossExpansionProperties;
 	
 	public ListInventoryTable(Integer listId) {
 		super(ColumnLabels.TAG.getName());

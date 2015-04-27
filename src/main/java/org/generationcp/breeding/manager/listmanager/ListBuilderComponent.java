@@ -47,6 +47,7 @@ import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -62,6 +63,7 @@ import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.service.api.PedigreeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -227,7 +229,13 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
-
+	
+	@Autowired
+	private PedigreeService pedigreeService;
+	
+    @Resource
+	private CrossExpansionProperties crossExpansionProperties;
+    
 	@Resource
 	private ContextUtil contextUtil;
 
@@ -427,7 +435,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		inventoryViewToolsButton = new ActionButton();
 		inventoryViewToolsButton.setData(TOOLS_BUTTON_ID);
 
-		dropHandler = new BuildNewListDropHandler(source, germplasmDataManager, germplasmListManager, inventoryDataManager, tableWithSelectAllLayout.getTable());
+		dropHandler = new BuildNewListDropHandler(source, germplasmDataManager, germplasmListManager, inventoryDataManager, pedigreeService, this.crossExpansionProperties, tableWithSelectAllLayout.getTable());
 
 		saveButton = new Button();
 		saveButton.setCaption(messageSource.getMessage(Message.SAVE_LABEL));
@@ -948,7 +956,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		//Rename the Build New List Header
 		buildNewListTitle.setValue(messageSource.getMessage(Message.BUILD_A_NEW_LIST));
 
-		dropHandler = new BuildNewListDropHandler(source, germplasmDataManager, germplasmListManager, inventoryDataManager, tableWithSelectAllLayout.getTable());
+		dropHandler = new BuildNewListDropHandler(source, germplasmDataManager, germplasmListManager, inventoryDataManager, pedigreeService, this.crossExpansionProperties, tableWithSelectAllLayout.getTable());
 		initializeHandlers();
 
 		//Reset Save Listener

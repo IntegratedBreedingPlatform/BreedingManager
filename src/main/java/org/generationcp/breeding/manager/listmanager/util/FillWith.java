@@ -6,12 +6,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.AdditionalDetailsCrossNameComponent;
 import org.generationcp.breeding.manager.listmanager.FillWithAttributeWindow;
 import org.generationcp.breeding.manager.listmanager.ListTabComponent;
 import org.generationcp.breeding.manager.util.GermplasmDetailModel;
 import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -22,6 +25,7 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.service.api.PedigreeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +48,9 @@ import com.vaadin.ui.themes.Reindeer;
 public class FillWith implements InternationalizableComponent  {
 	
 	private static final String EMPTY_STRING = "";
+	
+	@Resource
+	private CrossExpansionProperties crossExpansionProperties;
 
 	private final class TableHeaderClickListener implements Table.HeaderClickListener {
 		private static final long serialVersionUID = 4792602001489368804L;
@@ -123,6 +130,8 @@ public class FillWith implements InternationalizableComponent  {
 	
     @Autowired
     private GermplasmDataManager germplasmDataManager;
+    @Autowired
+    private PedigreeService pedigreeService;
 
     private AbstractLayout parentLayout;
     
@@ -778,8 +787,8 @@ public class FillWith implements InternationalizableComponent  {
 	            Object gidObject = item.getItemProperty(gidPropertyId).getValue();
 	            Button b= (Button) gidObject;
 	            String gid=b.getCaption();
-	            try{
-	            	String crossExpansion = this.germplasmDataManager.getCrossExpansion(Integer.parseInt(gid), crossExpansionLevel.intValue());
+	            try{	            		            
+	            	String crossExpansion = this.pedigreeService.getCrossExpansion(Integer.parseInt(gid), crossExpansionLevel.intValue(), this.crossExpansionProperties);
 	            	item.getItemProperty(propertyId).setValue(crossExpansion);
 	            } catch(MiddlewareQueryException ex){
 	            	LOG.error("Error with getting cross expansion: gid=" + gid + " level=" + crossExpansionLevel, ex);

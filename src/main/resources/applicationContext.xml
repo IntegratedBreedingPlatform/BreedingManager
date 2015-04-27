@@ -12,11 +12,10 @@
 >
     
     <!-- Declare property file locations -->
-    <context:property-placeholder location="classpath:workbench.properties,classpath:c3p0.properties" />
+    <context:property-placeholder location="classpath:workbench.properties,classpath:c3p0.properties,classpath:crossing.properties" />
     
     <!-- Enable Spring annotations -->
     <context:annotation-config/>
-    
     <!--
         Enable load-time-weaving so we can use @Configurable annotation.
         To make this work, we need to set the -java.agent VM argument to the spring-instrument JAR file's path.
@@ -47,7 +46,8 @@
             <util:constant static-field="java.util.Locale.ENGLISH"/>
         </property>
     </bean>
-    
+
+
     <bean id="workbenchDataSource" class = "com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
         <property name="driverClass" value="${workbench.driver}" />
         <property name="jdbcUrl" value="${workbench.url}" />
@@ -78,6 +78,11 @@
         <aop:scoped-proxy proxy-target-class="false"/>
     </bean>
     
+	<bean id="crossExpansionProperties" class = "org.generationcp.middleware.util.CrossExpansionProperties">
+    	<property name="wheatLevel" value="${wheat.generation.level}" />
+        <property name="defaultLevel" value="${default.generation.level}" />
+    </bean>
+    
     <bean id="managerFactoryProvider" class="org.generationcp.commons.hibernate.DynamicManagerFactoryProviderConcurrency">
     	<constructor-arg ref="workbenchDataManager" />
     	<property name="maxCachedSessionFactories" value="10" />
@@ -85,6 +90,7 @@
     	<property name="dbHost" value="${workbench.host}" />
     	<property name="dbUsername" value="${workbench.username}"/>
         <property name="dbPassword" value="${workbench.password}"/>
+        <property name="pedigreeProfile" value="${pedigree.profile}"/>
     </bean>
     
     <bean id="managerFactory" name="managerFactory"
@@ -171,4 +177,12 @@
         Reuseable UI components can be declared here, but don't do it just so you can have auto-wiring.
         Add @Configurable annotation to your class if you only need auto-wiring.
     -->
+    
+	<bean id="pedigreeService" factory-bean="managerFactory"
+          factory-method="getPedigreeService"
+          scope="request">
+        <aop:scoped-proxy/>
+    </bean>
+        
+    
 </beans>

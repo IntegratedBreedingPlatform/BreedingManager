@@ -14,6 +14,8 @@ package org.generationcp.breeding.manager.listimport;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.actions.ProcessImportedGermplasmAction;
@@ -22,6 +24,7 @@ import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportBut
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.ImportGermplasmEntryActionListener;
 import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -35,6 +38,7 @@ import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.service.api.PedigreeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -84,6 +88,9 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
     private GermplasmDataManager germplasmDataManager;
     
     @Autowired
+    private PedigreeService pedigreeService;
+    
+    @Autowired
     private LocationDataManager locationDataManager;
     
     private String germplasmName;
@@ -104,6 +111,9 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
     
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
+	
+	@Resource
+	private CrossExpansionProperties crossExpansionProperties;
     
     public SelectGermplasmWindow(ProcessImportedGermplasmAction source, String germplasmName, int index, Germplasm germplasm, Window parentWindow) {
         this.germplasmName = germplasmName;
@@ -377,7 +387,7 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
                 if(currentGermplasm!=null){
                 	try {
                 		if(germplasmDataManager!=null) {
-                            crossExpansion = germplasmDataManager.getCrossExpansion(currentGermplasm.getGid(), 1);
+                            crossExpansion = pedigreeService.getCrossExpansion(currentGermplasm.getGid(), this.crossExpansionProperties);
                         }
                 	} catch(MiddlewareQueryException ex){
                         crossExpansion = "-";

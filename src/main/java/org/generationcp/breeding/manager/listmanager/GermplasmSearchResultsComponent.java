@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -20,6 +23,7 @@ import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.service.api.PedigreeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -87,9 +91,15 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
+	
+    @Autowired
+    private PedigreeService pedigreeService;
     
     @Autowired
     private OntologyDataManager ontologyDataManager;
+    
+    @Resource
+	private CrossExpansionProperties crossExpansionProperties;
     
     
     public GermplasmSearchResultsComponent(){
@@ -312,7 +322,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
             if(germplasm!=null){
             	try {
             		if(germplasmDataManager!=null) {
-                        crossExpansion = germplasmDataManager.getCrossExpansion(germplasm.getGid(), 1);
+                        crossExpansion = pedigreeService.getCrossExpansion(germplasm.getGid(), this.crossExpansionProperties);
                     }
             	} catch(MiddlewareQueryException ex){
             		LOG.error(ex.getMessage(), ex);
