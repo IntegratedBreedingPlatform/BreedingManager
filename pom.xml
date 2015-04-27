@@ -335,6 +335,7 @@
 								<copy todir="src/main/resources" overwrite="true">
 									<fileset dir="pipeline/config/${envConfig}" id="fromDir">
 										<include name="workbench.properties" />
+										<include name="crossing.properties" />
 									</fileset>
 								</copy>
 							</tasks>

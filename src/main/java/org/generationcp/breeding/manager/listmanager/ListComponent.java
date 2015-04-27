@@ -48,6 +48,7 @@ import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -67,6 +68,7 @@ import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.service.api.PedigreeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -226,6 +228,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
+	
+    @Autowired
+    private PedigreeService pedigreeService;
 
 	@Autowired
 	private PedigreeDataManager pedigreeDataManager;
@@ -244,6 +249,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 	private FillWith fillWith;
 
 	private SaveListAsDialog dialog;
+	
+	@Resource
+	private CrossExpansionProperties crossExpansionProperties;
 
 	public ListComponent(ListManagerMain source, ListTabComponent parentListDetailsComponent,
 			GermplasmList germplasmList) {
@@ -1537,7 +1545,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 
 		String groupName = "-";
 		try {
-			groupName = this.germplasmDataManager.getCrossExpansion(gid, 1);
+			groupName = this.pedigreeService.getCrossExpansion(gid, this.crossExpansionProperties);
 		} catch (MiddlewareQueryException ex) {
 			LOG.error(ex.getMessage(), ex);
 			groupName = "-";
