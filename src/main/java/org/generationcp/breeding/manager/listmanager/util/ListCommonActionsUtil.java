@@ -1,9 +1,11 @@
 package org.generationcp.breeding.manager.listmanager.util;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Window;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
@@ -17,7 +19,10 @@ import org.generationcp.middleware.pojos.GermplasmListData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Window;
 
 public class ListCommonActionsUtil {
 
@@ -48,7 +53,7 @@ public class ListCommonActionsUtil {
 	 * Iterates through the whole table, gets selected item GID's, make sure it's sorted as seen on the UI
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<Integer> getSelectedGidsFromListDataTable(Table table, String GIDItemId) {
+	public static List<Integer> getSelectedGidsFromListDataTable(Table table, String gidItemId) {
 		List<Integer> itemIds = new ArrayList<Integer>();
 		List<Integer> selectedItemIds = new ArrayList<Integer>();
 		List<Integer> trueOrderedSelectedGIDs = new ArrayList<Integer>();
@@ -59,7 +64,7 @@ public class ListCommonActionsUtil {
 		for (Integer itemId : itemIds) {
 			if (selectedItemIds.contains(itemId)) {
 				Integer gid = Integer.valueOf(
-						((Button) table.getItem(itemId).getItemProperty(GIDItemId).getValue())
+						((Button) table.getItem(itemId).getItemProperty(gidItemId).getValue())
 								.getCaption().toString());
 				trueOrderedSelectedGIDs.add(gid);
 			}
@@ -190,71 +195,93 @@ public class ListCommonActionsUtil {
 				dataManager, source, messageSource);
 
 		for (GermplasmListData entry : listEntries) {
-			if (entry.getId() > 0 && !savedListEntriesMap.isEmpty()) {
+			if (entry.getId() > 0 && !savedListEntriesMap.isEmpty() 
+					&& savedListEntriesMap.get(entry.getId()) != null) {
+				
 				GermplasmListData matchingSavedEntry = savedListEntriesMap.get(entry.getId());
-				if (matchingSavedEntry != null) {
-					//check if it will be updated
-					boolean thereIsAChange = false;
-					if (!matchingSavedEntry.getDesignation().equals(entry.getDesignation())) {
-						thereIsAChange = true;
-						String designation = entry.getDesignation();
-						if (designation != null && designation.length() != 0) {
-							matchingSavedEntry.setDesignation(designation);
-						} else {
-							matchingSavedEntry.setDesignation("-");
-						}
-					}
-
-					if (!matchingSavedEntry.getEntryCode().equals(entry.getEntryCode())) {
-						thereIsAChange = true;
-						String entryCode = entry.getEntryCode();
-						if (entryCode != null && entryCode.length() != 0) {
-							matchingSavedEntry.setEntryCode(entryCode);
-						} else {
-							matchingSavedEntry.setEntryCode(entry.getEntryId().toString());
-						}
-					}
-
-					if (!matchingSavedEntry.getEntryId().equals(entry.getEntryId())) {
-						thereIsAChange = true;
-						matchingSavedEntry.setEntryId(entry.getEntryId());
-					}
-
-					if (!matchingSavedEntry.getGroupName().equals(entry.getGroupName())) {
-						thereIsAChange = true;
-						String groupName = entry.getGroupName();
-						if (groupName != null && groupName.length() != 0) {
-							if (groupName.length() > 255) {
-								groupName = groupName.substring(0, 255);
-							}
-							matchingSavedEntry.setGroupName(groupName);
-						} else {
-							matchingSavedEntry.setGroupName("-");
-						}
-					}
-
-					if (!matchingSavedEntry.getSeedSource().equals(entry.getSeedSource())) {
-						thereIsAChange = true;
-						String seedSource = entry.getSeedSource();
-						if (seedSource != null && seedSource.length() != 0) {
-							matchingSavedEntry.setSeedSource(seedSource);
-						} else {
-							matchingSavedEntry.setSeedSource("-");
-						}
-					}
-
-					if (thereIsAChange) {
-						entriesToUpdate.add(matchingSavedEntry);
-					}
-				} else {
-					// add to new entries to add
-					GermplasmListData listEntry = new GermplasmListData();
-					copyFieldsToNewListEntry(listEntry, entry, listToSave);
-					newEntries.add(listEntry);
+				//check if it will be updated
+				boolean thereIsAChange = false;
+				if (!matchingSavedEntry.getDesignation().equals(entry.getDesignation())) {
+					thereIsAChange = true;
+					setDesignationOfMatchingSavedEntry(entry,
+							matchingSavedEntry);
 				}
+
+				if (!matchingSavedEntry.getEntryCode().equals(entry.getEntryCode())) {
+					thereIsAChange = true;
+					setEntryCodeOfMatchingSavedEntry(entry, matchingSavedEntry);
+				}
+
+				if (!matchingSavedEntry.getEntryId().equals(entry.getEntryId())) {
+					thereIsAChange = true;
+					matchingSavedEntry.setEntryId(entry.getEntryId());
+				}
+
+				if (!matchingSavedEntry.getGroupName().equals(entry.getGroupName())) {
+					thereIsAChange = true;
+					setGroupNameOfMatchingSavedEntry(entry, matchingSavedEntry);
+				}
+
+				if (!matchingSavedEntry.getSeedSource().equals(entry.getSeedSource())) {
+					thereIsAChange = true;
+					setSeedSourceOfMatchingSavedEntry(entry, matchingSavedEntry);
+				}
+
+				if (thereIsAChange) {
+					entriesToUpdate.add(matchingSavedEntry);
+				}
+				
+			} else {
+				// add to new entries to add
+				GermplasmListData listEntry = new GermplasmListData();
+				copyFieldsToNewListEntry(listEntry, entry, listToSave);
+				newEntries.add(listEntry);
 			}
 		}
 
+	}
+
+	protected static void setDesignationOfMatchingSavedEntry(
+			GermplasmListData entry, GermplasmListData matchingSavedEntry) {
+		String designation = entry.getDesignation();
+		if (designation != null && designation.length() != 0) {
+			matchingSavedEntry.setDesignation(designation);
+		} else {
+			matchingSavedEntry.setDesignation("-");
+		}
+	}
+
+	protected static void setEntryCodeOfMatchingSavedEntry(
+			GermplasmListData entry, GermplasmListData matchingSavedEntry) {
+		String entryCode = entry.getEntryCode();
+		if (entryCode != null && entryCode.length() != 0) {
+			matchingSavedEntry.setEntryCode(entryCode);
+		} else {
+			matchingSavedEntry.setEntryCode(entry.getEntryId().toString());
+		}
+	}
+
+	protected static void setSeedSourceOfMatchingSavedEntry(
+			GermplasmListData entry, GermplasmListData matchingSavedEntry) {
+		String seedSource = entry.getSeedSource();
+		if (seedSource != null && seedSource.length() != 0) {
+			matchingSavedEntry.setSeedSource(seedSource);
+		} else {
+			matchingSavedEntry.setSeedSource("-");
+		}
+	}
+
+	protected static void setGroupNameOfMatchingSavedEntry(
+			GermplasmListData entry, GermplasmListData matchingSavedEntry) {
+		String groupName = entry.getGroupName();
+		if (groupName != null && groupName.length() != 0) {
+			if (groupName.length() > 255) {
+				groupName = groupName.substring(0, 255);
+			}
+			matchingSavedEntry.setGroupName(groupName);
+		} else {
+			matchingSavedEntry.setGroupName("-");
+		}
 	}
 
 	private static Map<Integer, GermplasmListData> getSavedListEntriesMap(
@@ -274,7 +301,8 @@ public class ListCommonActionsUtil {
 					if (!listEntries.contains(savedEntry) || forceHasChanges) {
 						savedEntry.setStatus(Integer.valueOf(9));
 						entriesToDelete.add(savedEntry);
-					} else {//add to map for possible update
+					} else {
+						//add to map for possible update
 						savedListEntriesMap.put(savedEntry.getId(), savedEntry);
 					}
 				}

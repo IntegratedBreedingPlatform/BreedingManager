@@ -32,6 +32,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableTransferable;
 import com.vaadin.ui.themes.BaseTheme;
@@ -376,6 +377,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		newItem.getItemProperty(ColumnLabels.RESERVED.getName()).setValue(0);
 		newItem.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(0);
 		newItem.getItemProperty(ColumnLabels.COMMENT.getName()).setValue(lotDetail.getCommentOfLot());
+		newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(new Label(""));
 		newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotDetail.getLotId());
 		
 		return newItem;
