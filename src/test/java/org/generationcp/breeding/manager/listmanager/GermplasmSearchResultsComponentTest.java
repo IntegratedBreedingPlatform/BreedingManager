@@ -72,6 +72,8 @@ public class GermplasmSearchResultsComponentTest {
 	public void testInstantiateComponentsHeaderNameDoesntExistFromOntology() throws MiddlewareQueryException{
 		
 		doReturn(null).when(ontologyDataManager).getTermById(ColumnLabels.PARENTAGE.getTermId().getId());
+		doReturn(null).when(ontologyDataManager).getTermById(ColumnLabels.AVAILABLE_INVENTORY.getTermId().getId());
+		doReturn(null).when(ontologyDataManager).getTermById(ColumnLabels.SEED_RESERVATION.getTermId().getId());
 		doReturn(null).when(ontologyDataManager).getTermById(ColumnLabels.STOCKID.getTermId().getId());
 		doReturn(null).when(ontologyDataManager).getTermById(ColumnLabels.GID.getTermId().getId());
 		doReturn(null).when(ontologyDataManager).getTermById(ColumnLabels.GERMPLASM_LOCATION.getTermId().getId());
@@ -84,6 +86,8 @@ public class GermplasmSearchResultsComponentTest {
 		assertEquals("Tag All Column", table.getColumnHeader(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID));
 		assertEquals("NAMES", table.getColumnHeader(GermplasmSearchResultsComponent.NAMES));
 		assertEquals(ColumnLabels.PARENTAGE.getName(), table.getColumnHeader(ColumnLabels.PARENTAGE.getName()));
+		assertEquals(ColumnLabels.AVAILABLE_INVENTORY.getName(), table.getColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName()));
+		assertEquals(ColumnLabels.SEED_RESERVATION.getName(), table.getColumnHeader(ColumnLabels.SEED_RESERVATION.getName()));
 		assertEquals(ColumnLabels.STOCKID.getName(), table.getColumnHeader(ColumnLabels.STOCKID.getName()));
 		assertEquals(ColumnLabels.GID.getName(), table.getColumnHeader(ColumnLabels.GID.getName()));
 		assertEquals(ColumnLabels.GERMPLASM_LOCATION.getName(), table.getColumnHeader(ColumnLabels.GERMPLASM_LOCATION.getName()));
