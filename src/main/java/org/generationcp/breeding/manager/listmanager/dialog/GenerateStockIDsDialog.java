@@ -40,6 +40,7 @@ import com.vaadin.ui.themes.Reindeer;
 @Configurable
 public class GenerateStockIDsDialog extends BaseSubWindow implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
+	private static final String DEFAULT_STOCKID_PREFIX = "SID";
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = LoggerFactory.getLogger(GenerateStockIDsDialog.class);
 
@@ -60,7 +61,7 @@ public class GenerateStockIDsDialog extends BaseSubWindow implements Initializin
 	private TextField txtSpecifyPrefix;
 	private Label lblExampleNextPrefixInSequence;
 	private Label lblExampleStockIdForThisList;
-	
+
 	private VerticalLayout source; 
 	
 	
@@ -106,6 +107,7 @@ public class GenerateStockIDsDialog extends BaseSubWindow implements Initializin
 		txtSpecifyPrefix = new TextField();
 		txtSpecifyPrefix.setImmediate(true);
 		txtSpecifyPrefix.setMaxLength(15);
+		txtSpecifyPrefix.focus();
 		
 		lblDefaultPrefixDescription = new Label(messageSource.getMessage(Message.DEFAULT_PREFIX_DESCRIPTION_LABEL));
 		lblDefaultPrefixDescription.addStyleName("italic");
@@ -135,7 +137,9 @@ public class GenerateStockIDsDialog extends BaseSubWindow implements Initializin
 
 	@Override
 	public void initializeValues() {
-		//do nothing
+		
+		updateSampleStockId("");
+		
 	}
 
 	@Override
@@ -163,7 +167,7 @@ public class GenerateStockIDsDialog extends BaseSubWindow implements Initializin
 				
 				if (source instanceof SpecifyGermplasmDetailsComponent){
 					
-					applyStockIdToImportedGermplasm(((SpecifyGermplasmDetailsComponent) source).getImportedGermplasms());
+					applyStockIdToImportedGermplasm(txtSpecifyPrefix.getValue().toString(),((SpecifyGermplasmDetailsComponent) source).getImportedGermplasms());
 					
 					((SpecifyGermplasmDetailsComponent) source).popupSaveAsDialog();
 					Window win = event.getButton().getWindow() ;
@@ -199,22 +203,6 @@ public class GenerateStockIDsDialog extends BaseSubWindow implements Initializin
 		
            
 	}
-
-	private void updateSampleStockId(String prefix){
-		try {
-			if (!StringUtils.isEmpty(prefix)){
-				String nextStockIDPrefix = inventoryStockService.calculateNextStockIDPrefix(prefix, "-");
-				lblExampleNextPrefixInSequence.setValue(nextStockIDPrefix.substring(0, nextStockIDPrefix.length()-1));
-				lblExampleStockIdForThisList.setValue(nextStockIDPrefix + "1");
-			}else{
-				lblExampleNextPrefixInSequence.setValue("");
-				lblExampleStockIdForThisList.setValue("");
-			}
-			
-		} catch (MiddlewareException e) {
-			LOG.error(e.getMessage(), e);
-		}
-	}
 	
 	@Override
 	public void layoutComponents() {
@@ -247,6 +235,12 @@ public class GenerateStockIDsDialog extends BaseSubWindow implements Initializin
 		
 	}
 	
+	protected Label getLblExampleNextPrefixInSequence() {
+		return lblExampleNextPrefixInSequence;
+	}
+	protected Label getLblExampleStockIdForThisList() {
+		return lblExampleStockIdForThisList;
+	}
 	
 	private class OneLineLayout extends HorizontalLayout {
 		
@@ -261,11 +255,29 @@ public class GenerateStockIDsDialog extends BaseSubWindow implements Initializin
 		
 	}
 	
-	private void applyStockIdToImportedGermplasm(List<ImportedGermplasm> importedGermplasmList){
-		
-		String prefix = txtSpecifyPrefix.getValue().toString();
+	protected void updateSampleStockId(String prefix){
+		try {
+			
+			String nextStockIDPrefix = "";
+			
+			if (!StringUtils.isEmpty(prefix.trim())){
+				nextStockIDPrefix = inventoryStockService.calculateNextStockIDPrefix(prefix, "-");
+			}else{
+				nextStockIDPrefix = inventoryStockService.calculateNextStockIDPrefix(DEFAULT_STOCKID_PREFIX, "-");			
+			}
+			
+			lblExampleNextPrefixInSequence.setValue(nextStockIDPrefix.substring(0, nextStockIDPrefix.length()-1));
+			lblExampleStockIdForThisList.setValue(nextStockIDPrefix + "1");
+			
+		} catch (MiddlewareException e) {
+			LOG.error(e.getMessage(), e);
+		}
+	}
+	
+	protected void applyStockIdToImportedGermplasm(String prefix, List<ImportedGermplasm> importedGermplasmList){
+	
 		if (StringUtils.isEmpty(prefix)) {
-			prefix = "SID";
+			prefix = DEFAULT_STOCKID_PREFIX;
 		}
 		String nextStockIDPrefix;
 		try {
@@ -284,5 +296,7 @@ public class GenerateStockIDsDialog extends BaseSubWindow implements Initializin
 		
 		
 	}
+	
+	
 
 }
