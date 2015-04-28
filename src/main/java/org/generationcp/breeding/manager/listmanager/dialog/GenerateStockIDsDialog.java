@@ -276,12 +276,16 @@ public class GenerateStockIDsDialog extends BaseSubWindow implements Initializin
 	
 	protected void applyStockIdToImportedGermplasm(String prefix, List<ImportedGermplasm> importedGermplasmList){
 	
-		if (StringUtils.isEmpty(prefix)) {
-			prefix = DEFAULT_STOCKID_PREFIX;
-		}
+		
 		String nextStockIDPrefix;
 		try {
-			nextStockIDPrefix = inventoryStockService.calculateNextStockIDPrefix(prefix, "-");
+			
+			if (StringUtils.isEmpty(prefix)) {
+				nextStockIDPrefix = inventoryStockService.calculateNextStockIDPrefix(DEFAULT_STOCKID_PREFIX, "-");
+			}else{
+				nextStockIDPrefix = inventoryStockService.calculateNextStockIDPrefix(prefix, "-");
+			}
+			
 			int stockIdSequence = 1;
 			for (ImportedGermplasm importedGermplasm: importedGermplasmList){
 				if (importedGermplasm.getSeedAmount()!= null && importedGermplasm.getSeedAmount() > 0){
