@@ -454,6 +454,7 @@ public enum Message{
     ,WITH_INVENTORY_ONLY
     ,INCLUDE_PARENTS
     ,INCLUDE_PUBLIC_DATA
+    ,SEARCH_TAKE_TOO_LONG_WARNING
     
     //General error msg
     ,ERROR_REPORT_TO

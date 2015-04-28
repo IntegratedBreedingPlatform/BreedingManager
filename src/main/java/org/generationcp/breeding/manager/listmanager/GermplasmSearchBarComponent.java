@@ -10,6 +10,7 @@ import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.manager.Operation;
 import org.slf4j.Logger;
@@ -33,6 +34,7 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 @Configurable
 public class GermplasmSearchBarComponent extends CssLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
@@ -199,9 +201,25 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 	}
 
 	public void searchButtonClickAction(){
-		String q = searchField.getValue().toString();
-		doSearch(q);
-
+		final String q = searchField.getValue().toString();
+		String searchType = (String)searchTypeOptions.getValue();
+		if(matchesContaining.equals(searchType)) {
+			ConfirmDialog.show(getWindow(), 
+				messageSource.getMessage(Message.WARNING), 
+	            messageSource.getMessage(Message.SEARCH_TAKE_TOO_LONG_WARNING), 
+	            messageSource.getMessage(Message.OK), messageSource.getMessage(Message.CANCEL), 
+	            new ConfirmDialog.Listener() {
+					private static final long serialVersionUID = 1L;
+					public void onClose(ConfirmDialog dialog) {
+	                    if (dialog.isConfirmed()) {
+							doSearch(q);
+	                    }
+	                }
+	            }
+	        );
+		} else {
+			doSearch(q);
+		}
     }
 	
 	public void doSearch(String q) {
