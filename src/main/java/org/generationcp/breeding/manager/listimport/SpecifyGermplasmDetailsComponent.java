@@ -16,6 +16,7 @@ import org.generationcp.breeding.manager.listimport.actions.ProcessImportedGermp
 import org.generationcp.breeding.manager.listimport.actions.SaveGermplasmListAction;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
 import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
+import org.generationcp.breeding.manager.listmanager.dialog.GenerateStockIDsDialog;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
@@ -80,6 +81,9 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
     private GermplasmList germplasmList;
 
     private SaveListAsDialog saveListAsDialog;
+    
+    private GenerateStockIDsDialog generateStockIdsDialog;
+    
     private ProcessImportedGermplasmAction processGermplasmAction;
 
     @Autowired
@@ -156,6 +160,17 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         if (validateLocation() && validatePedigreeOption()) {
             processGermplasmAction.processGermplasm();
         }
+    	
+    }
+    
+    public void saveTheList(){
+    	
+    	if (germplasmListUploader.hasInventoryAmount()){
+    		popupGenerateStockIdsDialog();
+    	}else{
+    		popupSaveAsDialog();
+    	}
+    	
     }
 
     public void popupSaveAsDialog() {
@@ -202,6 +217,18 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
             source.getGermplasmImportPopupSource().getParentWindow().addWindow(saveListAsDialog);
         }
 
+    }
+    
+    public void popupGenerateStockIdsDialog(){
+    	
+    	 generateStockIdsDialog = new GenerateStockIDsDialog(this, germplasmList);
+         //If not from popup
+         if (source.getGermplasmImportPopupSource() == null) {
+             this.getWindow().addWindow(generateStockIdsDialog);
+         } else {
+             source.getGermplasmImportPopupSource().getParentWindow().addWindow(generateStockIdsDialog);
+         }
+    	
     }
 
     private boolean validatePedigreeOption() {

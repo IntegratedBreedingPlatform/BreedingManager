@@ -573,7 +573,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	}
 
 	public void saveImport() {
-		germplasmDetailsComponent.popupSaveAsDialog();
+		germplasmDetailsComponent.saveTheList();
 	}
 
 	public void mapGermplasmNamesToGermplasm(String germplasmName,

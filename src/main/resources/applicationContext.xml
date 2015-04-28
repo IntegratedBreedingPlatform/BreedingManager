@@ -184,5 +184,38 @@
         <aop:scoped-proxy/>
     </bean>
         
+    <bean class="org.generationcp.commons.ruleengine.RulesPostProcessor">
+        <property name="ruleFactory" ref="ruleFactory"/>
+    </bean>
+    
+    <bean id="ruleFactory" class="org.generationcp.commons.ruleengine.RuleFactory"
+          init-method="init"/>
+
+    <bean id="ruleConfigProvider"
+          class="org.generationcp.commons.ruleengine.provider.PropertyFileRuleConfigurationProvider">
+        <property name="ruleSequenceConfiguration">
+            <map>
+                <entry key="stockid" value="${stockid.rules}"/>
+            </map>
+        </property>
+    </bean>
+
+	<bean id="ruleService" class="org.generationcp.commons.ruleengine.impl.RulesServiceImpl" />
+    <!--
+        This component scan automatically registers all implementations of the Rule interface into the Spring context.
+        In conjunction with the RulesPostProcessor above, this automatically populates the map in the RuleFactory
+         -->
+   <context:component-scan base-package="org.generationcp.commons.ruleengine.stockid"/>
+   
+    <bean id="inventoryStockService" class="org.generationcp.commons.service.impl.InventoryStockServiceImpl">
+        <aop:scoped-proxy/>
+    </bean>
+    
+    <bean id="inventoryService" factory-bean="managerFactory"
+    	factory-method="getInventoryMiddlewareService"
+    	scope="request">
+        <aop:scoped-proxy/>
+    </bean>
+    
     
 </beans>
