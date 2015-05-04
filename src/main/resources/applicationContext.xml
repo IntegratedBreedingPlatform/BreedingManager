@@ -207,7 +207,7 @@
          -->
    <context:component-scan base-package="org.generationcp.commons.ruleengine.stockid"/>
    
-    <bean id="inventoryStockService" class="org.generationcp.commons.service.impl.InventoryStockServiceImpl">
+    <bean id="stockService" class="org.generationcp.commons.service.impl.StockServiceImpl">
         <aop:scoped-proxy/>
     </bean>
     

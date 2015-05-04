@@ -7,7 +7,7 @@ import junit.framework.Assert;
 
 import org.generationcp.breeding.manager.listimport.SpecifyGermplasmDetailsComponent;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
-import org.generationcp.commons.service.impl.InventoryStockServiceImpl;
+import org.generationcp.commons.service.impl.StockServiceImpl;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +25,7 @@ public class GenerateStockIDsDialogTest {
 	SpecifyGermplasmDetailsComponent source;
 	
 	@Mock
-	InventoryStockServiceImpl inventoryStockService;
+	StockServiceImpl stockService;
 	
 	@InjectMocks
 	GenerateStockIDsDialog generateStockIDsDialog = Mockito.spy(new GenerateStockIDsDialog(source, null));
@@ -35,8 +35,8 @@ public class GenerateStockIDsDialogTest {
 		
 		MockitoAnnotations.initMocks(this);
 		
-		Mockito.doReturn("SID1-").when(inventoryStockService).calculateNextStockIDPrefix("SID", "-");
-		Mockito.doReturn("TEST1-").when(inventoryStockService).calculateNextStockIDPrefix("TEST", "-");
+		Mockito.doReturn("SID1-").when(stockService).calculateNextStockIDPrefix("SID", "-");
+		Mockito.doReturn("TEST1-").when(stockService).calculateNextStockIDPrefix("TEST", "-");
 		
 	}
 	

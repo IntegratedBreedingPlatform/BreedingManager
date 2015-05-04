@@ -9,7 +9,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.SpecifyGermplasmDetailsComponent;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
-import org.generationcp.commons.service.impl.InventoryStockServiceImpl;
+import org.generationcp.commons.service.impl.StockServiceImpl;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -48,7 +48,7 @@ public class GenerateStockIDsDialog extends BaseSubWindow implements Initializin
     private SimpleResourceBundleMessageSource messageSource;
 	
 	@Resource
-	private InventoryStockServiceImpl inventoryStockService;
+	private StockServiceImpl stockService;
 	
 	private Button btnContinue;
 	private Button btnCancel;
@@ -261,9 +261,9 @@ public class GenerateStockIDsDialog extends BaseSubWindow implements Initializin
 			String nextStockIDPrefix = "";
 			
 			if (!StringUtils.isEmpty(prefix.trim())){
-				nextStockIDPrefix = inventoryStockService.calculateNextStockIDPrefix(prefix, "-");
+				nextStockIDPrefix = stockService.calculateNextStockIDPrefix(prefix, "-");
 			}else{
-				nextStockIDPrefix = inventoryStockService.calculateNextStockIDPrefix(DEFAULT_STOCKID_PREFIX, "-");			
+				nextStockIDPrefix = stockService.calculateNextStockIDPrefix(DEFAULT_STOCKID_PREFIX, "-");			
 			}
 			
 			lblExampleNextPrefixInSequence.setValue(nextStockIDPrefix.substring(0, nextStockIDPrefix.length()-1));
@@ -281,9 +281,9 @@ public class GenerateStockIDsDialog extends BaseSubWindow implements Initializin
 		try {
 			
 			if (StringUtils.isEmpty(prefix)) {
-				nextStockIDPrefix = inventoryStockService.calculateNextStockIDPrefix(DEFAULT_STOCKID_PREFIX, "-");
+				nextStockIDPrefix = stockService.calculateNextStockIDPrefix(DEFAULT_STOCKID_PREFIX, "-");
 			}else{
-				nextStockIDPrefix = inventoryStockService.calculateNextStockIDPrefix(prefix, "-");
+				nextStockIDPrefix = stockService.calculateNextStockIDPrefix(prefix, "-");
 			}
 			
 			int stockIdSequence = 1;
