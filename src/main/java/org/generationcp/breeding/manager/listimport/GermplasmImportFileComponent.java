@@ -1,11 +1,16 @@
 package org.generationcp.breeding.manager.listimport;
 
+import com.vaadin.ui.*;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.themes.Reindeer;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.UploadField;
 import org.generationcp.breeding.manager.listimport.exceptions.GermplasmImportException;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
 import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
+import org.generationcp.commons.parsing.FileParsingException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -16,16 +21,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Upload;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Reindeer;
+import java.util.Locale;
 
 @Configurable
 public class GermplasmImportFileComponent extends AbsoluteLayout implements InitializingBean, 
@@ -75,16 +71,26 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
     
     public void nextButtonClickAction() {
     	try {
-    		germplasmListUploader.validate();
-            germplasmListUploader.readSheets();
-            MessageNotifier.showMessage(source.getWindow(), "Success", "File was successfully uploaded");
-    		
+    		germplasmListUploader.doParseWorkbook();
+
+            if ("".equals(germplasmListUploader.hasWarnings())) {
+                MessageNotifier.showMessage(source.getWindow(), "Success", "File was successfully uploaded");
+            } else {
+                MessageNotifier.showWarning(source.getWindow(), "Warning",
+                        germplasmListUploader.hasWarnings());
+            }
+
     		source.nextStep();
 			
 		} catch (GermplasmImportException e) {
 			LOG.debug("Error importing " + e.getMessage(), e);
 			MessageNotifier.showError(getWindow(), e.getCaption(), e.getMessage());
-		}
+		} catch (FileParsingException e) {
+            LOG.debug("Error importing " + e.getMessage(), e);
+            String message = messageSource.getMessage(e.getMessage(), e.getMessageParameters(), Locale
+                    .getDefault());
+            MessageNotifier.showError(getWindow(), "Error",message);
+        }
     }
     
     public GermplasmImportMain getSource() {

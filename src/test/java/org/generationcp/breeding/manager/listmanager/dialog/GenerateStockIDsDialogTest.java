@@ -1,13 +1,9 @@
 package org.generationcp.breeding.manager.listmanager.dialog;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import junit.framework.Assert;
-
 import org.generationcp.breeding.manager.listimport.SpecifyGermplasmDetailsComponent;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
-import org.generationcp.commons.service.impl.StockServiceImpl;
+import org.generationcp.commons.service.StockService;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +11,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GenerateStockIDsDialogTest {
 
@@ -25,7 +24,7 @@ public class GenerateStockIDsDialogTest {
 	SpecifyGermplasmDetailsComponent source;
 	
 	@Mock
-	StockServiceImpl stockService;
+	StockService stockService;
 	
 	@InjectMocks
 	GenerateStockIDsDialog generateStockIDsDialog = Mockito.spy(new GenerateStockIDsDialog(source, null));

@@ -210,12 +210,16 @@
     <bean id="stockService" class="org.generationcp.commons.service.impl.StockServiceImpl">
         <aop:scoped-proxy/>
     </bean>
-    
+
+
+    <bean id="fileService" class="org.generationcp.commons.service.impl.FileServiceImpl"
+          init-method="init">
+    </bean>
+
     <bean id="inventoryService" factory-bean="managerFactory"
     	factory-method="getInventoryMiddlewareService"
     	scope="request">
         <aop:scoped-proxy/>
     </bean>
-    
-    
+
 </beans>

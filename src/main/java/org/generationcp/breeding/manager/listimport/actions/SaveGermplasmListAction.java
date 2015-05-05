@@ -1,10 +1,10 @@
 package org.generationcp.breeding.manager.listimport.actions;
 
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
-import org.generationcp.breeding.manager.pojos.ImportedFactor;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
-import org.generationcp.breeding.manager.pojos.ImportedVariate;
+import org.generationcp.commons.parsing.pojo.ImportedFactor;
+import org.generationcp.commons.parsing.pojo.ImportedVariate;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.domain.dms.PhenotypicType;

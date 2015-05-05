@@ -11,7 +11,11 @@ public class ImportedGermplasm {
     private String cross;
     private String source;
     private String entryCode;
+
+	/** also the seed quantity */
     private Double seedAmount;
+
+	/** This is also the stockId */
     private String inventoryId;
     private Map<String, String> attributeVariates;
     private Map<String, String> nameFactors;

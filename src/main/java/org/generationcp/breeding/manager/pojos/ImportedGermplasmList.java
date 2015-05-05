@@ -1,162 +1,118 @@
 package org.generationcp.breeding.manager.pojos;
 
+import org.generationcp.commons.parsing.pojo.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.*;
 
-public class ImportedGermplasmList {
+public class ImportedGermplasmList extends ImportedDescriptionDetails {
 
-    private String filename;
-    private String name;
-    private String title;
-    private String type;
-    private Date date;
-    private List<ImportedCondition> importedConditions;
-    private List<ImportedFactor> importedFactors;
-    private List<ImportedConstant> importedConstants;
-    private List<ImportedVariate> importedVariates;
-    private List<ImportedGermplasm> importedGermplasms;
+	private static final Logger LOG = LoggerFactory.getLogger(ImportedGermplasmList.class);
+	private List<ImportedGermplasm> importedGermplasms = new ArrayList<>();
 
-    public ImportedGermplasmList(String filename, String name, String title, String type, Date date) {
-        this.filename = filename;
-        this.name = name;
-        this.title = title;
-        this.type = type;
-        this.date = date;
-        this.importedConditions = new ArrayList<ImportedCondition>();
-        this.importedFactors = new ArrayList<ImportedFactor>();
-        this.importedConstants = new ArrayList<ImportedConstant>();
-        this.importedVariates = new ArrayList<ImportedVariate>();
-        this.importedGermplasms = new ArrayList<ImportedGermplasm>();
-    }
+	public static final String INVENTORY_AMOUNT_PROPERTY = "INVENTORY AMOUNT";
 
-    public ImportedGermplasmList(String filename, String name, String title, String type, Date date
-            , List<ImportedCondition> importedConditions, List<ImportedFactor> importedFactors
-            , List<ImportedConstant> importedConstants, List<ImportedVariate> importedVariates
-            , List<ImportedGermplasm> importedGermplasms) {
-        this.filename = filename;
-        this.name = name;
-        this.title = title;
-        this.type = type;
-        this.date = date;
-        this.importedConditions = importedConditions;
-        this.importedFactors = importedFactors;
-        this.importedConstants = importedConstants;
-        this.importedVariates = importedVariates;
-        this.importedGermplasms = importedGermplasms;
-    }
+	public ImportedGermplasmList(String filename, String name, String title, String type,
+			Date date) {
+		super(filename,name,title,type,date);
+	}
 
-    public String getFilename() {
-        return filename;
-    }
+	public ImportedGermplasmList(String filename, String name, String title, String type, Date date
+			, List<ImportedCondition> importedConditions, List<ImportedFactor> importedFactors
+			, List<ImportedConstant> importedConstants, List<ImportedVariate> importedVariates
+			, List<ImportedGermplasm> importedGermplasms) {
+		this.filename = filename;
+		this.name = name;
+		this.title = title;
+		this.type = type;
+		this.date = date;
+		this.importedConditions = importedConditions;
+		this.importedFactors = importedFactors;
+		this.importedConstants = importedConstants;
+		this.importedVariates = importedVariates;
+		this.importedGermplasms = importedGermplasms;
+	}
 
-    public void setFilename(String filename) {
-        this.filename = filename;
-    }
+	public void removeImportedFactor(String factorName) {
+		for (ImportedFactor factor : getImportedFactors()) {
+			if (factor.getFactor().equalsIgnoreCase(factorName)) {
+				importedFactors.remove(factor);
+				break;
+			}
+		}
+	}
 
-    public String getName() {
-        return name;
-    }
+	public boolean isUniqueStockId(String stockId) {
+		for (ImportedGermplasm germplasm : getImportedGermplasms()) {
+			if (stockId.equals(germplasm.getInventoryId())) {
+				// oops we have retrieved an existing stockId in the list
+				return false;
+			}
+		}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+		return true;
+	}
 
-    public String getTitle() {
-        return title;
-    }
+	public List<String> getStockIdsAsList() {
+		List<String> stockIDList = new ArrayList<>();
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+		for (ImportedGermplasm germplasm : getImportedGermplasms()) {
+			stockIDList.add(germplasm.getInventoryId());
+		}
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    public List<ImportedCondition> getImportedConditions() {
-        return importedConditions;
-    }
-
-    public void setImportedConditions(List<ImportedCondition> importedConditions) {
-        this.importedConditions = importedConditions;
-    }
-
-    public void addImportedCondition(ImportedCondition importedCondition) {
-        this.importedConditions.add(importedCondition);
-    }
-
-    public List<ImportedFactor> getImportedFactors() {
-        return importedFactors;
-    }
-
-    public void setImportedFactors(List<ImportedFactor> importedFactors) {
-        this.importedFactors = importedFactors;
-    }
-
-    public void addImportedFactor(ImportedFactor importedFactor) {
-        this.importedFactors.add(importedFactor);
-    }
-
-    public List<ImportedConstant> getImportedConstants() {
-        return importedConstants;
-    }
-
-    public void setImportedConstants(List<ImportedConstant> importedConstants) {
-        this.importedConstants = importedConstants;
-    }
-
-    public void addImportedConstant(ImportedConstant importedConstant) {
-        this.importedConstants.add(importedConstant);
-    }
-
-    public List<ImportedVariate> getImportedVariates() {
-        return importedVariates;
-    }
-
-    public void setImportedVariates(List<ImportedVariate> importedVariates) {
-        this.importedVariates = importedVariates;
-    }
-
-    public void addImportedVariate(ImportedVariate importedVariate) {
-        this.importedVariates.add(importedVariate);
-    }
-
-    public List<ImportedGermplasm> getImportedGermplasms() {
-        return importedGermplasms;
-    }
-
-    public void setImportedGermplasms(List<ImportedGermplasm> importedGermplasms) {
-        this.importedGermplasms = importedGermplasms;
-    }
-
-    public void addImportedGermplasm(ImportedGermplasm importedGermplasm) {
-        this.importedGermplasms.add(importedGermplasm);
-    }
-
-    public void normalizeGermplasmList() {
-        if (importedGermplasms != null) {
-            Collections.sort(importedGermplasms, new ImportedGermplasmSorter());
-        }
-    }
-
-    private class ImportedGermplasmSorter implements Comparator<ImportedGermplasm> {
-
-        @Override
-        public int compare(ImportedGermplasm o1, ImportedGermplasm o2) {
-            return o1.getEntryId().compareTo(o2.getEntryId());
-        }
+		return stockIDList;
+	}
 
 
-    }
+	public List<ImportedGermplasm> getImportedGermplasms() {
+		return importedGermplasms;
+	}
+
+	public void setImportedGermplasms(List<ImportedGermplasm> importedGermplasms) {
+		this.importedGermplasms = importedGermplasms;
+	}
+
+	public void addImportedGermplasm(ImportedGermplasm importedGermplasm) {
+		this.importedGermplasms.add(importedGermplasm);
+	}
+
+	public void normalizeGermplasmList() {
+		if (importedGermplasms != null) {
+			Collections.sort(importedGermplasms, new ImportedGermplasmSorter());
+		}
+	}
+
+	public boolean isUniqueStockId() {
+		for (String stockId : getStockIdsAsList()) {
+			if (!isUniqueStockId(stockId)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	public String getDuplicateStockIdIfExists() {
+		Set<String> set = new HashSet<>();
+
+		for (String stockId : getStockIdsAsList()) {
+			if (set.contains(stockId)) {
+				return stockId;
+			} else {
+				set.add(stockId);
+			}
+		}
+
+		return "";
+	}
+
+	private class ImportedGermplasmSorter implements Comparator<ImportedGermplasm> {
+
+		@Override
+		public int compare(ImportedGermplasm o1, ImportedGermplasm o2) {
+			return o1.getEntryId().compareTo(o2.getEntryId());
+		}
+
+	}
 }

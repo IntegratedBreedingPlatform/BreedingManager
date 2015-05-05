@@ -164,7 +164,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
     }
     
     public void saveTheList(){
-    	
+    	// TODO: add condition if doesnt have stock id
     	if (germplasmListUploader.hasInventoryAmount()){
     		popupGenerateStockIdsDialog();
     	}else{
@@ -177,12 +177,12 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 
         germplasmList = new GermplasmList();
 
-        String sDate = DateUtil.formatDateAsStringValue(germplasmListUploader.getListDate(), 
+        String sDate = DateUtil.formatDateAsStringValue(germplasmListUploader.getImportedGermplasmList().getDate(),
         		DateUtil.DATE_AS_NUMBER_FORMAT);
-        germplasmList.setName(germplasmListUploader.getListName());
+        germplasmList.setName(germplasmListUploader.getImportedGermplasmList().getName());
         germplasmList.setDate(Long.parseLong(sDate));
-        germplasmList.setType(germplasmListUploader.getListType());
-        germplasmList.setDescription(germplasmListUploader.getListTitle());
+        germplasmList.setType(germplasmListUploader.getImportedGermplasmList().getType());
+        germplasmList.setDescription(germplasmListUploader.getImportedGermplasmList().getTitle());
         germplasmList.setStatus(1);
         try {
 			germplasmList.setUserId(contextUtil.getCurrentUserLocalId());

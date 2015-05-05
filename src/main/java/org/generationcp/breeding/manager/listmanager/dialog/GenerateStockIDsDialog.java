@@ -1,15 +1,19 @@
 package org.generationcp.breeding.manager.listmanager.dialog;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.event.FieldEvents.TextChangeEvent;
+import com.vaadin.event.FieldEvents.TextChangeListener;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.ui.*;
+import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.themes.Reindeer;
 import org.apache.commons.lang.StringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.SpecifyGermplasmDetailsComponent;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
-import org.generationcp.commons.service.impl.StockServiceImpl;
+import org.generationcp.commons.service.StockService;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -21,21 +25,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.event.FieldEvents.TextChangeEvent;
-import com.vaadin.event.FieldEvents.TextChangeListener;
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Reindeer;
+import javax.annotation.Resource;
+import java.util.List;
 
 @Configurable
 public class GenerateStockIDsDialog extends BaseSubWindow implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
@@ -48,7 +39,7 @@ public class GenerateStockIDsDialog extends BaseSubWindow implements Initializin
     private SimpleResourceBundleMessageSource messageSource;
 	
 	@Resource
-	private StockServiceImpl stockService;
+	private StockService stockService;
 	
 	private Button btnContinue;
 	private Button btnCancel;
@@ -263,7 +254,7 @@ public class GenerateStockIDsDialog extends BaseSubWindow implements Initializin
 			if (!StringUtils.isEmpty(prefix.trim())){
 				nextStockIDPrefix = stockService.calculateNextStockIDPrefix(prefix, "-");
 			}else{
-				nextStockIDPrefix = stockService.calculateNextStockIDPrefix(DEFAULT_STOCKID_PREFIX, "-");			
+				nextStockIDPrefix = stockService.calculateNextStockIDPrefix(DEFAULT_STOCKID_PREFIX, "-");
 			}
 			
 			lblExampleNextPrefixInSequence.setValue(nextStockIDPrefix.substring(0, nextStockIDPrefix.length()-1));
