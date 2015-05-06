@@ -165,7 +165,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
     
     public void saveTheList(){
     	// TODO: add condition if doesnt have stock id
-    	if (germplasmListUploader.hasInventoryAmount()){
+    	if (germplasmListUploader.hasInventoryAmountOnly()){
     		popupGenerateStockIdsDialog();
     	}else{
     		popupSaveAsDialog();
@@ -281,7 +281,8 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         pedigreeOptionComboBox.addItem(3);
         pedigreeOptionComboBox.setItemCaption(1, messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_ONE));
         pedigreeOptionComboBox.setItemCaption(2, messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_TWO));
-        pedigreeOptionComboBox.setItemCaption(3, messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_THREE));
+        pedigreeOptionComboBox.setItemCaption(3,
+                messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_THREE));
     }
 
     private void showFirstPedigreeOption(boolean visible) {
@@ -361,20 +362,49 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         germplasmDetailsTable.setHeight("200px");
         germplasmDetailsTable.setWidth("700px");
         
-        germplasmDetailsTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
-        germplasmDetailsTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
-        germplasmDetailsTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), String.class, null);
-        germplasmDetailsTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
+        germplasmDetailsTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class,
+                null);
+        germplasmDetailsTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class,
+                null);
+        germplasmDetailsTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), String.class,
+                null);
+        germplasmDetailsTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class,
+                null);
         germplasmDetailsTable.addContainerProperty(ColumnLabels.GID.getName(), Integer.class, null);
-        germplasmDetailsTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
+        germplasmDetailsTable.addContainerProperty(ColumnLabels.STOCKID, String.class, null);
+        germplasmDetailsTable.addContainerProperty(ColumnLabels.AMOUNT, Double.class, null);
+        germplasmDetailsTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class,
+                null);
+
+
+
+
         germplasmDetailsTable.setColumnCollapsingAllowed(true);
         
-        germplasmDetailsTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(),getTermNameFromOntology(ColumnLabels.ENTRY_ID));
-        germplasmDetailsTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(),getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
-        germplasmDetailsTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(),getTermNameFromOntology(ColumnLabels.DESIGNATION));
-        germplasmDetailsTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(),getTermNameFromOntology(ColumnLabels.PARENTAGE));
-        germplasmDetailsTable.setColumnHeader(ColumnLabels.GID.getName(),getTermNameFromOntology(ColumnLabels.GID));
-        germplasmDetailsTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(),getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
+        germplasmDetailsTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(),
+                getTermNameFromOntology(ColumnLabels.ENTRY_ID));
+        germplasmDetailsTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(),
+                getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
+        germplasmDetailsTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(),
+                getTermNameFromOntology(ColumnLabels.DESIGNATION));
+        germplasmDetailsTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(),
+                getTermNameFromOntology(ColumnLabels.PARENTAGE));
+        germplasmDetailsTable.setColumnHeader(ColumnLabels.GID.getName(),
+                getTermNameFromOntology(ColumnLabels.GID));
+
+        germplasmDetailsTable.setColumnHeader(ColumnLabels.STOCKID.getName(),
+                getTermNameFromOntology(ColumnLabels.STOCKID));
+
+        germplasmDetailsTable.setColumnHeader(ColumnLabels.AMOUNT.getName(),
+                getTermNameFromOntology(ColumnLabels.AMOUNT));
+
+        germplasmDetailsTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(),
+                getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
+
+
+        germplasmDetailsTable.setColumnCollapsed(ColumnLabels.STOCKID, true);
+        germplasmDetailsTable.setColumnCollapsed(ColumnLabels.AMOUNT, true);
+
     }
 
 	protected String getTermNameFromOntology(ColumnLabels columnLabels) {
@@ -467,10 +497,23 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
     public void initializeFromImportFile(ImportedGermplasmList importedGermplasmList) {
 
         this.importedGermplasmList = importedGermplasmList;
-        this.germplasmFieldsComponent.refreshLayout(germplasmListUploader.hasInventoryAmount());
+        this.germplasmFieldsComponent.refreshLayout(germplasmListUploader.hasInventoryAmountOnly());
 
         //Clear table contents first (possible that it has some rows in it from previous uploads, and then user went back to upload screen)
         getGermplasmDetailsTable().removeAllItems();
+
+        if (germplasmListUploader.hasStockIdFactor()) {
+            getGermplasmDetailsTable().setColumnCollapsed(ColumnLabels.STOCKID,false);
+        } else {
+            getGermplasmDetailsTable().setColumnCollapsed(ColumnLabels.STOCKID,true);
+        }
+
+        if (germplasmListUploader.hasInventoryAmount()) {
+            getGermplasmDetailsTable().setColumnCollapsed(ColumnLabels.AMOUNT, false);
+        } else {
+            getGermplasmDetailsTable().setColumnCollapsed(ColumnLabels.AMOUNT, true);
+        }
+
         String germplasmSource;
         for (int i = 0; i < importedGermplasms.size(); i++) {
             ImportedGermplasm importedGermplasm = importedGermplasms.get(i);
@@ -480,7 +523,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
             	germplasmSource = importedGermplasm.getSource();
             }
             getGermplasmDetailsTable().addItem(new Object[]{importedGermplasm.getEntryId(),
-                    importedGermplasm.getEntryCode(), importedGermplasm.getDesig(), importedGermplasm.getCross(), importedGermplasm.getGid(), germplasmSource}, new Integer(i + 1));
+                    importedGermplasm.getEntryCode(), importedGermplasm.getDesig(), importedGermplasm.getCross(), importedGermplasm.getGid(),importedGermplasm.getInventoryId(),importedGermplasm.getSeedAmount(),germplasmSource}, new Integer(i + 1));
         }
         updateTotalEntriesLabel();
 
