@@ -742,7 +742,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 				//GID is not given or 0, and DESIG is not given
 			} else if ((importedGermplasm.getGid() == null || importedGermplasm.getGid().equals(Integer.valueOf(0)))
 					&& (importedGermplasm.getDesig() == null || importedGermplasm.getDesig().length() == 0)) {
-				throw new FileParsingException("GERMPLSM_PARSE_GID_DESIG_NOT_EXISTS",currentIndex,String.valueOf(currentRowIndex),specialFactors.get(FactorTypes.GID));
+				throw new FileParsingException("GERMPLSM_PARSE_GID_DESIG_NOT_EXISTS",currentIndex,"",specialFactors.get(FactorTypes.GID));
 			}
 
 			return importedGermplasm;
