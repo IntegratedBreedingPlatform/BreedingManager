@@ -61,7 +61,6 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 	private String noInventoryWarning = "";
 	private boolean importFileIsAdvanced = false;
-	private boolean hasInventoryAmount = false;
 	private String seedAmountVariate = "";
 	private Set<String> nameFactors;
 	private Set<String> attributeVariates;
@@ -74,8 +73,16 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		this.originalFilename = originalFilename;
 	}
 
+	public boolean hasInventoryAmountOnly() {
+		return !seedAmountVariate.isEmpty() && !specialFactors.containsKey(FactorTypes.STOCK);
+	}
+
 	public boolean hasInventoryAmount() {
-		return hasInventoryAmount;
+		return !seedAmountVariate.isEmpty();
+	}
+
+	public boolean hasStockIdFactor() {
+		return specialFactors.containsKey(FactorTypes.STOCK);
 	}
 
 	public boolean isSeedAmountVariable(ImportedVariate variate) {
@@ -204,6 +211,11 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	}
 
 	protected void parseVariates() throws FileParsingException  {
+		// variate is optional so lets check first if its there
+		if (!"VARIATE".equalsIgnoreCase(getCellStringValue(DESCRIPTION_SHEET_NO,currentRowIndex,0))) {
+			return;
+		}
+
 		if ( isHeaderInvalid(currentRowIndex, DESCRIPTION_SHEET_NO, VariateHeaders.names()) ) {
 			throw new FileParsingException("GERMPLASM_PARSE_VARIATE_HEADER_ERROR");
 		}
@@ -218,9 +230,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		// if theres a stock id factor but no inventory column variate, we have to ignore the stock ids and treet it as a normal germplasm import
 		// lets show a warning message after the import
 		seedAmountVariate =  variateDetailsConverter.getSeedAmountVariate();
-		hasInventoryAmount = !seedAmountVariate.isEmpty();
 
-		if (!hasInventoryAmount && specialFactors.containsKey(FactorTypes.STOCK)) {
+		if (seedAmountVariate.isEmpty() && specialFactors.containsKey(FactorTypes.STOCK)) {
 			importedGermplasmList.removeImportedFactor(specialFactors.get(FactorTypes.STOCK));
 			specialFactors.remove(FactorTypes.STOCK);
 
@@ -433,7 +444,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	}
 
 	private void continueTillNextSection() {
-		while (isRowEmpty(DESCRIPTION_SHEET_NO, currentRowIndex, DESCRIPTION_SHEET_COL_SIZE)) {
+		// were limiting to 10 blank rows
+		for (int i = 0;isRowEmpty(DESCRIPTION_SHEET_NO, currentRowIndex, DESCRIPTION_SHEET_COL_SIZE) && i < 10; i++) {
 			currentRowIndex++;
 		}
 	}
@@ -770,7 +782,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 						+ " is being added in the import. Some of the StockIDs in this import file do not meet there requirements and will be ignored";
 
 
-			} else if (specialFactors.containsKey(FactorTypes.STOCK)) {
+			} else if (seedAmountVariate.equals(header)) {
 				Double seedAmountValue = Double.valueOf(value);
 				germplasmReference.setSeedAmount(seedAmountValue);
 			} else {

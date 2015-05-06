@@ -41,6 +41,10 @@ public class GermplasmListUploader implements FileFactory {
 	/**
 	 * Adopter methods, left over from legacy parser
 	 */
+	public boolean hasInventoryAmountOnly() {
+		return germplasmListParser.hasInventoryAmountOnly();
+	}
+
 	public boolean hasInventoryAmount() {
 		return germplasmListParser.hasInventoryAmount();
 	}
@@ -48,8 +52,12 @@ public class GermplasmListUploader implements FileFactory {
 	/*
      * Returns true if variate property = "INVENTORY AMOUNT" or any of its synonyms
      */
-	private boolean isSeedAmountVariable(ImportedVariate variate) {
+	public boolean isSeedAmountVariable(ImportedVariate variate) {
 		return germplasmListParser.isSeedAmountVariable(variate);
+	}
+
+	public boolean hasStockIdFactor() {
+		return germplasmListParser.hasStockIdFactor();
 	}
 
 	public boolean importFileIsAdvanced() {
