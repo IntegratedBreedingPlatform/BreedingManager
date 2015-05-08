@@ -355,49 +355,18 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	protected ParseValidationMap parseObservationHeaders() throws FileParsingException {
 		ParseValidationMap validationMap = new ParseValidationMap();
 
-		final List<ImportedFactor> importedFactors = new ArrayList<ImportedFactor>() {
-			@Override
-			public boolean contains(Object o) {
-				boolean returnVal = false;
-				for (ImportedFactor i : this) {
-					if (i.getFactor().equalsIgnoreCase(o.toString())) {
-						returnVal = true;
-					}
-				}
-				return returnVal;
-			}
-		};
-
-		importedFactors.addAll(importedGermplasmList.getImportedFactors());
-
-		final List<ImportedVariate> importedVariates = new ArrayList<ImportedVariate>() {
-			@Override
-			public boolean contains(Object o) {
-				for (ImportedVariate i : this) {
-					if (i.getVariate().equalsIgnoreCase(o.toString())) {
-						return true;
-					}
-				}
-				return false;
-			}
-		};
-
-		importedVariates.addAll(importedGermplasmList.getImportedVariates());
-
 		final int headerSize = importedGermplasmList.sizeOfObservationHeader();
 
 		boolean hasEntryColumn = false;
 		boolean hasDesigColumn = false;
 		boolean hasGidColumn = false;
-
+		boolean hasStockId = false;
 		// were accounting for two additional unknown columns inserted between the headers, then we'll
 		// just ignore it
 		for (int i = 0; i < headerSize + 2; i++) {
 			// search the current header
 			String obsHeader = getCellStringValue(OBSERVATION_SHEET_NO, 0, i);
 
-			boolean inFactors = importedFactors.contains(obsHeader);
-			boolean inVariates = importedVariates.contains(obsHeader);
 
 			// validation is only limited to existance of entry and desig factors
 			if (specialFactors.get(FactorTypes.ENTRY).equals(obsHeader)) {
@@ -411,12 +380,13 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 				hasGidColumn = true;
 				validationMap.addValidation(i, new NonEmptyValidator());
 			} else if (specialFactors.containsKey(FactorTypes.STOCK) && specialFactors.get(FactorTypes.STOCK).equals(obsHeader)) {
+				hasStockId = true;
 				validationMap.addValidation(i, new NonEmptyValidator());
+			} else if (!seedAmountVariate.isEmpty() && seedAmountVariate.equalsIgnoreCase(obsHeader)) {
+				validationMap.addValidation(i,new ValueTypeValidator(Double.class));
 			}
 
-			if (inFactors || inVariates) {
-				observationColumnMap.put(i, obsHeader);
-			}
+			observationColumnMap.put(i, obsHeader);
 		}
 
 		if (!hasEntryColumn) {
@@ -425,6 +395,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 			throw new FileParsingException("GERMPLASM_PARSE_DESIG_COLUMN_MISSING");
 		} else if (importFileIsAdvanced && !hasGidColumn) {
 			throw new FileParsingException("GERMPLASM_PARSE_GID_COLUMN_MISSING");
+		} else if (specialFactors.containsKey(FactorTypes.STOCK) && !hasStockId) {
+			throw new FileParsingException("GERMPLASM_PARSE_STOCK_COLUMN_MISSING");
 		}
 
 		return validationMap;
@@ -598,7 +570,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 				if (ontologyDataManager.isSeedAmountVariable(property)) {
 					importedVariate.setSeedStockVariable(true);
 					seedAmountVariate = importedVariate.getVariate();
-					LOG.debug("SEED STOCK " + importedVariate.getProperty());
+					LOG.debug("SEED STOCK :" + importedVariate.getProperty());
 				} else if ("ATTRIBUTE".equals(property) || "PASSPORT".equals(property)) {
 					attributeVariates.add(importedVariate.getVariate());
 				}
@@ -710,8 +682,13 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 					continue;
 				}
 
-				executeIfIsSeedAmountVariate(colHeader, rowValues.get(colIndex),
-						importedGermplasm);
+				if (executeIfIsSeedAmountVariate(colHeader, rowValues.get(colIndex),
+						importedGermplasm)) {
+					continue;
+				}
+
+				LOG.debug(String.format("%s header is not recognized [parsing from row: %s]",
+						colHeader, currentIndex));
 			}
 
 			// row based validation here
@@ -775,14 +752,18 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		}
 
 		public boolean executeIfIsSeedAmountVariate(String header,String value,ImportedGermplasm germplasmReference) throws FileParsingException {
-			if (specialFactors.containsKey(FactorTypes.STOCK) && "".equals(value)) {
+			if ("".equals(header)) {
+				return false;
+			}
+
+			if (seedAmountVariate.equals(header) && specialFactors.containsKey(FactorTypes.STOCK) && "".equals(value)) {
 				String stockFactor = specialFactors.remove(FactorTypes.STOCK);
 				importedGermplasmList.removeImportedFactor(stockFactor);
 				noInventoryWarning = "StockIDs can only be added for germplasm if it has existing inventory in the BMS, or inventory"
 						+ " is being added in the import. Some of the StockIDs in this import file do not meet there requirements and will be ignored";
+			}
 
-
-			} else if (seedAmountVariate.equals(header)) {
+			if (seedAmountVariate.equals(header)) {
 				Double seedAmountValue = Double.valueOf(value);
 				germplasmReference.setSeedAmount(seedAmountValue);
 			} else {
