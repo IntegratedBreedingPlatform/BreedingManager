@@ -764,7 +764,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 			}
 
 			if (seedAmountVariate.equals(header)) {
-				Double seedAmountValue = Double.valueOf(value);
+
+				Double seedAmountValue = "".equals(value) ? 0 : Double.valueOf(value);
 				germplasmReference.setSeedAmount(seedAmountValue);
 			} else {
 				return false;
