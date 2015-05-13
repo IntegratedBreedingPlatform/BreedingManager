@@ -361,6 +361,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		boolean hasDesigColumn = false;
 		boolean hasGidColumn = false;
 		boolean hasStockId = false;
+		boolean hasInventoryVariate = false;
 		// were accounting for two additional unknown columns inserted between the headers, then we'll
 		// just ignore it
 		for (int i = 0; i < headerSize + 2; i++) {
@@ -381,9 +382,9 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 				validationMap.addValidation(i, new NonEmptyValidator());
 			} else if (specialFactors.containsKey(FactorTypes.STOCK) && specialFactors.get(FactorTypes.STOCK).equals(obsHeader)) {
 				hasStockId = true;
-				validationMap.addValidation(i, new NonEmptyValidator());
 			} else if (!seedAmountVariate.isEmpty() && seedAmountVariate.equalsIgnoreCase(obsHeader)) {
 				validationMap.addValidation(i,new ValueTypeValidator(Double.class));
+				 hasInventoryVariate = true;
 			}
 
 			observationColumnMap.put(i, obsHeader);
@@ -397,6 +398,13 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 			throw new FileParsingException("GERMPLASM_PARSE_GID_COLUMN_MISSING");
 		} else if (specialFactors.containsKey(FactorTypes.STOCK) && !hasStockId) {
 			throw new FileParsingException("GERMPLASM_PARSE_STOCK_COLUMN_MISSING");
+		} else if (seedAmountVariate.isEmpty() && specialFactors.containsKey(FactorTypes.STOCK)
+				|| !seedAmountVariate.isEmpty() && !hasInventoryVariate && specialFactors.containsKey(FactorTypes.STOCK)
+				) {
+			importedGermplasmList.removeImportedFactor(specialFactors.get(FactorTypes.STOCK));
+			specialFactors.remove(FactorTypes.STOCK);
+			seedAmountVariate = "";
+			noInventoryWarning = "StockIDs can only be added for germplasm if it has existing inventory in the BMS";
 		}
 
 		return validationMap;
@@ -434,9 +442,9 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 		try {
 			List<String> possibleExistingDBStockIds = inventoryDataManager.getSimilarStockIds(importedGermplasmList.getStockIdsAsList());
-			if (!possibleDuplicateStockId.isEmpty()) {
+			if (!possibleExistingDBStockIds.isEmpty()) {
 				throw new FileParsingException("GERMPLASM_PARSE_DUPLICATE_DB_STOCK_ID",0,
-						StringUtils.join(possibleExistingDBStockIds, " "),specialFactors.get(FactorTypes.STOCK));
+						StringUtils.abbreviate(StringUtils.join(possibleExistingDBStockIds, " "),20),specialFactors.get(FactorTypes.STOCK));
 			}
 		} catch (MiddlewareQueryException e) {
 			throw new FileParsingException(e.getMessage());
@@ -656,6 +664,10 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 				factorBehaviors.put(FactorTypes.STOCK, new Command() {
 					@Override public void run() throws FileParsingException {
+						if ("".equals(rowValues.get(colIndex))) {
+							throw new FileParsingException("GERMPLASM_PARSE_STOCK_ID_EMPTY_VALUE");
+						}
+
 						importedGermplasm.setInventoryId(rowValues.get(colIndex));
 					}
 				});
