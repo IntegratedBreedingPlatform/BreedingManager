@@ -379,7 +379,6 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 				hasDesigColumn = true;
 			} else if (importFileIsAdvanced && specialFactors.get(FactorTypes.GID).equals(obsHeader)) {
 				hasGidColumn = true;
-				validationMap.addValidation(i, new NonEmptyValidator());
 			} else if (specialFactors.containsKey(FactorTypes.STOCK) && specialFactors.get(FactorTypes.STOCK).equals(obsHeader)) {
 				hasStockId = true;
 			} else if (!seedAmountVariate.isEmpty() && seedAmountVariate.equalsIgnoreCase(obsHeader)) {
