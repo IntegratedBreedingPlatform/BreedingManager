@@ -242,7 +242,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
                 messageSource, messageSource.getMessage(Message.GERMPLASM_LOCATION_LABEL));
     }
 
-    private void updateTotalEntriesLabel() {
+    protected void updateTotalEntriesLabel() {
         int count = germplasmDetailsTable.getItemIds().size();
         if (count == 0) {
             totalEntriesLabel.setValue(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
@@ -286,7 +286,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
                 messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_THREE));
     }
 
-    private void showFirstPedigreeOption(boolean visible) {
+    protected void showFirstPedigreeOption(boolean visible) {
         Item firstOption = pedigreeOptionComboBox.getItem(1);
         if (firstOption == null && visible) {
             pedigreeOptionComboBox.removeAllItems();
@@ -498,7 +498,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
     public void initializeFromImportFile(ImportedGermplasmList importedGermplasmList) {
 
         this.importedGermplasmList = importedGermplasmList;
-        this.germplasmFieldsComponent.refreshLayout(germplasmListUploader.hasInventoryAmountOnly());
+        this.getGermplasmFieldsComponent().refreshLayout(germplasmListUploader.hasInventoryAmountOnly());
 
         //Clear table contents first (possible that it has some rows in it from previous uploads, and then user went back to upload screen)
         getGermplasmDetailsTable().removeAllItems();
@@ -508,7 +508,6 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         } else {
             getGermplasmDetailsTable().setColumnCollapsed(ColumnLabels.STOCKID,true);
         }
-
         if (germplasmListUploader.hasInventoryAmount()) {
             getGermplasmDetailsTable().setColumnCollapsed(ColumnLabels.AMOUNT, false);
         } else {
@@ -517,8 +516,8 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 
         String germplasmSource;
         String fileNameWithoutExtension = FileUtils.getFilenameWithoutExtension(importedGermplasmList.getFilename());
-        for (int i = 0; i < importedGermplasms.size(); i++) {
-            ImportedGermplasm importedGermplasm = importedGermplasms.get(i);
+        for (int i = 0; i < getImportedGermplasms().size(); i++) {
+            ImportedGermplasm importedGermplasm = getImportedGermplasms().get(i);
             if (importedGermplasm.getSource() == null) {
             	germplasmSource = fileNameWithoutExtension + ":" + (i + 1);
             } else {
@@ -636,6 +635,5 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 	public void setContextUtil(ContextUtil contextUtil) {
 		this.contextUtil = contextUtil;
 	}
-    
-    
+	
 }
