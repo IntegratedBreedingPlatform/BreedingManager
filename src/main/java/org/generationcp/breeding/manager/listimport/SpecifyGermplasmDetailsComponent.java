@@ -23,6 +23,7 @@ import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.DateUtil;
+import org.generationcp.commons.util.FileUtils;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -515,10 +516,11 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         }
 
         String germplasmSource;
+        String fileNameWithoutExtension = FileUtils.getFilenameWithoutExtension(importedGermplasmList.getFilename());
         for (int i = 0; i < importedGermplasms.size(); i++) {
             ImportedGermplasm importedGermplasm = importedGermplasms.get(i);
             if (importedGermplasm.getSource() == null) {
-            	germplasmSource = importedGermplasmList.getFilename() + ":" + (i + 1);
+            	germplasmSource = fileNameWithoutExtension + ":" + (i + 1);
             } else {
             	germplasmSource = importedGermplasm.getSource();
             }

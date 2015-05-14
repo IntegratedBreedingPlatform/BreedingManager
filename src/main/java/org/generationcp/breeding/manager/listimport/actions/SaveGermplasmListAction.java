@@ -7,6 +7,7 @@ import org.generationcp.commons.parsing.pojo.ImportedFactor;
 import org.generationcp.commons.parsing.pojo.ImportedVariate;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.DateUtil;
+import org.generationcp.commons.util.FileUtils;
 import org.generationcp.middleware.domain.dms.PhenotypicType;
 import org.generationcp.middleware.domain.dms.StandardVariable;
 import org.generationcp.middleware.domain.oms.CvId;
@@ -28,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import javax.annotation.Resource;
+
 import java.io.Serializable;
 import java.util.*;
 
@@ -436,7 +438,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 			String designation = germplasmName.getName().getNval();
 
-			String source = filename + ":" + entryId;
+			String fileNameWithoutExtension = FileUtils.getFilenameWithoutExtension(filename);
+			String source = fileNameWithoutExtension + ":" + entryId;
 			if (importedGermplasm.getSource() != null
 					&& importedGermplasm.getSource().length() > 0) {
 				source = importedGermplasm.getSource();
