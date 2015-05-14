@@ -99,7 +99,7 @@ public class GermplasmListParserTest {
 	 */
 	@Test
 	public void testTemplateWithStockIdFactor() throws Exception {
-		importedGermplasmList = parser.parseWorkbook(defaultWorkbook);
+		importedGermplasmList = parser.parseWorkbook(defaultWorkbook,null);
 
 		assertNotNull(importedGermplasmList);
 		assert parser.hasStockIdFactor();
@@ -112,7 +112,7 @@ public class GermplasmListParserTest {
 	@Test
 	public void testTemplateWithNoStockIdInObservation() throws Exception {
 		try {
-			importedGermplasmList = parser.parseWorkbook(noStockIDWorkbook);
+			importedGermplasmList = parser.parseWorkbook(noStockIDWorkbook,null);
 			fail();
 		} catch (FileParsingException e) {
 			assertEquals("GERMPLASM_PARSE_STOCK_COLUMN_MISSING",e.getMessage());
@@ -126,7 +126,7 @@ public class GermplasmListParserTest {
 	 */
 	@Test
 	public void testTemplateWithNoInventoryColumn() throws Exception {
-		importedGermplasmList = parser.parseWorkbook(noInventoryWorkbook);
+		importedGermplasmList = parser.parseWorkbook(noInventoryWorkbook,null);
 
 		assertTrue(parser.getNoInventoryWarning().contains("StockIDs can only be added for germplasm if it has existing inventory in the BMS"));
 	}
@@ -138,7 +138,7 @@ public class GermplasmListParserTest {
 	@Test
 	public void testTemplateWithMissingStockIdValuesInObservation() throws Exception {
 		try {
-			importedGermplasmList = parser.parseWorkbook(missingStockIDValuesWorkbook);
+			importedGermplasmList = parser.parseWorkbook(missingStockIDValuesWorkbook,null);
 			fail();
 		} catch (FileParsingException e) {
 			assertEquals("common.parser.validation.error.empty.value",e.getMessage());
@@ -152,7 +152,7 @@ public class GermplasmListParserTest {
 	@Test
 	public void testTemplateWithDuplicateIdsInObservation() throws Exception {
 		try {
-			importedGermplasmList = parser.parseWorkbook(duplicateStockIdWorkbook);
+			importedGermplasmList = parser.parseWorkbook(duplicateStockIdWorkbook,null);
 			fail();
 		} catch (FileParsingException e) {
 			assertEquals("GERMPLASM_PARSE_DUPLICATE_STOCK_ID",e.getMessage());

@@ -197,7 +197,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	}
 
 	@Override
-	public ImportedGermplasmList parseWorkbook(Workbook workbook)
+	public ImportedGermplasmList parseWorkbook(Workbook workbook, Map<String,Object> additionalParams)
 			throws FileParsingException {
 		this.workbook = workbook;
 

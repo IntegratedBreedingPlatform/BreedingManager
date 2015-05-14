@@ -68,7 +68,7 @@ public class GermplasmListUploader implements FileFactory {
 		germplasmListParser = new GermplasmListParser();
 		germplasmListParser.setOriginalFilename(originalFilename);
 
-		importedGermplasmList = germplasmListParser.parseWorkbook(createWorkbook(tempFileName));
+		importedGermplasmList = germplasmListParser.parseWorkbook(createWorkbook(tempFileName),null);
 	}
 
 	public String hasWarnings() {
