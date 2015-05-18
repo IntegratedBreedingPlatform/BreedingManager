@@ -663,10 +663,6 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 				factorBehaviors.put(FactorTypes.STOCK, new Command() {
 					@Override public void run() throws FileParsingException {
-						if ("".equals(rowValues.get(colIndex))) {
-							throw new FileParsingException("GERMPLASM_PARSE_STOCK_ID_EMPTY_VALUE");
-						}
-
 						importedGermplasm.setInventoryId(rowValues.get(colIndex));
 					}
 				});
@@ -768,8 +764,6 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 			}
 
 			if (seedAmountVariate.equals(header) && specialFactors.containsKey(FactorTypes.STOCK) && "".equals(value)) {
-				String stockFactor = specialFactors.remove(FactorTypes.STOCK);
-				importedGermplasmList.removeImportedFactor(stockFactor);
 				noInventoryWarning = "StockIDs can only be added for germplasm if it has existing inventory in the BMS, or inventory"
 						+ " is being added in the import. Some of the StockIDs in this import file do not meet there requirements and will be ignored";
 			}
