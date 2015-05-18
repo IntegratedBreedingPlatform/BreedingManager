@@ -446,6 +446,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 						StringUtils.abbreviate(StringUtils.join(possibleExistingDBStockIds, " "),20),specialFactors.get(FactorTypes.STOCK));
 			}
 		} catch (MiddlewareQueryException e) {
+			LOG.error(e.getMessage(), e);
 			throw new FileParsingException(e.getMessage());
 		}
 	}
@@ -582,7 +583,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 					attributeVariates.add(importedVariate.getVariate());
 				}
 			} catch (MiddlewareQueryException e) {
-				LOG.error("SEED STOCK " + importedVariate.getProperty());
+				LOG.error("SEED STOCK " + importedVariate.getProperty(), e);
 			}
 
 			return importedVariate;
@@ -720,7 +721,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 					}
 				} catch (MiddlewareQueryException e) {
-					LOG.error(e.getMessage(),e);
+					LOG.error(e.getMessage(), e);
 				}
 
 				//GID is not given or 0, and DESIG is not given
