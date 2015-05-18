@@ -727,7 +727,12 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 			} else if ((importedGermplasm.getGid() == null || importedGermplasm.getGid().equals(Integer.valueOf(0)))
 					&& (importedGermplasm.getDesig() == null || importedGermplasm.getDesig().length() == 0)) {
 				throw new FileParsingException("GERMPLSM_PARSE_GID_DESIG_NOT_EXISTS",currentIndex,"",specialFactors.get(FactorTypes.GID));
-			}
+				
+			} else if ((importedGermplasm.getSeedAmount() == null || importedGermplasm.getSeedAmount() == 0)
+					&& importedGermplasm.getInventoryId() != null && !StringUtils.isEmpty(importedGermplasm.getInventoryId())) {
+				noInventoryWarning = "StockIDs can only be added for germplasm if it has existing inventory in the BMS, or inventory"
+						+ " is being added in the import. Some of the StockIDs in this import file do not meet these requirements and will be ignored.";
+			} 
 
 			return importedGermplasm;
 		}
@@ -763,13 +768,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 				return false;
 			}
 
-			if (seedAmountVariate.equals(header) && specialFactors.containsKey(FactorTypes.STOCK) && "".equals(value)) {
-				noInventoryWarning = "StockIDs can only be added for germplasm if it has existing inventory in the BMS, or inventory"
-						+ " is being added in the import. Some of the StockIDs in this import file do not meet there requirements and will be ignored";
-			}
-
 			if (seedAmountVariate.equals(header)) {
-
 				Double seedAmountValue = "".equals(value) ? 0 : Double.valueOf(value);
 				germplasmReference.setSeedAmount(seedAmountValue);
 			} else {
