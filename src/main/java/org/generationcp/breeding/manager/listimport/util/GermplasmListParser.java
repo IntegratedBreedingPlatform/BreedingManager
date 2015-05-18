@@ -728,6 +728,9 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 					&& (importedGermplasm.getDesig() == null || importedGermplasm.getDesig().length() == 0)) {
 				throw new FileParsingException("GERMPLSM_PARSE_GID_DESIG_NOT_EXISTS",currentIndex,"",specialFactors.get(FactorTypes.GID));
 				
+			} else if (importedGermplasm.getSeedAmount() != 0 && hasStockIdFactor() && StringUtils.isEmpty(importedGermplasm.getInventoryId())) {
+				throw new FileParsingException("GERMPLSM_PARSE_GID_MISSING_STOCK_ID_VALUE",currentIndex,"",specialFactors.get(FactorTypes.STOCK));
+			
 			} else if ((importedGermplasm.getSeedAmount() == null || importedGermplasm.getSeedAmount() == 0)
 					&& importedGermplasm.getInventoryId() != null && !StringUtils.isEmpty(importedGermplasm.getInventoryId())) {
 				noInventoryWarning = "StockIDs can only be added for germplasm if it has existing inventory in the BMS, or inventory"
