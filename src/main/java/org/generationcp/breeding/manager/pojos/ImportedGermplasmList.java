@@ -1,15 +1,26 @@
 package org.generationcp.breeding.manager.pojos;
 
-import org.generationcp.commons.parsing.pojo.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.generationcp.commons.parsing.pojo.ImportedCondition;
+import org.generationcp.commons.parsing.pojo.ImportedConstant;
+import org.generationcp.commons.parsing.pojo.ImportedDescriptionDetails;
+import org.generationcp.commons.parsing.pojo.ImportedFactor;
+import org.generationcp.commons.parsing.pojo.ImportedVariate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
 
 public class ImportedGermplasmList extends ImportedDescriptionDetails {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ImportedGermplasmList.class);
 	private List<ImportedGermplasm> importedGermplasms = new ArrayList<>();
+	private boolean hasStockIDValues = false;
 
 	public static final String INVENTORY_AMOUNT_PROPERTY = "INVENTORY AMOUNT";
 
@@ -105,6 +116,23 @@ public class ImportedGermplasmList extends ImportedDescriptionDetails {
 		}
 
 		return "";
+	}
+
+	public boolean isHasStockIDValues() {
+		return hasStockIDValues;
+	}
+
+	public void setHasStockIDValues(boolean hasStockIDValues) {
+		this.hasStockIDValues = hasStockIDValues;
+	}
+	
+	public boolean hasMissingStockIDValues(){
+		for (ImportedGermplasm importedGermplasm : getImportedGermplasms()){
+			if (this.hasStockIDValues && importedGermplasm.getSeedAmount() != 0 && "".equals(importedGermplasm.getInventoryId())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private class ImportedGermplasmSorter implements Comparator<ImportedGermplasm> {

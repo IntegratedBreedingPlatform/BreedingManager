@@ -1,7 +1,19 @@
 package org.generationcp.breeding.manager.listimport.util;
 
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.Resource;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.generationcp.breeding.manager.listimport.validator.StockIDValidator;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.commons.parsing.AbstractExcelFileParser;
@@ -17,16 +29,11 @@ import org.generationcp.commons.parsing.validation.ValueTypeValidator;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
-import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
-
-import javax.annotation.Resource;
-import java.text.ParseException;
-import java.util.*;
 
 /**
  * Class for parsing GermplsmList
@@ -50,9 +57,6 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	@Resource
 	private OntologyDataManager ontologyDataManager;
 
-	@Resource
-	private InventoryDataManager inventoryDataManager;
-
 	private int currentRowIndex = 0;
 	private Map<Integer, String> observationColumnMap = new HashMap<>();
 
@@ -64,6 +68,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	private String seedAmountVariate = "";
 	private Set<String> nameFactors;
 	private Set<String> attributeVariates;
+	
 
 	public String getNoInventoryWarning() {
 		return noInventoryWarning;
@@ -74,7 +79,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	}
 
 	public boolean hasInventoryAmountOnly() {
-		return !seedAmountVariate.isEmpty() && !specialFactors.containsKey(FactorTypes.STOCK);
+		return !seedAmountVariate.isEmpty() && (!specialFactors.containsKey(FactorTypes.STOCK) || !importedGermplasmList.isHasStockIDValues());
 	}
 
 	public boolean hasInventoryAmount() {
@@ -417,7 +422,10 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		List<ImportedGermplasm> importedGermplasms = observationRowConverter.convertWorkbookRowsToObject(new WorkbookRowConverter.ContinueTillBlank());
 
 		importedGermplasmList.setImportedGermplasms(importedGermplasms);
-		validateForDuplicateStockIds();
+		if (specialFactors.containsKey(FactorTypes.STOCK)) {
+			StockIDValidator validator = new StockIDValidator(specialFactors.get(FactorTypes.STOCK), importedGermplasmList);
+			validator.validate();
+		}
 
 		importedGermplasmList.normalizeGermplasmList();
 	}
@@ -428,30 +436,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 			currentRowIndex++;
 		}
 	}
-
-	protected void validateForDuplicateStockIds() throws FileParsingException{
-		if (!specialFactors.containsKey(FactorTypes.STOCK)) {
-			return;
-		}
-
-		String possibleDuplicateStockId = importedGermplasmList.getDuplicateStockIdIfExists();
-		if (!"".equals(possibleDuplicateStockId.trim())) {
-			throw new FileParsingException("GERMPLASM_PARSE_DUPLICATE_STOCK_ID",0,possibleDuplicateStockId,specialFactors.get(FactorTypes.STOCK));
-		}
-
-		try {
-			List<String> possibleExistingDBStockIds = inventoryDataManager.getSimilarStockIds(importedGermplasmList.getStockIdsAsList());
-			if (!possibleExistingDBStockIds.isEmpty()) {
-				throw new FileParsingException("GERMPLASM_PARSE_DUPLICATE_DB_STOCK_ID",0,
-						StringUtils.abbreviate(StringUtils.join(possibleExistingDBStockIds, " "),20),specialFactors.get(FactorTypes.STOCK));
-			}
-		} catch (MiddlewareQueryException e) {
-			LOG.error(e.getMessage(), e);
-			throw new FileParsingException(e.getMessage());
-		}
-	}
-
-
+	
 	class ConditionDetailsConverter extends WorkbookRowConverter<ImportedCondition> {
 
 		public ConditionDetailsConverter(Workbook workbook, int startingIndex, int targetSheetIndex,
@@ -664,6 +649,9 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 				factorBehaviors.put(FactorTypes.STOCK, new Command() {
 					@Override public void run() throws FileParsingException {
+						if (!"".equals(rowValues.get(colIndex)) && !importedGermplasmList.isHasStockIDValues()){
+							importedGermplasmList.setHasStockIDValues(true);
+						}
 						importedGermplasm.setInventoryId(rowValues.get(colIndex));
 					}
 				});
@@ -728,10 +716,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 			} else if ((importedGermplasm.getGid() == null || importedGermplasm.getGid().equals(Integer.valueOf(0)))
 					&& (importedGermplasm.getDesig() == null || importedGermplasm.getDesig().length() == 0)) {
 				throw new FileParsingException("GERMPLSM_PARSE_GID_DESIG_NOT_EXISTS",currentIndex,"",specialFactors.get(FactorTypes.GID));
-				
-			} else if (importedGermplasm.getSeedAmount() != 0 && hasStockIdFactor() && StringUtils.isEmpty(importedGermplasm.getInventoryId())) {
-				throw new FileParsingException("GERMPLSM_PARSE_GID_MISSING_STOCK_ID_VALUE",currentIndex,"",specialFactors.get(FactorTypes.STOCK));
 			
+				//TODO throw only if after determing that StockID column is not null
 			} else if ((importedGermplasm.getSeedAmount() == null || importedGermplasm.getSeedAmount() == 0)
 					&& importedGermplasm.getInventoryId() != null && !StringUtils.isEmpty(importedGermplasm.getInventoryId())) {
 				noInventoryWarning = "StockIDs can only be added for germplasm if it has existing inventory in the BMS, or inventory"
