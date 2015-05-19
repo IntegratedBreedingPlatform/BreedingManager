@@ -8,17 +8,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.generationcp.commons.parsing.pojo.ImportedCondition;
-import org.generationcp.commons.parsing.pojo.ImportedConstant;
 import org.generationcp.commons.parsing.pojo.ImportedDescriptionDetails;
 import org.generationcp.commons.parsing.pojo.ImportedFactor;
-import org.generationcp.commons.parsing.pojo.ImportedVariate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ImportedGermplasmList extends ImportedDescriptionDetails {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ImportedGermplasmList.class);
 	private List<ImportedGermplasm> importedGermplasms = new ArrayList<>();
 	private boolean hasStockIDValues = false;
 
@@ -27,22 +21,6 @@ public class ImportedGermplasmList extends ImportedDescriptionDetails {
 	public ImportedGermplasmList(String filename, String name, String title, String type,
 			Date date) {
 		super(filename,name,title,type,date);
-	}
-
-	public ImportedGermplasmList(String filename, String name, String title, String type, Date date
-			, List<ImportedCondition> importedConditions, List<ImportedFactor> importedFactors
-			, List<ImportedConstant> importedConstants, List<ImportedVariate> importedVariates
-			, List<ImportedGermplasm> importedGermplasms) {
-		this.filename = filename;
-		this.name = name;
-		this.title = title;
-		this.type = type;
-		this.date = date;
-		this.importedConditions = importedConditions;
-		this.importedFactors = importedFactors;
-		this.importedConstants = importedConstants;
-		this.importedVariates = importedVariates;
-		this.importedGermplasms = importedGermplasms;
 	}
 
 	public void removeImportedFactor(String factorName) {
