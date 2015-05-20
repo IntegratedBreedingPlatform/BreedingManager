@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -28,6 +30,7 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ApplyCrossingSettingAction;
+import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUtil;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
@@ -39,11 +42,15 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.service.api.PedigreeService;
+import org.generationcp.middleware.service.pedigree.PedigreeFactory;
+import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -87,7 +94,10 @@ public class MakeCrossesTableComponent extends VerticalLayout
     
     @Autowired
 	private OntologyDataManager ontologyDataManager;
-     
+ 
+	@Resource
+	private CrossExpansionProperties crossExpansionProperties;
+	
     private Label lblReviewCrosses;
     private Table tableCrossesMade;
     private Label lblCrossMade;
@@ -102,9 +112,21 @@ public class MakeCrossesTableComponent extends VerticalLayout
     private String separator;
     
     private CrossingManagerMakeCrossesComponent makeCrossesMain;
+
+    private PedigreeService pedigreeService;
+	private String pedigreeProfile;
     
     public MakeCrossesTableComponent(CrossingManagerMakeCrossesComponent makeCrossesMain){
     	this.makeCrossesMain = makeCrossesMain;
+		ManagerFactory managerFactory = ManagerFactory.getCurrentManagerFactoryThreadLocal().get();
+		if (managerFactory != null) {
+			this.pedigreeService = managerFactory.getPedigreeService();
+			pedigreeProfile = managerFactory.getPedigreeProfile();
+		} else {
+			throw new IllegalStateException("Must have access to the Manager Factory thread local valiable. "
+					+ "Please contact support for further help.");
+		}
+
     }
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -166,11 +188,16 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			maleParentCopy.setSeedSource(maleSeedSource);
 			
             CrossParents parents = new CrossParents(femaleParentCopy, maleParentCopy);
-            
+			final Germplasm germplasm = new Germplasm();
+			germplasm.setGnpgs(2);
+			germplasm.setGid(Integer.MAX_VALUE);
+			germplasm.setGpid1(femaleParent.getGid());
+			germplasm.setGpid2(maleParent.getGid());
+            String cross = getCross(germplasm, femaleDesig, maleDesig);
             String seedSource = appendWithSeparator(femaleSeedSource, maleSeedSource);
             if (!crossAlreadyExists(parents)){
                 tableCrossesMade.addItem(new Object[] {1,
-                		appendWithSeparator(femaleDesig, maleDesig), femaleDesig, maleDesig,seedSource 
+                		cross, femaleDesig, maleDesig,seedSource 
                     }, parents); 
                
             }     
@@ -220,44 +247,63 @@ public class MakeCrossesTableComponent extends VerticalLayout
      * @param listnameMaleParent 
      * @param listnameFemaleParent 
      */
-    public void multiplyParents(List<GermplasmListEntry> parents1, List<GermplasmListEntry> parents2, 
-    		String listnameFemaleParent, String listnameMaleParent){
-    	
-    	//make a copy first of the parents lists
-    	List<GermplasmListEntry> femaleParents = new ArrayList<GermplasmListEntry>();
-    	List<GermplasmListEntry> maleParents = new ArrayList<GermplasmListEntry>();
-    	femaleParents.addAll(parents1);
-    	maleParents.addAll(parents2);
-    	
-    	setMakeCrossesTableVisibleColumn();
-    	separator = makeCrossesMain.getSeparatorString();
+	public void multiplyParents(List<GermplasmListEntry> parents1, List<GermplasmListEntry> parents2, String listnameFemaleParent,
+			String listnameMaleParent) {
 
-    	for (GermplasmListEntry femaleParent : femaleParents){
-            String femaleDesig = femaleParent.getDesignation();
-            String femaleSource =listnameFemaleParent +":"+femaleParent.getEntryId();
-            GermplasmListEntry femaleParentCopy = femaleParent.copy();
-            femaleParentCopy.setSeedSource(femaleSource);
-            
-            for (GermplasmListEntry maleParent : maleParents){
-                String maleDesig = maleParent.getDesignation();
-                String maleSource =listnameMaleParent +":"+maleParent.getEntryId();
-                GermplasmListEntry maleParentCopy = maleParent.copy();
-                maleParentCopy.setSeedSource(maleSource);
-                
-                CrossParents parents = new CrossParents(femaleParentCopy, maleParentCopy);
-                
-                if (!crossAlreadyExists(parents)){
-					String seedSource=appendWithSeparator(femaleSource,maleSource);
-                   
-                    tableCrossesMade.addItem(new Object[] {1, 
-                    		appendWithSeparator(femaleDesig, maleDesig), femaleDesig, maleDesig,seedSource
-                            }, parents);     
-                }
-                
-            }
-        }
-    	updateCrossesMadeUI();
-    }
+		// make a copy first of the parents lists
+		List<GermplasmListEntry> femaleParents = new ArrayList<GermplasmListEntry>();
+		List<GermplasmListEntry> maleParents = new ArrayList<GermplasmListEntry>();
+		femaleParents.addAll(parents1);
+		maleParents.addAll(parents2);
+
+		setMakeCrossesTableVisibleColumn();
+		separator = makeCrossesMain.getSeparatorString();
+
+		for (GermplasmListEntry femaleParent : femaleParents) {
+			String femaleDesig = femaleParent.getDesignation();
+			String femaleSource = listnameFemaleParent + ":" + femaleParent.getEntryId();
+			GermplasmListEntry femaleParentCopy = femaleParent.copy();
+			femaleParentCopy.setSeedSource(femaleSource);
+
+			for (GermplasmListEntry maleParent : maleParents) {
+				String maleDesig = maleParent.getDesignation();
+				String maleSource = listnameMaleParent + ":" + maleParent.getEntryId();
+				GermplasmListEntry maleParentCopy = maleParent.copy();
+				maleParentCopy.setSeedSource(maleSource);
+
+				CrossParents parents = new CrossParents(femaleParentCopy, maleParentCopy);
+
+				if (!crossAlreadyExists(parents)) {
+					String seedSource = appendWithSeparator(femaleSource, maleSource);
+					final Germplasm germplasm = new Germplasm();
+					germplasm.setGnpgs(2);
+					germplasm.setGid(Integer.MAX_VALUE);
+					germplasm.setGpid1(femaleParent.getGid());
+					germplasm.setGpid2(maleParent.getGid());
+
+					String cross = getCross(germplasm, femaleDesig, maleDesig);
+
+					tableCrossesMade.addItem(new Object[] {1, cross, femaleDesig, maleDesig, seedSource}, parents);
+				}
+
+			}
+		}
+		updateCrossesMadeUI();
+	}
+    
+	private String getCross(final Germplasm germplasm, final String femaleDesignation, final String maleDesignation) {
+		try {
+			if (pedigreeProfile
+					.equalsIgnoreCase(PedigreeFactory.PROFILE_CIMMYT)) {
+				return pedigreeService.getCrossExpansion(germplasm, null, crossExpansionProperties);
+			}
+			return appendWithSeparator(femaleDesignation, maleDesignation);
+		} catch (MiddlewareQueryException e) {
+			throw new RuntimeException("There was a problem accessing communicating with the database. "
+					+ "Please contact support for further help.", e);
+		}
+
+	}
 
     private void addTableCrossesMadeCounter() {
     	
