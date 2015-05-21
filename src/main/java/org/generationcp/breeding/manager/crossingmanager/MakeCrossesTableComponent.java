@@ -30,13 +30,13 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ApplyCrossingSettingAction;
-import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUtil;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.commons.util.CrossingUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -49,7 +49,6 @@ import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.service.api.PedigreeService;
-import org.generationcp.middleware.service.pedigree.PedigreeFactory;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,21 +112,23 @@ public class MakeCrossesTableComponent extends VerticalLayout
     
     private CrossingManagerMakeCrossesComponent makeCrossesMain;
 
-    private PedigreeService pedigreeService;
-	private String pedigreeProfile;
+    private final PedigreeService pedigreeService;
+	private final String pedigreeProfile;
+	private final String currentCropName;
     
     public MakeCrossesTableComponent(CrossingManagerMakeCrossesComponent makeCrossesMain){
     	this.makeCrossesMain = makeCrossesMain;
 		ManagerFactory managerFactory = ManagerFactory.getCurrentManagerFactoryThreadLocal().get();
 		if (managerFactory != null) {
 			this.pedigreeService = managerFactory.getPedigreeService();
-			pedigreeProfile = managerFactory.getPedigreeProfile();
+			this.currentCropName = managerFactory.getCropName();
+			this.pedigreeProfile = managerFactory.getPedigreeProfile();
 		} else {
 			throw new IllegalStateException("Must have access to the Manager Factory thread local valiable. "
 					+ "Please contact support for further help.");
 		}
-
     }
+
     @Override
     public void afterPropertiesSet() throws Exception {
     	instantiateComponents();
@@ -293,15 +294,16 @@ public class MakeCrossesTableComponent extends VerticalLayout
     
 	private String getCross(final Germplasm germplasm, final String femaleDesignation, final String maleDesignation) {
 		try {
-			if (pedigreeProfile
-					.equalsIgnoreCase(PedigreeFactory.PROFILE_CIMMYT)) {
+			if (CrossingUtil.isCimmytWheat(pedigreeProfile, currentCropName)) {
 				return pedigreeService.getCrossExpansion(germplasm, null, crossExpansionProperties);
 			}
 			return appendWithSeparator(femaleDesignation, maleDesignation);
 		} catch (MiddlewareQueryException e) {
-			throw new RuntimeException("There was a problem accessing communicating with the database. "
-					+ "Please contact support for further help.", e);
+            LOG.error(e.getMessage(),e);
+            MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), 
+                messageSource.getMessage(Message.ERROR_ACCESSING_PEDIGREE_STRING));
 		}
+		return "";
 
 	}
 
