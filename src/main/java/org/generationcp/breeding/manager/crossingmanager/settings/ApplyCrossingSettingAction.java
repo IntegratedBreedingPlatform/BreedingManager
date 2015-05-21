@@ -1,6 +1,7 @@
 package org.generationcp.breeding.manager.crossingmanager.settings;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,9 +14,13 @@ import org.generationcp.breeding.manager.crossingmanager.xml.AdditionalDetailsSe
 import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
+import org.generationcp.commons.util.CrossingUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +35,8 @@ public class ApplyCrossingSettingAction implements
 	
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
+	@Autowired
+    private GermplasmListManager germplasmListManager;
 	
 	private CrossingManagerSetting setting;
 	private CrossesMadeContainer container;
@@ -97,13 +104,20 @@ public class ApplyCrossingSettingAction implements
                 
                 }
             }
+            Integer crossingNameTypeId = null;
+			try {
+				crossingNameTypeId = BreedingManagerUtil.getIDForUserDefinedFieldCrossingName(germplasmListManager);
+			} catch (MiddlewareQueryException e) {
+				LOG.error(e.getMessage(), e);
+			}
+            CrossingUtil.applyMethodNameType(germplasmDataManager, this.container.getCrossesMade().getCrossesMap(), crossingNameTypeId);
             return true;
             
         }
         
         return false;
 	}
-
+	
 	/**
 	 * Generate values for NAME record plus Germplasm List Entry designation
 	 * based on cross name setting configuration

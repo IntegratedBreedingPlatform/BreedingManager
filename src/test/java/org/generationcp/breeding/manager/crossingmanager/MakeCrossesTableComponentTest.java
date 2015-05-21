@@ -8,10 +8,12 @@ import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.vaadin.ui.Table;
@@ -27,13 +29,17 @@ public class MakeCrossesTableComponentTest {
 	
 	@Before
 	public void setUp(){
+
 		MockitoAnnotations.initMocks(this);
+		ManagerFactory.getCurrentManagerFactoryThreadLocal().set(Mockito.mock(ManagerFactory.class));
+
 		makeCrossesTableComponent = spy(new MakeCrossesTableComponent(makeCrossesMain));
 		makeCrossesTableComponent.setOntologyDataManager(ontologyDataManager);
 	}
 	
 	@Test
 	public void testInitializeCrossesMadeTable_returnsTheValueFromColumLabelDefaultName(){
+		
 		Table table = new Table();
 		
 		when(makeCrossesTableComponent.getTableCrossesMade()).thenReturn(table);
