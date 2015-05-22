@@ -45,8 +45,8 @@ public class BreedingManagerServiceTest {
 
     private static final String SAMPLE_SEARCH_STRING = "a sample search string";
     private static final Operation CONTAINS_MATCH = Operation.LIKE;
-    private static final Boolean EXCLUDE_PARENT = false;
-    private static final Boolean SEARCH_PUBLIC_DATA = true;
+    private static final Boolean INCLUDE_PARENT = true;
+    private static final Boolean WITH_INVENTORY_ONLY = true;
 
     @Mock
     private GermplasmDataManager germplasmDataManager;
@@ -165,12 +165,15 @@ public class BreedingManagerServiceTest {
         List<Germplasm> expectedResult = mock(List.class);
         expectedResult.add(mock(Germplasm.class));
 
-        when(germplasmDataManager.searchForGermplasm(SAMPLE_SEARCH_STRING, CONTAINS_MATCH, EXCLUDE_PARENT)).thenReturn(expectedResult);
+        when(germplasmDataManager.searchForGermplasm(SAMPLE_SEARCH_STRING, CONTAINS_MATCH, 
+        		INCLUDE_PARENT, WITH_INVENTORY_ONLY)).thenReturn(expectedResult);
 
         // assume we have a search result
-        List<Germplasm> result = breedingManagerService.doGermplasmSearch(SAMPLE_SEARCH_STRING, CONTAINS_MATCH, EXCLUDE_PARENT);
+        List<Germplasm> result = breedingManagerService.doGermplasmSearch(SAMPLE_SEARCH_STRING, 
+        		CONTAINS_MATCH, INCLUDE_PARENT, WITH_INVENTORY_ONLY);
 
-        verify(germplasmDataManager).searchForGermplasm(SAMPLE_SEARCH_STRING, CONTAINS_MATCH, EXCLUDE_PARENT);
+        verify(germplasmDataManager).searchForGermplasm(SAMPLE_SEARCH_STRING, CONTAINS_MATCH, 
+        		INCLUDE_PARENT, WITH_INVENTORY_ONLY);
 
         assertTrue("expects the result size is equal to the expectedResult size",result.size() == expectedResult.size());
 
@@ -180,7 +183,7 @@ public class BreedingManagerServiceTest {
     public void testDoGermplasmSearchEmptyString() throws Exception {
 
         try {
-            breedingManagerService.doGermplasmSearch("", CONTAINS_MATCH, EXCLUDE_PARENT);
+            breedingManagerService.doGermplasmSearch("", CONTAINS_MATCH, INCLUDE_PARENT, WITH_INVENTORY_ONLY);
             fail("expects an error since germplasm search string is empty");
         } catch (BreedingManagerSearchException e) {
             assertEquals("Should throw a BreedingManagerSearchException with SEARCH_QUERY_CANNOT_BE_EMPTY message",e.getErrorMessage(), Message.SEARCH_QUERY_CANNOT_BE_EMPTY);

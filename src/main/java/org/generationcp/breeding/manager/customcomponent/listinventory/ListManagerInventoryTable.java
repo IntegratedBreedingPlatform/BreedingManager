@@ -8,8 +8,10 @@ import org.generationcp.breeding.manager.listmanager.util.InventoryTableDropHand
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
+import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.pojos.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +19,7 @@ import com.vaadin.data.Item;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.themes.BaseTheme;
 
@@ -74,41 +77,68 @@ public class ListManagerInventoryTable extends ListInventoryTable {
 			 			@Override
 			 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 			 				CheckBox itemCheckBox = (CheckBox) event.getButton();
-			 				if(((Boolean) itemCheckBox.getValue()).equals(true)){
-			 					listInventoryTable.select(itemCheckBox.getData());
-			 				} else {
-			 					listInventoryTable.unselect(itemCheckBox.getData());
-			 				}
+			 				toggleSelectOnLotEntries(itemCheckBox);
 			 			}
-			 			 
+
 			 		});
 					
-			   		GermplasmListData germplasmListData = null;
-			   		
-			   		try {
-						germplasmListData = germplasmListManager.getGermplasmListDataByListIdAndLrecId(listId, lotDetail.getId());
-					} catch (MiddlewareQueryException e) {
-						LOG.error(e.getMessage(), e);
-					}
+			   		GermplasmListData germplasmListData = retrieveGermplasmListDataUsingLrecId(lotDetail);
 			   		
 			   		Button desigButton = new Button(String.format("%s", designation), 
 			   					new GidLinkButtonClickListener(listManagerMain,germplasmListData.getGid().toString(), true, true));
 		            desigButton.setStyleName(BaseTheme.BUTTON_LINK);
+		            
+		            Location locationOfLot = lotDetail.getLocationOfLot();
+		            String location = "";
+		            if (locationOfLot != null){
+		            	location = locationOfLot.getLname();
+		            }
+		            
+		            Term scaleOfLot = lotDetail.getScaleOfLot();
+		            String scale = "";
+		            if (scaleOfLot != null){
+		            	scale = scaleOfLot.getName();
+		            }
 			   		
 			   		newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(itemCheckBox);
 					newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entryId);
 					newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(desigButton);
-					newItem.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).setValue(lotDetail.getLocationOfLot().getLname());
-					newItem.getItemProperty(ColumnLabels.SCALE.getName()).setValue(lotDetail.getScaleOfLot().getName());
+					newItem.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).setValue(location);
+					newItem.getItemProperty(ColumnLabels.SCALE.getName()).setValue(scale);
 					newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(lotDetail.getAvailableLotBalance());
 					newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(lotDetail.getActualLotBalance());
 					newItem.getItemProperty(ColumnLabels.RESERVED.getName()).setValue(lotDetail.getReservedTotalForEntry());
 					newItem.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(0);
 					newItem.getItemProperty(ColumnLabels.COMMENT.getName()).setValue(lotDetail.getCommentOfLot());
+					
+					String stockIds = lotDetail.getStockIds();
+					Label stockIdsLbl = new Label(stockIds);
+					stockIdsLbl.setDescription(stockIds);
+					newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdsLbl);
+					
 					newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotDetail.getLotId());
 				}
 			}
 		}
+	}
+
+	protected GermplasmListData retrieveGermplasmListDataUsingLrecId(
+			ListEntryLotDetails lotDetail) {
+		try {
+			return germplasmListManager.getGermplasmListDataByListIdAndLrecId(listId, lotDetail.getId());
+		} catch (MiddlewareQueryException e) {
+			LOG.error(e.getMessage(), e);
+		}
+		return null;
+	}
+	
+	protected void toggleSelectOnLotEntries(
+			CheckBox itemCheckBox) {
+		if(((Boolean) itemCheckBox.getValue()).equals(true)){
+				listInventoryTable.select(itemCheckBox.getData());
+			} else {
+				listInventoryTable.unselect(itemCheckBox.getData());
+			}
 	}
 	
 	public void setDropHandler(){

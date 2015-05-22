@@ -90,10 +90,10 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 	}
 
     @Override
-    public List<Germplasm> doGermplasmSearch(String q, Operation o, boolean includeParents) throws BreedingManagerSearchException {
+    public List<Germplasm> doGermplasmSearch(String q, Operation o, boolean includeParents, boolean withInventoryOnly) throws BreedingManagerSearchException {
         validateEmptySearchString(q);
         try {
-            List<Germplasm> results = germplasmDataManager.searchForGermplasm(q, o, includeParents);
+            List<Germplasm> results = germplasmDataManager.searchForGermplasm(q, o, includeParents, withInventoryOnly);
 
             if (null == results || results.isEmpty()) {
             	throw new BreedingManagerSearchException(Message.NO_SEARCH_RESULTS);

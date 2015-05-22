@@ -11,7 +11,12 @@ public class ImportedGermplasm {
     private String cross;
     private String source;
     private String entryCode;
+
+	/** also the seed quantity */
     private Double seedAmount;
+
+	/** This is also the stockId */
+    private String inventoryId;
     private Map<String, String> attributeVariates;
     private Map<String, String> nameFactors;
     
@@ -105,6 +110,14 @@ public class ImportedGermplasm {
 	
 	public void addNameFactor(String name, String value){
 		nameFactors.put(name, value);
+	}
+
+	public String getInventoryId() {
+		return inventoryId;
+	}
+
+	public void setInventoryId(String inventoryId) {
+		this.inventoryId = inventoryId;
 	}
 	
 }

@@ -38,6 +38,7 @@ import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.BaseTheme;
 
@@ -392,6 +393,13 @@ public class DropHandlerMethods {
     	   		}
     	   		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
     	   		
+
+    	   		if (forEditList){
+    	   			newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(germplasmListData.getInventoryInfo().getStockIDs());
+    	   		}else{
+    	   			newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(STRING_EMPTY);
+    	   		}
+	    	   	
 	            
 	    		for (Entry<String, List<ListDataColumnValues>> columnEntry: currentColumnsInfo.getColumnValuesMap().entrySet()){
 	    			String column = columnEntry.getKey();
@@ -520,6 +528,9 @@ public class DropHandlerMethods {
 	   		newItem.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(entryCode);
 	   		newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
 	   		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
+	   		
+    	   	newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(STRING_EMPTY);
+
     		for (Entry<String, List<ListDataColumnValues>> columnEntry: currentColumnsInfo.getColumnValuesMap().entrySet()){
     			String column = columnEntry.getKey();
     			for (ListDataColumnValues columnValue : columnEntry.getValue()){
@@ -638,6 +649,14 @@ public class DropHandlerMethods {
    	    if(item!=null){
     	    String buttonCaption = ((Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue()).getCaption().toString();
     	    return Integer.valueOf(buttonCaption);
+    	}
+    	return null;	
+    }
+    
+    public String getStockIDFromStockIDLabel(Table table, Integer itemId){
+    	Item item = table.getItem(itemId);
+   	    if(item!=null){
+    	    return ((Label) item.getItemProperty(ColumnLabels.STOCKID.getName()).getValue()).getValue().toString();
     	}
     	return null;	
     }

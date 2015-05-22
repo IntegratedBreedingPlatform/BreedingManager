@@ -27,6 +27,9 @@ import com.vaadin.ui.CheckBox;
 @RunWith(MockitoJUnitRunner.class)
 public class GermplasmSearchBarComponentTest {
 	
+	private static final String MATCHES_STARTING_WITH = "Matches starting with";
+	private static final String MATCHES_CONTAINING = "Matches containing";
+	
 	@Mock
 	private GermplasmSearchResultsComponent germplasmSearchResultsComponent;
 	
@@ -46,6 +49,7 @@ public class GermplasmSearchBarComponentTest {
 				"\"Include public data\" checkbox.";
 	private static final String NO_SEARCH_RESULTS = "No matches were found.";
 	private static final String TEST_SEARCH_STRING = "1234567";
+	private static final String PERCENT = "%";
 	
 	
 	@Before
@@ -74,19 +78,24 @@ public class GermplasmSearchBarComponentTest {
 	public void testDoSearch() {
 		
 		CheckBox includeParentsCheckBox = spyComponent.getIncludeParentsCheckBox();
-		CheckBox exactMatchesOnlyCheckBox = spyComponent.getExactMatchesOnlyCheckBox();
+		CheckBox withInventoryOnlyCheckBox = spyComponent.getWithInventoryOnlyCheckBox(); 
 		boolean includeParents = (Boolean) includeParentsCheckBox.getValue();
-        boolean exactMatchesOnly = (Boolean) exactMatchesOnlyCheckBox.getValue();
-        
+		boolean withInventoryOnly = (Boolean) withInventoryOnlyCheckBox.getValue();
+		
+		String searchType = (String)spyComponent.getSearchTypeOptions().getValue();
+		String searchKeyword = getSearchKeyword(TEST_SEARCH_STRING,searchType);
+		
+		boolean exactMatchesOnly = false;
         Operation operation = exactMatchesOnly ? Operation.EQUAL : Operation.LIKE;
         List<Germplasm> results = null;
+        
         try {
-        	when(germplasmDataManager.searchForGermplasm(TEST_SEARCH_STRING, operation, 
-				includeParents)).thenReturn(null);
+        	when(germplasmDataManager.searchForGermplasm(searchKeyword, operation, 
+        			includeParents,withInventoryOnly)).thenReturn(null);
 			doNothing().when(germplasmSearchResultsComponent).applyGermplasmResults(results);
 			spyComponent.doSearch(TEST_SEARCH_STRING);
-			verify(breedingManagerService).doGermplasmSearch(TEST_SEARCH_STRING, 
-					operation, includeParents);
+			verify(breedingManagerService).doGermplasmSearch(searchKeyword, 
+					operation, includeParents,withInventoryOnly);
 		} catch (BreedingManagerSearchException e) {
 			Message errorMessage = e.getErrorMessage();
 			assertEquals("Error message should be "+NO_SEARCH_RESULTS_UNCHECKED_PUBLIC_DATA,
@@ -95,5 +104,15 @@ public class GermplasmSearchBarComponentTest {
 		} catch(Exception e) {
 			fail("Test fails with error : "+ e.getMessage());
 		}
+	}
+
+	private String getSearchKeyword(String query, String searchType) {
+		String searchKeyword = query;
+		if(MATCHES_STARTING_WITH.equals(searchType)) {
+        	searchKeyword = searchKeyword+PERCENT;
+        } else if(MATCHES_CONTAINING.equals(searchType)) {
+        	searchKeyword = PERCENT+searchKeyword+PERCENT;
+        }
+        return searchKeyword;
 	}
 }

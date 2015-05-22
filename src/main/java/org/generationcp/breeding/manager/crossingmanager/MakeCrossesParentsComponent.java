@@ -154,6 +154,8 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		List<Integer> selectedListEntries = new ArrayList<Integer>();
 		selectedListEntries.addAll((Collection<Integer>) sourceTable.getValue());
 
+		Boolean isCopyAllEntries = selectedListEntries.size() == sourceTable.getItemIds().size() && targetTable.getItemIds().isEmpty();
+		
 		if (selectedListEntries.isEmpty() && transferrableItemId != null) {
 			selectedListEntries.add(transferrableItemId);
 		}
@@ -233,6 +235,19 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 					item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName())
 							.setValue(newAvailInvButton);
 					item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
+
+					if (isCopyAllEntries){
+						
+						Object columnValue = sourceTable.getItem(itemId).getItemProperty(ColumnLabels.STOCKID.getName()).getValue();
+						Label stockIdLabel = (Label) columnValue;
+						Label newStockIdLabel = new Label(stockIdLabel.getValue().toString());
+						newStockIdLabel.setDescription(stockIdLabel.getValue().toString());
+						item.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(newStockIdLabel);
+						
+					}else{
+						item.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(new Label(""));
+					}
+					
 				}
 			}
 
@@ -486,6 +501,11 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 								.setValue(inventoryButton);
 						item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName())
 								.setValue(seedRes);
+						
+						Label stockIdLabel = new Label(listData.getInventoryInfo().getStockIDs());
+						stockIdLabel.setDescription(listData.getInventoryInfo().getStockIDs());
+						item.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdLabel);
+						
 
 						addedCount++;
 					}
@@ -599,6 +619,10 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 								.setValue(inventoryButton);
 						item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName())
 								.setValue(seedRes);
+						
+						Label stockIdLabel = new Label(listData.getInventoryInfo().getStockIDs());
+						stockIdLabel.setDescription(listData.getInventoryInfo().getStockIDs());
+						item.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdLabel);
 
 						addedCount++;
 					}

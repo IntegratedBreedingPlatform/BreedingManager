@@ -32,6 +32,7 @@ import com.vaadin.data.Item;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.BaseTheme;
 
@@ -97,6 +98,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		listInventoryTable.addContainerProperty(ColumnLabels.RESERVED.getName(), Double.class, null);
 		listInventoryTable.addContainerProperty(ColumnLabels.NEWLY_RESERVED.getName(), Double.class, null);
 		listInventoryTable.addContainerProperty(ColumnLabels.COMMENT.getName(), String.class, null);
+		listInventoryTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
 		listInventoryTable.addContainerProperty(ColumnLabels.LOT_ID.getName(), Integer.class, null);
 		
 		listInventoryTable.setColumnHeader(ColumnLabels.TAG.getName(), messageSource.getMessage(Message.CHECK_ICON));
@@ -109,6 +111,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		listInventoryTable.setColumnHeader(ColumnLabels.RESERVED.getName(), ColumnLabels.RESERVED.getTermNameFromOntology(ontologyDataManager));
 		listInventoryTable.setColumnHeader(ColumnLabels.NEWLY_RESERVED.getName(), ColumnLabels.NEWLY_RESERVED.getTermNameFromOntology(ontologyDataManager));
 		listInventoryTable.setColumnHeader(ColumnLabels.COMMENT.getName(), ColumnLabels.COMMENT.getTermNameFromOntology(ontologyDataManager));
+		listInventoryTable.setColumnHeader(ColumnLabels.STOCKID.getName(), ColumnLabels.STOCKID.getTermNameFromOntology(ontologyDataManager));
 		listInventoryTable.setColumnHeader(ColumnLabels.LOT_ID.getName(), ColumnLabels.LOT_ID.getTermNameFromOntology(ontologyDataManager));
 	}
 
@@ -149,13 +152,9 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 			 			@Override
 			 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 			 				CheckBox itemCheckBox = (CheckBox) event.getButton();
-			 				if(((Boolean) itemCheckBox.getValue()).equals(true)){
-			 					listInventoryTable.select(itemCheckBox.getData());
-			 				} else {
-			 					listInventoryTable.unselect(itemCheckBox.getData());
-			 				}
+			 				toggleSelectOnLotEntries(itemCheckBox);
 			 			}
-			 			 
+
 			 		});
 					
 			   		Button desigButton = new Button(String.format("%s", designation), 
@@ -172,11 +171,26 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 					newItem.getItemProperty(ColumnLabels.RESERVED.getName()).setValue(lotDetail.getReservedTotalForEntry());
 					newItem.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(0);
 					newItem.getItemProperty(ColumnLabels.COMMENT.getName()).setValue(lotDetail.getCommentOfLot());
+
+					String stockIds = lotDetail.getStockIds();
+					Label stockIdsLbl = new Label(stockIds);
+					stockIdsLbl.setDescription(stockIds);
+					newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdsLbl);
+
 					newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotDetail.getLotId());
 				}
 			}
 		}
 		
+	}
+	
+	protected void toggleSelectOnLotEntries(
+			CheckBox itemCheckBox) {
+		if(((Boolean) itemCheckBox.getValue()).equals(true)){
+				listInventoryTable.select(itemCheckBox.getData());
+			} else {
+				listInventoryTable.unselect(itemCheckBox.getData());
+			}
 	}
 	
 	public void updateListInventoryTableAfterSave(){

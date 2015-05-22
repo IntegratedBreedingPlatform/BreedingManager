@@ -16,12 +16,14 @@ import org.generationcp.breeding.manager.listimport.actions.ProcessImportedGermp
 import org.generationcp.breeding.manager.listimport.actions.SaveGermplasmListAction;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
 import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
+import org.generationcp.breeding.manager.listmanager.dialog.GenerateStockIDsDialog;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.DateUtil;
+import org.generationcp.commons.util.FileUtils;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -80,6 +82,9 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
     private GermplasmList germplasmList;
 
     private SaveListAsDialog saveListAsDialog;
+    
+    private GenerateStockIDsDialog generateStockIdsDialog;
+    
     private ProcessImportedGermplasmAction processGermplasmAction;
 
     @Autowired
@@ -156,18 +161,29 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         if (validateLocation() && validatePedigreeOption()) {
             processGermplasmAction.processGermplasm();
         }
+    	
+    }
+    
+    public void saveTheList(){
+    	// TODO: add condition if doesnt have stock id
+    	if (germplasmListUploader.hasInventoryAmountOnly()){
+    		popupGenerateStockIdsDialog();
+    	}else{
+    		popupSaveAsDialog();
+    	}
+    	
     }
 
     public void popupSaveAsDialog() {
 
         germplasmList = new GermplasmList();
 
-        String sDate = DateUtil.formatDateAsStringValue(germplasmListUploader.getListDate(), 
+        String sDate = DateUtil.formatDateAsStringValue(germplasmListUploader.getImportedGermplasmList().getDate(),
         		DateUtil.DATE_AS_NUMBER_FORMAT);
-        germplasmList.setName(germplasmListUploader.getListName());
+        germplasmList.setName(germplasmListUploader.getImportedGermplasmList().getName());
         germplasmList.setDate(Long.parseLong(sDate));
-        germplasmList.setType(germplasmListUploader.getListType());
-        germplasmList.setDescription(germplasmListUploader.getListTitle());
+        germplasmList.setType(germplasmListUploader.getImportedGermplasmList().getType());
+        germplasmList.setDescription(germplasmListUploader.getImportedGermplasmList().getTitle());
         germplasmList.setStatus(1);
         try {
 			germplasmList.setUserId(contextUtil.getCurrentUserLocalId());
@@ -203,6 +219,18 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         }
 
     }
+    
+    public void popupGenerateStockIdsDialog(){
+    	
+    	 generateStockIdsDialog = new GenerateStockIDsDialog(this, germplasmList);
+         //If not from popup
+         if (source.getGermplasmImportPopupSource() == null) {
+             this.getWindow().addWindow(generateStockIdsDialog);
+         } else {
+             source.getGermplasmImportPopupSource().getParentWindow().addWindow(generateStockIdsDialog);
+         }
+    	
+    }
 
     private boolean validatePedigreeOption() {
         return BreedingManagerUtil.validateRequiredField(getWindow(), pedigreeOptionComboBox,
@@ -214,7 +242,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
                 messageSource, messageSource.getMessage(Message.GERMPLASM_LOCATION_LABEL));
     }
 
-    private void updateTotalEntriesLabel() {
+    protected void updateTotalEntriesLabel() {
         int count = germplasmDetailsTable.getItemIds().size();
         if (count == 0) {
             totalEntriesLabel.setValue(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
@@ -254,10 +282,11 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         pedigreeOptionComboBox.addItem(3);
         pedigreeOptionComboBox.setItemCaption(1, messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_ONE));
         pedigreeOptionComboBox.setItemCaption(2, messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_TWO));
-        pedigreeOptionComboBox.setItemCaption(3, messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_THREE));
+        pedigreeOptionComboBox.setItemCaption(3,
+                messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_THREE));
     }
 
-    private void showFirstPedigreeOption(boolean visible) {
+    protected void showFirstPedigreeOption(boolean visible) {
         Item firstOption = pedigreeOptionComboBox.getItem(1);
         if (firstOption == null && visible) {
             pedigreeOptionComboBox.removeAllItems();
@@ -334,20 +363,49 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
         germplasmDetailsTable.setHeight("200px");
         germplasmDetailsTable.setWidth("700px");
         
-        germplasmDetailsTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
-        germplasmDetailsTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
-        germplasmDetailsTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), String.class, null);
-        germplasmDetailsTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
+        germplasmDetailsTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class,
+                null);
+        germplasmDetailsTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class,
+                null);
+        germplasmDetailsTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), String.class,
+                null);
+        germplasmDetailsTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class,
+                null);
         germplasmDetailsTable.addContainerProperty(ColumnLabels.GID.getName(), Integer.class, null);
-        germplasmDetailsTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
+        germplasmDetailsTable.addContainerProperty(ColumnLabels.STOCKID, String.class, null);
+        germplasmDetailsTable.addContainerProperty(ColumnLabels.AMOUNT, Double.class, null);
+        germplasmDetailsTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class,
+                null);
+
+
+
+
         germplasmDetailsTable.setColumnCollapsingAllowed(true);
         
-        germplasmDetailsTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(),getTermNameFromOntology(ColumnLabels.ENTRY_ID));
-        germplasmDetailsTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(),getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
-        germplasmDetailsTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(),getTermNameFromOntology(ColumnLabels.DESIGNATION));
-        germplasmDetailsTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(),getTermNameFromOntology(ColumnLabels.PARENTAGE));
-        germplasmDetailsTable.setColumnHeader(ColumnLabels.GID.getName(),getTermNameFromOntology(ColumnLabels.GID));
-        germplasmDetailsTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(),getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
+        germplasmDetailsTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(),
+                getTermNameFromOntology(ColumnLabels.ENTRY_ID));
+        germplasmDetailsTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(),
+                getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
+        germplasmDetailsTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(),
+                getTermNameFromOntology(ColumnLabels.DESIGNATION));
+        germplasmDetailsTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(),
+                getTermNameFromOntology(ColumnLabels.PARENTAGE));
+        germplasmDetailsTable.setColumnHeader(ColumnLabels.GID.getName(),
+                getTermNameFromOntology(ColumnLabels.GID));
+
+        germplasmDetailsTable.setColumnHeader(ColumnLabels.STOCKID.getName(),
+                getTermNameFromOntology(ColumnLabels.STOCKID));
+
+        germplasmDetailsTable.setColumnHeader(ColumnLabels.AMOUNT.getName(),
+                getTermNameFromOntology(ColumnLabels.AMOUNT));
+
+        germplasmDetailsTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(),
+                getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
+
+
+        germplasmDetailsTable.setColumnCollapsed(ColumnLabels.STOCKID, true);
+        germplasmDetailsTable.setColumnCollapsed(ColumnLabels.AMOUNT, true);
+
     }
 
 	protected String getTermNameFromOntology(ColumnLabels columnLabels) {
@@ -440,20 +498,33 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
     public void initializeFromImportFile(ImportedGermplasmList importedGermplasmList) {
 
         this.importedGermplasmList = importedGermplasmList;
-        this.germplasmFieldsComponent.refreshLayout(germplasmListUploader.hasInventoryAmount());
+        this.getGermplasmFieldsComponent().refreshLayout(germplasmListUploader.hasInventoryAmountOnly());
 
         //Clear table contents first (possible that it has some rows in it from previous uploads, and then user went back to upload screen)
         getGermplasmDetailsTable().removeAllItems();
+
+        if (germplasmListUploader.hasStockIdFactor()) {
+            getGermplasmDetailsTable().setColumnCollapsed(ColumnLabels.STOCKID,false);
+        } else {
+            getGermplasmDetailsTable().setColumnCollapsed(ColumnLabels.STOCKID,true);
+        }
+        if (germplasmListUploader.hasInventoryAmount()) {
+            getGermplasmDetailsTable().setColumnCollapsed(ColumnLabels.AMOUNT, false);
+        } else {
+            getGermplasmDetailsTable().setColumnCollapsed(ColumnLabels.AMOUNT, true);
+        }
+
         String germplasmSource;
-        for (int i = 0; i < importedGermplasms.size(); i++) {
-            ImportedGermplasm importedGermplasm = importedGermplasms.get(i);
+        String fileNameWithoutExtension = FileUtils.getFilenameWithoutExtension(importedGermplasmList.getFilename());
+        for (int i = 0; i < getImportedGermplasms().size(); i++) {
+            ImportedGermplasm importedGermplasm = getImportedGermplasms().get(i);
             if (importedGermplasm.getSource() == null) {
-            	germplasmSource = importedGermplasmList.getFilename() + ":" + (i + 1);
+            	germplasmSource = fileNameWithoutExtension + ":" + (i + 1);
             } else {
             	germplasmSource = importedGermplasm.getSource();
             }
             getGermplasmDetailsTable().addItem(new Object[]{importedGermplasm.getEntryId(),
-                    importedGermplasm.getEntryCode(), importedGermplasm.getDesig(), importedGermplasm.getCross(), importedGermplasm.getGid(), germplasmSource}, new Integer(i + 1));
+                    importedGermplasm.getEntryCode(), importedGermplasm.getDesig(), importedGermplasm.getCross(), importedGermplasm.getGid(),importedGermplasm.getInventoryId(),importedGermplasm.getSeedAmount(),germplasmSource}, new Integer(i + 1));
         }
         updateTotalEntriesLabel();
 
@@ -564,6 +635,5 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 	public void setContextUtil(ContextUtil contextUtil) {
 		this.contextUtil = contextUtil;
 	}
-    
-    
+	
 }

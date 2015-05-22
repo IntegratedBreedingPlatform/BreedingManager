@@ -61,6 +61,7 @@ public class SelectParentsListDataComponentTest {
 		assertEquals("HASHTAG", table.getColumnHeader(ColumnLabels.ENTRY_ID.getName()));
 		assertEquals("AVAIL INV", table.getColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName()));
 		assertEquals("SEED RES", table.getColumnHeader(ColumnLabels.SEED_RESERVATION.getName()));
+		assertEquals("STOCKID", table.getColumnHeader(ColumnLabels.STOCKID.getName()));
 		assertEquals("GID", table.getColumnHeader(ColumnLabels.GID.getName()));
 		assertEquals("ENTRY CODE", table.getColumnHeader(ColumnLabels.ENTRY_CODE.getName()));
 		assertEquals("DESIGNATION", table.getColumnHeader(ColumnLabels.DESIGNATION.getName()));
@@ -81,6 +82,7 @@ public class SelectParentsListDataComponentTest {
 		when(ontologyDataManager.getTermById(TermId.DESIG.getId())).thenReturn(fromOntology);
 		when(ontologyDataManager.getTermById(TermId.AVAILABLE_INVENTORY.getId())).thenReturn(fromOntology);
 		when(ontologyDataManager.getTermById(TermId.SEED_RESERVATION.getId())).thenReturn(fromOntology);
+		when(ontologyDataManager.getTermById(TermId.STOCKID.getId())).thenReturn(fromOntology);
 		when(ontologyDataManager.getTermById(TermId.CROSS.getId())).thenReturn(fromOntology);
 		when(ontologyDataManager.getTermById(TermId.ENTRY_CODE.getId())).thenReturn(fromOntology);
 		when(ontologyDataManager.getTermById(TermId.GID.getId())).thenReturn(fromOntology);
@@ -99,6 +101,7 @@ public class SelectParentsListDataComponentTest {
 		assertEquals("HASHTAG", table.getColumnHeader(ColumnLabels.ENTRY_ID.getName()));
 		assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName()));
 		assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.SEED_RESERVATION.getName()));
+		assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.STOCKID.getName()));
 		assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.GID.getName()));
 		assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.ENTRY_CODE.getName()));
 		assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.DESIGNATION.getName()));

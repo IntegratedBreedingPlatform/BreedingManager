@@ -113,6 +113,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		InternationalizableComponent, BreedingManagerLayout, AddEntryDialogSource,
 		SaveListAsDialogSource, ReserveInventorySource {
 
+	private static final String ERROR_WITH_DELETING_LIST_ENTRIES = "Error with deleting list entries.";
+
+	private static final String CONTEXT_MENU_WIDTH = "295px";
+
 	private static final long serialVersionUID = -3367108805414232721L;
 
 	private static final Logger LOG = LoggerFactory.getLogger(ListComponent.class);
@@ -334,7 +338,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		lockButton.setData(LOCK_BUTTON_ID);
 
 		menu = new ContextMenu();
-		menu.setWidth("295px");
+		menu.setWidth(CONTEXT_MENU_WIDTH);
 
 		// Add Column menu will be initialized after list data table is created
 		initializeListDataTable(); // listDataTable
@@ -354,7 +358,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		menu.addItem(messageSource.getMessage(Message.SELECT_ALL));
 
 		inventoryViewMenu = new ContextMenu();
-		inventoryViewMenu.setWidth("295px");
+		inventoryViewMenu.setWidth(CONTEXT_MENU_WIDTH);
 		menuCancelReservation = inventoryViewMenu.addItem(messageSource
 				.getMessage(Message.CANCEL_RESERVATIONS));
 		menuCopyToNewListFromInventory = inventoryViewMenu.addItem(messageSource
@@ -370,7 +374,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		resetInventoryMenuOptions();
 
 		tableContextMenu = new ContextMenu();
-		tableContextMenu.setWidth("295px");
+		tableContextMenu.setWidth(CONTEXT_MENU_WIDTH);
 		tableContextMenuSelectAll = tableContextMenu.addItem(messageSource
 				.getMessage(Message.SELECT_ALL));
 		tableContextMenuDeleteEntries = tableContextMenu.addItem(messageSource
@@ -434,6 +438,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 				String.class, null);
 		listDataTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class,
 				null);
+		listDataTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class,
+				null);
 		listDataTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(),
 				String.class, null);
 
@@ -453,9 +459,11 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 				getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
 		listDataTable.setColumnHeader(ColumnLabels.GID.getName(),
 				getTermNameFromOntology(ColumnLabels.GID));
+		listDataTable.setColumnHeader(ColumnLabels.STOCKID.getName(),
+				getTermNameFromOntology(ColumnLabels.STOCKID));
 		listDataTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(),
 				getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
-
+		
 		initializeAddColumnContextMenu();
 
 	}
@@ -607,6 +615,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		}
 		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(
 				seedRes);
+		
+		String stockIds = entry.getInventoryInfo().getStockIDs();
+		Label stockIdsLbl = new Label(stockIds);
+		stockIdsLbl.setDescription(stockIds);
+		newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdsLbl);
+		
 	}
 
 	private void getAllListEntries() {
@@ -800,8 +814,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 			if (propertyId.equals(ColumnLabels.GID.getName())
 					|| propertyId.equals(ColumnLabels.ENTRY_ID.getName())
 					|| propertyId.equals(ColumnLabels.DESIGNATION.getName())
-					|| propertyId.equals(ColumnLabels.AVAILABLE_INVENTORY.getName())
-					|| propertyId.equals(ColumnLabels.SEED_RESERVATION.getName())) {
+					|| isInventoryColumn(propertyId)) {
 				return null;
 			}
 
@@ -1022,10 +1035,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 						|| selectedColumn.equals(ColumnLabels.GID.getName())
 						|| selectedColumn.equals(ColumnLabels.ENTRY_ID.getName())
 						|| selectedColumn.equals(ColumnLabels.DESIGNATION.getName())
-						|| selectedColumn.equals(ColumnLabels.SEED_RESERVATION
-						.getName())
-						|| selectedColumn.equals(ColumnLabels.AVAILABLE_INVENTORY
-						.getName())) {
+						|| isInventoryColumn(selectedColumn)) {
 					tableContextMenuDeleteEntries.setVisible(!germplasmList.isLockedList());
 					tableContextMenuEditCell.setVisible(false);
 					if (source != null) {
@@ -1260,6 +1270,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		return false;
 	}
 
+	public boolean isInventoryColumn(Object propertyId) {
+		return propertyId.equals(ColumnLabels.AVAILABLE_INVENTORY.getName())
+		|| propertyId.equals(ColumnLabels.SEED_RESERVATION.getName())
+		|| propertyId.equals(ColumnLabels.STOCKID.getName());
+	}
+
 	public void deleteEntriesButtonClickAction() {
 		Collection<?> selectedIdsToDelete = (Collection<?>) listDataTable.getValue();
 
@@ -1318,12 +1334,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 			LOG.error(e.getMessage(), e);
 			MessageNotifier.showError(getWindow(),
 					messageSource.getMessage(Message.ERROR_DATABASE),
-					"Error with deleting list entries.");
+					ERROR_WITH_DELETING_LIST_ENTRIES);
 		} catch (MiddlewareQueryException e) {
 			LOG.error(e.getMessage(), e);
 			MessageNotifier.showError(getWindow(),
 					messageSource.getMessage(Message.ERROR_DATABASE),
-					"Error with deleting list entries.");
+					ERROR_WITH_DELETING_LIST_ENTRIES);
 		}
 
 		if (listDataTable.getItemIds().size() == selectedIds.size()) {
@@ -1805,10 +1821,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 			itemsToDelete.clear();
 
 		} catch (NumberFormatException e) {
-			LOG.error("Error with deleting list entries.", e);
+			LOG.error(ERROR_WITH_DELETING_LIST_ENTRIES, e);
 			LOG.error("\n" + e.getStackTrace());
 		} catch (MiddlewareQueryException e) {
-			LOG.error("Error with deleting list entries.", e);
+			LOG.error(ERROR_WITH_DELETING_LIST_ENTRIES, e);
 			LOG.error("\n" + e.getStackTrace());
 		}
 		// end of performListEntriesDeletion

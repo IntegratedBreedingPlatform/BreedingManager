@@ -16,6 +16,7 @@ import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.inventory.GermplasmInventory;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
@@ -159,6 +160,9 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		matchingGermplasmsTable.addContainerProperty(CHECKBOX_COLUMN_ID, CheckBox.class, null);
 		matchingGermplasmsTable.addContainerProperty(NAMES, Button.class,null);
 		matchingGermplasmsTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class,null);
+		matchingGermplasmsTable.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), String.class, null);
+		matchingGermplasmsTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
+		matchingGermplasmsTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
 		matchingGermplasmsTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
 		matchingGermplasmsTable.addContainerProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class,null);
 		matchingGermplasmsTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class,null);
@@ -171,6 +175,9 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 		messageSource.setColumnHeader(matchingGermplasmsTable, CHECKBOX_COLUMN_ID, Message.CHECK_ICON);
 		matchingGermplasmsTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(), ColumnLabels.PARENTAGE.getTermNameFromOntology(ontologyDataManager));
+		matchingGermplasmsTable.setColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName(), ColumnLabels.AVAILABLE_INVENTORY.getTermNameFromOntology(ontologyDataManager));
+		matchingGermplasmsTable.setColumnHeader(ColumnLabels.SEED_RESERVATION.getName(), ColumnLabels.SEED_RESERVATION.getTermNameFromOntology(ontologyDataManager));
+		matchingGermplasmsTable.setColumnHeader(ColumnLabels.STOCKID.getName(), ColumnLabels.STOCKID.getTermNameFromOntology(ontologyDataManager));
 		matchingGermplasmsTable.setColumnHeader(ColumnLabels.GID.getName(), ColumnLabels.GID.getTermNameFromOntology(ontologyDataManager));
 		matchingGermplasmsTable.setColumnHeader(ColumnLabels.GERMPLASM_LOCATION.getName(), ColumnLabels.GERMPLASM_LOCATION.getTermNameFromOntology(ontologyDataManager));
 		matchingGermplasmsTable.setColumnHeader(ColumnLabels.BREEDING_METHOD_NAME.getName(), ColumnLabels.BREEDING_METHOD_NAME.getTermNameFromOntology(ontologyDataManager));
@@ -366,7 +373,13 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
                 LOG.error(e.getMessage(), e);
             }
             
-            matchingGermplasmsTable.addItem(new Object[]{itemCheckBox, namesButton, crossExpansion, gidButton, locationName, methodName},germplasm.getGid());
+	   		GermplasmInventory inventoryInfo = germplasm.getInventoryInfo();
+	   		Label stockLabel = getStockIDs(inventoryInfo);
+			String availInv = getAvailableInventory(inventoryInfo);
+			String seedRes = getSeedReserved(inventoryInfo);
+	   		
+            matchingGermplasmsTable.addItem(new Object[]{itemCheckBox, namesButton, crossExpansion, 
+            		availInv, seedRes, stockLabel, gidButton, locationName, methodName},germplasm.getGid());
 		}
 		
 		updateNoOfEntries();
@@ -377,7 +390,32 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		LOG.debug("" + monitor.stop());
 	}
 
-    private String getGermplasmNames(int gid) {
+    private String getSeedReserved(GermplasmInventory inventoryInfo) {
+    	String seedRes = "-";
+    	Integer reservedLotCount = inventoryInfo.getReservedLotCount();
+    	if(reservedLotCount!=null && reservedLotCount.intValue()!=0) {
+    		seedRes = reservedLotCount.toString();
+    	}
+		return seedRes;
+	}
+
+	private String getAvailableInventory(GermplasmInventory inventoryInfo) {
+    	String availInv = "-";
+    	Integer actualInventoryLotCount = inventoryInfo.getActualInventoryLotCount();
+    	if(actualInventoryLotCount!=null && actualInventoryLotCount.intValue()!=0) {
+    		availInv = actualInventoryLotCount.toString();
+    	}
+		return availInv;
+	}
+
+	private Label getStockIDs(GermplasmInventory inventoryInfo) {
+    	String stockIDs = inventoryInfo.getStockIDs();
+    	Label stockLabel = new Label(stockIDs); 
+   		stockLabel.setDescription(stockIDs);
+   		return stockLabel;
+	}
+
+	private String getGermplasmNames(int gid) {
 
         try {
             List<Name> names = germplasmDataManager.getNamesByGID(new Integer(gid), null, null);

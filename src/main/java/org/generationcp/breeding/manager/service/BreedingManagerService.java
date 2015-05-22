@@ -22,7 +22,7 @@ public interface BreedingManagerService {
 
     public List<GermplasmList> doGermplasmListSearch(String q, Operation o) throws BreedingManagerSearchException;
 
-    public List<Germplasm> doGermplasmSearch(String q, Operation o, boolean includeParents) throws BreedingManagerSearchException;
+    public List<Germplasm> doGermplasmSearch(String q, Operation o, boolean includeParents, boolean withInventoryOnly) throws BreedingManagerSearchException;
     
     public Project getCurrentProject() throws MiddlewareQueryException;
 }
