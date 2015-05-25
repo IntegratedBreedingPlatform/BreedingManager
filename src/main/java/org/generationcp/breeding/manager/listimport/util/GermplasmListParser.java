@@ -735,7 +735,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		}
 
 		public boolean executeIfHasNameFactors(String header,String value,ImportedGermplasm germplasmReference) throws FileParsingException {
-			if (nameFactors.contains(header)) {
+			if (nameFactors != null && nameFactors.contains(header)) {
 				germplasmReference.addNameFactor(header,value);
 				return true;
 			}
@@ -744,7 +744,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		}
 
 		public boolean executeIfIsAttributeVariate(String header,String value,ImportedGermplasm germplasmReference) throws FileParsingException {
-			if (attributeVariates.contains(header)) {
+			if (attributeVariates != null && attributeVariates.contains(header)) {
 				germplasmReference.addAttributeVariate(header,value);
 				return true;
 			}
@@ -757,7 +757,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 				return false;
 			}
 
-			if (seedAmountVariate.equals(header)) {
+			if (seedAmountVariate != null && seedAmountVariate.equals(header)) {
 				Double seedAmountValue = "".equals(value) ? 0 : Double.valueOf(value);
 				germplasmReference.setSeedAmount(seedAmountValue);
 			} else {
