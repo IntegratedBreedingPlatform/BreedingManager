@@ -63,9 +63,6 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 
 	@Override
 	public void instantiateComponents() {
-		
-		setSizeFull();
-		
 		listSelectionLayout = new ListSelectionLayout(source, selectedListId);
 		listTreeComponent = new ListManagerTreeComponent(this, selectedListId);
 		listSearchComponent = new ListSearchComponent(source,listSelectionLayout);
@@ -83,6 +80,7 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 
 	@Override
 	public void layoutComponents() {
+		this.removeAllComponents();
         addComponent(listSelectionLayout);
 		this.addStyleName("list-selection-component");
 		listSelectionLayout.addStyleName("list-selection-layout");

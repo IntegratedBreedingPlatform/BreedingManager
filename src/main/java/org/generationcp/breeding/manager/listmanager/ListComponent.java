@@ -726,6 +726,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 
 	@Override
 	public void layoutComponents() {
+		this.removeAllComponents();
+		
 		headerLayout = new HorizontalLayout();
 		headerLayout.setWidth("100%");
 		headerLayout.setSpacing(true);
