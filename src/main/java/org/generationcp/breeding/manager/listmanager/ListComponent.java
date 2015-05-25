@@ -2464,4 +2464,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		return columnLabels.getTermNameFromOntology(ontologyDataManager);
 	}
 
+	@Override
+	public ListManagerMain getListManagerMain() {
+		return source;
+	}
 }

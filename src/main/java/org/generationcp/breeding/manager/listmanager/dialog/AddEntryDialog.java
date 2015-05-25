@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.BreedingLocationField;
@@ -59,8 +61,6 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-
-import javax.annotation.Resource;
 
 @Configurable
 public class AddEntryDialog extends BaseSubWindow implements InitializingBean, 
@@ -320,7 +320,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean,
         topPartHeader.addStyleName("bold");
         topPartHeader.addStyleName("h3");
         
-        searchResultsComponent = new GermplasmSearchResultsComponent(null, false, false);
+        searchResultsComponent = new GermplasmSearchResultsComponent(source.getListManagerMain(), false, false);
         searchResultsComponent.getMatchingGermplasmsTable().setHeight("150px");
         searchResultsComponent.getMatchingGermplasmsTableWithSelectAll().setHeight("180px");
         searchResultsComponent.setRightClickActionHandlerEnabled(false);
