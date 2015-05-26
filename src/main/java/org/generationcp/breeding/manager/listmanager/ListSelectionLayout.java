@@ -237,7 +237,6 @@ public class ListSelectionLayout extends VerticalLayout implements International
 
         this.addComponent(listSelectionHeaderContainer);
         this.addComponent(searchOrBrowseContainer);
-        this.addComponent(detailsTabSheet);
         this.displayDefault();
     }
     
@@ -362,7 +361,6 @@ public class ListSelectionLayout extends VerticalLayout implements International
     
     public void showDetailsTabsheet() {
         detailsTabSheet.setVisible(true);
-        this.removeComponent(detailsTabSheet);
         this.addComponent(detailsTabSheet);
         this.requestRepaint();
     }
