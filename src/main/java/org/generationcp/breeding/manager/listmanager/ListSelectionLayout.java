@@ -235,8 +235,10 @@ public class ListSelectionLayout extends VerticalLayout implements International
         listSelectionHeaderContainer.setExpandRatio(header,1.0F);
         listSelectionHeaderContainer.setComponentAlignment(headerBtnContainer,Alignment.TOP_RIGHT);
 
+        hideDetailsTabsheet();
         this.addComponent(listSelectionHeaderContainer);
         this.addComponent(searchOrBrowseContainer);
+        this.addComponent(detailsTabSheet);
         this.displayDefault();
     }
     
@@ -248,7 +250,6 @@ public class ListSelectionLayout extends VerticalLayout implements International
     	noListLabel.setVisible(false);
         headerLayout.setVisible(true);
         btnCloseAllTabs.setVisible(false);
-        detailsTabSheet.setVisible(false);
     }
 
     @Override
@@ -360,16 +361,13 @@ public class ListSelectionLayout extends VerticalLayout implements International
     }
     
     public void showDetailsTabsheet() {
-        detailsTabSheet.setVisible(true);
-        this.addComponent(detailsTabSheet);
+        detailsTabSheet.removeStyleName(AppConstants.CssStyles.NO_TAB);
         this.requestRepaint();
     }
     
     public void hideDetailsTabsheet() {
         btnCloseAllTabs.setVisible(false);
-        detailsTabSheet.setVisible(false);
-        
-        this.removeComponent(detailsTabSheet);
+        detailsTabSheet.addStyleName(AppConstants.CssStyles.NO_TAB);
         this.requestRepaint();
     }
     
@@ -379,8 +377,6 @@ public class ListSelectionLayout extends VerticalLayout implements International
     	    this.addComponent(listSelectionHeaderContainer);
     	    this.addComponent(searchOrBrowseContainer);
     	    this.addComponent(detailsTabSheet);
-    	
-            detailsTabSheet.setVisible(true);
             
             if(detailsTabSheet.getComponentCount() > 1){
             	btnCloseAllTabs.setVisible(true);

@@ -32,6 +32,7 @@ public final class AppConstants {
 		public static final String PANEL_GRAY_BACKGROUND = "section_panel_layout";
 		public static final String TABSHEET_WHITE = "tabsheet-white";
 		public static final String SCALE_ROW = "scale-row";
+		public static final String NO_TAB = "no-tab";
 		
 	}
 	

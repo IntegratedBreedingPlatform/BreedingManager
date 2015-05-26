@@ -831,3 +831,17 @@ div.unsaved-changes-dialog div.v-window-contents>div {
     height: 17px;
     width: 17px;
 }
+
+.no-tab .v-tabsheet-tabs .v-tabsheet-spacertd div {
+	border-bottom: 1px solid white !important;
+}
+
+.v-tabsheet-content-no-tab {
+	border-color: white !important;
+	background: white !important;
+}
+
+.v-tabsheet-content-no-tab .v-tabsheet-tabsheetpanel{
+	border-color: white !important;
+	background: white !important;
+}
