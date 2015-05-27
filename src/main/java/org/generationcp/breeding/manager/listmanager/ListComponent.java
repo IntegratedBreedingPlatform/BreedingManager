@@ -726,8 +726,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 
 	@Override
 	public void layoutComponents() {
-		this.removeAllComponents();
-		
 		headerLayout = new HorizontalLayout();
 		headerLayout.setWidth("100%");
 		headerLayout.setSpacing(true);
@@ -778,7 +776,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean,
 		addComponent(headerLayout);
 		addComponent(subHeaderLayout);
 
-		listDataTable.setHeight("480px");
+		listDataTable.setHeight("460px");
 
 		addComponent(getListDataTableWithSelectAll());
 		addComponent(listInventoryTable);

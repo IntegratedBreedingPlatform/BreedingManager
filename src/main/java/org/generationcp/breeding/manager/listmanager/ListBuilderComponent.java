@@ -669,7 +669,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		final VerticalLayout listDataTableLayout = new VerticalLayout();
 		listDataTableLayout.setMargin(true);
 		listDataTableLayout.setSpacing(true);
-		listDataTableLayout.setSizeFull();
 		listDataTableLayout.addStyleName("listDataTableLayout");
 
 		listBuilderPanel.setContent(listDataTableLayout);

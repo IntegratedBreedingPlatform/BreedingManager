@@ -128,7 +128,6 @@ public class ListManagerMain extends VerticalLayout
 		modeView = ModeView.LIST_VIEW;
 		hasChanges = false;
 
-		setSizeFull();
 		setTitleContent();
 		setTabHeader();
 		setTabContent();
@@ -203,7 +202,6 @@ public class ListManagerMain extends VerticalLayout
 
 		final Panel splitPanelContainer = new Panel();
 		splitPanelContainer.setScrollable(true);
-		splitPanelContainer.setSizeFull();
 		splitPanelContainer.setStyleName(Reindeer.PANEL_LIGHT + " lm-panel");
 
 		splitPanelContainer.setContent(splitPanel);

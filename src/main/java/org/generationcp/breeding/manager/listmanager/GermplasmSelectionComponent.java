@@ -98,7 +98,6 @@ public class GermplasmSelectionComponent extends VerticalLayout implements Initi
         
         final VerticalLayout listDataTableLayout = new VerticalLayout();
         listDataTableLayout.setMargin(true);
-        listDataTableLayout.setSizeFull();
         listDataTableLayout.addStyleName("listDataTableLayout");
 
         listDataTableLayout.addComponent(searchBarComponent);

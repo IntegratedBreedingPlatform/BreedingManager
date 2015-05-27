@@ -60,7 +60,7 @@ public class TableLayout extends CssLayout implements
 
 	@Override
 	public void layoutComponents() {
-		setSizeFull();
+		this.setWidth("100%");
 		if (!(doHideEmptyTable() && this.recordCount == 0)){
 			addComponent(table);
 		} else {

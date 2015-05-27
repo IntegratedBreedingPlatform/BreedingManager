@@ -48,27 +48,23 @@ public class ListTabComponent extends VerticalLayout implements InitializingBean
 
 	@Override
 	public void initializeValues() {
-		// TODO Auto-generated method stub
-		
+		// do nothing
 	}
 
 	@Override
 	public void addListeners() {
-		// TODO Auto-generated method stub
-		
+		// do nothing
 	}
 
 	@Override
 	public void layoutComponents() {
 		setMargin(true);
-		setSizeFull();
 		addComponent(listComponent);
 	}
 
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
-		
+		// do nothing
 	}
 	
 	public void setListNameLabel(String name){
