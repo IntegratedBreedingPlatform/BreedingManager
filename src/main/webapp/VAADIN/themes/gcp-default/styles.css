@@ -832,7 +832,7 @@ div.unsaved-changes-dialog div.v-window-contents>div {
     width: 17px;
 }
 
-.no-tab .v-tabsheet-tabs .v-tabsheet-spacertd div {
+.no-tab .v-tabsheet-tabs .v-tabsheet-spacertd div, .no-tab .v-tabsheet-content {
 	border-bottom: 1px solid white !important;
 }
 
@@ -841,7 +841,7 @@ div.unsaved-changes-dialog div.v-window-contents>div {
 	background: white !important;
 }
 
-.v-tabsheet-content-no-tab .v-tabsheet-tabsheetpanel{
+.v-tabsheet-content-no-tab .v-tabsheet-tabsheetpanel, .no-tab .v-tabsheet-tabsheetpanel, .v-sa .no-tab .v-tabsheet-content {
 	border-color: white !important;
 	background: white !important;
 }

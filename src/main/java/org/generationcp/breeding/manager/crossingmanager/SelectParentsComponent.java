@@ -96,13 +96,21 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
         listDetailsTabSheet = new TabSheet();
         listDetailsTabSheet.setWidth("460px");
         listDetailsTabSheet.setHeight("465px");
-        listDetailsTabSheet.setVisible(false);
+        hideListDetailsTabSheet();
         
         closeAllTabsButton = new Button(messageSource.getMessage(Message.CLOSE_ALL_TABS));
         closeAllTabsButton.setStyleName(BaseTheme.BUTTON_LINK);
         closeAllTabsButton.setVisible(false);
         
         listStatusForChanges = new HashMap<SelectParentsListDataComponent,Boolean>();
+	}
+
+	private void hideListDetailsTabSheet() {
+		listDetailsTabSheet.addStyleName(AppConstants.CssStyles.NO_TAB);	
+	}
+	
+	private void showListDetailsTabSheet() {
+		listDetailsTabSheet.removeStyleName(AppConstants.CssStyles.NO_TAB);	
 	}
 
 	@Override
@@ -136,7 +144,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 			@Override
 			public void buttonClick(ClickEvent event) {
 				Util.closeAllTab(listDetailsTabSheet);
-				listDetailsTabSheet.setVisible(false);
+				hideListDetailsTabSheet();
 				closeAllTabsButton.setVisible(false);
 			}
 		});
@@ -154,7 +162,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 
 	protected void hideDetailsTabsheet() {
 		closeAllTabsButton.setVisible(false);
-		listDetailsTabSheet.setVisible(false);
+		hideListDetailsTabSheet();
 	}
 
 	@Override
@@ -227,7 +235,10 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	}
 
     public void createListDetailsTab(Integer listId, String listName){
-    	listDetailsTabSheet.setVisible(true);
+    	
+    	if(listDetailsTabSheet.getComponentCount() == 0){
+    		showListDetailsTabSheet();
+    	}
     	
     	if(Util.isTabExist(listDetailsTabSheet, listName)){
     		Tab tabToFocus = null;
@@ -252,6 +263,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
     	} else{
     		closeAllTabsButton.setVisible(false);
     	}
+    	
     }
     
 	public void updateUIForDeletedList(GermplasmList list){
