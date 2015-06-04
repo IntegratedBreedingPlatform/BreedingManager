@@ -1,37 +1,34 @@
 package org.generationcp.breeding.manager.customfields;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.List;
-import java.util.Map;
-
+import com.vaadin.data.Item;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.event.ShortcutListener;
+import com.vaadin.ui.*;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
-import org.generationcp.breeding.manager.customcomponent.GermplasmListSource;
-import org.generationcp.breeding.manager.customcomponent.GermplasmListTree;
-import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
-import org.generationcp.breeding.manager.customcomponent.IconButton;
-import org.generationcp.breeding.manager.customcomponent.ToggleButton;
+import org.generationcp.breeding.manager.customcomponent.*;
 import org.generationcp.breeding.manager.customcomponent.generator.GermplasmListSourceItemDescriptionGenerator;
 import org.generationcp.breeding.manager.customcomponent.generator.GermplasmListSourceItemStyleGenerator;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItemClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListTreeCollapseListener;
-import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListTreeExpandListener;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.breeding.manager.validator.ListNameValidator;
+import org.generationcp.commons.constant.ListTreeState;
 import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
+import org.generationcp.middleware.manager.api.UserProgramStateDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,22 +36,11 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.data.Item;
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.event.ShortcutListener;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.Tree;
-import com.vaadin.ui.VerticalLayout;
+import java.util.*;
 
 @Configurable
 public abstract class ListSelectorComponent extends CssLayout implements
-        InitializingBean, BreedingManagerLayout {
+        InitializingBean, BreedingManagerLayout, Tree.ExpandListener {
 
 	private static final long serialVersionUID = 6042782367848192853L;
 
@@ -74,6 +60,12 @@ public abstract class ListSelectorComponent extends CssLayout implements
     protected GermplasmListManager germplasmListManager;
     @Autowired
     private UserDataManager userDataManager;
+
+    @Autowired
+    private ContextUtil util;
+
+    @Autowired
+    private UserProgramStateDataManager programStateManager;
 
     @Autowired
     protected SimpleResourceBundleMessageSource messageSource;
@@ -297,15 +289,39 @@ public abstract class ListSelectorComponent extends CssLayout implements
             MessageNotifier.showWarning(getWindow(),
                     messageSource.getMessage(Message.ERROR_DATABASE),
                     messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LISTS_BY_PARENT_FOLDER_ID));
-            listChildren = new ArrayList<GermplasmList>();
+            listChildren = new ArrayList<>();
         }
 
         return !listChildren.isEmpty();
     }
 
+    public void reinitializeTree() {
+
+        try {
+            Collection<String> parsedState = programStateManager.
+                    getUserProgramTreeStateByUserIdProgramUuidAndType(util.getCurrentWorkbenchUserId(), util.getCurrentProgramUUID(), ListTreeState.GERMPLASM_LIST.name());
+
+            if (parsedState.size() > 0) {
+                getGermplasmListSource().expandItem(LISTS);
+            }
+
+            for (String s : parsedState) {
+                String trimmed = s.trim();
+                if (!StringUtils.isNumeric(trimmed)) {
+                    continue;
+                }
+
+                int itemId = Integer.parseInt(trimmed);
+                getGermplasmListSource().expandItem(itemId);
+            }
+        } catch (MiddlewareQueryException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public void addGermplasmListNode(int parentGermplasmListId) {
-        List<GermplasmList> germplasmListChildren = new ArrayList<GermplasmList>();
+        List<GermplasmList> germplasmListChildren = new ArrayList<>();
 
         try {
             germplasmListChildren = this.germplasmListManager.getGermplasmListByParentFolderIdBatched(parentGermplasmListId, BATCH_SIZE);
@@ -646,7 +662,7 @@ public abstract class ListSelectorComponent extends CssLayout implements
                 if(!listChild.isFolder()) {
                     size = countGermplasmListDataByListId(listChild.getId());
                 }
-                getGermplasmListSource().addItem(generateCellInfo(listChild.getName(), BreedingManagerUtil.getOwnerListName(listChild.getUserId(), userDataManager),BreedingManagerUtil.getDescriptionForDisplay(listChild), BreedingManagerUtil.getTypeString(listChild.getType(), germplasmListManager), size), listChild.getId());
+                getGermplasmListSource().addItem(generateCellInfo(listChild.getName(), BreedingManagerUtil.getOwnerListName(listChild.getUserId(), userDataManager), BreedingManagerUtil.getDescriptionForDisplay(listChild), BreedingManagerUtil.getTypeString(listChild.getType(), germplasmListManager), size), listChild.getId());
                 setNodeItemIcon(listChild.getId(), listChild.isFolder());
                 getGermplasmListSource().setItemCaption(listChild.getId(), listChild.getName());
                 getGermplasmListSource().setParent(listChild.getId(), parentGermplasmListId);
@@ -722,8 +738,10 @@ public abstract class ListSelectorComponent extends CssLayout implements
         if (isTreeItemsDraggable()){
             getGermplasmListSource().setDragMode(Tree.TreeDragMode.NODE, Table.TableDragMode.ROW);
         }
-        addGermplasmsToTheList();
+
         addGermplasmListSourceListeners();
+        addGermplasmsToTheList();
+
         initializeGermplasmList();
     }
 
@@ -793,8 +811,25 @@ public abstract class ListSelectorComponent extends CssLayout implements
 
     }
 
+    // logic used when expanding nodes
+    @Override
+    public void nodeExpand(Tree.ExpandEvent event) {
+        if(!event.getItemId().toString().equals(ListSelectorComponent.LISTS)) {
+            try {
+                addGermplasmListNode(Integer.valueOf(event.getItemId().toString()));
+            } catch (InternationalizableException e) {
+                LOG.error(e.getMessage(),e);
+                MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+            }
+        }
+
+        setSelectedListId(event.getItemId());
+        updateButtons(event.getItemId());
+        toggleFolderSectionForItemSelected();
+    }
+
     private void addGermplasmListSourceListeners(){
-        getGermplasmListSource().addListener(new GermplasmListTreeExpandListener(this));
+        getGermplasmListSource().addListener(this);
         getGermplasmListSource().addListener(new GermplasmListItemClickListener(this));
         getGermplasmListSource().addListener(new GermplasmListTreeCollapseListener(this));
     }
@@ -831,4 +866,12 @@ public abstract class ListSelectorComponent extends CssLayout implements
 	public Button getRenameFolderBtn() {
 		return renameFolderBtn;
 	}
+
+    public void setUtil(ContextUtil util) {
+        this.util = util;
+    }
+
+    public void setProgramStateManager(UserProgramStateDataManager programStateManager) {
+        this.programStateManager = programStateManager;
+    }
 }
