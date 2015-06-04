@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.listmanager;
 
 import org.generationcp.breeding.manager.application.Message;
@@ -7,18 +8,18 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
 
 @Configurable
-public class ListManagerTreeComponent extends ListTreeTableComponent implements InitializingBean{
+public class ListManagerTreeComponent extends ListTreeTableComponent implements InitializingBean {
 
 	private static final long serialVersionUID = -1013380483927558222L;
 
-    public ListManagerTreeComponent(){
-        super();
-    }
+	public ListManagerTreeComponent() {
+		super();
+	}
 
-	public ListManagerTreeComponent(final ListTreeActionsListener treeActionListener, Integer listId){
+	public ListManagerTreeComponent(final ListTreeActionsListener treeActionListener, Integer listId) {
 		super(treeActionListener, listId);
 	}
-	
+
 	@Override
 	protected boolean doIncludeActionsButtons() {
 		return true;
@@ -38,20 +39,20 @@ public class ListManagerTreeComponent extends ListTreeTableComponent implements 
 	protected boolean doShowFoldersOnly() {
 		return false;
 	}
-	
+
 	@Override
 	public boolean usedInSubWindow() {
 		return true;
 	}
-	
+
 	@Override
 	public String getTreeHeading() {
-		return messageSource.getMessage(Message.ALL_LISTS);
+		return this.messageSource.getMessage(Message.ALL_LISTS);
 	}
-	
+
 	@Override
 	public String getTreeStyleName() {
 		return "listManagerTree";
-	}	
-	
+	}
+
 }

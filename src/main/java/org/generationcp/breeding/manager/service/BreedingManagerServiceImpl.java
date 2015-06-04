@@ -1,6 +1,9 @@
+
 package org.generationcp.breeding.manager.service;
 
 import java.util.List;
+
+import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -19,24 +22,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import javax.annotation.Resource;
-
 /**
- * Created by IntelliJ IDEA.
- * User: Daniel Villafuerte
- * Date: 9/26/2014
- * Time: 1:50 PM
+ * Created by IntelliJ IDEA. User: Daniel Villafuerte Date: 9/26/2014 Time: 1:50 PM
  */
 @Configurable
 public class BreedingManagerServiceImpl implements BreedingManagerService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(BreedingManagerServiceImpl.class);
 
-    @Autowired
-    private GermplasmDataManager germplasmDataManager;
+	@Autowired
+	private GermplasmDataManager germplasmDataManager;
 
-    @Autowired
-    private GermplasmListManager germplasmListManager;
+	@Autowired
+	private GermplasmListManager germplasmListManager;
 
 	@Autowired
 	private UserDataManager userDataManager;
@@ -50,11 +48,11 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 
 		try {
 			if (userId != null) {
-				return computeListName(userDataManager.getUserById(userId));
+				return this.computeListName(this.userDataManager.getUserById(userId));
 			}
 
 		} catch (MiddlewareQueryException ex) {
-			LOG.error("Error with getting list owner name of user with id: " + userId, ex);
+			BreedingManagerServiceImpl.LOG.error("Error with getting list owner name of user with id: " + userId, ex);
 			throw ex;
 		}
 
@@ -65,7 +63,7 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 		String userName = "";
 		if (user != null) {
 			int personId = user.getPersonid();
-			Person p = userDataManager.getPersonById(personId);
+			Person p = this.userDataManager.getPersonById(personId);
 
 			if (p != null) {
 				userName = p.getFirstName() + " " + p.getMiddleName() + " " + p.getLastName();
@@ -78,62 +76,63 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 	}
 
 	@Override
-	public String getDefaultOwnerListName() throws MiddlewareQueryException{
+	public String getDefaultOwnerListName() throws MiddlewareQueryException {
 		try {
-			int currentUser = contextUtil.getCurrentUserLocalId();
+			int currentUser = this.contextUtil.getCurrentUserLocalId();
 
-			return computeListName(userDataManager.getUserById(currentUser));
+			return this.computeListName(this.userDataManager.getUserById(currentUser));
 		} catch (MiddlewareQueryException e) {
-			LOG.error("Error with getting list owner name of default user ", e);
-						throw e;
+			BreedingManagerServiceImpl.LOG.error("Error with getting list owner name of default user ", e);
+			throw e;
 		}
 	}
 
-    @Override
-    public List<Germplasm> doGermplasmSearch(String q, Operation o, boolean includeParents, boolean withInventoryOnly) throws BreedingManagerSearchException {
-        validateEmptySearchString(q);
-        try {
-            List<Germplasm> results = germplasmDataManager.searchForGermplasm(q, o, includeParents, withInventoryOnly);
+	@Override
+	public List<Germplasm> doGermplasmSearch(String q, Operation o, boolean includeParents, boolean withInventoryOnly)
+			throws BreedingManagerSearchException {
+		this.validateEmptySearchString(q);
+		try {
+			List<Germplasm> results = this.germplasmDataManager.searchForGermplasm(q, o, includeParents, withInventoryOnly);
 
-            if (null == results || results.isEmpty()) {
-            	throw new BreedingManagerSearchException(Message.NO_SEARCH_RESULTS);
-            }
+			if (null == results || results.isEmpty()) {
+				throw new BreedingManagerSearchException(Message.NO_SEARCH_RESULTS);
+			}
 
-            return results;
+			return results;
 
-        } catch (MiddlewareQueryException e) {
-            LOG.error(e.getMessage(),e);
-            throw new BreedingManagerSearchException(Message.ERROR_DATABASE,e);
-        }
-    }
+		} catch (MiddlewareQueryException e) {
+			BreedingManagerServiceImpl.LOG.error(e.getMessage(), e);
+			throw new BreedingManagerSearchException(Message.ERROR_DATABASE, e);
+		}
+	}
 
-    @Override
-    public List<GermplasmList> doGermplasmListSearch(String q, Operation o) throws BreedingManagerSearchException {
-        validateEmptySearchString(q);
+	@Override
+	public List<GermplasmList> doGermplasmListSearch(String q, Operation o) throws BreedingManagerSearchException {
+		this.validateEmptySearchString(q);
 
-        try {
-            List<GermplasmList> results = germplasmListManager.searchForGermplasmList(q, o);
+		try {
+			List<GermplasmList> results = this.germplasmListManager.searchForGermplasmList(q, o);
 
-            if (null == results || results.isEmpty()) {
-            	throw new BreedingManagerSearchException(Message.NO_SEARCH_RESULTS);
-            }
+			if (null == results || results.isEmpty()) {
+				throw new BreedingManagerSearchException(Message.NO_SEARCH_RESULTS);
+			}
 
-            return results;
+			return results;
 
-        } catch (MiddlewareQueryException e) {
-            LOG.error(e.getMessage(),e);
-            throw new BreedingManagerSearchException(Message.ERROR_DATABASE,e);
-        }
-    }
+		} catch (MiddlewareQueryException e) {
+			BreedingManagerServiceImpl.LOG.error(e.getMessage(), e);
+			throw new BreedingManagerSearchException(Message.ERROR_DATABASE, e);
+		}
+	}
 
-    protected void validateEmptySearchString(String q) throws BreedingManagerSearchException {
-        if("".equals(q.replaceAll(" ", "").trim())) {
-            throw new BreedingManagerSearchException(Message.SEARCH_QUERY_CANNOT_BE_EMPTY);
-        }
-    }
+	protected void validateEmptySearchString(String q) throws BreedingManagerSearchException {
+		if ("".equals(q.replaceAll(" ", "").trim())) {
+			throw new BreedingManagerSearchException(Message.SEARCH_QUERY_CANNOT_BE_EMPTY);
+		}
+	}
 
 	public GermplasmDataManager getGermplasmDataManager() {
-		return germplasmDataManager;
+		return this.germplasmDataManager;
 	}
 
 	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
@@ -142,7 +141,7 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 
 	@Override
 	public Project getCurrentProject() throws MiddlewareQueryException {
-    	return contextUtil.getProjectInContext();
-    }
-    
+		return this.contextUtil.getProjectInContext();
+	}
+
 }

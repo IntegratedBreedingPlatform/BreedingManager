@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.customcomponent;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -10,41 +11,40 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 
 @Configurable
-public class TableLayout extends CssLayout implements
-		BreedingManagerLayout, InitializingBean {
+public class TableLayout extends CssLayout implements BreedingManagerLayout, InitializingBean {
 
 	private static final long serialVersionUID = -6261586644242232751L;
 
 	protected BreedingManagerTable table;
 	private final Label emptyTableLabel = new Label("No information retrieved.");
-	
+
 	private int recordCount = 0;
 	private int maxRecords = 0;
-	
-	public TableLayout(int recordCount, int maxRecords){
+
+	public TableLayout(int recordCount, int maxRecords) {
 		super();
 		this.recordCount = recordCount;
 		this.maxRecords = maxRecords;
 	}
-	
-	public TableLayout(int recordCount){
+
+	public TableLayout(int recordCount) {
 		super();
 		this.recordCount = recordCount;
 		this.maxRecords = recordCount;
 	}
-	
-	public TableLayout(){
+
+	public TableLayout() {
 	}
-	
+
 	private void setup() {
-		instantiateComponents();
-		addListeners();
-		layoutComponents();
+		this.instantiateComponents();
+		this.addListeners();
+		this.layoutComponents();
 	}
-	
+
 	@Override
 	public void instantiateComponents() {
-		this.table = new BreedingManagerTable(recordCount, maxRecords);
+		this.table = new BreedingManagerTable(this.recordCount, this.maxRecords);
 		this.table.setImmediate(true);
 	}
 
@@ -61,30 +61,30 @@ public class TableLayout extends CssLayout implements
 	@Override
 	public void layoutComponents() {
 		this.setWidth("100%");
-		if (!(doHideEmptyTable() && this.recordCount == 0)){
-			addComponent(table);
+		if (!(this.doHideEmptyTable() && this.recordCount == 0)) {
+			this.addComponent(this.table);
 		} else {
-			addComponent(emptyTableLabel);
+			this.addComponent(this.emptyTableLabel);
 		}
 
 	}
-	
-	protected boolean doHideEmptyTable(){
+
+	protected boolean doHideEmptyTable() {
 		return false;
 	}
-	
-	public Table getTable(){
+
+	public Table getTable() {
 		return this.table;
 	}
-	
-	public void setEmptyTableMessage(String message){
-		emptyTableLabel.setValue(message);
+
+	public void setEmptyTableMessage(String message) {
+		this.emptyTableLabel.setValue(message);
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		setup();
-		
+		this.setup();
+
 	}
 
 }

@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.customcomponent;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -11,58 +12,59 @@ import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class ViewListHeaderWindow extends BaseSubWindow implements BreedingManagerLayout, InitializingBean, InternationalizableComponent {
+
 	private static final long serialVersionUID = -8930840553445674785L;
 
-	private GermplasmList germplasmList;
+	private final GermplasmList germplasmList;
 	private ViewListHeaderComponent listHeaderComponent;
-	
-	public ViewListHeaderWindow(GermplasmList germplasmList){
+
+	public ViewListHeaderWindow(GermplasmList germplasmList) {
 		super();
 		this.germplasmList = germplasmList;
 	}
-	
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		instantiateComponents();
-		initializeValues();
-		addListeners();
-		layoutComponents();
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
 	}
-	
-	public ViewListHeaderComponent getListHeaderComponent(){
-		return listHeaderComponent;
+
+	public ViewListHeaderComponent getListHeaderComponent() {
+		return this.listHeaderComponent;
 	}
-	
+
 	@Override
 	public void instantiateComponents() {
-		setCaption("List Header Details");
-		addStyleName(Reindeer.WINDOW_LIGHT);
-		setResizable(false);
-		setModal(true);
-		setHeight("340px");
-		setWidth("350px");
-		
-		listHeaderComponent = new ViewListHeaderComponent(germplasmList);
+		this.setCaption("List Header Details");
+		this.addStyleName(Reindeer.WINDOW_LIGHT);
+		this.setResizable(false);
+		this.setModal(true);
+		this.setHeight("340px");
+		this.setWidth("350px");
+
+		this.listHeaderComponent = new ViewListHeaderComponent(this.germplasmList);
 	}
 
 	@Override
 	public void initializeValues() {
-		
+
 	}
 
 	@Override
 	public void addListeners() {
-		
+
 	}
 
 	@Override
 	public void layoutComponents() {
-		addComponent(listHeaderComponent);
+		this.addComponent(this.listHeaderComponent);
 	}
 
 	@Override
 	public void updateLabels() {
-		
+
 	}
-	
+
 }

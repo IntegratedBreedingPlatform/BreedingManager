@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.listmanager.listeners.test;
 
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
@@ -20,39 +21,37 @@ public class GermplasmListTreeCollapseListenerTest {
 
 	@Before
 	public void setUp() {
-		GermplasmListTreeCollapseListenerTest.listSelectorComponent = Mockito
-				.mock(ListSelectorComponent.class);
-		GermplasmListTreeCollapseListenerTest.listener = new GermplasmListTreeCollapseListener(
-				GermplasmListTreeCollapseListenerTest.listSelectorComponent);
+		GermplasmListTreeCollapseListenerTest.listSelectorComponent = Mockito.mock(ListSelectorComponent.class);
+		GermplasmListTreeCollapseListenerTest.listener =
+				new GermplasmListTreeCollapseListener(GermplasmListTreeCollapseListenerTest.listSelectorComponent);
 		GermplasmListTreeCollapseListenerTest.event = Mockito.mock(CollapseEvent.class);
 	}
 
 	@Test
 	public void testIfAddRenameItemOptionIsHiddenAfterClickingCollapseArrowForCentral() {
-		setUpCurrentItem(CENTRAL_ITEM);
-		triggerCollapse();
-		assertIfToggleFolderSectionForItemSelectedIsCalled();
+		this.setUpCurrentItem(GermplasmListTreeCollapseListenerTest.CENTRAL_ITEM);
+		this.triggerCollapse();
+		this.assertIfToggleFolderSectionForItemSelectedIsCalled();
 	}
-	
+
 	@Test
 	public void testIfAddRenameItemOptionIsHiddenAfterClickingCollapseArrowForLocal() {
-		setUpCurrentItem(LOCAL_ITEM);
-		triggerCollapse();
-		assertIfToggleFolderSectionForItemSelectedIsCalled();
+		this.setUpCurrentItem(GermplasmListTreeCollapseListenerTest.LOCAL_ITEM);
+		this.triggerCollapse();
+		this.assertIfToggleFolderSectionForItemSelectedIsCalled();
 	}
 
 	private void assertIfToggleFolderSectionForItemSelectedIsCalled() {
 		try {
-			Mockito.verify(GermplasmListTreeCollapseListenerTest.listSelectorComponent,
-					Mockito.times(1)).toggleFolderSectionForItemSelected();
+			Mockito.verify(GermplasmListTreeCollapseListenerTest.listSelectorComponent, Mockito.times(1))
+					.toggleFolderSectionForItemSelected();
 		} catch (TooLittleActualInvocations e) {
 			Assert.fail("Expected that the toggleFolderSectionForItemSelected() is called once after invoking nodeExpand but didn't.");
 		}
 	}
 
 	private void triggerCollapse() {
-		GermplasmListTreeCollapseListenerTest.listener
-				.nodeCollapse(GermplasmListTreeCollapseListenerTest.event);
+		GermplasmListTreeCollapseListenerTest.listener.nodeCollapse(GermplasmListTreeCollapseListenerTest.event);
 	}
 
 	private void setUpCurrentItem(String item) {

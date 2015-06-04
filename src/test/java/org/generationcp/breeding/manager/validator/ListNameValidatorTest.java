@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.validator;
 
 import java.util.ArrayList;
@@ -24,45 +25,48 @@ public class ListNameValidatorTest {
 
 	@Mock
 	private GermplasmListManager germplasmListManager;
-	
+
 	private ListNameValidator listNameValidator;
-	
-	private String DUMMY_ERROR_MESSAGE = "This is an error message.";
-	
+
+	private final String DUMMY_ERROR_MESSAGE = "This is an error message.";
+
 	@Before
-	public void setUp(){
+	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		
-		Mockito.when(messageSource.getMessage(Message.INVALID_ITEM_NAME)).thenReturn(DUMMY_ERROR_MESSAGE);
-		Mockito.when(messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE)).thenReturn(DUMMY_ERROR_MESSAGE);
-		Mockito.when(messageSource.getMessage(Message.ERROR_VALIDATING_LIST)).thenReturn(DUMMY_ERROR_MESSAGE);
-		
-		listNameValidator = Mockito.spy(new ListNameValidator());
-		listNameValidator.setMessageSource(messageSource);
-		listNameValidator.setGermplasmListManager(germplasmListManager);
+
+		Mockito.when(this.messageSource.getMessage(Message.INVALID_ITEM_NAME)).thenReturn(this.DUMMY_ERROR_MESSAGE);
+		Mockito.when(this.messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE)).thenReturn(this.DUMMY_ERROR_MESSAGE);
+		Mockito.when(this.messageSource.getMessage(Message.ERROR_VALIDATING_LIST)).thenReturn(this.DUMMY_ERROR_MESSAGE);
+
+		this.listNameValidator = Mockito.spy(new ListNameValidator());
+		this.listNameValidator.setMessageSource(this.messageSource);
+		this.listNameValidator.setGermplasmListManager(this.germplasmListManager);
 	}
-	
+
 	@Test
-	public void testValidateListNameForEmptyListName(){
-		Assert.assertFalse("Expecting that the validator will return false for empty list name.", listNameValidator.validateListName(""));
+	public void testValidateListNameForEmptyListName() {
+		Assert.assertFalse("Expecting that the validator will return false for empty list name.",
+				this.listNameValidator.validateListName(""));
 	}
-	
+
 	@Test
-	public void testValidateListNameForRootFolderLists(){
-		Assert.assertFalse("Expecting that the validator will return false when the list name is the root folder name.", listNameValidator.validateListName("Lists"));
+	public void testValidateListNameForRootFolderLists() {
+		Assert.assertFalse("Expecting that the validator will return false when the list name is the root folder name.",
+				this.listNameValidator.validateListName("Lists"));
 	}
-	
+
 	@Test
-	public void testValidateListNameForExistingLists() throws MiddlewareQueryException{
-		
+	public void testValidateListNameForExistingLists() throws MiddlewareQueryException {
+
 		String listName = "Sample List 1";
 		List<GermplasmList> germplasmLists = new ArrayList<GermplasmList>();
 		GermplasmList germplasmList = new GermplasmList();
 		germplasmList.setName("Samplem List 1");
 		germplasmLists.add(germplasmList);
-		
-		Mockito.when(germplasmListManager.getGermplasmListByName(listName, 0, 5, Operation.EQUAL)).thenReturn(germplasmLists);
-		
-		Assert.assertFalse("Expecting that the validator will return false when the list name is similar to an existing list.", listNameValidator.validateListName(listName));
+
+		Mockito.when(this.germplasmListManager.getGermplasmListByName(listName, 0, 5, Operation.EQUAL)).thenReturn(germplasmLists);
+
+		Assert.assertFalse("Expecting that the validator will return false when the list name is similar to an existing list.",
+				this.listNameValidator.validateListName(listName));
 	}
 }

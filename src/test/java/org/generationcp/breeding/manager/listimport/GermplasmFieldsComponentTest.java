@@ -1,28 +1,27 @@
-package org.generationcp.breeding.manager.listimport;
 
-import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+package org.generationcp.breeding.manager.listimport;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.BreedingLocationField;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Window;
-import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GermplasmFieldsComponentTest {
+
 	private static final String DUMMY_STRING = "DUMMY STRING";
 	private static final String TEST_PROGRAMUUID = "TEST_UUID";
 
@@ -39,74 +38,77 @@ public class GermplasmFieldsComponentTest {
 	private ContextUtil contextUtil;
 
 	@InjectMocks
-	private GermplasmFieldsComponent germplasmFieldsComponent = spy(new GermplasmFieldsComponent(parentWindow));
+	private final GermplasmFieldsComponent germplasmFieldsComponent = Mockito.spy(new GermplasmFieldsComponent(this.parentWindow));
 
 	@Before
-	public void setUp(){
+	public void setUp() {
 
-		when(contextUtil.getCurrentProgramUUID()).thenReturn(TEST_PROGRAMUUID);
-		when(messageSource.getMessage(Message.ADD_GERMPLASM_DETAILS)).thenReturn(DUMMY_STRING);
-		when(messageSource.getMessage(Message.GERMPLASM_BREEDING_METHOD_LABEL)).thenReturn(DUMMY_STRING);
-		when(messageSource.getMessage(Message.GERMPLASM_LOCATION_LABEL)).thenReturn(DUMMY_STRING);
-		when(messageSource.getMessage(Message.SEED_STORAGE_LOCATION_LABEL)).thenReturn(DUMMY_STRING);
-		when(messageSource.getMessage(Message.GERMPLASM_DATE_LABEL)).thenReturn(DUMMY_STRING);
-		when(messageSource.getMessage(Message.GERMPLASM_NAME_TYPE_LABEL)).thenReturn(DUMMY_STRING);
-		
-		germplasmFieldsComponent.instantiateComponents();
+		Mockito.when(this.contextUtil.getCurrentProgramUUID()).thenReturn(GermplasmFieldsComponentTest.TEST_PROGRAMUUID);
+		Mockito.when(this.messageSource.getMessage(Message.ADD_GERMPLASM_DETAILS)).thenReturn(GermplasmFieldsComponentTest.DUMMY_STRING);
+		Mockito.when(this.messageSource.getMessage(Message.GERMPLASM_BREEDING_METHOD_LABEL)).thenReturn(
+				GermplasmFieldsComponentTest.DUMMY_STRING);
+		Mockito.when(this.messageSource.getMessage(Message.GERMPLASM_LOCATION_LABEL)).thenReturn(GermplasmFieldsComponentTest.DUMMY_STRING);
+		Mockito.when(this.messageSource.getMessage(Message.SEED_STORAGE_LOCATION_LABEL)).thenReturn(
+				GermplasmFieldsComponentTest.DUMMY_STRING);
+		Mockito.when(this.messageSource.getMessage(Message.GERMPLASM_DATE_LABEL)).thenReturn(GermplasmFieldsComponentTest.DUMMY_STRING);
+		Mockito.when(this.messageSource.getMessage(Message.GERMPLASM_NAME_TYPE_LABEL))
+				.thenReturn(GermplasmFieldsComponentTest.DUMMY_STRING);
+
+		this.germplasmFieldsComponent.instantiateComponents();
 	}
-	
+
 	@Test
-	public void testUpdateAllLocationFields_WhenLocationComboBoxValueIsNull(){
+	public void testUpdateAllLocationFields_WhenLocationComboBoxValueIsNull() {
 		ComboBox comboBox = new ComboBox();
-		doReturn(comboBox).when(germplasmFieldsComponent).getLocationComboBox();
-		doReturn(comboBox).when(germplasmFieldsComponent).getSeedLocationComboBox();
-		Mockito.when(germplasmFieldsComponent.getLocationComponent()).thenReturn(locationComponent);
-		Mockito.when(germplasmFieldsComponent.getSeedLocationComponent()).thenReturn(
-				seedLocationComponent);
-		
-		germplasmFieldsComponent.updateAllLocationFields();
-		
-		verify(germplasmFieldsComponent,times(1)).getLocationComponent();
-		verify(germplasmFieldsComponent,times(1)).getSeedLocationComponent();
+		Mockito.doReturn(comboBox).when(this.germplasmFieldsComponent).getLocationComboBox();
+		Mockito.doReturn(comboBox).when(this.germplasmFieldsComponent).getSeedLocationComboBox();
+		Mockito.when(this.germplasmFieldsComponent.getLocationComponent()).thenReturn(this.locationComponent);
+		Mockito.when(this.germplasmFieldsComponent.getSeedLocationComponent()).thenReturn(this.seedLocationComponent);
+
+		this.germplasmFieldsComponent.updateAllLocationFields();
+
+		Mockito.verify(this.germplasmFieldsComponent, Mockito.times(1)).getLocationComponent();
+		Mockito.verify(this.germplasmFieldsComponent, Mockito.times(1)).getSeedLocationComponent();
 
 		ArgumentCaptor<Integer> intArg0 = ArgumentCaptor.forClass(Integer.class);
 		ArgumentCaptor<Integer> intArg1 = ArgumentCaptor.forClass(Integer.class);
 
+		Mockito.verify(this.locationComponent, Mockito.times(1)).populateHarvestLocation(intArg0.capture(),
+				Matchers.eq(GermplasmFieldsComponentTest.TEST_PROGRAMUUID));
+		Mockito.verify(this.seedLocationComponent, Mockito.times(1)).populateHarvestLocation(intArg1.capture(),
+				Matchers.eq(GermplasmFieldsComponentTest.TEST_PROGRAMUUID));
 
-		verify(locationComponent,times(1)).populateHarvestLocation(intArg0.capture(),eq(TEST_PROGRAMUUID));
-		verify(seedLocationComponent,times(1)).populateHarvestLocation(intArg1.capture(),eq(TEST_PROGRAMUUID));
-
-		assertNull("selected location must be null", intArg0.getValue());
-		assertNull("selected location must be null", intArg1.getValue());
+		Assert.assertNull("selected location must be null", intArg0.getValue());
+		Assert.assertNull("selected location must be null", intArg1.getValue());
 
 	}
-	
+
 	@Test
-	public void testUpdateAllLocationFields_WhenLocationComboBoxValueIsNotNull(){
+	public void testUpdateAllLocationFields_WhenLocationComboBoxValueIsNotNull() {
 		ComboBox comboBox = new ComboBox();
 		comboBox.addItem(1);
 		comboBox.setValue(1);
-		locationComponent.setBreedingLocationComboBox(comboBox);
-		doReturn(comboBox).when(germplasmFieldsComponent).getLocationComboBox();
-		
+		this.locationComponent.setBreedingLocationComboBox(comboBox);
+		Mockito.doReturn(comboBox).when(this.germplasmFieldsComponent).getLocationComboBox();
+
 		ComboBox comboBox2 = new ComboBox();
 		comboBox2.addItem(2);
 		comboBox2.setValue(2);
-		seedLocationComponent.setBreedingLocationComboBox(comboBox2);
-		doReturn(comboBox2).when(germplasmFieldsComponent).getSeedLocationComboBox();
-		
-		Mockito.when(germplasmFieldsComponent.getLocationComponent()).thenReturn(locationComponent);
-		Mockito.when(germplasmFieldsComponent.getSeedLocationComponent()).thenReturn(
-				seedLocationComponent);
-		
-		germplasmFieldsComponent.updateAllLocationFields();
-		
-		verify(germplasmFieldsComponent,times(1)).getLocationComponent();
-		verify(germplasmFieldsComponent,times(1)).getSeedLocationComponent();
-		
-		verify(locationComponent,times(1)).populateHarvestLocation(eq(1),eq(TEST_PROGRAMUUID));
-		verify(seedLocationComponent,times(1)).populateHarvestLocation(eq(2),eq(TEST_PROGRAMUUID));
+		this.seedLocationComponent.setBreedingLocationComboBox(comboBox2);
+		Mockito.doReturn(comboBox2).when(this.germplasmFieldsComponent).getSeedLocationComboBox();
+
+		Mockito.when(this.germplasmFieldsComponent.getLocationComponent()).thenReturn(this.locationComponent);
+		Mockito.when(this.germplasmFieldsComponent.getSeedLocationComponent()).thenReturn(this.seedLocationComponent);
+
+		this.germplasmFieldsComponent.updateAllLocationFields();
+
+		Mockito.verify(this.germplasmFieldsComponent, Mockito.times(1)).getLocationComponent();
+		Mockito.verify(this.germplasmFieldsComponent, Mockito.times(1)).getSeedLocationComponent();
+
+		Mockito.verify(this.locationComponent, Mockito.times(1)).populateHarvestLocation(Matchers.eq(1),
+				Matchers.eq(GermplasmFieldsComponentTest.TEST_PROGRAMUUID));
+		Mockito.verify(this.seedLocationComponent, Mockito.times(1)).populateHarvestLocation(Matchers.eq(2),
+				Matchers.eq(GermplasmFieldsComponentTest.TEST_PROGRAMUUID));
 	}
 
-
-}	
+}

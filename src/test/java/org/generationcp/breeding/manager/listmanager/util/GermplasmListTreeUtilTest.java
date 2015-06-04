@@ -1,6 +1,9 @@
+
 package org.generationcp.breeding.manager.listmanager.util;
 
-import com.vaadin.data.Validator.InvalidValueException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -21,8 +24,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.vaadin.data.Validator.InvalidValueException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GermplasmListTreeUtilTest {
@@ -44,7 +46,7 @@ public class GermplasmListTreeUtilTest {
 	private ContextUtil contextUtil;
 
 	@InjectMocks
-	private GermplasmListTreeUtil util = new GermplasmListTreeUtil();
+	private final GermplasmListTreeUtil util = new GermplasmListTreeUtil();
 
 	private static final Integer IBDB_USER_ID = (int) (Math.random() * 100);
 	private static final Integer OTHER_IBDB_USER_ID = (int) (Math.random() * 100);
@@ -59,18 +61,16 @@ public class GermplasmListTreeUtilTest {
 	}
 
 	private void setUpMessageSource() {
-		messageSource = Mockito.mock(SimpleResourceBundleMessageSource.class);
-		Mockito.when(messageSource.getMessage(Message.ERROR_NO_SELECTION))
-				.thenReturn(ERROR_NO_SELECTION);
-		Mockito.when(messageSource.getMessage(Message.ERROR_ITEM_DOES_NOT_EXISTS))
-				.thenReturn(ERROR_ITEM_DOES_NOT_EXISTS);
-		Mockito.when(messageSource.getMessage(Message.ERROR_UNABLE_TO_DELETE_LOCKED_LIST))
-				.thenReturn(ERROR_UNABLE_TO_DELETE_LOCKED_LIST);
-		Mockito.when(messageSource.getMessage(Message.ERROR_UNABLE_TO_DELETE_LIST_NON_OWNER))
-				.thenReturn(ERROR_UNABLE_TO_DELETE_LIST_NON_OWNER);
-		Mockito.when(messageSource.getMessage(Message.ERROR_HAS_CHILDREN))
-				.thenReturn(ERROR_HAS_CHILDREN);
-		this.util.setMessageSource(messageSource);
+		this.messageSource = Mockito.mock(SimpleResourceBundleMessageSource.class);
+		Mockito.when(this.messageSource.getMessage(Message.ERROR_NO_SELECTION)).thenReturn(GermplasmListTreeUtilTest.ERROR_NO_SELECTION);
+		Mockito.when(this.messageSource.getMessage(Message.ERROR_ITEM_DOES_NOT_EXISTS)).thenReturn(
+				GermplasmListTreeUtilTest.ERROR_ITEM_DOES_NOT_EXISTS);
+		Mockito.when(this.messageSource.getMessage(Message.ERROR_UNABLE_TO_DELETE_LOCKED_LIST)).thenReturn(
+				GermplasmListTreeUtilTest.ERROR_UNABLE_TO_DELETE_LOCKED_LIST);
+		Mockito.when(this.messageSource.getMessage(Message.ERROR_UNABLE_TO_DELETE_LIST_NON_OWNER)).thenReturn(
+				GermplasmListTreeUtilTest.ERROR_UNABLE_TO_DELETE_LIST_NON_OWNER);
+		Mockito.when(this.messageSource.getMessage(Message.ERROR_HAS_CHILDREN)).thenReturn(GermplasmListTreeUtilTest.ERROR_HAS_CHILDREN);
+		this.util.setMessageSource(this.messageSource);
 	}
 
 	private void setUpIBDBUserId(Integer userId) throws MiddlewareQueryException {
@@ -82,34 +82,27 @@ public class GermplasmListTreeUtilTest {
 		Project dummyProject = new Project();
 		dummyProject.setProjectId(5L);
 
-		Mockito.when(this.workbenchDataManager.getWorkbenchRuntimeData()).thenReturn(
-				runtimeDate);
-		Mockito.when(this.workbenchDataManager.getLastOpenedProject(runtimeDate.getUserId()))
-				.thenReturn(dummyProject);
-		Mockito.when(
-				this.workbenchDataManager.getLocalIbdbUserId(runtimeDate.getUserId(),
-						dummyProject.getProjectId())).thenReturn(userId);
+		Mockito.when(this.workbenchDataManager.getWorkbenchRuntimeData()).thenReturn(runtimeDate);
+		Mockito.when(this.workbenchDataManager.getLastOpenedProject(runtimeDate.getUserId())).thenReturn(dummyProject);
+		Mockito.when(this.workbenchDataManager.getLocalIbdbUserId(runtimeDate.getUserId(), dummyProject.getProjectId())).thenReturn(userId);
 
-		Mockito.when(contextUtil.getCurrentUserLocalId()).thenReturn(userId);
+		Mockito.when(this.contextUtil.getCurrentUserLocalId()).thenReturn(userId);
 	}
 
 	private void setUpGermplasmListDataManager(Integer itemId, boolean isExistingList) {
 		this.setUpGermplasmListDataManager(itemId, isExistingList, false);
 	}
 
-	private void setUpGermplasmListDataManager(Integer itemId, boolean isExistingList,
-			boolean isAFolder) {
+	private void setUpGermplasmListDataManager(Integer itemId, boolean isExistingList, boolean isAFolder) {
 		this.germplasmListManager = Mockito.mock(GermplasmListManager.class);
 		this.util.setGermplasmListManager(this.germplasmListManager);
 		this.germplasmList = this.getSampleGermplasmList(itemId);
 
 		try {
 			if (isExistingList) {
-				Mockito.when(this.germplasmListManager.getGermplasmListById(itemId)).thenReturn(
-						this.germplasmList);
+				Mockito.when(this.germplasmListManager.getGermplasmListById(itemId)).thenReturn(this.germplasmList);
 			} else {
-				Mockito.when(this.germplasmListManager.getGermplasmListById(itemId)).thenReturn(
-						null);
+				Mockito.when(this.germplasmListManager.getGermplasmListById(itemId)).thenReturn(null);
 			}
 
 		} catch (MiddlewareQueryException e) {
@@ -128,12 +121,10 @@ public class GermplasmListTreeUtilTest {
 
 		try {
 			Mockito.when(
-					this.germplasmListManager.getGermplasmListByParentFolderId(
-							GermplasmListTreeUtilTest.GERMPLASM_LIST_ID_WITH_CHILDREN, 0,
-							Integer.MAX_VALUE)).thenReturn(dummyListOfGermplasmListWithEntries);
+					this.germplasmListManager.getGermplasmListByParentFolderId(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID_WITH_CHILDREN,
+							0, Integer.MAX_VALUE)).thenReturn(dummyListOfGermplasmListWithEntries);
 		} catch (MiddlewareQueryException e) {
-			Assert.fail(
-					"Expecting no exception is returned for determining if the item is a folder and has content.");
+			Assert.fail("Expecting no exception is returned for determining if the item is a folder and has content.");
 		}
 	}
 
@@ -144,8 +135,7 @@ public class GermplasmListTreeUtilTest {
 		try {
 			this.util.validateItemToDelete(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID);
 		} catch (InvalidValueException e) {
-			Assert.fail(
-					"Expecting no exception is returned for validating item to delete using existing list, but the system returns an exception.");
+			Assert.fail("Expecting no exception is returned for validating item to delete using existing list, but the system returns an exception.");
 		}
 	}
 
@@ -156,9 +146,8 @@ public class GermplasmListTreeUtilTest {
 		try {
 			this.util.validateItemToDelete(null);
 		} catch (InvalidValueException e) {
-			Assert.assertEquals(
-					"Expecting an exception is returned for validating item to delete using a list ID that does not exist.",
-					ERROR_NO_SELECTION, e.getMessage());
+			Assert.assertEquals("Expecting an exception is returned for validating item to delete using a list ID that does not exist.",
+					GermplasmListTreeUtilTest.ERROR_NO_SELECTION, e.getMessage());
 		}
 	}
 
@@ -169,9 +158,8 @@ public class GermplasmListTreeUtilTest {
 		try {
 			this.util.validateItemToDelete(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID);
 		} catch (InvalidValueException e) {
-			Assert.assertEquals(
-					"Expecting an exception is returned for validating item to delete using a list that does not exist.",
-					ERROR_ITEM_DOES_NOT_EXISTS, e.getMessage());
+			Assert.assertEquals("Expecting an exception is returned for validating item to delete using a list that does not exist.",
+					GermplasmListTreeUtilTest.ERROR_ITEM_DOES_NOT_EXISTS, e.getMessage());
 		}
 	}
 
@@ -183,15 +171,13 @@ public class GermplasmListTreeUtilTest {
 		try {
 			this.util.validateItemToDelete(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID);
 		} catch (InvalidValueException e) {
-			Assert.assertEquals(
-					"Expecting an exception is returned for validating item to delete using a list that is locked.",
-					ERROR_UNABLE_TO_DELETE_LOCKED_LIST, e.getMessage());
+			Assert.assertEquals("Expecting an exception is returned for validating item to delete using a list that is locked.",
+					GermplasmListTreeUtilTest.ERROR_UNABLE_TO_DELETE_LOCKED_LIST, e.getMessage());
 		}
 	}
 
 	@Test
-	public void testValidateItemToDeleteThrowsExceptionIfGermplasmListIsNotOwnedByTheCurrentUser()
-			throws MiddlewareQueryException {
+	public void testValidateItemToDeleteThrowsExceptionIfGermplasmListIsNotOwnedByTheCurrentUser() throws MiddlewareQueryException {
 		this.setUpGermplasmListDataManager(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID, true);
 		this.setUpIBDBUserId(GermplasmListTreeUtilTest.OTHER_IBDB_USER_ID);
 
@@ -200,22 +186,19 @@ public class GermplasmListTreeUtilTest {
 		} catch (InvalidValueException e) {
 			Assert.assertEquals(
 					"Expecting an exception is returned for validating item to delete using a list that is not owned by the current user.",
-					ERROR_UNABLE_TO_DELETE_LIST_NON_OWNER, e.getMessage());
+					GermplasmListTreeUtilTest.ERROR_UNABLE_TO_DELETE_LIST_NON_OWNER, e.getMessage());
 		}
 	}
 
 	@Test
 	public void testValidateItemToDeleteThrowsExceptionIfItemHasContent() {
-		this.setUpGermplasmListDataManager(
-				GermplasmListTreeUtilTest.GERMPLASM_LIST_ID_WITH_CHILDREN, true, true);
+		this.setUpGermplasmListDataManager(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID_WITH_CHILDREN, true, true);
 
 		try {
-			this.util.validateItemToDelete(
-					GermplasmListTreeUtilTest.GERMPLASM_LIST_ID_WITH_CHILDREN);
+			this.util.validateItemToDelete(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID_WITH_CHILDREN);
 		} catch (InvalidValueException e) {
-			Assert.assertEquals(
-					"Expecting an exception is returned for validating item to delete which is a folder and has content.",
-					ERROR_HAS_CHILDREN, e.getMessage());
+			Assert.assertEquals("Expecting an exception is returned for validating item to delete which is a folder and has content.",
+					GermplasmListTreeUtilTest.ERROR_HAS_CHILDREN, e.getMessage());
 		}
 	}
 
@@ -232,19 +215,17 @@ public class GermplasmListTreeUtilTest {
 		Integer sourceId = GermplasmListTreeUtilTest.GERMPLASM_LIST_ID;
 		this.setUpGermplasmListDataManager(sourceId, true);
 
-		GermplasmList parent = getSampleGermplasmList(sourceId);
-		GermplasmList child1 = getSampleGermplasmList(2);
+		GermplasmList parent = this.getSampleGermplasmList(sourceId);
+		GermplasmList child1 = this.getSampleGermplasmList(2);
 		child1.setParent(parent);
 
 		List<GermplasmList> items = new ArrayList<GermplasmList>();
 		items.add(child1);
 
-		Mockito.when(germplasmListManager.getGermplasmListByParentFolderId(sourceId, 0, 1))
-				.thenReturn(items);
+		Mockito.when(this.germplasmListManager.getGermplasmListByParentFolderId(sourceId, 0, 1)).thenReturn(items);
 
-		Assert.assertTrue(
-				"Expecting true is returned when checking an item with children but didn't.",
-				util.isSourceItemHasChildren(sourceId));
+		Assert.assertTrue("Expecting true is returned when checking an item with children but didn't.",
+				this.util.isSourceItemHasChildren(sourceId));
 	}
 
 	@Test
@@ -252,11 +233,9 @@ public class GermplasmListTreeUtilTest {
 		Integer sourceId = GermplasmListTreeUtilTest.GERMPLASM_LIST_ID;
 		this.setUpGermplasmListDataManager(sourceId, true);
 
-		Mockito.when(germplasmListManager.getGermplasmListByParentFolderId(sourceId, 0, 1))
-				.thenReturn(new ArrayList<GermplasmList>());
+		Mockito.when(this.germplasmListManager.getGermplasmListByParentFolderId(sourceId, 0, 1)).thenReturn(new ArrayList<GermplasmList>());
 
-		Assert.assertFalse(
-				"Expecting false is returned when checking an item with no children but didn't.",
-				util.isSourceItemHasChildren(sourceId));
+		Assert.assertFalse("Expecting false is returned when checking an item with no children but didn't.",
+				this.util.isSourceItemHasChildren(sourceId));
 	}
 }

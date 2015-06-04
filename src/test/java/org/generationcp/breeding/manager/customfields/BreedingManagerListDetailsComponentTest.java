@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.customfields;
 
 import java.text.ParseException;
@@ -16,8 +17,7 @@ import org.slf4j.LoggerFactory;
 
 public class BreedingManagerListDetailsComponentTest {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(BreedingManagerListDetailsComponentTest.class);
+	private static final Logger LOG = LoggerFactory.getLogger(BreedingManagerListDetailsComponentTest.class);
 
 	private static final BreedingManagerListDetailsComponent listDetailsComponent = new BreedingManagerListDetailsComponent();
 
@@ -31,20 +31,17 @@ public class BreedingManagerListDetailsComponentTest {
 
 	@BeforeClass
 	public static void setUp() {
-		BreedingManagerListDetailsComponentTest.breedingManagerService = Mockito
-				.mock(BreedingManagerService.class);
+		BreedingManagerListDetailsComponentTest.breedingManagerService = Mockito.mock(BreedingManagerService.class);
 		BreedingManagerListDetailsComponentTest.listDetailsComponent
-				.setBreedingManagerService(BreedingManagerListDetailsComponentTest.breedingManagerService);
+		.setBreedingManagerService(BreedingManagerListDetailsComponentTest.breedingManagerService);
 
 		try {
+			Mockito.when(BreedingManagerListDetailsComponentTest.breedingManagerService.getDefaultOwnerListName()).thenReturn(
+							BreedingManagerListDetailsComponentTest.CURRENT_USER_NAME);
 			Mockito.when(
 					BreedingManagerListDetailsComponentTest.breedingManagerService
-							.getDefaultOwnerListName()).thenReturn(
-					BreedingManagerListDetailsComponentTest.CURRENT_USER_NAME);
-			Mockito.when(
-					BreedingManagerListDetailsComponentTest.breedingManagerService
-							.getOwnerListName(BreedingManagerListDetailsComponentTest.OTHER_USER))
-					.thenReturn(BreedingManagerListDetailsComponentTest.OTHER_USER_NAME);
+					.getOwnerListName(BreedingManagerListDetailsComponentTest.OTHER_USER)).thenReturn(
+					BreedingManagerListDetailsComponentTest.OTHER_USER_NAME);
 		} catch (MiddlewareQueryException e) {
 			Assert.fail();
 		}
@@ -55,13 +52,11 @@ public class BreedingManagerListDetailsComponentTest {
 		this.initGermplasmList();
 
 		Assert.assertEquals("Expecting current user name will be returned but didn't.",
-				BreedingManagerListDetailsComponentTest.listDetailsComponent
-						.getListOwnerValue(null),
+				BreedingManagerListDetailsComponentTest.listDetailsComponent.getListOwnerValue(null),
 				BreedingManagerListDetailsComponentTest.CURRENT_USER_NAME);
 
 		Assert.assertEquals("Expecting other user name will be returned but didn't.",
-				BreedingManagerListDetailsComponentTest.listDetailsComponent
-						.getListOwnerValue(this.germplasmList),
+				BreedingManagerListDetailsComponentTest.listDetailsComponent.getListOwnerValue(this.germplasmList),
 				BreedingManagerListDetailsComponentTest.OTHER_USER_NAME);
 
 	}
@@ -79,8 +74,7 @@ public class BreedingManagerListDetailsComponentTest {
 		// Valid Date
 		dateToParse = "20141212";
 		try {
-			returnedDate = BreedingManagerListDetailsComponentTest.listDetailsComponent
-					.getParsedDate(dateToParse);
+			returnedDate = BreedingManagerListDetailsComponentTest.listDetailsComponent.getParsedDate(dateToParse);
 		} catch (ParseException e) {
 			Assert.fail("Expecting a valid date parsed but didn't.");
 		}
@@ -90,8 +84,7 @@ public class BreedingManagerListDetailsComponentTest {
 		dateToParse = "A0/144313";
 		boolean returnedParseException = false;
 		try {
-			returnedDate = BreedingManagerListDetailsComponentTest.listDetailsComponent
-					.getParsedDate(dateToParse);
+			returnedDate = BreedingManagerListDetailsComponentTest.listDetailsComponent.getParsedDate(dateToParse);
 			Assert.fail("Expecting an exception must be returned but didn't.");
 		} catch (ParseException e) {
 			BreedingManagerListDetailsComponentTest.LOG.error(e.getMessage(), e);
@@ -105,8 +98,7 @@ public class BreedingManagerListDetailsComponentTest {
 		String dateToParse = "11212"; // 0001-12-12
 		String expectedDateToParse = "00011212";
 
-		Assert.assertEquals("Expecting a return of 8-character date string but didn't.",
-				expectedDateToParse, BreedingManagerListDetailsComponentTest.listDetailsComponent
-						.getParsableDateString(dateToParse));
+		Assert.assertEquals("Expecting a return of 8-character date string but didn't.", expectedDateToParse,
+				BreedingManagerListDetailsComponentTest.listDetailsComponent.getParsableDateString(dateToParse));
 	}
 }

@@ -1,10 +1,11 @@
+
 package org.generationcp.breeding.manager.listmanager;
 
-import com.vaadin.terminal.Sizeable;
-import com.vaadin.ui.*;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.themes.Reindeer;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
@@ -25,14 +26,22 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Map;
+import com.vaadin.terminal.Sizeable;
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.HorizontalSplitPanel;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class ListManagerMain extends VerticalLayout
-		implements InternationalizableComponent, InitializingBean,
-		BreedingManagerLayout, UnsavedChangesConfirmDialogSource {
+public class ListManagerMain extends VerticalLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout,
+		UnsavedChangesConfirmDialogSource {
 
 	private static final long serialVersionUID = 5976245899964745758L;
 
@@ -66,9 +75,9 @@ public class ListManagerMain extends VerticalLayout
 
 	private final Integer selectedListId;
 
-	//Handles Universal Mode View for ListManagerMain
+	// Handles Universal Mode View for ListManagerMain
 	private ModeView modeView;
-	//marks if there are unsaved changes in List from ListSelectorComponent and ListBuilderComponent
+	// marks if there are unsaved changes in List from ListSelectorComponent and ListBuilderComponent
 	private boolean hasChanges;
 	private UnsavedChangesConfirmDialog unsavedChangesDialog;
 
@@ -95,81 +104,79 @@ public class ListManagerMain extends VerticalLayout
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		instantiateComponents();
-		initializeValues();
-		addListeners();
-		layoutComponents();
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
 	}
 
 	@Override
 	public void updateLabels() {
-		mainTitle.setValue(messageSource.getMessage(Message.LIST_MANAGER_SCREEN_LABEL) + "  "
-				+ VERSION_STRING);
+		this.mainTitle.setValue(this.messageSource.getMessage(Message.LIST_MANAGER_SCREEN_LABEL) + "  " + ListManagerMain.VERSION_STRING);
 	}
 
 	@Override
 	public void instantiateComponents() {
-		listBuilderToggleBtn1 = new Button("<span class='bms-fa-chevron-left'" +
-				"style='" +
-				"position: relative;" +
-				" bottom: 3px;" +
-				"'></span>" + "Show List Builder");
-		listBuilderToggleBtn1.setHtmlContentAllowed(true);
-		listBuilderToggleBtn1.setStyleName(Bootstrap.Buttons.BORDERED.styleName() + " lm-toggle");
+		this.listBuilderToggleBtn1 =
+				new Button("<span class='bms-fa-chevron-left'" + "style='" + "position: relative;" + " bottom: 3px;" + "'></span>"
+						+ "Show List Builder");
+		this.listBuilderToggleBtn1.setHtmlContentAllowed(true);
+		this.listBuilderToggleBtn1.setStyleName(Bootstrap.Buttons.BORDERED.styleName() + " lm-toggle");
 
-		listBuilderToggleBtn2 = new Button("<span class='bms-fa-chevron-left'" +
-				"style='" +
-				"position: relative;" +
-				" bottom: 3px;" +
-				"'></span>" + "Show List Builder");
-		listBuilderToggleBtn2.setHtmlContentAllowed(true);
-		listBuilderToggleBtn2.setStyleName(Bootstrap.Buttons.BORDERED.styleName() + " lm-toggle");
+		this.listBuilderToggleBtn2 =
+				new Button("<span class='bms-fa-chevron-left'" + "style='" + "position: relative;" + " bottom: 3px;" + "'></span>"
+						+ "Show List Builder");
+		this.listBuilderToggleBtn2.setHtmlContentAllowed(true);
+		this.listBuilderToggleBtn2.setStyleName(Bootstrap.Buttons.BORDERED.styleName() + " lm-toggle");
 
-		modeView = ModeView.LIST_VIEW;
-		hasChanges = false;
+		this.modeView = ModeView.LIST_VIEW;
+		this.hasChanges = false;
 
-		setTitleContent();
-		setTabHeader();
-		setTabContent();
+		this.setTitleContent();
+		this.setTabHeader();
+		this.setTabContent();
 	}
 
 	@Override
 	public void initializeValues() {
-		plantFinderContent.setWidth("100%");
+		this.plantFinderContent.setWidth("100%");
 
 		// By default, the list selection component will be opened first
-		plantSelectionComponent.setVisible(false);
+		this.plantSelectionComponent.setVisible(false);
 	}
 
 	@Override
 	public void addListeners() {
 
-		listSelectionTabButton.addListener(new ClickListener() {
+		this.listSelectionTabButton.addListener(new ClickListener() {
+
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				showListSelection();
-				selectTab(listSelectionTabButton);
-				deselectTab(plantSelectionTabButton);
+				ListManagerMain.this.showListSelection();
+				ListManagerMain.this.selectTab(ListManagerMain.this.listSelectionTabButton);
+				ListManagerMain.this.deselectTab(ListManagerMain.this.plantSelectionTabButton);
 
 			}
 
 		});
 
-		plantSelectionTabButton.addListener(new ClickListener() {
+		this.plantSelectionTabButton.addListener(new ClickListener() {
+
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				showPlantSelection();
-				selectTab(plantSelectionTabButton);
-				deselectTab(listSelectionTabButton);
+				ListManagerMain.this.showPlantSelection();
+				ListManagerMain.this.selectTab(ListManagerMain.this.plantSelectionTabButton);
+				ListManagerMain.this.deselectTab(ListManagerMain.this.listSelectionTabButton);
 
 			}
 		});
 
-		listBuilderToggleBtn1.addListener(new Button.ClickListener() {
+		this.listBuilderToggleBtn1.addListener(new Button.ClickListener() {
+
 			private static final long serialVersionUID = -8178708255873293566L;
 
 			@Override
@@ -178,7 +185,8 @@ public class ListManagerMain extends VerticalLayout
 			}
 		});
 
-		listBuilderToggleBtn2.addListener(new Button.ClickListener() {
+		this.listBuilderToggleBtn2.addListener(new Button.ClickListener() {
+
 			private static final long serialVersionUID = 4202348847712247508L;
 
 			@Override
@@ -195,8 +203,8 @@ public class ListManagerMain extends VerticalLayout
 		titleAndTabContainer.setMargin(new MarginInfo(false, false, false, true));
 		titleAndTabContainer.setSpacing(true);
 
-		titleAndTabContainer.addComponent(titleLayout);
-		titleAndTabContainer.addComponent(tabHeaderLayout);
+		titleAndTabContainer.addComponent(this.titleLayout);
+		titleAndTabContainer.addComponent(this.tabHeaderLayout);
 
 		this.addComponent(titleAndTabContainer);
 
@@ -204,7 +212,7 @@ public class ListManagerMain extends VerticalLayout
 		splitPanelContainer.setScrollable(true);
 		splitPanelContainer.setStyleName(Reindeer.PANEL_LIGHT + " lm-panel");
 
-		splitPanelContainer.setContent(splitPanel);
+		splitPanelContainer.setContent(this.splitPanel);
 
 		this.addComponent(splitPanelContainer);
 		this.setExpandRatio(splitPanelContainer, 1.0F);
@@ -219,10 +227,10 @@ public class ListManagerMain extends VerticalLayout
 	 * @param list the list to load for editing
 	 */
 	public void loadListForEditing(final GermplasmList list) {
-		updateUIForEditingList(list);
-		listSelectionComponent.getListDetailsLayout().repaintTabsheet();
-		listBuilderComponent.editList(list);
-		showListBuilder();
+		this.updateUIForEditingList(list);
+		this.listSelectionComponent.getListDetailsLayout().repaintTabsheet();
+		this.listBuilderComponent.editList(list);
+		this.showListBuilder();
 	}
 
 	/**
@@ -231,7 +239,7 @@ public class ListManagerMain extends VerticalLayout
 	 * @param list the list to close
 	 */
 	public void closeList(final GermplasmList list) {
-		listSelectionComponent.getListDetailsLayout().removeTab(list.getId());
+		this.listSelectionComponent.getListDetailsLayout().removeTab(list.getId());
 	}
 
 	/**
@@ -240,7 +248,7 @@ public class ListManagerMain extends VerticalLayout
 	 * @param sourceTable the table to retrieve the selected plants from
 	 */
 	public void addSelectedPlantsToList(Table sourceTable) {
-		listBuilderComponent.addFromListDataTable(sourceTable);
+		this.listBuilderComponent.addFromListDataTable(sourceTable);
 	}
 
 	/**
@@ -249,104 +257,103 @@ public class ListManagerMain extends VerticalLayout
 	 * @param gid ID of the germplasm to add
 	 */
 	public void addPlantToList(final Integer gid) {
-		listBuilderComponent.addGermplasm(gid);
+		this.listBuilderComponent.addGermplasm(gid);
 	}
 
 	public ListBuilderComponent getListBuilderComponent() {
-		return listBuilderComponent;
+		return this.listBuilderComponent;
 	}
 
 	public ListSelectionComponent getListSelectionComponent() {
-		return listSelectionComponent;
+		return this.listSelectionComponent;
 	}
 
 	public GermplasmSelectionComponent getPlantSelectionComponent() {
-		return plantSelectionComponent;
+		return this.plantSelectionComponent;
 	}
 
 	protected void showPlantSelection() {
 
-		plantFinderContent.setCaption("100%");
+		this.plantFinderContent.setCaption("100%");
 
-		plantFinderContent.removeAllComponents();
-		plantFinderContent.addComponent(plantSelectionComponent);
+		this.plantFinderContent.removeAllComponents();
+		this.plantFinderContent.addComponent(this.plantSelectionComponent);
 
-		listSelectionComponent.setVisible(false);
-		plantSelectionComponent.setVisible(true);
-		plantSelectionComponent.getSearchBarComponent().focusOnSearchField();
+		this.listSelectionComponent.setVisible(false);
+		this.plantSelectionComponent.setVisible(true);
+		this.plantSelectionComponent.getSearchBarComponent().focusOnSearchField();
 
-		plantFinderContent.requestRepaint();
+		this.plantFinderContent.requestRepaint();
 	}
 
 	protected void showListSelection() {
 
-		plantFinderContent.setCaption("100%");
+		this.plantFinderContent.setCaption("100%");
 
-		plantFinderContent.removeAllComponents();
-		plantFinderContent.addComponent(listSelectionComponent);
+		this.plantFinderContent.removeAllComponents();
+		this.plantFinderContent.addComponent(this.listSelectionComponent);
 
-		listSelectionComponent.setVisible(true);
-		plantSelectionComponent.setVisible(false);
+		this.listSelectionComponent.setVisible(true);
+		this.plantSelectionComponent.setVisible(false);
 
-		plantFinderContent.requestRepaint();
+		this.plantFinderContent.requestRepaint();
 	}
 
 	private void setTitleContent() {
-		titleLayout = new AbsoluteLayout();
-		titleLayout.setWidth("100%");
-		titleLayout.setHeight("40px");
+		this.titleLayout = new AbsoluteLayout();
+		this.titleLayout.setWidth("100%");
+		this.titleLayout.setHeight("40px");
 
-		mainTitle = new Label();
-		mainTitle.setStyleName(Bootstrap.Typography.H1.styleName());
-		mainTitle.setContentMode(Label.CONTENT_XHTML);
-		mainTitle.setValue(messageSource.getMessage(Message.LIST_MANAGER_SCREEN_LABEL) + "  "
-				+ VERSION_STRING);
+		this.mainTitle = new Label();
+		this.mainTitle.setStyleName(Bootstrap.Typography.H1.styleName());
+		this.mainTitle.setContentMode(Label.CONTENT_XHTML);
+		this.mainTitle.setValue(this.messageSource.getMessage(Message.LIST_MANAGER_SCREEN_LABEL) + "  " + ListManagerMain.VERSION_STRING);
 
-		titleLayout.addComponent(mainTitle, "top:0px;left:0px");
+		this.titleLayout.addComponent(this.mainTitle, "top:0px;left:0px");
 	}
 
 	private void setTabHeader() {
-		listSelectionTabButton = new Button(messageSource.getMessage(Message.VIEW_LISTS));
-		plantSelectionTabButton = new Button(messageSource.getMessage(Message.VIEW_GERMPLASM));
-		listSelectionTabButton.addStyleName("tabHeaderSelectedStyle");
-		listSelectionTabButton.addStyleName("tabStyleButton");
-		plantSelectionTabButton.addStyleName("tabStyleButton");
-		listSelectionTabButton.setImmediate(true);
-		plantSelectionTabButton.setImmediate(true);
+		this.listSelectionTabButton = new Button(this.messageSource.getMessage(Message.VIEW_LISTS));
+		this.plantSelectionTabButton = new Button(this.messageSource.getMessage(Message.VIEW_GERMPLASM));
+		this.listSelectionTabButton.addStyleName("tabHeaderSelectedStyle");
+		this.listSelectionTabButton.addStyleName("tabStyleButton");
+		this.plantSelectionTabButton.addStyleName("tabStyleButton");
+		this.listSelectionTabButton.setImmediate(true);
+		this.plantSelectionTabButton.setImmediate(true);
 
-		tabHeaderLayout = new HorizontalLayout();
-		tabHeaderLayout.addStyleName("tabHeaderStyle");
-		tabHeaderLayout.setSpacing(true);
-		tabHeaderLayout.addComponent(listSelectionTabButton);
-		tabHeaderLayout.addComponent(plantSelectionTabButton);
+		this.tabHeaderLayout = new HorizontalLayout();
+		this.tabHeaderLayout.addStyleName("tabHeaderStyle");
+		this.tabHeaderLayout.setSpacing(true);
+		this.tabHeaderLayout.addComponent(this.listSelectionTabButton);
+		this.tabHeaderLayout.addComponent(this.plantSelectionTabButton);
 	}
 
 	private void setTabContent() {
-		splitPanel = new HorizontalSplitPanel();
-		splitPanel.setMargin(false);
-		splitPanel.setMaxSplitPosition(46.5f, Sizeable.UNITS_PERCENTAGE);
-		splitPanel.setSplitPosition(0, Sizeable.UNITS_PERCENTAGE, true);
+		this.splitPanel = new HorizontalSplitPanel();
+		this.splitPanel.setMargin(false);
+		this.splitPanel.setMaxSplitPosition(46.5f, Sizeable.UNITS_PERCENTAGE);
+		this.splitPanel.setSplitPosition(0, Sizeable.UNITS_PERCENTAGE, true);
 
-		splitPanel.setImmediate(true);
-		splitPanel.setStyleName(Reindeer.SPLITPANEL_SMALL);
-		splitPanel.addStyleName("tabContainerStyle");
+		this.splitPanel.setImmediate(true);
+		this.splitPanel.setStyleName(Reindeer.SPLITPANEL_SMALL);
+		this.splitPanel.addStyleName("tabContainerStyle");
 
-		listSelectionComponent = new ListSelectionComponent(this, selectedListId);
-		plantSelectionComponent = new GermplasmSelectionComponent(this);
+		this.listSelectionComponent = new ListSelectionComponent(this, this.selectedListId);
+		this.plantSelectionComponent = new GermplasmSelectionComponent(this);
 
-		plantFinderContent = new AbsoluteLayout();
-		plantFinderContent.addComponent(listSelectionComponent, "top:0px;left:0px");
-		plantFinderContent.addComponent(plantSelectionComponent, "top:0px;left:0px");
+		this.plantFinderContent = new AbsoluteLayout();
+		this.plantFinderContent.addComponent(this.listSelectionComponent, "top:0px;left:0px");
+		this.plantFinderContent.addComponent(this.plantSelectionComponent, "top:0px;left:0px");
 
-		listBuilderComponent = new ListBuilderComponent(this);
+		this.listBuilderComponent = new ListBuilderComponent(this);
 
-		splitPanel.setFirstComponent(plantFinderContent);
-		splitPanel.setSecondComponent(listBuilderComponent);
+		this.splitPanel.setFirstComponent(this.plantFinderContent);
+		this.splitPanel.setSecondComponent(this.listBuilderComponent);
 
-		splitPanel.setWidth("100%");
-		splitPanel.setHeight("780px");
+		this.splitPanel.setWidth("100%");
+		this.splitPanel.setHeight("780px");
 
-		addStyleName("lm-list-manager-main");
+		this.addStyleName("lm-list-manager-main");
 	}
 
 	private void selectTab(final Button tabToSelect) {
@@ -360,66 +367,59 @@ public class ListManagerMain extends VerticalLayout
 	}
 
 	public void updateUIForEditingList(GermplasmList list) {
-		//Check if tab for deleted list is opened
-		listSelectionComponent.getListDetailsLayout().removeTab(list.getId());
+		// Check if tab for deleted list is opened
+		this.listSelectionComponent.getListDetailsLayout().removeTab(list.getId());
 	}
 
 	public void updateUIForDeletedList(GermplasmList list) {
 		SaveListAsDialog saveListAsDialog = null;
 
-		//close the save dialog window in View list if the deleted list is the current selected list
-		ListTabComponent currentListTab = (ListTabComponent) listSelectionComponent
-				.getListDetailsLayout().getDetailsTabsheet().getSelectedTab();
+		// close the save dialog window in View list if the deleted list is the current selected list
+		ListTabComponent currentListTab =
+				(ListTabComponent) this.listSelectionComponent.getListDetailsLayout().getDetailsTabsheet().getSelectedTab();
 		if (currentListTab != null) {
 			ListComponent listComponent = currentListTab.getListComponent();
 			saveListAsDialog = listComponent.getSaveListAsDialog();
-			if (saveListAsDialog != null && listComponent.getCurrentListInSaveDialog().getName()
-					.equals(list.getName())) {
+			if (saveListAsDialog != null && listComponent.getCurrentListInSaveDialog().getName().equals(list.getName())) {
 				listComponent.getWindow().removeWindow(saveListAsDialog);
-				MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS),
-						"Germplasm List was deleted.");
+				MessageNotifier
+						.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS), "Germplasm List was deleted.");
 			}
 		}
 
-		//Check if tab for deleted list is opened
-		listSelectionComponent.getListDetailsLayout().removeTab(list.getId());
+		// Check if tab for deleted list is opened
+		this.listSelectionComponent.getListDetailsLayout().removeTab(list.getId());
 
-		//close the save dialog window in List Builder if the deleted list is the current selected list
-		saveListAsDialog = getListBuilderComponent().getSaveListAsDialog();
-		if (saveListAsDialog != null && saveListAsDialog.getGermplasmListToSave().getName()
-				.equals(list.getName())) {
-			getListBuilderComponent().getWindow().removeWindow(saveListAsDialog);
+		// close the save dialog window in List Builder if the deleted list is the current selected list
+		saveListAsDialog = this.getListBuilderComponent().getSaveListAsDialog();
+		if (saveListAsDialog != null && saveListAsDialog.getGermplasmListToSave().getName().equals(list.getName())) {
+			this.getListBuilderComponent().getWindow().removeWindow(saveListAsDialog);
 		}
 
-		if (getListBuilderComponent().getCurrentlySavedGermplasmList() != null
-				&& list != null
-				&& getListBuilderComponent().getCurrentlySavedGermplasmList().getName()
-				.equals(list.getName())) {
-			getListBuilderComponent().resetList();
-			MessageNotifier.showMessage(getWindow(), messageSource.getMessage(Message.SUCCESS),
-					"Germplasm List was deleted.");
+		if (this.getListBuilderComponent().getCurrentlySavedGermplasmList() != null && list != null
+				&& this.getListBuilderComponent().getCurrentlySavedGermplasmList().getName().equals(list.getName())) {
+			this.getListBuilderComponent().resetList();
+			MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS), "Germplasm List was deleted.");
 		}
 
-		//Check if deleted list is in the search results
-		listSelectionComponent.getListSearchComponent().getSearchResultsComponent()
-				.removeSearchResult(list.getId());
+		// Check if deleted list is in the search results
+		this.listSelectionComponent.getListSearchComponent().getSearchResultsComponent().removeSearchResult(list.getId());
 	}
 
 	public Boolean lockGermplasmList(GermplasmList germplasmList) {
 		if (!germplasmList.isLockedList()) {
 			germplasmList.setStatus(germplasmList.getStatus() + 100);
 			try {
-				germplasmListManager.updateGermplasmList(germplasmList);
+				this.germplasmListManager.updateGermplasmList(germplasmList);
 
-				contextUtil.logProgramActivity("Locked a germplasm list.",
-						"Locked list " + germplasmList.getId() + " - " + germplasmList.getName());
+				this.contextUtil.logProgramActivity("Locked a germplasm list.", "Locked list " + germplasmList.getId() + " - "
+						+ germplasmList.getName());
 
 				return true;
 			} catch (MiddlewareQueryException e) {
-				LOG.error("Error with locking list.", e);
-				MessageNotifier.showError(getWindow(), "Database Error!",
-						"Error with locking list. " + messageSource
-								.getMessage(Message.ERROR_REPORT_TO));
+				ListManagerMain.LOG.error("Error with locking list.", e);
+				MessageNotifier.showError(this.getWindow(), "Database Error!",
+						"Error with locking list. " + this.messageSource.getMessage(Message.ERROR_REPORT_TO));
 				return false;
 			}
 		}
@@ -427,33 +427,29 @@ public class ListManagerMain extends VerticalLayout
 	}
 
 	public void setUIForLockedListBuilder() {
-		plantSelectionComponent.getSearchResultsComponent()
-				.setRightClickActionHandlerEnabled(false);
-		listSelectionComponent.getListSearchComponent().getSearchResultsComponent()
-				.refreshActionHandler();
+		this.plantSelectionComponent.getSearchResultsComponent().setRightClickActionHandlerEnabled(false);
+		this.listSelectionComponent.getListSearchComponent().getSearchResultsComponent().refreshActionHandler();
 	}
 
 	public void setUIForUnlockedListBuilder() {
-		plantSelectionComponent.getSearchResultsComponent().setRightClickActionHandlerEnabled(true);
-		listSelectionComponent.getListSearchComponent().getSearchResultsComponent()
-				.refreshActionHandler();
+		this.plantSelectionComponent.getSearchResultsComponent().setRightClickActionHandlerEnabled(true);
+		this.listSelectionComponent.getListSearchComponent().getSearchResultsComponent().refreshActionHandler();
 	}
 
 	public Boolean unlockGermplasmList(GermplasmList germplasmList) {
 		if (germplasmList.isLockedList()) {
 			germplasmList.setStatus(germplasmList.getStatus() - 100);
 			try {
-				germplasmListManager.updateGermplasmList(germplasmList);
+				this.germplasmListManager.updateGermplasmList(germplasmList);
 
-				contextUtil.logProgramActivity("Unlocked a germplasm list.",
-						"Unlocked list " + germplasmList.getId() + " - " + germplasmList.getName());
+				this.contextUtil.logProgramActivity("Unlocked a germplasm list.", "Unlocked list " + germplasmList.getId() + " - "
+						+ germplasmList.getName());
 
 				return true;
 			} catch (MiddlewareQueryException e) {
-				LOG.error("Error with unlocking list.", e);
-				MessageNotifier.showError(getWindow(), "Database Error!",
-						"Error with unlocking list. " + messageSource
-								.getMessage(Message.ERROR_REPORT_TO));
+				ListManagerMain.LOG.error("Error with unlocking list.", e);
+				MessageNotifier.showError(this.getWindow(), "Database Error!",
+						"Error with unlocking list. " + this.messageSource.getMessage(Message.ERROR_REPORT_TO));
 				return false;
 			}
 		}
@@ -461,88 +457,81 @@ public class ListManagerMain extends VerticalLayout
 	}
 
 	public void toggleListBuilder() {
-		if (!isListBuilderShown) {
-			showListBuilder();
+		if (!this.isListBuilderShown) {
+			this.showListBuilder();
 		} else {
-			hideListBuilder();
+			this.hideListBuilder();
 		}
 
-		listSelectionComponent.getListDetailsLayout().repaintTabsheet();
+		this.listSelectionComponent.getListDetailsLayout().repaintTabsheet();
 	}
 
 	public void showListBuilder() {
-		splitPanel.setSplitPosition(50, Sizeable.UNITS_PERCENTAGE, true);
+		this.splitPanel.setSplitPosition(50, Sizeable.UNITS_PERCENTAGE, true);
 
-		String hideTxt = "<span class='bms-fa-chevron-right'" +
-				"style='position: relative;" +
-				" bottom: 3px;'" +
-				"'></span>" + "Hide List Builder";
+		String hideTxt =
+				"<span class='bms-fa-chevron-right'" + "style='position: relative;" + " bottom: 3px;'" + "'></span>" + "Hide List Builder";
 
-		listBuilderToggleBtn1.setCaption(hideTxt);
-		listBuilderToggleBtn2.setCaption(hideTxt);
+		this.listBuilderToggleBtn1.setCaption(hideTxt);
+		this.listBuilderToggleBtn2.setCaption(hideTxt);
 
-		isListBuilderShown = true;
+		this.isListBuilderShown = true;
 	}
 
 	public void hideListBuilder() {
-		splitPanel.setSplitPosition(0, Sizeable.UNITS_PIXELS, true);
+		this.splitPanel.setSplitPosition(0, Sizeable.UNITS_PIXELS, true);
 
-		String showTxt = "<span class='bms-fa-chevron-left'" +
-				"style='position: relative;" +
-				" bottom: 3px;'" +
-				"'></span>" + "Show List Builder";
+		String showTxt =
+				"<span class='bms-fa-chevron-left'" + "style='position: relative;" + " bottom: 3px;'" + "'></span>" + "Show List Builder";
 
-		listBuilderToggleBtn1.setCaption(showTxt);
-		listBuilderToggleBtn2.setCaption(showTxt);
+		this.listBuilderToggleBtn1.setCaption(showTxt);
+		this.listBuilderToggleBtn2.setCaption(showTxt);
 
-		isListBuilderShown = false;
+		this.isListBuilderShown = false;
 	}
 
 	public Integer getListBuilderStatus() {
-		if (listBuilderComponent != null
-				&& listBuilderComponent.getCurrentlySavedGermplasmList() != null) {
-			return listBuilderComponent.getCurrentlySavedGermplasmList().getStatus();
+		if (this.listBuilderComponent != null && this.listBuilderComponent.getCurrentlySavedGermplasmList() != null) {
+			return this.listBuilderComponent.getCurrentlySavedGermplasmList().getStatus();
 		}
 		return 0;
 	}
 
 	public Boolean listBuilderIsLocked() {
-		if (getListBuilderStatus() > 100) {
+		if (this.getListBuilderStatus() > 100) {
 			return true;
 		}
 		return false;
 	}
 
 	public ModeView getModeView() {
-		return modeView;
+		return this.modeView;
 	}
 
 	public void setModeView(ModeView newModeView) {
 		String message = "";
 
 		if (this.modeView != newModeView) {
-			if (hasChanges) {
-				if (this.modeView.equals(ModeView.LIST_VIEW) && newModeView
-						.equals(ModeView.INVENTORY_VIEW)) {
+			if (this.hasChanges) {
+				if (this.modeView.equals(ModeView.LIST_VIEW) && newModeView.equals(ModeView.INVENTORY_VIEW)) {
 					message = "You have unsaved changes to one or more lists. Do you want to save them before changing views?";
-					showUnsavedChangesConfirmDialog(message, newModeView);
-				} else if (this.modeView.equals(ModeView.INVENTORY_VIEW) && newModeView
-						.equals(ModeView.LIST_VIEW)) {
+					this.showUnsavedChangesConfirmDialog(message, newModeView);
+				} else if (this.modeView.equals(ModeView.INVENTORY_VIEW) && newModeView.equals(ModeView.LIST_VIEW)) {
 					message = "You have unsaved reservations to one or more lists. Do you want to save them before changing views?";
-					showUnsavedChangesConfirmDialog(message, newModeView);
+					this.showUnsavedChangesConfirmDialog(message, newModeView);
 				}
 			} else {
-				modeView = newModeView;
-				updateView(modeView);
+				this.modeView = newModeView;
+				this.updateView(this.modeView);
 			}
 		}
 
 	}
 
 	public void showUnsavedChangesConfirmDialog(String message, ModeView newModeView) {
-		modeView = newModeView;
-		unsavedChangesDialog = new UnsavedChangesConfirmDialog(this, message);
-		this.getWindow().addWindow(unsavedChangesDialog);
+		this.modeView = newModeView;
+		this.unsavedChangesDialog = new UnsavedChangesConfirmDialog(this, message);
+		this.getWindow().addWindow(this.unsavedChangesDialog);
 	}
 
 	public void setModeViewOnly(ModeView newModeView) {
@@ -550,12 +539,12 @@ public class ListManagerMain extends VerticalLayout
 	}
 
 	public void updateView(ModeView modeView) {
-		listSelectionComponent.getListDetailsLayout().updateViewForAllLists(modeView);
+		this.listSelectionComponent.getListDetailsLayout().updateViewForAllLists(modeView);
 
 		if (modeView.equals(ModeView.INVENTORY_VIEW)) {
-			listBuilderComponent.viewInventoryActionConfirmed();
+			this.listBuilderComponent.viewInventoryActionConfirmed();
 		} else if (modeView.equals(ModeView.LIST_VIEW)) {
-			listBuilderComponent.changeToListView();
+			this.listBuilderComponent.changeToListView();
 		}
 
 	}
@@ -563,94 +552,92 @@ public class ListManagerMain extends VerticalLayout
 	@Override
 	public void saveAllListChangesAction() {
 
-		if (getListSelectionComponent().getListDetailsLayout().hasUnsavedChanges()) {
+		if (this.getListSelectionComponent().getListDetailsLayout().hasUnsavedChanges()) {
 			Map<ListComponent, Boolean> listToUpdate = new HashMap<ListComponent, Boolean>();
-			listToUpdate.putAll(listSelectionComponent.getListDetailsLayout()
-					.getListStatusForChanges());
+			listToUpdate.putAll(this.listSelectionComponent.getListDetailsLayout().getListStatusForChanges());
 
 			for (Map.Entry<ListComponent, Boolean> list : listToUpdate.entrySet()) {
 				Boolean isListHasUnsavedChanges = list.getValue();
 				if (isListHasUnsavedChanges) {
 					ListComponent toSave = list.getKey();
-					//NOTE: the value of modeView here is the newModeView
-					if (modeView.equals(ModeView.LIST_VIEW)) {
+					// NOTE: the value of modeView here is the newModeView
+					if (this.modeView.equals(ModeView.LIST_VIEW)) {
 						toSave.saveReservationChangesAction();
-					} else if (modeView.equals(ModeView.INVENTORY_VIEW)) {
+					} else if (this.modeView.equals(ModeView.INVENTORY_VIEW)) {
 						toSave.saveChangesAction();
 					}
 				}
 			}
 		}
 
-		if (listBuilderComponent.hasUnsavedChanges()) {
-			//Save all changes in ListBuilder
-			GermplasmList currentlySavedGermplasmList = listBuilderComponent
-					.getCurrentlySavedGermplasmList();
+		if (this.listBuilderComponent.hasUnsavedChanges()) {
+			// Save all changes in ListBuilder
+			GermplasmList currentlySavedGermplasmList = this.listBuilderComponent.getCurrentlySavedGermplasmList();
 			if (currentlySavedGermplasmList == null) {
-				listBuilderComponent.openSaveListAsDialog();
+				this.listBuilderComponent.openSaveListAsDialog();
 			} else {
-				listBuilderComponent.getSaveListButtonListener().doSaveAction();
-				//Change ListBuilder View to List View
-				listBuilderComponent.viewInventoryActionConfirmed();
+				this.listBuilderComponent.getSaveListButtonListener().doSaveAction();
+				// Change ListBuilder View to List View
+				this.listBuilderComponent.viewInventoryActionConfirmed();
 			}
 		}
 
-		resetUnsavedStatus();
-		updateView(modeView);
+		this.resetUnsavedStatus();
+		this.updateView(this.modeView);
 
-		this.getWindow().removeWindow(unsavedChangesDialog);
-		//end of saveAllListChangesAction()
+		this.getWindow().removeWindow(this.unsavedChangesDialog);
+		// end of saveAllListChangesAction()
 	}
 
 	@Override
 	public void discardAllListChangesAction() {
-		//cancel all the unsaved changes
-		if (modeView.equals(ModeView.LIST_VIEW)) {
-			listSelectionComponent.getListDetailsLayout().resetInventoryViewForCancelledChanges();
-		} else if (modeView.equals(ModeView.INVENTORY_VIEW)) {
-			listSelectionComponent.getListDetailsLayout().resetListViewForCancelledChanges();
+		// cancel all the unsaved changes
+		if (this.modeView.equals(ModeView.LIST_VIEW)) {
+			this.listSelectionComponent.getListDetailsLayout().resetInventoryViewForCancelledChanges();
+		} else if (this.modeView.equals(ModeView.INVENTORY_VIEW)) {
+			this.listSelectionComponent.getListDetailsLayout().resetListViewForCancelledChanges();
 		}
 
-		listSelectionComponent.getListDetailsLayout().updateViewForAllLists(modeView);
+		this.listSelectionComponent.getListDetailsLayout().updateViewForAllLists(this.modeView);
 
-		if (listBuilderComponent.getCurrentlySavedGermplasmList() != null) {
-			if (modeView.equals(ModeView.INVENTORY_VIEW)) {
-				listBuilderComponent.discardChangesInListView();
-			} else if (modeView.equals(ModeView.LIST_VIEW)) {
-				listBuilderComponent.discardChangesInInventoryView();
+		if (this.listBuilderComponent.getCurrentlySavedGermplasmList() != null) {
+			if (this.modeView.equals(ModeView.INVENTORY_VIEW)) {
+				this.listBuilderComponent.discardChangesInListView();
+			} else if (this.modeView.equals(ModeView.LIST_VIEW)) {
+				this.listBuilderComponent.discardChangesInInventoryView();
 			}
 		} else {
-			//if no list save, just reset the list
-			listBuilderComponent.resetList();
+			// if no list save, just reset the list
+			this.listBuilderComponent.resetList();
 		}
 
-		resetUnsavedStatus();
+		this.resetUnsavedStatus();
 
-		this.getWindow().removeWindow(unsavedChangesDialog);
-		//end of discardAllListChangesAction()
+		this.getWindow().removeWindow(this.unsavedChangesDialog);
+		// end of discardAllListChangesAction()
 	}
 
 	@Override
 	public void cancelAllListChangesAction() {
 
-		//Return to Previous Mode View
-		if (modeView.equals(ModeView.LIST_VIEW)) {
-			setModeViewOnly(ModeView.INVENTORY_VIEW);
-		} else if (modeView.equals(ModeView.INVENTORY_VIEW)) {
-			setModeViewOnly(ModeView.LIST_VIEW);
+		// Return to Previous Mode View
+		if (this.modeView.equals(ModeView.LIST_VIEW)) {
+			this.setModeViewOnly(ModeView.INVENTORY_VIEW);
+		} else if (this.modeView.equals(ModeView.INVENTORY_VIEW)) {
+			this.setModeViewOnly(ModeView.LIST_VIEW);
 		}
 
-		this.getWindow().removeWindow(unsavedChangesDialog);
-		//end of cancelAllListChangesAction()
+		this.getWindow().removeWindow(this.unsavedChangesDialog);
+		// end of cancelAllListChangesAction()
 	}
 
 	public void resetUnsavedStatus() {
-		listSelectionComponent.getListDetailsLayout().updateHasChangesForAllList(false);
-		listBuilderComponent.resetUnsavedChangesFlag();
+		this.listSelectionComponent.getListDetailsLayout().updateHasChangesForAllList(false);
+		this.listBuilderComponent.resetUnsavedChangesFlag();
 	}
 
 	public boolean hasUnsavedChanges() {
-		return hasChanges;
+		return this.hasChanges;
 	}
 
 	public void setHasUnsavedChangesMain(boolean hasChanges) {

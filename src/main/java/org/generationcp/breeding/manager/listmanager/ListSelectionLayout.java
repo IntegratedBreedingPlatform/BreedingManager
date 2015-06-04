@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
- * 
+ *
  * Generation Challenge Programme (GCP)
- * 
- * 
- * This software is licensed for use under the terms of the GNU General Public
- * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
- * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
- * 
+ *
+ *
+ * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
+ * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
+ *
  *******************************************************************************/
+
 package org.generationcp.breeding.manager.listmanager;
 
 import java.util.ArrayList;
@@ -47,456 +47,450 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.Reindeer;
+import com.vaadin.ui.themes.BaseTheme;
 
 /**
  * @author Mark Agarrado
  */
 @Configurable
-public class ListSelectionLayout extends VerticalLayout implements InternationalizableComponent, 
-							InitializingBean, BreedingManagerLayout, UnsavedChangesSource {
+public class ListSelectionLayout extends VerticalLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout,
+		UnsavedChangesSource {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(ListSelectionLayout.class);
-    private static final long serialVersionUID = -6583178887344009055L;
-    
-    public static final String CLOSE_ALL_TABS_ID = "ListManagerDetailsLayout Close All Tabs ID";
-    public static final String TAB_DESCRIPTION_PREFIX = "List ID: ";
-    
-    @Autowired
-    private GermplasmListManager germplasmListManager;
-    
-    @Autowired
-    private SimpleResourceBundleMessageSource messageSource;
-    
-    private final ListManagerMain source;
-    
-    private Label headingLabel;
-    private Label noListLabel;
-    
-    private Button btnCloseAllTabs;
-    private Button browseForLists;
-    private Button searchForLists;
-    private Button importList;
-    private Label or;
-    private Label toWorkWith;
-    private Label or2;
-    private Label aNewListLabel;
+	protected static final Logger LOG = LoggerFactory.getLogger(ListSelectionLayout.class);
+	private static final long serialVersionUID = -6583178887344009055L;
 
-    private HorizontalLayout headerLayout;
-    private HorizontalLayout listSelectionHeaderContainer;
-    private HorizontalLayout searchOrBrowseContainer;
-    
-    private TabSheet detailsTabSheet;
-    private Map<ListComponent,Boolean> listStatusForChanges;
-    
-    private final Integer listId;
+	public static final String CLOSE_ALL_TABS_ID = "ListManagerDetailsLayout Close All Tabs ID";
+	public static final String TAB_DESCRIPTION_PREFIX = "List ID: ";
 
-    public ListSelectionLayout(final ListManagerMain source, final Integer listId) {
-    	super();
-        this.source = source;
-        this.listId = listId;
-    }
-    
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        instantiateComponents();
-        initializeValues();
-        layoutComponents();
-        addListeners();
-        
-        if(listId != null){
-        	try{
-        		createListDetailsTab(listId);
-        	} catch(MiddlewareQueryException ex){
-        		LOG.error("Error with opening list details tab of list with id: " + listId);
-        	}
-        }
-        else{
-        	displayDefault();
-        }
-    }
-    
-    @Override
-    public void instantiateComponents() {
+	@Autowired
+	private GermplasmListManager germplasmListManager;
 
-        noListLabel = new Label();
-    	noListLabel.setImmediate(true);
-    	
-    	headingLabel = new Label();
-    	headingLabel.setImmediate(true);
-    	headingLabel.setWidth("300px");
-    	headingLabel.setStyleName(Bootstrap.Typography.H4.styleName());
-    	headingLabel.addStyleName(AppConstants.CssStyles.BOLD);
-    	
-    	headerLayout = new HorizontalLayout();
-    	
-    	detailsTabSheet = new TabSheet();
-    	detailsTabSheet.setWidth("100%");
-    	detailsTabSheet.addStyleName("listDetails");
-    	setDetailsTabSheetHeight();
-    	
-        btnCloseAllTabs = new Button(messageSource.getMessage(Message.CLOSE_ALL_TABS));
-        btnCloseAllTabs.setData(CLOSE_ALL_TABS_ID);
-        btnCloseAllTabs.setImmediate(true);
-        btnCloseAllTabs.setStyleName(Reindeer.BUTTON_LINK);
-        
-        browseForLists = new Button();
-        browseForLists.setImmediate(true);
-        browseForLists.setStyleName(Reindeer.BUTTON_LINK);
-        
-        searchForLists = new Button();
-        searchForLists.setImmediate(true);
-        searchForLists.setStyleName(Reindeer.BUTTON_LINK);
-        
-        importList = new Button();
-        importList.setImmediate(true);
-        importList.setStyleName(Reindeer.BUTTON_LINK);
-        
-        or = new Label();
-        or.setImmediate(true);
-        
-        or2 = new Label();
-        or2.setImmediate(true);
-        
-        toWorkWith = new Label();
-        toWorkWith.setImmediate(true);
-        
-        aNewListLabel = new Label();
-        aNewListLabel.setImmediate(true);
-        
-        listStatusForChanges = new HashMap<ListComponent,Boolean>();
-    }
+	@Autowired
+	private SimpleResourceBundleMessageSource messageSource;
 
-    @Override
-    public void initializeValues() {
-        headingLabel.setValue(messageSource.getMessage(Message.LIST_DETAILS));
-        browseForLists.setCaption(messageSource.getMessage(Message.BROWSE_FOR_A_LIST) + " ");
-        searchForLists.setCaption(messageSource.getMessage(Message.SEARCH_FOR_A_LIST) + " ");
-        importList.setCaption(messageSource.getMessage(Message.IMPORT_A_LIST) + " ");
-        or.setValue(messageSource.getMessage(Message.OR) + " ");
-        or2.setValue(messageSource.getMessage(Message.OR) + " ");
-        toWorkWith.setValue(messageSource.getMessage(Message.A_LIST_TO_WORK_WITH) + ", ");
-        aNewListLabel.setValue(messageSource.getMessage(Message.A_NEW_LIST) + ".");
-    }
-    
-    @Override
-    public void layoutComponents() {
-        this.setMargin(new MarginInfo(true,false,true,true));
-        this.setWidth("100%");
+	private final ListManagerMain source;
 
-        listSelectionHeaderContainer = new HorizontalLayout();
-        listSelectionHeaderContainer.setHeight("26px");
-        listSelectionHeaderContainer.setWidth("100%");
+	private Label headingLabel;
+	private Label noListLabel;
 
-        final HeaderLabelLayout headerLbl = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS,headingLabel);
+	private Button btnCloseAllTabs;
+	private Button browseForLists;
+	private Button searchForLists;
+	private Button importList;
+	private Label or;
+	private Label toWorkWith;
+	private Label or2;
+	private Label aNewListLabel;
 
-        final HorizontalLayout searchOrBrowseLayout = new HorizontalLayout();
-        
-        searchOrBrowseContainer = new HorizontalLayout();
-        searchOrBrowseContainer.setHeight("19px");
-        searchOrBrowseContainer.setWidth("100%");
-        
-        // Ugh, bit of a hack - can't figure out how to space these nicely
-        searchForLists.setWidth("43px");
-        or.setWidth("16px");
-        browseForLists.setWidth("48px");
-        toWorkWith.setWidth("132px");
-        
-        or2.setWidth("16px");
-        importList.setWidth("44px");
-        aNewListLabel.setWidth("70px");
+	private HorizontalLayout headerLayout;
+	private HorizontalLayout listSelectionHeaderContainer;
+	private HorizontalLayout searchOrBrowseContainer;
 
-        searchOrBrowseLayout.addComponent(browseForLists);
-        searchOrBrowseLayout.addComponent(or);
-        searchOrBrowseLayout.addComponent(searchForLists);
-        searchOrBrowseLayout.addComponent(toWorkWith);
-        searchOrBrowseLayout.addComponent(or2);
-        searchOrBrowseLayout.addComponent(importList);
-        searchOrBrowseLayout.addComponent(aNewListLabel);
-        
-        searchOrBrowseContainer.addComponent(searchOrBrowseLayout);
-        searchOrBrowseContainer.addComponent(btnCloseAllTabs);
-        searchOrBrowseContainer.setComponentAlignment(btnCloseAllTabs,Alignment.TOP_RIGHT);
-    
-        final VerticalLayout header = new VerticalLayout();
-        header.setWidth("100%");
-        header.addComponent(noListLabel);
-        header.addComponent(headerLbl);
-        
-        
-        final VerticalLayout headerBtnContainer = new VerticalLayout();
-        headerBtnContainer.setSizeUndefined();
-        headerBtnContainer.setSpacing(true);
-        headerBtnContainer.addComponent(source.listBuilderToggleBtn1);
-        
+	private TabSheet detailsTabSheet;
+	private Map<ListComponent, Boolean> listStatusForChanges;
 
-        listSelectionHeaderContainer.addComponent(header);
-        listSelectionHeaderContainer.addComponent(headerBtnContainer);
-        listSelectionHeaderContainer.setExpandRatio(header,1.0F);
-        listSelectionHeaderContainer.setComponentAlignment(headerBtnContainer,Alignment.TOP_RIGHT);
+	private final Integer listId;
 
-        hideDetailsTabsheet();
-        this.addComponent(listSelectionHeaderContainer);
-        this.addComponent(searchOrBrowseContainer);
-        this.addComponent(detailsTabSheet);
-        this.displayDefault();
-    }
-    
-    public void setDetailsTabSheetHeight() {
-    	detailsTabSheet.setHeight("647px");
+	public ListSelectionLayout(final ListManagerMain source, final Integer listId) {
+		super();
+		this.source = source;
+		this.listId = listId;
 	}
 
-	public void displayDefault(){
-    	noListLabel.setVisible(false);
-        headerLayout.setVisible(true);
-        btnCloseAllTabs.setVisible(false);
-    }
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.instantiateComponents();
+		this.initializeValues();
+		this.layoutComponents();
+		this.addListeners();
 
-    @Override
-    public void addListeners() {
-        ListManagerDetailsTabCloseHandler closeHandler = new ListManagerDetailsTabCloseHandler(this);
-        btnCloseAllTabs.addListener(closeHandler);
-        detailsTabSheet.setCloseHandler(closeHandler);
-        detailsTabSheet.addListener(new TabSheet.SelectedTabChangeListener() {
+		if (this.listId != null) {
+			try {
+				this.createListDetailsTab(this.listId);
+			} catch (MiddlewareQueryException ex) {
+				ListSelectionLayout.LOG.error("Error with opening list details tab of list with id: " + this.listId);
+			}
+		} else {
+			this.displayDefault();
+		}
+	}
 
-            private static final long serialVersionUID = -7822326039221887888L;
+	@Override
+	public void instantiateComponents() {
 
-            @Override
-            public void selectedTabChange(SelectedTabChangeEvent event) {
-                if(detailsTabSheet.getComponentCount() <= 1){
-                    btnCloseAllTabs.setVisible(false);
-                }
-                else{
-                    btnCloseAllTabs.setVisible(true);
-                }
-            }
-        });
-        
-        browseForLists.addListener(new Button.ClickListener() {
+		this.noListLabel = new Label();
+		this.noListLabel.setImmediate(true);
 
-        	private static final long serialVersionUID = 6385074843600086746L;
+		this.headingLabel = new Label();
+		this.headingLabel.setImmediate(true);
+		this.headingLabel.setWidth("300px");
+		this.headingLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+		this.headingLabel.addStyleName(AppConstants.CssStyles.BOLD);
+
+		this.headerLayout = new HorizontalLayout();
+
+		this.detailsTabSheet = new TabSheet();
+		this.detailsTabSheet.setWidth("100%");
+		this.detailsTabSheet.addStyleName("listDetails");
+		this.setDetailsTabSheetHeight();
+
+		this.btnCloseAllTabs = new Button(this.messageSource.getMessage(Message.CLOSE_ALL_TABS));
+		this.btnCloseAllTabs.setData(ListSelectionLayout.CLOSE_ALL_TABS_ID);
+		this.btnCloseAllTabs.setImmediate(true);
+		this.btnCloseAllTabs.setStyleName(BaseTheme.BUTTON_LINK);
+
+		this.browseForLists = new Button();
+		this.browseForLists.setImmediate(true);
+		this.browseForLists.setStyleName(BaseTheme.BUTTON_LINK);
+
+		this.searchForLists = new Button();
+		this.searchForLists.setImmediate(true);
+		this.searchForLists.setStyleName(BaseTheme.BUTTON_LINK);
+
+		this.importList = new Button();
+		this.importList.setImmediate(true);
+		this.importList.setStyleName(BaseTheme.BUTTON_LINK);
+
+		this.or = new Label();
+		this.or.setImmediate(true);
+
+		this.or2 = new Label();
+		this.or2.setImmediate(true);
+
+		this.toWorkWith = new Label();
+		this.toWorkWith.setImmediate(true);
+
+		this.aNewListLabel = new Label();
+		this.aNewListLabel.setImmediate(true);
+
+		this.listStatusForChanges = new HashMap<ListComponent, Boolean>();
+	}
+
+	@Override
+	public void initializeValues() {
+		this.headingLabel.setValue(this.messageSource.getMessage(Message.LIST_DETAILS));
+		this.browseForLists.setCaption(this.messageSource.getMessage(Message.BROWSE_FOR_A_LIST) + " ");
+		this.searchForLists.setCaption(this.messageSource.getMessage(Message.SEARCH_FOR_A_LIST) + " ");
+		this.importList.setCaption(this.messageSource.getMessage(Message.IMPORT_A_LIST) + " ");
+		this.or.setValue(this.messageSource.getMessage(Message.OR) + " ");
+		this.or2.setValue(this.messageSource.getMessage(Message.OR) + " ");
+		this.toWorkWith.setValue(this.messageSource.getMessage(Message.A_LIST_TO_WORK_WITH) + ", ");
+		this.aNewListLabel.setValue(this.messageSource.getMessage(Message.A_NEW_LIST) + ".");
+	}
+
+	@Override
+	public void layoutComponents() {
+		this.setMargin(new MarginInfo(true, false, true, true));
+		this.setWidth("100%");
+
+		this.listSelectionHeaderContainer = new HorizontalLayout();
+		this.listSelectionHeaderContainer.setHeight("26px");
+		this.listSelectionHeaderContainer.setWidth("100%");
+
+		final HeaderLabelLayout headerLbl = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS, this.headingLabel);
+
+		final HorizontalLayout searchOrBrowseLayout = new HorizontalLayout();
+
+		this.searchOrBrowseContainer = new HorizontalLayout();
+		this.searchOrBrowseContainer.setHeight("19px");
+		this.searchOrBrowseContainer.setWidth("100%");
+
+		// Ugh, bit of a hack - can't figure out how to space these nicely
+		this.searchForLists.setWidth("43px");
+		this.or.setWidth("16px");
+		this.browseForLists.setWidth("48px");
+		this.toWorkWith.setWidth("132px");
+
+		this.or2.setWidth("16px");
+		this.importList.setWidth("44px");
+		this.aNewListLabel.setWidth("70px");
+
+		searchOrBrowseLayout.addComponent(this.browseForLists);
+		searchOrBrowseLayout.addComponent(this.or);
+		searchOrBrowseLayout.addComponent(this.searchForLists);
+		searchOrBrowseLayout.addComponent(this.toWorkWith);
+		searchOrBrowseLayout.addComponent(this.or2);
+		searchOrBrowseLayout.addComponent(this.importList);
+		searchOrBrowseLayout.addComponent(this.aNewListLabel);
+
+		this.searchOrBrowseContainer.addComponent(searchOrBrowseLayout);
+		this.searchOrBrowseContainer.addComponent(this.btnCloseAllTabs);
+		this.searchOrBrowseContainer.setComponentAlignment(this.btnCloseAllTabs, Alignment.TOP_RIGHT);
+
+		final VerticalLayout header = new VerticalLayout();
+		header.setWidth("100%");
+		header.addComponent(this.noListLabel);
+		header.addComponent(headerLbl);
+
+		final VerticalLayout headerBtnContainer = new VerticalLayout();
+		headerBtnContainer.setSizeUndefined();
+		headerBtnContainer.setSpacing(true);
+		headerBtnContainer.addComponent(this.source.listBuilderToggleBtn1);
+
+		this.listSelectionHeaderContainer.addComponent(header);
+		this.listSelectionHeaderContainer.addComponent(headerBtnContainer);
+		this.listSelectionHeaderContainer.setExpandRatio(header, 1.0F);
+		this.listSelectionHeaderContainer.setComponentAlignment(headerBtnContainer, Alignment.TOP_RIGHT);
+
+		this.hideDetailsTabsheet();
+		this.addComponent(this.listSelectionHeaderContainer);
+		this.addComponent(this.searchOrBrowseContainer);
+		this.addComponent(this.detailsTabSheet);
+		this.displayDefault();
+	}
+
+	public void setDetailsTabSheetHeight() {
+		this.detailsTabSheet.setHeight("647px");
+	}
+
+	public void displayDefault() {
+		this.noListLabel.setVisible(false);
+		this.headerLayout.setVisible(true);
+		this.btnCloseAllTabs.setVisible(false);
+	}
+
+	@Override
+	public void addListeners() {
+		ListManagerDetailsTabCloseHandler closeHandler = new ListManagerDetailsTabCloseHandler(this);
+		this.btnCloseAllTabs.addListener(closeHandler);
+		this.detailsTabSheet.setCloseHandler(closeHandler);
+		this.detailsTabSheet.addListener(new TabSheet.SelectedTabChangeListener() {
+
+			private static final long serialVersionUID = -7822326039221887888L;
+
+			@Override
+			public void selectedTabChange(SelectedTabChangeEvent event) {
+				if (ListSelectionLayout.this.detailsTabSheet.getComponentCount() <= 1) {
+					ListSelectionLayout.this.btnCloseAllTabs.setVisible(false);
+				} else {
+					ListSelectionLayout.this.btnCloseAllTabs.setVisible(true);
+				}
+			}
+		});
+
+		this.browseForLists.addListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = 6385074843600086746L;
 
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				source.getListSelectionComponent().openListBrowseDialog();
+				ListSelectionLayout.this.source.getListSelectionComponent().openListBrowseDialog();
 			}
-        });
-        
-        searchForLists.addListener(new Button.ClickListener() {
+		});
 
-        	private static final long serialVersionUID = 6385074843600086746L;
+		this.searchForLists.addListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = 6385074843600086746L;
 
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				source.getListSelectionComponent().openListSearchDialog();
+				ListSelectionLayout.this.source.getListSelectionComponent().openListSearchDialog();
 			}
-        });
+		});
 
-        importList.addListener(new Button.ClickListener() {
-        	
-        	private static final long serialVersionUID = 6385074843600086746L;
+		this.importList.addListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = 6385074843600086746L;
 
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				source.getListSelectionComponent().openListImportDialog();
+				ListSelectionLayout.this.source.getListSelectionComponent().openListImportDialog();
 			}
-        });        
-        
-    }
+		});
 
-    @Override
-    public void updateLabels() {
-        headingLabel.setValue(messageSource.getMessage(Message.LIST_DETAILS)); 
-        browseForLists.setCaption(messageSource.getMessage(Message.BROWSE_FOR_A_LIST) + " ");
-        searchForLists.setCaption(messageSource.getMessage(Message.SEARCH_FOR_A_LIST) + " ");
-        or.setValue(messageSource.getMessage(Message.OR) + " ");
-        toWorkWith.setValue(messageSource.getMessage(Message.A_LIST_TO_WORK_WITH));
-    }
+	}
 
-    public void createListDetailsTab(Integer listId) throws MiddlewareQueryException{
-        GermplasmList germplasmList = germplasmListManager.getGermplasmListById(listId);
-        if (germplasmList == null) {
-            hideDetailsTabsheet();
-            this.noListLabel.setCaption("There is no list in the database with id: " + listId);
-            this.noListLabel.setVisible(true);
-        } else {
-            noListLabel.setVisible(false);
-            final String tabName = germplasmList.getName();
-            this.createTab(listId, germplasmList, tabName);
-            this.showDetailsTabsheet();
-        }
-    }
-    
-    private void createTab(final int id, final GermplasmList germplasmList, final String tabName) {
-        
-    	final boolean tabExists = Util.isTabDescriptionExist(detailsTabSheet, generateTabDescription(germplasmList.getId()));
-        
-        if (!tabExists) {
-            
-        	final Component tabContent = new ListTabComponent(source, this, germplasmList);
-            final Tab tab = detailsTabSheet.addTab(tabContent, tabName, null);
-            
-            if (germplasmList != null){
-                tab.setDescription(generateTabDescription(germplasmList.getId()));
-            }
-            
-            tab.setClosable(true);
-            detailsTabSheet.setSelectedTab(tabContent);
-            
-        } else {
-            final Tab tab = Util.getTabWithDescription(detailsTabSheet, generateTabDescription(germplasmList.getId()));
+	@Override
+	public void updateLabels() {
+		this.headingLabel.setValue(this.messageSource.getMessage(Message.LIST_DETAILS));
+		this.browseForLists.setCaption(this.messageSource.getMessage(Message.BROWSE_FOR_A_LIST) + " ");
+		this.searchForLists.setCaption(this.messageSource.getMessage(Message.SEARCH_FOR_A_LIST) + " ");
+		this.or.setValue(this.messageSource.getMessage(Message.OR) + " ");
+		this.toWorkWith.setValue(this.messageSource.getMessage(Message.A_LIST_TO_WORK_WITH));
+	}
 
-            if (tab != null){
-                detailsTabSheet.setSelectedTab(tab.getComponent());
-            }
-        }
-    }
-    
-    private String generateTabDescription(Integer listId){
-        return TAB_DESCRIPTION_PREFIX + listId;
-    }
-    
-    public TabSheet getDetailsTabsheet() {
-        return this.detailsTabSheet;
-    }
-    
-    public void showDetailsTabsheet() {
-        detailsTabSheet.removeStyleName(AppConstants.CssStyles.NO_TAB);
-    }
-    
-    public void hideDetailsTabsheet() {
-        btnCloseAllTabs.setVisible(false);
-        detailsTabSheet.addStyleName(AppConstants.CssStyles.NO_TAB);
-    }
-    
-    public void repaintTabsheet() {
-    	if(detailsTabSheet.isVisible()){
-    	    this.removeAllComponents();
-    	    this.addComponent(listSelectionHeaderContainer);
-    	    this.addComponent(searchOrBrowseContainer);
-    	    this.addComponent(detailsTabSheet);
-            
-            if(detailsTabSheet.getComponentCount() > 1){
-            	btnCloseAllTabs.setVisible(true);
-            }
-            this.requestRepaint();
-    	}    	
-    }
-    
-    public void renameTab(Integer listId, String newName){
-    	
-        String tabDescription = generateTabDescription(listId);
-        Tab tab = Util.getTabWithDescription(detailsTabSheet, tabDescription);
-        if (tab != null){
-            tab.setCaption(newName);
-            ListTabComponent listDetails = (ListTabComponent) tab.getComponent();
-            listDetails.setListNameLabel(newName);
-            
-            if(tab.getComponent() instanceof ListTabComponent){
-            	((ListTabComponent) tab.getComponent()).getGermplasmList().setName(newName);
-            	
-            	GermplasmList germplasmList = ((ListTabComponent) tab.getComponent()).getListComponent().getGermplasmList();
-            	germplasmList.setName(newName);
-            	((ListTabComponent) tab.getComponent()).getListComponent().setViewListHeaderWindow(new ViewListHeaderWindow(germplasmList));
-            }
-        }
-    }
-    
-    public void removeTab(Integer listId){
-        String tabDescription = generateTabDescription(listId);
-        Tab tab = Util.getTabWithDescription(detailsTabSheet, tabDescription);
-        if (tab != null){
-            detailsTabSheet.removeTab(tab);
-        }
-        
-        if(detailsTabSheet.getComponentCount() == 0){
-            this.hideDetailsTabsheet();
-        }
-    }
+	public void createListDetailsTab(Integer listId) throws MiddlewareQueryException {
+		GermplasmList germplasmList = this.germplasmListManager.getGermplasmListById(listId);
+		if (germplasmList == null) {
+			this.hideDetailsTabsheet();
+			this.noListLabel.setCaption("There is no list in the database with id: " + listId);
+			this.noListLabel.setVisible(true);
+		} else {
+			this.noListLabel.setVisible(false);
+			final String tabName = germplasmList.getName();
+			this.createTab(listId, germplasmList, tabName);
+			this.showDetailsTabsheet();
+		}
+	}
+
+	private void createTab(final int id, final GermplasmList germplasmList, final String tabName) {
+
+		final boolean tabExists = Util.isTabDescriptionExist(this.detailsTabSheet, this.generateTabDescription(germplasmList.getId()));
+
+		if (!tabExists) {
+
+			final Component tabContent = new ListTabComponent(this.source, this, germplasmList);
+			final Tab tab = this.detailsTabSheet.addTab(tabContent, tabName, null);
+
+			if (germplasmList != null) {
+				tab.setDescription(this.generateTabDescription(germplasmList.getId()));
+			}
+
+			tab.setClosable(true);
+			this.detailsTabSheet.setSelectedTab(tabContent);
+
+		} else {
+			final Tab tab = Util.getTabWithDescription(this.detailsTabSheet, this.generateTabDescription(germplasmList.getId()));
+
+			if (tab != null) {
+				this.detailsTabSheet.setSelectedTab(tab.getComponent());
+			}
+		}
+	}
+
+	private String generateTabDescription(Integer listId) {
+		return ListSelectionLayout.TAB_DESCRIPTION_PREFIX + listId;
+	}
+
+	public TabSheet getDetailsTabsheet() {
+		return this.detailsTabSheet;
+	}
+
+	public void showDetailsTabsheet() {
+		this.detailsTabSheet.removeStyleName(AppConstants.CssStyles.NO_TAB);
+	}
+
+	public void hideDetailsTabsheet() {
+		this.btnCloseAllTabs.setVisible(false);
+		this.detailsTabSheet.addStyleName(AppConstants.CssStyles.NO_TAB);
+	}
+
+	public void repaintTabsheet() {
+		if (this.detailsTabSheet.isVisible()) {
+			this.removeAllComponents();
+			this.addComponent(this.listSelectionHeaderContainer);
+			this.addComponent(this.searchOrBrowseContainer);
+			this.addComponent(this.detailsTabSheet);
+
+			if (this.detailsTabSheet.getComponentCount() > 1) {
+				this.btnCloseAllTabs.setVisible(true);
+			}
+			this.requestRepaint();
+		}
+	}
+
+	public void renameTab(Integer listId, String newName) {
+
+		String tabDescription = this.generateTabDescription(listId);
+		Tab tab = Util.getTabWithDescription(this.detailsTabSheet, tabDescription);
+		if (tab != null) {
+			tab.setCaption(newName);
+			ListTabComponent listDetails = (ListTabComponent) tab.getComponent();
+			listDetails.setListNameLabel(newName);
+
+			if (tab.getComponent() instanceof ListTabComponent) {
+				((ListTabComponent) tab.getComponent()).getGermplasmList().setName(newName);
+
+				GermplasmList germplasmList = ((ListTabComponent) tab.getComponent()).getListComponent().getGermplasmList();
+				germplasmList.setName(newName);
+				((ListTabComponent) tab.getComponent()).getListComponent().setViewListHeaderWindow(new ViewListHeaderWindow(germplasmList));
+			}
+		}
+	}
+
+	public void removeTab(Integer listId) {
+		String tabDescription = this.generateTabDescription(listId);
+		Tab tab = Util.getTabWithDescription(this.detailsTabSheet, tabDescription);
+		if (tab != null) {
+			this.detailsTabSheet.removeTab(tab);
+		}
+
+		if (this.detailsTabSheet.getComponentCount() == 0) {
+			this.hideDetailsTabsheet();
+		}
+	}
 
 	@Override
 	public void setHasUnsavedChangesMain(boolean hasChanges) {
-		source.setHasUnsavedChangesMain(hasChanges);
+		this.source.setHasUnsavedChangesMain(hasChanges);
 	}
 
-	public Map<ListComponent,Boolean> getListStatusForChanges(){
-		return listStatusForChanges;
+	public Map<ListComponent, Boolean> getListStatusForChanges() {
+		return this.listStatusForChanges;
 	}
-	
-	public void addUpdateListStatusForChanges(ListComponent listComponent, Boolean status){
-		removeListStatusForChanges(listComponent);
-		listStatusForChanges.put(listComponent, status);
-		
-		if(hasUnsavedChanges()){
-			setHasUnsavedChangesMain(true);
-		}
-		else{
-			setHasUnsavedChangesMain(false);
+
+	public void addUpdateListStatusForChanges(ListComponent listComponent, Boolean status) {
+		this.removeListStatusForChanges(listComponent);
+		this.listStatusForChanges.put(listComponent, status);
+
+		if (this.hasUnsavedChanges()) {
+			this.setHasUnsavedChangesMain(true);
+		} else {
+			this.setHasUnsavedChangesMain(false);
 		}
 	}
-	
+
 	public boolean hasUnsavedChanges() {
 		List<Boolean> listOfStatus = new ArrayList<Boolean>();
-		
-		listOfStatus.addAll(listStatusForChanges.values());
-		
-		for(Boolean status: listOfStatus){
-			if(status){
+
+		listOfStatus.addAll(this.listStatusForChanges.values());
+
+		for (Boolean status : listOfStatus) {
+			if (status) {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 
-	public void removeListStatusForChanges(ListComponent listComponent){
-		if(listStatusForChanges.containsKey(listComponent)){
-			listStatusForChanges.remove(listComponent);
+	public void removeListStatusForChanges(ListComponent listComponent) {
+		if (this.listStatusForChanges.containsKey(listComponent)) {
+			this.listStatusForChanges.remove(listComponent);
 		}
 	}
-	
-	public void updateViewForAllLists(ModeView modeView){
+
+	public void updateViewForAllLists(ModeView modeView) {
 		List<ListComponent> listComponents = new ArrayList<ListComponent>();
-		listComponents.addAll(listStatusForChanges.keySet());
-		
-		if(modeView.equals(ModeView.LIST_VIEW)){
-			for(ListComponent listComponent : listComponents){
+		listComponents.addAll(this.listStatusForChanges.keySet());
+
+		if (modeView.equals(ModeView.LIST_VIEW)) {
+			for (ListComponent listComponent : listComponents) {
 				listComponent.changeToListView();
 			}
-		}
-		else if(modeView.equals(ModeView.INVENTORY_VIEW)){
-			for(ListComponent listComponent : listComponents){
+		} else if (modeView.equals(ModeView.INVENTORY_VIEW)) {
+			for (ListComponent listComponent : listComponents) {
 				listComponent.viewInventoryActionConfirmed();
 			}
 		}
 	}
-	
-	public void updateHasChangesForAllList(Boolean hasChanges){
+
+	public void updateHasChangesForAllList(Boolean hasChanges) {
 		List<ListComponent> listComponents = new ArrayList<ListComponent>();
-		listComponents.addAll(listStatusForChanges.keySet());
-		
-		for(ListComponent listComponent : listComponents){
+		listComponents.addAll(this.listStatusForChanges.keySet());
+
+		for (ListComponent listComponent : listComponents) {
 			listComponent.setHasUnsavedChanges(hasChanges);
 		}
 	}
 
 	public void resetListViewForCancelledChanges() {
 		List<ListComponent> listComponents = new ArrayList<ListComponent>();
-		listComponents.addAll(listStatusForChanges.keySet());
-		
-		for(ListComponent listComponent : listComponents){
-			if(listComponent.hasUnsavedChanges()){
+		listComponents.addAll(this.listStatusForChanges.keySet());
+
+		for (ListComponent listComponent : listComponents) {
+			if (listComponent.hasUnsavedChanges()) {
 				listComponent.resetListDataTableValues();
 			}
 		}
 	}
-	
+
 	public void resetInventoryViewForCancelledChanges() {
 		List<ListComponent> listComponents = new ArrayList<ListComponent>();
-		listComponents.addAll(listStatusForChanges.keySet());
-		
-		for(ListComponent listComponent : listComponents){
-			if(listComponent.hasUnsavedChanges()){
+		listComponents.addAll(this.listStatusForChanges.keySet());
+
+		for (ListComponent listComponent : listComponents) {
+			if (listComponent.hasUnsavedChanges()) {
 				listComponent.resetListInventoryTableValues();
 			}
 		}

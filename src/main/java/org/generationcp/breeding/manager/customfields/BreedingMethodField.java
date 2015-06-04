@@ -1,15 +1,13 @@
+
 package org.generationcp.breeding.manager.customfields;
 
-import com.vaadin.data.Container.ItemSetChangeEvent;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.ui.*;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Window.CloseEvent;
-import com.vaadin.ui.Window.CloseListener;
-import com.vaadin.ui.themes.BaseTheme;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.service.BreedingManagerService;
@@ -30,15 +28,25 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.vaadin.data.Container.ItemSetChangeEvent;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.PopupView;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.CloseEvent;
+import com.vaadin.ui.Window.CloseListener;
+import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
-public class BreedingMethodField extends AbsoluteLayout
-		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+public class BreedingMethodField extends AbsoluteLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 4506866031376540836L;
 	private final static Logger LOG = LoggerFactory.getLogger(BreedingMethodField.class);
@@ -106,16 +114,14 @@ public class BreedingMethodField extends AbsoluteLayout
 		this.hasDefaultValue = true;
 	}
 
-	public BreedingMethodField(Window attachToWindow, boolean isMandatory,
-			boolean hasDefaultValue) {
+	public BreedingMethodField(Window attachToWindow, boolean isMandatory, boolean hasDefaultValue) {
 		this();
 		this.attachToWindow = attachToWindow;
 		this.isMandatory = isMandatory;
 		this.hasDefaultValue = hasDefaultValue;
 	}
 
-	public BreedingMethodField(Window attachToWindow, int pixels, boolean isMandatory,
-			boolean hasDefaultValue) {
+	public BreedingMethodField(Window attachToWindow, int pixels, boolean isMandatory, boolean hasDefaultValue) {
 		this();
 		this.attachToWindow = attachToWindow;
 		this.leftIndentPixels = pixels;
@@ -132,59 +138,57 @@ public class BreedingMethodField extends AbsoluteLayout
 
 	@Override
 	public void instantiateComponents() {
-		setHeight("250px");
+		this.setHeight("250px");
 
-		captionLabel = new Label(caption);
-		captionLabel.addStyleName("bold");
+		this.captionLabel = new Label(this.caption);
+		this.captionLabel.addStyleName("bold");
 
-		breedingMethodComboBox = new ComboBox();
-		breedingMethodComboBox.setWidth("320px");
-		breedingMethodComboBox.setImmediate(true);
+		this.breedingMethodComboBox = new ComboBox();
+		this.breedingMethodComboBox.setWidth("320px");
+		this.breedingMethodComboBox.setImmediate(true);
 
-		if (isMandatory) {
-			breedingMethodComboBox.setNullSelectionAllowed(false);
-			breedingMethodComboBox.setRequired(true);
-			breedingMethodComboBox.setRequiredError("Please specify the method.");
+		if (this.isMandatory) {
+			this.breedingMethodComboBox.setNullSelectionAllowed(false);
+			this.breedingMethodComboBox.setRequired(true);
+			this.breedingMethodComboBox.setRequiredError("Please specify the method.");
 		} else {
-			breedingMethodComboBox.setNullSelectionAllowed(true);
-			breedingMethodComboBox.setInputPrompt("Please Choose");
+			this.breedingMethodComboBox.setNullSelectionAllowed(true);
+			this.breedingMethodComboBox.setInputPrompt("Please Choose");
 		}
 
-		showFavoritesCheckBox = new CheckBox();
-		showFavoritesCheckBox
-				.setCaption(messageSource.getMessage(Message.SHOW_ONLY_FAVORITE_METHODS));
-		showFavoritesCheckBox.setImmediate(true);
+		this.showFavoritesCheckBox = new CheckBox();
+		this.showFavoritesCheckBox.setCaption(this.messageSource.getMessage(Message.SHOW_ONLY_FAVORITE_METHODS));
+		this.showFavoritesCheckBox.setImmediate(true);
 
-		manageFavoritesLink = new Button();
-		manageFavoritesLink.setStyleName(BaseTheme.BUTTON_LINK);
-		manageFavoritesLink.setCaption(messageSource.getMessage(Message.MANAGE_METHODS));
+		this.manageFavoritesLink = new Button();
+		this.manageFavoritesLink.setStyleName(BaseTheme.BUTTON_LINK);
+		this.manageFavoritesLink.setCaption(this.messageSource.getMessage(Message.MANAGE_METHODS));
 
-		methodDescription = new Label();
-		methodDescription.setWidth("300px");
-		popup = new PopupView(" ? ", methodDescription);
-		popup.setStyleName("gcp-popup-view");
+		this.methodDescription = new Label();
+		this.methodDescription.setWidth("300px");
+		this.popup = new PopupView(" ? ", this.methodDescription);
+		this.popup.setStyleName("gcp-popup-view");
 
 		try {
-			programUniqueId = breedingManagerService.getCurrentProject().getUniqueID();
+			this.programUniqueId = this.breedingManagerService.getCurrentProject().getUniqueID();
 		} catch (MiddlewareQueryException e) {
-			LOG.error(e.getMessage(), e);
+			BreedingMethodField.LOG.error(e.getMessage(), e);
 		}
 	}
 
 	@Override
 	public void initializeValues() {
-		populateMethods(programUniqueId);
-		enableMethodHelp(hasDefaultValue);
-		initPopulateFavMethod(programUniqueId);
+		this.populateMethods(this.programUniqueId);
+		this.enableMethodHelp(this.hasDefaultValue);
+		this.initPopulateFavMethod(this.programUniqueId);
 	}
 
 	public boolean initPopulateFavMethod(String programUUID) {
 		boolean hasFavorite = false;
-		if (!hasDefaultValue && BreedingManagerUtil
-				.hasFavoriteMethods(germplasmDataManager, programUUID)) {
-			showFavoritesCheckBox.setValue(true);
+		if (!this.hasDefaultValue && BreedingManagerUtil.hasFavoriteMethods(this.germplasmDataManager, programUUID)) {
+			this.showFavoritesCheckBox.setValue(true);
 			hasFavorite = true;
-			populateMethods(true, programUniqueId);
+			this.populateMethods(true, this.programUniqueId);
 		}
 		return hasFavorite;
 	}
@@ -192,43 +196,47 @@ public class BreedingMethodField extends AbsoluteLayout
 	@Override
 	public void addListeners() {
 
-		breedingMethodComboBox.addListener(new ComboBox.ValueChangeListener() {
+		this.breedingMethodComboBox.addListener(new ComboBox.ValueChangeListener() {
+
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				updateComboBoxDescription();
-				changed = true;
+				BreedingMethodField.this.updateComboBoxDescription();
+				BreedingMethodField.this.changed = true;
 			}
 		});
 
-		breedingMethodComboBox.addListener(new ComboBox.ItemSetChangeListener() {
+		this.breedingMethodComboBox.addListener(new ComboBox.ItemSetChangeListener() {
+
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void containerItemSetChange(ItemSetChangeEvent event) {
-				updateComboBoxDescription();
-				changed = true;
+				BreedingMethodField.this.updateComboBoxDescription();
+				BreedingMethodField.this.changed = true;
 			}
 		});
 
-		showFavoritesCheckBox.addListener(new Property.ValueChangeListener() {
+		this.showFavoritesCheckBox.addListener(new Property.ValueChangeListener() {
+
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				populateMethods(((Boolean) event.getProperty().getValue()).equals(true),
-						programUniqueId);
-				updateComboBoxDescription();
+				BreedingMethodField.this.populateMethods(((Boolean) event.getProperty().getValue()).equals(true),
+						BreedingMethodField.this.programUniqueId);
+				BreedingMethodField.this.updateComboBoxDescription();
 			}
 		});
 
-		manageFavoritesLink.addListener(new ClickListener() {
+		this.manageFavoritesLink.addListener(new ClickListener() {
+
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				launchManageWindow();
+				BreedingMethodField.this.launchManageWindow();
 			}
 		});
 
@@ -236,16 +244,16 @@ public class BreedingMethodField extends AbsoluteLayout
 
 	@Override
 	public void layoutComponents() {
-		addComponent(captionLabel, "top:3px; left:0;");
-		addComponent(breedingMethodComboBox, "top:0; left:" + leftIndentPixels + "px");
+		this.addComponent(this.captionLabel, "top:3px; left:0;");
+		this.addComponent(this.breedingMethodComboBox, "top:0; left:" + this.leftIndentPixels + "px");
 
-		int pixels = leftIndentPixels + 325;
-		addComponent(popup, "top:0; left:" + pixels + "px");
+		int pixels = this.leftIndentPixels + 325;
+		this.addComponent(this.popup, "top:0; left:" + pixels + "px");
 
-		addComponent(showFavoritesCheckBox, "top:30px; left:" + leftIndentPixels + "px");
+		this.addComponent(this.showFavoritesCheckBox, "top:30px; left:" + this.leftIndentPixels + "px");
 
-		pixels = leftIndentPixels + 220;
-		addComponent(manageFavoritesLink, "top:33px; left:" + pixels + "px");
+		pixels = this.leftIndentPixels + 220;
+		this.addComponent(this.manageFavoritesLink, "top:33px; left:" + pixels + "px");
 	}
 
 	@Override
@@ -254,14 +262,14 @@ public class BreedingMethodField extends AbsoluteLayout
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		instantiateComponents();
-		initializeValues();
-		addListeners();
-		layoutComponents();
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
 	}
 
 	public ComboBox getBreedingMethodComboBox() {
-		return breedingMethodComboBox;
+		return this.breedingMethodComboBox;
 	}
 
 	public void setBreedingMethodComboBox(ComboBox breedingMethodComboBox) {
@@ -269,19 +277,19 @@ public class BreedingMethodField extends AbsoluteLayout
 	}
 
 	public void setValue(String value) {
-		breedingMethodComboBox.select(value);
+		this.breedingMethodComboBox.select(value);
 	}
 
 	public String getValue() {
-		return (String) breedingMethodComboBox.getValue();
+		return (String) this.breedingMethodComboBox.getValue();
 	}
 
 	public void validate() throws InvalidValueException {
-		breedingMethodComboBox.validate();
+		this.breedingMethodComboBox.validate();
 	}
 
 	public boolean isChanged() {
-		return changed;
+		return this.changed;
 	}
 
 	public void setChanged(boolean changed) {
@@ -289,103 +297,105 @@ public class BreedingMethodField extends AbsoluteLayout
 	}
 
 	private void updateComboBoxDescription() {
-		Object breedingMethodComboBoxValue = breedingMethodComboBox.getValue();
+		Object breedingMethodComboBoxValue = this.breedingMethodComboBox.getValue();
 
 		final Boolean methodSelected = breedingMethodComboBoxValue != null;
-		enableMethodHelp(methodSelected);
+		this.enableMethodHelp(methodSelected);
 
 		if (methodSelected) {
-			methodDescription.setValue(methodMap.get(breedingMethodComboBoxValue.toString()));
+			this.methodDescription.setValue(this.methodMap.get(breedingMethodComboBoxValue.toString()));
 		}
 	}
 
 	private void enableMethodHelp(final Boolean enable) {
-		methodDescription.setEnabled(enable);
-		popup.setEnabled(enable);
+		this.methodDescription.setEnabled(enable);
+		this.popup.setEnabled(enable);
 	}
 
 	private Map<String, String> populateMethods(String programUUID) {
 		try {
-			methods = germplasmDataManager.getMethodsByUniqueID(programUUID);
+			this.methods = this.germplasmDataManager.getMethodsByUniqueID(programUUID);
 		} catch (MiddlewareQueryException e) {
-			LOG.error(e.getMessage(), e);
+			BreedingMethodField.LOG.error(e.getMessage(), e);
 		}
 
-		if (methods == null) {
-			methods = new ArrayList<Method>();
+		if (this.methods == null) {
+			this.methods = new ArrayList<Method>();
 		}
 
-		methodMap = new HashMap<String, String>();
+		this.methodMap = new HashMap<String, String>();
 
 		Method defaultMethod = null;
-		for (Method method : methods) {
-			breedingMethodComboBox.addItem(method.getMid());
-			breedingMethodComboBox.setItemCaption(method.getMid(), method.getMname());
+		for (Method method : this.methods) {
+			this.breedingMethodComboBox.addItem(method.getMid());
+			this.breedingMethodComboBox.setItemCaption(method.getMid(), method.getMname());
 
-			if (DEFAULT_METHOD.equalsIgnoreCase(method.getMcode())) {
+			if (BreedingMethodField.DEFAULT_METHOD.equalsIgnoreCase(method.getMcode())) {
 				defaultMethod = method;
 			}
 
-			methodMap.put(method.getMid().toString(), method.getMdesc());
+			this.methodMap.put(method.getMid().toString(), method.getMdesc());
 		}
 
-		if (hasDefaultValue) {
+		if (this.hasDefaultValue) {
 			if (defaultMethod != null) {
-				breedingMethodComboBox.setValue(defaultMethod.getMid());
-				methodDescription.setValue(defaultMethod.getMdesc());
+				this.breedingMethodComboBox.setValue(defaultMethod.getMid());
+				this.methodDescription.setValue(defaultMethod.getMdesc());
 			} else {
-				//if the list of methods has no default method, just select the first item from the list
-				if (breedingMethodComboBox.getValue() == null && methods.size() > 0
-						&& methods.get(0) != null) {
-					breedingMethodComboBox.setValue(methods.get(0).getMid());
-					breedingMethodComboBox.setDescription(methods.get(0).getMdesc());
+				// if the list of methods has no default method, just select the first item from the list
+				if (this.breedingMethodComboBox.getValue() == null && this.methods.size() > 0 && this.methods.get(0) != null) {
+					this.breedingMethodComboBox.setValue(this.methods.get(0).getMid());
+					this.breedingMethodComboBox.setDescription(this.methods.get(0).getMdesc());
 				}
 			}
 		}
 
-		return methodMap;
+		return this.methodMap;
 	}
 
 	private void populateMethods(boolean showOnlyFavorites, String programUUID) {
-		breedingMethodComboBox.removeAllItems();
+		this.breedingMethodComboBox.removeAllItems();
 		if (showOnlyFavorites) {
 			try {
-				BreedingManagerUtil.populateWithFavoriteMethods(workbenchDataManager,
-						germplasmDataManager, breedingMethodComboBox, null, programUUID);
+				BreedingManagerUtil.populateWithFavoriteMethods(this.workbenchDataManager, this.germplasmDataManager,
+						this.breedingMethodComboBox, null, programUUID);
 			} catch (MiddlewareQueryException e) {
-				LOG.error(e.getMessage(), e);
-				MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR),
-						"Error getting favorite methods!");
+				BreedingMethodField.LOG.error(e.getMessage(), e);
+				MessageNotifier
+						.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR), "Error getting favorite methods!");
 			}
 		} else {
-			populateMethods(programUUID);
+			this.populateMethods(programUUID);
 		}
 
 	}
 
 	private void launchManageWindow() {
 		try {
-			Project project = contextUtil.getProjectInContext();
-			Window window = attachToWindow != null ? attachToWindow : getWindow();
-			Window manageFavoriteMethodsWindow = Util
-					.launchMethodManager(workbenchDataManager, project.getProjectId(), window,
-							messageSource.getMessage(Message.MANAGE_METHODS));
+			Project project = this.contextUtil.getProjectInContext();
+			Window window = this.attachToWindow != null ? this.attachToWindow : this.getWindow();
+			Window manageFavoriteMethodsWindow =
+					Util.launchMethodManager(this.workbenchDataManager, project.getProjectId(), window,
+							this.messageSource.getMessage(Message.MANAGE_METHODS));
 			manageFavoriteMethodsWindow.addListener(new CloseListener() {
+
 				private static final long serialVersionUID = 1L;
 
 				@Override
 				public void windowClose(CloseEvent e) {
-					Object lastValue = breedingMethodComboBox.getValue();
-					populateMethods(((Boolean) showFavoritesCheckBox.getValue()).equals(true),
-							programUniqueId);
-					breedingMethodComboBox.setValue(lastValue);
+					Object lastValue = BreedingMethodField.this.breedingMethodComboBox.getValue();
+					BreedingMethodField.this.populateMethods(
+							((Boolean) BreedingMethodField.this.showFavoritesCheckBox.getValue()).equals(true),
+							BreedingMethodField.this.programUniqueId);
+					BreedingMethodField.this.breedingMethodComboBox.setValue(lastValue);
 				}
 			});
 		} catch (MiddlewareQueryException e) {
-			LOG.error("Error on manageFavoriteMethods click", e);
+			BreedingMethodField.LOG.error("Error on manageFavoriteMethods click", e);
 		}
 	}
 
+	@Override
 	public void setCaption(String caption) {
 		this.caption = caption;
 		if (this.captionLabel != null) {
@@ -394,11 +404,11 @@ public class BreedingMethodField extends AbsoluteLayout
 	}
 
 	protected int getLeftIndentPixels() {
-		return leftIndentPixels;
+		return this.leftIndentPixels;
 	}
 
 	public SimpleResourceBundleMessageSource getMessageSource() {
-		return messageSource;
+		return this.messageSource;
 	}
 
 	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
@@ -410,7 +420,7 @@ public class BreedingMethodField extends AbsoluteLayout
 	}
 
 	public GermplasmDataManager getGermplasmDataManager() {
-		return germplasmDataManager;
+		return this.germplasmDataManager;
 	}
 
 	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
@@ -418,15 +428,14 @@ public class BreedingMethodField extends AbsoluteLayout
 	}
 
 	public boolean isHasDefaultValue() {
-		return hasDefaultValue;
+		return this.hasDefaultValue;
 	}
 
 	public void setHasDefaultValue(boolean hasDefaultValue) {
 		this.hasDefaultValue = hasDefaultValue;
 	}
 
-	public void setBreedingManagerService(
-			BreedingManagerService breedingManagerService) {
+	public void setBreedingManagerService(BreedingManagerService breedingManagerService) {
 		this.breedingManagerService = breedingManagerService;
 	}
 }

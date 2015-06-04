@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.listimport.validator;
 
 import java.util.List;
@@ -15,45 +16,47 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 @Configurable
 public class StockIDValidator {
+
 	private static final Logger LOG = LoggerFactory.getLogger(StockIDValidator.class);
-	
+
 	@Resource
 	private InventoryDataManager inventoryDataManager;
-	
-	private String header;
-	private ImportedGermplasmList importedGermplasmList;
-	
-	public StockIDValidator(String header, ImportedGermplasmList importedGermplasmList){
+
+	private final String header;
+	private final ImportedGermplasmList importedGermplasmList;
+
+	public StockIDValidator(String header, ImportedGermplasmList importedGermplasmList) {
 		this.header = header;
 		this.importedGermplasmList = importedGermplasmList;
 	}
-	
-	public void validate() throws FileParsingException{
-		validateForDuplicateStockIds();
-		validateForMissingStockIDValues();
+
+	public void validate() throws FileParsingException {
+		this.validateForDuplicateStockIds();
+		this.validateForMissingStockIDValues();
 	}
-	
-	private void validateForDuplicateStockIds() throws FileParsingException{
-		String possibleDuplicateStockId = importedGermplasmList.getDuplicateStockIdIfExists();
+
+	private void validateForDuplicateStockIds() throws FileParsingException {
+		String possibleDuplicateStockId = this.importedGermplasmList.getDuplicateStockIdIfExists();
 		if (!"".equals(possibleDuplicateStockId.trim())) {
-			throw new FileParsingException("GERMPLASM_PARSE_DUPLICATE_STOCK_ID", 0, possibleDuplicateStockId, header);
+			throw new FileParsingException("GERMPLASM_PARSE_DUPLICATE_STOCK_ID", 0, possibleDuplicateStockId, this.header);
 		}
 
 		try {
-			List<String> possibleExistingDBStockIds = inventoryDataManager.getSimilarStockIds(importedGermplasmList.getStockIdsAsList());
+			List<String> possibleExistingDBStockIds =
+					this.inventoryDataManager.getSimilarStockIds(this.importedGermplasmList.getStockIdsAsList());
 			if (!possibleExistingDBStockIds.isEmpty()) {
-				throw new FileParsingException("GERMPLASM_PARSE_DUPLICATE_DB_STOCK_ID",0,
-						StringUtils.abbreviate(StringUtils.join(possibleExistingDBStockIds, " "),20), header);
+				throw new FileParsingException("GERMPLASM_PARSE_DUPLICATE_DB_STOCK_ID", 0, StringUtils.abbreviate(
+						StringUtils.join(possibleExistingDBStockIds, " "), 20), this.header);
 			}
 		} catch (MiddlewareQueryException e) {
-			LOG.error(e.getMessage(), e);
+			StockIDValidator.LOG.error(e.getMessage(), e);
 			throw new FileParsingException(e.getMessage());
 		}
 	}
-	
-	private void validateForMissingStockIDValues() throws FileParsingException{
-		if (importedGermplasmList.hasMissingStockIDValues()){
-			throw new FileParsingException("GERMPLSM_PARSE_GID_MISSING_STOCK_ID_VALUE",0,"", header);
+
+	private void validateForMissingStockIDValues() throws FileParsingException {
+		if (this.importedGermplasmList.hasMissingStockIDValues()) {
+			throw new FileParsingException("GERMPLSM_PARSE_GID_MISSING_STOCK_ID_VALUE", 0, "", this.header);
 		}
 	}
 

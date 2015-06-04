@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.customcomponent.listinventory;
 
 import java.util.List;
@@ -26,81 +27,83 @@ import com.vaadin.ui.themes.BaseTheme;
 public class ListManagerInventoryTable extends ListInventoryTable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ListManagerInventoryTable.class);
-	
+
 	private static final long serialVersionUID = 7827387488704418083L;
 	public static final String INVENTORY_TABLE_DATA = "BuildNewListInventoryTableData";
-	
-	private ListManagerMain listManagerMain;
-	private InventoryTableDropHandler inventoryTableDropHandler;
-	private Boolean enableDragSource;
-	private Boolean enableDropHandler;
 
-	public ListManagerInventoryTable(ListManagerMain listManagerMain,
-			Integer listId, Boolean enableDragSource, Boolean enableDropHandler) {
+	private final ListManagerMain listManagerMain;
+	private InventoryTableDropHandler inventoryTableDropHandler;
+	private final Boolean enableDragSource;
+	private final Boolean enableDropHandler;
+
+	public ListManagerInventoryTable(ListManagerMain listManagerMain, Integer listId, Boolean enableDragSource, Boolean enableDropHandler) {
 		super(listId);
 		this.listManagerMain = listManagerMain;
 		this.enableDragSource = enableDragSource;
 		this.enableDropHandler = enableDropHandler;
 	}
-	
+
 	@Override
 	public void instantiateComponents() {
 		super.instantiateComponents();
-		
-		listInventoryTable.setData(INVENTORY_TABLE_DATA);
-		setDragSource();
-		setDropHandler();
+
+		this.listInventoryTable.setData(ListManagerInventoryTable.INVENTORY_TABLE_DATA);
+		this.setDragSource();
+		this.setDropHandler();
 	}
-	
+
 	@Override
-	public void displayInventoryDetails(List<GermplasmListData> inventoryDetails){
-		
-		listInventoryTable.removeAllItems();
-		for(GermplasmListData inventoryDetail : inventoryDetails){
-			
+	public void displayInventoryDetails(List<GermplasmListData> inventoryDetails) {
+
+		this.listInventoryTable.removeAllItems();
+		for (GermplasmListData inventoryDetail : inventoryDetails) {
+
 			Integer entryId = inventoryDetail.getEntryId();
 			String designation = inventoryDetail.getDesignation();
-			
+
 			ListDataInventory listDataInventory = inventoryDetail.getInventoryInfo();
 			@SuppressWarnings("unchecked")
-			List<ListEntryLotDetails> lotDetails = (List<ListEntryLotDetails>)listDataInventory.getLotRows();
-			
-			if(lotDetails!=null){
-				for(ListEntryLotDetails lotDetail : lotDetails){
-					Item newItem = listInventoryTable.addItem(lotDetail);
-					
-					CheckBox itemCheckBox = new CheckBox();
-			        itemCheckBox.setData(lotDetail);
-			        itemCheckBox.setImmediate(true);
-			   		itemCheckBox.addListener(new ClickListener() {
-			 			private static final long serialVersionUID = 1L;
-			 			@Override
-			 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-			 				CheckBox itemCheckBox = (CheckBox) event.getButton();
-			 				toggleSelectOnLotEntries(itemCheckBox);
-			 			}
+			List<ListEntryLotDetails> lotDetails = (List<ListEntryLotDetails>) listDataInventory.getLotRows();
 
-			 		});
-					
-			   		GermplasmListData germplasmListData = retrieveGermplasmListDataUsingLrecId(lotDetail);
-			   		
-			   		Button desigButton = new Button(String.format("%s", designation), 
-			   					new GidLinkButtonClickListener(listManagerMain,germplasmListData.getGid().toString(), true, true));
-		            desigButton.setStyleName(BaseTheme.BUTTON_LINK);
-		            
-		            Location locationOfLot = lotDetail.getLocationOfLot();
-		            String location = "";
-		            if (locationOfLot != null){
-		            	location = locationOfLot.getLname();
-		            }
-		            
-		            Term scaleOfLot = lotDetail.getScaleOfLot();
-		            String scale = "";
-		            if (scaleOfLot != null){
-		            	scale = scaleOfLot.getName();
-		            }
-			   		
-			   		newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(itemCheckBox);
+			if (lotDetails != null) {
+				for (ListEntryLotDetails lotDetail : lotDetails) {
+					Item newItem = this.listInventoryTable.addItem(lotDetail);
+
+					CheckBox itemCheckBox = new CheckBox();
+					itemCheckBox.setData(lotDetail);
+					itemCheckBox.setImmediate(true);
+					itemCheckBox.addListener(new ClickListener() {
+
+						private static final long serialVersionUID = 1L;
+
+						@Override
+						public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+							CheckBox itemCheckBox = (CheckBox) event.getButton();
+							ListManagerInventoryTable.this.toggleSelectOnLotEntries(itemCheckBox);
+						}
+
+					});
+
+					GermplasmListData germplasmListData = this.retrieveGermplasmListDataUsingLrecId(lotDetail);
+
+					Button desigButton =
+							new Button(String.format("%s", designation), new GidLinkButtonClickListener(this.listManagerMain,
+									germplasmListData.getGid().toString(), true, true));
+					desigButton.setStyleName(BaseTheme.BUTTON_LINK);
+
+					Location locationOfLot = lotDetail.getLocationOfLot();
+					String location = "";
+					if (locationOfLot != null) {
+						location = locationOfLot.getLname();
+					}
+
+					Term scaleOfLot = lotDetail.getScaleOfLot();
+					String scale = "";
+					if (scaleOfLot != null) {
+						scale = scaleOfLot.getName();
+					}
+
+					newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(itemCheckBox);
 					newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entryId);
 					newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(desigButton);
 					newItem.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).setValue(location);
@@ -110,52 +113,53 @@ public class ListManagerInventoryTable extends ListInventoryTable {
 					newItem.getItemProperty(ColumnLabels.RESERVED.getName()).setValue(lotDetail.getReservedTotalForEntry());
 					newItem.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(0);
 					newItem.getItemProperty(ColumnLabels.COMMENT.getName()).setValue(lotDetail.getCommentOfLot());
-					
+
 					String stockIds = lotDetail.getStockIds();
 					Label stockIdsLbl = new Label(stockIds);
 					stockIdsLbl.setDescription(stockIds);
 					newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdsLbl);
-					
+
 					newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotDetail.getLotId());
 				}
 			}
 		}
 	}
 
-	protected GermplasmListData retrieveGermplasmListDataUsingLrecId(
-			ListEntryLotDetails lotDetail) {
+	protected GermplasmListData retrieveGermplasmListDataUsingLrecId(ListEntryLotDetails lotDetail) {
 		try {
-			return germplasmListManager.getGermplasmListDataByListIdAndLrecId(listId, lotDetail.getId());
+			return this.germplasmListManager.getGermplasmListDataByListIdAndLrecId(this.listId, lotDetail.getId());
 		} catch (MiddlewareQueryException e) {
-			LOG.error(e.getMessage(), e);
+			ListManagerInventoryTable.LOG.error(e.getMessage(), e);
 		}
 		return null;
 	}
-	
-	protected void toggleSelectOnLotEntries(
-			CheckBox itemCheckBox) {
-		if(((Boolean) itemCheckBox.getValue()).equals(true)){
-				listInventoryTable.select(itemCheckBox.getData());
-			} else {
-				listInventoryTable.unselect(itemCheckBox.getData());
-			}
+
+	@Override
+	protected void toggleSelectOnLotEntries(CheckBox itemCheckBox) {
+		if (((Boolean) itemCheckBox.getValue()).equals(true)) {
+			this.listInventoryTable.select(itemCheckBox.getData());
+		} else {
+			this.listInventoryTable.unselect(itemCheckBox.getData());
+		}
 	}
-	
-	public void setDropHandler(){
-		inventoryTableDropHandler = new InventoryTableDropHandler(listManagerMain, germplasmDataManager, germplasmListManager, inventoryDataManager, pedigreeService, this.crossExpansionProperties, listInventoryTable);
-		if(enableDropHandler) {
-            listInventoryTable.setDropHandler(inventoryTableDropHandler);
-        }
+
+	public void setDropHandler() {
+		this.inventoryTableDropHandler =
+				new InventoryTableDropHandler(this.listManagerMain, this.germplasmDataManager, this.germplasmListManager,
+						this.inventoryDataManager, this.pedigreeService, this.crossExpansionProperties, this.listInventoryTable);
+		if (this.enableDropHandler) {
+			this.listInventoryTable.setDropHandler(this.inventoryTableDropHandler);
+		}
 	}
-	
-	public void setDragSource(){
-		if(enableDragSource) {
-            listInventoryTable.setDragMode(TableDragMode.ROW);
-        }
+
+	public void setDragSource() {
+		if (this.enableDragSource) {
+			this.listInventoryTable.setDragMode(TableDragMode.ROW);
+		}
 	}
-	
-	public InventoryTableDropHandler getInventoryTableDropHandler(){
-		return inventoryTableDropHandler;
+
+	public InventoryTableDropHandler getInventoryTableDropHandler() {
+		return this.inventoryTableDropHandler;
 	}
 
 }

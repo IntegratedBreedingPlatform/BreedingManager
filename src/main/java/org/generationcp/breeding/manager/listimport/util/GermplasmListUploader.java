@@ -1,4 +1,9 @@
+
 package org.generationcp.breeding.manager.listimport.util;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -12,28 +17,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.easyuploads.FileFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-
 @Configurable
 public class GermplasmListUploader implements FileFactory {
-	private static final Logger LOG = LoggerFactory.getLogger(GermplasmListUploader.class);
-	private static final String TEMP_FILE_DIR = new File(
-			System.getProperty("java.io.tmpdir")).getPath();
 
+	private static final Logger LOG = LoggerFactory.getLogger(GermplasmListUploader.class);
+	private static final String TEMP_FILE_DIR = new File(System.getProperty("java.io.tmpdir")).getPath();
 
 	ImportedGermplasmList importedGermplasmList;
 	GermplasmListParser germplasmListParser;
 
-
 	private String originalFilename;
 	private String tempFileName;
 
-	@Override public File createFile(String fileName, String mimeType) {
-		File f = new File(TEMP_FILE_DIR + "/" + fileName);
-		tempFileName = f.getAbsolutePath();
-		originalFilename = fileName;
+	@Override
+	public File createFile(String fileName, String mimeType) {
+		File f = new File(GermplasmListUploader.TEMP_FILE_DIR + "/" + fileName);
+		this.tempFileName = f.getAbsolutePath();
+		this.originalFilename = fileName;
 
 		return f;
 	}
@@ -42,41 +42,41 @@ public class GermplasmListUploader implements FileFactory {
 	 * Adopter methods, left over from legacy parser
 	 */
 	public boolean hasInventoryAmountOnly() {
-		return germplasmListParser.hasInventoryAmountOnly();
+		return this.germplasmListParser.hasInventoryAmountOnly();
 	}
 
 	public boolean hasInventoryAmount() {
-		return germplasmListParser.hasInventoryAmount();
+		return this.germplasmListParser.hasInventoryAmount();
 	}
 
 	/*
-     * Returns true if variate property = "INVENTORY AMOUNT" or any of its synonyms
-     */
+	 * Returns true if variate property = "INVENTORY AMOUNT" or any of its synonyms
+	 */
 	public boolean isSeedAmountVariable(ImportedVariate variate) {
-		return germplasmListParser.isSeedAmountVariable(variate);
+		return this.germplasmListParser.isSeedAmountVariable(variate);
 	}
 
 	public boolean hasStockIdFactor() {
-		return germplasmListParser.hasStockIdFactor();
+		return this.germplasmListParser.hasStockIdFactor();
 	}
 
 	public boolean importFileIsAdvanced() {
-		return germplasmListParser.importFileIsAdvanced();
+		return this.germplasmListParser.importFileIsAdvanced();
 	}
 
 	public void doParseWorkbook() throws FileParsingException {
-		germplasmListParser = new GermplasmListParser();
-		germplasmListParser.setOriginalFilename(originalFilename);
+		this.germplasmListParser = new GermplasmListParser();
+		this.germplasmListParser.setOriginalFilename(this.originalFilename);
 
-		importedGermplasmList = germplasmListParser.parseWorkbook(createWorkbook(tempFileName),null);
+		this.importedGermplasmList = this.germplasmListParser.parseWorkbook(this.createWorkbook(this.tempFileName), null);
 	}
 
 	public String hasWarnings() {
-		return germplasmListParser.getNoInventoryWarning();
+		return this.germplasmListParser.getNoInventoryWarning();
 	}
 
 	public ImportedGermplasmList getImportedGermplasmList() {
-		return importedGermplasmList;
+		return this.importedGermplasmList;
 	}
 
 	public Workbook createWorkbook(String tempFileName) throws InvalidFileTypeImportException {
@@ -88,6 +88,6 @@ public class GermplasmListUploader implements FileFactory {
 	}
 
 	public String getOriginalFilename() {
-		return originalFilename;
+		return this.originalFilename;
 	}
 }

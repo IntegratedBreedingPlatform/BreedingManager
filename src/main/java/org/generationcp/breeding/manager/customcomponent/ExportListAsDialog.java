@@ -1,8 +1,8 @@
+
 package org.generationcp.breeding.manager.customcomponent;
 
 import java.io.File;
 
-import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
@@ -36,8 +36,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class ExportListAsDialog extends BaseSubWindow implements InitializingBean,
-						InternationalizableComponent, BreedingManagerLayout {
+public class ExportListAsDialog extends BaseSubWindow implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final String XLS_EXT = ".xls";
 
@@ -50,7 +49,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	private static final String XLS_FORMAT = "Excel";
 
 	private static final long serialVersionUID = -4214986909789479904L;
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(ExportListAsDialog.class);
 
 	private VerticalLayout mainLayout;
@@ -59,204 +58,204 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	private ComboBox formatOptionsCbx;
 	private Button finishButton;
 	private Button cancelButton;
-	
-	private Component source;
-	private GermplasmList germplasmList;
+
+	private final Component source;
+	private final GermplasmList germplasmList;
 	private GermplasmListExporter listExporter;
-	
-	private Table listDataTable;
-	
+
+	private final Table listDataTable;
+
 	public String exportWarningMessage = "";
 	private static final String USER_HOME = "user.home";
-	public static final String TEMP_FILENAME = System.getProperty( USER_HOME ) + "/temp.csv";
-	
+	public static final String TEMP_FILENAME = System.getProperty(ExportListAsDialog.USER_HOME) + "/temp.csv";
+
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
-	
-	public ExportListAsDialog(Component source, GermplasmList germplasmList, Table listDataTable){
+
+	public ExportListAsDialog(Component source, GermplasmList germplasmList, Table listDataTable) {
 		this.source = source;
 		this.germplasmList = germplasmList;
 		this.listDataTable = listDataTable;
 	}
-	
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		instantiateComponents();
-		initializeValues();
-		addListeners();
-		layoutComponents();
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
 	}
 
 	@Override
 	public void instantiateComponents() {
-		exportWarningMessage = messageSource.getMessage(Message.EXPORT_WARNING_MESSAGE);
-		
-		exportFormalLbl = new Label(messageSource.getMessage(Message.EXPORT_FORMAT).toUpperCase());
-		exportFormalLbl.setStyleName(Bootstrap.Typography.H2.styleName());
-		
-		chooseAnExportLbl = new Label(messageSource.getMessage(Message.CHOOSE_AN_EXPORT_FORMAT) + ":");
-		
-		formatOptionsCbx = new ComboBox();
-		formatOptionsCbx.setImmediate(true);
-		formatOptionsCbx.setNullSelectionAllowed(false);
-		formatOptionsCbx.setTextInputAllowed(false);
-		formatOptionsCbx.setWidth("100px");
-		
-		cancelButton = new Button(messageSource.getMessage(Message.CANCEL));
-		cancelButton.setWidth("80px");
-		
-		finishButton = new Button(messageSource.getMessage(Message.FINISH));
-		finishButton.setWidth("80px");
-		finishButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-		
-		listExporter = new GermplasmListExporter(germplasmList.getId());
+		this.exportWarningMessage = this.messageSource.getMessage(Message.EXPORT_WARNING_MESSAGE);
+
+		this.exportFormalLbl = new Label(this.messageSource.getMessage(Message.EXPORT_FORMAT).toUpperCase());
+		this.exportFormalLbl.setStyleName(Bootstrap.Typography.H2.styleName());
+
+		this.chooseAnExportLbl = new Label(this.messageSource.getMessage(Message.CHOOSE_AN_EXPORT_FORMAT) + ":");
+
+		this.formatOptionsCbx = new ComboBox();
+		this.formatOptionsCbx.setImmediate(true);
+		this.formatOptionsCbx.setNullSelectionAllowed(false);
+		this.formatOptionsCbx.setTextInputAllowed(false);
+		this.formatOptionsCbx.setWidth("100px");
+
+		this.cancelButton = new Button(this.messageSource.getMessage(Message.CANCEL));
+		this.cancelButton.setWidth("80px");
+
+		this.finishButton = new Button(this.messageSource.getMessage(Message.FINISH));
+		this.finishButton.setWidth("80px");
+		this.finishButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+
+		this.listExporter = new GermplasmListExporter(this.germplasmList.getId());
 	}
 
 	@Override
 	public void initializeValues() {
-		formatOptionsCbx.addItem(XLS_FORMAT);
-		formatOptionsCbx.addItem(CSV_FORMAT);
-		
-		//default value
-		formatOptionsCbx.setValue(XLS_FORMAT);
+		this.formatOptionsCbx.addItem(ExportListAsDialog.XLS_FORMAT);
+		this.formatOptionsCbx.addItem(ExportListAsDialog.CSV_FORMAT);
+
+		// default value
+		this.formatOptionsCbx.setValue(ExportListAsDialog.XLS_FORMAT);
 	}
 
 	@Override
 	public void addListeners() {
-		cancelButton.addListener(new CloseWindowAction());
-		 
-		finishButton.addListener(new Button.ClickListener() {
+		this.cancelButton.addListener(new CloseWindowAction());
+
+		this.finishButton.addListener(new Button.ClickListener() {
+
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				exportListAction(listDataTable);
+				ExportListAsDialog.this.exportListAction(ExportListAsDialog.this.listDataTable);
 			}
 		});
 	}
 
 	protected void exportListAction(Table table) {
-		if(germplasmList.isLockedList()){
-			showWarningMessage(table);
-			//do the export
-			if(XLS_FORMAT.equalsIgnoreCase(formatOptionsCbx.getValue().toString())){
-				exportListAsXLS(table);
-			} else if(CSV_FORMAT.equalsIgnoreCase(formatOptionsCbx.getValue().toString())){
-				exportListAsCSV(table);
+		if (this.germplasmList.isLockedList()) {
+			this.showWarningMessage(table);
+			// do the export
+			if (ExportListAsDialog.XLS_FORMAT.equalsIgnoreCase(this.formatOptionsCbx.getValue().toString())) {
+				this.exportListAsXLS(table);
+			} else if (ExportListAsDialog.CSV_FORMAT.equalsIgnoreCase(this.formatOptionsCbx.getValue().toString())) {
+				this.exportListAsCSV(table);
 			}
-		 } else {
-            MessageNotifier.showError(this.getWindow()
-                    , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)
-                    , messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED));
-        }
+		} else {
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST),
+					this.messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED));
+		}
 	}
 
 	@Override
 	public void layoutComponents() {
-		//window formatting
-		this.setCaption(messageSource.getMessage(Message.EXPORT_GERMPLASM_LIST));
+		// window formatting
+		this.setCaption(this.messageSource.getMessage(Message.EXPORT_GERMPLASM_LIST));
 		this.addStyleName(Reindeer.WINDOW_LIGHT);
 		this.setModal(true);
 		this.setResizable(false);
 		this.setHeight("225px");
 		this.setWidth("380px");
-		
+
 		HorizontalLayout fieldLayout = new HorizontalLayout();
 		fieldLayout.setSpacing(true);
-		fieldLayout.addComponent(chooseAnExportLbl);
-		fieldLayout.addComponent(formatOptionsCbx);
-		
+		fieldLayout.addComponent(this.chooseAnExportLbl);
+		fieldLayout.addComponent(this.formatOptionsCbx);
+
 		HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setHeight("50px");
 		buttonLayout.setWidth("100%");
 		buttonLayout.setSpacing(true);
-		buttonLayout.addComponent(cancelButton);
-		buttonLayout.addComponent(finishButton);
-		buttonLayout.setComponentAlignment(cancelButton, Alignment.BOTTOM_RIGHT);
-		buttonLayout.setComponentAlignment(finishButton, Alignment.BOTTOM_LEFT);
-		
-		mainLayout = new VerticalLayout();
-		mainLayout.setSpacing(true);
-		mainLayout.addComponent(exportFormalLbl);
-		mainLayout.addComponent(fieldLayout);
-		mainLayout.addComponent(buttonLayout);
-		
-		this.addComponent(mainLayout);
+		buttonLayout.addComponent(this.cancelButton);
+		buttonLayout.addComponent(this.finishButton);
+		buttonLayout.setComponentAlignment(this.cancelButton, Alignment.BOTTOM_RIGHT);
+		buttonLayout.setComponentAlignment(this.finishButton, Alignment.BOTTOM_LEFT);
+
+		this.mainLayout = new VerticalLayout();
+		this.mainLayout.setSpacing(true);
+		this.mainLayout.addComponent(this.exportFormalLbl);
+		this.mainLayout.addComponent(fieldLayout);
+		this.mainLayout.addComponent(buttonLayout);
+
+		this.addComponent(this.mainLayout);
 	}
 
 	@Override
 	public void updateLabels() {
-		//do nothing
+		// do nothing
 	}
-	
+
 	protected void exportListAsCSV(Table table) {
-        try {
-        	
-        	
-            listExporter.exportGermplasmListCSV(TEMP_FILENAME, table);
-            FileDownloadResource fileDownloadResource = createFileDownloadResource();
-            String listName = germplasmList.getName();
-            fileDownloadResource.setFilename(FileDownloadResource.getDownloadFileName(listName, BreedingManagerUtil.getApplicationRequest()).replace(" ", "_") + CSV_EXT);
-            source.getWindow().open(fileDownloadResource);
-            //must figure out other way to clean-up file because deleting it here makes it unavailable for download            
-            
-        } catch (GermplasmListExporterException e) {
-            LOG.error(messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
-            MessageNotifier.showError(this.getWindow()
-                        , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)    
-                        , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO));
-        }
-		
+		try {
+
+			this.listExporter.exportGermplasmListCSV(ExportListAsDialog.TEMP_FILENAME, table);
+			FileDownloadResource fileDownloadResource = this.createFileDownloadResource();
+			String listName = this.germplasmList.getName();
+			fileDownloadResource.setFilename(FileDownloadResource
+					.getDownloadFileName(listName, BreedingManagerUtil.getApplicationRequest()).replace(" ", "_")
+					+ ExportListAsDialog.CSV_EXT);
+			this.source.getWindow().open(fileDownloadResource);
+			// must figure out other way to clean-up file because deleting it here makes it unavailable for download
+
+		} catch (GermplasmListExporterException e) {
+			ExportListAsDialog.LOG.error(this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e.getMessage() + ". "
+					+ this.messageSource.getMessage(Message.ERROR_REPORT_TO));
+		}
+
 	}
-	
-	protected void exportListAsXLS(Table table){
-        try {
-            listExporter.exportGermplasmListXLS(TEMP_FILENAME,table);
-            FileDownloadResource fileDownloadResource = createFileDownloadResource();
-            String listName = germplasmList.getName();            
-            fileDownloadResource.setFilename(FileDownloadResource.getDownloadFileName(listName, BreedingManagerUtil.getApplicationRequest()).replace(" ", "_") + XLS_EXT);            
-            source.getWindow().open(fileDownloadResource);
-            //must figure out other way to clean-up file because deleting it here makes it unavailable for download
-        } catch (GermplasmListExporterException | MiddlewareQueryException e) {
-            LOG.error(messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
-            MessageNotifier.showError(this.getWindow()
-                        , messageSource.getMessage(Message.ERROR_EXPORTING_LIST)    
-                        , e.getMessage() + ". " + messageSource.getMessage(Message.ERROR_REPORT_TO));
-        }
+
+	protected void exportListAsXLS(Table table) {
+		try {
+			this.listExporter.exportGermplasmListXLS(ExportListAsDialog.TEMP_FILENAME, table);
+			FileDownloadResource fileDownloadResource = this.createFileDownloadResource();
+			String listName = this.germplasmList.getName();
+			fileDownloadResource.setFilename(FileDownloadResource
+					.getDownloadFileName(listName, BreedingManagerUtil.getApplicationRequest()).replace(" ", "_")
+					+ ExportListAsDialog.XLS_EXT);
+			this.source.getWindow().open(fileDownloadResource);
+			// must figure out other way to clean-up file because deleting it here makes it unavailable for download
+		} catch (GermplasmListExporterException | MiddlewareQueryException e) {
+			ExportListAsDialog.LOG.error(this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e.getMessage() + ". "
+					+ this.messageSource.getMessage(Message.ERROR_REPORT_TO));
+		}
 	}
 
 	protected FileDownloadResource createFileDownloadResource() {
-		FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(TEMP_FILENAME), source.getApplication());
+		FileDownloadResource fileDownloadResource =
+				new FileDownloadResource(new File(ExportListAsDialog.TEMP_FILENAME), this.source.getApplication());
 		return fileDownloadResource;
 	}
 
 	protected void showWarningMessage(Table table) {
-		if(isARequiredColumnHidden(table)){
-			showMessage(this.exportWarningMessage);
+		if (this.isARequiredColumnHidden(table)) {
+			this.showMessage(this.exportWarningMessage);
 		}
 	}
 
 	protected void showMessage(String message) {
-		MessageNotifier.showWarning(this.getWindow(), messageSource.getMessage(Message.WARNING), message);
+		MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING), message);
 	}
-	
-	protected boolean isARequiredColumnHidden(Table listDataTable){
+
+	protected boolean isARequiredColumnHidden(Table listDataTable) {
 		int visibleRequiredColumns = 0;
 		Object[] visibleColumns = listDataTable.getVisibleColumns();
-		
-		for(Object column : visibleColumns){
-			if(isARequiredColumn(column.toString())
-					&& !listDataTable.isColumnCollapsed(column)){
+
+		for (Object column : visibleColumns) {
+			if (this.isARequiredColumn(column.toString()) && !listDataTable.isColumnCollapsed(column)) {
 				visibleRequiredColumns++;
 			}
 		}
-		
-		return visibleRequiredColumns < NO_OF_REQUIRED_COLUMNS;
+
+		return visibleRequiredColumns < ExportListAsDialog.NO_OF_REQUIRED_COLUMNS;
 	}
 
 	protected boolean isARequiredColumn(String column) {
-		return ColumnLabels.ENTRY_ID.getName().equalsIgnoreCase(column)
-				|| ColumnLabels.GID.getName().equalsIgnoreCase(column)
+		return ColumnLabels.ENTRY_ID.getName().equalsIgnoreCase(column) || ColumnLabels.GID.getName().equalsIgnoreCase(column)
 				|| ColumnLabels.DESIGNATION.getName().equalsIgnoreCase(column);
 	}
 

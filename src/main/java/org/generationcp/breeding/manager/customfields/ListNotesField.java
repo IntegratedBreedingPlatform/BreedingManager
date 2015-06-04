@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.customfields;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -13,111 +14,111 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
 
 @Configurable
-public class ListNotesField extends HorizontalLayout
-implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+public class ListNotesField extends HorizontalLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private Label captionLabel;
-	private String caption;
+	private final String caption;
 	private TextArea listNotesTextArea;
-	private boolean isMandatory;
+	private final boolean isMandatory;
 	private Label mandatoryMark;
 	private boolean changed;
-	
-	public ListNotesField(String caption, boolean isMandatory){
+
+	public ListNotesField(String caption, boolean isMandatory) {
 		this.caption = caption + ": ";
 		this.isMandatory = isMandatory;
 		this.changed = false;
 	}
-	
+
 	@Override
 	public void instantiateComponents() {
-		captionLabel = new Label(caption);
-		captionLabel.addStyleName("bold");
-		
-		listNotesTextArea = new TextArea();
-		listNotesTextArea.setWidth("250px");
-		listNotesTextArea.setHeight("65px");
-		listNotesTextArea.setImmediate(true);
-		
-		if(isMandatory){
-			mandatoryMark = new MandatoryMarkLabel();
-			
-			listNotesTextArea.setRequired(true);
-			listNotesTextArea.setRequiredError("Please specify the notes of the list.");
+		this.captionLabel = new Label(this.caption);
+		this.captionLabel.addStyleName("bold");
+
+		this.listNotesTextArea = new TextArea();
+		this.listNotesTextArea.setWidth("250px");
+		this.listNotesTextArea.setHeight("65px");
+		this.listNotesTextArea.setImmediate(true);
+
+		if (this.isMandatory) {
+			this.mandatoryMark = new MandatoryMarkLabel();
+
+			this.listNotesTextArea.setRequired(true);
+			this.listNotesTextArea.setRequiredError("Please specify the notes of the list.");
 		}
-		listNotesTextArea.setDebugId("vaadin-notes-txtarea");
+		this.listNotesTextArea.setDebugId("vaadin-notes-txtarea");
 	}
 
 	@Override
 	public void initializeValues() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void addListeners() {
-		listNotesTextArea.addListener(new Property.ValueChangeListener(){
-            
-            private static final long serialVersionUID = 2323698194362809907L;
+		this.listNotesTextArea.addListener(new Property.ValueChangeListener() {
 
-            public void valueChange(ValueChangeEvent event) {
-                changed = true;
-            }
-            
-        });
+			private static final long serialVersionUID = 2323698194362809907L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				ListNotesField.this.changed = true;
+			}
+
+		});
 	}
 
 	@Override
 	public void layoutComponents() {
-		setSpacing(true);
-		
-		addComponent(captionLabel);
-		
-		if(isMandatory){
-			addComponent(mandatoryMark);
+		this.setSpacing(true);
+
+		this.addComponent(this.captionLabel);
+
+		if (this.isMandatory) {
+			this.addComponent(this.mandatoryMark);
 		}
-		
-		addComponent(listNotesTextArea);
+
+		this.addComponent(this.listNotesTextArea);
 	}
 
 	@Override
 	public void updateLabels() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		instantiateComponents();
-		initializeValues();
-		addListeners();
-		layoutComponents();
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
 	}
 
 	public TextArea getListNotesTextArea() {
-		return listNotesTextArea;
+		return this.listNotesTextArea;
 	}
 
 	public void setListNotesTextArea(TextArea listNotesTextArea) {
 		this.listNotesTextArea = listNotesTextArea;
 	}
-	
-	public void setValue(String value){
-		listNotesTextArea.setValue(value);
+
+	public void setValue(String value) {
+		this.listNotesTextArea.setValue(value);
 	}
-	
-	public String getValue(){
-		return (String)listNotesTextArea.getValue();
+
+	public String getValue() {
+		return (String) this.listNotesTextArea.getValue();
 	}
-	
+
 	public void validate() throws InvalidValueException {
-		listNotesTextArea.validate();
+		this.listNotesTextArea.validate();
 	}
-	
+
 	public boolean isChanged() {
-		return changed;
+		return this.changed;
 	}
 
 	public void setChanged(boolean changed) {

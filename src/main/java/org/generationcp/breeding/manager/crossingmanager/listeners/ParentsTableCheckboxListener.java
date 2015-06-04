@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.crossingmanager.listeners;
 
 import java.util.Collection;
@@ -14,12 +15,12 @@ import com.vaadin.ui.Table;
 public class ParentsTableCheckboxListener implements Button.ClickListener {
 
 	private static final long serialVersionUID = -1891133133274865175L;
-	
-	private Table parentsTable;
-	private GermplasmListEntry entry;
-	private CheckBox tagAllBox;
 
-	public ParentsTableCheckboxListener(Table parentsTable, GermplasmListEntry entry, CheckBox tagAllBox){
+	private final Table parentsTable;
+	private final GermplasmListEntry entry;
+	private final CheckBox tagAllBox;
+
+	public ParentsTableCheckboxListener(Table parentsTable, GermplasmListEntry entry, CheckBox tagAllBox) {
 		super();
 		this.parentsTable = parentsTable;
 		this.entry = entry;
@@ -30,21 +31,21 @@ public class ParentsTableCheckboxListener implements Button.ClickListener {
 	@Override
 	public void buttonClick(ClickEvent event) {
 		boolean checkBoxValue = event.getButton().booleanValue();
-		Collection<GermplasmListEntry> selectedEntries = (Collection<GermplasmListEntry>) parentsTable.getValue();
+		Collection<GermplasmListEntry> selectedEntries = (Collection<GermplasmListEntry>) this.parentsTable.getValue();
 		Set<GermplasmListEntry> entriesToSelect = new HashSet<GermplasmListEntry>();
-		if(selectedEntries != null){
+		if (selectedEntries != null) {
 			entriesToSelect.addAll(selectedEntries);
-			if(checkBoxValue){
-				entriesToSelect.add(entry);
-			} else{
-				tagAllBox.setValue(false);
-				entriesToSelect.remove(entry);
+			if (checkBoxValue) {
+				entriesToSelect.add(this.entry);
+			} else {
+				this.tagAllBox.setValue(false);
+				entriesToSelect.remove(this.entry);
 			}
-		} else if(checkBoxValue){
-			entriesToSelect.add(entry);
+		} else if (checkBoxValue) {
+			entriesToSelect.add(this.entry);
 		}
-		parentsTable.setValue(entriesToSelect);
-		parentsTable.requestRepaint();
+		this.parentsTable.setValue(entriesToSelect);
+		this.parentsTable.requestRepaint();
 	}
 
 }

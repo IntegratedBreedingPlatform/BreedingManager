@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.listmanager.util;
 
 import java.util.List;
@@ -16,51 +17,49 @@ import com.vaadin.data.Item;
 import com.vaadin.ui.Table;
 
 /**
- * Reusable class for querying and displaying additional columns of a Germplasm 
- * List Data table
- * 
+ * Reusable class for querying and displaying additional columns of a Germplasm List Data table
+ *
  * @author Darla Ani
  *
  */
 @Configurable
 public class ListDataPropertiesRenderer {
-	
-	@Autowired
-	private GermplasmListManager listManager; 
-	
-	@Autowired
-	private OntologyDataManager ontologyDataManager; 
 
-	private Integer listId;
-	private Table targetTable;
-	
-	public ListDataPropertiesRenderer(Integer listId, Table targetTable){
+	@Autowired
+	private GermplasmListManager listManager;
+
+	@Autowired
+	private OntologyDataManager ontologyDataManager;
+
+	private final Integer listId;
+	private final Table targetTable;
+
+	public ListDataPropertiesRenderer(Integer listId, Table targetTable) {
 		this.listId = listId;
 		this.targetTable = targetTable;
 	}
-	
-	public void render() throws MiddlewareQueryException{
-		GermplasmListNewColumnsInfo columnsInfo = listManager.getAdditionalColumnsForList(listId);
-		for (Entry<String, List<ListDataColumnValues>> columnEntry: columnsInfo.getColumnValuesMap().entrySet()){
+
+	public void render() throws MiddlewareQueryException {
+		GermplasmListNewColumnsInfo columnsInfo = this.listManager.getAdditionalColumnsForList(this.listId);
+		for (Entry<String, List<ListDataColumnValues>> columnEntry : columnsInfo.getColumnValuesMap().entrySet()) {
 			String column = columnEntry.getKey();
-			targetTable.addContainerProperty(column, String.class, "");
-			targetTable.setColumnHeader(column, ColumnLabels.get(column).getTermNameFromOntology(ontologyDataManager));
-			targetTable.setColumnWidth(column, 250);
-			setColumnValues(column, columnEntry.getValue());
+			this.targetTable.addContainerProperty(column, String.class, "");
+			this.targetTable.setColumnHeader(column, ColumnLabels.get(column).getTermNameFromOntology(this.ontologyDataManager));
+			this.targetTable.setColumnWidth(column, 250);
+			this.setColumnValues(column, columnEntry.getValue());
 		}
-		
+
 	}
-	
-	public void setColumnValues(String column, List<ListDataColumnValues> columnValues){
-		for (ListDataColumnValues columnValue : columnValues){
+
+	public void setColumnValues(String column, List<ListDataColumnValues> columnValues) {
+		for (ListDataColumnValues columnValue : columnValues) {
 			Integer listDataId = columnValue.getListDataId();
-			Item tableItem = targetTable.getItem(listDataId);
-			if (tableItem != null){
+			Item tableItem = this.targetTable.getItem(listDataId);
+			if (tableItem != null) {
 				String value = columnValue.getValue();
 				tableItem.getItemProperty(column).setValue(value == null ? "" : value);
 			}
 		}
-    }
- 
+	}
 
 }

@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
- * 
+ *
  * Generation Challenge Programme (GCP)
- * 
- * 
- * This software is licensed for use under the terms of the GNU General Public
- * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
- * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
- * 
+ *
+ *
+ * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
+ * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
+ *
  *******************************************************************************/
+
 package org.generationcp.breeding.manager.listimport;
 
 import java.util.HashMap;
@@ -24,7 +24,6 @@ import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportBut
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.ImportGermplasmEntryActionListener;
 import org.generationcp.commons.constant.ColumnLabels;
-import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -39,6 +38,7 @@ import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.service.api.PedigreeService;
+import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -61,374 +61,388 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
-
 /**
  * @author Dennis Billano
  *
  */
 @Configurable
 public class SelectGermplasmWindow extends BaseSubWindow implements InitializingBean, InternationalizableComponent, BreedingManagerLayout,
-		Window.CloseListener, ImportGermplasmEntryActionListener{
-	
+Window.CloseListener, ImportGermplasmEntryActionListener {
+
 	private static final Logger LOG = LoggerFactory.getLogger(SelectGermplasmWindow.class);
 
 	private static final long serialVersionUID = -8113004135173349534L;
-    
-    public static final String CANCEL_BUTTON_ID = "SelectGermplasmWindow Cancel Button";
-    public static final String DONE_BUTTON_ID = "SelectGermplasmWindow Done Button";
-    
-    private VerticalLayout mainLayout;
-    private Button cancelButton;
-    private Button doneButton;
-    
-    @Autowired
-    private SimpleResourceBundleMessageSource messageSource;
 
-    @Autowired
-    private GermplasmDataManager germplasmDataManager;
-    
-    @Autowired
-    private PedigreeService pedigreeService;
-    
-    @Autowired
-    private LocationDataManager locationDataManager;
-    
-    private String germplasmName;
-    private List<Germplasm> germplasms;
-    private int germplasmCount;
-    private Table germplasmTable;
-    private int germplasmIndex;
-    private Germplasm germplasm;
-    
-    private ProcessImportedGermplasmAction source;
-    
-    private Label selectGermplasmLabel;
-    
-    private CheckBox useSameGidCheckbox;
-    private CheckBox ignoreMatchesCheckbox;
-    private CheckBox ignoreRemainingMatchesCheckbox;
-    private Window parentWindow;
-    
+	public static final String CANCEL_BUTTON_ID = "SelectGermplasmWindow Cancel Button";
+	public static final String DONE_BUTTON_ID = "SelectGermplasmWindow Done Button";
+
+	private VerticalLayout mainLayout;
+	private Button cancelButton;
+	private Button doneButton;
+
+	@Autowired
+	private SimpleResourceBundleMessageSource messageSource;
+
+	@Autowired
+	private GermplasmDataManager germplasmDataManager;
+
+	@Autowired
+	private PedigreeService pedigreeService;
+
+	@Autowired
+	private LocationDataManager locationDataManager;
+
+	private String germplasmName;
+	private List<Germplasm> germplasms;
+	private int germplasmCount;
+	private Table germplasmTable;
+	private int germplasmIndex;
+	private Germplasm germplasm;
+
+	private final ProcessImportedGermplasmAction source;
+
+	private Label selectGermplasmLabel;
+
+	private CheckBox useSameGidCheckbox;
+	private CheckBox ignoreMatchesCheckbox;
+	private CheckBox ignoreRemainingMatchesCheckbox;
+	private final Window parentWindow;
+
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
-	
+
 	@Resource
 	private CrossExpansionProperties crossExpansionProperties;
-    
-    public SelectGermplasmWindow(ProcessImportedGermplasmAction source, String germplasmName, int index, Germplasm germplasm, Window parentWindow) {
-        this.germplasmName = germplasmName;
-        this.germplasmIndex = index;
-        this.germplasm = germplasm;
-        this.source = source;
-        this.parentWindow = parentWindow;
-    }
-    
-    protected void assemble() {
-        instantiateComponents();
-        initializeValues();
-        addListeners();
-        layoutComponents();
-    }
- 
-    public void doneAction(){
-        try {
-        	if(useSameGidCheckbox.booleanValue()) {
-        		if(source.getNameGermplasmMap()==null) {
-        			source.setNameGermplasmMap(new HashMap<String, Germplasm>());
-        		}
-        		source.mapGermplasmNamesToGermplasm(germplasmName,germplasm);
-        	}
-        	if(!ignoreMatchesCheckbox.booleanValue()) {
-        		Germplasm selectedGermplasm = this.germplasmDataManager.getGermplasmByGID((Integer) germplasmTable.getValue());
-            	source.receiveGermplasmFromWindowAndUpdateGermplasmData(germplasmIndex, germplasm, selectedGermplasm);
-        	}
-        	source.removeListener(this);
-        	if(ignoreRemainingMatchesCheckbox.booleanValue()) {
-        		source.ignoreRemainingMatches();
-        	} else {
-        		source.processNextItems();
-        	}
-            removeWindow(this);            
-        } catch (MiddlewareQueryException e) {
-        	LOG.error(e.getMessage(),e);
-        }        
-    }
-    
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        assemble();
-    }
-    
-    @Override
-    public void attach() {
-        super.attach();
-        updateLabels();
-    }
 
-    @Override
-    public void updateLabels() {
-        messageSource.setCaption(this, Message.SELECT_MATCHING_GERMPLASM_OR_ADD_NEW_ENTRY);
-        messageSource.setCaption(doneButton, Message.CONTINUE);
-        messageSource.setCaption(cancelButton, Message.CANCEL);
-    }
+	public SelectGermplasmWindow(ProcessImportedGermplasmAction source, String germplasmName, int index, Germplasm germplasm,
+			Window parentWindow) {
+		this.germplasmName = germplasmName;
+		this.germplasmIndex = index;
+		this.germplasm = germplasm;
+		this.source = source;
+		this.parentWindow = parentWindow;
+	}
 
-    private String getGermplasmNames(int gid) {
+	protected void assemble() {
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
+	}
 
-        try {
-            List<Name> names = germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
-            StringBuilder germplasmNames = new StringBuilder("");
-            int i = 0;
-            for (Name n : names) {
-                if (i < names.size() - 1) {
-                    germplasmNames.append(n.getNval() + ", ");
-                } else {
-                    germplasmNames.append(n.getNval());
-                }
-                i++;
-            }
+	public void doneAction() {
+		try {
+			if (this.useSameGidCheckbox.booleanValue()) {
+				if (this.source.getNameGermplasmMap() == null) {
+					this.source.setNameGermplasmMap(new HashMap<String, Germplasm>());
+				}
+				this.source.mapGermplasmNamesToGermplasm(this.germplasmName, this.germplasm);
+			}
+			if (!this.ignoreMatchesCheckbox.booleanValue()) {
+				Germplasm selectedGermplasm = this.germplasmDataManager.getGermplasmByGID((Integer) this.germplasmTable.getValue());
+				this.source.receiveGermplasmFromWindowAndUpdateGermplasmData(this.germplasmIndex, this.germplasm, selectedGermplasm);
+			}
+			this.source.removeListener(this);
+			if (this.ignoreRemainingMatchesCheckbox.booleanValue()) {
+				this.source.ignoreRemainingMatches();
+			} else {
+				this.source.processNextItems();
+			}
+			this.removeWindow(this);
+		} catch (MiddlewareQueryException e) {
+			SelectGermplasmWindow.LOG.error(e.getMessage(), e);
+		}
+	}
 
-            return germplasmNames.toString();
-        } catch (MiddlewareQueryException e) {
-        	LOG.error(e.getMessage(),e);
-            return null;
-        }
-    }
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.assemble();
+	}
 
-    public void cancelButtonClickAction(){
-    	if(source instanceof ProcessImportedGermplasmAction){
-	    	source.closeAllImportEntryListeners();
-    	}
-    }
+	@Override
+	public void attach() {
+		super.attach();
+		this.updateLabels();
+	}
+
+	@Override
+	public void updateLabels() {
+		this.messageSource.setCaption(this, Message.SELECT_MATCHING_GERMPLASM_OR_ADD_NEW_ENTRY);
+		this.messageSource.setCaption(this.doneButton, Message.CONTINUE);
+		this.messageSource.setCaption(this.cancelButton, Message.CANCEL);
+	}
+
+	private String getGermplasmNames(int gid) {
+
+		try {
+			List<Name> names = this.germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
+			StringBuilder germplasmNames = new StringBuilder("");
+			int i = 0;
+			for (Name n : names) {
+				if (i < names.size() - 1) {
+					germplasmNames.append(n.getNval() + ", ");
+				} else {
+					germplasmNames.append(n.getNval());
+				}
+				i++;
+			}
+
+			return germplasmNames.toString();
+		} catch (MiddlewareQueryException e) {
+			SelectGermplasmWindow.LOG.error(e.getMessage(), e);
+			return null;
+		}
+	}
+
+	public void cancelButtonClickAction() {
+		if (this.source instanceof ProcessImportedGermplasmAction) {
+			this.source.closeAllImportEntryListeners();
+		}
+	}
 
 	@Override
 	public void instantiateComponents() {
-        selectGermplasmLabel = new Label("", Label.CONTENT_XHTML);
-        selectGermplasmLabel.setWidth("100%");
-        
-        cancelButton = new Button(); 
-        cancelButton.setData(CANCEL_BUTTON_ID);
-        
-        doneButton = new Button();
-        doneButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-        doneButton.setEnabled(false);
-        doneButton.setData(DONE_BUTTON_ID);
-        
-        initGermplasmTable();
-        
-        useSameGidCheckbox = new CheckBox("Use this match for other instances of this name in the import list");
-        useSameGidCheckbox.setImmediate(true);
-        ignoreMatchesCheckbox = new CheckBox("Ignore matches and add a new entry");
-        ignoreMatchesCheckbox.setImmediate(true);
-        ignoreRemainingMatchesCheckbox = new CheckBox("Ignore remaining matches and add new entries for all");
-        ignoreRemainingMatchesCheckbox.setImmediate(true);
+		this.selectGermplasmLabel = new Label("", Label.CONTENT_XHTML);
+		this.selectGermplasmLabel.setWidth("100%");
+
+		this.cancelButton = new Button();
+		this.cancelButton.setData(SelectGermplasmWindow.CANCEL_BUTTON_ID);
+
+		this.doneButton = new Button();
+		this.doneButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+		this.doneButton.setEnabled(false);
+		this.doneButton.setData(SelectGermplasmWindow.DONE_BUTTON_ID);
+
+		this.initGermplasmTable();
+
+		this.useSameGidCheckbox = new CheckBox("Use this match for other instances of this name in the import list");
+		this.useSameGidCheckbox.setImmediate(true);
+		this.ignoreMatchesCheckbox = new CheckBox("Ignore matches and add a new entry");
+		this.ignoreMatchesCheckbox.setImmediate(true);
+		this.ignoreRemainingMatchesCheckbox = new CheckBox("Ignore remaining matches and add new entries for all");
+		this.ignoreRemainingMatchesCheckbox.setImmediate(true);
 	}
 
 	protected void initGermplasmTable() {
-		setGermplasmTable(new Table());
-		
-		germplasmTable = getGermplasmTable();
-		germplasmTable.setHeight("200px");
-        germplasmTable.setWidth("750px");
-        germplasmTable.setSelectable(true);
-        germplasmTable.setMultiSelect(false);
-        germplasmTable.setNullSelectionAllowed(false);
-        germplasmTable.setImmediate(true);
-        
-        germplasmTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
-        germplasmTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
-        germplasmTable.addContainerProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class, null);
-        germplasmTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, null);
-        germplasmTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
-        
-        germplasmTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(),getTermNameFromOntology(ColumnLabels.DESIGNATION));
-        germplasmTable.setColumnHeader(ColumnLabels.GID.getName(),getTermNameFromOntology(ColumnLabels.GID));
-        germplasmTable.setColumnHeader(ColumnLabels.GERMPLASM_LOCATION.getName(),getTermNameFromOntology(ColumnLabels.GERMPLASM_LOCATION));
-        germplasmTable.setColumnHeader(ColumnLabels.BREEDING_METHOD_NAME.getName(),getTermNameFromOntology(ColumnLabels.BREEDING_METHOD_NAME));
-        germplasmTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(),getTermNameFromOntology(ColumnLabels.PARENTAGE));
-        
+		this.setGermplasmTable(new Table());
+
+		this.germplasmTable = this.getGermplasmTable();
+		this.germplasmTable.setHeight("200px");
+		this.germplasmTable.setWidth("750px");
+		this.germplasmTable.setSelectable(true);
+		this.germplasmTable.setMultiSelect(false);
+		this.germplasmTable.setNullSelectionAllowed(false);
+		this.germplasmTable.setImmediate(true);
+
+		this.germplasmTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
+		this.germplasmTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
+		this.germplasmTable.addContainerProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class, null);
+		this.germplasmTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, null);
+		this.germplasmTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
+
+		this.germplasmTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(), this.getTermNameFromOntology(ColumnLabels.DESIGNATION));
+		this.germplasmTable.setColumnHeader(ColumnLabels.GID.getName(), this.getTermNameFromOntology(ColumnLabels.GID));
+		this.germplasmTable.setColumnHeader(ColumnLabels.GERMPLASM_LOCATION.getName(),
+				this.getTermNameFromOntology(ColumnLabels.GERMPLASM_LOCATION));
+		this.germplasmTable.setColumnHeader(ColumnLabels.BREEDING_METHOD_NAME.getName(),
+				this.getTermNameFromOntology(ColumnLabels.BREEDING_METHOD_NAME));
+		this.germplasmTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(), this.getTermNameFromOntology(ColumnLabels.PARENTAGE));
+
 	}
-	
+
 	protected String getTermNameFromOntology(ColumnLabels columnLabels) {
-		return columnLabels.getTermNameFromOntology(ontologyDataManager);
+		return columnLabels.getTermNameFromOntology(this.ontologyDataManager);
 	}
 
 	@Override
 	public void addListeners() {
-		germplasmTable.addListener(new Property.ValueChangeListener() {
-	        private static final long serialVersionUID = 1L;
-	        @Override
-			public void valueChange(ValueChangeEvent event) {
-				toggleContinueButton();
-			}
-	    });
-		
-		useSameGidCheckbox.addListener(new Property.ValueChangeListener() {
+		this.germplasmTable.addListener(new Property.ValueChangeListener() {
+
 			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				toggleGermplasmTable();
+				SelectGermplasmWindow.this.toggleContinueButton();
 			}
 		});
-		
-		ignoreMatchesCheckbox.addListener(new Property.ValueChangeListener() {
+
+		this.useSameGidCheckbox.addListener(new Property.ValueChangeListener() {
+
 			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				toggleContinueButton();
-				toggleGermplasmTable();
+				SelectGermplasmWindow.this.toggleGermplasmTable();
 			}
 		});
-		
-		doneButton.addListener(new GermplasmImportButtonClickListener(this));
-        doneButton.addListener(new CloseWindowAction(this));
-	        
-        cancelButton.addListener(new CloseWindowAction(this));
+
+		this.ignoreMatchesCheckbox.addListener(new Property.ValueChangeListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				SelectGermplasmWindow.this.toggleContinueButton();
+				SelectGermplasmWindow.this.toggleGermplasmTable();
+			}
+		});
+
+		this.doneButton.addListener(new GermplasmImportButtonClickListener(this));
+		this.doneButton.addListener(new CloseWindowAction(this));
+
+		this.cancelButton.addListener(new CloseWindowAction(this));
 	}
 
 	protected void toggleGermplasmTable() {
-		boolean disableSelection = ignoreMatchesCheckbox.booleanValue() &&
-				!useSameGidCheckbox.booleanValue();
-		if(disableSelection) {
-			germplasmTable.setSelectable(false);
-			germplasmTable.setNullSelectionAllowed(true);
-			germplasmTable.unselect(germplasmTable.getValue());
-			germplasmTable.select(null);
-			germplasmTable.refreshRowCache();
-			germplasmTable.requestRepaint();
-			germplasmTable.setImmediate(true);
+		boolean disableSelection = this.ignoreMatchesCheckbox.booleanValue() && !this.useSameGidCheckbox.booleanValue();
+		if (disableSelection) {
+			this.germplasmTable.setSelectable(false);
+			this.germplasmTable.setNullSelectionAllowed(true);
+			this.germplasmTable.unselect(this.germplasmTable.getValue());
+			this.germplasmTable.select(null);
+			this.germplasmTable.refreshRowCache();
+			this.germplasmTable.requestRepaint();
+			this.germplasmTable.setImmediate(true);
 		} else {
-			germplasmTable.setSelectable(true);
-			germplasmTable.setNullSelectionAllowed(false);
-			germplasmTable.setMultiSelect(false);
-			germplasmTable.refreshRowCache();
-			germplasmTable.requestRepaint();
-			germplasmTable.setImmediate(true);
+			this.germplasmTable.setSelectable(true);
+			this.germplasmTable.setNullSelectionAllowed(false);
+			this.germplasmTable.setMultiSelect(false);
+			this.germplasmTable.refreshRowCache();
+			this.germplasmTable.requestRepaint();
+			this.germplasmTable.setImmediate(true);
 		}
 	}
 
 	protected void toggleContinueButton() {
-		boolean enableButton = (germplasmTable.getValue()!=null) ||
-							ignoreMatchesCheckbox.booleanValue();
-		if(enableButton) {
-			doneButton.setEnabled(true);
+		boolean enableButton = this.germplasmTable.getValue() != null || this.ignoreMatchesCheckbox.booleanValue();
+		if (enableButton) {
+			this.doneButton.setEnabled(true);
 		} else {
-			doneButton.setEnabled(false);
-		}				
+			this.doneButton.setEnabled(false);
+		}
 	}
 
 	@Override
 	public void initializeValues() {
-		initializeGuideMessage();
-		initializeTableValues();
+		this.initializeGuideMessage();
+		this.initializeTableValues();
 	}
 
 	@Override
 	public void layoutComponents() {
 		// set as modal window, other components are disabled while window is open
-        setModal(true);
-        // define window size, set as not resizable
-        setWidth("800px");
-        setHeight("460px");
-        setResizable(false);
-        addStyleName(Reindeer.WINDOW_LIGHT);
-        
-        // center window within the browser
-        center();
-        mainLayout = new VerticalLayout();
-        mainLayout.setMargin(true);
-        mainLayout.setSpacing(true);
-        mainLayout.addComponent(selectGermplasmLabel);
-        mainLayout.addComponent(germplasmTable);
-        
-        // Buttons Layout
+		this.setModal(true);
+		// define window size, set as not resizable
+		this.setWidth("800px");
+		this.setHeight("460px");
+		this.setResizable(false);
+		this.addStyleName(Reindeer.WINDOW_LIGHT);
+
+		// center window within the browser
+		this.center();
+		this.mainLayout = new VerticalLayout();
+		this.mainLayout.setMargin(true);
+		this.mainLayout.setSpacing(true);
+		this.mainLayout.addComponent(this.selectGermplasmLabel);
+		this.mainLayout.addComponent(this.germplasmTable);
+
+		// Buttons Layout
 		HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setWidth("100%");
 		buttonLayout.setHeight("40px");
 		buttonLayout.setSpacing(true);
-	     
-		buttonLayout.addComponent(cancelButton);
-		buttonLayout.addComponent(doneButton);
-		buttonLayout.setComponentAlignment(cancelButton, Alignment.BOTTOM_RIGHT);
-	    buttonLayout.setComponentAlignment(doneButton, Alignment.BOTTOM_LEFT);
-        
-        mainLayout.addComponent(useSameGidCheckbox);
-        mainLayout.addComponent(ignoreMatchesCheckbox);
-        mainLayout.addComponent(ignoreRemainingMatchesCheckbox);
-        
-        mainLayout.addComponent(buttonLayout);
-        
-        this.setContent(mainLayout);
+
+		buttonLayout.addComponent(this.cancelButton);
+		buttonLayout.addComponent(this.doneButton);
+		buttonLayout.setComponentAlignment(this.cancelButton, Alignment.BOTTOM_RIGHT);
+		buttonLayout.setComponentAlignment(this.doneButton, Alignment.BOTTOM_LEFT);
+
+		this.mainLayout.addComponent(this.useSameGidCheckbox);
+		this.mainLayout.addComponent(this.ignoreMatchesCheckbox);
+		this.mainLayout.addComponent(this.ignoreRemainingMatchesCheckbox);
+
+		this.mainLayout.addComponent(buttonLayout);
+
+		this.setContent(this.mainLayout);
 	}
-	
-	private void initializeGuideMessage(){
-		selectGermplasmLabel.setValue("Matches were found with the name <b>" + this.germplasmName + "</b>. Click on an entry below to choose it as a match. "
+
+	private void initializeGuideMessage() {
+		this.selectGermplasmLabel.setValue("Matches were found with the name <b>" + this.germplasmName
+				+ "</b>. Click on an entry below to choose it as a match. "
 				+ "You can also choose to ignore the match and add a new entry.");
 	}
-	
+
 	protected void initializeTableValues() {
 		try {
-            this.germplasmCount = (int) this.germplasmDataManager.countGermplasmByName(germplasmName, Operation.EQUAL);
-            this.germplasms = this.germplasmDataManager.getGermplasmByName(germplasmName, 0, germplasmCount, Operation.EQUAL);
-            for (int i=0; i<this.germplasms.size(); i++){
-            	
-                Germplasm currentGermplasm = germplasms.get(i);
-                Location location = locationDataManager.getLocationByID(currentGermplasm.getLocationId());
-                Method method = germplasmDataManager.getMethodByID(currentGermplasm.getMethodId());
-            	Name preferredName = germplasmDataManager.getPreferredNameByGID(currentGermplasm.getGid());
-            	
-            	Button gidButton = new Button(String.format("%s", currentGermplasm.getGid().toString()), new GidLinkClickListener(currentGermplasm.getGid().toString(), parentWindow));
-                gidButton.setStyleName(BaseTheme.BUTTON_LINK); 
-                
-                
-                Button desigButton = new Button(preferredName.getNval(), new GidLinkClickListener(currentGermplasm.getGid().toString(), parentWindow));
-                desigButton.setStyleName(BaseTheme.BUTTON_LINK); 
-                
-                String crossExpansion = "";
-                if(currentGermplasm!=null){
-                	try {
-                		if(germplasmDataManager!=null) {
-                            crossExpansion = pedigreeService.getCrossExpansion(currentGermplasm.getGid(), this.crossExpansionProperties);
-                        }
-                	} catch(MiddlewareQueryException ex){
-                        crossExpansion = "-";
-                    }
-            	}
-                
-                String locationName = "";
-                if(location!=null && location.getLname()!=null) {
-                    locationName = location.getLname();
-                }
+			this.germplasmCount = (int) this.germplasmDataManager.countGermplasmByName(this.germplasmName, Operation.EQUAL);
+			this.germplasms = this.germplasmDataManager.getGermplasmByName(this.germplasmName, 0, this.germplasmCount, Operation.EQUAL);
+			for (int i = 0; i < this.germplasms.size(); i++) {
 
-                String methodName = "";
-                if(method!=null && method.getMname()!=null) {
-                    methodName = method.getMname();
-                }
-                
-                this.germplasmTable.addItem(new Object[]{desigButton, gidButton, locationName, methodName, crossExpansion}, currentGermplasm.getGid());
-            }
-            
-            germplasmTable.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
-    			private static final long serialVersionUID = 1L;
+				Germplasm currentGermplasm = this.germplasms.get(i);
+				Location location = this.locationDataManager.getLocationByID(currentGermplasm.getLocationId());
+				Method method = this.germplasmDataManager.getMethodByID(currentGermplasm.getMethodId());
+				Name preferredName = this.germplasmDataManager.getPreferredNameByGID(currentGermplasm.getGid());
 
-    			public String generateDescription(Component source, Object itemId,
-    					Object propertyId) {
-    				if(propertyId==ColumnLabels.DESIGNATION.getName()){
-    					Item item = germplasmTable.getItem(itemId);
-    					Integer gid = Integer.valueOf(((Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue()).getCaption());
-    					return getGermplasmNames(gid);
-    				} else {
-    					return null;
-    				}
-    			}
-            });
-            
-        } catch (MiddlewareQueryException e) {
-        	LOG.error(e.getMessage(),e);
-        }
+				Button gidButton =
+						new Button(String.format("%s", currentGermplasm.getGid().toString()), new GidLinkClickListener(currentGermplasm
+								.getGid().toString(), this.parentWindow));
+				gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+
+				Button desigButton =
+						new Button(preferredName.getNval(), new GidLinkClickListener(currentGermplasm.getGid().toString(),
+								this.parentWindow));
+				desigButton.setStyleName(BaseTheme.BUTTON_LINK);
+
+				String crossExpansion = "";
+				if (currentGermplasm != null) {
+					try {
+						if (this.germplasmDataManager != null) {
+							crossExpansion =
+									this.pedigreeService.getCrossExpansion(currentGermplasm.getGid(), this.crossExpansionProperties);
+						}
+					} catch (MiddlewareQueryException ex) {
+						crossExpansion = "-";
+					}
+				}
+
+				String locationName = "";
+				if (location != null && location.getLname() != null) {
+					locationName = location.getLname();
+				}
+
+				String methodName = "";
+				if (method != null && method.getMname() != null) {
+					methodName = method.getMname();
+				}
+
+				this.germplasmTable.addItem(new Object[] {desigButton, gidButton, locationName, methodName, crossExpansion},
+						currentGermplasm.getGid());
+			}
+
+			this.germplasmTable.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
+
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public String generateDescription(Component source, Object itemId, Object propertyId) {
+					if (propertyId == ColumnLabels.DESIGNATION.getName()) {
+						Item item = SelectGermplasmWindow.this.germplasmTable.getItem(itemId);
+						Integer gid = Integer.valueOf(((Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue()).getCaption());
+						return SelectGermplasmWindow.this.getGermplasmNames(gid);
+					} else {
+						return null;
+					}
+				}
+			});
+
+		} catch (MiddlewareQueryException e) {
+			SelectGermplasmWindow.LOG.error(e.getMessage(), e);
+		}
 	}
 
+	@Override
 	public String getGermplasmName() {
-		return germplasmName;
+		return this.germplasmName;
 	}
 
 	public void setGermplasmName(String germplasmName) {
@@ -436,15 +450,16 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 	}
 
 	public Germplasm getGermplasm() {
-		return germplasm;
+		return this.germplasm;
 	}
 
 	public void setGermplasm(Germplasm germplasm) {
 		this.germplasm = germplasm;
 	}
 
+	@Override
 	public int getGermplasmIndex() {
-		return germplasmIndex;
+		return this.germplasmIndex;
 	}
 
 	public void setGermplasmIndex(int germplasmIndex) {
@@ -452,7 +467,7 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 	}
 
 	public Table getGermplasmTable() {
-		return germplasmTable;
+		return this.germplasmTable;
 	}
 
 	public void setGermplasmTable(Table germplasmTable) {
@@ -466,10 +481,7 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 	@Override
 	public void windowClose(CloseEvent e) {
 		super.close();
-		source.closeAllImportEntryListeners();
+		this.source.closeAllImportEntryListeners();
 	}
-	
-	
-	
-	
+
 }

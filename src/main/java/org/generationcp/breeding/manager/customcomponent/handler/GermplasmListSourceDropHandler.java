@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.customcomponent.handler;
 
 import org.generationcp.breeding.manager.customcomponent.GermplasmListSource;
@@ -21,65 +22,68 @@ import com.vaadin.ui.AbstractSelect;
 
 @Configurable
 public class GermplasmListSourceDropHandler implements DropHandler {
-    private static final long serialVersionUID = -6676297159926786216L;
 
-    private static final Logger LOG = LoggerFactory.getLogger(GermplasmListSourceDropHandler.class);
-    @Autowired
-    private GermplasmListManager germplasmListManager;
-    private GermplasmListSource targetListSource;
-    private ListSelectorComponent source;
-    private GermplasmListTreeUtil utilSource;
+	private static final long serialVersionUID = -6676297159926786216L;
 
-    public GermplasmListSourceDropHandler(GermplasmListSource targetListSource, ListSelectorComponent source, GermplasmListTreeUtil utilSource){
-        this.targetListSource = targetListSource;
-        this.source = source;
-        this.utilSource = utilSource;
-    }
+	private static final Logger LOG = LoggerFactory.getLogger(GermplasmListSourceDropHandler.class);
+	@Autowired
+	private GermplasmListManager germplasmListManager;
+	private final GermplasmListSource targetListSource;
+	private final ListSelectorComponent source;
+	private final GermplasmListTreeUtil utilSource;
 
-    public void drop(DragAndDropEvent dropEvent) {
-        Transferable t = dropEvent.getTransferable();
-        if (t.getSourceComponent() != targetListSource) {
-            return;
-        }
+	public GermplasmListSourceDropHandler(GermplasmListSource targetListSource, ListSelectorComponent source,
+			GermplasmListTreeUtil utilSource) {
+		this.targetListSource = targetListSource;
+		this.source = source;
+		this.utilSource = utilSource;
+	}
 
-        AbstractSelect.AbstractSelectTargetDetails target = (AbstractSelect.AbstractSelectTargetDetails) dropEvent.getTargetDetails();
+	@Override
+	public void drop(DragAndDropEvent dropEvent) {
+		Transferable t = dropEvent.getTransferable();
+		if (t.getSourceComponent() != this.targetListSource) {
+			return;
+		}
 
-        Object sourceItemId = t.getData("itemId");
-        Object targetItemId = target.getItemIdOver();
+		AbstractSelect.AbstractSelectTargetDetails target = (AbstractSelect.AbstractSelectTargetDetails) dropEvent.getTargetDetails();
 
-        VerticalDropLocation location = target.getDropLocation();
+		Object sourceItemId = t.getData("itemId");
+		Object targetItemId = target.getItemIdOver();
 
-        if(location != VerticalDropLocation.MIDDLE || sourceItemId.equals(targetItemId)) {
-            return;
-        }
+		VerticalDropLocation location = target.getDropLocation();
 
-        GermplasmList targetList = null;
-        try {
-            targetList = germplasmListManager.getGermplasmListById((Integer) targetItemId);
-        } catch (MiddlewareQueryException e) {
-            LOG.error(e.getMessage(),e);
-        } catch (ClassCastException e) {
-            LOG.error(e.getMessage(),e);
-        }
+		if (location != VerticalDropLocation.MIDDLE || sourceItemId.equals(targetItemId)) {
+			return;
+		}
 
-        //Dropped on a folder / root "Lists" folder
-        if (targetItemId instanceof String || targetList == null || "FOLDER".equalsIgnoreCase(targetList.getType())){
-            utilSource.setParent(sourceItemId, targetItemId);
-            //Dropped on a list
-        } else if (targetList!=null){
-            if(targetList.getParentId()==null && ((Integer)targetItemId)>0) {
-                targetItemId = ListSelectorComponent.LISTS;
-            } else {
-                targetItemId = targetList.getParentId();
-            }
-            utilSource.setParent(sourceItemId, targetItemId);
-        }
+		GermplasmList targetList = null;
+		try {
+			targetList = this.germplasmListManager.getGermplasmListById((Integer) targetItemId);
+		} catch (MiddlewareQueryException e) {
+			GermplasmListSourceDropHandler.LOG.error(e.getMessage(), e);
+		} catch (ClassCastException e) {
+			GermplasmListSourceDropHandler.LOG.error(e.getMessage(), e);
+		}
 
-        source.refreshRemoteTree();
-    }
+		// Dropped on a folder / root "Lists" folder
+		if (targetItemId instanceof String || targetList == null || "FOLDER".equalsIgnoreCase(targetList.getType())) {
+			this.utilSource.setParent(sourceItemId, targetItemId);
+			// Dropped on a list
+		} else if (targetList != null) {
+			if (targetList.getParentId() == null && (Integer) targetItemId > 0) {
+				targetItemId = ListSelectorComponent.LISTS;
+			} else {
+				targetItemId = targetList.getParentId();
+			}
+			this.utilSource.setParent(sourceItemId, targetItemId);
+		}
 
-    @Override
-    public AcceptCriterion getAcceptCriterion() {
-        return AcceptAll.get();
-    }
+		this.source.refreshRemoteTree();
+	}
+
+	@Override
+	public AcceptCriterion getAcceptCriterion() {
+		return AcceptAll.get();
+	}
 }

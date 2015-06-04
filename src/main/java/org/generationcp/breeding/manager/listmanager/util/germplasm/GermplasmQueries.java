@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.listmanager.util.germplasm;
 
 import java.io.Serializable;
@@ -21,111 +22,112 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 @Configurable
-public class GermplasmQueries implements Serializable, InitializingBean{
+public class GermplasmQueries implements Serializable, InitializingBean {
 
-    private GermplasmDetailModel germplasmDetail;
+	private GermplasmDetailModel germplasmDetail;
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    @Autowired
-    private GermplasmDataManager germplasmDataManager;
-  
-    @Autowired
-    private PedigreeDataManager pedigreeDataManager;
+	@Autowired
+	private GermplasmDataManager germplasmDataManager;
 
-    public GermplasmQueries() {
+	@Autowired
+	private PedigreeDataManager pedigreeDataManager;
 
-    }
+	public GermplasmQueries() {
 
-    public GermplasmDetailModel getGermplasmDetails(int gid) throws InternationalizableException {
-        try {
-            germplasmDetail = new GermplasmDetailModel();
-            Germplasm g = germplasmDataManager.getGermplasmByGID(new Integer(gid));
-            Name name = germplasmDataManager.getPreferredNameByGID(gid);
+	}
 
-            if (g != null) {
-                germplasmDetail.setGid(g.getGid());
-                germplasmDetail.setGermplasmMethod(germplasmDataManager.getMethodByID(g.getMethodId()).getMname());
-                germplasmDetail.setGermplasmPreferredName(name == null ? "" : name.getNval());
-                germplasmDetail.setGermplasmCreationDate(name == null ? "" : String.valueOf(g.getGdate()));
-                germplasmDetail.setGermplasmLocation(getLocation(g.getLocationId()));
-                germplasmDetail.setReference(getReference(g.getReferenceId()));
-            }
-            return germplasmDetail;
-        } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_GERMPLASM_DETAILS);
-        }
-    }
-    
-    @SuppressWarnings("deprecation")
+	public GermplasmDetailModel getGermplasmDetails(int gid) throws InternationalizableException {
+		try {
+			this.germplasmDetail = new GermplasmDetailModel();
+			Germplasm g = this.germplasmDataManager.getGermplasmByGID(new Integer(gid));
+			Name name = this.germplasmDataManager.getPreferredNameByGID(gid);
+
+			if (g != null) {
+				this.germplasmDetail.setGid(g.getGid());
+				this.germplasmDetail.setGermplasmMethod(this.germplasmDataManager.getMethodByID(g.getMethodId()).getMname());
+				this.germplasmDetail.setGermplasmPreferredName(name == null ? "" : name.getNval());
+				this.germplasmDetail.setGermplasmCreationDate(name == null ? "" : String.valueOf(g.getGdate()));
+				this.germplasmDetail.setGermplasmLocation(this.getLocation(g.getLocationId()));
+				this.germplasmDetail.setReference(this.getReference(g.getReferenceId()));
+			}
+			return this.germplasmDetail;
+		} catch (MiddlewareQueryException e) {
+			throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_GERMPLASM_DETAILS);
+		}
+	}
+
+	@SuppressWarnings("deprecation")
 	public ArrayList<GermplasmAttributeModel> getAttributes(int gid) throws InternationalizableException {
-        try {
-            ArrayList<Attribute> attr = (ArrayList<Attribute>) germplasmDataManager.getAttributesByGID(gid);
-            ArrayList<GermplasmAttributeModel> germplasmAttributes = new ArrayList<GermplasmAttributeModel>();
+		try {
+			ArrayList<Attribute> attr = (ArrayList<Attribute>) this.germplasmDataManager.getAttributesByGID(gid);
+			ArrayList<GermplasmAttributeModel> germplasmAttributes = new ArrayList<GermplasmAttributeModel>();
 
-            for (Attribute a : attr) {
-                GermplasmAttributeModel gAttributeRow = new GermplasmAttributeModel();
-                gAttributeRow.setName(a.getAval());
+			for (Attribute a : attr) {
+				GermplasmAttributeModel gAttributeRow = new GermplasmAttributeModel();
+				gAttributeRow.setName(a.getAval());
 
-                Location location = germplasmDataManager.getLocationByID(a.getLocationId());
-                if (location != null) {
-                    gAttributeRow.setLocation(location.getLname());
-                }
+				Location location = this.germplasmDataManager.getLocationByID(a.getLocationId());
+				if (location != null) {
+					gAttributeRow.setLocation(location.getLname());
+				}
 
-                UserDefinedField type = germplasmDataManager.getUserDefinedFieldByID(a.getTypeId());
-                if (type != null) {
-                    gAttributeRow.setType(type.getFcode());
-                    gAttributeRow.setTypeDesc(type.getFname());
-                }
+				UserDefinedField type = this.germplasmDataManager.getUserDefinedFieldByID(a.getTypeId());
+				if (type != null) {
+					gAttributeRow.setType(type.getFcode());
+					gAttributeRow.setTypeDesc(type.getFname());
+				}
 
-                gAttributeRow.setDate(a.getAdate().toString());
-                germplasmAttributes.add(gAttributeRow);
-            }
-            return germplasmAttributes;
-        } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_ATTRIBUTES_BY_GERMPLASM_ID);
-        }
-    }
+				gAttributeRow.setDate(a.getAdate().toString());
+				germplasmAttributes.add(gAttributeRow);
+			}
+			return germplasmAttributes;
+		} catch (MiddlewareQueryException e) {
+			throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_ATTRIBUTES_BY_GERMPLASM_ID);
+		}
+	}
 
-    private String getReference(int refId) throws MiddlewareQueryException{
-        Bibref bibRef = germplasmDataManager.getBibliographicReferenceByID(refId);
-        if (bibRef != null) {
-            return bibRef.getAnalyt();
-        } else {
-            return "";
-        }
+	private String getReference(int refId) throws MiddlewareQueryException {
+		Bibref bibRef = this.germplasmDataManager.getBibliographicReferenceByID(refId);
+		if (bibRef != null) {
+			return bibRef.getAnalyt();
+		} else {
+			return "";
+		}
 
-    }
+	}
 
-    @SuppressWarnings("deprecation")
+	@SuppressWarnings("deprecation")
 	private String getLocation(int locId) {
-        try {
-            Location x = germplasmDataManager.getLocationByID(locId);
-            return x.getLname();
-        } catch (Exception e) {
-            return ""; // TODO: Verify that this doesn't need ui error notification and really just returns ""
-        }
-    }
+		try {
+			Location x = this.germplasmDataManager.getLocationByID(locId);
+			return x.getLname();
+		} catch (Exception e) {
+			return ""; // TODO: Verify that this doesn't need ui error notification and really just returns ""
+		}
+	}
 
-    public GermplasmPedigreeTree generatePedigreeTree(Integer gid, int i) throws InternationalizableException {
-        try {
-            return pedigreeDataManager.generatePedigreeTree(gid, i);
-        } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GENERATING_PEDIGREE_TREE);
-        }
-    }
-    
-    public GermplasmPedigreeTree generatePedigreeTree(Integer gid, int i, Boolean includeDerivativeLines) throws InternationalizableException {
-        try {
-            return pedigreeDataManager.generatePedigreeTree(gid, i, includeDerivativeLines);
-        } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GENERATING_PEDIGREE_TREE);
-        }
-    }    
+	public GermplasmPedigreeTree generatePedigreeTree(Integer gid, int i) throws InternationalizableException {
+		try {
+			return this.pedigreeDataManager.generatePedigreeTree(gid, i);
+		} catch (MiddlewareQueryException e) {
+			throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GENERATING_PEDIGREE_TREE);
+		}
+	}
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
- 
-    }
+	public GermplasmPedigreeTree generatePedigreeTree(Integer gid, int i, Boolean includeDerivativeLines)
+			throws InternationalizableException {
+		try {
+			return this.pedigreeDataManager.generatePedigreeTree(gid, i, includeDerivativeLines);
+		} catch (MiddlewareQueryException e) {
+			throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GENERATING_PEDIGREE_TREE);
+		}
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+
+	}
 
 }

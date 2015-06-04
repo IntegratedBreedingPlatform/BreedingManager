@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.inventory;
 
 import java.util.Map;
@@ -26,127 +27,131 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class ReservationStatusWindow extends BaseSubWindow implements InitializingBean,
-							InternationalizableComponent, BreedingManagerLayout {
-	
+public class ReservationStatusWindow extends BaseSubWindow implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+
 	private static final long serialVersionUID = -8587129181683284005L;
-	
+
 	private VerticalLayout mainLayout;
-	
+
 	private Label statusDescriptionLabel;
 	private Table statusTable;
 	private Button okButton;
-	
+
 	@Autowired
-    private SimpleResourceBundleMessageSource messageSource;
-	
+	private SimpleResourceBundleMessageSource messageSource;
+
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
-	
-	private Map<ListEntryLotDetails,Double> invalidLotReservations;
-	
-	public ReservationStatusWindow(Map<ListEntryLotDetails,Double> invalidLotReservations) {
+
+	private final Map<ListEntryLotDetails, Double> invalidLotReservations;
+
+	public ReservationStatusWindow(Map<ListEntryLotDetails, Double> invalidLotReservations) {
 		super();
 		this.invalidLotReservations = invalidLotReservations;
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		instantiateComponents();
-		initializeValues();
-		addListeners();
-		layoutComponents();
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
 	}
-	
+
 	@Override
 	public void instantiateComponents() {
-		//window formatting
-		this.setCaption(messageSource.getMessage(Message.RESERVATION_STATUS));
+		// window formatting
+		this.setCaption(this.messageSource.getMessage(Message.RESERVATION_STATUS));
 		this.addStyleName(Reindeer.WINDOW_LIGHT);
 		this.setModal(true);
-		
-		statusDescriptionLabel = new Label("All selected entries will be reserved except for the following because of insufficient balance:");
-		
-		statusTable = new Table();
-		statusTable.setWidth("100%");
-		statusTable.setHeight("150px");
-		statusTable.setImmediate(true);
-		
-		statusTable.addContainerProperty(messageSource.getMessage(Message.LOT_ID), Integer.class, null);
-		statusTable.addContainerProperty(messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER), String.class, null);
-		statusTable.addContainerProperty(messageSource.getMessage(Message.LOCATION_HEADER), String.class, null);
-		statusTable.addContainerProperty(messageSource.getMessage(Message.UNITS), String.class, null);
-		statusTable.addContainerProperty(messageSource.getMessage(Message.AVAILABLE_BALANCE), Double.class, null);
-		statusTable.addContainerProperty(messageSource.getMessage(Message.AMOUNT_TO_RESERVE), Double.class, null);
-		
-		messageSource.setColumnHeader(statusTable, messageSource.getMessage(Message.LOT_ID), Message.LOT_ID);
-		messageSource.setColumnHeader(statusTable, messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER), Message.LISTDATA_DESIGNATION_HEADER);
-		messageSource.setColumnHeader(statusTable, messageSource.getMessage(Message.LOCATION_HEADER), Message.LOCATION_HEADER);
-		messageSource.setColumnHeader(statusTable, messageSource.getMessage(Message.UNITS), Message.UNITS);
-		messageSource.setColumnHeader(statusTable, messageSource.getMessage(Message.AVAILABLE_BALANCE), Message.AVAILABLE_BALANCE);
-		messageSource.setColumnHeader(statusTable, messageSource.getMessage(Message.AMOUNT_TO_RESERVE), Message.AMOUNT_TO_RESERVE);
-		
-		okButton = new Button(messageSource.getMessage(Message.OK));
-		okButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+
+		this.statusDescriptionLabel =
+				new Label("All selected entries will be reserved except for the following because of insufficient balance:");
+
+		this.statusTable = new Table();
+		this.statusTable.setWidth("100%");
+		this.statusTable.setHeight("150px");
+		this.statusTable.setImmediate(true);
+
+		this.statusTable.addContainerProperty(this.messageSource.getMessage(Message.LOT_ID), Integer.class, null);
+		this.statusTable.addContainerProperty(this.messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER), String.class, null);
+		this.statusTable.addContainerProperty(this.messageSource.getMessage(Message.LOCATION_HEADER), String.class, null);
+		this.statusTable.addContainerProperty(this.messageSource.getMessage(Message.UNITS), String.class, null);
+		this.statusTable.addContainerProperty(this.messageSource.getMessage(Message.AVAILABLE_BALANCE), Double.class, null);
+		this.statusTable.addContainerProperty(this.messageSource.getMessage(Message.AMOUNT_TO_RESERVE), Double.class, null);
+
+		this.messageSource.setColumnHeader(this.statusTable, this.messageSource.getMessage(Message.LOT_ID), Message.LOT_ID);
+		this.messageSource.setColumnHeader(this.statusTable, this.messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER),
+				Message.LISTDATA_DESIGNATION_HEADER);
+		this.messageSource.setColumnHeader(this.statusTable, this.messageSource.getMessage(Message.LOCATION_HEADER),
+				Message.LOCATION_HEADER);
+		this.messageSource.setColumnHeader(this.statusTable, this.messageSource.getMessage(Message.UNITS), Message.UNITS);
+		this.messageSource.setColumnHeader(this.statusTable, this.messageSource.getMessage(Message.AVAILABLE_BALANCE),
+				Message.AVAILABLE_BALANCE);
+		this.messageSource.setColumnHeader(this.statusTable, this.messageSource.getMessage(Message.AMOUNT_TO_RESERVE),
+				Message.AMOUNT_TO_RESERVE);
+
+		this.okButton = new Button(this.messageSource.getMessage(Message.OK));
+		this.okButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 	}
 
 	@Override
 	public void initializeValues() {
 
-		for(Map.Entry<ListEntryLotDetails,Double> entry  : invalidLotReservations.entrySet()){
+		for (Map.Entry<ListEntryLotDetails, Double> entry : this.invalidLotReservations.entrySet()) {
 			ListEntryLotDetails lot = entry.getKey();
 			Double amountToReserve = entry.getValue();
-			
-			Item newItem = statusTable.addItem(lot);
-			String designation = getDesignation(lot.getEntityIdOfLot());
-			newItem.getItemProperty(messageSource.getMessage(Message.LOT_ID)).setValue(lot.getLotId());
-			newItem.getItemProperty(messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER)).setValue(designation);
-			newItem.getItemProperty(messageSource.getMessage(Message.LOCATION_HEADER)).setValue(lot.getLocationOfLot().getLname());
-			newItem.getItemProperty(messageSource.getMessage(Message.UNITS)).setValue(lot.getScaleOfLot().getName());
-			newItem.getItemProperty(messageSource.getMessage(Message.AVAILABLE_BALANCE)).setValue(lot.getAvailableLotBalance());
-			newItem.getItemProperty(messageSource.getMessage(Message.AMOUNT_TO_RESERVE)).setValue(amountToReserve);
+
+			Item newItem = this.statusTable.addItem(lot);
+			String designation = this.getDesignation(lot.getEntityIdOfLot());
+			newItem.getItemProperty(this.messageSource.getMessage(Message.LOT_ID)).setValue(lot.getLotId());
+			newItem.getItemProperty(this.messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER)).setValue(designation);
+			newItem.getItemProperty(this.messageSource.getMessage(Message.LOCATION_HEADER)).setValue(lot.getLocationOfLot().getLname());
+			newItem.getItemProperty(this.messageSource.getMessage(Message.UNITS)).setValue(lot.getScaleOfLot().getName());
+			newItem.getItemProperty(this.messageSource.getMessage(Message.AVAILABLE_BALANCE)).setValue(lot.getAvailableLotBalance());
+			newItem.getItemProperty(this.messageSource.getMessage(Message.AMOUNT_TO_RESERVE)).setValue(amountToReserve);
 		}
 	}
 
 	@Override
 	public void addListeners() {
-		okButton.addListener(new CloseWindowAction());
+		this.okButton.addListener(new CloseWindowAction());
 	}
 
 	@Override
 	public void layoutComponents() {
-		//main window
-		setHeight("310px");
-		setWidth("780px");
-		
-		mainLayout = new VerticalLayout();
-		mainLayout.setSpacing(true);
-		
-		mainLayout.addComponent(statusDescriptionLabel);
-		mainLayout.addComponent(statusTable);
-		mainLayout.addComponent(okButton);
-		
-		mainLayout.setComponentAlignment(okButton, Alignment.BOTTOM_CENTER);
-		
-		addComponent(mainLayout);
+		// main window
+		this.setHeight("310px");
+		this.setWidth("780px");
+
+		this.mainLayout = new VerticalLayout();
+		this.mainLayout.setSpacing(true);
+
+		this.mainLayout.addComponent(this.statusDescriptionLabel);
+		this.mainLayout.addComponent(this.statusTable);
+		this.mainLayout.addComponent(this.okButton);
+
+		this.mainLayout.setComponentAlignment(this.okButton, Alignment.BOTTOM_CENTER);
+
+		this.addComponent(this.mainLayout);
 	}
 
 	@Override
 	public void updateLabels() {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 	private String getDesignation(Integer entityIdOfLot) {
 		Name designation = null;
-		
+
 		try {
-			designation = germplasmDataManager.getPreferredNameByGID(entityIdOfLot);
+			designation = this.germplasmDataManager.getPreferredNameByGID(entityIdOfLot);
 		} catch (MiddlewareQueryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return designation.getNval();
 	}
 }

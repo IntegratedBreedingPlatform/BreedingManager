@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.customfields;
 
 import java.util.Date;
@@ -15,73 +16,72 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
 @Configurable
-public class ListDateField extends HorizontalLayout
-	implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+public class ListDateField extends HorizontalLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private Label captionLabel;
 	private String caption;
-	private BmsDateField listDtDateField ;
-	private boolean isMandatory;
+	private BmsDateField listDtDateField;
+	private final boolean isMandatory;
 	private Label mandatoryMark;
 	private boolean changed;
-	
-	public ListDateField(String caption, boolean isMandatory){
+
+	public ListDateField(String caption, boolean isMandatory) {
 		this.isMandatory = isMandatory;
-		if(!"".equals(caption)) {
-            this.caption = caption + ": ";
-        }
+		if (!"".equals(caption)) {
+			this.caption = caption + ": ";
+		}
 		this.changed = false;
 	}
-	
 
 	@Override
 	public void instantiateComponents() {
-		captionLabel = new Label(caption);
-		captionLabel.addStyleName("bold");
-		
-		listDtDateField = new BmsDateField();
-		listDtDateField.setImmediate(true);
-		
-		if(isMandatory){
-			mandatoryMark = new MandatoryMarkLabel();
-			
-			listDtDateField.setRequired(true);
-			listDtDateField.setRequiredError("Date must be specified in the YYYY-MM-DD format");
+		this.captionLabel = new Label(this.caption);
+		this.captionLabel.addStyleName("bold");
+
+		this.listDtDateField = new BmsDateField();
+		this.listDtDateField.setImmediate(true);
+
+		if (this.isMandatory) {
+			this.mandatoryMark = new MandatoryMarkLabel();
+
+			this.listDtDateField.setRequired(true);
+			this.listDtDateField.setRequiredError("Date must be specified in the YYYY-MM-DD format");
 		}
-		listDtDateField.setDebugId("vaadin-listdate-date");
+		this.listDtDateField.setDebugId("vaadin-listdate-date");
 	}
 
 	@Override
 	public void initializeValues() {
-		listDtDateField.setValue(new Date());
+		this.listDtDateField.setValue(new Date());
 	}
 
 	@Override
 	public void addListeners() {
-		listDtDateField.addListener(new Property.ValueChangeListener(){
-            
-            private static final long serialVersionUID = 2323698194362809907L;
+		this.listDtDateField.addListener(new Property.ValueChangeListener() {
 
-            public void valueChange(ValueChangeEvent event) {
-                changed = true;
-            }
-            
-        });
+			private static final long serialVersionUID = 2323698194362809907L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				ListDateField.this.changed = true;
+			}
+
+		});
 	}
 
 	@Override
 	public void layoutComponents() {
-		setSpacing(true);
-		
-		addComponent(captionLabel);
-		
-		if(isMandatory){
-			addComponent(mandatoryMark);
+		this.setSpacing(true);
+
+		this.addComponent(this.captionLabel);
+
+		if (this.isMandatory) {
+			this.addComponent(this.mandatoryMark);
 		}
-		
-		addComponent(listDtDateField);
+
+		this.addComponent(this.listDtDateField);
 	}
 
 	@Override
@@ -91,34 +91,34 @@ public class ListDateField extends HorizontalLayout
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		instantiateComponents();
-		initializeValues();
-		addListeners();
-		layoutComponents();
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
 	}
-	
+
 	public BmsDateField getListDtDateField() {
-		return listDtDateField;
+		return this.listDtDateField;
 	}
 
 	public void setListDtDateField(BmsDateField listDtDateField) {
 		this.listDtDateField = listDtDateField;
 	}
-	
-	public void setValue(Date date){
-		listDtDateField.setValue(date);
+
+	public void setValue(Date date) {
+		this.listDtDateField.setValue(date);
 	}
 
-	public Date getValue(){
-		return (Date)listDtDateField.getValue();
+	public Date getValue() {
+		return (Date) this.listDtDateField.getValue();
 	}
-	
+
 	public void validate() throws InvalidValueException {
-		listDtDateField.validate();
+		this.listDtDateField.validate();
 	}
-	
+
 	public boolean isChanged() {
-		return changed;
+		return this.changed;
 	}
 
 	public void setChanged(boolean changed) {

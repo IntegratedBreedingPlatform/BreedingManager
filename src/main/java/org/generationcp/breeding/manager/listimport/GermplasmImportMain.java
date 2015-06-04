@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.listimport;
 
 import java.util.List;
@@ -29,123 +30,124 @@ import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
-public class GermplasmImportMain extends VerticalLayout implements InitializingBean, 
-		InternationalizableComponent, BreedingManagerLayout{
-    
-    private static final long serialVersionUID = -6656072296236475385L;
-    public static final String DATE_FORMAT = "yyyy-MM-dd";
-    private static final int NUMBER_OF_STEPS = 2;
-    
-    private static final String GUIDE_MESSAGE = "The Germplasm Import Import tool allows you to create a new list of germplasm from an import file. "
-    		+ "Sample import file templates are available in the Examples folder in the documentation provided with the BMS.";
-    
-    private final String[] wizardStepNames = new String[NUMBER_OF_STEPS];
-    private final String[] tabHeights = new String[NUMBER_OF_STEPS];
-    
-    private GermplasmImportFileComponent importFileComponent;
-    private SpecifyGermplasmDetailsComponent germplasmDetailsComponent;
-    private GermplasmListImportWizardDisplay wizardDisplay;
-    
-    private ComponentContainer parent;
-    private GermplasmImportPopupSource popupSource;
-    
-    private TabSheet tabSheet;
-    
-    @Autowired
-    private SimpleResourceBundleMessageSource messageSource;
+public class GermplasmImportMain extends VerticalLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+
+	private static final long serialVersionUID = -6656072296236475385L;
+	public static final String DATE_FORMAT = "yyyy-MM-dd";
+	private static final int NUMBER_OF_STEPS = 2;
+
+	private static final String GUIDE_MESSAGE =
+			"The Germplasm Import Import tool allows you to create a new list of germplasm from an import file. "
+					+ "Sample import file templates are available in the Examples folder in the documentation provided with the BMS.";
+
+	private final String[] wizardStepNames = new String[GermplasmImportMain.NUMBER_OF_STEPS];
+	private final String[] tabHeights = new String[GermplasmImportMain.NUMBER_OF_STEPS];
+
+	private GermplasmImportFileComponent importFileComponent;
+	private SpecifyGermplasmDetailsComponent germplasmDetailsComponent;
+	private GermplasmListImportWizardDisplay wizardDisplay;
+
+	private final ComponentContainer parent;
+	private GermplasmImportPopupSource popupSource;
+
+	private TabSheet tabSheet;
+
+	@Autowired
+	private SimpleResourceBundleMessageSource messageSource;
 	private HorizontalLayout titleLayout;
 	private Label toolTitle;
-    
-	private Boolean viaToolURL;
-	private boolean viaPopup; 
-	
-    public GermplasmImportMain(ComponentContainer parent, boolean viaToolURL){
-        this.parent = parent;
-        this.viaToolURL = viaToolURL;
-    }
 
-    public GermplasmImportMain(ComponentContainer parent, boolean viaToolURL, boolean viaPopup){
-        this.parent = parent;
-        this.viaToolURL = viaToolURL;
-        this.viaPopup = viaPopup;
-    }
-    
-    public GermplasmImportMain(ComponentContainer parent, boolean viaToolURL, GermplasmImportPopupSource popupSource){
-        this.parent = parent;
-        this.viaToolURL = viaToolURL;
-        this.viaPopup = false;
-        this.popupSource = popupSource;
-    }   
-    
-    @Override
-    public void afterPropertiesSet() throws Exception {
-    	instantiateComponents();
-    	initializeValues();
-    	addListeners();
-    	layoutComponents();
-    }
-    
-    @Override
-    public void updateLabels() {
+	private final Boolean viaToolURL;
+	private boolean viaPopup;
+
+	public GermplasmImportMain(ComponentContainer parent, boolean viaToolURL) {
+		this.parent = parent;
+		this.viaToolURL = viaToolURL;
+	}
+
+	public GermplasmImportMain(ComponentContainer parent, boolean viaToolURL, boolean viaPopup) {
+		this.parent = parent;
+		this.viaToolURL = viaToolURL;
+		this.viaPopup = viaPopup;
+	}
+
+	public GermplasmImportMain(ComponentContainer parent, boolean viaToolURL, GermplasmImportPopupSource popupSource) {
+		this.parent = parent;
+		this.viaToolURL = viaToolURL;
+		this.viaPopup = false;
+		this.popupSource = popupSource;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
+	}
+
+	@Override
+	public void updateLabels() {
 		// do nothing
-    }
-    
-    public GermplasmImportFileComponent getWizardScreenOne() {
-        return importFileComponent;
-    }
-    public SpecifyGermplasmDetailsComponent getWizardScreenTwo() {
-        return germplasmDetailsComponent;
-    }
-    
-    public void setTitleContent(String guideMessage){
-        titleLayout.removeAllComponents();        
-        toolTitle = new Label(messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
-        toolTitle.setStyleName(Bootstrap.Typography.H1.styleName());
-        toolTitle.setContentMode(Label.CONTENT_XHTML);
-        toolTitle.setWidth("300px");
-        titleLayout.addComponent(toolTitle);
-        
-        Label descLbl = new Label(guideMessage);
-        descLbl.setWidth("400px");
-        
-        PopupView popup = new PopupView("?",descLbl);
-        popup.setStyleName(CssStyles.POPUP_VIEW);
-        titleLayout.addComponent(popup);
-        
-        titleLayout.setComponentAlignment(popup, Alignment.MIDDLE_LEFT);
-    }
+	}
+
+	public GermplasmImportFileComponent getWizardScreenOne() {
+		return this.importFileComponent;
+	}
+
+	public SpecifyGermplasmDetailsComponent getWizardScreenTwo() {
+		return this.germplasmDetailsComponent;
+	}
+
+	public void setTitleContent(String guideMessage) {
+		this.titleLayout.removeAllComponents();
+		this.toolTitle = new Label(this.messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
+		this.toolTitle.setStyleName(Bootstrap.Typography.H1.styleName());
+		this.toolTitle.setContentMode(Label.CONTENT_XHTML);
+		this.toolTitle.setWidth("300px");
+		this.titleLayout.addComponent(this.toolTitle);
+
+		Label descLbl = new Label(guideMessage);
+		descLbl.setWidth("400px");
+
+		PopupView popup = new PopupView("?", descLbl);
+		popup.setStyleName(CssStyles.POPUP_VIEW);
+		this.titleLayout.addComponent(popup);
+
+		this.titleLayout.setComponentAlignment(popup, Alignment.MIDDLE_LEFT);
+	}
 
 	@Override
 	public void instantiateComponents() {
-		setMargin(false,false,true,true);
-		setWidth("730px");
-		
-		titleLayout = new HorizontalLayout();
-		titleLayout.setSpacing(true);
-		setTitleContent(GUIDE_MESSAGE);
-		
-		instantiateWizardDisplay();
-		
+		this.setMargin(false, false, true, true);
+		this.setWidth("730px");
+
+		this.titleLayout = new HorizontalLayout();
+		this.titleLayout.setSpacing(true);
+		this.setTitleContent(GermplasmImportMain.GUIDE_MESSAGE);
+
+		this.instantiateWizardDisplay();
+
 		// use tab approach to display which step to display
-		initializeWizardSteps();
+		this.initializeWizardSteps();
 	}
 
 	protected void initializeWizardSteps() {
-		tabSheet = new TabSheet();
-		
-		//tab names are not actually shown
-		tabSheet.hideTabs(true); 
-		
-		tabSheet.setHeight(tabHeights[0]);
-		tabSheet.setWidth("100%");
+		this.tabSheet = new TabSheet();
 
-		tabSheet.addStyleName(AppConstants.CssStyles.TABSHEET_WHITE);
-		
-		this.importFileComponent =  new GermplasmImportFileComponent(this);
-		this.germplasmDetailsComponent  = new SpecifyGermplasmDetailsComponent(this, viaToolURL);
-		
-		tabSheet.addTab(importFileComponent, wizardStepNames[0]);
-		tabSheet.addTab(germplasmDetailsComponent, wizardStepNames[1]);
+		// tab names are not actually shown
+		this.tabSheet.hideTabs(true);
+
+		this.tabSheet.setHeight(this.tabHeights[0]);
+		this.tabSheet.setWidth("100%");
+
+		this.tabSheet.addStyleName(AppConstants.CssStyles.TABSHEET_WHITE);
+
+		this.importFileComponent = new GermplasmImportFileComponent(this);
+		this.germplasmDetailsComponent = new SpecifyGermplasmDetailsComponent(this, this.viaToolURL);
+
+		this.tabSheet.addTab(this.importFileComponent, this.wizardStepNames[0]);
+		this.tabSheet.addTab(this.germplasmDetailsComponent, this.wizardStepNames[1]);
 	}
 
 	@Override
@@ -155,90 +157,89 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 
 	@Override
 	public void addListeners() {
-		// do nothing		
+		// do nothing
 	}
 
 	@Override
 	public void layoutComponents() {
-		addComponent(titleLayout);
-		
-		addComponent(wizardDisplay);
-		addComponent(tabSheet);
+		this.addComponent(this.titleLayout);
+
+		this.addComponent(this.wizardDisplay);
+		this.addComponent(this.tabSheet);
 	}
-	
+
 	private void instantiateWizardDisplay() {
-		wizardStepNames[0] = messageSource.getMessage(Message.CHOOSE_IMPORT_FILE);
-		wizardStepNames[1] = messageSource.getMessage(Message.SPECIFY_GERMPLASM_DETAILS);
-		
-		tabHeights[0] = "300px";
-		tabHeights[1] = "810px";
-		
-		wizardDisplay = new GermplasmListImportWizardDisplay(wizardStepNames);
+		this.wizardStepNames[0] = this.messageSource.getMessage(Message.CHOOSE_IMPORT_FILE);
+		this.wizardStepNames[1] = this.messageSource.getMessage(Message.SPECIFY_GERMPLASM_DETAILS);
+
+		this.tabHeights[0] = "300px";
+		this.tabHeights[1] = "810px";
+
+		this.wizardDisplay = new GermplasmListImportWizardDisplay(this.wizardStepNames);
 	}
 
 	private void showWizardStep(int step) {
-		Tab tab = Util.getTabAlreadyExist(tabSheet, wizardStepNames[step]);
-		if (tab != null){
+		Tab tab = Util.getTabAlreadyExist(this.tabSheet, this.wizardStepNames[step]);
+		if (tab != null) {
 			Component tabComponent = tab.getComponent();
-			tabSheet.setSelectedTab(tabComponent);
-			if (tabComponent instanceof StepChangeListener){
+			this.tabSheet.setSelectedTab(tabComponent);
+			if (tabComponent instanceof StepChangeListener) {
 				StepChangeListener listener = (StepChangeListener) tabComponent;
 				listener.updatePage();
 			}
-			tabSheet.setHeight(tabHeights[step]);
-			
-			if(getWindow()!=null) {
-                getWindow().setScrollTop(0);
-            }
-		}
-	}
-	
-	public void nextStep(){
-		int step = wizardDisplay.nextStep();
-		// if from upload to specify Germplasm Details step
-		if (step == 1){
-			initializeSpecifyGermplasmDetailsPage();
-		}
-		showWizardStep(step);
-	}
-	
-	public void backStep(){
-		int step = wizardDisplay.backStep();
-		showWizardStep(step);
-	}
-	
-	public void reset(){
-		this.parent.removeAllComponents();
-		this.parent.addComponent(new GermplasmImportMain(this.parent, viaToolURL, viaPopup));
-    }
-	
-	private void initializeSpecifyGermplasmDetailsPage(){
-		GermplasmListUploader germplasmListUploader = importFileComponent.getGermplasmListUploader();
-        if(germplasmDetailsComponent != null && germplasmListUploader != null
-                && germplasmListUploader.getImportedGermplasmList() != null){
-        	
-            ImportedGermplasmList importedGermplasmList = germplasmListUploader.getImportedGermplasmList();
-            List<ImportedGermplasm> importedGermplasms = importedGermplasmList.getImportedGermplasms();
-            
-            germplasmDetailsComponent.setImportedGermplasms(importedGermplasms);
-            germplasmDetailsComponent.setGermplasmListUploader(germplasmListUploader);
-            
-            germplasmDetailsComponent.initializeFromImportFile(importedGermplasmList);
+			this.tabSheet.setHeight(this.tabHeights[step]);
 
-        }
+			if (this.getWindow() != null) {
+				this.getWindow().setScrollTop(0);
+			}
+		}
 	}
-	
-	
-	public boolean isViaPopup(){
+
+	public void nextStep() {
+		int step = this.wizardDisplay.nextStep();
+		// if from upload to specify Germplasm Details step
+		if (step == 1) {
+			this.initializeSpecifyGermplasmDetailsPage();
+		}
+		this.showWizardStep(step);
+	}
+
+	public void backStep() {
+		int step = this.wizardDisplay.backStep();
+		this.showWizardStep(step);
+	}
+
+	public void reset() {
+		this.parent.removeAllComponents();
+		this.parent.addComponent(new GermplasmImportMain(this.parent, this.viaToolURL, this.viaPopup));
+	}
+
+	private void initializeSpecifyGermplasmDetailsPage() {
+		GermplasmListUploader germplasmListUploader = this.importFileComponent.getGermplasmListUploader();
+		if (this.germplasmDetailsComponent != null && germplasmListUploader != null
+				&& germplasmListUploader.getImportedGermplasmList() != null) {
+
+			ImportedGermplasmList importedGermplasmList = germplasmListUploader.getImportedGermplasmList();
+			List<ImportedGermplasm> importedGermplasms = importedGermplasmList.getImportedGermplasms();
+
+			this.germplasmDetailsComponent.setImportedGermplasms(importedGermplasms);
+			this.germplasmDetailsComponent.setGermplasmListUploader(germplasmListUploader);
+
+			this.germplasmDetailsComponent.initializeFromImportFile(importedGermplasmList);
+
+		}
+	}
+
+	public boolean isViaPopup() {
 		return this.viaPopup;
 	}
-	
-	public GermplasmImportPopupSource getGermplasmImportPopupSource(){
-		return popupSource;
+
+	public GermplasmImportPopupSource getGermplasmImportPopupSource() {
+		return this.popupSource;
 	}
-	
-	public ComponentContainer getComponentContainer(){
-		return parent;
+
+	public ComponentContainer getComponentContainer() {
+		return this.parent;
 	}
-	
+
 }

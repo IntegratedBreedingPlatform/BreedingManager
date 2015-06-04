@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.customcomponent;
 
 import java.util.Collection;
@@ -15,70 +16,70 @@ import com.vaadin.ui.Table;
 
 @Configurable
 public class TableWithSelectAllLayout extends TableLayout implements BreedingManagerLayout {
-	
+
 	private static final long serialVersionUID = 5246715520145983375L;
 
 	protected CheckBox selectAllCheckBox;
 	protected final Object checkboxColumnId;
 	protected Label dummyLabel;
-	
-	public TableWithSelectAllLayout(int recordCount, int maxRecords, Object checkboxColumnId){
+
+	public TableWithSelectAllLayout(int recordCount, int maxRecords, Object checkboxColumnId) {
 		super(recordCount, maxRecords);
 		this.checkboxColumnId = checkboxColumnId;
 	}
-	
-	public TableWithSelectAllLayout(Object checkboxColumnId){
+
+	public TableWithSelectAllLayout(Object checkboxColumnId) {
 		super();
 		this.checkboxColumnId = checkboxColumnId;
 	}
-	
-	public TableWithSelectAllLayout(int recordCount, Object checkboxColumnId){
+
+	public TableWithSelectAllLayout(int recordCount, Object checkboxColumnId) {
 		super(recordCount);
 		this.checkboxColumnId = checkboxColumnId;
 	}
 
 	@SuppressWarnings("unchecked")
-	public void syncItemCheckBoxes(){
-		Collection<Object> entries = (Collection<Object>) table.getItemIds();
-		Collection<Object> selectedEntries = (Collection<Object>) table.getValue();
-		if(selectedEntries.size() == entries.size() && selectedEntries.size() > 0){
-			selectAllCheckBox.setValue(true);
-		} else{
-			selectAllCheckBox.setValue(false);
+	public void syncItemCheckBoxes() {
+		Collection<Object> entries = (Collection<Object>) this.table.getItemIds();
+		Collection<Object> selectedEntries = (Collection<Object>) this.table.getValue();
+		if (selectedEntries.size() == entries.size() && selectedEntries.size() > 0) {
+			this.selectAllCheckBox.setValue(true);
+		} else {
+			this.selectAllCheckBox.setValue(false);
 		}
-		
-		for(Object entry : entries){
-			Property itemProperty = table.getItem(entry).getItemProperty(checkboxColumnId);
-			if (itemProperty != null){
+
+		for (Object entry : entries) {
+			Property itemProperty = this.table.getItem(entry).getItemProperty(this.checkboxColumnId);
+			if (itemProperty != null) {
 				CheckBox tag = (CheckBox) itemProperty.getValue();
-				if(selectedEntries.contains(entry)){
+				if (selectedEntries.contains(entry)) {
 					tag.setValue(true);
-				} else{
+				} else {
 					tag.setValue(false);
 				}
 			}
 		}
-    }
-	
+	}
+
 	@Override
-	public Table getTable(){
+	public Table getTable() {
 		return this.table;
 	}
-	
-	public CheckBox getCheckBox(){
+
+	public CheckBox getCheckBox() {
 		return this.selectAllCheckBox;
 	}
 
 	@Override
 	public void instantiateComponents() {
 		super.instantiateComponents();
-		
+
 		this.selectAllCheckBox = new CheckBox("Select All");
 		this.selectAllCheckBox.setImmediate(true);
-		
+
 		// label is just for indenting the Select All checkbox to align with table checkboxes
-		this.dummyLabel = new Label(); 
-		dummyLabel.setWidth("7px");
+		this.dummyLabel = new Label();
+		this.dummyLabel.setWidth("7px");
 	}
 
 	@Override
@@ -88,33 +89,38 @@ public class TableWithSelectAllLayout extends TableLayout implements BreedingMan
 	@Override
 	public void addListeners() {
 		super.addListeners();
-		
-		table.addListener(new Table.ValueChangeListener() {
+
+		this.table.addListener(new Table.ValueChangeListener() {
+
 			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void valueChange(final com.vaadin.data.Property.ValueChangeEvent event) {
-				syncItemCheckBoxes();
-             }
-         });
-		
+				TableWithSelectAllLayout.this.syncItemCheckBoxes();
+			}
+		});
+
 		this.selectAllCheckBox.addListener(new Button.ClickListener() {
+
 			private static final long serialVersionUID = 7882379695058054587L;
-			
+
 			@SuppressWarnings("unchecked")
 			@Override
 			public void buttonClick(ClickEvent event) {
 				boolean checkBoxValue = event.getButton().booleanValue();
-				Collection<Object> entries = (Collection<Object>) table.getItemIds();
-				for(Object entry : entries){
-					CheckBox tag = (CheckBox) table.getItem(entry).getItemProperty(checkboxColumnId).getValue();
+				Collection<Object> entries = (Collection<Object>) TableWithSelectAllLayout.this.table.getItemIds();
+				for (Object entry : entries) {
+					CheckBox tag =
+							(CheckBox) TableWithSelectAllLayout.this.table.getItem(entry)
+									.getItemProperty(TableWithSelectAllLayout.this.checkboxColumnId).getValue();
 					tag.setValue(checkBoxValue);
 				}
-				if (checkBoxValue){
-					table.setValue(entries);
+				if (checkBoxValue) {
+					TableWithSelectAllLayout.this.table.setValue(entries);
 				} else {
-					table.setValue(null);
+					TableWithSelectAllLayout.this.table.setValue(null);
 				}
-			
+
 			}
 		});
 	}
@@ -122,14 +128,14 @@ public class TableWithSelectAllLayout extends TableLayout implements BreedingMan
 	@Override
 	public void layoutComponents() {
 		super.layoutComponents();
-		
+
 		HorizontalLayout layout = new HorizontalLayout();
-		layout.addComponent(dummyLabel);
-		layout.addComponent(selectAllCheckBox);
-		
-		selectAllCheckBox.addStyleName("lm-table-select-all");
-		
-		addComponent(layout);
+		layout.addComponent(this.dummyLabel);
+		layout.addComponent(this.selectAllCheckBox);
+
+		this.selectAllCheckBox.addStyleName("lm-table-select-all");
+
+		this.addComponent(layout);
 	}
 
 }

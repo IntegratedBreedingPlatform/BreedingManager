@@ -1,5 +1,6 @@
+
 package org.generationcp.breeding.manager.crossingmanager.constants;
 
 public enum CrossType {
-	 PLEASE_CHOOSE, MULTIPLY, TOP_TO_BOTTOM
+	PLEASE_CHOOSE, MULTIPLY, TOP_TO_BOTTOM
 }

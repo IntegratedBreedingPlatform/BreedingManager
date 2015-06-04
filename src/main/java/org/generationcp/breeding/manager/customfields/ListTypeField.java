@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.customfields;
 
 import java.util.List;
@@ -22,144 +23,145 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
 @Configurable
-public class ListTypeField extends HorizontalLayout
-implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+public class ListTypeField extends HorizontalLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 4506866031376540836L;
 	private final static Logger LOG = LoggerFactory.getLogger(ListTypeField.class);
 
 	private Label captionLabel;
-	private String caption;
+	private final String caption;
 	private ComboBox listTypeComboBox;
-	private boolean isMandatory;
+	private final boolean isMandatory;
 	private Label mandatoryMark;
-	private final String DEFAULT_LIST_TYPE = "LST"; 
+	private final String DEFAULT_LIST_TYPE = "LST";
 	private boolean changed;
-	
+
 	@Autowired
-    private GermplasmListManager germplasmListManager;
-	
-	public ListTypeField(String caption, boolean isMandatory){
+	private GermplasmListManager germplasmListManager;
+
+	public ListTypeField(String caption, boolean isMandatory) {
 		this.caption = caption + ": ";
 		this.isMandatory = isMandatory;
 		this.changed = false;
 	}
+
 	@Override
 	public void instantiateComponents() {
-		captionLabel = new Label(caption);
-		captionLabel.addStyleName("bold");
-		
-		listTypeComboBox = new ComboBox();
-		listTypeComboBox.setWidth("180px");
-		listTypeComboBox.setImmediate(true);
-		
-		if(isMandatory){
-			mandatoryMark = new MandatoryMarkLabel();
-			
-			listTypeComboBox.setNullSelectionAllowed(false);
-			listTypeComboBox.setRequired(true);
-			listTypeComboBox.setRequiredError("Please specify the type of the list.");
+		this.captionLabel = new Label(this.caption);
+		this.captionLabel.addStyleName("bold");
+
+		this.listTypeComboBox = new ComboBox();
+		this.listTypeComboBox.setWidth("180px");
+		this.listTypeComboBox.setImmediate(true);
+
+		if (this.isMandatory) {
+			this.mandatoryMark = new MandatoryMarkLabel();
+
+			this.listTypeComboBox.setNullSelectionAllowed(false);
+			this.listTypeComboBox.setRequired(true);
+			this.listTypeComboBox.setRequiredError("Please specify the type of the list.");
 		}
-		listTypeComboBox.setDebugId("vaadin-listtype-select");
+		this.listTypeComboBox.setDebugId("vaadin-listtype-select");
 	}
 
 	@Override
 	public void initializeValues() {
 		try {
 			// initialize List Type ComboBox
-			populateListType(listTypeComboBox);
+			this.populateListType(this.listTypeComboBox);
 		} catch (MiddlewareQueryException e) {
-			LOG.error("Error in retrieving List Type", e);
+			ListTypeField.LOG.error("Error in retrieving List Type", e);
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void populateListType(ComboBox selectType) throws MiddlewareQueryException {
-        List<UserDefinedField> listTypes = this.germplasmListManager.getGermplasmListTypes();
-        
-        for (UserDefinedField listType : listTypes) {
-            String typeCode = listType.getFcode();
-            if (!AppConstants.DB.FOLDER.equals(typeCode)){
-            	selectType.addItem(typeCode);
-            	selectType.setItemCaption(typeCode, listType.getFname());
-            	//set "Germplasm List" as the default value
-            	if (DEFAULT_LIST_TYPE.equals(typeCode)) {
-            		selectType.setValue(typeCode);
-            	}
-            }
-        }
-    }
+		List<UserDefinedField> listTypes = this.germplasmListManager.getGermplasmListTypes();
+
+		for (UserDefinedField listType : listTypes) {
+			String typeCode = listType.getFcode();
+			if (!AppConstants.DB.FOLDER.equals(typeCode)) {
+				selectType.addItem(typeCode);
+				selectType.setItemCaption(typeCode, listType.getFname());
+				// set "Germplasm List" as the default value
+				if (this.DEFAULT_LIST_TYPE.equals(typeCode)) {
+					selectType.setValue(typeCode);
+				}
+			}
+		}
+	}
 
 	@Override
 	public void addListeners() {
-		listTypeComboBox.addListener(new Property.ValueChangeListener(){
-            
-            private static final long serialVersionUID = 2323698194362809907L;
+		this.listTypeComboBox.addListener(new Property.ValueChangeListener() {
 
-            public void valueChange(ValueChangeEvent event) {
-                changed = true;
-            }
-            
-        });
+			private static final long serialVersionUID = 2323698194362809907L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				ListTypeField.this.changed = true;
+			}
+
+		});
 	}
 
 	@Override
 	public void layoutComponents() {
-		setSpacing(true);
-		
-		addComponent(captionLabel);
-		
-		if(isMandatory){
-			addComponent(mandatoryMark);
+		this.setSpacing(true);
+
+		this.addComponent(this.captionLabel);
+
+		if (this.isMandatory) {
+			this.addComponent(this.mandatoryMark);
 		}
-		
-		addComponent(listTypeComboBox);
+
+		this.addComponent(this.listTypeComboBox);
 	}
 
 	@Override
 	public void updateLabels() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		instantiateComponents();
-		initializeValues();
-		addListeners();
-		layoutComponents();
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
 	}
-	
+
 	public ComboBox getListTypeComboBox() {
-		return listTypeComboBox;
+		return this.listTypeComboBox;
 	}
-	
+
 	public void setListTypeComboBox(ComboBox listTypeComboBox) {
 		this.listTypeComboBox = listTypeComboBox;
 	}
-	
-	public void setValue(String value){
-		listTypeComboBox.select(value);
+
+	public void setValue(String value) {
+		this.listTypeComboBox.select(value);
 	}
-	
-	public String getValue(){
-		return (String)listTypeComboBox.getValue();
+
+	public String getValue() {
+		return (String) this.listTypeComboBox.getValue();
 	}
-	
+
 	public String getDEFAULT_LIST_TYPE() {
-		return DEFAULT_LIST_TYPE;
+		return this.DEFAULT_LIST_TYPE;
 	}
-	
+
 	public void validate() throws InvalidValueException {
-		listTypeComboBox.validate();
+		this.listTypeComboBox.validate();
 	}
-	
+
 	public boolean isChanged() {
-		return changed;
+		return this.changed;
 	}
 
 	public void setChanged(boolean changed) {
 		this.changed = changed;
 	}
-	
+
 }

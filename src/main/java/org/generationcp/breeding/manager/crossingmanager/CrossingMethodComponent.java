@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.crossingmanager;
 
 import java.util.List;
@@ -27,28 +28,27 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
-public class CrossingMethodComponent extends VerticalLayout implements BreedingManagerLayout,InitializingBean, 
-								InternationalizableComponent {
+public class CrossingMethodComponent extends VerticalLayout implements BreedingManagerLayout, InitializingBean,
+		InternationalizableComponent {
 
 	private static final long serialVersionUID = -8847158352169444182L;
-	
-	public static final String MAKE_CROSS_BUTTON_ID = "Make Cross Button";
-	
-    @Autowired
-    private SimpleResourceBundleMessageSource messageSource;
-	
-    private Panel crossingMethodPanel;
-    private Label crossingMethodLabel;
-    
-    private ComboBox crossingMethodComboBox;
-    private CheckBox chkBoxMakeReciprocalCrosses;
-    private Button btnMakeCross;
 
-    private CrossingManagerMakeCrossesComponent makeCrossesMain;
-    private MakeCrossesParentsComponent parentsComponent;
-    
-	public CrossingMethodComponent(
-			CrossingManagerMakeCrossesComponent makeCrossesMain) {
+	public static final String MAKE_CROSS_BUTTON_ID = "Make Cross Button";
+
+	@Autowired
+	private SimpleResourceBundleMessageSource messageSource;
+
+	private Panel crossingMethodPanel;
+	private Label crossingMethodLabel;
+
+	private ComboBox crossingMethodComboBox;
+	private CheckBox chkBoxMakeReciprocalCrosses;
+	private Button btnMakeCross;
+
+	private final CrossingManagerMakeCrossesComponent makeCrossesMain;
+	private MakeCrossesParentsComponent parentsComponent;
+
+	public CrossingMethodComponent(CrossingManagerMakeCrossesComponent makeCrossesMain) {
 		super();
 		this.makeCrossesMain = makeCrossesMain;
 	}
@@ -59,98 +59,99 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-    	instantiateComponents();
-    	initializeValues();
-    	addListeners();
-    	layoutComponents();
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
 	}
 
 	@Override
 	public void instantiateComponents() {
-        crossingMethodLabel = new Label(messageSource.getMessage(Message.CROSSING_METHOD));
-        crossingMethodLabel.setWidth("200px");
-        crossingMethodLabel.setStyleName(Bootstrap.Typography.H4.styleName());
-        crossingMethodLabel.addStyleName(AppConstants.CssStyles.BOLD);
-        
-        crossingMethodComboBox = new ComboBox();
-        crossingMethodComboBox.setNewItemsAllowed(false);
-        crossingMethodComboBox.setNullSelectionAllowed(false);
-        crossingMethodComboBox.setWidth("400px");
-        
-        chkBoxMakeReciprocalCrosses = new CheckBox(messageSource.getMessage(Message.MAKE_CROSSES_CHECKBOX_LABEL));
-    
-        btnMakeCross= new Button(messageSource.getMessage(Message.MAKE_CROSSES_BUTTON_LABEL));
-        btnMakeCross.setData(MAKE_CROSS_BUTTON_ID);
-        btnMakeCross.addStyleName(Bootstrap.Buttons.INFO.styleName());
+		this.crossingMethodLabel = new Label(this.messageSource.getMessage(Message.CROSSING_METHOD));
+		this.crossingMethodLabel.setWidth("200px");
+		this.crossingMethodLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+		this.crossingMethodLabel.addStyleName(AppConstants.CssStyles.BOLD);
+
+		this.crossingMethodComboBox = new ComboBox();
+		this.crossingMethodComboBox.setNewItemsAllowed(false);
+		this.crossingMethodComboBox.setNullSelectionAllowed(false);
+		this.crossingMethodComboBox.setWidth("400px");
+
+		this.chkBoxMakeReciprocalCrosses = new CheckBox(this.messageSource.getMessage(Message.MAKE_CROSSES_CHECKBOX_LABEL));
+
+		this.btnMakeCross = new Button(this.messageSource.getMessage(Message.MAKE_CROSSES_BUTTON_LABEL));
+		this.btnMakeCross.setData(CrossingMethodComponent.MAKE_CROSS_BUTTON_ID);
+		this.btnMakeCross.addStyleName(Bootstrap.Buttons.INFO.styleName());
 	}
 
 	@Override
 	public void initializeValues() {
-		crossingMethodComboBox.addItem(CrossType.PLEASE_CHOOSE);
-        crossingMethodComboBox.setItemCaption(CrossType.PLEASE_CHOOSE, messageSource.getMessage(Message.MAKE_CROSSES_OPTION_GROUP_ITEM_PLEASE_CHOOSE));
-		crossingMethodComboBox.addItem(CrossType.MULTIPLY);
-        crossingMethodComboBox.setItemCaption(CrossType.MULTIPLY, messageSource.getMessage(Message.MAKE_CROSSES_OPTION_GROUP_ITEM_ONE_LABEL));
-        crossingMethodComboBox.addItem(CrossType.TOP_TO_BOTTOM);
-        crossingMethodComboBox.setItemCaption(CrossType.TOP_TO_BOTTOM, messageSource.getMessage(Message.MAKE_CROSSES_OPTION_GROUP_ITEM_TWO_LABEL));
-        crossingMethodComboBox.select(CrossType.PLEASE_CHOOSE);
+		this.crossingMethodComboBox.addItem(CrossType.PLEASE_CHOOSE);
+		this.crossingMethodComboBox.setItemCaption(CrossType.PLEASE_CHOOSE,
+				this.messageSource.getMessage(Message.MAKE_CROSSES_OPTION_GROUP_ITEM_PLEASE_CHOOSE));
+		this.crossingMethodComboBox.addItem(CrossType.MULTIPLY);
+		this.crossingMethodComboBox.setItemCaption(CrossType.MULTIPLY,
+				this.messageSource.getMessage(Message.MAKE_CROSSES_OPTION_GROUP_ITEM_ONE_LABEL));
+		this.crossingMethodComboBox.addItem(CrossType.TOP_TO_BOTTOM);
+		this.crossingMethodComboBox.setItemCaption(CrossType.TOP_TO_BOTTOM,
+				this.messageSource.getMessage(Message.MAKE_CROSSES_OPTION_GROUP_ITEM_TWO_LABEL));
+		this.crossingMethodComboBox.select(CrossType.PLEASE_CHOOSE);
 	}
 
 	@Override
 	public void addListeners() {
-		btnMakeCross.addListener(new CrossingManagerImportButtonClickListener(this));
+		this.btnMakeCross.addListener(new CrossingManagerImportButtonClickListener(this));
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
 	public void layoutComponents() {
-		setSpacing(true);
-		
-        VerticalLayout layoutCrossOption = new VerticalLayout();
-        layoutCrossOption.setWidth("460px");
-        layoutCrossOption.setSpacing(true);
-        layoutCrossOption.setMargin(true);
-        layoutCrossOption.addComponent(crossingMethodComboBox);
-        layoutCrossOption.addComponent(chkBoxMakeReciprocalCrosses);
-        layoutCrossOption.addComponent(btnMakeCross);
-        
-        crossingMethodPanel = new Panel();
-        crossingMethodPanel.setWidth("460px");
-        crossingMethodPanel.setLayout(layoutCrossOption);
-        crossingMethodPanel.addStyleName("section_panel_layout");
-        
-        //provides this slot for an icon 
-        HeaderLabelLayout crossingMethodLayout = new HeaderLabelLayout(null,crossingMethodLabel);
-        addComponent(crossingMethodLayout);
-        addComponent(crossingMethodPanel);
-	}
-	
-    public void makeCrossButtonAction(){
-    	// TODO temporary fix, will have a new fix approach soon
-    	if(makeCrossesMain.getModeView().equals(ModeView.INVENTORY_VIEW)){
-    		String message = "Please switch to list view first before making crosses.";
-        	MessageNotifier.showError(getWindow(),"Warning!", message);
-    	}    	
-    	else{    		          
-        	CrossType type = (CrossType) crossingMethodComboBox.getValue();
-        	if (CrossType.PLEASE_CHOOSE.equals(type)){
-            	MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.WARNING)
-    					, messageSource.getMessage(Message.PLEASE_CHOOSE_CROSSING_METHOD));
-        	}else{	
-        		parentsComponent = makeCrossesMain.getParentsComponent();
-            	
-            	Table femaleParents = parentsComponent.getFemaleTable();
-            	Table maleParents = parentsComponent.getMaleTable();
-            	
-            	List<GermplasmListEntry> femaleList = parentsComponent.getCorrectSortedValue(femaleParents);
-            	List<GermplasmListEntry> maleList = parentsComponent.getCorrectSortedValue(maleParents);
-	        	parentsComponent.updateFemaleListNameForCrosses();
-	        	parentsComponent.updateMaleListNameForCrosses();
-	        	
-	        	makeCrossesMain.makeCrossButtonAction(femaleList, maleList, 
-	        			parentsComponent.getFemaleListNameForCrosses(), parentsComponent.getMaleListNameForCrosses(), type, chkBoxMakeReciprocalCrosses.booleanValue());
-        	}
-    	}
-    }
+		this.setSpacing(true);
 
+		VerticalLayout layoutCrossOption = new VerticalLayout();
+		layoutCrossOption.setWidth("460px");
+		layoutCrossOption.setSpacing(true);
+		layoutCrossOption.setMargin(true);
+		layoutCrossOption.addComponent(this.crossingMethodComboBox);
+		layoutCrossOption.addComponent(this.chkBoxMakeReciprocalCrosses);
+		layoutCrossOption.addComponent(this.btnMakeCross);
+
+		this.crossingMethodPanel = new Panel();
+		this.crossingMethodPanel.setWidth("460px");
+		this.crossingMethodPanel.setLayout(layoutCrossOption);
+		this.crossingMethodPanel.addStyleName("section_panel_layout");
+
+		// provides this slot for an icon
+		HeaderLabelLayout crossingMethodLayout = new HeaderLabelLayout(null, this.crossingMethodLabel);
+		this.addComponent(crossingMethodLayout);
+		this.addComponent(this.crossingMethodPanel);
+	}
+
+	public void makeCrossButtonAction() {
+		// TODO temporary fix, will have a new fix approach soon
+		if (this.makeCrossesMain.getModeView().equals(ModeView.INVENTORY_VIEW)) {
+			String message = "Please switch to list view first before making crosses.";
+			MessageNotifier.showError(this.getWindow(), "Warning!", message);
+		} else {
+			CrossType type = (CrossType) this.crossingMethodComboBox.getValue();
+			if (CrossType.PLEASE_CHOOSE.equals(type)) {
+				MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
+						this.messageSource.getMessage(Message.PLEASE_CHOOSE_CROSSING_METHOD));
+			} else {
+				this.parentsComponent = this.makeCrossesMain.getParentsComponent();
+
+				Table femaleParents = this.parentsComponent.getFemaleTable();
+				Table maleParents = this.parentsComponent.getMaleTable();
+
+				List<GermplasmListEntry> femaleList = this.parentsComponent.getCorrectSortedValue(femaleParents);
+				List<GermplasmListEntry> maleList = this.parentsComponent.getCorrectSortedValue(maleParents);
+				this.parentsComponent.updateFemaleListNameForCrosses();
+				this.parentsComponent.updateMaleListNameForCrosses();
+
+				this.makeCrossesMain.makeCrossButtonAction(femaleList, maleList, this.parentsComponent.getFemaleListNameForCrosses(),
+						this.parentsComponent.getMaleListNameForCrosses(), type, this.chkBoxMakeReciprocalCrosses.booleanValue());
+			}
+		}
+	}
 
 }

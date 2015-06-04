@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.listmanager.listeners.test;
 
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
@@ -19,28 +20,28 @@ public class GermplasmListTreeExpandListenerTest {
 	@Before
 	public void setUp() {
 		GermplasmListTreeExpandListenerTest.listSelectorComponent = Mockito.mock(ListSelectorComponent.class);
-		GermplasmListTreeExpandListenerTest.listener 
-			= new GermplasmListTreeExpandListener(GermplasmListTreeExpandListenerTest.listSelectorComponent);
+		GermplasmListTreeExpandListenerTest.listener =
+				new GermplasmListTreeExpandListener(GermplasmListTreeExpandListenerTest.listSelectorComponent);
 		GermplasmListTreeExpandListenerTest.event = Mockito.mock(ExpandEvent.class);
 	}
 
 	@Test
 	public void testAddRenameItemOptionIsHiddenAfterClickingExpandArrow() {
 		Mockito.when(GermplasmListTreeExpandListenerTest.event.getItemId()).thenReturn(ListSelectorComponent.LISTS);
-		triggerExpand();
-		assertIfToggleFolderSectionForItemSelectedIsCalled();
+		this.triggerExpand();
+		this.assertIfToggleFolderSectionForItemSelectedIsCalled();
 	}
-	
+
 	private void assertIfToggleFolderSectionForItemSelectedIsCalled() {
 		try {
-			Mockito.verify(GermplasmListTreeExpandListenerTest.listSelectorComponent,
-					Mockito.times(1)).toggleFolderSectionForItemSelected();
+			Mockito.verify(GermplasmListTreeExpandListenerTest.listSelectorComponent, Mockito.times(1))
+					.toggleFolderSectionForItemSelected();
 		} catch (TooLittleActualInvocations e) {
 			Assert.fail("Expected that the toggleFolderSectionForItemSelected() is called once after invoking nodeExpand but didn't.");
 		}
 	}
 
 	private void triggerExpand() {
-		GermplasmListTreeExpandListenerTest.listener.nodeExpand(GermplasmListTreeExpandListenerTest.event);		
+		GermplasmListTreeExpandListenerTest.listener.nodeExpand(GermplasmListTreeExpandListenerTest.event);
 	}
 }

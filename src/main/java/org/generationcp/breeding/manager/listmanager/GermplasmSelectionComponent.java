@@ -1,7 +1,5 @@
-package org.generationcp.breeding.manager.listmanager;
 
-import com.vaadin.ui.*;
-import com.vaadin.ui.themes.Reindeer;
+package org.generationcp.breeding.manager.listmanager;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
@@ -14,67 +12,75 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Reindeer;
+
 @Configurable
-public class GermplasmSelectionComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+public class GermplasmSelectionComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
+		BreedingManagerLayout {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	@Autowired
-    private SimpleResourceBundleMessageSource messageSource;	
-	
+	private SimpleResourceBundleMessageSource messageSource;
+
 	private Label headingLabel;
 	private Label searchDescription;
-	
+
 	private HorizontalLayout headerLayout;
 	private HorizontalLayout instructionLayout;
-	
+
 	private GermplasmSearchBarComponent searchBarComponent;
 	private GermplasmSearchResultsComponent searchResultsComponent;
 
 	private final ListManagerMain source;
 
-    public GermplasmSelectionComponent(final ListManagerMain source) {
+	public GermplasmSelectionComponent(final ListManagerMain source) {
 		super();
-		this.source = source; 
+		this.source = source;
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		instantiateComponents();
-		initializeValues();
-		addListeners();
-		layoutComponents();
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
 	}
 
 	@Override
 	public void instantiateComponents() {
-		
-		setWidth("100%");
-		setHeight("800px");
-		
-		headerLayout = new HorizontalLayout();
-		instructionLayout = new HorizontalLayout();
-		instructionLayout.setWidth("100%");
-		
-		headingLabel = new Label();
-    	headingLabel.setImmediate(true);
-    	headingLabel.setWidth("200px");
-    	headingLabel.setStyleName(Bootstrap.Typography.H4.styleName());
-    	headingLabel.addStyleName(AppConstants.CssStyles.BOLD);
-		
-		searchDescription = new Label();
-		searchDescription.addStyleName("lm-word-wrap");
-		searchDescription.setHeight("55px");
-		
-		searchResultsComponent = new GermplasmSearchResultsComponent(source);
-		searchBarComponent = new GermplasmSearchBarComponent(searchResultsComponent);
 
-    }
+		this.setWidth("100%");
+		this.setHeight("800px");
+
+		this.headerLayout = new HorizontalLayout();
+		this.instructionLayout = new HorizontalLayout();
+		this.instructionLayout.setWidth("100%");
+
+		this.headingLabel = new Label();
+		this.headingLabel.setImmediate(true);
+		this.headingLabel.setWidth("200px");
+		this.headingLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+		this.headingLabel.addStyleName(AppConstants.CssStyles.BOLD);
+
+		this.searchDescription = new Label();
+		this.searchDescription.addStyleName("lm-word-wrap");
+		this.searchDescription.setHeight("55px");
+
+		this.searchResultsComponent = new GermplasmSearchResultsComponent(this.source);
+		this.searchBarComponent = new GermplasmSearchBarComponent(this.searchResultsComponent);
+
+	}
 
 	@Override
 	public void initializeValues() {
-		headingLabel.setValue(messageSource.getMessage(Message.SEARCH_FOR_GERMPLASM));
-		searchDescription.setValue(messageSource.getMessage(Message.SELECT_A_GERMPLASM_TO_VIEW_THE_DETAILS));
+		this.headingLabel.setValue(this.messageSource.getMessage(Message.SEARCH_FOR_GERMPLASM));
+		this.searchDescription.setValue(this.messageSource.getMessage(Message.SELECT_A_GERMPLASM_TO_VIEW_THE_DETAILS));
 	}
 
 	@Override
@@ -84,49 +90,48 @@ public class GermplasmSelectionComponent extends VerticalLayout implements Initi
 
 	@Override
 	public void layoutComponents() {
-        this.setMargin(new MarginInfo(true,false,true,true));
+		this.setMargin(new MarginInfo(true, false, true, true));
 
-        final HorizontalLayout selectionHeaderContainer = new HorizontalLayout();
-        selectionHeaderContainer.setWidth("100%");
+		final HorizontalLayout selectionHeaderContainer = new HorizontalLayout();
+		selectionHeaderContainer.setWidth("100%");
 
-		final HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS, headingLabel);
-		headerLayout.addComponent(headingLayout);
-		instructionLayout.addComponent(searchDescription);
-		
+		final HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS, this.headingLabel);
+		this.headerLayout.addComponent(headingLayout);
+		this.instructionLayout.addComponent(this.searchDescription);
+
 		final Panel listDataTablePanel = new Panel();
-        listDataTablePanel.setStyleName(Reindeer.PANEL_LIGHT + " "+AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
-        
-        final VerticalLayout listDataTableLayout = new VerticalLayout();
-        listDataTableLayout.setMargin(true);
-        listDataTableLayout.addStyleName("listDataTableLayout");
+		listDataTablePanel.setStyleName(Reindeer.PANEL_LIGHT + " " + AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
 
-        listDataTableLayout.addComponent(searchBarComponent);
-        listDataTableLayout.addComponent(searchResultsComponent);
-	
-        listDataTablePanel.setContent(listDataTableLayout);
+		final VerticalLayout listDataTableLayout = new VerticalLayout();
+		listDataTableLayout.setMargin(true);
+		listDataTableLayout.addStyleName("listDataTableLayout");
 
-        selectionHeaderContainer.addComponent(headingLayout);
-        selectionHeaderContainer.addComponent(source.listBuilderToggleBtn2);
-        selectionHeaderContainer.setExpandRatio(headingLayout,1.0F);
-        selectionHeaderContainer.setComponentAlignment(source.listBuilderToggleBtn2,Alignment.TOP_RIGHT);
+		listDataTableLayout.addComponent(this.searchBarComponent);
+		listDataTableLayout.addComponent(this.searchResultsComponent);
 
-        addComponent(selectionHeaderContainer);
-        addComponent(instructionLayout);
-		addComponent(listDataTablePanel);
+		listDataTablePanel.setContent(listDataTableLayout);
 
-        this.setExpandRatio(listDataTablePanel,1.0F);
+		selectionHeaderContainer.addComponent(headingLayout);
+		selectionHeaderContainer.addComponent(this.source.listBuilderToggleBtn2);
+		selectionHeaderContainer.setExpandRatio(headingLayout, 1.0F);
+		selectionHeaderContainer.setComponentAlignment(this.source.listBuilderToggleBtn2, Alignment.TOP_RIGHT);
+
+		this.addComponent(selectionHeaderContainer);
+		this.addComponent(this.instructionLayout);
+		this.addComponent(listDataTablePanel);
+
+		this.setExpandRatio(listDataTablePanel, 1.0F);
 	}
-	
-    public GermplasmSearchResultsComponent getSearchResultsComponent(){
-    	return searchResultsComponent;
-    }
 
-    public GermplasmSearchBarComponent getSearchBarComponent(){
-    	return searchBarComponent;
-    }    
-    
+	public GermplasmSearchResultsComponent getSearchResultsComponent() {
+		return this.searchResultsComponent;
+	}
+
+	public GermplasmSearchBarComponent getSearchBarComponent() {
+		return this.searchBarComponent;
+	}
+
 	@Override
 	public void updateLabels() {
 	}
 }
-

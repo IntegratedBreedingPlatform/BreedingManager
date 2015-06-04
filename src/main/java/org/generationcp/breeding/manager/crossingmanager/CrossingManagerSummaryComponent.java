@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.crossingmanager;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -21,76 +22,73 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
-public class CrossingManagerSummaryComponent extends VerticalLayout implements
-		BreedingManagerLayout, InitializingBean {
+public class CrossingManagerSummaryComponent extends VerticalLayout implements BreedingManagerLayout, InitializingBean {
 
 	private static final long serialVersionUID = 5812462719216001161L;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
-	
+
 	private Label summaryLabel;
-	
+
 	private TabSheet tabSheet;
 	private VerticalLayout tabContentLayout;
 	private CrossesSummaryListDataComponent crossListComponent;
 	private SummaryListHeaderComponent femaleDetailsComponent;
 	private SummaryListHeaderComponent maleDetailsComponent;
-	
+
 	private HorizontalLayout settingsComponent;
-	
+
 	private Button doneButton;
-	
-	private ManageCrossingSettingsMain crossingManagerMain;
-	
-	private GermplasmList crossList;
-	private GermplasmList maleList;
-	private GermplasmList femaleList;
-	private CrossingManagerSetting setting;
-	
-	public CrossingManagerSummaryComponent(ManageCrossingSettingsMain crossingManagerMain, GermplasmList crossList, 
-			GermplasmList femaleList, GermplasmList maleList, CrossingManagerSetting setting){
+
+	private final ManageCrossingSettingsMain crossingManagerMain;
+
+	private final GermplasmList crossList;
+	private final GermplasmList maleList;
+	private final GermplasmList femaleList;
+	private final CrossingManagerSetting setting;
+
+	public CrossingManagerSummaryComponent(ManageCrossingSettingsMain crossingManagerMain, GermplasmList crossList,
+			GermplasmList femaleList, GermplasmList maleList, CrossingManagerSetting setting) {
 		this.crossingManagerMain = crossingManagerMain;
 		this.crossList = crossList;
 		this.maleList = maleList;
 		this.femaleList = femaleList;
 		this.setting = setting;
 	}
-	
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		instantiateComponents();
-		initializeValues();
-		addListeners();
-		layoutComponents();
-		
-		crossListComponent.focus();
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
+
+		this.crossListComponent.focus();
 	}
 
 	@Override
 	public void instantiateComponents() {
-		summaryLabel = new Label(messageSource.getMessage(Message.SUMMARY));
-		summaryLabel.addStyleName(Bootstrap.Typography.H4.styleName());
-		summaryLabel.addStyleName(AppConstants.CssStyles.BOLD);
-		
-		//use tabsheet for styling purposes only
-		tabSheet = new TabSheet();
-		tabSheet.hideTabs(true);
-		tabContentLayout = new VerticalLayout();
-		
-		crossListComponent = new CrossesSummaryListDataComponent(crossList);
-		femaleDetailsComponent = new SummaryListHeaderComponent(femaleList, 
-				messageSource.getMessage(Message.FEMALE_PARENT_LIST_DETAILS));
-		maleDetailsComponent = new SummaryListHeaderComponent(maleList, 
-				messageSource.getMessage(Message.MALE_PARENT_LIST_DETAILS));
-		settingsComponent = new CrossesSummarySettingsComponent(setting);
-		
-		doneButton = new Button(messageSource.getMessage(Message.DONE));
-		doneButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-		
-		
-	}
+		this.summaryLabel = new Label(this.messageSource.getMessage(Message.SUMMARY));
+		this.summaryLabel.addStyleName(Bootstrap.Typography.H4.styleName());
+		this.summaryLabel.addStyleName(AppConstants.CssStyles.BOLD);
 
+		// use tabsheet for styling purposes only
+		this.tabSheet = new TabSheet();
+		this.tabSheet.hideTabs(true);
+		this.tabContentLayout = new VerticalLayout();
+
+		this.crossListComponent = new CrossesSummaryListDataComponent(this.crossList);
+		this.femaleDetailsComponent =
+				new SummaryListHeaderComponent(this.femaleList, this.messageSource.getMessage(Message.FEMALE_PARENT_LIST_DETAILS));
+		this.maleDetailsComponent =
+				new SummaryListHeaderComponent(this.maleList, this.messageSource.getMessage(Message.MALE_PARENT_LIST_DETAILS));
+		this.settingsComponent = new CrossesSummarySettingsComponent(this.setting);
+
+		this.doneButton = new Button(this.messageSource.getMessage(Message.DONE));
+		this.doneButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+
+	}
 
 	@Override
 	public void initializeValues() {
@@ -99,25 +97,26 @@ public class CrossingManagerSummaryComponent extends VerticalLayout implements
 
 	@Override
 	public void addListeners() {
-		doneButton.addListener(new Button.ClickListener() {
+		this.doneButton.addListener(new Button.ClickListener() {
+
 			private static final long serialVersionUID = -3416641468145860085L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				doneButtonClickAction();
-				
+				CrossingManagerSummaryComponent.this.doneButtonClickAction();
+
 			}
 		});
 	}
 
 	@Override
 	public void layoutComponents() {
-		setSpacing(true);
+		this.setSpacing(true);
 
-		layoutSummaryPageContent();
+		this.layoutSummaryPageContent();
 
-		addComponent(summaryLabel);
-		addComponent(tabSheet);
+		this.addComponent(this.summaryLabel);
+		this.addComponent(this.tabSheet);
 	}
 
 	private void layoutSummaryPageContent() {
@@ -125,35 +124,33 @@ public class CrossingManagerSummaryComponent extends VerticalLayout implements
 		parentsLayout.setSpacing(true);
 		parentsLayout.setHeight("130px");
 		parentsLayout.setWidth("100%");
-		parentsLayout.addComponent(femaleDetailsComponent);
-		parentsLayout.addComponent(maleDetailsComponent);
-		
+		parentsLayout.addComponent(this.femaleDetailsComponent);
+		parentsLayout.addComponent(this.maleDetailsComponent);
+
 		HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setWidth("100%");
-		buttonLayout.addComponent(doneButton);
-		buttonLayout.setComponentAlignment(doneButton, Alignment.MIDDLE_CENTER);
-		
+		buttonLayout.addComponent(this.doneButton);
+		buttonLayout.setComponentAlignment(this.doneButton, Alignment.MIDDLE_CENTER);
+
 		VerticalLayout spacingLayout = new VerticalLayout();
 		spacingLayout.setHeight("5px");
-		
-		tabContentLayout.setSpacing(true);
-		tabContentLayout.setMargin(true);
-		tabContentLayout.addComponent(crossListComponent);
-		
+
+		this.tabContentLayout.setSpacing(true);
+		this.tabContentLayout.setMargin(true);
+		this.tabContentLayout.addComponent(this.crossListComponent);
+
 		// for spacing only
-		tabContentLayout.addComponent(spacingLayout);
-		tabContentLayout.addComponent(parentsLayout);
-		tabContentLayout.addComponent(settingsComponent);
-		tabContentLayout.addComponent(buttonLayout);
-		
-		tabSheet.setHeight("620px");
-		tabSheet.addTab(tabContentLayout);
+		this.tabContentLayout.addComponent(spacingLayout);
+		this.tabContentLayout.addComponent(parentsLayout);
+		this.tabContentLayout.addComponent(this.settingsComponent);
+		this.tabContentLayout.addComponent(buttonLayout);
+
+		this.tabSheet.setHeight("620px");
+		this.tabSheet.addTab(this.tabContentLayout);
 	}
 
-	
-	private void doneButtonClickAction(){
-		crossingManagerMain.reset();
+	private void doneButtonClickAction() {
+		this.crossingManagerMain.reset();
 	}
-
 
 }

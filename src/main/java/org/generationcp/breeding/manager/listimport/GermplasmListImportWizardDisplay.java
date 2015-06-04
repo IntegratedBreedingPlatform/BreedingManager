@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.listimport;
 
 import org.generationcp.breeding.manager.constants.AppConstants.CssStyles;
@@ -6,8 +7,7 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 
 import com.vaadin.ui.Label;
 
-public class GermplasmListImportWizardDisplay extends
-		BreedingManagerWizardDisplay {
+public class GermplasmListImportWizardDisplay extends BreedingManagerWizardDisplay {
 
 	private static final long serialVersionUID = 1251783649172220389L;
 
@@ -15,10 +15,11 @@ public class GermplasmListImportWizardDisplay extends
 		super(steps);
 	}
 
-	protected String getLabelWidth(){
+	@Override
+	protected String getLabelWidth() {
 		return "250px";
 	}
-	
+
 	@Override
 	protected String getLabelStyleName() {
 		return Bootstrap.Typography.H4.styleName() + " " + CssStyles.BOLD;
@@ -28,17 +29,17 @@ public class GermplasmListImportWizardDisplay extends
 	protected boolean showAllSteps() {
 		return false;
 	}
-	
+
 	@Override
 	protected boolean displayStepNumber() {
 		return false;
 	}
-	
-	
-	protected void updateSelectedStep(){
-		for (int i=0; i < wizardLabels.size(); i++){
-			Label label = wizardLabels.get(i);
-			label.setVisible(i==currentIndex);
+
+	@Override
+	protected void updateSelectedStep() {
+		for (int i = 0; i < this.wizardLabels.size(); i++) {
+			Label label = this.wizardLabels.get(i);
+			label.setVisible(i == this.currentIndex);
 		}
 	}
 }

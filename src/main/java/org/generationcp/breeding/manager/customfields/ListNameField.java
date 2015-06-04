@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.customfields;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -15,133 +16,129 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 
 @Configurable
-public class ListNameField extends HorizontalLayout
-	implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+public class ListNameField extends HorizontalLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private Label captionLabel;
-	private String caption;
+	private final String caption;
 	private TextField listNameTextField;
-	private boolean isMandatory;
+	private final boolean isMandatory;
 	private Label mandatoryMark;
 	private ListNameValidator listNameValidator;
 	private boolean changed;
-	
-	public ListNameField(String caption, boolean isMandatory){
+
+	public ListNameField(String caption, boolean isMandatory) {
 		this.caption = caption + ": ";
 		this.isMandatory = isMandatory;
 		this.changed = false;
 	}
-	
+
 	@Override
 	public void instantiateComponents() {
-		captionLabel = new Label(caption);
-		captionLabel.addStyleName("bold");
-		
-		listNameTextField = new TextField();
-		listNameTextField.setWidth("180px");
-		listNameTextField.setImmediate(true);
-		listNameTextField.addValidator(new StringLengthValidator(
-                "List Name must not exceed 50 characters.", 1, 50, false));
-		
-		listNameValidator = new ListNameValidator();
-		listNameTextField.addValidator(listNameValidator);
-		
-		if(isMandatory){
-			mandatoryMark = new MandatoryMarkLabel();
-			
-			listNameTextField.setRequired(true);
-			listNameTextField.setRequiredError("Please specify the name of the list.");
+		this.captionLabel = new Label(this.caption);
+		this.captionLabel.addStyleName("bold");
+
+		this.listNameTextField = new TextField();
+		this.listNameTextField.setWidth("180px");
+		this.listNameTextField.setImmediate(true);
+		this.listNameTextField.addValidator(new StringLengthValidator("List Name must not exceed 50 characters.", 1, 50, false));
+
+		this.listNameValidator = new ListNameValidator();
+		this.listNameTextField.addValidator(this.listNameValidator);
+
+		if (this.isMandatory) {
+			this.mandatoryMark = new MandatoryMarkLabel();
+
+			this.listNameTextField.setRequired(true);
+			this.listNameTextField.setRequiredError("Please specify the name of the list.");
 		}
-		listNameTextField.setDebugId("vaadin-listname-txt");
+		this.listNameTextField.setDebugId("vaadin-listname-txt");
 	}
 
 	@Override
 	public void initializeValues() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void addListeners() {
-		listNameTextField.addListener(new Property.ValueChangeListener(){
-            
-            private static final long serialVersionUID = 2323698194362809907L;
+		this.listNameTextField.addListener(new Property.ValueChangeListener() {
 
-            public void valueChange(ValueChangeEvent event) {
-                changed = true;
-            }
-            
-        });
+			private static final long serialVersionUID = 2323698194362809907L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				ListNameField.this.changed = true;
+			}
+
+		});
 	}
 
 	@Override
 	public void layoutComponents() {
-		setSpacing(true);
-		
-		addComponent(captionLabel);
-		
-		if(isMandatory){
-			addComponent(mandatoryMark);
+		this.setSpacing(true);
+
+		this.addComponent(this.captionLabel);
+
+		if (this.isMandatory) {
+			this.addComponent(this.mandatoryMark);
 		}
-		
-		addComponent(listNameTextField);
+
+		this.addComponent(this.listNameTextField);
 	}
 
 	@Override
 	public void updateLabels() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		instantiateComponents();
-		initializeValues();
-		addListeners();
-		layoutComponents();
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
 	}
-	
-	
+
 	public TextField getListNameTextField() {
-		return listNameTextField;
+		return this.listNameTextField;
 	}
 
 	public void setListNameTextField(TextField listNameTextField) {
 		this.listNameTextField = listNameTextField;
 	}
-	
-	public void setValue(String listName){
-		listNameTextField.setValue(listName);
+
+	public void setValue(String listName) {
+		this.listNameTextField.setValue(listName);
 	}
 
-	public String getValue(){
-		return (String)listNameTextField.getValue();
+	public String getValue() {
+		return (String) this.listNameTextField.getValue();
 	}
-	
+
 	public ListNameValidator getListNameValidator() {
-		return listNameValidator;
+		return this.listNameValidator;
 	}
 
 	public void setListNameValidator(ListNameValidator listNameValidator) {
-		listNameTextField.removeValidator(this.listNameValidator);
+		this.listNameTextField.removeValidator(this.listNameValidator);
 		this.listNameValidator = listNameValidator;
-		listNameTextField.addValidator(this.listNameValidator);
+		this.listNameTextField.addValidator(this.listNameValidator);
 	}
 
 	public void validate() throws InvalidValueException {
-		listNameTextField.validate();
+		this.listNameTextField.validate();
 	}
 
 	public boolean isChanged() {
-		return changed;
+		return this.changed;
 	}
 
 	public void setChanged(boolean changed) {
 		this.changed = changed;
 	}
-
-
 
 }

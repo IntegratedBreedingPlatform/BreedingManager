@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.listimport;
 
 import java.io.File;
@@ -5,7 +6,6 @@ import java.io.IOException;
 
 import javax.annotation.Resource;
 
-import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
@@ -42,15 +42,15 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class ExportGermplasmListTemplateDialog extends BaseSubWindow implements InitializingBean,
-						InternationalizableComponent, BreedingManagerLayout {
-	
+public class ExportGermplasmListTemplateDialog extends BaseSubWindow implements InitializingBean, InternationalizableComponent,
+		BreedingManagerLayout {
+
 	private static final String EXPANDED = "Expanded";
 	private static final String ADVANCED = "Advanced";
 	private static final String BASIC = "Basic";
 	private static final long serialVersionUID = -9047374755825933209L;
 	private static final Logger LOG = LoggerFactory.getLogger(ExportGermplasmListTemplateDialog.class);
-	
+
 	@Autowired
 	private WorkbenchDataManager workbenchDataManager;
 
@@ -59,196 +59,191 @@ public class ExportGermplasmListTemplateDialog extends BaseSubWindow implements 
 
 	@Resource
 	private ContextUtil contextUtil;
-	
+
 	private VerticalLayout mainLayout;
 	private Label templateFormalLbl;
 	private Label chooseTemplateFormatLbl;
 	private ComboBox formatOptionsCbx;
 	private Button exportButton;
 	private Button cancelButton;
-	
-	private Component source;
-	
+
+	private final Component source;
+
 	public ExportGermplasmListTemplateDialog(Component source) {
 		this.source = source;
 	}
-	
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		instantiateComponents();
-		initializeValues();
-		addListeners();
-		layoutComponents();
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
 	}
 
 	@Override
 	public void instantiateComponents() {
-		templateFormalLbl = new Label(messageSource.getMessage(Message.TEMPLATE_FORMAT).toUpperCase());
-		templateFormalLbl.setStyleName(Bootstrap.Typography.H2.styleName());
-		
-		chooseTemplateFormatLbl = new Label(messageSource.getMessage(Message.CHOOSE_A_TEMPLATE_FORMAT) + ":");
-		
-		formatOptionsCbx = new ComboBox();
-		formatOptionsCbx.setImmediate(true);
-		formatOptionsCbx.setNullSelectionAllowed(false);
-		formatOptionsCbx.setTextInputAllowed(false);
-		formatOptionsCbx.setWidth("100px");
-		
-		cancelButton = new Button(messageSource.getMessage(Message.CANCEL));
-		cancelButton.setWidth("80px");
-		
-		exportButton = new Button(messageSource.getMessage(Message.EXPORT));
-		exportButton.setWidth("80px");
-		exportButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+		this.templateFormalLbl = new Label(this.messageSource.getMessage(Message.TEMPLATE_FORMAT).toUpperCase());
+		this.templateFormalLbl.setStyleName(Bootstrap.Typography.H2.styleName());
+
+		this.chooseTemplateFormatLbl = new Label(this.messageSource.getMessage(Message.CHOOSE_A_TEMPLATE_FORMAT) + ":");
+
+		this.formatOptionsCbx = new ComboBox();
+		this.formatOptionsCbx.setImmediate(true);
+		this.formatOptionsCbx.setNullSelectionAllowed(false);
+		this.formatOptionsCbx.setTextInputAllowed(false);
+		this.formatOptionsCbx.setWidth("100px");
+
+		this.cancelButton = new Button(this.messageSource.getMessage(Message.CANCEL));
+		this.cancelButton.setWidth("80px");
+
+		this.exportButton = new Button(this.messageSource.getMessage(Message.EXPORT));
+		this.exportButton.setWidth("80px");
+		this.exportButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 	}
 
 	@Override
 	public void initializeValues() {
-		formatOptionsCbx.addItem(BASIC);
-		formatOptionsCbx.addItem(ADVANCED);
-		formatOptionsCbx.addItem(EXPANDED);
-		
-		//default value
-		formatOptionsCbx.setValue(BASIC);
+		this.formatOptionsCbx.addItem(ExportGermplasmListTemplateDialog.BASIC);
+		this.formatOptionsCbx.addItem(ExportGermplasmListTemplateDialog.ADVANCED);
+		this.formatOptionsCbx.addItem(ExportGermplasmListTemplateDialog.EXPANDED);
+
+		// default value
+		this.formatOptionsCbx.setValue(ExportGermplasmListTemplateDialog.BASIC);
 	}
 
 	@Override
 	public void addListeners() {
-		cancelButton.addListener(new CloseWindowAction());
-		
-		exportButton.addListener(new ClickListener() {
+		this.cancelButton.addListener(new CloseWindowAction());
+
+		this.exportButton.addListener(new ClickListener() {
+
 			private static final long serialVersionUID = 3036613348361168491L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				exportGermplasmTemplate();
+				ExportGermplasmListTemplateDialog.this.exportGermplasmTemplate();
 			}
 		});
 	}
-	
+
 	protected void exportGermplasmTemplate() {
 		try {
-			
-			String fileName = getGermplasmTemplateFileName();
-			String fileToDownloadPath = getFileToDownloadPath(fileName);
-			
-			FileDownloadResource fileDownloadResource = createFileDownloadResource(fileToDownloadPath);
-			fileDownloadResource.setFilename(FileDownloadResource.getDownloadFileName(fileName, BreedingManagerUtil.getApplicationRequest()));
-	        source.getWindow().open(fileDownloadResource);
+
+			String fileName = this.getGermplasmTemplateFileName();
+			String fileToDownloadPath = this.getFileToDownloadPath(fileName);
+
+			FileDownloadResource fileDownloadResource = this.createFileDownloadResource(fileToDownloadPath);
+			fileDownloadResource
+					.setFilename(FileDownloadResource.getDownloadFileName(fileName, BreedingManagerUtil.getApplicationRequest()));
+			this.source.getWindow().open(fileDownloadResource);
 		} catch (IOException e) {
-			LOG.error(e.getMessage(),e);
-			MessageNotifier.showError(
-					getWindow(),
-					messageSource.getMessage(Message.ERROR),
-					e.getMessage());
+			ExportGermplasmListTemplateDialog.LOG.error(e.getMessage(), e);
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR), e.getMessage());
 		} catch (MiddlewareQueryException e) {
-			LOG.error(e.getMessage(),e);
+			ExportGermplasmListTemplateDialog.LOG.error(e.getMessage(), e);
 		}
 	}
 
 	protected String getGermplasmTemplateFileName() {
-		return "GermplasmImportTemplate-"+getSelectedTemplateType()+"-rev4.xls";
+		return "GermplasmImportTemplate-" + this.getSelectedTemplateType() + "-rev4.xls";
 	}
 
 	protected String getFileToDownloadPath(String fileName) throws MiddlewareQueryException {
-		String cropType = getCurrentProjectCropType();
-		String installationDirectory = getInstallationDirectory();
-		
+		String cropType = this.getCurrentProjectCropType();
+		String installationDirectory = this.getInstallationDirectory();
+
 		String fileToDownloadPath;
-		if(!"".equals(installationDirectory)){
-			fileToDownloadPath = installationDirectory 
-					+ File.separator + "Examples"
-					+ File.separator + cropType
-					+ File.separator + "templates" 
-					+ File.separator+ fileName;
+		if (!"".equals(installationDirectory)) {
+			fileToDownloadPath =
+					installationDirectory + File.separator + "Examples" + File.separator + cropType + File.separator + "templates"
+							+ File.separator + fileName;
 		} else {
-			fileToDownloadPath = "C:" + File.separator + "Breeding Management System" 
-					+ File.separator + "Examples"
-					+ File.separator + cropType
-					+ File.separator + "templates" 
-					+ File.separator + fileName;
+			fileToDownloadPath =
+					"C:" + File.separator + "Breeding Management System" + File.separator + "Examples" + File.separator + cropType
+							+ File.separator + "templates" + File.separator + fileName;
 		}
 		return fileToDownloadPath;
 	}
-	
+
 	private String getCurrentProjectCropType() throws MiddlewareQueryException {
-		Project currentProject = contextUtil.getProjectInContext();
+		Project currentProject = this.contextUtil.getProjectInContext();
 		String cropType = currentProject.getCropType().getCropName();
 		// if it is a custom crop
-		if(!isADefaultCrop(cropType)){
+		if (!this.isADefaultCrop(cropType)) {
 			cropType = "generic";
-		} 
-		
+		}
+
 		return cropType;
 	}
 
 	protected boolean isADefaultCrop(String cropType) {
-		for(CropEnum type : CropType.CropEnum.values()){
-			if(cropType.equalsIgnoreCase(type.toString())){
+		for (CropEnum type : CropType.CropEnum.values()) {
+			if (cropType.equalsIgnoreCase(type.toString())) {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 
 	protected String getInstallationDirectory() throws MiddlewareQueryException {
 		String installationDirectory = "";
-		WorkbenchSetting workbenchSetting = workbenchDataManager.getWorkbenchSetting();
+		WorkbenchSetting workbenchSetting = this.workbenchDataManager.getWorkbenchSetting();
 		if (workbenchSetting != null && !StringUtil.isEmpty(workbenchSetting.getInstallationDirectory())) {
 			installationDirectory = workbenchSetting.getInstallationDirectory();
-        }
-		
+		}
+
 		return installationDirectory;
 	}
 
 	protected FileDownloadResource createFileDownloadResource(String fileToDownloadPath) throws IOException {
 		File fileToDownload = new File(fileToDownloadPath);
-		
+
 		FileDownloadResource fileDownloadResource = null;
-		if(!fileToDownload.exists()){
+		if (!fileToDownload.exists()) {
 			throw new IOException("Germplasm Template File does not exist.");
 		} else {
-			fileDownloadResource = new FileDownloadResource(fileToDownload, source.getApplication());
+			fileDownloadResource = new FileDownloadResource(fileToDownload, this.source.getApplication());
 		}
 		return fileDownloadResource;
 	}
 
 	protected String getSelectedTemplateType() {
-		return formatOptionsCbx.getValue().toString();
+		return this.formatOptionsCbx.getValue().toString();
 	}
 
 	@Override
 	public void layoutComponents() {
-		//window formatting
-		this.setCaption(messageSource.getMessage(Message.GERMPLASM_LIST_EXPORT_TEMPLATE));
+		// window formatting
+		this.setCaption(this.messageSource.getMessage(Message.GERMPLASM_LIST_EXPORT_TEMPLATE));
 		this.addStyleName(Reindeer.WINDOW_LIGHT);
 		this.setModal(true);
 		this.setResizable(false);
 		this.setHeight("225px");
 		this.setWidth("380px");
-		
+
 		HorizontalLayout fieldLayout = new HorizontalLayout();
 		fieldLayout.setSpacing(true);
-		fieldLayout.addComponent(chooseTemplateFormatLbl);
-		fieldLayout.addComponent(formatOptionsCbx);
-		
+		fieldLayout.addComponent(this.chooseTemplateFormatLbl);
+		fieldLayout.addComponent(this.formatOptionsCbx);
+
 		HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setHeight("50px");
 		buttonLayout.setWidth("100%");
 		buttonLayout.setSpacing(true);
-		buttonLayout.addComponent(cancelButton);
-		buttonLayout.addComponent(exportButton);
-		buttonLayout.setComponentAlignment(cancelButton, Alignment.BOTTOM_RIGHT);
-		buttonLayout.setComponentAlignment(exportButton, Alignment.BOTTOM_LEFT);
-		
-		mainLayout = new VerticalLayout();
-		mainLayout.setSpacing(true);
-		mainLayout.addComponent(templateFormalLbl);
-		mainLayout.addComponent(fieldLayout);
-		mainLayout.addComponent(buttonLayout);
-		
-		this.addComponent(mainLayout);
+		buttonLayout.addComponent(this.cancelButton);
+		buttonLayout.addComponent(this.exportButton);
+		buttonLayout.setComponentAlignment(this.cancelButton, Alignment.BOTTOM_RIGHT);
+		buttonLayout.setComponentAlignment(this.exportButton, Alignment.BOTTOM_LEFT);
+
+		this.mainLayout = new VerticalLayout();
+		this.mainLayout.setSpacing(true);
+		this.mainLayout.addComponent(this.templateFormalLbl);
+		this.mainLayout.addComponent(fieldLayout);
+		this.mainLayout.addComponent(buttonLayout);
+
+		this.addComponent(this.mainLayout);
 	}
 
 	@Override

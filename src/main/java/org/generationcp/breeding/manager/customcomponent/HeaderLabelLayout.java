@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.customcomponent;
 
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -13,25 +14,28 @@ import com.vaadin.ui.Label;
 public class HeaderLabelLayout extends HorizontalLayout implements InitializingBean, InternationalizableComponent {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private ThemeResource ICON;
 	private Label label;
-	
+
 	public HeaderLabelLayout(ThemeResource iCON, Label label) {
 		super();
-		ICON = iCON;
+		this.ICON = iCON;
 		this.label = label;
 	}
-	
+
 	public ThemeResource getICON() {
-		return ICON;
+		return this.ICON;
 	}
+
 	public void setICON(ThemeResource iCON) {
-		ICON = iCON;
+		this.ICON = iCON;
 	}
+
 	public Label getLabel() {
-		return label;
+		return this.label;
 	}
+
 	public void setLabel(Label label) {
 		this.label = label;
 	}
@@ -39,20 +43,19 @@ public class HeaderLabelLayout extends HorizontalLayout implements InitializingB
 	@Override
 	public void updateLabels() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Embedded icon = new Embedded("",ICON);
-		
-		setHeight("25px");
-		setSpacing(false);
-		addComponent(icon);
-		addComponent(label);
-		
+		Embedded icon = new Embedded("", this.ICON);
+
+		this.setHeight("25px");
+		this.setSpacing(false);
+		this.addComponent(icon);
+		this.addComponent(this.label);
+
 		this.addStyleName("no-caption");
 	}
-	
-	
+
 }

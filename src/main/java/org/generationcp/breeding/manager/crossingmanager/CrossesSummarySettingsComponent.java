@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.crossingmanager;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -21,38 +22,37 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
-public class CrossesSummarySettingsComponent extends HorizontalLayout implements BreedingManagerLayout,
-		InitializingBean {
+public class CrossesSummarySettingsComponent extends HorizontalLayout implements BreedingManagerLayout, InitializingBean {
 
 	private static final long serialVersionUID = -862705470562935447L;
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(CrossesSummarySettingsComponent.class);
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
-	
+
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
-	
+
 	private VerticalLayout additionalDetailsComponent;
-	
-	private CrossingManagerSetting setting;
-	
-	public CrossesSummarySettingsComponent(CrossingManagerSetting setting){
+
+	private final CrossingManagerSetting setting;
+
+	public CrossesSummarySettingsComponent(CrossingManagerSetting setting) {
 		this.setting = setting;
 	}
-	
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		instantiateComponents();
-		initializeValues();
-		addListeners();
-		layoutComponents();
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
 	}
 
 	@Override
 	public void instantiateComponents() {
-		initializeAdditionalDetailsComponent();
+		this.initializeAdditionalDetailsComponent();
 	}
 
 	@Override
@@ -65,62 +65,62 @@ public class CrossesSummarySettingsComponent extends HorizontalLayout implements
 
 	@Override
 	public void layoutComponents() {
-		setHeight("75px");
-		setWidth("100%");
-		addComponent(additionalDetailsComponent);
+		this.setHeight("75px");
+		this.setWidth("100%");
+		this.addComponent(this.additionalDetailsComponent);
 	}
-	
+
 	private void initializeAdditionalDetailsComponent() {
-		additionalDetailsComponent = new VerticalLayout();
-		
-		Label additionalDetailsTitle = new Label(messageSource.getMessage(Message.HARVEST_DETAILS).toUpperCase());
+		this.additionalDetailsComponent = new VerticalLayout();
+
+		Label additionalDetailsTitle = new Label(this.messageSource.getMessage(Message.HARVEST_DETAILS).toUpperCase());
 		additionalDetailsTitle.addStyleName(Bootstrap.Typography.H4.styleName());
 		additionalDetailsTitle.addStyleName(AppConstants.CssStyles.BOLD);
-		
-		Label harvestLocationLabel = new Label(messageSource.getMessage(Message.HARVEST_LOCATION) + ":");
+
+		Label harvestLocationLabel = new Label(this.messageSource.getMessage(Message.HARVEST_LOCATION) + ":");
 		harvestLocationLabel.addStyleName(AppConstants.CssStyles.BOLD);
-		
-		Integer locationId = setting.getAdditionalDetailsSetting().getHarvestLocationId();
-		Label harvestLocationValue = initializeHarvestLocationValue(locationId);
-		
-		Label harvestDateLabel = new Label(messageSource.getMessage(Message.DATE_LABEL) + ":");
+
+		Integer locationId = this.setting.getAdditionalDetailsSetting().getHarvestLocationId();
+		Label harvestLocationValue = this.initializeHarvestLocationValue(locationId);
+
+		Label harvestDateLabel = new Label(this.messageSource.getMessage(Message.DATE_LABEL) + ":");
 		harvestDateLabel.addStyleName(AppConstants.CssStyles.BOLD);
-		Label harvestDateValue = initializeHarvestDateValue();
+		Label harvestDateValue = this.initializeHarvestDateValue();
 
 		Label dummyLabel = new Label();
 		dummyLabel.setWidth("30px"); // for spacing only
-		
-        //layout components
-        HorizontalLayout layout = new HorizontalLayout();
-        layout.setSpacing(true);
-        layout.addComponent(harvestLocationLabel);
-        layout.addComponent(harvestLocationValue);
-        layout.addComponent(dummyLabel);
-        layout.addComponent(harvestDateLabel);
-        layout.addComponent(harvestDateValue);
 
-        additionalDetailsComponent.addComponent(additionalDetailsTitle);
-        additionalDetailsComponent.addComponent(layout);
-        
+		// layout components
+		HorizontalLayout layout = new HorizontalLayout();
+		layout.setSpacing(true);
+		layout.addComponent(harvestLocationLabel);
+		layout.addComponent(harvestLocationValue);
+		layout.addComponent(dummyLabel);
+		layout.addComponent(harvestDateLabel);
+		layout.addComponent(harvestDateValue);
+
+		this.additionalDetailsComponent.addComponent(additionalDetailsTitle);
+		this.additionalDetailsComponent.addComponent(layout);
+
 	}
 
 	@SuppressWarnings("deprecation")
 	private Label initializeHarvestLocationValue(Integer locationId) {
-		Label harvestLocationValue = new Label("-"); 
-		if (locationId != null){
+		Label harvestLocationValue = new Label("-");
+		if (locationId != null) {
 			try {
-				Location location = germplasmDataManager.getLocationByID(locationId);
+				Location location = this.germplasmDataManager.getLocationByID(locationId);
 				harvestLocationValue.setValue(location.getLname());
 			} catch (MiddlewareQueryException e) {
-				LOG.error(e.getMessage());
-			} 
+				CrossesSummarySettingsComponent.LOG.error(e.getMessage());
+			}
 		}
 		return harvestLocationValue;
 	}
 
 	private Label initializeHarvestDateValue() {
 		Label harvestDateValue = new Label("-");
-		AdditionalDetailsSetting addSetting = setting.getAdditionalDetailsSetting();
+		AdditionalDetailsSetting addSetting = this.setting.getAdditionalDetailsSetting();
 		harvestDateValue.setValue(addSetting.getHarvestYear() + " " + addSetting.getHarvestMonth());
 		return harvestDateValue;
 	}

@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.listmanager.util;
 
 import java.util.ArrayList;
@@ -32,19 +33,15 @@ public class ListCommonActionsUtil {
 	private ListCommonActionsUtil() {
 	}
 
-	public static void deleteGermplasmList(GermplasmListManager germplasmListManager,
-			GermplasmList germplasmList, ContextUtil contextUtil,
-			Window window, SimpleResourceBundleMessageSource messageSource, String item)
-			throws MiddlewareQueryException {
+	public static void deleteGermplasmList(GermplasmListManager germplasmListManager, GermplasmList germplasmList, ContextUtil contextUtil,
+			Window window, SimpleResourceBundleMessageSource messageSource, String item) throws MiddlewareQueryException {
 
 		germplasmListManager.deleteGermplasmList(germplasmList);
 
-		contextUtil.logProgramActivity("Deleted a germplasm list.",
-				"Deleted germplasm list with id = " + germplasmList.getId() + " and name = "
-						+ germplasmList.getName() + ".");
+		contextUtil.logProgramActivity("Deleted a germplasm list.", "Deleted germplasm list with id = " + germplasmList.getId()
+				+ " and name = " + germplasmList.getName() + ".");
 
-		MessageNotifier.showMessage(window,
-				messageSource.getMessage(Message.SUCCESS),
+		MessageNotifier.showMessage(window, messageSource.getMessage(Message.SUCCESS),
 				messageSource.getMessage(Message.SUCCESSFULLY_DELETED_ITEM, item));
 
 	}
@@ -63,9 +60,8 @@ public class ListCommonActionsUtil {
 
 		for (Integer itemId : itemIds) {
 			if (selectedItemIds.contains(itemId)) {
-				Integer gid = Integer.valueOf(
-						((Button) table.getItem(itemId).getItemProperty(gidItemId).getValue())
-								.getCaption().toString());
+				Integer gid =
+						Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(gidItemId).getValue()).getCaption().toString());
 				trueOrderedSelectedGIDs.add(gid);
 			}
 		}
@@ -73,12 +69,8 @@ public class ListCommonActionsUtil {
 		return trueOrderedSelectedGIDs;
 	}
 
-	public static GermplasmList overwriteList(
-			GermplasmList listToSave,
-			GermplasmListManager dataManager,
-			Component source,
-			SimpleResourceBundleMessageSource messageSource,
-			Boolean showMessages) {
+	public static GermplasmList overwriteList(GermplasmList listToSave, GermplasmListManager dataManager, Component source,
+			SimpleResourceBundleMessageSource messageSource, Boolean showMessages) {
 		GermplasmList savedList = null;
 		try {
 			Integer listId = null;
@@ -96,9 +88,8 @@ public class ListCommonActionsUtil {
 
 			if (listId == null) {
 				if (showMessages) {
-					MessageNotifier.showError(source.getWindow(),
-							messageSource.getMessage(Message.ERROR_DATABASE)
-							, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
+					MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE),
+							messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
 				}
 				return null;
 			} else {
@@ -108,25 +99,21 @@ public class ListCommonActionsUtil {
 					ListBuilderComponent component = (ListBuilderComponent) source;
 					component.setCurrentlySavedGermplasmList(listFromDB);
 					component.setHasUnsavedChanges(false);
-					((ListManagerMain) component.getSource()).getListSelectionComponent()
-							.showNodeOnTree(listId);
+					component.getSource().getListSelectionComponent().showNodeOnTree(listId);
 				} else if (source instanceof ListManagerMain) {
 					ListManagerMain component = (ListManagerMain) source;
-					component.getListSelectionComponent().
-							updateUIForRenamedList(listToSave, listToSave.getName());
+					component.getListSelectionComponent().updateUIForRenamedList(listToSave, listToSave.getName());
 
 					component.getListSelectionComponent().showNodeOnTree(listFromDB.getId());
-					MessageNotifier.showMessage(source.getWindow(),
-							messageSource.getMessage(Message.SUCCESS),
+					MessageNotifier.showMessage(source.getWindow(), messageSource.getMessage(Message.SUCCESS),
 							"Changes to list header were saved.", 3000);
 				}
 
 			}
 		} catch (MiddlewareQueryException ex) {
-			LOG.error("Error in updating germplasm list: " + listToSave.getId(), ex);
+			ListCommonActionsUtil.LOG.error("Error in updating germplasm list: " + listToSave.getId(), ex);
 			if (showMessages) {
-				MessageNotifier.showError(source.getWindow(),
-						messageSource.getMessage(Message.ERROR_DATABASE),
+				MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE),
 						messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
 			}
 			return null;
@@ -134,22 +121,12 @@ public class ListCommonActionsUtil {
 		return savedList;
 	}
 
-	public static boolean overwriteListEntries(
-			GermplasmList listToSave,
-			List<GermplasmListData> listEntries,
-			Boolean forceHasChanges,
-			GermplasmListManager germplasmListManager,
-			Component source,
-			SimpleResourceBundleMessageSource messageSource,
+	public static boolean overwriteListEntries(GermplasmList listToSave, List<GermplasmListData> listEntries, Boolean forceHasChanges,
+			GermplasmListManager germplasmListManager, Component source, SimpleResourceBundleMessageSource messageSource,
 			Boolean showMessages) {
 
 		if (forceHasChanges) {
-			return replaceListEntries(
-					listToSave,
-					listEntries,
-					germplasmListManager,
-					source,
-					messageSource,
+			return ListCommonActionsUtil.replaceListEntries(listToSave, listEntries, germplasmListManager, source, messageSource,
 					showMessages);
 		}
 
@@ -157,59 +134,36 @@ public class ListCommonActionsUtil {
 		List<GermplasmListData> entriesToUpdate = new ArrayList<GermplasmListData>();
 		List<GermplasmListData> entriesToDelete = new ArrayList<GermplasmListData>();
 
-		getNewEntriesToSaveUpdateDelete(
-				listToSave,
-				listEntries,
-				forceHasChanges,
-				newEntries,
-				entriesToUpdate,
-				entriesToDelete,
-				germplasmListManager,
-				source,
-				messageSource);
+		ListCommonActionsUtil.getNewEntriesToSaveUpdateDelete(listToSave, listEntries, forceHasChanges, newEntries, entriesToUpdate,
+				entriesToDelete, germplasmListManager, source, messageSource);
 
-		return saveListEntries(
-				listToSave,
-				newEntries,
-				entriesToUpdate,
-				entriesToDelete,
-				germplasmListManager,
-				source,
-				messageSource,
-				showMessages);
+		return ListCommonActionsUtil.saveListEntries(listToSave, newEntries, entriesToUpdate, entriesToDelete, germplasmListManager,
+				source, messageSource, showMessages);
 	}
 
-	protected static void getNewEntriesToSaveUpdateDelete(
-			GermplasmList listToSave,
-			List<GermplasmListData> listEntries,
-			Boolean forceHasChanges,
-			List<GermplasmListData> newEntries,
-			List<GermplasmListData> entriesToUpdate,
-			List<GermplasmListData> entriesToDelete,
-			GermplasmListManager dataManager,
-			Component source,
+	protected static void getNewEntriesToSaveUpdateDelete(GermplasmList listToSave, List<GermplasmListData> listEntries,
+			Boolean forceHasChanges, List<GermplasmListData> newEntries, List<GermplasmListData> entriesToUpdate,
+			List<GermplasmListData> entriesToDelete, GermplasmListManager dataManager, Component source,
 			SimpleResourceBundleMessageSource messageSource) {
 
-		Map<Integer, GermplasmListData> savedListEntriesMap = getSavedListEntriesMap(
-				listToSave, listEntries, forceHasChanges, entriesToDelete,
-				dataManager, source, messageSource);
+		Map<Integer, GermplasmListData> savedListEntriesMap =
+				ListCommonActionsUtil.getSavedListEntriesMap(listToSave, listEntries, forceHasChanges, entriesToDelete, dataManager,
+						source, messageSource);
 
 		for (GermplasmListData entry : listEntries) {
-			if (entry.getId() > 0 && !savedListEntriesMap.isEmpty() 
-					&& savedListEntriesMap.get(entry.getId()) != null) {
-				
+			if (entry.getId() > 0 && !savedListEntriesMap.isEmpty() && savedListEntriesMap.get(entry.getId()) != null) {
+
 				GermplasmListData matchingSavedEntry = savedListEntriesMap.get(entry.getId());
-				//check if it will be updated
+				// check if it will be updated
 				boolean thereIsAChange = false;
 				if (!matchingSavedEntry.getDesignation().equals(entry.getDesignation())) {
 					thereIsAChange = true;
-					setDesignationOfMatchingSavedEntry(entry,
-							matchingSavedEntry);
+					ListCommonActionsUtil.setDesignationOfMatchingSavedEntry(entry, matchingSavedEntry);
 				}
 
 				if (!matchingSavedEntry.getEntryCode().equals(entry.getEntryCode())) {
 					thereIsAChange = true;
-					setEntryCodeOfMatchingSavedEntry(entry, matchingSavedEntry);
+					ListCommonActionsUtil.setEntryCodeOfMatchingSavedEntry(entry, matchingSavedEntry);
 				}
 
 				if (!matchingSavedEntry.getEntryId().equals(entry.getEntryId())) {
@@ -219,30 +173,29 @@ public class ListCommonActionsUtil {
 
 				if (!matchingSavedEntry.getGroupName().equals(entry.getGroupName())) {
 					thereIsAChange = true;
-					setGroupNameOfMatchingSavedEntry(entry, matchingSavedEntry);
+					ListCommonActionsUtil.setGroupNameOfMatchingSavedEntry(entry, matchingSavedEntry);
 				}
 
 				if (!matchingSavedEntry.getSeedSource().equals(entry.getSeedSource())) {
 					thereIsAChange = true;
-					setSeedSourceOfMatchingSavedEntry(entry, matchingSavedEntry);
+					ListCommonActionsUtil.setSeedSourceOfMatchingSavedEntry(entry, matchingSavedEntry);
 				}
 
 				if (thereIsAChange) {
 					entriesToUpdate.add(matchingSavedEntry);
 				}
-				
+
 			} else {
 				// add to new entries to add
 				GermplasmListData listEntry = new GermplasmListData();
-				copyFieldsToNewListEntry(listEntry, entry, listToSave);
+				ListCommonActionsUtil.copyFieldsToNewListEntry(listEntry, entry, listToSave);
 				newEntries.add(listEntry);
 			}
 		}
 
 	}
 
-	protected static void setDesignationOfMatchingSavedEntry(
-			GermplasmListData entry, GermplasmListData matchingSavedEntry) {
+	protected static void setDesignationOfMatchingSavedEntry(GermplasmListData entry, GermplasmListData matchingSavedEntry) {
 		String designation = entry.getDesignation();
 		if (designation != null && designation.length() != 0) {
 			matchingSavedEntry.setDesignation(designation);
@@ -251,8 +204,7 @@ public class ListCommonActionsUtil {
 		}
 	}
 
-	protected static void setEntryCodeOfMatchingSavedEntry(
-			GermplasmListData entry, GermplasmListData matchingSavedEntry) {
+	protected static void setEntryCodeOfMatchingSavedEntry(GermplasmListData entry, GermplasmListData matchingSavedEntry) {
 		String entryCode = entry.getEntryCode();
 		if (entryCode != null && entryCode.length() != 0) {
 			matchingSavedEntry.setEntryCode(entryCode);
@@ -261,8 +213,7 @@ public class ListCommonActionsUtil {
 		}
 	}
 
-	protected static void setSeedSourceOfMatchingSavedEntry(
-			GermplasmListData entry, GermplasmListData matchingSavedEntry) {
+	protected static void setSeedSourceOfMatchingSavedEntry(GermplasmListData entry, GermplasmListData matchingSavedEntry) {
 		String seedSource = entry.getSeedSource();
 		if (seedSource != null && seedSource.length() != 0) {
 			matchingSavedEntry.setSeedSource(seedSource);
@@ -271,8 +222,7 @@ public class ListCommonActionsUtil {
 		}
 	}
 
-	protected static void setGroupNameOfMatchingSavedEntry(
-			GermplasmListData entry, GermplasmListData matchingSavedEntry) {
+	protected static void setGroupNameOfMatchingSavedEntry(GermplasmListData entry, GermplasmListData matchingSavedEntry) {
 		String groupName = entry.getGroupName();
 		if (groupName != null && groupName.length() != 0) {
 			if (groupName.length() > 255) {
@@ -284,40 +234,34 @@ public class ListCommonActionsUtil {
 		}
 	}
 
-	private static Map<Integer, GermplasmListData> getSavedListEntriesMap(
-			GermplasmList listToSave, List<GermplasmListData> listEntries,
-			Boolean forceHasChanges, List<GermplasmListData> entriesToDelete,
-			GermplasmListManager dataManager, Component source,
+	private static Map<Integer, GermplasmListData> getSavedListEntriesMap(GermplasmList listToSave, List<GermplasmListData> listEntries,
+			Boolean forceHasChanges, List<GermplasmListData> entriesToDelete, GermplasmListManager dataManager, Component source,
 			SimpleResourceBundleMessageSource messageSource) {
 		Map<Integer, GermplasmListData> savedListEntriesMap = new HashMap<Integer, GermplasmListData>();
 		try {
-			int listDataCount = (int) dataManager
-					.countGermplasmListDataByListId(listToSave.getId());
-			List<GermplasmListData> savedListEntries = dataManager
-					.getGermplasmListDataByListId(listToSave.getId(), 0, listDataCount);
+			int listDataCount = (int) dataManager.countGermplasmListDataByListId(listToSave.getId());
+			List<GermplasmListData> savedListEntries = dataManager.getGermplasmListDataByListId(listToSave.getId(), 0, listDataCount);
 			if (savedListEntries != null) {
 				for (GermplasmListData savedEntry : savedListEntries) {
-					//check entries to be deleted
+					// check entries to be deleted
 					if (!listEntries.contains(savedEntry) || forceHasChanges) {
 						savedEntry.setStatus(Integer.valueOf(9));
 						entriesToDelete.add(savedEntry);
 					} else {
-						//add to map for possible update
+						// add to map for possible update
 						savedListEntriesMap.put(savedEntry.getId(), savedEntry);
 					}
 				}
 			}
 		} catch (MiddlewareQueryException ex) {
-			LOG.error("Error with getting the saved list entries.", ex);
-			MessageNotifier
-					.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE),
-							messageSource.getMessage(Message.ERROR_GETTING_SAVED_ENTRIES));
+			ListCommonActionsUtil.LOG.error("Error with getting the saved list entries.", ex);
+			MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE),
+					messageSource.getMessage(Message.ERROR_GETTING_SAVED_ENTRIES));
 		}
 		return savedListEntriesMap;
 	}
 
-	private static void copyFieldsToNewListEntry(GermplasmListData destination,
-			GermplasmListData origin, GermplasmList listToSave) {
+	private static void copyFieldsToNewListEntry(GermplasmListData destination, GermplasmListData origin, GermplasmList listToSave) {
 		if (destination != null && origin != null) {
 			destination.setDesignation(origin.getDesignation());
 			destination.setEntryCode(origin.getEntryCode());
@@ -331,15 +275,9 @@ public class ListCommonActionsUtil {
 		}
 	}
 
-	private static boolean saveListEntries(
-			GermplasmList listToSave,
-			List<GermplasmListData> newEntries,
-			List<GermplasmListData> entriesToUpdate,
-			List<GermplasmListData> entriesToDelete,
-			GermplasmListManager dataManager,
-			Component source,
-			SimpleResourceBundleMessageSource messageSource,
-			Boolean showMessages) {
+	private static boolean saveListEntries(GermplasmList listToSave, List<GermplasmListData> newEntries,
+			List<GermplasmListData> entriesToUpdate, List<GermplasmListData> entriesToDelete, GermplasmListManager dataManager,
+			Component source, SimpleResourceBundleMessageSource messageSource, Boolean showMessages) {
 		boolean hasError = false;
 
 		if (!newEntries.isEmpty()) {
@@ -349,57 +287,49 @@ public class ListCommonActionsUtil {
 					hasError = true;
 				}
 			} catch (MiddlewareQueryException ex) {
-				LOG.error("Error in saving germplasm list entries.", ex);
+				ListCommonActionsUtil.LOG.error("Error in saving germplasm list entries.", ex);
 				hasError = true;
 			}
 		}
 		if (!hasError && !entriesToUpdate.isEmpty()) {
 			try {
-				List<Integer> updatedEntryPKs = dataManager
-						.updateGermplasmListData(entriesToUpdate);
+				List<Integer> updatedEntryPKs = dataManager.updateGermplasmListData(entriesToUpdate);
 				if (!(updatedEntryPKs.size() == entriesToUpdate.size())) {
 					hasError = true;
 				}
 			} catch (MiddlewareQueryException ex) {
-				LOG.error("Error in updating germplasm list entries.", ex);
+				ListCommonActionsUtil.LOG.error("Error in updating germplasm list entries.", ex);
 			}
 		}
 		if (!hasError && !entriesToDelete.isEmpty()) {
 			try {
-				List<Integer> deletedEntryPKs = dataManager
-						.updateGermplasmListData(entriesToDelete);
+				List<Integer> deletedEntryPKs = dataManager.updateGermplasmListData(entriesToDelete);
 				if (!(deletedEntryPKs.size() == entriesToDelete.size())) {
 					hasError = true;
 				}
 			} catch (MiddlewareQueryException ex) {
-				LOG.error("Error in deleting germplasm list entries.", ex);
+				ListCommonActionsUtil.LOG.error("Error in deleting germplasm list entries.", ex);
 			}
 		}
 		if (hasError) {
 			if (showMessages) {
-				MessageNotifier.showError(source.getWindow(),
-						messageSource.getMessage(Message.ERROR_DATABASE)
-						, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST_ENTRIES));
+				MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE),
+						messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST_ENTRIES));
 			}
 			return false;
 		}
 		return true;
 	}
 
-	private static boolean replaceListEntries(
-			GermplasmList listToSave,
-			List<GermplasmListData> listEntries,
-			GermplasmListManager dataManager,
-			Component source,
-			SimpleResourceBundleMessageSource messageSource,
-			Boolean showMessages) {
+	private static boolean replaceListEntries(GermplasmList listToSave, List<GermplasmListData> listEntries,
+			GermplasmListManager dataManager, Component source, SimpleResourceBundleMessageSource messageSource, Boolean showMessages) {
 
 		boolean hasError = false;
 
 		try {
 			dataManager.deleteGermplasmListDataByListId(listToSave.getId());
 		} catch (MiddlewareQueryException ex) {
-			LOG.error("Error in deleting germplasm list entries.", ex);
+			ListCommonActionsUtil.LOG.error("Error in deleting germplasm list entries.", ex);
 			hasError = true;
 		}
 
@@ -408,7 +338,7 @@ public class ListCommonActionsUtil {
 				List<GermplasmListData> newEntries = new ArrayList<GermplasmListData>();
 				for (GermplasmListData entry : listEntries) {
 					GermplasmListData listEntry = new GermplasmListData();
-					copyFieldsToNewListEntry(listEntry, entry, listToSave);
+					ListCommonActionsUtil.copyFieldsToNewListEntry(listEntry, entry, listToSave);
 					newEntries.add(listEntry);
 				}
 				List<Integer> savedEntryPKs = dataManager.addGermplasmListData(newEntries);
@@ -416,16 +346,15 @@ public class ListCommonActionsUtil {
 					hasError = true;
 				}
 			} catch (MiddlewareQueryException ex) {
-				LOG.error("Error in saving germplasm list entries.", ex);
+				ListCommonActionsUtil.LOG.error("Error in saving germplasm list entries.", ex);
 				hasError = true;
 			}
 		}
 
 		if (hasError) {
 			if (showMessages) {
-				MessageNotifier.showError(source.getWindow(),
-						messageSource.getMessage(Message.ERROR_DATABASE)
-						, messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST_ENTRIES));
+				MessageNotifier.showError(source.getWindow(), messageSource.getMessage(Message.ERROR_DATABASE),
+						messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST_ENTRIES));
 			}
 			return false;
 		}

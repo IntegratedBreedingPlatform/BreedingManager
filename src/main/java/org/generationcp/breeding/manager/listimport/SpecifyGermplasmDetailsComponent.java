@@ -1,9 +1,12 @@
+
 package org.generationcp.breeding.manager.listimport;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.ui.*;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
@@ -40,600 +43,598 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.annotation.Resource;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 @Configurable
-public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements InitializingBean,
-        InternationalizableComponent, BreedingManagerLayout, SaveListAsDialogSource {
+public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
+		BreedingManagerLayout, SaveListAsDialogSource {
 
-    private static final long serialVersionUID = 2762965368037453497L;
-    private static final Logger LOG = LoggerFactory.getLogger(SpecifyGermplasmDetailsComponent.class);
+	private static final long serialVersionUID = 2762965368037453497L;
+	private static final Logger LOG = LoggerFactory.getLogger(SpecifyGermplasmDetailsComponent.class);
 
-    public static final String NEXT_BUTTON_ID = "next button";
-    public static final String BACK_BUTTON_ID = "back button";
+	public static final String NEXT_BUTTON_ID = "next button";
+	public static final String BACK_BUTTON_ID = "back button";
 
-    private GermplasmImportMain source;
+	private final GermplasmImportMain source;
 
-    private GermplasmFieldsComponent germplasmFieldsComponent;
-    private Table germplasmDetailsTable;
+	private GermplasmFieldsComponent germplasmFieldsComponent;
+	private Table germplasmDetailsTable;
 
-    private Label reviewImportDetailsLabel;
-    private Label totalEntriesLabel;
-    private Label selectPedigreeOptionsLabel;
-    private Label pedigreeOptionsLabel;
+	private Label reviewImportDetailsLabel;
+	private Label totalEntriesLabel;
+	private Label selectPedigreeOptionsLabel;
+	private Label pedigreeOptionsLabel;
 
-    private ComboBox pedigreeOptionComboBox;
+	private ComboBox pedigreeOptionComboBox;
 
-    private Button backButton;
-    private Button nextButton;
+	private Button backButton;
+	private Button nextButton;
 
-    private ImportedGermplasmList importedGermplasmList;
+	private ImportedGermplasmList importedGermplasmList;
 
-    private CheckBox automaticallyAcceptSingleMatchesCheckbox;
+	private CheckBox automaticallyAcceptSingleMatchesCheckbox;
 
-    private List<ImportedGermplasm> importedGermplasms;
-    private GermplasmListUploader germplasmListUploader;
+	private List<ImportedGermplasm> importedGermplasms;
+	private GermplasmListUploader germplasmListUploader;
 
-    private GermplasmList germplasmList;
+	private GermplasmList germplasmList;
 
-    private SaveListAsDialog saveListAsDialog;
-    
-    private GenerateStockIDsDialog generateStockIdsDialog;
-    
-    private ProcessImportedGermplasmAction processGermplasmAction;
+	private SaveListAsDialog saveListAsDialog;
 
-    @Autowired
-    private SimpleResourceBundleMessageSource messageSource;
+	private GenerateStockIDsDialog generateStockIdsDialog;
 
-    @Autowired
-    private GermplasmDataManager germplasmDataManager;
+	private ProcessImportedGermplasmAction processGermplasmAction;
+
+	@Autowired
+	private SimpleResourceBundleMessageSource messageSource;
+
+	@Autowired
+	private GermplasmDataManager germplasmDataManager;
 
 	@Resource
 	private OntologyDataManager ontologyDataManager;
 
-    @Resource
+	@Resource
 	private ContextUtil contextUtil;
 
-    private Boolean viaToolURL;
+	private final Boolean viaToolURL;
 
-    public SpecifyGermplasmDetailsComponent(GermplasmImportMain source, Boolean viaToolURL) {
-        this.source = source;
-        this.viaToolURL = viaToolURL;
-    }
-
-    public Table getGermplasmDetailsTable() {
-        return germplasmDetailsTable;
-    }
-
-    public List<ImportedGermplasm> getImportedGermplasms() {
-        return importedGermplasms;
-    }
-
-    public void setImportedGermplasms(List<ImportedGermplasm> importedGermplasms) {
-        this.importedGermplasms = importedGermplasms;
-    }
-
-    public GermplasmListUploader getGermplasmListUploader() {
-        return germplasmListUploader;
-    }
-
-    public void setGermplasmListUploader(GermplasmListUploader germplasmListUploader) {
-        this.germplasmListUploader = germplasmListUploader;
-    }
-
-    public Boolean getViaToolURL() {
-        return viaToolURL;
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        instantiateComponents();
-        initializeValues();
-        addListeners();
-        layoutComponents();
-    }
-
-
-    public GermplasmFieldsComponent getGermplasmFieldsComponent() {
-        return germplasmFieldsComponent;
-    }
-
-
-    @Override
-    public void attach() {
-        super.attach();
-        updateLabels();
-    }
-
-    @Override
-    public void updateLabels() {
-        messageSource.setCaption(backButton, Message.BACK);
-        messageSource.setCaption(nextButton, Message.FINISH);
-    }
-
-
-    public void nextButtonClickAction() {
-        if (validateLocation() && validatePedigreeOption()) {
-            processGermplasmAction.processGermplasm();
-        }
-    	
-    }
-    
-    public void saveTheList(){
-    	// TODO: add condition if doesnt have stock id
-    	if (germplasmListUploader.hasInventoryAmountOnly()){
-    		popupGenerateStockIdsDialog();
-    	}else{
-    		popupSaveAsDialog();
-    	}
-    	
-    }
-
-    public void popupSaveAsDialog() {
-
-        germplasmList = new GermplasmList();
-
-        String sDate = DateUtil.formatDateAsStringValue(germplasmListUploader.getImportedGermplasmList().getDate(),
-        		DateUtil.DATE_AS_NUMBER_FORMAT);
-        germplasmList.setName(germplasmListUploader.getImportedGermplasmList().getName());
-        germplasmList.setDate(Long.parseLong(sDate));
-        germplasmList.setType(germplasmListUploader.getImportedGermplasmList().getType());
-        germplasmList.setDescription(germplasmListUploader.getImportedGermplasmList().getTitle());
-        germplasmList.setStatus(1);
-        try {
-			germplasmList.setUserId(contextUtil.getCurrentUserLocalId());
-		} catch (MiddlewareQueryException e) {
-			LOG.error(e.getMessage(),e);
-		}
-
-        List<GermplasmName> germplasmNameObjects = getGermplasmNameObjects();
-        List<GermplasmName> germplasmNameObjectsToBeSaved = new ArrayList<GermplasmName>();
-
-        for (int i = 0; i < germplasmNameObjects.size(); i++) {
-            Integer gid = germplasmNameObjects.get(i).getGermplasm().getGid();
-            if (processGermplasmAction.getMatchedGermplasmIds().contains(gid)) {
-                //Get germplasm using temporarily set GID, then create map
-                Germplasm germplasmToBeUsed;
-                try {
-                    germplasmToBeUsed = germplasmDataManager.getGermplasmByGID(gid);
-                    germplasmNameObjectsToBeSaved.add(new GermplasmName(germplasmToBeUsed, germplasmNameObjects.get(i).getName()));
-                } catch (MiddlewareQueryException e) {
-                    LOG.error(e.getMessage(),e);
-                }
-            } else {
-                germplasmNameObjectsToBeSaved.add(new GermplasmName(germplasmNameObjects.get(i).getGermplasm(), germplasmNameObjects.get(i).getName()));
-            }
-        }
-
-        saveListAsDialog = new SaveListDialogWithFolderOnlyTree(this, germplasmList);
-        //If not from popup
-        if (source.getGermplasmImportPopupSource() == null) {
-            this.getWindow().addWindow(saveListAsDialog);
-        } else {
-            source.getGermplasmImportPopupSource().getParentWindow().addWindow(saveListAsDialog);
-        }
-
-    }
-    
-    public void popupGenerateStockIdsDialog(){
-    	
-    	 generateStockIdsDialog = new GenerateStockIDsDialog(this, germplasmList);
-         //If not from popup
-         if (source.getGermplasmImportPopupSource() == null) {
-             this.getWindow().addWindow(generateStockIdsDialog);
-         } else {
-             source.getGermplasmImportPopupSource().getParentWindow().addWindow(generateStockIdsDialog);
-         }
-    	
-    }
-
-    private boolean validatePedigreeOption() {
-        return BreedingManagerUtil.validateRequiredField(getWindow(), pedigreeOptionComboBox,
-                messageSource, messageSource.getMessage(Message.PEDIGREE_OPTIONS_LABEL));
-    }
-
-    private boolean validateLocation() {
-        return BreedingManagerUtil.validateRequiredField(getWindow(), germplasmFieldsComponent.getLocationComboBox(),
-                messageSource, messageSource.getMessage(Message.GERMPLASM_LOCATION_LABEL));
-    }
-
-    protected void updateTotalEntriesLabel() {
-        int count = germplasmDetailsTable.getItemIds().size();
-        if (count == 0) {
-            totalEntriesLabel.setValue(messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
-        } else {
-            totalEntriesLabel.setValue(messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": "
-                    + "  <b>" + count + "</b>");
-        }
-    }
-
-    public void backButtonClickAction() {
-        source.backStep();
-    }
-
-    public GermplasmImportMain getSource() {
-        return source;
-    }
-
-    public void setGermplasmBreedingMethod(String breedingMethod) {
-        germplasmFieldsComponent.setGermplasmBreedingMethod(breedingMethod);
-    }
-
-    public void setGermplasmDate(Date germplasmDate) throws ParseException {
-        germplasmFieldsComponent.setGermplasmDate(germplasmDate);
-    }
-
-    public void setGermplasmLocation(String germplasmLocation) {
-        germplasmFieldsComponent.setGermplasmLocation(germplasmLocation);
-    }
-
-    public void setGermplasmListType(String germplasmListType) {
-        germplasmFieldsComponent.setGermplasmListType(germplasmListType);
-    }
-
-    protected void initializePedigreeOptions() {
-        pedigreeOptionComboBox.addItem(1);
-        pedigreeOptionComboBox.addItem(2);
-        pedigreeOptionComboBox.addItem(3);
-        pedigreeOptionComboBox.setItemCaption(1, messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_ONE));
-        pedigreeOptionComboBox.setItemCaption(2, messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_TWO));
-        pedigreeOptionComboBox.setItemCaption(3,
-                messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_THREE));
-    }
-
-    protected void showFirstPedigreeOption(boolean visible) {
-        Item firstOption = pedigreeOptionComboBox.getItem(1);
-        if (firstOption == null && visible) {
-            pedigreeOptionComboBox.removeAllItems();
-            initializePedigreeOptions();
-        } else if (!visible) {
-            pedigreeOptionComboBox.removeItem(1);
-        }
-    }
-
-    public Integer getPedigreeOptionGroupValue() {
-        return (Integer) pedigreeOptionComboBox.getValue();
-    }
-
-    public String getPedigreeOption() {
-        return pedigreeOptionComboBox.getValue().toString();
-    }
-
-    public List<GermplasmName> getGermplasmNameObjects() {
-        return processGermplasmAction.getGermplasmNameObjects();
-    }
-
-    private List<Name> getNewNames() {
-        return processGermplasmAction.getNewNames();
-    }
-
-
-    @Override
-    public void instantiateComponents() {
-
-        if (source.getGermplasmImportPopupSource() == null) {
-            germplasmFieldsComponent = new GermplasmFieldsComponent(this.getWindow(), 200);
-        } else {
-            germplasmFieldsComponent = new GermplasmFieldsComponent(source.getGermplasmImportPopupSource().getParentWindow(), 200);
-        }
-
-        reviewImportDetailsLabel = new Label(messageSource.getMessage(Message.GERMPLASM_DETAILS_LABEL).toUpperCase());
-        reviewImportDetailsLabel.addStyleName(Bootstrap.Typography.H4.styleName());
-
-        totalEntriesLabel = new Label("Total Entries: 0", Label.CONTENT_XHTML);
-
-        initGermplasmDetailsTable();
-
-        selectPedigreeOptionsLabel = new Label(messageSource.getMessage(Message.SELECT_PEDIGREE_OPTIONS).toUpperCase());
-        selectPedigreeOptionsLabel.addStyleName(Bootstrap.Typography.H4.styleName());
-
-        pedigreeOptionsLabel = new Label(messageSource.getMessage(Message.PEDIGREE_OPTIONS_LABEL) + ":");
-        pedigreeOptionsLabel.addStyleName(AppConstants.CssStyles.BOLD);
-        pedigreeOptionsLabel.setWidth("250px");
-
-        pedigreeOptionComboBox = new ComboBox();
-        pedigreeOptionComboBox.setImmediate(true);
-        pedigreeOptionComboBox.setRequired(true);
-        pedigreeOptionComboBox.setWidth("450px");
-        pedigreeOptionComboBox.setInputPrompt("Please Choose");
-
-        automaticallyAcceptSingleMatchesCheckbox = new CheckBox(messageSource.getMessage(Message.AUTOMATICALLY_ACCEPT_SINGLE_MATCHES_WHENEVER_FOUND));
-        automaticallyAcceptSingleMatchesCheckbox.setVisible(false);
-
-        GermplasmImportButtonClickListener clickListener = new GermplasmImportButtonClickListener(this);
-
-        backButton = new Button();
-        backButton.setData(BACK_BUTTON_ID);
-        backButton.addListener(clickListener);
-
-        nextButton = new Button();
-        nextButton.setData(NEXT_BUTTON_ID);
-        nextButton.addListener(clickListener);
-        nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-    }
-
-	protected void initGermplasmDetailsTable() {
-        setGermplasmDetailsTable(new Table());
-        germplasmDetailsTable = getGermplasmDetailsTable();
-        germplasmDetailsTable.setHeight("200px");
-        germplasmDetailsTable.setWidth("700px");
-        
-        germplasmDetailsTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class,
-                null);
-        germplasmDetailsTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class,
-                null);
-        germplasmDetailsTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), String.class,
-                null);
-        germplasmDetailsTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class,
-                null);
-        germplasmDetailsTable.addContainerProperty(ColumnLabels.GID.getName(), Integer.class, null);
-        germplasmDetailsTable.addContainerProperty(ColumnLabels.STOCKID, String.class, null);
-        germplasmDetailsTable.addContainerProperty(ColumnLabels.AMOUNT, Double.class, null);
-        germplasmDetailsTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class,
-                null);
-
-
-
-
-        germplasmDetailsTable.setColumnCollapsingAllowed(true);
-        
-        germplasmDetailsTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(),
-                getTermNameFromOntology(ColumnLabels.ENTRY_ID));
-        germplasmDetailsTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(),
-                getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
-        germplasmDetailsTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(),
-                getTermNameFromOntology(ColumnLabels.DESIGNATION));
-        germplasmDetailsTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(),
-                getTermNameFromOntology(ColumnLabels.PARENTAGE));
-        germplasmDetailsTable.setColumnHeader(ColumnLabels.GID.getName(),
-                getTermNameFromOntology(ColumnLabels.GID));
-
-        germplasmDetailsTable.setColumnHeader(ColumnLabels.STOCKID.getName(),
-                getTermNameFromOntology(ColumnLabels.STOCKID));
-
-        germplasmDetailsTable.setColumnHeader(ColumnLabels.AMOUNT.getName(),
-                getTermNameFromOntology(ColumnLabels.AMOUNT));
-
-        germplasmDetailsTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(),
-                getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
-
-
-        germplasmDetailsTable.setColumnCollapsed(ColumnLabels.STOCKID, true);
-        germplasmDetailsTable.setColumnCollapsed(ColumnLabels.AMOUNT, true);
-
-    }
-
-	protected String getTermNameFromOntology(ColumnLabels columnLabels) {
-		return columnLabels.getTermNameFromOntology(ontologyDataManager);
+	public SpecifyGermplasmDetailsComponent(GermplasmImportMain source, Boolean viaToolURL) {
+		this.source = source;
+		this.viaToolURL = viaToolURL;
 	}
 
-    @Override
-    public void initializeValues() {
-        // 2nd section
-        initializePedigreeOptions();
-    }
+	public Table getGermplasmDetailsTable() {
+		return this.germplasmDetailsTable;
+	}
 
-    @SuppressWarnings("serial")
-    @Override
-    public void addListeners() {
-        processGermplasmAction = new ProcessImportedGermplasmAction(this);
+	public List<ImportedGermplasm> getImportedGermplasms() {
+		return this.importedGermplasms;
+	}
 
-        pedigreeOptionComboBox.addListener(new Property.ValueChangeListener() {
-            @Override
-            public void valueChange(ValueChangeEvent event) {
-                toggleAcceptSingleMatchesCheckbox();
-            }
-        });
+	public void setImportedGermplasms(List<ImportedGermplasm> importedGermplasms) {
+		this.importedGermplasms = importedGermplasms;
+	}
 
-    }
+	public GermplasmListUploader getGermplasmListUploader() {
+		return this.germplasmListUploader;
+	}
 
-    @Override
-    public void layoutComponents() {
-        setWidth("700px");
+	public void setGermplasmListUploader(GermplasmListUploader germplasmListUploader) {
+		this.germplasmListUploader = germplasmListUploader;
+	}
 
-        // Review Import Details Layout
-        VerticalLayout importDetailsLayout = new VerticalLayout();
-        importDetailsLayout.setSpacing(true);
-        importDetailsLayout.addComponent(reviewImportDetailsLabel);
-        importDetailsLayout.addComponent(totalEntriesLabel);
-        importDetailsLayout.addComponent(germplasmDetailsTable);
+	public Boolean getViaToolURL() {
+		return this.viaToolURL;
+	}
 
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
+	}
 
-        // Pedigree Options Layout
-        VerticalLayout pedigreeOptionsLayout = new VerticalLayout();
-        pedigreeOptionsLayout.setSpacing(true);
+	public GermplasmFieldsComponent getGermplasmFieldsComponent() {
+		return this.germplasmFieldsComponent;
+	}
 
-        VerticalLayout pedigreeControlsLayoutVL = new VerticalLayout();
-        pedigreeControlsLayoutVL.setSpacing(true);
-        pedigreeControlsLayoutVL.addComponent(pedigreeOptionComboBox);
-        pedigreeControlsLayoutVL.addComponent(automaticallyAcceptSingleMatchesCheckbox);
+	@Override
+	public void attach() {
+		super.attach();
+		this.updateLabels();
+	}
 
-        HorizontalLayout pedigreeControlsLayout = new HorizontalLayout();
-        pedigreeControlsLayout.addComponent(pedigreeOptionsLabel);
-        pedigreeControlsLayout.addComponent(pedigreeControlsLayoutVL);
+	@Override
+	public void updateLabels() {
+		this.messageSource.setCaption(this.backButton, Message.BACK);
+		this.messageSource.setCaption(this.nextButton, Message.FINISH);
+	}
 
-        pedigreeOptionsLayout.addComponent(selectPedigreeOptionsLabel);
-        pedigreeOptionsLayout.addComponent(pedigreeControlsLayout);
+	public void nextButtonClickAction() {
+		if (this.validateLocation() && this.validatePedigreeOption()) {
+			this.processGermplasmAction.processGermplasm();
+		}
 
-        // Buttons Layout
-        HorizontalLayout buttonLayout = new HorizontalLayout();
-        buttonLayout.setWidth("100%");
-        buttonLayout.setHeight("40px");
-        buttonLayout.setSpacing(true);
+	}
 
-        buttonLayout.addComponent(backButton);
-        buttonLayout.addComponent(nextButton);
-        buttonLayout.setComponentAlignment(backButton, Alignment.BOTTOM_RIGHT);
-        buttonLayout.setComponentAlignment(nextButton, Alignment.BOTTOM_LEFT);
+	public void saveTheList() {
+		// TODO: add condition if doesnt have stock id
+		if (this.germplasmListUploader.hasInventoryAmountOnly()) {
+			this.popupGenerateStockIdsDialog();
+		} else {
+			this.popupSaveAsDialog();
+		}
 
-        VerticalLayout spacerLayout = new VerticalLayout();
-        spacerLayout.setHeight("30px");
-        VerticalLayout spacerLayout2 = new VerticalLayout();
-        spacerLayout2.setHeight("30px");
+	}
 
-        addComponent(germplasmFieldsComponent);
-        addComponent(importDetailsLayout);
-        addComponent(spacerLayout);
-        addComponent(pedigreeOptionsLayout);
-        addComponent(spacerLayout2);
-        addComponent(buttonLayout);
-    }
+	public void popupSaveAsDialog() {
 
-    protected void toggleAcceptSingleMatchesCheckbox() {
-    	//by default hide it
-        automaticallyAcceptSingleMatchesCheckbox.setVisible(false);
-        automaticallyAcceptSingleMatchesCheckbox.setValue(true);
+		this.germplasmList = new GermplasmList();
 
-        if (pedigreeOptionComboBox.getValue() != null) {
-            boolean selectGermplasmOptionChosen = pedigreeOptionComboBox.getValue().equals(3);
-            automaticallyAcceptSingleMatchesCheckbox.setVisible(selectGermplasmOptionChosen);
-        }
-    }
+		String sDate =
+				DateUtil.formatDateAsStringValue(this.germplasmListUploader.getImportedGermplasmList().getDate(),
+						DateUtil.DATE_AS_NUMBER_FORMAT);
+		this.germplasmList.setName(this.germplasmListUploader.getImportedGermplasmList().getName());
+		this.germplasmList.setDate(Long.parseLong(sDate));
+		this.germplasmList.setType(this.germplasmListUploader.getImportedGermplasmList().getType());
+		this.germplasmList.setDescription(this.germplasmListUploader.getImportedGermplasmList().getTitle());
+		this.germplasmList.setStatus(1);
+		try {
+			this.germplasmList.setUserId(this.contextUtil.getCurrentUserLocalId());
+		} catch (MiddlewareQueryException e) {
+			SpecifyGermplasmDetailsComponent.LOG.error(e.getMessage(), e);
+		}
 
-    public void initializeFromImportFile(ImportedGermplasmList importedGermplasmList) {
+		List<GermplasmName> germplasmNameObjects = this.getGermplasmNameObjects();
+		List<GermplasmName> germplasmNameObjectsToBeSaved = new ArrayList<GermplasmName>();
 
-        this.importedGermplasmList = importedGermplasmList;
-        this.getGermplasmFieldsComponent().refreshLayout(germplasmListUploader.hasInventoryAmountOnly());
+		for (int i = 0; i < germplasmNameObjects.size(); i++) {
+			Integer gid = germplasmNameObjects.get(i).getGermplasm().getGid();
+			if (this.processGermplasmAction.getMatchedGermplasmIds().contains(gid)) {
+				// Get germplasm using temporarily set GID, then create map
+				Germplasm germplasmToBeUsed;
+				try {
+					germplasmToBeUsed = this.germplasmDataManager.getGermplasmByGID(gid);
+					germplasmNameObjectsToBeSaved.add(new GermplasmName(germplasmToBeUsed, germplasmNameObjects.get(i).getName()));
+				} catch (MiddlewareQueryException e) {
+					SpecifyGermplasmDetailsComponent.LOG.error(e.getMessage(), e);
+				}
+			} else {
+				germplasmNameObjectsToBeSaved.add(new GermplasmName(germplasmNameObjects.get(i).getGermplasm(), germplasmNameObjects.get(i)
+						.getName()));
+			}
+		}
 
-        //Clear table contents first (possible that it has some rows in it from previous uploads, and then user went back to upload screen)
-        getGermplasmDetailsTable().removeAllItems();
+		this.saveListAsDialog = new SaveListDialogWithFolderOnlyTree(this, this.germplasmList);
+		// If not from popup
+		if (this.source.getGermplasmImportPopupSource() == null) {
+			this.getWindow().addWindow(this.saveListAsDialog);
+		} else {
+			this.source.getGermplasmImportPopupSource().getParentWindow().addWindow(this.saveListAsDialog);
+		}
 
-        if (germplasmListUploader.hasStockIdFactor()) {
-            getGermplasmDetailsTable().setColumnCollapsed(ColumnLabels.STOCKID,false);
-        } else {
-            getGermplasmDetailsTable().setColumnCollapsed(ColumnLabels.STOCKID,true);
-        }
-        if (germplasmListUploader.hasInventoryAmount()) {
-            getGermplasmDetailsTable().setColumnCollapsed(ColumnLabels.AMOUNT, false);
-        } else {
-            getGermplasmDetailsTable().setColumnCollapsed(ColumnLabels.AMOUNT, true);
-        }
+	}
 
-        String germplasmSource;
-        String fileNameWithoutExtension = FileUtils.getFilenameWithoutExtension(importedGermplasmList.getFilename());
-        for (int i = 0; i < getImportedGermplasms().size(); i++) {
-            ImportedGermplasm importedGermplasm = getImportedGermplasms().get(i);
-            if (importedGermplasm.getSource() == null) {
-            	germplasmSource = fileNameWithoutExtension + ":" + (i + 1);
-            } else {
-            	germplasmSource = importedGermplasm.getSource();
-            }
-            getGermplasmDetailsTable().addItem(new Object[]{importedGermplasm.getEntryId(),
-                    importedGermplasm.getEntryCode(), importedGermplasm.getDesig(), importedGermplasm.getCross(), importedGermplasm.getGid(),importedGermplasm.getInventoryId(),importedGermplasm.getSeedAmount(),germplasmSource}, new Integer(i + 1));
-        }
-        updateTotalEntriesLabel();
+	public void popupGenerateStockIdsDialog() {
 
-        if (germplasmListUploader.importFileIsAdvanced()) {
-            showFirstPedigreeOption(false);
-        } else {
-            showFirstPedigreeOption(true);
-        }
-        toggleAcceptSingleMatchesCheckbox();
-    }
+		this.generateStockIdsDialog = new GenerateStockIDsDialog(this, this.germplasmList);
+		// If not from popup
+		if (this.source.getGermplasmImportPopupSource() == null) {
+			this.getWindow().addWindow(this.generateStockIdsDialog);
+		} else {
+			this.source.getGermplasmImportPopupSource().getParentWindow().addWindow(this.generateStockIdsDialog);
+		}
 
-    @Override
-    public void saveList(GermplasmList list) {
+	}
 
-        SaveGermplasmListAction saveGermplasmListAction = new SaveGermplasmListAction();
-        Window window = this.source.getWindow();
+	private boolean validatePedigreeOption() {
+		return BreedingManagerUtil.validateRequiredField(this.getWindow(), this.pedigreeOptionComboBox, this.messageSource,
+				this.messageSource.getMessage(Message.PEDIGREE_OPTIONS_LABEL));
+	}
 
-        try {
-            Integer listId = saveGermplasmListAction.saveRecords(list, getGermplasmNameObjects(), getNewNames(),
-                    germplasmListUploader.getOriginalFilename(), processGermplasmAction.getMatchedGermplasmIds(),
-                    importedGermplasmList, getSeedStorageLocation());
-            
+	private boolean validateLocation() {
+		return BreedingManagerUtil.validateRequiredField(this.getWindow(), this.germplasmFieldsComponent.getLocationComboBox(),
+				this.messageSource, this.messageSource.getMessage(Message.GERMPLASM_LOCATION_LABEL));
+	}
 
-            if (listId != null) {
-                MessageNotifier.showMessage(window, messageSource.getMessage(Message.SUCCESS),
-                        messageSource.getMessage(Message.GERMPLASM_LIST_SAVED_SUCCESSFULLY), 3000);
+	protected void updateTotalEntriesLabel() {
+		int count = this.germplasmDetailsTable.getItemIds().size();
+		if (count == 0) {
+			this.totalEntriesLabel.setValue(this.messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
+		} else {
+			this.totalEntriesLabel.setValue(this.messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " + "  <b>" + count + "</b>");
+		}
+	}
 
-                source.reset();
+	public void backButtonClickAction() {
+		this.source.backStep();
+	}
 
-                //If not via popup
-                if (source.getGermplasmImportPopupSource() == null) {
-                    source.backStep();
-                } else {
-                    source.getGermplasmImportPopupSource().openSavedGermplasmList(list);
-                    source.getGermplasmImportPopupSource().refreshListTreeAfterListImport();
-                    source.getGermplasmImportPopupSource().getParentWindow().removeWindow((Window) source.getComponentContainer());
-                }
+	public GermplasmImportMain getSource() {
+		return this.source;
+	}
 
-                if (source.isViaPopup()) {
-                    notifyExternalApplication(window, listId);
-                }
-            }
+	public void setGermplasmBreedingMethod(String breedingMethod) {
+		this.germplasmFieldsComponent.setGermplasmBreedingMethod(breedingMethod);
+	}
 
-        } catch (MiddlewareQueryException e) {
-            MessageNotifier.showError(window, "ERROR", "Error with saving germplasm list. Please see log for details.");
-            LOG.error(e.getMessage(),e);
-        }
+	public void setGermplasmDate(Date germplasmDate) throws ParseException {
+		this.germplasmFieldsComponent.setGermplasmDate(germplasmDate);
+	}
 
-    }
+	public void setGermplasmLocation(String germplasmLocation) {
+		this.germplasmFieldsComponent.setGermplasmLocation(germplasmLocation);
+	}
 
-    private Integer getSeedStorageLocation() {
-        Integer storageLocationId = 0;
-        try {
-        	if(germplasmFieldsComponent.getSeedLocationComboBox() != null && germplasmFieldsComponent.getSeedLocationComboBox().getValue() != null){
-        		storageLocationId = Integer.valueOf(germplasmFieldsComponent.getSeedLocationComboBox().getValue().toString());
-        	}
-        } catch (NumberFormatException e) {
-            LOG.error("Error ar SpecifyGermplasmDetailsComponent: getSeedStorageLocation() " + e);
-        }
+	public void setGermplasmListType(String germplasmListType) {
+		this.germplasmFieldsComponent.setGermplasmListType(germplasmListType);
+	}
 
-        return storageLocationId;
-    }
+	protected void initializePedigreeOptions() {
+		this.pedigreeOptionComboBox.addItem(1);
+		this.pedigreeOptionComboBox.addItem(2);
+		this.pedigreeOptionComboBox.addItem(3);
+		this.pedigreeOptionComboBox.setItemCaption(1, this.messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_ONE));
+		this.pedigreeOptionComboBox.setItemCaption(2, this.messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_TWO));
+		this.pedigreeOptionComboBox.setItemCaption(3, this.messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_THREE));
+	}
 
-    private void notifyExternalApplication(Window window, Integer listId) {
-        if (window != null) {
-            window.executeJavaScript("window.parent.closeImportFrame(" + listId + ");");
-        }
-    }
+	protected void showFirstPedigreeOption(boolean visible) {
+		Item firstOption = this.pedigreeOptionComboBox.getItem(1);
+		if (firstOption == null && visible) {
+			this.pedigreeOptionComboBox.removeAllItems();
+			this.initializePedigreeOptions();
+		} else if (!visible) {
+			this.pedigreeOptionComboBox.removeItem(1);
+		}
+	}
 
-    @Override
-    public void setCurrentlySavedGermplasmList(GermplasmList list) {
-        this.germplasmList = list;
-    }
+	public Integer getPedigreeOptionGroupValue() {
+		return (Integer) this.pedigreeOptionComboBox.getValue();
+	}
 
-    @Override
-    public Component getParentComponent() {
-        return source;
-    }
+	public String getPedigreeOption() {
+		return this.pedigreeOptionComboBox.getValue().toString();
+	}
 
-    public GermplasmList getGermplasmList() {
-        return germplasmList;
-    }
+	public List<GermplasmName> getGermplasmNameObjects() {
+		return this.processGermplasmAction.getGermplasmNameObjects();
+	}
 
-    public void closeSaveListAsDialog() {
-        if (saveListAsDialog != null) {
-            getWindow().removeWindow(saveListAsDialog);
-        }
-    }
+	private List<Name> getNewNames() {
+		return this.processGermplasmAction.getNewNames();
+	}
 
-    public Boolean automaticallyAcceptSingleMatchesCheckbox() {
-        return (Boolean) automaticallyAcceptSingleMatchesCheckbox.getValue();
-    }
+	@Override
+	public void instantiateComponents() {
 
-    public ImportedGermplasmList getImportedGermplasmList() {
-        return importedGermplasmList;
-    }
+		if (this.source.getGermplasmImportPopupSource() == null) {
+			this.germplasmFieldsComponent = new GermplasmFieldsComponent(this.getWindow(), 200);
+		} else {
+			this.germplasmFieldsComponent =
+					new GermplasmFieldsComponent(this.source.getGermplasmImportPopupSource().getParentWindow(), 200);
+		}
 
-    public void setGermplasmDetailsTable(Table germplasmDetailsTable) {
+		this.reviewImportDetailsLabel = new Label(this.messageSource.getMessage(Message.GERMPLASM_DETAILS_LABEL).toUpperCase());
+		this.reviewImportDetailsLabel.addStyleName(Bootstrap.Typography.H4.styleName());
+
+		this.totalEntriesLabel = new Label("Total Entries: 0", Label.CONTENT_XHTML);
+
+		this.initGermplasmDetailsTable();
+
+		this.selectPedigreeOptionsLabel = new Label(this.messageSource.getMessage(Message.SELECT_PEDIGREE_OPTIONS).toUpperCase());
+		this.selectPedigreeOptionsLabel.addStyleName(Bootstrap.Typography.H4.styleName());
+
+		this.pedigreeOptionsLabel = new Label(this.messageSource.getMessage(Message.PEDIGREE_OPTIONS_LABEL) + ":");
+		this.pedigreeOptionsLabel.addStyleName(AppConstants.CssStyles.BOLD);
+		this.pedigreeOptionsLabel.setWidth("250px");
+
+		this.pedigreeOptionComboBox = new ComboBox();
+		this.pedigreeOptionComboBox.setImmediate(true);
+		this.pedigreeOptionComboBox.setRequired(true);
+		this.pedigreeOptionComboBox.setWidth("450px");
+		this.pedigreeOptionComboBox.setInputPrompt("Please Choose");
+
+		this.automaticallyAcceptSingleMatchesCheckbox =
+				new CheckBox(this.messageSource.getMessage(Message.AUTOMATICALLY_ACCEPT_SINGLE_MATCHES_WHENEVER_FOUND));
+		this.automaticallyAcceptSingleMatchesCheckbox.setVisible(false);
+
+		GermplasmImportButtonClickListener clickListener = new GermplasmImportButtonClickListener(this);
+
+		this.backButton = new Button();
+		this.backButton.setData(SpecifyGermplasmDetailsComponent.BACK_BUTTON_ID);
+		this.backButton.addListener(clickListener);
+
+		this.nextButton = new Button();
+		this.nextButton.setData(SpecifyGermplasmDetailsComponent.NEXT_BUTTON_ID);
+		this.nextButton.addListener(clickListener);
+		this.nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+	}
+
+	protected void initGermplasmDetailsTable() {
+		this.setGermplasmDetailsTable(new Table());
+		this.germplasmDetailsTable = this.getGermplasmDetailsTable();
+		this.germplasmDetailsTable.setHeight("200px");
+		this.germplasmDetailsTable.setWidth("700px");
+
+		this.germplasmDetailsTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
+		this.germplasmDetailsTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
+		this.germplasmDetailsTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), String.class, null);
+		this.germplasmDetailsTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
+		this.germplasmDetailsTable.addContainerProperty(ColumnLabels.GID.getName(), Integer.class, null);
+		this.germplasmDetailsTable.addContainerProperty(ColumnLabels.STOCKID, String.class, null);
+		this.germplasmDetailsTable.addContainerProperty(ColumnLabels.AMOUNT, Double.class, null);
+		this.germplasmDetailsTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
+
+		this.germplasmDetailsTable.setColumnCollapsingAllowed(true);
+
+		this.germplasmDetailsTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), this.getTermNameFromOntology(ColumnLabels.ENTRY_ID));
+		this.germplasmDetailsTable
+				.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(), this.getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
+		this.germplasmDetailsTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(),
+				this.getTermNameFromOntology(ColumnLabels.DESIGNATION));
+		this.germplasmDetailsTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(), this.getTermNameFromOntology(ColumnLabels.PARENTAGE));
+		this.germplasmDetailsTable.setColumnHeader(ColumnLabels.GID.getName(), this.getTermNameFromOntology(ColumnLabels.GID));
+
+		this.germplasmDetailsTable.setColumnHeader(ColumnLabels.STOCKID.getName(), this.getTermNameFromOntology(ColumnLabels.STOCKID));
+
+		this.germplasmDetailsTable.setColumnHeader(ColumnLabels.AMOUNT.getName(), this.getTermNameFromOntology(ColumnLabels.AMOUNT));
+
+		this.germplasmDetailsTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(),
+				this.getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
+
+		this.germplasmDetailsTable.setColumnCollapsed(ColumnLabels.STOCKID, true);
+		this.germplasmDetailsTable.setColumnCollapsed(ColumnLabels.AMOUNT, true);
+
+	}
+
+	protected String getTermNameFromOntology(ColumnLabels columnLabels) {
+		return columnLabels.getTermNameFromOntology(this.ontologyDataManager);
+	}
+
+	@Override
+	public void initializeValues() {
+		// 2nd section
+		this.initializePedigreeOptions();
+	}
+
+	@SuppressWarnings("serial")
+	@Override
+	public void addListeners() {
+		this.processGermplasmAction = new ProcessImportedGermplasmAction(this);
+
+		this.pedigreeOptionComboBox.addListener(new Property.ValueChangeListener() {
+
+			/**
+			 *
+			 */
+			private static final long serialVersionUID = -1796753441697604604L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				SpecifyGermplasmDetailsComponent.this.toggleAcceptSingleMatchesCheckbox();
+			}
+		});
+
+	}
+
+	@Override
+	public void layoutComponents() {
+		this.setWidth("700px");
+
+		// Review Import Details Layout
+		VerticalLayout importDetailsLayout = new VerticalLayout();
+		importDetailsLayout.setSpacing(true);
+		importDetailsLayout.addComponent(this.reviewImportDetailsLabel);
+		importDetailsLayout.addComponent(this.totalEntriesLabel);
+		importDetailsLayout.addComponent(this.germplasmDetailsTable);
+
+		// Pedigree Options Layout
+		VerticalLayout pedigreeOptionsLayout = new VerticalLayout();
+		pedigreeOptionsLayout.setSpacing(true);
+
+		VerticalLayout pedigreeControlsLayoutVL = new VerticalLayout();
+		pedigreeControlsLayoutVL.setSpacing(true);
+		pedigreeControlsLayoutVL.addComponent(this.pedigreeOptionComboBox);
+		pedigreeControlsLayoutVL.addComponent(this.automaticallyAcceptSingleMatchesCheckbox);
+
+		HorizontalLayout pedigreeControlsLayout = new HorizontalLayout();
+		pedigreeControlsLayout.addComponent(this.pedigreeOptionsLabel);
+		pedigreeControlsLayout.addComponent(pedigreeControlsLayoutVL);
+
+		pedigreeOptionsLayout.addComponent(this.selectPedigreeOptionsLabel);
+		pedigreeOptionsLayout.addComponent(pedigreeControlsLayout);
+
+		// Buttons Layout
+		HorizontalLayout buttonLayout = new HorizontalLayout();
+		buttonLayout.setWidth("100%");
+		buttonLayout.setHeight("40px");
+		buttonLayout.setSpacing(true);
+
+		buttonLayout.addComponent(this.backButton);
+		buttonLayout.addComponent(this.nextButton);
+		buttonLayout.setComponentAlignment(this.backButton, Alignment.BOTTOM_RIGHT);
+		buttonLayout.setComponentAlignment(this.nextButton, Alignment.BOTTOM_LEFT);
+
+		VerticalLayout spacerLayout = new VerticalLayout();
+		spacerLayout.setHeight("30px");
+		VerticalLayout spacerLayout2 = new VerticalLayout();
+		spacerLayout2.setHeight("30px");
+
+		this.addComponent(this.germplasmFieldsComponent);
+		this.addComponent(importDetailsLayout);
+		this.addComponent(spacerLayout);
+		this.addComponent(pedigreeOptionsLayout);
+		this.addComponent(spacerLayout2);
+		this.addComponent(buttonLayout);
+	}
+
+	protected void toggleAcceptSingleMatchesCheckbox() {
+		// by default hide it
+		this.automaticallyAcceptSingleMatchesCheckbox.setVisible(false);
+		this.automaticallyAcceptSingleMatchesCheckbox.setValue(true);
+
+		if (this.pedigreeOptionComboBox.getValue() != null) {
+			boolean selectGermplasmOptionChosen = this.pedigreeOptionComboBox.getValue().equals(3);
+			this.automaticallyAcceptSingleMatchesCheckbox.setVisible(selectGermplasmOptionChosen);
+		}
+	}
+
+	public void initializeFromImportFile(ImportedGermplasmList importedGermplasmList) {
+
+		this.importedGermplasmList = importedGermplasmList;
+		this.getGermplasmFieldsComponent().refreshLayout(this.germplasmListUploader.hasInventoryAmountOnly());
+
+		// Clear table contents first (possible that it has some rows in it from previous uploads, and then user went back to upload screen)
+		this.getGermplasmDetailsTable().removeAllItems();
+
+		if (this.germplasmListUploader.hasStockIdFactor()) {
+			this.getGermplasmDetailsTable().setColumnCollapsed(ColumnLabels.STOCKID, false);
+		} else {
+			this.getGermplasmDetailsTable().setColumnCollapsed(ColumnLabels.STOCKID, true);
+		}
+		if (this.germplasmListUploader.hasInventoryAmount()) {
+			this.getGermplasmDetailsTable().setColumnCollapsed(ColumnLabels.AMOUNT, false);
+		} else {
+			this.getGermplasmDetailsTable().setColumnCollapsed(ColumnLabels.AMOUNT, true);
+		}
+
+		String germplasmSource;
+		String fileNameWithoutExtension = FileUtils.getFilenameWithoutExtension(importedGermplasmList.getFilename());
+		for (int i = 0; i < this.getImportedGermplasms().size(); i++) {
+			ImportedGermplasm importedGermplasm = this.getImportedGermplasms().get(i);
+			if (importedGermplasm.getSource() == null) {
+				germplasmSource = fileNameWithoutExtension + ":" + (i + 1);
+			} else {
+				germplasmSource = importedGermplasm.getSource();
+			}
+			this.getGermplasmDetailsTable().addItem(
+					new Object[] {importedGermplasm.getEntryId(), importedGermplasm.getEntryCode(), importedGermplasm.getDesig(),
+							importedGermplasm.getCross(), importedGermplasm.getGid(), importedGermplasm.getInventoryId(),
+							importedGermplasm.getSeedAmount(), germplasmSource}, new Integer(i + 1));
+		}
+		this.updateTotalEntriesLabel();
+
+		if (this.germplasmListUploader.importFileIsAdvanced()) {
+			this.showFirstPedigreeOption(false);
+		} else {
+			this.showFirstPedigreeOption(true);
+		}
+		this.toggleAcceptSingleMatchesCheckbox();
+	}
+
+	@Override
+	public void saveList(GermplasmList list) {
+
+		SaveGermplasmListAction saveGermplasmListAction = new SaveGermplasmListAction();
+		Window window = this.source.getWindow();
+
+		try {
+			Integer listId =
+					saveGermplasmListAction.saveRecords(list, this.getGermplasmNameObjects(), this.getNewNames(),
+							this.germplasmListUploader.getOriginalFilename(), this.processGermplasmAction.getMatchedGermplasmIds(),
+							this.importedGermplasmList, this.getSeedStorageLocation());
+
+			if (listId != null) {
+				MessageNotifier.showMessage(window, this.messageSource.getMessage(Message.SUCCESS),
+						this.messageSource.getMessage(Message.GERMPLASM_LIST_SAVED_SUCCESSFULLY), 3000);
+
+				this.source.reset();
+
+				// If not via popup
+				if (this.source.getGermplasmImportPopupSource() == null) {
+					this.source.backStep();
+				} else {
+					this.source.getGermplasmImportPopupSource().openSavedGermplasmList(list);
+					this.source.getGermplasmImportPopupSource().refreshListTreeAfterListImport();
+					this.source.getGermplasmImportPopupSource().getParentWindow()
+							.removeWindow((Window) this.source.getComponentContainer());
+				}
+
+				if (this.source.isViaPopup()) {
+					this.notifyExternalApplication(window, listId);
+				}
+			}
+
+		} catch (MiddlewareQueryException e) {
+			MessageNotifier.showError(window, "ERROR", "Error with saving germplasm list. Please see log for details.");
+			SpecifyGermplasmDetailsComponent.LOG.error(e.getMessage(), e);
+		}
+
+	}
+
+	private Integer getSeedStorageLocation() {
+		Integer storageLocationId = 0;
+		try {
+			if (this.germplasmFieldsComponent.getSeedLocationComboBox() != null
+					&& this.germplasmFieldsComponent.getSeedLocationComboBox().getValue() != null) {
+				storageLocationId = Integer.valueOf(this.germplasmFieldsComponent.getSeedLocationComboBox().getValue().toString());
+			}
+		} catch (NumberFormatException e) {
+			SpecifyGermplasmDetailsComponent.LOG.error("Error ar SpecifyGermplasmDetailsComponent: getSeedStorageLocation() " + e);
+		}
+
+		return storageLocationId;
+	}
+
+	private void notifyExternalApplication(Window window, Integer listId) {
+		if (window != null) {
+			window.executeJavaScript("window.parent.closeImportFrame(" + listId + ");");
+		}
+	}
+
+	@Override
+	public void setCurrentlySavedGermplasmList(GermplasmList list) {
+		this.germplasmList = list;
+	}
+
+	@Override
+	public Component getParentComponent() {
+		return this.source;
+	}
+
+	public GermplasmList getGermplasmList() {
+		return this.germplasmList;
+	}
+
+	public void closeSaveListAsDialog() {
+		if (this.saveListAsDialog != null) {
+			this.getWindow().removeWindow(this.saveListAsDialog);
+		}
+	}
+
+	public Boolean automaticallyAcceptSingleMatchesCheckbox() {
+		return (Boolean) this.automaticallyAcceptSingleMatchesCheckbox.getValue();
+	}
+
+	public ImportedGermplasmList getImportedGermplasmList() {
+		return this.importedGermplasmList;
+	}
+
+	public void setGermplasmDetailsTable(Table germplasmDetailsTable) {
 		this.germplasmDetailsTable = germplasmDetailsTable;
 	}
 
-
-    public void setProcessGermplasmAction(
-			ProcessImportedGermplasmAction processGermplasmAction) {
+	public void setProcessGermplasmAction(ProcessImportedGermplasmAction processGermplasmAction) {
 		this.processGermplasmAction = processGermplasmAction;
 	}
 
 	public void setContextUtil(ContextUtil contextUtil) {
 		this.contextUtil = contextUtil;
 	}
-	
+
 }

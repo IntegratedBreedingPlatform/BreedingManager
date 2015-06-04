@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.crossingmanager;
 
 import java.util.List;
@@ -23,41 +24,40 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
-public class SummaryListHeaderComponent extends VerticalLayout
-		implements BreedingManagerLayout, InitializingBean {
+public class SummaryListHeaderComponent extends VerticalLayout implements BreedingManagerLayout, InitializingBean {
 
 	private static final int DESCRIPTION_LENGTH = 80;
 	private static final long serialVersionUID = 6735189578521540285L;
 	private static final Logger LOG = LoggerFactory.getLogger(SummaryListHeaderComponent.class);
-	
+
 	@Autowired
 	private GermplasmListManager germplasmListManager;
-	
+
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
-	
+
 	private Label sectionTitleLabel;
 	private Label savedAsLabel;
 	private Label descriptionLabel;
 	private Label listTypeLabel;
 	private Label listDateLabel;
-	
+
 	private Label folderPathValue;
 	private Label listNameValue;
 	private Label descriptionValue;
 	private Label listTypeValue;
 	private Label listDateValue;
-	
+
 	private GermplasmList list;
 	private Integer listId;
-	private String sectionTitle;
+	private final String sectionTitle;
 
 	public SummaryListHeaderComponent(GermplasmList list, String sectionTitle) {
 		super();
 		this.list = list;
 		this.sectionTitle = sectionTitle;
 	}
-	
+
 	public SummaryListHeaderComponent(Integer listId, String sectionTitle) {
 		super();
 		this.listId = listId;
@@ -66,90 +66,89 @@ public class SummaryListHeaderComponent extends VerticalLayout
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		instantiateComponents();
-		initializeValues();
-		addListeners();
-		layoutComponents();
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
 	}
 
 	@Override
 	public void instantiateComponents() {
-		sectionTitleLabel = new Label(this.sectionTitle.toUpperCase());
-		sectionTitleLabel.addStyleName(Bootstrap.Typography.H4.styleName());
-		sectionTitleLabel.addStyleName(AppConstants.CssStyles.BOLD);
-		
-		savedAsLabel = new Label(messageSource.getMessage(Message.SAVED_AS) + ":");
-		savedAsLabel.addStyleName(AppConstants.CssStyles.BOLD);
-		
-		descriptionLabel = new Label(messageSource.getMessage(Message.DESCRIPTION_LABEL) + ":");
-		descriptionLabel.addStyleName(AppConstants.CssStyles.BOLD);
-		
-		listTypeLabel = new Label(messageSource.getMessage(Message.LIST_TYPE) + ":");
-		listTypeLabel.addStyleName(AppConstants.CssStyles.BOLD);
-		
-		listDateLabel = new Label(messageSource.getMessage(Message.DATE_LABEL) + ":");
-		listDateLabel.addStyleName(AppConstants.CssStyles.BOLD);
-		
-		folderPathValue = new Label();
+		this.sectionTitleLabel = new Label(this.sectionTitle.toUpperCase());
+		this.sectionTitleLabel.addStyleName(Bootstrap.Typography.H4.styleName());
+		this.sectionTitleLabel.addStyleName(AppConstants.CssStyles.BOLD);
 
-		listNameValue = new Label();
-		listNameValue.addStyleName(AppConstants.CssStyles.BOLD);
-		
-		descriptionValue = new Label();
-		
-		listTypeValue = new Label();
-		listTypeValue.setWidth("150px");
-		
-		listDateValue = new Label();
+		this.savedAsLabel = new Label(this.messageSource.getMessage(Message.SAVED_AS) + ":");
+		this.savedAsLabel.addStyleName(AppConstants.CssStyles.BOLD);
+
+		this.descriptionLabel = new Label(this.messageSource.getMessage(Message.DESCRIPTION_LABEL) + ":");
+		this.descriptionLabel.addStyleName(AppConstants.CssStyles.BOLD);
+
+		this.listTypeLabel = new Label(this.messageSource.getMessage(Message.LIST_TYPE) + ":");
+		this.listTypeLabel.addStyleName(AppConstants.CssStyles.BOLD);
+
+		this.listDateLabel = new Label(this.messageSource.getMessage(Message.DATE_LABEL) + ":");
+		this.listDateLabel.addStyleName(AppConstants.CssStyles.BOLD);
+
+		this.folderPathValue = new Label();
+
+		this.listNameValue = new Label();
+		this.listNameValue.addStyleName(AppConstants.CssStyles.BOLD);
+
+		this.descriptionValue = new Label();
+
+		this.listTypeValue = new Label();
+		this.listTypeValue.setWidth("150px");
+
+		this.listDateValue = new Label();
 	}
 
 	private void retrieveListDetails() {
 		try {
-			list = germplasmListManager.getGermplasmListById(listId);
+			this.list = this.germplasmListManager.getGermplasmListById(this.listId);
 		} catch (MiddlewareQueryException e) {
-			LOG.error("Error in getting parent list:" + e.getMessage());
+			SummaryListHeaderComponent.LOG.error("Error in getting parent list:" + e.getMessage());
 			e.printStackTrace();
 		}
 	}
 
 	@Override
 	public void initializeValues() {
-		if (list == null){
-			retrieveListDetails();
+		if (this.list == null) {
+			this.retrieveListDetails();
 		}
-		
-		listNameValue.setValue(list.getName());
-		
-		String description = list.getDescription();
-		if (description.length() > 70){
-			description = description.substring(0, DESCRIPTION_LENGTH) + "...";
-		}
-		descriptionValue.setValue(description);
-		descriptionValue.setDescription(list.getDescription());
-		
-		listDateValue.setValue(list.getDate());
 
-		initializeListTypeValue();
-		try {
-			folderPathValue.setValue(Util.generateListFolderPathLabel(germplasmListManager, list.getParent()));
-		} catch (MiddlewareQueryException e) {
-			LOG.error("Error getting list folder path " + e.getMessage());
+		this.listNameValue.setValue(this.list.getName());
+
+		String description = this.list.getDescription();
+		if (description.length() > 70) {
+			description = description.substring(0, SummaryListHeaderComponent.DESCRIPTION_LENGTH) + "...";
 		}
-		
-		
+		this.descriptionValue.setValue(description);
+		this.descriptionValue.setDescription(this.list.getDescription());
+
+		this.listDateValue.setValue(this.list.getDate());
+
+		this.initializeListTypeValue();
+		try {
+			this.folderPathValue.setValue(Util.generateListFolderPathLabel(this.germplasmListManager, this.list.getParent()));
+		} catch (MiddlewareQueryException e) {
+			SummaryListHeaderComponent.LOG.error("Error getting list folder path " + e.getMessage());
+		}
+
 	}
 
 	private void initializeListTypeValue() {
-		listTypeValue.setValue(list.getType());
+		this.listTypeValue.setValue(this.list.getType());
 		try {
 			List<UserDefinedField> listTypes = this.germplasmListManager.getGermplasmListTypes();
-			for (UserDefinedField field: listTypes){
-				if (field.getFcode().equals(list.getType())){
-					listTypeValue.setValue(field.getFname());
+			for (UserDefinedField field : listTypes) {
+				if (field.getFcode().equals(this.list.getType())) {
+					this.listTypeValue.setValue(field.getFname());
 				}
 			}
 		} catch (MiddlewareQueryException e) {
-			LOG.error("Error getting list types " + e.getMessage());
+			SummaryListHeaderComponent.LOG.error("Error getting list types " + e.getMessage());
 		}
 	}
 
@@ -159,30 +158,30 @@ public class SummaryListHeaderComponent extends VerticalLayout
 
 	@Override
 	public void layoutComponents() {
-		setSpacing(true);
-		
+		this.setSpacing(true);
+
 		HorizontalLayout row1 = new HorizontalLayout();
 		row1.setSpacing(true);
-		row1.addComponent(savedAsLabel);
-		row1.addComponent(folderPathValue);
-		row1.addComponent(listNameValue);
-		
+		row1.addComponent(this.savedAsLabel);
+		row1.addComponent(this.folderPathValue);
+		row1.addComponent(this.listNameValue);
+
 		HorizontalLayout row2 = new HorizontalLayout();
 		row2.setSpacing(true);
-		row2.addComponent(descriptionLabel);
-		row2.addComponent(descriptionValue);
-		
+		row2.addComponent(this.descriptionLabel);
+		row2.addComponent(this.descriptionValue);
+
 		HorizontalLayout row3 = new HorizontalLayout();
 		row3.setSpacing(true);
-		row3.addComponent(listTypeLabel);
-		row3.addComponent(listTypeValue);
-		row3.addComponent(listDateLabel);
-		row3.addComponent(listDateValue);
-		
-		addComponent(sectionTitleLabel);
-		addComponent(row1);
-		addComponent(row2);
-		addComponent(row3);
+		row3.addComponent(this.listTypeLabel);
+		row3.addComponent(this.listTypeValue);
+		row3.addComponent(this.listDateLabel);
+		row3.addComponent(this.listDateValue);
+
+		this.addComponent(this.sectionTitleLabel);
+		this.addComponent(row1);
+		this.addComponent(row2);
+		this.addComponent(row3);
 	}
 
 }

@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.listmanager.util.germplasm;
 
 import java.util.ArrayList;
@@ -20,192 +21,190 @@ import com.vaadin.data.util.PropertysetItem;
 
 /**
  * An implementation of Query which is needed for using the LazyQueryContainer.
- * 
- * Reference:
- * https://vaadin.com/wiki/-/wiki/Main/Lazy%20Query%20Container/#section
+ *
+ * Reference: https://vaadin.com/wiki/-/wiki/Main/Lazy%20Query%20Container/#section
  * -Lazy+Query+Container-HowToImplementCustomQueryAndQueryFactory
- * 
+ *
  * @author Joyce Avestro
- * 
+ *
  */
-public class GermplasmSearchQuery implements Query{
+public class GermplasmSearchQuery implements Query {
 
-    public static final Object GID = "gid";
-    public static final Object NAMES = "names";
-    public static final Object METHOD = "method";
-    public static final Object LOCATION = "location";
-    public static final String SEARCH_OPTION_GID = "GID";
-    public static final String SEARCH_OPTION_NAME = "Names";
+	public static final Object GID = "gid";
+	public static final Object NAMES = "names";
+	public static final Object METHOD = "method";
+	public static final Object LOCATION = "location";
+	public static final String SEARCH_OPTION_GID = "GID";
+	public static final String SEARCH_OPTION_NAME = "Names";
 
-    private GermplasmDataManager germplasmDataManager;
-    private String searchChoice;
-    private String searchValue;
-    private int size;
+	private final GermplasmDataManager germplasmDataManager;
+	private final String searchChoice;
+	private final String searchValue;
+	private int size;
 
-    /**
-     * These parameters are passed by the QueryFactory which instantiates
-     * objects of this class.
-     * 
-     */
-    public GermplasmSearchQuery(GermplasmDataManager germplasmDataManager, String searchChoice, String searchValue) {
-        super();
-        this.germplasmDataManager = germplasmDataManager;
-        this.searchChoice = searchChoice;
-        this.searchValue = searchValue;
-        this.size = -1;
-    }
+	/**
+	 * These parameters are passed by the QueryFactory which instantiates objects of this class.
+	 * 
+	 */
+	public GermplasmSearchQuery(GermplasmDataManager germplasmDataManager, String searchChoice, String searchValue) {
+		super();
+		this.germplasmDataManager = germplasmDataManager;
+		this.searchChoice = searchChoice;
+		this.searchValue = searchValue;
+		this.size = -1;
+	}
 
-    /**
-     * This method seems to be called for creating blank items on the Table
-     */
-    @Override
-    public Item constructItem() {
-        PropertysetItem item = new PropertysetItem();
-        item.addItemProperty(GID, new ObjectProperty<String>(""));
-        item.addItemProperty(NAMES, new ObjectProperty<String>(""));
-        item.addItemProperty(METHOD, new ObjectProperty<String>(""));
-        item.addItemProperty(LOCATION, new ObjectProperty<String>(""));
-        return item;
-    }
+	/**
+	 * This method seems to be called for creating blank items on the Table
+	 */
+	@Override
+	public Item constructItem() {
+		PropertysetItem item = new PropertysetItem();
+		item.addItemProperty(GermplasmSearchQuery.GID, new ObjectProperty<String>(""));
+		item.addItemProperty(GermplasmSearchQuery.NAMES, new ObjectProperty<String>(""));
+		item.addItemProperty(GermplasmSearchQuery.METHOD, new ObjectProperty<String>(""));
+		item.addItemProperty(GermplasmSearchQuery.LOCATION, new ObjectProperty<String>(""));
+		return item;
+	}
 
-    @Override
-    public boolean deleteAllItems() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public boolean deleteAllItems() {
+		throw new UnsupportedOperationException();
+	}
 
-    /**
-     * Retrieves the dataset by batches of rows. Used for lazy loading the dataset.
-     */
-    @Override
-    public List<Item> loadItems(int start, int numOfRows) {
-        List<Item> items = new ArrayList<Item>();
+	/**
+	 * Retrieves the dataset by batches of rows. Used for lazy loading the dataset.
+	 */
+	@Override
+	public List<Item> loadItems(int start, int numOfRows) {
+		List<Item> items = new ArrayList<Item>();
 
-        List<GermplasmSearchResultModel> germplasms = new ArrayList<GermplasmSearchResultModel>();
+		List<GermplasmSearchResultModel> germplasms = new ArrayList<GermplasmSearchResultModel>();
 
-        try {
-            List<Germplasm> germplasmList;
+		try {
+			List<Germplasm> germplasmList;
 
-            if (searchChoice.equals(SEARCH_OPTION_NAME)) {
-                if (searchValue.contains("%")) {
-                    germplasmList = germplasmDataManager.getGermplasmByName(searchValue, start, numOfRows, Operation.LIKE);
-                } else {
-                    germplasmList = germplasmDataManager.getGermplasmByName(searchValue, start, numOfRows, Operation.EQUAL);
-                }
-                for (Germplasm g : germplasmList) {
-                    Germplasm gData = g;
-                    GermplasmSearchResultModel gResult = new GermplasmSearchResultModel();
-                    germplasms.add(setGermplasmSearchResult(gResult, gData));
+			if (this.searchChoice.equals(GermplasmSearchQuery.SEARCH_OPTION_NAME)) {
+				if (this.searchValue.contains("%")) {
+					germplasmList = this.germplasmDataManager.getGermplasmByName(this.searchValue, start, numOfRows, Operation.LIKE);
+				} else {
+					germplasmList = this.germplasmDataManager.getGermplasmByName(this.searchValue, start, numOfRows, Operation.EQUAL);
+				}
+				for (Germplasm g : germplasmList) {
+					Germplasm gData = g;
+					GermplasmSearchResultModel gResult = new GermplasmSearchResultModel();
+					germplasms.add(this.setGermplasmSearchResult(gResult, gData));
 
-                }
-            } else {
-                Germplasm gData = germplasmDataManager.getGermplasmByGID(Integer.parseInt(searchValue));
-                GermplasmSearchResultModel gResult = new GermplasmSearchResultModel();
+				}
+			} else {
+				Germplasm gData = this.germplasmDataManager.getGermplasmByGID(Integer.parseInt(this.searchValue));
+				GermplasmSearchResultModel gResult = new GermplasmSearchResultModel();
 
-                if (gData != null) {
-                    gResult = setGermplasmSearchResult(gResult, gData);
-                    germplasms.add(gResult);
-                }
+				if (gData != null) {
+					gResult = this.setGermplasmSearchResult(gResult, gData);
+					germplasms.add(gResult);
+				}
 
-            }
+			}
 
-        } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.ERROR_DATABASE,
-                    Message.ERROR_IN_GETTING_GERMPLASM_LIST_RESULT_BY_PREFERRED_NAME);
-        }
+		} catch (MiddlewareQueryException e) {
+			throw new InternationalizableException(e, Message.ERROR_DATABASE,
+					Message.ERROR_IN_GETTING_GERMPLASM_LIST_RESULT_BY_PREFERRED_NAME);
+		}
 
-        for (GermplasmSearchResultModel germplasm : germplasms) {
-            PropertysetItem item = new PropertysetItem();
-            item.addItemProperty(GID, new ObjectProperty<String>(germplasm.getGid().toString()));
-            if (germplasm.getNames() != null) {
-                item.addItemProperty(NAMES, new ObjectProperty<String>(germplasm.getNames()));
-            } else {
-                item.addItemProperty(NAMES, new ObjectProperty<String>("-"));
-            }
-            item.addItemProperty(METHOD, new ObjectProperty<String>(germplasm.getMethod()));
-            item.addItemProperty(LOCATION, new ObjectProperty<String>(germplasm.getLocation()));
-            items.add(item);
-        }
+		for (GermplasmSearchResultModel germplasm : germplasms) {
+			PropertysetItem item = new PropertysetItem();
+			item.addItemProperty(GermplasmSearchQuery.GID, new ObjectProperty<String>(germplasm.getGid().toString()));
+			if (germplasm.getNames() != null) {
+				item.addItemProperty(GermplasmSearchQuery.NAMES, new ObjectProperty<String>(germplasm.getNames()));
+			} else {
+				item.addItemProperty(GermplasmSearchQuery.NAMES, new ObjectProperty<String>("-"));
+			}
+			item.addItemProperty(GermplasmSearchQuery.METHOD, new ObjectProperty<String>(germplasm.getMethod()));
+			item.addItemProperty(GermplasmSearchQuery.LOCATION, new ObjectProperty<String>(germplasm.getLocation()));
+			items.add(item);
+		}
 
-        return items;
-    }
+		return items;
+	}
 
-    @SuppressWarnings("deprecation")
+	@SuppressWarnings("deprecation")
 	private GermplasmSearchResultModel setGermplasmSearchResult(GermplasmSearchResultModel gResult, Germplasm gData)
-            throws InternationalizableException {
-        gResult.setGid(gData.getGid());
-        gResult.setNames(getGermplasmNames(gData.getGid()));
+			throws InternationalizableException {
+		gResult.setGid(gData.getGid());
+		gResult.setNames(this.getGermplasmNames(gData.getGid()));
 
-        try{
-            Method method = germplasmDataManager.getMethodByID(gData.getMethodId());
-            if (method != null) {
-                gResult.setMethod(method.getMname());
-            } else {
-                gResult.setMethod("");
-            }
-    
-            Location loc = germplasmDataManager.getLocationByID(gData.getLocationId());
-            if (loc != null) {
-                gResult.setLocation(loc.getLname());
-            } else {
-                gResult.setLocation("");
-            }
-    
-            return gResult;
-        } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_SEARCH);
-        }
+		try {
+			Method method = this.germplasmDataManager.getMethodByID(gData.getMethodId());
+			if (method != null) {
+				gResult.setMethod(method.getMname());
+			} else {
+				gResult.setMethod("");
+			}
 
-    }
+			Location loc = this.germplasmDataManager.getLocationByID(gData.getLocationId());
+			if (loc != null) {
+				gResult.setLocation(loc.getLname());
+			} else {
+				gResult.setLocation("");
+			}
 
-    private String getGermplasmNames(int gid) throws InternationalizableException {
+			return gResult;
+		} catch (MiddlewareQueryException e) {
+			throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_SEARCH);
+		}
 
-        try {
-            List<Name> names = germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
-            StringBuffer germplasmNames = new StringBuffer("");
-            int i = 0;
-            for (Name n : names) {
-                if (i < names.size() - 1) {
-                    germplasmNames.append(n.getNval() + ",");
-                } else {
-                    germplasmNames.append(n.getNval());
-                }
-                i++;
-            }
+	}
 
-            return germplasmNames.toString();
-        } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_NAMES_BY_GERMPLASM_ID);
-        }
-    }
+	private String getGermplasmNames(int gid) throws InternationalizableException {
 
-    @Override
-    public void saveItems(List<Item> arg0, List<Item> arg1, List<Item> arg2) {
-        throw new UnsupportedOperationException();
-    }
+		try {
+			List<Name> names = this.germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
+			StringBuffer germplasmNames = new StringBuffer("");
+			int i = 0;
+			for (Name n : names) {
+				if (i < names.size() - 1) {
+					germplasmNames.append(n.getNval() + ",");
+				} else {
+					germplasmNames.append(n.getNval());
+				}
+				i++;
+			}
 
-    /**
-     * Returns the total number of rows to be displayed on the Table
-     */
-    @Override
-    public int size() {
-        try {
-            if(this.size == -1){
-                if (searchChoice.equals(SEARCH_OPTION_NAME)) {
-                    if (searchValue.contains("%")) {
-                        this.size = (int) germplasmDataManager.countGermplasmByName(searchValue, Operation.LIKE);
-                    } else {
-                        this.size = (int) germplasmDataManager.countGermplasmByName(searchValue, Operation.EQUAL);
-                    }
-                } else {
-                    this.size = germplasmDataManager.getGermplasmByGID(Integer.parseInt(searchValue)) != null ? 1 : 0;
-                }
-            }
-        } catch (MiddlewareQueryException e) {
-            throw new InternationalizableException(e, Message.ERROR_DATABASE,
-                    Message.ERROR_IN_GETTING_GERMPLASM_LIST_RESULT_BY_PREFERRED_NAME);
-        }
+			return germplasmNames.toString();
+		} catch (MiddlewareQueryException e) {
+			throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_GETTING_NAMES_BY_GERMPLASM_ID);
+		}
+	}
 
-        return this.size;
-    }
+	@Override
+	public void saveItems(List<Item> arg0, List<Item> arg1, List<Item> arg2) {
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * Returns the total number of rows to be displayed on the Table
+	 */
+	@Override
+	public int size() {
+		try {
+			if (this.size == -1) {
+				if (this.searchChoice.equals(GermplasmSearchQuery.SEARCH_OPTION_NAME)) {
+					if (this.searchValue.contains("%")) {
+						this.size = (int) this.germplasmDataManager.countGermplasmByName(this.searchValue, Operation.LIKE);
+					} else {
+						this.size = (int) this.germplasmDataManager.countGermplasmByName(this.searchValue, Operation.EQUAL);
+					}
+				} else {
+					this.size = this.germplasmDataManager.getGermplasmByGID(Integer.parseInt(this.searchValue)) != null ? 1 : 0;
+				}
+			}
+		} catch (MiddlewareQueryException e) {
+			throw new InternationalizableException(e, Message.ERROR_DATABASE,
+					Message.ERROR_IN_GETTING_GERMPLASM_LIST_RESULT_BY_PREFERRED_NAME);
+		}
+
+		return this.size;
+	}
 
 }

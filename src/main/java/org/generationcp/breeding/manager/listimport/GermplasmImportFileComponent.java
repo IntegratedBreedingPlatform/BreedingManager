@@ -1,9 +1,8 @@
+
 package org.generationcp.breeding.manager.listimport;
 
-import com.vaadin.ui.*;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.themes.Reindeer;
+import java.util.Locale;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.UploadField;
@@ -21,208 +20,229 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import java.util.Locale;
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Upload;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
-public class GermplasmImportFileComponent extends AbsoluteLayout implements InitializingBean, 
-		InternationalizableComponent, BreedingManagerLayout {
-    
-    public  static final String FB_CLOSE_WINDOW_JS_CALL = "window.parent.cancelImportGermplasm()";
+public class GermplasmImportFileComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent,
+		BreedingManagerLayout {
+
+	public static final String FB_CLOSE_WINDOW_JS_CALL = "window.parent.cancelImportGermplasm()";
 	private static final long serialVersionUID = 9097810121003895303L;
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmImportFileComponent.class);
-    
-    private GermplasmImportMain source;
 
-    public static final String NEXT_BUTTON_ID = "next button";
-    
-    private Label selectFileLabel;
-    private UploadField uploadComponents;
-    private Button cancelButton;
-    private Button nextButton;
-    private Button openTemplateButton;
-    private GermplasmListUploader germplasmListUploader;
-    
-    @Autowired
-    private SimpleResourceBundleMessageSource messageSource;
-    
-    public GermplasmImportFileComponent(GermplasmImportMain source){
-        this.source = source;
-    }
-    
-    @Override
-    public void afterPropertiesSet() throws Exception {
-       instantiateComponents();
-       initializeValues();
-       addListeners();
-       layoutComponents();
-    }
+	private final GermplasmImportMain source;
 
-    @Override
-    public void attach() {
-        super.attach();
-        updateLabels();
-    }
-    
-    @Override
-    public void updateLabels() {
-        messageSource.setCaption(nextButton, Message.NEXT);
-        messageSource.setCaption(openTemplateButton, Message.HERE);
-    }
-    
-    public void nextButtonClickAction() {
-    	try {
-    		germplasmListUploader.doParseWorkbook();
+	public static final String NEXT_BUTTON_ID = "next button";
 
-            if ("".equals(germplasmListUploader.hasWarnings())) {
-                MessageNotifier.showMessage(source.getWindow(), "Success", "File was successfully uploaded");
-            } else {
-                MessageNotifier.showWarning(source.getWindow(), "Warning",
-                        germplasmListUploader.hasWarnings());
-            }
+	private Label selectFileLabel;
+	private UploadField uploadComponents;
+	private Button cancelButton;
+	private Button nextButton;
+	private Button openTemplateButton;
+	private GermplasmListUploader germplasmListUploader;
 
-    		source.nextStep();
-			
+	@Autowired
+	private SimpleResourceBundleMessageSource messageSource;
+
+	public GermplasmImportFileComponent(GermplasmImportMain source) {
+		this.source = source;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
+	}
+
+	@Override
+	public void attach() {
+		super.attach();
+		this.updateLabels();
+	}
+
+	@Override
+	public void updateLabels() {
+		this.messageSource.setCaption(this.nextButton, Message.NEXT);
+		this.messageSource.setCaption(this.openTemplateButton, Message.HERE);
+	}
+
+	public void nextButtonClickAction() {
+		try {
+			this.germplasmListUploader.doParseWorkbook();
+
+			if ("".equals(this.germplasmListUploader.hasWarnings())) {
+				MessageNotifier.showMessage(this.source.getWindow(), "Success", "File was successfully uploaded");
+			} else {
+				MessageNotifier.showWarning(this.source.getWindow(), "Warning", this.germplasmListUploader.hasWarnings());
+			}
+
+			this.source.nextStep();
+
 		} catch (GermplasmImportException e) {
-			LOG.debug("Error importing " + e.getMessage(), e);
-			MessageNotifier.showError(getWindow(), e.getCaption(), e.getMessage());
+			GermplasmImportFileComponent.LOG.debug("Error importing " + e.getMessage(), e);
+			MessageNotifier.showError(this.getWindow(), e.getCaption(), e.getMessage());
 		} catch (FileParsingException e) {
-            LOG.debug("Error importing " + e.getMessage(), e);
-            String message = messageSource.getMessage(e.getMessage(), e.getMessageParameters(), Locale
-                    .getDefault());
-            MessageNotifier.showError(getWindow(), "Error",message);
-        }
-    }
-    
-    public GermplasmImportMain getSource() {
-        return source;
-    }
+			GermplasmImportFileComponent.LOG.debug("Error importing " + e.getMessage(), e);
+			String message = this.messageSource.getMessage(e.getMessage(), e.getMessageParameters(), Locale.getDefault());
+			MessageNotifier.showError(this.getWindow(), "Error", message);
+		}
+	}
 
-    public void initializeUploadField(){
-    	uploadComponents = new UploadField(){
+	public GermplasmImportMain getSource() {
+		return this.source;
+	}
+
+	public void initializeUploadField() {
+		this.uploadComponents = new UploadField() {
+
 			private static final long serialVersionUID = 1L;
+
 			@Override
-            public void uploadFinished(Upload.FinishedEvent event) {
-                super.uploadFinished(event);
-                nextButton.setEnabled(true);
-            }
-       };
-       uploadComponents.discard();
-       
-       uploadComponents.setButtonCaption(messageSource.getMessage(Message.UPLOAD));
-       uploadComponents.setNoFileSelectedText(messageSource.getMessage("NO_FILE_SELECTED"));
-       uploadComponents.setSelectedFileText(messageSource.getMessage("SELECTED_IMPORT_FILE"));
-       uploadComponents.setDeleteCaption(messageSource.getMessage("CLEAR"));
-       uploadComponents.setFieldType(UploadField.FieldType.FILE);
-       uploadComponents.setButtonCaption("Browse");
-       
-       uploadComponents.getRootLayout().setWidth("100%");
-       uploadComponents.getRootLayout().setStyleName("bms-upload-container");
-       addListenersForUploadField();
-    }
-    
-    public UploadField getUploadComponent(){
-    	return uploadComponents;
-    }
-    
+			public void uploadFinished(Upload.FinishedEvent event) {
+				super.uploadFinished(event);
+				GermplasmImportFileComponent.this.nextButton.setEnabled(true);
+			}
+		};
+		this.uploadComponents.discard();
+
+		this.uploadComponents.setButtonCaption(this.messageSource.getMessage(Message.UPLOAD));
+		this.uploadComponents.setNoFileSelectedText(this.messageSource.getMessage("NO_FILE_SELECTED"));
+		this.uploadComponents.setSelectedFileText(this.messageSource.getMessage("SELECTED_IMPORT_FILE"));
+		this.uploadComponents.setDeleteCaption(this.messageSource.getMessage("CLEAR"));
+		this.uploadComponents.setFieldType(UploadField.FieldType.FILE);
+		this.uploadComponents.setButtonCaption("Browse");
+
+		this.uploadComponents.getRootLayout().setWidth("100%");
+		this.uploadComponents.getRootLayout().setStyleName("bms-upload-container");
+		this.addListenersForUploadField();
+	}
+
+	public UploadField getUploadComponent() {
+		return this.uploadComponents;
+	}
+
 	@Override
 	public void instantiateComponents() {
-		selectFileLabel = new Label(messageSource.getMessage(Message.SELECT_GERMPLASM_LIST_FILE));
-      
-		initializeUploadField();
-        
-        germplasmListUploader = new GermplasmListUploader();
-        
-        cancelButton = new Button(messageSource.getMessage(Message.CANCEL));
-        
-        nextButton = new Button();
-        nextButton.setData(NEXT_BUTTON_ID);
-        nextButton.setEnabled(false);
-        nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-        
-        openTemplateButton = new Button();
-        openTemplateButton.setImmediate(true);
-        openTemplateButton.setStyleName(Reindeer.BUTTON_LINK);
-        
+		this.selectFileLabel = new Label(this.messageSource.getMessage(Message.SELECT_GERMPLASM_LIST_FILE));
+
+		this.initializeUploadField();
+
+		this.germplasmListUploader = new GermplasmListUploader();
+
+		this.cancelButton = new Button(this.messageSource.getMessage(Message.CANCEL));
+
+		this.nextButton = new Button();
+		this.nextButton.setData(GermplasmImportFileComponent.NEXT_BUTTON_ID);
+		this.nextButton.setEnabled(false);
+		this.nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+
+		this.openTemplateButton = new Button();
+		this.openTemplateButton.setImmediate(true);
+		this.openTemplateButton.setStyleName(BaseTheme.BUTTON_LINK);
+
 	}
 
 	@Override
 	public void initializeValues() {
-		//do nothing
+		// do nothing
 	}
 
-	public void addListenersForUploadField(){
-		uploadComponents.setDeleteButtonListener(new Button.ClickListener() {
+	public void addListenersForUploadField() {
+		this.uploadComponents.setDeleteButtonListener(new Button.ClickListener() {
+
 			private static final long serialVersionUID = -1357425494204377238L;
 
 			@Override
-            public void buttonClick(ClickEvent event) {
-               nextButton.setEnabled(false);
-            }
-        });
-		uploadComponents.setFileFactory(germplasmListUploader);
+			public void buttonClick(ClickEvent event) {
+				GermplasmImportFileComponent.this.nextButton.setEnabled(false);
+			}
+		});
+		this.uploadComponents.setFileFactory(this.germplasmListUploader);
 	}
-	
+
 	@SuppressWarnings("serial")
 	@Override
 	public void addListeners() {
-		
-		addListenersForUploadField();
-		
-		
-		cancelButton.addListener(new Button.ClickListener() {
+
+		this.addListenersForUploadField();
+
+		this.cancelButton.addListener(new Button.ClickListener() {
+
+			/**
+			 *
+			 */
+			private static final long serialVersionUID = -8787686200326172252L;
+
 			@Override
 			public void buttonClick(ClickEvent event) {
-				cancelButtonAction();
+				GermplasmImportFileComponent.this.cancelButtonAction();
 			}
 
 		});
-		
-		nextButton.addListener(new GermplasmImportButtonClickListener(this));
-		
-		openTemplateButton.addListener(new ClickListener() {
-			
+
+		this.nextButton.addListener(new GermplasmImportButtonClickListener(this));
+
+		this.openTemplateButton.addListener(new ClickListener() {
+
+			/**
+			 *
+			 */
+			private static final long serialVersionUID = -5277793372784918711L;
+
 			@Override
 			public void buttonClick(ClickEvent event) {
-				ExportGermplasmListTemplateDialog exportGermplasmTemplateDialog = new ExportGermplasmListTemplateDialog(source);
-				source.getWindow().addWindow(exportGermplasmTemplateDialog);
+				ExportGermplasmListTemplateDialog exportGermplasmTemplateDialog =
+						new ExportGermplasmListTemplateDialog(GermplasmImportFileComponent.this.source);
+				GermplasmImportFileComponent.this.source.getWindow().addWindow(exportGermplasmTemplateDialog);
 			}
 		});
 	}
 
 	@Override
 	public void layoutComponents() {
-		addComponent(selectFileLabel, "top:20px");
-		addComponent(openTemplateButton, "top:21px;left:520px;");
+		this.addComponent(this.selectFileLabel, "top:20px");
+		this.addComponent(this.openTemplateButton, "top:21px;left:520px;");
 
-		addComponent(uploadComponents, "top:50px");
+		this.addComponent(this.uploadComponents, "top:50px");
 
 		HorizontalLayout buttonLayout = new HorizontalLayout();
-        buttonLayout.setWidth("100%");
-        buttonLayout.setHeight("40px");
-        buttonLayout.setSpacing(true);
-        
-        buttonLayout.addComponent(cancelButton);
-        buttonLayout.addComponent(nextButton);
-        buttonLayout.setComponentAlignment(cancelButton, Alignment.BOTTOM_RIGHT);
-        buttonLayout.setComponentAlignment(nextButton, Alignment.BOTTOM_LEFT);
-        
-        addComponent(buttonLayout, "top:230px");
+		buttonLayout.setWidth("100%");
+		buttonLayout.setHeight("40px");
+		buttonLayout.setSpacing(true);
+
+		buttonLayout.addComponent(this.cancelButton);
+		buttonLayout.addComponent(this.nextButton);
+		buttonLayout.setComponentAlignment(this.cancelButton, Alignment.BOTTOM_RIGHT);
+		buttonLayout.setComponentAlignment(this.nextButton, Alignment.BOTTOM_LEFT);
+
+		this.addComponent(buttonLayout, "top:230px");
 	}
-	
-	public GermplasmListUploader getGermplasmListUploader(){
+
+	public GermplasmListUploader getGermplasmListUploader() {
 		return this.germplasmListUploader;
 	}
-	
+
 	protected void cancelButtonAction() {
-		Window window = source.getWindow();
-		if (source.getGermplasmImportPopupSource() == null){
-			source.reset();
-			//if called by Fieldbook
-			if (source.isViaPopup() && window != null){
-				window.executeJavaScript(FB_CLOSE_WINDOW_JS_CALL);
+		Window window = this.source.getWindow();
+		if (this.source.getGermplasmImportPopupSource() == null) {
+			this.source.reset();
+			// if called by Fieldbook
+			if (this.source.isViaPopup() && window != null) {
+				window.executeJavaScript(GermplasmImportFileComponent.FB_CLOSE_WINDOW_JS_CALL);
 			}
 		} else {
-			source.getGermplasmImportPopupSource().getParentWindow().removeWindow((Window) source.getComponentContainer());
+			this.source.getGermplasmImportPopupSource().getParentWindow().removeWindow((Window) this.source.getComponentContainer());
 		}
 	}
 }

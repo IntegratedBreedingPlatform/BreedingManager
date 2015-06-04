@@ -1,11 +1,5 @@
-package org.generationcp.breeding.manager.customcomponent;
 
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+package org.generationcp.breeding.manager.customcomponent;
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -43,136 +37,141 @@ public class ExportListAsDialogTest {
 
 	private static final int NO_OF_LIST_ENTRIES = 10;
 	private static final Integer USER_ID = 1;
-	private String exportWarningMessages = "";
-	
+	private final String exportWarningMessages = "";
+
 	private static Table listDataTable;
-	private static List<GermplasmListData>  listEntries;
+	private static List<GermplasmListData> listEntries;
 	private static GermplasmList germplasmList;
-	
+
 	@Mock
 	private Component source;
-	
+
 	@Mock
 	private Window window;
-	
+
 	@Mock
 	private FileDownloadResource fileDownloadResource;
-	
+
 	@Mock
 	private GermplasmListExporter listExporter;
-	
+
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
-	
+
 	private ExportListAsDialog dialog;
-	
+
 	private static Table emptyTable;
-	
+
 	@BeforeClass
 	public static void setUpClass() {
-		emptyTable = new Table();
-		listEntries = generateListEntries();
-		germplasmList = getGermplasmList();		
-	}
-	
-	@Before
-	public void setUp() throws MiddlewareQueryException, GermplasmListExporterException {
-		
-		MockitoAnnotations.initMocks(this);
-		
-		listDataTable = generateTestTable();
-		dialog = spy(new ExportListAsDialog(source,germplasmList,listDataTable));
-		
-		listExporter = Mockito.mock(GermplasmListExporter.class);
-		dialog.setListExporter(listExporter);
-		dialog.setMessageSource(messageSource);
-		
-		doNothing().when(dialog).showMessage(exportWarningMessages);
-		doReturn(Mockito.mock(FileOutputStream.class)).when(listExporter).exportGermplasmListXLS(ExportListAsDialog.TEMP_FILENAME,listDataTable);
-		
-		doReturn(fileDownloadResource).when(dialog).createFileDownloadResource();
-		doReturn(window).when(source).getWindow();
-		doNothing().when(window).open(fileDownloadResource);
-	}
-	
-	@Test
-	public void testIsARequiredColumn(){
-		Assert.assertTrue("GID is a required column.",dialog.isARequiredColumn(ColumnLabels.GID.getName()));
-		Assert.assertTrue("ENTRY_ID is a required column.",dialog.isARequiredColumn(ColumnLabels.ENTRY_ID.getName()));
-		Assert.assertTrue("DESIGNATION is a required column.",dialog.isARequiredColumn(ColumnLabels.DESIGNATION.getName()));
-		Assert.assertFalse("SEED_SOURCE is a not required column.",dialog.isARequiredColumn(ColumnLabels.SEED_SOURCE.getName()));
-	}
-	
-	@Test
-	public void testIsARequiredColumnHidden(){
-		Assert.assertFalse("Expecting no required columns is hidden but didn't.",dialog.isARequiredColumnHidden(listDataTable));
-		
-		listDataTable.setColumnCollapsed(ColumnLabels.GID.getName(), true);
-		Assert.assertTrue("Expecting one of the required columns is hidden but didn't.",dialog.isARequiredColumnHidden(listDataTable));
+		ExportListAsDialogTest.emptyTable = new Table();
+		ExportListAsDialogTest.listEntries = ExportListAsDialogTest.generateListEntries();
+		ExportListAsDialogTest.germplasmList = ExportListAsDialogTest.getGermplasmList();
 	}
 
-	
-	@Test
-	public void testShowWarningMessageWhenListDataTableHasHiddenRequiredColumns(){
-		listDataTable.setColumnCollapsed(ColumnLabels.GID.getName(), true);
-		
-		Assert.assertTrue(dialog.isARequiredColumnHidden(listDataTable));
-		dialog.showWarningMessage(listDataTable);
-		verify(dialog,times(1)).showMessage(exportWarningMessages);
+	@Before
+	public void setUp() throws MiddlewareQueryException, GermplasmListExporterException {
+
+		MockitoAnnotations.initMocks(this);
+
+		ExportListAsDialogTest.listDataTable = ExportListAsDialogTest.generateTestTable();
+		this.dialog =
+				Mockito.spy(new ExportListAsDialog(this.source, ExportListAsDialogTest.germplasmList, ExportListAsDialogTest.listDataTable));
+
+		this.listExporter = Mockito.mock(GermplasmListExporter.class);
+		this.dialog.setListExporter(this.listExporter);
+		this.dialog.setMessageSource(this.messageSource);
+
+		Mockito.doNothing().when(this.dialog).showMessage(this.exportWarningMessages);
+		Mockito.doReturn(Mockito.mock(FileOutputStream.class)).when(this.listExporter)
+				.exportGermplasmListXLS(ExportListAsDialog.TEMP_FILENAME, ExportListAsDialogTest.listDataTable);
+
+		Mockito.doReturn(this.fileDownloadResource).when(this.dialog).createFileDownloadResource();
+		Mockito.doReturn(this.window).when(this.source).getWindow();
+		Mockito.doNothing().when(this.window).open(this.fileDownloadResource);
 	}
-	
+
 	@Test
-	public void testShowWarningMessageWhenListDataTableDoNotHaveHiddenRequiredColumns(){
-		Assert.assertFalse(dialog.isARequiredColumnHidden(listDataTable));
-		dialog.showWarningMessage(listDataTable);
-		verify(dialog,times(0)).showMessage(exportWarningMessages);
+	public void testIsARequiredColumn() {
+		Assert.assertTrue("GID is a required column.", this.dialog.isARequiredColumn(ColumnLabels.GID.getName()));
+		Assert.assertTrue("ENTRY_ID is a required column.", this.dialog.isARequiredColumn(ColumnLabels.ENTRY_ID.getName()));
+		Assert.assertTrue("DESIGNATION is a required column.", this.dialog.isARequiredColumn(ColumnLabels.DESIGNATION.getName()));
+		Assert.assertFalse("SEED_SOURCE is a not required column.", this.dialog.isARequiredColumn(ColumnLabels.SEED_SOURCE.getName()));
 	}
-	
+
 	@Test
-	public void testExportListAsXLS()
-			throws GermplasmListExporterException, MiddlewareQueryException {
-		dialog.exportListAsXLS(listDataTable);
-		verify(listExporter,times(1)).exportGermplasmListXLS(ExportListAsDialog.TEMP_FILENAME, listDataTable);
+	public void testIsARequiredColumnHidden() {
+		Assert.assertFalse("Expecting no required columns is hidden but didn't.",
+				this.dialog.isARequiredColumnHidden(ExportListAsDialogTest.listDataTable));
+
+		ExportListAsDialogTest.listDataTable.setColumnCollapsed(ColumnLabels.GID.getName(), true);
+		Assert.assertTrue("Expecting one of the required columns is hidden but didn't.",
+				this.dialog.isARequiredColumnHidden(ExportListAsDialogTest.listDataTable));
 	}
-	
+
 	@Test
-	public void testExportListAsXLSWithException()
-			throws GermplasmListExporterException, MiddlewareQueryException {
-		doThrow(new GermplasmListExporterException()).when(listExporter).exportGermplasmListXLS(ExportListAsDialog.TEMP_FILENAME,emptyTable);
-		dialog.exportListAsXLS(emptyTable);
-		verify(window,times(0)).open(fileDownloadResource);
+	public void testShowWarningMessageWhenListDataTableHasHiddenRequiredColumns() {
+		ExportListAsDialogTest.listDataTable.setColumnCollapsed(ColumnLabels.GID.getName(), true);
+
+		Assert.assertTrue(this.dialog.isARequiredColumnHidden(ExportListAsDialogTest.listDataTable));
+		this.dialog.showWarningMessage(ExportListAsDialogTest.listDataTable);
+		Mockito.verify(this.dialog, Mockito.times(1)).showMessage(this.exportWarningMessages);
 	}
-	
+
 	@Test
-	public void testExportListAsCSV() throws GermplasmListExporterException{
-		
-		dialog.exportListAsCSV(listDataTable);
-		verify(listExporter,times(1)).exportGermplasmListCSV(ExportListAsDialog.TEMP_FILENAME, listDataTable);
+	public void testShowWarningMessageWhenListDataTableDoNotHaveHiddenRequiredColumns() {
+		Assert.assertFalse(this.dialog.isARequiredColumnHidden(ExportListAsDialogTest.listDataTable));
+		this.dialog.showWarningMessage(ExportListAsDialogTest.listDataTable);
+		Mockito.verify(this.dialog, Mockito.times(0)).showMessage(this.exportWarningMessages);
 	}
-	
+
 	@Test
-	public void testExportListAsCSVWithException() throws GermplasmListExporterException{
-		doThrow(new GermplasmListExporterException()).when(listExporter).exportGermplasmListCSV(ExportListAsDialog.TEMP_FILENAME,emptyTable);
-		dialog.exportListAsCSV(emptyTable);
-		verify(window,times(0)).open(fileDownloadResource);
+	public void testExportListAsXLS() throws GermplasmListExporterException, MiddlewareQueryException {
+		this.dialog.exportListAsXLS(ExportListAsDialogTest.listDataTable);
+		Mockito.verify(this.listExporter, Mockito.times(1)).exportGermplasmListXLS(ExportListAsDialog.TEMP_FILENAME,
+				ExportListAsDialogTest.listDataTable);
 	}
-	
+
+	@Test
+	public void testExportListAsXLSWithException() throws GermplasmListExporterException, MiddlewareQueryException {
+		Mockito.doThrow(new GermplasmListExporterException()).when(this.listExporter)
+				.exportGermplasmListXLS(ExportListAsDialog.TEMP_FILENAME, ExportListAsDialogTest.emptyTable);
+		this.dialog.exportListAsXLS(ExportListAsDialogTest.emptyTable);
+		Mockito.verify(this.window, Mockito.times(0)).open(this.fileDownloadResource);
+	}
+
+	@Test
+	public void testExportListAsCSV() throws GermplasmListExporterException {
+
+		this.dialog.exportListAsCSV(ExportListAsDialogTest.listDataTable);
+		Mockito.verify(this.listExporter, Mockito.times(1)).exportGermplasmListCSV(ExportListAsDialog.TEMP_FILENAME,
+				ExportListAsDialogTest.listDataTable);
+	}
+
+	@Test
+	public void testExportListAsCSVWithException() throws GermplasmListExporterException {
+		Mockito.doThrow(new GermplasmListExporterException()).when(this.listExporter)
+				.exportGermplasmListCSV(ExportListAsDialog.TEMP_FILENAME, ExportListAsDialogTest.emptyTable);
+		this.dialog.exportListAsCSV(ExportListAsDialogTest.emptyTable);
+		Mockito.verify(this.window, Mockito.times(0)).open(this.fileDownloadResource);
+	}
+
 	private static GermplasmList getGermplasmList() {
 		GermplasmList germplasmList = new GermplasmList();
 		germplasmList.setName("Sample List");
-		germplasmList.setUserId(USER_ID);
+		germplasmList.setUserId(ExportListAsDialogTest.USER_ID);
 		germplasmList.setDescription("Sample description");
 		germplasmList.setType("LST");
 		germplasmList.setDate(20141112L);
 		germplasmList.setNotes("Sample Notes");
-		germplasmList.setListData(generateListEntries());
-		
+		germplasmList.setListData(ExportListAsDialogTest.generateListEntries());
+
 		return germplasmList;
 	}
-	
-	private static Table generateTestTable(){
+
+	private static Table generateTestTable() {
 		Table listDataTable = new Table();
-		
+
 		listDataTable.addContainerProperty(ColumnLabels.TAG.getName(), CheckBox.class, null);
 		listDataTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
 		listDataTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
@@ -183,70 +182,72 @@ public class ExportListAsDialogTest {
 		listDataTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
 		listDataTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
 		listDataTable.setColumnCollapsingAllowed(true);
-		
-		loadEntriesToListDataTable(listDataTable);
-		
+
+		ExportListAsDialogTest.loadEntriesToListDataTable(listDataTable);
+
 		return listDataTable;
 	}
-	
-	private static List<GermplasmListData> generateListEntries(){
+
+	private static List<GermplasmListData> generateListEntries() {
 		List<GermplasmListData> entries = new ArrayList<>();
-    	
-    	for (int x=1; x <= NO_OF_LIST_ENTRIES; x++){
-    		GermplasmListData germplasmListData = new GermplasmListData();
-    		germplasmListData.setId(x);
-    		germplasmListData.setEntryId(x);
-    		germplasmListData.setDesignation(ColumnLabels.DESIGNATION.getName() + x);
-    		germplasmListData.setGroupName(ColumnLabels.PARENTAGE.getName() + x);
-    		ListDataInventory inventoryInfo = new ListDataInventory(x,x);
-    		inventoryInfo.setLotCount(1);
-    		inventoryInfo.setReservedLotCount(1);
-    		inventoryInfo.setActualInventoryLotCount(1);
-    		germplasmListData.setInventoryInfo(inventoryInfo);
-    		germplasmListData.setEntryCode(ColumnLabels.ENTRY_CODE.getName() + x);
-    		germplasmListData.setSeedSource(ColumnLabels.SEED_SOURCE.getName() + x);
-    		germplasmListData.setGid(x);
-    		entries.add(germplasmListData);
-    	}
-    	
-    	return entries;
+
+		for (int x = 1; x <= ExportListAsDialogTest.NO_OF_LIST_ENTRIES; x++) {
+			GermplasmListData germplasmListData = new GermplasmListData();
+			germplasmListData.setId(x);
+			germplasmListData.setEntryId(x);
+			germplasmListData.setDesignation(ColumnLabels.DESIGNATION.getName() + x);
+			germplasmListData.setGroupName(ColumnLabels.PARENTAGE.getName() + x);
+			ListDataInventory inventoryInfo = new ListDataInventory(x, x);
+			inventoryInfo.setLotCount(1);
+			inventoryInfo.setReservedLotCount(1);
+			inventoryInfo.setActualInventoryLotCount(1);
+			germplasmListData.setInventoryInfo(inventoryInfo);
+			germplasmListData.setEntryCode(ColumnLabels.ENTRY_CODE.getName() + x);
+			germplasmListData.setSeedSource(ColumnLabels.SEED_SOURCE.getName() + x);
+			germplasmListData.setGid(x);
+			entries.add(germplasmListData);
+		}
+
+		return entries;
 	}
 
-	private static void loadEntriesToListDataTable(Table listDataTable){
-		for(GermplasmListData entry : listEntries){
-			addListEntryToTable(entry, listDataTable);
-	   	}
-		
-		listDataTable.sort(new Object[]{ColumnLabels.ENTRY_ID.getName()}, new boolean[]{true});    
+	private static void loadEntriesToListDataTable(Table listDataTable) {
+		for (GermplasmListData entry : ExportListAsDialogTest.listEntries) {
+			ExportListAsDialogTest.addListEntryToTable(entry, listDataTable);
+		}
+
+		listDataTable.sort(new Object[] {ColumnLabels.ENTRY_ID.getName()}, new boolean[] {true});
 	}
 
 	private static void addListEntryToTable(GermplasmListData entry, final Table listDataTable) {
 		String gid = String.format("%s", entry.getGid().toString());
-		Button gidButton = new Button(gid, new GidLinkButtonClickListener(null, gid,true,true));
+		Button gidButton = new Button(gid, new GidLinkButtonClickListener(null, gid, true, true));
 		gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 		gidButton.setDescription("Click to view Germplasm information");
-		
-		Button desigButton = new Button(entry.getDesignation(), new GidLinkButtonClickListener(null, gid,true,true));
+
+		Button desigButton = new Button(entry.getDesignation(), new GidLinkButtonClickListener(null, gid, true, true));
 		desigButton.setStyleName(BaseTheme.BUTTON_LINK);
 		desigButton.setDescription("Click to view Germplasm information");
-		
+
 		CheckBox itemCheckBox = new CheckBox();
 		itemCheckBox.setData(entry.getId());
 		itemCheckBox.setImmediate(true);
 		itemCheckBox.addListener(new ClickListener() {
+
 			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 				CheckBox itemCheckBox = (CheckBox) event.getButton();
-				if(((Boolean) itemCheckBox.getValue()).equals(true)){
+				if (((Boolean) itemCheckBox.getValue()).equals(true)) {
 					listDataTable.select(itemCheckBox.getData());
 				} else {
 					listDataTable.unselect(itemCheckBox.getData());
 				}
 			}
-			 
+
 		});
-		
+
 		Item newItem = listDataTable.getContainerDataSource().addItem(entry.getId());
 		newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(itemCheckBox);
 		newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entry.getEntryId());
@@ -255,29 +256,29 @@ public class ExportListAsDialogTest {
 		newItem.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(entry.getEntryCode());
 		newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
 		newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
-		
-		//#1 Available Inventory
-        //default value
+
+		// #1 Available Inventory
+		// default value
 		String availInv = "-";
-		if(entry.getInventoryInfo().getLotCount().intValue() != 0){
+		if (entry.getInventoryInfo().getLotCount().intValue() != 0) {
 			availInv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
 		}
-		Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(null,null,entry.getId(), entry.getGid()));
+		Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(null, null, entry.getId(), entry.getGid()));
 		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 		inventoryButton.setDescription(null);
 		newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-		
-		if("-".equals(availInv)){
+
+		if ("-".equals(availInv)) {
 			inventoryButton.setEnabled(false);
 			inventoryButton.setDescription("No Lot for this Germplasm");
 		} else {
 			inventoryButton.setDescription(null);
 		}
-		
-		//#2 Seed Reserved
-		//default value
-		String seedRes = "-"; 
-		if(entry.getInventoryInfo().getReservedLotCount().intValue() != 0){
+
+		// #2 Seed Reserved
+		// default value
+		String seedRes = "-";
+		if (entry.getInventoryInfo().getReservedLotCount().intValue() != 0) {
 			seedRes = entry.getInventoryInfo().getReservedLotCount().toString().trim();
 		}
 		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);

@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.inventory;
 
 import java.util.ArrayList;
@@ -30,8 +31,8 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class ReserveInventoryWindow extends BaseSubWindow implements InitializingBean,
-							InternationalizableComponent, BreedingManagerLayout {
+public class ReserveInventoryWindow extends BaseSubWindow implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+
 	private static final long serialVersionUID = -5997291617886011653L;
 
 	private VerticalLayout mainLayout;
@@ -41,22 +42,23 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 	private Label multiScaleDescriptionLabel;
 	private Button cancelButton;
 	private Button finishButton;
-	
+
 	private List<ReserveInventoryRowComponent> scaleRows;
-	
+
 	private Boolean isSingleScaled;
-	
-	private ReserveInventorySource source;
-	
-	//Inputs
-	private Map<String, List<ListEntryLotDetails>> scaleGrouping;
-	
+
+	private final ReserveInventorySource source;
+
+	// Inputs
+	private final Map<String, List<ListEntryLotDetails>> scaleGrouping;
+
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
-	
+
 	private ReserveInventoryAction reserveInventoryAction;
-	
-	public ReserveInventoryWindow(ReserveInventorySource source, Map<String, List<ListEntryLotDetails>> scaleGrouping, Boolean isSingleScaled) {
+
+	public ReserveInventoryWindow(ReserveInventorySource source, Map<String, List<ListEntryLotDetails>> scaleGrouping,
+			Boolean isSingleScaled) {
 		super();
 		this.source = source;
 		this.isSingleScaled = isSingleScaled;
@@ -65,66 +67,67 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		instantiateComponents();
-		initializeValues();
-		addListeners();
-		layoutComponents();
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
 	}
-	
+
 	@Override
 	public void instantiateComponents() {
-		//window formatting
-		this.setCaption(messageSource.getMessage(Message.RESERVE_INVENTORY));
+		// window formatting
+		this.setCaption(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
 		this.addStyleName(Reindeer.WINDOW_LIGHT);
 		this.setModal(true);
-		
-		//components formatting
-		singleScaleDescriptionLabel = new Label("Specify the amount of inventory to reserve from each selected lot.");
-		
-		multiScaleDescriptionLabel =  new Label("The lots you have selected are in different units. " +
-				"Please specify the amount of inventory to reserve for each unit type.");
-		
-		contentPanel = new Panel();
-		contentPanel.addStyleName("section_panel_layout");
-		
-		
-		scaleRows = new ArrayList<ReserveInventoryRowComponent>();
-		
-		cancelButton = new Button(messageSource.getMessage(Message.CANCEL));
-		cancelButton.setWidth("80px");
-		
-		finishButton = new Button(messageSource.getMessage(Message.FINISH));
-		finishButton.setWidth("80px");
-		finishButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+
+		// components formatting
+		this.singleScaleDescriptionLabel = new Label("Specify the amount of inventory to reserve from each selected lot.");
+
+		this.multiScaleDescriptionLabel =
+				new Label("The lots you have selected are in different units. "
+						+ "Please specify the amount of inventory to reserve for each unit type.");
+
+		this.contentPanel = new Panel();
+		this.contentPanel.addStyleName("section_panel_layout");
+
+		this.scaleRows = new ArrayList<ReserveInventoryRowComponent>();
+
+		this.cancelButton = new Button(this.messageSource.getMessage(Message.CANCEL));
+		this.cancelButton.setWidth("80px");
+
+		this.finishButton = new Button(this.messageSource.getMessage(Message.FINISH));
+		this.finishButton.setWidth("80px");
+		this.finishButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 	}
 
 	@Override
 	public void initializeValues() {
-		initializeScaleRows();
+		this.initializeScaleRows();
 	}
 
 	private void initializeScaleRows() {
-	
-		for (Map.Entry<String, List<ListEntryLotDetails>> entry : scaleGrouping.entrySet()) {
-		    String scale = entry.getKey();
-		    List<ListEntryLotDetails> lotDetailList = entry.getValue();
-		    scaleRows.add(new ReserveInventoryRowComponent(scale,lotDetailList.size()));
+
+		for (Map.Entry<String, List<ListEntryLotDetails>> entry : this.scaleGrouping.entrySet()) {
+			String scale = entry.getKey();
+			List<ListEntryLotDetails> lotDetailList = entry.getValue();
+			this.scaleRows.add(new ReserveInventoryRowComponent(scale, lotDetailList.size()));
 		}
 	}
 
 	@Override
 	public void addListeners() {
-		cancelButton.addListener(new CloseWindowAction());
-		 
-		reserveInventoryAction = new ReserveInventoryAction(source);
-		
-		finishButton.addListener(new Button.ClickListener() {
+		this.cancelButton.addListener(new CloseWindowAction());
+
+		this.reserveInventoryAction = new ReserveInventoryAction(this.source);
+
+		this.finishButton.addListener(new Button.ClickListener() {
+
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if(validateReserveAmount()){
-					reserveInventoryAction.validateReservations(getReservations());
+				if (ReserveInventoryWindow.this.validateReserveAmount()) {
+					ReserveInventoryWindow.this.reserveInventoryAction.validateReservations(ReserveInventoryWindow.this.getReservations());
 				}
 			}
 		});
@@ -132,15 +135,15 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 
 	protected boolean validateReserveAmount() {
 		try {
-			
-			for(ReserveInventoryRowComponent row : scaleRows){
+
+			for (ReserveInventoryRowComponent row : this.scaleRows) {
 				row.validate();
 			}
 
 			return true;
-			
+
 		} catch (InvalidValueException e) {
-			MessageNotifier.showRequiredFieldError(getWindow(), e.getMessage());
+			MessageNotifier.showRequiredFieldError(this.getWindow(), e.getMessage());
 			return false;
 		}
 	}
@@ -148,85 +151,84 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 	@SuppressWarnings("deprecation")
 	@Override
 	public void layoutComponents() {
-		
-		mainLayout = new VerticalLayout();
-		mainLayout.setSpacing(true);
-		
-		panelContentLayout = new VerticalLayout();
-		panelContentLayout.setMargin(true);
-		panelContentLayout.setSpacing(true);
-		
-		if(isSingleScaled){
-			setHeight("225px");
-			setWidth("550px");
-			
-			contentPanel.setWidth("510px");
-			contentPanel.setHeight("90px");
-			
-			panelContentLayout.addComponent(singleScaleDescriptionLabel);
-			panelContentLayout.addComponent(scaleRows.get(0));
-			
-		}
-		else{
-			setHeight("310px");
-			setWidth("550px");
-			
-			contentPanel.setWidth("510px");
-			contentPanel.setHeight("175px");
-			
-			panelContentLayout.addComponent(multiScaleDescriptionLabel);
-			
+
+		this.mainLayout = new VerticalLayout();
+		this.mainLayout.setSpacing(true);
+
+		this.panelContentLayout = new VerticalLayout();
+		this.panelContentLayout.setMargin(true);
+		this.panelContentLayout.setSpacing(true);
+
+		if (this.isSingleScaled) {
+			this.setHeight("225px");
+			this.setWidth("550px");
+
+			this.contentPanel.setWidth("510px");
+			this.contentPanel.setHeight("90px");
+
+			this.panelContentLayout.addComponent(this.singleScaleDescriptionLabel);
+			this.panelContentLayout.addComponent(this.scaleRows.get(0));
+
+		} else {
+			this.setHeight("310px");
+			this.setWidth("550px");
+
+			this.contentPanel.setWidth("510px");
+			this.contentPanel.setHeight("175px");
+
+			this.panelContentLayout.addComponent(this.multiScaleDescriptionLabel);
+
 			VerticalLayout scaleLayout = new VerticalLayout();
 			scaleLayout.setSpacing(true);
 			scaleLayout.setHeight("90px");
-			
-			if(scaleRows.size() > 3){
+
+			if (this.scaleRows.size() > 3) {
 				scaleLayout.addStyleName(AppConstants.CssStyles.SCALE_ROW);
 			}
-			
-			for(ReserveInventoryRowComponent row : scaleRows){
+
+			for (ReserveInventoryRowComponent row : this.scaleRows) {
 				scaleLayout.addComponent(row);
 			}
-			
-			panelContentLayout.addComponent(scaleLayout);
-			
+
+			this.panelContentLayout.addComponent(scaleLayout);
+
 		}
-		
-		contentPanel.setLayout(panelContentLayout);
-		
+
+		this.contentPanel.setLayout(this.panelContentLayout);
+
 		HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setWidth("100%");
 		buttonLayout.setSpacing(true);
-		buttonLayout.addComponent(cancelButton);
-		buttonLayout.addComponent(finishButton);
-		buttonLayout.setComponentAlignment(cancelButton, Alignment.BOTTOM_RIGHT);
-		buttonLayout.setComponentAlignment(finishButton, Alignment.BOTTOM_LEFT);
-		
-		mainLayout.addComponent(contentPanel);
-		mainLayout.addComponent(buttonLayout);
-		
-		addComponent(mainLayout);
+		buttonLayout.addComponent(this.cancelButton);
+		buttonLayout.addComponent(this.finishButton);
+		buttonLayout.setComponentAlignment(this.cancelButton, Alignment.BOTTOM_RIGHT);
+		buttonLayout.setComponentAlignment(this.finishButton, Alignment.BOTTOM_LEFT);
+
+		this.mainLayout.addComponent(this.contentPanel);
+		this.mainLayout.addComponent(buttonLayout);
+
+		this.addComponent(this.mainLayout);
 	}
 
 	@Override
 	public void updateLabels() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	protected Map<ReservationRowKey, List<ListEntryLotDetails>> getReservations() {
-		Map<ReservationRowKey, List<ListEntryLotDetails>> reservations = new HashMap<ReservationRowKey,List<ListEntryLotDetails>>();
-		
-		for(ReserveInventoryRowComponent row : scaleRows){
-			reservations.put(new ReservationRowKey(row.getScale(), row.getReservationAmount()), scaleGrouping.get(row.getScale()));
+		Map<ReservationRowKey, List<ListEntryLotDetails>> reservations = new HashMap<ReservationRowKey, List<ListEntryLotDetails>>();
+
+		for (ReserveInventoryRowComponent row : this.scaleRows) {
+			reservations.put(new ReservationRowKey(row.getScale(), row.getReservationAmount()), this.scaleGrouping.get(row.getScale()));
 		}
-		
+
 		return reservations;
 	}
 
 	// SETTERS AND GETTERS
 	public Boolean getIsSingleScaled() {
-		return isSingleScaled;
+		return this.isSingleScaled;
 	}
 
 	public void setIsSingleScaled(Boolean isSingleScaled) {
@@ -234,12 +236,11 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 	}
 
 	public List<ReserveInventoryRowComponent> getScaleRows() {
-		return scaleRows;
+		return this.scaleRows;
 	}
 
 	public void setScaleRows(List<ReserveInventoryRowComponent> scaleRows) {
 		this.scaleRows = scaleRows;
 	}
-	
-	
+
 }

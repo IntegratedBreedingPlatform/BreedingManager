@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.crossingmanager.settings;
 
 import java.util.ArrayList;
@@ -16,63 +17,66 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import static org.mockito.Mockito.*;
 
 public class CrossingSettingsMethodComponentTest {
 
 	private static final String DUMMY_UNIQUE_ID = "1234567890";
-	
+
 	private CrossingSettingsMethodComponent csmc;
-	
+
 	@Mock
 	private BreedingManagerServiceImpl service;
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
 	@Mock
 	private GermplasmDataManager gpdm;
-	
+
 	@Before
-	public void setUp() throws MiddlewareQueryException{
+	public void setUp() throws MiddlewareQueryException {
 		MockitoAnnotations.initMocks(this);
-		
-		Mockito.when(service.getCurrentProject()).thenReturn(getProject(1L));
-		Mockito.when(messageSource.getMessage(Message.BREEDING_METHOD)).thenReturn("Breeding Method");
-		
-		csmc = spy(new CrossingSettingsMethodComponent());
-		
-		csmc.setGermplasmDataManager(gpdm);
-		csmc.setMessageSource(messageSource);
-		csmc.setBreedingManagerService(service);
+
+		Mockito.when(this.service.getCurrentProject()).thenReturn(this.getProject(1L));
+		Mockito.when(this.messageSource.getMessage(Message.BREEDING_METHOD)).thenReturn("Breeding Method");
+
+		this.csmc = Mockito.spy(new CrossingSettingsMethodComponent());
+
+		this.csmc.setGermplasmDataManager(this.gpdm);
+		this.csmc.setMessageSource(this.messageSource);
+		this.csmc.setBreedingManagerService(this.service);
 	}
-	
+
 	@Test
-	public void testinitPopulateFavMethodReturnsFalseWhenThereAreNoFavouriteMethod() throws MiddlewareQueryException {		
+	public void testinitPopulateFavMethodReturnsFalseWhenThereAreNoFavouriteMethod() throws MiddlewareQueryException {
 		ArrayList<ProgramFavorite> favouriteMethods = new ArrayList<ProgramFavorite>();
-		
-		Mockito.when(gpdm.getProgramFavorites(FavoriteType.METHOD, 1000, DUMMY_UNIQUE_ID)).thenReturn(favouriteMethods);
-		Mockito.when(messageSource.getMessage(Message.BREEDING_METHOD)).thenReturn("Breeding Method");
-		
-		csmc.instantiateComponents();
-		
-		Assert.assertFalse("Expecting a false return value when there are no favourite method.", csmc.initPopulateFavMethod(DUMMY_UNIQUE_ID));
+
+		Mockito.when(this.gpdm.getProgramFavorites(FavoriteType.METHOD, 1000, CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID))
+				.thenReturn(favouriteMethods);
+		Mockito.when(this.messageSource.getMessage(Message.BREEDING_METHOD)).thenReturn("Breeding Method");
+
+		this.csmc.instantiateComponents();
+
+		Assert.assertFalse("Expecting a false return value when there are no favourite method.",
+				this.csmc.initPopulateFavMethod(CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID));
 	}
-	
+
 	private Project getProject(long id) {
 		Project project = new Project();
 		project.setProjectId(id);
-		project.setUniqueID(DUMMY_UNIQUE_ID);
+		project.setUniqueID(CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID);
 		return project;
 	}
 
 	@Test
-	public void testinitPopulateFavMethodReturnsTrueWhenThereAreFavouriteMethod() throws MiddlewareQueryException {		
-		
+	public void testinitPopulateFavMethodReturnsTrueWhenThereAreFavouriteMethod() throws MiddlewareQueryException {
+
 		ArrayList<ProgramFavorite> favouriteMethods = new ArrayList<ProgramFavorite>();
 		favouriteMethods.add(Mockito.mock(ProgramFavorite.class));
-		
-		Mockito.when(gpdm.getProgramFavorites(FavoriteType.METHOD, 1000, DUMMY_UNIQUE_ID)).thenReturn(favouriteMethods);
-		csmc.instantiateComponents();
-		
-		Assert.assertTrue("Expecting a true return value when there are favourite method.", csmc.initPopulateFavMethod(DUMMY_UNIQUE_ID));
+
+		Mockito.when(this.gpdm.getProgramFavorites(FavoriteType.METHOD, 1000, CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID))
+				.thenReturn(favouriteMethods);
+		this.csmc.instantiateComponents();
+
+		Assert.assertTrue("Expecting a true return value when there are favourite method.",
+				this.csmc.initPopulateFavMethod(CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID));
 	}
 }

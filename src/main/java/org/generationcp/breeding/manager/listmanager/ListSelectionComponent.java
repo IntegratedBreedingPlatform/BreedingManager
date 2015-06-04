@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.listmanager;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -25,23 +26,24 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class ListSelectionComponent extends VerticalLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout, ListTreeActionsListener, GermplasmImportPopupSource {
-    
-    private static final Logger LOG = LoggerFactory.getLogger(ListSelectionComponent.class);
+public class ListSelectionComponent extends VerticalLayout implements InternationalizableComponent, InitializingBean,
+		BreedingManagerLayout, ListTreeActionsListener, GermplasmImportPopupSource {
+
+	private static final Logger LOG = LoggerFactory.getLogger(ListSelectionComponent.class);
 
 	private static final long serialVersionUID = -383145225475654748L;
 
 	@Autowired
-    private SimpleResourceBundleMessageSource messageSource;
-	
+	private SimpleResourceBundleMessageSource messageSource;
+
 	private final ListManagerMain source;
-	
+
 	private ListSelectionLayout listSelectionLayout;
 	private ListManagerTreeComponent listTreeComponent;
 	private ListSearchComponent listSearchComponent;
-	
+
 	private final Integer selectedListId;
-	
+
 	public ListSelectionComponent(final ListManagerMain source, final Integer listId) {
 		super();
 		this.source = source;
@@ -50,12 +52,12 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		instantiateComponents();
-		initializeValues();
-		addListeners();
-		layoutComponents();
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
 	}
-	
+
 	@Override
 	public void updateLabels() {
 		// No op
@@ -63,9 +65,9 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 
 	@Override
 	public void instantiateComponents() {
-		listSelectionLayout = new ListSelectionLayout(source, selectedListId);
-		listTreeComponent = new ListManagerTreeComponent(this, selectedListId);
-		listSearchComponent = new ListSearchComponent(source,listSelectionLayout);
+		this.listSelectionLayout = new ListSelectionLayout(this.source, this.selectedListId);
+		this.listTreeComponent = new ListManagerTreeComponent(this, this.selectedListId);
+		this.listSearchComponent = new ListSearchComponent(this.source, this.listSelectionLayout);
 	}
 
 	@Override
@@ -81,125 +83,124 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 	@Override
 	public void layoutComponents() {
 		this.removeAllComponents();
-        addComponent(listSelectionLayout);
+		this.addComponent(this.listSelectionLayout);
 		this.addStyleName("list-selection-component");
-		listSelectionLayout.addStyleName("list-selection-layout");
+		this.listSelectionLayout.addStyleName("list-selection-layout");
 	}
 
 	@Override
-    public void studyClicked(final GermplasmList list) {
-        try {
-            listSelectionLayout.createListDetailsTab(list.getId());
-        } catch (MiddlewareQueryException e) {
-            LOG.error("Error in displaying germplasm list details.", e);
-            throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_CREATING_GERMPLASMLIST_DETAILS_WINDOW);
-        }
+	public void studyClicked(final GermplasmList list) {
+		try {
+			this.listSelectionLayout.createListDetailsTab(list.getId());
+		} catch (MiddlewareQueryException e) {
+			ListSelectionComponent.LOG.error("Error in displaying germplasm list details.", e);
+			throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_CREATING_GERMPLASMLIST_DETAILS_WINDOW);
+		}
 	}
-	
+
 	@Override
 	public void updateUIForRenamedList(GermplasmList list, String newName) {
 		this.listSelectionLayout.renameTab(list.getId(), newName);
 	}
 
 	public ListSelectionLayout getListDetailsLayout() {
-		return listSelectionLayout;
+		return this.listSelectionLayout;
 	}
-    
-	public ListManagerTreeComponent getListTreeComponent(){
-		return listTreeComponent;
+
+	public ListManagerTreeComponent getListTreeComponent() {
+		return this.listTreeComponent;
 	}
-	
-    
-    private Window launchListSelectionWindow (final Window window, final Component content, final String caption) {
 
-        final CssLayout layout = new CssLayout();
-        layout.setMargin(true);
-        layout.setWidth("100%");
-        layout.setHeight("490px");
+	private Window launchListSelectionWindow(final Window window, final Component content, final String caption) {
 
-        layout.addComponent(content);
-        
-        final BaseSubWindow popupWindow = new BaseSubWindow();
-        popupWindow.setWidth("900px");
-        popupWindow.setHeight("550px");
-        popupWindow.setModal(true);
-        popupWindow.setResizable(false);
-        popupWindow.center();
-        popupWindow.setCaption(caption);
-        popupWindow.setContent(layout);
-        popupWindow.addStyleName(Reindeer.WINDOW_LIGHT);
-        popupWindow.addStyleName("lm-list-manager-popup");
+		final CssLayout layout = new CssLayout();
+		layout.setMargin(true);
+		layout.setWidth("100%");
+		layout.setHeight("490px");
 
-        if(caption.equals(messageSource.getMessage(Message.SEARCH_FOR_LISTS))){
-            popupWindow.setOverrideFocus(true);
-            listSearchComponent.focusOnSearchField();
-            listSearchComponent.getSearchResultsComponent().updateGermplasmListsMap();
-        }
+		layout.addComponent(content);
 
-        window.addWindow(popupWindow);
+		final BaseSubWindow popupWindow = new BaseSubWindow();
+		popupWindow.setWidth("900px");
+		popupWindow.setHeight("550px");
+		popupWindow.setModal(true);
+		popupWindow.setResizable(false);
+		popupWindow.center();
+		popupWindow.setCaption(caption);
+		popupWindow.setContent(layout);
+		popupWindow.addStyleName(Reindeer.WINDOW_LIGHT);
+		popupWindow.addStyleName("lm-list-manager-popup");
 
-        return popupWindow;
+		if (caption.equals(this.messageSource.getMessage(Message.SEARCH_FOR_LISTS))) {
+			popupWindow.setOverrideFocus(true);
+			this.listSearchComponent.focusOnSearchField();
+			this.listSearchComponent.getSearchResultsComponent().updateGermplasmListsMap();
+		}
+
+		window.addWindow(popupWindow);
+
+		return popupWindow;
 	}
 
 	public void openListBrowseDialog() {
-		listTreeComponent.showAddRenameFolderSection(false);
-		launchListSelectionWindow(getWindow(), listTreeComponent, messageSource.getMessage(Message.BROWSE_FOR_LISTS));
+		this.listTreeComponent.showAddRenameFolderSection(false);
+		this.launchListSelectionWindow(this.getWindow(), this.listTreeComponent, this.messageSource.getMessage(Message.BROWSE_FOR_LISTS));
 	}
 
 	public void openListSearchDialog() {
-		launchListSelectionWindow(getWindow(), listSearchComponent, messageSource.getMessage(Message.SEARCH_FOR_LISTS));
+		this.launchListSelectionWindow(this.getWindow(), this.listSearchComponent, this.messageSource.getMessage(Message.SEARCH_FOR_LISTS));
 	}
 
 	@Override
 	public void folderClicked(GermplasmList list) {
 		// do nothing
 	}
-	
-	public void showNodeOnTree(Integer listId){
-		listTreeComponent.setListId(listId);
-		listTreeComponent.createTree();
+
+	public void showNodeOnTree(Integer listId) {
+		this.listTreeComponent.setListId(listId);
+		this.listTreeComponent.createTree();
 	}
-	
-	public ListSearchComponent getListSearchComponent(){
-		return listSearchComponent;
+
+	public ListSearchComponent getListSearchComponent() {
+		return this.listSearchComponent;
 	}
 
 	public void openListImportDialog() {
-		Window window = getWindow();
+		Window window = this.getWindow();
 		Window popupWindow = new BaseSubWindow();
 
-		GermplasmImportMain germplasmImportMain = new GermplasmImportMain(popupWindow,false,this);
-		
+		GermplasmImportMain germplasmImportMain = new GermplasmImportMain(popupWindow, false, this);
+
 		VerticalLayout content = new VerticalLayout();
 		content.addComponent(germplasmImportMain);
 		content.setComponentAlignment(germplasmImportMain, Alignment.TOP_CENTER);
-		
-        popupWindow.setWidth("760px");
-        popupWindow.setHeight("550px");
-        popupWindow.setModal(true);
-        popupWindow.setResizable(false);
-        popupWindow.center();
-        popupWindow.setCaption(messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
-        popupWindow.setContent(content);
-        popupWindow.addStyleName(Reindeer.WINDOW_LIGHT);
-        popupWindow.addStyleName("lm-list-manager-popup");
-        
-        window.addWindow(popupWindow);
+
+		popupWindow.setWidth("760px");
+		popupWindow.setHeight("550px");
+		popupWindow.setModal(true);
+		popupWindow.setResizable(false);
+		popupWindow.center();
+		popupWindow.setCaption(this.messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
+		popupWindow.setContent(content);
+		popupWindow.addStyleName(Reindeer.WINDOW_LIGHT);
+		popupWindow.addStyleName("lm-list-manager-popup");
+
+		window.addWindow(popupWindow);
 	}
 
 	@Override
 	public void openSavedGermplasmList(GermplasmList germplasmList) {
-		studyClicked(germplasmList);
+		this.studyClicked(germplasmList);
 	}
 
 	@Override
 	public void refreshListTreeAfterListImport() {
-		listTreeComponent.refreshComponent();
+		this.listTreeComponent.refreshComponent();
 	}
-	
+
 	@Override
-	public Window getParentWindow(){
-		return getWindow();
+	public Window getParentWindow() {
+		return this.getWindow();
 	}
-	
+
 }

@@ -1,11 +1,12 @@
+
 package org.generationcp.breeding.manager.listmanager.util;
 
-import com.vaadin.data.Item;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.themes.BaseTheme;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
@@ -35,19 +36,17 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import com.vaadin.data.Item;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.themes.BaseTheme;
 
 public class GermplasmListExporterTest {
 
@@ -69,7 +68,6 @@ public class GermplasmListExporterTest {
 	@Mock
 	private UserDataManager userDataManager;
 
-
 	@Mock
 	private OntologyDataManager ontologyDataManager;
 
@@ -77,10 +75,10 @@ public class GermplasmListExporterTest {
 	private ContextUtil contextUtil;
 
 	@InjectMocks
-	private GermplasmListExporter _germplasmListExporter = new GermplasmListExporter(LIST_ID);
+	private final GermplasmListExporter _germplasmListExporter = new GermplasmListExporter(GermplasmListExporterTest.LIST_ID);
 
 	@InjectMocks
-	private ExportService exportService = spy(new ExportServiceImpl());
+	private final ExportService exportService = Mockito.spy(new ExportServiceImpl());
 
 	private GermplasmListExporter germplasmListExporter;
 
@@ -96,8 +94,8 @@ public class GermplasmListExporterTest {
 	@BeforeClass
 	public static void setUpClass() {
 
-		listEntries = generateListEntries();
-		listDataTable = generateTestTable();
+		GermplasmListExporterTest.listEntries = GermplasmListExporterTest.generateListEntries();
+		GermplasmListExporterTest.listDataTable = GermplasmListExporterTest.generateTestTable();
 	}
 
 	@Before
@@ -105,70 +103,66 @@ public class GermplasmListExporterTest {
 
 		MockitoAnnotations.initMocks(this);
 
-		_germplasmListExporter.setExportService(exportService);
-		_germplasmListExporter.setMessageSource(messageSource);
-		_germplasmListExporter.setGermplasmListManager(germplasmListManager);
-		_germplasmListExporter.setUserDataManager(userDataManager);
-		germplasmListExporter = spy(_germplasmListExporter);
+		this._germplasmListExporter.setExportService(this.exportService);
+		this._germplasmListExporter.setMessageSource(this.messageSource);
+		this._germplasmListExporter.setGermplasmListManager(this.germplasmListManager);
+		this._germplasmListExporter.setUserDataManager(this.userDataManager);
+		this.germplasmListExporter = Mockito.spy(this._germplasmListExporter);
 
-		doReturn("#").when(messageSource).getMessage(Message.HASHTAG);
-		
-		doReturn(GID).when(germplasmListExporter).getTermNameFromOntology(ColumnLabels.GID);
-		doReturn(ENTRY_CODE).when(germplasmListExporter).getTermNameFromOntology(ColumnLabels.ENTRY_CODE);
-		doReturn(DESIG).when(germplasmListExporter).getTermNameFromOntology(ColumnLabels.DESIGNATION);
-		doReturn(CROSS).when(germplasmListExporter).getTermNameFromOntology(ColumnLabels.PARENTAGE);
-		doReturn(SEED_SOURCE).when(germplasmListExporter).getTermNameFromOntology(ColumnLabels.SEED_SOURCE);
-		
+		Mockito.doReturn("#").when(this.messageSource).getMessage(Message.HASHTAG);
+
+		Mockito.doReturn(GermplasmListExporterTest.GID).when(this.germplasmListExporter).getTermNameFromOntology(ColumnLabels.GID);
+		Mockito.doReturn(GermplasmListExporterTest.ENTRY_CODE).when(this.germplasmListExporter)
+				.getTermNameFromOntology(ColumnLabels.ENTRY_CODE);
+		Mockito.doReturn(GermplasmListExporterTest.DESIG).when(this.germplasmListExporter)
+				.getTermNameFromOntology(ColumnLabels.DESIGNATION);
+		Mockito.doReturn(GermplasmListExporterTest.CROSS).when(this.germplasmListExporter).getTermNameFromOntology(ColumnLabels.PARENTAGE);
+		Mockito.doReturn(GermplasmListExporterTest.SEED_SOURCE).when(this.germplasmListExporter)
+				.getTermNameFromOntology(ColumnLabels.SEED_SOURCE);
+
 		// set up test data for germplasm list
-		doReturn(getGermplasmList()).when(germplasmListManager).getGermplasmListById(LIST_ID);
-		doReturn(NO_OF_LIST_ENTRIES).when(germplasmListManager)
-				.countGermplasmListDataByListId(LIST_ID);
-		doReturn(generateListEntries()).when(germplasmListManager)
-				.getGermplasmListDataByListId(LIST_ID, 0, (int) NO_OF_LIST_ENTRIES);
+		Mockito.doReturn(this.getGermplasmList()).when(this.germplasmListManager).getGermplasmListById(GermplasmListExporterTest.LIST_ID);
+		Mockito.doReturn(GermplasmListExporterTest.NO_OF_LIST_ENTRIES).when(this.germplasmListManager)
+		.countGermplasmListDataByListId(GermplasmListExporterTest.LIST_ID);
+		Mockito.doReturn(GermplasmListExporterTest.generateListEntries()).when(this.germplasmListManager)
+		.getGermplasmListDataByListId(GermplasmListExporterTest.LIST_ID, 0, (int) GermplasmListExporterTest.NO_OF_LIST_ENTRIES);
 
 	}
-	
+
 	@Test
 	public void testGetColumnHeadersForGenotypingData() {
-		List<ExportColumnHeader> exportColumnList = germplasmListExporter
-				.getColumnHeadersForGenotypingData(PLATE_SIZE);
+		List<ExportColumnHeader> exportColumnList =
+				this.germplasmListExporter.getColumnHeadersForGenotypingData(GermplasmListExporterTest.PLATE_SIZE);
 
-		Assert.assertTrue("Expected that the total number of columns will be 8",
-				exportColumnList.size() == 8);
-		Assert.assertEquals("Expected to have a Subject ID as the 1st column",
-				exportColumnList.get(0).getName(), "Subject ID");
-		Assert.assertEquals("Expected to have a Plate ID as the 2nd column",
-				exportColumnList.get(1).getName(), "Plate ID");
-		Assert.assertEquals("Expected to have a Well ID as the 3rd column",
-				exportColumnList.get(2).getName(), "Well");
-		Assert.assertEquals("Expected to have a Sample type as the 4th column",
-				exportColumnList.get(3).getName(), "Sample type");
-		Assert.assertEquals("Expected to have a " + PLATE_SIZE + " as the 5th column",
-				exportColumnList.get(4).getName(), String.valueOf(PLATE_SIZE));
-		Assert.assertEquals("Expected to have a Primer as the 6th column",
-				exportColumnList.get(5).getName(), "Primer");
-		Assert.assertEquals("Expected to have a Subject BC as the 7th column",
-				exportColumnList.get(6).getName(), "Subject BC");
-		Assert.assertEquals("Expected to have a Plate BC as the 8th column",
-				exportColumnList.get(7).getName(), "Plate BC");
+		Assert.assertTrue("Expected that the total number of columns will be 8", exportColumnList.size() == 8);
+		Assert.assertEquals("Expected to have a Subject ID as the 1st column", exportColumnList.get(0).getName(), "Subject ID");
+		Assert.assertEquals("Expected to have a Plate ID as the 2nd column", exportColumnList.get(1).getName(), "Plate ID");
+		Assert.assertEquals("Expected to have a Well ID as the 3rd column", exportColumnList.get(2).getName(), "Well");
+		Assert.assertEquals("Expected to have a Sample type as the 4th column", exportColumnList.get(3).getName(), "Sample type");
+		Assert.assertEquals("Expected to have a " + GermplasmListExporterTest.PLATE_SIZE + " as the 5th column", exportColumnList.get(4)
+				.getName(), String.valueOf(GermplasmListExporterTest.PLATE_SIZE));
+		Assert.assertEquals("Expected to have a Primer as the 6th column", exportColumnList.get(5).getName(), "Primer");
+		Assert.assertEquals("Expected to have a Subject BC as the 7th column", exportColumnList.get(6).getName(), "Subject BC");
+		Assert.assertEquals("Expected to have a Plate BC as the 8th column", exportColumnList.get(7).getName(), "Plate BC");
 	}
 
 	@Test
 	public void testGetColumnValuesForGenotypingData() throws GermplasmListExporterException {
-		List<Map<Integer, ExportColumnValue>> exportColumnValues = germplasmListExporter
-				.getColumnValuesForGenotypingData(PLATE_SIZE);
-		Assert.assertTrue("Expected to have a total of " + NO_OF_LIST_ENTRIES + " entries",
-				exportColumnValues.size() == NO_OF_LIST_ENTRIES);
+		List<Map<Integer, ExportColumnValue>> exportColumnValues =
+				this.germplasmListExporter.getColumnValuesForGenotypingData(GermplasmListExporterTest.PLATE_SIZE);
+		Assert.assertTrue("Expected to have a total of " + GermplasmListExporterTest.NO_OF_LIST_ENTRIES + " entries",
+				exportColumnValues.size() == GermplasmListExporterTest.NO_OF_LIST_ENTRIES);
 	}
 
 	@Test
 	public void testExportKBioScienceGenotypingOrderXLS() {
 		try {
 
-			germplasmListExporter.exportKBioScienceGenotypingOrderXLS(FILE_NAME, PLATE_SIZE);
+			this.germplasmListExporter.exportKBioScienceGenotypingOrderXLS(GermplasmListExporterTest.FILE_NAME,
+					GermplasmListExporterTest.PLATE_SIZE);
 
 		} catch (GermplasmListExporterException e) {
-			fail(e.getMessage());
+			Assert.fail(e.getMessage());
 		}
 	}
 
@@ -177,52 +171,45 @@ public class GermplasmListExporterTest {
 
 		GermplasmList germplasmList = null;
 		try {
-			germplasmList = germplasmListExporter.getGermplasmListAndListData(LIST_ID);
+			germplasmList = this.germplasmListExporter.getGermplasmListAndListData(GermplasmListExporterTest.LIST_ID);
 		} catch (GermplasmListExporterException e) {
-			Assert.fail(
-					"Expected to return a germplasmList object but throws an exception instead.");
+			Assert.fail("Expected to return a germplasmList object but throws an exception instead.");
 		}
 
-		Assert.assertNotNull("Expected the returned germplasmList object is not null.",
-				germplasmList);
-		Assert.assertNotNull(
-				"Expected the listData of the returned germplasmList object is not null.",
-				germplasmList.getListData());
+		Assert.assertNotNull("Expected the returned germplasmList object is not null.", germplasmList);
+		Assert.assertNotNull("Expected the listData of the returned germplasmList object is not null.", germplasmList.getListData());
 	}
 
 	@Test
 	public void testGetOwnerName() throws MiddlewareQueryException {
-		User user = getUser();
-		Person person = getPerson();
+		User user = this.getUser();
+		Person person = this.getPerson();
 		String ownerName = "";
-		doReturn(user).when(userDataManager).getUserById(USER_ID);
-		doReturn(person).when(userDataManager).getPersonById(PERSON_ID);
+		Mockito.doReturn(user).when(this.userDataManager).getUserById(GermplasmListExporterTest.USER_ID);
+		Mockito.doReturn(person).when(this.userDataManager).getPersonById(GermplasmListExporterTest.PERSON_ID);
 		try {
-			ownerName = germplasmListExporter.getOwnerName(USER_ID);
+			ownerName = this.germplasmListExporter.getOwnerName(GermplasmListExporterTest.USER_ID);
 		} catch (GermplasmListExporterException e) {
 			Assert.fail("Expected to return ownerName but didn't.");
 		}
-		//when person is not null
-		Assert.assertEquals("Expected to return the person's name when the person is not null.",
-				ownerName, person.getFirstName() + " " + person.getLastName());
+		// when person is not null
+		Assert.assertEquals("Expected to return the person's name when the person is not null.", ownerName, person.getFirstName() + " "
+				+ person.getLastName());
 
-		doReturn(null).when(userDataManager).getPersonById(PERSON_ID);
+		Mockito.doReturn(null).when(this.userDataManager).getPersonById(GermplasmListExporterTest.PERSON_ID);
 		try {
-			ownerName = germplasmListExporter.getOwnerName(USER_ID);
+			ownerName = this.germplasmListExporter.getOwnerName(GermplasmListExporterTest.USER_ID);
 		} catch (GermplasmListExporterException e) {
 			Assert.fail("Expected to return ownerName but didn't.");
 		}
-		//when person does not exist
-		Assert.assertEquals("Expected to return the user's name when the person is null.",
-				ownerName, user.getName());
+		// when person does not exist
+		Assert.assertEquals("Expected to return the user's name when the person is null.", ownerName, user.getName());
 
-		doReturn(null).when(userDataManager).getUserById(any(Integer.class));
+		Mockito.doReturn(null).when(this.userDataManager).getUserById(Matchers.any(Integer.class));
 		try {
-			ownerName = germplasmListExporter.getExporterName(any(Integer.class));
+			ownerName = this.germplasmListExporter.getExporterName(Matchers.any(Integer.class));
 		} catch (NullPointerException e) {
-			Assert.assertEquals(
-					"Expected to return a NullPointerException when the userID does not exist.",
-					NullPointerException.class, e);
+			Assert.assertEquals("Expected to return a NullPointerException when the userID does not exist.", NullPointerException.class, e);
 		} catch (GermplasmListExporterException e) {
 			Assert.fail("must not throw this exception");
 		}
@@ -230,7 +217,7 @@ public class GermplasmListExporterTest {
 
 	private Person getPerson() {
 		Person person = new Person();
-		person.setId(PERSON_ID);
+		person.setId(GermplasmListExporterTest.PERSON_ID);
 		person.setFirstName("FirstName");
 		person.setLastName("LastName");
 		return person;
@@ -238,9 +225,9 @@ public class GermplasmListExporterTest {
 
 	private User getUser() {
 		User user = new User();
-		user.setUserid(USER_ID);
-		user.setName(OWNER_NAME);
-		user.setPersonid(PERSON_ID);
+		user.setUserid(GermplasmListExporterTest.USER_ID);
+		user.setName(GermplasmListExporterTest.OWNER_NAME);
+		user.setPersonid(GermplasmListExporterTest.PERSON_ID);
 
 		return user;
 	}
@@ -249,28 +236,26 @@ public class GermplasmListExporterTest {
 	public void testGetVisibleColumnMap() {
 		Map<String, Boolean> visibleColumnsMap = null;
 		int visibleColumnCount = 0;
-		listDataTable = generateTestTable();
+		GermplasmListExporterTest.listDataTable = GermplasmListExporterTest.generateTestTable();
 
-		visibleColumnsMap = germplasmListExporter.getVisibleColumnMap(listDataTable);
-		visibleColumnCount = getNoOfVisibleColumns(visibleColumnsMap);
+		visibleColumnsMap = this.germplasmListExporter.getVisibleColumnMap(GermplasmListExporterTest.listDataTable);
+		visibleColumnCount = this.getNoOfVisibleColumns(visibleColumnsMap);
 		Assert.assertTrue("Expected to have exactly 9 visible columns.", visibleColumnCount == 9);
 
-		listDataTable.setColumnCollapsed(ColumnLabels.SEED_SOURCE.getName(), true);
-		listDataTable.setColumnCollapsed(ColumnLabels.PARENTAGE.getName(), true);
-		visibleColumnsMap = germplasmListExporter.getVisibleColumnMap(listDataTable);
-		visibleColumnCount = getNoOfVisibleColumns(visibleColumnsMap);
+		GermplasmListExporterTest.listDataTable.setColumnCollapsed(ColumnLabels.SEED_SOURCE.getName(), true);
+		GermplasmListExporterTest.listDataTable.setColumnCollapsed(ColumnLabels.PARENTAGE.getName(), true);
+		visibleColumnsMap = this.germplasmListExporter.getVisibleColumnMap(GermplasmListExporterTest.listDataTable);
+		visibleColumnCount = this.getNoOfVisibleColumns(visibleColumnsMap);
 		Assert.assertTrue("Expected to have exactly 7 visible columns.", visibleColumnCount == 7);
 
-		listDataTable.setColumnCollapsed(ColumnLabels.DESIGNATION.getName(), true);
-		listDataTable.setColumnCollapsed(ColumnLabels.GID.getName(), true);
-		visibleColumnsMap = germplasmListExporter.getVisibleColumnMap(listDataTable);
-		visibleColumnCount = getNoOfVisibleColumns(visibleColumnsMap);
-		Assert.assertTrue(
-				"Expected still to have exactly 7 visible columns when collapsing the required columns.",
-				visibleColumnCount == 7);
+		GermplasmListExporterTest.listDataTable.setColumnCollapsed(ColumnLabels.DESIGNATION.getName(), true);
+		GermplasmListExporterTest.listDataTable.setColumnCollapsed(ColumnLabels.GID.getName(), true);
+		visibleColumnsMap = this.germplasmListExporter.getVisibleColumnMap(GermplasmListExporterTest.listDataTable);
+		visibleColumnCount = this.getNoOfVisibleColumns(visibleColumnsMap);
+		Assert.assertTrue("Expected still to have exactly 7 visible columns when collapsing the required columns.", visibleColumnCount == 7);
 
-		//reset
-		listDataTable = generateTestTable();
+		// reset
+		GermplasmListExporterTest.listDataTable = GermplasmListExporterTest.generateTestTable();
 	}
 
 	private int getNoOfVisibleColumns(Map<String, Boolean> visibleColumnsMap) {
@@ -286,50 +271,46 @@ public class GermplasmListExporterTest {
 
 	@Test
 	public void testGetExporterName() throws MiddlewareQueryException {
-		User user = getUser();
-		Person person = getPerson();
+		User user = this.getUser();
+		Person person = this.getPerson();
 		String exporterName = "";
-		doReturn(user).when(userDataManager).getUserById(USER_ID);
-		doReturn(person).when(userDataManager).getPersonById(PERSON_ID);
+		Mockito.doReturn(user).when(this.userDataManager).getUserById(GermplasmListExporterTest.USER_ID);
+		Mockito.doReturn(person).when(this.userDataManager).getPersonById(GermplasmListExporterTest.PERSON_ID);
 		try {
-			exporterName = germplasmListExporter.getExporterName(USER_ID);
+			exporterName = this.germplasmListExporter.getExporterName(GermplasmListExporterTest.USER_ID);
 		} catch (GermplasmListExporterException e) {
 			Assert.fail("Expected to return exporterName but didn't.");
 		}
-		//when person is not null
-		Assert.assertEquals(
-				"Expected that the returned exporter name equal to the person's firstname and lastname.",
-				exporterName, person.getFirstName() + " " + person.getLastName());
+		// when person is not null
+		Assert.assertEquals("Expected that the returned exporter name equal to the person's firstname and lastname.", exporterName,
+				person.getFirstName() + " " + person.getLastName());
 
-		doReturn(null).when(userDataManager).getUserById(any(Integer.class));
+		Mockito.doReturn(null).when(this.userDataManager).getUserById(Matchers.any(Integer.class));
 		try {
-			exporterName = germplasmListExporter.getExporterName(any(Integer.class));
+			exporterName = this.germplasmListExporter.getExporterName(Matchers.any(Integer.class));
 		} catch (NullPointerException e) {
-			Assert.assertEquals(
-					"Expected to return a NullPointerException when the userID does not exist.",
-					NullPointerException.class, e);
+			Assert.assertEquals("Expected to return a NullPointerException when the userID does not exist.", NullPointerException.class, e);
 		} catch (GermplasmListExporterException e) {
 			Assert.fail("must not throw this exception");
 		}
 	}
 
 	@Test
-	public void testExportGermplasmListXLS()
-			throws MiddlewareQueryException, GermplasmListExporterException {
-		configureTermNamesFromDefault();
-			
-		germplasmListExporter.exportGermplasmListXLS(FILE_NAME, listDataTable);
-		//make sure that generateGermplasmListExcelFile is called and without errors
-		verify(exportService, times(1)).generateGermplasmListExcelFile(any(GermplasmListExportInputValues.class));
+	public void testExportGermplasmListXLS() throws MiddlewareQueryException, GermplasmListExporterException {
+		this.configureTermNamesFromDefault();
+
+		this.germplasmListExporter.exportGermplasmListXLS(GermplasmListExporterTest.FILE_NAME, GermplasmListExporterTest.listDataTable);
+		// make sure that generateGermplasmListExcelFile is called and without errors
+		Mockito.verify(this.exportService, Mockito.times(1)).generateGermplasmListExcelFile(
+				Matchers.any(GermplasmListExportInputValues.class));
 	}
 
 	@Test(expected = GermplasmListExporterException.class)
-	public void testExportGermplasmListXLSWithException()
-			throws GermplasmListExporterException, MiddlewareQueryException {
+	public void testExportGermplasmListXLSWithException() throws GermplasmListExporterException, MiddlewareQueryException {
 
-		doThrow(new GermplasmListExporterException()).when(exportService)
-				.generateGermplasmListExcelFile(any(GermplasmListExportInputValues.class));
-		germplasmListExporter.exportGermplasmListXLS(FILE_NAME, new Table());
+		Mockito.doThrow(new GermplasmListExporterException()).when(this.exportService)
+		.generateGermplasmListExcelFile(Matchers.any(GermplasmListExportInputValues.class));
+		this.germplasmListExporter.exportGermplasmListXLS(GermplasmListExporterTest.FILE_NAME, new Table());
 
 	}
 
@@ -338,123 +319,123 @@ public class GermplasmListExporterTest {
 
 		try {
 
-			germplasmListExporter.exportGermplasmListCSV(FILE_NAME, listDataTable);
-			//make sure that generateCSVFile is called and without errors
-			verify(exportService, times(1))
-					.generateCSVFile(any(List.class), any(List.class), anyString());
+			this.germplasmListExporter.exportGermplasmListCSV(GermplasmListExporterTest.FILE_NAME, GermplasmListExporterTest.listDataTable);
+			// make sure that generateCSVFile is called and without errors
+			Mockito.verify(this.exportService, Mockito.times(1)).generateCSVFile(Matchers.any(List.class), Matchers.any(List.class),
+					Matchers.anyString());
 
 		} catch (GermplasmListExporterException | IOException e) {
-			fail(e.getMessage());
+			Assert.fail(e.getMessage());
 		}
 	}
 
 	@Test(expected = GermplasmListExporterException.class)
-	public void testExportGermplasmListCSVWithException()
-			throws GermplasmListExporterException, IOException {
+	public void testExportGermplasmListCSVWithException() throws GermplasmListExporterException, IOException {
 
-		doThrow(new IOException()).when(exportService)
-				.generateCSVFile(any(List.class), any(List.class), anyString());
-		germplasmListExporter.exportGermplasmListCSV(FILE_NAME, listDataTable);
+		Mockito.doThrow(new IOException()).when(this.exportService)
+		.generateCSVFile(Matchers.any(List.class), Matchers.any(List.class), Matchers.anyString());
+		this.germplasmListExporter.exportGermplasmListCSV(GermplasmListExporterTest.FILE_NAME, GermplasmListExporterTest.listDataTable);
 
 	}
 
 	@Test
-	public void testGetExportColumnHeadersFromTable_AllColumnsAreVisible() throws MiddlewareQueryException{
-		
-		configureTermNamesFromDefault();
-	
-		List<ExportColumnHeader> exportColumnHeaders = germplasmListExporter.getExportColumnHeadersFromTable(listDataTable);
-		
-		
-		//no columns in the table are hidden/collapsed, therefore the isDisplay is always true for all headers
-		assertEquals(6, exportColumnHeaders.size());
-		assertTrue(exportColumnHeaders.get(0).isDisplay());
-		assertTrue(exportColumnHeaders.get(1).isDisplay());
-		assertTrue(exportColumnHeaders.get(2).isDisplay());
-		assertTrue(exportColumnHeaders.get(3).isDisplay());
-		assertTrue(exportColumnHeaders.get(4).isDisplay());
-		assertTrue(exportColumnHeaders.get(5).isDisplay());
+	public void testGetExportColumnHeadersFromTable_AllColumnsAreVisible() throws MiddlewareQueryException {
 
-		//make sure the header in CSV is same as the header in table
-		assertEquals(ENTRY_ID, exportColumnHeaders.get(0).getName());
-		assertEquals(GID, exportColumnHeaders.get(1).getName());
-		assertEquals(ENTRY_CODE, exportColumnHeaders.get(2).getName());
-		assertEquals(DESIG, exportColumnHeaders.get(3).getName());
-		assertEquals(CROSS, exportColumnHeaders.get(4).getName());
-		assertEquals(SEED_SOURCE, exportColumnHeaders.get(5).getName());
-			
+		this.configureTermNamesFromDefault();
+
+		List<ExportColumnHeader> exportColumnHeaders =
+				this.germplasmListExporter.getExportColumnHeadersFromTable(GermplasmListExporterTest.listDataTable);
+
+		// no columns in the table are hidden/collapsed, therefore the isDisplay is always true for all headers
+		Assert.assertEquals(6, exportColumnHeaders.size());
+		Assert.assertTrue(exportColumnHeaders.get(0).isDisplay());
+		Assert.assertTrue(exportColumnHeaders.get(1).isDisplay());
+		Assert.assertTrue(exportColumnHeaders.get(2).isDisplay());
+		Assert.assertTrue(exportColumnHeaders.get(3).isDisplay());
+		Assert.assertTrue(exportColumnHeaders.get(4).isDisplay());
+		Assert.assertTrue(exportColumnHeaders.get(5).isDisplay());
+
+		// make sure the header in CSV is same as the header in table
+		Assert.assertEquals(GermplasmListExporterTest.ENTRY_ID, exportColumnHeaders.get(0).getName());
+		Assert.assertEquals(GermplasmListExporterTest.GID, exportColumnHeaders.get(1).getName());
+		Assert.assertEquals(GermplasmListExporterTest.ENTRY_CODE, exportColumnHeaders.get(2).getName());
+		Assert.assertEquals(GermplasmListExporterTest.DESIG, exportColumnHeaders.get(3).getName());
+		Assert.assertEquals(GermplasmListExporterTest.CROSS, exportColumnHeaders.get(4).getName());
+		Assert.assertEquals(GermplasmListExporterTest.SEED_SOURCE, exportColumnHeaders.get(5).getName());
+
 	}
 
 	@Test
-	public void testGetExportColumnHeadersFromTable_NoColumnsAreVisible() throws MiddlewareQueryException{
-		
-		
-		configureTermNamesFromDefault();
-	
-		Table collapsedColumnTable = generateTestTable();
-		collapsedColumnTable.setColumnCollapsed((Object)ColumnLabels.ENTRY_ID.getName(), true);
-		collapsedColumnTable.setColumnCollapsed((Object)ColumnLabels.DESIGNATION.getName(), true);
-		collapsedColumnTable.setColumnCollapsed((Object)ColumnLabels.PARENTAGE.getName(), true);
-		collapsedColumnTable.setColumnCollapsed((Object)ColumnLabels.GID.getName(), true);
-		collapsedColumnTable.setColumnCollapsed((Object)ColumnLabels.ENTRY_CODE.getName(), true);
-		collapsedColumnTable.setColumnCollapsed((Object)ColumnLabels.SEED_SOURCE.getName(), true);
-		
-		List<ExportColumnHeader> exportColumnHeaders = germplasmListExporter.getExportColumnHeadersFromTable(collapsedColumnTable);
-		
-		//EntryID, GID and DESIGNATION are all required columns, so their isDisplay is always true.
-		assertEquals(6, exportColumnHeaders.size());
-		assertTrue(exportColumnHeaders.get(0).isDisplay());
-		assertTrue(exportColumnHeaders.get(1).isDisplay());
-		assertFalse(exportColumnHeaders.get(2).isDisplay());
-		assertTrue(exportColumnHeaders.get(3).isDisplay());
-		assertFalse(exportColumnHeaders.get(4).isDisplay());
-		assertFalse(exportColumnHeaders.get(5).isDisplay());
+	public void testGetExportColumnHeadersFromTable_NoColumnsAreVisible() throws MiddlewareQueryException {
 
-		//make sure the header in CSV is same as the header in table
-		assertEquals(ENTRY_ID, exportColumnHeaders.get(0).getName());
-		assertEquals(GID, exportColumnHeaders.get(1).getName());
-		assertEquals(ENTRY_CODE, exportColumnHeaders.get(2).getName());
-		assertEquals(DESIG, exportColumnHeaders.get(3).getName());
-		assertEquals(CROSS, exportColumnHeaders.get(4).getName());
-		assertEquals(SEED_SOURCE, exportColumnHeaders.get(5).getName());
+		this.configureTermNamesFromDefault();
+
+		Table collapsedColumnTable = GermplasmListExporterTest.generateTestTable();
+		collapsedColumnTable.setColumnCollapsed(ColumnLabels.ENTRY_ID.getName(), true);
+		collapsedColumnTable.setColumnCollapsed(ColumnLabels.DESIGNATION.getName(), true);
+		collapsedColumnTable.setColumnCollapsed(ColumnLabels.PARENTAGE.getName(), true);
+		collapsedColumnTable.setColumnCollapsed(ColumnLabels.GID.getName(), true);
+		collapsedColumnTable.setColumnCollapsed(ColumnLabels.ENTRY_CODE.getName(), true);
+		collapsedColumnTable.setColumnCollapsed(ColumnLabels.SEED_SOURCE.getName(), true);
+
+		List<ExportColumnHeader> exportColumnHeaders = this.germplasmListExporter.getExportColumnHeadersFromTable(collapsedColumnTable);
+
+		// EntryID, GID and DESIGNATION are all required columns, so their isDisplay is always true.
+		Assert.assertEquals(6, exportColumnHeaders.size());
+		Assert.assertTrue(exportColumnHeaders.get(0).isDisplay());
+		Assert.assertTrue(exportColumnHeaders.get(1).isDisplay());
+		Assert.assertFalse(exportColumnHeaders.get(2).isDisplay());
+		Assert.assertTrue(exportColumnHeaders.get(3).isDisplay());
+		Assert.assertFalse(exportColumnHeaders.get(4).isDisplay());
+		Assert.assertFalse(exportColumnHeaders.get(5).isDisplay());
+
+		// make sure the header in CSV is same as the header in table
+		Assert.assertEquals(GermplasmListExporterTest.ENTRY_ID, exportColumnHeaders.get(0).getName());
+		Assert.assertEquals(GermplasmListExporterTest.GID, exportColumnHeaders.get(1).getName());
+		Assert.assertEquals(GermplasmListExporterTest.ENTRY_CODE, exportColumnHeaders.get(2).getName());
+		Assert.assertEquals(GermplasmListExporterTest.DESIG, exportColumnHeaders.get(3).getName());
+		Assert.assertEquals(GermplasmListExporterTest.CROSS, exportColumnHeaders.get(4).getName());
+		Assert.assertEquals(GermplasmListExporterTest.SEED_SOURCE, exportColumnHeaders.get(5).getName());
 	}
 
 	@Test
 	public void testGetExportColumnValuesFromTable() {
 
-		List<Map<Integer, ExportColumnValue>> exportColumnValues = germplasmListExporter
-				.getExportColumnValuesFromTable(listDataTable);
-		assertEquals(10, exportColumnValues.size());
+		List<Map<Integer, ExportColumnValue>> exportColumnValues =
+				this.germplasmListExporter.getExportColumnValuesFromTable(GermplasmListExporterTest.listDataTable);
+		Assert.assertEquals(10, exportColumnValues.size());
 
-		//check if the values from the table match the created pojos
+		// check if the values from the table match the created pojos
 		for (int x = 0; x < exportColumnValues.size(); x++) {
 			Map<Integer, ExportColumnValue> row = exportColumnValues.get(x);
-			assertEquals(listEntries.get(x).getEntryId().toString(), row.get(0).getValue());
-			assertEquals(listEntries.get(x).getGid().toString(), row.get(1).getValue());
-			assertEquals(listEntries.get(x).getEntryCode().toString(), row.get(2).getValue());
-			assertEquals(listEntries.get(x).getDesignation().toString(), row.get(3).getValue());
-			assertEquals(listEntries.get(x).getGroupName().toString(), row.get(4).getValue());
-			assertEquals(listEntries.get(x).getSeedSource().toString(), row.get(5).getValue());
+			Assert.assertEquals(GermplasmListExporterTest.listEntries.get(x).getEntryId().toString(), row.get(0).getValue());
+			Assert.assertEquals(GermplasmListExporterTest.listEntries.get(x).getGid().toString(), row.get(1).getValue());
+			Assert.assertEquals(GermplasmListExporterTest.listEntries.get(x).getEntryCode().toString(), row.get(2).getValue());
+			Assert.assertEquals(GermplasmListExporterTest.listEntries.get(x).getDesignation().toString(), row.get(3).getValue());
+			Assert.assertEquals(GermplasmListExporterTest.listEntries.get(x).getGroupName().toString(), row.get(4).getValue());
+			Assert.assertEquals(GermplasmListExporterTest.listEntries.get(x).getSeedSource().toString(), row.get(5).getValue());
 		}
 
 	}
-	
+
 	@Test
-	public void testHasParentsColumn_returnsFalseForTableWithoutFemaleParentColumnHeader(){
-		Table listDataTable = generateTestTable();
-		Assert.assertFalse("Expected to return false for table without Parents Column but didn't.",germplasmListExporter.hasParentsColumn(listDataTable));
+	public void testHasParentsColumn_returnsFalseForTableWithoutFemaleParentColumnHeader() {
+		Table listDataTable = GermplasmListExporterTest.generateTestTable();
+		Assert.assertFalse("Expected to return false for table without Parents Column but didn't.",
+				this.germplasmListExporter.hasParentsColumn(listDataTable));
 	}
-	
+
 	@Test
-	public void testHasParentsColumn_returnsTrueForTableWithFemaleParentColumnHeader(){
-		Table listDataTable = generateTestTable();
+	public void testHasParentsColumn_returnsTrueForTableWithFemaleParentColumnHeader() {
+		Table listDataTable = GermplasmListExporterTest.generateTestTable();
 		listDataTable.addContainerProperty(ColumnLabels.FEMALE_PARENT.getName(), Button.class, null);
-		Assert.assertFalse("Expected to return true for table with Parents Column but didn't.",germplasmListExporter.hasParentsColumn(listDataTable));
+		Assert.assertFalse("Expected to return true for table with Parents Column but didn't.",
+				this.germplasmListExporter.hasParentsColumn(listDataTable));
 	}
-	
-	private static Table generateTestTable(){
+
+	private static Table generateTestTable() {
 		Table listDataTable = new Table();
-		
+
 		listDataTable.addContainerProperty(ColumnLabels.TAG.getName(), CheckBox.class, null);
 		listDataTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
 		listDataTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
@@ -466,41 +447,41 @@ public class GermplasmListExporterTest {
 		listDataTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
 		listDataTable.setColumnCollapsingAllowed(true);
 
-		loadEntriesToListDataTable(listDataTable);
+		GermplasmListExporterTest.loadEntriesToListDataTable(listDataTable);
 
 		return listDataTable;
 	}
 
 	private static List<GermplasmListData> generateListEntries() {
 		List<GermplasmListData> entries = new ArrayList<>();
-    	
-    	for (int x=1; x <= NO_OF_LIST_ENTRIES; x++){
-    		GermplasmListData germplasmListData = new GermplasmListData();
-    		germplasmListData.setId(x);
-    		germplasmListData.setEntryId(x);
-    		germplasmListData.setDesignation(ColumnLabels.DESIGNATION.getName() + x);
-    		germplasmListData.setGroupName(ColumnLabels.PARENTAGE.getName() + x);
-    		ListDataInventory inventoryInfo = new ListDataInventory(x,x);
-    		inventoryInfo.setLotCount(1);
-    		inventoryInfo.setReservedLotCount(1);
-    		inventoryInfo.setActualInventoryLotCount(1);
-    		germplasmListData.setInventoryInfo(inventoryInfo);
-    		germplasmListData.setEntryCode(ColumnLabels.ENTRY_CODE.getName() + x);
-    		germplasmListData.setSeedSource(ColumnLabels.SEED_SOURCE.getName() + x);
-    		germplasmListData.setGid(x);
-    		entries.add(germplasmListData);
-    	}
-    	
-    	return entries;
+
+		for (int x = 1; x <= GermplasmListExporterTest.NO_OF_LIST_ENTRIES; x++) {
+			GermplasmListData germplasmListData = new GermplasmListData();
+			germplasmListData.setId(x);
+			germplasmListData.setEntryId(x);
+			germplasmListData.setDesignation(ColumnLabels.DESIGNATION.getName() + x);
+			germplasmListData.setGroupName(ColumnLabels.PARENTAGE.getName() + x);
+			ListDataInventory inventoryInfo = new ListDataInventory(x, x);
+			inventoryInfo.setLotCount(1);
+			inventoryInfo.setReservedLotCount(1);
+			inventoryInfo.setActualInventoryLotCount(1);
+			germplasmListData.setInventoryInfo(inventoryInfo);
+			germplasmListData.setEntryCode(ColumnLabels.ENTRY_CODE.getName() + x);
+			germplasmListData.setSeedSource(ColumnLabels.SEED_SOURCE.getName() + x);
+			germplasmListData.setGid(x);
+			entries.add(germplasmListData);
+		}
+
+		return entries;
 	}
-	
-	private static void loadEntriesToListDataTable(Table listDataTable){
-	    	
-			for(GermplasmListData entry : listEntries){
-				addListEntryToTable(entry, listDataTable);
-		   	}
-			
-			listDataTable.sort(new Object[]{ColumnLabels.ENTRY_ID.getName()}, new boolean[]{true});    
+
+	private static void loadEntriesToListDataTable(Table listDataTable) {
+
+		for (GermplasmListData entry : GermplasmListExporterTest.listEntries) {
+			GermplasmListExporterTest.addListEntryToTable(entry, listDataTable);
+		}
+
+		listDataTable.sort(new Object[] {ColumnLabels.ENTRY_ID.getName()}, new boolean[] {true});
 	}
 
 	private static void addListEntryToTable(GermplasmListData entry, final Table listDataTable) {
@@ -509,8 +490,7 @@ public class GermplasmListExporterTest {
 		gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 		gidButton.setDescription("Click to view Germplasm information");
 
-		Button desigButton = new Button(entry.getDesignation(),
-				new GidLinkButtonClickListener(null, gid, true, true));
+		Button desigButton = new Button(entry.getDesignation(), new GidLinkButtonClickListener(null, gid, true, true));
 		desigButton.setStyleName(BaseTheme.BUTTON_LINK);
 		desigButton.setDescription("Click to view Germplasm information");
 
@@ -518,6 +498,7 @@ public class GermplasmListExporterTest {
 		itemCheckBox.setData(entry.getId());
 		itemCheckBox.setImmediate(true);
 		itemCheckBox.addListener(new ClickListener() {
+
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -540,109 +521,115 @@ public class GermplasmListExporterTest {
 		newItem.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(entry.getEntryCode());
 		newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
 		newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
-		
-		//#1 Available Inventory
-		//default value
+
+		// #1 Available Inventory
+		// default value
 		String availInv = "-";
 		if (entry.getInventoryInfo().getLotCount().intValue() != 0) {
 			availInv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
 		}
-		Button inventoryButton = new Button(availInv,
-				new InventoryLinkButtonClickListener(null, null, entry.getId(), entry.getGid()));
+		Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(null, null, entry.getId(), entry.getGid()));
 		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 		inventoryButton.setDescription(null);
 		newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-		
-		if("-".equals(availInv)){
+
+		if ("-".equals(availInv)) {
 			inventoryButton.setEnabled(false);
 			inventoryButton.setDescription("No Lot for this Germplasm");
 		} else {
 			inventoryButton.setDescription(null);
 		}
 
-		//#2 Seed Reserved
-		//default value
+		// #2 Seed Reserved
+		// default value
 		String seedRes = "-";
 		if (entry.getInventoryInfo().getReservedLotCount().intValue() != 0) {
 			seedRes = entry.getInventoryInfo().getReservedLotCount().toString().trim();
 		}
 		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 	}
-	
-	private void configureTermNamesFromOntology(){
-		try{
-			doReturn(generateStandardVariable(ColumnLabels.ENTRY_ID)).when(ontologyDataManager).getStandardVariable(ColumnLabels.ENTRY_ID.getTermId().getId());
-			doReturn(generateStandardVariable(ColumnLabels.GID)).when(ontologyDataManager).getStandardVariable(ColumnLabels.GID.getTermId().getId());
-			doReturn(generateStandardVariable(ColumnLabels.PARENTAGE)).when(ontologyDataManager).getStandardVariable(ColumnLabels.PARENTAGE.getTermId().getId());
-			doReturn(generateStandardVariable(ColumnLabels.ENTRY_CODE)).when(ontologyDataManager).getStandardVariable(ColumnLabels.ENTRY_CODE.getTermId().getId());
-			doReturn(generateStandardVariable(ColumnLabels.SEED_SOURCE)).when(ontologyDataManager).getStandardVariable(ColumnLabels.SEED_SOURCE.getTermId().getId());
-			doReturn(generateStandardVariable(ColumnLabels.DESIGNATION)).when(ontologyDataManager).getStandardVariable(ColumnLabels.DESIGNATION.getTermId().getId());
-			doReturn(generateStandardVariable(ColumnLabels.AVAILABLE_INVENTORY)).when(ontologyDataManager).getStandardVariable(ColumnLabels.AVAILABLE_INVENTORY.getTermId().getId());
-			doReturn(generateStandardVariable(ColumnLabels.SEED_RESERVATION)).when(ontologyDataManager).getStandardVariable(ColumnLabels.SEED_RESERVATION.getTermId().getId());
-		}catch(Exception e){
-			
+
+	private void configureTermNamesFromOntology() {
+		try {
+			Mockito.doReturn(this.generateStandardVariable(ColumnLabels.ENTRY_ID)).when(this.ontologyDataManager)
+					.getStandardVariable(ColumnLabels.ENTRY_ID.getTermId().getId());
+			Mockito.doReturn(this.generateStandardVariable(ColumnLabels.GID)).when(this.ontologyDataManager)
+					.getStandardVariable(ColumnLabels.GID.getTermId().getId());
+			Mockito.doReturn(this.generateStandardVariable(ColumnLabels.PARENTAGE)).when(this.ontologyDataManager)
+					.getStandardVariable(ColumnLabels.PARENTAGE.getTermId().getId());
+			Mockito.doReturn(this.generateStandardVariable(ColumnLabels.ENTRY_CODE)).when(this.ontologyDataManager)
+					.getStandardVariable(ColumnLabels.ENTRY_CODE.getTermId().getId());
+			Mockito.doReturn(this.generateStandardVariable(ColumnLabels.SEED_SOURCE)).when(this.ontologyDataManager)
+					.getStandardVariable(ColumnLabels.SEED_SOURCE.getTermId().getId());
+			Mockito.doReturn(this.generateStandardVariable(ColumnLabels.DESIGNATION)).when(this.ontologyDataManager)
+					.getStandardVariable(ColumnLabels.DESIGNATION.getTermId().getId());
+			Mockito.doReturn(this.generateStandardVariable(ColumnLabels.AVAILABLE_INVENTORY)).when(this.ontologyDataManager)
+					.getStandardVariable(ColumnLabels.AVAILABLE_INVENTORY.getTermId().getId());
+			Mockito.doReturn(this.generateStandardVariable(ColumnLabels.SEED_RESERVATION)).when(this.ontologyDataManager)
+					.getStandardVariable(ColumnLabels.SEED_RESERVATION.getTermId().getId());
+		} catch (Exception e) {
+
 		}
-		
+
 	}
-	
-	private void configureTermNamesFromDefault(){
-		try{
-			doReturn(null).when(ontologyDataManager).getStandardVariable(ColumnLabels.ENTRY_ID.getTermId().getId());
-			doReturn(null).when(ontologyDataManager).getStandardVariable(ColumnLabels.GID.getTermId().getId());
-			doReturn(null).when(ontologyDataManager).getStandardVariable(ColumnLabels.PARENTAGE.getTermId().getId());
-			doReturn(null).when(ontologyDataManager).getStandardVariable(ColumnLabels.ENTRY_CODE.getTermId().getId());
-			doReturn(null).when(ontologyDataManager).getStandardVariable(ColumnLabels.SEED_SOURCE.getTermId().getId());
-			doReturn(null).when(ontologyDataManager).getStandardVariable(ColumnLabels.DESIGNATION.getTermId().getId());
-			doReturn(null).when(ontologyDataManager).getStandardVariable(ColumnLabels.AVAILABLE_INVENTORY.getTermId().getId());
-			doReturn(null).when(ontologyDataManager).getStandardVariable(ColumnLabels.SEED_RESERVATION.getTermId().getId());
-		}catch(Exception e){
-			
+
+	private void configureTermNamesFromDefault() {
+		try {
+			Mockito.doReturn(null).when(this.ontologyDataManager).getStandardVariable(ColumnLabels.ENTRY_ID.getTermId().getId());
+			Mockito.doReturn(null).when(this.ontologyDataManager).getStandardVariable(ColumnLabels.GID.getTermId().getId());
+			Mockito.doReturn(null).when(this.ontologyDataManager).getStandardVariable(ColumnLabels.PARENTAGE.getTermId().getId());
+			Mockito.doReturn(null).when(this.ontologyDataManager).getStandardVariable(ColumnLabels.ENTRY_CODE.getTermId().getId());
+			Mockito.doReturn(null).when(this.ontologyDataManager).getStandardVariable(ColumnLabels.SEED_SOURCE.getTermId().getId());
+			Mockito.doReturn(null).when(this.ontologyDataManager).getStandardVariable(ColumnLabels.DESIGNATION.getTermId().getId());
+			Mockito.doReturn(null).when(this.ontologyDataManager).getStandardVariable(ColumnLabels.AVAILABLE_INVENTORY.getTermId().getId());
+			Mockito.doReturn(null).when(this.ontologyDataManager).getStandardVariable(ColumnLabels.SEED_RESERVATION.getTermId().getId());
+		} catch (Exception e) {
+
 		}
-		
+
 	}
-	
-	private StandardVariable generateStandardVariable(ColumnLabels columnLabel){
+
+	private StandardVariable generateStandardVariable(ColumnLabels columnLabel) {
 		StandardVariable standardVariable = new StandardVariable();
 		standardVariable.setId(columnLabel.getTermId().getId());
 		standardVariable.setName(columnLabel.getName());
-		standardVariable.setProperty(generateTerm(0,""));
-		standardVariable.setScale(generateTerm(0,""));
-		standardVariable.setMethod(generateTerm(0,""));
-		standardVariable.setDataType(generateTerm(0,""));
+		standardVariable.setProperty(this.generateTerm(0, ""));
+		standardVariable.setScale(this.generateTerm(0, ""));
+		standardVariable.setMethod(this.generateTerm(0, ""));
+		standardVariable.setDataType(this.generateTerm(0, ""));
 		return standardVariable;
 	}
-	
-	private Term generateTerm(int id, String name){
+
+	private Term generateTerm(int id, String name) {
 		Term term = new Term();
 		term.setId(id);
 		term.setName(name);
 		return term;
 	}
-	
+
 	private GermplasmList getGermplasmList() {
 		GermplasmList germplasmList = new GermplasmList();
 		germplasmList.setName("Sample List");
-		germplasmList.setUserId(USER_ID);
+		germplasmList.setUserId(GermplasmListExporterTest.USER_ID);
 		germplasmList.setDescription("Sample description");
 		germplasmList.setType("LST");
 		germplasmList.setDate(20141112L);
 		germplasmList.setNotes("Sample Notes");
-		germplasmList.setListData(generateListEntries());
-		
+		germplasmList.setListData(GermplasmListExporterTest.generateListEntries());
+
 		return germplasmList;
 	}
-	
+
 	@AfterClass
 	public static void cleanUp() {
-		
+
 		try {
-			File file = new File(FILE_NAME);
+			File file = new File(GermplasmListExporterTest.FILE_NAME);
 			file.delete();
-		}catch(Exception e){
-			//do nothing
+		} catch (Exception e) {
+			// do nothing
 		}
-		
-				
+
 	}
 
 }

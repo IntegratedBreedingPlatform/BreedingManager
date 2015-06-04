@@ -1,30 +1,29 @@
+
 package org.generationcp.breeding.manager.crossingmanager.pojos;
 
-
 public class CrossParents {
-    
-    private GermplasmListEntry femaleParent;
-    
-    private GermplasmListEntry maleParent;
-    
-    private String seedSource;
-    
-    public CrossParents(GermplasmListEntry femaleParent, GermplasmListEntry maleParent){
-        this.femaleParent = femaleParent;
-        this.maleParent = maleParent;
-    }
-    
-    public GermplasmListEntry getFemaleParent() {
-        return femaleParent;
-    }
-    
-    public GermplasmListEntry getMaleParent() {
-        return maleParent;
-    }
 
-    
+	private final GermplasmListEntry femaleParent;
+
+	private final GermplasmListEntry maleParent;
+
+	private String seedSource;
+
+	public CrossParents(GermplasmListEntry femaleParent, GermplasmListEntry maleParent) {
+		this.femaleParent = femaleParent;
+		this.maleParent = maleParent;
+	}
+
+	public GermplasmListEntry getFemaleParent() {
+		return this.femaleParent;
+	}
+
+	public GermplasmListEntry getMaleParent() {
+		return this.maleParent;
+	}
+
 	public String getSeedSource() {
-		return seedSource;
+		return this.seedSource;
 	}
 
 	public void setSeedSource(String seedSource) {
@@ -35,39 +34,37 @@ public class CrossParents {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((femaleParent == null) ? 0 : femaleParent.hashCode());
-		result = prime * result
-				+ ((maleParent == null) ? 0 : maleParent.hashCode());
+		result = prime * result + (this.femaleParent == null ? 0 : this.femaleParent.hashCode());
+		result = prime * result + (this.maleParent == null ? 0 : this.maleParent.hashCode());
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
-            return true;
-        }
+			return true;
+		}
 		if (obj == null) {
-            return false;
-        }
-		if (getClass() != obj.getClass()) {
-            return false;
-        }
+			return false;
+		}
+		if (this.getClass() != obj.getClass()) {
+			return false;
+		}
 		CrossParents other = (CrossParents) obj;
-		if (femaleParent == null) {
+		if (this.femaleParent == null) {
 			if (other.femaleParent != null) {
-                return false;
-            }
-		} else if (!femaleParent.hasEqualGidWith(other.femaleParent)) {
-            return false;
-        }
-		if (maleParent == null) {
+				return false;
+			}
+		} else if (!this.femaleParent.hasEqualGidWith(other.femaleParent)) {
+			return false;
+		}
+		if (this.maleParent == null) {
 			if (other.maleParent != null) {
-                return false;
-            }
-		} else if (!maleParent.hasEqualGidWith(other.maleParent)) {
-            return false;
-        }
+				return false;
+			}
+		} else if (!this.maleParent.hasEqualGidWith(other.maleParent)) {
+			return false;
+		}
 		return true;
 	}
 

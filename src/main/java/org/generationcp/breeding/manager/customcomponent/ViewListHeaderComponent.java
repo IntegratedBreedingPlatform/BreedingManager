@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.customcomponent;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -16,12 +17,12 @@ import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 
 @Configurable
-public class ViewListHeaderComponent extends GridLayout implements BreedingManagerLayout, InitializingBean, InternationalizableComponent{
-	
+public class ViewListHeaderComponent extends GridLayout implements BreedingManagerLayout, InitializingBean, InternationalizableComponent {
+
 	private static final long serialVersionUID = 4690756426750044929L;
-	
-	private GermplasmList germplasmList;
-	
+
+	private final GermplasmList germplasmList;
+
 	private Label nameLabel;
 	private Label nameValueLabel;
 	private Label ownerLabel;
@@ -36,192 +37,192 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 	private Label dateValueLabel;
 	private Label notesLabel;
 	private Label notesValueLabel;
-	
+
 	@Autowired
-    private SimpleResourceBundleMessageSource messageSource;
-	
+	private SimpleResourceBundleMessageSource messageSource;
+
 	@Autowired
-    private UserDataManager userDataManager;
-	
+	private UserDataManager userDataManager;
+
 	@Autowired
-    private GermplasmListManager germplasmListManager;
-	
-	public ViewListHeaderComponent(GermplasmList germplasmList){
+	private GermplasmListManager germplasmListManager;
+
+	public ViewListHeaderComponent(GermplasmList germplasmList) {
 		super(2, 7);
 		this.germplasmList = germplasmList;
 	}
-	
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		instantiateComponents();
-		initializeValues();
-		addListeners();
-		layoutComponents();
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
 	}
-	
+
 	@Override
 	public void instantiateComponents() {
-		nameLabel = new Label(messageSource.getMessage(Message.LIST_NAME) + ":");
-		nameLabel.addStyleName("bold");
-		
-		nameValueLabel = new Label(germplasmList.getName());
-		nameValueLabel.setDescription(germplasmList.getName());
-		nameValueLabel.setWidth("200px");
-		
-		ownerLabel = new Label(messageSource.getMessage(Message.LIST_OWNER_LABEL) + ":");
-		ownerLabel.addStyleName("bold");
+		this.nameLabel = new Label(this.messageSource.getMessage(Message.LIST_NAME) + ":");
+		this.nameLabel.addStyleName("bold");
 
-        String ownerName = BreedingManagerUtil.getOwnerListName(germplasmList.getUserId(), userDataManager);
-		ownerValueLabel = new Label(ownerName);
-		ownerValueLabel.setDescription(ownerName);
-		ownerValueLabel.setWidth("200px");
-		
-		statusLabel = new Label(messageSource.getMessage(Message.STATUS_LABEL) + ":");
-		statusLabel.addStyleName("bold");
-		
+		this.nameValueLabel = new Label(this.germplasmList.getName());
+		this.nameValueLabel.setDescription(this.germplasmList.getName());
+		this.nameValueLabel.setWidth("200px");
+
+		this.ownerLabel = new Label(this.messageSource.getMessage(Message.LIST_OWNER_LABEL) + ":");
+		this.ownerLabel.addStyleName("bold");
+
+		String ownerName = BreedingManagerUtil.getOwnerListName(this.germplasmList.getUserId(), this.userDataManager);
+		this.ownerValueLabel = new Label(ownerName);
+		this.ownerValueLabel.setDescription(ownerName);
+		this.ownerValueLabel.setWidth("200px");
+
+		this.statusLabel = new Label(this.messageSource.getMessage(Message.STATUS_LABEL) + ":");
+		this.statusLabel.addStyleName("bold");
+
 		String statusValue = "Unlocked List";
-		if(germplasmList.getStatus() >= 100){
+		if (this.germplasmList.getStatus() >= 100) {
 			statusValue = "Locked List";
 		}
-		statusValueLabel = new Label(statusValue);
-		statusValueLabel.setWidth("200px");
-		
-		descriptionLabel = new Label(messageSource.getMessage(Message.DESCRIPTION_LABEL) + ":");
-		descriptionLabel.addStyleName("bold");
-		
-		String description = BreedingManagerUtil.getDescriptionForDisplay(germplasmList);
-		descriptionValueLabel = new Label(description);
-		descriptionValueLabel.setDescription(germplasmList.getDescription());
-		descriptionValueLabel.setWidth("200px");
-		
-		typeLabel = new Label(messageSource.getMessage(Message.TYPE_LABEL) + ":");
-		typeLabel.addStyleName("bold");
-		
-		String typeValue = BreedingManagerUtil.getTypeString(germplasmList.getType(), germplasmListManager);
-		typeValueLabel = new Label(typeValue);
-		typeValueLabel.setDescription(typeValue);
-		typeValueLabel.setWidth("200px");
-		
-		dateLabel = new Label(messageSource.getMessage(Message.DATE_LABEL) + ":");
-		dateLabel.addStyleName("bold");
-		
-		dateValueLabel = new Label(germplasmList.getDate().toString());
-		dateValueLabel.setWidth("200px");
-		
-		notesLabel = new Label(messageSource.getMessage(Message.NOTES) + ":");
-		notesLabel.addStyleName("bold");
-		
+		this.statusValueLabel = new Label(statusValue);
+		this.statusValueLabel.setWidth("200px");
+
+		this.descriptionLabel = new Label(this.messageSource.getMessage(Message.DESCRIPTION_LABEL) + ":");
+		this.descriptionLabel.addStyleName("bold");
+
+		String description = BreedingManagerUtil.getDescriptionForDisplay(this.germplasmList);
+		this.descriptionValueLabel = new Label(description);
+		this.descriptionValueLabel.setDescription(this.germplasmList.getDescription());
+		this.descriptionValueLabel.setWidth("200px");
+
+		this.typeLabel = new Label(this.messageSource.getMessage(Message.TYPE_LABEL) + ":");
+		this.typeLabel.addStyleName("bold");
+
+		String typeValue = BreedingManagerUtil.getTypeString(this.germplasmList.getType(), this.germplasmListManager);
+		this.typeValueLabel = new Label(typeValue);
+		this.typeValueLabel.setDescription(typeValue);
+		this.typeValueLabel.setWidth("200px");
+
+		this.dateLabel = new Label(this.messageSource.getMessage(Message.DATE_LABEL) + ":");
+		this.dateLabel.addStyleName("bold");
+
+		this.dateValueLabel = new Label(this.germplasmList.getDate().toString());
+		this.dateValueLabel.setWidth("200px");
+
+		this.notesLabel = new Label(this.messageSource.getMessage(Message.NOTES) + ":");
+		this.notesLabel.addStyleName("bold");
+
 		String notes = "-";
-		if(germplasmList.getNotes() != null && germplasmList.getNotes().length() != 0){
-			notes = germplasmList.getNotes();
-			if(notes.length() > 27){
+		if (this.germplasmList.getNotes() != null && this.germplasmList.getNotes().length() != 0) {
+			notes = this.germplasmList.getNotes();
+			if (notes.length() > 27) {
 				notes = notes.substring(0, 27) + "...";
 			}
 		}
-		notesValueLabel = new Label(notes);
-		notesValueLabel.setDescription(germplasmList.getNotes());
+		this.notesValueLabel = new Label(notes);
+		this.notesValueLabel.setDescription(this.germplasmList.getNotes());
 	}
 
 	@Override
 	public void initializeValues() {
-		
+
 	}
 
 	@Override
 	public void addListeners() {
-		
+
 	}
 
 	@Override
 	public void layoutComponents() {
-		setSpacing(true);
-		
-		addComponent(nameLabel, 0, 0);
-		addComponent(nameValueLabel, 1, 0);
-		
-		addComponent(ownerLabel, 0, 1);
-		addComponent(ownerValueLabel, 1, 1);
-		
-		addComponent(statusLabel, 0, 2);
-		addComponent(statusValueLabel, 1, 2);
-		
-		addComponent(descriptionLabel, 0, 3);
-		addComponent(descriptionValueLabel, 1, 3);
-		
-		addComponent(typeLabel, 0, 4);
-		addComponent(typeValueLabel, 1, 4);
-		
-		addComponent(dateLabel, 0, 5);
-		addComponent(dateValueLabel, 1, 5);
-		
-		addComponent(notesLabel, 0, 6);
-		addComponent(notesValueLabel, 1, 6);
+		this.setSpacing(true);
+
+		this.addComponent(this.nameLabel, 0, 0);
+		this.addComponent(this.nameValueLabel, 1, 0);
+
+		this.addComponent(this.ownerLabel, 0, 1);
+		this.addComponent(this.ownerValueLabel, 1, 1);
+
+		this.addComponent(this.statusLabel, 0, 2);
+		this.addComponent(this.statusValueLabel, 1, 2);
+
+		this.addComponent(this.descriptionLabel, 0, 3);
+		this.addComponent(this.descriptionValueLabel, 1, 3);
+
+		this.addComponent(this.typeLabel, 0, 4);
+		this.addComponent(this.typeValueLabel, 1, 4);
+
+		this.addComponent(this.dateLabel, 0, 5);
+		this.addComponent(this.dateValueLabel, 1, 5);
+
+		this.addComponent(this.notesLabel, 0, 6);
+		this.addComponent(this.notesValueLabel, 1, 6);
 	}
 
 	@Override
 	public void updateLabels() {
-		
+
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("<table border=\"0\">\n");
 		builder.append("<tr>\n");
 		builder.append("<td><b>List Name:</b></td>\n");
-		builder.append("<td>" + germplasmList.getName() + "</td>\n");
+		builder.append("<td>" + this.germplasmList.getName() + "</td>\n");
 		builder.append("</tr>\n");
 		builder.append("<tr>\n");
-		
+
 		builder.append("<td><b>List Owner:</b></td>\n");
-		builder.append("<td>" + BreedingManagerUtil.getOwnerListName(germplasmList.getUserId(), userDataManager) + "</td>\n");
+		builder.append("<td>" + BreedingManagerUtil.getOwnerListName(this.germplasmList.getUserId(), this.userDataManager) + "</td>\n");
 		builder.append("</tr>\n");
-		
+
 		builder.append("<tr>\n");
 		String statusValue = "Unlocked List";
-		if(germplasmList.getStatus() >= 100){
+		if (this.germplasmList.getStatus() >= 100) {
 			statusValue = "Locked List";
 		}
 		builder.append("<td><b>Status:</b></td>\n");
 		builder.append("<td>" + statusValue + "</td>\n");
 		builder.append("</tr>\n");
-		
+
 		builder.append("<tr>\n");
 		builder.append("<td><b>Description:</b></td>\n");
-		String description =  BreedingManagerUtil.getDescriptionForDisplay(germplasmList);
+		String description = BreedingManagerUtil.getDescriptionForDisplay(this.germplasmList);
 
 		builder.append("<td>" + description + "</td>\n");
 		builder.append("</tr>\n");
-		
+
 		builder.append("<tr>\n");
 		builder.append("<td><b>Type:</b></td>\n");
-		builder.append("<td>" + BreedingManagerUtil.getTypeString(germplasmList.getType(), germplasmListManager) + "</td>\n");
+		builder.append("<td>" + BreedingManagerUtil.getTypeString(this.germplasmList.getType(), this.germplasmListManager) + "</td>\n");
 		builder.append("</tr>\n");
-		
+
 		builder.append("<tr>\n");
 		builder.append("<td><b>Creation Date:</b></td>\n");
-		builder.append("<td>" + germplasmList.getDate() + "</td>\n");
+		builder.append("<td>" + this.germplasmList.getDate() + "</td>\n");
 		builder.append("</tr>\n");
-		
+
 		builder.append("<tr>\n");
 		builder.append("<td><b>Notes:</b></td>\n");
-		if(germplasmList.getNotes() != null){
-			String notes = germplasmList.getNotes().replaceAll("<", "&lt;");
+		if (this.germplasmList.getNotes() != null) {
+			String notes = this.germplasmList.getNotes().replaceAll("<", "&lt;");
 			notes = notes.replaceAll(">", "&gt;");
-			if(notes.length() > 27){
+			if (notes.length() > 27) {
 				notes = notes.substring(0, 27) + "...";
 			}
-			if(notes.length() == 0){
+			if (notes.length() == 0) {
 				notes = "-";
 			}
 			builder.append("<td>" + notes + "</td>\n");
-		} else{
+		} else {
 			builder.append("<td>-</td>\n");
 		}
 		builder.append("</tr>\n");
-		
+
 		builder.append("</table>");
-		
+
 		return builder.toString();
 	}
 }

@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.customcomponent;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -20,23 +21,24 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class UnsavedChangesConfirmDialog extends BaseSubWindow implements InitializingBean,
-								InternationalizableComponent, BreedingManagerLayout {
+public class UnsavedChangesConfirmDialog extends BaseSubWindow implements InitializingBean, InternationalizableComponent,
+		BreedingManagerLayout {
+
 	private static final long serialVersionUID = -7800270790767272974L;
-	
-	private Label descriptionLabel; 
+
+	private Label descriptionLabel;
 	private Button cancelButton;
 	private Button discardButton;
 	private Button saveButton;
-	
-	private String description;
-	
+
+	private final String description;
+
 	private VerticalLayout mainLayout;
-	private UnsavedChangesConfirmDialogSource source;
-	
+	private final UnsavedChangesConfirmDialogSource source;
+
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
-	
+
 	public UnsavedChangesConfirmDialog(UnsavedChangesConfirmDialogSource source, String description) {
 		super();
 		this.source = source;
@@ -45,108 +47,111 @@ public class UnsavedChangesConfirmDialog extends BaseSubWindow implements Initia
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-        instantiateComponents();
-		initializeValues();
-		addListeners();
-		layoutComponents();
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
 	}
-	
+
 	@Override
 	public void instantiateComponents() {
-		setModal(true);
-		setCaption(messageSource.getMessage(Message.UNSAVED_CHANGES));
-		setStyleName(Reindeer.WINDOW_LIGHT);
-		addStyleName("unsaved-changes-dialog");
+		this.setModal(true);
+		this.setCaption(this.messageSource.getMessage(Message.UNSAVED_CHANGES));
+		this.setStyleName(Reindeer.WINDOW_LIGHT);
+		this.addStyleName("unsaved-changes-dialog");
 		// define window size, set as not resizable
-        setWidth("544px");
-        setHeight("180px");
-        setResizable(false);
-        // center window within the browser
-		center();
-		
-		//content variables
-		descriptionLabel = new Label("<center>" + description + "</center>",Label.CONTENT_XHTML);
-		
-		cancelButton = new Button(messageSource.getMessage(Message.CANCEL));
-		discardButton = new Button(messageSource.getMessage(Message.DISCARD_CHANGES));
-		
-		saveButton = new Button(messageSource.getMessage(Message.SAVE_CHANGES));
-		saveButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+		this.setWidth("544px");
+		this.setHeight("180px");
+		this.setResizable(false);
+		// center window within the browser
+		this.center();
+
+		// content variables
+		this.descriptionLabel = new Label("<center>" + this.description + "</center>", Label.CONTENT_XHTML);
+
+		this.cancelButton = new Button(this.messageSource.getMessage(Message.CANCEL));
+		this.discardButton = new Button(this.messageSource.getMessage(Message.DISCARD_CHANGES));
+
+		this.saveButton = new Button(this.messageSource.getMessage(Message.SAVE_CHANGES));
+		this.saveButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 	}
 
 	@Override
 	public void initializeValues() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void addListeners() {
-		cancelButton.addListener(new ClickListener(){
+		this.cancelButton.addListener(new ClickListener() {
+
 			private static final long serialVersionUID = 2688256898854358066L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				cancelAction();
+				UnsavedChangesConfirmDialog.this.cancelAction();
 			}
 		});
-		
-		saveButton.addListener(new ClickListener() {
+
+		this.saveButton.addListener(new ClickListener() {
+
 			private static final long serialVersionUID = -941792327552845606L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				saveAction();
+				UnsavedChangesConfirmDialog.this.saveAction();
 			}
 		});
-		
-		discardButton.addListener(new ClickListener() {
+
+		this.discardButton.addListener(new ClickListener() {
+
 			private static final long serialVersionUID = -5985668025701325303L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				discardAction();
+				UnsavedChangesConfirmDialog.this.discardAction();
 			}
 		});
 	}
 
 	public void discardAction() {
-		source.discardAllListChangesAction();
+		this.source.discardAllListChangesAction();
 	}
 
 	public void saveAction() {
-		source.saveAllListChangesAction();
+		this.source.saveAllListChangesAction();
 	}
 
 	public void cancelAction() {
-		source.cancelAllListChangesAction();
+		this.source.cancelAllListChangesAction();
 	}
 
 	@Override
 	public void layoutComponents() {
-		mainLayout = new VerticalLayout();
-		mainLayout.setSpacing(true);
-		
-		mainLayout.addComponent(descriptionLabel);
-		
+		this.mainLayout = new VerticalLayout();
+		this.mainLayout.setSpacing(true);
+
+		this.mainLayout.addComponent(this.descriptionLabel);
+
 		Label forSpaceLabel = new Label();
-		mainLayout.addComponent(forSpaceLabel);
-		
+		this.mainLayout.addComponent(forSpaceLabel);
+
 		HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setSpacing(true);
-		buttonLayout.addComponent(cancelButton);
-		buttonLayout.addComponent(discardButton);
-		buttonLayout.addComponent(saveButton);
-		
-		mainLayout.addComponent(buttonLayout);
-		mainLayout.setComponentAlignment(buttonLayout, Alignment.MIDDLE_CENTER);
-		
-		addComponent(mainLayout);
+		buttonLayout.addComponent(this.cancelButton);
+		buttonLayout.addComponent(this.discardButton);
+		buttonLayout.addComponent(this.saveButton);
+
+		this.mainLayout.addComponent(buttonLayout);
+		this.mainLayout.setComponentAlignment(buttonLayout, Alignment.MIDDLE_CENTER);
+
+		this.addComponent(this.mainLayout);
 	}
 
 	@Override
 	public void updateLabels() {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

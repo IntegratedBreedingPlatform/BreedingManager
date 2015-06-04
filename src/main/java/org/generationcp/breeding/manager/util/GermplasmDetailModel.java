@@ -1,13 +1,12 @@
 /*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
- * 
+ *
  * Generation Challenge Programme (GCP)
- * 
- * 
- * This software is licensed for use under the terms of the GNU General Public
- * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
- * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
- * 
+ *
+ *
+ * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
+ * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
+ *
  *******************************************************************************/
 
 package org.generationcp.breeding.manager.util;
@@ -16,107 +15,105 @@ import org.generationcp.middleware.pojos.Bibref;
 
 public class GermplasmDetailModel {
 
-    private int gid;
-    String germplasmPreferredName; // nval value where names.nstat=1
-    private String dateNamed; // ndate value where names.nstat=1
-    private String nameLocation;
-    private String germplasmMethod;
-    private String germplasmCreationDate;
-    private String germplasmLocation;
-    private String reference;
-    private String germplasmUser;
-    private String prefID; // nval value where names.nstat=8
-   
-    
-    private Bibref bibRef;
+	private int gid;
+	String germplasmPreferredName; // nval value where names.nstat=1
+	private String dateNamed; // ndate value where names.nstat=1
+	private String nameLocation;
+	private String germplasmMethod;
+	private String germplasmCreationDate;
+	private String germplasmLocation;
+	private String reference;
+	private String germplasmUser;
+	private String prefID; // nval value where names.nstat=8
 
-    public Bibref getBibRef() {
-        return bibRef;
-    }
+	private Bibref bibRef;
 
-    public void setBibRef(Bibref bibRef) {
-        this.bibRef = bibRef;
-    }
+	public Bibref getBibRef() {
+		return this.bibRef;
+	}
 
-    public int getGid() {
-        return gid;
-    }
+	public void setBibRef(Bibref bibRef) {
+		this.bibRef = bibRef;
+	}
 
-    public void setGid(int gid) {
-        this.gid = gid;
-    }
+	public int getGid() {
+		return this.gid;
+	}
 
-    public String getDateNamed() {
-        return dateNamed;
-    }
+	public void setGid(int gid) {
+		this.gid = gid;
+	}
 
-    public void setDateNamed(String dateNamed) {
-        this.dateNamed = dateNamed;
-    }
+	public String getDateNamed() {
+		return this.dateNamed;
+	}
 
-    public String getNameLocation() {
-        return nameLocation;
-    }
+	public void setDateNamed(String dateNamed) {
+		this.dateNamed = dateNamed;
+	}
 
-    public void setNameLocation(String nameLocation) {
-        this.nameLocation = nameLocation;
-    }
+	public String getNameLocation() {
+		return this.nameLocation;
+	}
 
-    public String getGermplasmLocation() {
-        return germplasmLocation;
-    }
+	public void setNameLocation(String nameLocation) {
+		this.nameLocation = nameLocation;
+	}
 
-    public void setGermplasmLocation(String germplasmLocation) {
-        this.germplasmLocation = germplasmLocation;
-    }
+	public String getGermplasmLocation() {
+		return this.germplasmLocation;
+	}
 
-    public String getReference() {
-        return reference;
-    }
+	public void setGermplasmLocation(String germplasmLocation) {
+		this.germplasmLocation = germplasmLocation;
+	}
 
-    public void setReference(String reference) {
-        this.reference = reference;
-    }
+	public String getReference() {
+		return this.reference;
+	}
 
-    public String getGermplasmUser() {
-        return germplasmUser;
-    }
+	public void setReference(String reference) {
+		this.reference = reference;
+	}
 
-    public void setGermplasmUser(String germplasmUser) {
-        this.germplasmUser = germplasmUser;
-    }
+	public String getGermplasmUser() {
+		return this.germplasmUser;
+	}
 
-    public String getGermplasmMethod() {
-        return germplasmMethod;
-    }
+	public void setGermplasmUser(String germplasmUser) {
+		this.germplasmUser = germplasmUser;
+	}
 
-    public void setGermplasmMethod(String germplasmMethod) {
-        this.germplasmMethod = germplasmMethod;
-    }
+	public String getGermplasmMethod() {
+		return this.germplasmMethod;
+	}
 
-    public String getGermplasmPreferredName() {
-        return germplasmPreferredName;
-    }
+	public void setGermplasmMethod(String germplasmMethod) {
+		this.germplasmMethod = germplasmMethod;
+	}
 
-    public void setGermplasmPreferredName(String germplasmPreferredName) {
-        this.germplasmPreferredName = germplasmPreferredName;
-    }
+	public String getGermplasmPreferredName() {
+		return this.germplasmPreferredName;
+	}
 
-    public String getGermplasmCreationDate() {
-        return germplasmCreationDate;
-    }
+	public void setGermplasmPreferredName(String germplasmPreferredName) {
+		this.germplasmPreferredName = germplasmPreferredName;
+	}
 
-    public void setGermplasmCreationDate(String germplasmCreationDate) {
-        this.germplasmCreationDate = germplasmCreationDate;
-    }
+	public String getGermplasmCreationDate() {
+		return this.germplasmCreationDate;
+	}
 
-    public String getPrefID() {
-        return prefID;
-    }
+	public void setGermplasmCreationDate(String germplasmCreationDate) {
+		this.germplasmCreationDate = germplasmCreationDate;
+	}
 
-    public void setPrefID(String prefID) {
-        this.prefID = prefID;
-    }
+	public String getPrefID() {
+		return this.prefID;
+	}
 
-   
+	public void setPrefID(String prefID) {
+		this.prefID = prefID;
+	}
+
 }

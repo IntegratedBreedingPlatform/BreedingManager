@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.crossingmanager;
 
 import java.io.File;
@@ -6,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -49,345 +49,341 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
-import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class CrossesSummaryListDataComponent extends VerticalLayout implements 
-		BreedingManagerLayout, InitializingBean {
+public class CrossesSummaryListDataComponent extends VerticalLayout implements BreedingManagerLayout, InitializingBean {
 
 	private static final String CLICK_TO_VIEW_CROSS_INFORMATION = "Click to view Cross information";
 	private static final String CLICK_TO_VIEW_FEMALE_INFORMATION = "Click to view Female Parent information";
 	private static final String CLICK_TO_VIEW_MALE_INFORMATION = "Click to view Male Parent information";
 
 	private static final long serialVersionUID = -6058352152291932651L;
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(CrossesSummaryListDataComponent.class);
-	
+
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
-	
+
 	@Autowired
 	private GermplasmListManager germplasmListManager;
-	
+
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
 
 	private Label listEntriesLabel;
-	
+
 	private Table listDataTable;
 	private Button toolsButton;
 	private Button viewHeaderButton;
-	
+
 	private Long count;
-	
-	//Menu for tools button
-	private ContextMenu menu; 
+
+	// Menu for tools button
+	private ContextMenu menu;
 	private ContextMenuItem menuExportList;
-	
+
 	private ViewListHeaderWindow viewListHeaderWindow;
-	
+
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
-	
-	private GermplasmList list;
+
+	private final GermplasmList list;
 
 	private List<GermplasmListData> listEntries;
 	private Map<Integer, Germplasm> germplasmMap;
-	//list data id, CrossParents info
-	private Map<Integer, CrossParents> parentsInfo; 
+	// list data id, CrossParents info
+	private Map<Integer, CrossParents> parentsInfo;
 
-	//Used maps to make use of existing Middleware methods
+	// Used maps to make use of existing Middleware methods
 	// gid of parent, preferred name
-	private Map<Integer, String> parentGermplasmNames; 
+	private Map<Integer, String> parentGermplasmNames;
 	// Gid, Method of germplasm
-	private Map<Integer, Object> methodMap; 
-	
-	public CrossesSummaryListDataComponent(GermplasmList list){
+	private Map<Integer, Object> methodMap;
+
+	public CrossesSummaryListDataComponent(GermplasmList list) {
 		this.list = list;
 	}
-	
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		instantiateComponents();
-		initializeValues();
-		addListeners();
-		layoutComponents();
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
 	}
 
 	@Override
 	public void instantiateComponents() {
-		listEntriesLabel = new Label(messageSource.getMessage(Message.CROSS_LIST_ENTRIES).toUpperCase());
-		listEntriesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
-		listEntriesLabel.addStyleName(AppConstants.CssStyles.BOLD);
-		listEntriesLabel.setWidth("180px");
-		
-		viewListHeaderWindow = new ViewListHeaderWindow(list);
-		
-		viewHeaderButton = new Button(messageSource.getMessage(Message.VIEW_HEADER));
-		viewHeaderButton.addStyleName(Reindeer.BUTTON_LINK);
-		viewHeaderButton.setDescription(viewListHeaderWindow.getListHeaderComponent().toString());
-		viewHeaderButton.setHeight("14px");
-		
-		initializeListEntriesTable();
-		
-		toolsButton = new ActionButton();
-		
-		menu = new ContextMenu();
-		menu.setWidth("200px");
-		menu.setVisible(true);
-		
+		this.listEntriesLabel = new Label(this.messageSource.getMessage(Message.CROSS_LIST_ENTRIES).toUpperCase());
+		this.listEntriesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+		this.listEntriesLabel.addStyleName(AppConstants.CssStyles.BOLD);
+		this.listEntriesLabel.setWidth("180px");
+
+		this.viewListHeaderWindow = new ViewListHeaderWindow(this.list);
+
+		this.viewHeaderButton = new Button(this.messageSource.getMessage(Message.VIEW_HEADER));
+		this.viewHeaderButton.addStyleName(BaseTheme.BUTTON_LINK);
+		this.viewHeaderButton.setDescription(this.viewListHeaderWindow.getListHeaderComponent().toString());
+		this.viewHeaderButton.setHeight("14px");
+
+		this.initializeListEntriesTable();
+
+		this.toolsButton = new ActionButton();
+
+		this.menu = new ContextMenu();
+		this.menu.setWidth("200px");
+		this.menu.setVisible(true);
+
 		// Generate menu items
-		menuExportList = menu.addItem(messageSource.getMessage(Message.EXPORT_CROSS_LIST));
-		menuExportList.setVisible(true);
-		
+		this.menuExportList = this.menu.addItem(this.messageSource.getMessage(Message.EXPORT_CROSS_LIST));
+		this.menuExportList.setVisible(true);
+
 	}
 
 	@Override
 	public void initializeValues() {
-		retrieveGermplasmsInformation();
-		populateTable();
+		this.retrieveGermplasmsInformation();
+		this.populateTable();
 	}
 
-	
 	private void populateTable() {
-		parentsInfo = new HashMap<Integer, CrossParents>();
-		
-		for(GermplasmListData entry : listEntries){
+		this.parentsInfo = new HashMap<Integer, CrossParents>();
+
+		for (GermplasmListData entry : this.listEntries) {
 			Integer gid = entry.getGid();
 			String gidString = String.format("%s", gid.toString());
-            
-			Button gidButton = generateLaunchGermplasmDetailsButton(gidString, gidString, CLICK_TO_VIEW_CROSS_INFORMATION);
-            Button desigButton = generateLaunchGermplasmDetailsButton(entry.getDesignation(), gidString, CLICK_TO_VIEW_CROSS_INFORMATION);
-            
-            Germplasm germplasm = germplasmMap.get(gid);
-            Integer femaleGid = germplasm.getGpid1();
-            String femaleGidString = femaleGid.toString();
-			Button femaleGidButton = generateLaunchGermplasmDetailsButton(femaleGidString, femaleGidString, CLICK_TO_VIEW_FEMALE_INFORMATION);
-            String femaleDesig = parentGermplasmNames.get(femaleGid);
-			Button femaleDesigButton = generateLaunchGermplasmDetailsButton(femaleDesig, femaleGidString, CLICK_TO_VIEW_FEMALE_INFORMATION);
-            
-            Integer maleGid = germplasm.getGpid2();
-            String maleGidString = maleGid.toString();
-            Button maleGidButton = generateLaunchGermplasmDetailsButton(maleGidString, maleGidString, CLICK_TO_VIEW_MALE_INFORMATION);
-            String maleDesig = parentGermplasmNames.get(maleGid);
-			Button maleDesigButton = generateLaunchGermplasmDetailsButton(maleDesig, maleGidString, CLICK_TO_VIEW_MALE_INFORMATION);
-            
-            Method method = (Method) methodMap.get(gid);
-            
-            
-	   		listDataTable.addItem(new Object[] {
-	   				entry.getEntryId(), desigButton, entry.getGroupName(), entry.getEntryCode(), gidButton, entry.getSeedSource(),
-	   				femaleDesigButton, femaleGidButton, maleDesigButton, maleGidButton, method.getMname()
-   				}, entry.getId());
-	   		
-	   		
-	   		addToParentsInfoMap(entry.getId(), femaleGid, femaleDesig, maleGid, maleDesig);
+
+			Button gidButton =
+					this.generateLaunchGermplasmDetailsButton(gidString, gidString,
+							CrossesSummaryListDataComponent.CLICK_TO_VIEW_CROSS_INFORMATION);
+			Button desigButton =
+					this.generateLaunchGermplasmDetailsButton(entry.getDesignation(), gidString,
+							CrossesSummaryListDataComponent.CLICK_TO_VIEW_CROSS_INFORMATION);
+
+			Germplasm germplasm = this.germplasmMap.get(gid);
+			Integer femaleGid = germplasm.getGpid1();
+			String femaleGidString = femaleGid.toString();
+			Button femaleGidButton =
+					this.generateLaunchGermplasmDetailsButton(femaleGidString, femaleGidString,
+							CrossesSummaryListDataComponent.CLICK_TO_VIEW_FEMALE_INFORMATION);
+			String femaleDesig = this.parentGermplasmNames.get(femaleGid);
+			Button femaleDesigButton =
+					this.generateLaunchGermplasmDetailsButton(femaleDesig, femaleGidString,
+							CrossesSummaryListDataComponent.CLICK_TO_VIEW_FEMALE_INFORMATION);
+
+			Integer maleGid = germplasm.getGpid2();
+			String maleGidString = maleGid.toString();
+			Button maleGidButton =
+					this.generateLaunchGermplasmDetailsButton(maleGidString, maleGidString,
+							CrossesSummaryListDataComponent.CLICK_TO_VIEW_MALE_INFORMATION);
+			String maleDesig = this.parentGermplasmNames.get(maleGid);
+			Button maleDesigButton =
+					this.generateLaunchGermplasmDetailsButton(maleDesig, maleGidString,
+							CrossesSummaryListDataComponent.CLICK_TO_VIEW_MALE_INFORMATION);
+
+			Method method = (Method) this.methodMap.get(gid);
+
+			this.listDataTable.addItem(
+					new Object[] {entry.getEntryId(), desigButton, entry.getGroupName(), entry.getEntryCode(), gidButton,
+							entry.getSeedSource(), femaleDesigButton, femaleGidButton, maleDesigButton, maleGidButton, method.getMname()},
+					entry.getId());
+
+			this.addToParentsInfoMap(entry.getId(), femaleGid, femaleDesig, maleGid, maleDesig);
 		}
-	
+
 	}
 
-	
-	private void addToParentsInfoMap(Integer id, Integer femaleGid,
-			String femaleDesig, Integer maleGid, String maleDesig) {
-		
-		GermplasmListEntry femaleEntry = new GermplasmListEntry(null, femaleGid, null, femaleDesig); 
-		GermplasmListEntry maleEntry = new GermplasmListEntry(null, maleGid, null, maleDesig); 
+	private void addToParentsInfoMap(Integer id, Integer femaleGid, String femaleDesig, Integer maleGid, String maleDesig) {
+
+		GermplasmListEntry femaleEntry = new GermplasmListEntry(null, femaleGid, null, femaleDesig);
+		GermplasmListEntry maleEntry = new GermplasmListEntry(null, maleGid, null, maleDesig);
 		CrossParents parents = new CrossParents(femaleEntry, maleEntry);
-		parentsInfo.put(id, parents);
+		this.parentsInfo.put(id, parents);
 	}
 
-	
 	private Button generateLaunchGermplasmDetailsButton(String caption, String gid, String description) {
-		Button gidButton = new Button(caption, new GidLinkClickListener(gid,true));
+		Button gidButton = new Button(caption, new GidLinkClickListener(gid, true));
 		gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 		gidButton.setDescription(description);
 		return gidButton;
 	}
-	
 
 	@Override
 	public void addListeners() {
-		toolsButton.addListener(new ClickListener() {
+		this.toolsButton.addListener(new ClickListener() {
+
 			private static final long serialVersionUID = -7600642919550425308L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				menu.show(event.getClientX(),event.getClientY());
+				CrossesSummaryListDataComponent.this.menu.show(event.getClientX(), event.getClientY());
 			}
 		});
-		
-		menu.addListener(new ContextMenu.ClickListener() {
+
+		this.menu.addListener(new ContextMenu.ClickListener() {
+
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void contextItemClick(
-					org.vaadin.peter.contextmenu.ContextMenu.ClickEvent event) {
+			public void contextItemClick(org.vaadin.peter.contextmenu.ContextMenu.ClickEvent event) {
 				ContextMenuItem clickedItem = event.getClickedItem();
-                if(menuExportList.equals(clickedItem)){
-                	exportCrossesMadeAction();
-                }      
+				if (CrossesSummaryListDataComponent.this.menuExportList.equals(clickedItem)) {
+					CrossesSummaryListDataComponent.this.exportCrossesMadeAction();
+				}
 			}
 		});
-		
-		viewHeaderButton.addListener(new ClickListener() {
+
+		this.viewHeaderButton.addListener(new ClickListener() {
+
 			private static final long serialVersionUID = 329434322390122057L;
 
 			@Override
 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-				openViewListHeaderWindow();
+				CrossesSummaryListDataComponent.this.openViewListHeaderWindow();
 			}
 		});
-		
+
 	}
 
 	@Override
 	public void layoutComponents() {
-		setSpacing(true);
-			
+		this.setSpacing(true);
+
 		HorizontalLayout tableHeaderLayout = new HorizontalLayout();
 		tableHeaderLayout.setHeight("27px");
 		tableHeaderLayout.setWidth("100%");
-		
+
 		HorizontalLayout leftHeaderLayout = new HorizontalLayout();
 		leftHeaderLayout.setSpacing(true);
 		leftHeaderLayout.setHeight("100%");
-		leftHeaderLayout.addComponent(listEntriesLabel);
-		leftHeaderLayout.addComponent(viewHeaderButton);
-		leftHeaderLayout.setComponentAlignment(viewHeaderButton, Alignment.MIDDLE_RIGHT);
-		
-		
+		leftHeaderLayout.addComponent(this.listEntriesLabel);
+		leftHeaderLayout.addComponent(this.viewHeaderButton);
+		leftHeaderLayout.setComponentAlignment(this.viewHeaderButton, Alignment.MIDDLE_RIGHT);
+
 		tableHeaderLayout.addComponent(leftHeaderLayout);
-		tableHeaderLayout.addComponent(toolsButton);
+		tableHeaderLayout.addComponent(this.toolsButton);
 		tableHeaderLayout.setComponentAlignment(leftHeaderLayout, Alignment.MIDDLE_LEFT);
-		tableHeaderLayout.setComponentAlignment(toolsButton, Alignment.MIDDLE_RIGHT);
-		
+		tableHeaderLayout.setComponentAlignment(this.toolsButton, Alignment.MIDDLE_RIGHT);
+
 		VerticalLayout tableLayout = new VerticalLayout();
-		listDataTable.setWidth("100%");
-		tableLayout.addComponent(listDataTable);
-		tableLayout.setComponentAlignment(listDataTable, Alignment.TOP_LEFT);
-		
-		addComponent(tableHeaderLayout);
-		addComponent(tableLayout);
-		addComponent(menu);
+		this.listDataTable.setWidth("100%");
+		tableLayout.addComponent(this.listDataTable);
+		tableLayout.setComponentAlignment(this.listDataTable, Alignment.TOP_LEFT);
+
+		this.addComponent(tableHeaderLayout);
+		this.addComponent(tableLayout);
+		this.addComponent(this.menu);
 	}
-	
-	
-	private void retrieveGermplasmsInformation(){
-		try{
+
+	private void retrieveGermplasmsInformation() {
+		try {
 			List<Integer> germplasmIds = new ArrayList<Integer>();
-			germplasmMap = new HashMap<Integer, Germplasm>();
+			this.germplasmMap = new HashMap<Integer, Germplasm>();
 
 			// retrieve germplasm of list data to get its parent germplasms
-			this.listEntries = germplasmListManager.getGermplasmListDataByListId(list.getId(), 0, Integer.MAX_VALUE);
-			for(GermplasmListData entry : listEntries){
+			this.listEntries = this.germplasmListManager.getGermplasmListDataByListId(this.list.getId(), 0, Integer.MAX_VALUE);
+			for (GermplasmListData entry : this.listEntries) {
 				germplasmIds.add(entry.getGid());
 			}
-			List<Germplasm> existingGermplasms = germplasmDataManager.getGermplasms(germplasmIds);
-			
-			
-			//retrieve methods of germplasms
-			methodMap = germplasmDataManager.getMethodsByGids(germplasmIds);
-			
-			
-			//retrieve preferred names of parent germplasms
+			List<Germplasm> existingGermplasms = this.germplasmDataManager.getGermplasms(germplasmIds);
+
+			// retrieve methods of germplasms
+			this.methodMap = this.germplasmDataManager.getMethodsByGids(germplasmIds);
+
+			// retrieve preferred names of parent germplasms
 			List<Integer> parentIds = new ArrayList<Integer>();
-			for (Germplasm germplasm : existingGermplasms){
-				germplasmMap.put(germplasm.getGid(), germplasm);
+			for (Germplasm germplasm : existingGermplasms) {
+				this.germplasmMap.put(germplasm.getGid(), germplasm);
 				parentIds.add(germplasm.getGpid1());
 				parentIds.add(germplasm.getGpid2());
 			}
-			parentGermplasmNames = germplasmDataManager.getPreferredNamesByGids(parentIds);
-			
-		} catch(MiddlewareQueryException ex){
-			LOG.error(ex.getMessage() + list.getId(), ex);
-			MessageNotifier.showError(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE), "Error in getting list and/or germplasm information.");
-		}
-	}
-	
-	protected void initializeListEntriesTable(){
-		count = Long.valueOf(0);
-		try {
-			count = germplasmListManager.countGermplasmListDataByListId(this.list.getId());
-		} catch (MiddlewareQueryException e) {
-			LOG.error(e.getMessage(), e);
-		}
-		
-		setListDataTable(new BreedingManagerTable(count.intValue(), 8));
-		listDataTable = getListDataTable();
-		listDataTable.setColumnCollapsingAllowed(true);
-		listDataTable.setColumnReorderingAllowed(true);
-		listDataTable.setImmediate(true);
-		
-		listDataTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
-		listDataTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
-		listDataTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
-		listDataTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
-		listDataTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
-		listDataTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
-		listDataTable.addContainerProperty(ColumnLabels.FEMALE_PARENT.getName(), Button.class, null);
-		listDataTable.addContainerProperty(ColumnLabels.FGID.getName(), Button.class, null);
-		listDataTable.addContainerProperty(ColumnLabels.MALE_PARENT.getName(), Button.class, null);
-		listDataTable.addContainerProperty(ColumnLabels.MGID.getName(), Button.class, null);
-		listDataTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, null);
-		
-		listDataTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), messageSource.getMessage(Message.HASHTAG));
-		listDataTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(), getTermNameFromOntology(ColumnLabels.DESIGNATION));
-		listDataTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(), getTermNameFromOntology(ColumnLabels.PARENTAGE));
-		listDataTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(),  getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
-		listDataTable.setColumnHeader(ColumnLabels.GID.getName(), getTermNameFromOntology(ColumnLabels.GID));
-		listDataTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(), getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
-		listDataTable.setColumnHeader(ColumnLabels.FEMALE_PARENT.getName(), getTermNameFromOntology(ColumnLabels.FEMALE_PARENT));
-		listDataTable.setColumnHeader(ColumnLabels.FGID.getName(), getTermNameFromOntology(ColumnLabels.FGID));
-		listDataTable.setColumnHeader(ColumnLabels.MALE_PARENT.getName(), getTermNameFromOntology(ColumnLabels.MALE_PARENT));
-		listDataTable.setColumnHeader(ColumnLabels.MGID.getName(), getTermNameFromOntology(ColumnLabels.MGID));
-		listDataTable.setColumnHeader(ColumnLabels.BREEDING_METHOD_NAME.getName(), getTermNameFromOntology(ColumnLabels.BREEDING_METHOD_NAME));
-		
-		listDataTable.setVisibleColumns(new Object[] { 
-        		ColumnLabels.ENTRY_ID.getName()
-        		,ColumnLabels.DESIGNATION.getName()
-        		,ColumnLabels.PARENTAGE.getName()
-        		,ColumnLabels.ENTRY_CODE.getName()
-        		,ColumnLabels.GID.getName()
-        		,ColumnLabels.SEED_SOURCE.getName()
-        		,ColumnLabels.FEMALE_PARENT.getName()
-        		,ColumnLabels.FGID.getName()
-        		,ColumnLabels.MALE_PARENT.getName()
-        		,ColumnLabels.MGID.getName()
-        		,ColumnLabels.BREEDING_METHOD_NAME.getName()
-    		}
-		);
-	}
-	
-	private void exportCrossesMadeAction(){
-		GermplasmListExporter exporter = new GermplasmListExporter(list.getId());
-		 String tempFileName = System.getProperty(AppConstants.USER_HOME) + "/temp.xls";
-		 
-        try {
-        	exporter.exportGermplasmListXLS(tempFileName, listDataTable);
-            FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
-            fileDownloadResource.setFilename(FileDownloadResource.getDownloadFileName(list.getName(),  BreedingManagerUtil.getApplicationRequest()).replace(" ", "_") + ".xls");
+			this.parentGermplasmNames = this.germplasmDataManager.getPreferredNamesByGids(parentIds);
 
-            this.getWindow().open(fileDownloadResource);
-        } catch (GermplasmListExporterException | MiddlewareQueryException e) {
-        	LOG.error(e.getMessage(), e);
-            MessageNotifier.showError(getWindow(), "Error with exporting crossing file.", e.getMessage());
+		} catch (MiddlewareQueryException ex) {
+			CrossesSummaryListDataComponent.LOG.error(ex.getMessage() + this.list.getId(), ex);
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
+					"Error in getting list and/or germplasm information.");
 		}
 	}
-	
-	public void openViewListHeaderWindow(){
-		this.getWindow().addWindow(viewListHeaderWindow);
+
+	protected void initializeListEntriesTable() {
+		this.count = Long.valueOf(0);
+		try {
+			this.count = this.germplasmListManager.countGermplasmListDataByListId(this.list.getId());
+		} catch (MiddlewareQueryException e) {
+			CrossesSummaryListDataComponent.LOG.error(e.getMessage(), e);
+		}
+
+		this.setListDataTable(new BreedingManagerTable(this.count.intValue(), 8));
+		this.listDataTable = this.getListDataTable();
+		this.listDataTable.setColumnCollapsingAllowed(true);
+		this.listDataTable.setColumnReorderingAllowed(true);
+		this.listDataTable.setImmediate(true);
+
+		this.listDataTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
+		this.listDataTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
+		this.listDataTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
+		this.listDataTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
+		this.listDataTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
+		this.listDataTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
+		this.listDataTable.addContainerProperty(ColumnLabels.FEMALE_PARENT.getName(), Button.class, null);
+		this.listDataTable.addContainerProperty(ColumnLabels.FGID.getName(), Button.class, null);
+		this.listDataTable.addContainerProperty(ColumnLabels.MALE_PARENT.getName(), Button.class, null);
+		this.listDataTable.addContainerProperty(ColumnLabels.MGID.getName(), Button.class, null);
+		this.listDataTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, null);
+
+		this.listDataTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), this.messageSource.getMessage(Message.HASHTAG));
+		this.listDataTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(), this.getTermNameFromOntology(ColumnLabels.DESIGNATION));
+		this.listDataTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(), this.getTermNameFromOntology(ColumnLabels.PARENTAGE));
+		this.listDataTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(), this.getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
+		this.listDataTable.setColumnHeader(ColumnLabels.GID.getName(), this.getTermNameFromOntology(ColumnLabels.GID));
+		this.listDataTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(), this.getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
+		this.listDataTable.setColumnHeader(ColumnLabels.FEMALE_PARENT.getName(), this.getTermNameFromOntology(ColumnLabels.FEMALE_PARENT));
+		this.listDataTable.setColumnHeader(ColumnLabels.FGID.getName(), this.getTermNameFromOntology(ColumnLabels.FGID));
+		this.listDataTable.setColumnHeader(ColumnLabels.MALE_PARENT.getName(), this.getTermNameFromOntology(ColumnLabels.MALE_PARENT));
+		this.listDataTable.setColumnHeader(ColumnLabels.MGID.getName(), this.getTermNameFromOntology(ColumnLabels.MGID));
+		this.listDataTable.setColumnHeader(ColumnLabels.BREEDING_METHOD_NAME.getName(),
+				this.getTermNameFromOntology(ColumnLabels.BREEDING_METHOD_NAME));
+
+		this.listDataTable.setVisibleColumns(new Object[] {ColumnLabels.ENTRY_ID.getName(), ColumnLabels.DESIGNATION.getName(),
+				ColumnLabels.PARENTAGE.getName(), ColumnLabels.ENTRY_CODE.getName(), ColumnLabels.GID.getName(),
+				ColumnLabels.SEED_SOURCE.getName(), ColumnLabels.FEMALE_PARENT.getName(), ColumnLabels.FGID.getName(),
+				ColumnLabels.MALE_PARENT.getName(), ColumnLabels.MGID.getName(), ColumnLabels.BREEDING_METHOD_NAME.getName()});
 	}
-	
-	public void focus(){
-		listDataTable.focus();
+
+	private void exportCrossesMadeAction() {
+		GermplasmListExporter exporter = new GermplasmListExporter(this.list.getId());
+		String tempFileName = System.getProperty(AppConstants.USER_HOME) + "/temp.xls";
+
+		try {
+			exporter.exportGermplasmListXLS(tempFileName, this.listDataTable);
+			FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
+			fileDownloadResource.setFilename(FileDownloadResource.getDownloadFileName(this.list.getName(),
+					BreedingManagerUtil.getApplicationRequest()).replace(" ", "_")
+					+ ".xls");
+
+			this.getWindow().open(fileDownloadResource);
+		} catch (GermplasmListExporterException | MiddlewareQueryException e) {
+			CrossesSummaryListDataComponent.LOG.error(e.getMessage(), e);
+			MessageNotifier.showError(this.getWindow(), "Error with exporting crossing file.", e.getMessage());
+		}
 	}
-	
+
+	public void openViewListHeaderWindow() {
+		this.getWindow().addWindow(this.viewListHeaderWindow);
+	}
+
+	@Override
+	public void focus() {
+		this.listDataTable.focus();
+	}
+
 	protected String getTermNameFromOntology(ColumnLabels columnLabels) {
-		return columnLabels.getTermNameFromOntology(ontologyDataManager);
+		return columnLabels.getTermNameFromOntology(this.ontologyDataManager);
 	}
 
 	public Table getListDataTable() {
-		return listDataTable;
+		return this.listDataTable;
 	}
 
 	public void setListDataTable(Table listDataTable) {

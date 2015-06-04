@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.listimport;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -19,34 +20,33 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow implements BreedingManagerLayout, InitializingBean, ImportGermplasmEntryActionListener, Window.CloseListener {
+public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow implements BreedingManagerLayout, InitializingBean,
+		ImportGermplasmEntryActionListener, Window.CloseListener {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -2742268286525936983L;
 	public static final String WINDOW_NAME = "New Name";
 	public static final String ADD_NAME_TO_GID = "Add name to GID";
 	public static final String SEARCH_OR_CREATE_NEW = "Search/create another germplasm record";
-	
-	private  String germplasmName;
+
+	private String germplasmName;
 	private int germplasmIndex;
 	private Integer ibdbUserId;
 	private Integer dateIntValue;
 	private Integer gid;
 	private Integer nameMatchesCount;
-	
+
 	private VerticalLayout mainLayout;
 	private Label confirmLabel;
 	private Button searchCreateButton;
 	private Button addNameButton;
-	
-	private ProcessImportedGermplasmAction source;
-	
-	
-	
-	public NewDesignationForGermplasmConfirmDialog(ProcessImportedGermplasmAction source, String germplasmName,int germplasmIndex, Integer gid, 
-			Integer ibdbUserId, Integer dateIntValue, Integer nameMatchesCount) {
+
+	private final ProcessImportedGermplasmAction source;
+
+	public NewDesignationForGermplasmConfirmDialog(ProcessImportedGermplasmAction source, String germplasmName, int germplasmIndex,
+			Integer gid, Integer ibdbUserId, Integer dateIntValue, Integer nameMatchesCount) {
 		super();
 		this.germplasmName = germplasmName;
 		this.germplasmIndex = germplasmIndex;
@@ -59,110 +59,121 @@ public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow imple
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		instantiateComponents();
-		initializeValues();
-		addListeners();
-		layoutComponents();
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
 	}
 
 	@Override
 	public void instantiateComponents() {
-		setModal(true);
-		setCaption(WINDOW_NAME);
-		setStyleName(Reindeer.WINDOW_LIGHT);
-		addStyleName("unsaved-changes-dialog");
-		
+		this.setModal(true);
+		this.setCaption(NewDesignationForGermplasmConfirmDialog.WINDOW_NAME);
+		this.setStyleName(Reindeer.WINDOW_LIGHT);
+		this.addStyleName("unsaved-changes-dialog");
+
 		// define window size, set as not resizable
-        setWidth("544px");
-        setHeight("180px");
-        setResizable(false);
-        
-        // center window within the browser
-		center();
-		confirmLabel = new Label("<center>" + getConfirmationMessage() + "</center>",Label.CONTENT_XHTML);
-		
-		searchCreateButton = new Button(SEARCH_OR_CREATE_NEW);
-		
-		addNameButton = new Button(ADD_NAME_TO_GID);
-		addNameButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+		this.setWidth("544px");
+		this.setHeight("180px");
+		this.setResizable(false);
+
+		// center window within the browser
+		this.center();
+		this.confirmLabel = new Label("<center>" + this.getConfirmationMessage() + "</center>", Label.CONTENT_XHTML);
+
+		this.searchCreateButton = new Button(NewDesignationForGermplasmConfirmDialog.SEARCH_OR_CREATE_NEW);
+
+		this.addNameButton = new Button(NewDesignationForGermplasmConfirmDialog.ADD_NAME_TO_GID);
+		this.addNameButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 	}
 
 	@Override
 	public void initializeValues() {
-		
+
 	}
 
 	@SuppressWarnings("serial")
 	@Override
 	public void addListeners() {
-		searchCreateButton.addListener(new Button.ClickListener() {
+		this.searchCreateButton.addListener(new Button.ClickListener() {
+
+			/**
+			 *
+			 */
+			private static final long serialVersionUID = -373965708464005849L;
+
 			@Override
 			public void buttonClick(ClickEvent event) {
-				searchOrAddANewGermplasm();
+				NewDesignationForGermplasmConfirmDialog.this.searchOrAddANewGermplasm();
 			}
 		});
-		
-		addNameButton.addListener(new Button.ClickListener() {
+
+		this.addNameButton.addListener(new Button.ClickListener() {
+
+			/**
+			 *
+			 */
+			private static final long serialVersionUID = -8698652015248607854L;
+
 			@Override
 			public void buttonClick(ClickEvent event) {
-				addGermplasmName();
+				NewDesignationForGermplasmConfirmDialog.this.addGermplasmName();
 			}
 		});
-		
+
 	}
-	
-	private void searchOrAddANewGermplasm(){
-		source.searchOrAddANewGermplasm(this);
+
+	private void searchOrAddANewGermplasm() {
+		this.source.searchOrAddANewGermplasm(this);
 		this.getParent().removeWindow(this);
 	}
 
 	@Override
 	public void layoutComponents() {
-		mainLayout = new VerticalLayout();
-		mainLayout.setSpacing(true);
-		
-		mainLayout.addComponent(confirmLabel);
-		
+		this.mainLayout = new VerticalLayout();
+		this.mainLayout.setSpacing(true);
+
+		this.mainLayout.addComponent(this.confirmLabel);
+
 		Label forSpaceLabel = new Label();
-		mainLayout.addComponent(forSpaceLabel);
-		
+		this.mainLayout.addComponent(forSpaceLabel);
+
 		HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setSpacing(true);
-		buttonLayout.addComponent(searchCreateButton);
-		buttonLayout.addComponent(addNameButton);
-		
-		mainLayout.addComponent(buttonLayout);
-		mainLayout.setComponentAlignment(buttonLayout, Alignment.MIDDLE_CENTER);
-		
-		addComponent(mainLayout);
-		
+		buttonLayout.addComponent(this.searchCreateButton);
+		buttonLayout.addComponent(this.addNameButton);
+
+		this.mainLayout.addComponent(buttonLayout);
+		this.mainLayout.setComponentAlignment(buttonLayout, Alignment.MIDDLE_CENTER);
+
+		this.addComponent(this.mainLayout);
+
 	}
-	
-	
+
 	public Integer getGid() {
-		return gid;
+		return this.gid;
 	}
 
 	public Integer getIbdbUserId() {
-		return ibdbUserId;
+		return this.ibdbUserId;
 	}
 
 	public Integer getDateIntValue() {
-		return dateIntValue;
+		return this.dateIntValue;
 	}
 
 	@Override
 	public String getGermplasmName() {
-		return germplasmName;
+		return this.germplasmName;
 	}
 
 	@Override
 	public int getGermplasmIndex() {
-		return germplasmIndex;
+		return this.germplasmIndex;
 	}
 
 	public Integer getNameMatchesCount() {
-		return nameMatchesCount;
+		return this.nameMatchesCount;
 	}
 
 	public void setNameMatchesCount(Integer nameMatchesCount) {
@@ -189,28 +200,28 @@ public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow imple
 		this.gid = gid;
 	}
 
-    private void addGermplasmName(){
-		Name name = source.createNameObject(ibdbUserId, dateIntValue, germplasmName);
-		
+	private void addGermplasmName() {
+		Name name = this.source.createNameObject(this.ibdbUserId, this.dateIntValue, this.germplasmName);
+
 		name.setNid(null);
 		name.setNstat(Integer.valueOf(0));
-		name.setGermplasmId(gid);
-		
-		source.addNameToGermplasm(name, gid);
-		
-		source.removeCurrentListenerAndProcessNextItem(this);
+		name.setGermplasmId(this.gid);
+
+		this.source.addNameToGermplasm(name, this.gid);
+
+		this.source.removeCurrentListenerAndProcessNextItem(this);
 		this.getParent().removeWindow(this);
-    }
-    
-    private String getConfirmationMessage(){
-    	return "The name \"" + getGermplasmName() + "\" is not recorded as a name of GID " + getGid() + "."
-	            + " Do you want to add the name to the GID or search/create another germplasm record?";
-    }
+	}
+
+	private String getConfirmationMessage() {
+		return "The name \"" + this.getGermplasmName() + "\" is not recorded as a name of GID " + this.getGid() + "."
+				+ " Do you want to add the name to the GID or search/create another germplasm record?";
+	}
 
 	@Override
 	public void windowClose(CloseEvent e) {
 		super.close();
-		source.closeAllImportEntryListeners();
+		this.source.closeAllImportEntryListeners();
 	}
 
 }

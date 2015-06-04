@@ -1,7 +1,6 @@
+
 package org.generationcp.breeding.manager.listmanager.listeners.test;
 
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Window;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
@@ -20,8 +19,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Window;
 
 public class SaveListButtonClickListenerTest {
 
@@ -56,105 +55,98 @@ public class SaveListButtonClickListenerTest {
 	public void setUp() throws MiddlewareQueryException, IllegalAccessException {
 		MockitoAnnotations.initMocks(this);
 
-		initializeGermplasmList();
-		initializeProject();
+		this.initializeGermplasmList();
+		this.initializeProject();
 
-		when(contextUtil.getCurrentUserLocalId()).thenReturn(DUMMY_ID);
+		Mockito.when(this.contextUtil.getCurrentUserLocalId()).thenReturn(SaveListButtonClickListenerTest.DUMMY_ID);
 
-		SaveListButtonClickListener _listener = new SaveListButtonClickListener(source,
-				listDataTable,
-				messageSource);
+		SaveListButtonClickListener _listener = new SaveListButtonClickListener(this.source, this.listDataTable, this.messageSource);
 
-		FieldUtils.writeDeclaredField(_listener, "contextUtil", contextUtil, true);
+		FieldUtils.writeDeclaredField(_listener, "contextUtil", this.contextUtil, true);
 
-		saveListener = Mockito.spy(_listener);
+		this.saveListener = Mockito.spy(_listener);
 
-		Mockito.when(source.getWindow()).thenReturn(new Window());
+		Mockito.when(this.source.getWindow()).thenReturn(new Window());
 
-		Mockito.when(messageSource.getMessage(Message.NAME_CAN_NOT_BE_BLANK))
-				.thenReturn(DUMMY_OPTION);
+		Mockito.when(this.messageSource.getMessage(Message.NAME_CAN_NOT_BE_BLANK)).thenReturn(SaveListButtonClickListenerTest.DUMMY_OPTION);
 
-		saveListener.setDataManager(dataManager);
-		saveListener.setMessageSource(messageSource);
-		saveListener.setInventoryDataManager(inventoryDataManager);
-		saveListener.setSource(source);
+		this.saveListener.setDataManager(this.dataManager);
+		this.saveListener.setMessageSource(this.messageSource);
+		this.saveListener.setInventoryDataManager(this.inventoryDataManager);
+		this.saveListener.setSource(this.source);
 
 	}
 
 	private void initializeProject() {
-		project = new Project();
-		project.setProjectId(DUMMY_LONG_ID);
+		this.project = new Project();
+		this.project.setProjectId(SaveListButtonClickListenerTest.DUMMY_LONG_ID);
 	}
 
 	private void initializeGermplasmList() {
-		germplasmList = new GermplasmList();
-		germplasmList.setName("List Name");
-		germplasmList.setDescription("This is a description.");
-		germplasmList.setDate(20150801L);
-		germplasmList.setStatus(Integer.valueOf(1));
-		germplasmList.setUserId(DUMMY_ID);
+		this.germplasmList = new GermplasmList();
+		this.germplasmList.setName("List Name");
+		this.germplasmList.setDescription("This is a description.");
+		this.germplasmList.setDate(20150801L);
+		this.germplasmList.setStatus(Integer.valueOf(1));
+		this.germplasmList.setUserId(SaveListButtonClickListenerTest.DUMMY_ID);
 	}
 
 	@Test
-	public void testShowErrorOnSavingGermplasmListIsCalledWhenErrorEncounteredOnSaveList()
-			throws MiddlewareQueryException {
-		Mockito.when(source.getCurrentlySavedGermplasmList()).thenReturn(null);
-		Mockito.when(source.getCurrentlySetGermplasmListInfo()).thenReturn(germplasmList);
-		Mockito.when(dataManager.addGermplasmList(germplasmList)).thenReturn(null);
+	public void testShowErrorOnSavingGermplasmListIsCalledWhenErrorEncounteredOnSaveList() throws MiddlewareQueryException {
+		Mockito.when(this.source.getCurrentlySavedGermplasmList()).thenReturn(null);
+		Mockito.when(this.source.getCurrentlySetGermplasmListInfo()).thenReturn(this.germplasmList);
+		Mockito.when(this.dataManager.addGermplasmList(this.germplasmList)).thenReturn(null);
 
-		saveListener.doSaveAction(true, true);
-		Mockito.verify(saveListener, Mockito.times(1)).showErrorOnSavingGermplasmList(true);
+		this.saveListener.doSaveAction(true, true);
+		Mockito.verify(this.saveListener, Mockito.times(1)).showErrorOnSavingGermplasmList(true);
 
-		doThrow(new MiddlewareQueryException("There is an error")).when(dataManager)
-				.addGermplasmList(germplasmList);
-		saveListener.doSaveAction(true, true);
-		Mockito.verify(saveListener, Mockito.times(2)).showErrorOnSavingGermplasmList(true);
+		Mockito.doThrow(new MiddlewareQueryException("There is an error")).when(this.dataManager).addGermplasmList(this.germplasmList);
+		this.saveListener.doSaveAction(true, true);
+		Mockito.verify(this.saveListener, Mockito.times(2)).showErrorOnSavingGermplasmList(true);
 	}
 
 	@Test
 	public void testValidateListDetailsForListNameThatIsNull() {
-		initializeGermplasmList();
-		germplasmList.setName(null);
+		this.initializeGermplasmList();
+		this.germplasmList.setName(null);
 		Assert.assertFalse("Expected to invalidate for germplasm list without listname.",
-				saveListener.validateListDetails(germplasmList, null));
+				this.saveListener.validateListDetails(this.germplasmList, null));
 	}
 
 	@Test
 	public void testValidateListDetailsForListNameThatIsGreaterThan50() {
-		initializeGermplasmList();
-		germplasmList.setName("abcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijk");
+		this.initializeGermplasmList();
+		this.germplasmList.setName("abcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijk");
 		Assert.assertFalse("Expected to invalidate for germplasm list with listname.length > 50.",
-				saveListener.validateListDetails(germplasmList, null));
+				this.saveListener.validateListDetails(this.germplasmList, null));
 	}
 
 	@Test
 	public void testValidateListDetailsForDescriptionThatIsNull() {
-		initializeGermplasmList();
-		germplasmList.setDescription(null);
+		this.initializeGermplasmList();
+		this.germplasmList.setDescription(null);
 		Assert.assertFalse("Expected to invalidate for germplasm list without description.",
-				saveListener.validateListDetails(germplasmList, null));
+				this.saveListener.validateListDetails(this.germplasmList, null));
 	}
 
 	@Test
 	public void testValidateListDetailsForDescriptionThatIsGreaterThan255() {
-		initializeGermplasmList();
-		germplasmList.setDescription(
-				"abcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijk"
-						+ "abcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijk"
-						+ "abcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdef"
-						+ "ghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijk");
-		Assert.assertFalse(
-				"Expected to invalidate for germplasm list with description.length > 255.",
-				saveListener.validateListDetails(germplasmList, null));
+		this.initializeGermplasmList();
+		this.germplasmList.setDescription("abcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijk"
+				+ "abcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijk"
+				+ "abcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdef"
+				+ "ghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijk");
+		Assert.assertFalse("Expected to invalidate for germplasm list with description.length > 255.",
+				this.saveListener.validateListDetails(this.germplasmList, null));
 	}
 
 	@Test
 	public void testValidateListDetailsForDateThatIsNull() {
-		initializeGermplasmList();
-		germplasmList.setDate(null);
+		this.initializeGermplasmList();
+		this.germplasmList.setDate(null);
 		;
 		Assert.assertFalse("Expected to invalidate for germplasm list without date.",
-				saveListener.validateListDetails(germplasmList, null));
+				this.saveListener.validateListDetails(this.germplasmList, null));
 
 	}
 
@@ -163,58 +155,43 @@ public class SaveListButtonClickListenerTest {
 		Table newTable = new Table();
 		Integer noOfColumnsAdded = 0;
 
-		saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "PREFERRED ID");
-		Assert.assertTrue("PREFERRED ID is added to the newTable.",
-				++noOfColumnsAdded == newTable.getColumnHeaders().length);
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "PREFERRED ID");
+		Assert.assertTrue("PREFERRED ID is added to the newTable.", ++noOfColumnsAdded == newTable.getColumnHeaders().length);
 
-		saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "PREFERRED NAME");
-		Assert.assertTrue("PREFERRED NAME is added to the newTable.",
-				++noOfColumnsAdded == newTable.getColumnHeaders().length);
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "PREFERRED NAME");
+		Assert.assertTrue("PREFERRED NAME is added to the newTable.", ++noOfColumnsAdded == newTable.getColumnHeaders().length);
 
-		saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "GERMPLASM DATE");
-		Assert.assertTrue("GERMPLASM DATE is added to the newTable.",
-				++noOfColumnsAdded == newTable.getColumnHeaders().length);
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "GERMPLASM DATE");
+		Assert.assertTrue("GERMPLASM DATE is added to the newTable.", ++noOfColumnsAdded == newTable.getColumnHeaders().length);
 
-		saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "LOCATIONS");
-		Assert.assertTrue("LOCATIONS is added to the newTable.",
-				++noOfColumnsAdded == newTable.getColumnHeaders().length);
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "LOCATIONS");
+		Assert.assertTrue("LOCATIONS is added to the newTable.", ++noOfColumnsAdded == newTable.getColumnHeaders().length);
 
-		saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "METHOD NAME");
-		Assert.assertTrue("METHOD NAME is added to the newTable.",
-				++noOfColumnsAdded == newTable.getColumnHeaders().length);
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "METHOD NAME");
+		Assert.assertTrue("METHOD NAME is added to the newTable.", ++noOfColumnsAdded == newTable.getColumnHeaders().length);
 
-		saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "METHOD ABBREV");
-		Assert.assertTrue("METHOD ABBREV is added to the newTable.",
-				++noOfColumnsAdded == newTable.getColumnHeaders().length);
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "METHOD ABBREV");
+		Assert.assertTrue("METHOD ABBREV is added to the newTable.", ++noOfColumnsAdded == newTable.getColumnHeaders().length);
 
-		saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "METHOD NUMBER");
-		Assert.assertTrue("METHOD NUMBER is added to the newTable.",
-				++noOfColumnsAdded == newTable.getColumnHeaders().length);
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "METHOD NUMBER");
+		Assert.assertTrue("METHOD NUMBER is added to the newTable.", ++noOfColumnsAdded == newTable.getColumnHeaders().length);
 
-		saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "METHOD GROUP");
-		Assert.assertTrue("METHOD GROUP is added to the newTable.",
-				++noOfColumnsAdded == newTable.getColumnHeaders().length);
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "METHOD GROUP");
+		Assert.assertTrue("METHOD GROUP is added to the newTable.", ++noOfColumnsAdded == newTable.getColumnHeaders().length);
 
-		saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "CROSS-FEMALE GID");
-		Assert.assertTrue("CROSS-FEMALE GID is added to the newTable.",
-				++noOfColumnsAdded == newTable.getColumnHeaders().length);
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "CROSS-FEMALE GID");
+		Assert.assertTrue("CROSS-FEMALE GID is added to the newTable.", ++noOfColumnsAdded == newTable.getColumnHeaders().length);
 
-		saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable,
-				"CROSS-FEMALE PREFERRED NAME");
-		Assert.assertTrue("CROSS-FEMALE PREFERRED NAME is added to the newTable.",
-				++noOfColumnsAdded == newTable.getColumnHeaders().length);
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "CROSS-FEMALE PREFERRED NAME");
+		Assert.assertTrue("CROSS-FEMALE PREFERRED NAME is added to the newTable.", ++noOfColumnsAdded == newTable.getColumnHeaders().length);
 
-		saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "CROSS-MALE GID");
-		Assert.assertTrue("CROSS-MALE GID is added to the newTable.",
-				++noOfColumnsAdded == newTable.getColumnHeaders().length);
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "CROSS-MALE GID");
+		Assert.assertTrue("CROSS-MALE GID is added to the newTable.", ++noOfColumnsAdded == newTable.getColumnHeaders().length);
 
-		saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable,
-				"CROSS-MALE PREFERRED NAME");
-		Assert.assertTrue("CROSS-MALE PREFERRED NAME is added to the newTable.",
-				++noOfColumnsAdded == newTable.getColumnHeaders().length);
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "CROSS-MALE PREFERRED NAME");
+		Assert.assertTrue("CROSS-MALE PREFERRED NAME is added to the newTable.", ++noOfColumnsAdded == newTable.getColumnHeaders().length);
 
-		saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "DUMMY COLUMN");
-		Assert.assertTrue("DUMMY COLUMN is added to the newTable.",
-				noOfColumnsAdded == newTable.getColumnHeaders().length);
+		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "DUMMY COLUMN");
+		Assert.assertTrue("DUMMY COLUMN is added to the newTable.", noOfColumnsAdded == newTable.getColumnHeaders().length);
 	}
 }

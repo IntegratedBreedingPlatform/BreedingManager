@@ -1,10 +1,10 @@
+
 package org.generationcp.breeding.manager.crossingmanager.settings;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.ui.*;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.themes.Reindeer;
+import java.util.List;
+
+import javax.annotation.Resource;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
@@ -23,12 +23,20 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import javax.annotation.Resource;
-import java.util.List;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
-public class DefineCrossingSettingComponent extends CssLayout implements BreedingManagerLayout,
-		InitializingBean, InternationalizableComponent {
+public class DefineCrossingSettingComponent extends CssLayout implements BreedingManagerLayout, InitializingBean,
+		InternationalizableComponent {
 
 	private static final long serialVersionUID = 8015092540102625727L;
 	private static final Logger LOG = LoggerFactory.getLogger(DefineCrossingSettingComponent.class);
@@ -59,63 +67,60 @@ public class DefineCrossingSettingComponent extends CssLayout implements Breedin
 	@Override
 	public void attach() {
 		super.attach();
-		updateLabels();
+		this.updateLabels();
 	}
 
 	@Override
 	public void updateLabels() {
-		defineCrossingSettingsLabel
-				.setValue(messageSource.getMessage(Message.DEFINE_CROSSING_SETTINGS).toUpperCase());
-		crossingSettingsHelp.setValue(messageSource.getMessage(Message.CROSSING_SETTINGS_HELP));
+		this.defineCrossingSettingsLabel.setValue(this.messageSource.getMessage(Message.DEFINE_CROSSING_SETTINGS).toUpperCase());
+		this.crossingSettingsHelp.setValue(this.messageSource.getMessage(Message.CROSSING_SETTINGS_HELP));
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		instantiateComponents();
-		initializeValues();
-		addListeners();
-		layoutComponents();
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
 	}
 
 	@Override
 	public void instantiateComponents() {
 
-		defineCrossingSettingsLabel = new Label(
-				messageSource.getMessage(Message.DEFINE_CROSSING_SETTINGS).toUpperCase());
-		defineCrossingSettingsLabel.setStyleName(Bootstrap.Typography.H2.styleName());
+		this.defineCrossingSettingsLabel = new Label(this.messageSource.getMessage(Message.DEFINE_CROSSING_SETTINGS).toUpperCase());
+		this.defineCrossingSettingsLabel.setStyleName(Bootstrap.Typography.H2.styleName());
 
-		crossingSettingsHelp = new Label(messageSource.getMessage(Message.CROSSING_SETTINGS_HELP),
-				Label.CONTENT_XHTML);
-		crossingSettingsHelp.addStyleName("gcp-content-help-text");
+		this.crossingSettingsHelp = new Label(this.messageSource.getMessage(Message.CROSSING_SETTINGS_HELP), Label.CONTENT_XHTML);
+		this.crossingSettingsHelp.addStyleName("gcp-content-help-text");
 
-		selectSetting = new CheckBox(
-				messageSource.getMessage(Message.LOAD_PREVIOUSLY_SAVED_SETTING) + ":");
-		selectSetting.setImmediate(true);
+		this.selectSetting = new CheckBox(this.messageSource.getMessage(Message.LOAD_PREVIOUSLY_SAVED_SETTING) + ":");
+		this.selectSetting.setImmediate(true);
 
-		settingsComboBox = new ComboBox();
-		settingsComboBox.setImmediate(true);
-		settingsComboBox.setNullSelectionAllowed(true);
-		settingsComboBox.setTextInputAllowed(false);
-		settingsComboBox.setVisible(false);
+		this.settingsComboBox = new ComboBox();
+		this.settingsComboBox.setImmediate(true);
+		this.settingsComboBox.setNullSelectionAllowed(true);
+		this.settingsComboBox.setTextInputAllowed(false);
+		this.settingsComboBox.setVisible(false);
 
-		deleteSettingButton = new Button(
-				"<span class='glyphicon glyphicon-trash' style='color: #7c7c7c;font-size: 16px; font-weight: bold;'></span>");
-		deleteSettingButton.setHtmlContentAllowed(true);
-		deleteSettingButton.setDescription("Delete Setting");
-		deleteSettingButton.setStyleName(Reindeer.BUTTON_LINK);
-		deleteSettingButton.setVisible(false);
+		this.deleteSettingButton =
+				new Button("<span class='glyphicon glyphicon-trash' style='color: #7c7c7c;font-size: 16px; font-weight: bold;'></span>");
+		this.deleteSettingButton.setHtmlContentAllowed(true);
+		this.deleteSettingButton.setDescription("Delete Setting");
+		this.deleteSettingButton.setStyleName(BaseTheme.BUTTON_LINK);
+		this.deleteSettingButton.setVisible(false);
 	}
 
 	@Override
 	public void initializeValues() {
-		selectSetting.setValue(false);
-		setSettingsComboBox(null);
+		this.selectSetting.setValue(false);
+		this.setSettingsComboBox(null);
 	}
 
 	@Override
 	public void addListeners() {
 
-		selectSetting.addListener(new Property.ValueChangeListener() {
+		this.selectSetting.addListener(new Property.ValueChangeListener() {
+
 			private static final long serialVersionUID = -1282191407425721085L;
 
 			@Override
@@ -123,44 +128,47 @@ public class DefineCrossingSettingComponent extends CssLayout implements Breedin
 
 				final Boolean selectSetting = (Boolean) event.getProperty().getValue();
 
-				showSettingSelection(selectSetting);
+				DefineCrossingSettingComponent.this.showSettingSelection(selectSetting);
 
 				if (selectSetting) {
-					settingsComboBox.focus();
+					DefineCrossingSettingComponent.this.settingsComboBox.focus();
 				} else {
-					settingsComboBox.setValue(null);
+					DefineCrossingSettingComponent.this.settingsComboBox.setValue(null);
 				}
 			}
 		});
 
-		settingsComboBox.addListener(new Property.ValueChangeListener() {
+		this.settingsComboBox.addListener(new Property.ValueChangeListener() {
+
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				if (settingsComboBox.getValue() != null) {
-					settingsParentComponent.setCurrentSetting(getSelectedTemplateSetting());
-					settingsParentComponent.setManageCrossingSettingsFields();
+				if (DefineCrossingSettingComponent.this.settingsComboBox.getValue() != null) {
+					DefineCrossingSettingComponent.this.settingsParentComponent.setCurrentSetting(DefineCrossingSettingComponent.this
+							.getSelectedTemplateSetting());
+					DefineCrossingSettingComponent.this.settingsParentComponent.setManageCrossingSettingsFields();
 				} else {
-					revertScreenToDefaultValues();
+					DefineCrossingSettingComponent.this.revertScreenToDefaultValues();
 				}
 			}
 
 		});
 
-		deleteSettingButton.addListener(new Button.ClickListener() {
+		this.deleteSettingButton.addListener(new Button.ClickListener() {
+
 			private static final long serialVersionUID = -432280582291837428L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				settingsParentComponent.doDeleteAction();
+				DefineCrossingSettingComponent.this.settingsParentComponent.doDeleteAction();
 			}
 		});
 	}
 
 	private void showSettingSelection(Boolean show) {
-		settingsComboBox.setVisible(show);
-		deleteSettingButton.setVisible(show);
+		this.settingsComboBox.setVisible(show);
+		this.deleteSettingButton.setVisible(show);
 	}
 
 	@Override
@@ -168,65 +176,62 @@ public class DefineCrossingSettingComponent extends CssLayout implements Breedin
 
 		final HorizontalLayout crossingForm = new HorizontalLayout();
 
-		crossingForm.addComponent(selectSetting);
-		crossingForm.addComponent(settingsComboBox);
-		crossingForm.addComponent(deleteSettingButton);
+		crossingForm.addComponent(this.selectSetting);
+		crossingForm.addComponent(this.settingsComboBox);
+		crossingForm.addComponent(this.deleteSettingButton);
 
-		selectSetting.addStyleName("cs-form-label");
-		settingsComboBox.addStyleName("cs-form-input");
-		deleteSettingButton.addStyleName("cs-inline-icon");
+		this.selectSetting.addStyleName("cs-form-label");
+		this.settingsComboBox.addStyleName("cs-form-input");
+		this.deleteSettingButton.addStyleName("cs-inline-icon");
 
-		addComponent(defineCrossingSettingsLabel);
-		addComponent(crossingSettingsHelp);
-		addComponent(crossingForm);
+		this.addComponent(this.defineCrossingSettingsLabel);
+		this.addComponent(this.crossingSettingsHelp);
+		this.addComponent(crossingForm);
 
 	}
 
 	public void setSettingsComboBox(TemplateSetting currentSetting) {
-		settingsComboBox.removeAllItems();
+		this.settingsComboBox.removeAllItems();
 		try {
-			Project project = contextUtil.getProjectInContext();
+			Project project = this.contextUtil.getProjectInContext();
 
-			Tool crossingManagerTool = workbenchDataManager
-					.getToolWithName(CrossingManagerSetting.CROSSING_MANAGER_TOOL_NAME);
+			Tool crossingManagerTool = this.workbenchDataManager.getToolWithName(CrossingManagerSetting.CROSSING_MANAGER_TOOL_NAME);
 
 			TemplateSetting templateSettingFilter = new TemplateSetting();
 			templateSettingFilter.setTool(crossingManagerTool);
 			templateSettingFilter.setProjectId(project.getProjectId().intValue());
 
-			List<TemplateSetting> templateSettings = workbenchDataManager
-					.getTemplateSettings(templateSettingFilter);
+			List<TemplateSetting> templateSettings = this.workbenchDataManager.getTemplateSettings(templateSettingFilter);
 
 			for (TemplateSetting ts : templateSettings) {
-				settingsComboBox.addItem(ts);
-				settingsComboBox.setItemCaption(ts, ts.getName());
+				this.settingsComboBox.addItem(ts);
+				this.settingsComboBox.setItemCaption(ts, ts.getName());
 
 				if (ts.getIsDefault() != null && ts.getIsDefault() == 1) {
-					settingsComboBox.select(ts);
-					settingsParentComponent.setDefaultSetting(ts);
+					this.settingsComboBox.select(ts);
+					this.settingsParentComponent.setDefaultSetting(ts);
 				}
 
 			}
 
 			if (currentSetting != null) {
-				settingsComboBox.select(currentSetting);
+				this.settingsComboBox.select(currentSetting);
 			}
 
 		} catch (MiddlewareQueryException e) {
-			//commenting out code for showing error notification because at this point this component is not yet attached to a window and so getWindow() returns null
-			LOG.error(
-					"Error with retrieving Workbench template settings for Crossing Manager tool.",
-					e);
+			// commenting out code for showing error notification because at this point this component is not yet attached to a window and
+			// so getWindow() returns null
+			DefineCrossingSettingComponent.LOG.error("Error with retrieving Workbench template settings for Crossing Manager tool.", e);
 		}
 	}
 
 	public TemplateSetting getSelectedTemplateSetting() {
-		return (TemplateSetting) settingsComboBox.getValue();
+		return (TemplateSetting) this.settingsComboBox.getValue();
 	}
 
 	private void revertScreenToDefaultValues() {
-		settingsParentComponent.setCurrentSetting(null);
-		settingsParentComponent.setDefaultManageCrossingSettingsFields();
+		this.settingsParentComponent.setCurrentSetting(null);
+		this.settingsParentComponent.setDefaultManageCrossingSettingsFields();
 	}
 
 }

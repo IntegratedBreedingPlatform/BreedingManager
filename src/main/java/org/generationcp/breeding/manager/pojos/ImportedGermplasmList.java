@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.pojos;
 
 import java.util.ArrayList;
@@ -13,27 +14,30 @@ import org.generationcp.commons.parsing.pojo.ImportedFactor;
 
 public class ImportedGermplasmList extends ImportedDescriptionDetails {
 
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -7039616815348588609L;
 	private List<ImportedGermplasm> importedGermplasms = new ArrayList<>();
 	private boolean hasStockIDValues = false;
 
 	public static final String INVENTORY_AMOUNT_PROPERTY = "INVENTORY AMOUNT";
 
-	public ImportedGermplasmList(String filename, String name, String title, String type,
-			Date date) {
-		super(filename,name,title,type,date);
+	public ImportedGermplasmList(String filename, String name, String title, String type, Date date) {
+		super(filename, name, title, type, date);
 	}
 
 	public void removeImportedFactor(String factorName) {
-		for (ImportedFactor factor : getImportedFactors()) {
+		for (ImportedFactor factor : this.getImportedFactors()) {
 			if (factor.getFactor().equalsIgnoreCase(factorName)) {
-				importedFactors.remove(factor);
+				this.importedFactors.remove(factor);
 				break;
 			}
 		}
 	}
 
 	public boolean isUniqueStockId(String stockId) {
-		for (ImportedGermplasm germplasm : getImportedGermplasms()) {
+		for (ImportedGermplasm germplasm : this.getImportedGermplasms()) {
 			if (stockId.equals(germplasm.getInventoryId())) {
 				// oops we have retrieved an existing stockId in the list
 				return false;
@@ -46,16 +50,15 @@ public class ImportedGermplasmList extends ImportedDescriptionDetails {
 	public List<String> getStockIdsAsList() {
 		List<String> stockIDList = new ArrayList<>();
 
-		for (ImportedGermplasm germplasm : getImportedGermplasms()) {
+		for (ImportedGermplasm germplasm : this.getImportedGermplasms()) {
 			stockIDList.add(germplasm.getInventoryId());
 		}
 
 		return stockIDList;
 	}
 
-
 	public List<ImportedGermplasm> getImportedGermplasms() {
-		return importedGermplasms;
+		return this.importedGermplasms;
 	}
 
 	public void setImportedGermplasms(List<ImportedGermplasm> importedGermplasms) {
@@ -67,14 +70,14 @@ public class ImportedGermplasmList extends ImportedDescriptionDetails {
 	}
 
 	public void normalizeGermplasmList() {
-		if (importedGermplasms != null) {
-			Collections.sort(importedGermplasms, new ImportedGermplasmSorter());
+		if (this.importedGermplasms != null) {
+			Collections.sort(this.importedGermplasms, new ImportedGermplasmSorter());
 		}
 	}
 
 	public boolean isUniqueStockId() {
-		for (String stockId : getStockIdsAsList()) {
-			if (!isUniqueStockId(stockId)) {
+		for (String stockId : this.getStockIdsAsList()) {
+			if (!this.isUniqueStockId(stockId)) {
 				return false;
 			}
 		}
@@ -85,7 +88,7 @@ public class ImportedGermplasmList extends ImportedDescriptionDetails {
 	public String getDuplicateStockIdIfExists() {
 		Set<String> set = new HashSet<>();
 
-		for (String stockId : getStockIdsAsList()) {
+		for (String stockId : this.getStockIdsAsList()) {
 			if (set.contains(stockId)) {
 				return stockId;
 			} else {
@@ -97,15 +100,15 @@ public class ImportedGermplasmList extends ImportedDescriptionDetails {
 	}
 
 	public boolean isHasStockIDValues() {
-		return hasStockIDValues;
+		return this.hasStockIDValues;
 	}
 
 	public void setHasStockIDValues(boolean hasStockIDValues) {
 		this.hasStockIDValues = hasStockIDValues;
 	}
-	
-	public boolean hasMissingStockIDValues(){
-		for (ImportedGermplasm importedGermplasm : getImportedGermplasms()){
+
+	public boolean hasMissingStockIDValues() {
+		for (ImportedGermplasm importedGermplasm : this.getImportedGermplasms()) {
 			if (this.hasStockIDValues && importedGermplasm.getSeedAmount() != 0 && "".equals(importedGermplasm.getInventoryId())) {
 				return true;
 			}

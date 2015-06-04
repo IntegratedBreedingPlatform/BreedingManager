@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
- * 
+ *
  * Generation Challenge Programme (GCP)
- * 
- * 
- * This software is licensed for use under the terms of the GNU General Public
- * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
- * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
- * 
+ *
+ *
+ * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
+ * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
+ *
  *******************************************************************************/
+
 package org.generationcp.breeding.manager.listmanager;
 
 import java.util.ArrayList;
@@ -35,169 +35,172 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
 
-
 /**
  * This class opens a pop-up window for selecting attributes
- * 
+ *
  * @author Mark Agarrado
  */
 
 @Configurable
-public class FillWithAttributeWindow extends BaseSubWindow implements InternationalizableComponent,
-						InitializingBean, BreedingManagerLayout {
+public class FillWithAttributeWindow extends BaseSubWindow implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
 
-    private static final long serialVersionUID = -8850686249688989080L;
-    
-    private SimpleResourceBundleMessageSource messageSource;
-    
-    private Table targetTable;
-    private String gidPropertyId;
-    private String targetPropertyId;
-    private HorizontalLayout attributeLayout;
-    private ComboBox attributeBox;
-    private Button okButton;
-    private List<UserDefinedField> attributeList;
-    private ListTabComponent listDetailsComponent;
-    private org.generationcp.breeding.manager.listmanager.ListBuilderComponent buildListComponent;
-    
-    @Autowired
-    private GermplasmDataManager germplasmDataManager;
-    
-    public FillWithAttributeWindow(Table targetTable, String gidPropertyId, 
-            String targetPropertyId, SimpleResourceBundleMessageSource messageSource) {
-        this.targetTable = targetTable;
-        this.gidPropertyId = gidPropertyId;
-        this.targetPropertyId = targetPropertyId;
-        this.messageSource = messageSource;
-    }
-    
-    public FillWithAttributeWindow(Table targetTable, String gidPropertyId, 
-            String targetPropertyId, SimpleResourceBundleMessageSource messageSource, ListTabComponent listDetailsComponent
-            ,org.generationcp.breeding.manager.listmanager.ListBuilderComponent buildListComponent) {
-        this.targetTable = targetTable;
-        this.gidPropertyId = gidPropertyId;
-        this.targetPropertyId = targetPropertyId;
-        this.messageSource = messageSource;
-        this.listDetailsComponent = listDetailsComponent;
-        this.buildListComponent = buildListComponent;
-    }
-    
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        instantiateComponents();
-        initializeValues();
-        addListeners();
-        layoutComponents();
-    }
-    
+	private static final long serialVersionUID = -8850686249688989080L;
+
+	private final SimpleResourceBundleMessageSource messageSource;
+
+	private final Table targetTable;
+	private final String gidPropertyId;
+	private final String targetPropertyId;
+	private HorizontalLayout attributeLayout;
+	private ComboBox attributeBox;
+	private Button okButton;
+	private List<UserDefinedField> attributeList;
+	private ListTabComponent listDetailsComponent;
+	private org.generationcp.breeding.manager.listmanager.ListBuilderComponent buildListComponent;
+
+	@Autowired
+	private GermplasmDataManager germplasmDataManager;
+
+	public FillWithAttributeWindow(Table targetTable, String gidPropertyId, String targetPropertyId,
+			SimpleResourceBundleMessageSource messageSource) {
+		this.targetTable = targetTable;
+		this.gidPropertyId = gidPropertyId;
+		this.targetPropertyId = targetPropertyId;
+		this.messageSource = messageSource;
+	}
+
+	public FillWithAttributeWindow(Table targetTable, String gidPropertyId, String targetPropertyId,
+			SimpleResourceBundleMessageSource messageSource, ListTabComponent listDetailsComponent,
+			org.generationcp.breeding.manager.listmanager.ListBuilderComponent buildListComponent) {
+		this.targetTable = targetTable;
+		this.gidPropertyId = gidPropertyId;
+		this.targetPropertyId = targetPropertyId;
+		this.messageSource = messageSource;
+		this.listDetailsComponent = listDetailsComponent;
+		this.buildListComponent = buildListComponent;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
+	}
+
 	@Override
 	public void instantiateComponents() {
-        attributeBox = new ComboBox();
-        attributeBox.setNullSelectionAllowed(false);
-        okButton = new Button();
+		this.attributeBox = new ComboBox();
+		this.attributeBox.setNullSelectionAllowed(false);
+		this.okButton = new Button();
 	}
 
 	@Override
 	public void initializeValues() {
 		try {
-            List<Integer> gids = getGidsFromTable(targetTable);
-            attributeList = germplasmDataManager.getAttributeTypesByGIDList(gids);
-            
-            for (UserDefinedField attribute : attributeList) {
-                attributeBox.addItem(attribute.getFldno());
-                attributeBox.setItemCaption(attribute.getFldno(), attribute.getFname());
-            }
-        } catch (MiddlewareQueryException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+			List<Integer> gids = this.getGidsFromTable(this.targetTable);
+			this.attributeList = this.germplasmDataManager.getAttributeTypesByGIDList(gids);
+
+			for (UserDefinedField attribute : this.attributeList) {
+				this.attributeBox.addItem(attribute.getFldno());
+				this.attributeBox.setItemCaption(attribute.getFldno(), attribute.getFname());
+			}
+		} catch (MiddlewareQueryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void addListeners() {
-        okButton.addListener(new ClickListener() {
-            private static final long serialVersionUID = -7472646361265849940L;
-            @Override
-            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-                fillWithAttribute((Integer) attributeBox.getValue());
-                // close pop-up
-                Window attributeWindow = ((Button) event.getSource()).getWindow();
-                attributeWindow.getParent().removeWindow(attributeWindow);
-            }
-        });
+		this.okButton.addListener(new ClickListener() {
+
+			private static final long serialVersionUID = -7472646361265849940L;
+
+			@Override
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				FillWithAttributeWindow.this.fillWithAttribute((Integer) FillWithAttributeWindow.this.attributeBox.getValue());
+				// close pop-up
+				Window attributeWindow = ((Button) event.getSource()).getWindow();
+				attributeWindow.getParent().removeWindow(attributeWindow);
+			}
+		});
 	}
 
 	@Override
 	public void layoutComponents() {
-		attributeBox.setWidth("300px");
-        
-        attributeLayout = new HorizontalLayout();
-        attributeLayout.setMargin(true);
-        attributeLayout.setSpacing(true);
-        
-        attributeLayout.addComponent(attributeBox);
-        attributeLayout.addComponent(okButton);
-        
-        //set window properties
-        setContent(attributeLayout);
-        setWidth("400px");
-        setHeight("30px");
-        center();
-        setResizable(false);
-        setModal(true);
-	}
-    
-    private void fillWithAttribute(Integer attributeType){
-        if (attributeType!=null) {
-            try {
-                List<Integer> gids = getGidsFromTable(targetTable);
-                Map<Integer, String> gidAttributeMap = germplasmDataManager.getAttributeValuesByTypeAndGIDList(attributeType, gids);
-                
-                List<Integer> itemIds = getItemIds(targetTable);
-                for(Integer itemId: itemIds){
-                    Integer gid = Integer.valueOf(((Button) targetTable.getItem(itemId).getItemProperty(gidPropertyId).getValue()).getCaption().toString());
-                    targetTable.getItem(itemId).getItemProperty(targetPropertyId).setValue(gidAttributeMap.get(gid));
-                }
-            } catch (MiddlewareQueryException e) {
-                e.printStackTrace();
-            }
-        }
+		this.attributeBox.setWidth("300px");
 
-        //mark flag that changes have been made in listDataTable
-        if(listDetailsComponent != null){
-        	listDetailsComponent.getListComponent().setHasUnsavedChanges(true);
-        }
-        
-        if(buildListComponent != null){
-        	buildListComponent.setHasUnsavedChanges(true);
-        }
-     }
-    
-    private List<Integer> getGidsFromTable(Table table){
-        List<Integer> gids = new ArrayList<Integer>();
-        List<Integer> listDataItemIds = getItemIds(table);
-        for(Integer itemId: listDataItemIds){
-            gids.add(Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(gidPropertyId).getValue()).getCaption().toString()));
-        }
-        return gids;
-    }
-   
-    @SuppressWarnings("unchecked")
-    private List<Integer> getItemIds(Table table){
-        List<Integer> itemIds = new ArrayList<Integer>();
-        itemIds.addAll((Collection<? extends Integer>) table.getItemIds());
-        return itemIds;
-    }
-    
-    @Override
-    public void attach() {      
-        super.attach();
-        updateLabels();
-    }
-    
-    @Override
-    public void updateLabels() {
-        messageSource.setCaption(this, Message.FILL_WITH_ATTRIBUTE_WINDOW);
-        messageSource.setCaption(okButton, Message.OK);
-    }
+		this.attributeLayout = new HorizontalLayout();
+		this.attributeLayout.setMargin(true);
+		this.attributeLayout.setSpacing(true);
+
+		this.attributeLayout.addComponent(this.attributeBox);
+		this.attributeLayout.addComponent(this.okButton);
+
+		// set window properties
+		this.setContent(this.attributeLayout);
+		this.setWidth("400px");
+		this.setHeight("30px");
+		this.center();
+		this.setResizable(false);
+		this.setModal(true);
+	}
+
+	private void fillWithAttribute(Integer attributeType) {
+		if (attributeType != null) {
+			try {
+				List<Integer> gids = this.getGidsFromTable(this.targetTable);
+				Map<Integer, String> gidAttributeMap = this.germplasmDataManager.getAttributeValuesByTypeAndGIDList(attributeType, gids);
+
+				List<Integer> itemIds = this.getItemIds(this.targetTable);
+				for (Integer itemId : itemIds) {
+					Integer gid =
+							Integer.valueOf(((Button) this.targetTable.getItem(itemId).getItemProperty(this.gidPropertyId).getValue())
+									.getCaption().toString());
+					this.targetTable.getItem(itemId).getItemProperty(this.targetPropertyId).setValue(gidAttributeMap.get(gid));
+				}
+			} catch (MiddlewareQueryException e) {
+				e.printStackTrace();
+			}
+		}
+
+		// mark flag that changes have been made in listDataTable
+		if (this.listDetailsComponent != null) {
+			this.listDetailsComponent.getListComponent().setHasUnsavedChanges(true);
+		}
+
+		if (this.buildListComponent != null) {
+			this.buildListComponent.setHasUnsavedChanges(true);
+		}
+	}
+
+	private List<Integer> getGidsFromTable(Table table) {
+		List<Integer> gids = new ArrayList<Integer>();
+		List<Integer> listDataItemIds = this.getItemIds(table);
+		for (Integer itemId : listDataItemIds) {
+			gids.add(Integer.valueOf(((Button) table.getItem(itemId).getItemProperty(this.gidPropertyId).getValue()).getCaption()
+					.toString()));
+		}
+		return gids;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<Integer> getItemIds(Table table) {
+		List<Integer> itemIds = new ArrayList<Integer>();
+		itemIds.addAll((Collection<? extends Integer>) table.getItemIds());
+		return itemIds;
+	}
+
+	@Override
+	public void attach() {
+		super.attach();
+		this.updateLabels();
+	}
+
+	@Override
+	public void updateLabels() {
+		this.messageSource.setCaption(this, Message.FILL_WITH_ATTRIBUTE_WINDOW);
+		this.messageSource.setCaption(this.okButton, Message.OK);
+	}
 }

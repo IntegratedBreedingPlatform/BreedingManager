@@ -1,10 +1,5 @@
-package org.generationcp.breeding.manager.listmanager.dialog;
 
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
+package org.generationcp.breeding.manager.listmanager.dialog;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -30,64 +25,62 @@ public class AddEntryDialogTest {
 	private AddEntryDialog addEntryDialog;
 	private Window parentWindow;
 	private BreedingManagerService breedingManagerService;
-	
+
 	@Before
-	public void setUp() throws Exception{
-		dialogSource = mock(AddEntryDialogSource.class);
-		parentWindow = new Window();
-		addEntryDialog = new AddEntryDialog(dialogSource, parentWindow);
-		breedingManagerService = Mockito.mock(BreedingManagerService.class);
-		
+	public void setUp() throws Exception {
+		this.dialogSource = Mockito.mock(AddEntryDialogSource.class);
+		this.parentWindow = new Window();
+		this.addEntryDialog = new AddEntryDialog(this.dialogSource, this.parentWindow);
+		this.breedingManagerService = Mockito.mock(BreedingManagerService.class);
+
 		Project testProject = new Project();
 		testProject.setUniqueID(UUID.randomUUID().toString());
-		
-		Mockito.when(breedingManagerService.getCurrentProject()).thenReturn(testProject);
-		addEntryDialog.setBreedingManagerService(breedingManagerService);
+
+		Mockito.when(this.breedingManagerService.getCurrentProject()).thenReturn(testProject);
+		this.addEntryDialog.setBreedingManagerService(this.breedingManagerService);
 	}
-	
-	
+
 	@Test
-	public void testValidateListenerCount() throws Exception{
-		AddEntryDialog dialog = spy(addEntryDialog);
-		dialog.setMessageSource(mock(SimpleResourceBundleMessageSource.class));
-		
-		doNothing().when(dialog).initializeTopPart();
-		doNothing().when(dialog).initializeBottomPart();
-		doNothing().when(dialog).initializeValues();
-		doNothing().when(dialog).addSearchResultsListeners();
-		doNothing().when(dialog).addListenerToOptionGroup();
-		doNothing().when(dialog).layoutComponents();
-		
+	public void testValidateListenerCount() throws Exception {
+		AddEntryDialog dialog = Mockito.spy(this.addEntryDialog);
+		dialog.setMessageSource(Mockito.mock(SimpleResourceBundleMessageSource.class));
+
+		Mockito.doNothing().when(dialog).initializeTopPart();
+		Mockito.doNothing().when(dialog).initializeBottomPart();
+		Mockito.doNothing().when(dialog).initializeValues();
+		Mockito.doNothing().when(dialog).addSearchResultsListeners();
+		Mockito.doNothing().when(dialog).addListenerToOptionGroup();
+		Mockito.doNothing().when(dialog).layoutComponents();
+
 		dialog.afterPropertiesSet();
-		
+
 		Collection<?> listeners = dialog.getDoneButton().getListeners(Button.ClickEvent.class);
 		Assert.assertTrue("Done button has only 1 listener", listeners.size() == 1);
-		
+
 		listeners = dialog.getCancelButton().getListeners(Button.ClickEvent.class);
 		Assert.assertTrue("Cancel button has only 1 listener", listeners.size() == 1);
-		
-		
+
 	}
 
 	@Test
 	public void testAddEntryOption1() {
-		AddEntryDialog dialog = spy(addEntryDialog);
+		AddEntryDialog dialog = Mockito.spy(this.addEntryDialog);
 		OptionGroup optionGroup = new OptionGroup();
 		optionGroup.addItem(AddEntryDialog.OPTION_1_ID);
 		optionGroup.select(AddEntryDialog.OPTION_1_ID);
 		dialog.setOptionGroup(optionGroup);
-		
+
 		List<Integer> selectedGids = Collections.singletonList(1);
 		dialog.setSelectedGids(selectedGids);
-		
-		ClickEvent event = mock(ClickEvent.class);
-		Button mockButton = mock(Button.class);
-		Window window = mock(Window.class);
-		doReturn(mockButton).when(event).getButton();
-		doReturn(window).when(mockButton).getWindow();
-		doReturn(parentWindow).when(window).getParent();
-		
+
+		ClickEvent event = Mockito.mock(ClickEvent.class);
+		Button mockButton = Mockito.mock(Button.class);
+		Window window = Mockito.mock(Window.class);
+		Mockito.doReturn(mockButton).when(event).getButton();
+		Mockito.doReturn(window).when(mockButton).getWindow();
+		Mockito.doReturn(this.parentWindow).when(window).getParent();
+
 		dialog.nextButtonClickAction(event);
-		verify(dialogSource).finishAddingEntry(selectedGids);
+		Mockito.verify(this.dialogSource).finishAddingEntry(selectedGids);
 	}
 }

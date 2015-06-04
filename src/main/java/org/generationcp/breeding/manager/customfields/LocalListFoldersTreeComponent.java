@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.customfields;
 
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
@@ -12,13 +13,12 @@ import org.springframework.beans.factory.annotation.Configurable;
 public class LocalListFoldersTreeComponent extends ListTreeComponent {
 
 	private static final long serialVersionUID = -3038021741795321888L;
-	private Boolean showFoldersOnly;
+	private final Boolean showFoldersOnly;
 	private Boolean refreshTreeOnAddEditOrDeleteAction;
-	
-    @Autowired
-    protected SimpleResourceBundleMessageSource messageSource;
 
-	
+	@Autowired
+	protected SimpleResourceBundleMessageSource messageSource;
+
 	public LocalListFoldersTreeComponent(Integer folderId) {
 		super(folderId);
 		this.showFoldersOnly = true;
@@ -29,28 +29,29 @@ public class LocalListFoldersTreeComponent extends ListTreeComponent {
 		this.showFoldersOnly = showFoldersOnly;
 	}
 
-	public LocalListFoldersTreeComponent(SelectTreeItemOnSaveListener selectTreeItemOnSaveListener, Integer folderId, Boolean showFoldersOnly) {
+	public LocalListFoldersTreeComponent(SelectTreeItemOnSaveListener selectTreeItemOnSaveListener, Integer folderId,
+			Boolean showFoldersOnly) {
 		super(selectTreeItemOnSaveListener, folderId);
 		this.showFoldersOnly = showFoldersOnly;
-		refreshTreeOnAddEditOrDeleteAction = false;
+		this.refreshTreeOnAddEditOrDeleteAction = false;
 	}
 
-	public LocalListFoldersTreeComponent(SelectTreeItemOnSaveListener selectTreeItemOnSaveListener, Integer folderId, Boolean showFoldersOnly, Boolean refreshTreeOnAddEditOrDeleteAction) {
+	public LocalListFoldersTreeComponent(SelectTreeItemOnSaveListener selectTreeItemOnSaveListener, Integer folderId,
+			Boolean showFoldersOnly, Boolean refreshTreeOnAddEditOrDeleteAction) {
 		super(selectTreeItemOnSaveListener, folderId);
 		this.showFoldersOnly = showFoldersOnly;
 		this.refreshTreeOnAddEditOrDeleteAction = refreshTreeOnAddEditOrDeleteAction;
 	}
-	
+
 	@Override
 	public void instantiateComponents() {
 		super.instantiateComponents();
-		
-		if (folderTextField != null){
-			folderTextField.setWidth("140px");
+
+		if (this.folderTextField != null) {
+			this.folderTextField.setWidth("140px");
 		}
 	}
-	
-	
+
 	@Override
 	protected boolean doIncludeActionsButtons() {
 		return true;
@@ -58,9 +59,9 @@ public class LocalListFoldersTreeComponent extends ListTreeComponent {
 
 	@Override
 	protected String getTreeHeading() {
-		return messageSource.getMessage(Message.LIST_LOCATION);
+		return this.messageSource.getMessage(Message.LIST_LOCATION);
 	}
-	
+
 	@Override
 	protected String getTreeHeadingStyleName() {
 		return Bootstrap.Typography.H4.styleName();
@@ -78,33 +79,33 @@ public class LocalListFoldersTreeComponent extends ListTreeComponent {
 
 	@Override
 	protected boolean doShowFoldersOnly() {
-		return showFoldersOnly;
+		return this.showFoldersOnly;
 	}
-	
+
 	@Override
 	public boolean usedInSubWindow() {
 		return true;
 	}
-	
+
 	@Override
 	public boolean doIncludeTreeHeadingIcon() {
 		return false;
 	}
-	
+
 	@Override
 	public String getTreeStyleName() {
 		return "saveListTree";
 	}
-	
-	@Override
-	public void refreshRemoteTree(){
 
-		if(!refreshTreeOnAddEditOrDeleteAction) {
-            return;
-        }
-		
-		BreedingManagerApplication breedingManagerApplication = (BreedingManagerApplication) getApplication();
-		if(breedingManagerApplication!=null){
+	@Override
+	public void refreshRemoteTree() {
+
+		if (!this.refreshTreeOnAddEditOrDeleteAction) {
+			return;
+		}
+
+		BreedingManagerApplication breedingManagerApplication = (BreedingManagerApplication) this.getApplication();
+		if (breedingManagerApplication != null) {
 			breedingManagerApplication.refreshListManagerTree();
 			breedingManagerApplication.refreshCrossingManagerTree();
 		}

@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.customcomponent.listinventory;
 
 /**
@@ -5,9 +6,9 @@ package org.generationcp.breeding.manager.customcomponent.listinventory;
  * */
 
 public class CrossingManagerInventoryTable extends ListInventoryTable {
-	
+
 	private static final long serialVersionUID = 1501680757819615221L;
-	
+
 	public CrossingManagerInventoryTable(Integer listId) {
 		super(listId);
 	}
