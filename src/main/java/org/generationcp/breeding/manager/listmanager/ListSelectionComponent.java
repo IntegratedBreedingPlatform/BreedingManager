@@ -1,8 +1,12 @@
 package org.generationcp.breeding.manager.listmanager;
 
+import com.vaadin.ui.*;
+import com.vaadin.ui.themes.Reindeer;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
+import org.generationcp.commons.constant.ListTreeState;
+import org.generationcp.commons.vaadin.util.SaveTreeStateListener;
 import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
 import org.generationcp.breeding.manager.listimport.GermplasmImportPopupSource;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -16,13 +20,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class ListSelectionComponent extends VerticalLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout, ListTreeActionsListener, GermplasmImportPopupSource {
@@ -39,6 +36,7 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 	private ListSelectionLayout listSelectionLayout;
 	private ListManagerTreeComponent listTreeComponent;
 	private ListSearchComponent listSearchComponent;
+	private SaveTreeStateListener treeStateSaver;
 	
 	private final Integer selectedListId;
 	
@@ -143,7 +141,11 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 
 	public void openListBrowseDialog() {
 		listTreeComponent.showAddRenameFolderSection(false);
-		launchListSelectionWindow(getWindow(), listTreeComponent, messageSource.getMessage(Message.BROWSE_FOR_LISTS));
+		treeStateSaver = new SaveTreeStateListener((TreeTable) listTreeComponent.getGermplasmListSource(), ListTreeState.GERMPLASM_LIST.name());
+		launchListSelectionWindow(getWindow(), listTreeComponent, messageSource.getMessage(Message.BROWSE_FOR_LISTS)).addListener(treeStateSaver);
+
+		listTreeComponent.reinitializeTree();
+
 	}
 
 	public void openListSearchDialog() {
