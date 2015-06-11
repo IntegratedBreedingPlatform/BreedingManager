@@ -301,9 +301,12 @@ public abstract class ListSelectorComponent extends CssLayout implements
             Collection<String> parsedState = programStateManager.
                     getUserProgramTreeStateByUserIdProgramUuidAndType(util.getCurrentWorkbenchUserId(), util.getCurrentProgramUUID(), ListTreeState.GERMPLASM_LIST.name());
 
-            if (parsedState.size() > 0) {
-                getGermplasmListSource().expandItem(LISTS);
+            if (parsedState.isEmpty()) {
+                getGermplasmListSource().collapseItem(LISTS);
+                return;
             }
+
+            getGermplasmListSource().expandItem(LISTS);
 
             for (String s : parsedState) {
                 String trimmed = s.trim();
@@ -315,7 +318,7 @@ public abstract class ListSelectorComponent extends CssLayout implements
                 getGermplasmListSource().expandItem(itemId);
             }
         } catch (MiddlewareQueryException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         }
     }
 
