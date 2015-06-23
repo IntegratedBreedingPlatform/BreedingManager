@@ -1,9 +1,7 @@
 package org.generationcp.breeding.manager.customfields;
 
-import com.vaadin.data.Item;
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.event.ShortcutListener;
-import com.vaadin.ui.*;
+import java.util.*;
+
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -36,7 +34,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import java.util.*;
+import com.vaadin.data.Item;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.event.ShortcutListener;
+import com.vaadin.ui.*;
 
 @Configurable
 public abstract class ListSelectorComponent extends CssLayout implements
@@ -706,6 +707,7 @@ public abstract class ListSelectorComponent extends CssLayout implements
     public void refreshComponent(){
         this.listId = null;
         createTree();
+        reinitializeTree();
     }
     public void instantiateListComponent(){
         setGermplasmListSource(new GermplasmListTree());
