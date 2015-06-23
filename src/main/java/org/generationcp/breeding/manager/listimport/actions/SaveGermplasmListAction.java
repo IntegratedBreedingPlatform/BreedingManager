@@ -22,6 +22,7 @@ import org.generationcp.middleware.domain.dms.StandardVariable;
 import org.generationcp.middleware.domain.oms.CvId;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
+import org.generationcp.middleware.exceptions.MiddlewareException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -111,7 +112,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	 */
 	public Integer saveRecords(GermplasmList germplasmList, List<GermplasmName> germplasmNameObjects, List<Name> newNames, String filename,
 			List<Integer> doNotCreateGermplasmsWithId, ImportedGermplasmList importedGermplasmList, Integer seedStorageLocation)
-					throws MiddlewareQueryException {
+					throws MiddlewareException {
 
 		germplasmList.setUserId(this.contextUtil.getCurrentUserLocalId());
 
@@ -207,7 +208,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		}
 	}
 
-	protected void processVariates(ImportedGermplasmList importedGermplasmList) throws MiddlewareQueryException {
+	protected void processVariates(ImportedGermplasmList importedGermplasmList) throws MiddlewareException {
 		List<UserDefinedField> existingUdflds = this.getUserDefinedFields(SaveGermplasmListAction.FCODE_TYPE_ATTRIBUTE);
 		List<UserDefinedField> newUdflds = new ArrayList<UserDefinedField>();
 		Map<String, String> attributeVariates = importedGermplasmList.getImportedGermplasms().get(0).getAttributeVariates();
@@ -281,12 +282,13 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		return newUdfld;
 	}
 
-	protected void processSeedStockVariate(ImportedVariate importedVariate) throws MiddlewareQueryException {
+	protected void processSeedStockVariate(ImportedVariate importedVariate) throws MiddlewareException {
 		String trait = importedVariate.getProperty().toUpperCase();
 		String scale = importedVariate.getScale().toUpperCase();
 		String method = importedVariate.getMethod().toUpperCase();
 
-		StandardVariable stdVariable = this.ontologyDataManager.findStandardVariableByTraitScaleMethodNames(trait, scale, method);
+		StandardVariable stdVariable = this.ontologyDataManager.findStandardVariableByTraitScaleMethodNames(
+				trait, scale, method, contextUtil.getCurrentProgramUUID());
 		// create new variate if PSMR doesn't exist
 		if (stdVariable == null || stdVariable.getStoredIn().getId() != TermId.OBSERVATION_VARIATE.getId()) {
 
@@ -322,7 +324,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 			stdVariable.setName(importedVariate.getVariate());
 			stdVariable.setDescription(importedVariate.getDescription());
 
-			this.ontologyDataManager.addStandardVariable(stdVariable);
+			this.ontologyDataManager.addStandardVariable(stdVariable,contextUtil.getCurrentProgramUUID());
 		}
 
 		if (stdVariable.getId() != 0) {

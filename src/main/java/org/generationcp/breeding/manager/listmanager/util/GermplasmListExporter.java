@@ -22,6 +22,7 @@ import org.generationcp.commons.service.impl.ExportServiceImpl;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.dms.StandardVariable;
+import org.generationcp.middleware.exceptions.MiddlewareException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
@@ -327,12 +328,13 @@ public class GermplasmListExporter {
 	private void addStandardVariable(Map<Integer, StandardVariable> columnStandardVariableMap, ColumnLabels columnLabel) {
 
 		try {
-			StandardVariable standardVar = this.ontologyDataManager.getStandardVariable(columnLabel.getTermId().getId());
+			StandardVariable standardVar = this.ontologyDataManager.getStandardVariable(
+					columnLabel.getTermId().getId(),contextUtil.getCurrentProgramUUID());
 			if (standardVar != null) {
 				columnStandardVariableMap.put(standardVar.getId(), standardVar);
 			}
 
-		} catch (MiddlewareQueryException e) {
+		} catch (MiddlewareException e) {
 			GermplasmListExporter.LOG.error(e.getMessage(), e);
 		}
 	}

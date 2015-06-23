@@ -90,6 +90,8 @@ public class GermplasmListExporterTest {
 	private static List<GermplasmListData> listEntries;
 
 	private static final int PLATE_SIZE = 98;
+	
+	private String programUUID = contextUtil.getCurrentProgramUUID();
 
 	@BeforeClass
 	public static void setUpClass() {
@@ -550,23 +552,24 @@ public class GermplasmListExporterTest {
 	}
 
 	private void configureTermNamesFromOntology() {
+		
 		try {
 			Mockito.doReturn(this.generateStandardVariable(ColumnLabels.ENTRY_ID)).when(this.ontologyDataManager)
-					.getStandardVariable(ColumnLabels.ENTRY_ID.getTermId().getId());
+					.getStandardVariable(ColumnLabels.ENTRY_ID.getTermId().getId(),programUUID);
 			Mockito.doReturn(this.generateStandardVariable(ColumnLabels.GID)).when(this.ontologyDataManager)
-					.getStandardVariable(ColumnLabels.GID.getTermId().getId());
+					.getStandardVariable(ColumnLabels.GID.getTermId().getId(),programUUID);
 			Mockito.doReturn(this.generateStandardVariable(ColumnLabels.PARENTAGE)).when(this.ontologyDataManager)
-					.getStandardVariable(ColumnLabels.PARENTAGE.getTermId().getId());
+					.getStandardVariable(ColumnLabels.PARENTAGE.getTermId().getId(),programUUID);
 			Mockito.doReturn(this.generateStandardVariable(ColumnLabels.ENTRY_CODE)).when(this.ontologyDataManager)
-					.getStandardVariable(ColumnLabels.ENTRY_CODE.getTermId().getId());
+					.getStandardVariable(ColumnLabels.ENTRY_CODE.getTermId().getId(),programUUID);
 			Mockito.doReturn(this.generateStandardVariable(ColumnLabels.SEED_SOURCE)).when(this.ontologyDataManager)
-					.getStandardVariable(ColumnLabels.SEED_SOURCE.getTermId().getId());
+					.getStandardVariable(ColumnLabels.SEED_SOURCE.getTermId().getId(),programUUID);
 			Mockito.doReturn(this.generateStandardVariable(ColumnLabels.DESIGNATION)).when(this.ontologyDataManager)
-					.getStandardVariable(ColumnLabels.DESIGNATION.getTermId().getId());
+					.getStandardVariable(ColumnLabels.DESIGNATION.getTermId().getId(),programUUID);
 			Mockito.doReturn(this.generateStandardVariable(ColumnLabels.AVAILABLE_INVENTORY)).when(this.ontologyDataManager)
-					.getStandardVariable(ColumnLabels.AVAILABLE_INVENTORY.getTermId().getId());
+					.getStandardVariable(ColumnLabels.AVAILABLE_INVENTORY.getTermId().getId(),programUUID);
 			Mockito.doReturn(this.generateStandardVariable(ColumnLabels.SEED_RESERVATION)).when(this.ontologyDataManager)
-					.getStandardVariable(ColumnLabels.SEED_RESERVATION.getTermId().getId());
+					.getStandardVariable(ColumnLabels.SEED_RESERVATION.getTermId().getId(),programUUID);
 		} catch (Exception e) {
 
 		}
@@ -575,14 +578,22 @@ public class GermplasmListExporterTest {
 
 	private void configureTermNamesFromDefault() {
 		try {
-			Mockito.doReturn(null).when(this.ontologyDataManager).getStandardVariable(ColumnLabels.ENTRY_ID.getTermId().getId());
-			Mockito.doReturn(null).when(this.ontologyDataManager).getStandardVariable(ColumnLabels.GID.getTermId().getId());
-			Mockito.doReturn(null).when(this.ontologyDataManager).getStandardVariable(ColumnLabels.PARENTAGE.getTermId().getId());
-			Mockito.doReturn(null).when(this.ontologyDataManager).getStandardVariable(ColumnLabels.ENTRY_CODE.getTermId().getId());
-			Mockito.doReturn(null).when(this.ontologyDataManager).getStandardVariable(ColumnLabels.SEED_SOURCE.getTermId().getId());
-			Mockito.doReturn(null).when(this.ontologyDataManager).getStandardVariable(ColumnLabels.DESIGNATION.getTermId().getId());
-			Mockito.doReturn(null).when(this.ontologyDataManager).getStandardVariable(ColumnLabels.AVAILABLE_INVENTORY.getTermId().getId());
-			Mockito.doReturn(null).when(this.ontologyDataManager).getStandardVariable(ColumnLabels.SEED_RESERVATION.getTermId().getId());
+			Mockito.doReturn(null).when(this.ontologyDataManager).getStandardVariable(
+					ColumnLabels.ENTRY_ID.getTermId().getId(),programUUID);
+			Mockito.doReturn(null).when(this.ontologyDataManager).getStandardVariable(
+					ColumnLabels.GID.getTermId().getId(),programUUID);
+			Mockito.doReturn(null).when(this.ontologyDataManager).getStandardVariable(
+					ColumnLabels.PARENTAGE.getTermId().getId(),programUUID);
+			Mockito.doReturn(null).when(this.ontologyDataManager).getStandardVariable(
+					ColumnLabels.ENTRY_CODE.getTermId().getId(),programUUID);
+			Mockito.doReturn(null).when(this.ontologyDataManager).getStandardVariable(
+					ColumnLabels.SEED_SOURCE.getTermId().getId(),programUUID);
+			Mockito.doReturn(null).when(this.ontologyDataManager).getStandardVariable(
+					ColumnLabels.DESIGNATION.getTermId().getId(),programUUID);
+			Mockito.doReturn(null).when(this.ontologyDataManager).getStandardVariable(
+					ColumnLabels.AVAILABLE_INVENTORY.getTermId().getId(),programUUID);
+			Mockito.doReturn(null).when(this.ontologyDataManager).getStandardVariable(
+					ColumnLabels.SEED_RESERVATION.getTermId().getId(),programUUID);
 		} catch (Exception e) {
 
 		}
