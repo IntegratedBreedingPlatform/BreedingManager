@@ -97,7 +97,7 @@ public class GidLinkClickListener implements Button.ClickListener, ItemClickList
 
 		Tool tool = null;
 		try {
-			tool = this.workbenchDataManager.getToolWithName(ToolName.germplasm_browser.toString());
+			tool = this.workbenchDataManager.getToolWithName(ToolName.GERMPLASM_BROWSER.toString());
 		} catch (MiddlewareQueryException qe) {
 			GidLinkClickListener.LOG.error("QueryException", qe);
 		}
