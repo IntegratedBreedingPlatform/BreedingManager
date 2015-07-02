@@ -72,7 +72,14 @@ public class GermplasmListUploader implements FileFactory {
 	}
 
 	public String hasWarnings() {
-		return this.germplasmListParser.getNoInventoryWarning();
+	    StringBuilder mySB = new StringBuilder();
+	    mySB.append(this.germplasmListParser.getNoInventoryWarning());
+	    if (!this.germplasmListParser.getNoVariatesWarning().equals("") ) {
+	        // Add a blank line to separate warnings   
+	        if (!mySB.toString().equals("")) mySB.append("\n\n");
+	         mySB.append(this.germplasmListParser.getNoVariatesWarning());            
+	    }		    
+	    return mySB.toString();
 	}
 
 	public ImportedGermplasmList getImportedGermplasmList() {

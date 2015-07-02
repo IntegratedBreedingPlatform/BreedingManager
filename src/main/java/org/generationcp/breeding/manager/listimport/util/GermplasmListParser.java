@@ -65,6 +65,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	private Map<FactorTypes, String> specialFactors;
 
 	private String noInventoryWarning = "";
+	private String noVariatesWarning = "";
 	private boolean importFileIsAdvanced = false;
 	private String seedAmountVariate = "";
 	private Set<String> nameFactors;
@@ -74,6 +75,10 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		return this.noInventoryWarning;
 	}
 
+	public String getNoVariatesWarning() {
+	    return this.noVariatesWarning;
+	}
+	
 	public void setOriginalFilename(String originalFilename) {
 		this.originalFilename = originalFilename;
 	}
@@ -217,10 +222,16 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		List<ImportedVariate> variateList =
 				variateDetailsConverter.convertWorkbookRowsToObject(new WorkbookRowConverter.ContinueTillBlank());
 
+		// If a VARIATE header exists without accompanying data, show a warning after the import
+		// This alerts the user to a case of multiple VARIATE headers, where the first does not
+		// have data.  User has requested a warning message.
+		if (variateList.size() < 1) {
+		    this.noVariatesWarning = "VARIATE header present with no data";
+		}
 		this.attributeVariates = variateDetailsConverter.getAttributeVariates();
 
-		// if theres a stock id factor but no inventory column variate, we have to ignore the stock ids and treet it as a normal germplasm
-		// import
+		// if there's a stock id factor but no inventory column variate, we have to ignore the stock ids and treat it as a normal germplasm
+		// import                                                            
 		// lets show a warning message after the import
 		this.seedAmountVariate = variateDetailsConverter.getSeedAmountVariate();
 
