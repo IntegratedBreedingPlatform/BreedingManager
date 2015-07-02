@@ -276,9 +276,6 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
 		this.plantFinderContent.setCaption("100%");
 
-		this.plantFinderContent.removeAllComponents();
-		this.plantFinderContent.addComponent(this.plantSelectionComponent);
-
 		this.listSelectionComponent.setVisible(false);
 		this.plantSelectionComponent.setVisible(true);
 		this.plantSelectionComponent.getSearchBarComponent().focusOnSearchField();
@@ -289,9 +286,6 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	protected void showListSelection() {
 
 		this.plantFinderContent.setCaption("100%");
-
-		this.plantFinderContent.removeAllComponents();
-		this.plantFinderContent.addComponent(this.listSelectionComponent);
 
 		this.listSelectionComponent.setVisible(true);
 		this.plantSelectionComponent.setVisible(false);
