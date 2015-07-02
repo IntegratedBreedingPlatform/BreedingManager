@@ -1,38 +1,33 @@
 
 package org.generationcp.breeding.manager.customfields;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
-import org.generationcp.breeding.manager.customcomponent.GermplasmListSource;
-import org.generationcp.breeding.manager.customcomponent.GermplasmListTree;
-import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
-import org.generationcp.breeding.manager.customcomponent.IconButton;
-import org.generationcp.breeding.manager.customcomponent.ToggleButton;
+import org.generationcp.breeding.manager.customcomponent.*;
 import org.generationcp.breeding.manager.customcomponent.generator.GermplasmListSourceItemDescriptionGenerator;
 import org.generationcp.breeding.manager.customcomponent.generator.GermplasmListSourceItemStyleGenerator;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItemClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListTreeCollapseListener;
-import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListTreeExpandListener;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.breeding.manager.validator.ListNameValidator;
+import org.generationcp.commons.constant.ListTreeState;
 import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
+import org.generationcp.middleware.manager.api.UserProgramStateDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,18 +38,10 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.data.Item;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.Tree;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 
 @Configurable
-public abstract class ListSelectorComponent extends CssLayout implements InitializingBean, BreedingManagerLayout {
+public abstract class ListSelectorComponent extends CssLayout implements InitializingBean, BreedingManagerLayout, Tree.ExpandListener {
 
 	private static final long serialVersionUID = 6042782367848192853L;
 
@@ -74,6 +61,12 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	protected GermplasmListManager germplasmListManager;
 	@Autowired
 	private UserDataManager userDataManager;
+
+	@Autowired
+	private ContextUtil util;
+
+	@Autowired
+	private UserProgramStateDataManager programStateManager;
 
 	@Autowired
 	protected SimpleResourceBundleMessageSource messageSource;
@@ -134,7 +127,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	public abstract void instantiateGermplasmListSourceComponent();
 
 	public GermplasmListSource getGermplasmListSource() {
-		return this.germplasmListSource;
+		return germplasmListSource;
 	}
 
 	public void setGermplasmListSource(GermplasmListSource newGermplasmListSource) {
@@ -142,7 +135,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	}
 
 	protected boolean doSaveNewFolder() {
-		return FolderSaveMode.ADD.equals(this.folderSaveMode);
+		return FolderSaveMode.ADD.equals(folderSaveMode);
 	}
 
 	public boolean usedInSubWindow() {
@@ -158,145 +151,145 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	}
 
 	public void initializeRefreshButton() {
-		this.refreshButton = new Button();
-		this.refreshButton.setData(ListSelectorComponent.REFRESH_BUTTON_ID);
-		this.refreshButton.setCaption(this.messageSource.getMessage(Message.REFRESH_LABEL));
-		this.refreshButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
+		refreshButton = new Button();
+		refreshButton.setData(REFRESH_BUTTON_ID);
+		refreshButton.setCaption(messageSource.getMessage(Message.REFRESH_LABEL));
+		refreshButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 	}
 
 	protected void initializeButtonPanel() {
-		this.renameFolderBtn =
+		renameFolderBtn =
 				new IconButton("<span class='bms-edit' style='left: 2px; color: #0083c0;font-size: 18px; font-weight: bold;'></span>",
 						"Rename Item");
-		this.renameFolderBtn.setEnabled(false);
+		renameFolderBtn.setEnabled(false);
 
-		this.addFolderBtn =
+		addFolderBtn =
 				new IconButton("<span class='bms-add' style='left: 2px; color: #00a950;font-size: 18px; font-weight: bold;'></span>",
 						"Add New Folder");
-		this.addFolderBtn.setEnabled(false);
+		addFolderBtn.setEnabled(false);
 
-		this.deleteFolderBtn =
+		deleteFolderBtn =
 				new IconButton("<span class='bms-delete' style='left: 2px; color: #f4a41c;font-size: 18px; font-weight: bold;'></span>",
 						"Delete Item");
-		this.deleteFolderBtn.setEnabled(false);
-		this.deleteFolderBtn.setData(this);
+		deleteFolderBtn.setEnabled(false);
+		deleteFolderBtn.setData(this);
 
-		this.ctrlBtnsRightSubLayout = new HorizontalLayout();
-		this.ctrlBtnsRightSubLayout.setHeight("30px");
-		this.ctrlBtnsRightSubLayout.addComponent(this.addFolderBtn);
-		this.ctrlBtnsRightSubLayout.addComponent(this.renameFolderBtn);
-		this.ctrlBtnsRightSubLayout.addComponent(this.deleteFolderBtn);
-		this.ctrlBtnsRightSubLayout.setComponentAlignment(this.addFolderBtn, Alignment.BOTTOM_RIGHT);
-		this.ctrlBtnsRightSubLayout.setComponentAlignment(this.renameFolderBtn, Alignment.BOTTOM_RIGHT);
-		this.ctrlBtnsRightSubLayout.setComponentAlignment(this.deleteFolderBtn, Alignment.BOTTOM_RIGHT);
+		ctrlBtnsRightSubLayout = new HorizontalLayout();
+		ctrlBtnsRightSubLayout.setHeight("30px");
+		ctrlBtnsRightSubLayout.addComponent(addFolderBtn);
+		ctrlBtnsRightSubLayout.addComponent(renameFolderBtn);
+		ctrlBtnsRightSubLayout.addComponent(deleteFolderBtn);
+		ctrlBtnsRightSubLayout.setComponentAlignment(addFolderBtn, Alignment.BOTTOM_RIGHT);
+		ctrlBtnsRightSubLayout.setComponentAlignment(renameFolderBtn, Alignment.BOTTOM_RIGHT);
+		ctrlBtnsRightSubLayout.setComponentAlignment(deleteFolderBtn, Alignment.BOTTOM_RIGHT);
 
-		this.ctrlBtnsLeftSubLayout = new HorizontalLayout();
-		this.ctrlBtnsLeftSubLayout.setHeight("30px");
+		ctrlBtnsLeftSubLayout = new HorizontalLayout();
+		ctrlBtnsLeftSubLayout.setHeight("30px");
 
-		if (this.doIncludeToggleButton()) {
-			this.ctrlBtnsLeftSubLayout.addComponent(this.toggleListTreeButton);
-			this.ctrlBtnsLeftSubLayout.setComponentAlignment(this.toggleListTreeButton, Alignment.BOTTOM_LEFT);
+		if (doIncludeToggleButton()) {
+			ctrlBtnsLeftSubLayout.addComponent(toggleListTreeButton);
+			ctrlBtnsLeftSubLayout.setComponentAlignment(toggleListTreeButton, Alignment.BOTTOM_LEFT);
 		}
 
-		if (this.doIncludeTreeHeadingIcon()) {
-			this.ctrlBtnsLeftSubLayout.addComponent(this.treeHeadingLayout);
-			this.heading.setWidth("80px");
+		if (doIncludeTreeHeadingIcon()) {
+			ctrlBtnsLeftSubLayout.addComponent(treeHeadingLayout);
+			heading.setWidth("80px");
 		} else {
-			this.ctrlBtnsLeftSubLayout.addComponent(this.heading);
-			this.heading.setWidth("140px");
+			ctrlBtnsLeftSubLayout.addComponent(heading);
+			heading.setWidth("140px");
 		}
 
-		this.controlButtonsLayout = new HorizontalLayout();
-		this.controlButtonsLayout.setWidth("100%");
-		this.controlButtonsLayout.setHeight("30px");
-		this.controlButtonsLayout.setSpacing(true);
+		controlButtonsLayout = new HorizontalLayout();
+		controlButtonsLayout.setWidth("100%");
+		controlButtonsLayout.setHeight("30px");
+		controlButtonsLayout.setSpacing(true);
 
-		this.controlButtonsLayout.addComponent(this.ctrlBtnsLeftSubLayout);
-		this.controlButtonsLayout.addComponent(this.ctrlBtnsRightSubLayout);
-		this.controlButtonsLayout.setComponentAlignment(this.ctrlBtnsLeftSubLayout, Alignment.BOTTOM_LEFT);
-		this.controlButtonsLayout.setComponentAlignment(this.ctrlBtnsRightSubLayout, Alignment.BOTTOM_RIGHT);
+		controlButtonsLayout.addComponent(ctrlBtnsLeftSubLayout);
+		controlButtonsLayout.addComponent(ctrlBtnsRightSubLayout);
+		controlButtonsLayout.setComponentAlignment(ctrlBtnsLeftSubLayout, Alignment.BOTTOM_LEFT);
+		controlButtonsLayout.setComponentAlignment(ctrlBtnsRightSubLayout, Alignment.BOTTOM_RIGHT);
 
 	}
 
 	protected void initializeAddRenameFolderPanel() {
-		this.folderLabel = new Label("Folder");
-		this.folderLabel.addStyleName(AppConstants.CssStyles.BOLD);
+		folderLabel = new Label("Folder");
+		folderLabel.addStyleName(AppConstants.CssStyles.BOLD);
 		Label mandatoryMarkLabel = new MandatoryMarkLabel();
 
-		this.folderTextField = new TextField();
-		this.folderTextField.setMaxLength(50);
-		this.folderTextField.setValidationVisible(false);
+		folderTextField = new TextField();
+		folderTextField.setMaxLength(50);
+		folderTextField.setValidationVisible(false);
 
-		this.folderTextField.setRequired(true);
-		this.folderTextField.setRequiredError("Please specify item name.");
-		this.listNameValidator = new ListNameValidator();
-		this.folderTextField.addValidator(this.listNameValidator);
+		folderTextField.setRequired(true);
+		folderTextField.setRequiredError("Please specify item name.");
+		listNameValidator = new ListNameValidator();
+		folderTextField.addValidator(listNameValidator);
 
-		this.saveFolderButton = new Button("<span class='glyphicon glyphicon-ok' style='right: 2px;'></span>");
-		this.saveFolderButton.setHtmlContentAllowed(true);
-		this.saveFolderButton.setDescription(this.messageSource.getMessage(Message.SAVE_LABEL));
-		this.saveFolderButton.setStyleName(Bootstrap.Buttons.SUCCESS.styleName());
+		saveFolderButton = new Button("<span class='glyphicon glyphicon-ok' style='right: 2px;'></span>");
+		saveFolderButton.setHtmlContentAllowed(true);
+		saveFolderButton.setDescription(messageSource.getMessage(Message.SAVE_LABEL));
+		saveFolderButton.setStyleName(Bootstrap.Buttons.SUCCESS.styleName());
 
-		this.cancelFolderButton = new Button("<span class='glyphicon glyphicon-remove' style='right: 2px;'></span>");
-		this.cancelFolderButton.setHtmlContentAllowed(true);
-		this.cancelFolderButton.setDescription(this.messageSource.getMessage(Message.CANCEL));
-		this.cancelFolderButton.setStyleName(Bootstrap.Buttons.DANGER.styleName());
+		cancelFolderButton = new Button("<span class='glyphicon glyphicon-remove' style='right: 2px;'></span>");
+		cancelFolderButton.setHtmlContentAllowed(true);
+		cancelFolderButton.setDescription(messageSource.getMessage(Message.CANCEL));
+		cancelFolderButton.setStyleName(Bootstrap.Buttons.DANGER.styleName());
 
-		this.addRenameFolderLayout = new HorizontalLayout();
-		this.addRenameFolderLayout.setSpacing(true);
+		addRenameFolderLayout = new HorizontalLayout();
+		addRenameFolderLayout.setSpacing(true);
 
 		HorizontalLayout rightPanelLayout = new HorizontalLayout();
-		rightPanelLayout.addComponent(this.folderTextField);
-		rightPanelLayout.addComponent(this.saveFolderButton);
-		rightPanelLayout.addComponent(this.cancelFolderButton);
+		rightPanelLayout.addComponent(folderTextField);
+		rightPanelLayout.addComponent(saveFolderButton);
+		rightPanelLayout.addComponent(cancelFolderButton);
 
-		this.addRenameFolderLayout.addComponent(this.folderLabel);
-		this.addRenameFolderLayout.addComponent(mandatoryMarkLabel);
-		this.addRenameFolderLayout.addComponent(rightPanelLayout);
+		addRenameFolderLayout.addComponent(folderLabel);
+		addRenameFolderLayout.addComponent(mandatoryMarkLabel);
+		addRenameFolderLayout.addComponent(rightPanelLayout);
 
-		this.addRenameFolderLayout.setVisible(false);
+		addRenameFolderLayout.setVisible(false);
 	}
 
 	public void updateButtons(Object itemId) {
-		this.setSelectedListId(itemId);
+		setSelectedListId(itemId);
 
 		// If any of the lists/folders is selected
 		if (NumberUtils.isNumber(itemId.toString())) {
-			this.addFolderBtn.setEnabled(true);
-			this.renameFolderBtn.setEnabled(true);
-			this.deleteFolderBtn.setEnabled(true);
-		} else if (itemId.toString().equals(ListSelectorComponent.LISTS)) {
-			this.addFolderBtn.setEnabled(true);
-			this.renameFolderBtn.setEnabled(false);
-			this.deleteFolderBtn.setEnabled(false);
+			addFolderBtn.setEnabled(true);
+			renameFolderBtn.setEnabled(true);
+			deleteFolderBtn.setEnabled(true);
+		} else if (itemId.toString().equals(LISTS)) {
+			addFolderBtn.setEnabled(true);
+			renameFolderBtn.setEnabled(false);
+			deleteFolderBtn.setEnabled(false);
 		}
 	}
 
 	public void showAddRenameFolderSection(boolean showFolderSection) {
-		this.addRenameFolderLayout.setVisible(showFolderSection);
+		addRenameFolderLayout.setVisible(showFolderSection);
 
-		if (showFolderSection && this.folderSaveMode != null) {
-			this.folderLabel.setValue(this.doSaveNewFolder() ? "Add Folder" : "Rename Item");
+		if (showFolderSection && folderSaveMode != null) {
+			folderLabel.setValue(doSaveNewFolder() ? "Add Folder" : "Rename Item");
 
-			if (this.doSaveNewFolder()) {
-				this.folderTextField.setValue("");
+			if (doSaveNewFolder()) {
+				folderTextField.setValue("");
 
 				// If rename, set existing name
-			} else if (this.selectedListId != null) {
-				String itemCaption = this.getSelectedItemCaption();
+			} else if (selectedListId != null) {
+				String itemCaption = getSelectedItemCaption();
 				if (itemCaption != null) {
-					this.listNameValidator.setCurrentListName(itemCaption);
-					this.folderTextField.setValue(itemCaption);
+					listNameValidator.setCurrentListName(itemCaption);
+					folderTextField.setValue(itemCaption);
 				}
 			}
-			this.folderTextField.focus();
+			folderTextField.focus();
 
 		}
 	}
 
 	protected boolean isEmptyFolder(GermplasmList list) throws MiddlewareQueryException {
 		boolean isFolder = list.getType().equalsIgnoreCase(AppConstants.DB.FOLDER);
-		return isFolder && !this.hasChildList(list.getId());
+		return isFolder && !hasChildList(list.getId());
 	}
 
 	protected boolean hasChildList(int listId) {
@@ -306,51 +299,77 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		try {
 			listChildren = this.germplasmListManager.getGermplasmListByParentFolderId(listId, 0, 1);
 		} catch (MiddlewareQueryException e) {
-			ListSelectorComponent.LOG.error("Error in getting germplasm lists by parent id.", e);
-			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
-					this.messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LISTS_BY_PARENT_FOLDER_ID));
-			listChildren = new ArrayList<GermplasmList>();
+			LOG.error("Error in getting germplasm lists by parent id.", e);
+			MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE),
+					messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LISTS_BY_PARENT_FOLDER_ID));
+			listChildren = new ArrayList<>();
 		}
 
 		return !listChildren.isEmpty();
 	}
 
-	public void addGermplasmListNode(int parentGermplasmListId) {
-		List<GermplasmList> germplasmListChildren = new ArrayList<GermplasmList>();
+	public void reinitializeTree() {
 
 		try {
-			germplasmListChildren =
-					this.germplasmListManager.getGermplasmListByParentFolderIdBatched(parentGermplasmListId,
-							ListSelectorComponent.BATCH_SIZE);
+			Collection<String> parsedState =
+					programStateManager.getUserProgramTreeStateByUserIdProgramUuidAndType(util.getCurrentWorkbenchUserId(),
+							util.getCurrentProgramUUID(), ListTreeState.GERMPLASM_LIST.name());
+
+			if (parsedState.isEmpty()) {
+				getGermplasmListSource().collapseItem(LISTS);
+				return;
+			}
+
+			getGermplasmListSource().expandItem(LISTS);
+
+			for (String s : parsedState) {
+				String trimmed = s.trim();
+				if (!StringUtils.isNumeric(trimmed)) {
+					continue;
+				}
+
+				int itemId = Integer.parseInt(trimmed);
+				getGermplasmListSource().expandItem(itemId);
+			}
 		} catch (MiddlewareQueryException e) {
-			ListSelectorComponent.LOG.error("Error in getting germplasm lists by parent id.", e);
-			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
-					this.messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LISTS_BY_PARENT_FOLDER_ID));
+			LOG.error(e.getMessage(), e);
+		}
+	}
+
+	public void addGermplasmListNode(int parentGermplasmListId) {
+		List<GermplasmList> germplasmListChildren = new ArrayList<>();
+
+		try {
+			germplasmListChildren = this.germplasmListManager.getGermplasmListByParentFolderIdBatched(parentGermplasmListId, BATCH_SIZE);
+		} catch (MiddlewareQueryException e) {
+			LOG.error("Error in getting germplasm lists by parent id.", e);
+			MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE),
+					messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LISTS_BY_PARENT_FOLDER_ID));
 			germplasmListChildren = new ArrayList<GermplasmList>();
 		}
-		this.addGermplasmListNodeToComponent(germplasmListChildren, parentGermplasmListId);
+		addGermplasmListNodeToComponent(germplasmListChildren, parentGermplasmListId);
 
 	}
 
 	public boolean doAddItem(GermplasmList list) {
-		return !this.doShowFoldersOnly() || this.isFolder(list.getId());
+		return !doShowFoldersOnly() || isFolder(list.getId());
 	}
 
 	public boolean isFolder(Object itemId) {
 		try {
 			int currentListId = Integer.valueOf(itemId.toString());
-			GermplasmList currentGermplasmList = this.germplasmListManager.getGermplasmListById(currentListId);
+			GermplasmList currentGermplasmList = germplasmListManager.getGermplasmListById(currentListId);
 			if (currentGermplasmList == null) {
 				return false;
 			}
 			return currentGermplasmList.getType().equalsIgnoreCase(AppConstants.DB.FOLDER);
 		} catch (MiddlewareQueryException e) {
-			ListSelectorComponent.LOG.debug("Checking is folder, cause the MW exception");
-			ListSelectorComponent.LOG.error(e.getMessage(), e);
+			LOG.debug("Checking is folder, cause the MW exception");
+			LOG.error(e.getMessage(), e);
 			return false;
 		} catch (NumberFormatException e) {
 			boolean returnVal = false;
-			if (this.listId != null && this.listId.toString().equals(ListSelectorComponent.LISTS)) {
+			if (listId != null && (listId.toString().equals(LISTS))) {
 				returnVal = true;
 			}
 			return returnVal;
@@ -358,7 +377,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	}
 
 	public Object getSelectedListId() {
-		return this.selectedListId;
+		return selectedListId;
 	}
 
 	public void setListId(Integer listId) {
@@ -366,7 +385,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	}
 
 	public void assignNewNameToGermplasmListMap(String key, String newName) {
-		GermplasmList germplasmListFromMap = this.germplasmListsMap.get(Integer.valueOf(key.toString()));
+		GermplasmList germplasmListFromMap = germplasmListsMap.get(Integer.valueOf(key.toString()));
 		if (germplasmListFromMap != null) {
 			germplasmListFromMap.setName(newName);
 		}
@@ -374,107 +393,76 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 	@Override
 	public void addListeners() {
-		if (this.doIncludeRefreshButton()) {
-			this.refreshButton.addListener(new Button.ClickListener() {
+		if (doIncludeRefreshButton()) {
+			refreshButton.addListener(new Button.ClickListener() {
 
 				private static final long serialVersionUID = 1L;
 
 				@Override
 				public void buttonClick(Button.ClickEvent event) {
-					ListSelectorComponent.this.refreshComponent();
+					refreshComponent();
 				}
 			});
 		}
 
-		if (this.doIncludeActionsButtons()) {
-			this.addFolderActionsListener();
+		if (doIncludeActionsButtons()) {
+			addFolderActionsListener();
 		}
 	}
 
 	@SuppressWarnings("serial")
 	protected void addFolderActionsListener() {
-		this.renameFolderBtn.addListener(new Button.ClickListener() {
-
-			/**
-			 *
-			 */
-			 private static final long serialVersionUID = 4606520616351364666L;
-
-			 @Override
-			public void buttonClick(Button.ClickEvent event) {
-				ListSelectorComponent.this.folderSaveMode = FolderSaveMode.RENAME;
-				ListSelectorComponent.this.showAddRenameFolderSection(true);
-			}
-		});
-
-		this.addFolderBtn.addListener(new Button.ClickListener() {
-
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = -7317775128679479757L;
+		renameFolderBtn.addListener(new Button.ClickListener() {
 
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
-				ListSelectorComponent.this.folderSaveMode = FolderSaveMode.ADD;
-				ListSelectorComponent.this.showAddRenameFolderSection(true);
+				folderSaveMode = FolderSaveMode.RENAME;
+				showAddRenameFolderSection(true);
 			}
 		});
 
-		this.deleteFolderBtn.addListener(new Button.ClickListener() {
+		addFolderBtn.addListener(new Button.ClickListener() {
 
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 3963269144924095369L;
+			@Override
+			public void buttonClick(Button.ClickEvent event) {
+				folderSaveMode = FolderSaveMode.ADD;
+				showAddRenameFolderSection(true);
+			}
+		});
+
+		deleteFolderBtn.addListener(new Button.ClickListener() {
 
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
 				Object data = event.getButton().getData();
 				if (data instanceof ListSelectorComponent) {
-					ListSelectorComponent.this.germplasmListTreeUtil.deleteFolderOrList((ListSelectorComponent) data,
-							Integer.valueOf(ListSelectorComponent.this.selectedListId.toString()),
-							ListSelectorComponent.this.treeActionsListener);
+					germplasmListTreeUtil.deleteFolderOrList((ListSelectorComponent) data, Integer.valueOf(selectedListId.toString()),
+							treeActionsListener);
 				}
 			}
 		});
 
-		this.folderTextField.addShortcutListener(new ShortcutListener("ENTER", ShortcutAction.KeyCode.ENTER, null) {
-
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 3453562703942122213L;
+		folderTextField.addShortcutListener(new ShortcutListener("ENTER", ShortcutAction.KeyCode.ENTER, null) {
 
 			@Override
 			public void handleAction(Object sender, Object target) {
-				ListSelectorComponent.this.addRenameItemAction();
+				addRenameItemAction();
 			}
 		});
 
-		this.saveFolderButton.addListener(new Button.ClickListener() {
-
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 8280338644831541745L;
+		saveFolderButton.addListener(new Button.ClickListener() {
 
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
-				ListSelectorComponent.this.addRenameItemAction();
+				addRenameItemAction();
 			}
 		});
 
-		this.cancelFolderButton.addListener(new Button.ClickListener() {
-
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 2812915644280474197L;
+		cancelFolderButton.addListener(new Button.ClickListener() {
 
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
-				ListSelectorComponent.this.showAddRenameFolderSection(false);
+				showAddRenameFolderSection(false);
 			}
 		});
 	}
@@ -483,30 +471,30 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	}
 
 	public void studyClickedAction(GermplasmList germplasmList) {
-		if (this.treeActionsListener != null && germplasmList != null) {
-			this.treeActionsListener.studyClicked(germplasmList);
+		if (treeActionsListener != null && germplasmList != null) {
+			treeActionsListener.studyClicked(germplasmList);
 		}
 	}
 
 	public void folderClickedAction(GermplasmList germplasmList) {
-		if (this.treeActionsListener != null && germplasmList != null) {
-			this.treeActionsListener.folderClicked(germplasmList);
+		if (treeActionsListener != null && germplasmList != null) {
+			treeActionsListener.folderClicked(germplasmList);
 		}
 	}
 
 	public void toggleFolderSectionForItemSelected() {
-		if (this.addRenameFolderLayout != null && this.addRenameFolderLayout.isVisible()) {
+		if (addRenameFolderLayout != null && addRenameFolderLayout.isVisible()) {
 			Integer currentListId = null;
-			if (this.selectedListId instanceof Integer) {
-				currentListId = Integer.valueOf(this.selectedListId.toString());
+			if (selectedListId instanceof Integer) {
+				currentListId = Integer.valueOf(selectedListId.toString());
 			}
 
-			if (!this.doSaveNewFolder()) {
+			if (!doSaveNewFolder()) {
 				if (currentListId != null) {
-					this.folderTextField.setValue(this.getSelectedItemCaption());
-					this.folderTextField.focus();
-				} else if (ListSelectorComponent.LISTS.equals(this.selectedListId)) {
-					this.showAddRenameFolderSection(false);
+					folderTextField.setValue(getSelectedItemCaption());
+					folderTextField.focus();
+				} else if (LISTS.equals(selectedListId)) {
+					showAddRenameFolderSection(false);
 				}
 
 			}
@@ -515,29 +503,29 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 	@Override
 	public void layoutComponents() {
-		this.setWidth("100%");
+		setWidth("100%");
 
 		VerticalLayout layout = new VerticalLayout();
 		layout.setSpacing(true);
 		layout.setWidth("100%");
 
-		if (this.doIncludeActionsButtons()) {
-			layout.addComponent(this.controlButtonsLayout);
-			layout.addComponent(this.addRenameFolderLayout);
+		if (doIncludeActionsButtons()) {
+			layout.addComponent(controlButtonsLayout);
+			layout.addComponent(addRenameFolderLayout);
 		}
 
-		this.treeContainerLayout.addComponent(this.getGermplasmListSource().getUIComponent());
-		layout.addComponent(this.treeContainerLayout);
+		treeContainerLayout.addComponent(getGermplasmListSource().getUIComponent());
+		layout.addComponent(treeContainerLayout);
 
-		if (this.doIncludeRefreshButton()) {
-			layout.addComponent(this.refreshButton);
+		if (doIncludeRefreshButton()) {
+			layout.addComponent(refreshButton);
 		}
 
-		this.addComponent(layout);
+		addComponent(layout);
 	}
 
 	protected String getTreeHeading() {
-		return this.messageSource.getMessage(Message.LISTS);
+		return messageSource.getMessage(Message.LISTS);
 	}
 
 	protected String getTreeHeadingStyleName() {
@@ -546,128 +534,128 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 	@Override
 	public void instantiateComponents() {
-		this.setHeight("580px");
-		this.setWidth("880px");
+		setHeight("580px");
+		setWidth("880px");
 
-		this.heading = new Label();
-		this.heading.setValue(this.getTreeHeading());
-		this.heading.addStyleName(this.getTreeHeadingStyleName());
-		this.heading.addStyleName(AppConstants.CssStyles.BOLD);
+		heading = new Label();
+		heading.setValue(getTreeHeading());
+		heading.addStyleName(getTreeHeadingStyleName());
+		heading.addStyleName(AppConstants.CssStyles.BOLD);
 
-		this.treeHeadingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_BUILD_NEW_LIST, this.heading);
+		treeHeadingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_BUILD_NEW_LIST, heading);
 
 		// if tree will include the toggle button to hide itself
-		if (this.doIncludeToggleButton()) {
-			this.toggleListTreeButton = new ToggleButton("Toggle Build New List Pane");
+		if (doIncludeToggleButton()) {
+			toggleListTreeButton = new ToggleButton("Toggle Build New List Pane");
 		}
 
 		// assumes that all tree will display control buttons
-		if (this.doIncludeActionsButtons()) {
-			this.initializeButtonPanel();
-			this.initializeAddRenameFolderPanel();
+		if (doIncludeActionsButtons()) {
+			initializeButtonPanel();
+			initializeAddRenameFolderPanel();
 		}
 
-		this.treeContainerLayout = new CssLayout();
-		this.treeContainerLayout.setWidth("100%");
+		treeContainerLayout = new CssLayout();
+		treeContainerLayout.setWidth("100%");
 
-		if (this.doIncludeRefreshButton()) {
-			this.initializeRefreshButton();
+		if (doIncludeRefreshButton()) {
+			initializeRefreshButton();
 		}
 
-		this.instantiateListComponent();
+		instantiateListComponent();
 	}
 
 	public ListTreeActionsListener getTreeActionsListener() {
-		return this.treeActionsListener;
+		return treeActionsListener;
 	}
 
 	public void createTree() {
-		if (this.treeContainerLayout != null && this.treeContainerLayout.getComponentCount() > 0) {
-			this.treeContainerLayout.removeComponent(this.getGermplasmListSource().getUIComponent());
+		if (treeContainerLayout != null && treeContainerLayout.getComponentCount() > 0) {
+			treeContainerLayout.removeComponent(getGermplasmListSource().getUIComponent());
 		}
-		this.getGermplasmListSource().removeAllItems();
+		getGermplasmListSource().removeAllItems();
 
-		this.createGermplasmList();
-		this.getGermplasmListSource().setStyleName(this.getMainTreeStyleName());
-		this.getGermplasmListSource().addStyleName(this.getTreeStyleName());
+		createGermplasmList();
+		getGermplasmListSource().setStyleName(getMainTreeStyleName());
+		getGermplasmListSource().addStyleName(getTreeStyleName());
 
-		this.getGermplasmListSource().setItemStyleGenerator(new GermplasmListSourceItemStyleGenerator());
+		getGermplasmListSource().setItemStyleGenerator(new GermplasmListSourceItemStyleGenerator());
 
-		this.germplasmListsMap = Util.getAllGermplasmLists(this.germplasmListManager);
-		this.addListTreeItemDescription();
+		germplasmListsMap = Util.getAllGermplasmLists(germplasmListManager);
+		addListTreeItemDescription();
 
-		this.getGermplasmListSource().setImmediate(true);
-		if (this.doIncludeActionsButtons()) {
-			this.germplasmListTreeUtil = new GermplasmListTreeUtil(this, this.getGermplasmListSource());
+		getGermplasmListSource().setImmediate(true);
+		if (doIncludeActionsButtons()) {
+			germplasmListTreeUtil = new GermplasmListTreeUtil(this, getGermplasmListSource());
 		}
-		this.treeContainerLayout.addComponent(this.getGermplasmListSource().getUIComponent());
-		this.getGermplasmListSource().requestRepaint();
+		treeContainerLayout.addComponent(getGermplasmListSource().getUIComponent());
+		getGermplasmListSource().requestRepaint();
 
 	}
 
 	public void addListTreeItemDescription() {
-		this.getGermplasmListSource().setItemDescriptionGenerator(new GermplasmListSourceItemDescriptionGenerator(this));
+		getGermplasmListSource().setItemDescriptionGenerator(new GermplasmListSourceItemDescriptionGenerator(this));
 	}
 
 	public void setSelectedListId(Object listId) {
 		this.selectedListId = listId;
-		this.selectListSourceDetails(listId, false);
+		selectListSourceDetails(listId, false);
 	}
 
 	public String getSelectedItemCaption() {
-		return this.getGermplasmListSource().getItemCaption(this.selectedListId);
+		return getGermplasmListSource().getItemCaption(selectedListId);
 	}
 
 	public void removeListFromTree(GermplasmList germplasmList) {
 		Integer currentListId = germplasmList.getId();
-		Item item = this.getGermplasmListSource().getItem(currentListId);
+		Item item = getGermplasmListSource().getItem(currentListId);
 		if (item != null) {
-			this.getGermplasmListSource().removeItem(currentListId);
+			getGermplasmListSource().removeItem(currentListId);
 		}
 		GermplasmList parent = germplasmList.getParent();
 		if (parent == null) {
-			this.getGermplasmListSource().select(ListSelectorComponent.LISTS);
-			this.setSelectedListId(ListSelectorComponent.LISTS);
+			getGermplasmListSource().select(LISTS);
+			setSelectedListId(LISTS);
 		} else {
-			this.getGermplasmListSource().select(parent.getId());
-			this.getGermplasmListSource().expandItem(parent.getId());
-			this.setSelectedListId(parent.getId());
+			getGermplasmListSource().select(parent.getId());
+			getGermplasmListSource().expandItem(parent.getId());
+			setSelectedListId(parent.getId());
 		}
-		this.updateButtons(this.selectedListId);
+		updateButtons(this.selectedListId);
 	}
 
 	public void treeItemClickAction(int germplasmListId) {
 
 		try {
 
-			this.germplasmList = this.germplasmListManager.getGermplasmListById(germplasmListId);
-			this.selectedListId = germplasmListId;
+			germplasmList = germplasmListManager.getGermplasmListById(germplasmListId);
+			selectedListId = germplasmListId;
 
-			boolean isEmptyFolder = this.isEmptyFolder(this.germplasmList);
+			boolean isEmptyFolder = isEmptyFolder(germplasmList);
 			if (!isEmptyFolder) {
-				boolean hasChildList = this.hasChildList(germplasmListId);
+				boolean hasChildList = hasChildList(germplasmListId);
 
 				if (!hasChildList) {
-					this.studyClickedAction(this.germplasmList);
+					studyClickedAction(germplasmList);
 					// toggle folder
 				} else if (hasChildList) {
-					this.folderClickedAction(this.germplasmList);
-					this.expandOrCollapseListTreeNode(Integer.valueOf(germplasmListId));
+					folderClickedAction(germplasmList);
+					expandOrCollapseListTreeNode(Integer.valueOf(germplasmListId));
 				}
 
-				this.selectListSourceDetails(germplasmListId, false);
+				selectListSourceDetails(germplasmListId, false);
 			} else {
 				// when an empty folder is clicked
-				this.folderClickedAction(this.germplasmList);
+				folderClickedAction(germplasmList);
 			}
 
 		} catch (NumberFormatException e) {
 
-			ListSelectorComponent.LOG.error("Error clicking of list.", e);
-			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.ERROR_INVALID_FORMAT),
-					this.messageSource.getMessage(Message.ERROR_IN_NUMBER_FORMAT));
+			LOG.error("Error clicking of list.", e);
+			MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.ERROR_INVALID_FORMAT),
+					messageSource.getMessage(Message.ERROR_IN_NUMBER_FORMAT));
 		} catch (MiddlewareQueryException e) {
-			ListSelectorComponent.LOG.error("Error in displaying germplasm list details.", e);
+			LOG.error("Error in displaying germplasm list details.", e);
 			throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_CREATING_GERMPLASMLIST_DETAILS_WINDOW);
 		}
 	}
@@ -680,35 +668,32 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 			this.getGermplasmListSource().collapseItem(nodeId);
 		}
 
-		this.selectListSourceDetails(nodeId, false);
+		selectListSourceDetails(nodeId, false);
 	}
 
 	public void expandNode(Object itemId) {
-		this.getGermplasmListSource().expandItem(itemId);
+		getGermplasmListSource().expandItem(itemId);
 	}
 
 	public void addGermplasmListNodeToComponent(List<GermplasmList> germplasmListChildren, int parentGermplasmListId) {
 		for (GermplasmList listChild : germplasmListChildren) {
-			if (this.doAddItem(listChild)) {
+			if (doAddItem(listChild)) {
 				String size = "";
 				if (!listChild.isFolder()) {
-					size = this.countGermplasmListDataByListId(listChild.getId());
+					size = countGermplasmListDataByListId(listChild.getId());
 				}
-				this.getGermplasmListSource()
-						.addItem(
-								this.generateCellInfo(listChild.getName(),
-										BreedingManagerUtil.getOwnerListName(listChild.getUserId(), this.userDataManager),
-										BreedingManagerUtil.getDescriptionForDisplay(listChild),
-										BreedingManagerUtil.getTypeString(listChild.getType(), this.germplasmListManager), size),
-								listChild.getId());
-				this.setNodeItemIcon(listChild.getId(), listChild.isFolder());
-				this.getGermplasmListSource().setItemCaption(listChild.getId(), listChild.getName());
-				this.getGermplasmListSource().setParent(listChild.getId(), parentGermplasmListId);
+				getGermplasmListSource().addItem(
+						generateCellInfo(listChild.getName(), BreedingManagerUtil.getOwnerListName(listChild.getUserId(), userDataManager),
+								BreedingManagerUtil.getDescriptionForDisplay(listChild),
+								BreedingManagerUtil.getTypeString(listChild.getType(), germplasmListManager), size), listChild.getId());
+				setNodeItemIcon(listChild.getId(), listChild.isFolder());
+				getGermplasmListSource().setItemCaption(listChild.getId(), listChild.getName());
+				getGermplasmListSource().setParent(listChild.getId(), parentGermplasmListId);
 				// allow children if list has sub-lists
-				this.getGermplasmListSource().setChildrenAllowed(listChild.getId(), this.hasChildList(listChild.getId()));
+				getGermplasmListSource().setChildrenAllowed(listChild.getId(), hasChildList(listChild.getId()));
 			}
 		}
-		this.selectListSourceDetails(parentGermplasmListId, false);
+		selectListSourceDetails(parentGermplasmListId, false);
 	}
 
 	private String countGermplasmListDataByListId(Integer id) {
@@ -717,47 +702,48 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 			long numberOfEntries = this.germplasmListManager.countGermplasmListDataByListId(id);
 			size = Long.toString(numberOfEntries);
 		} catch (MiddlewareQueryException e) {
-			ListSelectorComponent.LOG.error("Error in getting number of entries for list id " + id, e);
+			LOG.error("Error in getting number of entries for list id " + id, e);
 		}
 		return size;
 	}
 
 	private void selectListSourceDetails(Object itemId, boolean nullSelectAllowed) {
-		this.getGermplasmListSource().setNullSelectionAllowed(nullSelectAllowed);
-		this.getGermplasmListSource().select(itemId);
-		this.getGermplasmListSource().setValue(itemId);
+		getGermplasmListSource().setNullSelectionAllowed(nullSelectAllowed);
+		getGermplasmListSource().select(itemId);
+		getGermplasmListSource().setValue(itemId);
 	}
 
 	public String addRenameItemAction() {
-		if (this.doSaveNewFolder()) {
-			this.germplasmListTreeUtil.addFolder(this.selectedListId, this.folderTextField);
+		if (doSaveNewFolder()) {
+			germplasmListTreeUtil.addFolder(selectedListId, folderTextField);
 		} else {
 
-			String oldName = this.getGermplasmListSource().getItemCaption(this.selectedListId);
-			this.germplasmListTreeUtil.renameFolderOrList(Integer.valueOf(this.selectedListId.toString()), this.treeActionsListener,
-					this.folderTextField, oldName);
+			String oldName = getGermplasmListSource().getItemCaption(selectedListId);
+			germplasmListTreeUtil.renameFolderOrList(Integer.valueOf(selectedListId.toString()), treeActionsListener, folderTextField,
+					oldName);
 		}
-		return this.folderTextField.getValue().toString().trim();
+		return folderTextField.getValue().toString().trim();
 	}
 
 	public void refreshComponent() {
 		this.listId = null;
-		this.createTree();
+		createTree();
+		reinitializeTree();
 	}
 
 	public void instantiateListComponent() {
-		this.setGermplasmListSource(new GermplasmListTree());
-		this.createTree();
-		this.germplasmListTreeUtil = new GermplasmListTreeUtil(this, this.getGermplasmListSource());
+		setGermplasmListSource(new GermplasmListTree());
+		createTree();
+		germplasmListTreeUtil = new GermplasmListTreeUtil(this, getGermplasmListSource());
 	}
 
 	public void reloadTreeItemDescription() {
-		this.germplasmListsMap = Util.getAllGermplasmLists(this.germplasmListManager);
-		this.addListTreeItemDescription();
+		germplasmListsMap = Util.getAllGermplasmLists(germplasmListManager);
+		addListTreeItemDescription();
 	}
 
 	public Map<Integer, GermplasmList> getGermplasmListsMap() {
-		return this.germplasmListsMap;
+		return germplasmListsMap;
 	}
 
 	@Override
@@ -767,98 +753,118 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.instantiateComponents();
-		this.initializeValues();
-		this.addListeners();
-		this.layoutComponents();
+		instantiateComponents();
+		initializeValues();
+		addListeners();
+		layoutComponents();
 	}
 
 	public void createGermplasmList() {
 
-		this.instantiateGermplasmListSourceComponent();
+		instantiateGermplasmListSourceComponent();
 
-		if (this.isTreeItemsDraggable()) {
-			this.getGermplasmListSource().setDragMode(Tree.TreeDragMode.NODE, Table.TableDragMode.ROW);
+		if (isTreeItemsDraggable()) {
+			getGermplasmListSource().setDragMode(Tree.TreeDragMode.NODE, Table.TableDragMode.ROW);
 		}
-		this.addGermplasmsToTheList();
-		this.addGermplasmListSourceListeners();
-		this.initializeGermplasmList();
+
+		addGermplasmListSourceListeners();
+		addGermplasmsToTheList();
+
+		initializeGermplasmList();
 	}
 
 	private void initializeGermplasmList() {
 		try {
-			if (this.listId != null) {
-				GermplasmList list = this.germplasmListManager.getGermplasmListById(this.listId);
+			if (listId != null) {
+				GermplasmList list = germplasmListManager.getGermplasmListById(listId);
 
 				if (list != null) {
 					Deque<GermplasmList> parents = new ArrayDeque<GermplasmList>();
-					GermplasmListTreeUtil.traverseParentsOfList(this.germplasmListManager, list, parents);
+					GermplasmListTreeUtil.traverseParentsOfList(germplasmListManager, list, parents);
 
-					this.getGermplasmListSource().expandItem(ListSelectorComponent.LISTS);
+					getGermplasmListSource().expandItem(LISTS);
 
 					while (!parents.isEmpty()) {
 						GermplasmList parent = parents.pop();
-						this.getGermplasmListSource().setChildrenAllowed(parent.getId(), true);
-						this.addGermplasmListNode(parent.getId().intValue());
-						this.getGermplasmListSource().expandItem(parent.getId());
+						getGermplasmListSource().setChildrenAllowed(parent.getId(), true);
+						addGermplasmListNode(parent.getId().intValue());
+						getGermplasmListSource().expandItem(parent.getId());
 					}
 
-					this.getGermplasmListSource().setNullSelectionAllowed(false);
-					this.getGermplasmListSource().select(this.listId);
-					this.getGermplasmListSource().setValue(this.listId);
-					this.setSelectedListId(this.listId);
-					this.updateButtons(this.listId);
+					getGermplasmListSource().setNullSelectionAllowed(false);
+					getGermplasmListSource().select(listId);
+					getGermplasmListSource().setValue(listId);
+					setSelectedListId(listId);
+					updateButtons(listId);
 				}
 
-			} else if (this.selectListsFolderByDefault) {
-				this.getGermplasmListSource().select(ListSelectorComponent.LISTS);
-				this.getGermplasmListSource().setValue(ListSelectorComponent.LISTS);
-				this.updateButtons(ListSelectorComponent.LISTS);
+			} else if (selectListsFolderByDefault) {
+				getGermplasmListSource().select(LISTS);
+				getGermplasmListSource().setValue(LISTS);
+				updateButtons(LISTS);
 			}
 		} catch (MiddlewareQueryException ex) {
-			ListSelectorComponent.LOG.error("Error with getting parents for hierarchy of list id: " + this.listId, ex);
+			LOG.error("Error with getting parents for hierarchy of list id: " + listId, ex);
 		}
 	}
 
 	private void addGermplasmsToTheList() {
 		List<GermplasmList> germplasmListParent = new ArrayList<GermplasmList>();
 		try {
-			germplasmListParent = this.germplasmListManager.getAllTopLevelListsBatched(ListSelectorComponent.BATCH_SIZE);
+			germplasmListParent = this.germplasmListManager.getAllTopLevelListsBatched(BATCH_SIZE);
 		} catch (MiddlewareQueryException e) {
-			ListSelectorComponent.LOG.error("Error in getting top level lists.", e);
-			if (this.getWindow() != null) {
-				MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
-						this.messageSource.getMessage(Message.ERROR_IN_GETTING_TOP_LEVEL_FOLDERS));
+			LOG.error("Error in getting top level lists.", e);
+			if (getWindow() != null) {
+				MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE),
+						messageSource.getMessage(Message.ERROR_IN_GETTING_TOP_LEVEL_FOLDERS));
 			}
 			germplasmListParent = new ArrayList<GermplasmList>();
 		}
 
-		this.getGermplasmListSource().addItem(this.generateCellInfo(ListSelectorComponent.LISTS, "", "", "", ""),
-				ListSelectorComponent.LISTS);
-		this.setNodeItemIcon(ListSelectorComponent.LISTS, true);
-		this.getGermplasmListSource().setItemCaption(ListSelectorComponent.LISTS, ListSelectorComponent.LISTS);
+		getGermplasmListSource().addItem(generateCellInfo(LISTS, "", "", "", ""), LISTS);
+		setNodeItemIcon(LISTS, true);
+		getGermplasmListSource().setItemCaption(LISTS, LISTS);
 
 		for (GermplasmList parentList : germplasmListParent) {
-			if (this.doAddItem(parentList)) {
-				String size = this.countGermplasmListDataByListId(parentList.getId());
-				this.getGermplasmListSource().addItem(
-						this.generateCellInfo(parentList.getName(), BreedingManagerUtil.getOwnerListName(parentList.getUserId(),
-								this.userDataManager), BreedingManagerUtil.getDescriptionForDisplay(parentList), BreedingManagerUtil
-								.getTypeString(parentList.getType(), this.germplasmListManager), parentList.isFolder() ? "" : size),
-						parentList.getId());
-				this.setNodeItemIcon(parentList.getId(), parentList.isFolder());
-				this.getGermplasmListSource().setItemCaption(parentList.getId(), parentList.getName());
-				this.getGermplasmListSource().setChildrenAllowed(parentList.getId(), this.hasChildList(parentList.getId()));
-				this.getGermplasmListSource().setParent(parentList.getId(), ListSelectorComponent.LISTS);
+			if (doAddItem(parentList)) {
+				String size = countGermplasmListDataByListId(parentList.getId());
+				getGermplasmListSource()
+						.addItem(
+								generateCellInfo(parentList.getName(),
+										BreedingManagerUtil.getOwnerListName(parentList.getUserId(), userDataManager),
+										BreedingManagerUtil.getDescriptionForDisplay(parentList),
+										BreedingManagerUtil.getTypeString(parentList.getType(), germplasmListManager),
+										parentList.isFolder() ? "" : size), parentList.getId());
+				setNodeItemIcon(parentList.getId(), parentList.isFolder());
+				getGermplasmListSource().setItemCaption(parentList.getId(), parentList.getName());
+				getGermplasmListSource().setChildrenAllowed(parentList.getId(), hasChildList(parentList.getId()));
+				getGermplasmListSource().setParent(parentList.getId(), LISTS);
 			}
 		}
 
 	}
 
+	// logic used when expanding nodes
+	@Override
+	public void nodeExpand(Tree.ExpandEvent event) {
+		if (!event.getItemId().toString().equals(ListSelectorComponent.LISTS)) {
+			try {
+				addGermplasmListNode(Integer.valueOf(event.getItemId().toString()));
+			} catch (InternationalizableException e) {
+				LOG.error(e.getMessage(), e);
+				MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+			}
+		}
+
+		setSelectedListId(event.getItemId());
+		updateButtons(event.getItemId());
+		toggleFolderSectionForItemSelected();
+	}
+
 	private void addGermplasmListSourceListeners() {
-		this.getGermplasmListSource().addListener(new GermplasmListTreeExpandListener(this));
-		this.getGermplasmListSource().addListener(new GermplasmListItemClickListener(this));
-		this.getGermplasmListSource().addListener(new GermplasmListTreeCollapseListener(this));
+		getGermplasmListSource().addListener(this);
+		getGermplasmListSource().addListener(new GermplasmListItemClickListener(this));
+		getGermplasmListSource().addListener(new GermplasmListTreeCollapseListener(this));
 	}
 
 	public void setGermplasmListManager(GermplasmListManager germplasmListManager) {
@@ -878,11 +884,11 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	}
 
 	public GermplasmListTreeUtil getGermplasmListTreeUtil() {
-		return this.germplasmListTreeUtil;
+		return germplasmListTreeUtil;
 	}
 
 	public SimpleResourceBundleMessageSource getMessageSource() {
-		return this.messageSource;
+		return messageSource;
 	}
 
 	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
@@ -890,14 +896,22 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	}
 
 	public Button getAddFolderBtn() {
-		return this.addFolderBtn;
+		return addFolderBtn;
 	}
 
 	public Button getDeleteFolderBtn() {
-		return this.deleteFolderBtn;
+		return deleteFolderBtn;
 	}
 
 	public Button getRenameFolderBtn() {
-		return this.renameFolderBtn;
+		return renameFolderBtn;
+	}
+
+	public void setUtil(ContextUtil util) {
+		this.util = util;
+	}
+
+	public void setProgramStateManager(UserProgramStateDataManager programStateManager) {
+		this.programStateManager = programStateManager;
 	}
 }

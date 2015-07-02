@@ -271,7 +271,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 
 		Tool tool = null;
 		try {
-			tool = this.workbenchDataManager.getToolWithName(ToolName.germplasm_browser.toString());
+			tool = this.workbenchDataManager.getToolWithName(ToolName.GERMPLASM_BROWSER.toString());
 		} catch (MiddlewareQueryException qe) {
 			AddEntryDialog.LOG.error(this.messageSource.getMessage(Message.QUERY_EXCEPTION), qe);
 		}
