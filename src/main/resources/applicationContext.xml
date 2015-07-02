@@ -222,4 +222,10 @@
         <aop:scoped-proxy/>
     </bean>
 
+    <bean id="userProgramStateManager" class="org.generationcp.middleware.manager.UserProgramStateDataManagerImpl"
+            factory-bean="managerFactory" factory-method="getUserProgramStateDataManager"
+            scope="request">
+        <aop:scoped-proxy/>
+    </bean>
+
 </beans>
