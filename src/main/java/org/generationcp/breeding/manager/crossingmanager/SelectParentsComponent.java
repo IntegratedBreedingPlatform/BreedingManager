@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.crossingmanager;
 
 import java.util.ArrayList;
@@ -34,28 +35,28 @@ import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class SelectParentsComponent extends VerticalLayout implements BreedingManagerLayout,InitializingBean, 
-												InternationalizableComponent, CrossingManagerTreeActionsListener, UnsavedChangesSource {
+public class SelectParentsComponent extends VerticalLayout implements BreedingManagerLayout, InitializingBean,
+		InternationalizableComponent, CrossingManagerTreeActionsListener, UnsavedChangesSource {
 
 	private static final long serialVersionUID = -5109231715662648484L;
-	
+
 	public static final String TAB_DESCRIPTION_PREFIX = "List ID: ";
-	
-    @Autowired
-    private SimpleResourceBundleMessageSource messageSource;
-	
+
+	@Autowired
+	private SimpleResourceBundleMessageSource messageSource;
+
 	private CrossingManagerMakeCrossesComponent source;
-	
+
 	private CrossingManagerListTreeComponent listTreeComponent;
-    private Button browseForListsButton;
-    
-    private Label selectParentsLabel;
-    private Label instructionForSelectParents;
-    private TabSheet listDetailsTabSheet;
-    private Button closeAllTabsButton;
-    
-    private Map<SelectParentsListDataComponent,Boolean> listStatusForChanges;
-    
+	private Button browseForListsButton;
+
+	private Label selectParentsLabel;
+	private Label instructionForSelectParents;
+	private TabSheet listDetailsTabSheet;
+	private Button closeAllTabsButton;
+
+	private Map<SelectParentsListDataComponent, Boolean> listStatusForChanges;
+
 	public SelectParentsComponent(CrossingManagerMakeCrossesComponent source) {
 		super();
 		this.source = source;
@@ -68,44 +69,44 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-    	instantiateComponents();
-    	initializeValues();
-    	addListeners();
-    	layoutComponents();
+		instantiateComponents();
+		initializeValues();
+		addListeners();
+		layoutComponents();
 	}
 
 	@Override
 	public void instantiateComponents() {
-        selectParentsLabel = new Label(messageSource.getMessage(Message.SELECT_PARENTS));
-        selectParentsLabel.setStyleName(Bootstrap.Typography.H4.styleName());
-        selectParentsLabel.addStyleName(AppConstants.CssStyles.BOLD);
+		selectParentsLabel = new Label(messageSource.getMessage(Message.SELECT_PARENTS));
+		selectParentsLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+		selectParentsLabel.addStyleName(AppConstants.CssStyles.BOLD);
 
-        browseForListsButton = new Button(messageSource.getMessage(Message.BROWSE));
-        browseForListsButton.setImmediate(true);
-        browseForListsButton.setStyleName(Reindeer.BUTTON_LINK);
+		browseForListsButton = new Button(messageSource.getMessage(Message.BROWSE));
+		browseForListsButton.setImmediate(true);
+		browseForListsButton.setStyleName(Reindeer.BUTTON_LINK);
 
-        listTreeComponent = new CrossingManagerListTreeComponent(this,source);
-                
-        instructionForSelectParents = new Label("for a list to work with.");
-        
-        listDetailsTabSheet = new TabSheet();
-        listDetailsTabSheet.setWidth("460px");
-        listDetailsTabSheet.setHeight("465px");
-        hideListDetailsTabSheet();
-        
-        closeAllTabsButton = new Button(messageSource.getMessage(Message.CLOSE_ALL_TABS));
-        closeAllTabsButton.setStyleName(BaseTheme.BUTTON_LINK);
-        closeAllTabsButton.setVisible(false);
-        
-        listStatusForChanges = new HashMap<SelectParentsListDataComponent,Boolean>();
+		listTreeComponent = new CrossingManagerListTreeComponent(this, source);
+
+		instructionForSelectParents = new Label("for a list to work with.");
+
+		listDetailsTabSheet = new TabSheet();
+		listDetailsTabSheet.setWidth("460px");
+		listDetailsTabSheet.setHeight("465px");
+		hideListDetailsTabSheet();
+
+		closeAllTabsButton = new Button(messageSource.getMessage(Message.CLOSE_ALL_TABS));
+		closeAllTabsButton.setStyleName(BaseTheme.BUTTON_LINK);
+		closeAllTabsButton.setVisible(false);
+
+		listStatusForChanges = new HashMap<SelectParentsListDataComponent, Boolean>();
 	}
 
 	private void hideListDetailsTabSheet() {
-		listDetailsTabSheet.addStyleName(AppConstants.CssStyles.NO_TAB);	
+		listDetailsTabSheet.addStyleName(AppConstants.CssStyles.NO_TAB);
 	}
-	
+
 	private void showListDetailsTabSheet() {
-		listDetailsTabSheet.removeStyleName(AppConstants.CssStyles.NO_TAB);	
+		listDetailsTabSheet.removeStyleName(AppConstants.CssStyles.NO_TAB);
 	}
 
 	@Override
@@ -115,25 +116,27 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 
 	@Override
 	public void addListeners() {
-		
+
 		listDetailsTabSheet.setCloseHandler(new CloseHandler() {
+
 			private static final long serialVersionUID = -7085023295466691749L;
 
 			@Override
 			public void onTabClose(TabSheet tabsheet, Component tabContent) {
-				if(tabsheet.getComponentCount() > 1){
-		            String tabCaption=tabsheet.getTab(tabContent).getCaption();
-		            Tab tab = Util.getTabToFocus(tabsheet, tabCaption);
-		            tabsheet.removeTab(tabsheet.getTab(tabContent));
-		            tabsheet.setSelectedTab(tab.getComponent());
-		        }else{
-		            tabsheet.removeTab(tabsheet.getTab(tabContent));
-		            hideDetailsTabsheet();
-		        }
+				if (tabsheet.getComponentCount() > 1) {
+					String tabCaption = tabsheet.getTab(tabContent).getCaption();
+					Tab tab = Util.getTabToFocus(tabsheet, tabCaption);
+					tabsheet.removeTab(tabsheet.getTab(tabContent));
+					tabsheet.setSelectedTab(tab.getComponent());
+				} else {
+					tabsheet.removeTab(tabsheet.getTab(tabContent));
+					hideDetailsTabsheet();
+				}
 			}
 		});
-		 
+
 		closeAllTabsButton.addListener(new Button.ClickListener() {
+
 			private static final long serialVersionUID = -2946008623293356900L;
 
 			@Override
@@ -143,16 +146,16 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 				closeAllTabsButton.setVisible(false);
 			}
 		});
-		
-        browseForListsButton.addListener(new Button.ClickListener() {
 
-        	private static final long serialVersionUID = 6385074843600086746L;
+		browseForListsButton.addListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = 6385074843600086746L;
 
 			@Override
 			public void buttonClick(final ClickEvent event) {
 				openBrowseForListDialog();
 			}
-        });
+		});
 	}
 
 	protected void hideDetailsTabsheet() {
@@ -162,124 +165,128 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 
 	@Override
 	public void layoutComponents() {
-		
+
 		setSpacing(true);
 		setWidth("460px");
-		
-		HeaderLabelLayout selectParentsHeaderLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_SELECT_PARENTS,selectParentsLabel);
+
+		HeaderLabelLayout selectParentsHeaderLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_SELECT_PARENTS, selectParentsLabel);
 
 		HorizontalLayout leftLayout = new HorizontalLayout();
 		leftLayout.setSpacing(true);
 		leftLayout.addComponent(browseForListsButton);
 		leftLayout.addComponent(instructionForSelectParents);
-		
-		HorizontalLayout instructionForSelectParentsLayout = new HorizontalLayout(); 
+
+		HorizontalLayout instructionForSelectParentsLayout = new HorizontalLayout();
 		instructionForSelectParentsLayout.setWidth("100%");
 		instructionForSelectParentsLayout.addComponent(leftLayout);
 		instructionForSelectParentsLayout.addComponent(closeAllTabsButton);
-		instructionForSelectParentsLayout.setComponentAlignment(leftLayout,Alignment.MIDDLE_LEFT);
-		instructionForSelectParentsLayout.setComponentAlignment(closeAllTabsButton,Alignment.MIDDLE_RIGHT);
-		
+		instructionForSelectParentsLayout.setComponentAlignment(leftLayout, Alignment.MIDDLE_LEFT);
+		instructionForSelectParentsLayout.setComponentAlignment(closeAllTabsButton, Alignment.MIDDLE_RIGHT);
+
 		addComponent(selectParentsHeaderLayout);
 		addComponent(instructionForSelectParentsLayout);
 		addComponent(listDetailsTabSheet);
 	}
-	
-	public void selectListInTree(Integer id){
+
+	public void selectListInTree(Integer id) {
 		listTreeComponent.setListId(id);
 		listTreeComponent.createTree();
 		listTreeComponent.setSelectedListId(id);
 	}
-	
+
 	@Override
 	public void studyClicked(GermplasmList list) {
 		createListDetailsTab(list.getId(), list.getName());
 	}
-	
-	public void openBrowseForListDialog(){
-		SaveTreeStateListener saveTreeStateListener = new SaveTreeStateListener((TreeTable) listTreeComponent.getGermplasmListSource(), ListTreeState.GERMPLASM_LIST.name(), ListSelectorComponent.LISTS);
+
+	public void openBrowseForListDialog() {
+		SaveTreeStateListener saveTreeStateListener =
+				new SaveTreeStateListener((TreeTable) listTreeComponent.getGermplasmListSource(), ListTreeState.GERMPLASM_LIST.name(),
+						ListSelectorComponent.LISTS);
 		listTreeComponent.showAddRenameFolderSection(false);
 		listTreeComponent.reinitializeTree();
-		launchListSelectionWindow(getWindow(), listTreeComponent, messageSource.getMessage(Message.BROWSE_FOR_LISTS)).addListener(saveTreeStateListener);
-	}
-	
-    private Window launchListSelectionWindow (final Window window, final Component content, final String caption) {
-
-        final CssLayout layout = new CssLayout();
-        layout.setMargin(true);
-        layout.setWidth("100%");
-        layout.setHeight("515px");
-
-        layout.addComponent(content);
-      
-        
-        final Window popupWindow = new BaseSubWindow();
-        popupWindow.setWidth("900px");
-        popupWindow.setHeight("575px");
-        popupWindow.setModal(true);
-        popupWindow.setResizable(false);
-        popupWindow.center();
-        popupWindow.setCaption(caption);
-        popupWindow.setContent(layout);
-        popupWindow.addStyleName(Reindeer.WINDOW_LIGHT);
-        popupWindow.addStyleName("lm-list-manager-popup");
-        popupWindow.setCloseShortcut(KeyCode.ESCAPE, null);
-        popupWindow.setScrollable(false);
-        
-        window.addWindow(popupWindow);
-        
-        return popupWindow;
+		launchListSelectionWindow(getWindow(), listTreeComponent, messageSource.getMessage(Message.BROWSE_FOR_LISTS)).addListener(
+				saveTreeStateListener);
 	}
 
-    public void createListDetailsTab(Integer listId, String listName){
-    	
-    	if(listDetailsTabSheet.getComponentCount() == 0){
-    		showListDetailsTabSheet();
-    	}
-    	
-    	if(Util.isTabExist(listDetailsTabSheet, listName)){
-    		Tab tabToFocus = null;
-    		for(int ctr = 0; ctr < listDetailsTabSheet.getComponentCount(); ctr++){
-    			Tab tab = listDetailsTabSheet.getTab(ctr);
-    			if(tab != null && tab.getCaption().equals(listName)){
-    				tabToFocus = tab;
-    			}
-    		}
-    		if (tabToFocus != null){
-            	listDetailsTabSheet.setSelectedTab(tabToFocus);
-            }
-	    } else{
-	    	Tab newTab = listDetailsTabSheet.addTab(new SelectParentsListDataComponent(listId, listName, source.getParentsComponent()), listName);
-	    	newTab.setDescription(generateTabDescription(listId));
-	    	newTab.setClosable(true);
-	    	listDetailsTabSheet.setSelectedTab(newTab);
-    	}
-    	
-    	if(listDetailsTabSheet.getComponentCount() >= 2){
-    		closeAllTabsButton.setVisible(true);
-    	} else{
-    		closeAllTabsButton.setVisible(false);
-    	}
-    	
-    }
-    
-	public void updateUIForDeletedList(GermplasmList list){
+	private Window launchListSelectionWindow(final Window window, final Component content, final String caption) {
+
+		final CssLayout layout = new CssLayout();
+		layout.setMargin(true);
+		layout.setWidth("100%");
+		layout.setHeight("515px");
+
+		layout.addComponent(content);
+
+		final Window popupWindow = new BaseSubWindow();
+		popupWindow.setWidth("900px");
+		popupWindow.setHeight("575px");
+		popupWindow.setModal(true);
+		popupWindow.setResizable(false);
+		popupWindow.center();
+		popupWindow.setCaption(caption);
+		popupWindow.setContent(layout);
+		popupWindow.addStyleName(Reindeer.WINDOW_LIGHT);
+		popupWindow.addStyleName("lm-list-manager-popup");
+		popupWindow.setCloseShortcut(KeyCode.ESCAPE, null);
+		popupWindow.setScrollable(false);
+
+		window.addWindow(popupWindow);
+
+		return popupWindow;
+	}
+
+	public void createListDetailsTab(Integer listId, String listName) {
+
+		if (listDetailsTabSheet.getComponentCount() == 0) {
+			showListDetailsTabSheet();
+		}
+
+		if (Util.isTabExist(listDetailsTabSheet, listName)) {
+			Tab tabToFocus = null;
+			for (int ctr = 0; ctr < listDetailsTabSheet.getComponentCount(); ctr++) {
+				Tab tab = listDetailsTabSheet.getTab(ctr);
+				if (tab != null && tab.getCaption().equals(listName)) {
+					tabToFocus = tab;
+				}
+			}
+			if (tabToFocus != null) {
+				listDetailsTabSheet.setSelectedTab(tabToFocus);
+			}
+		} else {
+			Tab newTab =
+					listDetailsTabSheet
+							.addTab(new SelectParentsListDataComponent(listId, listName, source.getParentsComponent()), listName);
+			newTab.setDescription(generateTabDescription(listId));
+			newTab.setClosable(true);
+			listDetailsTabSheet.setSelectedTab(newTab);
+		}
+
+		if (listDetailsTabSheet.getComponentCount() >= 2) {
+			closeAllTabsButton.setVisible(true);
+		} else {
+			closeAllTabsButton.setVisible(false);
+		}
+
+	}
+
+	public void updateUIForDeletedList(GermplasmList list) {
 		String listName = list.getName();
-		for(int ctr = 0; ctr < listDetailsTabSheet.getComponentCount(); ctr++){
+		for (int ctr = 0; ctr < listDetailsTabSheet.getComponentCount(); ctr++) {
 			Tab tab = listDetailsTabSheet.getTab(ctr);
-			if(tab != null && tab.getCaption().equals(listName)){
+			if (tab != null && tab.getCaption().equals(listName)) {
 				listDetailsTabSheet.removeTab(tab);
 				return;
 			}
 		}
 	}
-	
-	public void updateUIForRenamedList(GermplasmList list, String newName){
+
+	public void updateUIForRenamedList(GermplasmList list, String newName) {
 		Integer listId = list.getId();
 		String description = generateTabDescription(listId);
-		for(int ctr = 0; ctr < listDetailsTabSheet.getComponentCount(); ctr++){
+		for (int ctr = 0; ctr < listDetailsTabSheet.getComponentCount(); ctr++) {
 			Tab tab = listDetailsTabSheet.getTab(ctr);
-			if(tab != null && tab.getDescription().equals(description)){
+			if (tab != null && tab.getDescription().equals(description)) {
 				tab.setCaption(newName);
 				return;
 			}
@@ -290,20 +297,20 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	public void folderClicked(GermplasmList list) {
 		// do nothing
 	}
-	
+
 	// SETTERS AND GETTERS
-	public TabSheet getListDetailsTabSheet(){
+	public TabSheet getListDetailsTabSheet() {
 		return listDetailsTabSheet;
 	}
-	
-	public CrossingManagerListTreeComponent getListTreeComponent(){
+
+	public CrossingManagerListTreeComponent getListTreeComponent() {
 		return listTreeComponent;
 	}
 
 	@Override
 	public void addListToFemaleList(Integer germplasmListId) {
 		source.getParentsComponent().addListToFemaleTable(germplasmListId);
-		
+
 	}
 
 	@Override
@@ -314,51 +321,49 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	public void updateViewForAllLists(ModeView modeView) {
 		List<SelectParentsListDataComponent> selectParentComponents = new ArrayList<SelectParentsListDataComponent>();
 		selectParentComponents.addAll(listStatusForChanges.keySet());
-		
-		if(modeView.equals(ModeView.LIST_VIEW)){
-			for(SelectParentsListDataComponent selectParentComponent : selectParentComponents){
+
+		if (modeView.equals(ModeView.LIST_VIEW)) {
+			for (SelectParentsListDataComponent selectParentComponent : selectParentComponents) {
 				selectParentComponent.changeToListView();
 			}
-		} else if(modeView.equals(ModeView.INVENTORY_VIEW)){
-			for(SelectParentsListDataComponent selectParentComponent : selectParentComponents){
+		} else if (modeView.equals(ModeView.INVENTORY_VIEW)) {
+			for (SelectParentsListDataComponent selectParentComponent : selectParentComponents) {
 				selectParentComponent.viewInventoryActionConfirmed();
 			}
 		}
 	}
-	
-	public Map<SelectParentsListDataComponent,Boolean> getListStatusForChanges(){
+
+	public Map<SelectParentsListDataComponent, Boolean> getListStatusForChanges() {
 		return listStatusForChanges;
 	}
 
-	public void addUpdateListStatusForChanges(
-			SelectParentsListDataComponent selectParentsListDataComponent,
-			boolean hasChanges) {
+	public void addUpdateListStatusForChanges(SelectParentsListDataComponent selectParentsListDataComponent, boolean hasChanges) {
 		removeListStatusForChanges(selectParentsListDataComponent);
 		listStatusForChanges.put(selectParentsListDataComponent, hasChanges);
-		
-		if(hasUnsavedChanges()){
+
+		if (hasUnsavedChanges()) {
 			setHasUnsavedChangesMain(true);
 		} else {
 			setHasUnsavedChangesMain(false);
 		}
 	}
-	
+
 	public boolean hasUnsavedChanges() {
 		List<Boolean> listOfStatus = new ArrayList<Boolean>();
-		
+
 		listOfStatus.addAll(listStatusForChanges.values());
-		
-		for(Boolean status: listOfStatus){
-			if(status){
+
+		for (Boolean status : listOfStatus) {
+			if (status) {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 
 	public void removeListStatusForChanges(SelectParentsListDataComponent selectParentsListDataComponent) {
-		if(listStatusForChanges.containsKey(selectParentsListDataComponent)){
+		if (listStatusForChanges.containsKey(selectParentsListDataComponent)) {
 			listStatusForChanges.remove(selectParentsListDataComponent);
 		}
 	}
@@ -371,28 +376,28 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	public void updateHasChangesForAllList(boolean hasChanges) {
 		List<SelectParentsListDataComponent> selectParentComponents = new ArrayList<SelectParentsListDataComponent>();
 		selectParentComponents.addAll(listStatusForChanges.keySet());
-		
-		for(SelectParentsListDataComponent selectParentComponent : selectParentComponents){
+
+		for (SelectParentsListDataComponent selectParentComponent : selectParentComponents) {
 			selectParentComponent.setHasUnsavedChanges(hasChanges);
 		}
 	}
-	
-	public CrossingManagerMakeCrossesComponent getCrossingManagerMakeCrossesComponent(){
+
+	public CrossingManagerMakeCrossesComponent getCrossingManagerMakeCrossesComponent() {
 		return source;
 	}
 
 	public void resetInventoryViewForCancelledChanges() {
 		List<SelectParentsListDataComponent> listDataComponents = new ArrayList<SelectParentsListDataComponent>();
 		listDataComponents.addAll(listStatusForChanges.keySet());
-		
-		for(SelectParentsListDataComponent listDataComponent : listDataComponents){
-			if(listDataComponent.hasUnsavedChanges()){
+
+		for (SelectParentsListDataComponent listDataComponent : listDataComponents) {
+			if (listDataComponent.hasUnsavedChanges()) {
 				listDataComponent.resetListInventoryTableValues();
 			}
 		}
 	}
-	
-    public static String generateTabDescription(Integer listId){
-    	return TAB_DESCRIPTION_PREFIX + listId;
-    }
+
+	public static String generateTabDescription(Integer listId) {
+		return TAB_DESCRIPTION_PREFIX + listId;
+	}
 }
