@@ -23,6 +23,7 @@
 		<spring.version>3.2.11.RELEASE</spring.version>
 		<spring.security.version>3.2.5.RELEASE</spring.security.version>
 		<webapp.path>C:/Breeding Management System/infrastructure/tomcat/webapps</webapp.path>
+		<envConfig>release</envConfig>	
 	</properties>
 
 	<distributionManagement>
@@ -263,14 +264,18 @@
 		</dependency>
 
 	</dependencies>
-	
+
 	<scm>
 		<developerConnection>scm:git:https://github.com/IntegratedBreedingPlatform/BreedingManager</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
-	
+
 	<build>
 		<finalName>${project.artifactId}</finalName>
+		<filters>
+			<filter>../BMSConfig/${envConfig}/application.properties</filter>
+			<filter>../BMSConfig/${envConfig}/test.properties</filter>
+		</filters>
 		<resources>
 			<resource>
 				<filtering>false</filtering>
@@ -283,13 +288,42 @@
 				</excludes>
 			</resource>
 			<resource>
+				<filtering>true</filtering>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*.properties</include>
+				</includes>
+			</resource>
+			<resource>
 				<filtering>false</filtering>
 				<directory>src/main/resources</directory>
 				<includes>
 					<include>**</include>
 				</includes>
+				<excludes>
+					<exclude>**/*.properties</exclude>
+				</excludes>
 			</resource>
 		</resources>
+		<testResources>
+			<testResource>
+				<filtering>true</filtering>
+				<directory>src/test/resources</directory>
+				<includes>
+					<include>**/*.properties</include>
+				</includes>
+			</testResource>
+			<testResource>
+				<filtering>false</filtering>
+				<directory>src/test/resources</directory>
+				<includes>
+					<include>**</include>
+				</includes>
+				<excludes>
+					<exclude>**/*.properties</exclude>
+				</excludes>
+			</testResource>
+		</testResources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.tomcat.maven</groupId>
@@ -322,43 +356,7 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.8</version>
 			</plugin>
-			<plugin>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.7</version>
-				<executions>
-					<execution>
-						<id>copy-properties</id>
-						<phase>generate-resources</phase>
-						<configuration>
-							<tasks>
-								<copy todir="src/main/resources" overwrite="true">
-									<fileset dir="pipeline/config/${envConfig}" id="fromDir">
-										<include name="workbench.properties" />
-										<include name="crossing.properties" />
-									</fileset>
-								</copy>
-							</tasks>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>default-cli</id>
-						<configuration>
-							<tasks>
-								<delete dir="${webapp.path}/${project.artifactId}" />
-								<copy todir="${webapp.path}/${project.artifactId}">
-									<fileset dir="target/${project.artifactId}" includes="**/*" />
-								</copy>
-							</tasks>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
