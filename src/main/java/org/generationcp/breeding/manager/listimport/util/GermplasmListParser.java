@@ -225,7 +225,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		// If a VARIATE header exists without accompanying data, show a warning after the import
 		// This alerts the user to a case of multiple VARIATE headers, where the first does not
 		// have data.  User has requested a warning message.
-		if (variateList.size() < 1) {
+		if (variateList.isEmpty()) {
 		    this.noVariatesWarning = "VARIATE header present with no data";
 		}
 		this.attributeVariates = variateDetailsConverter.getAttributeVariates();
