@@ -23,7 +23,7 @@
 		<spring.version>3.2.11.RELEASE</spring.version>
 		<spring.security.version>3.2.5.RELEASE</spring.security.version>
 		<webapp.path>C:/Breeding Management System/infrastructure/tomcat/webapps</webapp.path>
-		<envConfig>release</envConfig>	
+		<envConfig>${user.name}</envConfig>
 	</properties>
 
 	<distributionManagement>
