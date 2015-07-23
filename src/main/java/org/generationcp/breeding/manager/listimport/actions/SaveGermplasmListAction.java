@@ -98,7 +98,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 	/**
 	 * Saves records in Germplasm, GermplasmList and GermplasmListData, ProjectActivity (Workbench).
-	 *
+	 * 
 	 * @param germplasmList
 	 * @param germplasmNameObjects
 	 * @param newNames
@@ -111,7 +111,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	 */
 	public Integer saveRecords(GermplasmList germplasmList, List<GermplasmName> germplasmNameObjects, List<Name> newNames, String filename,
 			List<Integer> doNotCreateGermplasmsWithId, ImportedGermplasmList importedGermplasmList, Integer seedStorageLocation)
-					throws MiddlewareQueryException {
+			throws MiddlewareQueryException {
 
 		germplasmList.setUserId(this.contextUtil.getCurrentUserLocalId());
 
@@ -465,7 +465,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	}
 
 	protected void createDepositInventoryTransaction(GermplasmList list, ImportedGermplasm importedGermplasm, Integer gid, Integer lrecId)
-					throws MiddlewareQueryException {
+			throws MiddlewareQueryException {
 		if (importedGermplasm != null && importedGermplasm.getSeedAmount() != null && importedGermplasm.getSeedAmount() > 0) {
 
 			if (this.gidTransactionSetMap.get(gid) == null) {
@@ -515,7 +515,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	}
 
 	private List<Name> prepareAllNamesToAdd(ImportedGermplasm importedGermplasm, List<UserDefinedField> existingUdflds, Germplasm germplasm)
-					throws MiddlewareQueryException {
+			throws MiddlewareQueryException {
 		List<Name> names = new ArrayList<Name>();
 
 		Map<String, String> otherNames = importedGermplasm.getNameFactors();
