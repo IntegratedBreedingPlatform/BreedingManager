@@ -2,7 +2,9 @@
 package org.generationcp.breeding.manager.listimport.actions;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -188,6 +190,11 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 				if (addedGermplasmMatch == null) {
 					germplasm = germplasmName.getGermplasm();
 					germplasmName.getGermplasm().setGid(null);
+					if (germplasm.getGdate().equals(Integer.valueOf(0))) {
+						SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+						Date today = new Date();
+						germplasm.setGdate(Integer.valueOf(dateFormat.format(today)));
+					}
 					gid = this.germplasmManager.addGermplasm(germplasm, name);
 					addedGermplasmNameMap.put(germplasmName.getGermplasm().getGid(), germplasmName);
 					// if already addded (re-use that one)
