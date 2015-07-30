@@ -136,8 +136,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		this.saveInventory();
 
 		// log project activity in Workbench
-		this.contextUtil.logProgramActivity(SaveGermplasmListAction.WB_ACTIVITY_NAME, SaveGermplasmListAction.WB_ACTIVITY_DESCRIPTION
-				+ filename);
+		this.contextUtil.logProgramActivity(SaveGermplasmListAction.WB_ACTIVITY_NAME,
+				SaveGermplasmListAction.WB_ACTIVITY_DESCRIPTION + filename);
 
 		return list.getId();
 	}
@@ -565,5 +565,25 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		germplasmListData.setLocalRecordId(entryId);
 
 		return germplasmListData;
+	}
+
+	public void setGermplasmListManager(GermplasmListManager germplasmListManager) {
+		this.germplasmListManager = germplasmListManager;
+	}
+
+	public void setGermplasmManager(GermplasmDataManager germplasmManager) {
+		this.germplasmManager = germplasmManager;
+	}
+
+	public void setInventoryDataManager(InventoryDataManager inventoryDataManager) {
+		this.inventoryDataManager = inventoryDataManager;
+	}
+
+	public void setOntologyDataManager(OntologyDataManager ontologyDataManager) {
+		this.ontologyDataManager = ontologyDataManager;
+	}
+
+	public void setContextUtil(ContextUtil contextUtil) {
+		this.contextUtil = contextUtil;
 	}
 }
