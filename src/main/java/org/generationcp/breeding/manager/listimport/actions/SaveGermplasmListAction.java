@@ -29,6 +29,7 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
+import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.Attribute;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -41,6 +42,7 @@ import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.Transaction;
 import org.generationcp.middleware.pojos.ims.TransactionStatus;
 import org.generationcp.middleware.util.Util;
+import org.jfree.util.Log;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -80,6 +82,9 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
+
+	@Autowired
+	private UserDataManager userDataManager;
 
 	@Resource
 	private ContextUtil contextUtil;
@@ -481,15 +486,31 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 			Integer intDate = DateUtil.getCurrentDateAsIntegerValue();
 
+			Integer cropUserId = this.contextUtil.getCurrentUserLocalId();
+
 			Transaction transaction =
-					new Transaction(null, this.contextUtil.getCurrentWorkbenchUserId(), this.gidLotMap.get(gid), intDate,
-							TransactionStatus.DEPOSITED.getIntValue(), importedGermplasm.getSeedAmount(),
-							SaveGermplasmListAction.INVENTORY_COMMENT, 0, "LIST", list.getId(), lrecId, Double.valueOf(0), 0,
-							importedGermplasm.getInventoryId());
+					new Transaction(null, cropUserId, this.gidLotMap.get(gid), intDate, TransactionStatus.DEPOSITED.getIntValue(),
+							importedGermplasm.getSeedAmount(), SaveGermplasmListAction.INVENTORY_COMMENT, 0, "LIST", list.getId(), lrecId,
+							Double.valueOf(0), this.getCropPersonId(cropUserId), importedGermplasm.getInventoryId());
 			if (importedGermplasm.getSeedAmount() != null) {
 				this.gidTransactionSetMap.get(gid).add(transaction);
 			}
 		}
+	}
+
+	protected Integer getCropPersonId(Integer cropUserId) {
+		User cropUser = null;
+		Integer cropPersonId = 0;
+		try {
+			cropUser = this.userDataManager.getUserById(cropUserId);
+			if (cropUser != null) {
+				cropPersonId = cropUser.getPersonid();
+			}
+		} catch (MiddlewareQueryException e) {
+			Log.error(e.getMessage(), e);
+		}
+
+		return cropPersonId;
 	}
 
 	private List<Attribute> prepareAllAttributesToAdd(ImportedGermplasm importedGermplasm, List<UserDefinedField> existingUdflds,
