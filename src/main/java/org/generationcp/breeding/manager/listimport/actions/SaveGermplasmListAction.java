@@ -607,4 +607,9 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	public void setContextUtil(ContextUtil contextUtil) {
 		this.contextUtil = contextUtil;
 	}
+
+	public void setUserDataManager(UserDataManager userDataManager) {
+		this.userDataManager = userDataManager;
+	}
+
 }
