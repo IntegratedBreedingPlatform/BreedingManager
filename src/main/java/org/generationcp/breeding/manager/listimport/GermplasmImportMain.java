@@ -6,12 +6,13 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
-import org.generationcp.breeding.manager.constants.AppConstants.CssStyles;
 import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDisplay.StepChangeListener;
 import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.util.Util;
+import org.generationcp.commons.help.document.HELP_MODULE;
+import org.generationcp.commons.help.document.HelpButton;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -19,12 +20,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.PopupView;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.VerticalLayout;
@@ -35,10 +34,6 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 	private static final long serialVersionUID = -6656072296236475385L;
 	public static final String DATE_FORMAT = "yyyy-MM-dd";
 	private static final int NUMBER_OF_STEPS = 2;
-
-	private static final String GUIDE_MESSAGE =
-			"The Germplasm Import Import tool allows you to create a new list of germplasm from an import file. "
-					+ "Sample import file templates are available in the Examples folder in the documentation provided with the BMS.";
 
 	private final String[] wizardStepNames = new String[GermplasmImportMain.NUMBER_OF_STEPS];
 	private final String[] tabHeights = new String[GermplasmImportMain.NUMBER_OF_STEPS];
@@ -99,22 +94,17 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 		return this.germplasmDetailsComponent;
 	}
 
-	public void setTitleContent(String guideMessage) {
-		this.titleLayout.removeAllComponents();
+	private void setTitleContent() {
+		this.titleLayout = new HorizontalLayout();
+		this.titleLayout.setSpacing(true);
+
 		this.toolTitle = new Label(this.messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
 		this.toolTitle.setStyleName(Bootstrap.Typography.H1.styleName());
 		this.toolTitle.setContentMode(Label.CONTENT_XHTML);
-		this.toolTitle.setWidth("300px");
+		this.toolTitle.setWidth("268px");
+
 		this.titleLayout.addComponent(this.toolTitle);
-
-		Label descLbl = new Label(guideMessage);
-		descLbl.setWidth("400px");
-
-		PopupView popup = new PopupView("?", descLbl);
-		popup.setStyleName(CssStyles.POPUP_VIEW);
-		this.titleLayout.addComponent(popup);
-
-		this.titleLayout.setComponentAlignment(popup, Alignment.MIDDLE_LEFT);
+		this.titleLayout.addComponent(new HelpButton(HELP_MODULE.IMPORT_GERMPLASM, "View Import Germplasm Tutorial"));
 	}
 
 	@Override
@@ -122,9 +112,7 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 		this.setMargin(false, false, true, true);
 		this.setWidth("730px");
 
-		this.titleLayout = new HorizontalLayout();
-		this.titleLayout.setSpacing(true);
-		this.setTitleContent(GermplasmImportMain.GUIDE_MESSAGE);
+		this.setTitleContent();
 
 		this.instantiateWizardDisplay();
 
