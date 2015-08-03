@@ -69,6 +69,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	private String seedAmountVariate = "";
 	private Set<String> nameFactors;
 	private Set<String> attributeVariates;
+  	private StockIDValidator stockIDValidator = new StockIDValidator();
 
 	public String getNoInventoryWarning() {
 		return this.noInventoryWarning;
@@ -329,7 +330,13 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 		Date listDate;
 		try {
-			listDate = DateUtil.parseDate(this.getCellStringValue(GermplasmListParser.DESCRIPTION_SHEET_NO, listDateColNo, 1));
+		  String listDateCellValue = this.getCellStringValue(GermplasmListParser.DESCRIPTION_SHEET_NO, listDateColNo, 1);
+
+		  if ("".equals(listDateCellValue.trim())) {
+			listDate = DateUtil.getCurrentDate();
+		  } else {
+			listDate = DateUtil.parseDate(listDateCellValue);
+		  }
 		} catch (ParseException e) {
 			throw new FileParsingException("GERMPLASM_PARSE_LIST_DATE_FORMAT_INVALID");
 		}
@@ -415,8 +422,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 		this.importedGermplasmList.setImportedGermplasms(importedGermplasms);
 		if (this.specialFactors.containsKey(FactorTypes.STOCK)) {
-			StockIDValidator validator = new StockIDValidator(this.specialFactors.get(FactorTypes.STOCK), this.importedGermplasmList);
-			validator.validate();
+		  this.stockIDValidator.validate(this.specialFactors.get(FactorTypes.STOCK), this.importedGermplasmList);
 		}
 
 		this.importedGermplasmList.normalizeGermplasmList();

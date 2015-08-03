@@ -7,8 +7,10 @@ import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.generationcp.breeding.manager.listimport.validator.StockIDValidator;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.commons.parsing.FileParsingException;
+import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
@@ -17,11 +19,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.AdditionalMatchers;
-import org.mockito.InjectMocks;
-import org.mockito.Matchers;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 
 /**
@@ -46,6 +44,9 @@ public class GermplasmListParserTest {
 
 	@Mock
 	private InventoryDataManager inventoryDataManager;
+
+  	@InjectMocks
+	private StockIDValidator stockIDValidator = Mockito.spy(new StockIDValidator());
 
 	@InjectMocks
 	private final GermplasmListParser parser = Mockito.spy(new GermplasmListParser());
@@ -105,10 +106,12 @@ public class GermplasmListParserTest {
 		this.importedGermplasmList = this.parser.parseWorkbook(this.defaultWorkbook, null);
 
 		Assert.assertNotNull(this.importedGermplasmList);
+	    Assert.assertEquals("This template has blank list date, should be eq to current date", DateUtil.getCurrentDateInUIFormat(),DateUtil.getDateInUIFormat(this.importedGermplasmList.getDate()));
 		assert this.parser.hasStockIdFactor();
 	}
 
-	/**
+
+  /**
 	 * Test when we have no stock id column in observation
 	 * 
 	 * @throws Exception
@@ -148,7 +151,7 @@ public class GermplasmListParserTest {
 			this.importedGermplasmList = this.parser.parseWorkbook(this.missingStockIDValuesWorkbook, null);
 			Assert.fail();
 		} catch (FileParsingException e) {
-			Assert.assertEquals("common.parser.validation.error.empty.value", e.getMessage());
+			Assert.assertEquals("GERMPLSM_PARSE_GID_MISSING_STOCK_ID_VALUE", e.getMessage());
 		}
 	}
 

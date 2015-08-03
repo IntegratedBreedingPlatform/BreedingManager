@@ -22,31 +22,23 @@ public class StockIDValidator {
 	@Resource
 	private InventoryDataManager inventoryDataManager;
 
-	private final String header;
-	private final ImportedGermplasmList importedGermplasmList;
-
-	public StockIDValidator(String header, ImportedGermplasmList importedGermplasmList) {
-		this.header = header;
-		this.importedGermplasmList = importedGermplasmList;
+	public void validate(String header,ImportedGermplasmList importedGermplasmList) throws FileParsingException {
+		this.validateForDuplicateStockIds(header,importedGermplasmList);
+		this.validateForMissingStockIDValues(header,importedGermplasmList);
 	}
 
-	public void validate() throws FileParsingException {
-		this.validateForDuplicateStockIds();
-		this.validateForMissingStockIDValues();
-	}
-
-	private void validateForDuplicateStockIds() throws FileParsingException {
-		String possibleDuplicateStockId = this.importedGermplasmList.getDuplicateStockIdIfExists();
+	private void validateForDuplicateStockIds(String header,ImportedGermplasmList importedGermplasmList) throws FileParsingException {
+		String possibleDuplicateStockId = importedGermplasmList.getDuplicateStockIdIfExists();
 		if (!"".equals(possibleDuplicateStockId.trim())) {
-			throw new FileParsingException("GERMPLASM_PARSE_DUPLICATE_STOCK_ID", 0, possibleDuplicateStockId, this.header);
+			throw new FileParsingException("GERMPLASM_PARSE_DUPLICATE_STOCK_ID", 0, possibleDuplicateStockId, header);
 		}
 
 		try {
 			List<String> possibleExistingDBStockIds =
-					this.inventoryDataManager.getSimilarStockIds(this.importedGermplasmList.getStockIdsAsList());
+					this.inventoryDataManager.getSimilarStockIds(importedGermplasmList.getStockIdsAsList());
 			if (!possibleExistingDBStockIds.isEmpty()) {
 				throw new FileParsingException("GERMPLASM_PARSE_DUPLICATE_DB_STOCK_ID", 0, StringUtils.abbreviate(
-						StringUtils.join(possibleExistingDBStockIds, " "), 20), this.header);
+						StringUtils.join(possibleExistingDBStockIds, " "), 20), header);
 			}
 		} catch (MiddlewareQueryException e) {
 			StockIDValidator.LOG.error(e.getMessage(), e);
@@ -54,9 +46,9 @@ public class StockIDValidator {
 		}
 	}
 
-	private void validateForMissingStockIDValues() throws FileParsingException {
-		if (this.importedGermplasmList.hasMissingStockIDValues()) {
-			throw new FileParsingException("GERMPLSM_PARSE_GID_MISSING_STOCK_ID_VALUE", 0, "", this.header);
+	private void validateForMissingStockIDValues(String header,ImportedGermplasmList importedGermplasmList) throws FileParsingException {
+		if (importedGermplasmList.hasMissingStockIDValues()) {
+			throw new FileParsingException("GERMPLSM_PARSE_GID_MISSING_STOCK_ID_VALUE", 0, "", header);
 		}
 	}
 
