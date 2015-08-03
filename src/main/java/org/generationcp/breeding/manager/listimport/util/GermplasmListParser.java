@@ -1,4 +1,3 @@
-
 package org.generationcp.breeding.manager.listimport.util;
 
 import java.text.ParseException;
@@ -9,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
@@ -42,25 +40,23 @@ import org.springframework.beans.factory.annotation.Configurable;
 @Configurable
 public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermplasmList> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(GermplasmListParser.class);
-
 	public static final int DESCRIPTION_SHEET_COL_SIZE = 8;
 	public static final int DESCRIPTION_SHEET_NO = 0;
 	public static final int CONDITION_HEADER_ROW_INDEX = 5;
 	public static final String TEMPLATE_LIST_TYPE = "LST";
 	public static final String LIST_DATE = "LIST DATE";
 	public static final String LIST_TYPE = "LIST TYPE";
+	private static final Logger LOG = LoggerFactory.getLogger(GermplasmListParser.class);
 	private static final int OBSERVATION_SHEET_NO = 1;
+
+	private final Map<Integer, String> observationColumnMap = new HashMap<>();
 
 	@Resource
 	private GermplasmDataManager germplasmDataManager;
-
 	@Resource
 	private OntologyDataManager ontologyDataManager;
 
 	private int currentRowIndex = 0;
-	private final Map<Integer, String> observationColumnMap = new HashMap<>();
-
 	private ImportedGermplasmList importedGermplasmList;
 	private Map<FactorTypes, String> specialFactors;
 
@@ -69,7 +65,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	private String seedAmountVariate = "";
 	private Set<String> nameFactors;
 	private Set<String> attributeVariates;
-  	private StockIDValidator stockIDValidator = new StockIDValidator();
+	private StockIDValidator stockIDValidator = new StockIDValidator();
 
 	public String getNoInventoryWarning() {
 		return this.noInventoryWarning;
@@ -80,8 +76,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	}
 
 	public boolean hasInventoryAmountOnly() {
-		return !this.seedAmountVariate.isEmpty()
-				&& (!this.specialFactors.containsKey(FactorTypes.STOCK) || !this.importedGermplasmList.isHasStockIDValues());
+		return !this.seedAmountVariate.isEmpty() && (!this.specialFactors.containsKey(FactorTypes.STOCK) || !this.importedGermplasmList
+				.isHasStockIDValues());
 	}
 
 	public boolean hasInventoryAmount() {
@@ -98,94 +94,6 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 	public boolean importFileIsAdvanced() {
 		return this.importFileIsAdvanced;
-	}
-
-	enum ConditionHeaders {
-		CONDITION("CONDITION"), DESCRIPTION("DESCRIPTION"), PROPERTY("PROPERTY"), SCALE("SCALE"), METHOD("METHOD");
-
-		String label;
-
-		ConditionHeaders(String label) {
-			this.label = label;
-		}
-
-		public static String[] names() {
-			ConditionHeaders[] values = ConditionHeaders.values();
-			String[] names = new String[values.length];
-
-			for (int i = 0; i < values.length; i++) {
-				names[i] = values[i].label;
-			}
-
-			return names;
-		}
-	}
-
-	enum FactorHeaders {
-		FACTOR("FACTOR"), DESCRIPTION("DESCRIPTION"), PROPERTY("PROPERTY"), SCALE("SCALE"), METHOD("METHOD");
-
-		String label;
-
-		FactorHeaders(String label) {
-			this.label = label;
-		}
-
-		public static String[] names() {
-			FactorHeaders[] values = FactorHeaders.values();
-			String[] names = new String[values.length];
-
-			for (int i = 0; i < values.length; i++) {
-				names[i] = values[i].label;
-			}
-
-			return names;
-		}
-	}
-
-	enum ConstantHeaders {
-		CONSTANT("CONSTANT"), DESCRIPTION("DESCRIPTION"), PROPERTY("PROPERTY"), SCALE("SCALE"), METHOD("METHOD");
-
-		String label;
-
-		ConstantHeaders(String label) {
-			this.label = label;
-		}
-
-		public static String[] names() {
-			ConstantHeaders[] values = ConstantHeaders.values();
-			String[] names = new String[values.length];
-
-			for (int i = 0; i < values.length; i++) {
-				names[i] = values[i].label;
-			}
-
-			return names;
-		}
-	}
-
-	enum VariateHeaders {
-		VARIATE("VARIATE"), DESCRIPTION("DESCRIPTION"), PROPERTY("PROPERTY"), SCALE("SCALE"), METHOD("METHOD");
-
-		String label;
-
-		VariateHeaders(String label) {
-			this.label = label;
-		}
-
-		public static String[] names() {
-			VariateHeaders[] values = VariateHeaders.values();
-			String[] names = new String[values.length];
-
-			for (int i = 0; i < values.length; i++) {
-				names[i] = values[i].label;
-			}
-
-			return names;
-		}
-	}
-
-	enum FactorTypes {
-		ENTRY, DESIG, GID, ENTRYCODE, SOURCE, CROSS, NAME, STOCK
 	}
 
 	@Override
@@ -330,13 +238,13 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 		Date listDate;
 		try {
-		  String listDateCellValue = this.getCellStringValue(GermplasmListParser.DESCRIPTION_SHEET_NO, listDateColNo, 1);
+			String listDateCellValue = this.getCellStringValue(GermplasmListParser.DESCRIPTION_SHEET_NO, listDateColNo, 1);
 
-		  if ("".equals(listDateCellValue.trim())) {
-			listDate = DateUtil.getCurrentDate();
-		  } else {
-			listDate = DateUtil.parseDate(listDateCellValue);
-		  }
+			if ("".equals(listDateCellValue.trim())) {
+				listDate = DateUtil.getCurrentDate();
+			} else {
+				listDate = DateUtil.parseDate(listDateCellValue);
+			}
 		} catch (ParseException e) {
 			throw new FileParsingException("GERMPLASM_PARSE_LIST_DATE_FORMAT_INVALID");
 		}
@@ -352,7 +260,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 	/**
 	 * This validator might be too strict for germplasm list parser
-	 * 
+	 *
 	 * @return ParseValidationMap
 	 */
 	protected ParseValidationMap parseObservationHeaders() throws FileParsingException {
@@ -412,9 +320,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 	protected void parseObservationRows() throws FileParsingException {
 		ParseValidationMap validationMap = this.parseObservationHeaders();
-		ObservationRowConverter observationRowConverter =
-				new ObservationRowConverter(this.workbook, 1, 1, this.observationColumnMap.size(), this.observationColumnMap.values()
-						.toArray(new String[this.observationColumnMap.size()]));
+		ObservationRowConverter observationRowConverter = new ObservationRowConverter(this.workbook, 1, 1, this.observationColumnMap.size(),
+				this.observationColumnMap.values().toArray(new String[this.observationColumnMap.size()]));
 		observationRowConverter.setValidationMap(validationMap);
 
 		List<ImportedGermplasm> importedGermplasms =
@@ -422,7 +329,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 		this.importedGermplasmList.setImportedGermplasms(importedGermplasms);
 		if (this.specialFactors.containsKey(FactorTypes.STOCK)) {
-		  this.stockIDValidator.validate(this.specialFactors.get(FactorTypes.STOCK), this.importedGermplasmList);
+			this.stockIDValidator.validate(this.specialFactors.get(FactorTypes.STOCK), this.importedGermplasmList);
 		}
 
 		this.importedGermplasmList.normalizeGermplasmList();
@@ -430,15 +337,111 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 	private void continueTillNextSection() {
 		// were limiting to 10 blank rows
-		for (int i = 0; this.isRowEmpty(GermplasmListParser.DESCRIPTION_SHEET_NO, this.currentRowIndex,
-				GermplasmListParser.DESCRIPTION_SHEET_COL_SIZE) && i < 10; i++) {
+		for (int i = 0;
+			 this.isRowEmpty(GermplasmListParser.DESCRIPTION_SHEET_NO, this.currentRowIndex, GermplasmListParser.DESCRIPTION_SHEET_COL_SIZE)
+					 && i < 10; i++) {
 			this.currentRowIndex++;
 		}
 	}
 
+	enum ConditionHeaders {
+		CONDITION("CONDITION"), DESCRIPTION("DESCRIPTION"), PROPERTY("PROPERTY"), SCALE("SCALE"), METHOD("METHOD");
+
+		String label;
+
+		ConditionHeaders(String label) {
+			this.label = label;
+		}
+
+		public static String[] names() {
+			ConditionHeaders[] values = ConditionHeaders.values();
+			String[] names = new String[values.length];
+
+			for (int i = 0; i < values.length; i++) {
+				names[i] = values[i].label;
+			}
+
+			return names;
+		}
+	}
+
+	enum FactorHeaders {
+		FACTOR("FACTOR"), DESCRIPTION("DESCRIPTION"), PROPERTY("PROPERTY"), SCALE("SCALE"), METHOD("METHOD");
+
+		String label;
+
+		FactorHeaders(String label) {
+			this.label = label;
+		}
+
+		public static String[] names() {
+			FactorHeaders[] values = FactorHeaders.values();
+			String[] names = new String[values.length];
+
+			for (int i = 0; i < values.length; i++) {
+				names[i] = values[i].label;
+			}
+
+			return names;
+		}
+	}
+
+	enum ConstantHeaders {
+		CONSTANT("CONSTANT"), DESCRIPTION("DESCRIPTION"), PROPERTY("PROPERTY"), SCALE("SCALE"), METHOD("METHOD");
+
+		String label;
+
+		ConstantHeaders(String label) {
+			this.label = label;
+		}
+
+		public static String[] names() {
+			ConstantHeaders[] values = ConstantHeaders.values();
+			String[] names = new String[values.length];
+
+			for (int i = 0; i < values.length; i++) {
+				names[i] = values[i].label;
+			}
+
+			return names;
+		}
+	}
+
+	enum VariateHeaders {
+		VARIATE("VARIATE"), DESCRIPTION("DESCRIPTION"), PROPERTY("PROPERTY"), SCALE("SCALE"), METHOD("METHOD");
+
+		String label;
+
+		VariateHeaders(String label) {
+			this.label = label;
+		}
+
+		public static String[] names() {
+			VariateHeaders[] values = VariateHeaders.values();
+			String[] names = new String[values.length];
+
+			for (int i = 0; i < values.length; i++) {
+				names[i] = values[i].label;
+			}
+
+			return names;
+		}
+	}
+
+	enum FactorTypes {
+		ENTRY, DESIG, GID, ENTRYCODE, SOURCE, CROSS, NAME, STOCK
+	}
+
+	public interface Command {
+
+		void run() throws FileParsingException;
+	}
+
+
 	class ConditionDetailsConverter extends WorkbookRowConverter<ImportedCondition> {
 
-		public ConditionDetailsConverter(Workbook workbook, int startingIndex, int targetSheetIndex, int columnCount, String[] columnLabels) {
+		public ConditionDetailsConverter(Workbook workbook, int startingIndex, int targetSheetIndex, int columnCount,
+				String[] columnLabels) {
 			super(workbook, startingIndex, targetSheetIndex, columnCount, columnLabels);
 		}
 
@@ -449,6 +452,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 		}
 	}
+
 
 	class FactorDetailsConverter extends WorkbookRowConverter<ImportedFactor> {
 
@@ -463,10 +467,9 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		public static final String CODE_SCALE = "CODE";
 		public static final String NAME_SCALE = "NAME";
 		public static final String ASSIGNED_METHOD = "ASSIGNED";
-		private boolean importFileIsAdvanced = false;
-
 		private final Map<FactorTypes, String> specialFactors = new HashMap<>();
 		private final Set<String> nameFactors = new HashSet<>();
+		private boolean importFileIsAdvanced = false;
 
 		public FactorDetailsConverter(Workbook workbook, int startingIndex, int targetSheetIndex, int columnCount, String[] columnLabels) {
 			super(workbook, startingIndex, targetSheetIndex, columnCount, columnLabels);
@@ -490,14 +493,15 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 			} else if (FactorDetailsConverter.GERMPLASM_ID_PROPERTY.equals(property) && FactorDetailsConverter.DBID_SCALE.equals(scale)) {
 				this.specialFactors.put(FactorTypes.GID, importedFactor.getFactor());
 				this.importFileIsAdvanced = true;
-			} else if (FactorDetailsConverter.GERMPLASM_ENTRY_PROPERTY.equals(property) && FactorDetailsConverter.CODE_SCALE.equals(scale)) {
+			} else if (FactorDetailsConverter.GERMPLASM_ENTRY_PROPERTY.equals(property) && FactorDetailsConverter.CODE_SCALE
+					.equals(scale)) {
 				this.specialFactors.put(FactorTypes.ENTRYCODE, importedFactor.getFactor());
 			} else if (FactorDetailsConverter.SEED_SOURCE_PROPERTY.equals(property) && FactorDetailsConverter.NAME_SCALE.equals(scale)) {
 				this.specialFactors.put(FactorTypes.SOURCE, importedFactor.getFactor());
 			} else if (FactorDetailsConverter.CROSS_NAME_PROPERTY.equals(property) && FactorDetailsConverter.NAME_SCALE.equals(scale)) {
 				this.specialFactors.put(FactorTypes.CROSS, importedFactor.getFactor());
-			} else if (FactorDetailsConverter.GERMPLASM_STOCK_ID_PROPERTY.equals(property)
-					&& FactorDetailsConverter.DBCV_SCALE.equals(scale)) {
+			} else if (FactorDetailsConverter.GERMPLASM_STOCK_ID_PROPERTY.equals(property) && FactorDetailsConverter.DBCV_SCALE
+					.equals(scale)) {
 				this.specialFactors.put(FactorTypes.STOCK, importedFactor.getFactor());
 			} else if (FactorDetailsConverter.GERMPLASM_ID_PROPERTY.equals(property) && FactorDetailsConverter.NAME_SCALE.equals(scale)
 					&& FactorDetailsConverter.ASSIGNED_METHOD.equals(method)) {
@@ -520,9 +524,11 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		}
 	}
 
+
 	class ConstantsDetailsConverter extends WorkbookRowConverter<ImportedConstant> {
 
-		public ConstantsDetailsConverter(Workbook workbook, int startingIndex, int targetSheetIndex, int columnCount, String[] columnLabels) {
+		public ConstantsDetailsConverter(Workbook workbook, int startingIndex, int targetSheetIndex, int columnCount,
+				String[] columnLabels) {
 			super(workbook, startingIndex, targetSheetIndex, columnCount, columnLabels);
 		}
 
@@ -533,10 +539,11 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		}
 	}
 
+
 	class VariateDetailsConverter extends WorkbookRowConverter<ImportedVariate> {
 
-		private String seedAmountVariate = "";
 		private final Set<String> attributeVariates = new HashSet<>();
+		private String seedAmountVariate = "";
 
 		public VariateDetailsConverter(Workbook workbook, int startingIndex, int targetSheetIndex, int columnCount, String[] columnLabels) {
 			super(workbook, startingIndex, targetSheetIndex, columnCount, columnLabels);
@@ -574,6 +581,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 			return this.attributeVariates;
 		}
 	}
+
 
 	class ObservationRowConverter extends WorkbookRowConverter<ImportedGermplasm> {
 
@@ -685,8 +693,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 					continue;
 				}
 
-				GermplasmListParser.LOG.debug(String.format("%s header is not recognized [parsing from row: %s]", colHeader,
-						this.currentIndex));
+				GermplasmListParser.LOG
+						.debug(String.format("%s header is not recognized [parsing from row: %s]", colHeader, this.currentIndex));
 			}
 
 			// row based validation here
@@ -698,8 +706,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 					Germplasm currentGermplasm =
 							GermplasmListParser.this.germplasmDataManager.getGermplasmByGID(importedGermplasm.getGid());
 					if (currentGermplasm == null) {
-						throw new FileParsingException("GERMPLSM_PARSE_DB_GID_NOT_EXISTS", this.currentIndex, importedGermplasm.getGid()
-								.toString(), GermplasmListParser.this.specialFactors.get(FactorTypes.GID));
+						throw new FileParsingException("GERMPLSM_PARSE_DB_GID_NOT_EXISTS", this.currentIndex,
+								importedGermplasm.getGid().toString(), GermplasmListParser.this.specialFactors.get(FactorTypes.GID));
 					} else {
 
 						List<Integer> importedGermplasmGids = new ArrayList<>();
@@ -718,8 +726,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 				}
 
 				// GID is not given or 0, and DESIG is not given
-			} else if ((importedGermplasm.getGid() == null || importedGermplasm.getGid().equals(Integer.valueOf(0)))
-					&& (importedGermplasm.getDesig() == null || importedGermplasm.getDesig().length() == 0)) {
+			} else if ((importedGermplasm.getGid() == null || importedGermplasm.getGid().equals(Integer.valueOf(0))) && (
+					importedGermplasm.getDesig() == null || importedGermplasm.getDesig().length() == 0)) {
 				throw new FileParsingException("GERMPLSM_PARSE_GID_DESIG_NOT_EXISTS", this.currentIndex, "",
 						GermplasmListParser.this.specialFactors.get(FactorTypes.GID));
 
@@ -734,8 +742,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		}
 
 		public boolean executeOnFactorMatch(String header, FactorTypes type, Command e) throws FileParsingException {
-			if (GermplasmListParser.this.specialFactors.containsKey(type)
-					&& GermplasmListParser.this.specialFactors.get(type).equalsIgnoreCase(header)) {
+			if (GermplasmListParser.this.specialFactors.containsKey(type) && GermplasmListParser.this.specialFactors.get(type)
+					.equalsIgnoreCase(header)) {
 				e.run();
 				return true;
 			}
@@ -777,10 +785,5 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 			return true;
 		}
-	}
-
-	public interface Command {
-
-		void run() throws FileParsingException;
 	}
 }
