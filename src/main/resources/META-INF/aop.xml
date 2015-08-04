@@ -6,6 +6,7 @@
 		<exclude within="com.vaadin.*" />
 		<exclude within="com.google.*" />
 		<exclude within="javax.*" />
+		<exclude within="*..*CGLIB*" />
 	</weaver>
 
 	<!-- <aspects> <aspect name="org.dellroad.stuff.vaadin.VaadinConfigurableAspect"/> 
