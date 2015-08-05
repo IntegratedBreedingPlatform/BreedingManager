@@ -37,4 +37,9 @@ public class GermplasmListTree extends Tree implements GermplasmListSource {
 	public void setColumnWidth(Object propertyId, int width) {
 		// not needed to implement any code, just added the function so we would have override for the treetable specific function
 	}
+
+	@Override
+	public void clearSelection() {
+		super.select(null);
+	}
 }
