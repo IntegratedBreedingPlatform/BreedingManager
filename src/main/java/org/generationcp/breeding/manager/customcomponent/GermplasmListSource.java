@@ -82,4 +82,6 @@ public interface GermplasmListSource {
 	Component getUIComponent();
 
 	void setColumnWidth(Object propertyId, int width);
+
+	void clearSelection();
 }
