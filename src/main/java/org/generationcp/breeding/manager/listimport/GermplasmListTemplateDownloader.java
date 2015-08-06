@@ -6,6 +6,7 @@ import java.util.Objects;
 import javax.annotation.Resource;
 
 import com.vaadin.Application;
+import org.apache.commons.lang.StringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -81,19 +82,12 @@ public class GermplasmListTemplateDownloader {
 	}
 
 	public String getBMSCropTemplateDownloadLocation(String fileName, String cropType) {
-		String installationDirectory = this.getInstallationDirectory();
+		String fileDownloadPathFormat = "%s" + File.separator + "Examples" + File.separator + "%s" + File.separator + "templates" + File.separator + "%s";
 
-		String fileToDownloadPath;
-		if (!"".equals(installationDirectory)) {
-			fileToDownloadPath =
-					installationDirectory + File.separator + "Examples" + File.separator + cropType + File.separator + "templates"
-							+ File.separator + fileName;
-		} else {
-			fileToDownloadPath =
-					"C:" + File.separator + "BMS4" + File.separator + "Examples" + File.separator + cropType + File.separator + "templates"
-							+ File.separator + fileName;
-		}
-		return fileToDownloadPath;
+		String installationDirectory = this.getInstallationDirectory();
+		installationDirectory = !StringUtils.isEmpty(installationDirectory) ? installationDirectory : "C:" + File.separator + "BMS4";
+
+		return String.format(fileDownloadPathFormat,installationDirectory,cropType,fileName);
 	}
 
 	public String getInstallationDirectory() {
