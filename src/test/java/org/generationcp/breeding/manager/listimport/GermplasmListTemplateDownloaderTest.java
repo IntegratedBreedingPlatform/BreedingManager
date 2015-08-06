@@ -1,9 +1,10 @@
 package org.generationcp.breeding.manager.listimport;
 
 import java.io.File;
+import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 
-import com.vaadin.ui.Component;
+import com.vaadin.Application;
 import junit.framework.Assert;
 import org.apache.commons.lang.StringUtils;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -25,15 +26,8 @@ import static org.mockito.Mockito.spy;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GermplasmListTemplateDownloaderTest {
-
-	private static final String LIST_TEMPLATE_FILE = "GermplasmImportTemplate-Expanded-rev5.xls";
-
 	private static final String CROP_TYPE = "maize";
-
 	private static final String INSTALLATION_DIRECTORY = "C:" + File.separator + "InstallationDirectory";
-
-	@Mock
-	private Component source;
 
 	@Mock
 	private WorkbenchDataManager workbenchDataManager;
@@ -82,16 +76,56 @@ public class GermplasmListTemplateDownloaderTest {
 
 	@Test
 	public void testGetFileToDownloadPath_ReturnsInstallationDirectoryPath() throws MiddlewareQueryException {
+		WorkbenchSetting workbenchSetting = new WorkbenchSetting();
+		workbenchSetting.setInstallationDirectory(GermplasmListTemplateDownloaderTest.INSTALLATION_DIRECTORY);
+		Mockito.when(this.workbenchDataManager.getWorkbenchSetting()).thenReturn(workbenchSetting);
 
+		String fileToDownloadPath = this.exportDialog.getBMSCropTemplateDownloadLocation(GermplasmListTemplateDownloader.EXPANDED_TEMPLATE_FILE,CROP_TYPE);
+
+		String expectedPath =
+				GermplasmListTemplateDownloaderTest.INSTALLATION_DIRECTORY + "" + File.separator + "Examples" + File.separator + CROP_TYPE
+						+ File.separator + "templates" + File.separator + GermplasmListTemplateDownloader.EXPANDED_TEMPLATE_FILE;
+
+		Assert.assertEquals("Expected to return " + expectedPath + " but returned " + fileToDownloadPath, expectedPath, fileToDownloadPath);
 	}
 
 	@Test
 	public void testGetFileToDownloadPath_ReturnsDefaultInstallationDirectoryPath() throws MiddlewareQueryException {
+		WorkbenchSetting workbenchSetting = new WorkbenchSetting();
+		workbenchSetting.setInstallationDirectory("");
+		Mockito.when(this.workbenchDataManager.getWorkbenchSetting()).thenReturn(workbenchSetting);
 
+		String fileToDownloadPath = this.exportDialog.getBMSCropTemplateDownloadLocation(GermplasmListTemplateDownloader.EXPANDED_TEMPLATE_FILE,CROP_TYPE);
+
+		String expectedPath =
+				"C:" + File.separator + "BMS4" + File.separator + "Examples" + File.separator + CROP_TYPE
+						+ File.separator + "templates" + File.separator + GermplasmListTemplateDownloader.EXPANDED_TEMPLATE_FILE;
+
+		Assert.assertEquals("Expected to return " + expectedPath + " but returned " + fileToDownloadPath, expectedPath, fileToDownloadPath);
 	}
 
 	@Test
 	public void testCreateFileDownloadResource() {
+		Application mockApp = Mockito.mock(Application.class);
+
+		String fileToDownloadPath =
+				"C:" + File.separator + "BMS4" + File.separator + "Examples" + File.separator + CROP_TYPE
+						+ File.separator + "templates" + File.separator + GermplasmListTemplateDownloader.EXPANDED_TEMPLATE_FILE;
+
+		File fileToDownload = new File(fileToDownloadPath);
+		if (fileToDownload.exists()) {
+			try {
+				this.exportDialog.createFileDownloadResource(fileToDownloadPath,mockApp);
+			} catch (IOException e) {
+				Assert.fail("should not throw an exception here.");
+			}
+		} else {
+			try {
+				this.exportDialog.createFileDownloadResource(fileToDownloadPath,mockApp);
+			} catch (IOException e) {
+				Assert.assertEquals("Germplasm Template File does not exist.", e.getMessage());
+			}
+		}
 	}
 
 	@Test

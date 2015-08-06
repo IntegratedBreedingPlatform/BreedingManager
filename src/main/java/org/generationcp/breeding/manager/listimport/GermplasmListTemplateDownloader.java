@@ -23,9 +23,10 @@ import org.springframework.beans.factory.annotation.Configurable;
 @Configurable
 public class GermplasmListTemplateDownloader {
 
+	static final String EXPANDED_TEMPLATE_FILE = "GermplasmImportTemplate-Expanded-rev5.xls";
+
 	private static final long serialVersionUID = -9047374755825933209L;
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmListTemplateDownloader.class);
-	private static final String EXPANDED_TEMPLATE_FILE = "GermplasmImportTemplate-Expanded-rev5.xls";
 
 	@Resource
 	private WorkbenchDataManager workbenchDataManager;
