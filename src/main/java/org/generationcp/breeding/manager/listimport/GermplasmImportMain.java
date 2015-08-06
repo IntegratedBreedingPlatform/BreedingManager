@@ -11,8 +11,8 @@ import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.util.Util;
-import org.generationcp.commons.help.document.HELP_MODULE;
 import org.generationcp.commons.help.document.HelpButton;
+import org.generationcp.commons.help.document.HelpModule;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -104,7 +104,7 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 		this.toolTitle.setWidth("268px");
 
 		this.titleLayout.addComponent(this.toolTitle);
-		this.titleLayout.addComponent(new HelpButton(HELP_MODULE.IMPORT_GERMPLASM, "View Import Germplasm Tutorial"));
+		this.titleLayout.addComponent(new HelpButton(HelpModule.IMPORT_GERMPLASM, "View Import Germplasm Tutorial"));
 	}
 
 	@Override
