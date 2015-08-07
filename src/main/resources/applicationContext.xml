@@ -13,6 +13,7 @@
     
     <!-- Declare property file locations -->
     <context:property-placeholder location="classpath:workbench.properties,classpath:c3p0.properties,classpath:crossing.properties" />
+    <util:properties id="workbenchProperties" location="classpath:workbench.properties"/>
     <util:properties id="helpProperties" location="classpath:helplinks.properties"/>
     
     <!-- Enable Spring annotations -->
