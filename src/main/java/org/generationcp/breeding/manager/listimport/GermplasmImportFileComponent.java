@@ -215,7 +215,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 	@Override
 	public void layoutComponents() {
 		this.addComponent(this.selectFileLabel, "top:20px");
-		this.addComponent(this.openTemplateButton, "top:21px;left:520px;");
+		this.addComponent(this.openTemplateButton, "top:21px;left:430px;");
 
 		this.addComponent(this.uploadComponents, "top:50px");
 
