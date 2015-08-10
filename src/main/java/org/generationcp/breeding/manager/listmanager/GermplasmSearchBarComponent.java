@@ -19,6 +19,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
@@ -70,6 +74,10 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 
 	@Autowired
 	private BreedingManagerService breedingManagerService;
+	
+	@Autowired
+	private PlatformTransactionManager transactionManager;
+
 
 	public GermplasmSearchBarComponent(final GermplasmSearchResultsComponent searchResultsComponent) {
 		super();
@@ -138,7 +146,13 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				GermplasmSearchBarComponent.this.searchButtonClickAction();
+				final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+					@Override
+					protected void doInTransactionWithoutResult(TransactionStatus status) {
+						GermplasmSearchBarComponent.this.searchButtonClickAction();
+					}
+				});
 			}
 		});
 	}
