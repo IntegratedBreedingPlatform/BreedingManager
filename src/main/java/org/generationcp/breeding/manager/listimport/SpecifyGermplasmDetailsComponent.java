@@ -248,6 +248,13 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 	}
 
 	private boolean validateLocation() {
+		// BMS-953 : location is in fact always specified, so where null or blank occurs, we will switch to 'Unknown - 0'
+		// Needs to be fixed on the actual screen by preventing selection of favorites where favorites don't exist
+		if(this.getGermplasmFieldsComponent().getLocationComboBox().getValue() == null) {
+			// the next line, we need to add the 'Unknown Location' id of 0 to the list of combo box items, or Vaadin will not let us set the value to 0
+			this.getGermplasmFieldsComponent().getLocationComboBox().addItem(new Integer(0));
+			this.getGermplasmFieldsComponent().getLocationComboBox().setValue(new Integer(0));
+		}
 		return BreedingManagerUtil.validateRequiredField(this.getWindow(), this.germplasmFieldsComponent.getLocationComboBox(),
 				this.messageSource, this.messageSource.getMessage(Message.GERMPLASM_LOCATION_LABEL));
 	}

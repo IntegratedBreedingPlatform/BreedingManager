@@ -12,6 +12,8 @@ import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialog;
 import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialogSource;
+import org.generationcp.commons.help.document.HELP_MODULE;
+import org.generationcp.commons.help.document.HelpButton;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -49,8 +51,8 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
 	private static final String VERSION_STRING = "<h2>1.0.0</h2>";
 
-	private AbsoluteLayout titleLayout;
-	private Label mainTitle;
+	private HorizontalLayout titleLayout;
+	private Label toolTitle;
 	public static final String BUILD_NEW_LIST_BUTTON_DATA = "Build new list";
 
 	// Tabs
@@ -112,7 +114,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
 	@Override
 	public void updateLabels() {
-		this.mainTitle.setValue(this.messageSource.getMessage(Message.LIST_MANAGER_SCREEN_LABEL) + "  " + ListManagerMain.VERSION_STRING);
+		this.toolTitle.setValue(this.messageSource.getMessage(Message.LIST_MANAGER_SCREEN_LABEL) + "  " + ListManagerMain.VERSION_STRING);
 	}
 
 	@Override
@@ -223,7 +225,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
 	/**
 	 * Loads the specified list in the list builder. Ensures the list is not currently open anywhere else.
-	 *
+	 * 
 	 * @param list the list to load for editing
 	 */
 	public void loadListForEditing(final GermplasmList list) {
@@ -235,7 +237,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
 	/**
 	 * Closes the specified list from any open views.
-	 *
+	 * 
 	 * @param list the list to close
 	 */
 	public void closeList(final GermplasmList list) {
@@ -244,7 +246,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
 	/**
 	 * Add selected plants to the list open in the list builder.
-	 *
+	 * 
 	 * @param sourceTable the table to retrieve the selected plants from
 	 */
 	public void addSelectedPlantsToList(Table sourceTable) {
@@ -253,7 +255,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
 	/**
 	 * Add a plant to the list open in the list builder.
-	 *
+	 * 
 	 * @param gid ID of the germplasm to add
 	 */
 	public void addPlantToList(final Integer gid) {
@@ -294,16 +296,17 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	}
 
 	private void setTitleContent() {
-		this.titleLayout = new AbsoluteLayout();
-		this.titleLayout.setWidth("100%");
+		this.titleLayout = new HorizontalLayout();
+		this.titleLayout.setSpacing(true);
 		this.titleLayout.setHeight("40px");
 
-		this.mainTitle = new Label();
-		this.mainTitle.setStyleName(Bootstrap.Typography.H1.styleName());
-		this.mainTitle.setContentMode(Label.CONTENT_XHTML);
-		this.mainTitle.setValue(this.messageSource.getMessage(Message.LIST_MANAGER_SCREEN_LABEL) + "  " + ListManagerMain.VERSION_STRING);
+		this.toolTitle = new Label(this.messageSource.getMessage(Message.LIST_MANAGER_SCREEN_LABEL));
+		this.toolTitle.setStyleName(Bootstrap.Typography.H1.styleName());
+		this.toolTitle.setContentMode(Label.CONTENT_XHTML);
+		this.toolTitle.setWidth("185px");
 
-		this.titleLayout.addComponent(this.mainTitle, "top:0px;left:0px");
+		this.titleLayout.addComponent(this.toolTitle);
+		this.titleLayout.addComponent(new HelpButton(HELP_MODULE.IMPORT_GERMPLASM, "View Manage Lists Tutorial"));
 	}
 
 	private void setTabHeader() {

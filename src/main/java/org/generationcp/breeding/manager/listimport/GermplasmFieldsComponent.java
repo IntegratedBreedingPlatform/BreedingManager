@@ -146,6 +146,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 		this.germplasmDateLabel.addStyleName(CssStyles.BOLD);
 
 		this.germplasmDateField = new BmsDateField();
+		this.germplasmDateField.setValue(new Date());
 
 		this.nameTypeLabel = new Label(this.messageSource.getMessage(Message.GERMPLASM_NAME_TYPE_LABEL) + ":");
 		this.nameTypeLabel.addStyleName(CssStyles.BOLD);

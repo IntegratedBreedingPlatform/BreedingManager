@@ -2,7 +2,9 @@
 package org.generationcp.breeding.manager.listimport.actions;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +30,7 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
+import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.Attribute;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -40,6 +43,7 @@ import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.Transaction;
 import org.generationcp.middleware.pojos.ims.TransactionStatus;
 import org.generationcp.middleware.util.Util;
+import org.jfree.util.Log;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -80,6 +84,9 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
 
+	@Autowired
+	private UserDataManager userDataManager;
+
 	@Resource
 	private ContextUtil contextUtil;
 
@@ -99,7 +106,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 	/**
 	 * Saves records in Germplasm, GermplasmList and GermplasmListData, ProjectActivity (Workbench).
-	 *
+	 * 
 	 * @param germplasmList
 	 * @param germplasmNameObjects
 	 * @param newNames
@@ -135,8 +142,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		this.saveInventory();
 
 		// log project activity in Workbench
-		this.contextUtil.logProgramActivity(SaveGermplasmListAction.WB_ACTIVITY_NAME, SaveGermplasmListAction.WB_ACTIVITY_DESCRIPTION
-				+ filename);
+		this.contextUtil.logProgramActivity(SaveGermplasmListAction.WB_ACTIVITY_NAME,
+				SaveGermplasmListAction.WB_ACTIVITY_DESCRIPTION + filename);
 
 		return list.getId();
 	}
@@ -189,6 +196,11 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 				if (addedGermplasmMatch == null) {
 					germplasm = germplasmName.getGermplasm();
 					germplasmName.getGermplasm().setGid(null);
+					if (germplasm.getGdate().equals(Integer.valueOf(0))) {
+						SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+						Date today = new Date();
+						germplasm.setGdate(Integer.valueOf(dateFormat.format(today)));
+					}
 					gid = this.germplasmManager.addGermplasm(germplasm, name);
 					addedGermplasmNameMap.put(germplasmName.getGermplasm().getGid(), germplasmName);
 					// if already addded (re-use that one)
@@ -464,7 +476,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	}
 
 	protected void createDepositInventoryTransaction(GermplasmList list, ImportedGermplasm importedGermplasm, Integer gid, Integer lrecId)
-					throws MiddlewareQueryException {
+			throws MiddlewareQueryException {
 		if (importedGermplasm != null && importedGermplasm.getSeedAmount() != null && importedGermplasm.getSeedAmount() > 0) {
 
 			if (this.gidTransactionSetMap.get(gid) == null) {
@@ -473,15 +485,31 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 			Integer intDate = DateUtil.getCurrentDateAsIntegerValue();
 
+			Integer cropUserId = this.contextUtil.getCurrentUserLocalId();
+
 			Transaction transaction =
-					new Transaction(null, this.contextUtil.getCurrentWorkbenchUserId(), this.gidLotMap.get(gid), intDate,
-							TransactionStatus.DEPOSITED.getIntValue(), importedGermplasm.getSeedAmount(),
-							SaveGermplasmListAction.INVENTORY_COMMENT, 0, "LIST", list.getId(), lrecId, Double.valueOf(0), 0,
-							importedGermplasm.getInventoryId());
+					new Transaction(null, cropUserId, this.gidLotMap.get(gid), intDate, TransactionStatus.DEPOSITED.getIntValue(),
+							importedGermplasm.getSeedAmount(), SaveGermplasmListAction.INVENTORY_COMMENT, 0, "LIST", list.getId(), lrecId,
+							Double.valueOf(0), this.getCropPersonId(cropUserId), importedGermplasm.getInventoryId());
 			if (importedGermplasm.getSeedAmount() != null) {
 				this.gidTransactionSetMap.get(gid).add(transaction);
 			}
 		}
+	}
+
+	protected Integer getCropPersonId(Integer cropUserId) {
+		User cropUser = null;
+		Integer cropPersonId = 0;
+		try {
+			cropUser = this.userDataManager.getUserById(cropUserId);
+			if (cropUser != null) {
+				cropPersonId = cropUser.getPersonid();
+			}
+		} catch (MiddlewareQueryException e) {
+			Log.error(e.getMessage(), e);
+		}
+
+		return cropPersonId;
 	}
 
 	private List<Attribute> prepareAllAttributesToAdd(ImportedGermplasm importedGermplasm, List<UserDefinedField> existingUdflds,
@@ -514,7 +542,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	}
 
 	private List<Name> prepareAllNamesToAdd(ImportedGermplasm importedGermplasm, List<UserDefinedField> existingUdflds, Germplasm germplasm)
-					throws MiddlewareQueryException {
+			throws MiddlewareQueryException {
 		List<Name> names = new ArrayList<Name>();
 
 		Map<String, String> otherNames = importedGermplasm.getNameFactors();
@@ -558,4 +586,29 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 		return germplasmListData;
 	}
+
+	public void setGermplasmListManager(GermplasmListManager germplasmListManager) {
+		this.germplasmListManager = germplasmListManager;
+	}
+
+	public void setGermplasmManager(GermplasmDataManager germplasmManager) {
+		this.germplasmManager = germplasmManager;
+	}
+
+	public void setInventoryDataManager(InventoryDataManager inventoryDataManager) {
+		this.inventoryDataManager = inventoryDataManager;
+	}
+
+	public void setOntologyDataManager(OntologyDataManager ontologyDataManager) {
+		this.ontologyDataManager = ontologyDataManager;
+	}
+
+	public void setContextUtil(ContextUtil contextUtil) {
+		this.contextUtil = contextUtil;
+	}
+
+	public void setUserDataManager(UserDataManager userDataManager) {
+		this.userDataManager = userDataManager;
+	}
+
 }

@@ -12,6 +12,8 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDisplay;
 import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDisplay.StepChangeListener;
 import org.generationcp.breeding.manager.util.Util;
+import org.generationcp.commons.help.document.HELP_MODULE;
+import org.generationcp.commons.help.document.HelpButton;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -21,12 +23,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.PopupView;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.VerticalLayout;
@@ -43,7 +43,6 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 
 	private Label toolTitle;
 	private Label makeCrossesLabel;
-	private PopupView toolPopupView;
 	private BreedingManagerWizardDisplay wizardDisplay;
 
 	private CrossingSettingsDetailComponent detailComponent;
@@ -81,11 +80,6 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 		this.makeCrossesLabel = new Label(this.messageSource.getMessage(Message.MAKE_CROSSES));
 		this.makeCrossesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		this.makeCrossesLabel.addStyleName(AppConstants.CssStyles.BOLD);
-
-		Label popupLabel = new Label(this.messageSource.getMessage(Message.CROSSING_MANAGER_TOOL_DESCRIPTION));
-		popupLabel.setWidth("470px");
-		this.toolPopupView = new PopupView(AppConstants.Icons.POPUP_VIEW_ICON, popupLabel);
-		this.toolPopupView.addStyleName(AppConstants.CssStyles.POPUP_VIEW);
 
 		this.instantiateWizardDisplay();
 
@@ -128,11 +122,11 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 		this.setWidth("100%");
 		this.setMargin(false, false, false, true);
 
-		AbsoluteLayout headingLayout = new AbsoluteLayout();
+		HorizontalLayout headingLayout = new HorizontalLayout();
+		headingLayout.setSpacing(true);
 		headingLayout.setHeight("40px");
-		headingLayout.setWidth("260px");
 		headingLayout.addComponent(this.toolTitle);
-		headingLayout.addComponent(this.toolPopupView, "top: 13px;left:240px");
+		headingLayout.addComponent(new HelpButton(HELP_MODULE.MAKE_CROSSES, "View Make Crosses tutorial"));
 
 		HeaderLabelLayout subHeaderLabel = new HeaderLabelLayout(AppConstants.Icons.ICON_MANAGE_SETTINGS, this.makeCrossesLabel);
 
