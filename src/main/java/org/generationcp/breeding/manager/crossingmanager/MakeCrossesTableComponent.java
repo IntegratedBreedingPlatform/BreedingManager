@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
- *
+ * 
  * Generation Challenge Programme (GCP)
- *
- *
+ * 
+ * 
  * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
  * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
- *
+ * 
  *******************************************************************************/
 
 package org.generationcp.breeding.manager.crossingmanager;
@@ -70,9 +70,9 @@ import com.vaadin.ui.themes.Reindeer;
 
 /**
  * This class contains UI components and functions related to Crosses Made table in Make Crosses screen in Crossing Manager
- *
+ * 
  * @author Darla Ani
- *
+ * 
  */
 @Configurable
 public class MakeCrossesTableComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
@@ -96,7 +96,6 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 
 	private Label lblReviewCrosses;
 	private Table tableCrossesMade;
-	private Label lblCrossMade;
 
 	private Label totalCrossesLabel;
 	private Label totalSelectedCrossesLabel;
@@ -142,7 +141,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 
 	@Override
 	public void updateLabels() {
-		this.lblCrossMade.setValue(this.messageSource.getMessage(Message.LABEL_CROSS_MADE));
+		// no implementation for this method
 	}
 
 	/**
@@ -395,10 +394,6 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		this.lblReviewCrosses.addStyleName(AppConstants.CssStyles.BOLD);
 		this.lblReviewCrosses.setWidth("150px");
 
-		this.lblCrossMade = new Label();
-		this.lblCrossMade.addStyleName(Bootstrap.Typography.H4.styleName());
-		this.lblCrossMade.setWidth("160px");
-
 		this.totalCrossesLabel = new Label();
 		this.totalCrossesLabel.setContentMode(Label.CONTENT_XHTML);
 		this.totalCrossesLabel.setWidth("120px");
@@ -504,8 +499,6 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		this.setMargin(false, false, false, true);
 		this.setWidth("450px");
 
-		HeaderLabelLayout headingLayout = new HeaderLabelLayout(null, this.lblCrossMade);
-
 		HorizontalLayout leftLabelContainer = new HorizontalLayout();
 		leftLabelContainer.setSpacing(true);
 		leftLabelContainer.addComponent(this.totalCrossesLabel);
@@ -524,7 +517,6 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		VerticalLayout makeCrossesLayout = new VerticalLayout();
 		makeCrossesLayout.setSpacing(true);
 		makeCrossesLayout.setMargin(true);
-		makeCrossesLayout.addComponent(headingLayout);
 		makeCrossesLayout.addComponent(labelContainer);
 		makeCrossesLayout.addComponent(this.tableCrossesMade);
 
