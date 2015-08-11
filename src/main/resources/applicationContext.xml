@@ -1,233 +1,226 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<beans  xmlns="http://www.springframework.org/schema/beans"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:context="http://www.springframework.org/schema/context"
-        xmlns:util="http://www.springframework.org/schema/util"
-        xmlns:aop="http://www.springframework.org/schema/aop"
-        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
                             http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
                             http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd
-                            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd"
->
-    
-    <!-- Declare property file locations -->
-    <context:property-placeholder location="classpath:workbench.properties,classpath:c3p0.properties,classpath:crossing.properties" />
-    <util:properties id="workbenchProperties" location="classpath:workbench.properties"/>
-    <util:properties id="helpProperties" location="classpath:helplinks.properties"/>
-    
-    <!-- Enable Spring annotations -->
-    <context:annotation-config/>
-    <!--
-        Enable load-time-weaving so we can use @Configurable annotation.
-        To make this work, we need to set the -java.agent VM argument to the spring-instrument JAR file's path.
-        In windows, you can use:
-            -javaagent:${env_var:HOMEDRIVE}${env_var:HOMEPATH}\.m2\repository\org\springframework\spring-instrument\3.1.1.RELEASE\spring-instrument-3.1.1.RELEASE.jar
-        Mac and Linux users, add your path here.
-    -->
-    <context:load-time-weaver/>
-    
-    
-    <!-- The application classes -->
-    <bean id="application" class="org.generationcp.breeding.manager.application.BreedingManagerApplication" scope="prototype"/>
-    
-    <!--
-        Reuseable UI components can be declared here, but don't do it just so you can have auto-wiring.
-        Add @Configurable annotation to your class if you only need auto-wiring.
-    -->
+                            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
 
-    <!-- The Message Source -->
-    <bean id="messageSource" class="org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource">
-        <property name="basenames">
-		  <list>
-		    <value>I18NMessages</value>
-		    <value>VaadinCommonMessages</value>
-		  </list>
+	<!-- Declare property file locations -->
+	<context:property-placeholder
+		location="classpath:workbench.properties,classpath:c3p0.properties,classpath:crossing.properties" />
+	<util:properties id="workbenchProperties" location="classpath:workbench.properties" />
+	<util:properties id="helpProperties" location="classpath:helplinks.properties" />
+
+	<!-- Enable Spring annotations -->
+	<context:annotation-config />
+	<!-- Enable load-time-weaving so we can use @Configurable annotation. To 
+		make this work, we need to set the -java.agent VM argument to the spring-instrument 
+		JAR file's path. In windows, you can use: -javaagent:${env_var:HOMEDRIVE}${env_var:HOMEPATH}\.m2\repository\org\springframework\spring-instrument\3.1.1.RELEASE\spring-instrument-3.1.1.RELEASE.jar 
+		Mac and Linux users, add your path here. -->
+	<context:load-time-weaver />
+
+
+	<!-- The application classes -->
+	<bean id="application"
+		class="org.generationcp.breeding.manager.application.BreedingManagerApplication"
+		scope="prototype" />
+
+	<!-- Reuseable UI components can be declared here, but don't do it just 
+		so you can have auto-wiring. Add @Configurable annotation to your class if 
+		you only need auto-wiring. -->
+
+	<!-- The Message Source -->
+	<bean id="messageSource"
+		class="org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>I18NMessages</value>
+				<value>VaadinCommonMessages</value>
+			</list>
 		</property>
-        <property name="locale">
-            <util:constant static-field="java.util.Locale.ENGLISH"/>
-        </property>
-    </bean>
+		<property name="locale">
+			<util:constant static-field="java.util.Locale.ENGLISH" />
+		</property>
+	</bean>
 
 
-    <bean id="workbenchDataSource" class = "com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
-        <property name="driverClass" value="${workbench.driver}" />
-        <property name="jdbcUrl" value="${workbench.url}" />
-        <property name="user" value="${workbench.username}" />
-        <property name="password" value="${workbench.password}" /> 
+	<bean id="workbenchDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="${workbench.driver}" />
+		<property name="jdbcUrl" value="${workbench.url}" />
+		<property name="user" value="${workbench.username}" />
+		<property name="password" value="${workbench.password}" />
 
-        <!-- C3P0 properties -->
-        <property name="minPoolSize" value="${c3p0.minPoolSize}" />
-        <property name="maxPoolSize" value="${c3p0.maxPoolSize}" />
-        <property name="debugUnreturnedConnectionStackTraces" value="${c3p0.debugUnreturnedConnectionStackTraces}" />
-        <property name="unreturnedConnectionTimeout" value="${c3p0.unreturnedConnectionTimeout}" />
-        <property name="maxConnectionAge" value="${c3p0.maxConnectionAge}" />
-        <property name="maxIdleTime" value="${c3p0.maxIdleTime}" />
-        <property name="preferredTestQuery" value="${c3p0.preferredTestQuery}" />
-        <property name="testConnectionOnCheckout" value="${c3p0.testConnectionOnCheckout}" />
- 	</bean>
-    
-    <bean id="workbenchSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
-        <property name="dataSource" ref="workbenchDataSource"/>
-        <property name="configLocation" value="classpath:ibpmidware_hib.cfg.xml"/>
-    </bean>
-    
-    
-    <bean id="workbenchHibernateSessionProvider" class="org.generationcp.middleware.hibernate.HibernateSessionPerRequestProvider" scope="request" destroy-method="close">
-        <property name="sessionFactory" ref="workbenchSessionFactory"/>
-        
-        <!-- JDK Standard Proxy around this request scoped bean, so we can use it on longer scoped beans -->
-        <aop:scoped-proxy proxy-target-class="false"/>
-    </bean>
-    
-	<bean id="crossExpansionProperties" class = "org.generationcp.middleware.util.CrossExpansionProperties">
-    	<property name="wheatLevel" value="${wheat.generation.level}" />
-        <property name="defaultLevel" value="${default.generation.level}" />
-    </bean>
-    
-    <bean id="managerFactoryProvider" class="org.generationcp.commons.hibernate.DynamicManagerFactoryProviderConcurrency">
-    	<constructor-arg ref="workbenchDataManager" />
-    	<property name="maxCachedSessionFactories" value="10" />
-    	<property name="dbPort" value="${workbench.port}" />
-    	<property name="dbHost" value="${workbench.host}" />
-    	<property name="dbUsername" value="${workbench.username}"/>
-        <property name="dbPassword" value="${workbench.password}"/>
-        <property name="pedigreeProfile" value="${pedigree.profile}"/>
-    </bean>
-    
-    <bean id="managerFactory" name="managerFactory"
-    	factory-bean="managerFactoryProvider"
-    	factory-method="createInstance"
-    	scope="request" destroy-method="close">
-    	<aop:scoped-proxy/>
-    </bean>
-    
-    <bean id="genotypicDataManager" factory-bean="managerFactory"
-    	factory-method="getGenotypicDataManager"
-    	scope="request">
-    	<aop:scoped-proxy/>
-    </bean>
-    
-    <bean id="germplasmDataManager" factory-bean="managerFactory"
-    	factory-method="getGermplasmDataManager"
-    	scope="request">
-    	<aop:scoped-proxy/>
-    </bean>
+		<!-- C3P0 properties -->
+		<property name="minPoolSize" value="${c3p0.minPoolSize}" />
+		<property name="maxPoolSize" value="${c3p0.maxPoolSize}" />
+		<property name="debugUnreturnedConnectionStackTraces" value="${c3p0.debugUnreturnedConnectionStackTraces}" />
+		<property name="unreturnedConnectionTimeout" value="${c3p0.unreturnedConnectionTimeout}" />
+		<property name="maxConnectionAge" value="${c3p0.maxConnectionAge}" />
+		<property name="maxIdleTime" value="${c3p0.maxIdleTime}" />
+		<property name="preferredTestQuery" value="${c3p0.preferredTestQuery}" />
+		<property name="testConnectionOnCheckout" value="${c3p0.testConnectionOnCheckout}" />
+	</bean>
 
-    <bean id="locationDataManager" factory-bean="managerFactory"
-    	factory-method="getLocationDataManager"
-    	scope="request">
-    	<aop:scoped-proxy/>
-    </bean>
-    
-    <bean id="germplasmListManager" factory-bean="managerFactory"
-    	factory-method="getGermplasmListManager"
-    	scope="request">
-    	<aop:scoped-proxy/>
-    </bean>
-    
-     <bean id="pedigreeDataManager" factory-bean="managerFactory"
-    	factory-method="getPedigreeDataManager"
-    	scope="request">
-    	<aop:scoped-proxy/>
-    </bean>
-    
-    <bean id="inventoryDataManager" factory-bean="managerFactory"
-    	factory-method="getInventoryDataManager"
-    	scope="request">
-    	<aop:scoped-proxy/>
-    </bean>
-    
-    <bean id="ontologyDataManager" factory-bean="managerFactory"
-        factory-method="getOntologyDataManager"
-        scope="request">
-        <aop:scoped-proxy/>
-    </bean>
-    
-    <bean id="studyDataManager" factory-bean="managerFactory"
-    	factory-method="getNewStudyDataManager"
-    	scope="request">
-    	<aop:scoped-proxy/>
-    </bean>
+	<bean id="workbenchSessionFactory"
+		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="dataSource" ref="workbenchDataSource" />
+		<property name="configLocation" value="classpath:ibpmidware_hib.cfg.xml" />
+	</bean>
 
-    <bean id="breedingManagerService" class="org.generationcp.breeding.manager.service.BreedingManagerServiceImpl"/>
 
-    
-    <bean id="userDataManager" factory-bean="managerFactory"
-    	factory-method="getUserDataManager"
-    	scope="request">
-    	<aop:scoped-proxy/>
-    </bean>
+	<bean id="workbenchHibernateSessionProvider"
+		class="org.generationcp.middleware.hibernate.HibernateSessionPerRequestProvider"
+		scope="request" destroy-method="close">
+		<property name="sessionFactory" ref="workbenchSessionFactory" />
 
-    <bean id="contextUtil" class="org.generationcp.commons.spring.util.ContextUtil"
-          scope="request">
-        <aop:scoped-proxy/>
-    </bean>
-    
-    <bean id="workbenchDataManager"
-        class="org.generationcp.middleware.manager.WorkbenchDataManagerImpl" destroy-method="close">
-        <constructor-arg ref="workbenchHibernateSessionProvider" />
-    </bean>
-    
-     <bean id="tomcatUtil" class="org.generationcp.commons.tomcat.util.TomcatUtil">
-        <property name="managerUrl" value="${tomcat.manager.url}"/>
-        <property name="username"   value="${tomcat.manager.username}"/>
-        <property name="password"   value="${tomcat.manager.password}"/>
-    </bean>
-    
-    <!--
-        Reuseable UI components can be declared here, but don't do it just so you can have auto-wiring.
-        Add @Configurable annotation to your class if you only need auto-wiring.
-    -->
-    
+		<!-- JDK Standard Proxy around this request scoped bean, so we can use 
+			it on longer scoped beans -->
+		<aop:scoped-proxy proxy-target-class="false" />
+	</bean>
+
+	<bean id="crossExpansionProperties"
+		class="org.generationcp.middleware.util.CrossExpansionProperties">
+		<property name="wheatLevel" value="${wheat.generation.level}" />
+		<property name="defaultLevel" value="${default.generation.level}" />
+	</bean>
+
+	<bean id="managerFactoryProvider"
+		class="org.generationcp.commons.hibernate.DynamicManagerFactoryProviderConcurrency">
+		<constructor-arg ref="workbenchDataManager" />
+		<property name="maxCachedSessionFactories" value="10" />
+		<property name="dbPort" value="${workbench.port}" />
+		<property name="dbHost" value="${workbench.host}" />
+		<property name="dbUsername" value="${workbench.username}" />
+		<property name="dbPassword" value="${workbench.password}" />
+		<property name="pedigreeProfile" value="${pedigree.profile}" />
+	</bean>
+
+	<bean id="managerFactory" name="managerFactory" factory-bean="managerFactoryProvider"
+		factory-method="createInstance" scope="request" destroy-method="close">
+		<aop:scoped-proxy />
+	</bean>
+
+	<bean id="genotypicDataManager" factory-bean="managerFactory"
+		factory-method="getGenotypicDataManager" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+
+	<bean id="germplasmDataManager" factory-bean="managerFactory"
+		factory-method="getGermplasmDataManager" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+
+	<bean id="locationDataManager" factory-bean="managerFactory"
+		factory-method="getLocationDataManager" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+
+	<bean id="germplasmListManager" factory-bean="managerFactory"
+		factory-method="getGermplasmListManager" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+
+	<bean id="pedigreeDataManager" factory-bean="managerFactory"
+		factory-method="getPedigreeDataManager" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+
+	<bean id="inventoryDataManager" factory-bean="managerFactory"
+		factory-method="getInventoryDataManager" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+
+	<bean id="ontologyDataManager" factory-bean="managerFactory"
+		factory-method="getOntologyDataManager" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+
+	<bean id="studyDataManager" factory-bean="managerFactory"
+		factory-method="getNewStudyDataManager" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+
+	<bean id="breedingManagerService"
+		class="org.generationcp.breeding.manager.service.BreedingManagerServiceImpl" />
+
+
+	<bean id="userDataManager" factory-bean="managerFactory"
+		factory-method="getUserDataManager" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+
+	<bean id="contextUtil" class="org.generationcp.commons.spring.util.ContextUtil"
+		scope="request">
+		<aop:scoped-proxy />
+	</bean>
+
+	<bean id="workbenchDataManager"
+		class="org.generationcp.middleware.manager.WorkbenchDataManagerImpl"
+		destroy-method="close">
+		<constructor-arg ref="workbenchHibernateSessionProvider" />
+	</bean>
+
+	<bean id="tomcatUtil" class="org.generationcp.commons.tomcat.util.TomcatUtil">
+		<property name="managerUrl" value="${tomcat.manager.url}" />
+		<property name="username" value="${tomcat.manager.username}" />
+		<property name="password" value="${tomcat.manager.password}" />
+	</bean>
+
+	<!-- Reuseable UI components can be declared here, but don't do it just 
+		so you can have auto-wiring. Add @Configurable annotation to your class if 
+		you only need auto-wiring. -->
+
 	<bean id="pedigreeService" factory-bean="managerFactory"
-          factory-method="getPedigreeService"
-          scope="request">
-        <aop:scoped-proxy/>
-    </bean>
-        
-    <bean class="org.generationcp.commons.ruleengine.RulesPostProcessor">
-        <property name="ruleFactory" ref="ruleFactory"/>
-    </bean>
-    
-    <bean id="ruleFactory" class="org.generationcp.commons.ruleengine.RuleFactory"
-          init-method="init"/>
+		factory-method="getPedigreeService" scope="request">
+		<aop:scoped-proxy />
+	</bean>
 
-    <bean id="ruleConfigProvider"
-          class="org.generationcp.commons.ruleengine.provider.PropertyFileRuleConfigurationProvider">
-        <property name="ruleSequenceConfiguration">
-            <map>
-                <entry key="stockid" value="${stockid.rules}"/>
-            </map>
-        </property>
-    </bean>
+	<bean class="org.generationcp.commons.ruleengine.RulesPostProcessor">
+		<property name="ruleFactory" ref="ruleFactory" />
+	</bean>
 
-	<bean id="ruleService" class="org.generationcp.commons.ruleengine.impl.RulesServiceImpl" />
-    <!--
-        This component scan automatically registers all implementations of the Rule interface into the Spring context.
-        In conjunction with the RulesPostProcessor above, this automatically populates the map in the RuleFactory
-         -->
-   <context:component-scan base-package="org.generationcp.commons.ruleengine.stockid"/>
-   
-    <bean id="stockService" class="org.generationcp.commons.service.impl.StockServiceImpl">
-        <aop:scoped-proxy/>
-    </bean>
+	<bean id="ruleFactory" class="org.generationcp.commons.ruleengine.RuleFactory"
+		init-method="init" />
+
+	<bean id="ruleConfigProvider"
+		class="org.generationcp.commons.ruleengine.provider.PropertyFileRuleConfigurationProvider">
+		<property name="ruleSequenceConfiguration">
+			<map>
+				<entry key="stockid" value="${stockid.rules}" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="ruleService"
+		class="org.generationcp.commons.ruleengine.impl.RulesServiceImpl" />
+	<!-- This component scan automatically registers all implementations of 
+		the Rule interface into the Spring context. In conjunction with the RulesPostProcessor 
+		above, this automatically populates the map in the RuleFactory -->
+	<context:component-scan base-package="org.generationcp.commons.ruleengine.stockid" />
+
+	<bean id="stockService" class="org.generationcp.commons.service.impl.StockServiceImpl">
+		<aop:scoped-proxy />
+	</bean>
 
 
-    <bean id="fileService" class="org.generationcp.commons.service.impl.FileServiceImpl"
-          init-method="init">
-    </bean>
+	<bean id="fileService" class="org.generationcp.commons.service.impl.FileServiceImpl"
+		init-method="init">
+	</bean>
 
-    <bean id="inventoryService" factory-bean="managerFactory"
-    	factory-method="getInventoryMiddlewareService"
-    	scope="request">
-        <aop:scoped-proxy/>
-    </bean>
+	<bean id="inventoryService" factory-bean="managerFactory"
+		factory-method="getInventoryMiddlewareService" scope="request">
+		<aop:scoped-proxy />
+	</bean>
 
-    <bean id="userProgramStateManager" class="org.generationcp.middleware.manager.UserProgramStateDataManagerImpl"
-            factory-bean="managerFactory" factory-method="getUserProgramStateDataManager"
-            scope="request">
-        <aop:scoped-proxy/>
-    </bean>
+	<bean id="userProgramStateManager"
+		class="org.generationcp.middleware.manager.UserProgramStateDataManagerImpl"
+		factory-bean="managerFactory" factory-method="getUserProgramStateDataManager"
+		scope="request">
+		<aop:scoped-proxy />
+	</bean>
 
 </beans>
