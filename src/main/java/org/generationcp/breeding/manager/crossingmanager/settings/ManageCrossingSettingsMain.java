@@ -12,8 +12,8 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDisplay;
 import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDisplay.StepChangeListener;
 import org.generationcp.breeding.manager.util.Util;
-import org.generationcp.commons.help.document.HELP_MODULE;
 import org.generationcp.commons.help.document.HelpButton;
+import org.generationcp.commons.help.document.HelpModule;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -126,7 +126,7 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 		headingLayout.setSpacing(true);
 		headingLayout.setHeight("40px");
 		headingLayout.addComponent(this.toolTitle);
-		headingLayout.addComponent(new HelpButton(HELP_MODULE.MAKE_CROSSES, "View Make Crosses tutorial"));
+		headingLayout.addComponent(new HelpButton(HelpModule.MAKE_CROSSES, "View Make Crosses tutorial"));
 
 		HeaderLabelLayout subHeaderLabel = new HeaderLabelLayout(AppConstants.Icons.ICON_MANAGE_SETTINGS, this.makeCrossesLabel);
 

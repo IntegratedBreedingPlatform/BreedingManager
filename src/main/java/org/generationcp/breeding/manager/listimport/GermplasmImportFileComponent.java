@@ -202,9 +202,12 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				ExportGermplasmListTemplateDialog exportGermplasmTemplateDialog =
-						new ExportGermplasmListTemplateDialog(GermplasmImportFileComponent.this.source);
-				GermplasmImportFileComponent.this.source.getWindow().addWindow(exportGermplasmTemplateDialog);
+				// Just download the new expanded template
+				try {
+					(new GermplasmListTemplateDownloader()).exportGermplasmTemplate();
+				} catch (GermplasmListTemplateDownloader.FileDownloadException e) {
+					MessageNotifier.showError(GermplasmImportFileComponent.this.getWindow(), GermplasmImportFileComponent.this.messageSource.getMessage(Message.ERROR), e.getMessage());
+				}
 			}
 		});
 	}
