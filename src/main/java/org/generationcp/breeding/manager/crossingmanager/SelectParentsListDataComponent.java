@@ -14,6 +14,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.constants.ModeView;
+import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUtil;
 import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
@@ -140,6 +141,14 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 				}
 			} else if (clickedItem.getName().equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.INVENTORY_VIEW))) {
 				SelectParentsListDataComponent.this.viewInventoryAction();
+			} else if (clickedItem.getName().equals(
+					SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES))) {
+				SelectParentsListDataComponent.this.listDataTable.setValue(CrossingManagerUtil
+						.getEvenEntries(SelectParentsListDataComponent.this.listDataTable));
+			} else if (clickedItem.getName().equals(
+					SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES))) {
+				SelectParentsListDataComponent.this.listDataTable.setValue(CrossingManagerUtil
+						.getOddEntries(SelectParentsListDataComponent.this.listDataTable));
 			}
 		}
 	}
@@ -273,6 +282,8 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		this.actionMenu.addItem(this.messageSource.getMessage(Message.ADD_TO_FEMALE_LIST));
 		this.actionMenu.addItem(this.messageSource.getMessage(Message.INVENTORY_VIEW));
 		this.actionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
+		this.actionMenu.addItem(this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES));
+		this.actionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES));
 
 		this.inventoryViewActionMenu = new ContextMenu();
 		this.inventoryViewActionMenu.setWidth("295px");
@@ -281,6 +292,8 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		this.menuListView = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
 		this.menuInventorySaveChanges = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SAVE_CHANGES));
 		this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
+		this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES));
+		this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES));
 		this.resetInventoryMenuOptions();
 
 		this.initializeListDataTable();
@@ -516,6 +529,14 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 				} else if (clickedItem.getName().equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
 					SelectParentsListDataComponent.this.listInventoryTable.getTable().setValue(
 							SelectParentsListDataComponent.this.listInventoryTable.getTable().getItemIds());
+				} else if (clickedItem.getName().equals(
+						SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES))) {
+					SelectParentsListDataComponent.this.listInventoryTable.getTable().setValue(
+							CrossingManagerUtil.getEvenEntries(SelectParentsListDataComponent.this.listInventoryTable.getTable()));
+				} else if (clickedItem.getName().equals(
+						SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES))) {
+					SelectParentsListDataComponent.this.listInventoryTable.getTable().setValue(
+							CrossingManagerUtil.getOddEntries(SelectParentsListDataComponent.this.listInventoryTable.getTable()));
 				}
 			}
 		});
