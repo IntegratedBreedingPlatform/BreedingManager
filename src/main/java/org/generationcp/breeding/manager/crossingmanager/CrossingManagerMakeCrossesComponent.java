@@ -87,22 +87,24 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	 * Action handler for Make Cross button
 	 */
 	public void makeCrossButtonAction(List<GermplasmListEntry> femaleList, List<GermplasmListEntry> maleList, String listnameFemaleParent,
-			String listnameMaleParent, CrossType type, boolean makeReciprocalCrosses) {
+			String listnameMaleParent, CrossType type, boolean makeReciprocalCrosses, boolean excludeSelf) {
 
 		if (!femaleList.isEmpty() && !maleList.isEmpty()) {
 			// Female - Male Multiplication
 			if (CrossType.MULTIPLY.equals(type)) {
-				this.crossesTableComponent.multiplyParents(femaleList, maleList, listnameFemaleParent, listnameMaleParent);
+				this.crossesTableComponent.multiplyParents(femaleList, maleList, listnameFemaleParent, listnameMaleParent, excludeSelf);
 				if (makeReciprocalCrosses) {
-					this.crossesTableComponent.multiplyParents(maleList, femaleList, listnameMaleParent, listnameFemaleParent);
+					this.crossesTableComponent.multiplyParents(maleList, femaleList, listnameMaleParent, listnameFemaleParent, excludeSelf);
 				}
 
 				// Top to Bottom Crossing
 			} else if (CrossType.TOP_TO_BOTTOM.equals(type)) {
 				if (femaleList.size() == maleList.size()) {
-					this.crossesTableComponent.makeTopToBottomCrosses(femaleList, maleList, listnameFemaleParent, listnameMaleParent);
+					this.crossesTableComponent.makeTopToBottomCrosses(femaleList, maleList, listnameFemaleParent, listnameMaleParent,
+							excludeSelf);
 					if (makeReciprocalCrosses) {
-						this.crossesTableComponent.makeTopToBottomCrosses(maleList, femaleList, listnameMaleParent, listnameFemaleParent);
+						this.crossesTableComponent.makeTopToBottomCrosses(maleList, femaleList, listnameMaleParent, listnameFemaleParent,
+								excludeSelf);
 					}
 				} else {
 					MessageNotifier.showError(this.getWindow(), "Error with selecting parents.",
@@ -112,6 +114,16 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		} else {
 			MessageNotifier.showError(this.getWindow(), "Error with selecting parents.",
 					this.messageSource.getMessage(Message.AT_LEAST_ONE_FEMALE_AND_ONE_MALE_PARENT_MUST_BE_SELECTED));
+		}
+
+		this.showNotificationAfterCrossing(this.crossesTableComponent.getTableCrossesMade().size());
+
+	}
+
+	void showNotificationAfterCrossing(int noOfCrosses) {
+		if (noOfCrosses == 0) {
+			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
+					this.messageSource.getMessage(Message.NO_CROSSES_GENERATED));
 		}
 	}
 
