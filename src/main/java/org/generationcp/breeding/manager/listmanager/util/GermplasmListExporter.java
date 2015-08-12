@@ -346,7 +346,7 @@ public class GermplasmListExporter {
 
 		Map<Integer, StandardVariable> standardVariableMap = new HashMap<>();
 		this.addStandardVariableToMap(standardVariableMap, TermId.SEED_AMOUNT_G.getId());
-		this.addStandardVariableToMap(standardVariableMap, 8269);
+		this.addStandardVariableToMap(standardVariableMap, TermId.STOCKID.getId());
 		return standardVariableMap;
 	}
 
