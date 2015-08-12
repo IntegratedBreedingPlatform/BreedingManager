@@ -75,6 +75,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
@@ -245,6 +249,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
+
+	@Autowired
+	private PlatformTransactionManager transactionManager;
 
 	@Resource
 	private ContextUtil contextUtil;
@@ -881,22 +888,30 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		private static final long serialVersionUID = -2343109406180457070L;
 
 		@Override
-		public void contextItemClick(ClickEvent event) {
-			// Get reference to clicked item
-			ContextMenuItem clickedItem = event.getClickedItem();
-			if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.SAVE_RESERVATIONS))) {
-				ListComponent.this.saveReservationChangesAction();
-			} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
-				ListComponent.this.viewListAction();
-			} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
-				ListComponent.this.copyToNewListFromInventoryViewAction();
-			} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
-				ListComponent.this.reserveInventoryAction();
-			} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
-				ListComponent.this.listInventoryTable.getTable().setValue(ListComponent.this.listInventoryTable.getTable().getItemIds());
-			} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.CANCEL_RESERVATIONS))) {
-				ListComponent.this.cancelReservationsAction();
-			}
+		public void contextItemClick(final ClickEvent event) {
+			
+			final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+			transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					// Get reference to clicked item
+					ContextMenuItem clickedItem = event.getClickedItem();
+					if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.SAVE_RESERVATIONS))) {
+						ListComponent.this.saveReservationChangesAction();
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
+						ListComponent.this.viewListAction();
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
+						ListComponent.this.copyToNewListFromInventoryViewAction();
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
+						ListComponent.this.reserveInventoryAction();
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
+						ListComponent.this.listInventoryTable.getTable().setValue(ListComponent.this.listInventoryTable.getTable().getItemIds());
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.CANCEL_RESERVATIONS))) {
+						ListComponent.this.cancelReservationsAction();
+					}
+				}
+			});
+
 		}
 	}
 
@@ -905,31 +920,37 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		private static final long serialVersionUID = -2343109406180457070L;
 
 		@Override
-		public void contextItemClick(ClickEvent event) {
-			// Get reference to clicked item
-			ContextMenuItem clickedItem = event.getClickedItem();
-			if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
-				ListComponent.this.listDataTable.setValue(ListComponent.this.listDataTable.getItemIds());
-			} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.EXPORT_LIST))) {
-				ListComponent.this.exportListAction();
-			} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER))) {
-				ListComponent.this.exportListForGenotypingOrderAction();
-			} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
-				ListComponent.this.copyToNewListAction();
-			} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.ADD_ENTRIES))) {
-				ListComponent.this.addEntryButtonClickAction();
-			} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.SAVE_CHANGES))) {
-				ListComponent.this.saveChangesAction();
-			} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES))) {
-				ListComponent.this.deleteEntriesButtonClickAction();
-			} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.EDIT_LIST))) {
-				ListComponent.this.editListButtonClickAction();
-			} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.DELETE_LIST))) {
-				ListComponent.this.deleteListButtonClickAction();
-			} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.INVENTORY_VIEW))) {
-				ListComponent.this.viewInventoryAction();
-			}
-
+		public void contextItemClick(final ClickEvent event) {
+			
+			final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+			transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(final TransactionStatus status) {
+					// Get reference to clicked item
+					ContextMenuItem clickedItem = event.getClickedItem();
+					if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
+						ListComponent.this.listDataTable.setValue(ListComponent.this.listDataTable.getItemIds());
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.EXPORT_LIST))) {
+						ListComponent.this.exportListAction();
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER))) {
+						ListComponent.this.exportListForGenotypingOrderAction();
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
+						ListComponent.this.copyToNewListAction();
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.ADD_ENTRIES))) {
+						ListComponent.this.addEntryButtonClickAction();
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.SAVE_CHANGES))) {
+						ListComponent.this.saveChangesAction();
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES))) {
+						ListComponent.this.deleteEntriesButtonClickAction();
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.EDIT_LIST))) {
+						ListComponent.this.editListButtonClickAction();
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.DELETE_LIST))) {
+						ListComponent.this.deleteListButtonClickAction();
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.INVENTORY_VIEW))) {
+						ListComponent.this.viewInventoryAction();
+					}
+				}
+			});
 		}
 	}
 

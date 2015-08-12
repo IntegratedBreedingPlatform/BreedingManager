@@ -211,25 +211,33 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 	}
 
 	public void searchButtonClickAction() {
-		final String q = this.searchField.getValue().toString();
-		String searchType = (String) this.searchTypeOptions.getValue();
-		if (this.matchesContaining.equals(searchType)) {
-			ConfirmDialog.show(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
-					this.messageSource.getMessage(Message.SEARCH_TAKE_TOO_LONG_WARNING), this.messageSource.getMessage(Message.OK),
-					this.messageSource.getMessage(Message.CANCEL), new ConfirmDialog.Listener() {
+		
+		final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final String q = GermplasmSearchBarComponent.this.searchField.getValue().toString();
+				String searchType = (String) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
+				if (GermplasmSearchBarComponent.this.matchesContaining.equals(searchType)) {
+					ConfirmDialog.show(GermplasmSearchBarComponent.this.getWindow(), GermplasmSearchBarComponent.this.messageSource.getMessage(Message.WARNING),
+							GermplasmSearchBarComponent.this.messageSource.getMessage(Message.SEARCH_TAKE_TOO_LONG_WARNING), 
+							GermplasmSearchBarComponent.this.messageSource.getMessage(Message.OK),
+							GermplasmSearchBarComponent.this.messageSource.getMessage(Message.CANCEL), new ConfirmDialog.Listener() {
+								private static final long serialVersionUID = 1L;
+								@Override
+								public void onClose(ConfirmDialog dialog) {
+									if (dialog.isConfirmed()) {
+										GermplasmSearchBarComponent.this.doSearch(q);
+									}
+								}
+							});
+				} else {
+					GermplasmSearchBarComponent.this.doSearch(q);
+				}
+			}
+		});
+		
 
-						private static final long serialVersionUID = 1L;
-
-						@Override
-						public void onClose(ConfirmDialog dialog) {
-							if (dialog.isConfirmed()) {
-								GermplasmSearchBarComponent.this.doSearch(q);
-							}
-						}
-					});
-		} else {
-			this.doSearch(q);
-		}
 	}
 
 	public void doSearch(String q) {
