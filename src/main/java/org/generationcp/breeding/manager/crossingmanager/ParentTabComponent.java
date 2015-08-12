@@ -503,6 +503,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 		this.listInventoryTable.setVisible(false);
 		this.listInventoryTable.setMaxRows(this.rowCount);
+		this.listInventoryTable.setTableHeight(null);
 	}
 
 	@Override

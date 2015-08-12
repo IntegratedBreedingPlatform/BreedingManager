@@ -369,6 +369,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		this.listInventoryTable = new CrossingManagerInventoryTable(this.germplasmList.getId());
 		this.listInventoryTable.setVisible(false);
 		this.listInventoryTable.setMaxRows(9);
+		this.listInventoryTable.setTableHeight(null);
 		this.listInventoryTable.getTable().setDragMode(TableDragMode.ROW);
 		this.listInventoryTable.getTable().setData(SelectParentsListDataComponent.CROSSING_MANAGER_PARENT_TAB_INVENTORY_TABLE);
 	}

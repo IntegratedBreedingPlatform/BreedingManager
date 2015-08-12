@@ -262,8 +262,11 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 	}
 
 	public void setMaxRows(int i) {
-		this.listInventoryTable.setHeight("100%");
 		this.listInventoryTable.setPageLength(i);
+	}
+
+	public void setTableHeight(String height) {
+		this.listInventoryTable.setHeight(height);
 	}
 
 }
