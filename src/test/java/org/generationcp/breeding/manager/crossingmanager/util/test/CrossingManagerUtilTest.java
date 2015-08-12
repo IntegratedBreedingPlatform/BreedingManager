@@ -7,7 +7,11 @@ import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUti
 import org.generationcp.middleware.pojos.Germplasm;
 import org.junit.Test;
 
-public class TestCrossingManagerUtil {
+public class CrossingManagerUtilTest {
+
+	private CrossingManagerUtilTest() {
+		// not implemented
+	}
 
 	@Test
 	public void testSetCrossingBreedingMethod() {
