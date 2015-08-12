@@ -36,4 +36,6 @@
 	<logger name="org.generationcp" level="TRACE" />
 	<logger name="org.hibernate.cfg" level="WARN" />
 	<logger name="org.springframework" level="WARN"/>
+	<logger name="com.atomikos" level="WARN"/>
+	
 </configuration>
