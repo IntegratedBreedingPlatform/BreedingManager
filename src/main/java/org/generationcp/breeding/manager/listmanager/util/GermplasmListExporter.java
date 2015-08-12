@@ -158,8 +158,9 @@ public class GermplasmListExporter {
 		return exportColumnValues;
 	}
 
-	public FileOutputStream exportGermplasmListXLS(String fileName, Table listDataTable) throws GermplasmListExporterException,
-			MiddlewareQueryException {
+	public FileOutputStream exportGermplasmListXLS(String fileName, Table listDataTable) throws GermplasmListExporterException {
+
+		Integer currentLocalIbdbUserId = this.getCurrentLocalIbdbUserId();
 
 		GermplasmListExportInputValues input = new GermplasmListExportInputValues();
 		input.setFileName(fileName);
@@ -172,7 +173,6 @@ public class GermplasmListExporter {
 
 		input.setOwnerName(this.getOwnerName(germplasmList.getUserId()));
 
-		Integer currentLocalIbdbUserId = this.contextUtil.getCurrentUserLocalId();
 		input.setCurrentLocalIbdbUserId(currentLocalIbdbUserId);
 
 		input.setExporterName(this.getExporterName(currentLocalIbdbUserId));
@@ -440,6 +440,17 @@ public class GermplasmListExporter {
 		}
 
 		return exportColumnValues;
+	}
+
+	protected Integer getCurrentLocalIbdbUserId() {
+		Integer currentLocalIbdbUserId = 0;
+
+		try {
+			currentLocalIbdbUserId = this.contextUtil.getCurrentUserLocalId();
+		} catch (MiddlewareQueryException e) {
+			LOG.error(e.getMessage(), e);
+		}
+		return currentLocalIbdbUserId;
 	}
 
 	protected void setExportService(ExportService exportService) {
