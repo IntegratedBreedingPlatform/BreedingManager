@@ -210,20 +210,20 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 
 					private static final long serialVersionUID = 1L;
 
-			@Override
-			public void onClose(ConfirmDialog dialog) {
-				if (dialog.isConfirmed()) {
-					if (CrossingSettingsDetailComponent.this.currentSetting != null) {
-						CrossingSettingsDetailComponent.this.setManageCrossingSettingsFields();
-					} else {
-						CrossingSettingsDetailComponent.this.setDefaultManageCrossingSettingsFields();
+					@Override
+					public void onClose(ConfirmDialog dialog) {
+						if (dialog.isConfirmed()) {
+							if (CrossingSettingsDetailComponent.this.currentSetting != null) {
+								CrossingSettingsDetailComponent.this.setManageCrossingSettingsFields();
+							} else {
+								CrossingSettingsDetailComponent.this.setDefaultManageCrossingSettingsFields();
+							}
+							MessageNotifier.showMessage(CrossingSettingsDetailComponent.this.getWindow(),
+									CrossingSettingsDetailComponent.this.messageSource.getMessage(Message.SUCCESS),
+									"Crossing Manager Setting has been reset.");
+						}
 					}
-					MessageNotifier.showMessage(CrossingSettingsDetailComponent.this.getWindow(),
-							CrossingSettingsDetailComponent.this.messageSource.getMessage(Message.SUCCESS),
-							"Crossing Manager Setting has been reset.");
-				}
-			}
-		});
+				});
 	}
 
 	public void setManageCrossingSettingsFields() {
@@ -532,7 +532,7 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 
 	/**
 	 * Make sure to validate the input fields first before calling this method.
-	 *
+	 * 
 	 * @return
 	 */
 	public CrossingManagerSetting getCurrentlyDefinedSetting() {
