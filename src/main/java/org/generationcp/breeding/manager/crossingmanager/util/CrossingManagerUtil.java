@@ -14,6 +14,10 @@ import com.vaadin.ui.Table;
 
 public class CrossingManagerUtil {
 
+	private CrossingManagerUtil() {
+		// do not implement this method
+	}
+
 	/**
 	 * Determines the proper crossing method for a germplasm based on how its parental lines have been created.
 	 * 
