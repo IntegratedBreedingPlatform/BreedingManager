@@ -121,21 +121,19 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 			throw new FileParsingException("GERMPLASM_PARSE_INVENTORY_HEADER_ERROR");
 		}
 
-		(new WorkbookRowConverter<Boolean>(this.workbook, this.currentRowIndex + 1, GermplasmListParser.DESCRIPTION_SHEET_NO,
+		WorkbookRowConverter converter = new WorkbookRowConverter<Boolean>(this.workbook, this.currentRowIndex + 1, GermplasmListParser.DESCRIPTION_SHEET_NO,
 				InventoryHeaders.values().length, InventoryHeaders.names()) {
-
 			@Override
 			public Boolean convertToObject(Map<Integer, String> rowValues) throws FileParsingException {
 				String property = rowValues.get(2) == null ? "" : rowValues.get(2).toUpperCase();
 				String scale = rowValues.get(3) == null ? "" : rowValues.get(3).toUpperCase();
 				// stock id factor parse
-				if (FactorDetailsConverter.GERMPLASM_STOCK_ID_PROPERTY.equals(property) && FactorDetailsConverter.DBCV_SCALE
+				if (FactorDetailsConverter.GERMPLASM_STOCK_ID_PROPERTY.equalsIgnoreCase(property) && FactorDetailsConverter.DBCV_SCALE
 						.equals(scale)) {
 
 					ImportedFactor importedFactor =
 							new ImportedFactor(rowValues.get(0), rowValues.get(1), rowValues.get(2), rowValues.get(3), rowValues.get(4),
 									rowValues.get(5), rowValues.get(6), rowValues.get(7));
-
 
 					// lets remove if exists just in case
 					GermplasmListParser.this.specialFactors.remove(FactorTypes.STOCK);
@@ -149,8 +147,6 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 						}
 					}
 					GermplasmListParser.this.importedGermplasmList.addImportedFactor(importedFactor);
-
-
 
 					return true;
 				}
@@ -177,9 +173,14 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 				return false;
 			}
-		}).convertWorkbookRowsToObject(new WorkbookRowConverter.ContinueTillBlank());
+		};
+
+		converter.convertWorkbookRowsToObject(new WorkbookRowConverter.ContinueTillBlank());
 
 		this.applyWarningIfNoInventory();
+
+		this.currentRowIndex = converter.getCurrentIndex();
+		this.continueTillNextSection();
 	}
 
 	protected void parseVariates() throws FileParsingException {
