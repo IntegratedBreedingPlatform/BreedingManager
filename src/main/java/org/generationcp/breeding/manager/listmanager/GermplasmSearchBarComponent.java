@@ -257,8 +257,10 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 						MessageNotifier.showWarning(GermplasmSearchBarComponent.this.getWindow(),
 								GermplasmSearchBarComponent.this.messageSource.getMessage(Message.SEARCH_RESULTS),
 								GermplasmSearchBarComponent.this.messageSource.getMessage(e.getErrorMessage()));
+						if (Message.ERROR_DATABASE.equals(e.getErrorMessage())) {
+							GermplasmSearchBarComponent.LOG.error("Database error occured while searching. Search string was: " + q, e);
+						}
 					}
-					GermplasmSearchBarComponent.LOG.info(e.getMessage(), e);
 				} finally {
 					GermplasmSearchBarComponent.LOG.debug("" + monitor.stop());
 				}
