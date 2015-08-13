@@ -29,7 +29,7 @@ import com.vaadin.ui.TextField;
 
 @Configurable
 public class CrossingSettingsNameComponent extends CssLayout implements BreedingManagerLayout, InternationalizableComponent,
-InitializingBean {
+		InitializingBean {
 
 	private static final int SEPARATOR_MAX_CHARS_LENGTH = 3;
 	private static final int STARTING_NUM_MAX_CHARS_LENGTH = 9;
@@ -58,6 +58,8 @@ InitializingBean {
 
 	private TextField generatedNextName;
 	private TextField generatedExampleParentage;
+
+	private OptionGroup saveParentageDesignationAsAStringGroup;
 
 	public enum AddSpaceOption {
 		YES, NO
@@ -126,6 +128,10 @@ InitializingBean {
 
 		this.generatedExampleParentage = new TextField(this.messageSource.getMessage(Message.GENERATED_PARENT_DESIGNATION) + ":");
 		this.generatedExampleParentage.setReadOnly(true);
+
+		this.saveParentageDesignationAsAStringGroup =
+				new OptionGroup(this.messageSource.getMessage(Message.SAVE_PARENTAGE_DESIGNATION_AS_STRING));
+		this.saveParentageDesignationAsAStringGroup.setImmediate(true);
 	}
 
 	@Override
@@ -149,6 +155,11 @@ InitializingBean {
 		this.addSpaceBetSuffixAndCodeOptionGroup.setItemCaption(AddSpaceOption.YES, yes);
 		this.addSpaceBetSuffixAndCodeOptionGroup.addItem(AddSpaceOption.NO);
 		this.addSpaceBetSuffixAndCodeOptionGroup.setItemCaption(AddSpaceOption.NO, no);
+
+		this.saveParentageDesignationAsAStringGroup.addItem(AddSpaceOption.YES);
+		this.saveParentageDesignationAsAStringGroup.setItemCaption(AddSpaceOption.YES, yes);
+		this.saveParentageDesignationAsAStringGroup.addItem(AddSpaceOption.NO);
+		this.saveParentageDesignationAsAStringGroup.setItemCaption(AddSpaceOption.NO, no);
 
 		this.setFieldsDefaultValue();
 	}
@@ -188,6 +199,7 @@ InitializingBean {
 		formFields.addComponent(this.startNumberTextField);
 		formFields.addComponent(this.separatorTextField);
 		formFields.addComponent(this.generatedExampleParentage);
+		formFields.addComponent(this.saveParentageDesignationAsAStringGroup);
 
 		this.addComponent(this.namingLabel);
 		this.addComponent(this.namingDescLabel);
@@ -209,11 +221,12 @@ InitializingBean {
 		final boolean addSpaceBetweenPrefixAndCode = AddSpaceOption.YES.equals(this.addSpaceBetPrefixAndCodeOptionGroup.getValue());
 		final boolean addSpaceBetweenSuffixAndCode = AddSpaceOption.YES.equals(this.addSpaceBetSuffixAndCodeOptionGroup.getValue());
 		final Integer numOfDigits = this.leadingZerosSelect.getValue() == null ? null : (Integer) this.leadingZerosSelect.getValue();
+		final boolean saveParentageDesignationAsAString = AddSpaceOption.YES.equals(this.saveParentageDesignationAsAStringGroup.getValue());
 
 		final String separator = (String) this.separatorTextField.getValue();
 		final CrossNameSetting crossNameSettingPojo =
 				new CrossNameSetting(prefix.trim(), suffix, addSpaceBetweenPrefixAndCode, addSpaceBetweenSuffixAndCode, numOfDigits,
-						separator);
+						separator, saveParentageDesignationAsAString);
 		final String startNumber = (String) this.startNumberTextField.getValue();
 
 		if (!startNumber.isEmpty() && NumberUtils.isDigits(startNumber)) {
@@ -251,6 +264,12 @@ InitializingBean {
 		this.crossNameSuffix.setValue(suffix);
 
 		this.separatorTextField.setValue(crossNameSetting.getSeparator());
+
+		if (crossNameSetting.isSaveParentageDesignationAsAString()) {
+			this.saveParentageDesignationAsAStringGroup.select(AddSpaceOption.YES);
+		} else {
+			this.saveParentageDesignationAsAStringGroup.select(AddSpaceOption.NO);
+		}
 	}
 
 	public void setFieldsDefaultValue() {
@@ -263,6 +282,7 @@ InitializingBean {
 		this.separatorTextField.setValue(CrossNameSetting.DEFAULT_SEPARATOR);
 		this.updateNextNameInSequence("");
 		this.updateDesignationExample();
+		this.saveParentageDesignationAsAStringGroup.select(AddSpaceOption.NO);
 	}
 
 	public boolean validateInputFields() {
