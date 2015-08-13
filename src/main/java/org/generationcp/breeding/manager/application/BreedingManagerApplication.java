@@ -202,11 +202,6 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 			HttpRequestAwareUtil.onRequestEnd(this.applicationContext, request, response);
 		}
 
-		try {
-			this.managerFactoryProvider.close();
-		} catch (Exception e) {
-			BreedingManagerApplication.LOG.error(e.getMessage(), e);
-		}
 	}
 
 	public ListManagerMain getListManagerMain() {
