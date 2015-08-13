@@ -74,10 +74,9 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 
 	@Autowired
 	private BreedingManagerService breedingManagerService;
-	
+
 	@Autowired
 	private PlatformTransactionManager transactionManager;
-
 
 	public GermplasmSearchBarComponent(final GermplasmSearchResultsComponent searchResultsComponent) {
 		super();
@@ -146,13 +145,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
-				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-					@Override
-					protected void doInTransactionWithoutResult(TransactionStatus status) {
-						GermplasmSearchBarComponent.this.searchButtonClickAction();
-					}
-				});
+				GermplasmSearchBarComponent.this.searchButtonClickAction();
 			}
 		});
 	}
@@ -211,60 +204,66 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 	}
 
 	public void searchButtonClickAction() {
-		
-		final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
-		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+		final String q = GermplasmSearchBarComponent.this.searchField.getValue().toString();
+		String searchType = (String) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
+		if (GermplasmSearchBarComponent.this.matchesContaining.equals(searchType)) {
+			ConfirmDialog.show(GermplasmSearchBarComponent.this.getWindow(),
+					GermplasmSearchBarComponent.this.messageSource.getMessage(Message.WARNING),
+					GermplasmSearchBarComponent.this.messageSource.getMessage(Message.SEARCH_TAKE_TOO_LONG_WARNING),
+					GermplasmSearchBarComponent.this.messageSource.getMessage(Message.OK),
+					GermplasmSearchBarComponent.this.messageSource.getMessage(Message.CANCEL), new ConfirmDialog.Listener() {
+
+						private static final long serialVersionUID = 1L;
+
+						@Override
+				public void onClose(ConfirmDialog dialog) {
+					if (dialog.isConfirmed()) {
+						GermplasmSearchBarComponent.this.doSearch(q);
+					}
+				}
+			});
+		} else {
+			GermplasmSearchBarComponent.this.doSearch(q);
+		}
+	}
+
+	public void doSearch(final String q) {
+
+		TransactionTemplate inTx = new TransactionTemplate(this.transactionManager);
+		inTx.execute(new TransactionCallbackWithoutResult() {
+
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final String q = GermplasmSearchBarComponent.this.searchField.getValue().toString();
+				Monitor monitor = MonitorFactory.start("GermplasmSearchBarComponent.doSearch()");
 				String searchType = (String) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
-				if (GermplasmSearchBarComponent.this.matchesContaining.equals(searchType)) {
-					ConfirmDialog.show(GermplasmSearchBarComponent.this.getWindow(), GermplasmSearchBarComponent.this.messageSource.getMessage(Message.WARNING),
-							GermplasmSearchBarComponent.this.messageSource.getMessage(Message.SEARCH_TAKE_TOO_LONG_WARNING), 
-							GermplasmSearchBarComponent.this.messageSource.getMessage(Message.OK),
-							GermplasmSearchBarComponent.this.messageSource.getMessage(Message.CANCEL), new ConfirmDialog.Listener() {
-								private static final long serialVersionUID = 1L;
-								@Override
-								public void onClose(ConfirmDialog dialog) {
-									if (dialog.isConfirmed()) {
-										GermplasmSearchBarComponent.this.doSearch(q);
-									}
-								}
-							});
-				} else {
-					GermplasmSearchBarComponent.this.doSearch(q);
+				String searchKeyword = GermplasmSearchBarComponent.this.getSearchKeyword(q, searchType);
+				Operation operation = GermplasmSearchBarComponent.this.exactMatches.equals(searchType) ? Operation.EQUAL : Operation.LIKE;
+
+				try {
+					boolean includeParents = (Boolean) GermplasmSearchBarComponent.this.includeParentsCheckBox.getValue();
+					boolean withInventoryOnly = (Boolean) GermplasmSearchBarComponent.this.withInventoryOnlyCheckBox.getValue();
+					GermplasmSearchBarComponent.this.searchResultsComponent
+					.applyGermplasmResults(GermplasmSearchBarComponent.this.breedingManagerService.doGermplasmSearch(searchKeyword,
+							operation, includeParents, withInventoryOnly));
+				} catch (BreedingManagerSearchException e) {
+					if (Message.SEARCH_QUERY_CANNOT_BE_EMPTY.equals(e.getErrorMessage())) {
+						// invalid search string
+						MessageNotifier.showWarning(GermplasmSearchBarComponent.this.getWindow(),
+								GermplasmSearchBarComponent.this.messageSource.getMessage(Message.UNABLE_TO_SEARCH),
+								GermplasmSearchBarComponent.this.messageSource.getMessage(e.getErrorMessage()));
+					} else {
+						// case for no results, database error
+						MessageNotifier.showWarning(GermplasmSearchBarComponent.this.getWindow(),
+								GermplasmSearchBarComponent.this.messageSource.getMessage(Message.SEARCH_RESULTS),
+								GermplasmSearchBarComponent.this.messageSource.getMessage(e.getErrorMessage()));
+					}
+					GermplasmSearchBarComponent.LOG.info(e.getMessage(), e);
+				} finally {
+					GermplasmSearchBarComponent.LOG.debug("" + monitor.stop());
 				}
 			}
 		});
-		
-
-	}
-
-	public void doSearch(String q) {
-		Monitor monitor = MonitorFactory.start("GermplasmSearchBarComponent.doSearch()");
-		String searchType = (String) this.searchTypeOptions.getValue();
-		String searchKeyword = this.getSearchKeyword(q, searchType);
-		Operation operation = this.exactMatches.equals(searchType) ? Operation.EQUAL : Operation.LIKE;
-
-		try {
-			boolean includeParents = (Boolean) this.includeParentsCheckBox.getValue();
-			boolean withInventoryOnly = (Boolean) this.withInventoryOnlyCheckBox.getValue();
-			this.searchResultsComponent.applyGermplasmResults(this.breedingManagerService.doGermplasmSearch(searchKeyword, operation,
-					includeParents, withInventoryOnly));
-		} catch (BreedingManagerSearchException e) {
-			if (Message.SEARCH_QUERY_CANNOT_BE_EMPTY.equals(e.getErrorMessage())) {
-				// invalid search string
-				MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.UNABLE_TO_SEARCH),
-						this.messageSource.getMessage(e.getErrorMessage()));
-			} else {
-				// case for no results, database error
-				MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.SEARCH_RESULTS),
-						this.messageSource.getMessage(e.getErrorMessage()));
-			}
-			GermplasmSearchBarComponent.LOG.info(e.getMessage(), e);
-		} finally {
-			GermplasmSearchBarComponent.LOG.debug("" + monitor.stop());
-		}
 	}
 
 	private String getSearchKeyword(String query, String searchType) {
