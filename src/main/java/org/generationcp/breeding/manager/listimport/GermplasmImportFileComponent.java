@@ -204,7 +204,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 			public void buttonClick(ClickEvent event) {
 				// Just download the new expanded template
 				try {
-					(new GermplasmListTemplateDownloader()).exportGermplasmTemplate();
+					(new GermplasmListTemplateDownloader()).exportGermplasmTemplate(event.getComponent(),GermplasmImportFileComponent.this.source.isViaPopup());
 				} catch (GermplasmListTemplateDownloader.FileDownloadException e) {
 					MessageNotifier.showError(GermplasmImportFileComponent.this.getWindow(), GermplasmImportFileComponent.this.messageSource.getMessage(Message.ERROR), e.getMessage());
 				}

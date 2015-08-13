@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 
 import com.vaadin.Application;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
 import junit.framework.Assert;
 import org.apache.commons.lang.StringUtils;
@@ -55,7 +56,7 @@ public class GermplasmListTemplateDownloaderTest {
 
 	@Test
 	public void testExportGermplasmTemplate() throws Exception {
-		exportDialog.exportGermplasmTemplate();
+		exportDialog.exportGermplasmTemplate(mock(Component.class),false);
 
 		verify(window).open(any(FileDownloadResource.class));
 	}
