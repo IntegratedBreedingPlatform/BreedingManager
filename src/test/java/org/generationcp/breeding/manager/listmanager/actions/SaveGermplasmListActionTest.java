@@ -1,5 +1,8 @@
 package org.generationcp.breeding.manager.listmanager.actions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.listimport.actions.SaveGermplasmListAction;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
@@ -17,11 +20,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The skeleton for the SaveGermplasmListAction test
