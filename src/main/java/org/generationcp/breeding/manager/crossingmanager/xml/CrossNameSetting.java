@@ -141,6 +141,7 @@ public class CrossNameSetting implements Serializable {
 		return new EqualsBuilder().append(this.prefix, rhs.prefix).append(this.suffix, rhs.suffix)
 				.append(this.addSpaceBetweenPrefixAndCode, rhs.addSpaceBetweenPrefixAndCode)
 				.append(this.addSpaceBetweenSuffixAndCode, rhs.addSpaceBetweenSuffixAndCode).append(this.numOfDigits, rhs.numOfDigits)
+				.append(this.saveParentageDesignationAsAString, rhs.saveParentageDesignationAsAString)
 				.append(this.separator, rhs.separator).isEquals();
 	}
 
@@ -155,6 +156,8 @@ public class CrossNameSetting implements Serializable {
 		builder.append(this.addSpaceBetweenPrefixAndCode);
 		builder.append(", addSpaceBetweenSuffixAndCode=");
 		builder.append(this.addSpaceBetweenSuffixAndCode);
+		builder.append(", saveParentageDesignationAsAString=");
+		builder.append(this.saveParentageDesignationAsAString);
 		builder.append(", numOfDigits=");
 		builder.append(this.numOfDigits);
 		builder.append(", separator=");
