@@ -122,7 +122,7 @@ public class SaveCrossesMadeAction implements Serializable {
 		return list;
 	}
 
-	private List<Integer> saveGermplasmsAndNames(CrossesMade crossesMade) throws MiddlewareQueryException {
+	List<Integer> saveGermplasmsAndNames(CrossesMade crossesMade) throws MiddlewareQueryException {
 		List<Integer> germplasmIDs = new ArrayList<Integer>();
 
 		Map<Germplasm, Name> currentCrossesMap = crossesMade.getCrossesMap();
@@ -205,7 +205,7 @@ public class SaveCrossesMadeAction implements Serializable {
 		return g1.getGpid1().equals(g2.getGpid1()) && g1.getGpid2().equals(g2.getGpid2());
 	}
 
-	private GermplasmList saveGermplasmListRecord(CrossesMade crossesMade) throws MiddlewareQueryException {
+	GermplasmList saveGermplasmListRecord(CrossesMade crossesMade) throws MiddlewareQueryException {
 		int listId;
 		GermplasmList listToSave = crossesMade.getGermplasmList();
 		if (this.germplasmList == null) {
@@ -227,7 +227,7 @@ public class SaveCrossesMadeAction implements Serializable {
 		return list;
 	}
 
-	private void saveGermplasmListDataRecords(CrossesMade crossesMade, List<Integer> germplasmIDs, GermplasmList list)
+	void saveGermplasmListDataRecords(CrossesMade crossesMade, List<Integer> germplasmIDs, GermplasmList list)
 			throws MiddlewareQueryException {
 
 		this.deleteRemovedListData(crossesMade);
@@ -301,7 +301,7 @@ public class SaveCrossesMadeAction implements Serializable {
 		}
 	}
 
-	private void savePedigreeDesignationName(CrossesMade crossesMade, List<Integer> germplasmIDs) throws MiddlewareQueryException {
+	void savePedigreeDesignationName(CrossesMade crossesMade, List<Integer> germplasmIDs) throws MiddlewareQueryException {
 
 		List<Name> parentageDesignationNames = new ArrayList<Name>();
 		Iterator<Integer> germplasmIdIterator = germplasmIDs.iterator();
@@ -413,6 +413,33 @@ public class SaveCrossesMadeAction implements Serializable {
 			}
 		}
 		this.germplasmListManager.updateGermplasmListData(this.existingListEntries);
+	}
+
+	/**
+	 * For Test Only
+	 * 
+	 * @param contextUtil
+	 */
+	void setContextUtil(ContextUtil contextUtil) {
+		this.contextUtil = contextUtil;
+	}
+
+	/**
+	 * For Test Only
+	 * 
+	 * @param contextUtil
+	 */
+	void setGermplasmManager(GermplasmDataManager germplasmManager) {
+		this.germplasmManager = germplasmManager;
+	}
+
+	/**
+	 * For Test Only
+	 * 
+	 * @param contextUtil
+	 */
+	void setGermplasmListManager(GermplasmListManager germplasmListManager) {
+		this.germplasmListManager = germplasmListManager;
 	}
 
 }
