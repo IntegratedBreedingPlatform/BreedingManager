@@ -19,17 +19,18 @@ public class GermplasmListTemplateDownloader {
 
 	private static final long serialVersionUID = -9047374755825933209L;
 
-	public void exportGermplasmTemplate(Component component,boolean isPopup) throws FileDownloadException {
+	public void exportGermplasmTemplate(Component component) throws FileDownloadException {
 		try {
 			ClassPathResource cpr = new ClassPathResource("templates/" + GermplasmListTemplateDownloader.EXPANDED_TEMPLATE_FILE);
 			File templateFile = cpr.getFile();
 
 			FileDownloadResource fileDownloadResource = getTemplateAsDownloadResource(templateFile);
 
-			if (isPopup) {
-				component.getWindow().open(fileDownloadResource);
-			} else {
+			if (getCurrentApplication().getMainWindow().getChildWindows().size() > 0) {
 				getCurrentApplication().getMainWindow().open(fileDownloadResource);
+			} else {
+				component.getWindow().open(fileDownloadResource);
+
 			}
 
 		} catch (IOException e) {

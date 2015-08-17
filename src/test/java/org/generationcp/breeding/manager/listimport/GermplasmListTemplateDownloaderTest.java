@@ -56,7 +56,9 @@ public class GermplasmListTemplateDownloaderTest {
 
 	@Test
 	public void testExportGermplasmTemplate() throws Exception {
-		exportDialog.exportGermplasmTemplate(mock(Component.class),false);
+		Component component = mock(Component.class);
+		when(component.getWindow()).thenReturn(window);
+		exportDialog.exportGermplasmTemplate(component);
 
 		verify(window).open(any(FileDownloadResource.class));
 	}
