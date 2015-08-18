@@ -167,7 +167,7 @@
 	
 	<bean id="exportService"
           class="org.generationcp.commons.service.impl.ExportServiceImpl">
-        <property name="templateFile" value="classpath*:GermplasmListCode.xls"/>
+        <property name="templateFile" value="GermplasmListCode.xls"/>
     </bean>
 
 	<bean id="userProgramStateManager"
