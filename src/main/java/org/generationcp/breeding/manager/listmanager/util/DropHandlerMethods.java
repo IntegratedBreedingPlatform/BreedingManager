@@ -741,12 +741,12 @@ public class DropHandlerMethods {
 		public void listUpdated(final ListUpdatedEvent event);
 	}
 
-	 public class ListUpdatedEvent {
+	public class ListUpdatedEvent {
 
 		private final int listCount;
 
 		public ListUpdatedEvent(final int listCount) {
-			 this.listCount = listCount;
+			this.listCount = listCount;
 		}
 
 		public int getListCount() {
@@ -757,9 +757,9 @@ public class DropHandlerMethods {
 	/*
 	 * Marks List Builder if there is unsaved changes in the list data table during drop and drag actions
 	 */
-	 public void setHasUnsavedChanges(boolean changed) {
-		 this.changed = changed;
+	public void setHasUnsavedChanges(boolean changed) {
+		this.changed = changed;
 		this.listManagerMain.getListBuilderComponent().setHasUnsavedChanges(changed);
-	 }
+	}
 
 }
