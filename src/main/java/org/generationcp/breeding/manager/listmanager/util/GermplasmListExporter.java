@@ -392,23 +392,23 @@ public class GermplasmListExporter {
 
 		List<ExportColumnHeader> exportColumnHeaders = new ArrayList<>();
 
-		exportColumnHeaders.add(new ExportColumnHeader(0, this.getTermNameFromOntology(ColumnLabels.ENTRY_ID), visibleColumns
-				.get(ColumnLabels.ENTRY_ID.getName())));
+		exportColumnHeaders.add(new ExportColumnHeader(0, this.getTermNameFromOntology(ColumnLabels.ENTRY_ID), visibleColumns.get(String
+				.valueOf(ColumnLabels.ENTRY_ID.getTermId().getId()))));
 
-		exportColumnHeaders.add(new ExportColumnHeader(1, this.getTermNameFromOntology(ColumnLabels.GID), visibleColumns
-				.get(ColumnLabels.GID.getName())));
+		exportColumnHeaders.add(new ExportColumnHeader(1, this.getTermNameFromOntology(ColumnLabels.GID), visibleColumns.get(String
+				.valueOf(ColumnLabels.GID.getTermId().getId()))));
 
-		exportColumnHeaders.add(new ExportColumnHeader(2, this.getTermNameFromOntology(ColumnLabels.ENTRY_CODE), visibleColumns
-				.get(ColumnLabels.ENTRY_CODE.getName())));
+		exportColumnHeaders.add(new ExportColumnHeader(2, this.getTermNameFromOntology(ColumnLabels.ENTRY_CODE), visibleColumns.get(String
+				.valueOf(ColumnLabels.ENTRY_CODE.getTermId().getId()))));
 
-		exportColumnHeaders.add(new ExportColumnHeader(3, this.getTermNameFromOntology(ColumnLabels.DESIGNATION), visibleColumns
-				.get(ColumnLabels.DESIGNATION.getName())));
+		exportColumnHeaders.add(new ExportColumnHeader(3, this.getTermNameFromOntology(ColumnLabels.DESIGNATION), visibleColumns.get(String
+				.valueOf(ColumnLabels.DESIGNATION.getTermId().getId()))));
 
-		exportColumnHeaders.add(new ExportColumnHeader(4, this.getTermNameFromOntology(ColumnLabels.PARENTAGE), visibleColumns
-				.get(ColumnLabels.PARENTAGE.getName())));
+		exportColumnHeaders.add(new ExportColumnHeader(4, this.getTermNameFromOntology(ColumnLabels.PARENTAGE), visibleColumns.get(String
+				.valueOf(ColumnLabels.PARENTAGE.getTermId().getId()))));
 
-		exportColumnHeaders.add(new ExportColumnHeader(5, this.getTermNameFromOntology(ColumnLabels.SEED_SOURCE), visibleColumns
-				.get(ColumnLabels.SEED_SOURCE.getName())));
+		exportColumnHeaders.add(new ExportColumnHeader(5, this.getTermNameFromOntology(ColumnLabels.SEED_SOURCE), visibleColumns.get(String
+				.valueOf(ColumnLabels.SEED_SOURCE.getTermId().getId()))));
 
 		return exportColumnHeaders;
 	}
