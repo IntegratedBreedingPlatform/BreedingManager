@@ -32,6 +32,7 @@ import org.generationcp.breeding.manager.crossingmanager.settings.ApplyCrossingS
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
+import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
@@ -64,7 +65,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
@@ -78,6 +78,7 @@ import com.vaadin.ui.themes.Reindeer;
 public class MakeCrossesTableComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
 		BreedingManagerLayout, SaveListAsDialogSource {
 
+	private static final int PAGE_LENGTH = 12;
 	public static final String PARENTS_DELIMITER = ",";
 	private static final long serialVersionUID = 3702324761498666369L;
 	private static final Logger LOG = LoggerFactory.getLogger(MakeCrossesTableComponent.class);
@@ -95,7 +96,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 	private CrossExpansionProperties crossExpansionProperties;
 
 	private Label lblReviewCrosses;
-	private Table tableCrossesMade;
+	private BreedingManagerTable tableCrossesMade;
 
 	private Label totalCrossesLabel;
 	private Label totalSelectedCrossesLabel;
@@ -430,7 +431,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 	}
 
 	protected void initializeCrossesMadeTable() {
-		this.setTableCrossesMade(new Table());
+		this.setTableCrossesMade(new BreedingManagerTable(PAGE_LENGTH, PAGE_LENGTH));
 		this.tableCrossesMade = this.getTableCrossesMade();
 		this.tableCrossesMade.setWidth("100%");
 		this.tableCrossesMade.setHeight("407px");
@@ -697,11 +698,11 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		return this.makeCrossesMain.getSource();
 	}
 
-	public Table getTableCrossesMade() {
+	public BreedingManagerTable getTableCrossesMade() {
 		return this.tableCrossesMade;
 	}
 
-	public void setTableCrossesMade(Table tableCrossesMade) {
+	public void setTableCrossesMade(BreedingManagerTable tableCrossesMade) {
 		this.tableCrossesMade = tableCrossesMade;
 	}
 

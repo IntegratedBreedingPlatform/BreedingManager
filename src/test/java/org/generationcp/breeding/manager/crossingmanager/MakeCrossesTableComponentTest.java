@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
+import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
@@ -20,8 +21,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.exceptions.verification.NeverWantedButInvoked;
 import org.mockito.exceptions.verification.TooLittleActualInvocations;
 
-import com.vaadin.ui.Table;
-
 public class MakeCrossesTableComponentTest {
 
 	private MakeCrossesTableComponent makeCrossesTableComponent;
@@ -31,7 +30,7 @@ public class MakeCrossesTableComponentTest {
 	@Mock
 	private OntologyDataManager ontologyDataManager;
 	@Mock
-	private Table tableCrossesMade;
+	private BreedingManagerTable tableCrossesMade;
 
 	private GermplasmListEntry femaleParent;
 	private GermplasmListEntry maleParent;
@@ -62,7 +61,7 @@ public class MakeCrossesTableComponentTest {
 	@Test
 	public void testInitializeCrossesMadeTable_returnsTheValueFromColumLabelDefaultName() {
 
-		Table table = new Table();
+		BreedingManagerTable table = new BreedingManagerTable(10, 10);
 
 		Mockito.when(this.makeCrossesTableComponent.getTableCrossesMade()).thenReturn(table);
 
@@ -77,7 +76,7 @@ public class MakeCrossesTableComponentTest {
 
 	@Test
 	public void testInitializeCrossesMadeTable_returnsTheValueFromOntologyManager() throws MiddlewareQueryException {
-		Table table = new Table();
+		BreedingManagerTable table = new BreedingManagerTable(10, 10);
 
 		Mockito.when(this.makeCrossesTableComponent.getTableCrossesMade()).thenReturn(table);
 
