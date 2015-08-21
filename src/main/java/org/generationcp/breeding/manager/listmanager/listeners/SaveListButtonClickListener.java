@@ -49,7 +49,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 	private ListBuilderComponent source;
 
 	@Resource
-	private GermplasmListManager dataManager;
+	private GermplasmListManager germplasmListManager;
 
 	@Resource
 	private InventoryDataManager inventoryDataManager;
@@ -100,11 +100,12 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 
 			try {
 				listToSave.setUserId(this.contextUtil.getCurrentUserLocalId());
+				listToSave.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
 
-				Integer listId = this.dataManager.addGermplasmList(listToSave);
+				Integer listId = this.germplasmListManager.addGermplasmList(listToSave);
 
 				if (listId != null) {
-					GermplasmList listSaved = this.dataManager.getGermplasmListById(listId);
+					GermplasmList listSaved = this.germplasmListManager.getGermplasmListById(listId);
 					currentlySavedList = listSaved;
 					this.source.setCurrentlySavedGermplasmList(listSaved);
 
@@ -142,12 +143,12 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 				}
 
 				listToSave =
-						ListCommonActionsUtil.overwriteList(listToSave, this.dataManager, this.source, this.messageSource, showMessages);
+						ListCommonActionsUtil.overwriteList(listToSave, this.germplasmListManager, this.source, this.messageSource, showMessages);
 			}
 
 			if (listToSave != null) {
 				boolean thereAreChangesInListEntries =
-						ListCommonActionsUtil.overwriteListEntries(listToSave, listEntries, this.forceHasChanges, this.dataManager,
+						ListCommonActionsUtil.overwriteListEntries(listToSave, listEntries, this.forceHasChanges, this.germplasmListManager,
 								this.source, this.messageSource, showMessages);
 
 				if (thereAreChangesInListEntries) {
@@ -193,7 +194,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 
 	private void saveListDataColumns(GermplasmList listToSave) {
 		try {
-			this.dataManager.saveListDataColumns(this.source.getAddColumnContextMenu().getListDataCollectionFromTable(this.listDataTable));
+			this.germplasmListManager.saveListDataColumns(this.source.getAddColumnContextMenu().getListDataCollectionFromTable(this.listDataTable));
 		} catch (MiddlewareQueryException e) {
 			SaveListButtonClickListener.LOG.error("Error in saving added germplasm list columns: " + listToSave, e);
 			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
@@ -230,7 +231,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 
 	private boolean validateListName(GermplasmList list) {
 		try {
-			List<GermplasmList> lists = this.dataManager.getGermplasmListByName(list.getName(), 0, 5, Operation.EQUAL);
+			List<GermplasmList> lists = this.germplasmListManager.getGermplasmListByName(list.getName(), 0, 5, Operation.EQUAL);
 			if (!lists.isEmpty() && lists.size() == 1 && lists.get(0).getId() != list.getId()) {
 				MessageNotifier.showRequiredFieldError(this.source.getWindow(),
 						this.messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));
@@ -248,7 +249,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 
 	private void updateListDataTableContent(GermplasmList currentlySavedList) {
 		try {
-			int listDataCount = (int) this.dataManager.countGermplasmListDataByListId(currentlySavedList.getId());
+			int listDataCount = (int) this.germplasmListManager.countGermplasmListDataByListId(currentlySavedList.getId());
 			List<GermplasmListData> savedListEntries =
 					this.inventoryDataManager.getLotCountsForList(currentlySavedList.getId(), 0, listDataCount);
 
@@ -408,7 +409,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 
 	private boolean saveNewListEntries(List<GermplasmListData> listEntries) {
 		try {
-			List<Integer> savedEntryPKs = this.dataManager.addGermplasmListData(listEntries);
+			List<Integer> savedEntryPKs = this.germplasmListManager.addGermplasmListData(listEntries);
 
 			if (!(savedEntryPKs.size() == listEntries.size())) {
 				MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
@@ -429,7 +430,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 	}
 
 	public void setDataManager(GermplasmListManager dataManager) {
-		this.dataManager = dataManager;
+		this.germplasmListManager = dataManager;
 	}
 
 	public void setInventoryDataManager(InventoryDataManager inventoryDataManager) {
