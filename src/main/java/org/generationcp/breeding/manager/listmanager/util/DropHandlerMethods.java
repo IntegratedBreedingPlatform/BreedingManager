@@ -718,18 +718,13 @@ public class DropHandlerMethods {
 	}
 
 	/**
-	 * Reset the germplasmList, and make sure that the inventory columns are properly filled up
+	 * Reset the germplasmList
 	 */
 	public GermplasmList getGermplasmList(Integer listId) {
 		GermplasmList germplasmList = null;
 
 		try {
 			germplasmList = this.germplasmListManager.getGermplasmListById(listId);
-
-			List<GermplasmListData> germplasmListData =
-					this.inventoryDataManager.getLotCountsForList(germplasmList.getId(), 0, Integer.MAX_VALUE);
-			germplasmList.setListData(germplasmListData);
-
 		} catch (MiddlewareQueryException e) {
 			DropHandlerMethods.LOG.error(e.getMessage(), e);
 		}
