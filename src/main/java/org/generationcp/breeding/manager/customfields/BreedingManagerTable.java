@@ -68,8 +68,11 @@ public class BreedingManagerTable extends Table {
 				@SuppressWarnings("unchecked")
 				List<Object> selectedIds = new ArrayList<Object>((Collection<Object>) bmTable.getValue());
 				List<Object> itemIds = new ArrayList<Object>(bmTable.getItemIds());
-				bmTable.setMultiSelectEndKey(itemIds.get(selectedIds.size()));
-				bmTable.setValueForSelectedItems();
+				if (selectedIds.size() != itemIds.size()) {
+					bmTable.setMultiSelectEndKey(itemIds.get(selectedIds.size()));
+					bmTable.setValueForSelectedItems();
+				}
+
 			}
 		});
 	}
