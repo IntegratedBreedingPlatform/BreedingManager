@@ -297,18 +297,7 @@ public class DropHandlerMethods {
 			if (germplasmList == null) {
 				germplasmList = this.getGermplasmList(listId);
 			}
-
-			GermplasmListData germplasmListData = null;
-
-			if (germplasmList.getListData() != null && !germplasmList.getListData().isEmpty()) {
-				for (GermplasmListData listData : germplasmList.getListData()) {
-					if (listData.getId().equals(lrecid)) {
-						germplasmListData = listData;
-					}
-				}
-			} else {
-				germplasmListData = this.germplasmListManager.getGermplasmListDataByListIdAndLrecId(listId, lrecid);
-			}
+			GermplasmListData germplasmListData = this.getListDataByListIdAndLrecId(listId, lrecid, germplasmList);
 
 			// handles the data for inventory
 
@@ -438,6 +427,21 @@ public class DropHandlerMethods {
 			return null;
 		}
 
+	}
+
+	public GermplasmListData getListDataByListIdAndLrecId(Integer listId, Integer lrecid, GermplasmList germplasmList) {
+		GermplasmListData germplasmListData = null;
+
+		if (germplasmList.getListData() != null && !germplasmList.getListData().isEmpty()) {
+			for (GermplasmListData listData : germplasmList.getListData()) {
+				if (listData.getId().equals(lrecid)) {
+					germplasmListData = listData;
+				}
+			}
+		} else {
+			germplasmListData = this.germplasmListManager.getGermplasmListDataByListIdAndLrecId(listId, lrecid);
+		}
+		return germplasmListData;
 	}
 
 	public void addFromListDataTable(Table sourceTable) {
