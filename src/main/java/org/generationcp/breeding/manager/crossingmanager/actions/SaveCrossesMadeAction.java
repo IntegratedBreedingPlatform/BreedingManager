@@ -208,6 +208,7 @@ public class SaveCrossesMadeAction implements Serializable {
 	GermplasmList saveGermplasmListRecord(CrossesMade crossesMade) throws MiddlewareQueryException {
 		int listId;
 		GermplasmList listToSave = crossesMade.getGermplasmList();
+		listToSave.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
 		if (this.germplasmList == null) {
 			listId = this.germplasmListManager.addGermplasmList(listToSave);
 		} else {
@@ -219,6 +220,7 @@ public class SaveCrossesMadeAction implements Serializable {
 			this.germplasmList.setType(listToSave.getType());
 			this.germplasmList.setDate(listToSave.getDate());
 			this.germplasmList.setNotes(listToSave.getNotes());
+			this.germplasmList.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
 
 			listId = this.germplasmListManager.updateGermplasmList(this.germplasmList);
 		}
