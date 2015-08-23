@@ -151,7 +151,7 @@ public class ListCommonActionsUtil {
 						source, messageSource);
 
 		for (GermplasmListData entry : listEntries) {
-			if (entry.getId() > 0 && !savedListEntriesMap.isEmpty() && savedListEntriesMap.get(entry.getId()) != null) {
+			if ((entry.getId() != null && entry.getId() > 0) && !savedListEntriesMap.isEmpty() && savedListEntriesMap.get(entry.getId()) != null) {
 
 				GermplasmListData matchingSavedEntry = savedListEntriesMap.get(entry.getId());
 				// check if it will be updated
@@ -245,7 +245,6 @@ public class ListCommonActionsUtil {
 				for (GermplasmListData savedEntry : savedListEntries) {
 					// check entries to be deleted
 					if (!listEntries.contains(savedEntry) || forceHasChanges) {
-						savedEntry.setStatus(Integer.valueOf(9));
 						entriesToDelete.add(savedEntry);
 					} else {
 						// add to map for possible update
@@ -303,8 +302,8 @@ public class ListCommonActionsUtil {
 		}
 		if (!hasError && !entriesToDelete.isEmpty()) {
 			try {
-				List<Integer> deletedEntryPKs = dataManager.updateGermplasmListData(entriesToDelete);
-				if (!(deletedEntryPKs.size() == entriesToDelete.size())) {
+				int deleteGermplasmListData = dataManager.deleteGermplasmListData(entriesToDelete);
+				if (!(deleteGermplasmListData == entriesToDelete.size())) {
 					hasError = true;
 				}
 			} catch (MiddlewareQueryException ex) {
