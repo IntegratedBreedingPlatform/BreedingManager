@@ -1041,51 +1041,58 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		private static final long serialVersionUID = -2343109406180457070L;
 
 		@Override
-		public void contextItemClick(ClickEvent event) {
-			String action = event.getClickedItem().getName();
-			if (action.equals(ListComponent.this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES))) {
-				ListComponent.this.deleteEntriesButtonClickAction();
-			} else if (action.equals(ListComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
-				ListComponent.this.listDataTable.setValue(ListComponent.this.listDataTable.getItemIds());
-			} else if (action.equals(ListComponent.this.messageSource.getMessage(Message.EDIT_VALUE))) {
+		public void contextItemClick(final ClickEvent event) {
+			final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+			transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					String action = event.getClickedItem().getName();
+					if (action.equals(ListComponent.this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES))) {
+						ListComponent.this.deleteEntriesButtonClickAction();
+					} else if (action.equals(ListComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
+						ListComponent.this.listDataTable.setValue(ListComponent.this.listDataTable.getItemIds());
+					} else if (action.equals(ListComponent.this.messageSource.getMessage(Message.EDIT_VALUE))) {
 
-				Map<Object, Field> itemMap = ListComponent.this.fields.get(ListComponent.this.selectedItemId);
+						Map<Object, Field> itemMap = ListComponent.this.fields.get(ListComponent.this.selectedItemId);
 
-				// go through each field, set previous edited fields to
-				// blurred/readonly
-				for (Map.Entry<Object, Field> entry : itemMap.entrySet()) {
-					Field f = entry.getValue();
-					Object fieldValue = f.getValue();
-					if (!f.isReadOnly()) {
-						f.setReadOnly(true);
-
-						if (!fieldValue.equals(ListComponent.this.lastCellvalue)) {
-							ListComponent.this.setHasUnsavedChanges(true);
-						}
-					}
-				}
-
-				// Make the entire item editable
-
-				if (itemMap != null) {
-					for (Map.Entry<Object, Field> entry : itemMap.entrySet()) {
-						Object column = entry.getKey();
-						if (column.equals(ListComponent.this.selectedColumn)) {
+						// go through each field, set previous edited fields to
+						// blurred/readonly
+						for (Map.Entry<Object, Field> entry : itemMap.entrySet()) {
 							Field f = entry.getValue();
-							if (f.isReadOnly()) {
-								Object fieldValue = f.getValue();
-								ListComponent.this.lastCellvalue = fieldValue != null ? fieldValue.toString() : "";
-								f.setReadOnly(false);
-								f.focus();
+							Object fieldValue = f.getValue();
+							if (!f.isReadOnly()) {
+								f.setReadOnly(true);
+
+								if (!fieldValue.equals(ListComponent.this.lastCellvalue)) {
+									ListComponent.this.setHasUnsavedChanges(true);
+								}
 							}
 						}
+
+						// Make the entire item editable
+
+						if (itemMap != null) {
+							for (Map.Entry<Object, Field> entry : itemMap.entrySet()) {
+								Object column = entry.getKey();
+								if (column.equals(ListComponent.this.selectedColumn)) {
+									Field f = entry.getValue();
+									if (f.isReadOnly()) {
+										Object fieldValue = f.getValue();
+										ListComponent.this.lastCellvalue = fieldValue != null ? fieldValue.toString() : "";
+										f.setReadOnly(false);
+										f.focus();
+									}
+								}
+							}
+						}
+
+						ListComponent.this.listDataTable.select(ListComponent.this.selectedItemId);
+					} else if (action.equals(ListComponent.this.messageSource.getMessage(Message.ADD_SELECTED_ENTRIES_TO_NEW_LIST))) {
+						ListComponent.this.source.addSelectedPlantsToList(ListComponent.this.listDataTable);
 					}
 				}
+			});
 
-				ListComponent.this.listDataTable.select(ListComponent.this.selectedItemId);
-			} else if (action.equals(ListComponent.this.messageSource.getMessage(Message.ADD_SELECTED_ENTRIES_TO_NEW_LIST))) {
-				ListComponent.this.source.addSelectedPlantsToList(ListComponent.this.listDataTable);
-			}
 		}
 	}
 
@@ -1779,23 +1786,18 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		}
 	}
 
-	protected void deleteGermplasmDialogBox(final List<Integer> gidsWithoutChildren) throws MiddlewareQueryException {
+	protected void deleteGermplasmDialogBox(final List<Integer> gidsWithoutChildren) {
 
 		if (gidsWithoutChildren != null && !gidsWithoutChildren.isEmpty()) {
 			List<Germplasm> gList = new ArrayList<Germplasm>();
-			try {
-				for (Integer gid : gidsWithoutChildren) {
-					Germplasm g = this.germplasmDataManager.getGermplasmByGID(gid);
-					g.setGrplce(gid);
-					gList.add(g);
-				}
-				// end loop
-
-				this.germplasmDataManager.updateGermplasm(gList);
-
-			} catch (MiddlewareQueryException e) {
-				ListComponent.LOG.error(e.getMessage(), e);
+			for (Integer gid : gidsWithoutChildren) {
+				Germplasm g = this.germplasmDataManager.getGermplasmByGID(gid);
+				g.setGrplce(gid);
+				gList.add(g);
 			}
+			// end loop
+
+			this.germplasmDataManager.updateGermplasm(gList);
 		}
 	}
 
