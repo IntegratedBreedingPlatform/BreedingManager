@@ -2,6 +2,7 @@
 package org.generationcp.breeding.manager.listmanager.dialog;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
@@ -15,6 +16,7 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareException;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
@@ -158,18 +160,7 @@ public class GenerateStockIDsDialog extends BaseSubWindow implements Initializin
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-
-				if (GenerateStockIDsDialog.this.source instanceof SpecifyGermplasmDetailsComponent) {
-
-					GenerateStockIDsDialog.this.applyStockIdToImportedGermplasm(GenerateStockIDsDialog.this.txtSpecifyPrefix.getValue()
-							.toString(), ((SpecifyGermplasmDetailsComponent) GenerateStockIDsDialog.this.source).getImportedGermplasms());
-
-					((SpecifyGermplasmDetailsComponent) GenerateStockIDsDialog.this.source).popupSaveAsDialog();
-					Window win = event.getButton().getWindow();
-					win.getParent().removeWindow(win);
-
-				}
-
+				GenerateStockIDsDialog.this.continueAction(event);
 			}
 		});
 
@@ -192,7 +183,6 @@ public class GenerateStockIDsDialog extends BaseSubWindow implements Initializin
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				GenerateStockIDsDialog.this.updateSampleStockId(GenerateStockIDsDialog.this.txtSpecifyPrefix.getValue().toString());
-
 			}
 		});
 
@@ -253,20 +243,35 @@ public class GenerateStockIDsDialog extends BaseSubWindow implements Initializin
 	protected void updateSampleStockId(String prefix) {
 		try {
 
-			String nextStockIDPrefix = "";
-
-			if (!StringUtils.isEmpty(prefix.trim())) {
-				nextStockIDPrefix = this.stockService.calculateNextStockIDPrefix(prefix, "-");
+			if (!this.isValidPrefix(prefix)) {
+				this.showMessageValidationForPrefix();
 			} else {
-				nextStockIDPrefix = this.stockService.calculateNextStockIDPrefix(GenerateStockIDsDialog.DEFAULT_STOCKID_PREFIX, "-");
-			}
+				String nextStockIDPrefix = "";
 
-			this.lblExampleNextPrefixInSequence.setValue(nextStockIDPrefix.substring(0, nextStockIDPrefix.length() - 1));
-			this.lblExampleStockIdForThisList.setValue(nextStockIDPrefix + "1");
+				if (!StringUtils.isEmpty(prefix.trim())) {
+					nextStockIDPrefix = this.stockService.calculateNextStockIDPrefix(prefix, "-");
+				} else {
+					nextStockIDPrefix = this.stockService.calculateNextStockIDPrefix(GenerateStockIDsDialog.DEFAULT_STOCKID_PREFIX, "-");
+				}
+
+				this.lblExampleNextPrefixInSequence.setValue(nextStockIDPrefix.substring(0, nextStockIDPrefix.length() - 1));
+				this.lblExampleStockIdForThisList.setValue(nextStockIDPrefix + "1");
+			}
 
 		} catch (MiddlewareException e) {
 			GenerateStockIDsDialog.LOG.error(e.getMessage(), e);
 		}
+	}
+
+	private void showMessageValidationForPrefix() {
+		MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
+				this.messageSource.getMessage(Message.INVALID_PREFIX));
+		this.txtSpecifyPrefix.focus();
+	}
+
+	boolean isValidPrefix(String prefix) {
+		String pattern = "^[a-zA-Z]*$";
+		return Pattern.matches(pattern, prefix);
 	}
 
 	protected void applyStockIdToImportedGermplasm(String prefix, List<ImportedGermplasm> importedGermplasmList) {
@@ -292,6 +297,25 @@ public class GenerateStockIDsDialog extends BaseSubWindow implements Initializin
 			GenerateStockIDsDialog.LOG.error(e.getMessage(), e);
 		}
 
+	}
+
+	private void continueAction(ClickEvent event) {
+		if (GenerateStockIDsDialog.this.source instanceof SpecifyGermplasmDetailsComponent) {
+
+			String prefix = GenerateStockIDsDialog.this.txtSpecifyPrefix.getValue().toString();
+
+			if (!GenerateStockIDsDialog.this.isValidPrefix(prefix)) {
+				GenerateStockIDsDialog.this.showMessageValidationForPrefix();
+			} else {
+				GenerateStockIDsDialog.this.applyStockIdToImportedGermplasm(prefix,
+						((SpecifyGermplasmDetailsComponent) GenerateStockIDsDialog.this.source).getImportedGermplasms());
+
+				((SpecifyGermplasmDetailsComponent) GenerateStockIDsDialog.this.source).popupSaveAsDialog();
+				Window win = event.getButton().getWindow();
+				win.getParent().removeWindow(win);
+			}
+
+		}
 	}
 
 }
