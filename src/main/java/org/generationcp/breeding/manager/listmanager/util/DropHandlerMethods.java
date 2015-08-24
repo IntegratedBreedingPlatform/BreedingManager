@@ -706,20 +706,19 @@ public class DropHandlerMethods {
 		this.listeners.remove(listener);
 	}
 
+
 	/**
-	 * Reset the germplasmList
+	 * Retrieve the germplasmList, and make sure that the inventory columns are properly filled up
 	 */
 	public GermplasmList getGermplasmList(Integer listId) {
-		GermplasmList germplasmList = null;
-
 		try {
-			germplasmList = this.germplasmListManager.getGermplasmListById(listId);
+			final GermplasmList germplasmList = this.germplasmListManager.getGermplasmListById(listId);
+			inventoryDataManager.populateLotCountsIntoExistingList(germplasmList);
+			return germplasmList;
 		} catch (MiddlewareQueryException e) {
 			DropHandlerMethods.LOG.error(e.getMessage(), e);
 			throw e;
 		}
-
-		return germplasmList;
 	}
 
 	public interface ListUpdatedListener {
