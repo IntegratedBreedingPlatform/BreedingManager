@@ -1079,7 +1079,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			Item item = this.tableWithSelectAllLayout.getTable().getItem(entryId);
 
 			GermplasmListData listEntry = new GermplasmListData();
-			//listEntry.setId(entryId);
 
 			Button designationButton = (Button) item.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue();
 			String designation = designationButton.getCaption();
