@@ -179,13 +179,19 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void handleAction(Action action, Object sender, Object target) {
-				if (ListSearchResultsComponent.ACTION_SELECT_ALL == action) {
-					ListSearchResultsComponent.this.matchingListsTable.setValue(ListSearchResultsComponent.this.matchingListsTable
-							.getItemIds());
-				} else if (ListSearchResultsComponent.ACTION_ADD_TO_NEW_LIST == action) {
-					ListSearchResultsComponent.this.addSelectedListToNewList();
-				}
+			public void handleAction(final Action action, final Object sender, final Object target) {
+				final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+					@Override
+					protected void doInTransactionWithoutResult(TransactionStatus status) {
+						if (ListSearchResultsComponent.ACTION_SELECT_ALL == action) {
+							ListSearchResultsComponent.this.matchingListsTable.setValue(ListSearchResultsComponent.this.matchingListsTable
+									.getItemIds());
+						} else if (ListSearchResultsComponent.ACTION_ADD_TO_NEW_LIST == action) {
+							ListSearchResultsComponent.this.addSelectedListToNewList();
+						}
+					}
+				});
 			}
 
 			@Override
