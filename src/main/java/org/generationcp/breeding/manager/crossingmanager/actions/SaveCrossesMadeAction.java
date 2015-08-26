@@ -12,14 +12,7 @@
 package org.generationcp.breeding.manager.crossingmanager.actions;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
+import java.util.*;
 
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
@@ -36,6 +29,10 @@ import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Creates Germplasm, GermplasmList, GermplasmListData records for crosses defined. Adds a ProjectActivity (Workbench) record for the save
@@ -75,8 +72,11 @@ public class SaveCrossesMadeAction implements Serializable {
 	@Autowired
 	private GermplasmDataManager germplasmManager;
 
-	@Resource
+	@Autowired
 	private ContextUtil contextUtil;
+
+	@Autowired
+	private PlatformTransactionManager transactionManager;
 
 	private GermplasmList germplasmList;
 	private List<GermplasmListData> existingListEntries = new ArrayList<GermplasmListData>();
@@ -101,25 +101,32 @@ public class SaveCrossesMadeAction implements Serializable {
 	 * @return id of new Germplasm List created
 	 * @throws MiddlewareQueryException
 	 */
-	public GermplasmList saveRecords(CrossesMade crossesMade) throws MiddlewareQueryException {
-		this.updateConstantFields(crossesMade);
+	public GermplasmList saveRecords(final CrossesMade crossesMade) throws MiddlewareQueryException {
+		final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+		return transactionTemplate.execute(new TransactionCallback<GermplasmList>() {
+			@Override
+			public GermplasmList doInTransaction(TransactionStatus transactionStatus) {
+				updateConstantFields(crossesMade);
 
-		List<Integer> germplasmIDs = this.saveGermplasmsAndNames(crossesMade);
+				List<Integer> germplasmIDs = saveGermplasmsAndNames(crossesMade);
 
-		if (crossesMade.getSetting().getCrossNameSetting().isSaveParentageDesignationAsAString()) {
-			this.savePedigreeDesignationName(crossesMade, germplasmIDs);
-		}
+				if (crossesMade.getSetting().getCrossNameSetting().isSaveParentageDesignationAsAString()) {
+					savePedigreeDesignationName(crossesMade, germplasmIDs);
+				}
 
-		GermplasmList list = this.saveGermplasmListRecord(crossesMade);
-		this.saveGermplasmListDataRecords(crossesMade, germplasmIDs, list);
+				GermplasmList list = saveGermplasmListRecord(crossesMade);
+				saveGermplasmListDataRecords(crossesMade, germplasmIDs, list);
 
-		// log project activity in Workbench
-		if (this.germplasmList == null) {
-			this.contextUtil.logProgramActivity(SaveCrossesMadeAction.WB_ACTIVITY_NAME, SaveCrossesMadeAction.WB_ACTIVITY_DESCRIPTION
-					+ list.getId());
-		}
+				// log project activity in Workbench
+				if (germplasmList == null) {
+					contextUtil.logProgramActivity(SaveCrossesMadeAction.WB_ACTIVITY_NAME, SaveCrossesMadeAction.WB_ACTIVITY_DESCRIPTION
+							+ list.getId());
+				}
 
-		return list;
+				return list;
+			}
+		});
+
 	}
 
 	List<Integer> saveGermplasmsAndNames(CrossesMade crossesMade) throws MiddlewareQueryException {
@@ -429,7 +436,7 @@ public class SaveCrossesMadeAction implements Serializable {
 	/**
 	 * For Test Only
 	 * 
-	 * @param contextUtil
+	 * @param germplasmManager
 	 */
 	void setGermplasmManager(GermplasmDataManager germplasmManager) {
 		this.germplasmManager = germplasmManager;
@@ -438,7 +445,7 @@ public class SaveCrossesMadeAction implements Serializable {
 	/**
 	 * For Test Only
 	 * 
-	 * @param contextUtil
+	 * @param germplasmListManager
 	 */
 	void setGermplasmListManager(GermplasmListManager germplasmListManager) {
 		this.germplasmListManager = germplasmListManager;
