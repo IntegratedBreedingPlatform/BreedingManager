@@ -312,7 +312,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 							newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entryId);
 							newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(desigButton);
 							newItem.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).setValue(lotDetail.getLocationOfLot().getLname());
-							newItem.getItemProperty(ColumnLabels.SCALE.getName()).setValue(lotDetail.getScaleOfLot().getName());
+							newItem.getItemProperty(ColumnLabels.UNITS.getName()).setValue(lotDetail.getScaleOfLot().getName());
 							newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName())
 									.setValue(lotDetail.getAvailableLotBalance());
 							newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(lotDetail.getActualLotBalance());
@@ -387,7 +387,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entryId);
 		newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(desigButton);
 		newItem.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).setValue(lotDetail.getLocationOfLot().getLname());
-		newItem.getItemProperty(ColumnLabels.SCALE.getName()).setValue(lotDetail.getScaleOfLot().getName());
+		newItem.getItemProperty(ColumnLabels.UNITS.getName()).setValue(lotDetail.getScaleOfLot().getName());
 		newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(lotDetail.getAvailableLotBalance());
 		newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(lotDetail.getActualLotBalance());
 		newItem.getItemProperty(ColumnLabels.RESERVED.getName()).setValue(0);

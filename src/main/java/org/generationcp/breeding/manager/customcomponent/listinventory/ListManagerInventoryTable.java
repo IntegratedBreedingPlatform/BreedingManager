@@ -107,7 +107,7 @@ public class ListManagerInventoryTable extends ListInventoryTable {
 					newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entryId);
 					newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(desigButton);
 					newItem.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).setValue(location);
-					newItem.getItemProperty(ColumnLabels.SCALE.getName()).setValue(scale);
+					newItem.getItemProperty(ColumnLabels.UNITS.getName()).setValue(scale);
 					newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(lotDetail.getAvailableLotBalance());
 					newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(lotDetail.getActualLotBalance());
 					newItem.getItemProperty(ColumnLabels.RESERVED.getName()).setValue(lotDetail.getReservedTotalForEntry());

@@ -48,7 +48,7 @@ public class ListInventoryTableTest {
 				.getTermById(ColumnLabels.DESIGNATION.getTermId().getId());
 		Mockito.doReturn(this.createTerm("LOCATION")).when(this.ontologyDataManager)
 				.getTermById(ColumnLabels.LOT_LOCATION.getTermId().getId());
-		Mockito.doReturn(this.createTerm("SCALE")).when(this.ontologyDataManager).getTermById(ColumnLabels.SCALE.getTermId().getId());
+		Mockito.doReturn(this.createTerm("SCALE")).when(this.ontologyDataManager).getTermById(ColumnLabels.UNITS.getTermId().getId());
 		Mockito.doReturn(this.createTerm("AVAIL_INV")).when(this.ontologyDataManager)
 				.getTermById(ColumnLabels.AVAILABLE_INVENTORY.getTermId().getId());
 		Mockito.doReturn(this.createTerm("TOTAL")).when(this.ontologyDataManager).getTermById(ColumnLabels.TOTAL.getTermId().getId());
@@ -66,7 +66,7 @@ public class ListInventoryTableTest {
 		Assert.assertEquals("#", table.getColumnHeader(ColumnLabels.ENTRY_ID.getName()));
 		Assert.assertEquals("DESIGNATION", table.getColumnHeader(ColumnLabels.DESIGNATION.getName()));
 		Assert.assertEquals("LOCATION", table.getColumnHeader(ColumnLabels.LOT_LOCATION.getName()));
-		Assert.assertEquals("SCALE", table.getColumnHeader(ColumnLabels.SCALE.getName()));
+		Assert.assertEquals("SCALE", table.getColumnHeader(ColumnLabels.UNITS.getName()));
 		Assert.assertEquals("AVAIL_INV", table.getColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName()));
 		Assert.assertEquals("TOTAL", table.getColumnHeader(ColumnLabels.TOTAL.getName()));
 		Assert.assertEquals("RES", table.getColumnHeader(ColumnLabels.RESERVED.getName()));
@@ -81,7 +81,7 @@ public class ListInventoryTableTest {
 
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.DESIGNATION.getTermId().getId());
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.LOT_LOCATION.getTermId().getId());
-		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.SCALE.getTermId().getId());
+		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.UNITS.getTermId().getId());
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.AVAILABLE_INVENTORY.getTermId().getId());
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.TOTAL.getTermId().getId());
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.RESERVED.getTermId().getId());
@@ -96,7 +96,7 @@ public class ListInventoryTableTest {
 		Assert.assertEquals("#", table.getColumnHeader(ColumnLabels.ENTRY_ID.getName()));
 		Assert.assertEquals(ColumnLabels.DESIGNATION.getName(), table.getColumnHeader(ColumnLabels.DESIGNATION.getName()));
 		Assert.assertEquals(ColumnLabels.LOT_LOCATION.getName(), table.getColumnHeader(ColumnLabels.LOT_LOCATION.getName()));
-		Assert.assertEquals(ColumnLabels.SCALE.getName(), table.getColumnHeader(ColumnLabels.SCALE.getName()));
+		Assert.assertEquals(ColumnLabels.UNITS.getName(), table.getColumnHeader(ColumnLabels.UNITS.getName()));
 		Assert.assertEquals(ColumnLabels.AVAILABLE_INVENTORY.getName(), table.getColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName()));
 		Assert.assertEquals(ColumnLabels.TOTAL.getName(), table.getColumnHeader(ColumnLabels.TOTAL.getName()));
 		Assert.assertEquals(ColumnLabels.RESERVED.getName(), table.getColumnHeader(ColumnLabels.RESERVED.getName()));
