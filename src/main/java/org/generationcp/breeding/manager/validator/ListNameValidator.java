@@ -95,8 +95,7 @@ public class ListNameValidator implements Validator {
 			try {
 				List<GermplasmList> lists = this.germplasmListManager.getGermplasmListByName(listName, 0, 5, Operation.EQUAL);
 
-				if (lists.size() == 1 && !lists.get(0).getName().trim().equals(this.currentListName) || !lists.isEmpty()
-						&& lists.size() > 1) {
+				if (!lists.isEmpty() && (this.currentListName == null || !lists.get(0).getName().trim().equals(this.currentListName))) {
 					this.errorDetails = this.messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE);
 					isValid = false;
 				}

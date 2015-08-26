@@ -256,8 +256,10 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout implemen
 	}
 
 	public void resetListNameFieldForExistingList(GermplasmList germplasmList) {
-		ListNameValidator listNameValidator = this.listNameField.getListNameValidator();
-		listNameValidator.setCurrentListName(germplasmList.getName());
+		ListNameValidator listNameValidator = this.getListNameField().getListNameValidator();
+		if (germplasmList.getId() != null) {
+			listNameValidator.setCurrentListName(germplasmList.getName());
+		}
 
 		GermplasmList parentList = germplasmList.getParent();
 		if (parentList != null) {

@@ -56,6 +56,16 @@ public class ListNameValidatorTest {
 	}
 
 	@Test
+	public void testValidateListNameForUniqueList() throws MiddlewareQueryException {
+		String listName = "Unique List";
+		Mockito.when(this.germplasmListManager.getGermplasmListByName(listName, 0, 5, Operation.EQUAL)).thenReturn(
+				new ArrayList<GermplasmList>());
+
+		Assert.assertTrue("Expecting that the validator will return true when the list name is unique",
+				this.listNameValidator.validateListName(listName));
+	}
+
+	@Test
 	public void testValidateListNameForExistingLists() throws MiddlewareQueryException {
 
 		String listName = "Sample List 1";
@@ -67,6 +77,22 @@ public class ListNameValidatorTest {
 		Mockito.when(this.germplasmListManager.getGermplasmListByName(listName, 0, 5, Operation.EQUAL)).thenReturn(germplasmLists);
 
 		Assert.assertFalse("Expecting that the validator will return false when the list name is similar to an existing list.",
+				this.listNameValidator.validateListName(listName));
+	}
+
+	@Test
+	public void testValidateListNameForExistingListsForUpdate() throws MiddlewareQueryException {
+		String listName = "Sample List 1";
+		this.listNameValidator.setCurrentListName(listName);
+
+		List<GermplasmList> germplasmLists = new ArrayList<GermplasmList>();
+		GermplasmList germplasmList = new GermplasmList();
+		germplasmList.setName(listName);
+		germplasmLists.add(germplasmList);
+
+		Mockito.when(this.germplasmListManager.getGermplasmListByName(listName, 0, 5, Operation.EQUAL)).thenReturn(germplasmLists);
+
+		Assert.assertTrue("Expecting that the validator will return true when the list name is similar to an existing list.",
 				this.listNameValidator.validateListName(listName));
 	}
 }
