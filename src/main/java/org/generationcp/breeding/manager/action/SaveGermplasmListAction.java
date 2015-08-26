@@ -10,7 +10,6 @@ import javax.annotation.Resource;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -27,9 +26,6 @@ public class SaveGermplasmListAction implements Serializable {
 
 	@Autowired
 	private GermplasmListManager germplasmListManager;
-
-	@Autowired
-	private GermplasmDataManager germplasmManager;
 
 	@Autowired
 	private PedigreeService pedigreeService;
@@ -74,6 +70,7 @@ public class SaveGermplasmListAction implements Serializable {
 		int listId = 0;
 
 		if (germplasmList.getId() == null) { // add new
+			germplasmList.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
 			listId = this.germplasmListManager.addGermplasmList(germplasmList);
 		} else { // update
 			GermplasmList listToUpdate = this.germplasmListManager.getGermplasmListById(germplasmList.getId());

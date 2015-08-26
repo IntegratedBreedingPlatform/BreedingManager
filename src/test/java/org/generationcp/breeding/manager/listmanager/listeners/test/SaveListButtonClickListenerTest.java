@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
@@ -42,6 +43,9 @@ public class SaveListButtonClickListenerTest {
 	private InventoryDataManager inventoryDataManager;
 
 	@Mock
+	private PlatformTransactionManager transactionManager;
+
+	@Mock
 	private ContextUtil contextUtil;
 
 	private Project project;
@@ -50,6 +54,7 @@ public class SaveListButtonClickListenerTest {
 	private static final Integer DUMMY_ID = 1;
 	private static final Long DUMMY_LONG_ID = 1L;
 	private static final String DUMMY_OPTION = "Dummy Option";
+	private static final String DUMMY_PROGRAM_UUID = "12345678";
 
 	@Before
 	public void setUp() throws MiddlewareQueryException, IllegalAccessException {
@@ -74,6 +79,7 @@ public class SaveListButtonClickListenerTest {
 		this.saveListener.setMessageSource(this.messageSource);
 		this.saveListener.setInventoryDataManager(this.inventoryDataManager);
 		this.saveListener.setSource(this.source);
+		this.saveListener.setTransactionManager(this.transactionManager);
 
 	}
 
@@ -89,6 +95,7 @@ public class SaveListButtonClickListenerTest {
 		this.germplasmList.setDate(20150801L);
 		this.germplasmList.setStatus(Integer.valueOf(1));
 		this.germplasmList.setUserId(SaveListButtonClickListenerTest.DUMMY_ID);
+		this.germplasmList.setProgramUUID(DUMMY_PROGRAM_UUID);
 	}
 
 	@Test

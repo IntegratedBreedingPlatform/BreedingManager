@@ -301,6 +301,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler, BreedingManagerLayo
 									.toString(), this.ibdbUserId, description, parent, statusListName);
 
 					try {
+						listNameData.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
 						this.newListid = this.germplasmListManager.addGermplasmList(listNameData);
 						this.addGermplasm();
 						this.mainWindow.removeWindow(this.dialogWindow);

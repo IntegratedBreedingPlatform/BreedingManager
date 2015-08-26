@@ -312,8 +312,8 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 		try {
 			Collection<String> parsedState =
-					programStateManager.getUserProgramTreeStateByUserIdProgramUuidAndType(util.getCurrentWorkbenchUserId(),
-							util.getCurrentProgramUUID(), ListTreeState.GERMPLASM_LIST.name());
+					this.programStateManager.getUserProgramTreeStateByUserIdProgramUuidAndType(this.util.getCurrentWorkbenchUserId(),
+							this.util.getCurrentProgramUUID(), ListTreeState.GERMPLASM_LIST.name());
 
 			if (parsedState.isEmpty()) {
 				getGermplasmListSource().collapseItem(LISTS);
@@ -342,7 +342,8 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		List<GermplasmList> germplasmListChildren = new ArrayList<>();
 
 		try {
-			germplasmListChildren = this.germplasmListManager.getGermplasmListByParentFolderIdBatched(parentGermplasmListId, BATCH_SIZE);
+			germplasmListChildren = this.germplasmListManager.getGermplasmListByParentFolderIdBatched(parentGermplasmListId,
+					this.getCurrentProgramUUID(), BATCH_SIZE);
 		} catch (MiddlewareQueryException e) {
 			LOG.error("Error in getting germplasm lists by parent id.", e);
 			MessageNotifier.showWarning(getWindow(), messageSource.getMessage(Message.ERROR_DATABASE),
@@ -351,6 +352,10 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		}
 		addGermplasmListNodeToComponent(germplasmListChildren, parentGermplasmListId);
 
+	}
+
+	protected String getCurrentProgramUUID() {
+		return this.util.getCurrentProgramUUID();
 	}
 
 	public boolean doAddItem(GermplasmList list) {
@@ -813,7 +818,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	private void addGermplasmsToTheList() {
 		List<GermplasmList> germplasmListParent = new ArrayList<GermplasmList>();
 		try {
-			germplasmListParent = this.germplasmListManager.getAllTopLevelListsBatched(BATCH_SIZE);
+			germplasmListParent = this.germplasmListManager.getAllTopLevelListsBatched(this.getCurrentProgramUUID(), BATCH_SIZE);
 		} catch (MiddlewareQueryException e) {
 			LOG.error("Error in getting top level lists.", e);
 			if (getWindow() != null) {

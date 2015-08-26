@@ -52,12 +52,15 @@ public class GermplasmListTreeUtilTest {
 	private static final Integer OTHER_IBDB_USER_ID = (int) (Math.random() * 100);
 	private static final Integer GERMPLASM_LIST_ID = (int) (Math.random() * 100);
 	private static final Integer GERMPLASM_LIST_ID_WITH_CHILDREN = (int) (Math.random() * 100);
+
+	private static final String PROGRAM_UUID = "1234567";
 	private GermplasmList germplasmList;
 
 	@Before
 	public void setUp() throws MiddlewareQueryException {
 		this.setUpMessageSource();
 		this.setUpIBDBUserId(GermplasmListTreeUtilTest.IBDB_USER_ID);
+		Mockito.doReturn(PROGRAM_UUID).when(this.contextUtil).getCurrentProgramUUID();
 	}
 
 	private void setUpMessageSource() {
@@ -122,7 +125,8 @@ public class GermplasmListTreeUtilTest {
 		try {
 			Mockito.when(
 					this.germplasmListManager.getGermplasmListByParentFolderId(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID_WITH_CHILDREN,
-							0, Integer.MAX_VALUE)).thenReturn(dummyListOfGermplasmListWithEntries);
+							PROGRAM_UUID, 0, Integer.MAX_VALUE))
+			.thenReturn(dummyListOfGermplasmListWithEntries);
 		} catch (MiddlewareQueryException e) {
 			Assert.fail("Expecting no exception is returned for determining if the item is a folder and has content.");
 		}
@@ -207,6 +211,7 @@ public class GermplasmListTreeUtilTest {
 		germplasmList.setId(listId);
 		germplasmList.setStatus(1);
 		germplasmList.setUserId(GermplasmListTreeUtilTest.IBDB_USER_ID);
+		germplasmList.setProgramUUID(PROGRAM_UUID);
 		return germplasmList;
 	}
 
@@ -222,7 +227,7 @@ public class GermplasmListTreeUtilTest {
 		List<GermplasmList> items = new ArrayList<GermplasmList>();
 		items.add(child1);
 
-		Mockito.when(this.germplasmListManager.getGermplasmListByParentFolderId(sourceId, 0, 1)).thenReturn(items);
+		Mockito.when(this.germplasmListManager.getGermplasmListByParentFolderId(sourceId, PROGRAM_UUID, 0, 1)).thenReturn(items);
 
 		Assert.assertTrue("Expecting true is returned when checking an item with children but didn't.",
 				this.util.isSourceItemHasChildren(sourceId));
@@ -233,7 +238,8 @@ public class GermplasmListTreeUtilTest {
 		Integer sourceId = GermplasmListTreeUtilTest.GERMPLASM_LIST_ID;
 		this.setUpGermplasmListDataManager(sourceId, true);
 
-		Mockito.when(this.germplasmListManager.getGermplasmListByParentFolderId(sourceId, 0, 1)).thenReturn(new ArrayList<GermplasmList>());
+		Mockito.when(this.germplasmListManager.getGermplasmListByParentFolderId(sourceId, PROGRAM_UUID, 0, 1))
+		.thenReturn(new ArrayList<GermplasmList>());
 
 		Assert.assertFalse("Expecting false is returned when checking an item with no children but didn't.",
 				this.util.isSourceItemHasChildren(sourceId));

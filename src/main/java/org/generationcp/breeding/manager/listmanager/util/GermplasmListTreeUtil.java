@@ -131,7 +131,8 @@ public class GermplasmListTreeUtil implements Serializable {
 		List<GermplasmList> listChildren = new ArrayList<GermplasmList>();
 
 		try {
-			listChildren = this.germplasmListManager.getGermplasmListByParentFolderId(Integer.valueOf(sourceItemId.toString()), 0, 1);
+			listChildren = this.germplasmListManager.getGermplasmListByParentFolderId(Integer.valueOf(sourceItemId.toString()),
+					this.getCurrentProgramUUID(), 0, 1);
 		} catch (MiddlewareQueryException e) {
 			GermplasmListTreeUtil.LOG.error("Error in getting germplasm lists by parent id.", e);
 			listChildren = new ArrayList<GermplasmList>();
@@ -344,7 +345,12 @@ public class GermplasmListTreeUtil implements Serializable {
 	}
 
 	public boolean hasChildren(Integer id) throws MiddlewareQueryException {
-		return !this.germplasmListManager.getGermplasmListByParentFolderId(id, 0, Integer.MAX_VALUE).isEmpty();
+		return !this.germplasmListManager.getGermplasmListByParentFolderId(id, this.getCurrentProgramUUID(), 0, Integer.MAX_VALUE)
+				.isEmpty();
+	}
+
+	protected String getCurrentProgramUUID() {
+		return this.contextUtil.getCurrentProgramUUID();
 	}
 
 	private GermplasmList getGermplasmList(Integer itemId) {
@@ -451,6 +457,10 @@ public class GermplasmListTreeUtil implements Serializable {
 
 	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
+	}
+
+	public void setContextUtil(ContextUtil contextUtil) {
+		this.contextUtil = contextUtil;
 	}
 
 }

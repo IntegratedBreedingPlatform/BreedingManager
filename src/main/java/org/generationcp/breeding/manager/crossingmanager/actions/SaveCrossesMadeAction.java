@@ -217,6 +217,7 @@ public class SaveCrossesMadeAction implements Serializable {
 		GermplasmList listToSave = crossesMade.getGermplasmList();
 		listToSave.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
 		if (this.germplasmList == null) {
+			listToSave.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
 			listId = this.germplasmListManager.addGermplasmList(listToSave);
 		} else {
 			// GCP-8225 : set the updates manually on List object so that list entries are not deleted

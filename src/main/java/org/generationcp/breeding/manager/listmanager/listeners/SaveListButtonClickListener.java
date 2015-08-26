@@ -17,12 +17,6 @@ import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.Operation;
-import org.generationcp.middleware.manager.api.GermplasmListManager;
-import org.generationcp.middleware.manager.api.InventoryDataManager;
-import org.generationcp.middleware.pojos.GermplasmList;
-import org.generationcp.middleware.pojos.GermplasmListData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -111,9 +105,8 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 					listToSave.setStatus(1);
 		
 					try {
-						listToSave.setUserId(SaveListButtonClickListener.this.contextUtil.getCurrentUserLocalId());
-						listToSave.setProgramUUID(SaveListButtonClickListener.this.contextUtil.getCurrentProgramUUID());
-		
+						listToSave.setUserId(this.contextUtil.getCurrentUserLocalId());
+						listToSave.setProgramUUID(this.getCurrentProgramUUID());
 						Integer listId = SaveListButtonClickListener.this.germplasmListManager.addGermplasmList(listToSave);
 		
 						if (listId != null) {
@@ -199,6 +192,10 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 		});
 	}
 
+	protected String getCurrentProgramUUID() {
+		return this.contextUtil.getCurrentProgramUUID();
+	}
+
 	public void showErrorOnSavingGermplasmList(Boolean showMessages) {
 		if (showMessages) {
 			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
@@ -245,7 +242,8 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 
 	private boolean validateListName(GermplasmList list) {
 		try {
-			List<GermplasmList> lists = this.germplasmListManager.getGermplasmListByName(list.getName(), 0, 5, Operation.EQUAL);
+			List<GermplasmList> lists =
+					this.germplasmListManager.getGermplasmListByName(list.getName(), this.getCurrentProgramUUID(), 0, 5, Operation.EQUAL);
 			if (!lists.isEmpty() && lists.size() == 1 && lists.get(0).getId() != list.getId()) {
 				MessageNotifier.showRequiredFieldError(this.source.getWindow(),
 						this.messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));
@@ -457,6 +455,10 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 
 	public void setSource(ListBuilderComponent source) {
 		this.source = source;
+	}
+
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
 	}
 
 	@Override

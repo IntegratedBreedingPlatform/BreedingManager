@@ -4,8 +4,6 @@ package org.generationcp.breeding.manager.validator;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.Assert;
-
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -17,6 +15,8 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
+import junit.framework.Assert;
 
 public class ListNameValidatorTest {
 
@@ -30,6 +30,8 @@ public class ListNameValidatorTest {
 
 	private final String DUMMY_ERROR_MESSAGE = "This is an error message.";
 
+	private static final String PROGRAM_UUID = "1234567";
+
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
@@ -41,6 +43,8 @@ public class ListNameValidatorTest {
 		this.listNameValidator = Mockito.spy(new ListNameValidator());
 		this.listNameValidator.setMessageSource(this.messageSource);
 		this.listNameValidator.setGermplasmListManager(this.germplasmListManager);
+
+		Mockito.doReturn(PROGRAM_UUID).when(this.listNameValidator).getCurrentProgramUUID();
 	}
 
 	@Test
@@ -74,7 +78,8 @@ public class ListNameValidatorTest {
 		germplasmList.setName("Samplem List 1");
 		germplasmLists.add(germplasmList);
 
-		Mockito.when(this.germplasmListManager.getGermplasmListByName(listName, 0, 5, Operation.EQUAL)).thenReturn(germplasmLists);
+		Mockito.when(this.germplasmListManager.getGermplasmListByName(listName, PROGRAM_UUID, 0, 5, Operation.EQUAL))
+		.thenReturn(germplasmLists);
 
 		Assert.assertFalse("Expecting that the validator will return false when the list name is similar to an existing list.",
 				this.listNameValidator.validateListName(listName));
