@@ -49,7 +49,7 @@ public class GermplasmListTreeUtil implements Serializable {
 
 	@Autowired
 	private GermplasmListManager germplasmListManager;
-	
+
 	@Autowired
 	private UserDataManager userDataManager;
 
@@ -163,8 +163,8 @@ public class GermplasmListTreeUtil implements Serializable {
 			newFolder.setStatus(0);
 			newFolder.setUserId(ibdbUserId);
 			newFolder.setDate(DateUtil.getCurrentDateAsLongValue());
-			newFolder.setProgramUUID(contextUtil.getCurrentProgramUUID());
-			
+			newFolder.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
+
 			if (parentItemId == null || parentItemId instanceof String || this.targetListSource.getItem(parentItemId) == null) {
 				newFolder.setParent(null);
 			} else if (!this.source.isFolder(parentItemId)) {
@@ -257,15 +257,15 @@ public class GermplasmListTreeUtil implements Serializable {
 				this.messageSource.getMessage(Message.DELETE_ITEM_CONFIRM), this.messageSource.getMessage(Message.YES),
 				this.messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
 
-					private static final long serialVersionUID = -6164460688355101277L;
+			private static final long serialVersionUID = -6164460688355101277L;
 
 			@Override
 			public void onClose(ConfirmDialog dialog) {
 				if (dialog.isConfirmed()) {
 					try {
 						ListCommonActionsUtil.deleteGermplasmList(GermplasmListTreeUtil.this.germplasmListManager, finalGpList,
-										GermplasmListTreeUtil.this.contextUtil, GermplasmListTreeUtil.this.source.getWindow(),
-										GermplasmListTreeUtil.this.messageSource, "item");
+								GermplasmListTreeUtil.this.contextUtil, GermplasmListTreeUtil.this.source.getWindow(),
+								GermplasmListTreeUtil.this.messageSource, "item");
 						listSelectorComponent.removeListFromTree(finalGpList);
 						GermplasmListTreeUtil.this.source.refreshRemoteTree();
 						((BreedingManagerApplication) mainWindow.getApplication()).updateUIForDeletedList(finalGpList);

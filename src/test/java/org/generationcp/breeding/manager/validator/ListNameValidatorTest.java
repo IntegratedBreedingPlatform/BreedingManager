@@ -44,7 +44,7 @@ public class ListNameValidatorTest {
 		this.listNameValidator.setMessageSource(this.messageSource);
 		this.listNameValidator.setGermplasmListManager(this.germplasmListManager);
 
-		Mockito.doReturn(PROGRAM_UUID).when(this.listNameValidator).getCurrentProgramUUID();
+		Mockito.doReturn(ListNameValidatorTest.PROGRAM_UUID).when(this.listNameValidator).getCurrentProgramUUID();
 	}
 
 	@Test
@@ -62,7 +62,8 @@ public class ListNameValidatorTest {
 	@Test
 	public void testValidateListNameForUniqueList() throws MiddlewareQueryException {
 		String listName = "Unique List";
-		Mockito.when(this.germplasmListManager.getGermplasmListByName(listName, 0, 5, Operation.EQUAL)).thenReturn(
+		Mockito.when(this.germplasmListManager.getGermplasmListByName(listName, PROGRAM_UUID, 0, 5, Operation.EQUAL))
+		.thenReturn(
 				new ArrayList<GermplasmList>());
 
 		Assert.assertTrue("Expecting that the validator will return true when the list name is unique",
@@ -78,7 +79,7 @@ public class ListNameValidatorTest {
 		germplasmList.setName("Samplem List 1");
 		germplasmLists.add(germplasmList);
 
-		Mockito.when(this.germplasmListManager.getGermplasmListByName(listName, PROGRAM_UUID, 0, 5, Operation.EQUAL))
+		Mockito.when(this.germplasmListManager.getGermplasmListByName(listName, ListNameValidatorTest.PROGRAM_UUID, 0, 5, Operation.EQUAL))
 		.thenReturn(germplasmLists);
 
 		Assert.assertFalse("Expecting that the validator will return false when the list name is similar to an existing list.",
@@ -95,7 +96,8 @@ public class ListNameValidatorTest {
 		germplasmList.setName(listName);
 		germplasmLists.add(germplasmList);
 
-		Mockito.when(this.germplasmListManager.getGermplasmListByName(listName, 0, 5, Operation.EQUAL)).thenReturn(germplasmLists);
+		Mockito.when(this.germplasmListManager.getGermplasmListByName(listName, PROGRAM_UUID, 0, 5, Operation.EQUAL))
+				.thenReturn(germplasmLists);
 
 		Assert.assertTrue("Expecting that the validator will return true when the list name is similar to an existing list.",
 				this.listNameValidator.validateListName(listName));

@@ -179,9 +179,8 @@ public class ListSelectorComponentTest {
 
 		Object[] treeTableInfo = listManagerTreeComponent.generateCellInfo("Test", "Owner", "description", "listType", "25");
 		listManagerTreeComponent.getGermplasmListSource().addItem(treeTableInfo, germplasmListTreeId);
-		String newName =
-				listManagerTreeComponent.getGermplasmListTreeUtil().renameFolderOrList(germplasmListTreeId,
-						listManagerTreeComponent.getTreeActionsListener(), folderTextField, "Test");
+		String newName = listManagerTreeComponent.getGermplasmListTreeUtil().renameFolderOrList(germplasmListTreeId,
+				listManagerTreeComponent.getTreeActionsListener(), folderTextField, "Test");
 
 		Assert.assertEquals("Returns correct folder name when the user is renaming a folder in the tree", " " + newFolderName, newName);
 	}
@@ -203,8 +202,8 @@ public class ListSelectorComponentTest {
 		Object[] info = listManagerTreeComponent.generateCellInfo("Test", "Owner", "description", "listType", "25");
 		listManagerTreeComponent.getGermplasmListSource().addItem(info, germplasmListId);
 		listManagerTreeComponent.removeListFromTree(germplasmList);
-		Assert.assertNull("Should not return an object since the folder in the tree was deleted already", listManagerTreeComponent
-				.getGermplasmListSource().getItem(germplasmListId));
+		Assert.assertNull("Should not return an object since the folder in the tree was deleted already",
+				listManagerTreeComponent.getGermplasmListSource().getItem(germplasmListId));
 	}
 
 	@Test
@@ -235,7 +234,8 @@ public class ListSelectorComponentTest {
 	@Test
 	public void testUpdateButtonsWhenTheSelectedItemisAListOrFolder() throws MiddlewareQueryException {
 		Mockito.when(this.messageSource.getMessage(Message.ALL_LISTS)).thenReturn("All Lists");
-		Mockito.when(this.germplasmListManager.getAllTopLevelListsBatched(PROGRAM_UUID, 10)).thenReturn(new ArrayList<GermplasmList>());
+		Mockito.when(this.germplasmListManager.getAllTopLevelListsBatched(ListSelectorComponentTest.PROGRAM_UUID, 10))
+				.thenReturn(new ArrayList<GermplasmList>());
 
 		ListManagerTreeComponent listManagerTreeComponent = Mockito.spy(new ListManagerTreeComponent());
 		listManagerTreeComponent.setMessageSource(this.messageSource);
@@ -255,7 +255,8 @@ public class ListSelectorComponentTest {
 	@Test
 	public void testUpdateButtonsWhenTheSelectedItemisARootFolder() throws MiddlewareQueryException {
 		Mockito.when(this.messageSource.getMessage(Message.ALL_LISTS)).thenReturn("All Lists");
-		Mockito.when(this.germplasmListManager.getAllTopLevelListsBatched(PROGRAM_UUID, 10)).thenReturn(new ArrayList<GermplasmList>());
+		Mockito.when(this.germplasmListManager.getAllTopLevelListsBatched(ListSelectorComponentTest.PROGRAM_UUID, 10))
+				.thenReturn(new ArrayList<GermplasmList>());
 
 		ListManagerTreeComponent listManagerTreeComponent = Mockito.spy(new ListManagerTreeComponent());
 		listManagerTreeComponent.setMessageSource(this.messageSource);
@@ -289,9 +290,8 @@ public class ListSelectorComponentTest {
 		List<GermplasmList> germplasmListChildren = new ArrayList<GermplasmList>();
 		germplasmListChildren.add(germplasmList);
 
-		Mockito.when(this.germplasmListManager.getAllTopLevelListsBatched(PROGRAM_UUID, ListSelectorComponent.BATCH_SIZE))
-		.thenReturn(
-				germplasmListChildren);
+		Mockito.when(this.germplasmListManager.getAllTopLevelListsBatched(ListSelectorComponentTest.PROGRAM_UUID,
+				ListSelectorComponent.BATCH_SIZE)).thenReturn(germplasmListChildren);
 		Long expectedNoOfEntries = 10L;
 		Mockito.when(this.germplasmListManager.countGermplasmListDataByListId(childGermplasmListId)).thenReturn(expectedNoOfEntries);
 		Mockito.when(userDataManager.getUserById(userId)).thenReturn(null);

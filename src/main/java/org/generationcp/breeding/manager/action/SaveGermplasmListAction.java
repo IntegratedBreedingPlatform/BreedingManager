@@ -48,7 +48,8 @@ public class SaveGermplasmListAction implements Serializable {
 
 	private final SaveGermplasmListActionSource source;
 
-	public SaveGermplasmListAction(SaveGermplasmListActionSource source, GermplasmList germplasmList, List<GermplasmListEntry> listEntries) {
+	public SaveGermplasmListAction(SaveGermplasmListActionSource source, GermplasmList germplasmList,
+			List<GermplasmListEntry> listEntries) {
 		this.source = source;
 		this.germplasmList = germplasmList;
 		this.listEntries = listEntries;

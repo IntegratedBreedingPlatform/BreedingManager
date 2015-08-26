@@ -46,7 +46,6 @@ public class SaveCrossesMadeActionTest {
 		MockitoAnnotations.initMocks(this);
 		this.action = Mockito.spy(new SaveCrossesMadeAction());
 		this.action.setContextUtil(this.contextUtil);
-		this.action.setGermplasmManager(this.germplasmManager);
 		this.action.setGermplasmListManager(this.germplasmListManager);
 
 		this.crossesMade = new CrossesMade();

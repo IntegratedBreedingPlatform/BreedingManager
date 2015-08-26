@@ -17,6 +17,12 @@ import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.Operation;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.InventoryDataManager;
+import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.GermplasmListData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -85,39 +91,42 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 	}
 
 	public void doSaveAction(final Boolean showMessages, final Boolean callSaveReservation) {
-		final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
 		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				GermplasmList currentlySavedList = SaveListButtonClickListener.this.source.getCurrentlySavedGermplasmList();
 				GermplasmList listToSave = SaveListButtonClickListener.this.source.getCurrentlySetGermplasmListInfo();
-		
+
 				if (listToSave == null) {
+
 					return;
 				}
 				List<GermplasmListData> listEntries = SaveListButtonClickListener.this.source.getListEntriesFromTable();
-		
+
 				if (!SaveListButtonClickListener.this.validateListDetails(listToSave, currentlySavedList)) {
 					return;
 				}
-		
+
 				if (currentlySavedList == null || listToSave.getId() == null) {
 					listToSave.setStatus(1);
-		
+
 					try {
-						listToSave.setUserId(this.contextUtil.getCurrentUserLocalId());
-						listToSave.setProgramUUID(this.getCurrentProgramUUID());
+						listToSave.setUserId(SaveListButtonClickListener.this.contextUtil.getCurrentUserLocalId());
+						listToSave.setProgramUUID(SaveListButtonClickListener.this.contextUtil.getCurrentProgramUUID());
+
 						Integer listId = SaveListButtonClickListener.this.germplasmListManager.addGermplasmList(listToSave);
-		
+
 						if (listId != null) {
 							GermplasmList listSaved = SaveListButtonClickListener.this.germplasmListManager.getGermplasmListById(listId);
 							currentlySavedList = listSaved;
 							SaveListButtonClickListener.this.source.setCurrentlySavedGermplasmList(listSaved);
-		
+
 							SaveListButtonClickListener.this.source.setHasUnsavedChanges(false);
-		
+
 							SaveListButtonClickListener.this.source.getSource().getListSelectionComponent().showNodeOnTree(listId);
-		
+
 						} else {
 							SaveListButtonClickListener.this.showErrorOnSavingGermplasmList(showMessages);
 							return;
@@ -127,66 +136,70 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 						SaveListButtonClickListener.this.showErrorOnSavingGermplasmList(showMessages);
 						return;
 					}
-		
+
 					if (!listEntries.isEmpty()) {
 						SaveListButtonClickListener.this.setNeededValuesForNewListEntries(currentlySavedList, listEntries);
-		
+
 						if (!SaveListButtonClickListener.this.saveNewListEntries(listEntries)) {
 							return;
 						}
-		
+
 						SaveListButtonClickListener.this.updateListDataTableContent(currentlySavedList);
-		
+
 						SaveListButtonClickListener.this.saveListDataColumns(listToSave);
 					}
-		
+
 				} else if (currentlySavedList != null) {
-		
-					if (SaveListButtonClickListener.this.areThereChangesToList(currentlySavedList, listToSave) || SaveListButtonClickListener.this.forceHasChanges) {
-						if (!currentlySavedList.getName().equals(listToSave.getName()) && !SaveListButtonClickListener.this.validateListName(listToSave)) {
+
+					if (SaveListButtonClickListener.this.areThereChangesToList(currentlySavedList, listToSave)
+							|| SaveListButtonClickListener.this.forceHasChanges) {
+						if (!currentlySavedList.getName().equals(listToSave.getName())
+								&& !SaveListButtonClickListener.this.validateListName(listToSave)) {
 							return;
 						}
-		
-						listToSave =
-								ListCommonActionsUtil.overwriteList(listToSave, SaveListButtonClickListener.this.germplasmListManager, SaveListButtonClickListener.this.source, SaveListButtonClickListener.this.messageSource, showMessages);
+
+						listToSave = ListCommonActionsUtil.overwriteList(listToSave, SaveListButtonClickListener.this.germplasmListManager,
+								SaveListButtonClickListener.this.source, SaveListButtonClickListener.this.messageSource, showMessages);
 					}
-		
+
 					if (listToSave != null) {
-						boolean thereAreChangesInListEntries =
-								ListCommonActionsUtil.overwriteListEntries(listToSave, listEntries, SaveListButtonClickListener.this.forceHasChanges, SaveListButtonClickListener.this.germplasmListManager,
-										SaveListButtonClickListener.this.source, SaveListButtonClickListener.this.messageSource, showMessages);
-		
+						boolean thereAreChangesInListEntries = ListCommonActionsUtil.overwriteListEntries(listToSave, listEntries,
+								SaveListButtonClickListener.this.forceHasChanges, SaveListButtonClickListener.this.germplasmListManager,
+								SaveListButtonClickListener.this.source, SaveListButtonClickListener.this.messageSource, showMessages);
+
 						if (thereAreChangesInListEntries) {
 							SaveListButtonClickListener.this.updateListDataTableContent(currentlySavedList);
 						}
-		
+
 						if (!listEntries.isEmpty()) {
 							SaveListButtonClickListener.this.saveListDataColumns(listToSave);
 						}
 					}
 				}
-		
+
 				try {
-					SaveListButtonClickListener.this.contextUtil.logProgramActivity("List Manager Save List", "Successfully saved list and list entries for: "
-							+ currentlySavedList.getId() + " - " + currentlySavedList.getName());
-		
+					SaveListButtonClickListener.this.contextUtil.logProgramActivity("List Manager Save List",
+							"Successfully saved list and list entries for: " + currentlySavedList.getId() + " - "
+									+ currentlySavedList.getName());
+
 					SaveListButtonClickListener.this.source.getBuildNewListDropHandler().setChanged(false);
-		
+
 				} catch (MiddlewareQueryException ex) {
 					SaveListButtonClickListener.LOG.error("Error with saving Workbench activity.", ex);
 				}
-		
+
 				if (showMessages) {
-					MessageNotifier.showMessage(SaveListButtonClickListener.this.source.getWindow(), SaveListButtonClickListener.this.messageSource.getMessage(Message.SUCCESS),
+					MessageNotifier.showMessage(SaveListButtonClickListener.this.source.getWindow(),
+							SaveListButtonClickListener.this.messageSource.getMessage(Message.SUCCESS),
 							SaveListButtonClickListener.this.messageSource.getMessage(Message.LIST_DATA_SAVED_SUCCESS), 3000);
 				}
-		
+
 				if (callSaveReservation) {
 					SaveListButtonClickListener.this.source.saveReservationChangesAction();
 				}
-		
+
 				SaveListButtonClickListener.this.source.resetUnsavedChangesFlag();
-		
+
 				SaveListButtonClickListener.this.source.getSource().closeList(currentlySavedList);
 			}
 		});
@@ -205,7 +218,8 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 
 	private void saveListDataColumns(GermplasmList listToSave) {
 		try {
-			this.germplasmListManager.saveListDataColumns(this.source.getAddColumnContextMenu().getListDataCollectionFromTable(this.listDataTable));
+			this.germplasmListManager
+					.saveListDataColumns(this.source.getAddColumnContextMenu().getListDataCollectionFromTable(this.listDataTable));
 		} catch (MiddlewareQueryException e) {
 			SaveListButtonClickListener.LOG.error("Error in saving added germplasm list columns: " + listToSave, e);
 			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
@@ -307,9 +321,8 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 						&& entry.getInventoryInfo().getActualInventoryLotCount() != 0) {
 					availInv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
 				}
-				Button inventoryButton =
-						new Button(availInv, new InventoryLinkButtonClickListener(this.source, currentlySavedList.getId(), entry.getId(),
-								entry.getGid()));
+				Button inventoryButton = new Button(availInv,
+						new InventoryLinkButtonClickListener(this.source, currentlySavedList.getId(), entry.getId(), entry.getGid()));
 				inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 				inventoryButton.setDescription("Click to view Inventory Details");
 
