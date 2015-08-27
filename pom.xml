@@ -22,7 +22,7 @@
 		<ibpcommons.version>4.1.0.SNAPSHOT</ibpcommons.version>
 		<spring.version>3.2.11.RELEASE</spring.version>
 		<spring.security.version>3.2.5.RELEASE</spring.security.version>
-		<webapp.path>C:/Breeding Management System/infrastructure/tomcat/webapps</webapp.path>
+		<webapp.path>${workbench.installation_dir}/infrastructure/tomcat/webapps</webapp.path>
 		<envConfig>${user.name}</envConfig>
 	</properties>
 
@@ -326,7 +326,7 @@
 				<version>2.1</version>
 				<configuration>
 					<path>/${project.build.finalName}</path>
-					<port>${tomcatPort}</port>
+					<port>${server.port}</port>
 					<hostName>${tomcatHost}</hostName>
 				</configuration>
 			</plugin>
@@ -399,6 +399,50 @@
 						</manifestEntries>
 					</archive>
 				</configuration>
+			</plugin>
+			<!--
+				Used to refresh the copy of the application contained in the installed BMS environment
+			-->
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>default-cli</id>
+						<configuration>
+							<tasks>
+								<delete dir="${webapp.path}/${project.artifactId}" />
+								<copy todir="${webapp.path}/${project.artifactId}">
+									<fileset dir="target/${project.artifactId}" includes="**/*" />
+								</copy>
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!--
+				The following plugin makes the properties defined in the configured file available to the Maven build
+				-->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<version>1.0-alpha-2</version>
+				<executions>
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>read-project-properties</goal>
+						</goals>
+						<configuration>
+							<files>
+								<file>../BMSConfig/${envConfig}/application.properties</file>
+							</files>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

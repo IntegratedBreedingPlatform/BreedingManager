@@ -122,6 +122,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 					throws MiddlewareException {
 
 		germplasmList.setUserId(this.contextUtil.getCurrentUserLocalId());
+		germplasmList.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
 
 		// Retrieve seed stock variable and/or attribute types (or create new one) as needed
 		this.processVariates(importedGermplasmList);

@@ -112,4 +112,33 @@ public class GenerateStockIDsDialogTest {
 
 	}
 
+	@Test
+	public void testIsValidPrefix_ForEmptryString() {
+		Assert.assertTrue("Expecting that no validation will be made for emtpy string.", this.generateStockIDsDialog.isValidPrefix(""));
+	}
+
+	@Test
+	public void testIsValidPrefix_ForStringWithCharactersOtherThanLetters() {
+		// start
+		String prefix = "?STK";
+		Assert.assertFalse("Expecting that prefix with characters other than letters is invalid.",
+				this.generateStockIDsDialog.isValidPrefix(prefix));
+
+		// end
+		prefix = "STK?";
+		Assert.assertFalse("Expecting that prefix with characters other than letters is invalid.",
+				this.generateStockIDsDialog.isValidPrefix(prefix));
+
+		// middle
+		prefix = "ST?K";
+		Assert.assertFalse("Expecting that prefix with characters other than letters is invalid.",
+				this.generateStockIDsDialog.isValidPrefix(prefix));
+	}
+
+	@Test
+	public void testIsValidPrefix_ForStringWithLettersOnly() {
+		String prefix = "STK";
+		Assert.assertTrue("Expecting that prefix with characters other than letters is invalid.",
+				this.generateStockIDsDialog.isValidPrefix(prefix));
+	}
 }

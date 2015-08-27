@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.listimport;
 
 import static org.mockito.Matchers.any;
@@ -22,6 +23,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 
 import com.vaadin.Application;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -44,18 +46,20 @@ public class GermplasmListTemplateDownloaderTest {
 
 	@Before
 	public void setUp() throws Exception {
-		doReturn(application).when(exportDialog).getCurrentApplication() ;
-		doReturn(request).when(exportDialog).getCurrentRequest();
-		doReturn(mock(FileDownloadResource.class)).when(exportDialog).getTemplateAsDownloadResource(any(File.class));
+		doReturn(this.application).when(this.exportDialog).getCurrentApplication();
+		doReturn(this.request).when(this.exportDialog).getCurrentRequest();
+		doReturn(mock(FileDownloadResource.class)).when(this.exportDialog).getTemplateAsDownloadResource(any(File.class));
 
-		when(application.getMainWindow()).thenReturn(window);
+		when(this.application.getMainWindow()).thenReturn(this.window);
 	}
 
 	@Test
 	public void testExportGermplasmTemplate() throws Exception {
-		exportDialog.exportGermplasmTemplate();
+		Component component = mock(Component.class);
+		when(component.getWindow()).thenReturn(this.window);
+		this.exportDialog.exportGermplasmTemplate(component);
 
-		verify(window).open(any(FileDownloadResource.class));
+		verify(this.window).open(any(FileDownloadResource.class));
 	}
 
 	@Test

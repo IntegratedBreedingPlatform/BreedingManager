@@ -14,6 +14,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.constants.ModeView;
+import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUtil;
 import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
@@ -43,6 +44,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
@@ -69,6 +74,10 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	private static final String NO_LOT_FOR_THIS_GERMPLASM = "No Lot for this Germplasm";
 	private static final String CLICK_TO_VIEW_INVENTORY_DETAILS = "Click to view Inventory Details";
 	private static final String STRING_DASH = "-";
+	
+	@Autowired
+	private PlatformTransactionManager transactionManager;
+
 
 	private final class ListDataTableActionHandler implements Action.Handler {
 
@@ -104,43 +113,57 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		private static final long serialVersionUID = -2343109406180457070L;
 
 		@Override
-		public void contextItemClick(ClickEvent event) {
-			// Get reference to clicked item
-			ContextMenuItem clickedItem = event.getClickedItem();
-			if (clickedItem.getName().equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
-				SelectParentsListDataComponent.this.listDataTable.setValue(SelectParentsListDataComponent.this.listDataTable.getItemIds());
-			} else if (clickedItem.getName().equals(
-					SelectParentsListDataComponent.this.messageSource.getMessage(Message.ADD_TO_FEMALE_LIST))) {
-				Collection<?> selectedIdsToAdd = (Collection<?>) SelectParentsListDataComponent.this.listDataTable.getValue();
-				if (!selectedIdsToAdd.isEmpty()) {
-					SelectParentsListDataComponent.this.makeCrossesParentsComponent.dropToFemaleOrMaleTable(
-							SelectParentsListDataComponent.this.listDataTable,
-							SelectParentsListDataComponent.this.makeCrossesParentsComponent.getFemaleTable(), null);
-					SelectParentsListDataComponent.this.makeCrossesParentsComponent
+		public void contextItemClick(final ClickEvent event) {
+			final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+			transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					// Get reference to clicked item
+					ContextMenuItem clickedItem = event.getClickedItem();
+					if (clickedItem.getName().equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
+						SelectParentsListDataComponent.this.listDataTable.setValue(SelectParentsListDataComponent.this.listDataTable.getItemIds());
+					} else if (clickedItem.getName().equals(
+							SelectParentsListDataComponent.this.messageSource.getMessage(Message.ADD_TO_FEMALE_LIST))) {
+						Collection<?> selectedIdsToAdd = (Collection<?>) SelectParentsListDataComponent.this.listDataTable.getValue();
+						if (!selectedIdsToAdd.isEmpty()) {
+							SelectParentsListDataComponent.this.makeCrossesParentsComponent.dropToFemaleOrMaleTable(
+									SelectParentsListDataComponent.this.listDataTable,
+									SelectParentsListDataComponent.this.makeCrossesParentsComponent.getFemaleTable(), null);
+							SelectParentsListDataComponent.this.makeCrossesParentsComponent
 							.assignEntryNumber(SelectParentsListDataComponent.this.makeCrossesParentsComponent.getFemaleTable());
-					SelectParentsListDataComponent.this.makeCrossesParentsComponent.getParentTabSheet().setSelectedTab(0);
-				} else {
-					MessageNotifier.showWarning(SelectParentsListDataComponent.this.getWindow(),
-							SelectParentsListDataComponent.this.messageSource.getMessage(Message.WARNING),
-							SelectParentsListDataComponent.this.messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
-				}
-			} else if (clickedItem.getName().equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.ADD_TO_MALE_LIST))) {
-				Collection<?> selectedIdsToAdd = (Collection<?>) SelectParentsListDataComponent.this.listDataTable.getValue();
-				if (!selectedIdsToAdd.isEmpty()) {
-					SelectParentsListDataComponent.this.makeCrossesParentsComponent.dropToFemaleOrMaleTable(
-							SelectParentsListDataComponent.this.listDataTable,
-							SelectParentsListDataComponent.this.makeCrossesParentsComponent.getMaleTable(), null);
-					SelectParentsListDataComponent.this.makeCrossesParentsComponent
+							SelectParentsListDataComponent.this.makeCrossesParentsComponent.getParentTabSheet().setSelectedTab(0);
+						} else {
+							MessageNotifier.showWarning(SelectParentsListDataComponent.this.getWindow(),
+									SelectParentsListDataComponent.this.messageSource.getMessage(Message.WARNING),
+									SelectParentsListDataComponent.this.messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
+						}
+					} else if (clickedItem.getName().equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.ADD_TO_MALE_LIST))) {
+						Collection<?> selectedIdsToAdd = (Collection<?>) SelectParentsListDataComponent.this.listDataTable.getValue();
+						if (!selectedIdsToAdd.isEmpty()) {
+							SelectParentsListDataComponent.this.makeCrossesParentsComponent.dropToFemaleOrMaleTable(
+									SelectParentsListDataComponent.this.listDataTable,
+									SelectParentsListDataComponent.this.makeCrossesParentsComponent.getMaleTable(), null);
+							SelectParentsListDataComponent.this.makeCrossesParentsComponent
 							.assignEntryNumber(SelectParentsListDataComponent.this.makeCrossesParentsComponent.getMaleTable());
-					SelectParentsListDataComponent.this.makeCrossesParentsComponent.getParentTabSheet().setSelectedTab(1);
-				} else {
-					MessageNotifier.showWarning(SelectParentsListDataComponent.this.getWindow(),
-							SelectParentsListDataComponent.this.messageSource.getMessage(Message.WARNING),
-							SelectParentsListDataComponent.this.messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
+							SelectParentsListDataComponent.this.makeCrossesParentsComponent.getParentTabSheet().setSelectedTab(1);
+						} else {
+							MessageNotifier.showWarning(SelectParentsListDataComponent.this.getWindow(),
+									SelectParentsListDataComponent.this.messageSource.getMessage(Message.WARNING),
+									SelectParentsListDataComponent.this.messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
+						}
+					} else if (clickedItem.getName().equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.INVENTORY_VIEW))) {
+						SelectParentsListDataComponent.this.viewInventoryAction();
+					} else if (clickedItem.getName().equals(
+							SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES))) {
+						SelectParentsListDataComponent.this.listDataTable.setValue(CrossingManagerUtil
+								.getEvenEntries(SelectParentsListDataComponent.this.listDataTable));
+					} else if (clickedItem.getName().equals(
+							SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES))) {
+						SelectParentsListDataComponent.this.listDataTable.setValue(CrossingManagerUtil
+								.getOddEntries(SelectParentsListDataComponent.this.listDataTable));
+					}
 				}
-			} else if (clickedItem.getName().equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.INVENTORY_VIEW))) {
-				SelectParentsListDataComponent.this.viewInventoryAction();
-			}
+			});
 		}
 	}
 
@@ -273,6 +296,8 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		this.actionMenu.addItem(this.messageSource.getMessage(Message.ADD_TO_FEMALE_LIST));
 		this.actionMenu.addItem(this.messageSource.getMessage(Message.INVENTORY_VIEW));
 		this.actionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
+		this.actionMenu.addItem(this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES));
+		this.actionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES));
 
 		this.inventoryViewActionMenu = new ContextMenu();
 		this.inventoryViewActionMenu.setWidth("295px");
@@ -281,6 +306,8 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		this.menuListView = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
 		this.menuInventorySaveChanges = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SAVE_CHANGES));
 		this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
+		this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES));
+		this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES));
 		this.resetInventoryMenuOptions();
 
 		this.initializeListDataTable();
@@ -369,6 +396,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		this.listInventoryTable = new CrossingManagerInventoryTable(this.germplasmList.getId());
 		this.listInventoryTable.setVisible(false);
 		this.listInventoryTable.setMaxRows(9);
+		this.listInventoryTable.setTableHeight(null);
 		this.listInventoryTable.getTable().setDragMode(TableDragMode.ROW);
 		this.listInventoryTable.getTable().setData(SelectParentsListDataComponent.CROSSING_MANAGER_PARENT_TAB_INVENTORY_TABLE);
 	}
@@ -498,24 +526,39 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 			private static final long serialVersionUID = -2343109406180457070L;
 
 			@Override
-			public void contextItemClick(ClickEvent event) {
-				// Get reference to clicked item
-				ContextMenuItem clickedItem = event.getClickedItem();
-				if (clickedItem.getName().equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.SAVE_CHANGES))) {
-					SelectParentsListDataComponent.this.saveReservationChangesAction();
-				} else if (clickedItem.getName().equals(
-						SelectParentsListDataComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
-					SelectParentsListDataComponent.this.viewListAction();
-				} else if (clickedItem.getName().equals(
-						SelectParentsListDataComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
-					// no implementation yet for this method
-				} else if (clickedItem.getName().equals(
-						SelectParentsListDataComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
-					SelectParentsListDataComponent.this.reserveInventoryAction();
-				} else if (clickedItem.getName().equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
-					SelectParentsListDataComponent.this.listInventoryTable.getTable().setValue(
-							SelectParentsListDataComponent.this.listInventoryTable.getTable().getItemIds());
-				}
+			public void contextItemClick(final ClickEvent event) {
+				final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+					@Override
+					protected void doInTransactionWithoutResult(TransactionStatus status) {
+						// Get reference to clicked item
+						ContextMenuItem clickedItem = event.getClickedItem();
+						if (clickedItem.getName().equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.SAVE_CHANGES))) {
+							SelectParentsListDataComponent.this.saveReservationChangesAction();
+						} else if (clickedItem.getName().equals(
+								SelectParentsListDataComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
+							SelectParentsListDataComponent.this.viewListAction();
+						} else if (clickedItem.getName().equals(
+								SelectParentsListDataComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
+							// no implementation yet for this method
+						} else if (clickedItem.getName().equals(
+								SelectParentsListDataComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
+							SelectParentsListDataComponent.this.reserveInventoryAction();
+						} else if (clickedItem.getName().equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
+							SelectParentsListDataComponent.this.listInventoryTable.getTable().setValue(
+									SelectParentsListDataComponent.this.listInventoryTable.getTable().getItemIds());
+						} else if (clickedItem.getName().equals(
+								SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES))) {
+							SelectParentsListDataComponent.this.listInventoryTable.getTable().setValue(
+									CrossingManagerUtil.getEvenEntries(SelectParentsListDataComponent.this.listInventoryTable.getTable()));
+						} else if (clickedItem.getName().equals(
+								SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES))) {
+							SelectParentsListDataComponent.this.listInventoryTable.getTable().setValue(
+									CrossingManagerUtil.getOddEntries(SelectParentsListDataComponent.this.listInventoryTable.getTable()));
+						}
+					}
+					
+				});
 			}
 		});
 

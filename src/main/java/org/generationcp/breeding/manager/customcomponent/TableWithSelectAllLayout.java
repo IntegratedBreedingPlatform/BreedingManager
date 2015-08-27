@@ -42,7 +42,7 @@ public class TableWithSelectAllLayout extends TableLayout implements BreedingMan
 	public void syncItemCheckBoxes() {
 		Collection<Object> entries = (Collection<Object>) this.table.getItemIds();
 		Collection<Object> selectedEntries = (Collection<Object>) this.table.getValue();
-		if (selectedEntries.size() == entries.size() && selectedEntries.size() > 0) {
+		if (selectedEntries.size() == entries.size() && !selectedEntries.isEmpty()) {
 			this.selectAllCheckBox.setValue(true);
 		} else {
 			this.selectAllCheckBox.setValue(false);
@@ -84,6 +84,7 @@ public class TableWithSelectAllLayout extends TableLayout implements BreedingMan
 
 	@Override
 	public void initializeValues() {
+		// not implemented
 	}
 
 	@Override

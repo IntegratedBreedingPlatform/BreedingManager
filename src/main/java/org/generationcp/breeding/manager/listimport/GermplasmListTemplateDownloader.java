@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.vaadin.ui.Component;
 import org.dellroad.stuff.vaadin.ContextApplication;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -19,14 +20,20 @@ public class GermplasmListTemplateDownloader {
 
 	private static final long serialVersionUID = -9047374755825933209L;
 
-	public void exportGermplasmTemplate() throws FileDownloadException {
+	public void exportGermplasmTemplate(Component component) throws FileDownloadException {
 		try {
 			ClassPathResource cpr = new ClassPathResource("templates/" + GermplasmListTemplateDownloader.EXPANDED_TEMPLATE_FILE);
 			File templateFile = cpr.getFile();
 
 			FileDownloadResource fileDownloadResource = getTemplateAsDownloadResource(templateFile);
 
-			getCurrentApplication().getMainWindow().open(fileDownloadResource);
+			if (getCurrentApplication().getMainWindow().getChildWindows().size() > 0) {
+				getCurrentApplication().getMainWindow().open(fileDownloadResource);
+			} else {
+				component.getWindow().open(fileDownloadResource);
+
+			}
+
 		} catch (IOException e) {
 			throw new FileDownloadException(e.getMessage(), e);
 		}

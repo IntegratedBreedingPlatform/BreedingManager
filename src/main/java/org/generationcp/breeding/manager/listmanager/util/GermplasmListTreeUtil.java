@@ -49,6 +49,7 @@ public class GermplasmListTreeUtil implements Serializable {
 
 	@Autowired
 	private GermplasmListManager germplasmListManager;
+	
 	@Autowired
 	private UserDataManager userDataManager;
 
@@ -161,7 +162,8 @@ public class GermplasmListTreeUtil implements Serializable {
 			newFolder.setStatus(0);
 			newFolder.setUserId(ibdbUserId);
 			newFolder.setDate(DateUtil.getCurrentDateAsLongValue());
-
+			newFolder.setProgramUUID(contextUtil.getCurrentProgramUUID());
+			
 			if (parentItemId == null || parentItemId instanceof String || this.targetListSource.getItem(parentItemId) == null) {
 				newFolder.setParent(null);
 			} else if (!this.source.isFolder(parentItemId)) {

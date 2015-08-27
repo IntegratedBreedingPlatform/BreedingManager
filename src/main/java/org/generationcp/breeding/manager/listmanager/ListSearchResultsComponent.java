@@ -22,6 +22,10 @@ import org.generationcp.middleware.pojos.GermplasmList;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
@@ -87,6 +91,9 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 
 	@Autowired
 	protected GermplasmListManager germplasmListManager;
+
+	@Autowired
+	private PlatformTransactionManager transactionManager;
 
 	private Map<Integer, GermplasmList> germplasmListsMap;
 
@@ -172,13 +179,19 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void handleAction(Action action, Object sender, Object target) {
-				if (ListSearchResultsComponent.ACTION_SELECT_ALL == action) {
-					ListSearchResultsComponent.this.matchingListsTable.setValue(ListSearchResultsComponent.this.matchingListsTable
-							.getItemIds());
-				} else if (ListSearchResultsComponent.ACTION_ADD_TO_NEW_LIST == action) {
-					ListSearchResultsComponent.this.addSelectedListToNewList();
-				}
+			public void handleAction(final Action action, final Object sender, final Object target) {
+				final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+					@Override
+					protected void doInTransactionWithoutResult(TransactionStatus status) {
+						if (ListSearchResultsComponent.ACTION_SELECT_ALL == action) {
+							ListSearchResultsComponent.this.matchingListsTable.setValue(ListSearchResultsComponent.this.matchingListsTable
+									.getItemIds());
+						} else if (ListSearchResultsComponent.ACTION_ADD_TO_NEW_LIST == action) {
+							ListSearchResultsComponent.this.addSelectedListToNewList();
+						}
+					}
+				});
 			}
 
 			@Override
@@ -258,16 +271,21 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void contextItemClick(org.vaadin.peter.contextmenu.ContextMenu.ClickEvent event) {
-				ContextMenuItem clickedItem = event.getClickedItem();
-
-				if (clickedItem.getName().equals(ListSearchResultsComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
-					ListSearchResultsComponent.this.matchingListsTable.setValue(ListSearchResultsComponent.this.matchingListsTable
-							.getItemIds());
-				} else if (clickedItem.getName().equals(
-						ListSearchResultsComponent.this.messageSource.getMessage(Message.ADD_SELECTED_LIST_TO_NEW_LIST))) {
-					ListSearchResultsComponent.this.addSelectedListToNewList();
-				}
+			public void contextItemClick(final org.vaadin.peter.contextmenu.ContextMenu.ClickEvent event) {
+				final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+					@Override
+					protected void doInTransactionWithoutResult(TransactionStatus status) {
+						ContextMenuItem clickedItem = event.getClickedItem();
+						if (clickedItem.getName().equals(ListSearchResultsComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
+							ListSearchResultsComponent.this.matchingListsTable.setValue(ListSearchResultsComponent.this.matchingListsTable
+									.getItemIds());
+						} else if (clickedItem.getName().equals(
+								ListSearchResultsComponent.this.messageSource.getMessage(Message.ADD_SELECTED_LIST_TO_NEW_LIST))) {
+							ListSearchResultsComponent.this.addSelectedListToNewList();
+						}
+					}
+				});
 			}
 		});
 

@@ -348,6 +348,8 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 				int itemId = Integer.parseInt(trimmed);
 				getGermplasmListSource().expandItem(itemId);
 			}
+
+			getGermplasmListSource().clearSelection();
 		} catch (MiddlewareQueryException e) {
 			LOG.error(e.getMessage(), e);
 		}

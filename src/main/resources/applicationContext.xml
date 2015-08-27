@@ -164,6 +164,11 @@
 		factory-method="getInventoryMiddlewareService" scope="request">
 		<aop:scoped-proxy />
 	</bean>
+	
+	<bean id="exportService"
+          class="org.generationcp.commons.service.impl.ExportServiceImpl">
+        <property name="templateFile" value="GermplasmListCode.xls"/>
+    </bean>
 
 	<bean id="userProgramStateManager"
 		class="org.generationcp.middleware.manager.UserProgramStateDataManagerImpl"

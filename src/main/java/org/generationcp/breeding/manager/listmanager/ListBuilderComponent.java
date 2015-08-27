@@ -70,6 +70,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
@@ -174,25 +178,32 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		private static final long serialVersionUID = -2343109406180457070L;
 
 		@Override
-		public void contextItemClick(ClickEvent event) {
-			// Get reference to clicked item
-			ContextMenuItem clickedItem = event.getClickedItem();
-			if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
-				ListBuilderComponent.this.viewListAction();
-			} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
-				ListBuilderComponent.this.copyToNewListFromInventoryViewAction();
-			} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
-				ListBuilderComponent.this.reserveInventoryAction();
-			} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
-				ListBuilderComponent.this.listInventoryTable.getTable().setValue(
-						ListBuilderComponent.this.listInventoryTable.getTable().getItemIds());
-			} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.CANCEL_RESERVATIONS))) {
-				ListBuilderComponent.this.cancelReservationsAction();
-			} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESET_LIST))) {
-				ListBuilderComponent.this.resetButton.click();
-			} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SAVE_LIST))) {
-				ListBuilderComponent.this.saveButton.click();
-			}
+		public void contextItemClick(final ClickEvent event) {
+			final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+			transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					// Get reference to clicked item
+					ContextMenuItem clickedItem = event.getClickedItem();
+					if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
+						ListBuilderComponent.this.viewListAction();
+					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
+						ListBuilderComponent.this.copyToNewListFromInventoryViewAction();
+					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
+						ListBuilderComponent.this.reserveInventoryAction();
+					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
+						ListBuilderComponent.this.listInventoryTable.getTable().setValue(
+								ListBuilderComponent.this.listInventoryTable.getTable().getItemIds());
+					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.CANCEL_RESERVATIONS))) {
+						ListBuilderComponent.this.cancelReservationsAction();
+					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESET_LIST))) {
+						ListBuilderComponent.this.resetButton.click();
+					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SAVE_LIST))) {
+						ListBuilderComponent.this.saveButton.click();
+					}
+				}
+			});
+
 		}
 	}
 
@@ -201,28 +212,34 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		private static final long serialVersionUID = -2331333436994090161L;
 
 		@Override
-		public void contextItemClick(ClickEvent event) {
-			ContextMenuItem clickedItem = event.getClickedItem();
-			Table germplasmsTable = ListBuilderComponent.this.tableWithSelectAllLayout.getTable();
-			if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
-				germplasmsTable.setValue(germplasmsTable.getItemIds());
-			} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES))) {
-				ListBuilderComponent.this.deleteSelectedEntries();
-			} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.EXPORT_LIST))) {
-				ListBuilderComponent.this.exportListAction();
-			} else if (clickedItem.getName().equals(
-					ListBuilderComponent.this.messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER))) {
-				ListBuilderComponent.this.exportListForGenotypingOrderAction();
-			} else if (clickedItem.getName().equals(
-					ListBuilderComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL))) {
-				ListBuilderComponent.this.copyToNewListAction();
-			} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.INVENTORY_VIEW))) {
-				ListBuilderComponent.this.viewInventoryAction();
-			} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESET_LIST))) {
-				ListBuilderComponent.this.resetButton.click();
-			} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SAVE_LIST))) {
-				ListBuilderComponent.this.saveButton.click();
-			}
+		public void contextItemClick(final ClickEvent event) {
+			final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+			transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					ContextMenuItem clickedItem = event.getClickedItem();
+					Table germplasmsTable = ListBuilderComponent.this.tableWithSelectAllLayout.getTable();
+					if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
+						germplasmsTable.setValue(germplasmsTable.getItemIds());
+					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES))) {
+						ListBuilderComponent.this.deleteSelectedEntries();
+					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.EXPORT_LIST))) {
+						ListBuilderComponent.this.exportListAction();
+					} else if (clickedItem.getName().equals(
+							ListBuilderComponent.this.messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER))) {
+						ListBuilderComponent.this.exportListForGenotypingOrderAction();
+					} else if (clickedItem.getName().equals(
+							ListBuilderComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL))) {
+						ListBuilderComponent.this.copyToNewListAction();
+					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.INVENTORY_VIEW))) {
+						ListBuilderComponent.this.viewInventoryAction();
+					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESET_LIST))) {
+						ListBuilderComponent.this.resetButton.click();
+					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SAVE_LIST))) {
+						ListBuilderComponent.this.saveButton.click();
+					}
+				}
+			});
 		}
 	}
 
@@ -256,6 +273,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	@Resource
 	private ContextUtil contextUtil;
+	
+	@Resource
+	private PlatformTransactionManager transactionManager;
 
 	public static final String GERMPLASMS_TABLE_DATA = "Germplasms Table Data";
 	static final Action ACTION_SELECT_ALL = new Action("Select All");
@@ -462,7 +482,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 		this.dropHandler =
 				new BuildNewListDropHandler(this.source, this.germplasmDataManager, this.germplasmListManager, this.inventoryDataManager,
-						this.pedigreeService, this.crossExpansionProperties, this.tableWithSelectAllLayout.getTable());
+						this.pedigreeService, this.crossExpansionProperties, this.tableWithSelectAllLayout.getTable(), transactionManager);
 
 		this.saveButton = new Button();
 		this.saveButton.setCaption(this.messageSource.getMessage(Message.SAVE_LABEL));
@@ -990,7 +1010,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 		this.dropHandler =
 				new BuildNewListDropHandler(this.source, this.germplasmDataManager, this.germplasmListManager, this.inventoryDataManager,
-						this.pedigreeService, this.crossExpansionProperties, this.tableWithSelectAllLayout.getTable());
+						this.pedigreeService, this.crossExpansionProperties, this.tableWithSelectAllLayout.getTable(), transactionManager);
 		this.initializeHandlers();
 
 		// Reset Save Listener
@@ -1059,7 +1079,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			Item item = this.tableWithSelectAllLayout.getTable().getItem(entryId);
 
 			GermplasmListData listEntry = new GermplasmListData();
-			listEntry.setId(entryId);
 
 			Button designationButton = (Button) item.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue();
 			String designation = designationButton.getCaption();
