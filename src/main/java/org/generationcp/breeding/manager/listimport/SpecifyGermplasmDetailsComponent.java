@@ -195,6 +195,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 		this.germplasmList.setStatus(1);
 		try {
 			this.germplasmList.setUserId(this.contextUtil.getCurrentUserLocalId());
+			this.germplasmList.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
 		} catch (MiddlewareQueryException e) {
 			SpecifyGermplasmDetailsComponent.LOG.error(e.getMessage(), e);
 		}

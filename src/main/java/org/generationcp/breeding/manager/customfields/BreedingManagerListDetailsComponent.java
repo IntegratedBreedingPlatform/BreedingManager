@@ -9,6 +9,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.breeding.manager.validator.ListNameValidator;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -56,6 +57,9 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout implemen
 
 	@Autowired
 	private BreedingManagerService breedingManagerService;
+
+	@Autowired
+	private ContextUtil contextUtil;
 
 	private GermplasmList germplasmList;
 
@@ -180,6 +184,8 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout implemen
 		}
 		list.setNotes(this.listNotesField.getValue().toString());
 		list.setUserId(0);
+
+		list.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
 
 		return list;
 	}
