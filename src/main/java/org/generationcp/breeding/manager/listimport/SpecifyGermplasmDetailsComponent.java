@@ -58,8 +58,8 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 @Configurable
-public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
-		BreedingManagerLayout, SaveListAsDialogSource {
+public class SpecifyGermplasmDetailsComponent extends VerticalLayout
+		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, SaveListAsDialogSource {
 
 	private static final long serialVersionUID = 2762965368037453497L;
 	private static final Logger LOG = LoggerFactory.getLogger(SpecifyGermplasmDetailsComponent.class);
@@ -185,9 +185,8 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 
 		this.germplasmList = new GermplasmList();
 
-		String sDate =
-				DateUtil.formatDateAsStringValue(this.germplasmListUploader.getImportedGermplasmList().getDate(),
-						DateUtil.DATE_AS_NUMBER_FORMAT);
+		String sDate = DateUtil.formatDateAsStringValue(this.germplasmListUploader.getImportedGermplasmList().getDate(),
+				DateUtil.DATE_AS_NUMBER_FORMAT);
 		this.germplasmList.setName(this.germplasmListUploader.getImportedGermplasmList().getName());
 		this.germplasmList.setDate(Long.parseLong(sDate));
 		this.germplasmList.setType(this.germplasmListUploader.getImportedGermplasmList().getType());
@@ -215,8 +214,8 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 					SpecifyGermplasmDetailsComponent.LOG.error(e.getMessage(), e);
 				}
 			} else {
-				germplasmNameObjectsToBeSaved.add(new GermplasmName(germplasmNameObjects.get(i).getGermplasm(), germplasmNameObjects.get(i)
-						.getName()));
+				germplasmNameObjectsToBeSaved
+						.add(new GermplasmName(germplasmNameObjects.get(i).getGermplasm(), germplasmNameObjects.get(i).getName()));
 			}
 		}
 
@@ -250,8 +249,9 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 	private boolean validateLocation() {
 		// BMS-953 : location is in fact always specified, so where null or blank occurs, we will switch to 'Unknown - 0'
 		// Needs to be fixed on the actual screen by preventing selection of favorites where favorites don't exist
-		if(this.getGermplasmFieldsComponent().getLocationComboBox().getValue() == null) {
-			// the next line, we need to add the 'Unknown Location' id of 0 to the list of combo box items, or Vaadin will not let us set the value to 0
+		if (this.getGermplasmFieldsComponent().getLocationComboBox().getValue() == null) {
+			// the next line, we need to add the 'Unknown Location' id of 0 to the list of combo box items, or Vaadin will not let us set
+			// the value to 0
 			this.getGermplasmFieldsComponent().getLocationComboBox().addItem(new Integer(0));
 			this.getGermplasmFieldsComponent().getLocationComboBox().setValue(new Integer(0));
 		}
@@ -391,8 +391,8 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 		this.germplasmDetailsTable.setColumnCollapsingAllowed(true);
 
 		this.germplasmDetailsTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), this.getTermNameFromOntology(ColumnLabels.ENTRY_ID));
-		this.germplasmDetailsTable
-				.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(), this.getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
+		this.germplasmDetailsTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(),
+				this.getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
 		this.germplasmDetailsTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(),
 				this.getTermNameFromOntology(ColumnLabels.DESIGNATION));
 		this.germplasmDetailsTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(), this.getTermNameFromOntology(ColumnLabels.PARENTAGE));
@@ -530,8 +530,8 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 			} else {
 				germplasmSource = importedGermplasm.getSource();
 			}
-			this.getGermplasmDetailsTable().addItem(
-					new Object[] {importedGermplasm.getEntryId(), importedGermplasm.getEntryCode(), importedGermplasm.getDesig(),
+			this.getGermplasmDetailsTable()
+					.addItem(new Object[] {importedGermplasm.getEntryId(), importedGermplasm.getEntryCode(), importedGermplasm.getDesig(),
 							importedGermplasm.getCross(), importedGermplasm.getGid(), importedGermplasm.getInventoryId(),
 							importedGermplasm.getSeedAmount(), germplasmSource}, new Integer(i + 1));
 		}
@@ -552,10 +552,9 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 		Window window = this.source.getWindow();
 
 		try {
-			Integer listId =
-					saveGermplasmListAction.saveRecords(list, this.getGermplasmNameObjects(), this.getNewNames(),
-							this.germplasmListUploader.getOriginalFilename(), this.processGermplasmAction.getMatchedGermplasmIds(),
-							this.importedGermplasmList, this.getSeedStorageLocation());
+			Integer listId = saveGermplasmListAction.saveRecords(list, this.getGermplasmNameObjects(), this.getNewNames(),
+					this.germplasmListUploader.getOriginalFilename(), this.processGermplasmAction.getMatchedGermplasmIds(),
+					this.importedGermplasmList, this.getSeedStorageLocation());
 
 			if (listId != null) {
 				MessageNotifier.showMessage(window, this.messageSource.getMessage(Message.SUCCESS),

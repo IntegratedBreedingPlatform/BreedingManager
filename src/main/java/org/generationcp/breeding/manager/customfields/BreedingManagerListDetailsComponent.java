@@ -31,8 +31,8 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
-public class BreedingManagerListDetailsComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
-		BreedingManagerLayout {
+public class BreedingManagerListDetailsComponent extends VerticalLayout
+		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = LoggerFactory.getLogger(BreedingManagerListDetailsComponent.class);
