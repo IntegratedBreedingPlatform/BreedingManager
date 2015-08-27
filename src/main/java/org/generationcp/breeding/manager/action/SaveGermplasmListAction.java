@@ -88,7 +88,6 @@ public class SaveGermplasmListAction implements Serializable {
 		List<GermplasmListData> currentListDataEntries = new ArrayList<GermplasmListData>();
 
 		for (GermplasmListEntry listEntry : listEntries) {
-			int id = listEntry.getListDataId();
 			int gid = listEntry.getGid();
 			int entryId = listEntry.getEntryId();
 			String designation = listEntry.getDesignation();
@@ -97,7 +96,6 @@ public class SaveGermplasmListAction implements Serializable {
 
 			GermplasmListData germplasmListData = this.buildGermplasmListData(list, gid, entryId, designation, groupName, seedSource);
 
-			germplasmListData.setId(id);
 			currentListDataEntries.add(germplasmListData); // with no ids
 		}
 
