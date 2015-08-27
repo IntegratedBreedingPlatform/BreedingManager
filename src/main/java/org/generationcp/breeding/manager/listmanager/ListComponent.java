@@ -1292,14 +1292,17 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		try {
 			final List<Integer> gidsWithoutChildren = this.getGidsToDeletedWithoutChildren(selectedIds);
 			if (!gidsWithoutChildren.isEmpty()) {
+				
+				// We have been forced to switch the Ok and the cancel buttons because we want to default to no when asking the user if they
+				// wish to delete associated germplasm entries.
 				ConfirmDialog.show(this.getWindow(), "Delete Germplasm from Database",
-						"Would you like to delete the germplasm(s) from the database also?", "Yes", "No", new ConfirmDialog.Listener() {
+						"Would you like to delete the germplasm(s) from the database also?", "No", "Yes", new ConfirmDialog.Listener() {
 
 							private static final long serialVersionUID = 1L;
 
 					@Override
 					public void onClose(ConfirmDialog dialog) {
-						if (dialog.isConfirmed()) {
+						if (!dialog.isConfirmed()) {
 							ListComponent.this.gidsWithoutChildrenToDelete.addAll(gidsWithoutChildren);
 						}
 					}
@@ -1748,6 +1751,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			}
 
 			this.deleteGermplasmDialogBox(this.gidsWithoutChildrenToDelete);
+
 			this.designationOfListEntriesDeleted =
 					this.designationOfListEntriesDeleted.substring(0, this.designationOfListEntriesDeleted.length() - 1);
 
@@ -1768,6 +1772,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			// reset items to delete in listDataTable
 			itemsToDelete.clear();
 
+			// Reset the gidsWithoutChildrenToDelete so that already deleted ids do not get reprocessed. 
+			gidsWithoutChildrenToDelete.clear();
 		} catch (NumberFormatException e) {
 			ListComponent.LOG.error(ListComponent.ERROR_WITH_DELETING_LIST_ENTRIES, e);
 			ListComponent.LOG.error("\n" + e.getStackTrace());
