@@ -1772,6 +1772,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			// reset items to delete in listDataTable
 			itemsToDelete.clear();
 
+			// Reset the gidsWithoutChildrenToDelete so that already deleted ids do not get reprocessed. 
+			gidsWithoutChildrenToDelete.clear();
 		} catch (NumberFormatException e) {
 			ListComponent.LOG.error(ListComponent.ERROR_WITH_DELETING_LIST_ENTRIES, e);
 			ListComponent.LOG.error("\n" + e.getStackTrace());
