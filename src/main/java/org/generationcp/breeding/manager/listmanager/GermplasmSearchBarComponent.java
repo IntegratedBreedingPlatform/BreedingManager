@@ -314,4 +314,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		this.searchTypeOptions = searchTypeOptions;
 	}
 
+	protected void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
 }
