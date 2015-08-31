@@ -25,15 +25,21 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.exceptions.verification.NeverWantedButInvoked;
 import org.mockito.exceptions.verification.TooLittleActualInvocations;
+import org.springframework.transaction.PlatformTransactionManager;
 
 public class SaveCrossesMadeActionTest {
 
 	@Mock
 	private ContextUtil contextUtil;
+
 	@Mock
 	private GermplasmDataManager germplasmManager;
+
 	@Mock
 	private GermplasmListManager germplasmListManager;
+
+	@Mock
+	private PlatformTransactionManager transactionManager;
 
 	private SaveCrossesMadeAction action;
 
@@ -46,7 +52,9 @@ public class SaveCrossesMadeActionTest {
 		MockitoAnnotations.initMocks(this);
 		this.action = Mockito.spy(new SaveCrossesMadeAction());
 		this.action.setContextUtil(this.contextUtil);
+		this.action.setTransactionManager(this.transactionManager);
 		this.action.setGermplasmListManager(this.germplasmListManager);
+
 
 		this.crossesMade = new CrossesMade();
 		this.crossesMade.setCrossesMap(this.getCrossesMap());

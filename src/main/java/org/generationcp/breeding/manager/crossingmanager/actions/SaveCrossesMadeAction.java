@@ -447,5 +447,8 @@ public class SaveCrossesMadeAction implements Serializable {
 	void setGermplasmListManager(GermplasmListManager germplasmListManager) {
 		this.germplasmListManager = germplasmListManager;
 	}
-
+	
+	protected void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
 }
