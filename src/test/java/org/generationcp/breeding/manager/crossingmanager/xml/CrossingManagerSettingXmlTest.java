@@ -1,5 +1,5 @@
 
-package org.generationcp.breeding.manager.crossingmanager.xml.test;
+package org.generationcp.breeding.manager.crossingmanager.xml;
 
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -16,7 +16,7 @@ import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.junit.Test;
 
-public class TestCrossingManagerSettingXml {
+public class CrossingManagerSettingXmlTest {
 
 	@Test
 	public void test() throws Exception {
