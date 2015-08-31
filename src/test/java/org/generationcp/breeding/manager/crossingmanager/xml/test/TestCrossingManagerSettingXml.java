@@ -33,9 +33,13 @@ public class TestCrossingManagerSettingXml {
 		marshaller.marshal(crossingManagerSetting, writer);
 
 		String xmlToRead =
-				"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><crossingManagerSetting name=\"sample\"><additionalDetailsSetting "
-						+ "harvestLocationId=\"1000\" harvestDate=\"20140500\"/><breedingMethodSetting methodId=\"104\" "
-						+ "basedOnStatusOfParentalLines=\"false\"/><crossNameSetting prefix=\"IR\" suffix=\"M\" numOfDigits=\"5\" addSpaceBetweenPrefixAndCode=\"true\" addSpaceBetweenSuffixAndCode=\"true\" separator=\"/\"/></crossingManagerSetting>";
+				"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
+						+ "<crossingManagerSetting name=\"sample\">"
+						+ "<additionalDetailsSetting harvestLocationId=\"1000\" harvestDate=\"20140500\"/>"
+						+ "<breedingMethodSetting methodId=\"104\" basedOnStatusOfParentalLines=\"false\"/>"
+						+ "<crossNameSetting prefix=\"IR\" suffix=\"M\" numOfDigits=\"5\" "
+						+ "			addSpaceBetweenPrefixAndCode=\"true\" addSpaceBetweenSuffixAndCode=\"true\" saveParentageDesignationAsAString=\"true\" separator=\"/\"/>"
+						+ "</crossingManagerSetting>";
 		Unmarshaller unmarshaller = context.createUnmarshaller();
 		CrossingManagerSetting parsedSetting = (CrossingManagerSetting) unmarshaller.unmarshal(new StringReader(xmlToRead));
 		Assert.assertEquals(crossingManagerSetting, parsedSetting);
