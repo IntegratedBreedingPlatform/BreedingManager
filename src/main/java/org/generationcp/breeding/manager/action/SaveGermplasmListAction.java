@@ -48,8 +48,7 @@ public class SaveGermplasmListAction implements Serializable {
 
 	private final SaveGermplasmListActionSource source;
 
-	public SaveGermplasmListAction(SaveGermplasmListActionSource source, GermplasmList germplasmList,
-			List<GermplasmListEntry> listEntries) {
+	public SaveGermplasmListAction(SaveGermplasmListActionSource source, GermplasmList germplasmList, List<GermplasmListEntry> listEntries) {
 		this.source = source;
 		this.germplasmList = germplasmList;
 		this.listEntries = listEntries;
@@ -196,6 +195,26 @@ public class SaveGermplasmListAction implements Serializable {
 		germplasmListData.setLocalRecordId(SaveGermplasmListAction.LIST_DATA_LRECID);
 
 		return germplasmListData;
+	}
+
+	public void setGermplasmListManager(GermplasmListManager germplasmListManager) {
+		this.germplasmListManager = germplasmListManager;
+	}
+
+	public void setPedigreeService(PedigreeService pedigreeService) {
+		this.pedigreeService = pedigreeService;
+	}
+
+	public void setContextUtil(ContextUtil contextUtil) {
+		this.contextUtil = contextUtil;
+	}
+
+	public void setCrossExpansionProperties(CrossExpansionProperties crossExpansionProperties) {
+		this.crossExpansionProperties = crossExpansionProperties;
+	}
+
+	public void setInventoryDataManager(InventoryDataManager inventoryDataManager) {
+		this.inventoryDataManager = inventoryDataManager;
 	}
 
 }
