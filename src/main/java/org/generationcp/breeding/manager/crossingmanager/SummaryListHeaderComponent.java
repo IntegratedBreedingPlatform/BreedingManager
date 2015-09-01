@@ -154,6 +154,7 @@ public class SummaryListHeaderComponent extends VerticalLayout implements Breedi
 
 	@Override
 	public void addListeners() {
+		// not implemented
 	}
 
 	@Override

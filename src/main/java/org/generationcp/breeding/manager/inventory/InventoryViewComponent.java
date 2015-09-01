@@ -152,6 +152,7 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 
 	@Override
 	public void addListeners() {
+		// not implemented
 	}
 
 	@Override

@@ -258,6 +258,7 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 
 	@Override
 	public void updateLabels() {
+		// not implemented
 	}
 
 	@Override

@@ -104,6 +104,7 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 
 	@Override
 	public void updateLabels() {
+		// not implemented
 	}
 
 	@Override
@@ -260,7 +261,7 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 
 	@Override
 	public void initializeValues() {
-
+		// not implemented
 	}
 
 	@Override

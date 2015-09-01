@@ -127,7 +127,7 @@ public class GermplasmQueries implements Serializable, InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-
+		// not implemented
 	}
 
 }
