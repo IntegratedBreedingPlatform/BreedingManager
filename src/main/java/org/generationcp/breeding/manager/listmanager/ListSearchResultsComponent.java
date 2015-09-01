@@ -19,6 +19,8 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -50,6 +52,7 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 		BreedingManagerLayout {
 
 	private static final long serialVersionUID = 5314653969843976836L;
+	private static final Logger LOG = LoggerFactory.getLogger(ListSearchResultsComponent.class);
 
 	private final ListManagerMain source;
 
@@ -234,8 +237,7 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 						return viewListHeaderWindow.getListHeaderComponent().toString();
 					}
 				} catch (NumberFormatException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOG.error(e.getMessage(), e);
 				}
 				return "";
 			}

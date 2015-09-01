@@ -15,6 +15,8 @@ import org.generationcp.commons.util.StringUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.WorkbenchSetting;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -24,6 +26,7 @@ import com.vaadin.ui.Window;
 public class GraphVizUtility {
 
 	private static String TEMP_DIR = System.getProperty("user.dir");
+	private static final Logger LOG = LoggerFactory.getLogger(GraphVizUtility.class);
 
 	/**
 	 * Where is your dot program located? It will be called externally.
@@ -198,10 +201,10 @@ public class GraphVizUtility {
 		} catch (java.io.IOException ioe) {
 			System.err.println("Error:    in I/O processing of tempfile in dir " + GraphVizUtility.TEMP_DIR + "\n");
 			System.err.println("       or in calling external command");
-			ioe.printStackTrace();
+			LOG.error(ioe.getMessage(), ioe);
 		} catch (java.lang.InterruptedException ie) {
 			System.err.println("Error: the execution of the external program was interrupted");
-			ie.printStackTrace();
+			LOG.error(ie.getMessage(), ie);
 		}
 
 		return img_stream;

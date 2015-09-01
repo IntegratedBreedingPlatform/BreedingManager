@@ -37,8 +37,7 @@ public class GermplasmListValueChangeListener implements Table.ValueChangeListen
 			try {
 				((AddEntryDialog) this.source).resultTableValueChangeAction();
 			} catch (InternationalizableException e) {
-				GermplasmListValueChangeListener.LOG.error(e.toString() + "\n" + e.getStackTrace());
-				e.printStackTrace();
+				GermplasmListValueChangeListener.LOG.error(e.getMessage(), e);
 			}
 		}
 	}

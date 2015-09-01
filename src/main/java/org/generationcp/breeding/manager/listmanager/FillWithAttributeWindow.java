@@ -24,6 +24,8 @@ import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -45,6 +47,8 @@ import com.vaadin.ui.Window;
 public class FillWithAttributeWindow extends BaseSubWindow implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
 
 	private static final long serialVersionUID = -8850686249688989080L;
+
+	private static final Logger LOG = LoggerFactory.getLogger(FillWithAttributeWindow.class);
 
 	private final SimpleResourceBundleMessageSource messageSource;
 
@@ -106,8 +110,7 @@ public class FillWithAttributeWindow extends BaseSubWindow implements Internatio
 				this.attributeBox.setItemCaption(attribute.getFldno(), attribute.getFname());
 			}
 		} catch (MiddlewareQueryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error(e.getMessage(), e);
 		}
 	}
 
@@ -161,7 +164,7 @@ public class FillWithAttributeWindow extends BaseSubWindow implements Internatio
 					this.targetTable.getItem(itemId).getItemProperty(this.targetPropertyId).setValue(gidAttributeMap.get(gid));
 				}
 			} catch (MiddlewareQueryException e) {
-				e.printStackTrace();
+				LOG.error(e.getMessage(), e);
 			}
 		}
 

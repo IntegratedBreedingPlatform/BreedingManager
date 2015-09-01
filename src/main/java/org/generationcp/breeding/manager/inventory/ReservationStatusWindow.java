@@ -14,6 +14,8 @@ import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Name;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -30,6 +32,7 @@ import com.vaadin.ui.themes.Reindeer;
 public class ReservationStatusWindow extends BaseSubWindow implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = -8587129181683284005L;
+	private static final Logger LOG = LoggerFactory.getLogger(ReservationStatusWindow.class);
 
 	private VerticalLayout mainLayout;
 
@@ -148,8 +151,7 @@ public class ReservationStatusWindow extends BaseSubWindow implements Initializi
 		try {
 			designation = this.germplasmDataManager.getPreferredNameByGID(entityIdOfLot);
 		} catch (MiddlewareQueryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error(e.getMessage(), e);
 		}
 
 		return designation.getNval();

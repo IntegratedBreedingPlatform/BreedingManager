@@ -71,7 +71,6 @@ public class ListTypeField extends HorizontalLayout implements InitializingBean,
 			this.populateListType(this.listTypeComboBox);
 		} catch (MiddlewareQueryException e) {
 			ListTypeField.LOG.error("Error in retrieving List Type", e);
-			e.printStackTrace();
 		}
 	}
 

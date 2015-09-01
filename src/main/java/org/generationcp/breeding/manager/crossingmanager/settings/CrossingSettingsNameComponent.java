@@ -33,7 +33,7 @@ public class CrossingSettingsNameComponent extends CssLayout implements Breeding
 
 	private static final int SEPARATOR_MAX_CHARS_LENGTH = 3;
 	private static final int STARTING_NUM_MAX_CHARS_LENGTH = 9;
-	public static final Logger LOG = LoggerFactory.getLogger(CrossingSettingsNameComponent.class);
+	private static final Logger LOG = LoggerFactory.getLogger(CrossingSettingsNameComponent.class);
 	private static final long serialVersionUID = 1887628092049615806L;
 	private static final Integer MAX_LEADING_ZEROS = 9;
 	private static final Integer MAX_PREFIX_SUFFIX_LENGTH = 12;
@@ -314,7 +314,7 @@ public class CrossingSettingsNameComponent extends CssLayout implements Breeding
 
 			} catch (MiddlewareQueryException e) {
 				CrossingSettingsNameComponent.LOG.error(e.toString() + "\n" + e.getStackTrace());
-				e.printStackTrace();
+				LOG.error(e.getMessage(), e);
 				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
 						this.messageSource.getMessage(Message.ERROR_IN_GETTING_NEXT_NUMBER_IN_CROSS_NAME_SEQUENCE));
 			}
