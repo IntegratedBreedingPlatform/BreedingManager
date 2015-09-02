@@ -344,7 +344,7 @@ public class GermplasmListTreeUtil implements Serializable {
 		}
 	}
 
-	public boolean hasChildren(Integer id) throws MiddlewareQueryException {
+	public boolean hasChildren(Integer id) {
 		return !this.germplasmListManager.getGermplasmListByParentFolderId(id, this.getCurrentProgramUUID(), 0, Integer.MAX_VALUE)
 				.isEmpty();
 	}
@@ -365,8 +365,7 @@ public class GermplasmListTreeUtil implements Serializable {
 		return gpList;
 	}
 
-	public static void traverseParentsOfList(GermplasmListManager germplasmListManager, GermplasmList list, Deque<GermplasmList> parents)
-			throws MiddlewareQueryException {
+	public static void traverseParentsOfList(GermplasmListManager germplasmListManager, GermplasmList list, Deque<GermplasmList> parents) {
 		if (list == null) {
 			return;
 		} else {

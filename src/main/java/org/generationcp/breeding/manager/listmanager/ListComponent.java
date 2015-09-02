@@ -1339,7 +1339,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.updateNoOfEntries();
 	}
 
-	private List<Integer> getGidsToDeletedWithoutChildren(Collection<?> selectedIds) throws MiddlewareQueryException {
+	private List<Integer> getGidsToDeletedWithoutChildren(Collection<?> selectedIds) {
 		List<Integer> gids = new ArrayList<Integer>();
 		for (final Object itemId : selectedIds) {
 			Button gidButton = (Button) this.listDataTable.getItem(itemId).getItemProperty(ColumnLabels.GID.getName()).getValue();

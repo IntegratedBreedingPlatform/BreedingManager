@@ -34,7 +34,7 @@ public class ListCommonActionsUtil {
 	}
 
 	public static void deleteGermplasmList(GermplasmListManager germplasmListManager, GermplasmList germplasmList, ContextUtil contextUtil,
-			Window window, SimpleResourceBundleMessageSource messageSource, String item) throws MiddlewareQueryException {
+			Window window, SimpleResourceBundleMessageSource messageSource, String item) {
 
 		germplasmListManager.deleteGermplasmList(germplasmList);
 

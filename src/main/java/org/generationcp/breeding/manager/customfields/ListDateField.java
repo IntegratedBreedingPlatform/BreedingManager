@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
@@ -113,7 +112,7 @@ public class ListDateField extends HorizontalLayout implements InitializingBean,
 		return (Date) this.listDtDateField.getValue();
 	}
 
-	public void validate() throws InvalidValueException {
+	public void validate() {
 		this.listDtDateField.validate();
 	}
 

@@ -233,7 +233,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 		return this.seedLocationComponent;
 	}
 
-	protected void populateNameTypes() throws MiddlewareQueryException {
+	protected void populateNameTypes() {
 		List<UserDefinedField> userDefinedFieldList = this.germplasmListManager.getGermplasmNameTypes();
 		Integer firstId = null;
 		boolean hasDefault = false;

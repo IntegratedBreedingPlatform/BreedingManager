@@ -7,7 +7,6 @@ import java.util.Map.Entry;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +17,9 @@ import com.vaadin.ui.Table;
 
 /**
  * Reusable class for querying and displaying additional columns of a Germplasm List Data table
- *
+ * 
  * @author Darla Ani
- *
+ * 
  */
 @Configurable
 public class ListDataPropertiesRenderer {
@@ -39,7 +38,7 @@ public class ListDataPropertiesRenderer {
 		this.targetTable = targetTable;
 	}
 
-	public void render() throws MiddlewareQueryException {
+	public void render() {
 		GermplasmListNewColumnsInfo columnsInfo = this.listManager.getAdditionalColumnsForList(this.listId);
 		for (Entry<String, List<ListDataColumnValues>> columnEntry : columnsInfo.getColumnValuesMap().entrySet()) {
 			String column = columnEntry.getKey();

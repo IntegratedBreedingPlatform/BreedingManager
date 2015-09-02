@@ -9,7 +9,6 @@ import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.commons.spring.util.ContextUtil;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -54,7 +53,7 @@ public class SaveGermplasmListAction implements Serializable {
 		this.listEntries = listEntries;
 	}
 
-	public GermplasmList saveRecords() throws MiddlewareQueryException {
+	public GermplasmList saveRecords() {
 
 		// set the listnms.listuid to the current user
 		Integer userId = this.contextUtil.getCurrentUserLocalId();
@@ -66,7 +65,7 @@ public class SaveGermplasmListAction implements Serializable {
 		return this.germplasmList;
 	}
 
-	private GermplasmList saveGermplasmListRecord(GermplasmList germplasmList) throws MiddlewareQueryException {
+	private GermplasmList saveGermplasmListRecord(GermplasmList germplasmList) {
 		int listId = 0;
 
 		if (germplasmList.getId() == null) { // add new
@@ -82,7 +81,7 @@ public class SaveGermplasmListAction implements Serializable {
 		return list;
 	}
 
-	private void saveGermplasmListDataRecords(GermplasmList list, List<GermplasmListEntry> listEntries) throws MiddlewareQueryException {
+	private void saveGermplasmListDataRecords(GermplasmList list, List<GermplasmListEntry> listEntries) {
 
 		List<GermplasmListData> currentListDataEntries = new ArrayList<GermplasmListData>();
 

@@ -337,7 +337,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 		}
 	}
 
-	private void addGermplasm() throws MiddlewareQueryException {
+	private void addGermplasm() {
 		try {
 			GermplasmList germList = this.germplasmListManager.getGermplasmListById(this.newListid);
 			this.addGermplasmListData(germList, 1);
@@ -352,7 +352,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 		}
 	}
 
-	private void addGermplasmListData(GermplasmList germList, int entryid) throws MiddlewareQueryException {
+	private void addGermplasmListData(GermplasmList germList, int entryid) {
 		int status = 0;
 		int localRecordId = 0;
 		int germplasmListDataEntryId = entryid;
@@ -389,7 +389,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 		this.logCopyToNewListEntriesToWorkbenchProjectActivity();
 	}
 
-	private void logCopyToNewListEntriesToWorkbenchProjectActivity() throws MiddlewareQueryException {
+	private void logCopyToNewListEntriesToWorkbenchProjectActivity() {
 		try {
 			this.contextUtil.logProgramActivity("Copied entries into a new list.",
 					"Copied entries to list " + this.newListid + " - " + this.listNameValue);

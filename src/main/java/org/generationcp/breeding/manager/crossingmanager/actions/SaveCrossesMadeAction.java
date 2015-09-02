@@ -24,7 +24,6 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.commons.spring.util.ContextUtil;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
@@ -101,14 +100,14 @@ public class SaveCrossesMadeAction implements Serializable {
 
 	/**
 	 * Saves records in Germplasm, GermplasmList and GermplasmListData, ProjectActivity (Workbench).
-	 *
+	 * 
 	 * @param crossesMade where crosses information is defined
 	 * @return id of new Germplasm List created
-	 * @throws MiddlewareQueryException
 	 */
-	public GermplasmList saveRecords(final CrossesMade crossesMade) throws MiddlewareQueryException {
+	public GermplasmList saveRecords(final CrossesMade crossesMade) {
 		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
 		return transactionTemplate.execute(new TransactionCallback<GermplasmList>() {
+
 			@Override
 			public GermplasmList doInTransaction(TransactionStatus transactionStatus) {
 				SaveCrossesMadeAction.this.updateConstantFields(crossesMade);
@@ -134,7 +133,7 @@ public class SaveCrossesMadeAction implements Serializable {
 
 	}
 
-	List<Integer> saveGermplasmsAndNames(CrossesMade crossesMade) throws MiddlewareQueryException {
+	List<Integer> saveGermplasmsAndNames(CrossesMade crossesMade) {
 		List<Integer> germplasmIDs = new ArrayList<Integer>();
 
 		Map<Germplasm, Name> currentCrossesMap = crossesMade.getCrossesMap();
@@ -183,7 +182,7 @@ public class SaveCrossesMadeAction implements Serializable {
 		return germplasmIDs;
 	}
 
-	private void retrieveGermplasmsOfList() throws MiddlewareQueryException {
+	private void retrieveGermplasmsOfList() {
 		this.germplasmToListDataMap.clear();
 
 		List<GermplasmListData> allExistingEntries =
@@ -217,7 +216,7 @@ public class SaveCrossesMadeAction implements Serializable {
 		return g1.getGpid1().equals(g2.getGpid1()) && g1.getGpid2().equals(g2.getGpid2());
 	}
 
-	GermplasmList saveGermplasmListRecord(CrossesMade crossesMade) throws MiddlewareQueryException {
+	GermplasmList saveGermplasmListRecord(CrossesMade crossesMade) {
 		int listId;
 		GermplasmList listToSave = crossesMade.getGermplasmList();
 		listToSave.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
@@ -242,14 +241,13 @@ public class SaveCrossesMadeAction implements Serializable {
 		return list;
 	}
 
-	void saveGermplasmListDataRecords(CrossesMade crossesMade, List<Integer> germplasmIDs, GermplasmList list)
-			throws MiddlewareQueryException {
+	void saveGermplasmListDataRecords(CrossesMade crossesMade, List<Integer> germplasmIDs, GermplasmList list) {
 
 		this.deleteRemovedListData(crossesMade);
 		this.addNewGermplasmListData(crossesMade, germplasmIDs, list);
 	}
 
-	private void deleteRemovedListData(CrossesMade crossesMade) throws MiddlewareQueryException {
+	private void deleteRemovedListData(CrossesMade crossesMade) {
 		List<GermplasmListData> retainedCrosses = new ArrayList<GermplasmListData>();
 		for (int i = 0; i < this.existingGermplasms.size(); i++) {
 			Germplasm existingGermplasm = this.existingGermplasms.get(i);
@@ -275,8 +273,8 @@ public class SaveCrossesMadeAction implements Serializable {
 		List<GermplasmListData> allExistingEntries = new ArrayList<GermplasmListData>();
 
 		if (this.germplasmList != null) {
-			allExistingEntries
-			.addAll(this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId(), 0, Integer.MAX_VALUE));
+			allExistingEntries.addAll(this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId(), 0,
+					Integer.MAX_VALUE));
 			Integer entryId = 1;
 			for (GermplasmListData germplasmListData : allExistingEntries) {
 				if (germplasmListData.getStatus() != 9) {
@@ -289,8 +287,7 @@ public class SaveCrossesMadeAction implements Serializable {
 		this.germplasmListManager.updateGermplasmListData(this.existingListEntries);
 	}
 
-	private void addNewGermplasmListData(CrossesMade crossesMade, List<Integer> germplasmIDs, GermplasmList list)
-			throws MiddlewareQueryException {
+	private void addNewGermplasmListData(CrossesMade crossesMade, List<Integer> germplasmIDs, GermplasmList list) {
 		Iterator<Integer> germplasmIdIterator = germplasmIDs.iterator();
 		List<GermplasmListData> listToSave = new ArrayList<GermplasmListData>();
 		int ctr = 0;
@@ -316,7 +313,7 @@ public class SaveCrossesMadeAction implements Serializable {
 		}
 	}
 
-	void savePedigreeDesignationName(CrossesMade crossesMade, List<Integer> germplasmIDs) throws MiddlewareQueryException {
+	void savePedigreeDesignationName(CrossesMade crossesMade, List<Integer> germplasmIDs) {
 
 		List<Name> parentageDesignationNames = new ArrayList<Name>();
 		Iterator<Integer> germplasmIdIterator = germplasmIDs.iterator();
@@ -386,7 +383,7 @@ public class SaveCrossesMadeAction implements Serializable {
 		return germplasmListData;
 	}
 
-	private void updateConstantFields(CrossesMade crossesMade) throws MiddlewareQueryException {
+	private void updateConstantFields(CrossesMade crossesMade) {
 		Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
 
 		for (Map.Entry<Germplasm, Name> entry : crossesMade.getCrossesMap().entrySet()) {
@@ -411,7 +408,7 @@ public class SaveCrossesMadeAction implements Serializable {
 
 	}
 
-	public void updateSeedSource(Collection<CrossParents> crossParents) throws MiddlewareQueryException {
+	public void updateSeedSource(Collection<CrossParents> crossParents) {
 		this.retrieveGermplasmsOfList();
 		for (CrossParents parents : crossParents) {
 			Germplasm currentGermplasm = new Germplasm();

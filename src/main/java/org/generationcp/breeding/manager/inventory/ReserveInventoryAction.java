@@ -207,7 +207,7 @@ public class ReserveInventoryAction implements Serializable {
 		return lrecIds;
 	}
 
-	public void cancelReservations(List<ListEntryLotDetails> listEntries) throws MiddlewareQueryException {
+	public void cancelReservations(List<ListEntryLotDetails> listEntries) {
 		this.inventoryDataManager.cancelReservedInventory(this.getLotIdAndLrecId(listEntries));
 	}
 }

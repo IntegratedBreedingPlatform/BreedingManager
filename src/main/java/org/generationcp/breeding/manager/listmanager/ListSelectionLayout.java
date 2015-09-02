@@ -309,7 +309,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
 		this.toWorkWith.setValue(this.messageSource.getMessage(Message.A_LIST_TO_WORK_WITH));
 	}
 
-	public void createListDetailsTab(Integer listId) throws MiddlewareQueryException {
+	public void createListDetailsTab(Integer listId) {
 		GermplasmList germplasmList = this.germplasmListManager.getGermplasmListById(listId);
 		if (germplasmList == null) {
 			this.hideDetailsTabsheet();

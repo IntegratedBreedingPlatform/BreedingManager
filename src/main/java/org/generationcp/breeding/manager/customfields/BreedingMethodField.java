@@ -31,7 +31,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -285,7 +284,7 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 		return (String) this.breedingMethodComboBox.getValue();
 	}
 
-	public void validate() throws InvalidValueException {
+	public void validate() {
 		this.breedingMethodComboBox.validate();
 	}
 
