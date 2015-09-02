@@ -129,7 +129,7 @@ public class GraphVizUtility {
 			if (dot != null) {
 				img_stream = this.get_img_stream(dot, type);
 				if (dot.delete() == false) {
-					System.err.println("Warning: " + dot.getAbsolutePath() + " could not be deleted!");
+					LOG.error("Warning: " + dot.getAbsolutePath() + " could not be deleted!");
 				}
 				return img_stream;
 			}
@@ -196,15 +196,12 @@ public class GraphVizUtility {
 			}
 
 			if (img.delete() == false) {
-				System.err.println("Warning: " + img.getAbsolutePath() + " could not be deleted!");
+				LOG.error("Warning: " + img.getAbsolutePath() + " could not be deleted!");
 			}
 		} catch (java.io.IOException ioe) {
-			System.err.println("Error:    in I/O processing of tempfile in dir " + GraphVizUtility.TEMP_DIR + "\n");
-			System.err.println("       or in calling external command");
-			LOG.error(ioe.getMessage(), ioe);
+			LOG.error("Error: In I/O processing of tempfile in dir " + GraphVizUtility.TEMP_DIR + "\n or in calling external command", ioe);
 		} catch (java.lang.InterruptedException ie) {
-			System.err.println("Error: the execution of the external program was interrupted");
-			LOG.error(ie.getMessage(), ie);
+			LOG.error("Error: the execution of the external program was interrupted", ie);
 		}
 
 		return img_stream;
@@ -224,7 +221,7 @@ public class GraphVizUtility {
 			fout.write(str);
 			fout.close();
 		} catch (Exception e) {
-			System.err.println("Error: I/O error while writing the dot source to temp file!");
+			LOG.error("Error: I/O error while writing the dot source to temp file!", e);
 			return null;
 		}
 		return temp;
@@ -266,7 +263,7 @@ public class GraphVizUtility {
 			}
 			dis.close();
 		} catch (Exception e) {
-			System.err.println("Error: " + e.getMessage());
+			LOG.error(e.getMessage(), e);
 		}
 
 		this.graph = sb;
