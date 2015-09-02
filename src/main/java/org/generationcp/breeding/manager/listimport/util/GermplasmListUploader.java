@@ -83,6 +83,7 @@ public class GermplasmListUploader implements FileFactory {
 		try {
 			return WorkbookFactory.create(new FileInputStream(tempFileName));
 		} catch (IOException | InvalidFormatException e) {
+			LOG.error(e.getMessage(), e);
 			throw new InvalidFileTypeImportException("Please upload a properly formatted XLS or XLSX file.");
 		}
 	}

@@ -9,7 +9,6 @@ import org.dellroad.stuff.vaadin.SpringContextApplication;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
-import org.generationcp.commons.hibernate.DynamicManagerFactoryProviderConcurrency;
 import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
 import org.generationcp.commons.vaadin.actions.UpdateComponentLabelsAction;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -45,9 +44,6 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
-
-	@Autowired
-	private DynamicManagerFactoryProviderConcurrency managerFactoryProvider;
 
 	private UpdateComponentLabelsAction messageSourceListener;
 
