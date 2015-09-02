@@ -375,13 +375,6 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 		this.totalMatchingListsLabel.setValue(this.messageSource.getMessage(Message.TOTAL_RESULTS) + ": " + "  <b>" + count + "</b>");
 	}
 
-	@SuppressWarnings("unused")
-	private void updateNoOfEntries() {
-		int count = 0;
-		count = this.matchingListsTable.getItemIds().size();
-		this.updateNoOfEntries(count);
-	}
-
 	private void updateNoOfSelectedEntries(int count) {
 		this.totalSelectedMatchingListsLabel.setValue("<i>" + this.messageSource.getMessage(Message.SELECTED) + ": " + "  <b>" + count
 				+ "</b></i>");

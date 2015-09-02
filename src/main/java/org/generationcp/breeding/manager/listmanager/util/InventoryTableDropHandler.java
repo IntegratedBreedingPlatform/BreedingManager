@@ -399,13 +399,6 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		return newItem;
 	}
 
-	@SuppressWarnings({"unchecked", "unused"})
-	private List<ListEntryLotDetails> getInventoryTableItemIds(Table table) {
-		List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
-		lotDetails.addAll((Collection<? extends ListEntryLotDetails>) table.getItemIds());
-		return lotDetails;
-	}
-
 	@SuppressWarnings("unchecked")
 	private List<ListEntryLotDetails> getInventoryTableSelectedItemIds(Table table) {
 		List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
@@ -434,18 +427,6 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 
 	private Integer getInventoryTableNextEntryId() {
 		return this.getInventoryTableLastEntryId() + 1;
-	}
-
-	@SuppressWarnings({"unchecked", "unused"})
-	private Integer getInventoryTableNextTempLrecId() {
-		int nextId = 0;
-		for (ListEntryLotDetails lotDetails : (Collection<? extends ListEntryLotDetails>) this.targetTable.getItemIds()) {
-
-			if (lotDetails.getId() < nextId) {
-				nextId = lotDetails.getId();
-			}
-		}
-		return nextId - 1;
 	}
 
 	public List<ListDataAndLotDetails> getListDataAndLotDetails() {
