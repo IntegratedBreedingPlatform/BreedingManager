@@ -47,7 +47,7 @@ public class CrossingManagerActionHandler implements Handler {
 		} else if (this.source instanceof MakeCrossesTableComponent) {
 			return CrossingManagerActionHandler.MAKE_CROSSES_ACTIONS;
 		}
-		return null;
+		return new Action[0];
 	}
 
 	@Override

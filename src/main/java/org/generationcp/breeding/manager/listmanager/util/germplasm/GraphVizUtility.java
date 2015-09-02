@@ -133,10 +133,11 @@ public class GraphVizUtility {
 				}
 				return img_stream;
 			}
-			return null;
 		} catch (java.io.IOException ioe) {
-			return null;
+			LOG.error(ioe.getMessage(), ioe);
 		}
+
+		return new byte[0];
 	}
 
 	/**
