@@ -344,7 +344,7 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 				this.methodDescription.setValue(defaultMethod.getMdesc());
 			} else {
 				// if the list of methods has no default method, just select the first item from the list
-				if (this.breedingMethodComboBox.getValue() == null && this.methods.size() > 0 && this.methods.get(0) != null) {
+				if (this.breedingMethodComboBox.getValue() == null && !this.methods.isEmpty() && this.methods.get(0) != null) {
 					this.breedingMethodComboBox.setValue(this.methods.get(0).getMid());
 					this.breedingMethodComboBox.setDescription(this.methods.get(0).getMdesc());
 				}

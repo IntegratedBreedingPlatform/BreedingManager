@@ -370,7 +370,7 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 			newItem.getItemProperty(ListSearchResultsComponent.DESCRIPTION_ID).setValue(germplasmList.getDescription());
 		}
 
-		if (this.matchingListsTable.getItemIds().size() > 0) {
+		if (!this.matchingListsTable.getItemIds().isEmpty()) {
 			this.updateActionMenuOptions(true);
 		}
 	}

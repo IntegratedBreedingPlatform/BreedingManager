@@ -105,14 +105,14 @@ public class SaveGermplasmListAction implements Serializable {
 		List<GermplasmListData> listToAdd = new ArrayList<GermplasmListData>();
 		List<GermplasmListData> listToDelete = new ArrayList<GermplasmListData>();
 
-		if (existingListDataEntries.size() > 0) {
+		if (!existingListDataEntries.isEmpty()) {
 			listToAdd = this.getNewEntriesToSave(currentListDataEntries, existingListDataEntries);
 			listToDelete = this.getNewEntriesToDelete(currentListDataEntries, existingListDataEntries);
 		} else {
 			listToAdd.addAll(currentListDataEntries);
 		}
 
-		if (listToAdd.size() > 0) {
+		if (!listToAdd.isEmpty()) {
 			this.germplasmListManager.addGermplasmListData(listToAdd); // ADD the newly created
 		}
 
@@ -122,7 +122,7 @@ public class SaveGermplasmListAction implements Serializable {
 		// get all the updated entries
 		List<GermplasmListData> listToUpdate = new ArrayList<GermplasmListData>();
 
-		if (existingListDataEntries.size() > 0) {
+		if (!existingListDataEntries.isEmpty()) {
 			listToUpdate = this.getEntriesToUpdate(currentListDataEntries, existingListDataEntries);
 		}
 

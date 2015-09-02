@@ -177,7 +177,7 @@ public class SaveCrossesMadeAction implements Serializable {
 			}
 		}
 
-		if (crossesToInsert.size() > 0) {
+		if (!crossesToInsert.isEmpty()) {
 			germplasmIDs = this.germplasmManager.addGermplasm(crossesToInsert);
 		}
 		return germplasmIDs;
@@ -265,7 +265,7 @@ public class SaveCrossesMadeAction implements Serializable {
 		List<GermplasmListData> listToDelete = new ArrayList<GermplasmListData>(this.existingListEntries);
 		listToDelete.removeAll(retainedCrosses);
 
-		if (listToDelete.size() > 0) {
+		if (!listToDelete.isEmpty()) {
 			this.germplasmListManager.deleteGermplasmListData(listToDelete);
 		}
 
@@ -311,7 +311,7 @@ public class SaveCrossesMadeAction implements Serializable {
 			ctr++;
 		}
 
-		if (listToSave.size() > 0) {
+		if (!listToSave.isEmpty()) {
 			this.germplasmListManager.addGermplasmListData(listToSave);
 		}
 	}
