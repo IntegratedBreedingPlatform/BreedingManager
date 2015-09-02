@@ -56,7 +56,7 @@ import com.vaadin.ui.themes.BaseTheme;
 public class ListSelectionLayout extends VerticalLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout,
 		UnsavedChangesSource {
 
-	protected static final Logger LOG = LoggerFactory.getLogger(ListSelectionLayout.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ListSelectionLayout.class);
 	private static final long serialVersionUID = -6583178887344009055L;
 
 	public static final String CLOSE_ALL_TABS_ID = "ListManagerDetailsLayout Close All Tabs ID";
