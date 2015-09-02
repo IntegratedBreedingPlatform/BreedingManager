@@ -193,7 +193,8 @@ BreedingManagerLayout {
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				if (CrossingSettingsMethodComponent.this.breedingMethods.size() > 0) {
+				int size = CrossingSettingsMethodComponent.this.breedingMethods.size();
+				if (size > 0) {
 					CrossingSettingsMethodComponent.this.showMethodDescription((Integer) event.getProperty().getValue());
 				}
 
