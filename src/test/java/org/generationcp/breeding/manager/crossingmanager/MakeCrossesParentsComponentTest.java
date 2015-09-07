@@ -1,45 +1,48 @@
 
 package org.generationcp.breeding.manager.crossingmanager;
 
+import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.exceptions.verification.TooLittleActualInvocations;
 
 public class MakeCrossesParentsComponentTest {
 
-	private static final String FEMALE_PARENT = "FEMALE PARENT";
-	private static final Integer FEMALE_ROW_COUNT = 5;
-
-	private static final String MALE_PARENT = "MALE PARENT";
-	private static final Integer MALE_ROW_COUNT = 5;
+	@Mock
+	private SimpleResourceBundleMessageSource messageSource;
 
 	@Mock
 	private CrossingManagerMakeCrossesComponent parentComponent;
 
-	private MakeCrossesParentsComponent makeCrossesParentsComponent;
+	@InjectMocks
+	private MakeCrossesParentsComponent makeCrossesParentsComponent = new MakeCrossesParentsComponent(this.parentComponent);
 
+	@Mock
 	private ParentTabComponent femaleParentTab;
+	@Mock
 	private ParentTabComponent maleParentTab;
+
+	private GermplasmList germplasmList;
 
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 
-		this.makeCrossesParentsComponent = Mockito.spy(new MakeCrossesParentsComponent(this.parentComponent));
-		this.femaleParentTab =
-				Mockito.spy(new ParentTabComponent(this.parentComponent, this.makeCrossesParentsComponent,
-						MakeCrossesParentsComponentTest.FEMALE_PARENT, MakeCrossesParentsComponentTest.FEMALE_ROW_COUNT));
-		this.maleParentTab =
-				Mockito.spy(new ParentTabComponent(this.parentComponent, this.makeCrossesParentsComponent,
-						MakeCrossesParentsComponentTest.MALE_PARENT, MakeCrossesParentsComponentTest.MALE_ROW_COUNT));
+		Mockito.doReturn("Parent List").when(this.messageSource).getMessage(Message.PARENTS_LISTS);
+		Mockito.doReturn("Reserve Inventory").when(this.messageSource).getMessage(Message.RESERVE_INVENTORY);
 
-		this.makeCrossesParentsComponent.setFemaleParentTab(this.femaleParentTab);
+		this.makeCrossesParentsComponent.instantiateComponents();
 		this.makeCrossesParentsComponent.setMaleParentTab(this.maleParentTab);
+		this.makeCrossesParentsComponent.setFemaleParentTab(this.femaleParentTab);
 
+		this.germplasmList = this.createGermplasmList();
 	}
 
 	private GermplasmList createGermplasmList() {
@@ -54,29 +57,21 @@ public class MakeCrossesParentsComponentTest {
 
 	@Test
 	public void testUpdateMaleParentList() {
-		GermplasmList germplasmList = this.createGermplasmList();
-
-		Mockito.doNothing().when(this.maleParentTab).enableReserveInventory();
-		Mockito.doNothing().when(this.maleParentTab).enableEditListHeaderOption();
-		Mockito.doNothing().when(this.maleParentTab).updateNoOfEntries();
-
-		this.makeCrossesParentsComponent.updateMaleParentList(germplasmList);
-		Mockito.verify(this.maleParentTab, Mockito.times(1)).enableEditListHeaderOption();
-		Assert.assertTrue("Expecting the germplasm list is set on the maleParentTab.",
-				germplasmList.getId().equals(this.maleParentTab.getGermplasmList().getId()));
+		this.makeCrossesParentsComponent.updateMaleParentList(this.germplasmList);
+		try {
+			Mockito.verify(this.maleParentTab, Mockito.atLeast(1)).setGermplasmList(this.germplasmList);
+		} catch (TooLittleActualInvocations e) {
+			Assert.fail("Expecting the germplasm list in male parent tab is set but didn't");
+		}
 	}
 
 	@Test
 	public void testUpdateFemaleParentList() {
-		GermplasmList germplasmList = this.createGermplasmList();
-
-		Mockito.doNothing().when(this.femaleParentTab).enableReserveInventory();
-		Mockito.doNothing().when(this.femaleParentTab).enableEditListHeaderOption();
-		Mockito.doNothing().when(this.femaleParentTab).updateNoOfEntries();
-
-		this.makeCrossesParentsComponent.updateFemaleParentList(germplasmList);
-		Mockito.verify(this.femaleParentTab, Mockito.times(1)).enableEditListHeaderOption();
-		Assert.assertTrue("Expecting the germplasm list is set on the femaleParentTab.",
-				germplasmList.getId().equals(this.femaleParentTab.getGermplasmList().getId()));
+		this.makeCrossesParentsComponent.updateFemaleParentList(this.germplasmList);
+		try {
+			Mockito.verify(this.femaleParentTab, Mockito.atLeast(1)).setGermplasmList(this.germplasmList);
+		} catch (TooLittleActualInvocations e) {
+			Assert.fail("Expecting the germplasm list in female parent tab is set but didn't");
+		}
 	}
 }
