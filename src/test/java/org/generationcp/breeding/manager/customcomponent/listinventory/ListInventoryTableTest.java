@@ -1,7 +1,6 @@
 
 package org.generationcp.breeding.manager.customcomponent.listinventory;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -9,14 +8,11 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
-import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.GermplasmListData;
-import org.generationcp.middleware.pojos.Location;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,10 +26,6 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Table;
 
 public class ListInventoryTableTest {
-
-	private static final int NO_OF_LISTDATA = 5;
-
-	private static final int NO_OF_LOTS_PER_LISTDATA = 5;
 
 	private static final int LIST_ID = 1;
 
@@ -63,20 +55,26 @@ public class ListInventoryTableTest {
 	@Test
 	public void testInstantiateComponentsHeaderNameFromOntology() throws MiddlewareQueryException {
 
-		Mockito.doReturn(this.createTerm("DESIGNATION")).when(this.ontologyDataManager)
+		Mockito.doReturn(ListInventoryTableUtil.createTerm("DESIGNATION")).when(this.ontologyDataManager)
 				.getTermById(ColumnLabels.DESIGNATION.getTermId().getId());
-		Mockito.doReturn(this.createTerm("LOCATION")).when(this.ontologyDataManager)
+		Mockito.doReturn(ListInventoryTableUtil.createTerm("LOCATION")).when(this.ontologyDataManager)
 				.getTermById(ColumnLabels.LOT_LOCATION.getTermId().getId());
-		Mockito.doReturn(this.createTerm("UNITS")).when(this.ontologyDataManager).getTermById(ColumnLabels.UNITS.getTermId().getId());
-		Mockito.doReturn(this.createTerm("AVAIL_INV")).when(this.ontologyDataManager)
+		Mockito.doReturn(ListInventoryTableUtil.createTerm("UNITS")).when(this.ontologyDataManager)
+				.getTermById(ColumnLabels.UNITS.getTermId().getId());
+		Mockito.doReturn(ListInventoryTableUtil.createTerm("AVAIL_INV")).when(this.ontologyDataManager)
 				.getTermById(ColumnLabels.AVAILABLE_INVENTORY.getTermId().getId());
-		Mockito.doReturn(this.createTerm("TOTAL")).when(this.ontologyDataManager).getTermById(ColumnLabels.TOTAL.getTermId().getId());
-		Mockito.doReturn(this.createTerm("RES")).when(this.ontologyDataManager).getTermById(ColumnLabels.RESERVED.getTermId().getId());
-		Mockito.doReturn(this.createTerm("NEW RES")).when(this.ontologyDataManager)
+		Mockito.doReturn(ListInventoryTableUtil.createTerm("TOTAL")).when(this.ontologyDataManager)
+				.getTermById(ColumnLabels.TOTAL.getTermId().getId());
+		Mockito.doReturn(ListInventoryTableUtil.createTerm("RES")).when(this.ontologyDataManager)
+				.getTermById(ColumnLabels.RESERVED.getTermId().getId());
+		Mockito.doReturn(ListInventoryTableUtil.createTerm("NEW RES")).when(this.ontologyDataManager)
 				.getTermById(ColumnLabels.NEWLY_RESERVED.getTermId().getId());
-		Mockito.doReturn(this.createTerm("COMMENT")).when(this.ontologyDataManager).getTermById(ColumnLabels.COMMENT.getTermId().getId());
-		Mockito.doReturn(this.createTerm("STOCKID")).when(this.ontologyDataManager).getTermById(ColumnLabels.STOCKID.getTermId().getId());
-		Mockito.doReturn(this.createTerm("LOT_ID")).when(this.ontologyDataManager).getTermById(ColumnLabels.LOT_ID.getTermId().getId());
+		Mockito.doReturn(ListInventoryTableUtil.createTerm("COMMENT")).when(this.ontologyDataManager)
+				.getTermById(ColumnLabels.COMMENT.getTermId().getId());
+		Mockito.doReturn(ListInventoryTableUtil.createTerm("STOCKID")).when(this.ontologyDataManager)
+				.getTermById(ColumnLabels.STOCKID.getTermId().getId());
+		Mockito.doReturn(ListInventoryTableUtil.createTerm("LOT_ID")).when(this.ontologyDataManager)
+				.getTermById(ColumnLabels.LOT_ID.getTermId().getId());
 
 		this.listInventoryTable.instantiateComponents();
 
@@ -126,10 +124,10 @@ public class ListInventoryTableTest {
 
 	@Test
 	public void testDisplayInventoryDetails() {
-		List<GermplasmListData> inventoryDetails = this.createGermplasmListDataWithInventoryDetails();
+		List<GermplasmListData> inventoryDetails = ListInventoryTableUtil.createGermplasmListDataWithInventoryDetails();
 		this.listInventoryTable.displayInventoryDetails(inventoryDetails);
 
-		int expectedNoOFLotEntries = NO_OF_LISTDATA * NO_OF_LOTS_PER_LISTDATA;
+		int expectedNoOFLotEntries = ListInventoryTableUtil.getNumberOfEntries();
 		Assert.assertEquals("Expecting that all entries from inventoryDetails are properly inserted in listinventory table but didn't.",
 				expectedNoOFLotEntries, this.listInventoryTable.getTable().getContainerDataSource().size());
 	}
@@ -147,7 +145,7 @@ public class ListInventoryTableTest {
 	public void testLoadInventoryData() {
 		this.initDataToInventoryTable();
 
-		int expectedNoOFLotEntries = NO_OF_LISTDATA * NO_OF_LOTS_PER_LISTDATA;
+		int expectedNoOFLotEntries = ListInventoryTableUtil.getNumberOfEntries();
 		Assert.assertEquals("Expecting that the method for loading inventory data in inventory table is called but didn't.",
 				expectedNoOFLotEntries, this.listInventoryTable.getTable().getContainerDataSource().size());
 
@@ -164,7 +162,7 @@ public class ListInventoryTableTest {
 	}
 
 	private void initDataToInventoryTable() {
-		List<GermplasmListData> inventoryDetails = this.createGermplasmListDataWithInventoryDetails();
+		List<GermplasmListData> inventoryDetails = ListInventoryTableUtil.createGermplasmListDataWithInventoryDetails();
 		Mockito.doReturn(inventoryDetails).when(this.inventoryDataManager)
 				.getLotDetailsForList(ListInventoryTableTest.LIST_ID, 0, Integer.MAX_VALUE);
 
@@ -192,70 +190,6 @@ public class ListInventoryTableTest {
 		itemCheckBox.setValue(false);
 		this.listInventoryTable.toggleSelectOnLotEntries(itemCheckBox);
 		Assert.assertEquals("Expecting that no checkbox is selected but didn't.", 0, this.listInventoryTable.getSelectedLots().size());
-	}
-
-	// ------------------------------------------ DATA INITIALIZATION HERE -----------------------------------------------------------------
-
-	private Term createTerm(String name) {
-		Term term = new Term();
-		term.setName(name);
-		term.setId(0);
-		return term;
-	}
-
-	private List<GermplasmListData> createGermplasmListDataWithInventoryDetails() {
-		List<GermplasmListData> inventoryDetails = new ArrayList<GermplasmListData>();
-
-		for (int i = 0; i < NO_OF_LISTDATA; i++) {
-			GermplasmListData listData = new GermplasmListData();
-			int id = i + 1;
-			listData.setEntryId(id);
-			listData.setDesignation("Germplasm" + id);
-			listData.setGid(id);
-			listData.setInventoryInfo(this.createInventoryInfo(id));
-			inventoryDetails.add(listData);
-		}
-
-		return inventoryDetails;
-	}
-
-	private ListDataInventory createInventoryInfo(int listDataId) {
-		ListDataInventory inventoryInfo = new ListDataInventory(listDataId, listDataId);
-		List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
-		for (int i = 0; i < NO_OF_LOTS_PER_LISTDATA; i++) {
-			lotDetails.add(this.createLotDetail(i));
-		}
-		inventoryInfo.setLotRows(lotDetails);
-		return inventoryInfo;
-	}
-
-	private ListEntryLotDetails createLotDetail(int i) {
-		ListEntryLotDetails lotDetail = new ListEntryLotDetails();
-		int id = i + 1;
-		lotDetail.setId(id);
-		lotDetail.setLotId(id);
-		lotDetail.setLocationOfLot(this.createLocation(id));
-		lotDetail.setScaleOfLot(this.createScale(id));
-		lotDetail.setAvailableLotBalance(100D);
-		lotDetail.setActualLotBalance(100D);
-		lotDetail.setReservedTotalForEntry(100D);
-		lotDetail.setCommentOfLot("Lot Comment" + id);
-		lotDetail.setStockIds("STK1-1,STK2-2,STK-3");
-		return lotDetail;
-	}
-
-	private Term createScale(int id) {
-		Term scale = new Term();
-		scale.setId(id);
-		scale.setName("Scale" + id);
-		return scale;
-	}
-
-	private Location createLocation(int id) {
-		Location location = new Location();
-		location.setLocid(id);
-		location.setLname("Location" + id);
-		return location;
 	}
 
 }
