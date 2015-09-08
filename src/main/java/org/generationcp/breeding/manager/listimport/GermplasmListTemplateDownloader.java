@@ -5,12 +5,13 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.vaadin.Application;
 import com.vaadin.ui.Component;
 import org.dellroad.stuff.vaadin.ContextApplication;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.core.io.ClassPathResource;
+
+import com.vaadin.Application;
 
 @Configurable
 public class GermplasmListTemplateDownloader {

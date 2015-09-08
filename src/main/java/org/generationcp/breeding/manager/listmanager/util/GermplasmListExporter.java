@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.annotation.Resource;
 
@@ -43,6 +44,8 @@ import com.vaadin.ui.Table;
 public class GermplasmListExporter {
 
 	private static final String FEMALE_PARENT = "FEMALE PARENT";
+
+	public static final String PROGRAM_UUID = UUID.randomUUID().toString();
 
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmListExporter.class);
 
@@ -351,7 +354,7 @@ public class GermplasmListExporter {
 	private void addStandardVariableToMap(Map<Integer, StandardVariable> standardVariableMap, int termId) {
 
 		try {
-			StandardVariable standardVar = this.ontologyDataManager.getStandardVariable(termId);
+			StandardVariable standardVar = this.ontologyDataManager.getStandardVariable(termId, PROGRAM_UUID);
 			if (standardVar != null) {
 				standardVariableMap.put(standardVar.getId(), standardVar);
 			}

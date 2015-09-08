@@ -1,12 +1,17 @@
+
 package org.generationcp.breeding.manager.listimport;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.vaadin.Application;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window;
 
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
@@ -19,7 +24,9 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 
-import static org.mockito.Mockito.*;
+import com.vaadin.Application;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Window;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GermplasmListTemplateDownloaderTest {
@@ -41,21 +48,21 @@ public class GermplasmListTemplateDownloaderTest {
 
 	@Before
 	public void setUp() throws Exception {
-		doReturn(application).when(exportDialog).getCurrentApplication() ;
-		doReturn(request).when(exportDialog).getCurrentRequest();
-		doReturn(mock(FileDownloadResource.class)).when(exportDialog).getTemplateAsDownloadResource(any(File.class));
+		doReturn(this.application).when(this.exportDialog).getCurrentApplication();
+		doReturn(this.request).when(this.exportDialog).getCurrentRequest();
+		doReturn(mock(FileDownloadResource.class)).when(this.exportDialog).getTemplateAsDownloadResource(any(File.class));
 
-		when(application.getMainWindow()).thenReturn(window);
+		when(this.application.getMainWindow()).thenReturn(this.window);
 	}
 
 	@Test
 	@Ignore(value = "This test runs fine in IDE but fails on mvn commandline due to classpath issues in loading the xls file from commons. Team Manila to fix and enable soon.")
 	public void testExportGermplasmTemplate() throws Exception {
 		Component component = mock(Component.class);
-		when(component.getWindow()).thenReturn(window);
-		exportDialog.exportGermplasmTemplate(component);
+		when(component.getWindow()).thenReturn(this.window);
+		this.exportDialog.exportGermplasmTemplate(component);
 
-		verify(window).open(any(FileDownloadResource.class));
+		verify(this.window).open(any(FileDownloadResource.class));
 	}
 
 	@Test
