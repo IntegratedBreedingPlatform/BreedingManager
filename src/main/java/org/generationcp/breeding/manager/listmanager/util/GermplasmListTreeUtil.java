@@ -49,7 +49,7 @@ public class GermplasmListTreeUtil implements Serializable {
 
 	@Autowired
 	private GermplasmListManager germplasmListManager;
-	
+
 	@Autowired
 	private UserDataManager userDataManager;
 
@@ -131,7 +131,8 @@ public class GermplasmListTreeUtil implements Serializable {
 		List<GermplasmList> listChildren = new ArrayList<GermplasmList>();
 
 		try {
-			listChildren = this.germplasmListManager.getGermplasmListByParentFolderId(Integer.valueOf(sourceItemId.toString()), 0, 1);
+			listChildren = this.germplasmListManager.getGermplasmListByParentFolderId(Integer.valueOf(sourceItemId.toString()),
+					this.getCurrentProgramUUID(), 0, 1);
 		} catch (MiddlewareQueryException e) {
 			GermplasmListTreeUtil.LOG.error("Error in getting germplasm lists by parent id.", e);
 			listChildren = new ArrayList<GermplasmList>();
@@ -162,8 +163,8 @@ public class GermplasmListTreeUtil implements Serializable {
 			newFolder.setStatus(0);
 			newFolder.setUserId(ibdbUserId);
 			newFolder.setDate(DateUtil.getCurrentDateAsLongValue());
-			newFolder.setProgramUUID(contextUtil.getCurrentProgramUUID());
-			
+			newFolder.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
+
 			if (parentItemId == null || parentItemId instanceof String || this.targetListSource.getItem(parentItemId) == null) {
 				newFolder.setParent(null);
 			} else if (!this.source.isFolder(parentItemId)) {
@@ -256,15 +257,15 @@ public class GermplasmListTreeUtil implements Serializable {
 				this.messageSource.getMessage(Message.DELETE_ITEM_CONFIRM), this.messageSource.getMessage(Message.YES),
 				this.messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
 
-					private static final long serialVersionUID = -6164460688355101277L;
+			private static final long serialVersionUID = -6164460688355101277L;
 
 			@Override
 			public void onClose(ConfirmDialog dialog) {
 				if (dialog.isConfirmed()) {
 					try {
 						ListCommonActionsUtil.deleteGermplasmList(GermplasmListTreeUtil.this.germplasmListManager, finalGpList,
-										GermplasmListTreeUtil.this.contextUtil, GermplasmListTreeUtil.this.source.getWindow(),
-										GermplasmListTreeUtil.this.messageSource, "item");
+								GermplasmListTreeUtil.this.contextUtil, GermplasmListTreeUtil.this.source.getWindow(),
+								GermplasmListTreeUtil.this.messageSource, "item");
 						listSelectorComponent.removeListFromTree(finalGpList);
 						GermplasmListTreeUtil.this.source.refreshRemoteTree();
 						((BreedingManagerApplication) mainWindow.getApplication()).updateUIForDeletedList(finalGpList);
@@ -343,8 +344,13 @@ public class GermplasmListTreeUtil implements Serializable {
 		}
 	}
 
-	public boolean hasChildren(Integer id) throws MiddlewareQueryException {
-		return !this.germplasmListManager.getGermplasmListByParentFolderId(id, 0, Integer.MAX_VALUE).isEmpty();
+	public boolean hasChildren(Integer id) {
+		return !this.germplasmListManager.getGermplasmListByParentFolderId(id, this.getCurrentProgramUUID(), 0, Integer.MAX_VALUE)
+				.isEmpty();
+	}
+
+	protected String getCurrentProgramUUID() {
+		return this.contextUtil.getCurrentProgramUUID();
 	}
 
 	private GermplasmList getGermplasmList(Integer itemId) {
@@ -359,8 +365,7 @@ public class GermplasmListTreeUtil implements Serializable {
 		return gpList;
 	}
 
-	public static void traverseParentsOfList(GermplasmListManager germplasmListManager, GermplasmList list, Deque<GermplasmList> parents)
-			throws MiddlewareQueryException {
+	public static void traverseParentsOfList(GermplasmListManager germplasmListManager, GermplasmList list, Deque<GermplasmList> parents) {
 		if (list == null) {
 			return;
 		} else {
@@ -451,6 +456,10 @@ public class GermplasmListTreeUtil implements Serializable {
 
 	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
+	}
+
+	public void setContextUtil(ContextUtil contextUtil) {
+		this.contextUtil = contextUtil;
 	}
 
 }

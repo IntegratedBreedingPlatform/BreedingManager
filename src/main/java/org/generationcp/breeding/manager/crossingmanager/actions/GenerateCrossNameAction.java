@@ -3,16 +3,15 @@ package org.generationcp.breeding.manager.crossingmanager.actions;
 
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Utility class for generating next cross name / number given CrossNameSetting object
- *
+ * 
  * @author Darla Ani
- *
+ * 
  */
 @Configurable
 public class GenerateCrossNameAction {
@@ -26,12 +25,11 @@ public class GenerateCrossNameAction {
 
 	/**
 	 * Returns the generated next name in sequence with the given CrossNameSetting parameters
-	 *
+	 * 
 	 * @param setting
-	 * @return
-	 * @throws MiddlewareQueryException
+	 * @return @
 	 */
-	public String getNextNameInSequence(CrossNameSetting setting) throws MiddlewareQueryException {
+	public String getNextNameInSequence(CrossNameSetting setting) {
 		this.setting = setting;
 		this.nextNumberInSequence = this.getNextNumberInSequence(setting);
 
@@ -40,12 +38,11 @@ public class GenerateCrossNameAction {
 
 	/**
 	 * Returns the generated next number in sequence with the given CrossNameSetting parameters
-	 *
+	 * 
 	 * @param setting
-	 * @return
-	 * @throws MiddlewareQueryException
+	 * @return @
 	 */
-	public Integer getNextNumberInSequence(CrossNameSetting setting) throws MiddlewareQueryException {
+	public Integer getNextNumberInSequence(CrossNameSetting setting) {
 		this.setting = setting;
 		String lastPrefixUsed = this.buildPrefixString();
 		this.nextNumberInSequence = 1;

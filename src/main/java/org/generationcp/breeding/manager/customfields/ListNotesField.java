@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
@@ -113,7 +112,7 @@ public class ListNotesField extends HorizontalLayout implements InitializingBean
 		return (String) this.listNotesTextArea.getValue();
 	}
 
-	public void validate() throws InvalidValueException {
+	public void validate() {
 		this.listNotesTextArea.validate();
 	}
 

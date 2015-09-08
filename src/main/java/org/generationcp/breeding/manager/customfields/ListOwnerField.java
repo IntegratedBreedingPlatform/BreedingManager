@@ -46,7 +46,7 @@ public class ListOwnerField extends HorizontalLayout implements InitializingBean
 
 	@Override
 	public void initializeValues() {
-
+		// not implemented
 	}
 
 	@Override

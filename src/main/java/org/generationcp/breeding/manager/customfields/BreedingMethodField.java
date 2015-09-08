@@ -31,7 +31,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -258,6 +257,7 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 
 	@Override
 	public void updateLabels() {
+		// not implemented
 	}
 
 	@Override
@@ -284,7 +284,7 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 		return (String) this.breedingMethodComboBox.getValue();
 	}
 
-	public void validate() throws InvalidValueException {
+	public void validate() {
 		this.breedingMethodComboBox.validate();
 	}
 
@@ -343,7 +343,7 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 				this.methodDescription.setValue(defaultMethod.getMdesc());
 			} else {
 				// if the list of methods has no default method, just select the first item from the list
-				if (this.breedingMethodComboBox.getValue() == null && this.methods.size() > 0 && this.methods.get(0) != null) {
+				if (this.breedingMethodComboBox.getValue() == null && !this.methods.isEmpty() && this.methods.get(0) != null) {
 					this.breedingMethodComboBox.setValue(this.methods.get(0).getMid());
 					this.breedingMethodComboBox.setDescription(this.methods.get(0).getMdesc());
 				}

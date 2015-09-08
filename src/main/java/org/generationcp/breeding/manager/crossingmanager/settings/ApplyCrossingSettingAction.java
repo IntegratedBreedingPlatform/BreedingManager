@@ -94,8 +94,7 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 								motherOfMale, fatherOfMale);
 
 					} catch (MiddlewareQueryException e) {
-						ApplyCrossingSettingAction.LOG.error(e.toString() + "\n" + e.getStackTrace());
-						e.printStackTrace();
+						LOG.error(e.getMessage(), e);
 						return false;
 					}
 
@@ -131,8 +130,7 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 			try {
 				ctr = generateNameAction.getNextNumberInSequence(nameSetting);
 			} catch (MiddlewareQueryException e) {
-				ApplyCrossingSettingAction.LOG.error(e.toString() + "\n" + e.getStackTrace());
-				e.printStackTrace();
+				LOG.error(e.getMessage(), e);
 				return false;
 			}
 

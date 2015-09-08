@@ -114,12 +114,10 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	 * @param doNotCreateGermplasmsWithId
 	 * @param importedGermplasmList
 	 * @param seedStorageLocation
-	 * @return id of new Germplasm List created
-	 * @throws MiddlewareQueryException
+	 * @return id of new Germplasm List created @
 	 */
 	public Integer saveRecords(GermplasmList germplasmList, List<GermplasmName> germplasmNameObjects, List<Name> newNames, String filename,
-			List<Integer> doNotCreateGermplasmsWithId, ImportedGermplasmList importedGermplasmList, Integer seedStorageLocation)
-					throws MiddlewareException {
+			List<Integer> doNotCreateGermplasmsWithId, ImportedGermplasmList importedGermplasmList, Integer seedStorageLocation) {
 
 		germplasmList.setUserId(this.contextUtil.getCurrentUserLocalId());
 		germplasmList.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
@@ -149,7 +147,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		return list.getId();
 	}
 
-	protected void saveInventory() throws MiddlewareQueryException {
+	protected void saveInventory() {
 		for (Map.Entry<Integer, Lot> item : this.gidLotMap.entrySet()) {
 			Integer gid = item.getKey();
 			List<Transaction> listOfTransactions = this.gidTransactionSetMap.get(gid);
@@ -172,7 +170,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	}
 
 	protected void processGermplasmNamesAndLots(List<GermplasmName> germplasmNameObjects, List<Integer> doNotCreateGermplasmsWithId,
-			Integer seedStorageLocation) throws MiddlewareQueryException {
+			Integer seedStorageLocation) {
 
 		Map<Integer, GermplasmName> addedGermplasmNameMap = new HashMap<Integer, GermplasmName>();
 
@@ -221,7 +219,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		}
 	}
 
-	protected void processVariates(ImportedGermplasmList importedGermplasmList) throws MiddlewareException {
+	protected void processVariates(ImportedGermplasmList importedGermplasmList) {
 		List<UserDefinedField> existingUdflds = this.getUserDefinedFields(SaveGermplasmListAction.FCODE_TYPE_ATTRIBUTE);
 		List<UserDefinedField> newUdflds = new ArrayList<UserDefinedField>();
 		Map<String, String> attributeVariates = importedGermplasmList.getImportedGermplasms().get(0).getAttributeVariates();
@@ -243,7 +241,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		this.germplasmManager.addUserDefinedFields(newUdflds);
 	}
 
-	protected void processFactors(ImportedGermplasmList importedGermplasmList) throws MiddlewareQueryException {
+	protected void processFactors(ImportedGermplasmList importedGermplasmList) {
 		List<UserDefinedField> existingUdflds = this.getUserDefinedFields(SaveGermplasmListAction.FCODE_TYPE_NAME);
 		List<UserDefinedField> newUdflds = new ArrayList<UserDefinedField>();
 		Map<String, String> nameFactors = importedGermplasmList.getImportedGermplasms().get(0).getNameFactors();
@@ -260,7 +258,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		this.germplasmManager.addUserDefinedFields(newUdflds);
 	}
 
-	private UserDefinedField createNewUserDefinedField(ImportedVariate importedVariate) throws MiddlewareQueryException {
+	private UserDefinedField createNewUserDefinedField(ImportedVariate importedVariate) {
 		UserDefinedField newUdfld = new UserDefinedField();
 		newUdfld.setFtable(SaveGermplasmListAction.FTABLE_ATTRIBUTE);
 		newUdfld.setFtype(importedVariate.getProperty().toUpperCase());
@@ -278,7 +276,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		return newUdfld;
 	}
 
-	private UserDefinedField createNewUserDefinedField(ImportedFactor importedFactor) throws MiddlewareQueryException {
+	private UserDefinedField createNewUserDefinedField(ImportedFactor importedFactor) {
 		UserDefinedField newUdfld = new UserDefinedField();
 		newUdfld.setFtable(SaveGermplasmListAction.FTABLE_NAME);
 		newUdfld.setFtype(SaveGermplasmListAction.FTYPE_NAME);
@@ -295,7 +293,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		return newUdfld;
 	}
 
-	protected void processSeedStockVariate(ImportedVariate importedVariate) throws MiddlewareException {
+	protected void processSeedStockVariate(ImportedVariate importedVariate) {
 		String trait = importedVariate.getProperty().toUpperCase();
 		String scale = importedVariate.getScale().toUpperCase();
 		String method = importedVariate.getMethod().toUpperCase();
@@ -364,7 +362,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		return 0;
 	}
 
-	protected void addNewNamesToExistingGermplasm(List<Name> newNames) throws MiddlewareQueryException {
+	protected void addNewNamesToExistingGermplasm(List<Name> newNames) {
 		for (Name name : newNames) {
 			this.germplasmManager.addGermplasmName(name);
 		}
@@ -382,12 +380,12 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		return null;
 	}
 
-	private GermplasmList saveGermplasmListRecord(GermplasmList germplasmList) throws MiddlewareQueryException {
+	private GermplasmList saveGermplasmListRecord(GermplasmList germplasmList) {
 		int newListId = this.germplasmListManager.addGermplasmList(germplasmList);
 		return this.germplasmListManager.getGermplasmListById(newListId);
 	}
 
-	private List<UserDefinedField> getUserDefinedFields(int fcodeType) throws MiddlewareQueryException {
+	private List<UserDefinedField> getUserDefinedFields(int fcodeType) {
 		List<UserDefinedField> udFields = new ArrayList<UserDefinedField>();
 		if (SaveGermplasmListAction.FCODE_TYPE_ATTRIBUTE == fcodeType) {
 			List<UserDefinedField> list =
@@ -411,7 +409,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	}
 
 	private void saveGermplasmListDataRecords(List<GermplasmName> germplasmNameObjects, GermplasmList list, String filename,
-			List<ImportedGermplasm> importedGermplasms) throws MiddlewareQueryException {
+			List<ImportedGermplasm> importedGermplasms) {
 
 		List<GermplasmListData> listToSave = new ArrayList<GermplasmListData>();
 		List<UserDefinedField> existingAttrUdflds = this.getUserDefinedFields(SaveGermplasmListAction.FCODE_TYPE_ATTRIBUTE);
@@ -476,8 +474,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		}
 	}
 
-	protected void createDepositInventoryTransaction(GermplasmList list, ImportedGermplasm importedGermplasm, Integer gid, Integer lrecId)
-			throws MiddlewareQueryException {
+	protected void createDepositInventoryTransaction(GermplasmList list, ImportedGermplasm importedGermplasm, Integer gid, Integer lrecId) {
 		if (importedGermplasm != null && importedGermplasm.getSeedAmount() != null && importedGermplasm.getSeedAmount() > 0) {
 
 			if (this.gidTransactionSetMap.get(gid) == null) {
@@ -514,7 +511,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	}
 
 	private List<Attribute> prepareAllAttributesToAdd(ImportedGermplasm importedGermplasm, List<UserDefinedField> existingUdflds,
-			Germplasm germplasm) throws MiddlewareQueryException {
+			Germplasm germplasm) {
 		List<Attribute> attrs = new ArrayList<Attribute>();
 
 		Map<String, String> otherAttributes = importedGermplasm.getAttributeVariates();
@@ -542,8 +539,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		return attrs;
 	}
 
-	private List<Name> prepareAllNamesToAdd(ImportedGermplasm importedGermplasm, List<UserDefinedField> existingUdflds, Germplasm germplasm)
-			throws MiddlewareQueryException {
+	private List<Name> prepareAllNamesToAdd(ImportedGermplasm importedGermplasm, List<UserDefinedField> existingUdflds, Germplasm germplasm) {
 		List<Name> names = new ArrayList<Name>();
 
 		Map<String, String> otherNames = importedGermplasm.getNameFactors();

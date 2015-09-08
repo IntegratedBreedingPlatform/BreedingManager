@@ -125,12 +125,12 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 
 	@Override
 	public void initializeValues() {
-
+		// not implemented
 	}
 
 	@Override
 	public void addListeners() {
-
+		// not implemented
 	}
 
 	@Override
@@ -161,7 +161,7 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 
 	@Override
 	public void updateLabels() {
-
+		// not implemented
 	}
 
 	@Override

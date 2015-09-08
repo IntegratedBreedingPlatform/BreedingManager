@@ -62,7 +62,7 @@ import com.vaadin.ui.Window;
 
 @Configurable
 public class ListManagerCopyToNewListDialog extends VerticalLayout implements InitializingBean, InternationalizableComponent,
-Property.ValueChangeListener, AbstractSelect.NewItemHandler, BreedingManagerLayout {
+		Property.ValueChangeListener, AbstractSelect.NewItemHandler, BreedingManagerLayout {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ListManagerCopyToNewListDialog.class);
 	private static final long serialVersionUID = 1L;
@@ -296,11 +296,11 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler, BreedingManagerLayo
 				if (!this.existingListSelected) {
 					GermplasmList parent = null;
 					int statusListName = 1;
-					GermplasmList listNameData =
-							new GermplasmList(null, this.listNameValue, DateUtil.getCurrentDateAsLongValue(), this.selectType.getValue()
-									.toString(), this.ibdbUserId, description, parent, statusListName);
+					GermplasmList listNameData = new GermplasmList(null, this.listNameValue, DateUtil.getCurrentDateAsLongValue(),
+							this.selectType.getValue().toString(), this.ibdbUserId, description, parent, statusListName);
 
 					try {
+						listNameData.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
 						this.newListid = this.germplasmListManager.addGermplasmList(listNameData);
 						this.addGermplasm();
 						this.mainWindow.removeWindow(this.dialogWindow);
@@ -337,7 +337,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler, BreedingManagerLayo
 		}
 	}
 
-	private void addGermplasm() throws MiddlewareQueryException {
+	private void addGermplasm() {
 		try {
 			GermplasmList germList = this.germplasmListManager.getGermplasmListById(this.newListid);
 			this.addGermplasmListData(germList, 1);
@@ -352,7 +352,7 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler, BreedingManagerLayo
 		}
 	}
 
-	private void addGermplasmListData(GermplasmList germList, int entryid) throws MiddlewareQueryException {
+	private void addGermplasmListData(GermplasmList germList, int entryid) {
 		int status = 0;
 		int localRecordId = 0;
 		int germplasmListDataEntryId = entryid;
@@ -373,9 +373,8 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler, BreedingManagerLayo
 			this.designationOfListEntriesCopied += designation + ",";
 			String groupName = String.valueOf(pParentage.getValue().toString());
 
-			GermplasmListData germplasmListData =
-					new GermplasmListData(null, germList, gid, germplasmListDataEntryId, entryIdOfList, seedSource, designation, groupName,
-							status, localRecordId);
+			GermplasmListData germplasmListData = new GermplasmListData(null, germList, gid, germplasmListDataEntryId, entryIdOfList,
+					seedSource, designation, groupName, status, localRecordId);
 			this.germplasmListManager.addGermplasmListData(germplasmListData);
 
 			germplasmListDataEntryId++;
@@ -390,10 +389,10 @@ Property.ValueChangeListener, AbstractSelect.NewItemHandler, BreedingManagerLayo
 		this.logCopyToNewListEntriesToWorkbenchProjectActivity();
 	}
 
-	private void logCopyToNewListEntriesToWorkbenchProjectActivity() throws MiddlewareQueryException {
+	private void logCopyToNewListEntriesToWorkbenchProjectActivity() {
 		try {
-			this.contextUtil.logProgramActivity("Copied entries into a new list.", "Copied entries to list " + this.newListid + " - "
-					+ this.listNameValue);
+			this.contextUtil.logProgramActivity("Copied entries into a new list.",
+					"Copied entries to list " + this.newListid + " - " + this.listNameValue);
 		} catch (MiddlewareQueryException e) {
 			ListManagerCopyToNewListDialog.LOG.error("Error with logging workbench activity.", e);
 		}

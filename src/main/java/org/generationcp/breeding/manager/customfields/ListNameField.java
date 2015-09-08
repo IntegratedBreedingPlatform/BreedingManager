@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -129,7 +128,7 @@ public class ListNameField extends HorizontalLayout implements InitializingBean,
 		this.listNameTextField.addValidator(this.listNameValidator);
 	}
 
-	public void validate() throws InvalidValueException {
+	public void validate() {
 		this.listNameTextField.validate();
 	}
 

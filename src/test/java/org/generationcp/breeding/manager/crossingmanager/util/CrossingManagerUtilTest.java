@@ -1,5 +1,5 @@
 
-package org.generationcp.breeding.manager.crossingmanager.util.test;
+package org.generationcp.breeding.manager.crossingmanager.util;
 
 import java.util.Collection;
 

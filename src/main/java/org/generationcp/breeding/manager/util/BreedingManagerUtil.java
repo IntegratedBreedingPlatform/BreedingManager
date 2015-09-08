@@ -49,10 +49,9 @@ public class BreedingManagerUtil {
 	 * NAME', 'CROSS NAME'); </b>
 	 * 
 	 * @param germplasmListManager
-	 * @return
-	 * @throws MiddlewareQueryException
+	 * @return @
 	 */
-	public static Integer getIDForUserDefinedFieldCrossingName(GermplasmListManager germplasmListManager) throws MiddlewareQueryException {
+	public static Integer getIDForUserDefinedFieldCrossingName(GermplasmListManager germplasmListManager) {
 
 		List<UserDefinedField> nameTypes = germplasmListManager.getGermplasmNameTypes();
 		for (UserDefinedField type : nameTypes) {
@@ -170,13 +169,11 @@ public class BreedingManagerUtil {
 	 * @param germplasmDataManager
 	 * @param locationComboBox
 	 * @param mapLocation
-	 * @param locationType
-	 * @throws MiddlewareQueryException
+	 * @param locationType @
 	 */
 	@SuppressWarnings("deprecation")
 	public static void populateWithFavoriteLocations(WorkbenchDataManager workbenchDataManager, GermplasmDataManager germplasmDataManager,
-			ComboBox locationComboBox, Map<String, Integer> mapLocation, Integer locationType, String programUUID)
-			throws MiddlewareQueryException {
+			ComboBox locationComboBox, Map<String, Integer> mapLocation, Integer locationType, String programUUID) {
 
 		locationComboBox.removeAllItems();
 
@@ -218,11 +215,10 @@ public class BreedingManagerUtil {
 	 * @param workbenchDataManager
 	 * @param germplasmDataManager
 	 * @param locationComboBox
-	 * @param mapLocation
-	 * @throws MiddlewareQueryException
+	 * @param mapLocation @
 	 */
 	public static void populateWithFavoriteLocations(WorkbenchDataManager workbenchDataManager, GermplasmDataManager germplasmDataManager,
-			ComboBox locationComboBox, Map<String, Integer> mapLocation, String programUUID) throws MiddlewareQueryException {
+			ComboBox locationComboBox, Map<String, Integer> mapLocation, String programUUID) {
 		BreedingManagerUtil.populateWithFavoriteLocations(workbenchDataManager, germplasmDataManager, locationComboBox, mapLocation, 0,
 				programUUID);
 	}
@@ -234,13 +230,11 @@ public class BreedingManagerUtil {
 	 * @param workbenchDataManager
 	 * @param germplasmDataManager
 	 * @param locationComboBox
-	 * @param mapLocation
-	 * @throws MiddlewareQueryException
+	 * @param mapLocation @
 	 */
 	@SuppressWarnings("deprecation")
 	public static void populateWithFavoriteBreedingLocations(WorkbenchDataManager workbenchDataManager,
-			GermplasmDataManager germplasmDataManager, ComboBox locationComboBox, Map<String, Integer> mapLocation, String programUUID)
-			throws MiddlewareQueryException {
+			GermplasmDataManager germplasmDataManager, ComboBox locationComboBox, Map<String, Integer> mapLocation, String programUUID) {
 
 		locationComboBox.removeAllItems();
 
@@ -278,11 +272,10 @@ public class BreedingManagerUtil {
 	 * @param workbenchDataManager
 	 * @param germplasmDataManager
 	 * @param locationComboBox
-	 * @param mapLocation
-	 * @throws MiddlewareQueryException
+	 * @param mapLocation @
 	 */
 	public static void populateWithFavoriteMethods(WorkbenchDataManager workbenchDataManager, GermplasmDataManager germplasmDataManager,
-			ComboBox methodComboBox, Map<String, Integer> mapMethods, String programUUID) throws MiddlewareQueryException {
+			ComboBox methodComboBox, Map<String, Integer> mapMethods, String programUUID) {
 		BreedingManagerUtil.populateWithFavoriteMethods(workbenchDataManager, germplasmDataManager, methodComboBox, mapMethods, null,
 				programUUID);
 	}
@@ -323,11 +316,10 @@ public class BreedingManagerUtil {
 	 * @param germplasmDataManager
 	 * @param locationComboBox
 	 * @param mapLocation
-	 * @param mType
-	 * @throws MiddlewareQueryException
+	 * @param mType @
 	 */
 	public static void populateWithFavoriteMethods(WorkbenchDataManager workbenchDataManager, GermplasmDataManager germplasmDataManager,
-			ComboBox methodComboBox, Map<String, Integer> mapMethods, String mType, String programUUID) throws MiddlewareQueryException {
+			ComboBox methodComboBox, Map<String, Integer> mapMethods, String mType, String programUUID) {
 
 		methodComboBox.removeAllItems();
 

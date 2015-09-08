@@ -193,7 +193,8 @@ BreedingManagerLayout {
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				if (CrossingSettingsMethodComponent.this.breedingMethods.size() > 0) {
+				int size = CrossingSettingsMethodComponent.this.breedingMethods.size();
+				if (size > 0) {
 					CrossingSettingsMethodComponent.this.showMethodDescription((Integer) event.getProperty().getValue());
 				}
 
@@ -360,7 +361,7 @@ BreedingManagerLayout {
 				BreedingManagerUtil.populateWithFavoriteMethods(this.workbenchDataManager, this.germplasmDataManager, this.breedingMethods,
 						this.mapMethods, programUUID);
 			} catch (MiddlewareQueryException e) {
-				e.printStackTrace();
+				LOG.error(e.getMessage(), e);
 				MessageNotifier
 						.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR), "Error getting favorite methods!");
 			}

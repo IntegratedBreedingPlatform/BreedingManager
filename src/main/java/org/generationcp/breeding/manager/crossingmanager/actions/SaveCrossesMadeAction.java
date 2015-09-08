@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
- * 
+ *
  * Generation Challenge Programme (GCP)
- * 
- * 
+ *
+ *
  * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
  * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
- * 
+ *
  *******************************************************************************/
 
 package org.generationcp.breeding.manager.crossingmanager.actions;
@@ -19,14 +19,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
-
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.commons.spring.util.ContextUtil;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
@@ -36,11 +33,15 @@ import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Creates Germplasm, GermplasmList, GermplasmListData records for crosses defined. Adds a ProjectActivity (Workbench) record for the save
  * action.
- * 
+ *
  * @author Darla Ani
  */
 @Configurable
@@ -75,8 +76,11 @@ public class SaveCrossesMadeAction implements Serializable {
 	@Autowired
 	private GermplasmDataManager germplasmManager;
 
-	@Resource
+	@Autowired
 	private ContextUtil contextUtil;
+
+	@Autowired
+	private PlatformTransactionManager transactionManager;
 
 	private GermplasmList germplasmList;
 	private List<GermplasmListData> existingListEntries = new ArrayList<GermplasmListData>();
@@ -99,30 +103,37 @@ public class SaveCrossesMadeAction implements Serializable {
 	 * 
 	 * @param crossesMade where crosses information is defined
 	 * @return id of new Germplasm List created
-	 * @throws MiddlewareQueryException
 	 */
-	public GermplasmList saveRecords(CrossesMade crossesMade) throws MiddlewareQueryException {
-		this.updateConstantFields(crossesMade);
+	public GermplasmList saveRecords(final CrossesMade crossesMade) {
+		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
+		return transactionTemplate.execute(new TransactionCallback<GermplasmList>() {
 
-		List<Integer> germplasmIDs = this.saveGermplasmsAndNames(crossesMade);
+			@Override
+			public GermplasmList doInTransaction(TransactionStatus transactionStatus) {
+				SaveCrossesMadeAction.this.updateConstantFields(crossesMade);
 
-		if (crossesMade.getSetting().getCrossNameSetting().isSaveParentageDesignationAsAString()) {
-			this.savePedigreeDesignationName(crossesMade, germplasmIDs);
-		}
+				List<Integer> germplasmIDs = SaveCrossesMadeAction.this.saveGermplasmsAndNames(crossesMade);
 
-		GermplasmList list = this.saveGermplasmListRecord(crossesMade);
-		this.saveGermplasmListDataRecords(crossesMade, germplasmIDs, list);
+				if (crossesMade.getSetting().getCrossNameSetting().isSaveParentageDesignationAsAString()) {
+					SaveCrossesMadeAction.this.savePedigreeDesignationName(crossesMade, germplasmIDs);
+				}
 
-		// log project activity in Workbench
-		if (this.germplasmList == null) {
-			this.contextUtil.logProgramActivity(SaveCrossesMadeAction.WB_ACTIVITY_NAME, SaveCrossesMadeAction.WB_ACTIVITY_DESCRIPTION
-					+ list.getId());
-		}
+				GermplasmList list = SaveCrossesMadeAction.this.saveGermplasmListRecord(crossesMade);
+				SaveCrossesMadeAction.this.saveGermplasmListDataRecords(crossesMade, germplasmIDs, list);
 
-		return list;
+				// log project activity in Workbench
+				if (SaveCrossesMadeAction.this.germplasmList == null) {
+					SaveCrossesMadeAction.this.contextUtil.logProgramActivity(SaveCrossesMadeAction.WB_ACTIVITY_NAME, SaveCrossesMadeAction.WB_ACTIVITY_DESCRIPTION
+							+ list.getId());
+				}
+
+				return list;
+			}
+		});
+
 	}
 
-	List<Integer> saveGermplasmsAndNames(CrossesMade crossesMade) throws MiddlewareQueryException {
+	List<Integer> saveGermplasmsAndNames(CrossesMade crossesMade) {
 		List<Integer> germplasmIDs = new ArrayList<Integer>();
 
 		Map<Germplasm, Name> currentCrossesMap = crossesMade.getCrossesMap();
@@ -165,13 +176,13 @@ public class SaveCrossesMadeAction implements Serializable {
 			}
 		}
 
-		if (crossesToInsert.size() > 0) {
+		if (!crossesToInsert.isEmpty()) {
 			germplasmIDs = this.germplasmManager.addGermplasm(crossesToInsert);
 		}
 		return germplasmIDs;
 	}
 
-	private void retrieveGermplasmsOfList() throws MiddlewareQueryException {
+	private void retrieveGermplasmsOfList() {
 		this.germplasmToListDataMap.clear();
 
 		List<GermplasmListData> allExistingEntries =
@@ -205,11 +216,12 @@ public class SaveCrossesMadeAction implements Serializable {
 		return g1.getGpid1().equals(g2.getGpid1()) && g1.getGpid2().equals(g2.getGpid2());
 	}
 
-	GermplasmList saveGermplasmListRecord(CrossesMade crossesMade) throws MiddlewareQueryException {
+	GermplasmList saveGermplasmListRecord(CrossesMade crossesMade) {
 		int listId;
 		GermplasmList listToSave = crossesMade.getGermplasmList();
 		listToSave.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
 		if (this.germplasmList == null) {
+			listToSave.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
 			listId = this.germplasmListManager.addGermplasmList(listToSave);
 		} else {
 			// GCP-8225 : set the updates manually on List object so that list entries are not deleted
@@ -229,14 +241,13 @@ public class SaveCrossesMadeAction implements Serializable {
 		return list;
 	}
 
-	void saveGermplasmListDataRecords(CrossesMade crossesMade, List<Integer> germplasmIDs, GermplasmList list)
-			throws MiddlewareQueryException {
+	void saveGermplasmListDataRecords(CrossesMade crossesMade, List<Integer> germplasmIDs, GermplasmList list) {
 
 		this.deleteRemovedListData(crossesMade);
 		this.addNewGermplasmListData(crossesMade, germplasmIDs, list);
 	}
 
-	private void deleteRemovedListData(CrossesMade crossesMade) throws MiddlewareQueryException {
+	private void deleteRemovedListData(CrossesMade crossesMade) {
 		List<GermplasmListData> retainedCrosses = new ArrayList<GermplasmListData>();
 		for (int i = 0; i < this.existingGermplasms.size(); i++) {
 			Germplasm existingGermplasm = this.existingGermplasms.get(i);
@@ -252,7 +263,7 @@ public class SaveCrossesMadeAction implements Serializable {
 		List<GermplasmListData> listToDelete = new ArrayList<GermplasmListData>(this.existingListEntries);
 		listToDelete.removeAll(retainedCrosses);
 
-		if (listToDelete.size() > 0) {
+		if (!listToDelete.isEmpty()) {
 			this.germplasmListManager.deleteGermplasmListData(listToDelete);
 		}
 
@@ -276,8 +287,7 @@ public class SaveCrossesMadeAction implements Serializable {
 		this.germplasmListManager.updateGermplasmListData(this.existingListEntries);
 	}
 
-	private void addNewGermplasmListData(CrossesMade crossesMade, List<Integer> germplasmIDs, GermplasmList list)
-			throws MiddlewareQueryException {
+	private void addNewGermplasmListData(CrossesMade crossesMade, List<Integer> germplasmIDs, GermplasmList list) {
 		Iterator<Integer> germplasmIdIterator = germplasmIDs.iterator();
 		List<GermplasmListData> listToSave = new ArrayList<GermplasmListData>();
 		int ctr = 0;
@@ -298,12 +308,12 @@ public class SaveCrossesMadeAction implements Serializable {
 			ctr++;
 		}
 
-		if (listToSave.size() > 0) {
+		if (!listToSave.isEmpty()) {
 			this.germplasmListManager.addGermplasmListData(listToSave);
 		}
 	}
 
-	void savePedigreeDesignationName(CrossesMade crossesMade, List<Integer> germplasmIDs) throws MiddlewareQueryException {
+	void savePedigreeDesignationName(CrossesMade crossesMade, List<Integer> germplasmIDs) {
 
 		List<Name> parentageDesignationNames = new ArrayList<Name>();
 		Iterator<Integer> germplasmIdIterator = germplasmIDs.iterator();
@@ -318,10 +328,10 @@ public class SaveCrossesMadeAction implements Serializable {
 
 				Name parentageDesignationName = new Name();
 				parentageDesignationName.setGermplasmId(gid);
-				parentageDesignationName.setTypeId(PEDIGREE_NAME_TYPE);
+				parentageDesignationName.setTypeId(SaveCrossesMadeAction.PEDIGREE_NAME_TYPE);
 				parentageDesignationName.setUserId(this.contextUtil.getCurrentUserLocalId());
 				parentageDesignationName.setNval(parentageDesignation);
-				parentageDesignationName.setNstat(PREFERRED_NAME);
+				parentageDesignationName.setNstat(SaveCrossesMadeAction.PREFERRED_NAME);
 				parentageDesignationName.setLocationId(locationId);
 				parentageDesignationName.setNdate(Util.getCurrentDateAsIntegerValue());
 				parentageDesignationName.setReferenceId(0);
@@ -373,7 +383,7 @@ public class SaveCrossesMadeAction implements Serializable {
 		return germplasmListData;
 	}
 
-	private void updateConstantFields(CrossesMade crossesMade) throws MiddlewareQueryException {
+	private void updateConstantFields(CrossesMade crossesMade) {
 		Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
 
 		for (Map.Entry<Germplasm, Name> entry : crossesMade.getCrossesMap().entrySet()) {
@@ -398,7 +408,7 @@ public class SaveCrossesMadeAction implements Serializable {
 
 	}
 
-	public void updateSeedSource(Collection<CrossParents> crossParents) throws MiddlewareQueryException {
+	public void updateSeedSource(Collection<CrossParents> crossParents) {
 		this.retrieveGermplasmsOfList();
 		for (CrossParents parents : crossParents) {
 			Germplasm currentGermplasm = new Germplasm();
@@ -419,7 +429,7 @@ public class SaveCrossesMadeAction implements Serializable {
 
 	/**
 	 * For Test Only
-	 * 
+	 *
 	 * @param contextUtil
 	 */
 	void setContextUtil(ContextUtil contextUtil) {
@@ -428,20 +438,14 @@ public class SaveCrossesMadeAction implements Serializable {
 
 	/**
 	 * For Test Only
-	 * 
-	 * @param contextUtil
-	 */
-	void setGermplasmManager(GermplasmDataManager germplasmManager) {
-		this.germplasmManager = germplasmManager;
-	}
-
-	/**
-	 * For Test Only
-	 * 
-	 * @param contextUtil
+	 *
+	 * @param germplasmManager
 	 */
 	void setGermplasmListManager(GermplasmListManager germplasmListManager) {
 		this.germplasmListManager = germplasmListManager;
 	}
-
+	
+	protected void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
 }

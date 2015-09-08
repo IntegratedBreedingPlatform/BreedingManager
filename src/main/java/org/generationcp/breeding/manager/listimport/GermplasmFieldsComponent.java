@@ -11,7 +11,6 @@ import org.generationcp.breeding.manager.constants.AppConstants.CssStyles;
 import org.generationcp.breeding.manager.customfields.BreedingLocationField;
 import org.generationcp.breeding.manager.customfields.BreedingLocationFieldSource;
 import org.generationcp.breeding.manager.customfields.BreedingMethodField;
-import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -72,8 +71,6 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 
 	private static final Integer STORAGE_LOCATION_TYPEID = 1500;
 
-	@Autowired
-	private BreedingManagerService breedingManagerService;
 	private String programUniqueId;
 
 	public GermplasmFieldsComponent(Window parentWindow) {
@@ -236,7 +233,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 		return this.seedLocationComponent;
 	}
 
-	protected void populateNameTypes() throws MiddlewareQueryException {
+	protected void populateNameTypes() {
 		List<UserDefinedField> userDefinedFieldList = this.germplasmListManager.getGermplasmNameTypes();
 		Integer firstId = null;
 		boolean hasDefault = false;

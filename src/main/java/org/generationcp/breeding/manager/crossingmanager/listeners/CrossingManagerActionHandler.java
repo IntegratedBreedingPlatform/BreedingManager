@@ -47,7 +47,7 @@ public class CrossingManagerActionHandler implements Handler {
 		} else if (this.source instanceof MakeCrossesTableComponent) {
 			return CrossingManagerActionHandler.MAKE_CROSSES_ACTIONS;
 		}
-		return null;
+		return new Action[0];
 	}
 
 	@Override
@@ -115,7 +115,7 @@ public class CrossingManagerActionHandler implements Handler {
 		itemsLeftAfterDelete.addAll(table.getItemIds());
 
 		// If an item has been deleted, enable save option from action buttons
-		if (itemsBeforeDelete.size() != itemsLeftAfterDelete.size() && itemsLeftAfterDelete.size() > 0) {
+		if (itemsBeforeDelete.size() != itemsLeftAfterDelete.size() && !itemsLeftAfterDelete.isEmpty()) {
 			if (((MakeCrossesParentsComponent) this.source).getFemaleTable().equals(table)) {
 				((MakeCrossesParentsComponent) this.source).getFemaleParentTab().getSaveActionMenu().setEnabled(true);
 				((MakeCrossesParentsComponent) this.source).getFemaleParentTab().setHasUnsavedChanges(true);
@@ -125,7 +125,7 @@ public class CrossingManagerActionHandler implements Handler {
 				((MakeCrossesParentsComponent) this.source).getMaleParentTab().setHasUnsavedChanges(true);
 			}
 			// Add checker, if table is male/female tables in crossing manager, and disable save if used deleted all entries
-		} else if (this.source instanceof MakeCrossesParentsComponent && itemsLeftAfterDelete.size() == 0) {
+		} else if (this.source instanceof MakeCrossesParentsComponent && itemsLeftAfterDelete.isEmpty()) {
 			if (((MakeCrossesParentsComponent) this.source).getFemaleTable().equals(table)) {
 				((MakeCrossesParentsComponent) this.source).getFemaleParentTab().getSaveActionMenu().setEnabled(false);
 				((MakeCrossesParentsComponent) this.source).getFemaleParentTab().setHasUnsavedChanges(false);

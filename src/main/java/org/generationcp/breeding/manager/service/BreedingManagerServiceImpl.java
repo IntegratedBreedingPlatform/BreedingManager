@@ -43,7 +43,7 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 	private ContextUtil contextUtil;
 
 	@Override
-	public String getOwnerListName(Integer userId) throws MiddlewareQueryException {
+	public String getOwnerListName(Integer userId) {
 		String username = "";
 
 		try {
@@ -59,7 +59,7 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 		return username;
 	}
 
-	protected String computeListName(User user) throws MiddlewareQueryException {
+	protected String computeListName(User user) {
 		String userName = "";
 		if (user != null) {
 			int personId = user.getPersonid();
@@ -76,7 +76,7 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 	}
 
 	@Override
-	public String getDefaultOwnerListName() throws MiddlewareQueryException {
+	public String getDefaultOwnerListName() {
 		try {
 			int currentUser = this.contextUtil.getCurrentUserLocalId();
 
@@ -140,7 +140,7 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 	}
 
 	@Override
-	public Project getCurrentProject() throws MiddlewareQueryException {
+	public Project getCurrentProject() {
 		return this.contextUtil.getProjectInContext();
 	}
 

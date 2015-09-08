@@ -9,8 +9,6 @@ import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.commons.spring.util.ContextUtil;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -27,9 +25,6 @@ public class SaveGermplasmListAction implements Serializable {
 
 	@Autowired
 	private GermplasmListManager germplasmListManager;
-
-	@Autowired
-	private GermplasmDataManager germplasmManager;
 
 	@Autowired
 	private PedigreeService pedigreeService;
@@ -58,7 +53,7 @@ public class SaveGermplasmListAction implements Serializable {
 		this.listEntries = listEntries;
 	}
 
-	public GermplasmList saveRecords() throws MiddlewareQueryException {
+	public GermplasmList saveRecords() {
 
 		// set the listnms.listuid to the current user
 		Integer userId = this.contextUtil.getCurrentUserLocalId();
@@ -70,10 +65,11 @@ public class SaveGermplasmListAction implements Serializable {
 		return this.germplasmList;
 	}
 
-	private GermplasmList saveGermplasmListRecord(GermplasmList germplasmList) throws MiddlewareQueryException {
+	private GermplasmList saveGermplasmListRecord(GermplasmList germplasmList) {
 		int listId = 0;
 
 		if (germplasmList.getId() == null) { // add new
+			germplasmList.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
 			listId = this.germplasmListManager.addGermplasmList(germplasmList);
 		} else { // update
 			GermplasmList listToUpdate = this.germplasmListManager.getGermplasmListById(germplasmList.getId());
@@ -85,12 +81,11 @@ public class SaveGermplasmListAction implements Serializable {
 		return list;
 	}
 
-	private void saveGermplasmListDataRecords(GermplasmList list, List<GermplasmListEntry> listEntries) throws MiddlewareQueryException {
+	private void saveGermplasmListDataRecords(GermplasmList list, List<GermplasmListEntry> listEntries) {
 
 		List<GermplasmListData> currentListDataEntries = new ArrayList<GermplasmListData>();
 
 		for (GermplasmListEntry listEntry : listEntries) {
-			int id = listEntry.getListDataId();
 			int gid = listEntry.getGid();
 			int entryId = listEntry.getEntryId();
 			String designation = listEntry.getDesignation();
@@ -99,7 +94,6 @@ public class SaveGermplasmListAction implements Serializable {
 
 			GermplasmListData germplasmListData = this.buildGermplasmListData(list, gid, entryId, designation, groupName, seedSource);
 
-			germplasmListData.setId(id);
 			currentListDataEntries.add(germplasmListData); // with no ids
 		}
 
@@ -110,14 +104,14 @@ public class SaveGermplasmListAction implements Serializable {
 		List<GermplasmListData> listToAdd = new ArrayList<GermplasmListData>();
 		List<GermplasmListData> listToDelete = new ArrayList<GermplasmListData>();
 
-		if (existingListDataEntries.size() > 0) {
+		if (!existingListDataEntries.isEmpty()) {
 			listToAdd = this.getNewEntriesToSave(currentListDataEntries, existingListDataEntries);
 			listToDelete = this.getNewEntriesToDelete(currentListDataEntries, existingListDataEntries);
 		} else {
 			listToAdd.addAll(currentListDataEntries);
 		}
 
-		if (listToAdd.size() > 0) {
+		if (!listToAdd.isEmpty()) {
 			this.germplasmListManager.addGermplasmListData(listToAdd); // ADD the newly created
 		}
 
@@ -127,7 +121,7 @@ public class SaveGermplasmListAction implements Serializable {
 		// get all the updated entries
 		List<GermplasmListData> listToUpdate = new ArrayList<GermplasmListData>();
 
-		if (existingListDataEntries.size() > 0) {
+		if (!existingListDataEntries.isEmpty()) {
 			listToUpdate = this.getEntriesToUpdate(currentListDataEntries, existingListDataEntries);
 		}
 
@@ -200,6 +194,26 @@ public class SaveGermplasmListAction implements Serializable {
 		germplasmListData.setLocalRecordId(SaveGermplasmListAction.LIST_DATA_LRECID);
 
 		return germplasmListData;
+	}
+
+	public void setGermplasmListManager(GermplasmListManager germplasmListManager) {
+		this.germplasmListManager = germplasmListManager;
+	}
+
+	public void setPedigreeService(PedigreeService pedigreeService) {
+		this.pedigreeService = pedigreeService;
+	}
+
+	public void setContextUtil(ContextUtil contextUtil) {
+		this.contextUtil = contextUtil;
+	}
+
+	public void setCrossExpansionProperties(CrossExpansionProperties crossExpansionProperties) {
+		this.crossExpansionProperties = crossExpansionProperties;
+	}
+
+	public void setInventoryDataManager(InventoryDataManager inventoryDataManager) {
+		this.inventoryDataManager = inventoryDataManager;
 	}
 
 }

@@ -56,6 +56,7 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 
 	@Override
 	public void updateLabels() {
+		// not implemented
 	}
 
 	@Override

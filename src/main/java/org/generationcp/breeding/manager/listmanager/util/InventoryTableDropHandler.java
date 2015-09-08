@@ -312,7 +312,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 							newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entryId);
 							newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(desigButton);
 							newItem.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).setValue(lotDetail.getLocationOfLot().getLname());
-							newItem.getItemProperty(ColumnLabels.SCALE.getName()).setValue(lotDetail.getScaleOfLot().getName());
+							newItem.getItemProperty(ColumnLabels.UNITS.getName()).setValue(lotDetail.getScaleOfLot().getName());
 							newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName())
 									.setValue(lotDetail.getAvailableLotBalance());
 							newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(lotDetail.getActualLotBalance());
@@ -387,7 +387,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entryId);
 		newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(desigButton);
 		newItem.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).setValue(lotDetail.getLocationOfLot().getLname());
-		newItem.getItemProperty(ColumnLabels.SCALE.getName()).setValue(lotDetail.getScaleOfLot().getName());
+		newItem.getItemProperty(ColumnLabels.UNITS.getName()).setValue(lotDetail.getScaleOfLot().getName());
 		newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(lotDetail.getAvailableLotBalance());
 		newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(lotDetail.getActualLotBalance());
 		newItem.getItemProperty(ColumnLabels.RESERVED.getName()).setValue(0);
@@ -397,13 +397,6 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotDetail.getLotId());
 
 		return newItem;
-	}
-
-	@SuppressWarnings({"unchecked", "unused"})
-	private List<ListEntryLotDetails> getInventoryTableItemIds(Table table) {
-		List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
-		lotDetails.addAll((Collection<? extends ListEntryLotDetails>) table.getItemIds());
-		return lotDetails;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -434,18 +427,6 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 
 	private Integer getInventoryTableNextEntryId() {
 		return this.getInventoryTableLastEntryId() + 1;
-	}
-
-	@SuppressWarnings({"unchecked", "unused"})
-	private Integer getInventoryTableNextTempLrecId() {
-		int nextId = 0;
-		for (ListEntryLotDetails lotDetails : (Collection<? extends ListEntryLotDetails>) this.targetTable.getItemIds()) {
-
-			if (lotDetails.getId() < nextId) {
-				nextId = lotDetails.getId();
-			}
-		}
-		return nextId - 1;
 	}
 
 	public List<ListDataAndLotDetails> getListDataAndLotDetails() {

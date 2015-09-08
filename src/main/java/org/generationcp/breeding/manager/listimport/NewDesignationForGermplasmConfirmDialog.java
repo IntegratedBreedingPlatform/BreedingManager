@@ -89,7 +89,7 @@ public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow imple
 
 	@Override
 	public void initializeValues() {
-
+		// not implemented
 	}
 
 	@SuppressWarnings("serial")

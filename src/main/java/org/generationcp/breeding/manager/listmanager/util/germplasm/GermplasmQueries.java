@@ -38,7 +38,7 @@ public class GermplasmQueries implements Serializable, InitializingBean {
 
 	}
 
-	public GermplasmDetailModel getGermplasmDetails(int gid) throws InternationalizableException {
+	public GermplasmDetailModel getGermplasmDetails(int gid) {
 		try {
 			this.germplasmDetail = new GermplasmDetailModel();
 			Germplasm g = this.germplasmDataManager.getGermplasmByGID(new Integer(gid));
@@ -59,7 +59,7 @@ public class GermplasmQueries implements Serializable, InitializingBean {
 	}
 
 	@SuppressWarnings("deprecation")
-	public ArrayList<GermplasmAttributeModel> getAttributes(int gid) throws InternationalizableException {
+	public ArrayList<GermplasmAttributeModel> getAttributes(int gid) {
 		try {
 			ArrayList<Attribute> attr = (ArrayList<Attribute>) this.germplasmDataManager.getAttributesByGID(gid);
 			ArrayList<GermplasmAttributeModel> germplasmAttributes = new ArrayList<GermplasmAttributeModel>();
@@ -88,7 +88,7 @@ public class GermplasmQueries implements Serializable, InitializingBean {
 		}
 	}
 
-	private String getReference(int refId) throws MiddlewareQueryException {
+	private String getReference(int refId) {
 		Bibref bibRef = this.germplasmDataManager.getBibliographicReferenceByID(refId);
 		if (bibRef != null) {
 			return bibRef.getAnalyt();
@@ -108,7 +108,7 @@ public class GermplasmQueries implements Serializable, InitializingBean {
 		}
 	}
 
-	public GermplasmPedigreeTree generatePedigreeTree(Integer gid, int i) throws InternationalizableException {
+	public GermplasmPedigreeTree generatePedigreeTree(Integer gid, int i) {
 		try {
 			return this.pedigreeDataManager.generatePedigreeTree(gid, i);
 		} catch (MiddlewareQueryException e) {
@@ -116,8 +116,7 @@ public class GermplasmQueries implements Serializable, InitializingBean {
 		}
 	}
 
-	public GermplasmPedigreeTree generatePedigreeTree(Integer gid, int i, Boolean includeDerivativeLines)
-			throws InternationalizableException {
+	public GermplasmPedigreeTree generatePedigreeTree(Integer gid, int i, Boolean includeDerivativeLines) {
 		try {
 			return this.pedigreeDataManager.generatePedigreeTree(gid, i, includeDerivativeLines);
 		} catch (MiddlewareQueryException e) {
@@ -127,7 +126,7 @@ public class GermplasmQueries implements Serializable, InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-
+		// not implemented
 	}
 
 }

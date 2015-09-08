@@ -299,7 +299,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	}
 
 	protected Germplasm createGermplasmObject(Integer gid, Integer gnpgs, Integer gpid1, Integer gpid2, Integer ibdbUserId,
-			Integer dateIntValue) throws MiddlewareQueryException {
+			Integer dateIntValue) {
 		Germplasm germplasm = new Germplasm();
 
 		germplasm.setGid(gid);
@@ -331,7 +331,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		return methodId;
 	}
 
-	private int getGermplasmGnpgs(Integer methodId, Integer prevGnpgs) throws MiddlewareQueryException {
+	private int getGermplasmGnpgs(Integer methodId, Integer prevGnpgs) {
 		int gnpgs = 0;
 		if (methodId == ProcessImportedGermplasmAction.UNKNOWN_DERIVATIVE_METHOD) {
 			gnpgs = -1;

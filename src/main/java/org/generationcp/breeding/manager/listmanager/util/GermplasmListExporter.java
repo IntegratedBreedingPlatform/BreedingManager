@@ -274,22 +274,12 @@ public class GermplasmListExporter {
 
 	protected GermplasmList getGermplasmListAndListData(Integer listId) throws GermplasmListExporterException {
 		GermplasmList germplasmList;
-		// set germplasmList and germplasmListData
 		try {
 			germplasmList = this.germplasmListManager.getGermplasmListById(listId);
+			this.inventoryDataManager.populateLotCountsIntoExistingList(germplasmList);
 		} catch (MiddlewareQueryException e) {
 			throw new GermplasmListExporterException("Error with getting Germplasm List with id: " + listId, e);
 		}
-
-		List<GermplasmListData> germplasmlistData = new ArrayList<GermplasmListData>();
-		try {
-			long listDataCount = this.germplasmListManager.countGermplasmListDataByListId(listId);
-			germplasmlistData = this.inventoryDataManager.getLotCountsForList(listId, 0, (int) listDataCount);
-		} catch (MiddlewareQueryException e1) {
-			GermplasmListExporter.LOG.error(e1.getMessage(), e1);
-		}
-		germplasmList.setListData(germplasmlistData);
-
 		return germplasmList;
 	}
 
@@ -474,6 +464,10 @@ public class GermplasmListExporter {
 
 	protected void setOntologyDataManager(OntologyDataManager ontologyDataManager) {
 		this.ontologyDataManager = ontologyDataManager;
+	}
+
+	protected void setInventoryDataManager(InventoryDataManager inventoryDataManager) {
+		this.inventoryDataManager = inventoryDataManager;
 	}
 
 	protected String getTermNameFromOntology(ColumnLabels columnLabel) {

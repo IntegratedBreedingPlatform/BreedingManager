@@ -27,8 +27,8 @@ public class GermplasmListTemplateDownloader {
 
 			FileDownloadResource fileDownloadResource = getTemplateAsDownloadResource(templateFile);
 
-			if (getCurrentApplication().getMainWindow().getChildWindows().size() > 0) {
-				getCurrentApplication().getMainWindow().open(fileDownloadResource);
+			if (!this.getCurrentApplication().getMainWindow().getChildWindows().isEmpty()) {
+				this.getCurrentApplication().getMainWindow().open(fileDownloadResource);
 			} else {
 				component.getWindow().open(fileDownloadResource);
 

@@ -16,9 +16,10 @@ import org.generationcp.breeding.manager.listmanager.listeners.ListSearchResults
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -50,6 +51,7 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 		BreedingManagerLayout {
 
 	private static final long serialVersionUID = 5314653969843976836L;
+	private static final Logger LOG = LoggerFactory.getLogger(ListSearchResultsComponent.class);
 
 	private final ListManagerMain source;
 
@@ -87,9 +89,6 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 	private SimpleResourceBundleMessageSource messageSource;
 
 	@Autowired
-	private GermplasmDataManager germplasmDataManager;
-
-	@Autowired
 	protected GermplasmListManager germplasmListManager;
 
 	@Autowired
@@ -104,6 +103,7 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 
 	@Override
 	public void updateLabels() {
+		// not implemented
 	}
 
 	@Override
@@ -233,8 +233,7 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 						return viewListHeaderWindow.getListHeaderComponent().toString();
 					}
 				} catch (NumberFormatException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOG.error(e.getMessage(), e);
 				}
 				return "";
 			}
@@ -260,7 +259,7 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 
 	@Override
 	public void initializeValues() {
-
+		// not implemented
 	}
 
 	@Override
@@ -367,20 +366,13 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 			newItem.getItemProperty(ListSearchResultsComponent.DESCRIPTION_ID).setValue(germplasmList.getDescription());
 		}
 
-		if (this.matchingListsTable.getItemIds().size() > 0) {
+		if (!this.matchingListsTable.getItemIds().isEmpty()) {
 			this.updateActionMenuOptions(true);
 		}
 	}
 
 	private void updateNoOfEntries(long count) {
 		this.totalMatchingListsLabel.setValue(this.messageSource.getMessage(Message.TOTAL_RESULTS) + ": " + "  <b>" + count + "</b>");
-	}
-
-	@SuppressWarnings("unused")
-	private void updateNoOfEntries() {
-		int count = 0;
-		count = this.matchingListsTable.getItemIds().size();
-		this.updateNoOfEntries(count);
 	}
 
 	private void updateNoOfSelectedEntries(int count) {

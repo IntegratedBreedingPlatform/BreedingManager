@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -15,14 +17,16 @@ import com.vaadin.ui.Label;
 /**
  * Reusable component that displays input steps as wizard type layout. Has methods for traversing back and next steps, the UI is updated
  * accordingly to reflect the currently selected wizard step
- *
+ * 
  * @author Darla Ani
- *
+ * 
  */
 @Configurable
 public class BreedingManagerWizardDisplay extends HorizontalLayout implements InitializingBean, BreedingManagerLayout {
 
 	private static final long serialVersionUID = -122768867922396461L;
+
+	private static final Logger LOG = LoggerFactory.getLogger(BreedingManagerWizardDisplay.class);
 
 	protected List<String> wizardSteps = new ArrayList<String>();
 	protected List<Label> wizardLabels = new ArrayList<Label>();
@@ -40,7 +44,7 @@ public class BreedingManagerWizardDisplay extends HorizontalLayout implements In
 			this.currentIndex++;
 			this.updateSelectedStep();
 		} else {
-			throw new Error("There is no more NEXT step left for this wizard.");
+			LOG.error("There is no more NEXT step left for this wizard.");
 		}
 		return this.currentIndex;
 	}
@@ -50,7 +54,7 @@ public class BreedingManagerWizardDisplay extends HorizontalLayout implements In
 			this.currentIndex--;
 			this.updateSelectedStep();
 		} else {
-			throw new Error("There is no more BACK step left for this wizard.");
+			LOG.error("There is no more BACK step left for this wizard.");
 		}
 		return this.currentIndex;
 	}
@@ -119,6 +123,7 @@ public class BreedingManagerWizardDisplay extends HorizontalLayout implements In
 
 	@Override
 	public void addListeners() {
+		// not implemented
 	}
 
 	@Override
@@ -140,7 +145,7 @@ public class BreedingManagerWizardDisplay extends HorizontalLayout implements In
 
 	/**
 	 * Updates the page according to inputs from last selected step of the wizard
-	 *
+	 * 
 	 */
 	public interface StepChangeListener {
 
