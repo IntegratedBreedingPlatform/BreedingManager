@@ -69,7 +69,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	private ParentTabComponent femaleParentTab;
 	private ParentTabComponent maleParentTab;
 
-	private final CrossingManagerMakeCrossesComponent makeCrossesMain;
+	private CrossingManagerMakeCrossesComponent makeCrossesMain;
 
 	private Boolean hasChanges;
 
@@ -270,7 +270,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		}
 	}
 
-	private void updateParentTabForUnsavedChanges(Table targetTable) {
+	void updateParentTabForUnsavedChanges(Table targetTable) {
 		// just add the new entry to the parent table
 		if (targetTable.equals(this.femaleParentTab.getListDataTable())) {
 			this.femaleParentTab.getSaveActionMenu().setEnabled(true);
@@ -283,10 +283,10 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		}
 	}
 
-	private void clearSeedReservationValues(Table table) {
+	void clearSeedReservationValues(Table table) {
 		for (Object itemId : table.getItemIds()) {
 			table.getItem(itemId).getItemProperty(ColumnLabels.SEED_RESERVATION.getName())
-			.setValue(MakeCrossesParentsComponent.STRING_DASH);
+					.setValue(MakeCrossesParentsComponent.STRING_DASH);
 		}
 	}
 
@@ -364,7 +364,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 
 	public String getSeedSource(Table table, Integer entryId) {
 		String seedSource = "";
-		if (table.getParent().getParent() instanceof SelectParentsListDataComponent) {
+		if (table.getParent() != null && table.getParent().getParent() instanceof SelectParentsListDataComponent) {
 			SelectParentsListDataComponent parentComponent = (SelectParentsListDataComponent) table.getParent().getParent();
 			String listname = parentComponent.getListName();
 			seedSource = listname + ":" + entryId;
@@ -717,6 +717,10 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 
 	public CrossingManagerMakeCrossesComponent getMakeCrossesMain() {
 		return this.makeCrossesMain;
+	}
+
+	void setMakeCrossesMain(CrossingManagerMakeCrossesComponent makeCrossesMain) {
+		this.makeCrossesMain = makeCrossesMain;
 	}
 
 	public Boolean hasUnsavedChanges() {

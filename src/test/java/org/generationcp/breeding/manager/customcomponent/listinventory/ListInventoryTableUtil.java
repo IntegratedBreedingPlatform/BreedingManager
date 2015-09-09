@@ -27,6 +27,7 @@ public class ListInventoryTableUtil {
 			listData.setDesignation("Germplasm" + id);
 			listData.setGid(id);
 			listData.setInventoryInfo(createInventoryInfo(id));
+			listData.setStatus(0);
 			inventoryDetails.add(listData);
 		}
 
@@ -40,6 +41,8 @@ public class ListInventoryTableUtil {
 			lotDetails.add(createLotDetail(i, listDataId));
 		}
 		inventoryInfo.setLotRows(lotDetails);
+		inventoryInfo.setActualInventoryLotCount(1);
+		inventoryInfo.setReservedLotCount(2);
 		return inventoryInfo;
 	}
 
