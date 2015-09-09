@@ -8,7 +8,7 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
-import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTableUtil;
+import org.generationcp.breeding.manager.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -349,7 +349,7 @@ public class MakeCrossesParentsComponentTest {
 	public void testAddListToMaleTable() {
 		Mockito.doReturn(ModeView.LIST_VIEW).when(this.makeCrossesMain).getModeView();
 		Mockito.doReturn(this.germplasmList).when(this.germplasmListManager).getGermplasmListById(GERMPLASM_LIST_ID);
-		Mockito.doReturn(ListInventoryTableUtil.createGermplasmListDataWithInventoryDetails()).when(this.inventoryDataManager)
+		Mockito.doReturn(ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails()).when(this.inventoryDataManager)
 				.getLotCountsForList(GERMPLASM_LIST_ID, 0, Integer.MAX_VALUE);
 
 		int beforeSize = this.maleParent.size();
@@ -364,7 +364,7 @@ public class MakeCrossesParentsComponentTest {
 	public void testAddListToFemaleTable() {
 		Mockito.doReturn(ModeView.LIST_VIEW).when(this.makeCrossesMain).getModeView();
 		Mockito.doReturn(this.germplasmList).when(this.germplasmListManager).getGermplasmListById(GERMPLASM_LIST_ID);
-		Mockito.doReturn(ListInventoryTableUtil.createGermplasmListDataWithInventoryDetails()).when(this.inventoryDataManager)
+		Mockito.doReturn(ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails()).when(this.inventoryDataManager)
 				.getLotCountsForList(GERMPLASM_LIST_ID, 0, Integer.MAX_VALUE);
 
 		int beforeSize = this.femaleParent.size();

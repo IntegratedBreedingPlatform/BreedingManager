@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
@@ -55,25 +56,25 @@ public class ListInventoryTableTest {
 	@Test
 	public void testInstantiateComponentsHeaderNameFromOntology() throws MiddlewareQueryException {
 
-		Mockito.doReturn(ListInventoryTableUtil.createTerm("DESIGNATION")).when(this.ontologyDataManager)
+		Mockito.doReturn(ListInventoryDataInitializer.createTerm("DESIGNATION")).when(this.ontologyDataManager)
 				.getTermById(ColumnLabels.DESIGNATION.getTermId().getId());
-		Mockito.doReturn(ListInventoryTableUtil.createTerm("LOCATION")).when(this.ontologyDataManager)
+		Mockito.doReturn(ListInventoryDataInitializer.createTerm("LOCATION")).when(this.ontologyDataManager)
 				.getTermById(ColumnLabels.LOT_LOCATION.getTermId().getId());
-		Mockito.doReturn(ListInventoryTableUtil.createTerm("UNITS")).when(this.ontologyDataManager)
+		Mockito.doReturn(ListInventoryDataInitializer.createTerm("UNITS")).when(this.ontologyDataManager)
 				.getTermById(ColumnLabels.UNITS.getTermId().getId());
-		Mockito.doReturn(ListInventoryTableUtil.createTerm("AVAIL_INV")).when(this.ontologyDataManager)
+		Mockito.doReturn(ListInventoryDataInitializer.createTerm("AVAIL_INV")).when(this.ontologyDataManager)
 				.getTermById(ColumnLabels.AVAILABLE_INVENTORY.getTermId().getId());
-		Mockito.doReturn(ListInventoryTableUtil.createTerm("TOTAL")).when(this.ontologyDataManager)
+		Mockito.doReturn(ListInventoryDataInitializer.createTerm("TOTAL")).when(this.ontologyDataManager)
 				.getTermById(ColumnLabels.TOTAL.getTermId().getId());
-		Mockito.doReturn(ListInventoryTableUtil.createTerm("RES")).when(this.ontologyDataManager)
+		Mockito.doReturn(ListInventoryDataInitializer.createTerm("RES")).when(this.ontologyDataManager)
 				.getTermById(ColumnLabels.RESERVED.getTermId().getId());
-		Mockito.doReturn(ListInventoryTableUtil.createTerm("NEW RES")).when(this.ontologyDataManager)
+		Mockito.doReturn(ListInventoryDataInitializer.createTerm("NEW RES")).when(this.ontologyDataManager)
 				.getTermById(ColumnLabels.NEWLY_RESERVED.getTermId().getId());
-		Mockito.doReturn(ListInventoryTableUtil.createTerm("COMMENT")).when(this.ontologyDataManager)
+		Mockito.doReturn(ListInventoryDataInitializer.createTerm("COMMENT")).when(this.ontologyDataManager)
 				.getTermById(ColumnLabels.COMMENT.getTermId().getId());
-		Mockito.doReturn(ListInventoryTableUtil.createTerm("STOCKID")).when(this.ontologyDataManager)
+		Mockito.doReturn(ListInventoryDataInitializer.createTerm("STOCKID")).when(this.ontologyDataManager)
 				.getTermById(ColumnLabels.STOCKID.getTermId().getId());
-		Mockito.doReturn(ListInventoryTableUtil.createTerm("LOT_ID")).when(this.ontologyDataManager)
+		Mockito.doReturn(ListInventoryDataInitializer.createTerm("LOT_ID")).when(this.ontologyDataManager)
 				.getTermById(ColumnLabels.LOT_ID.getTermId().getId());
 
 		this.listInventoryTable.instantiateComponents();
@@ -124,10 +125,10 @@ public class ListInventoryTableTest {
 
 	@Test
 	public void testDisplayInventoryDetails() {
-		List<GermplasmListData> inventoryDetails = ListInventoryTableUtil.createGermplasmListDataWithInventoryDetails();
+		List<GermplasmListData> inventoryDetails = ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails();
 		this.listInventoryTable.displayInventoryDetails(inventoryDetails);
 
-		int expectedNoOFLotEntries = ListInventoryTableUtil.getNumberOfEntries();
+		int expectedNoOFLotEntries = ListInventoryDataInitializer.getNumberOfEntries();
 		Assert.assertEquals("Expecting that all entries from inventoryDetails are properly inserted in listinventory table but didn't.",
 				expectedNoOFLotEntries, this.listInventoryTable.getTable().getContainerDataSource().size());
 	}
@@ -145,7 +146,7 @@ public class ListInventoryTableTest {
 	public void testLoadInventoryData() {
 		this.initDataToInventoryTable();
 
-		int expectedNoOFLotEntries = ListInventoryTableUtil.getNumberOfEntries();
+		int expectedNoOFLotEntries = ListInventoryDataInitializer.getNumberOfEntries();
 		Assert.assertEquals("Expecting that the method for loading inventory data in inventory table is called but didn't.",
 				expectedNoOFLotEntries, this.listInventoryTable.getTable().getContainerDataSource().size());
 
@@ -162,7 +163,7 @@ public class ListInventoryTableTest {
 	}
 
 	private void initDataToInventoryTable() {
-		List<GermplasmListData> inventoryDetails = ListInventoryTableUtil.createGermplasmListDataWithInventoryDetails();
+		List<GermplasmListData> inventoryDetails = ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails();
 		Mockito.doReturn(inventoryDetails).when(this.inventoryDataManager)
 				.getLotDetailsForList(ListInventoryTableTest.LIST_ID, 0, Integer.MAX_VALUE);
 

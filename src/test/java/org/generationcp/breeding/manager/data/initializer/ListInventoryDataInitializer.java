@@ -1,5 +1,5 @@
 
-package org.generationcp.breeding.manager.customcomponent.listinventory;
+package org.generationcp.breeding.manager.data.initializer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Location;
 
-public class ListInventoryTableUtil {
+public class ListInventoryDataInitializer {
 
 	public static final int NO_OF_LISTDATA = 5;
 

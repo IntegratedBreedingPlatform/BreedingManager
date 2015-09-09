@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.generationcp.breeding.manager.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -60,7 +61,7 @@ public class ListManagerInventoryTableTest {
 
 		this.listInventoryTable.instantiateComponents();
 
-		this.inventoryDetails = ListInventoryTableUtil.createGermplasmListDataWithInventoryDetails();
+		this.inventoryDetails = ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails();
 		this.mockGetGermplasmListDataByListIdAndLrecId();
 
 	}
@@ -71,7 +72,7 @@ public class ListManagerInventoryTableTest {
 			inventoryDetailsMap.put(listData.getId(), listData);
 		}
 
-		for (int i = 1; i <= ListInventoryTableUtil.getNumberOfEntries(); i++) {
+		for (int i = 1; i <= ListInventoryDataInitializer.getNumberOfEntries(); i++) {
 			int id = (i % 5 == 0) ? 5 : i % 5;
 			Mockito.doReturn(inventoryDetailsMap.get(id)).when(this.germplasmListManager)
 					.getGermplasmListDataByListIdAndLrecId(ListManagerInventoryTableTest.LIST_ID, i);
@@ -81,7 +82,7 @@ public class ListManagerInventoryTableTest {
 	@Test
 	public void testDisplayInventoryDetails() {
 		this.listInventoryTable.displayInventoryDetails(this.inventoryDetails);
-		Assert.assertEquals("Expecting that the inventory table is properly been filled.", ListInventoryTableUtil.getNumberOfEntries()
+		Assert.assertEquals("Expecting that the inventory table is properly been filled.", ListInventoryDataInitializer.getNumberOfEntries()
 				.intValue(), this.listInventoryTable.getTable().size());
 	}
 
