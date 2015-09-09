@@ -94,7 +94,8 @@ public class GermplasmListExporterTest {
 
 	private static final int PLATE_SIZE = 98;
 	
-	private String programUUID = contextUtil.getCurrentProgramUUID();
+	// provide a fake UUID, assuming this is a Unit test and we do not need to verify DB data
+	private String programUUID = "12345uuid";
 
 	@BeforeClass
 	public static void setUpClass() {
