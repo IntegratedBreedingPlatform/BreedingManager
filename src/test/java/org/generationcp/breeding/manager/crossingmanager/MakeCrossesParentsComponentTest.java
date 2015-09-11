@@ -8,6 +8,7 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
+import org.generationcp.breeding.manager.data.initializer.GermplasmListDataInitializer;
 import org.generationcp.breeding.manager.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
@@ -94,7 +95,7 @@ public class MakeCrossesParentsComponentTest {
 		this.makeCrossesParentsComponent.setFemaleParentTab(this.femaleParentTab);
 		this.makeCrossesParentsComponent.setMakeCrossesMain(this.makeCrossesMain);
 
-		this.germplasmList = this.createGermplasmList();
+		this.germplasmList = GermplasmListDataInitializer.createGermplasmList(GERMPLASM_LIST_ID);
 		this.sourceTable = this.createSourceTable();
 		this.createContextMenuOnParentTab(this.femaleParentTab);
 		this.createContextMenuOnParentTab(this.maleParentTab);
@@ -191,16 +192,6 @@ public class MakeCrossesParentsComponentTest {
 			this.addItemToParentTable(i, parentTable);
 		}
 		return parentTable;
-	}
-
-	private GermplasmList createGermplasmList() {
-		GermplasmList germplasmList = new GermplasmList();
-		germplasmList.setId(GERMPLASM_LIST_ID);
-		germplasmList.setName("List Name");
-		germplasmList.setDescription("This is a sample list.");
-		germplasmList.setDate(20150109L);
-
-		return germplasmList;
 	}
 
 	@Test
