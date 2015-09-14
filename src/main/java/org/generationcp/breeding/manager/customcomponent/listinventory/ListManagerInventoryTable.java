@@ -24,6 +24,10 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.themes.BaseTheme;
 
+/**
+ * This table is used for displaying lots in Inventory view specifically for List Manager. It basically handles the drop handling method in
+ * inventory view.
+ */
 public class ListManagerInventoryTable extends ListInventoryTable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ListManagerInventoryTable.class);
