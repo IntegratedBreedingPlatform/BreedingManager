@@ -74,10 +74,9 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	private static final String NO_LOT_FOR_THIS_GERMPLASM = "No Lot for this Germplasm";
 	private static final String CLICK_TO_VIEW_INVENTORY_DETAILS = "Click to view Inventory Details";
 	private static final String STRING_DASH = "-";
-	
+
 	@Autowired
 	private PlatformTransactionManager transactionManager;
-
 
 	private final class ListDataTableActionHandler implements Action.Handler {
 
@@ -114,14 +113,16 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 
 		@Override
 		public void contextItemClick(final ClickEvent event) {
-			final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+			final TransactionTemplate transactionTemplate = new TransactionTemplate(SelectParentsListDataComponent.this.transactionManager);
 			transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
 				@Override
 				protected void doInTransactionWithoutResult(TransactionStatus status) {
 					// Get reference to clicked item
 					ContextMenuItem clickedItem = event.getClickedItem();
 					if (clickedItem.getName().equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
-						SelectParentsListDataComponent.this.listDataTable.setValue(SelectParentsListDataComponent.this.listDataTable.getItemIds());
+						SelectParentsListDataComponent.this.listDataTable.setValue(SelectParentsListDataComponent.this.listDataTable
+								.getItemIds());
 					} else if (clickedItem.getName().equals(
 							SelectParentsListDataComponent.this.messageSource.getMessage(Message.ADD_TO_FEMALE_LIST))) {
 						Collection<?> selectedIdsToAdd = (Collection<?>) SelectParentsListDataComponent.this.listDataTable.getValue();
@@ -130,28 +131,32 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 									SelectParentsListDataComponent.this.listDataTable,
 									SelectParentsListDataComponent.this.makeCrossesParentsComponent.getFemaleTable(), null);
 							SelectParentsListDataComponent.this.makeCrossesParentsComponent
-							.assignEntryNumber(SelectParentsListDataComponent.this.makeCrossesParentsComponent.getFemaleTable());
+									.assignEntryNumber(SelectParentsListDataComponent.this.makeCrossesParentsComponent.getFemaleTable());
 							SelectParentsListDataComponent.this.makeCrossesParentsComponent.getParentTabSheet().setSelectedTab(0);
 						} else {
 							MessageNotifier.showWarning(SelectParentsListDataComponent.this.getWindow(),
 									SelectParentsListDataComponent.this.messageSource.getMessage(Message.WARNING),
-									SelectParentsListDataComponent.this.messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
+									SelectParentsListDataComponent.this.messageSource
+											.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
 						}
-					} else if (clickedItem.getName().equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.ADD_TO_MALE_LIST))) {
+					} else if (clickedItem.getName().equals(
+							SelectParentsListDataComponent.this.messageSource.getMessage(Message.ADD_TO_MALE_LIST))) {
 						Collection<?> selectedIdsToAdd = (Collection<?>) SelectParentsListDataComponent.this.listDataTable.getValue();
 						if (!selectedIdsToAdd.isEmpty()) {
 							SelectParentsListDataComponent.this.makeCrossesParentsComponent.dropToFemaleOrMaleTable(
 									SelectParentsListDataComponent.this.listDataTable,
 									SelectParentsListDataComponent.this.makeCrossesParentsComponent.getMaleTable(), null);
 							SelectParentsListDataComponent.this.makeCrossesParentsComponent
-							.assignEntryNumber(SelectParentsListDataComponent.this.makeCrossesParentsComponent.getMaleTable());
+									.assignEntryNumber(SelectParentsListDataComponent.this.makeCrossesParentsComponent.getMaleTable());
 							SelectParentsListDataComponent.this.makeCrossesParentsComponent.getParentTabSheet().setSelectedTab(1);
 						} else {
 							MessageNotifier.showWarning(SelectParentsListDataComponent.this.getWindow(),
 									SelectParentsListDataComponent.this.messageSource.getMessage(Message.WARNING),
-									SelectParentsListDataComponent.this.messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
+									SelectParentsListDataComponent.this.messageSource
+											.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
 						}
-					} else if (clickedItem.getName().equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.INVENTORY_VIEW))) {
+					} else if (clickedItem.getName().equals(
+							SelectParentsListDataComponent.this.messageSource.getMessage(Message.INVENTORY_VIEW))) {
 						SelectParentsListDataComponent.this.viewInventoryAction();
 					} else if (clickedItem.getName().equals(
 							SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES))) {
@@ -311,7 +316,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		this.resetInventoryMenuOptions();
 
 		this.initializeListDataTable();
-		this.initializeListInventoryTable(); // listInventoryTable
+		this.initializeListInventoryTable();
 
 		this.viewListHeaderButton = new Button(this.messageSource.getMessage(Message.VIEW_LIST_HEADERS));
 		this.viewListHeaderButton.setStyleName(BaseTheme.BUTTON_LINK);
@@ -543,13 +548,16 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 
 			@Override
 			public void contextItemClick(final ClickEvent event) {
-				final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+				final TransactionTemplate transactionTemplate =
+						new TransactionTemplate(SelectParentsListDataComponent.this.transactionManager);
 				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
 					@Override
 					protected void doInTransactionWithoutResult(TransactionStatus status) {
 						// Get reference to clicked item
 						ContextMenuItem clickedItem = event.getClickedItem();
-						if (clickedItem.getName().equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.SAVE_CHANGES))) {
+						if (clickedItem.getName()
+								.equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.SAVE_CHANGES))) {
 							SelectParentsListDataComponent.this.saveReservationChangesAction();
 						} else if (clickedItem.getName().equals(
 								SelectParentsListDataComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
@@ -560,7 +568,8 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 						} else if (clickedItem.getName().equals(
 								SelectParentsListDataComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
 							SelectParentsListDataComponent.this.reserveInventoryAction();
-						} else if (clickedItem.getName().equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
+						} else if (clickedItem.getName().equals(
+								SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
 							SelectParentsListDataComponent.this.listInventoryTable.getTable().setValue(
 									SelectParentsListDataComponent.this.listInventoryTable.getTable().getItemIds());
 						} else if (clickedItem.getName().equals(
@@ -573,7 +582,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 									CrossingManagerUtil.getOddEntries(SelectParentsListDataComponent.this.listInventoryTable.getTable()));
 						}
 					}
-					
+
 				});
 			}
 		});
