@@ -1,6 +1,7 @@
 
 package org.generationcp.breeding.manager.customcomponent.listinventory;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -29,6 +30,8 @@ import com.vaadin.ui.Table;
 public class ListInventoryTableTest {
 
 	private static final int LIST_ID = 1;
+	private static final double PREV_AVAIL_INVENTORY = 99.9;
+	private static final double PREV_RESERVED_VALUE = 0.01;
 
 	@Mock
 	private OntologyDataManager ontologyDataManager;
@@ -179,8 +182,8 @@ public class ListInventoryTableTest {
 		// retrieve a checkbox from one of the rows in inventory table
 		@SuppressWarnings("unchecked")
 		Collection<ListEntryLotDetails> itemIds = (Collection<ListEntryLotDetails>) table.getItemIds();
-		Iterator itr = itemIds.iterator();
-		ListEntryLotDetails lotDetail = (ListEntryLotDetails) itr.next();
+		Iterator<ListEntryLotDetails> itr = itemIds.iterator();
+		ListEntryLotDetails lotDetail = itr.next();
 		Item item = table.getItem(lotDetail);
 		CheckBox itemCheckBox = (CheckBox) item.getItemProperty(ColumnLabels.TAG.getName()).getValue();
 
@@ -193,4 +196,63 @@ public class ListInventoryTableTest {
 		Assert.assertEquals("Expecting that no checkbox is selected but didn't.", 0, this.listInventoryTable.getSelectedLots().size());
 	}
 
+	@Test
+	public void testResetRowsForCancelledReservation() {
+		List<ListEntryLotDetails> lotDetailsToCancel = new ArrayList<ListEntryLotDetails>();
+		this.initDataToInventoryTable();
+		Table table = this.listInventoryTable.getTable();
+		this.updateReservationForLotEntries(lotDetailsToCancel, table, PREV_RESERVED_VALUE);
+
+		this.listInventoryTable.resetRowsForCancelledReservation(lotDetailsToCancel, LIST_ID);
+
+		double expectedNewAvailInventory = PREV_AVAIL_INVENTORY + PREV_RESERVED_VALUE;
+		for (ListEntryLotDetails lotDetail : lotDetailsToCancel) {
+			Item item = table.getItem(lotDetail);
+			double availVal = (double) item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue();
+			double reservedVal = (double) item.getItemProperty(ColumnLabels.RESERVED.getName()).getValue();
+			double newReservedVal = (double) item.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).getValue();
+
+			Assert.assertEquals("Expecting that the available inventory is increased by the amount of reservation but didn't.",
+					expectedNewAvailInventory, availVal, 0.00);
+			Assert.assertEquals("Expecting that the reservation amount is reset to 0 but didn't.", 0, reservedVal, 0.00);
+			Assert.assertEquals("Expecting that the new reservation amount is also reset to 0 but didn't", 0, newReservedVal, 0.00);
+		}
+
+	}
+
+	@Test
+	public void testIsSelectedEntriesHasReservation_WhenThereIsReservation() {
+		List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
+		this.initDataToInventoryTable();
+		Table table = this.listInventoryTable.getTable();
+		this.updateReservationForLotEntries(lotDetails, table, PREV_RESERVED_VALUE);
+
+		Assert.assertTrue("Expecting true for at least one lot details with reservation but didn't.",
+				this.listInventoryTable.isSelectedEntriesHasReservation(lotDetails));
+	}
+
+	@Test
+	public void testIsSelectedEntriesHasReservation_WhenThereIsNoReservation() {
+		List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
+		this.initDataToInventoryTable();
+		Table table = this.listInventoryTable.getTable();
+		this.updateReservationForLotEntries(lotDetails, table, 0);
+
+		Assert.assertFalse("Expecting false for at least one lot details with reservation but didn't.",
+				this.listInventoryTable.isSelectedEntriesHasReservation(lotDetails));
+	}
+
+	private void updateReservationForLotEntries(List<ListEntryLotDetails> lotEntries, Table table, double reservedVal) {
+		@SuppressWarnings("unchecked")
+		Collection<ListEntryLotDetails> itemIds = (Collection<ListEntryLotDetails>) table.getItemIds();
+		Iterator<ListEntryLotDetails> itr = itemIds.iterator();
+		while (itr.hasNext()) {
+			ListEntryLotDetails lotDetail = itr.next();
+			Item item = table.getItem(lotDetail);
+			item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(PREV_AVAIL_INVENTORY);
+			item.getItemProperty(ColumnLabels.RESERVED.getName()).setValue(reservedVal);
+			item.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(reservedVal);
+			lotEntries.add(lotDetail);
+		}
+	}
 }
