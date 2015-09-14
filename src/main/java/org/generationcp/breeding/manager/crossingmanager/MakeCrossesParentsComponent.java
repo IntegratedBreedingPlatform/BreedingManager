@@ -376,7 +376,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	/**
 	 * Implemented something similar to table.getValue(), because that method returns a collection of items, but does not follow the sorting
 	 * done by the drag n drop sorting, this one does
-	 *
+	 * 
 	 * @param table
 	 * @return List of selected germplasm list entries
 	 */
@@ -717,10 +717,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 
 	public CrossingManagerMakeCrossesComponent getMakeCrossesMain() {
 		return this.makeCrossesMain;
-	}
-
-	void setMakeCrossesMain(CrossingManagerMakeCrossesComponent makeCrossesMain) {
-		this.makeCrossesMain = makeCrossesMain;
 	}
 
 	public Boolean hasUnsavedChanges() {

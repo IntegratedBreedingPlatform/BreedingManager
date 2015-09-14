@@ -19,11 +19,13 @@ import org.generationcp.middleware.pojos.GermplasmList;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.exceptions.verification.TooLittleActualInvocations;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
@@ -35,6 +37,7 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.BaseTheme;
 
+@RunWith(MockitoJUnitRunner.class)
 public class MakeCrossesParentsComponentTest {
 
 	private static final int GERMPLASM_LIST_ID = 1;
@@ -93,7 +96,6 @@ public class MakeCrossesParentsComponentTest {
 		// injecting manual mocks
 		this.makeCrossesParentsComponent.setMaleParentTab(this.maleParentTab);
 		this.makeCrossesParentsComponent.setFemaleParentTab(this.femaleParentTab);
-		this.makeCrossesParentsComponent.setMakeCrossesMain(this.makeCrossesMain);
 
 		this.germplasmList = GermplasmListDataInitializer.createGermplasmList(GERMPLASM_LIST_ID);
 		this.sourceTable = this.createSourceTable();
