@@ -222,7 +222,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	private ReserveInventoryAction reserveInventoryAction;
 	private Map<ListEntryLotDetails, Double> validReservationsToSave;
 
-	private final MakeCrossesParentsComponent makeCrossesParentsComponent;
+	private MakeCrossesParentsComponent makeCrossesParentsComponent;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -282,7 +282,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 
 		this.viewListHeaderButton = new Button(this.messageSource.getMessage(Message.VIEW_HEADER));
 		this.viewListHeaderButton.addStyleName(BaseTheme.BUTTON_LINK);
-		this.viewListHeaderButton.setDescription(this.viewListHeaderWindow.getListHeaderComponent().toString());
+		this.viewListHeaderButton.setDescription(this.retrieveViewListHeaderButtonDescription());
 
 		this.actionButton = new ActionButton();
 		this.actionButton.setData(SelectParentsListDataComponent.ACTIONS_BUTTON_ID);
@@ -327,6 +327,14 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		}
 	}
 
+	private String retrieveViewListHeaderButtonDescription() {
+		if (this.viewListHeaderWindow.getListHeaderComponent() != null) {
+			return this.viewListHeaderWindow.getListHeaderComponent().toString();
+		}
+
+		return "";
+	}
+
 	private void resetInventoryMenuOptions() {
 		// disable the save button at first since there are no reservations yet
 		this.menuInventorySaveChanges.setEnabled(false);
@@ -335,70 +343,78 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		this.menuCopyToNewListFromInventory.setEnabled(false);
 	}
 
-	protected void initializeListDataTable() {
-		this.setListDataTableWithSelectAll(new TableWithSelectAllLayout(this.count.intValue(), 9,
-				SelectParentsListDataComponent.CHECKBOX_COLUMN_ID));
-		this.getListDataTableWithSelectAll().setWidth("100%");
+	void initializeListDataTable() {
+		this.tableWithSelectAllLayout =
+				new TableWithSelectAllLayout(this.count.intValue(), 9, SelectParentsListDataComponent.CHECKBOX_COLUMN_ID);
+		this.tableWithSelectAllLayout.setWidth("100%");
 
-		this.listDataTable = this.getListDataTableWithSelectAll().getTable();
-		this.listDataTable.setWidth("100%");
-		this.listDataTable.setData(SelectParentsListDataComponent.LIST_DATA_TABLE_ID);
-		this.listDataTable.setSelectable(true);
-		this.listDataTable.setMultiSelect(true);
-		this.listDataTable.setColumnCollapsingAllowed(true);
-		this.listDataTable.setColumnReorderingAllowed(true);
-		this.listDataTable.setImmediate(true);
-		this.listDataTable.setDragMode(TableDragMode.MULTIROW);
+		this.listDataTable = this.tableWithSelectAllLayout.getTable();
+		this.initializeListDataTable(this.listDataTable);
+	}
 
-		this.listDataTable.addContainerProperty(SelectParentsListDataComponent.CHECKBOX_COLUMN_ID, CheckBox.class, null);
-		this.listDataTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
-		this.listDataTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
-		this.listDataTable.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Button.class, null);
-		this.listDataTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
-		this.listDataTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, new Label(""));
-		this.listDataTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
-		this.listDataTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
-		this.listDataTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
-		this.listDataTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
+	void initializeListDataTable(final Table listDataTable) {
+		if (listDataTable != null) {
+			listDataTable.setWidth("100%");
+			listDataTable.setData(SelectParentsListDataComponent.LIST_DATA_TABLE_ID);
+			listDataTable.setSelectable(true);
+			listDataTable.setMultiSelect(true);
+			listDataTable.setColumnCollapsingAllowed(true);
+			listDataTable.setColumnReorderingAllowed(true);
+			listDataTable.setImmediate(true);
+			listDataTable.setDragMode(TableDragMode.MULTIROW);
 
-		this.listDataTable.setColumnHeader(SelectParentsListDataComponent.CHECKBOX_COLUMN_ID,
-				this.messageSource.getMessage(Message.CHECK_ICON));
-		this.listDataTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), this.messageSource.getMessage(Message.HASHTAG));
-		this.listDataTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(), this.getTermNameFromOntology(ColumnLabels.DESIGNATION));
-		this.listDataTable.setColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName(),
-				this.getTermNameFromOntology(ColumnLabels.AVAILABLE_INVENTORY));
-		this.listDataTable.setColumnHeader(ColumnLabels.SEED_RESERVATION.getName(),
-				this.getTermNameFromOntology(ColumnLabels.SEED_RESERVATION));
-		this.listDataTable.setColumnHeader(ColumnLabels.STOCKID.getName(), this.getTermNameFromOntology(ColumnLabels.STOCKID));
-		this.listDataTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(), this.getTermNameFromOntology(ColumnLabels.PARENTAGE));
-		this.listDataTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(), this.getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
-		this.listDataTable.setColumnHeader(ColumnLabels.GID.getName(), this.getTermNameFromOntology(ColumnLabels.GID));
-		this.listDataTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(), this.getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
+			listDataTable.addContainerProperty(SelectParentsListDataComponent.CHECKBOX_COLUMN_ID, CheckBox.class, null);
+			listDataTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
+			listDataTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
+			listDataTable.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Button.class, null);
+			listDataTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
+			listDataTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, new Label(""));
+			listDataTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
+			listDataTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
+			listDataTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
+			listDataTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
 
-		this.listDataTable.setColumnWidth(SelectParentsListDataComponent.CHECKBOX_COLUMN_ID, 25);
-		this.listDataTable.setColumnWidth(ColumnLabels.ENTRY_ID.getName(), 25);
-		this.listDataTable.setColumnWidth(ColumnLabels.DESIGNATION.getName(), 130);
-		this.listDataTable.setColumnWidth(ColumnLabels.AVAILABLE_INVENTORY.getName(), 70);
-		this.listDataTable.setColumnWidth(ColumnLabels.SEED_RESERVATION.getName(), 70);
-		this.listDataTable.setColumnWidth(ColumnLabels.SEED_RESERVATION.getName(), 130);
-		this.listDataTable.setColumnWidth(ColumnLabels.PARENTAGE.getName(), 130);
-		this.listDataTable.setColumnWidth(ColumnLabels.ENTRY_CODE.getName(), 100);
-		this.listDataTable.setColumnWidth(ColumnLabels.GID.getName(), 60);
-		this.listDataTable.setColumnWidth(ColumnLabels.SEED_SOURCE.getName(), 110);
+			listDataTable.setColumnHeader(SelectParentsListDataComponent.CHECKBOX_COLUMN_ID,
+					this.messageSource.getMessage(Message.CHECK_ICON));
+			listDataTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), this.messageSource.getMessage(Message.HASHTAG));
+			listDataTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(), this.getTermNameFromOntology(ColumnLabels.DESIGNATION));
+			listDataTable.setColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName(),
+					this.getTermNameFromOntology(ColumnLabels.AVAILABLE_INVENTORY));
+			listDataTable.setColumnHeader(ColumnLabels.SEED_RESERVATION.getName(),
+					this.getTermNameFromOntology(ColumnLabels.SEED_RESERVATION));
+			listDataTable.setColumnHeader(ColumnLabels.STOCKID.getName(), this.getTermNameFromOntology(ColumnLabels.STOCKID));
+			listDataTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(), this.getTermNameFromOntology(ColumnLabels.PARENTAGE));
+			listDataTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(), this.getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
+			listDataTable.setColumnHeader(ColumnLabels.GID.getName(), this.getTermNameFromOntology(ColumnLabels.GID));
+			listDataTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(), this.getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
 
-		this.listDataTable.setVisibleColumns(new String[] {SelectParentsListDataComponent.CHECKBOX_COLUMN_ID,
-				ColumnLabels.ENTRY_ID.getName(), ColumnLabels.DESIGNATION.getName(), ColumnLabels.AVAILABLE_INVENTORY.getName(),
-				ColumnLabels.SEED_RESERVATION.getName(), ColumnLabels.STOCKID.getName(), ColumnLabels.PARENTAGE.getName(),
-				ColumnLabels.ENTRY_CODE.getName(), ColumnLabels.GID.getName(), ColumnLabels.SEED_SOURCE.getName()});
+			listDataTable.setColumnWidth(SelectParentsListDataComponent.CHECKBOX_COLUMN_ID, 25);
+			listDataTable.setColumnWidth(ColumnLabels.ENTRY_ID.getName(), 25);
+			listDataTable.setColumnWidth(ColumnLabels.DESIGNATION.getName(), 130);
+			listDataTable.setColumnWidth(ColumnLabels.AVAILABLE_INVENTORY.getName(), 70);
+			listDataTable.setColumnWidth(ColumnLabels.SEED_RESERVATION.getName(), 70);
+			listDataTable.setColumnWidth(ColumnLabels.SEED_RESERVATION.getName(), 130);
+			listDataTable.setColumnWidth(ColumnLabels.PARENTAGE.getName(), 130);
+			listDataTable.setColumnWidth(ColumnLabels.ENTRY_CODE.getName(), 100);
+			listDataTable.setColumnWidth(ColumnLabels.GID.getName(), 60);
+			listDataTable.setColumnWidth(ColumnLabels.SEED_SOURCE.getName(), 110);
+
+			listDataTable.setVisibleColumns(new String[] {SelectParentsListDataComponent.CHECKBOX_COLUMN_ID,
+					ColumnLabels.ENTRY_ID.getName(), ColumnLabels.DESIGNATION.getName(), ColumnLabels.AVAILABLE_INVENTORY.getName(),
+					ColumnLabels.SEED_RESERVATION.getName(), ColumnLabels.STOCKID.getName(), ColumnLabels.PARENTAGE.getName(),
+					ColumnLabels.ENTRY_CODE.getName(), ColumnLabels.GID.getName(), ColumnLabels.SEED_SOURCE.getName()});
+		}
 	}
 
 	private void initializeListInventoryTable() {
 		this.listInventoryTable = new CrossingManagerInventoryTable(this.germplasmList.getId());
 		this.listInventoryTable.setVisible(false);
-		this.listInventoryTable.setMaxRows(9);
-		this.listInventoryTable.setTableHeight(null);
-		this.listInventoryTable.getTable().setDragMode(TableDragMode.ROW);
-		this.listInventoryTable.getTable().setData(SelectParentsListDataComponent.CROSSING_MANAGER_PARENT_TAB_INVENTORY_TABLE);
+		if (this.listInventoryTable.getTable() != null) {
+			this.listInventoryTable.setMaxRows(9);
+			this.listInventoryTable.setTableHeight(null);
+			this.listInventoryTable.getTable().setDragMode(TableDragMode.ROW);
+			this.listInventoryTable.getTable().setData(SelectParentsListDataComponent.CROSSING_MANAGER_PARENT_TAB_INVENTORY_TABLE);
+		}
 	}
 
 	private void retrieveListDetails() {
@@ -979,13 +995,5 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 
 	public void setCount(Long count) {
 		this.count = count;
-	}
-
-	public void setOntologyDataManager(OntologyDataManager ontologyDataManager) {
-		this.ontologyDataManager = ontologyDataManager;
-	}
-
-	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
-		this.messageSource = messageSource;
 	}
 }
