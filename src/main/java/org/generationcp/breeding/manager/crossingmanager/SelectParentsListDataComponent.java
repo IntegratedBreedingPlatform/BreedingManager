@@ -357,7 +357,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		this.initializeListDataTable(this.listDataTable);
 	}
 
-	void initializeListDataTable(final Table listDataTable) {
+	void initializeListDataTable(Table listDataTable) {
 		if (listDataTable != null) {
 			listDataTable.setWidth("100%");
 			listDataTable.setData(SelectParentsListDataComponent.LIST_DATA_TABLE_ID);
@@ -457,9 +457,9 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 					public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 						CheckBox itemCheckBox = (CheckBox) event.getButton();
 						if (((Boolean) itemCheckBox.getValue()).equals(true)) {
-							SelectParentsListDataComponent.this.listDataTable.select(itemCheckBox.getData());
+							SelectParentsListDataComponent.this.getListDataTable().select(itemCheckBox.getData());
 						} else {
-							SelectParentsListDataComponent.this.listDataTable.unselect(itemCheckBox.getData());
+							SelectParentsListDataComponent.this.getListDataTable().unselect(itemCheckBox.getData());
 						}
 					}
 				});
@@ -492,7 +492,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 					seedRes = entry.getInventoryInfo().getReservedLotCount().toString().trim();
 				}
 
-				Item newItem = this.listDataTable.getContainerDataSource().addItem(entry.getId());
+				Item newItem = this.getListDataTable().getContainerDataSource().addItem(entry.getId());
 				newItem.getItemProperty(SelectParentsListDataComponent.CHECKBOX_COLUMN_ID).setValue(itemCheckBox);
 				newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entry.getEntryId());
 				newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(desigButton);
@@ -657,7 +657,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 
 	}
 
-	private void updateNoOfEntries(long count) {
+	void updateNoOfEntries(long count) {
 		if (this.makeCrossesParentsComponent.getMakeCrossesMain().getModeView().equals(ModeView.LIST_VIEW)) {
 			if (count == 0) {
 				this.totalListEntriesLabel.setValue(this.messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
@@ -671,10 +671,10 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		}
 	}
 
-	private void updateNoOfEntries() {
+	void updateNoOfEntries() {
 		int entryCount = 0;
 		if (this.makeCrossesParentsComponent.getMakeCrossesMain().getModeView().equals(ModeView.LIST_VIEW)) {
-			entryCount = this.listDataTable.getItemIds().size();
+			entryCount = this.getListDataTable().getItemIds().size();
 
 			// Inventory View
 		} else {
@@ -688,11 +688,11 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 				+ "</b></i>");
 	}
 
-	private void updateNoOfSelectedEntries() {
+	void updateNoOfSelectedEntries() {
 		int entryCount = 0;
 
 		if (this.makeCrossesParentsComponent.getMakeCrossesMain().getModeView().equals(ModeView.LIST_VIEW)) {
-			Collection<?> selectedItems = (Collection<?>) this.tableWithSelectAllLayout.getTable().getValue();
+			Collection<?> selectedItems = (Collection<?>) this.getListDataTable().getValue();
 			entryCount = selectedItems.size();
 		} else {
 			Collection<?> selectedItems = (Collection<?>) this.listInventoryTable.getTable().getValue();
@@ -962,7 +962,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	}
 
 	public Table getListDataTable() {
-		return this.listDataTable;
+		return this.tableWithSelectAllLayout.getTable();
 	}
 
 	public String getListName() {
@@ -1002,7 +1002,24 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		return this.tableWithSelectAllLayout;
 	}
 
+	protected void setListInventoryTable(CrossingManagerInventoryTable listInventoryTable) {
+		this.listInventoryTable = listInventoryTable;
+	}
+
+	protected CrossingManagerInventoryTable getListInventoryTable() {
+		return this.listInventoryTable;
+	}
+
 	public void setCount(Long count) {
 		this.count = count;
 	}
+
+	public Label getTotalListEntriesLabel() {
+		return this.totalListEntriesLabel;
+	}
+
+	public Label getTotalSelectedListEntriesLabel() {
+		return this.totalSelectedListEntriesLabel;
+	}
+
 }
