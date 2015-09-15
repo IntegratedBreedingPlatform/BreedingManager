@@ -131,7 +131,7 @@ public class ListInventoryTableTest {
 		List<GermplasmListData> inventoryDetails = ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails();
 		this.listInventoryTable.displayInventoryDetails(inventoryDetails);
 
-		int expectedNoOFLotEntries = ListInventoryDataInitializer.getNumberOfEntries();
+		int expectedNoOFLotEntries = ListInventoryDataInitializer.getNumberOfEntriesInInventoryView();
 		Assert.assertEquals("Expecting that all entries from inventoryDetails are properly inserted in listinventory table but didn't.",
 				expectedNoOFLotEntries, this.listInventoryTable.getTable().getContainerDataSource().size());
 	}
@@ -149,7 +149,7 @@ public class ListInventoryTableTest {
 	public void testLoadInventoryData() {
 		this.initDataToInventoryTable();
 
-		int expectedNoOFLotEntries = ListInventoryDataInitializer.getNumberOfEntries();
+		int expectedNoOFLotEntries = ListInventoryDataInitializer.getNumberOfEntriesInInventoryView();
 		Assert.assertEquals("Expecting that the method for loading inventory data in inventory table is called but didn't.",
 				expectedNoOFLotEntries, this.listInventoryTable.getTable().getContainerDataSource().size());
 

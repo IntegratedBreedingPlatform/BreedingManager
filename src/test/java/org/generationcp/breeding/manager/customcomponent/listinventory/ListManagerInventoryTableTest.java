@@ -72,7 +72,7 @@ public class ListManagerInventoryTableTest {
 			inventoryDetailsMap.put(listData.getId(), listData);
 		}
 
-		for (int i = 1; i <= ListInventoryDataInitializer.getNumberOfEntries(); i++) {
+		for (int i = 1; i <= ListInventoryDataInitializer.getNumberOfEntriesInInventoryView(); i++) {
 			int id = (i % 5 == 0) ? 5 : i % 5;
 			Mockito.doReturn(inventoryDetailsMap.get(id)).when(this.germplasmListManager)
 					.getGermplasmListDataByListIdAndLrecId(ListManagerInventoryTableTest.LIST_ID, i);
@@ -82,7 +82,7 @@ public class ListManagerInventoryTableTest {
 	@Test
 	public void testDisplayInventoryDetails() {
 		this.listInventoryTable.displayInventoryDetails(this.inventoryDetails);
-		Assert.assertEquals("Expecting that the inventory table is properly been filled.", ListInventoryDataInitializer.getNumberOfEntries()
+		Assert.assertEquals("Expecting that the inventory table is properly been filled.", ListInventoryDataInitializer.getNumberOfEntriesInInventoryView()
 				.intValue(), this.listInventoryTable.getTable().size());
 	}
 

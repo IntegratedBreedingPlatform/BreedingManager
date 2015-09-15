@@ -82,7 +82,11 @@ public class ListInventoryDataInitializer {
 		return term;
 	}
 
-	public static Integer getNumberOfEntries() {
+	public static Integer getNumberOfEntriesInInventoryView() {
 		return NO_OF_LISTDATA * NO_OF_LOTS_PER_LISTDATA;
+	}
+
+	public static Integer getNumberOfEntriesInListView() {
+		return NO_OF_LISTDATA;
 	}
 }
