@@ -37,6 +37,9 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.BaseTheme;
 
+/**
+ * This table is used for displaying lots in Inventory view. It is mainly used in List Manager and Crossing Manager.
+ */
 @Configurable
 public class ListInventoryTable extends TableWithSelectAllLayout implements InitializingBean {
 
