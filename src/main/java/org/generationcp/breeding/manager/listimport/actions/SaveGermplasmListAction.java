@@ -24,6 +24,7 @@ import org.generationcp.middleware.domain.dms.StandardVariable;
 import org.generationcp.middleware.domain.oms.CvId;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
+import org.generationcp.middleware.exceptions.MiddlewareException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -297,9 +298,10 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		String scale = importedVariate.getScale().toUpperCase();
 		String method = importedVariate.getMethod().toUpperCase();
 
-		StandardVariable stdVariable = this.ontologyDataManager.findStandardVariableByTraitScaleMethodNames(trait, scale, method);
+		StandardVariable stdVariable = this.ontologyDataManager.findStandardVariableByTraitScaleMethodNames(
+				trait, scale, method, contextUtil.getCurrentProgramUUID());
 		// create new variate if PSMR doesn't exist
-		if (stdVariable == null || stdVariable.getStoredIn().getId() != TermId.OBSERVATION_VARIATE.getId()) {
+		if (stdVariable == null) {
 
 			Term traitTerm = this.ontologyDataManager.findTermByName(trait, CvId.PROPERTIES);
 			if (traitTerm == null) {
@@ -326,14 +328,11 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 			Term dataType = new Term();
 			dataType.setId("N".equals(importedVariate.getDataType()) ? TermId.NUMERIC_VARIABLE.getId() : TermId.CHARACTER_VARIABLE.getId());
 
-			Term storedIn = new Term();
-			storedIn.setId(TermId.OBSERVATION_VARIATE.getId());
-
-			stdVariable = new StandardVariable(traitTerm, scaleTerm, methodTerm, dataType, storedIn, null, PhenotypicType.VARIATE);
+			stdVariable = new StandardVariable(traitTerm, scaleTerm, methodTerm, dataType, null, PhenotypicType.VARIATE);
 			stdVariable.setName(importedVariate.getVariate());
 			stdVariable.setDescription(importedVariate.getDescription());
 
-			this.ontologyDataManager.addStandardVariable(stdVariable);
+			this.ontologyDataManager.addStandardVariable(stdVariable,contextUtil.getCurrentProgramUUID());
 		}
 
 		if (stdVariable.getId() != 0) {

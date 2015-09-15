@@ -31,6 +31,7 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.exceptions.MiddlewareException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
@@ -577,7 +578,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 				}
 			}
 
-		} catch (MiddlewareQueryException e) {
+		} catch (MiddlewareException e) {
 			MessageNotifier.showError(window, "ERROR", "Error with saving germplasm list. Please see log for details.");
 			SpecifyGermplasmDetailsComponent.LOG.error(e.getMessage(), e);
 		}
