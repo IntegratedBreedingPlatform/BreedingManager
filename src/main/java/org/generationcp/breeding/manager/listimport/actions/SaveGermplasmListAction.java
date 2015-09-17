@@ -24,7 +24,6 @@ import org.generationcp.middleware.domain.dms.StandardVariable;
 import org.generationcp.middleware.domain.oms.CvId;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
-import org.generationcp.middleware.exceptions.MiddlewareException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -42,11 +41,15 @@ import org.generationcp.middleware.pojos.ims.EntityType;
 import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.Transaction;
 import org.generationcp.middleware.pojos.ims.TransactionStatus;
+import org.generationcp.middleware.service.api.InventoryService;
 import org.generationcp.middleware.util.Util;
 import org.jfree.util.Log;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Created with IntelliJ IDEA. User: Efficio.Daniel Date: 8/20/13 Time: 1:39 PM To change this template use File | Settings | File
@@ -82,6 +85,12 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	private InventoryDataManager inventoryDataManager;
 
 	@Autowired
+	private InventoryService inventoryService;
+
+	@Autowired
+	private PlatformTransactionManager transactionManager;
+
+	@Autowired
 	private OntologyDataManager ontologyDataManager;
 
 	@Autowired
@@ -97,6 +106,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	private Map<Integer, List<Transaction>> gidTransactionSetMap;
 
 	public SaveGermplasmListAction() {
+		this.gidLotMap = new HashMap<Integer, Lot>();
+		this.gidTransactionSetMap = new HashMap<Integer, List<Transaction>>();
 	}
 
 	@Override
@@ -106,7 +117,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 	/**
 	 * Saves records in Germplasm, GermplasmList and GermplasmListData, ProjectActivity (Workbench).
-	 * 
+	 *
 	 * @param germplasmList
 	 * @param germplasmNameObjects
 	 * @param newNames
@@ -128,8 +139,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		// Create new udfld records as needed
 		this.processFactors(importedGermplasmList);
 
-		this.gidLotMap = new HashMap<Integer, Lot>();
-		this.gidTransactionSetMap = new HashMap<Integer, List<Transaction>>();
+		this.gidLotMap.clear();
+		this.gidTransactionSetMap.clear();
 
 		this.processGermplasmNamesAndLots(germplasmNameObjects, doNotCreateGermplasmsWithId, seedStorageLocation);
 
@@ -148,25 +159,32 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	}
 
 	protected void saveInventory() {
-		for (Map.Entry<Integer, Lot> item : this.gidLotMap.entrySet()) {
-			Integer gid = item.getKey();
-			List<Transaction> listOfTransactions = this.gidTransactionSetMap.get(gid);
-			if (listOfTransactions == null || listOfTransactions.isEmpty()) {
-				continue;
-			}
-			Lot lot = item.getValue();
-			Lot existingLot =
-					this.inventoryDataManager.getLotByEntityTypeAndEntityIdAndLocationIdAndScaleId(lot.getEntityType(), gid,
-							lot.getLocationId(), lot.getScaleId());
-			if (existingLot == null) {
-				this.inventoryDataManager.addLot(lot);
-			} else {
-				for (Transaction transaction : listOfTransactions) {
-					transaction.setLot(existingLot);
+		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
+		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+			@Override
+			protected void doInTransactionWithoutResult(final org.springframework.transaction.TransactionStatus status) {
+				for (final Map.Entry<Integer, Lot> item : SaveGermplasmListAction.this.gidLotMap.entrySet()) {
+					final Integer gid = item.getKey();
+					final List<Transaction> listOfTransactions = SaveGermplasmListAction.this.gidTransactionSetMap.get(gid);
+					if (listOfTransactions == null || listOfTransactions.isEmpty()) {
+						continue;
+					}
+					final Lot lot = item.getValue();
+					final Lot existingLot =
+							SaveGermplasmListAction.this.inventoryService.getLotByEntityTypeAndEntityIdAndLocationIdAndScaleId(
+									lot.getEntityType(), gid, lot.getLocationId(), lot.getScaleId());
+					if (existingLot == null) {
+						SaveGermplasmListAction.this.inventoryDataManager.addLot(lot);
+					} else {
+						for (final Transaction transaction : listOfTransactions) {
+							transaction.setLot(existingLot);
+						}
+					}
+					SaveGermplasmListAction.this.inventoryDataManager.addTransactions(listOfTransactions);
 				}
 			}
-			this.inventoryDataManager.addTransactions(listOfTransactions);
-		}
+		});
 	}
 
 	protected void processGermplasmNamesAndLots(List<GermplasmName> germplasmNameObjects, List<Integer> doNotCreateGermplasmsWithId,
@@ -299,7 +317,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		String method = importedVariate.getMethod().toUpperCase();
 
 		StandardVariable stdVariable = this.ontologyDataManager.findStandardVariableByTraitScaleMethodNames(
-				trait, scale, method, contextUtil.getCurrentProgramUUID());
+				trait, scale, method, this.contextUtil.getCurrentProgramUUID());
 		// create new variate if PSMR doesn't exist
 		if (stdVariable == null) {
 
@@ -332,7 +350,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 			stdVariable.setName(importedVariate.getVariate());
 			stdVariable.setDescription(importedVariate.getDescription());
 
-			this.ontologyDataManager.addStandardVariable(stdVariable,contextUtil.getCurrentProgramUUID());
+			this.ontologyDataManager.addStandardVariable(stdVariable,this.contextUtil.getCurrentProgramUUID());
 		}
 
 		if (stdVariable.getId() != 0) {
