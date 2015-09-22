@@ -403,26 +403,6 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		this.listSelectionComponent.getListSearchComponent().getSearchResultsComponent().removeSearchResult(list.getId());
 	}
 
-	public Boolean lockGermplasmList(GermplasmList germplasmList) {
-		if (!germplasmList.isLockedList()) {
-			germplasmList.setStatus(germplasmList.getStatus() + 100);
-			try {
-				this.germplasmListManager.updateGermplasmList(germplasmList);
-
-				this.contextUtil.logProgramActivity("Locked a germplasm list.", "Locked list " + germplasmList.getId() + " - "
-						+ germplasmList.getName());
-
-				return true;
-			} catch (MiddlewareQueryException e) {
-				ListManagerMain.LOG.error("Error with locking list.", e);
-				MessageNotifier.showError(this.getWindow(), "Database Error!",
-						"Error with locking list. " + this.messageSource.getMessage(Message.ERROR_REPORT_TO));
-				return false;
-			}
-		}
-		return false;
-	}
-
 	public void setUIForLockedListBuilder() {
 		this.plantSelectionComponent.getSearchResultsComponent().setRightClickActionHandlerEnabled(false);
 		this.listSelectionComponent.getListSearchComponent().getSearchResultsComponent().refreshActionHandler();

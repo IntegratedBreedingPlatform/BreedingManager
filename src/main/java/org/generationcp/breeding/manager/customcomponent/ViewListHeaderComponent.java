@@ -80,11 +80,7 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 		this.statusLabel = new Label(this.messageSource.getMessage(Message.STATUS_LABEL) + ":");
 		this.statusLabel.addStyleName("bold");
 
-		String statusValue = "Unlocked List";
-		if (this.germplasmList.getStatus() >= 100) {
-			statusValue = "Locked List";
-		}
-		this.statusValueLabel = new Label(statusValue);
+		this.statusValueLabel = new Label(this.getStatusValue(this.germplasmList.getStatus()));
 		this.statusValueLabel.setWidth("200px");
 
 		this.descriptionLabel = new Label(this.messageSource.getMessage(Message.DESCRIPTION_LABEL) + ":");
@@ -121,6 +117,29 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 		}
 		this.notesValueLabel = new Label(notes);
 		this.notesValueLabel.setDescription(this.germplasmList.getNotes());
+	}
+
+	public GermplasmList getGermplasmList() {
+		return germplasmList;
+	}
+
+	public void setStatus(int status) {
+		if (this.statusValueLabel == null) {
+			this.statusValueLabel = new Label();
+		}
+		this.statusValueLabel.setValue(this.getStatusValue(status));
+	}
+
+	private String getStatusValue(int status) {
+		String statusValue = "Unlocked List";
+		if (this.germplasmList.getStatus() >= 100) {
+			statusValue = "Locked List";
+		}
+		return statusValue;
+	}
+
+	public Label getStatusValueLabel() {
+		return statusValueLabel;
 	}
 
 	@Override
