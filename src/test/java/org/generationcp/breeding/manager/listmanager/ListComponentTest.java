@@ -283,12 +283,12 @@ public class ListComponentTest {
 		this.listComponent.setContextUtil(contextUtil);
 		Mockito.doNothing().when(contextUtil).logProgramActivity(Mockito.anyString(), Mockito.anyString());
 		Mockito.doReturn("Test").when(this.messageSource).getMessage(Mockito.any(Message.class));
-		Mockito.doReturn(this.germplasmList).when(this.germplasmListManager).getGermplasmListById(this.germplasmList.getId().intValue());
+		Mockito.doReturn(this.germplasmList).when(this.germplasmListManager).getGermplasmListById(this.germplasmList.getId());
 		Mockito.doNothing().when(this.listComponent).setLockedState(true);
 		this.listComponent.instantiateComponents();
 		this.listComponent.getViewListHeaderWindow().instantiateComponents();
 
-		this.listComponent.lockGermplasmList(this.germplasmList);
+		this.listComponent.toggleGermplasmListStatus();
 
 		Assert.assertEquals(
 				"Expecting the that the germplasmList status was changed to locked(101) but returned (" + this.germplasmList.getStatus()
@@ -306,13 +306,14 @@ public class ListComponentTest {
 		this.listComponent.setContextUtil(contextUtil);
 		Mockito.doNothing().when(contextUtil).logProgramActivity(Mockito.anyString(), Mockito.anyString());
 		Mockito.doReturn("Test").when(this.messageSource).getMessage(Mockito.any(Message.class));
+		Mockito.doReturn(this.germplasmList).when(this.germplasmListManager).getGermplasmListById(this.germplasmList.getId());
 		this.listComponent.setListDataTable(new Table());
 		this.germplasmList.setStatus(101);
 		Mockito.doNothing().when(this.listComponent).setLockedState(false);
 		this.listComponent.instantiateComponents();
 		this.listComponent.getViewListHeaderWindow().instantiateComponents();
 
-		this.listComponent.unlockGermplasmList();
+		this.listComponent.toggleGermplasmListStatus();
 
 		Assert.assertEquals(
 				"Expecting the that the germplasmList status was changed to unlocked(1) but returned (" + this.germplasmList.getStatus()

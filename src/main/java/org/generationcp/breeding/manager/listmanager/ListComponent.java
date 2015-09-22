@@ -661,7 +661,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			@Override
 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 				try {
-					ListComponent.this.lockGermplasmList(ListComponent.this.germplasmList);
+					ListComponent.this.toggleGermplasmListStatus();
 				} catch (MiddlewareQueryException mqe) {
 					ListComponent.LOG.error("Error with locking list.", mqe);
 					MessageNotifier.showError(ListComponent.this.getWindow(), ListComponent.DATABASE_ERROR,
@@ -677,7 +677,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			@Override
 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 				try {
-				ListComponent.this.unlockGermplasmList();
+				ListComponent.this.toggleGermplasmListStatus();
 				} catch (MiddlewareQueryException mqe) {
 					ListComponent.LOG.error("Error with unlocking list.", mqe);
 					MessageNotifier.showError(ListComponent.this.getWindow(), ListComponent.DATABASE_ERROR, "Error with unlocking list. "
@@ -1866,35 +1866,29 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		return this.germplasmList.getId();
 	}
 
-	public void lockGermplasmList(GermplasmList list) throws MiddlewareQueryException {
+	public void toggleGermplasmListStatus() throws MiddlewareQueryException {
+		int toggledStatus;
+
 		if (this.germplasmList.isLockedList()) {
-			return;
+			toggledStatus = germplasmList.getStatus() - 100;
+		} else {
+			toggledStatus = germplasmList.getStatus() + 100;
 		}
 
-		this.germplasmList = this.germplasmListManager.getGermplasmListById(list.getId());
+		this.germplasmList = this.germplasmListManager.getGermplasmListById(this.germplasmList.getId());
 
-		germplasmList.setStatus(germplasmList.getStatus() + 100);
+		germplasmList.setStatus(toggledStatus);
+		this.setFillWith();
 		this.germplasmListManager.updateGermplasmList(germplasmList);
 		this.setLockedState(this.germplasmList.isLockedList());
 
-		this.contextUtil.logProgramActivity("Locked a germplasm list.", "Locked list " + this.germplasmList.getId() + " - " +
+		if(this.germplasmList.isLockedList()) {
+			this.contextUtil.logProgramActivity("Locked a germplasm list.", "Locked list " + this.germplasmList.getId() + " - " +
 				this.germplasmList.getName());
-		this.viewListHeaderWindow.setGermplasmListStatus(this.germplasmList.getStatus());
-	}
-
-	public void unlockGermplasmList() throws MiddlewareQueryException{
-		if (!this.germplasmList.isLockedList()) {
-			return;
+		} else {
+			this.contextUtil.logProgramActivity("Unlocked a germplasm list.", "Unlocked list " + this.germplasmList.getId() + " - " +
+					this.germplasmList.getName());
 		}
-		this.germplasmList.setStatus(this.germplasmList.getStatus() - 100);
-
-		this.setFillWith();
-		this.germplasmListManager.updateGermplasmList(this.germplasmList);
-
-		this.setLockedState(this.germplasmList.isLockedList());
-
-		this.contextUtil.logProgramActivity("Unlocked a germplasm list.", "Unlocked list " + this.germplasmList.getId() + " - " +
-				this.germplasmList.getName());
 		this.viewListHeaderWindow.setGermplasmListStatus(this.germplasmList.getStatus());
 	}
 
