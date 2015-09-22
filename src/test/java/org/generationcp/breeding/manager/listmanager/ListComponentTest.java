@@ -134,10 +134,10 @@ public class ListComponentTest {
 		this.workbenchDataManager = Mockito.mock(WorkbenchDataManager.class);
 
 		WorkbenchRuntimeData runtimeDate = new WorkbenchRuntimeData();
-		runtimeDate.setUserId(new Integer(5));
+		runtimeDate.setUserId(5);
 
 		Project dummyProject = new Project();
-		dummyProject.setProjectId(new Long(5));
+		dummyProject.setProjectId((long) 5);
 
 		try {
 			Mockito.when(this.workbenchDataManager.getWorkbenchRuntimeData()).thenReturn(runtimeDate);
@@ -164,7 +164,7 @@ public class ListComponentTest {
 
 		try {
 			Mockito.doReturn(this.germplasmList).when(this.germplasmListManager)
-					.getGermplasmListById(this.germplasmList.getId().intValue());
+					.getGermplasmListById(this.germplasmList.getId());
 
 			this.listComponent.saveList(germplasmListToBeSaved);
 
@@ -235,7 +235,7 @@ public class ListComponentTest {
 		germplasmListToBeSaved.setType(ListComponentTest.UPDATED_GERMPLASM_LIST_TYPE);
 		germplasmListToBeSaved.setStatus(1);
 
-		Mockito.doReturn(null).when(this.germplasmListManager).getGermplasmListById(this.germplasmList.getId().intValue());
+		Mockito.doReturn(null).when(this.germplasmListManager).getGermplasmListById(this.germplasmList.getId());
 
 		this.listComponent.saveList(germplasmListToBeSaved);
 

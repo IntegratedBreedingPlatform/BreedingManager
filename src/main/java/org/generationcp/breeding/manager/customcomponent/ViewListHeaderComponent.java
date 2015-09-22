@@ -128,6 +128,7 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 			this.statusValueLabel = new Label();
 		}
 		this.statusValueLabel.setValue(this.getStatusValue(status));
+		this.getGermplasmList().setStatus(status);
 	}
 
 	private String getStatusValue(int status) {
