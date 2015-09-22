@@ -47,7 +47,7 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 	@Autowired
 	private GermplasmListManager germplasmListManager;
 
-	public ViewListHeaderComponent(GermplasmList germplasmList) {
+	public ViewListHeaderComponent(final GermplasmList germplasmList) {
 		super(2, 7);
 		this.germplasmList = germplasmList;
 	}
@@ -72,7 +72,7 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 		this.ownerLabel = new Label(this.messageSource.getMessage(Message.LIST_OWNER_LABEL) + ":");
 		this.ownerLabel.addStyleName("bold");
 
-		String ownerName = BreedingManagerUtil.getOwnerListName(this.germplasmList.getUserId(), this.userDataManager);
+		final String ownerName = BreedingManagerUtil.getOwnerListName(this.germplasmList.getUserId(), this.userDataManager);
 		this.ownerValueLabel = new Label(ownerName);
 		this.ownerValueLabel.setDescription(ownerName);
 		this.ownerValueLabel.setWidth("200px");
@@ -86,7 +86,7 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 		this.descriptionLabel = new Label(this.messageSource.getMessage(Message.DESCRIPTION_LABEL) + ":");
 		this.descriptionLabel.addStyleName("bold");
 
-		String description = BreedingManagerUtil.getDescriptionForDisplay(this.germplasmList);
+		final String description = BreedingManagerUtil.getDescriptionForDisplay(this.germplasmList);
 		this.descriptionValueLabel = new Label(description);
 		this.descriptionValueLabel.setDescription(this.germplasmList.getDescription());
 		this.descriptionValueLabel.setWidth("200px");
@@ -94,7 +94,7 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 		this.typeLabel = new Label(this.messageSource.getMessage(Message.TYPE_LABEL) + ":");
 		this.typeLabel.addStyleName("bold");
 
-		String typeValue = BreedingManagerUtil.getTypeString(this.germplasmList.getType(), this.germplasmListManager);
+		final String typeValue = BreedingManagerUtil.getTypeString(this.germplasmList.getType(), this.germplasmListManager);
 		this.typeValueLabel = new Label(typeValue);
 		this.typeValueLabel.setDescription(typeValue);
 		this.typeValueLabel.setWidth("200px");
@@ -123,7 +123,7 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 		return germplasmList;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(final int status) {
 		if (this.statusValueLabel == null) {
 			this.statusValueLabel = new Label();
 		}
@@ -131,7 +131,7 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 		this.getGermplasmList().setStatus(status);
 	}
 
-	private String getStatusValue(int status) {
+	private String getStatusValue(final int status) {
 		String statusValue = "Unlocked List";
 		if (this.germplasmList.getStatus() >= 100) {
 			statusValue = "Locked List";
@@ -186,7 +186,7 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
+		final StringBuilder builder = new StringBuilder();
 		builder.append("<table border=\"0\">\n");
 		builder.append("<tr>\n");
 		builder.append("<td><b>List Name:</b></td>\n");
@@ -209,7 +209,7 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 
 		builder.append("<tr>\n");
 		builder.append("<td><b>Description:</b></td>\n");
-		String description = BreedingManagerUtil.getDescriptionForDisplay(this.germplasmList);
+		final String description = BreedingManagerUtil.getDescriptionForDisplay(this.germplasmList);
 
 		builder.append("<td>" + description + "</td>\n");
 		builder.append("</tr>\n");

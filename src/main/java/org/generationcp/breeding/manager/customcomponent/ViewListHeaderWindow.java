@@ -18,7 +18,7 @@ public class ViewListHeaderWindow extends BaseSubWindow implements BreedingManag
 	private final GermplasmList germplasmList;
 	private ViewListHeaderComponent listHeaderComponent;
 
-	public ViewListHeaderWindow(GermplasmList germplasmList) {
+	public ViewListHeaderWindow(final GermplasmList germplasmList) {
 		super();
 		this.germplasmList = germplasmList;
 	}
@@ -58,7 +58,7 @@ public class ViewListHeaderWindow extends BaseSubWindow implements BreedingManag
 	 *
 	 * @param status
 	 */
-	public void setGermplasmListStatus(int status) {
+	public void setGermplasmListStatus(final int status) {
 		this.getGermplasmList().setStatus(status);
 		this.getListHeaderComponent().setStatus(status);
 	}

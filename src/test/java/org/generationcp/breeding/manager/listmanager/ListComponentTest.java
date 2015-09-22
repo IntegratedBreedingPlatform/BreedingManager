@@ -89,7 +89,7 @@ public class ListComponentTest {
 
 		this.setUpWorkbench();
 
-		ListManagerMain listManagerMain = new ListManagerMain();
+		final ListManagerMain listManagerMain = new ListManagerMain();
 		FieldUtils.writeDeclaredField(listManagerMain, "germplasmListManager", this.germplasmListManager, true);
 		FieldUtils.writeDeclaredField(listManagerMain, "contextUtil", this.contextUtil, true);
 
@@ -104,7 +104,7 @@ public class ListComponentTest {
 		this.germplasmList.setType(ListComponentTest.GERMPLASM_LIST_TYPE);
 		this.germplasmList.setStatus(1);
 
-		List<GermplasmListData> listEntries = new ArrayList<GermplasmListData>();
+		final List<GermplasmListData> listEntries = new ArrayList<GermplasmListData>();
 		listEntries.add(Mockito.mock(GermplasmListData.class));
 
 		this.listComponent = Mockito.spy(new ListComponent(this.source, this.parentListDetailsComponent, this.germplasmList));
@@ -133,10 +133,10 @@ public class ListComponentTest {
 	private void setUpWorkbench() {
 		this.workbenchDataManager = Mockito.mock(WorkbenchDataManager.class);
 
-		WorkbenchRuntimeData runtimeDate = new WorkbenchRuntimeData();
+		final WorkbenchRuntimeData runtimeDate = new WorkbenchRuntimeData();
 		runtimeDate.setUserId(5);
 
-		Project dummyProject = new Project();
+		final Project dummyProject = new Project();
 		dummyProject.setProjectId((long) 5);
 
 		try {
@@ -145,7 +145,7 @@ public class ListComponentTest {
 			Mockito.when(this.workbenchDataManager.getLocalIbdbUserId(runtimeDate.getUserId(), dummyProject.getProjectId())).thenReturn(
 					this.EXPECTED_USER_ID);
 
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			Assert.fail("Failed to create an ibdbuser instance.");
 		}
 	}
@@ -153,7 +153,7 @@ public class ListComponentTest {
 	@Test
 	public void testSaveList_OverwriteExistingGermplasmList() {
 
-		GermplasmList germplasmListToBeSaved = new GermplasmList();
+		final GermplasmList germplasmListToBeSaved = new GermplasmList();
 		germplasmListToBeSaved.setId(1);
 		germplasmListToBeSaved.setDescription(ListComponentTest.UPDATED_GERMPLASM_LIST_DESCRIPTION_VALUE);
 		germplasmListToBeSaved.setName(ListComponentTest.UPDATED_GERMPLASM_LIST_NAME);
@@ -168,7 +168,7 @@ public class ListComponentTest {
 
 			this.listComponent.saveList(germplasmListToBeSaved);
 
-			GermplasmList savedList = this.listComponent.getGermplasmList();
+			final GermplasmList savedList = this.listComponent.getGermplasmList();
 
 			Assert.assertEquals(savedList.getId(), germplasmListToBeSaved.getId());
 			Assert.assertEquals(savedList.getDescription(), germplasmListToBeSaved.getDescription());
@@ -180,7 +180,7 @@ public class ListComponentTest {
 
 			Assert.assertSame(savedList, this.germplasmList);
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			Assert.fail(e.getMessage());
 		}
 
@@ -189,7 +189,7 @@ public class ListComponentTest {
 	@Test
 	public void testSaveList_OverwriteExistingGermplasmListWithDifferentID() {
 
-		GermplasmList germplasmListToBeSaved = new GermplasmList();
+		final GermplasmList germplasmListToBeSaved = new GermplasmList();
 		germplasmListToBeSaved.setId(1000);
 		germplasmListToBeSaved.setDescription(ListComponentTest.UPDATED_GERMPLASM_LIST_DESCRIPTION_VALUE);
 		germplasmListToBeSaved.setName(ListComponentTest.UPDATED_GERMPLASM_LIST_NAME);
@@ -205,7 +205,7 @@ public class ListComponentTest {
 			// this will overwrite the list entries of the current germplasm list. Germplasm List Details will not be updated.
 			this.listComponent.saveList(germplasmListToBeSaved);
 
-			GermplasmList savedList = this.listComponent.getGermplasmList();
+			final GermplasmList savedList = this.listComponent.getGermplasmList();
 
 			Assert.assertFalse("", savedList.getId().equals(germplasmListToBeSaved.getId()));
 			Assert.assertFalse(savedList.getDescription().equals(germplasmListToBeSaved.getDescription()));
@@ -216,7 +216,7 @@ public class ListComponentTest {
 
 			Assert.assertSame(savedList, this.germplasmList);
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 			Assert.fail(e.getMessage());
 		}
@@ -226,7 +226,7 @@ public class ListComponentTest {
 	@Test
 	public void testSaveList_OverwriteNonExistingGermplasmList() {
 
-		GermplasmList germplasmListToBeSaved = new GermplasmList();
+		final GermplasmList germplasmListToBeSaved = new GermplasmList();
 		germplasmListToBeSaved.setId(1);
 		germplasmListToBeSaved.setDescription(ListComponentTest.UPDATED_GERMPLASM_LIST_DESCRIPTION_VALUE);
 		germplasmListToBeSaved.setName(ListComponentTest.UPDATED_GERMPLASM_LIST_NAME);
@@ -239,7 +239,7 @@ public class ListComponentTest {
 
 		this.listComponent.saveList(germplasmListToBeSaved);
 
-		GermplasmList savedList = this.listComponent.getGermplasmList();
+		final GermplasmList savedList = this.listComponent.getGermplasmList();
 
 		Assert.assertTrue(savedList.getId().equals(germplasmListToBeSaved.getId()));
 		Assert.assertFalse(savedList.getDescription().equals(germplasmListToBeSaved.getDescription()));
@@ -254,7 +254,7 @@ public class ListComponentTest {
 	@Test
 	public void testInitializeListDataTable() {
 
-		TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
+		final TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
 		tableWithSelectAll.instantiateComponents();
 
 		Mockito.doReturn(tableWithSelectAll).when(this.listComponent).getListDataTableWithSelectAll();
@@ -262,7 +262,7 @@ public class ListComponentTest {
 
 		this.listComponent.initializeListDataTable();
 
-		Table table = tableWithSelectAll.getTable();
+		final Table table = tableWithSelectAll.getTable();
 
 		Assert.assertEquals(ListComponentTest.CHECK, table.getColumnHeader(ColumnLabels.TAG.getName()));
 		Assert.assertEquals(ListComponentTest.HASH, table.getColumnHeader(ColumnLabels.ENTRY_ID.getName()));
@@ -279,7 +279,7 @@ public class ListComponentTest {
 
 	@Test
 	public void testLockGermplasmList() {
-		ContextUtil contextUtil = Mockito.mock(ContextUtil.class);
+		final ContextUtil contextUtil = Mockito.mock(ContextUtil.class);
 		this.listComponent.setContextUtil(contextUtil);
 		Mockito.doNothing().when(contextUtil).logProgramActivity(Mockito.anyString(), Mockito.anyString());
 		Mockito.doReturn("Test").when(this.messageSource).getMessage(Mockito.any(Message.class));
@@ -302,7 +302,7 @@ public class ListComponentTest {
 
 	@Test
 	public void testUnlockGermplasmList() {
-		ContextUtil contextUtil = Mockito.mock(ContextUtil.class);
+		final ContextUtil contextUtil = Mockito.mock(ContextUtil.class);
 		this.listComponent.setContextUtil(contextUtil);
 		Mockito.doNothing().when(contextUtil).logProgramActivity(Mockito.anyString(), Mockito.anyString());
 		Mockito.doReturn("Test").when(this.messageSource).getMessage(Mockito.any(Message.class));
@@ -328,7 +328,7 @@ public class ListComponentTest {
 
 	@Test
 	public void testSaveChangesAction_verifyIfTheListTreeIsRefreshedAfterSavingList() {
-		Table listDataTable = new Table();
+		final Table listDataTable = new Table();
 		this.listComponent.setAddColumnContextMenu(this.addColumnContextMenu);
 		Mockito.when(this.addColumnContextMenu.getListDataCollectionFromTable(listDataTable)).thenReturn(new ArrayList<ListDataInfo>());
 		Mockito.doNothing().when(this.listComponent).setHasUnsavedChanges(true);
