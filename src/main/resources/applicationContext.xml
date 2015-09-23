@@ -89,7 +89,27 @@
 		<aop:scoped-proxy />
 	</bean>
 
-	<bean id="studyDataManager" factory-bean="managerFactory"
+    <bean id="ontologyMethodDataManager" factory-bean="managerFactory"
+          factory-method="getOntologyMethodDataManager" scope="request">
+        <aop:scoped-proxy/>
+    </bean>
+
+    <bean id="ontologyPropertyDataManager" factory-bean="managerFactory"
+          factory-method="getOntologyPropertyDataManager" scope="request">
+        <aop:scoped-proxy/>
+    </bean>
+
+    <bean id="ontologyScaleDataManager" factory-bean="managerFactory"
+          factory-method="getOntologyScaleDataManager" scope="request">
+        <aop:scoped-proxy/>
+    </bean>
+
+    <bean id="ontologyVariableDataManager" factory-bean="managerFactory"
+          factory-method="getOntologyVariableDataManager" scope="request">
+        <aop:scoped-proxy/>
+    </bean>
+
+    <bean id="studyDataManager" factory-bean="managerFactory"
 		factory-method="getNewStudyDataManager" scope="request">
 		<aop:scoped-proxy />
 	</bean>
