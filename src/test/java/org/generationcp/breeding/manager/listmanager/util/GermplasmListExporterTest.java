@@ -7,6 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.vaadin.data.Item;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.themes.BaseTheme;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
@@ -20,11 +26,13 @@ import org.generationcp.commons.service.impl.ExportServiceImpl;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
+import org.generationcp.middleware.domain.ontology.Variable;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
+import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Person;
@@ -40,13 +48,6 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-
-import com.vaadin.data.Item;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.themes.BaseTheme;
 
 public class GermplasmListExporterTest {
 
@@ -70,6 +71,9 @@ public class GermplasmListExporterTest {
 
 	@Mock
 	private OntologyDataManager ontologyDataManager;
+
+	@Mock
+	private OntologyVariableDataManager ontologyVariableDataManager;
 
 	@Mock
 	private ContextUtil contextUtil;
@@ -114,6 +118,7 @@ public class GermplasmListExporterTest {
 		this._germplasmListExporter.setGermplasmListManager(this.germplasmListManager);
 		this._germplasmListExporter.setUserDataManager(this.userDataManager);
 		this._germplasmListExporter.setInventoryDataManager(this.inventoryDataManager);
+		this._germplasmListExporter.setOntologyVariableDataManager(this.ontologyVariableDataManager);
 		this.germplasmListExporter = Mockito.spy(this._germplasmListExporter);
 
 		Mockito.doReturn("#").when(this.messageSource).getMessage(Message.HASHTAG);
@@ -319,6 +324,14 @@ public class GermplasmListExporterTest {
 
 	@Test(expected = GermplasmListExporterException.class)
 	public void testExportGermplasmListXLSWithException() throws GermplasmListExporterException, MiddlewareQueryException {
+
+		User user = this.getUser();
+		Person person = this.getPerson();
+
+		Mockito.doReturn(Mockito.mock(Variable.class)).when(this.ontologyVariableDataManager)
+				.getVariable(Mockito.anyString(), Mockito.anyInt());
+		Mockito.doReturn(user).when(this.userDataManager).getUserById(Mockito.anyInt());
+		Mockito.doReturn(person).when(this.userDataManager).getPersonById(Mockito.anyInt());
 
 		Mockito.doThrow(new GermplasmListExporterException()).when(this.exportService)
 		.generateGermplasmListExcelFile(Matchers.any(GermplasmListExportInputValues.class));
