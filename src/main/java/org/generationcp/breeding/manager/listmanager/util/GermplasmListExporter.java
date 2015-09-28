@@ -27,6 +27,7 @@ import org.generationcp.middleware.domain.oms.CvId;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.domain.ontology.Variable;
+import org.generationcp.middleware.exceptions.MiddlewareException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -382,12 +383,14 @@ public class GermplasmListExporter {
 	private void addOntologyTermToMap(Map<Integer, Term> termMap, int termId) {
 
 		try {
+			//Term should exist with that id in database.
 			Term term = this.ontologyDataManager.getTermById(termId);
 
-			if (term == null) {
-				GermplasmListExporter.LOG.error("Term with id:" + termId + " does not exist");
-				return;
-			}
+			GermplasmListExporter.LOG.debug("Finding term with id:" + termId + ". Found: " + (term!= null));
+
+            if(term == null){
+                throw new MiddlewareException("Term does not exist with id:" + termId);
+            }
 
 			CvId cvId = CvId.valueOf(term.getVocabularyId());
 
