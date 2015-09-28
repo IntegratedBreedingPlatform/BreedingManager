@@ -369,7 +369,7 @@ public class GermplasmListExporter {
 	private void addVariableToMap(Map<Integer, Variable> variableMap, int termId) {
 
 		try {
-			Variable variable = this.ontologyVariableDataManager.getVariable(this.contextUtil.getCurrentProgramUUID(), termId);
+			Variable variable = this.ontologyVariableDataManager.getVariable(this.contextUtil.getCurrentProgramUUID(), termId, false);
 			if (variable != null) {
 				variableMap.put(variable.getId(), variable);
 			}
@@ -392,14 +392,14 @@ public class GermplasmListExporter {
 			CvId cvId = CvId.valueOf(term.getVocabularyId());
 
 			if (Objects.equals(cvId, CvId.METHODS)) {
-				termMap.put(term.getId(), this.ontologyMethodDataManager.getMethod(term.getId()));
+				termMap.put(term.getId(), this.ontologyMethodDataManager.getMethod(term.getId(), false));
 			} else if (Objects.equals(cvId, CvId.PROPERTIES)) {
-				termMap.put(term.getId(), this.ontologyPropertyDataManager.getProperty(term.getId()));
+				termMap.put(term.getId(), this.ontologyPropertyDataManager.getProperty(term.getId(), false));
 			} else if (Objects.equals(cvId, CvId.SCALES)) {
-				termMap.put(term.getId(), this.ontologyScaleDataManager.getScaleById(term.getId()));
+				termMap.put(term.getId(), this.ontologyScaleDataManager.getScaleById(term.getId(), false));
 			} else {
 				termMap.put(term.getId(),
-						this.ontologyVariableDataManager.getVariable(this.contextUtil.getCurrentProgramUUID(), term.getId()));
+						this.ontologyVariableDataManager.getVariable(this.contextUtil.getCurrentProgramUUID(), term.getId(), false));
 			}
 		} catch (MiddlewareQueryException e) {
 			GermplasmListExporter.LOG.error(e.getMessage(), e);
