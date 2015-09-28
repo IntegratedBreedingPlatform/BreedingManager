@@ -329,7 +329,7 @@ public class GermplasmListExporterTest {
 		Person person = this.getPerson();
 
 		Mockito.doReturn(Mockito.mock(Variable.class)).when(this.ontologyVariableDataManager)
-				.getVariable(Mockito.anyString(), Mockito.anyInt());
+				.getVariable(Mockito.anyString(), Mockito.anyInt(), false);
 		Mockito.doReturn(user).when(this.userDataManager).getUserById(Mockito.anyInt());
 		Mockito.doReturn(person).when(this.userDataManager).getPersonById(Mockito.anyInt());
 
