@@ -597,9 +597,9 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 			}
 		});
 
-		this.listDataTable.addActionHandler(new ListDataTableActionHandler());
+		this.getListDataTable().addActionHandler(new ListDataTableActionHandler());
 
-		this.tableWithSelectAllLayout.getTable().addListener(new Property.ValueChangeListener() {
+		this.getListDataTable().addListener(new Property.ValueChangeListener() {
 
 			private static final long serialVersionUID = 1L;
 
@@ -704,14 +704,13 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 
 	/*--------------------------------------INVENTORY RELATED FUNCTIONS---------------------------------------*/
 
-	private void viewListAction() {
+	void viewListAction() {
 
 		if (!this.hasUnsavedChanges()) {
 			this.makeCrossesParentsComponent.getMakeCrossesMain().setModeView(ModeView.LIST_VIEW);
 		} else {
 			String message =
-					"You have unsaved reservations for this list. " + "You will need to save them before changing views. "
-							+ "Do you want to save your changes?";
+					"You have unsaved reservations for this list. You will need to save them before changing views. Do you want to save your changes?";
 
 			this.makeCrossesParentsComponent.getMakeCrossesMain().showUnsavedChangesConfirmDialog(message, ModeView.LIST_VIEW);
 		}
@@ -737,7 +736,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		}
 	}
 
-	private void viewInventoryAction() {
+	void viewInventoryAction() {
 		if (!this.hasUnsavedChanges()) {
 			this.makeCrossesParentsComponent.getMakeCrossesMain().setModeView(ModeView.INVENTORY_VIEW);
 		} else {
@@ -775,7 +774,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 
 	public void reserveInventoryAction() {
 		// checks if the screen is in the inventory view
-		if (!this.inventoryViewActionMenu.isVisible()) {
+		if (!this.listInventoryTable.isVisible()) {
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
 					"Please change to Inventory View first.");
 		} else {
@@ -880,10 +879,10 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		}
 	}
 
-	public void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReservationsToSave2) {
+	public void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReservationsToSave) {
 
 		Set<Integer> entryIds = new HashSet<Integer>();
-		for (Entry<ListEntryLotDetails, Double> details : this.validReservationsToSave.entrySet()) {
+		for (Entry<ListEntryLotDetails, Double> details : validReservationsToSave.entrySet()) {
 			entryIds.add(details.getKey().getId());
 		}
 
@@ -899,7 +898,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		}
 
 		for (GermplasmListData listData : germplasmListDataEntries) {
-			Item item = this.listDataTable.getItem(listData.getId());
+			Item item = this.getListDataTable().getItem(listData.getId());
 
 			// #1 Available Inventory
 			// default value
@@ -1020,6 +1019,10 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 
 	public Label getTotalSelectedListEntriesLabel() {
 		return this.totalSelectedListEntriesLabel;
+	}
+
+	public Label getListEntriesLabel() {
+		return this.listEntriesLabel;
 	}
 
 }
