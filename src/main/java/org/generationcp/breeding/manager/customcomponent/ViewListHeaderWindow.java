@@ -18,7 +18,7 @@ public class ViewListHeaderWindow extends BaseSubWindow implements BreedingManag
 	private final GermplasmList germplasmList;
 	private ViewListHeaderComponent listHeaderComponent;
 
-	public ViewListHeaderWindow(GermplasmList germplasmList) {
+	public ViewListHeaderWindow(final GermplasmList germplasmList) {
 		super();
 		this.germplasmList = germplasmList;
 	}
@@ -45,6 +45,22 @@ public class ViewListHeaderWindow extends BaseSubWindow implements BreedingManag
 		this.setWidth("350px");
 
 		this.listHeaderComponent = new ViewListHeaderComponent(this.germplasmList);
+	}
+
+	public GermplasmList getGermplasmList() {
+		return germplasmList;
+	}
+
+	/**
+	 * We are using this function to set status, because we have 2 copies of germplasm list, one is in ViewListHeaderWindow and the other
+	 * one is in ViewListHeaderComponent, which is due to the implementation of how we instantiateComponents() in Vaadin
+	 * It could be improved in the future.
+	 *
+	 * @param status
+	 */
+	public void setGermplasmListStatus(final int status) {
+		this.getGermplasmList().setStatus(status);
+		this.getListHeaderComponent().setStatus(status);
 	}
 
 	@Override

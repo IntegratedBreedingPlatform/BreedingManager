@@ -8,10 +8,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+import java.util.Objects;
 
 import javax.annotation.Resource;
 
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Table;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.ExportColumnHeader;
@@ -21,13 +23,20 @@ import org.generationcp.commons.pojo.GermplasmParents;
 import org.generationcp.commons.service.ExportService;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.domain.dms.StandardVariable;
+import org.generationcp.middleware.domain.oms.CvId;
+import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
+import org.generationcp.middleware.domain.ontology.Variable;
+import org.generationcp.middleware.exceptions.MiddlewareException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
+import org.generationcp.middleware.manager.ontology.api.OntologyMethodDataManager;
+import org.generationcp.middleware.manager.ontology.api.OntologyPropertyDataManager;
+import org.generationcp.middleware.manager.ontology.api.OntologyScaleDataManager;
+import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Person;
@@ -37,15 +46,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Table;
-
 @Configurable
 public class GermplasmListExporter {
 
 	private static final String FEMALE_PARENT = "FEMALE PARENT";
-
-	public static final String PROGRAM_UUID = UUID.randomUUID().toString();
 
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmListExporter.class);
 
@@ -60,6 +64,18 @@ public class GermplasmListExporter {
 
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
+
+	@Autowired
+	private OntologyMethodDataManager ontologyMethodDataManager;
+
+	@Autowired
+	private OntologyPropertyDataManager ontologyPropertyDataManager;
+
+	@Autowired
+	private OntologyScaleDataManager ontologyScaleDataManager;
+
+	@Autowired
+	private OntologyVariableDataManager ontologyVariableDataManager;
 
 	@Autowired
 	private InventoryDataManager inventoryDataManager;
@@ -182,11 +198,11 @@ public class GermplasmListExporter {
 
 		input.setVisibleColumnMap(this.getVisibleColumnMap(listDataTable));
 
-		input.setColumnStandardVariableMap(this.getGermplasmStandardVariableMap(listDataTable));
+		input.setColumnTermMap(this.getOntologyTermMap(listDataTable));
 
-		input.setInventoryStandardVariableMap(this.getInventoryStandardVariables());
+		input.setInventoryVariableMap(this.getInventoryVariables());
 
-		input.setVariateStandardVariableMap(this.getVariateStandardVariables());
+		input.setVariateVariableMap(this.getVariateVariables());
 
 		input.setGermplasmParents(this.getGermplasmParentsMap(listDataTable, this.listId));
 
@@ -319,46 +335,75 @@ public class GermplasmListExporter {
 		return columnHeaderMap;
 	}
 
-	protected Map<Integer, StandardVariable> getGermplasmStandardVariableMap(Table listDataTable) {
+	protected Map<Integer, Term> getOntologyTermMap(Table listDataTable) {
 
-		Map<Integer, StandardVariable> columnStandardVariableMap = new HashMap<>();
+		Map<Integer, Term> columnTermMap = new HashMap<>();
 		Collection<?> columnHeaders = listDataTable.getContainerPropertyIds();
 
 		for (Object column : columnHeaders) {
 			String columnHeader = column.toString();
 			ColumnLabels columnLabel = ColumnLabels.get(columnHeader);
 			if (columnLabel != null && columnLabel.getTermId() != null) {
-				this.addStandardVariableToMap(columnStandardVariableMap, columnLabel.getTermId().getId());
+				this.addOntologyTermToMap(columnTermMap, columnLabel.getTermId().getId());
 			}
 		}
 
-		return columnStandardVariableMap;
+		return columnTermMap;
 	}
 
-	protected Map<Integer, StandardVariable> getInventoryStandardVariables() {
+	protected Map<Integer, Variable> getInventoryVariables() {
 
-		Map<Integer, StandardVariable> standardVariableMap = new HashMap<>();
-		this.addStandardVariableToMap(standardVariableMap, TermId.SEED_AMOUNT_G.getId());
-		this.addStandardVariableToMap(standardVariableMap, TermId.STOCKID.getId());
-		return standardVariableMap;
+		Map<Integer, Variable> variableMap = new HashMap<>();
+		this.addVariableToMap(variableMap, TermId.SEED_AMOUNT_G.getId());
+		this.addVariableToMap(variableMap, TermId.STOCKID.getId());
+		return variableMap;
 	}
 
-	protected Map<Integer, StandardVariable> getVariateStandardVariables() {
+	protected Map<Integer, Variable> getVariateVariables() {
 
-		Map<Integer, StandardVariable> standardVariableMap = new HashMap<>();
-		this.addStandardVariableToMap(standardVariableMap, TermId.NOTES.getId());
-		return standardVariableMap;
+		Map<Integer, Variable> variableMap = new HashMap<>();
+		this.addVariableToMap(variableMap, TermId.NOTES.getId());
+		return variableMap;
 
 	}
 
-	private void addStandardVariableToMap(Map<Integer, StandardVariable> standardVariableMap, int termId) {
+	private void addVariableToMap(Map<Integer, Variable> variableMap, int termId) {
 
 		try {
-			StandardVariable standardVar = this.ontologyDataManager.getStandardVariable(termId, PROGRAM_UUID);
-			if (standardVar != null) {
-				standardVariableMap.put(standardVar.getId(), standardVar);
+			Variable variable = this.ontologyVariableDataManager.getVariable(this.contextUtil.getCurrentProgramUUID(), termId, false);
+			if (variable != null) {
+				variableMap.put(variable.getId(), variable);
 			}
 
+		} catch (MiddlewareQueryException e) {
+			GermplasmListExporter.LOG.error(e.getMessage(), e);
+		}
+	}
+
+	private void addOntologyTermToMap(Map<Integer, Term> termMap, int termId) {
+
+		try {
+			//Term should exist with that id in database.
+			Term term = this.ontologyDataManager.getTermById(termId);
+
+			GermplasmListExporter.LOG.debug("Finding term with id:" + termId + ". Found: " + (term!= null));
+
+            if(term == null){
+                throw new MiddlewareException("Term does not exist with id:" + termId);
+            }
+
+			CvId cvId = CvId.valueOf(term.getVocabularyId());
+
+			if (Objects.equals(cvId, CvId.METHODS)) {
+				termMap.put(term.getId(), this.ontologyMethodDataManager.getMethod(term.getId(), false));
+			} else if (Objects.equals(cvId, CvId.PROPERTIES)) {
+				termMap.put(term.getId(), this.ontologyPropertyDataManager.getProperty(term.getId(), false));
+			} else if (Objects.equals(cvId, CvId.SCALES)) {
+				termMap.put(term.getId(), this.ontologyScaleDataManager.getScaleById(term.getId(), false));
+			} else {
+				termMap.put(term.getId(),
+						this.ontologyVariableDataManager.getVariable(this.contextUtil.getCurrentProgramUUID(), term.getId(), false));
+			}
 		} catch (MiddlewareQueryException e) {
 			GermplasmListExporter.LOG.error(e.getMessage(), e);
 		}
@@ -468,6 +513,10 @@ public class GermplasmListExporter {
 
 	protected void setInventoryDataManager(InventoryDataManager inventoryDataManager) {
 		this.inventoryDataManager = inventoryDataManager;
+	}
+
+	protected void setOntologyVariableDataManager(OntologyVariableDataManager ontologyVariableDataManager) {
+		this.ontologyVariableDataManager = ontologyVariableDataManager;
 	}
 
 	protected String getTermNameFromOntology(ColumnLabels columnLabel) {

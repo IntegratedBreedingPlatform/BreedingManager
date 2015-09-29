@@ -52,7 +52,9 @@ public class ListInventoryDataInitializer {
 		lotDetail.setId(id);
 		lotDetail.setLotId(id);
 		lotDetail.setLocationOfLot(createLocation(id));
+		lotDetail.setLocId(i);
 		lotDetail.setScaleOfLot(createScale(id));
+		lotDetail.setScaleId(i);
 		lotDetail.setAvailableLotBalance(100D);
 		lotDetail.setActualLotBalance(100D);
 		lotDetail.setReservedTotalForEntry(100D);
