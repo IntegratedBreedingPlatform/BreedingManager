@@ -134,7 +134,9 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 
 	@Override
 	public void instantiateComponents() {
-		this.selectFileLabel = new Label(this.messageSource.getMessage(Message.SELECT_GERMPLASM_LIST_FILE));
+		// the &nbsp is neaded to add a whitespace between the text and following button-link
+		this.selectFileLabel = new Label(this.messageSource.getMessage(Message.SELECT_GERMPLASM_LIST_FILE) + "&nbsp");
+		this.selectFileLabel.setContentMode(Label.CONTENT_XHTML);
 
 		this.initializeUploadField();
 
@@ -214,8 +216,12 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 
 	@Override
 	public void layoutComponents() {
-		this.addComponent(this.selectFileLabel, "top:20px");
-		this.addComponent(this.openTemplateButton, "top:21px;left:430px;");
+		// align the message consisting of the text, the link to the template and the end sentence period into one line
+		final HorizontalLayout downloadMessageLayout = new HorizontalLayout();
+		downloadMessageLayout.addComponent(this.selectFileLabel);
+		downloadMessageLayout.addComponent(this.openTemplateButton);
+		downloadMessageLayout.addComponent(new Label(this.messageSource.getMessage(Message.PERIOD)));
+		this.addComponent(downloadMessageLayout, "top:20px;");
 
 		this.addComponent(this.uploadComponents, "top:50px");
 
