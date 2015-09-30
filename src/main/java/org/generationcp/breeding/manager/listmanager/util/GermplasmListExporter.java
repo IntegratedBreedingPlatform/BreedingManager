@@ -394,7 +394,9 @@ public class GermplasmListExporter {
 
 			CvId cvId = CvId.valueOf(term.getVocabularyId());
 
-			if (Objects.equals(cvId, CvId.METHODS)) {
+			if (Objects.equals(cvId, CvId.IBDB_TERMS)) {
+				termMap.put(term.getId(), term);
+			} else if (Objects.equals(cvId, CvId.METHODS)) {
 				termMap.put(term.getId(), this.ontologyMethodDataManager.getMethod(term.getId(), false));
 			} else if (Objects.equals(cvId, CvId.PROPERTIES)) {
 				termMap.put(term.getId(), this.ontologyPropertyDataManager.getProperty(term.getId(), false));
