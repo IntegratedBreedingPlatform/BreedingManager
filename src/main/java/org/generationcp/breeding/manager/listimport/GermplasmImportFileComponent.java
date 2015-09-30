@@ -197,9 +197,6 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 
 		this.openTemplateButton.addListener(new ClickListener() {
 
-			/**
-			 *
-			 */
 			private static final long serialVersionUID = -5277793372784918711L;
 
 			@Override
