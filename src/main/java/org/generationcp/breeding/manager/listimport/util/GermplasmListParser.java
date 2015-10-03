@@ -83,7 +83,19 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	}
 
 	public boolean hasInventoryAmount() {
-		return !this.seedAmountVariate.isEmpty();
+
+		if(this.seedAmountVariate.isEmpty()){
+			return false;
+		}
+
+		for(ImportedGermplasm germplasm : this.importedGermplasmList.getImportedGermplasms()){
+			Double seedAmount = germplasm.getSeedAmount();
+			if(seedAmount > 0.0){
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public boolean hasStockIdFactor() {

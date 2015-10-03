@@ -174,7 +174,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 
 	public void saveTheList() {
 		// TODO: add condition if doesnt have stock id
-		if (this.germplasmListUploader.hasInventoryAmountOnly()) {
+		if (this.germplasmListUploader.hasInventoryAmount()) {
 			this.popupGenerateStockIdsDialog();
 		} else {
 			this.popupSaveAsDialog();
