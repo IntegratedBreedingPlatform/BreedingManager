@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.listimport;
 
 import java.util.Locale;
 
+import org.apache.commons.io.FilenameUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.UploadField;
@@ -78,6 +79,16 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 	}
 
 	public void nextButtonClickAction() {
+
+		// NOTE: Display Error message if Germplasm Import file contains invalid extension like .doc, .pdf, .docx etc.
+		// Valid File Extensions are .xls and .xlsx
+		final String extension = FilenameUtils.getExtension(this.germplasmListUploader.getOriginalFilename());
+		if (!extension.equalsIgnoreCase("xls") && !extension.equalsIgnoreCase("xlsx")){
+			MessageNotifier.showError(this.getWindow(), "Error", "Invalid Import File Type.\n"
+					+ "Please upload a properly formatted XLS or XLSX file.");
+			return;
+		}
+
 		try {
 			this.germplasmListUploader.doParseWorkbook();
 
