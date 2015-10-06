@@ -186,7 +186,7 @@ public class SaveCrossesMadeAction implements Serializable {
 		this.germplasmToListDataMap.clear();
 
 		List<GermplasmListData> allExistingEntries =
-				this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId(), 0, Integer.MAX_VALUE);
+				this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId());
 
 		// Add only non deleted list data
 		this.existingListEntries = new ArrayList<GermplasmListData>();
@@ -273,8 +273,7 @@ public class SaveCrossesMadeAction implements Serializable {
 		List<GermplasmListData> allExistingEntries = new ArrayList<GermplasmListData>();
 
 		if (this.germplasmList != null) {
-			allExistingEntries.addAll(this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId(), 0,
-					Integer.MAX_VALUE));
+			allExistingEntries.addAll(this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId()));
 			Integer entryId = 1;
 			for (GermplasmListData germplasmListData : allExistingEntries) {
 				if (germplasmListData.getStatus() != 9) {
