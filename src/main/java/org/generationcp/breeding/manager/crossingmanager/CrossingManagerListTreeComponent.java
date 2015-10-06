@@ -28,8 +28,8 @@ public class CrossingManagerListTreeComponent extends ListTreeTableComponent {
 	private final CrossingManagerMakeCrossesComponent source;
 	private final CrossingManagerTreeActionsListener crossingTreeActionsListener;
 
-	public CrossingManagerListTreeComponent(CrossingManagerTreeActionsListener treeActionsListener,
-			CrossingManagerMakeCrossesComponent source) {
+	public CrossingManagerListTreeComponent(final CrossingManagerTreeActionsListener treeActionsListener,
+			final CrossingManagerMakeCrossesComponent source) {
 		super(treeActionsListener);
 		this.crossingTreeActionsListener = treeActionsListener;
 		this.source = source;
@@ -45,16 +45,16 @@ public class CrossingManagerListTreeComponent extends ListTreeTableComponent {
 			private static final long serialVersionUID = -3383724866291655410L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 
-				Integer germplasmListId = (Integer) CrossingManagerListTreeComponent.this.getGermplasmListSource().getValue();
+				final Integer germplasmListId = (Integer) CrossingManagerListTreeComponent.this.getGermplasmListSource().getValue();
 
 				if (CrossingManagerListTreeComponent.this.source.getModeView().equals(ModeView.INVENTORY_VIEW)) {
 					if (CrossingManagerListTreeComponent.this.crossingTreeActionsListener instanceof SelectParentsComponent) {
-						MakeCrossesParentsComponent parentsComponent =
+						final MakeCrossesParentsComponent parentsComponent =
 								((SelectParentsComponent) CrossingManagerListTreeComponent.this.crossingTreeActionsListener)
 										.getCrossingManagerMakeCrossesComponent().getParentsComponent();
-						InventoryTableDropHandler inventoryTableDropHandler =
+						final InventoryTableDropHandler inventoryTableDropHandler =
 								parentsComponent.getFemaleParentTab().getInventoryTableDropHandler();
 						inventoryTableDropHandler.addGermplasmListInventoryData(germplasmListId);
 
@@ -82,17 +82,17 @@ public class CrossingManagerListTreeComponent extends ListTreeTableComponent {
 			private static final long serialVersionUID = -7685621731871659880L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 
-				Integer germplasmListId = (Integer) CrossingManagerListTreeComponent.this.getGermplasmListSource().getValue();
+				final Integer germplasmListId = (Integer) CrossingManagerListTreeComponent.this.getGermplasmListSource().getValue();
 
 				if (CrossingManagerListTreeComponent.this.source.getModeView().equals(ModeView.INVENTORY_VIEW)) {
 
 					if (CrossingManagerListTreeComponent.this.crossingTreeActionsListener instanceof SelectParentsComponent) {
-						MakeCrossesParentsComponent parentsComponent =
+						final MakeCrossesParentsComponent parentsComponent =
 								((SelectParentsComponent) CrossingManagerListTreeComponent.this.crossingTreeActionsListener)
 										.getCrossingManagerMakeCrossesComponent().getParentsComponent();
-						InventoryTableDropHandler inventoryTableDropHandler =
+						final InventoryTableDropHandler inventoryTableDropHandler =
 								parentsComponent.getMaleParentTab().getInventoryTableDropHandler();
 						inventoryTableDropHandler.addGermplasmListInventoryData(germplasmListId);
 
@@ -120,7 +120,7 @@ public class CrossingManagerListTreeComponent extends ListTreeTableComponent {
 			private static final long serialVersionUID = 2103866815084444657L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				if (CrossingManagerListTreeComponent.this.germplasmList != null) {
 					CrossingManagerListTreeComponent.this.getTreeActionsListener().studyClicked(
 							CrossingManagerListTreeComponent.this.germplasmList);
@@ -136,7 +136,7 @@ public class CrossingManagerListTreeComponent extends ListTreeTableComponent {
 			private static final long serialVersionUID = -3708969669687499248L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				CrossingManagerListTreeComponent.this.closeTreeWindow(event);
 			}
 
@@ -144,13 +144,13 @@ public class CrossingManagerListTreeComponent extends ListTreeTableComponent {
 
 	}
 
-	protected void closeTreeWindow(ClickEvent event) {
-		Window dialog = event.getComponent().getParent().getWindow();
+	protected void closeTreeWindow(final ClickEvent event) {
+		final Window dialog = event.getComponent().getParent().getWindow();
 		dialog.getParent().getWindow().removeWindow(dialog);
 	}
 
 	public void showWarningInInventoryView() {
-		String message = "Please switch to list view first before adding entries to parent lists.";
+		final String message = "Please switch to list view first before adding entries to parent lists.";
 		MessageNotifier.showError(this.getWindow(), "Warning!", message);
 	}
 
@@ -159,7 +159,7 @@ public class CrossingManagerListTreeComponent extends ListTreeTableComponent {
 
 		super.layoutComponents();
 
-		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
+		final HorizontalLayout actionButtonsLayout = new HorizontalLayout();
 		actionButtonsLayout.setSpacing(true);
 		actionButtonsLayout.setStyleName("align-center");
 		actionButtonsLayout.setMargin(true, false, false, false);
@@ -230,16 +230,16 @@ public class CrossingManagerListTreeComponent extends ListTreeTableComponent {
 	}
 
 	@Override
-	public void studyClickedAction(GermplasmList germplasmList) {
+	public void studyClickedAction(final GermplasmList germplasmList) {
 		this.toggleListSelectionButtons(true);
 	}
 
 	@Override
-	public void folderClickedAction(GermplasmList germplasmList) {
+	public void folderClickedAction(final GermplasmList germplasmList) {
 		this.toggleListSelectionButtons(false);
 	}
 
-	private void toggleListSelectionButtons(boolean enabled) {
+	private void toggleListSelectionButtons(final boolean enabled) {
 		this.addToFemaleListButton.setEnabled(enabled);
 		this.addToMaleListButton.setEnabled(enabled);
 		this.openForReviewButton.setEnabled(enabled);
