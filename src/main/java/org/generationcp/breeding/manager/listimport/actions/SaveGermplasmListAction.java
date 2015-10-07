@@ -150,8 +150,9 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 		final GermplasmList list = this.saveGermplasmListRecord(germplasmList);
 
-		if (germplasmList.getId() != null) {
-			ListCommonActionsUtil.deleteExistingListEntries(germplasmList, this.germplasmListManager);
+		final Integer existingListId = germplasmList.getId();
+		if (existingListId != null) {
+			ListCommonActionsUtil.deleteExistingListEntries(existingListId, this.germplasmListManager);
 		}
 
 		this.saveGermplasmListDataRecords(germplasmNameObjects, list, filename, importedGermplasms);
