@@ -59,8 +59,8 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 @Configurable
-public class SpecifyGermplasmDetailsComponent extends VerticalLayout
-		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, SaveListAsDialogSource {
+public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
+		BreedingManagerLayout, SaveListAsDialogSource {
 
 	private static final long serialVersionUID = 2762965368037453497L;
 	private static final Logger LOG = LoggerFactory.getLogger(SpecifyGermplasmDetailsComponent.class);
@@ -112,7 +112,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 
 	private final Boolean viaToolURL;
 
-	public SpecifyGermplasmDetailsComponent(GermplasmImportMain source, Boolean viaToolURL) {
+	public SpecifyGermplasmDetailsComponent(final GermplasmImportMain source, final Boolean viaToolURL) {
 		this.source = source;
 		this.viaToolURL = viaToolURL;
 	}
@@ -125,7 +125,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 		return this.importedGermplasms;
 	}
 
-	public void setImportedGermplasms(List<ImportedGermplasm> importedGermplasms) {
+	public void setImportedGermplasms(final List<ImportedGermplasm> importedGermplasms) {
 		this.importedGermplasms = importedGermplasms;
 	}
 
@@ -133,7 +133,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 		return this.germplasmListUploader;
 	}
 
-	public void setGermplasmListUploader(GermplasmListUploader germplasmListUploader) {
+	public void setGermplasmListUploader(final GermplasmListUploader germplasmListUploader) {
 		this.germplasmListUploader = germplasmListUploader;
 	}
 
@@ -186,8 +186,9 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 
 		this.germplasmList = new GermplasmList();
 
-		String sDate = DateUtil.formatDateAsStringValue(this.germplasmListUploader.getImportedGermplasmList().getDate(),
-				DateUtil.DATE_AS_NUMBER_FORMAT);
+		final String sDate =
+				DateUtil.formatDateAsStringValue(this.germplasmListUploader.getImportedGermplasmList().getDate(),
+						DateUtil.DATE_AS_NUMBER_FORMAT);
 		this.germplasmList.setName(this.germplasmListUploader.getImportedGermplasmList().getName());
 		this.germplasmList.setDate(Long.parseLong(sDate));
 		this.germplasmList.setType(this.germplasmListUploader.getImportedGermplasmList().getType());
@@ -196,27 +197,27 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 		try {
 			this.germplasmList.setUserId(this.contextUtil.getCurrentUserLocalId());
 			this.germplasmList.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			SpecifyGermplasmDetailsComponent.LOG.error(e.getMessage(), e);
 		}
 
-		List<GermplasmName> germplasmNameObjects = this.getGermplasmNameObjects();
-		List<GermplasmName> germplasmNameObjectsToBeSaved = new ArrayList<GermplasmName>();
+		final List<GermplasmName> germplasmNameObjects = this.getGermplasmNameObjects();
+		final List<GermplasmName> germplasmNameObjectsToBeSaved = new ArrayList<GermplasmName>();
 
 		for (int i = 0; i < germplasmNameObjects.size(); i++) {
-			Integer gid = germplasmNameObjects.get(i).getGermplasm().getGid();
+			final Integer gid = germplasmNameObjects.get(i).getGermplasm().getGid();
 			if (this.processGermplasmAction.getMatchedGermplasmIds().contains(gid)) {
 				// Get germplasm using temporarily set GID, then create map
 				Germplasm germplasmToBeUsed;
 				try {
 					germplasmToBeUsed = this.germplasmDataManager.getGermplasmByGID(gid);
 					germplasmNameObjectsToBeSaved.add(new GermplasmName(germplasmToBeUsed, germplasmNameObjects.get(i).getName()));
-				} catch (MiddlewareQueryException e) {
+				} catch (final MiddlewareQueryException e) {
 					SpecifyGermplasmDetailsComponent.LOG.error(e.getMessage(), e);
 				}
 			} else {
-				germplasmNameObjectsToBeSaved
-						.add(new GermplasmName(germplasmNameObjects.get(i).getGermplasm(), germplasmNameObjects.get(i).getName()));
+				germplasmNameObjectsToBeSaved.add(new GermplasmName(germplasmNameObjects.get(i).getGermplasm(), germplasmNameObjects.get(i)
+						.getName()));
 			}
 		}
 
@@ -261,7 +262,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 	}
 
 	protected void updateTotalEntriesLabel() {
-		int count = this.germplasmDetailsTable.getItemIds().size();
+		final int count = this.germplasmDetailsTable.getItemIds().size();
 		if (count == 0) {
 			this.totalEntriesLabel.setValue(this.messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
 		} else {
@@ -277,19 +278,19 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 		return this.source;
 	}
 
-	public void setGermplasmBreedingMethod(String breedingMethod) {
+	public void setGermplasmBreedingMethod(final String breedingMethod) {
 		this.germplasmFieldsComponent.setGermplasmBreedingMethod(breedingMethod);
 	}
 
-	public void setGermplasmDate(Date germplasmDate) throws ParseException {
+	public void setGermplasmDate(final Date germplasmDate) throws ParseException {
 		this.germplasmFieldsComponent.setGermplasmDate(germplasmDate);
 	}
 
-	public void setGermplasmLocation(String germplasmLocation) {
+	public void setGermplasmLocation(final String germplasmLocation) {
 		this.germplasmFieldsComponent.setGermplasmLocation(germplasmLocation);
 	}
 
-	public void setGermplasmListType(String germplasmListType) {
+	public void setGermplasmListType(final String germplasmListType) {
 		this.germplasmFieldsComponent.setGermplasmListType(germplasmListType);
 	}
 
@@ -302,8 +303,8 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 		this.pedigreeOptionComboBox.setItemCaption(3, this.messageSource.getMessage(Message.IMPORT_PEDIGREE_OPTION_THREE));
 	}
 
-	protected void showFirstPedigreeOption(boolean visible) {
-		Item firstOption = this.pedigreeOptionComboBox.getItem(1);
+	protected void showFirstPedigreeOption(final boolean visible) {
+		final Item firstOption = this.pedigreeOptionComboBox.getItem(1);
 		if (firstOption == null && visible) {
 			this.pedigreeOptionComboBox.removeAllItems();
 			this.initializePedigreeOptions();
@@ -362,7 +363,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 				new CheckBox(this.messageSource.getMessage(Message.AUTOMATICALLY_ACCEPT_SINGLE_MATCHES_WHENEVER_FOUND));
 		this.automaticallyAcceptSingleMatchesCheckbox.setVisible(false);
 
-		GermplasmImportButtonClickListener clickListener = new GermplasmImportButtonClickListener(this);
+		final GermplasmImportButtonClickListener clickListener = new GermplasmImportButtonClickListener(this);
 
 		this.backButton = new Button();
 		this.backButton.setData(SpecifyGermplasmDetailsComponent.BACK_BUTTON_ID);
@@ -392,8 +393,8 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 		this.germplasmDetailsTable.setColumnCollapsingAllowed(true);
 
 		this.germplasmDetailsTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), this.getTermNameFromOntology(ColumnLabels.ENTRY_ID));
-		this.germplasmDetailsTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(),
-				this.getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
+		this.germplasmDetailsTable
+				.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(), this.getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
 		this.germplasmDetailsTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(),
 				this.getTermNameFromOntology(ColumnLabels.DESIGNATION));
 		this.germplasmDetailsTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(), this.getTermNameFromOntology(ColumnLabels.PARENTAGE));
@@ -411,7 +412,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 
 	}
 
-	protected String getTermNameFromOntology(ColumnLabels columnLabels) {
+	protected String getTermNameFromOntology(final ColumnLabels columnLabels) {
 		return columnLabels.getTermNameFromOntology(this.ontologyDataManager);
 	}
 
@@ -434,7 +435,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 			private static final long serialVersionUID = -1796753441697604604L;
 
 			@Override
-			public void valueChange(ValueChangeEvent event) {
+			public void valueChange(final ValueChangeEvent event) {
 				SpecifyGermplasmDetailsComponent.this.toggleAcceptSingleMatchesCheckbox();
 			}
 		});
@@ -446,22 +447,22 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 		this.setWidth("700px");
 
 		// Review Import Details Layout
-		VerticalLayout importDetailsLayout = new VerticalLayout();
+		final VerticalLayout importDetailsLayout = new VerticalLayout();
 		importDetailsLayout.setSpacing(true);
 		importDetailsLayout.addComponent(this.reviewImportDetailsLabel);
 		importDetailsLayout.addComponent(this.totalEntriesLabel);
 		importDetailsLayout.addComponent(this.germplasmDetailsTable);
 
 		// Pedigree Options Layout
-		VerticalLayout pedigreeOptionsLayout = new VerticalLayout();
+		final VerticalLayout pedigreeOptionsLayout = new VerticalLayout();
 		pedigreeOptionsLayout.setSpacing(true);
 
-		VerticalLayout pedigreeControlsLayoutVL = new VerticalLayout();
+		final VerticalLayout pedigreeControlsLayoutVL = new VerticalLayout();
 		pedigreeControlsLayoutVL.setSpacing(true);
 		pedigreeControlsLayoutVL.addComponent(this.pedigreeOptionComboBox);
 		pedigreeControlsLayoutVL.addComponent(this.automaticallyAcceptSingleMatchesCheckbox);
 
-		HorizontalLayout pedigreeControlsLayout = new HorizontalLayout();
+		final HorizontalLayout pedigreeControlsLayout = new HorizontalLayout();
 		pedigreeControlsLayout.addComponent(this.pedigreeOptionsLabel);
 		pedigreeControlsLayout.addComponent(pedigreeControlsLayoutVL);
 
@@ -469,7 +470,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 		pedigreeOptionsLayout.addComponent(pedigreeControlsLayout);
 
 		// Buttons Layout
-		HorizontalLayout buttonLayout = new HorizontalLayout();
+		final HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setWidth("100%");
 		buttonLayout.setHeight("40px");
 		buttonLayout.setSpacing(true);
@@ -479,9 +480,9 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 		buttonLayout.setComponentAlignment(this.backButton, Alignment.BOTTOM_RIGHT);
 		buttonLayout.setComponentAlignment(this.nextButton, Alignment.BOTTOM_LEFT);
 
-		VerticalLayout spacerLayout = new VerticalLayout();
+		final VerticalLayout spacerLayout = new VerticalLayout();
 		spacerLayout.setHeight("30px");
-		VerticalLayout spacerLayout2 = new VerticalLayout();
+		final VerticalLayout spacerLayout2 = new VerticalLayout();
 		spacerLayout2.setHeight("30px");
 
 		this.addComponent(this.germplasmFieldsComponent);
@@ -498,12 +499,12 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 		this.automaticallyAcceptSingleMatchesCheckbox.setValue(true);
 
 		if (this.pedigreeOptionComboBox.getValue() != null) {
-			boolean selectGermplasmOptionChosen = this.pedigreeOptionComboBox.getValue().equals(3);
+			final boolean selectGermplasmOptionChosen = this.pedigreeOptionComboBox.getValue().equals(3);
 			this.automaticallyAcceptSingleMatchesCheckbox.setVisible(selectGermplasmOptionChosen);
 		}
 	}
 
-	public void initializeFromImportFile(ImportedGermplasmList importedGermplasmList) {
+	public void initializeFromImportFile(final ImportedGermplasmList importedGermplasmList) {
 
 		this.importedGermplasmList = importedGermplasmList;
 		this.getGermplasmFieldsComponent().refreshLayout(this.germplasmListUploader.hasInventoryAmountOnly());
@@ -523,16 +524,16 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 		}
 
 		String germplasmSource;
-		String fileNameWithoutExtension = FileUtils.getFilenameWithoutExtension(importedGermplasmList.getFilename());
+		final String fileNameWithoutExtension = FileUtils.getFilenameWithoutExtension(importedGermplasmList.getFilename());
 		for (int i = 0; i < this.getImportedGermplasms().size(); i++) {
-			ImportedGermplasm importedGermplasm = this.getImportedGermplasms().get(i);
+			final ImportedGermplasm importedGermplasm = this.getImportedGermplasms().get(i);
 			if (importedGermplasm.getSource() == null) {
 				germplasmSource = fileNameWithoutExtension + ":" + (i + 1);
 			} else {
 				germplasmSource = importedGermplasm.getSource();
 			}
-			this.getGermplasmDetailsTable()
-					.addItem(new Object[] {importedGermplasm.getEntryId(), importedGermplasm.getEntryCode(), importedGermplasm.getDesig(),
+			this.getGermplasmDetailsTable().addItem(
+					new Object[] {importedGermplasm.getEntryId(), importedGermplasm.getEntryCode(), importedGermplasm.getDesig(),
 							importedGermplasm.getCross(), importedGermplasm.getGid(), importedGermplasm.getInventoryId(),
 							importedGermplasm.getSeedAmount(), germplasmSource}, new Integer(i + 1));
 		}
@@ -547,15 +548,16 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 	}
 
 	@Override
-	public void saveList(GermplasmList list) {
+	public void saveList(final GermplasmList list) {
 
-		SaveGermplasmListAction saveGermplasmListAction = new SaveGermplasmListAction();
-		Window window = this.source.getWindow();
+		final SaveGermplasmListAction saveGermplasmListAction = new SaveGermplasmListAction();
+		final Window window = this.source.getWindow();
 
 		try {
-			Integer listId = saveGermplasmListAction.saveRecords(list, this.getGermplasmNameObjects(), this.getNewNames(),
-					this.germplasmListUploader.getOriginalFilename(), this.processGermplasmAction.getMatchedGermplasmIds(),
-					this.importedGermplasmList, this.getSeedStorageLocation());
+			final Integer listId =
+					saveGermplasmListAction.saveRecords(list, this.getGermplasmNameObjects(), this.getNewNames(),
+							this.germplasmListUploader.getOriginalFilename(), this.processGermplasmAction.getMatchedGermplasmIds(),
+							this.importedGermplasmList, this.getSeedStorageLocation());
 
 			if (listId != null) {
 				MessageNotifier.showMessage(window, this.messageSource.getMessage(Message.SUCCESS),
@@ -578,7 +580,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 				}
 			}
 
-		} catch (MiddlewareException e) {
+		} catch (final MiddlewareException e) {
 			MessageNotifier.showError(window, "ERROR", "Error with saving germplasm list. Please see log for details.");
 			SpecifyGermplasmDetailsComponent.LOG.error(e.getMessage(), e);
 		}
@@ -592,21 +594,21 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 					&& this.germplasmFieldsComponent.getSeedLocationComboBox().getValue() != null) {
 				storageLocationId = Integer.valueOf(this.germplasmFieldsComponent.getSeedLocationComboBox().getValue().toString());
 			}
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			SpecifyGermplasmDetailsComponent.LOG.error("Error ar SpecifyGermplasmDetailsComponent: getSeedStorageLocation() " + e);
 		}
 
 		return storageLocationId;
 	}
 
-	private void notifyExternalApplication(Window window, Integer listId) {
+	private void notifyExternalApplication(final Window window, final Integer listId) {
 		if (window != null) {
 			window.executeJavaScript("window.parent.closeImportFrame(" + listId + ");");
 		}
 	}
 
 	@Override
-	public void setCurrentlySavedGermplasmList(GermplasmList list) {
+	public void setCurrentlySavedGermplasmList(final GermplasmList list) {
 		this.germplasmList = list;
 	}
 
@@ -633,15 +635,15 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 		return this.importedGermplasmList;
 	}
 
-	public void setGermplasmDetailsTable(Table germplasmDetailsTable) {
+	public void setGermplasmDetailsTable(final Table germplasmDetailsTable) {
 		this.germplasmDetailsTable = germplasmDetailsTable;
 	}
 
-	public void setProcessGermplasmAction(ProcessImportedGermplasmAction processGermplasmAction) {
+	public void setProcessGermplasmAction(final ProcessImportedGermplasmAction processGermplasmAction) {
 		this.processGermplasmAction = processGermplasmAction;
 	}
 
-	public void setContextUtil(ContextUtil contextUtil) {
+	public void setContextUtil(final ContextUtil contextUtil) {
 		this.contextUtil = contextUtil;
 	}
 
