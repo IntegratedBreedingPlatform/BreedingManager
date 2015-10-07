@@ -21,8 +21,6 @@ import com.vaadin.ui.Component;
 
 public class ListCommonActionsUtilTest {
 
-	private ListCommonActionsUtil util;
-
 	private GermplasmList listToSave;
 	private List<GermplasmListData> listEntries;
 	private Boolean forceHasChanges;
@@ -64,8 +62,8 @@ public class ListCommonActionsUtilTest {
 
 	@Test
 	public void testSetDesignationOfMatchingSavedEntry_WhenDesignationIsNull() {
-		GermplasmListData entry = new GermplasmListData();
-		GermplasmListData matchingSavedEntry = new GermplasmListData();
+		final GermplasmListData entry = new GermplasmListData();
+		final GermplasmListData matchingSavedEntry = new GermplasmListData();
 
 		ListCommonActionsUtil.setDesignationOfMatchingSavedEntry(entry, matchingSavedEntry);
 
@@ -75,23 +73,23 @@ public class ListCommonActionsUtilTest {
 
 	@Test
 	public void testSetDesignationOfMatchingSavedEntry_WhenDesignationIsNotNull() {
-		GermplasmListData entry = new GermplasmListData();
-		String expectedDesignation = "Expected Designation";
+		final GermplasmListData entry = new GermplasmListData();
+		final String expectedDesignation = "Expected Designation";
 		entry.setDesignation(expectedDesignation);
-		GermplasmListData matchingSavedEntry = new GermplasmListData();
+		final GermplasmListData matchingSavedEntry = new GermplasmListData();
 
 		ListCommonActionsUtil.setDesignationOfMatchingSavedEntry(entry, matchingSavedEntry);
 
-		String actualDesignation = matchingSavedEntry.getDesignation();
+		final String actualDesignation = matchingSavedEntry.getDesignation();
 		Assert.assertEquals("Expecting that the designation value is " + expectedDesignation + " but returned " + actualDesignation,
 				expectedDesignation, actualDesignation);
 	}
 
 	@Test
 	public void testSetEntryCodeOfMatchingSavedEntry_WhenEntryCodeIsNull() {
-		GermplasmListData entry = new GermplasmListData();
+		final GermplasmListData entry = new GermplasmListData();
 		entry.setEntryId(1);
-		GermplasmListData matchingSavedEntry = new GermplasmListData();
+		final GermplasmListData matchingSavedEntry = new GermplasmListData();
 
 		ListCommonActionsUtil.setEntryCodeOfMatchingSavedEntry(entry, matchingSavedEntry);
 
@@ -101,22 +99,22 @@ public class ListCommonActionsUtilTest {
 
 	@Test
 	public void testSetEntryCodeOfMatchingSavedEntry_WhenEntryCodeIsNotNull() {
-		GermplasmListData entry = new GermplasmListData();
-		String expectedEntryCode = "Expected Entry Code";
+		final GermplasmListData entry = new GermplasmListData();
+		final String expectedEntryCode = "Expected Entry Code";
 		entry.setEntryCode(expectedEntryCode);
-		GermplasmListData matchingSavedEntry = new GermplasmListData();
+		final GermplasmListData matchingSavedEntry = new GermplasmListData();
 
 		ListCommonActionsUtil.setEntryCodeOfMatchingSavedEntry(entry, matchingSavedEntry);
 
-		String actualEntryCode = matchingSavedEntry.getEntryCode();
+		final String actualEntryCode = matchingSavedEntry.getEntryCode();
 		Assert.assertEquals("Expecting that the entry code value is " + expectedEntryCode + " but returned " + actualEntryCode,
 				expectedEntryCode, actualEntryCode);
 	}
 
 	@Test
 	public void testSetSeedSourceOfMatchingSavedEntry_WhenSeedSourceIsNull() {
-		GermplasmListData entry = new GermplasmListData();
-		GermplasmListData matchingSavedEntry = new GermplasmListData();
+		final GermplasmListData entry = new GermplasmListData();
+		final GermplasmListData matchingSavedEntry = new GermplasmListData();
 
 		ListCommonActionsUtil.setSeedSourceOfMatchingSavedEntry(entry, matchingSavedEntry);
 
@@ -126,22 +124,22 @@ public class ListCommonActionsUtilTest {
 
 	@Test
 	public void testSetSeedSourceOfMatchingSavedEntry_WhenSeedSourceIsNotNull() {
-		GermplasmListData entry = new GermplasmListData();
-		String expectedSeedSource = "Expected Seed Source";
+		final GermplasmListData entry = new GermplasmListData();
+		final String expectedSeedSource = "Expected Seed Source";
 		entry.setSeedSource(expectedSeedSource);
-		GermplasmListData matchingSavedEntry = new GermplasmListData();
+		final GermplasmListData matchingSavedEntry = new GermplasmListData();
 
 		ListCommonActionsUtil.setSeedSourceOfMatchingSavedEntry(entry, matchingSavedEntry);
 
-		String actualSeedSource = matchingSavedEntry.getSeedSource();
+		final String actualSeedSource = matchingSavedEntry.getSeedSource();
 		Assert.assertEquals("Expecting that the seed source value is " + expectedSeedSource + " but returned " + actualSeedSource,
 				expectedSeedSource, actualSeedSource);
 	}
 
 	@Test
 	public void testSetGroupNameOfMatchingSavedEntry_WhenGroupNameIsNull() {
-		GermplasmListData entry = new GermplasmListData();
-		GermplasmListData matchingSavedEntry = new GermplasmListData();
+		final GermplasmListData entry = new GermplasmListData();
+		final GermplasmListData matchingSavedEntry = new GermplasmListData();
 
 		ListCommonActionsUtil.setGroupNameOfMatchingSavedEntry(entry, matchingSavedEntry);
 
@@ -151,14 +149,14 @@ public class ListCommonActionsUtilTest {
 
 	@Test
 	public void testSetGroupNameOfMatchingSavedEntry_WhenGroupNameIsNotNull() {
-		GermplasmListData entry = new GermplasmListData();
-		String expectedGroupName = "Expected Group Name";
+		final GermplasmListData entry = new GermplasmListData();
+		final String expectedGroupName = "Expected Group Name";
 		entry.setGroupName(expectedGroupName);
-		GermplasmListData matchingSavedEntry = new GermplasmListData();
+		final GermplasmListData matchingSavedEntry = new GermplasmListData();
 
 		ListCommonActionsUtil.setGroupNameOfMatchingSavedEntry(entry, matchingSavedEntry);
 
-		String actualGroupName = matchingSavedEntry.getGroupName();
+		final String actualGroupName = matchingSavedEntry.getGroupName();
 		Assert.assertEquals("Expecting that the group name value is " + expectedGroupName + " but returned " + actualGroupName,
 				expectedGroupName, actualGroupName);
 	}
