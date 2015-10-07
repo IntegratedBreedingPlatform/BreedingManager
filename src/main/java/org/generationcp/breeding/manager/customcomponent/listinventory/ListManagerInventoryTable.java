@@ -24,6 +24,10 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.themes.BaseTheme;
 
+/**
+ * This table is used for displaying lots in Inventory view specifically for List Manager. It basically handles the drop handling method in
+ * inventory view.
+ */
 public class ListManagerInventoryTable extends ListInventoryTable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ListManagerInventoryTable.class);
@@ -107,7 +111,7 @@ public class ListManagerInventoryTable extends ListInventoryTable {
 					newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entryId);
 					newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(desigButton);
 					newItem.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).setValue(location);
-					newItem.getItemProperty(ColumnLabels.SCALE.getName()).setValue(scale);
+					newItem.getItemProperty(ColumnLabels.UNITS.getName()).setValue(scale);
 					newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(lotDetail.getAvailableLotBalance());
 					newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(lotDetail.getActualLotBalance());
 					newItem.getItemProperty(ColumnLabels.RESERVED.getName()).setValue(lotDetail.getReservedTotalForEntry());

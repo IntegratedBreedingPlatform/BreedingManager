@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -71,11 +70,10 @@ public class ListTypeField extends HorizontalLayout implements InitializingBean,
 			this.populateListType(this.listTypeComboBox);
 		} catch (MiddlewareQueryException e) {
 			ListTypeField.LOG.error("Error in retrieving List Type", e);
-			e.printStackTrace();
 		}
 	}
 
-	private void populateListType(ComboBox selectType) throws MiddlewareQueryException {
+	private void populateListType(ComboBox selectType) {
 		List<UserDefinedField> listTypes = this.germplasmListManager.getGermplasmListTypes();
 
 		for (UserDefinedField listType : listTypes) {
@@ -152,7 +150,7 @@ public class ListTypeField extends HorizontalLayout implements InitializingBean,
 		return this.DEFAULT_LIST_TYPE;
 	}
 
-	public void validate() throws InvalidValueException {
+	public void validate() {
 		this.listTypeComboBox.validate();
 	}
 

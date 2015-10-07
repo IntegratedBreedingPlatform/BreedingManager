@@ -85,7 +85,7 @@ public class GermplasmSelectionComponent extends VerticalLayout implements Initi
 
 	@Override
 	public void addListeners() {
-
+		// not implemented
 	}
 
 	@Override
@@ -133,5 +133,6 @@ public class GermplasmSelectionComponent extends VerticalLayout implements Initi
 
 	@Override
 	public void updateLabels() {
+		// not implemented
 	}
 }

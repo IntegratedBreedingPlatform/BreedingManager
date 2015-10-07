@@ -19,6 +19,7 @@ public class CrossNameSetting implements Serializable {
 	private boolean addSpaceBetweenSuffixAndCode;
 	private Integer numOfDigits;
 	private String separator;
+	private boolean saveParentageDesignationAsAString;
 
 	private Integer startNumber; // "transient" attribute, not saved in DB
 
@@ -27,7 +28,7 @@ public class CrossNameSetting implements Serializable {
 	}
 
 	public CrossNameSetting(String prefix, String suffix, boolean addSpaceBetweenPrefixAndCode, boolean addSpaceBetweenSuffixAndCode,
-			Integer numOfDigits, String separator) {
+			Integer numOfDigits, String separator, boolean saveParentageDesignationAsAString) {
 		super();
 		this.prefix = prefix;
 		this.suffix = suffix;
@@ -35,6 +36,7 @@ public class CrossNameSetting implements Serializable {
 		this.addSpaceBetweenSuffixAndCode = addSpaceBetweenSuffixAndCode;
 		this.numOfDigits = numOfDigits;
 		this.separator = separator;
+		this.saveParentageDesignationAsAString = saveParentageDesignationAsAString;
 	}
 
 	@XmlAttribute
@@ -99,6 +101,15 @@ public class CrossNameSetting implements Serializable {
 		this.separator = separator;
 	}
 
+	@XmlAttribute
+	public boolean isSaveParentageDesignationAsAString() {
+		return this.saveParentageDesignationAsAString;
+	}
+
+	public void setSaveParentageDesignationAsAString(boolean saveParentageDesignationAsAString) {
+		this.saveParentageDesignationAsAString = saveParentageDesignationAsAString;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -110,6 +121,7 @@ public class CrossNameSetting implements Serializable {
 		result = prime * result + (this.separator == null ? 0 : this.separator.hashCode());
 		result = prime * result + (this.startNumber == null ? 0 : this.startNumber.hashCode());
 		result = prime * result + (this.suffix == null ? 0 : this.suffix.hashCode());
+		result = prime * result + (this.saveParentageDesignationAsAString ? 1231 : 1237);
 		return result;
 	}
 
@@ -129,6 +141,7 @@ public class CrossNameSetting implements Serializable {
 		return new EqualsBuilder().append(this.prefix, rhs.prefix).append(this.suffix, rhs.suffix)
 				.append(this.addSpaceBetweenPrefixAndCode, rhs.addSpaceBetweenPrefixAndCode)
 				.append(this.addSpaceBetweenSuffixAndCode, rhs.addSpaceBetweenSuffixAndCode).append(this.numOfDigits, rhs.numOfDigits)
+				.append(this.saveParentageDesignationAsAString, rhs.saveParentageDesignationAsAString)
 				.append(this.separator, rhs.separator).isEquals();
 	}
 
@@ -143,6 +156,8 @@ public class CrossNameSetting implements Serializable {
 		builder.append(this.addSpaceBetweenPrefixAndCode);
 		builder.append(", addSpaceBetweenSuffixAndCode=");
 		builder.append(this.addSpaceBetweenSuffixAndCode);
+		builder.append(", saveParentageDesignationAsAString=");
+		builder.append(this.saveParentageDesignationAsAString);
 		builder.append(", numOfDigits=");
 		builder.append(this.numOfDigits);
 		builder.append(", separator=");

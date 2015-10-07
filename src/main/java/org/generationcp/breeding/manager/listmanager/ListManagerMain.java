@@ -12,6 +12,8 @@ import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialog;
 import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialogSource;
+import org.generationcp.commons.help.document.HelpButton;
+import org.generationcp.commons.help.document.HelpModule;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -49,8 +51,8 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
 	private static final String VERSION_STRING = "<h2>1.0.0</h2>";
 
-	private AbsoluteLayout titleLayout;
-	private Label mainTitle;
+	private HorizontalLayout titleLayout;
+	private Label toolTitle;
 	public static final String BUILD_NEW_LIST_BUTTON_DATA = "Build new list";
 
 	// Tabs
@@ -112,7 +114,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
 	@Override
 	public void updateLabels() {
-		this.mainTitle.setValue(this.messageSource.getMessage(Message.LIST_MANAGER_SCREEN_LABEL) + "  " + ListManagerMain.VERSION_STRING);
+		this.toolTitle.setValue(this.messageSource.getMessage(Message.LIST_MANAGER_SCREEN_LABEL) + "  " + ListManagerMain.VERSION_STRING);
 	}
 
 	@Override
@@ -153,7 +155,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				ListManagerMain.this.showListSelection();
 				ListManagerMain.this.selectTab(ListManagerMain.this.listSelectionTabButton);
 				ListManagerMain.this.deselectTab(ListManagerMain.this.plantSelectionTabButton);
@@ -167,7 +169,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				ListManagerMain.this.showPlantSelection();
 				ListManagerMain.this.selectTab(ListManagerMain.this.plantSelectionTabButton);
 				ListManagerMain.this.deselectTab(ListManagerMain.this.listSelectionTabButton);
@@ -180,7 +182,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 			private static final long serialVersionUID = -8178708255873293566L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				ListManagerMain.this.toggleListBuilder();
 			}
 		});
@@ -190,7 +192,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 			private static final long serialVersionUID = 4202348847712247508L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				ListManagerMain.this.toggleListBuilder();
 			}
 		});
@@ -223,7 +225,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
 	/**
 	 * Loads the specified list in the list builder. Ensures the list is not currently open anywhere else.
-	 *
+	 * 
 	 * @param list the list to load for editing
 	 */
 	public void loadListForEditing(final GermplasmList list) {
@@ -235,7 +237,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
 	/**
 	 * Closes the specified list from any open views.
-	 *
+	 * 
 	 * @param list the list to close
 	 */
 	public void closeList(final GermplasmList list) {
@@ -244,16 +246,16 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
 	/**
 	 * Add selected plants to the list open in the list builder.
-	 *
+	 * 
 	 * @param sourceTable the table to retrieve the selected plants from
 	 */
-	public void addSelectedPlantsToList(Table sourceTable) {
+	public void addSelectedPlantsToList(final Table sourceTable) {
 		this.listBuilderComponent.addFromListDataTable(sourceTable);
 	}
 
 	/**
 	 * Add a plant to the list open in the list builder.
-	 *
+	 * 
 	 * @param gid ID of the germplasm to add
 	 */
 	public void addPlantToList(final Integer gid) {
@@ -294,16 +296,17 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	}
 
 	private void setTitleContent() {
-		this.titleLayout = new AbsoluteLayout();
-		this.titleLayout.setWidth("100%");
+		this.titleLayout = new HorizontalLayout();
+		this.titleLayout.setSpacing(true);
 		this.titleLayout.setHeight("40px");
 
-		this.mainTitle = new Label();
-		this.mainTitle.setStyleName(Bootstrap.Typography.H1.styleName());
-		this.mainTitle.setContentMode(Label.CONTENT_XHTML);
-		this.mainTitle.setValue(this.messageSource.getMessage(Message.LIST_MANAGER_SCREEN_LABEL) + "  " + ListManagerMain.VERSION_STRING);
+		this.toolTitle = new Label(this.messageSource.getMessage(Message.LIST_MANAGER_SCREEN_LABEL));
+		this.toolTitle.setStyleName(Bootstrap.Typography.H1.styleName());
+		this.toolTitle.setContentMode(Label.CONTENT_XHTML);
+		this.toolTitle.setWidth("185px");
 
-		this.titleLayout.addComponent(this.mainTitle, "top:0px;left:0px");
+		this.titleLayout.addComponent(this.toolTitle);
+		this.titleLayout.addComponent(new HelpButton(HelpModule.MANAGE_LIST, "View Manage Lists Tutorial"));
 	}
 
 	private void setTabHeader() {
@@ -360,19 +363,19 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		tabToUnselect.addStyleName("tabHeaderStyle");
 	}
 
-	public void updateUIForEditingList(GermplasmList list) {
+	public void updateUIForEditingList(final GermplasmList list) {
 		// Check if tab for deleted list is opened
 		this.listSelectionComponent.getListDetailsLayout().removeTab(list.getId());
 	}
 
-	public void updateUIForDeletedList(GermplasmList list) {
+	public void updateUIForDeletedList(final GermplasmList list) {
 		SaveListAsDialog saveListAsDialog = null;
 
 		// close the save dialog window in View list if the deleted list is the current selected list
-		ListTabComponent currentListTab =
+		final ListTabComponent currentListTab =
 				(ListTabComponent) this.listSelectionComponent.getListDetailsLayout().getDetailsTabsheet().getSelectedTab();
 		if (currentListTab != null) {
-			ListComponent listComponent = currentListTab.getListComponent();
+			final ListComponent listComponent = currentListTab.getListComponent();
 			saveListAsDialog = listComponent.getSaveListAsDialog();
 			if (saveListAsDialog != null && listComponent.getCurrentListInSaveDialog().getName().equals(list.getName())) {
 				listComponent.getWindow().removeWindow(saveListAsDialog);
@@ -400,26 +403,6 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		this.listSelectionComponent.getListSearchComponent().getSearchResultsComponent().removeSearchResult(list.getId());
 	}
 
-	public Boolean lockGermplasmList(GermplasmList germplasmList) {
-		if (!germplasmList.isLockedList()) {
-			germplasmList.setStatus(germplasmList.getStatus() + 100);
-			try {
-				this.germplasmListManager.updateGermplasmList(germplasmList);
-
-				this.contextUtil.logProgramActivity("Locked a germplasm list.", "Locked list " + germplasmList.getId() + " - "
-						+ germplasmList.getName());
-
-				return true;
-			} catch (MiddlewareQueryException e) {
-				ListManagerMain.LOG.error("Error with locking list.", e);
-				MessageNotifier.showError(this.getWindow(), "Database Error!",
-						"Error with locking list. " + this.messageSource.getMessage(Message.ERROR_REPORT_TO));
-				return false;
-			}
-		}
-		return false;
-	}
-
 	public void setUIForLockedListBuilder() {
 		this.plantSelectionComponent.getSearchResultsComponent().setRightClickActionHandlerEnabled(false);
 		this.listSelectionComponent.getListSearchComponent().getSearchResultsComponent().refreshActionHandler();
@@ -430,7 +413,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		this.listSelectionComponent.getListSearchComponent().getSearchResultsComponent().refreshActionHandler();
 	}
 
-	public Boolean unlockGermplasmList(GermplasmList germplasmList) {
+	public Boolean unlockGermplasmList(final GermplasmList germplasmList) {
 		if (germplasmList.isLockedList()) {
 			germplasmList.setStatus(germplasmList.getStatus() - 100);
 			try {
@@ -440,7 +423,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 						+ germplasmList.getName());
 
 				return true;
-			} catch (MiddlewareQueryException e) {
+			} catch (final MiddlewareQueryException e) {
 				ListManagerMain.LOG.error("Error with unlocking list.", e);
 				MessageNotifier.showError(this.getWindow(), "Database Error!",
 						"Error with unlocking list. " + this.messageSource.getMessage(Message.ERROR_REPORT_TO));
@@ -463,7 +446,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	public void showListBuilder() {
 		this.splitPanel.setSplitPosition(50, Sizeable.UNITS_PERCENTAGE, true);
 
-		String hideTxt =
+		final String hideTxt =
 				"<span class='bms-fa-chevron-right'" + "style='position: relative;" + " bottom: 3px;'" + "'></span>" + "Hide List Builder";
 
 		this.listBuilderToggleBtn1.setCaption(hideTxt);
@@ -475,7 +458,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	public void hideListBuilder() {
 		this.splitPanel.setSplitPosition(0, Sizeable.UNITS_PIXELS, true);
 
-		String showTxt =
+		final String showTxt =
 				"<span class='bms-fa-chevron-left'" + "style='position: relative;" + " bottom: 3px;'" + "'></span>" + "Show List Builder";
 
 		this.listBuilderToggleBtn1.setCaption(showTxt);
@@ -502,7 +485,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		return this.modeView;
 	}
 
-	public void setModeView(ModeView newModeView) {
+	public void setModeView(final ModeView newModeView) {
 		String message = "";
 
 		if (this.modeView != newModeView) {
@@ -522,17 +505,17 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
 	}
 
-	public void showUnsavedChangesConfirmDialog(String message, ModeView newModeView) {
+	public void showUnsavedChangesConfirmDialog(final String message, final ModeView newModeView) {
 		this.modeView = newModeView;
 		this.unsavedChangesDialog = new UnsavedChangesConfirmDialog(this, message);
 		this.getWindow().addWindow(this.unsavedChangesDialog);
 	}
 
-	public void setModeViewOnly(ModeView newModeView) {
+	public void setModeViewOnly(final ModeView newModeView) {
 		this.modeView = newModeView;
 	}
 
-	public void updateView(ModeView modeView) {
+	public void updateView(final ModeView modeView) {
 		this.listSelectionComponent.getListDetailsLayout().updateViewForAllLists(modeView);
 
 		if (modeView.equals(ModeView.INVENTORY_VIEW)) {
@@ -547,13 +530,13 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	public void saveAllListChangesAction() {
 
 		if (this.getListSelectionComponent().getListDetailsLayout().hasUnsavedChanges()) {
-			Map<ListComponent, Boolean> listToUpdate = new HashMap<ListComponent, Boolean>();
+			final Map<ListComponent, Boolean> listToUpdate = new HashMap<ListComponent, Boolean>();
 			listToUpdate.putAll(this.listSelectionComponent.getListDetailsLayout().getListStatusForChanges());
 
-			for (Map.Entry<ListComponent, Boolean> list : listToUpdate.entrySet()) {
-				Boolean isListHasUnsavedChanges = list.getValue();
+			for (final Map.Entry<ListComponent, Boolean> list : listToUpdate.entrySet()) {
+				final Boolean isListHasUnsavedChanges = list.getValue();
 				if (isListHasUnsavedChanges) {
-					ListComponent toSave = list.getKey();
+					final ListComponent toSave = list.getKey();
 					// NOTE: the value of modeView here is the newModeView
 					if (this.modeView.equals(ModeView.LIST_VIEW)) {
 						toSave.saveReservationChangesAction();
@@ -566,7 +549,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
 		if (this.listBuilderComponent.hasUnsavedChanges()) {
 			// Save all changes in ListBuilder
-			GermplasmList currentlySavedGermplasmList = this.listBuilderComponent.getCurrentlySavedGermplasmList();
+			final GermplasmList currentlySavedGermplasmList = this.listBuilderComponent.getCurrentlySavedGermplasmList();
 			if (currentlySavedGermplasmList == null) {
 				this.listBuilderComponent.openSaveListAsDialog();
 			} else {
@@ -634,7 +617,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		return this.hasChanges;
 	}
 
-	public void setHasUnsavedChangesMain(boolean hasChanges) {
+	public void setHasUnsavedChangesMain(final boolean hasChanges) {
 		this.hasChanges = hasChanges;
 	}
 }

@@ -8,9 +8,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.Resource;
 
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Table;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.ExportColumnHeader;
@@ -18,14 +21,22 @@ import org.generationcp.commons.pojo.ExportColumnValue;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.pojo.GermplasmParents;
 import org.generationcp.commons.service.ExportService;
-import org.generationcp.commons.service.impl.ExportServiceImpl;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.domain.dms.StandardVariable;
+import org.generationcp.middleware.domain.oms.CvId;
+import org.generationcp.middleware.domain.oms.Term;
+import org.generationcp.middleware.domain.oms.TermId;
+import org.generationcp.middleware.domain.ontology.Variable;
+import org.generationcp.middleware.exceptions.MiddlewareException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
+import org.generationcp.middleware.manager.ontology.api.OntologyMethodDataManager;
+import org.generationcp.middleware.manager.ontology.api.OntologyPropertyDataManager;
+import org.generationcp.middleware.manager.ontology.api.OntologyScaleDataManager;
+import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Person;
@@ -34,9 +45,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Table;
 
 @Configurable
 public class GermplasmListExporter {
@@ -57,15 +65,31 @@ public class GermplasmListExporter {
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
 
+	@Autowired
+	private OntologyMethodDataManager ontologyMethodDataManager;
+
+	@Autowired
+	private OntologyPropertyDataManager ontologyPropertyDataManager;
+
+	@Autowired
+	private OntologyScaleDataManager ontologyScaleDataManager;
+
+	@Autowired
+	private OntologyVariableDataManager ontologyVariableDataManager;
+
+	@Autowired
+	private InventoryDataManager inventoryDataManager;
+
 	@Resource
 	private ContextUtil contextUtil;
 
+	@Resource
 	private ExportService exportService;
+
 	private final Integer listId;
 
 	public GermplasmListExporter(Integer germplasmListId) {
 		this.listId = germplasmListId;
-		this.exportService = new ExportServiceImpl();
 	}
 
 	public FileOutputStream exportKBioScienceGenotypingOrderXLS(String filename, int plateSize) throws GermplasmListExporterException {
@@ -74,7 +98,6 @@ public class GermplasmListExporter {
 		List<Map<Integer, ExportColumnValue>> exportColumnValues = this.getColumnValuesForGenotypingData(plateSize);
 
 		try {
-			this.exportService = new ExportServiceImpl();
 			return this.exportService.generateExcelFileForSingleSheet(exportColumnValues, exportColumnHeaders, filename, "List");
 		} catch (IOException e) {
 			throw new GermplasmListExporterException("Error with writing to: " + filename, e);
@@ -154,25 +177,32 @@ public class GermplasmListExporter {
 		return exportColumnValues;
 	}
 
-	public FileOutputStream exportGermplasmListXLS(String fileName, Table listDataTable) throws GermplasmListExporterException,
-			MiddlewareQueryException {
+	public FileOutputStream exportGermplasmListXLS(String fileName, Table listDataTable) throws GermplasmListExporterException {
+
+		Integer currentLocalIbdbUserId = this.getCurrentLocalIbdbUserId();
 
 		GermplasmListExportInputValues input = new GermplasmListExportInputValues();
 		input.setFileName(fileName);
 
 		GermplasmList germplasmList = this.getGermplasmListAndListData(this.listId);
+
 		input.setGermplasmList(germplasmList);
+
+		input.setListData(germplasmList.getListData());
 
 		input.setOwnerName(this.getOwnerName(germplasmList.getUserId()));
 
-		Integer currentLocalIbdbUserId = this.contextUtil.getCurrentUserLocalId();
 		input.setCurrentLocalIbdbUserId(currentLocalIbdbUserId);
 
 		input.setExporterName(this.getExporterName(currentLocalIbdbUserId));
 
 		input.setVisibleColumnMap(this.getVisibleColumnMap(listDataTable));
 
-		input.setColumnStandardVariableMap(this.getColumnStandardVariableMap(listDataTable));
+		input.setColumnTermMap(this.getOntologyTermMap(listDataTable));
+
+		input.setInventoryVariableMap(this.getInventoryVariables());
+
+		input.setVariateVariableMap(this.getVariateVariables());
 
 		input.setGermplasmParents(this.getGermplasmParentsMap(listDataTable, this.listId));
 
@@ -260,22 +290,12 @@ public class GermplasmListExporter {
 
 	protected GermplasmList getGermplasmListAndListData(Integer listId) throws GermplasmListExporterException {
 		GermplasmList germplasmList;
-		// set germplasmList and germplasmListData
 		try {
 			germplasmList = this.germplasmListManager.getGermplasmListById(listId);
+			this.inventoryDataManager.populateLotCountsIntoExistingList(germplasmList);
 		} catch (MiddlewareQueryException e) {
 			throw new GermplasmListExporterException("Error with getting Germplasm List with id: " + listId, e);
 		}
-
-		List<GermplasmListData> germplasmlistData = new ArrayList<GermplasmListData>();
-		try {
-			long listDataCount = this.germplasmListManager.countGermplasmListDataByListId(listId);
-			germplasmlistData = this.germplasmListManager.getGermplasmListDataByListId(listId, 0, (int) listDataCount);
-		} catch (MiddlewareQueryException e1) {
-			GermplasmListExporter.LOG.error(e1.getMessage(), e1);
-		}
-		germplasmList.setListData(germplasmlistData);
-
 		return germplasmList;
 	}
 
@@ -295,43 +315,97 @@ public class GermplasmListExporter {
 		}
 
 		for (Object column : columnHeaders) {
-			String columnHeader = column.toString();
-			// always set to true for required columns
-			if (ColumnLabels.ENTRY_ID.getName().equalsIgnoreCase(columnHeader) || ColumnLabels.GID.getName().equalsIgnoreCase(columnHeader)
-					|| ColumnLabels.DESIGNATION.getName().equalsIgnoreCase(columnHeader)) {
-				columnHeaderMap.put(columnHeader, true);
-			} else {
-				columnHeaderMap.put(columnHeader, visibleColumnList.contains(columnHeader));
+			String key = column.toString();
+			ColumnLabels columnLabel = ColumnLabels.get(column.toString());
+			if (columnLabel != null && columnLabel.getTermId() != null) {
+				key = String.valueOf(columnLabel.getTermId().getId());
 			}
+
+			// always set to true for required columns
+			if (ColumnLabels.ENTRY_ID.getName().equalsIgnoreCase(column.toString())
+					|| ColumnLabels.GID.getName().equalsIgnoreCase(column.toString())
+					|| ColumnLabels.DESIGNATION.getName().equalsIgnoreCase(column.toString())) {
+				columnHeaderMap.put(key, true);
+			} else {
+				columnHeaderMap.put(key, visibleColumnList.contains(column.toString()));
+			}
+
 		}
 
 		return columnHeaderMap;
 	}
 
-	protected Map<Integer, StandardVariable> getColumnStandardVariableMap(Table listDataTable) {
+	protected Map<Integer, Term> getOntologyTermMap(Table listDataTable) {
 
-		Map<Integer, StandardVariable> columnStandardVariableMap = new HashMap<>();
+		Map<Integer, Term> columnTermMap = new HashMap<>();
 		Collection<?> columnHeaders = listDataTable.getContainerPropertyIds();
 
 		for (Object column : columnHeaders) {
 			String columnHeader = column.toString();
 			ColumnLabels columnLabel = ColumnLabels.get(columnHeader);
 			if (columnLabel != null && columnLabel.getTermId() != null) {
-				this.addStandardVariable(columnStandardVariableMap, columnLabel);
+				this.addOntologyTermToMap(columnTermMap, columnLabel.getTermId().getId());
 			}
 		}
 
-		return columnStandardVariableMap;
+		return columnTermMap;
 	}
 
-	private void addStandardVariable(Map<Integer, StandardVariable> columnStandardVariableMap, ColumnLabels columnLabel) {
+	protected Map<Integer, Variable> getInventoryVariables() {
+
+		Map<Integer, Variable> variableMap = new HashMap<>();
+		this.addVariableToMap(variableMap, TermId.SEED_AMOUNT_G.getId());
+		this.addVariableToMap(variableMap, TermId.STOCKID.getId());
+		return variableMap;
+	}
+
+	protected Map<Integer, Variable> getVariateVariables() {
+
+		Map<Integer, Variable> variableMap = new HashMap<>();
+		this.addVariableToMap(variableMap, TermId.NOTES.getId());
+		return variableMap;
+
+	}
+
+	private void addVariableToMap(Map<Integer, Variable> variableMap, int termId) {
 
 		try {
-			StandardVariable standardVar = this.ontologyDataManager.getStandardVariable(columnLabel.getTermId().getId());
-			if (standardVar != null) {
-				columnStandardVariableMap.put(standardVar.getId(), standardVar);
+			Variable variable = this.ontologyVariableDataManager.getVariable(this.contextUtil.getCurrentProgramUUID(), termId, false);
+			if (variable != null) {
+				variableMap.put(variable.getId(), variable);
 			}
 
+		} catch (MiddlewareQueryException e) {
+			GermplasmListExporter.LOG.error(e.getMessage(), e);
+		}
+	}
+
+	private void addOntologyTermToMap(Map<Integer, Term> termMap, int termId) {
+
+		try {
+			//Term should exist with that id in database.
+			Term term = this.ontologyDataManager.getTermById(termId);
+
+			GermplasmListExporter.LOG.debug("Finding term with id:" + termId + ". Found: " + (term!= null));
+
+            if(term == null){
+                throw new MiddlewareException("Term does not exist with id:" + termId);
+            }
+
+			CvId cvId = CvId.valueOf(term.getVocabularyId());
+
+			if (Objects.equals(cvId, CvId.IBDB_TERMS)) {
+				termMap.put(term.getId(), term);
+			} else if (Objects.equals(cvId, CvId.METHODS)) {
+				termMap.put(term.getId(), this.ontologyMethodDataManager.getMethod(term.getId(), false));
+			} else if (Objects.equals(cvId, CvId.PROPERTIES)) {
+				termMap.put(term.getId(), this.ontologyPropertyDataManager.getProperty(term.getId(), false));
+			} else if (Objects.equals(cvId, CvId.SCALES)) {
+				termMap.put(term.getId(), this.ontologyScaleDataManager.getScaleById(term.getId(), false));
+			} else {
+				termMap.put(term.getId(),
+						this.ontologyVariableDataManager.getVariable(this.contextUtil.getCurrentProgramUUID(), term.getId(), false));
+			}
 		} catch (MiddlewareQueryException e) {
 			GermplasmListExporter.LOG.error(e.getMessage(), e);
 		}
@@ -358,23 +432,23 @@ public class GermplasmListExporter {
 
 		List<ExportColumnHeader> exportColumnHeaders = new ArrayList<>();
 
-		exportColumnHeaders.add(new ExportColumnHeader(0, this.getTermNameFromOntology(ColumnLabels.ENTRY_ID), visibleColumns
-				.get(ColumnLabels.ENTRY_ID.getName())));
+		exportColumnHeaders.add(new ExportColumnHeader(0, this.getTermNameFromOntology(ColumnLabels.ENTRY_ID), visibleColumns.get(String
+				.valueOf(ColumnLabels.ENTRY_ID.getTermId().getId()))));
 
-		exportColumnHeaders.add(new ExportColumnHeader(1, this.getTermNameFromOntology(ColumnLabels.GID), visibleColumns
-				.get(ColumnLabels.GID.getName())));
+		exportColumnHeaders.add(new ExportColumnHeader(1, this.getTermNameFromOntology(ColumnLabels.GID), visibleColumns.get(String
+				.valueOf(ColumnLabels.GID.getTermId().getId()))));
 
-		exportColumnHeaders.add(new ExportColumnHeader(2, this.getTermNameFromOntology(ColumnLabels.ENTRY_CODE), visibleColumns
-				.get(ColumnLabels.ENTRY_CODE.getName())));
+		exportColumnHeaders.add(new ExportColumnHeader(2, this.getTermNameFromOntology(ColumnLabels.ENTRY_CODE), visibleColumns.get(String
+				.valueOf(ColumnLabels.ENTRY_CODE.getTermId().getId()))));
 
-		exportColumnHeaders.add(new ExportColumnHeader(3, this.getTermNameFromOntology(ColumnLabels.DESIGNATION), visibleColumns
-				.get(ColumnLabels.DESIGNATION.getName())));
+		exportColumnHeaders.add(new ExportColumnHeader(3, this.getTermNameFromOntology(ColumnLabels.DESIGNATION), visibleColumns.get(String
+				.valueOf(ColumnLabels.DESIGNATION.getTermId().getId()))));
 
-		exportColumnHeaders.add(new ExportColumnHeader(4, this.getTermNameFromOntology(ColumnLabels.PARENTAGE), visibleColumns
-				.get(ColumnLabels.PARENTAGE.getName())));
+		exportColumnHeaders.add(new ExportColumnHeader(4, this.getTermNameFromOntology(ColumnLabels.PARENTAGE), visibleColumns.get(String
+				.valueOf(ColumnLabels.PARENTAGE.getTermId().getId()))));
 
-		exportColumnHeaders.add(new ExportColumnHeader(5, this.getTermNameFromOntology(ColumnLabels.SEED_SOURCE), visibleColumns
-				.get(ColumnLabels.SEED_SOURCE.getName())));
+		exportColumnHeaders.add(new ExportColumnHeader(5, this.getTermNameFromOntology(ColumnLabels.SEED_SOURCE), visibleColumns.get(String
+				.valueOf(ColumnLabels.SEED_SOURCE.getTermId().getId()))));
 
 		return exportColumnHeaders;
 	}
@@ -408,6 +482,17 @@ public class GermplasmListExporter {
 		return exportColumnValues;
 	}
 
+	protected Integer getCurrentLocalIbdbUserId() {
+		Integer currentLocalIbdbUserId = 0;
+
+		try {
+			currentLocalIbdbUserId = this.contextUtil.getCurrentUserLocalId();
+		} catch (MiddlewareQueryException e) {
+			LOG.error(e.getMessage(), e);
+		}
+		return currentLocalIbdbUserId;
+	}
+
 	protected void setExportService(ExportService exportService) {
 		this.exportService = exportService;
 	}
@@ -426,6 +511,14 @@ public class GermplasmListExporter {
 
 	protected void setOntologyDataManager(OntologyDataManager ontologyDataManager) {
 		this.ontologyDataManager = ontologyDataManager;
+	}
+
+	protected void setInventoryDataManager(InventoryDataManager inventoryDataManager) {
+		this.inventoryDataManager = inventoryDataManager;
+	}
+
+	protected void setOntologyVariableDataManager(OntologyVariableDataManager ontologyVariableDataManager) {
+		this.ontologyVariableDataManager = ontologyVariableDataManager;
 	}
 
 	protected String getTermNameFromOntology(ColumnLabels columnLabel) {

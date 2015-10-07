@@ -129,8 +129,7 @@ public class GermplasmSearchQuery implements Query {
 	}
 
 	@SuppressWarnings("deprecation")
-	private GermplasmSearchResultModel setGermplasmSearchResult(GermplasmSearchResultModel gResult, Germplasm gData)
-			throws InternationalizableException {
+	private GermplasmSearchResultModel setGermplasmSearchResult(GermplasmSearchResultModel gResult, Germplasm gData) {
 		gResult.setGid(gData.getGid());
 		gResult.setNames(this.getGermplasmNames(gData.getGid()));
 
@@ -156,7 +155,7 @@ public class GermplasmSearchQuery implements Query {
 
 	}
 
-	private String getGermplasmNames(int gid) throws InternationalizableException {
+	private String getGermplasmNames(int gid) {
 
 		try {
 			List<Name> names = this.germplasmDataManager.getNamesByGID(new Integer(gid), null, null);

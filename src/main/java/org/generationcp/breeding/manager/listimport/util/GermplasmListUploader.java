@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.listimport.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.apache.commons.lang3.StringUtils;
@@ -69,6 +70,10 @@ public class GermplasmListUploader implements FileFactory {
 		this.germplasmListParser = new GermplasmListParser();
 		this.germplasmListParser.setOriginalFilename(this.originalFilename);
 
+		this.updateImportGermplasmList();
+	}
+
+	void updateImportGermplasmList() throws FileParsingException {
 		this.importedGermplasmList = this.germplasmListParser.parseWorkbook(this.createWorkbook(this.tempFileName), null);
 	}
 
@@ -89,12 +94,26 @@ public class GermplasmListUploader implements FileFactory {
 		return this.importedGermplasmList;
 	}
 
-	public Workbook createWorkbook(String tempFileName) throws InvalidFileTypeImportException {
+	public Workbook createWorkbook(String tempFileName) {
 		try {
-			return WorkbookFactory.create(new FileInputStream(tempFileName));
+			return this.createWorkbookFromFactory(tempFileName);
 		} catch (IOException | InvalidFormatException e) {
+			LOG.error(e.getMessage(), e);
 			throw new InvalidFileTypeImportException("Please upload a properly formatted XLS or XLSX file.");
 		}
+	}
+
+	Workbook createWorkbookFromFactory(String tempFileName) throws IOException, InvalidFormatException {
+		return WorkbookFactory.create(this.createFileInputStream(tempFileName));
+	}
+
+	FileInputStream createFileInputStream(String tempFileName) {
+		try {
+			return new FileInputStream(tempFileName);
+		} catch (FileNotFoundException e) {
+			LOG.error(e.getMessage(), e);
+		}
+		return null;
 	}
 
 	public String getOriginalFilename() {

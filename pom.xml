@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.generationcp</groupId>
 	<artifactId>BreedingManager</artifactId>
-	<version>4.0.0.M5</version>
+	<version>4.0.0.BETA</version>
 	<packaging>war</packaging>
 	<name>Breeding Manager</name>
 
@@ -19,10 +19,9 @@
 		<vaadin.version>6.8.13</vaadin.version>
 		<gwt.version>2.5.1</gwt.version>
 		<gwt.plugin.version>2.5.1</gwt.plugin.version>
-		<ibpcommons.version>4.0.0.M5</ibpcommons.version>
+		<ibpcommons.version>4.0.0.BETA</ibpcommons.version>
 		<spring.version>3.2.11.RELEASE</spring.version>
 		<spring.security.version>3.2.5.RELEASE</spring.security.version>
-		<webapp.path>C:/Breeding Management System/infrastructure/tomcat/webapps</webapp.path>
 		<envConfig>${user.name}</envConfig>
 	</properties>
 
@@ -216,11 +215,6 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>c3p0</groupId>
-			<artifactId>c3p0</artifactId>
-			<version>0.9.1.2</version>
-		</dependency>
-		<dependency>
 			<groupId>javassist</groupId>
 			<artifactId>javassist</artifactId>
 			<version>3.12.1.GA</version>
@@ -269,6 +263,33 @@
 		<developerConnection>scm:git:https://github.com/IntegratedBreedingPlatform/BreedingManager</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
+
+	<profiles>
+		<profile>
+			<id>localDeployment</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.tomcat.maven</groupId>
+						<artifactId>tomcat7-maven-plugin</artifactId>
+						<version>2.1</version>
+						<configuration>
+							<port>${server.port}</port>
+							<path>/${project.build.finalName}</path>
+							<url>${tomcat.manager.url}</url>
+							<username>${tomcat.manager.username}</username>
+							<password>${tomcat.manager.password}</password>
+							<update>true</update>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<!-- TODO : setup another profile for the Tomcat 7 plugin that can be used for deploying to a remote server -->
+	</profiles>
 
 	<build>
 		<finalName>${project.artifactId}</finalName>
@@ -325,16 +346,6 @@
 			</testResource>
 		</testResources>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.tomcat.maven</groupId>
-				<artifactId>tomcat7-maven-plugin</artifactId>
-				<version>2.1</version>
-				<configuration>
-					<path>/${project.build.finalName}</path>
-					<port>${tomcatPort}</port>
-					<hostName>${tomcatHost}</hostName>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -404,6 +415,27 @@
 						</manifestEntries>
 					</archive>
 				</configuration>
+			</plugin>
+			<!--
+				The following plugin makes the properties defined in the configured file available to the Maven build
+				-->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<version>1.0-alpha-2</version>
+				<executions>
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>read-project-properties</goal>
+						</goals>
+						<configuration>
+							<files>
+								<file>../BMSConfig/${envConfig}/application.properties</file>
+							</files>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

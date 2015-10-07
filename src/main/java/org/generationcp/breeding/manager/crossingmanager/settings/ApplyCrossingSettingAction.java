@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainer;
 import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainerUpdateListener;
 import org.generationcp.breeding.manager.crossingmanager.actions.GenerateCrossNameAction;
@@ -94,8 +96,7 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 								motherOfMale, fatherOfMale);
 
 					} catch (MiddlewareQueryException e) {
-						ApplyCrossingSettingAction.LOG.error(e.toString() + "\n" + e.getStackTrace());
-						e.printStackTrace();
+						LOG.error(e.getMessage(), e);
 						return false;
 					}
 
@@ -107,13 +108,24 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 			} catch (MiddlewareQueryException e) {
 				ApplyCrossingSettingAction.LOG.error(e.getMessage(), e);
 			}
-			CrossingUtil
-					.applyMethodNameType(this.germplasmDataManager, this.container.getCrossesMade().getCrossesMap(), crossingNameTypeId);
+
+			List<Pair<Germplasm, Name>> germplasmPairs = extractGermplasmPairList(this.container.getCrossesMade().getCrossesMap());
+
+			CrossingUtil.applyMethodNameType(this.germplasmDataManager, germplasmPairs, crossingNameTypeId);
 			return true;
 
 		}
 
 		return false;
+	}
+
+	protected List<Pair<Germplasm, Name>> extractGermplasmPairList(Map<Germplasm, Name> germplasmNameMap) {
+		List<Pair<Germplasm, Name>> returnValue = new ArrayList<>();
+		for (Map.Entry<Germplasm, Name> germplasmNameEntry : germplasmNameMap.entrySet()) {
+			returnValue.add(new ImmutablePair<Germplasm, Name>(germplasmNameEntry.getKey(), germplasmNameEntry.getValue()));
+		}
+
+		return returnValue;
 	}
 
 	/**
@@ -131,8 +143,7 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 			try {
 				ctr = generateNameAction.getNextNumberInSequence(nameSetting);
 			} catch (MiddlewareQueryException e) {
-				ApplyCrossingSettingAction.LOG.error(e.toString() + "\n" + e.getStackTrace());
-				e.printStackTrace();
+				LOG.error(e.getMessage(), e);
 				return false;
 			}
 

@@ -246,14 +246,14 @@ public class Util {
 	}
 
 	/**
-	  * Opens and attaches a modal window containing the location manager
-	  * 
+	 * Opens and attaches a modal window containing the location manager
+	 * 
 	 * @param workbenchDataManager - workbenchDataManager, this is used by this method to get tool URL (if available)
-	  * @param programId - used to load the locations for the given programId
-	  * @param window - modal window will be attached to this window
-	  * @return
-	  */
-	 public static Window launchLocationManager(WorkbenchDataManager workbenchDataManager, Long programId, Window window, String caption) {
+	 * @param programId - used to load the locations for the given programId
+	 * @param window - modal window will be attached to this window
+	 * @return
+	 */
+	public static Window launchLocationManager(WorkbenchDataManager workbenchDataManager, Long programId, Window window, String caption) {
 
 		Tool tool = null;
 		try {

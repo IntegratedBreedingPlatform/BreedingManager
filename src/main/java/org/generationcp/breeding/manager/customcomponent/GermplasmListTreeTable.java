@@ -68,4 +68,9 @@ public class GermplasmListTreeTable extends TreeTable implements GermplasmListSo
 	public void setItemCaption(Object itemId, String caption) {
 		this.getItem(itemId).getItemProperty(GermplasmListTreeTable.NAME_COL).setValue(" " + caption);
 	}
+
+	@Override
+	public void clearSelection() {
+		super.select(null);
+	}
 }

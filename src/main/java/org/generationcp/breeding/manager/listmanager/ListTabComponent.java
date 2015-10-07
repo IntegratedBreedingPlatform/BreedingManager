@@ -3,10 +3,8 @@ package org.generationcp.breeding.manager.listmanager;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
-import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.VerticalLayout;
@@ -20,9 +18,6 @@ public class ListTabComponent extends VerticalLayout implements InitializingBean
 	private final ListSelectionLayout listSelectionLayout;
 	private ListComponent listComponent;
 	private final GermplasmList germplasmList;
-
-	@Autowired
-	private SimpleResourceBundleMessageSource messageSource;
 
 	public ListTabComponent(ListManagerMain source, ListSelectionLayout detailsLayout, GermplasmList germplasmList) {
 		super();

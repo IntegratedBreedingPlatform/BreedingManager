@@ -9,6 +9,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.breeding.manager.validator.ListNameValidator;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -30,8 +31,8 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
-public class BreedingManagerListDetailsComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
-		BreedingManagerLayout {
+public class BreedingManagerListDetailsComponent extends VerticalLayout
+		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = LoggerFactory.getLogger(BreedingManagerListDetailsComponent.class);
@@ -56,6 +57,9 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout implemen
 
 	@Autowired
 	private BreedingManagerService breedingManagerService;
+
+	@Autowired
+	private ContextUtil contextUtil;
 
 	private GermplasmList germplasmList;
 
@@ -181,6 +185,8 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout implemen
 		list.setNotes(this.listNotesField.getValue().toString());
 		list.setUserId(0);
 
+		list.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
+
 		return list;
 	}
 
@@ -256,8 +262,10 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout implemen
 	}
 
 	public void resetListNameFieldForExistingList(GermplasmList germplasmList) {
-		ListNameValidator listNameValidator = this.listNameField.getListNameValidator();
-		listNameValidator.setCurrentListName(germplasmList.getName());
+		ListNameValidator listNameValidator = this.getListNameField().getListNameValidator();
+		if (germplasmList.getId() != null) {
+			listNameValidator.setCurrentListName(germplasmList.getName());
+		}
 
 		GermplasmList parentList = germplasmList.getParent();
 		if (parentList != null) {

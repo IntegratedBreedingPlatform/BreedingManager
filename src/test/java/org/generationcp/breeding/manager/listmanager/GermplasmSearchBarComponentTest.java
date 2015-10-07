@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import com.vaadin.ui.CheckBox;
 
@@ -34,6 +35,9 @@ public class GermplasmSearchBarComponentTest {
 
 	@Mock
 	private GermplasmDataManager germplasmDataManager;
+
+	@Mock
+	private PlatformTransactionManager transactionManager;
 
 	private SimpleResourceBundleMessageSource messageSource;
 	private GermplasmSearchBarComponent germplasmSearchBarComponent;
@@ -54,6 +58,7 @@ public class GermplasmSearchBarComponentTest {
 		this.germplasmSearchBarComponent = new GermplasmSearchBarComponent(this.germplasmSearchResultsComponent);
 		this.germplasmSearchBarComponent.setMessageSource(this.messageSource);
 		this.germplasmSearchBarComponent.setBreedingManagerService(this.breedingManagerService);
+		this.germplasmSearchBarComponent.setTransactionManager(this.transactionManager);
 		this.spyComponent = Mockito.spy(this.germplasmSearchBarComponent);
 		this.spyComponent.instantiateComponents();
 	}
@@ -84,7 +89,7 @@ public class GermplasmSearchBarComponentTest {
 
 		try {
 			Mockito.when(this.germplasmDataManager.searchForGermplasm(searchKeyword, operation, includeParents, withInventoryOnly))
-					.thenReturn(null);
+			.thenReturn(null);
 			Mockito.doNothing().when(this.germplasmSearchResultsComponent).applyGermplasmResults(results);
 			this.spyComponent.doSearch(GermplasmSearchBarComponentTest.TEST_SEARCH_STRING);
 			Mockito.verify(this.breedingManagerService).doGermplasmSearch(searchKeyword, operation, includeParents, withInventoryOnly);

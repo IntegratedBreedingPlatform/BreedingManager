@@ -202,9 +202,12 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				ExportGermplasmListTemplateDialog exportGermplasmTemplateDialog =
-						new ExportGermplasmListTemplateDialog(GermplasmImportFileComponent.this.source);
-				GermplasmImportFileComponent.this.source.getWindow().addWindow(exportGermplasmTemplateDialog);
+				// Just download the new expanded template
+				try {
+					(new GermplasmListTemplateDownloader()).exportGermplasmTemplate(event.getComponent());
+				} catch (GermplasmListTemplateDownloader.FileDownloadException e) {
+					MessageNotifier.showError(GermplasmImportFileComponent.this.getWindow(), GermplasmImportFileComponent.this.messageSource.getMessage(Message.ERROR), e.getMessage());
+				}
 			}
 		});
 	}
@@ -212,7 +215,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 	@Override
 	public void layoutComponents() {
 		this.addComponent(this.selectFileLabel, "top:20px");
-		this.addComponent(this.openTemplateButton, "top:21px;left:520px;");
+		this.addComponent(this.openTemplateButton, "top:21px;left:430px;");
 
 		this.addComponent(this.uploadComponents, "top:50px");
 

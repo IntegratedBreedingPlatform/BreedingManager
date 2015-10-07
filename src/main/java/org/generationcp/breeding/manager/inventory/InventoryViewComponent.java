@@ -12,6 +12,8 @@ import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.domain.inventory.LotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -25,6 +27,8 @@ import com.vaadin.ui.VerticalLayout;
 public class InventoryViewComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final Logger LOG = LoggerFactory.getLogger(InventoryViewComponent.class);
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -146,12 +150,13 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 				newItem.getItemProperty(InventoryViewComponent.LOT_ID).setValue(lotEntry.getLotId());
 					}
 		} catch (MiddlewareQueryException e) {
-			e.printStackTrace();
+			LOG.error(e.getMessage(), e);
 		}
 	}
 
 	@Override
 	public void addListeners() {
+		// not implemented
 	}
 
 	@Override

@@ -37,6 +37,9 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.BaseTheme;
 
+/**
+ * This table is used for displaying lots in Inventory view. It is mainly used in List Manager and Crossing Manager.
+ */
 @Configurable
 public class ListInventoryTable extends TableWithSelectAllLayout implements InitializingBean {
 
@@ -93,7 +96,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		this.listInventoryTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.LOT_LOCATION.getName(), String.class, null);
-		this.listInventoryTable.addContainerProperty(ColumnLabels.SCALE.getName(), String.class, null);
+		this.listInventoryTable.addContainerProperty(ColumnLabels.UNITS.getName(), String.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Double.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.TOTAL.getName(), Double.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.RESERVED.getName(), Double.class, null);
@@ -108,8 +111,8 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 				ColumnLabels.DESIGNATION.getTermNameFromOntology(this.ontologyDataManager));
 		this.listInventoryTable.setColumnHeader(ColumnLabels.LOT_LOCATION.getName(),
 				ColumnLabels.LOT_LOCATION.getTermNameFromOntology(this.ontologyDataManager));
-		this.listInventoryTable.setColumnHeader(ColumnLabels.SCALE.getName(),
-				ColumnLabels.SCALE.getTermNameFromOntology(this.ontologyDataManager));
+		this.listInventoryTable.setColumnHeader(ColumnLabels.UNITS.getName(),
+				ColumnLabels.UNITS.getTermNameFromOntology(this.ontologyDataManager));
 		this.listInventoryTable.setColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName(),
 				ColumnLabels.AVAILABLE_INVENTORY.getTermNameFromOntology(this.ontologyDataManager));
 		this.listInventoryTable.setColumnHeader(ColumnLabels.TOTAL.getName(),
@@ -180,7 +183,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 					newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entryId);
 					newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(desigButton);
 					newItem.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).setValue(lotDetail.getLocationOfLot().getLname());
-					newItem.getItemProperty(ColumnLabels.SCALE.getName()).setValue(lotDetail.getScaleOfLot().getName());
+					newItem.getItemProperty(ColumnLabels.UNITS.getName()).setValue(lotDetail.getScaleOfLot().getName());
 					newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(lotDetail.getAvailableLotBalance());
 					newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(lotDetail.getActualLotBalance());
 					newItem.getItemProperty(ColumnLabels.RESERVED.getName()).setValue(lotDetail.getReservedTotalForEntry());
@@ -262,8 +265,11 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 	}
 
 	public void setMaxRows(int i) {
-		this.listInventoryTable.setHeight("100%");
 		this.listInventoryTable.setPageLength(i);
+	}
+
+	public void setTableHeight(String height) {
+		this.listInventoryTable.setHeight(height);
 	}
 
 }

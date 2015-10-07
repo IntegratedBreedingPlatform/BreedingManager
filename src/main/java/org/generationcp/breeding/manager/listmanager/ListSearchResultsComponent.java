@@ -16,12 +16,17 @@ import org.generationcp.breeding.manager.listmanager.listeners.ListSearchResults
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
@@ -46,6 +51,7 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 		BreedingManagerLayout {
 
 	private static final long serialVersionUID = 5314653969843976836L;
+	private static final Logger LOG = LoggerFactory.getLogger(ListSearchResultsComponent.class);
 
 	private final ListManagerMain source;
 
@@ -83,10 +89,10 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 	private SimpleResourceBundleMessageSource messageSource;
 
 	@Autowired
-	private GermplasmDataManager germplasmDataManager;
+	protected GermplasmListManager germplasmListManager;
 
 	@Autowired
-	protected GermplasmListManager germplasmListManager;
+	private PlatformTransactionManager transactionManager;
 
 	private Map<Integer, GermplasmList> germplasmListsMap;
 
@@ -97,6 +103,7 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 
 	@Override
 	public void updateLabels() {
+		// not implemented
 	}
 
 	@Override
@@ -172,13 +179,19 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void handleAction(Action action, Object sender, Object target) {
-				if (ListSearchResultsComponent.ACTION_SELECT_ALL == action) {
-					ListSearchResultsComponent.this.matchingListsTable.setValue(ListSearchResultsComponent.this.matchingListsTable
-							.getItemIds());
-				} else if (ListSearchResultsComponent.ACTION_ADD_TO_NEW_LIST == action) {
-					ListSearchResultsComponent.this.addSelectedListToNewList();
-				}
+			public void handleAction(final Action action, final Object sender, final Object target) {
+				final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+					@Override
+					protected void doInTransactionWithoutResult(TransactionStatus status) {
+						if (ListSearchResultsComponent.ACTION_SELECT_ALL == action) {
+							ListSearchResultsComponent.this.matchingListsTable.setValue(ListSearchResultsComponent.this.matchingListsTable
+									.getItemIds());
+						} else if (ListSearchResultsComponent.ACTION_ADD_TO_NEW_LIST == action) {
+							ListSearchResultsComponent.this.addSelectedListToNewList();
+						}
+					}
+				});
 			}
 
 			@Override
@@ -220,8 +233,7 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 						return viewListHeaderWindow.getListHeaderComponent().toString();
 					}
 				} catch (NumberFormatException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOG.error(e.getMessage(), e);
 				}
 				return "";
 			}
@@ -247,7 +259,7 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 
 	@Override
 	public void initializeValues() {
-
+		// not implemented
 	}
 
 	@Override
@@ -258,16 +270,21 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void contextItemClick(org.vaadin.peter.contextmenu.ContextMenu.ClickEvent event) {
-				ContextMenuItem clickedItem = event.getClickedItem();
-
-				if (clickedItem.getName().equals(ListSearchResultsComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
-					ListSearchResultsComponent.this.matchingListsTable.setValue(ListSearchResultsComponent.this.matchingListsTable
-							.getItemIds());
-				} else if (clickedItem.getName().equals(
-						ListSearchResultsComponent.this.messageSource.getMessage(Message.ADD_SELECTED_LIST_TO_NEW_LIST))) {
-					ListSearchResultsComponent.this.addSelectedListToNewList();
-				}
+			public void contextItemClick(final org.vaadin.peter.contextmenu.ContextMenu.ClickEvent event) {
+				final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+					@Override
+					protected void doInTransactionWithoutResult(TransactionStatus status) {
+						ContextMenuItem clickedItem = event.getClickedItem();
+						if (clickedItem.getName().equals(ListSearchResultsComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
+							ListSearchResultsComponent.this.matchingListsTable.setValue(ListSearchResultsComponent.this.matchingListsTable
+									.getItemIds());
+						} else if (clickedItem.getName().equals(
+								ListSearchResultsComponent.this.messageSource.getMessage(Message.ADD_SELECTED_LIST_TO_NEW_LIST))) {
+							ListSearchResultsComponent.this.addSelectedListToNewList();
+						}
+					}
+				});
 			}
 		});
 
@@ -349,20 +366,13 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 			newItem.getItemProperty(ListSearchResultsComponent.DESCRIPTION_ID).setValue(germplasmList.getDescription());
 		}
 
-		if (this.matchingListsTable.getItemIds().size() > 0) {
+		if (!this.matchingListsTable.getItemIds().isEmpty()) {
 			this.updateActionMenuOptions(true);
 		}
 	}
 
 	private void updateNoOfEntries(long count) {
 		this.totalMatchingListsLabel.setValue(this.messageSource.getMessage(Message.TOTAL_RESULTS) + ": " + "  <b>" + count + "</b>");
-	}
-
-	@SuppressWarnings("unused")
-	private void updateNoOfEntries() {
-		int count = 0;
-		count = this.matchingListsTable.getItemIds().size();
-		this.updateNoOfEntries(count);
 	}
 
 	private void updateNoOfSelectedEntries(int count) {

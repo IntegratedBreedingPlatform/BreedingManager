@@ -57,10 +57,12 @@ public class CrossesSummarySettingsComponent extends HorizontalLayout implements
 
 	@Override
 	public void initializeValues() {
+		// not implemented
 	}
 
 	@Override
 	public void addListeners() {
+		// not implemented
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
@@ -37,6 +38,9 @@ public class ListNameValidator implements Validator {
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
+
+	@Autowired
+	private ContextUtil contextUtil;
 
 	public ListNameValidator() {
 	}
@@ -93,10 +97,10 @@ public class ListNameValidator implements Validator {
 
 		} else {
 			try {
-				List<GermplasmList> lists = this.germplasmListManager.getGermplasmListByName(listName, 0, 5, Operation.EQUAL);
+				List<GermplasmList> lists =
+						this.germplasmListManager.getGermplasmListByName(listName, this.getCurrentProgramUUID(), 0, 5, Operation.EQUAL);
 
-				if (lists.size() == 1 && !lists.get(0).getName().trim().equals(this.currentListName) || !lists.isEmpty()
-						&& lists.size() > 1) {
+				if (!lists.isEmpty() && (this.currentListName == null || !lists.get(0).getName().trim().equals(this.currentListName))) {
 					this.errorDetails = this.messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE);
 					isValid = false;
 				}
@@ -108,6 +112,10 @@ public class ListNameValidator implements Validator {
 			}
 		}
 		return isValid;
+	}
+
+	protected String getCurrentProgramUUID() {
+		return this.contextUtil.getCurrentProgramUUID();
 	}
 
 	public String getCurrentListName() {

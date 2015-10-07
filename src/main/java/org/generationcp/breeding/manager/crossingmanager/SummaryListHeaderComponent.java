@@ -107,8 +107,7 @@ public class SummaryListHeaderComponent extends VerticalLayout implements Breedi
 		try {
 			this.list = this.germplasmListManager.getGermplasmListById(this.listId);
 		} catch (MiddlewareQueryException e) {
-			SummaryListHeaderComponent.LOG.error("Error in getting parent list:" + e.getMessage());
-			e.printStackTrace();
+			SummaryListHeaderComponent.LOG.error("Error in getting parent list:" + e.getMessage(), e);
 		}
 	}
 
@@ -154,6 +153,7 @@ public class SummaryListHeaderComponent extends VerticalLayout implements Breedi
 
 	@Override
 	public void addListeners() {
+		// not implemented
 	}
 
 	@Override

@@ -87,22 +87,24 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	 * Action handler for Make Cross button
 	 */
 	public void makeCrossButtonAction(List<GermplasmListEntry> femaleList, List<GermplasmListEntry> maleList, String listnameFemaleParent,
-			String listnameMaleParent, CrossType type, boolean makeReciprocalCrosses) {
+			String listnameMaleParent, CrossType type, boolean makeReciprocalCrosses, boolean excludeSelf) {
 
 		if (!femaleList.isEmpty() && !maleList.isEmpty()) {
 			// Female - Male Multiplication
 			if (CrossType.MULTIPLY.equals(type)) {
-				this.crossesTableComponent.multiplyParents(femaleList, maleList, listnameFemaleParent, listnameMaleParent);
+				this.crossesTableComponent.multiplyParents(femaleList, maleList, listnameFemaleParent, listnameMaleParent, excludeSelf);
 				if (makeReciprocalCrosses) {
-					this.crossesTableComponent.multiplyParents(maleList, femaleList, listnameMaleParent, listnameFemaleParent);
+					this.crossesTableComponent.multiplyParents(maleList, femaleList, listnameMaleParent, listnameFemaleParent, excludeSelf);
 				}
 
 				// Top to Bottom Crossing
 			} else if (CrossType.TOP_TO_BOTTOM.equals(type)) {
 				if (femaleList.size() == maleList.size()) {
-					this.crossesTableComponent.makeTopToBottomCrosses(femaleList, maleList, listnameFemaleParent, listnameMaleParent);
+					this.crossesTableComponent.makeTopToBottomCrosses(femaleList, maleList, listnameFemaleParent, listnameMaleParent,
+							excludeSelf);
 					if (makeReciprocalCrosses) {
-						this.crossesTableComponent.makeTopToBottomCrosses(maleList, femaleList, listnameMaleParent, listnameFemaleParent);
+						this.crossesTableComponent.makeTopToBottomCrosses(maleList, femaleList, listnameMaleParent, listnameFemaleParent,
+								excludeSelf);
 					}
 				} else {
 					MessageNotifier.showError(this.getWindow(), "Error with selecting parents.",
@@ -113,10 +115,20 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 			MessageNotifier.showError(this.getWindow(), "Error with selecting parents.",
 					this.messageSource.getMessage(Message.AT_LEAST_ONE_FEMALE_AND_ONE_MALE_PARENT_MUST_BE_SELECTED));
 		}
+
+		this.showNotificationAfterCrossing(this.crossesTableComponent.getTableCrossesMade().size());
+
+	}
+
+	void showNotificationAfterCrossing(int noOfCrosses) {
+		if (noOfCrosses == 0) {
+			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
+					this.messageSource.getMessage(Message.NO_CROSSES_GENERATED));
+		}
 	}
 
 	public void toggleNextButton() {
-		 this.nextButton.setEnabled(this.isAllListsSaved());
+		this.nextButton.setEnabled(this.isAllListsSaved());
 	}
 
 	private boolean isAllListsSaved() {
@@ -146,8 +158,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		this.nextButton.setEnabled(false);
 	}
 
-	 @Override
-	 public void instantiateComponents() {
+	@Override
+	public void instantiateComponents() {
 		this.selectParentsComponent = new SelectParentsComponent(this);
 		this.parentsComponent = new MakeCrossesParentsComponent(this);
 		this.crossingMethodComponent = new CrossingMethodComponent(this);
@@ -165,36 +177,36 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 		this.modeView = ModeView.LIST_VIEW;
 		this.hasChanges = false;
-	 }
+	}
 
-	 @Override
-	 public void initializeValues() {
-		 // do nothing
-	 }
+	@Override
+	public void initializeValues() {
+		// do nothing
+	}
 
-	 @Override
-	 public void addListeners() {
-		 CrossingManagerImportButtonClickListener listener = new CrossingManagerImportButtonClickListener(this);
+	@Override
+	public void addListeners() {
+		CrossingManagerImportButtonClickListener listener = new CrossingManagerImportButtonClickListener(this);
 		this.backButton.addListener(listener);
 		this.nextButton.addListener(listener);
-	 }
+	}
 
-	 @Override
-	 public void layoutComponents() {
-		 this.setWidth("950px");
+	@Override
+	public void layoutComponents() {
+		this.setWidth("950px");
 		this.setMargin(true);
 		this.setSpacing(true);
 
 		HorizontalLayout upperLayout = new HorizontalLayout();
-		 upperLayout.setSpacing(true);
-		 upperLayout.setHeight("535px");
-		 upperLayout.addComponent(this.selectParentsComponent);
-		 upperLayout.addComponent(this.parentsComponent);
+		upperLayout.setSpacing(true);
+		upperLayout.setHeight("535px");
+		upperLayout.addComponent(this.selectParentsComponent);
+		upperLayout.addComponent(this.parentsComponent);
 
 		HorizontalLayout lowerLayout = new HorizontalLayout();
-		 lowerLayout.setSpacing(true);
-		 lowerLayout.addComponent(this.crossingMethodComponent);
-		 lowerLayout.addComponent(this.crossesTableComponent);
+		lowerLayout.setSpacing(true);
+		lowerLayout.addComponent(this.crossingMethodComponent);
+		lowerLayout.addComponent(this.crossesTableComponent);
 
 		HorizontalLayout layoutButtonArea = new HorizontalLayout();
 		layoutButtonArea.setMargin(true, true, false, true);
@@ -211,20 +223,20 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	}
 
 	public void updateCrossesSeedSource(String femaleListName, String maleListName) {
-		 this.crossesTableComponent.updateSeedSource(femaleListName, maleListName);
-	 }
+		this.crossesTableComponent.updateSeedSource(femaleListName, maleListName);
+	}
 
 	private boolean doUpdateTable() {
-		 return !this.getSeparatorString().equals(this.crossesTableComponent.getSeparator());
-	 }
+		return !this.getSeparatorString().equals(this.crossesTableComponent.getSeparator());
+	}
 
-	 @Override
-	 public void updatePage() {
-		 // only make updates to the page if separator was changed
-		 if (this.doUpdateTable() && this.crossesTableComponent.getCrossList() == null) {
-			 this.crossesTableComponent.updateSeparatorForCrossesMade();
-		 }
-	 }
+	@Override
+	public void updatePage() {
+		// only make updates to the page if separator was changed
+		if (this.doUpdateTable() && this.crossesTableComponent.getCrossList() == null) {
+			this.crossesTableComponent.updateSeparatorForCrossesMade();
+		}
+	}
 
 	// SETTERS AND GETTERS
 	public String getSeparatorString() {
@@ -232,217 +244,221 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		return crossNameSetting.getSeparator();
 	}
 
-	 public CrossingManagerSetting getCurrentCrossingSetting() {
-		 return this.source.getDetailComponent().getCurrentlyDefinedSetting();
-	 }
+	public CrossingManagerSetting getCurrentCrossingSetting() {
+		return this.source.getDetailComponent().getCurrentlyDefinedSetting();
+	}
 
 	public CrossesMadeContainer getCrossesMadeContainer() {
-		 return this.source;
-	 }
+		return this.source;
+	}
 
 	public SelectParentsComponent getSelectParentsComponent() {
-		 return this.selectParentsComponent;
-	 }
+		return this.selectParentsComponent;
+	}
 
 	public MakeCrossesParentsComponent getParentsComponent() {
-		 return this.parentsComponent;
-	 }
+		return this.parentsComponent;
+	}
 
-	 public CrossingMethodComponent getCrossingMethodComponent() {
-		 return this.crossingMethodComponent;
-	 }
+	public CrossingMethodComponent getCrossingMethodComponent() {
+		return this.crossingMethodComponent;
+	}
 
-	 public MakeCrossesTableComponent getCrossesTableComponent() {
-		 return this.crossesTableComponent;
-	 }
+	public MakeCrossesTableComponent getCrossesTableComponent() {
+		return this.crossesTableComponent;
+	}
 
-	 public Component getSource() {
-		 return this.source;
-	 }
+	public Component getSource() {
+		return this.source;
+	}
 
 	public ModeView getModeView() {
-		 return this.modeView;
-	 }
+		return this.modeView;
+	}
 
 	public void setModeViewOnly(ModeView newModeView) {
-		 this.modeView = newModeView;
+		this.modeView = newModeView;
 	}
 
 	public void setModeView(ModeView newModeView) {
-		 String message = "";
+		String message = "";
 
 		if (this.modeView != newModeView) {
-			 if (this.hasChanges) {
-				 if (this.modeView.equals(ModeView.LIST_VIEW) && newModeView.equals(ModeView.INVENTORY_VIEW)) {
-					 message =
+			if (this.hasChanges) {
+				if (this.modeView.equals(ModeView.LIST_VIEW) && newModeView.equals(ModeView.INVENTORY_VIEW)) {
+					message =
 							"You have unsaved changes to a parent list you are creating."
 									+ " Do you want to save them before changing views?";
-				 } else if (this.modeView.equals(ModeView.INVENTORY_VIEW) && newModeView.equals(ModeView.LIST_VIEW)) {
-					 message = "You have unsaved reservations to one or more lists. Do you want to save them before changing views?";
-				 }
+				} else if (this.modeView.equals(ModeView.INVENTORY_VIEW) && newModeView.equals(ModeView.LIST_VIEW)) {
+					message = "You have unsaved reservations to one or more lists. Do you want to save them before changing views?";
+				}
 				// both parents are not yet saved and has unsaved changes
-				 if (this.areBothParentsNewListWithUnsavedChanges()) {
-					 MessageNotifier.showError(this.getWindow(), "Unsaved Parent Lists",
+				if (this.areBothParentsNewListWithUnsavedChanges()) {
+					MessageNotifier.showError(this.getWindow(), "Unsaved Parent Lists",
 							"Please save parent lists first before changing view.");
-				 } else {
-					 this.showUnsavedChangesConfirmDialog(message, newModeView);
-				 }
-			 } else {
-				 this.modeView = newModeView;
-				 this.updateView(this.modeView);
-			 }
-		 }
+				} else {
+					this.showUnsavedChangesConfirmDialog(message, newModeView);
+				}
+			} else {
+				this.modeView = newModeView;
+				this.updateView(this.modeView);
+			}
+		}
 
 	}
 
 	public boolean areBothParentsNewListWithUnsavedChanges() {
-		 // for female and male parent lists
-		 ParentTabComponent femaleParentTab = this.parentsComponent.getFemaleParentTab();
-		 ParentTabComponent maleParentTab = this.parentsComponent.getMaleParentTab();
+		// for female and male parent lists
+		ParentTabComponent femaleParentTab = this.parentsComponent.getFemaleParentTab();
+		ParentTabComponent maleParentTab = this.parentsComponent.getMaleParentTab();
 
 		if (femaleParentTab.getGermplasmList() == null && femaleParentTab.hasUnsavedChanges() && maleParentTab.getGermplasmList() == null
 				&& maleParentTab.hasUnsavedChanges()) {
-			 return true;
-		 }
+			return true;
+		}
 
 		return false;
-	 }
+	}
 
-	 public void updateView(ModeView modeView) {
-		 this.selectParentsComponent.updateViewForAllLists(modeView);
-		 this.parentsComponent.updateViewForAllParentLists(modeView);
-	 }
+	public void updateView(ModeView modeView) {
+		this.selectParentsComponent.updateViewForAllLists(modeView);
+		this.parentsComponent.updateViewForAllParentLists(modeView);
+	}
 
-	 public void showUnsavedChangesConfirmDialog(String message, ModeView newModeView) {
-		 this.modeView = newModeView;
-		 this.unsavedChangesDialog = new UnsavedChangesConfirmDialog(this, message);
-		 this.getWindow().addWindow(this.unsavedChangesDialog);
-	 }
+	public void showUnsavedChangesConfirmDialog(String message, ModeView newModeView) {
+		this.modeView = newModeView;
+		this.unsavedChangesDialog = new UnsavedChangesConfirmDialog(this, message);
+		this.getWindow().addWindow(this.unsavedChangesDialog);
+	}
 
-	 @Override
-	 public void saveAllListChangesAction() {
+	@Override
+	public void saveAllListChangesAction() {
 
 		if (this.selectParentsComponent.hasUnsavedChanges()) {
-			 Map<SelectParentsListDataComponent, Boolean> listToUpdate = new HashMap<SelectParentsListDataComponent, Boolean>();
+			Map<SelectParentsListDataComponent, Boolean> listToUpdate = new HashMap<SelectParentsListDataComponent, Boolean>();
 			listToUpdate.putAll(this.selectParentsComponent.getListStatusForChanges());
 
 			for (Map.Entry<SelectParentsListDataComponent, Boolean> list : listToUpdate.entrySet()) {
-				 Boolean isListHasUnsavedChanges = list.getValue();
-				 if (isListHasUnsavedChanges) {
-					 SelectParentsListDataComponent toSave = list.getKey();
-					 toSave.saveReservationChangesAction();
-				 }
-			 }
-		 }
+				Boolean isListHasUnsavedChanges = list.getValue();
+				if (isListHasUnsavedChanges) {
+					SelectParentsListDataComponent toSave = list.getKey();
+					toSave.saveReservationChangesAction();
+				}
+			}
+		}
 
 		if (this.parentsComponent.hasUnsavedChanges()) {
-			 // for female and male parent lists
-			 ParentTabComponent femaleParentTab = this.parentsComponent.getFemaleParentTab();
-			 ParentTabComponent maleParentTab = this.parentsComponent.getMaleParentTab();
+			// for female and male parent lists
+			ParentTabComponent femaleParentTab = this.parentsComponent.getFemaleParentTab();
+			ParentTabComponent maleParentTab = this.parentsComponent.getMaleParentTab();
 
 			ModeView prevModeView;
-			 if (this.modeView.equals(ModeView.LIST_VIEW)) {
-				 prevModeView = ModeView.INVENTORY_VIEW;
-			 } else {
-				 prevModeView = ModeView.LIST_VIEW;
-			 }
+			if (this.modeView.equals(ModeView.LIST_VIEW)) {
+				prevModeView = ModeView.INVENTORY_VIEW;
+			} else {
+				prevModeView = ModeView.LIST_VIEW;
+			}
 
 			if (femaleParentTab.hasUnsavedChanges() && !maleParentTab.hasUnsavedChanges()) {
-				 femaleParentTab.setPreviousModeView(prevModeView);
-				 femaleParentTab.doSaveActionFromMain();
-			 } else if (maleParentTab.hasUnsavedChanges() && !femaleParentTab.hasUnsavedChanges()) {
-				 maleParentTab.setPreviousModeView(prevModeView);
-				 maleParentTab.doSaveActionFromMain();
-			 } else {
-				 // keep track the unsaved changes due to reservation and dragging lots given that the parents have existing lists.
-				 if (femaleParentTab.getGermplasmList() != null && maleParentTab.getGermplasmList() != null) {
+				femaleParentTab.setPreviousModeView(prevModeView);
+				femaleParentTab.doSaveActionFromMain();
+			} else if (maleParentTab.hasUnsavedChanges() && !femaleParentTab.hasUnsavedChanges()) {
+				maleParentTab.setPreviousModeView(prevModeView);
+				maleParentTab.doSaveActionFromMain();
+			} else {
+				// keep track the unsaved changes due to reservation and dragging lots given that the parents have existing lists.
+				if (femaleParentTab.getGermplasmList() != null && maleParentTab.getGermplasmList() != null) {
 
 					femaleParentTab.setPreviousModeView(prevModeView);
-					 femaleParentTab.doSaveActionFromMain();
+					femaleParentTab.doSaveActionFromMain();
 
 					maleParentTab.setPreviousModeView(prevModeView);
-					 maleParentTab.doSaveActionFromMain();
-				 }
-			 }
-		 } else {
-			 this.updateView(this.modeView);
-		 }
+					maleParentTab.doSaveActionFromMain();
+				}
+			}
+		} else {
+			this.updateView(this.modeView);
+		}
 
 		this.resetUnsavedStatus();
 
 		this.getWindow().removeWindow(this.unsavedChangesDialog);
-	 }
+	}
 
-	 private void resetUnsavedStatus() {
-		 this.selectParentsComponent.updateHasChangesForAllList(false);
-		 this.parentsComponent.updateHasChangesForAllParentList();
-	 }
+	private void resetUnsavedStatus() {
+		this.selectParentsComponent.updateHasChangesForAllList(false);
+		this.parentsComponent.updateHasChangesForAllParentList();
+	}
 
-	 @Override
-	 public void discardAllListChangesAction() {
-		 // cancel all the unsaved changes
-		 if (this.modeView.equals(ModeView.INVENTORY_VIEW)) {
-			 this.selectParentsComponent.resetInventoryViewForCancelledChanges();
-		 }
-		 this.selectParentsComponent.updateViewForAllLists(this.modeView);
+	@Override
+	public void discardAllListChangesAction() {
+		// cancel all the unsaved changes
+		if (this.modeView.equals(ModeView.INVENTORY_VIEW)) {
+			this.selectParentsComponent.resetInventoryViewForCancelledChanges();
+		}
+		this.selectParentsComponent.updateViewForAllLists(this.modeView);
 
 		// for female parent list
-		 ParentTabComponent femaleTabComponent = this.parentsComponent.getFemaleParentTab();
-		 if (femaleTabComponent.getGermplasmList() != null) {
-			 if (this.modeView.equals(ModeView.INVENTORY_VIEW)) {
-				 femaleTabComponent.discardChangesInListView();
-			 } else if (this.modeView.equals(ModeView.LIST_VIEW)) {
-				 femaleTabComponent.discardChangesInInventoryView();
-			 }
-		 } else {
-			 // if no list save, just reset the list
-			 femaleTabComponent.resetList();
-		 }
+		ParentTabComponent femaleTabComponent = this.parentsComponent.getFemaleParentTab();
+		if (femaleTabComponent.getGermplasmList() != null) {
+			if (this.modeView.equals(ModeView.INVENTORY_VIEW)) {
+				femaleTabComponent.discardChangesInListView();
+			} else if (this.modeView.equals(ModeView.LIST_VIEW)) {
+				femaleTabComponent.discardChangesInInventoryView();
+			}
+		} else {
+			// if no list save, just reset the list
+			femaleTabComponent.resetList();
+		}
 
 		// for male parent list
-		 ParentTabComponent maleTabComponent = this.parentsComponent.getMaleParentTab();
-		 if (maleTabComponent.getGermplasmList() != null) {
-			 if (this.modeView.equals(ModeView.INVENTORY_VIEW)) {
-				 maleTabComponent.discardChangesInListView();
-			 } else if (this.modeView.equals(ModeView.LIST_VIEW)) {
-				 maleTabComponent.discardChangesInInventoryView();
-			 }
-		 } else {
-			 // if no list save, just reset the list
-			 maleTabComponent.resetList();
-		 }
+		ParentTabComponent maleTabComponent = this.parentsComponent.getMaleParentTab();
+		if (maleTabComponent.getGermplasmList() != null) {
+			if (this.modeView.equals(ModeView.INVENTORY_VIEW)) {
+				maleTabComponent.discardChangesInListView();
+			} else if (this.modeView.equals(ModeView.LIST_VIEW)) {
+				maleTabComponent.discardChangesInInventoryView();
+			}
+		} else {
+			// if no list save, just reset the list
+			maleTabComponent.resetList();
+		}
 
 		this.resetUnsavedStatus();
-		 this.updateView(this.modeView);
-		 this.getWindow().removeWindow(this.unsavedChangesDialog);
+		this.updateView(this.modeView);
+		this.getWindow().removeWindow(this.unsavedChangesDialog);
 		// end of discardAllListChangesAction()
-	 }
+	}
 
-	 @Override
-	 public void cancelAllListChangesAction() {
+	@Override
+	public void cancelAllListChangesAction() {
 
 		// Return to Previous Mode View
-		 if (this.modeView.equals(ModeView.LIST_VIEW)) {
-			 this.setModeViewOnly(ModeView.INVENTORY_VIEW);
-		 } else if (this.modeView.equals(ModeView.INVENTORY_VIEW)) {
-			 this.setModeViewOnly(ModeView.LIST_VIEW);
-		 }
+		if (this.modeView.equals(ModeView.LIST_VIEW)) {
+			this.setModeViewOnly(ModeView.INVENTORY_VIEW);
+		} else if (this.modeView.equals(ModeView.INVENTORY_VIEW)) {
+			this.setModeViewOnly(ModeView.LIST_VIEW);
+		}
 
 		this.getWindow().removeWindow(this.unsavedChangesDialog);
 		// end of cancelAllListChangesAction()
-	 }
+	}
 
-	 public void setHasUnsavedChangesMain(boolean hasChanges) {
-		 this.hasChanges = hasChanges;
-	 }
+	public void setHasUnsavedChangesMain(boolean hasChanges) {
+		this.hasChanges = hasChanges;
+	}
 
 	public Boolean hasUnsavedChangesMain() {
-		 return this.hasChanges;
-	 }
+		return this.hasChanges;
+	}
 
-	 public void showNodeOnTree(Integer listId) {
-		 CrossingManagerListTreeComponent listTreeComponent = this.getSelectParentsComponent().getListTreeComponent();
-		 listTreeComponent.setListId(listId);
-		 listTreeComponent.createTree();
-	 }
+	public void showNodeOnTree(Integer listId) {
+		CrossingManagerListTreeComponent listTreeComponent = this.getSelectParentsComponent().getListTreeComponent();
+		listTreeComponent.setListId(listId);
+		listTreeComponent.createTree();
+	}
+
+	void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
 }

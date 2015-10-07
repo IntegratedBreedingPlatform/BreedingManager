@@ -37,6 +37,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
@@ -69,6 +73,9 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
+	
+	@Autowired
+	private PlatformTransactionManager transactionManager;
 
 	private Label listEntriesLabel;
 
@@ -225,11 +232,17 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void contextItemClick(org.vaadin.peter.contextmenu.ContextMenu.ClickEvent event) {
-				ContextMenuItem clickedItem = event.getClickedItem();
-				if (CrossesSummaryListDataComponent.this.menuExportList.equals(clickedItem)) {
-					CrossesSummaryListDataComponent.this.exportCrossesMadeAction();
-				}
+			public void contextItemClick(final org.vaadin.peter.contextmenu.ContextMenu.ClickEvent event) {
+				final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+					@Override
+					protected void doInTransactionWithoutResult(TransactionStatus status) {
+						ContextMenuItem clickedItem = event.getClickedItem();
+						if (CrossesSummaryListDataComponent.this.menuExportList.equals(clickedItem)) {
+							CrossesSummaryListDataComponent.this.exportCrossesMadeAction();
+						}
+					}
+				});
 			}
 		});
 

@@ -16,13 +16,16 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -72,6 +75,9 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
+	@Autowired
+	private PlatformTransactionManager transactionManager;
+	
 	public ExportListAsDialog(Component source, GermplasmList germplasmList, Table listDataTable) {
 		this.source = source;
 		this.germplasmList = germplasmList;
@@ -135,19 +141,29 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 		});
 	}
 
-	protected void exportListAction(Table table) {
-		if (this.germplasmList.isLockedList()) {
-			this.showWarningMessage(table);
-			// do the export
-			if (ExportListAsDialog.XLS_FORMAT.equalsIgnoreCase(this.formatOptionsCbx.getValue().toString())) {
-				this.exportListAsXLS(table);
-			} else if (ExportListAsDialog.CSV_FORMAT.equalsIgnoreCase(this.formatOptionsCbx.getValue().toString())) {
-				this.exportListAsCSV(table);
+	protected void exportListAction(final Table table) {
+
+		final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				if (ExportListAsDialog.this.germplasmList.isLockedList()) {
+					ExportListAsDialog.this.showWarningMessage(table);
+					// do the export
+					if (ExportListAsDialog.XLS_FORMAT.equalsIgnoreCase(ExportListAsDialog.this.formatOptionsCbx.getValue().toString())) {
+						ExportListAsDialog.this.exportListAsXLS(table);
+					} else if (ExportListAsDialog.CSV_FORMAT.equalsIgnoreCase(ExportListAsDialog.this.formatOptionsCbx.getValue()
+							.toString())) {
+						ExportListAsDialog.this.exportListAsCSV(table);
+					}
+				} else {
+					MessageNotifier.showError(ExportListAsDialog.this.getWindow(),
+							ExportListAsDialog.this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST),
+							ExportListAsDialog.this.messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED));
+				}
 			}
-		} else {
-			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST),
-					this.messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED));
-		}
+		});
+
 	}
 
 	@Override
@@ -218,7 +234,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 					+ ExportListAsDialog.XLS_EXT);
 			this.source.getWindow().open(fileDownloadResource);
 			// must figure out other way to clean-up file because deleting it here makes it unavailable for download
-		} catch (GermplasmListExporterException | MiddlewareQueryException e) {
+		} catch (GermplasmListExporterException e) {
 			ExportListAsDialog.LOG.error(this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e.getMessage() + ". "
 					+ this.messageSource.getMessage(Message.ERROR_REPORT_TO));

@@ -21,6 +21,7 @@ import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerActionHandler;
 import org.generationcp.breeding.manager.crossingmanager.listeners.ParentsTableCheckboxListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
+import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUtil;
 import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
@@ -57,6 +58,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
@@ -91,6 +96,9 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
+	
+	@Autowired
+	private PlatformTransactionManager transactionManager;
 
 	private final class ListDataTableDropHandler implements DropHandler {
 
@@ -232,21 +240,34 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		private static final long serialVersionUID = -2343109406180457070L;
 
 		@Override
-		public void contextItemClick(org.vaadin.peter.contextmenu.ContextMenu.ClickEvent event) {
-			// Get reference to clicked item
-			ContextMenuItem clickedItem = event.getClickedItem();
-			if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.SAVE_CHANGES))) {
-				ParentTabComponent.this.doSaveAction();
-			} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
-				ParentTabComponent.this.viewListAction();
-			} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
-				// no implementation yet for this condition
-			} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
-				ParentTabComponent.this.reserveInventoryAction();
-			} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
-				ParentTabComponent.this.listInventoryTable.getTable().setValue(
-						ParentTabComponent.this.listInventoryTable.getTable().getItemIds());
-			}
+		public void contextItemClick(final org.vaadin.peter.contextmenu.ContextMenu.ClickEvent event) {
+			final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+			transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					// Get reference to clicked item
+					ContextMenuItem clickedItem = event.getClickedItem();
+					if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.SAVE_CHANGES))) {
+						ParentTabComponent.this.doSaveAction();
+					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
+						ParentTabComponent.this.viewListAction();
+					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
+						// no implementation yet for this condition
+					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
+						ParentTabComponent.this.reserveInventoryAction();
+					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
+						ParentTabComponent.this.listInventoryTable.getTable().setValue(
+								ParentTabComponent.this.listInventoryTable.getTable().getItemIds());
+					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES))) {
+						ParentTabComponent.this.listInventoryTable.getTable().setValue(
+								CrossingManagerUtil.getEvenEntries(ParentTabComponent.this.listInventoryTable.getTable()));
+					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES))) {
+						ParentTabComponent.this.listInventoryTable.getTable().setValue(
+								CrossingManagerUtil.getOddEntries(ParentTabComponent.this.listInventoryTable.getTable()));
+					}
+				}
+			});
+
 		}
 	}
 
@@ -255,22 +276,30 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		private static final long serialVersionUID = -2343109406180457070L;
 
 		@Override
-		public void contextItemClick(org.vaadin.peter.contextmenu.ContextMenu.ClickEvent event) {
-			ContextMenuItem clickedItem = event.getClickedItem();
-
-			if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.INVENTORY_VIEW))) {
-				ParentTabComponent.this.viewInventoryAction();
-			} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.REMOVE_SELECTED_ENTRIES))) {
-				ParentTabComponent.this.parentActionListener.removeSelectedEntriesAction(ParentTabComponent.this.listDataTable);
-			} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.SAVE_LIST))) {
-				ParentTabComponent.this.doSaveAction();
-			} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
-				ParentTabComponent.this.listDataTable.setValue(ParentTabComponent.this.listDataTable.getItemIds());
-			} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.CLEAR_ALL))) {
-				ParentTabComponent.this.listDataTable.setValue(ParentTabComponent.this.listDataTable.getItemIds());
-				ParentTabComponent.this.parentActionListener.removeSelectedEntriesAction(ParentTabComponent.this.listDataTable);
-			}
-
+		public void contextItemClick(final org.vaadin.peter.contextmenu.ContextMenu.ClickEvent event) {
+			final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+			transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					ContextMenuItem clickedItem = event.getClickedItem();
+					if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.INVENTORY_VIEW))) {
+						ParentTabComponent.this.viewInventoryAction();
+					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.REMOVE_SELECTED_ENTRIES))) {
+						ParentTabComponent.this.parentActionListener.removeSelectedEntriesAction(ParentTabComponent.this.listDataTable);
+					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.SAVE_LIST))) {
+						ParentTabComponent.this.doSaveAction();
+					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
+						ParentTabComponent.this.listDataTable.setValue(ParentTabComponent.this.listDataTable.getItemIds());
+					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES))) {
+						ParentTabComponent.this.listDataTable.setValue(CrossingManagerUtil.getEvenEntries(ParentTabComponent.this.listDataTable));
+					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES))) {
+						ParentTabComponent.this.listDataTable.setValue(CrossingManagerUtil.getOddEntries(ParentTabComponent.this.listDataTable));
+					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.CLEAR_ALL))) {
+						ParentTabComponent.this.listDataTable.setValue(ParentTabComponent.this.listDataTable);
+						ParentTabComponent.this.parentActionListener.removeSelectedEntriesAction(ParentTabComponent.this.listDataTable);
+					}
+				}
+			});
 		}
 	}
 
@@ -398,12 +427,14 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 		this.actionMenu = new ContextMenu();
 		this.actionMenu.setWidth("250px");
+		this.actionMenu.addItem(this.messageSource.getMessage(Message.CLEAR_ALL));
 		this.actionMenu.addItem(this.messageSource.getMessage(Message.INVENTORY_VIEW));
 		this.actionMenu.addItem(this.messageSource.getMessage(Message.REMOVE_SELECTED_ENTRIES));
 		this.saveActionMenu = this.actionMenu.addItem(this.messageSource.getMessage(Message.SAVE_LIST));
 		this.saveActionMenu.setEnabled(false);
 		this.actionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
-		this.actionMenu.addItem(this.messageSource.getMessage(Message.CLEAR_ALL));
+		this.actionMenu.addItem(this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES));
+		this.actionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES));
 
 		this.inventoryViewActionButton = new ActionButton();
 
@@ -414,6 +445,8 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		this.menuListView = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
 		this.menuInventorySaveChanges = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SAVE_CHANGES));
 		this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
+		this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES));
+		this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES));
 		this.resetInventoryMenuOptions();
 
 		this.initializeParentTable();
@@ -503,6 +536,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 		this.listInventoryTable.setVisible(false);
 		this.listInventoryTable.setMaxRows(this.rowCount);
+		this.listInventoryTable.setTableHeight(null);
 	}
 
 	@Override

@@ -50,12 +50,12 @@ public class TableLayout extends CssLayout implements BreedingManagerLayout, Ini
 
 	@Override
 	public void initializeValues() {
-
+		// not implemented
 	}
 
 	@Override
 	public void addListeners() {
-
+		// not implemented
 	}
 
 	@Override

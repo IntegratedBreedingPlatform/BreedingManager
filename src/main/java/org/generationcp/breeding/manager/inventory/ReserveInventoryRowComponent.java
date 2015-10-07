@@ -10,7 +10,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.validator.DoubleValidator;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -144,7 +143,7 @@ public class ReserveInventoryRowComponent extends HorizontalLayout implements In
 		return this.reservedAmtTxtField;
 	}
 
-	public void validate() throws InvalidValueException {
+	public void validate() {
 		this.reservedAmtTxtField.validate();
 	}
 }
