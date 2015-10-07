@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
@@ -77,7 +78,16 @@ public class GermplasmListUploader implements FileFactory {
 	}
 
 	public String hasWarnings() {
-		return this.germplasmListParser.getNoInventoryWarning();
+	    StringBuilder mySB = new StringBuilder();
+	    mySB.append(this.germplasmListParser.getNoInventoryWarning());
+	    if (StringUtils.isNotBlank(this.germplasmListParser.getNoVariatesWarning())) {
+	        // Add a blank line to separate warnings   
+	        if (StringUtils.isNotBlank(mySB.toString())) {
+	            mySB.append("\n\n");
+	        }
+	        mySB.append(this.germplasmListParser.getNoVariatesWarning());            
+	    }		    
+	    return mySB.toString();
 	}
 
 	public ImportedGermplasmList getImportedGermplasmList() {
