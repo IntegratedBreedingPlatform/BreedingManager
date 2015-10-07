@@ -370,7 +370,7 @@ public class GermplasmListExporter {
 	private void addVariableToMap(Map<Integer, Variable> variableMap, int termId) {
 
 		try {
-			Variable variable = this.ontologyVariableDataManager.getVariable(this.contextUtil.getCurrentProgramUUID(), termId, false);
+			Variable variable = this.ontologyVariableDataManager.getVariable(this.contextUtil.getCurrentProgramUUID(), termId, false, false);
 			if (variable != null) {
 				variableMap.put(variable.getId(), variable);
 			}
@@ -404,7 +404,7 @@ public class GermplasmListExporter {
 				termMap.put(term.getId(), this.ontologyScaleDataManager.getScaleById(term.getId(), false));
 			} else {
 				termMap.put(term.getId(),
-						this.ontologyVariableDataManager.getVariable(this.contextUtil.getCurrentProgramUUID(), term.getId(), false));
+						this.ontologyVariableDataManager.getVariable(this.contextUtil.getCurrentProgramUUID(), term.getId(), false, false));
 			}
 		} catch (MiddlewareQueryException e) {
 			GermplasmListExporter.LOG.error(e.getMessage(), e);
