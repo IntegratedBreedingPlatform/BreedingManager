@@ -4,6 +4,7 @@ package org.generationcp.breeding.manager.listmanager.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.generationcp.breeding.manager.data.initializer.GermplasmListDataInitializer;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -45,14 +46,14 @@ public class ListCommonActionsUtilTest {
 	@Test
 	public void testGetNewEntriesToSaveUpdateDelete_ForNewEntries() throws MiddlewareQueryException {
 		this.forceHasChanges = false;
-		this.listToSave = this.getGermplasmList();
-		this.listEntries = this.getGermplasmListData(5);
+		this.listToSave = GermplasmListDataInitializer.createGermplasmList(1);
+		this.listEntries = GermplasmListDataInitializer.createGermplasmListData(5);
 		this.newEntries = new ArrayList<GermplasmListData>();
 		this.entriesToUpdate = new ArrayList<GermplasmListData>();
 		this.entriesToDelete = new ArrayList<GermplasmListData>();
 
-		Mockito.when(this.dataManager.countGermplasmListDataByListId(this.listToSave.getId())).thenReturn(4L);
-		Mockito.when(this.dataManager.getGermplasmListDataByListId(this.listToSave.getId(), 0, 4))
+		Mockito.when(this.dataManager.countGermplasmListDataByListId(this.listToSave.getId())).thenReturn(5L);
+		Mockito.when(this.dataManager.getGermplasmListDataByListId(this.listToSave.getId(), 0, 5))
 				.thenReturn(this.listToSave.getListData());
 
 		ListCommonActionsUtil.getNewEntriesToSaveUpdateDelete(this.listToSave, this.listEntries, this.forceHasChanges, this.newEntries,
@@ -162,32 +163,5 @@ public class ListCommonActionsUtilTest {
 				expectedGroupName, actualGroupName);
 	}
 
-	private GermplasmList getGermplasmList() {
-		GermplasmList germplasmList = new GermplasmList();
-		germplasmList.setId(1);
-		germplasmList.setName("List 001");
-		germplasmList.setDescription("List 001 Description");
-		germplasmList.setDate(20150101L);
-		germplasmList.setListData(this.getGermplasmListData(4));
-
-		return germplasmList;
-	}
-
-	private List<GermplasmListData> getGermplasmListData(Integer itemNo) {
-		List<GermplasmListData> listEntries = new ArrayList<GermplasmListData>();
-		for (int i = 1; i <= itemNo; i++) {
-			GermplasmListData listEntry = new GermplasmListData();
-			listEntry.setId(i);
-			listEntry.setDesignation("Designation " + i);
-			listEntry.setEntryCode("EntryCode " + i);
-			listEntry.setEntryId(i);
-			listEntry.setGroupName("GroupName " + i);
-			listEntry.setStatus(1);
-			listEntry.setSeedSource("SeedSource " + i);
-
-			listEntries.add(listEntry);
-		}
-
-		return listEntries;
 	}
 }
