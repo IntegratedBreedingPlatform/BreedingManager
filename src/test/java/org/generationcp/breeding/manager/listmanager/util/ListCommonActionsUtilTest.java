@@ -161,5 +161,22 @@ public class ListCommonActionsUtilTest {
 				expectedGroupName, actualGroupName);
 	}
 
+	@Test
+	public void testDeleteExistingListEntriesWithException() {
+		this.listToSave = GermplasmListDataInitializer.createGermplasmList(1);
+		final Integer listId = this.listToSave.getId();
+		Mockito.doThrow(new MiddlewareQueryException("Error")).when(this.dataManager).deleteGermplasmListDataByListId(listId);
+
+		Assert.assertTrue("Should return true when there is an exception with the deletion of list entries.",
+				ListCommonActionsUtil.deleteExistingListEntries(listId, this.dataManager));
+	}
+
+	@Test
+	public void testDeleteExistingListEntriesWithoutException() {
+		this.listToSave = GermplasmListDataInitializer.createGermplasmList(1);
+		final Integer listId = this.listToSave.getId();
+
+		Assert.assertFalse("Should return false when there is no exception with the deletion of list entries.",
+				ListCommonActionsUtil.deleteExistingListEntries(listId, this.dataManager));
 	}
 }
