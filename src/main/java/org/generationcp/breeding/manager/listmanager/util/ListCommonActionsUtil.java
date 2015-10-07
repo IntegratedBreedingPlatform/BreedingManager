@@ -329,12 +329,7 @@ public class ListCommonActionsUtil {
 
 		boolean hasError = false;
 
-		try {
-			dataManager.deleteGermplasmListDataByListId(listToSave.getId());
-		} catch (final MiddlewareQueryException ex) {
-			ListCommonActionsUtil.LOG.error("Error in deleting germplasm list entries.", ex);
-			hasError = true;
-		}
+		hasError = deleteExistingListEntries(listToSave, dataManager);
 
 		if (!hasError && !listEntries.isEmpty()) {
 			try {
@@ -362,6 +357,17 @@ public class ListCommonActionsUtil {
 			return false;
 		}
 		return true;
+	}
+
+	public static boolean deleteExistingListEntries(final GermplasmList listToSave, final GermplasmListManager dataManager) {
+		boolean hasError = false;
+		try {
+			dataManager.deleteGermplasmListDataByListId(listToSave.getId());
+		} catch (final MiddlewareQueryException ex) {
+			ListCommonActionsUtil.LOG.error("Error in deleting germplasm list entries.", ex);
+			hasError = true;
+		}
+		return hasError;
 	}
 
 }

@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
+import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.commons.parsing.pojo.ImportedFactor;
@@ -146,7 +147,13 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		this.processGermplasmNamesAndLots(germplasmNameObjects, doNotCreateGermplasmsWithId, seedStorageLocation);
 
 		final List<ImportedGermplasm> importedGermplasms = importedGermplasmList.getImportedGermplasms();
+
 		final GermplasmList list = this.saveGermplasmListRecord(germplasmList);
+
+		if (germplasmList.getId() != null) {
+			ListCommonActionsUtil.deleteExistingListEntries(germplasmList, this.germplasmListManager);
+		}
+
 		this.saveGermplasmListDataRecords(germplasmNameObjects, list, filename, importedGermplasms);
 		this.addNewNamesToExistingGermplasm(newNames);
 
