@@ -614,28 +614,4 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		return germplasmListData;
 	}
 
-	public void setGermplasmListManager(final GermplasmListManager germplasmListManager) {
-		this.germplasmListManager = germplasmListManager;
-	}
-
-	public void setGermplasmManager(final GermplasmDataManager germplasmManager) {
-		this.germplasmManager = germplasmManager;
-	}
-
-	public void setInventoryDataManager(final InventoryDataManager inventoryDataManager) {
-		this.inventoryDataManager = inventoryDataManager;
-	}
-
-	public void setOntologyDataManager(final OntologyDataManager ontologyDataManager) {
-		this.ontologyDataManager = ontologyDataManager;
-	}
-
-	public void setContextUtil(final ContextUtil contextUtil) {
-		this.contextUtil = contextUtil;
-	}
-
-	public void setUserDataManager(final UserDataManager userDataManager) {
-		this.userDataManager = userDataManager;
-	}
-
 }

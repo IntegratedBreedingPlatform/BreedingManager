@@ -7,27 +7,29 @@ import org.generationcp.middleware.pojos.User;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class SaveGermplasmListActionTest {
-
-	private SaveGermplasmListAction action;
 
 	@Mock
 	private UserDataManager userDataManager;
 
+	@InjectMocks
+	private SaveGermplasmListAction action;
+
 	@Before
 	public void setup() {
-		MockitoAnnotations.initMocks(this);
-		this.action = new SaveGermplasmListAction();
-		this.action.setUserDataManager(this.userDataManager);
+		// do nothing for now
 	}
 
 	@Test
 	public void testGetCropPersonId_WithNullCropUserId() throws MiddlewareQueryException {
-		Integer cropUserId = 0;
+		final Integer cropUserId = 0;
 		Mockito.when(this.userDataManager.getUserById(cropUserId)).thenReturn(null);
 
 		Assert.assertEquals("Expecting to return a blank for null userid but didn't.", this.action.getCropPersonId(cropUserId).intValue(),
@@ -36,10 +38,10 @@ public class SaveGermplasmListActionTest {
 
 	@Test
 	public void testGetCropPersonId_WithValidCropUserId() throws MiddlewareQueryException {
-		Integer cropUserId = 1;
-		Integer personUserId = 2;
+		final Integer cropUserId = 1;
+		final Integer personUserId = 2;
 
-		User user = new User();
+		final User user = new User();
 		user.setUserid(cropUserId);
 		user.setPersonid(personUserId);
 
