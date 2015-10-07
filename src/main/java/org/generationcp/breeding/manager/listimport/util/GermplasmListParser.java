@@ -743,6 +743,10 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 					@Override
 					public void run() throws FileParsingException {
+						String designation = rowValues.get(colIndex);
+						if (designation != null && designation.length() > 255){
+							throw new FileParsingException("GERMPLSM_PARSE_DESIGNATION_ERROR");
+						}
 						importedGermplasm.setDesig(rowValues.get(colIndex));
 					}
 				});
