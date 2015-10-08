@@ -1,9 +1,26 @@
 
 package org.generationcp.breeding.manager.listimport.actions;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
+import org.generationcp.breeding.manager.data.initializer.GermplasmDataInitializer;
+import org.generationcp.breeding.manager.data.initializer.GermplasmListDataInitializer;
+import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
+import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.InventoryDataManager;
+import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
+import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.UserDefinedField;
+import org.generationcp.middleware.service.api.InventoryService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,20 +28,78 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.exceptions.verification.NeverWantedButInvoked;
+import org.mockito.exceptions.verification.TooLittleActualInvocations;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.transaction.PlatformTransactionManager;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SaveGermplasmListActionTest {
 
+	private static final int SAVED_GERMPLASM_LIST_ID = 1;
+	private static final int NO_OF_ENTRIES = 5;
+	private static final int CURRENT_LOCAL_ID = 1;
+	private static final String PROGRAM_UUID = "1234567890";
+	private static final int LIST_ID = 1;
+	private static final Integer SEED_STORAGE_LOCATION = 2;
+	private static final String FTABLE_ATTRIBUTE = "ATRIBUTS";
+	private static final String FTYPE_ATTRIBUTE = "ATTRIBUTE";
+	private static final String FTYPE_PASSPORT = "PASSPORT";
+
+	@Mock
+	private GermplasmListManager germplasmListManager;
+
+	@Mock
+	private GermplasmDataManager germplasmManager;
+
+	@Mock
+	private InventoryDataManager inventoryDataManager;
+
+	@Mock
+	private InventoryService inventoryService;
+
+	@Mock
+	private PlatformTransactionManager transactionManager;
+
+	@Mock
+	private OntologyDataManager ontologyDataManager;
+
 	@Mock
 	private UserDataManager userDataManager;
+
+	@Mock
+	private ContextUtil contextUtil;
 
 	@InjectMocks
 	private SaveGermplasmListAction action;
 
+	private GermplasmList germplasmList;
+	private List<GermplasmName> germplasmNameObjects;
+	private List<Name> newNames;
+	private List<Integer> doNotCreateGermplasmsWithId;
+	private ImportedGermplasmList importedGermplasmList;
+
 	@Before
 	public void setup() {
-		// do nothing for now
+		this.germplasmList = GermplasmListDataInitializer.createGermplasmList(LIST_ID);
+		this.importedGermplasmList = ImportedGermplasmListDataInitializer.createImportedGermplasmList(NO_OF_ENTRIES);
+		this.germplasmNameObjects = ImportedGermplasmListDataInitializer.createGermplasmNameObjects(NO_OF_ENTRIES);
+		this.doNotCreateGermplasmsWithId = ImportedGermplasmListDataInitializer.createListOfGemplasmIds(2);
+		this.newNames = GermplasmDataInitializer.createNameList(NO_OF_ENTRIES);
+
+		Mockito.doReturn(PROGRAM_UUID).when(this.contextUtil).getCurrentProgramUUID();
+		Mockito.doReturn(CURRENT_LOCAL_ID).when(this.contextUtil).getCurrentUserLocalId();
+		Mockito.doReturn(new ArrayList<UserDefinedField>()).when(this.germplasmManager)
+				.getUserDefinedFieldByFieldTableNameAndType(FTABLE_ATTRIBUTE, FTYPE_ATTRIBUTE);
+		Mockito.doReturn(new ArrayList<UserDefinedField>()).when(this.germplasmManager)
+				.getUserDefinedFieldByFieldTableNameAndType(FTABLE_ATTRIBUTE, FTYPE_PASSPORT);
+		Mockito.doReturn(SAVED_GERMPLASM_LIST_ID).when(this.germplasmListManager).addGermplasmList(Mockito.any(GermplasmList.class));
+		Mockito.doReturn(this.germplasmList).when(this.germplasmListManager).getGermplasmListById(SAVED_GERMPLASM_LIST_ID);
+
+		for (int i = 1; i <= NO_OF_ENTRIES; i++) {
+			Mockito.doReturn(GermplasmDataInitializer.createGermplasm(i)).when(this.germplasmManager).getGermplasmByGID(i);
+		}
+
 	}
 
 	@Test
@@ -49,5 +124,34 @@ public class SaveGermplasmListActionTest {
 
 		Assert.assertEquals("Expecting to return a person id from the userid but didn't.", this.action.getCropPersonId(cropUserId),
 				personUserId);
+	}
+
+	@Test
+	public void testSaveRecordsWhenOverridingExistingListUsingTheImportedGermplasmList() {
+		final String filename = "SourceList.xls";
+		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, filename, this.doNotCreateGermplasmsWithId,
+				this.importedGermplasmList, SEED_STORAGE_LOCATION);
+
+		try {
+			Mockito.verify(this.germplasmListManager, Mockito.times(1)).deleteGermplasmListDataByListId(SAVED_GERMPLASM_LIST_ID);
+		} catch (final TooLittleActualInvocations e) {
+			Assert.fail("Expecting that the list entries of the existing list are marked deleted after trying to overwrite a list using germplasm import.");
+		}
+
+	}
+
+	@Test
+	public void testSaveRecordsWhenOverridingNewListUsingTheImportedGermplasmList() {
+		final String filename = "SourceList.xls";
+		this.germplasmList.setId(null);
+		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, filename, this.doNotCreateGermplasmsWithId,
+				this.importedGermplasmList, SEED_STORAGE_LOCATION);
+
+		try {
+			Mockito.verify(this.germplasmListManager, Mockito.times(0)).deleteGermplasmListDataByListId(SAVED_GERMPLASM_LIST_ID);
+		} catch (final NeverWantedButInvoked e) {
+			Assert.fail("Expecting that there is no existing list entries to mark as deleted for new list using germplasm import.");
+		}
+
 	}
 }

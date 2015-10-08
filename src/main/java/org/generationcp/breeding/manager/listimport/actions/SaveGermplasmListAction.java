@@ -150,6 +150,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 		final GermplasmList list = this.saveGermplasmListRecord(germplasmList);
 
+		// mark the existing entries of the list deleted before adding the new entries from germplasm import
 		final Integer existingListId = germplasmList.getId();
 		if (existingListId != null) {
 			ListCommonActionsUtil.deleteExistingListEntries(existingListId, this.germplasmListManager);
