@@ -111,6 +111,7 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 	public void instantiateComponents() {
 		this.setMargin(false, false, true, true);
 		this.setWidth("730px");
+		this.addStyleName("lm-germplasm-import-main");
 
 		this.setTitleContent();
 

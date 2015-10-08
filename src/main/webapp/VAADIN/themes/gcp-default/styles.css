@@ -668,6 +668,10 @@
 	font-size: 13px;
 }
 
+.lm-germplasm-import-main .v-button .v-button-caption {
+	font-size: 13px;
+}
+
 .v-button.lm-selection-help .v-button-caption {
 	padding-left: 14px;
 }
