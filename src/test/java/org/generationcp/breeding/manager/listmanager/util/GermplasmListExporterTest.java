@@ -151,8 +151,8 @@ public class GermplasmListExporterTest {
 		Assert.assertEquals("Expected to have a Plate ID as the 2nd column", exportColumnList.get(1).getName(), "Plate ID");
 		Assert.assertEquals("Expected to have a Well ID as the 3rd column", exportColumnList.get(2).getName(), "Well");
 		Assert.assertEquals("Expected to have a Sample type as the 4th column", exportColumnList.get(3).getName(), "Sample type");
-		Assert.assertEquals("Expected to have a " + GermplasmListExporterTest.PLATE_SIZE + " as the 5th column", exportColumnList.get(4)
-				.getName(), String.valueOf(GermplasmListExporterTest.PLATE_SIZE));
+		Assert.assertEquals("Expected to have a " + GermplasmListExporterTest.PLATE_SIZE + " as the 5th column",
+				exportColumnList.get(4).getName(), String.valueOf(GermplasmListExporterTest.PLATE_SIZE));
 		Assert.assertEquals("Expected to have a Primer as the 6th column", exportColumnList.get(5).getName(), "Primer");
 		Assert.assertEquals("Expected to have a Subject BC as the 7th column", exportColumnList.get(6).getName(), "Subject BC");
 		Assert.assertEquals("Expected to have a Plate BC as the 8th column", exportColumnList.get(7).getName(), "Plate BC");
@@ -193,38 +193,43 @@ public class GermplasmListExporterTest {
 	}
 
 	@Test
-	public void testGetOwnerName() throws MiddlewareQueryException {
-		User user = this.getUser();
-		Person person = this.getPerson();
-		String ownerName = "";
-		Mockito.doReturn(user).when(this.userDataManager).getUserById(GermplasmListExporterTest.USER_ID);
+	public void testGetOwnerNamePersonExists() throws GermplasmListExporterException {
+		final Person person = this.getPerson();
+		Mockito.doReturn(this.getUser()).when(this.userDataManager).getUserById(GermplasmListExporterTest.USER_ID);
 		Mockito.doReturn(person).when(this.userDataManager).getPersonById(GermplasmListExporterTest.PERSON_ID);
-		try {
-			ownerName = this.germplasmListExporter.getOwnerName(GermplasmListExporterTest.USER_ID);
-		} catch (GermplasmListExporterException e) {
-			Assert.fail("Expected to return ownerName but didn't.");
-		}
-		// when person is not null
-		Assert.assertEquals("Expected to return the person's name when the person is not null.", ownerName, person.getFirstName() + " "
-				+ person.getLastName());
+		Assert.assertEquals("Expected to return the person's name",
+				this.germplasmListExporter.getOwnerName(GermplasmListExporterTest.USER_ID),
+				person.getFirstName() + " " + person.getLastName());
+	}
 
+	@Test
+	public void testGetOwnerNameNoPerson() throws GermplasmListExporterException {
+		final User user = this.getUser();
+		Mockito.doReturn(user).when(this.userDataManager).getUserById(GermplasmListExporterTest.USER_ID);
 		Mockito.doReturn(null).when(this.userDataManager).getPersonById(GermplasmListExporterTest.PERSON_ID);
-		try {
-			ownerName = this.germplasmListExporter.getOwnerName(GermplasmListExporterTest.USER_ID);
-		} catch (GermplasmListExporterException e) {
-			Assert.fail("Expected to return ownerName but didn't.");
-		}
-		// when person does not exist
-		Assert.assertEquals("Expected to return the user's name when the person is null.", ownerName, user.getName());
 
+		// when person does not exist
+		Assert.assertEquals("Expected to return the user's name when the person is null.",
+				this.germplasmListExporter.getOwnerName(GermplasmListExporterTest.USER_ID), user.getName());
+	}
+
+	@Test(expected = GermplasmListExporterException.class)
+	public void testGetOwnerNameNoUserId() throws GermplasmListExporterException {
+		//Expected to return a GermplasmListExporterException when the userID does not exist.
 		Mockito.doReturn(null).when(this.userDataManager).getUserById(Matchers.any(Integer.class));
-		try {
-			ownerName = this.germplasmListExporter.getExporterName(Matchers.any(Integer.class));
-		} catch (NullPointerException e) {
-			Assert.assertEquals("Expected to return a NullPointerException when the userID does not exist.", NullPointerException.class, e);
-		} catch (GermplasmListExporterException e) {
-			Assert.fail("must not throw this exception");
-		}
+		this.germplasmListExporter.getOwnerName(Matchers.any(Integer.class));
+	}
+
+	@Test(expected = GermplasmListExporterException.class)
+	public void testGetOwnerNameDBError() throws GermplasmListExporterException {
+		//Exception from DB
+		Mockito.doThrow(MiddlewareQueryException.class).when(this.userDataManager).getUserById(Matchers.any(Integer.class));
+		this.germplasmListExporter.getOwnerName(Matchers.any(Integer.class));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetOwnerNameNullUserId() throws GermplasmListExporterException {
+		this.germplasmListExporter.getOwnerName(null);
 	}
 
 	private Person getPerson() {
@@ -282,34 +287,43 @@ public class GermplasmListExporterTest {
 	}
 
 	@Test
-	public void testGetExporterName() throws MiddlewareQueryException {
-		User user = this.getUser();
-		Person person = this.getPerson();
-		String exporterName = "";
-		Mockito.doReturn(user).when(this.userDataManager).getUserById(GermplasmListExporterTest.USER_ID);
+	public void testGetExporterName() throws GermplasmListExporterException {
+		final Person person = this.getPerson();
+		Mockito.doReturn(this.getUser()).when(this.userDataManager).getUserById(GermplasmListExporterTest.USER_ID);
 		Mockito.doReturn(person).when(this.userDataManager).getPersonById(GermplasmListExporterTest.PERSON_ID);
-		try {
-			exporterName = this.germplasmListExporter.getExporterName(GermplasmListExporterTest.USER_ID);
-		} catch (GermplasmListExporterException e) {
-			Assert.fail("Expected to return exporterName but didn't.");
-		}
-		// when person is not null
-		Assert.assertEquals("Expected that the returned exporter name equal to the person's firstname and lastname.", exporterName,
-				person.getFirstName() + " " + person.getLastName());
+		Assert.assertEquals("Expected that the returned exporter name equal to the person's firstname and lastname.",
+				this.germplasmListExporter.getExporterName(GermplasmListExporterTest.USER_ID), person.getFirstName() + " "
+						+ person.getLastName());
+	}
 
+	@Test(expected = GermplasmListExporterException.class)
+	public void testGetExporterNameNoUserId() throws GermplasmListExporterException {
 		Mockito.doReturn(null).when(this.userDataManager).getUserById(Matchers.any(Integer.class));
-		try {
-			exporterName = this.germplasmListExporter.getExporterName(Matchers.any(Integer.class));
-		} catch (NullPointerException e) {
-			Assert.assertEquals("Expected to return a NullPointerException when the userID does not exist.", NullPointerException.class, e);
-		} catch (GermplasmListExporterException e) {
-			Assert.fail("must not throw this exception");
-		}
+		this.germplasmListExporter.getExporterName(Matchers.any(Integer.class));
+	}
+
+	@Test(expected = GermplasmListExporterException.class)
+	public void testGetExporterNameNoPerson() throws GermplasmListExporterException {
+		Mockito.doReturn(this.getUser()).when(this.userDataManager).getUserById(GermplasmListExporterTest.USER_ID);
+		Mockito.doReturn(null).when(this.userDataManager).getPersonById(Matchers.any(Integer.class));
+		this.germplasmListExporter.getExporterName(GermplasmListExporterTest.USER_ID);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetExporterNameNullUserId() throws GermplasmListExporterException {
+		this.germplasmListExporter.getExporterName(null);
+	}
+
+	@Test(expected = GermplasmListExporterException.class)
+	public void testGetExporterNameDBError() throws GermplasmListExporterException {
+		//Exception from DB
+		Mockito.doThrow(MiddlewareQueryException.class).when(this.userDataManager).getUserById(Matchers.any(Integer.class));
+		this.germplasmListExporter.getExporterName(Matchers.any(Integer.class));
 	}
 
 	@Test
 	@Ignore(value = "Temporarily skipping. To be fixed by Team Manila soon.")
-	public void testExportGermplasmListXLS() throws MiddlewareQueryException, GermplasmListExporterException {
+	public void testExportGermplasmListXLS() throws GermplasmListExporterException {
 		this.configureTermNamesFromDefault();
 		User user = this.getUser();
 		Person person = this.getPerson();
