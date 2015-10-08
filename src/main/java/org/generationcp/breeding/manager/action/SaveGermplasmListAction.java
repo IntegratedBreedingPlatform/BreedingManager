@@ -98,7 +98,7 @@ public class SaveGermplasmListAction implements Serializable {
 		}
 
 		List<GermplasmListData> existingListDataEntries =
-				this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId(), 0, Integer.MAX_VALUE);
+				this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId());
 
 		// get all the list to add
 		List<GermplasmListData> listToAdd = new ArrayList<GermplasmListData>();

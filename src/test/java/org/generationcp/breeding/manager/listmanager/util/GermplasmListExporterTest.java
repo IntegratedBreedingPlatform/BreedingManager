@@ -137,7 +137,7 @@ public class GermplasmListExporterTest {
 		Mockito.doReturn(GermplasmListExporterTest.NO_OF_LIST_ENTRIES).when(this.germplasmListManager)
 		.countGermplasmListDataByListId(GermplasmListExporterTest.LIST_ID);
 		Mockito.doReturn(GermplasmListExporterTest.generateListEntries()).when(this.germplasmListManager)
-		.getGermplasmListDataByListId(GermplasmListExporterTest.LIST_ID, 0, (int) GermplasmListExporterTest.NO_OF_LIST_ENTRIES);
+		.getGermplasmListDataByListId(GermplasmListExporterTest.LIST_ID);
 
 	}
 
