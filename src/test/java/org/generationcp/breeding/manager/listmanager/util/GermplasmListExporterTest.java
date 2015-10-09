@@ -23,6 +23,7 @@ import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportColumnValue;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
+import org.generationcp.commons.service.FileService;
 import org.generationcp.commons.service.GermplasmExportService;
 import org.generationcp.commons.service.impl.GermplasmExportServiceImpl;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -84,11 +85,13 @@ public class GermplasmListExporterTest {
 	@Mock
 	private InventoryDataManager inventoryDataManager;
 
+	@Mock
+	private FileService fileService;
+
 	@InjectMocks
 	private final GermplasmListExporter _germplasmListExporter = new GermplasmListExporter(GermplasmListExporterTest.LIST_ID);
 
 	@InjectMocks
-	//we need to use ExportServiceImpl reference to mock retrieveTemplate() method which is not part of the ExportService interface
 	private final GermplasmExportServiceImpl germplasmExportService = Mockito.spy(new GermplasmExportServiceImpl());
 
 	private GermplasmListExporter germplasmListExporter;
@@ -117,6 +120,7 @@ public class GermplasmListExporterTest {
 
 		MockitoAnnotations.initMocks(this);
 
+		germplasmExportService.setTemplateFile(FILE_NAME);
 		this._germplasmListExporter.setGermplasmExportService(this.germplasmExportService);
 		this._germplasmListExporter.setMessageSource(this.messageSource);
 		this._germplasmListExporter.setGermplasmListManager(this.germplasmListManager);
@@ -329,7 +333,7 @@ public class GermplasmListExporterTest {
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.GID.getId())).thenReturn(fromOntology);
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.SOURCE.getId())).thenReturn(fromOntology);
 
-		Mockito.doReturn(this.createWorkbook()).when(this.germplasmExportService).retrieveTemplate();
+		Mockito.doReturn(this.createWorkbook()).when(this.fileService).retrieveWorkbookTemplate(FILE_NAME);
 
 		this.germplasmListExporter.exportGermplasmListXLS(FILE_NAME, GermplasmListExporterTest.listDataTable);
 		// make sure that generateGermplasmListExcelFile is called and without errors
