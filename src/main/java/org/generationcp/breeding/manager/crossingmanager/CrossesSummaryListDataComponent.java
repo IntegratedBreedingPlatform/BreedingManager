@@ -294,7 +294,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 			this.germplasmMap = new HashMap<Integer, Germplasm>();
 
 			// retrieve germplasm of list data to get its parent germplasms
-			this.listEntries = this.germplasmListManager.getGermplasmListDataByListId(this.list.getId(), 0, Integer.MAX_VALUE);
+			this.listEntries = this.germplasmListManager.getGermplasmListDataByListId(this.list.getId());
 			for (GermplasmListData entry : this.listEntries) {
 				germplasmIds.add(entry.getGid());
 			}

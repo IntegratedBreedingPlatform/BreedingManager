@@ -240,8 +240,7 @@ public class ListCommonActionsUtil {
 			final GermplasmListManager dataManager, final Component source, final SimpleResourceBundleMessageSource messageSource) {
 		final Map<Integer, GermplasmListData> savedListEntriesMap = new HashMap<Integer, GermplasmListData>();
 		try {
-			final int listDataCount = (int) dataManager.countGermplasmListDataByListId(listToSave.getId());
-			final List<GermplasmListData> savedListEntries = dataManager.getGermplasmListDataByListId(listToSave.getId(), 0, listDataCount);
+			List<GermplasmListData> savedListEntries = dataManager.getGermplasmListDataByListId(listToSave.getId());
 			if (savedListEntries != null) {
 				for (final GermplasmListData savedEntry : savedListEntries) {
 					// check entries to be deleted
