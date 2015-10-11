@@ -88,11 +88,11 @@ public class GermplasmListExporterTest {
 	@Mock
 	private FileService fileService;
 
-	@InjectMocks
-	private final GermplasmListExporter _germplasmListExporter = new GermplasmListExporter(GermplasmListExporterTest.LIST_ID);
+	@Mock
+	private GermplasmExportServiceImpl germplasmExportService;
 
 	@InjectMocks
-	private final GermplasmExportServiceImpl germplasmExportService = Mockito.spy(new GermplasmExportServiceImpl());
+	private final GermplasmListExporter _germplasmListExporter = new GermplasmListExporter(GermplasmListExporterTest.LIST_ID);
 
 	private GermplasmListExporter germplasmListExporter;
 
