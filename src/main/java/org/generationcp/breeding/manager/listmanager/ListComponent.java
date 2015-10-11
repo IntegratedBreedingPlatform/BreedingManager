@@ -1663,9 +1663,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		}
 
 		try {
-			this.listEntriesCount = this.germplasmListManager.countGermplasmListDataByListId(this.germplasmList.getId());
 			this.listEntries =
-					this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId(), 0, (int) this.listEntriesCount);
+					this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId());
 		} catch (final MiddlewareQueryException e) {
 			throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_SAVING_GERMPLASMLIST_DATA_CHANGES);
 		}
@@ -1776,8 +1775,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 			// Change entry IDs on listData
 			final List<GermplasmListData> listDatas =
-					this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId(), 0,
-							(int) this.germplasmListManager.countGermplasmListDataByListId(this.germplasmList.getId()));
+					this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId());
 			Integer entryId = 1;
 			for (final GermplasmListData listData : listDatas) {
 				listData.setEntryId(entryId);

@@ -13,6 +13,8 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.BaseTheme;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
@@ -21,11 +23,14 @@ import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportColumnValue;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
-import org.generationcp.commons.service.ExportService;
-import org.generationcp.commons.service.impl.ExportServiceImpl;
+import org.generationcp.commons.service.FileService;
+import org.generationcp.commons.service.GermplasmExportService;
+import org.generationcp.commons.service.impl.GermplasmExportServiceImpl;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
+import org.generationcp.middleware.domain.oms.Term;
+import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.domain.ontology.Variable;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -41,7 +46,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
@@ -81,11 +85,14 @@ public class GermplasmListExporterTest {
 	@Mock
 	private InventoryDataManager inventoryDataManager;
 
-	@InjectMocks
-	private final GermplasmListExporter _germplasmListExporter = new GermplasmListExporter(GermplasmListExporterTest.LIST_ID);
+	@Mock
+	private FileService fileService;
+
+	@Mock
+	private GermplasmExportServiceImpl germplasmExportService;
 
 	@InjectMocks
-	private final ExportService exportService = Mockito.spy(new ExportServiceImpl());
+	private final GermplasmListExporter _germplasmListExporter = new GermplasmListExporter(GermplasmListExporterTest.LIST_ID);
 
 	private GermplasmListExporter germplasmListExporter;
 
@@ -113,7 +120,8 @@ public class GermplasmListExporterTest {
 
 		MockitoAnnotations.initMocks(this);
 
-		this._germplasmListExporter.setExportService(this.exportService);
+		germplasmExportService.setTemplateFile(FILE_NAME);
+		this._germplasmListExporter.setGermplasmExportService(this.germplasmExportService);
 		this._germplasmListExporter.setMessageSource(this.messageSource);
 		this._germplasmListExporter.setGermplasmListManager(this.germplasmListManager);
 		this._germplasmListExporter.setUserDataManager(this.userDataManager);
@@ -137,7 +145,7 @@ public class GermplasmListExporterTest {
 		Mockito.doReturn(GermplasmListExporterTest.NO_OF_LIST_ENTRIES).when(this.germplasmListManager)
 		.countGermplasmListDataByListId(GermplasmListExporterTest.LIST_ID);
 		Mockito.doReturn(GermplasmListExporterTest.generateListEntries()).when(this.germplasmListManager)
-		.getGermplasmListDataByListId(GermplasmListExporterTest.LIST_ID, 0, (int) GermplasmListExporterTest.NO_OF_LIST_ENTRIES);
+		.getGermplasmListDataByListId(GermplasmListExporterTest.LIST_ID);
 
 	}
 
@@ -322,17 +330,28 @@ public class GermplasmListExporterTest {
 	}
 
 	@Test
-	@Ignore(value = "Temporarily skipping. To be fixed by Team Manila soon.")
-	public void testExportGermplasmListXLS() throws GermplasmListExporterException {
+	public void testExportGermplasmListXLS()
+			throws MiddlewareQueryException, GermplasmListExporterException, IOException, InvalidFormatException {
 		this.configureTermNamesFromDefault();
-		User user = this.getUser();
-		Person person = this.getPerson();
-		Mockito.doReturn(user).when(this.userDataManager).getUserById(Mockito.anyInt());
-		Mockito.doReturn(person).when(this.userDataManager).getPersonById(GermplasmListExporterTest.PERSON_ID);
+		Mockito.doReturn(this.getUser()).when(this.userDataManager).getUserById(Mockito.anyInt());
+		Mockito.doReturn(this.getPerson()).when(this.userDataManager).getPersonById(GermplasmListExporterTest.PERSON_ID);
 
-		this.germplasmListExporter.exportGermplasmListXLS(GermplasmListExporterTest.FILE_NAME, GermplasmListExporterTest.listDataTable);
+		final Term fromOntology = new Term();
+		fromOntology.setName("Ontology Name");
+		Mockito.when(this.ontologyDataManager.getTermById(TermId.ENTRY_NO.getId())).thenReturn(fromOntology);
+		Mockito.when(this.ontologyDataManager.getTermById(TermId.DESIG.getId())).thenReturn(fromOntology);
+		Mockito.when(this.ontologyDataManager.getTermById(TermId.CROSS.getId())).thenReturn(fromOntology);
+		Mockito.when(this.ontologyDataManager.getTermById(TermId.AVAILABLE_INVENTORY.getId())).thenReturn(fromOntology);
+		Mockito.when(this.ontologyDataManager.getTermById(TermId.SEED_RESERVATION.getId())).thenReturn(fromOntology);
+		Mockito.when(this.ontologyDataManager.getTermById(TermId.ENTRY_CODE.getId())).thenReturn(fromOntology);
+		Mockito.when(this.ontologyDataManager.getTermById(TermId.GID.getId())).thenReturn(fromOntology);
+		Mockito.when(this.ontologyDataManager.getTermById(TermId.SOURCE.getId())).thenReturn(fromOntology);
+
+		Mockito.doReturn(this.createWorkbook()).when(this.fileService).retrieveWorkbookTemplate(FILE_NAME);
+
+		this.germplasmListExporter.exportGermplasmListXLS(FILE_NAME, GermplasmListExporterTest.listDataTable);
 		// make sure that generateGermplasmListExcelFile is called and without errors
-		Mockito.verify(this.exportService, Mockito.times(1)).generateGermplasmListExcelFile(
+		Mockito.verify(this.germplasmExportService, Mockito.times(1)).generateGermplasmListExcelFile(
 				Matchers.any(GermplasmListExportInputValues.class));
 	}
 
@@ -343,11 +362,11 @@ public class GermplasmListExporterTest {
 		Person person = this.getPerson();
 
 		Mockito.doReturn(Mockito.mock(Variable.class)).when(this.ontologyVariableDataManager)
-				.getVariable(Mockito.anyString(), Mockito.anyInt(), Mockito.eq(false));
+		.getVariable(Mockito.anyString(), Mockito.anyInt(), Mockito.eq(false), Mockito.eq(false));
 		Mockito.doReturn(user).when(this.userDataManager).getUserById(Mockito.anyInt());
 		Mockito.doReturn(person).when(this.userDataManager).getPersonById(Mockito.anyInt());
 
-		Mockito.doThrow(new GermplasmListExporterException()).when(this.exportService)
+		Mockito.doThrow(new GermplasmListExporterException()).when(this.germplasmExportService)
 		.generateGermplasmListExcelFile(Matchers.any(GermplasmListExportInputValues.class));
 		this.germplasmListExporter.exportGermplasmListXLS(GermplasmListExporterTest.FILE_NAME, new Table());
 
@@ -360,7 +379,7 @@ public class GermplasmListExporterTest {
 
 			this.germplasmListExporter.exportGermplasmListCSV(GermplasmListExporterTest.FILE_NAME, GermplasmListExporterTest.listDataTable);
 			// make sure that generateCSVFile is called and without errors
-			Mockito.verify(this.exportService, Mockito.times(1)).generateCSVFile(Matchers.any(List.class), Matchers.any(List.class),
+			Mockito.verify(this.germplasmExportService, Mockito.times(1)).generateCSVFile(Matchers.any(List.class), Matchers.any(List.class),
 					Matchers.anyString());
 
 		} catch (GermplasmListExporterException | IOException e) {
@@ -371,7 +390,7 @@ public class GermplasmListExporterTest {
 	@Test(expected = GermplasmListExporterException.class)
 	public void testExportGermplasmListCSVWithException() throws GermplasmListExporterException, IOException {
 
-		Mockito.doThrow(new IOException()).when(this.exportService)
+		Mockito.doThrow(new IOException()).when(this.germplasmExportService)
 		.generateCSVFile(Matchers.any(List.class), Matchers.any(List.class), Matchers.anyString());
 		this.germplasmListExporter.exportGermplasmListCSV(GermplasmListExporterTest.FILE_NAME, GermplasmListExporterTest.listDataTable);
 
@@ -623,6 +642,12 @@ public class GermplasmListExporterTest {
 		germplasmList.setListData(GermplasmListExporterTest.generateListEntries());
 
 		return germplasmList;
+	}
+
+	private HSSFWorkbook createWorkbook() {
+		HSSFWorkbook wb = new HSSFWorkbook();
+		wb.createSheet("Codes");
+		return wb;
 	}
 
 	@AfterClass
