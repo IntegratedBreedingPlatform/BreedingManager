@@ -9,6 +9,7 @@ import org.generationcp.breeding.manager.customfields.UploadField;
 import org.generationcp.breeding.manager.listimport.exceptions.GermplasmImportException;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
 import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
+import org.generationcp.commons.parsing.InvalidFileDataException;
 import org.generationcp.commons.parsing.FileParsingException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -96,6 +97,12 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 			GermplasmImportFileComponent.LOG.debug("Error importing " + e.getMessage(), e);
 			final String message = this.messageSource.getMessage(e.getMessage(), e.getMessageParameters(), Locale.getDefault());
 			MessageNotifier.showError(this.getWindow(), "Error", message);
+		} catch (final InvalidFileDataException e) {
+			// Display Error message if Observations is empty and disable Next Button.
+			GermplasmImportFileComponent.LOG.debug("Error importing " + e.getMessage(), e);
+			final String message = this.messageSource.getMessage(e.getMessage(), e.getMessageParameters(), Locale.getDefault());
+			MessageNotifier.showError(this.getWindow(), "Error", message);
+			this.nextButton.setEnabled(false);
 		}
 	}
 

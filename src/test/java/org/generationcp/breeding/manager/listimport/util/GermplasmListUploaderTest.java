@@ -7,6 +7,7 @@ import java.io.IOException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.generationcp.breeding.manager.listimport.exceptions.InvalidFileTypeImportException;
+import org.generationcp.commons.parsing.InvalidFileDataException;
 import org.generationcp.commons.parsing.FileParsingException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -81,7 +82,7 @@ public class GermplasmListUploaderTest {
 	}
 
 	@Test
-	public void testDoParseWorkbook() throws InvalidFormatException, IOException, FileParsingException {
+	public void testDoParseWorkbook() throws InvalidFormatException, IOException, FileParsingException, InvalidFileDataException {
 		FileInputStream fileStream = Mockito.mock(FileInputStream.class);
 		Mockito.doReturn(fileStream).when(this.uploader).createFileInputStream(Mockito.anyString());
 		Mockito.doReturn(new HSSFWorkbook()).when(this.uploader).createWorkbookFromFactory(Mockito.anyString());
