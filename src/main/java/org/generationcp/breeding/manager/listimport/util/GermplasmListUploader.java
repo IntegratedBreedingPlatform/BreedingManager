@@ -11,6 +11,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.generationcp.breeding.manager.listimport.exceptions.InvalidFileTypeImportException;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
+import org.generationcp.commons.parsing.InvalidFileDataException;
 import org.generationcp.commons.parsing.FileParsingException;
 import org.generationcp.commons.parsing.pojo.ImportedVariate;
 import org.slf4j.Logger;
@@ -65,15 +66,19 @@ public class GermplasmListUploader implements FileFactory {
 		return this.germplasmListParser.importFileIsAdvanced();
 	}
 
-	public void doParseWorkbook() throws FileParsingException {
+	public void doParseWorkbook() throws FileParsingException, InvalidFileDataException {
 		this.germplasmListParser = new GermplasmListParser();
 		this.germplasmListParser.setOriginalFilename(this.originalFilename);
 
 		this.updateImportGermplasmList();
 	}
 
-	void updateImportGermplasmList() throws FileParsingException {
+	void updateImportGermplasmList() throws FileParsingException, InvalidFileDataException {
 		this.importedGermplasmList = this.germplasmListParser.parseWorkbook(this.createWorkbook(this.tempFileName), null);
+
+		if(this.importedGermplasmList.getImportedGermplasms().isEmpty()) {
+			throw new InvalidFileDataException("GERMPLSM_EMPTY_FILE_PARSE_ERROR");
+		}
 	}
 
 	public String hasWarnings() {

@@ -255,35 +255,46 @@ public class GermplasmListExporter {
 		return false;
 	}
 
-	protected String getExporterName(Integer currentLocalIbdbUserId) throws GermplasmListExporterException {
-		String exporterName = "";
+	protected String getExporterName(final Integer currentLocalIbdbUserId) throws GermplasmListExporterException {
+		if (currentLocalIbdbUserId == null) {
+			throw new IllegalArgumentException("User id could not be null");
+		}
+		final String exporterName;
 		try {
-			User exporterUser = this.userDataManager.getUserById(currentLocalIbdbUserId);
-			Person exporterPerson = this.userDataManager.getPersonById(exporterUser.getPersonid());
+			final User exporterUser = this.userDataManager.getUserById(currentLocalIbdbUserId);
+			if (exporterUser == null) {
+				throw new GermplasmListExporterException("Could not retrieve the exporter name from the database");
+			}
+			final Person exporterPerson = this.userDataManager.getPersonById(exporterUser.getPersonid());
+			if (exporterPerson == null) {
+				throw new GermplasmListExporterException("Could not retrieve the exporter name from the database");
+			}
 			exporterName = exporterPerson.getFirstName() + " " + exporterPerson.getLastName();
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			throw new GermplasmListExporterException("Error with getting current workbench user information.", e);
-		} catch (NullPointerException ex) {
-			GermplasmListExporter.LOG.error("Error with getting user information for exporter with id = " + currentLocalIbdbUserId, ex);
 		}
 		return exporterName;
 	}
 
-	protected String getOwnerName(Integer userId) throws GermplasmListExporterException {
+	protected String getOwnerName(final Integer userId) throws GermplasmListExporterException {
 		// retrieve user details
-		String ownerName = "";
+		if (userId == null) {
+			throw new IllegalArgumentException("User id could not be null");
+		}
+		final String ownerName;
 		try {
-			User ownerUser = this.userDataManager.getUserById(userId);
-			Person ownerPerson = this.userDataManager.getPersonById(ownerUser.getPersonid());
+			final User ownerUser = this.userDataManager.getUserById(userId);
+			if (ownerUser == null) {
+				throw new GermplasmListExporterException("Could not retrieve the owner name from the database");
+			}
+			final Person ownerPerson = this.userDataManager.getPersonById(ownerUser.getPersonid());
 			if (ownerPerson != null) {
 				ownerName = ownerPerson.getFirstName() + " " + ownerPerson.getLastName();
 			} else {
 				ownerName = ownerUser.getName();
 			}
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			throw new GermplasmListExporterException("Error with getting user information.", e);
-		} catch (NullPointerException ex) {
-			GermplasmListExporter.LOG.error("Error with getting user information for list owner with id = " + userId, ex);
 		}
 		return ownerName;
 	}
