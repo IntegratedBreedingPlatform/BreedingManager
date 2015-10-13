@@ -9,12 +9,8 @@ public class SaveCrossListAsDialog extends SaveListAsDialog {
 
 	private static final long serialVersionUID = -4151286394925054516L;
 
-	public SaveCrossListAsDialog(SaveListAsDialogSource source, GermplasmList germplasmList) {
+	public SaveCrossListAsDialog(final SaveListAsDialogSource source, final GermplasmList germplasmList) {
 		super(source, germplasmList);
-	}
-
-	public SaveCrossListAsDialog(SaveListAsDialogSource source, GermplasmList germplasmList, String defaultListType) {
-		super(source, defaultListType, germplasmList);
 	}
 
 	@Override
