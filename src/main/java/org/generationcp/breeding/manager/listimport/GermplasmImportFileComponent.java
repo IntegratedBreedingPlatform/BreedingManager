@@ -9,6 +9,7 @@ import org.generationcp.breeding.manager.customfields.UploadField;
 import org.generationcp.breeding.manager.listimport.exceptions.GermplasmImportException;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
 import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
+import org.generationcp.commons.parsing.InvalidFileDataException;
 import org.generationcp.commons.parsing.FileParsingException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -53,7 +54,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
-	public GermplasmImportFileComponent(GermplasmImportMain source) {
+	public GermplasmImportFileComponent(final GermplasmImportMain source) {
 		this.source = source;
 	}
 
@@ -89,13 +90,19 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 
 			this.source.nextStep();
 
-		} catch (GermplasmImportException e) {
+		} catch (final GermplasmImportException e) {
 			GermplasmImportFileComponent.LOG.debug("Error importing " + e.getMessage(), e);
 			MessageNotifier.showError(this.getWindow(), e.getCaption(), e.getMessage());
-		} catch (FileParsingException e) {
+		} catch (final FileParsingException e) {
 			GermplasmImportFileComponent.LOG.debug("Error importing " + e.getMessage(), e);
-			String message = this.messageSource.getMessage(e.getMessage(), e.getMessageParameters(), Locale.getDefault());
+			final String message = this.messageSource.getMessage(e.getMessage(), e.getMessageParameters(), Locale.getDefault());
 			MessageNotifier.showError(this.getWindow(), "Error", message);
+		} catch (final InvalidFileDataException e) {
+			// Display Error message if Observations is empty and disable Next Button.
+			GermplasmImportFileComponent.LOG.debug("Error importing " + e.getMessage(), e);
+			final String message = this.messageSource.getMessage(e.getMessage(), e.getMessageParameters(), Locale.getDefault());
+			MessageNotifier.showError(this.getWindow(), "Error", message);
+			this.nextButton.setEnabled(false);
 		}
 	}
 
@@ -109,7 +116,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void uploadFinished(Upload.FinishedEvent event) {
+			public void uploadFinished(final Upload.FinishedEvent event) {
 				super.uploadFinished(event);
 				GermplasmImportFileComponent.this.nextButton.setEnabled(true);
 			}
@@ -134,7 +141,9 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 
 	@Override
 	public void instantiateComponents() {
-		this.selectFileLabel = new Label(this.messageSource.getMessage(Message.SELECT_GERMPLASM_LIST_FILE));
+		// the &nbsp is neaded to add a whitespace between the text and following button-link
+		this.selectFileLabel = new Label(this.messageSource.getMessage(Message.SELECT_GERMPLASM_LIST_FILE) + "&nbsp");
+		this.selectFileLabel.setContentMode(Label.CONTENT_XHTML);
 
 		this.initializeUploadField();
 
@@ -164,7 +173,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 			private static final long serialVersionUID = -1357425494204377238L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				GermplasmImportFileComponent.this.nextButton.setEnabled(false);
 			}
 		});
@@ -185,7 +194,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 			private static final long serialVersionUID = -8787686200326172252L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				GermplasmImportFileComponent.this.cancelButtonAction();
 			}
 
@@ -195,17 +204,14 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 
 		this.openTemplateButton.addListener(new ClickListener() {
 
-			/**
-			 *
-			 */
 			private static final long serialVersionUID = -5277793372784918711L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				// Just download the new expanded template
 				try {
 					(new GermplasmListTemplateDownloader()).exportGermplasmTemplate(event.getComponent());
-				} catch (GermplasmListTemplateDownloader.FileDownloadException e) {
+				} catch (final GermplasmListTemplateDownloader.FileDownloadException e) {
 					MessageNotifier.showError(GermplasmImportFileComponent.this.getWindow(), GermplasmImportFileComponent.this.messageSource.getMessage(Message.ERROR), e.getMessage());
 				}
 			}
@@ -214,12 +220,16 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 
 	@Override
 	public void layoutComponents() {
-		this.addComponent(this.selectFileLabel, "top:20px");
-		this.addComponent(this.openTemplateButton, "top:21px;left:430px;");
+		// align the message consisting of the text, the link to the template and the end sentence period into one line
+		final HorizontalLayout downloadMessageLayout = new HorizontalLayout();
+		downloadMessageLayout.addComponent(this.selectFileLabel);
+		downloadMessageLayout.addComponent(this.openTemplateButton);
+		downloadMessageLayout.addComponent(new Label(this.messageSource.getMessage(Message.PERIOD)));
+		this.addComponent(downloadMessageLayout, "top:20px;");
 
 		this.addComponent(this.uploadComponents, "top:50px");
 
-		HorizontalLayout buttonLayout = new HorizontalLayout();
+		final HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setWidth("100%");
 		buttonLayout.setHeight("40px");
 		buttonLayout.setSpacing(true);
@@ -237,7 +247,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 	}
 
 	protected void cancelButtonAction() {
-		Window window = this.source.getWindow();
+		final Window window = this.source.getWindow();
 		if (this.source.getGermplasmImportPopupSource() == null) {
 			this.source.reset();
 			// if called by Fieldbook

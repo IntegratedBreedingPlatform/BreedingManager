@@ -16,7 +16,7 @@ import com.vaadin.Application;
 @Configurable
 public class GermplasmListTemplateDownloader {
 
-	static final String EXPANDED_TEMPLATE_FILE = "GermplasmImportTemplate-Expanded-rev5.xls";
+	static final String EXPANDED_TEMPLATE_FILE = "GermplasmImportTemplate-Expanded-rev5a.xls";
 
 	private static final long serialVersionUID = -9047374755825933209L;
 

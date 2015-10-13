@@ -20,7 +20,7 @@ import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportColumnValue;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.pojo.GermplasmParents;
-import org.generationcp.commons.service.ExportService;
+import org.generationcp.commons.service.GermplasmExportService;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.oms.CvId;
@@ -84,7 +84,7 @@ public class GermplasmListExporter {
 	private ContextUtil contextUtil;
 
 	@Resource
-	private ExportService exportService;
+	private GermplasmExportService germplasmExportService;
 
 	private final Integer listId;
 
@@ -98,7 +98,7 @@ public class GermplasmListExporter {
 		List<Map<Integer, ExportColumnValue>> exportColumnValues = this.getColumnValuesForGenotypingData(plateSize);
 
 		try {
-			return this.exportService.generateExcelFileForSingleSheet(exportColumnValues, exportColumnHeaders, filename, "List");
+			return this.germplasmExportService.generateExcelFileForSingleSheet(exportColumnValues, exportColumnHeaders, filename, "List");
 		} catch (IOException e) {
 			throw new GermplasmListExporterException("Error with writing to: " + filename, e);
 		}
@@ -206,7 +206,7 @@ public class GermplasmListExporter {
 
 		input.setGermplasmParents(this.getGermplasmParentsMap(listDataTable, this.listId));
 
-		return this.exportService.generateGermplasmListExcelFile(input);
+		return this.germplasmExportService.generateGermplasmListExcelFile(input);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -255,35 +255,46 @@ public class GermplasmListExporter {
 		return false;
 	}
 
-	protected String getExporterName(Integer currentLocalIbdbUserId) throws GermplasmListExporterException {
-		String exporterName = "";
+	protected String getExporterName(final Integer currentLocalIbdbUserId) throws GermplasmListExporterException {
+		if (currentLocalIbdbUserId == null) {
+			throw new IllegalArgumentException("User id could not be null");
+		}
+		final String exporterName;
 		try {
-			User exporterUser = this.userDataManager.getUserById(currentLocalIbdbUserId);
-			Person exporterPerson = this.userDataManager.getPersonById(exporterUser.getPersonid());
+			final User exporterUser = this.userDataManager.getUserById(currentLocalIbdbUserId);
+			if (exporterUser == null) {
+				throw new GermplasmListExporterException("Could not retrieve the exporter name from the database");
+			}
+			final Person exporterPerson = this.userDataManager.getPersonById(exporterUser.getPersonid());
+			if (exporterPerson == null) {
+				throw new GermplasmListExporterException("Could not retrieve the exporter name from the database");
+			}
 			exporterName = exporterPerson.getFirstName() + " " + exporterPerson.getLastName();
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			throw new GermplasmListExporterException("Error with getting current workbench user information.", e);
-		} catch (NullPointerException ex) {
-			GermplasmListExporter.LOG.error("Error with getting user information for exporter with id = " + currentLocalIbdbUserId, ex);
 		}
 		return exporterName;
 	}
 
-	protected String getOwnerName(Integer userId) throws GermplasmListExporterException {
+	protected String getOwnerName(final Integer userId) throws GermplasmListExporterException {
 		// retrieve user details
-		String ownerName = "";
+		if (userId == null) {
+			throw new IllegalArgumentException("User id could not be null");
+		}
+		final String ownerName;
 		try {
-			User ownerUser = this.userDataManager.getUserById(userId);
-			Person ownerPerson = this.userDataManager.getPersonById(ownerUser.getPersonid());
+			final User ownerUser = this.userDataManager.getUserById(userId);
+			if (ownerUser == null) {
+				throw new GermplasmListExporterException("Could not retrieve the owner name from the database");
+			}
+			final Person ownerPerson = this.userDataManager.getPersonById(ownerUser.getPersonid());
 			if (ownerPerson != null) {
 				ownerName = ownerPerson.getFirstName() + " " + ownerPerson.getLastName();
 			} else {
 				ownerName = ownerUser.getName();
 			}
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			throw new GermplasmListExporterException("Error with getting user information.", e);
-		} catch (NullPointerException ex) {
-			GermplasmListExporter.LOG.error("Error with getting user information for list owner with id = " + userId, ex);
 		}
 		return ownerName;
 	}
@@ -370,7 +381,7 @@ public class GermplasmListExporter {
 	private void addVariableToMap(Map<Integer, Variable> variableMap, int termId) {
 
 		try {
-			Variable variable = this.ontologyVariableDataManager.getVariable(this.contextUtil.getCurrentProgramUUID(), termId, false);
+			Variable variable = this.ontologyVariableDataManager.getVariable(this.contextUtil.getCurrentProgramUUID(), termId, false, false);
 			if (variable != null) {
 				variableMap.put(variable.getId(), variable);
 			}
@@ -404,7 +415,7 @@ public class GermplasmListExporter {
 				termMap.put(term.getId(), this.ontologyScaleDataManager.getScaleById(term.getId(), false));
 			} else {
 				termMap.put(term.getId(),
-						this.ontologyVariableDataManager.getVariable(this.contextUtil.getCurrentProgramUUID(), term.getId(), false));
+						this.ontologyVariableDataManager.getVariable(this.contextUtil.getCurrentProgramUUID(), term.getId(), false, false));
 			}
 		} catch (MiddlewareQueryException e) {
 			GermplasmListExporter.LOG.error(e.getMessage(), e);
@@ -418,7 +429,7 @@ public class GermplasmListExporter {
 
 		try {
 
-			this.exportService.generateCSVFile(exportColumnValues, exportColumnHeaders, fileName);
+			this.germplasmExportService.generateCSVFile(exportColumnValues, exportColumnHeaders, fileName);
 
 		} catch (IOException e) {
 			throw new GermplasmListExporterException("Error with exporting list to CSV File.", e);
@@ -493,8 +504,8 @@ public class GermplasmListExporter {
 		return currentLocalIbdbUserId;
 	}
 
-	protected void setExportService(ExportService exportService) {
-		this.exportService = exportService;
+	protected void setGermplasmExportService(GermplasmExportService germplasmExportService) {
+		this.germplasmExportService = germplasmExportService;
 	}
 
 	protected void setMessageSource(SimpleResourceBundleMessageSource messageSource) {

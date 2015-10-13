@@ -52,7 +52,7 @@ public class ListCommonActionsUtilTest {
 		this.entriesToDelete = new ArrayList<GermplasmListData>();
 
 		Mockito.when(this.dataManager.countGermplasmListDataByListId(this.listToSave.getId())).thenReturn(4L);
-		Mockito.when(this.dataManager.getGermplasmListDataByListId(this.listToSave.getId(), 0, 4))
+		Mockito.when(this.dataManager.getGermplasmListDataByListId(this.listToSave.getId()))
 				.thenReturn(this.listToSave.getListData());
 
 		ListCommonActionsUtil.getNewEntriesToSaveUpdateDelete(this.listToSave, this.listEntries, this.forceHasChanges, this.newEntries,
