@@ -51,8 +51,7 @@ public class ListCommonActionsUtilTest {
 		this.entriesToDelete = new ArrayList<GermplasmListData>();
 
 		Mockito.when(this.dataManager.countGermplasmListDataByListId(this.listToSave.getId())).thenReturn(5L);
-		Mockito.when(this.dataManager.getGermplasmListDataByListId(this.listToSave.getId()))
-				.thenReturn(this.listToSave.getListData());
+		Mockito.when(this.dataManager.getGermplasmListDataByListId(this.listToSave.getId())).thenReturn(this.listToSave.getListData());
 
 		ListCommonActionsUtil.getNewEntriesToSaveUpdateDelete(this.listToSave, this.listEntries, this.forceHasChanges, this.newEntries,
 				this.entriesToUpdate, this.entriesToDelete, this.dataManager, this.source, this.messageSource);
@@ -162,21 +161,12 @@ public class ListCommonActionsUtilTest {
 	}
 
 	@Test
-	public void testDeleteExistingListEntriesWithException() {
-		this.listToSave = GermplasmListDataInitializer.createGermplasmList(1);
-		final Integer listId = this.listToSave.getId();
-		Mockito.doThrow(new MiddlewareQueryException("Error")).when(this.dataManager).deleteGermplasmListDataByListId(listId);
-
-		Assert.assertTrue("Should return true when there is an exception with the deletion of list entries.",
-				ListCommonActionsUtil.deleteExistingListEntries(listId, this.dataManager));
-	}
-
-	@Test
-	public void testDeleteExistingListEntriesWithoutException() {
+	public void testDeleteExistingListEntries() {
 		this.listToSave = GermplasmListDataInitializer.createGermplasmList(1);
 		final Integer listId = this.listToSave.getId();
 
-		Assert.assertFalse("Should return false when there is no exception with the deletion of list entries.",
-				ListCommonActionsUtil.deleteExistingListEntries(listId, this.dataManager));
+		ListCommonActionsUtil.deleteExistingListEntries(listId, this.dataManager);
+
+		Mockito.verify(this.dataManager, Mockito.times(1)).deleteGermplasmListDataByListId(listId);
 	}
 }

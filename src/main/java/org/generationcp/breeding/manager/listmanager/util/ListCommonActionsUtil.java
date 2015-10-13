@@ -240,7 +240,7 @@ public class ListCommonActionsUtil {
 			final GermplasmListManager dataManager, final Component source, final SimpleResourceBundleMessageSource messageSource) {
 		final Map<Integer, GermplasmListData> savedListEntriesMap = new HashMap<Integer, GermplasmListData>();
 		try {
-			List<GermplasmListData> savedListEntries = dataManager.getGermplasmListDataByListId(listToSave.getId());
+			final List<GermplasmListData> savedListEntries = dataManager.getGermplasmListDataByListId(listToSave.getId());
 			if (savedListEntries != null) {
 				for (final GermplasmListData savedEntry : savedListEntries) {
 					// check entries to be deleted
@@ -328,10 +328,10 @@ public class ListCommonActionsUtil {
 
 		boolean hasError = false;
 
-		hasError = deleteExistingListEntries(listToSave.getId(), dataManager);
-
-		if (!hasError && !listEntries.isEmpty()) {
+		if (!listEntries.isEmpty()) {
 			try {
+				ListCommonActionsUtil.deleteExistingListEntries(listToSave.getId(), dataManager);
+
 				final List<GermplasmListData> newEntries = new ArrayList<GermplasmListData>();
 				for (final GermplasmListData entry : listEntries) {
 					final GermplasmListData listEntry = new GermplasmListData();
@@ -358,15 +358,8 @@ public class ListCommonActionsUtil {
 		return true;
 	}
 
-	public static boolean deleteExistingListEntries(final Integer listId, final GermplasmListManager dataManager) {
-		boolean hasError = false;
-		try {
-			dataManager.deleteGermplasmListDataByListId(listId);
-		} catch (final MiddlewareQueryException ex) {
-			ListCommonActionsUtil.LOG.error("Error in deleting germplasm list entries.", ex);
-			hasError = true;
-		}
-		return hasError;
+	public static void deleteExistingListEntries(final Integer listId, final GermplasmListManager dataManager) {
+		dataManager.deleteGermplasmListDataByListId(listId);
 	}
 
 }
