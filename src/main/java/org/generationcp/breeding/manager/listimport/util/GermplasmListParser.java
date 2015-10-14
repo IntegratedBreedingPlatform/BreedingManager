@@ -721,7 +721,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		public ImportedGermplasm convertToObject(final Map<Integer, String> rowValues) throws FileParsingException {
 			final ImportedGermplasm importedGermplasm = new ImportedGermplasm();
 			for (final int colIndex : rowValues.keySet()) {
-				String colHeader = GermplasmListParser.this.observationColumnMap.get(colIndex);
+				final String colHeader = GermplasmListParser.this.observationColumnMap.get(colIndex);
 				// Map cell (given a column label) with a pojo setter
 
 				Map<FactorTypes, Command> factorBehaviors = new HashMap<>();
@@ -745,7 +745,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 					public void run() throws FileParsingException {
 						String designation = rowValues.get(colIndex);
 						if (designation != null && designation.length() > 255){
-							throw new FileParsingException("GERMPLSM_PARSE_DESIGNATION_ERROR", currentIndex, "", rowValues.get(colIndex));
+							throw new FileParsingException("GERMPLSM_PARSE_DESIGNATION_ERROR", currentIndex, "", colHeader);
 						}
 						importedGermplasm.setDesig(rowValues.get(colIndex));
 					}
