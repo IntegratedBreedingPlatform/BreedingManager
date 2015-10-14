@@ -12,6 +12,7 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import com.google.common.base.Strings;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.generationcp.breeding.manager.listimport.validator.StockIDValidator;
@@ -90,7 +91,9 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 		for(ImportedGermplasm germplasm : this.importedGermplasmList.getImportedGermplasms()){
 			Double seedAmount = germplasm.getSeedAmount();
-			if(seedAmount > 0.0){
+			String stockId = germplasm.getInventoryId();
+
+			if(seedAmount > 0.0 && Strings.isNullOrEmpty(stockId)){
 				return true;
 			}
 		}

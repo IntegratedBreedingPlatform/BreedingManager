@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.generationcp.commons.parsing.pojo.ImportedDescriptionDetails;
@@ -109,7 +110,7 @@ public class ImportedGermplasmList extends ImportedDescriptionDetails {
 
 	public boolean hasMissingStockIDValues() {
 		for (ImportedGermplasm importedGermplasm : this.getImportedGermplasms()) {
-			if (this.hasStockIDValues && importedGermplasm.getSeedAmount() != 0 && "".equals(importedGermplasm.getInventoryId())) {
+			if (this.hasStockIDValues && importedGermplasm.getSeedAmount() == 0 && !Objects.equals(importedGermplasm.getInventoryId(),"")) {
 				return true;
 			}
 		}

@@ -31,12 +31,14 @@ public class GenerateStockIDsDialogTest {
 	@InjectMocks
 	GenerateStockIDsDialog generateStockIDsDialog = Mockito.spy(new GenerateStockIDsDialog(this.source, null));
 
+	private static final String inventoryId = "SID1-";
+
 	@Before
 	public void setUp() throws Exception {
 
 		MockitoAnnotations.initMocks(this);
 
-		Mockito.doReturn("SID1-").when(this.stockService).calculateNextStockIDPrefix("SID", "-");
+		Mockito.doReturn(inventoryId).when(this.stockService).calculateNextStockIDPrefix("SID", "-");
 		Mockito.doReturn("TEST1-").when(this.stockService).calculateNextStockIDPrefix("TEST", "-");
 
 	}

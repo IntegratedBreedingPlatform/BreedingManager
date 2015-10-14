@@ -143,7 +143,7 @@ public class GermplasmListParserTest {
 	}
 
 	/**
-	 * Test when we have stock id colum but contain missing values
+	 * Test when we have stock id column but contain missing values
 	 *
 	 * @throws Exception
 	 */
@@ -158,7 +158,7 @@ public class GermplasmListParserTest {
 	}
 
 	/**
-	 * Test when we have stock id colum but contain missing values
+	 * Test when we have stock id column but contain duplicate values
 	 *
 	 * @throws Exception
 	 */
