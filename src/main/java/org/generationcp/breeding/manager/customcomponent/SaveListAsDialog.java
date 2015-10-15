@@ -66,9 +66,6 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 	private final String windowCaption;
 	private boolean showFoldersOnlyInListTree = false;
 
-	@SuppressWarnings("unused")
-	private String defaultListType;
-
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
@@ -80,22 +77,11 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 
 	public static final Integer LIST_NAMES_STATUS = 1;
 
-	public SaveListAsDialog(SaveListAsDialogSource source, GermplasmList germplasmList) {
-		this.source = source;
-		this.originalGermplasmList = germplasmList;
-		this.germplasmList = germplasmList;
-		this.windowCaption = null;
+	public SaveListAsDialog(final SaveListAsDialogSource source, final GermplasmList germplasmList) {
+		this(source, germplasmList, null);
 	}
 
-	public SaveListAsDialog(SaveListAsDialogSource source, String defaultListType, GermplasmList germplasmList) {
-		this.source = source;
-		this.originalGermplasmList = germplasmList;
-		this.germplasmList = germplasmList;
-		this.defaultListType = defaultListType;
-		this.windowCaption = null;
-	}
-
-	public SaveListAsDialog(SaveListAsDialogSource source, GermplasmList germplasmList, String windowCaption) {
+	public SaveListAsDialog(final SaveListAsDialogSource source, final GermplasmList germplasmList, final String windowCaption) {
 		this.source = source;
 		this.originalGermplasmList = germplasmList;
 		this.germplasmList = germplasmList;
@@ -200,7 +186,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 		this.buttonLayout.addComponent(this.saveButton);
 		this.buttonLayout.addStyleName("buttonLayout");
 
-		HorizontalLayout buttonLayoutMain = new HorizontalLayout();
+		final HorizontalLayout buttonLayoutMain = new HorizontalLayout();
 		buttonLayoutMain.addComponent(this.buttonLayout);
 		buttonLayoutMain.setComponentAlignment(this.buttonLayout, Alignment.MIDDLE_CENTER);
 		buttonLayoutMain.setWidth("100%");
@@ -233,7 +219,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 		if (folderId != null) {
 			try {
 				folder = this.germplasmListManager.getGermplasmListById(folderId);
-			} catch (MiddlewareQueryException e) {
+			} catch (final MiddlewareQueryException e) {
 				SaveListAsDialog.LOG.error("Error with retrieving list with id: " + folderId, e);
 			}
 		}
@@ -259,7 +245,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 			// If selected item is a folder, get parent of that folder
 			try {
 				selectedList = this.germplasmListManager.getGermplasmListById(selectedList.getParentId());
-			} catch (MiddlewareQueryException e) {
+			} catch (final MiddlewareQueryException e) {
 				SaveListAsDialog.LOG.error("Error with getting parent list: " + selectedList.getParentId(), e);
 			}
 
@@ -291,7 +277,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 		return this.source;
 	}
 
-	public void setGermplasmList(GermplasmList germplasmList) {
+	public void setGermplasmList(final GermplasmList germplasmList) {
 		this.germplasmList = germplasmList;
 	}
 
@@ -313,7 +299,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 		return this.showFoldersOnlyInListTree;
 	}
 
-	protected void setShowFoldersOnlyInListTree(boolean showFoldersOnlyInListTree) {
+	protected void setShowFoldersOnlyInListTree(final boolean showFoldersOnlyInListTree) {
 		this.showFoldersOnlyInListTree = showFoldersOnlyInListTree;
 	}
 
@@ -321,7 +307,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 		return this.originalGermplasmList;
 	}
 
-	public void setOriginalGermplasmList(GermplasmList originalGermplasmList) {
+	public void setOriginalGermplasmList(final GermplasmList originalGermplasmList) {
 		this.originalGermplasmList = originalGermplasmList;
 	}
 
@@ -352,11 +338,11 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 									private static final long serialVersionUID = 1L;
 
 									@Override
-									public void onClose(ConfirmDialog dialog) {
+									public void onClose(final ConfirmDialog dialog) {
 										if (dialog.isConfirmed()) {
 											SaveListAsDialog.this.source.saveList(gl);
 											SaveListAsDialog.this.saveReservationChanges();
-											Window window = event.getButton().getWindow();
+											final Window window = event.getButton().getWindow();
 											window.getParent().removeWindow(window);
 										}
 									}
@@ -366,13 +352,13 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 			} else {
 				if (this.validateAllFields()) {
 
-					GermplasmList gl = this.getGermplasmListToSave();
+					final GermplasmList gl = this.getGermplasmListToSave();
 					this.setGermplasmListDetails(gl);
 
 					this.source.saveList(gl);
 					this.saveReservationChanges();
 
-					Window window = event.getButton().getWindow();
+					final Window window = event.getButton().getWindow();
 					window.getParent().removeWindow(window);
 				}
 			}
@@ -383,9 +369,9 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 
 	private void updateInventoryColumnsOnListDataAndListInventoryTables() {
 		if (this.source instanceof ReserveInventorySource) {
-			ReserveInventoryAction reserveInventoryAction = new ReserveInventoryAction((ReserveInventorySource) this.source);
+			final ReserveInventoryAction reserveInventoryAction = new ReserveInventoryAction((ReserveInventorySource) this.source);
 			if (this.source instanceof ParentTabComponent) {
-				boolean success =
+				final boolean success =
 						reserveInventoryAction.saveReserveTransactions(((ParentTabComponent) this.source).getValidReservationsToSave(),
 								this.germplasmList.getId());
 				if (success) {
@@ -423,11 +409,11 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 		return this.germplasmList != null && this.germplasmList.getStatus() >= 100;
 	}
 
-	private boolean isListDateValid(ListDateField listDateField) {
+	private boolean isListDateValid(final ListDateField listDateField) {
 
 		try {
 			listDateField.validate();
-		} catch (InvalidValueException e) {
+		} catch (final InvalidValueException e) {
 			SaveListAsDialog.LOG.error(e.getMessage(), e);
 			MessageNotifier.showRequiredFieldError(this.getWindow().getParent().getWindow(), e.getMessage());
 			return false;
@@ -442,17 +428,17 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 	 * @param listDate string with format: E MMM dd HH:mm:ss Z yyyy If doesn't follow the format, will return the current date
 	 * @return
 	 */
-	protected Long getCurrentParsedListDate(String listDate) {
+	protected Long getCurrentParsedListDate(final String listDate) {
 		Date date;
 		try {
-			SimpleDateFormat sdf = (SimpleDateFormat) DateUtil.getSimpleDateFormat("E MMM dd HH:mm:ss Z yyyy").clone();
+			final SimpleDateFormat sdf = (SimpleDateFormat) DateUtil.getSimpleDateFormat("E MMM dd HH:mm:ss Z yyyy").clone();
 			sdf.setLenient(true);
 			date = sdf.parse(listDate);
-		} catch (ParseException e) {
+		} catch (final ParseException e) {
 			date = new Date();
 			SaveListAsDialog.LOG.error(e.getMessage(), e);
 		}
-		String dateAsString = DateUtil.formatDateAsStringValue(date, DateUtil.DATE_AS_NUMBER_FORMAT);
+		final String dateAsString = DateUtil.formatDateAsStringValue(date, DateUtil.DATE_AS_NUMBER_FORMAT);
 		return Long.parseLong(dateAsString);
 	}
 }

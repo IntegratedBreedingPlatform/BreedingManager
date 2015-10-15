@@ -14,30 +14,17 @@ public class LocalListFoldersTreeComponent extends ListTreeComponent {
 
 	private static final long serialVersionUID = -3038021741795321888L;
 	private final Boolean showFoldersOnly;
-	private Boolean refreshTreeOnAddEditOrDeleteAction;
+	private final Boolean refreshTreeOnAddEditOrDeleteAction;
 
 	@Autowired
 	protected SimpleResourceBundleMessageSource messageSource;
 
-	public LocalListFoldersTreeComponent(Integer folderId) {
-		super(folderId);
-		this.showFoldersOnly = true;
+	public LocalListFoldersTreeComponent(final Integer folderId) {
+		this(null, folderId, true, false);
 	}
 
-	public LocalListFoldersTreeComponent(Integer folderId, Boolean showFoldersOnly) {
-		super(folderId);
-		this.showFoldersOnly = showFoldersOnly;
-	}
-
-	public LocalListFoldersTreeComponent(SelectTreeItemOnSaveListener selectTreeItemOnSaveListener, Integer folderId,
-			Boolean showFoldersOnly) {
-		super(selectTreeItemOnSaveListener, folderId);
-		this.showFoldersOnly = showFoldersOnly;
-		this.refreshTreeOnAddEditOrDeleteAction = false;
-	}
-
-	public LocalListFoldersTreeComponent(SelectTreeItemOnSaveListener selectTreeItemOnSaveListener, Integer folderId,
-			Boolean showFoldersOnly, Boolean refreshTreeOnAddEditOrDeleteAction) {
+	public LocalListFoldersTreeComponent(final SelectTreeItemOnSaveListener selectTreeItemOnSaveListener, final Integer folderId,
+			final Boolean showFoldersOnly, final Boolean refreshTreeOnAddEditOrDeleteAction) {
 		super(selectTreeItemOnSaveListener, folderId);
 		this.showFoldersOnly = showFoldersOnly;
 		this.refreshTreeOnAddEditOrDeleteAction = refreshTreeOnAddEditOrDeleteAction;
@@ -104,7 +91,7 @@ public class LocalListFoldersTreeComponent extends ListTreeComponent {
 			return;
 		}
 
-		BreedingManagerApplication breedingManagerApplication = (BreedingManagerApplication) this.getApplication();
+		final BreedingManagerApplication breedingManagerApplication = (BreedingManagerApplication) this.getApplication();
 		if (breedingManagerApplication != null) {
 			breedingManagerApplication.refreshListManagerTree();
 			breedingManagerApplication.refreshCrossingManagerTree();

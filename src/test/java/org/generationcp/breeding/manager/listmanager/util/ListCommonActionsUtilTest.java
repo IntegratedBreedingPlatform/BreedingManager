@@ -4,6 +4,7 @@ package org.generationcp.breeding.manager.listmanager.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.generationcp.breeding.manager.data.initializer.GermplasmListDataInitializer;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -19,8 +20,6 @@ import org.mockito.MockitoAnnotations;
 import com.vaadin.ui.Component;
 
 public class ListCommonActionsUtilTest {
-
-	private ListCommonActionsUtil util;
 
 	private GermplasmList listToSave;
 	private List<GermplasmListData> listEntries;
@@ -45,15 +44,14 @@ public class ListCommonActionsUtilTest {
 	@Test
 	public void testGetNewEntriesToSaveUpdateDelete_ForNewEntries() throws MiddlewareQueryException {
 		this.forceHasChanges = false;
-		this.listToSave = this.getGermplasmList();
-		this.listEntries = this.getGermplasmListData(5);
+		this.listToSave = GermplasmListDataInitializer.createGermplasmList(1);
+		this.listEntries = GermplasmListDataInitializer.createGermplasmListData(5);
 		this.newEntries = new ArrayList<GermplasmListData>();
 		this.entriesToUpdate = new ArrayList<GermplasmListData>();
 		this.entriesToDelete = new ArrayList<GermplasmListData>();
 
-		Mockito.when(this.dataManager.countGermplasmListDataByListId(this.listToSave.getId())).thenReturn(4L);
-		Mockito.when(this.dataManager.getGermplasmListDataByListId(this.listToSave.getId(), 0, 4))
-				.thenReturn(this.listToSave.getListData());
+		Mockito.when(this.dataManager.countGermplasmListDataByListId(this.listToSave.getId())).thenReturn(5L);
+		Mockito.when(this.dataManager.getGermplasmListDataByListId(this.listToSave.getId())).thenReturn(this.listToSave.getListData());
 
 		ListCommonActionsUtil.getNewEntriesToSaveUpdateDelete(this.listToSave, this.listEntries, this.forceHasChanges, this.newEntries,
 				this.entriesToUpdate, this.entriesToDelete, this.dataManager, this.source, this.messageSource);
@@ -63,8 +61,8 @@ public class ListCommonActionsUtilTest {
 
 	@Test
 	public void testSetDesignationOfMatchingSavedEntry_WhenDesignationIsNull() {
-		GermplasmListData entry = new GermplasmListData();
-		GermplasmListData matchingSavedEntry = new GermplasmListData();
+		final GermplasmListData entry = new GermplasmListData();
+		final GermplasmListData matchingSavedEntry = new GermplasmListData();
 
 		ListCommonActionsUtil.setDesignationOfMatchingSavedEntry(entry, matchingSavedEntry);
 
@@ -74,23 +72,23 @@ public class ListCommonActionsUtilTest {
 
 	@Test
 	public void testSetDesignationOfMatchingSavedEntry_WhenDesignationIsNotNull() {
-		GermplasmListData entry = new GermplasmListData();
-		String expectedDesignation = "Expected Designation";
+		final GermplasmListData entry = new GermplasmListData();
+		final String expectedDesignation = "Expected Designation";
 		entry.setDesignation(expectedDesignation);
-		GermplasmListData matchingSavedEntry = new GermplasmListData();
+		final GermplasmListData matchingSavedEntry = new GermplasmListData();
 
 		ListCommonActionsUtil.setDesignationOfMatchingSavedEntry(entry, matchingSavedEntry);
 
-		String actualDesignation = matchingSavedEntry.getDesignation();
+		final String actualDesignation = matchingSavedEntry.getDesignation();
 		Assert.assertEquals("Expecting that the designation value is " + expectedDesignation + " but returned " + actualDesignation,
 				expectedDesignation, actualDesignation);
 	}
 
 	@Test
 	public void testSetEntryCodeOfMatchingSavedEntry_WhenEntryCodeIsNull() {
-		GermplasmListData entry = new GermplasmListData();
+		final GermplasmListData entry = new GermplasmListData();
 		entry.setEntryId(1);
-		GermplasmListData matchingSavedEntry = new GermplasmListData();
+		final GermplasmListData matchingSavedEntry = new GermplasmListData();
 
 		ListCommonActionsUtil.setEntryCodeOfMatchingSavedEntry(entry, matchingSavedEntry);
 
@@ -100,22 +98,22 @@ public class ListCommonActionsUtilTest {
 
 	@Test
 	public void testSetEntryCodeOfMatchingSavedEntry_WhenEntryCodeIsNotNull() {
-		GermplasmListData entry = new GermplasmListData();
-		String expectedEntryCode = "Expected Entry Code";
+		final GermplasmListData entry = new GermplasmListData();
+		final String expectedEntryCode = "Expected Entry Code";
 		entry.setEntryCode(expectedEntryCode);
-		GermplasmListData matchingSavedEntry = new GermplasmListData();
+		final GermplasmListData matchingSavedEntry = new GermplasmListData();
 
 		ListCommonActionsUtil.setEntryCodeOfMatchingSavedEntry(entry, matchingSavedEntry);
 
-		String actualEntryCode = matchingSavedEntry.getEntryCode();
+		final String actualEntryCode = matchingSavedEntry.getEntryCode();
 		Assert.assertEquals("Expecting that the entry code value is " + expectedEntryCode + " but returned " + actualEntryCode,
 				expectedEntryCode, actualEntryCode);
 	}
 
 	@Test
 	public void testSetSeedSourceOfMatchingSavedEntry_WhenSeedSourceIsNull() {
-		GermplasmListData entry = new GermplasmListData();
-		GermplasmListData matchingSavedEntry = new GermplasmListData();
+		final GermplasmListData entry = new GermplasmListData();
+		final GermplasmListData matchingSavedEntry = new GermplasmListData();
 
 		ListCommonActionsUtil.setSeedSourceOfMatchingSavedEntry(entry, matchingSavedEntry);
 
@@ -125,22 +123,22 @@ public class ListCommonActionsUtilTest {
 
 	@Test
 	public void testSetSeedSourceOfMatchingSavedEntry_WhenSeedSourceIsNotNull() {
-		GermplasmListData entry = new GermplasmListData();
-		String expectedSeedSource = "Expected Seed Source";
+		final GermplasmListData entry = new GermplasmListData();
+		final String expectedSeedSource = "Expected Seed Source";
 		entry.setSeedSource(expectedSeedSource);
-		GermplasmListData matchingSavedEntry = new GermplasmListData();
+		final GermplasmListData matchingSavedEntry = new GermplasmListData();
 
 		ListCommonActionsUtil.setSeedSourceOfMatchingSavedEntry(entry, matchingSavedEntry);
 
-		String actualSeedSource = matchingSavedEntry.getSeedSource();
+		final String actualSeedSource = matchingSavedEntry.getSeedSource();
 		Assert.assertEquals("Expecting that the seed source value is " + expectedSeedSource + " but returned " + actualSeedSource,
 				expectedSeedSource, actualSeedSource);
 	}
 
 	@Test
 	public void testSetGroupNameOfMatchingSavedEntry_WhenGroupNameIsNull() {
-		GermplasmListData entry = new GermplasmListData();
-		GermplasmListData matchingSavedEntry = new GermplasmListData();
+		final GermplasmListData entry = new GermplasmListData();
+		final GermplasmListData matchingSavedEntry = new GermplasmListData();
 
 		ListCommonActionsUtil.setGroupNameOfMatchingSavedEntry(entry, matchingSavedEntry);
 
@@ -150,44 +148,25 @@ public class ListCommonActionsUtilTest {
 
 	@Test
 	public void testSetGroupNameOfMatchingSavedEntry_WhenGroupNameIsNotNull() {
-		GermplasmListData entry = new GermplasmListData();
-		String expectedGroupName = "Expected Group Name";
+		final GermplasmListData entry = new GermplasmListData();
+		final String expectedGroupName = "Expected Group Name";
 		entry.setGroupName(expectedGroupName);
-		GermplasmListData matchingSavedEntry = new GermplasmListData();
+		final GermplasmListData matchingSavedEntry = new GermplasmListData();
 
 		ListCommonActionsUtil.setGroupNameOfMatchingSavedEntry(entry, matchingSavedEntry);
 
-		String actualGroupName = matchingSavedEntry.getGroupName();
+		final String actualGroupName = matchingSavedEntry.getGroupName();
 		Assert.assertEquals("Expecting that the group name value is " + expectedGroupName + " but returned " + actualGroupName,
 				expectedGroupName, actualGroupName);
 	}
 
-	private GermplasmList getGermplasmList() {
-		GermplasmList germplasmList = new GermplasmList();
-		germplasmList.setId(1);
-		germplasmList.setName("List 001");
-		germplasmList.setDescription("List 001 Description");
-		germplasmList.setDate(20150101L);
-		germplasmList.setListData(this.getGermplasmListData(4));
+	@Test
+	public void testDeleteExistingListEntries() {
+		this.listToSave = GermplasmListDataInitializer.createGermplasmList(1);
+		final Integer listId = this.listToSave.getId();
 
-		return germplasmList;
-	}
+		ListCommonActionsUtil.deleteExistingListEntries(listId, this.dataManager);
 
-	private List<GermplasmListData> getGermplasmListData(Integer itemNo) {
-		List<GermplasmListData> listEntries = new ArrayList<GermplasmListData>();
-		for (int i = 1; i <= itemNo; i++) {
-			GermplasmListData listEntry = new GermplasmListData();
-			listEntry.setId(i);
-			listEntry.setDesignation("Designation " + i);
-			listEntry.setEntryCode("EntryCode " + i);
-			listEntry.setEntryId(i);
-			listEntry.setGroupName("GroupName " + i);
-			listEntry.setStatus(1);
-			listEntry.setSeedSource("SeedSource " + i);
-
-			listEntries.add(listEntry);
-		}
-
-		return listEntries;
+		Mockito.verify(this.dataManager, Mockito.times(1)).deleteGermplasmListDataByListId(listId);
 	}
 }
