@@ -1,7 +1,9 @@
 
 package org.generationcp.breeding.manager.listimport;
 
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -51,6 +53,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 	private Button nextButton;
 	private Button openTemplateButton;
 	private GermplasmListUploader germplasmListUploader;
+	private Set<String> extensionSet = new HashSet<>();
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -65,6 +68,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 		this.initializeValues();
 		this.addListeners();
 		this.layoutComponents();
+		this.initializeExtensionSet();
 	}
 
 	@Override
@@ -79,14 +83,18 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 		this.messageSource.setCaption(this.openTemplateButton, Message.HERE);
 	}
 
+	public void initializeExtensionSet() {
+		extensionSet.add("xls");
+		extensionSet.add("xlsx");
+	}
+
 	public void nextButtonClickAction() {
 
 		// NOTE: Display Error message if Germplasm Import file contains invalid extension like .doc, .pdf, .docx etc.
 		// Valid File Extensions are .xls and .xlsx
-		final String extension = FilenameUtils.getExtension(this.germplasmListUploader.getOriginalFilename());
-		if (!extension.equalsIgnoreCase("xls") && !extension.equalsIgnoreCase("xlsx")){
-			MessageNotifier.showError(this.getWindow(), "Error", "Invalid Import File Type.\n"
-					+ "Please upload a properly formatted XLS or XLSX file.");
+		final String extension = FilenameUtils.getExtension(this.germplasmListUploader.getOriginalFilename()).toLowerCase();
+		if (!extensionSet.contains(extension)) {
+			MessageNotifier.showError(this.getWindow(), "Error", this.messageSource.getMessage("GERMPLSM_INVALID_FILE_EXTENSION_ERROR"));
 			return;
 		}
 
