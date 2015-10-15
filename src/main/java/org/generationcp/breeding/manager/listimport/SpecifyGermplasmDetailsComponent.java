@@ -345,7 +345,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 
 		this.initGermplasmDetailsTable();
 
-		this.selectPedigreeOptionsLabel = new Label(this.messageSource.getMessage(Message.SELECT_PEDIGREE_OPTIONS).toUpperCase());
+		this.selectPedigreeOptionsLabel = new Label(this.messageSource.getMessage(Message.SELECT_GID_ASSIGNMENT_OPTIONS).toUpperCase());
 		this.selectPedigreeOptionsLabel.addStyleName(Bootstrap.Typography.H4.styleName());
 
 		this.pedigreeOptionsLabel = new Label(this.messageSource.getMessage(Message.PEDIGREE_OPTIONS_LABEL) + ":");
