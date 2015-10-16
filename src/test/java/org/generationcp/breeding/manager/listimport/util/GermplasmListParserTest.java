@@ -65,7 +65,7 @@ public class GermplasmListParserTest {
 		Mockito.when(this.germplasmDataManager.getGermplasmByGID(Matchers.anyInt())).thenReturn(Mockito.mock(Germplasm.class));
 		Mockito.when(this.inventoryDataManager.getSimilarStockIds(Matchers.anyList())).thenReturn(new ArrayList<String>());
 
-		Map<Integer, String> preferredNames = Mockito.mock(Map.class);
+		final Map<Integer, String> preferredNames = Mockito.mock(Map.class);
 		Mockito.when(preferredNames.get(Matchers.any())).thenReturn("TEST DESIG");
 		Mockito.when(this.germplasmDataManager.getPreferredNamesByGids(Matchers.anyList())).thenReturn(preferredNames);
 
@@ -78,11 +78,11 @@ public class GermplasmListParserTest {
 	 */
 	@Test
 	public void testTemplateWithStockIdFactor() throws Exception {
-		File workbookFile = new File(ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.TEST_FILE_NAME).toURI());
+		final File workbookFile = new File(ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.TEST_FILE_NAME).toURI());
 
 		assert workbookFile.exists();
 
-		Workbook defaultWorkbook = WorkbookFactory.create(workbookFile);
+		final Workbook defaultWorkbook = WorkbookFactory.create(workbookFile);
 		this.importedGermplasmList = this.parser.parseWorkbook(defaultWorkbook, null);
 
 		Assert.assertNotNull(this.importedGermplasmList);
@@ -99,15 +99,15 @@ public class GermplasmListParserTest {
 	@Test
 	public void testTemplateMissingObservationHeader() throws Exception {
 		try {
-			File workbookFile =
+			final File workbookFile =
 					new File(ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.OBSERVATION_NO_STOCK_ID_FILE).toURI());
 
 			assert workbookFile.exists();
 
-			Workbook noStockIDWorkbook = WorkbookFactory.create(workbookFile);
+			final Workbook noStockIDWorkbook = WorkbookFactory.create(workbookFile);
 			this.importedGermplasmList = this.parser.parseWorkbook(noStockIDWorkbook, null);
 			Assert.fail();
-		} catch (FileParsingException e) {
+		} catch (final FileParsingException e) {
 			Assert.assertEquals("GERMPLASM_PARSE_HEADER_ERROR", e.getMessage());
 		}
 
@@ -120,11 +120,12 @@ public class GermplasmListParserTest {
 	 */
 	@Test
 	public void testTemplateWithNoInventoryColumn() throws Exception {
-		File workbookFile = new File(
+		final File workbookFile =
+				new File(
 				ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.NO_INVENTORY_COL_FILE).toURI());
 
 		assert workbookFile.exists();
-		Workbook noInventoryWorkbook = WorkbookFactory.create(workbookFile);
+		final Workbook noInventoryWorkbook = WorkbookFactory.create(workbookFile);
 
 		this.importedGermplasmList = this.parser.parseWorkbook(noInventoryWorkbook, null);
 
@@ -140,12 +141,13 @@ public class GermplasmListParserTest {
 	@Test
 	public void testTemplateWithMissingStockIdValuesInObservation() throws Exception {
 		try {
-			File workbookFile = new File(
+			final File workbookFile =
+					new File(
 					ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.OBSERVATION_NO_STOCK_ID_VALUES_FILE).toURI());
-			Workbook missingStockIDValuesWorkbook = WorkbookFactory.create(workbookFile);
+			final Workbook missingStockIDValuesWorkbook = WorkbookFactory.create(workbookFile);
 			this.importedGermplasmList = this.parser.parseWorkbook(missingStockIDValuesWorkbook, null);
 			Assert.fail();
-		} catch (FileParsingException e) {
+		} catch (final FileParsingException e) {
 			Assert.assertEquals("GERMPLSM_PARSE_GID_MISSING_STOCK_ID_VALUE", e.getMessage());
 		}
 	}
@@ -158,12 +160,12 @@ public class GermplasmListParserTest {
 	@Test
 	public void testTemplateWithDuplicateIdsInObservation() throws Exception {
 		try {
-			File workbookFile =
+			final File workbookFile =
 					new File(ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.DUPLICATE_STOCK_ID_FILE).toURI());
-			Workbook duplicateStockIdWorkbook = WorkbookFactory.create(workbookFile);
+			final Workbook duplicateStockIdWorkbook = WorkbookFactory.create(workbookFile);
 			this.importedGermplasmList = this.parser.parseWorkbook(duplicateStockIdWorkbook, null);
 			Assert.fail();
-		} catch (FileParsingException e) {
+		} catch (final FileParsingException e) {
 			Assert.assertEquals("GERMPLASM_PARSE_DUPLICATE_STOCK_ID", e.getMessage());
 		}
 	}
