@@ -25,7 +25,6 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.vaadin.ui.Table;
-import org.springframework.context.MessageSource;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SpecifyGermplasmDetailsComponentTest {
