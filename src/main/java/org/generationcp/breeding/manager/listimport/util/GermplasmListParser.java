@@ -434,6 +434,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		this.importedGermplasmList.setImportedGermplasms(importedGermplasms);
 		if (this.specialFactors.containsKey(FactorTypes.STOCK)) {
 			this.stockIDValidator.validate(this.specialFactors.get(FactorTypes.STOCK), this.importedGermplasmList);
+			this.validateForMissingInventoryVariable(this.specialFactors.get(FactorTypes.STOCK), this.importedGermplasmList);
 		}
 
 		this.importedGermplasmList.normalizeGermplasmList();
@@ -912,6 +913,16 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 			}
 
 			return true;
+		}
+	}
+
+	/**
+	 * This method is to verify inventory variable is missing or not.
+	 * This method move from StockIdValidator as now we need to check empty/missing inventory variable not stockId.
+	 */
+	private void validateForMissingInventoryVariable(String header, ImportedGermplasmList importedGermplasmList) throws FileParsingException {
+		if (importedGermplasmList.hasMissingInventoryVariable()) {
+			throw new FileParsingException("GERMPLSM_PARSE_GID_MISSING_SEED_AMOUNT_VALUE", 0, "", header);
 		}
 	}
 }
