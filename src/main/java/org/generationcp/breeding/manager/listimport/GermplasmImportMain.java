@@ -215,7 +215,6 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 			this.germplasmDetailsComponent.setGermplasmListUploader(germplasmListUploader);
 
 			this.germplasmDetailsComponent.initializeFromImportFile(importedGermplasmList);
-			this.germplasmDetailsComponent.updateTotalEntriesLabel();
 		}
 	}
 

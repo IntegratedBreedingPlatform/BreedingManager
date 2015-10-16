@@ -374,8 +374,6 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 	}
 
 	protected void initGermplasmDetailsTable() {
-		this.germplasmDetailsTable = this.getGermplasmDetailsTable();
-
 		if (this.getGermplasmDetailsTable() == null) {
 			this.setGermplasmDetailsTable(new Table());
 		}
@@ -536,6 +534,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 							importedGermplasm.getSeedAmount(), germplasmSource}, new Integer(i + 1));
 		}
 
+		this.updateTotalEntriesLabel();
 
 		if (this.germplasmListUploader.importFileIsAdvanced()) {
 			this.showFirstPedigreeOption(false);
