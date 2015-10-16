@@ -33,6 +33,7 @@ public class SpecifyGermplasmDetailsComponentTest {
 	private static final String EXTENSION = "xls";
 	private static final String COMPLETE_FILE_NAME = SpecifyGermplasmDetailsComponentTest.FILE_NAME + "."
 			+ SpecifyGermplasmDetailsComponentTest.EXTENSION;
+	private static final String TEST_SOURCE_VALUE = "ListABC";
 
 
 	@Mock
@@ -92,12 +93,47 @@ public class SpecifyGermplasmDetailsComponentTest {
 	}
 
 	@Test
-	public void testInitializeFromImportFile_BasicTemplate() {
+	public void testInitializeFromImportFile_BasicTemplateSourceAvailable() {
 		final Table table = new Table();
+
+		final List<ImportedGermplasm> importedGermplasms = createImportedGermplasmFromBasicTemplate(TEST_SOURCE_VALUE);
+
+		setupInitializeFromImportedFileTest(table, importedGermplasms);
+		Assert.assertTrue(table.getItemIds().size() == 5);
+		for (int i = 1; i <= 5; i++) {
+			final Integer id = new Integer(i);
+			Assert.assertEquals(id, table.getItem(id).getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue());
+
+			Assert.assertEquals(TEST_SOURCE_VALUE, table.getItem(id).getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue());
+			Assert.assertEquals("LEAFNODE00" + i, table.getItem(id).getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue());
+			Assert.assertNull(table.getItem(id).getItemProperty(ColumnLabels.ENTRY_CODE.getName()).getValue());
+			Assert.assertNull(table.getItem(id).getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue());
+			Assert.assertNull(table.getItem(id).getItemProperty(ColumnLabels.GID.getName()).getValue());
+		}
+	}
+
+	@Test
+	public void testInitializeFromImportFile_BasicTemplateNoSourceValue() {
+		final Table table = new Table();
+
+		// we want to test the result of importing a germplasm list with a null / empty source value from the file
+		final List<ImportedGermplasm> importedGermplasms = createImportedGermplasmFromBasicTemplate(null);
+
+		setupInitializeFromImportedFileTest(table, importedGermplasms);
+		Assert.assertTrue(table.getItemIds().size() == 5);
+		for (int i = 1; i <= 5; i++) {
+			final Integer id = new Integer(i);
+			Assert.assertEquals("", table.getItem(id).getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue());
+		}
+	}
+
+	protected void setupInitializeFromImportedFileTest(final Table table, final List<ImportedGermplasm> germplasmList) {
+
 		final GermplasmFieldsComponent germplasmFieldsComponent = Mockito.mock(GermplasmFieldsComponent.class);
 		this.specifyGermplasmDetailsComponent.setGermplasmDetailsTable(table);
 		this.specifyGermplasmDetailsComponent.setGermplasmFieldsComponent(germplasmFieldsComponent);
-		this.specifyGermplasmDetailsComponent.setImportedGermplasms(createImportedGermplasmFromBasicTemplate());
+
+		this.specifyGermplasmDetailsComponent.setImportedGermplasms(germplasmList);
 
 
 		final GermplasmListUploader uploader = Mockito.mock(GermplasmListUploader.class);
@@ -115,27 +151,15 @@ public class SpecifyGermplasmDetailsComponentTest {
 		this.specifyGermplasmDetailsComponent.initGermplasmDetailsTable();
 		this.specifyGermplasmDetailsComponent.initializeFromImportFile(importedList);
 
-		Assert.assertTrue(table.getItemIds().size() == 5);
-		for (int i = 1; i <= 5; i++) {
-			final Integer id = new Integer(i);
-			Assert.assertEquals(id, table.getItem(id).getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue());
-
-			// we are expecting a blank value for source, since the provided import file does not have source data
-			Assert.assertEquals("",
-					table.getItem(id).getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue());
-			Assert.assertEquals("LEAFNODE00" + i, table.getItem(id).getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue());
-			Assert.assertNull(table.getItem(id).getItemProperty(ColumnLabels.ENTRY_CODE.getName()).getValue());
-			Assert.assertNull(table.getItem(id).getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue());
-			Assert.assertNull(table.getItem(id).getItemProperty(ColumnLabels.GID.getName()).getValue());
-		}
 	}
 
-	private List<ImportedGermplasm> createImportedGermplasmFromBasicTemplate() {
+	private List<ImportedGermplasm> createImportedGermplasmFromBasicTemplate(final String sourceValue) {
 		final List<ImportedGermplasm> testListOfGermplasm = new ArrayList<ImportedGermplasm>();
 		for (int i = 1; i <= 5; i++) {
 			final ImportedGermplasm germplasm = new ImportedGermplasm();
 			germplasm.setEntryId(i);
 			germplasm.setDesig("LEAFNODE00" + i);
+			germplasm.setSource(sourceValue);
 			testListOfGermplasm.add(germplasm);
 		}
 		return testListOfGermplasm;
