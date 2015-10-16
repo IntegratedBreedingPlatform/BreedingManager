@@ -107,6 +107,8 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 	private CheckBox ignoreMatchesCheckbox;
 	private CheckBox ignoreRemainingMatchesCheckbox;
 	private final Window parentWindow;
+	private Integer currentMatch;
+	private Integer totalMatches;
 
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
@@ -121,6 +123,17 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 		this.germplasm = germplasm;
 		this.source = source;
 		this.parentWindow = parentWindow;
+	}
+
+	public SelectGermplasmWindow(ProcessImportedGermplasmAction source, String germplasmName, int index, Germplasm germplasm,
+			Window parentWindow, Integer currentMatch, Integer totalMatches) {
+		this.germplasmName = germplasmName;
+		this.germplasmIndex = index;
+		this.germplasm = germplasm;
+		this.source = source;
+		this.parentWindow = parentWindow;
+		this.currentMatch = currentMatch;
+		this.totalMatches = totalMatches;
 	}
 
 	protected void assemble() {
@@ -371,17 +384,25 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 
 		this.mainLayout.addComponent(this.useSameGidCheckbox);
 		this.mainLayout.addComponent(this.ignoreMatchesCheckbox);
-		this.mainLayout.addComponent(this.ignoreRemainingMatchesCheckbox);
 
+		// Display 3rd check box i.e. ignoreRemainingMatchesCheckBox as sub step of 2nd Check box i.e. ignoreMatchesCheckBox so small gap is inserted using label.
+		HorizontalLayout horizontalLayout = new HorizontalLayout();
+		Label gap = new Label();
+		gap.setWidth("2em");
+		horizontalLayout.addComponent(gap);
+		horizontalLayout.addComponent(this.ignoreRemainingMatchesCheckbox);
+
+		this.mainLayout.addComponent(horizontalLayout);
 		this.mainLayout.addComponent(buttonLayout);
 
 		this.setContent(this.mainLayout);
 	}
 
 	private void initializeGuideMessage() {
-		this.selectGermplasmLabel.setValue("Matches were found with the name <b>" + this.germplasmName
-				+ "</b>. Click on an entry below to choose it as a match. "
-				+ "You can also choose to ignore the match and add a new entry.");
+		// Initialize label with Current Match, Total Match & Germplasm Name
+		this.selectGermplasmLabel.setValue(String.format("Match <b> %s of %s </b>were found with the name <b> %s </b>. "
+				+ "Click on an entry below to choose it as a match. "
+				+ "You can also choose to ignore the match and add a new entry.", currentMatch, totalMatches, this.germplasmName));
 	}
 
 	protected void initializeTableValues() {
