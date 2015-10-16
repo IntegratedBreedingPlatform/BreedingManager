@@ -221,6 +221,7 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 		this.ignoreMatchesCheckbox.setImmediate(true);
 		this.ignoreRemainingMatchesCheckbox = new CheckBox("Ignore remaining matches and add new entries for all");
 		this.ignoreRemainingMatchesCheckbox.setImmediate(true);
+		this.ignoreRemainingMatchesCheckbox.setEnabled(false);
 	}
 
 	protected void initGermplasmTable() {
@@ -284,6 +285,7 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 			public void valueChange(ValueChangeEvent event) {
 				SelectGermplasmWindow.this.toggleContinueButton();
 				SelectGermplasmWindow.this.toggleGermplasmTable();
+				SelectGermplasmWindow.this.toggleIgnoreRemainingCheckBox();
 			}
 		});
 
@@ -319,6 +321,16 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 			this.doneButton.setEnabled(true);
 		} else {
 			this.doneButton.setEnabled(false);
+		}
+	}
+
+	public void toggleIgnoreRemainingCheckBox() {
+		boolean enableCheckBox = ignoreMatchesCheckbox.booleanValue();
+		if(enableCheckBox) {
+			ignoreRemainingMatchesCheckbox.setEnabled(true);
+		} else {
+			ignoreRemainingMatchesCheckbox.setEnabled(false);
+			ignoreRemainingMatchesCheckbox.setValue(false);
 		}
 	}
 
