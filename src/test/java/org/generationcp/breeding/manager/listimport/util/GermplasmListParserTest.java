@@ -143,7 +143,7 @@ public class GermplasmListParserTest {
 	}
 
 	/**
-	 * Test when we have stock id colum but contain missing values
+	 * Test when we have stock id column but contain missing values
 	 *
 	 * @throws Exception
 	 */
@@ -153,12 +153,12 @@ public class GermplasmListParserTest {
 			this.importedGermplasmList = this.parser.parseWorkbook(this.missingStockIDValuesWorkbook, null);
 			Assert.fail();
 		} catch (FileParsingException e) {
-			Assert.assertEquals("GERMPLSM_PARSE_GID_MISSING_STOCK_ID_VALUE", e.getMessage());
+			Assert.assertEquals("GERMPLSM_PARSE_GID_MISSING_SEED_AMOUNT_VALUE", e.getMessage());
 		}
 	}
 
 	/**
-	 * Test when we have stock id colum but contain missing values
+	 * Test when we have stock id column but contain duplicate values
 	 *
 	 * @throws Exception
 	 */
