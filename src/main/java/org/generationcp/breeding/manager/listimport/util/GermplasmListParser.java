@@ -91,11 +91,11 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 			return false;
 		}
 
-		for(ImportedGermplasm germplasm : this.importedGermplasmList.getImportedGermplasms()){
+		for (ImportedGermplasm germplasm : this.importedGermplasmList.getImportedGermplasms()) {
 			Double seedAmount = germplasm.getSeedAmount();
 			String stockId = germplasm.getInventoryId();
 
-			if(seedAmount > 0.0 && Strings.isNullOrEmpty(stockId)){
+			if (seedAmount > 0.0 && Strings.isNullOrEmpty(stockId)) {
 				return true;
 			}
 		}
@@ -763,7 +763,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 					@Override
 					public void run() throws FileParsingException {
 						String designation = rowValues.get(colIndex);
-						if (designation != null && designation.length() > 255){
+						if (designation != null && designation.length() > 255) {
 							throw new FileParsingException("GERMPLSM_PARSE_DESIGNATION_ERROR", currentIndex, "", colHeader);
 						}
 						importedGermplasm.setDesig(rowValues.get(colIndex));
@@ -936,10 +936,11 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	}
 
 	/**
-	 * This method is to verify inventory variable is missing or not.
-	 * This method move from StockIdValidator as now we need to check empty/missing inventory variable not stockId.
+	 * This method is to verify inventory variable is missing or not. This method move from StockIdValidator as now we need to check
+	 * empty/missing inventory variable not stockId.
 	 */
-	private void validateForMissingInventoryVariable(String header, ImportedGermplasmList importedGermplasmList) throws FileParsingException {
+	private void validateForMissingInventoryVariable(String header, ImportedGermplasmList importedGermplasmList)
+			throws FileParsingException {
 		if (importedGermplasmList.hasMissingInventoryVariable()) {
 			throw new FileParsingException("GERMPLSM_PARSE_GID_MISSING_SEED_AMOUNT_VALUE", 0, "", header);
 		}

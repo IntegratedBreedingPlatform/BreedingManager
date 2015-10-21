@@ -288,7 +288,7 @@ public class GenerateStockIDsDialog extends BaseSubWindow implements Initializin
 			int stockIdSequence = 1;
 			for (ImportedGermplasm importedGermplasm : importedGermplasmList) {
 				if (importedGermplasm.getSeedAmount() != null && importedGermplasm.getSeedAmount() > 0) {
-					if(StringUtils.isEmpty(importedGermplasm.getInventoryId())){
+					if (StringUtils.isEmpty(importedGermplasm.getInventoryId())) {
 						importedGermplasm.setInventoryId(nextStockIDPrefix + stockIdSequence);
 						stockIdSequence++;
 					}

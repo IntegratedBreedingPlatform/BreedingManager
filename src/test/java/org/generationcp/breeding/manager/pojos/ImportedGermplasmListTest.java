@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.pojos;
 
 import java.util.ArrayList;
@@ -20,11 +21,11 @@ public class ImportedGermplasmListTest {
 	}
 
 	/**
-	 * This test will check missing Inventory Variable.
-	 * Result: this will check that inventory amount is empty and return true if value is missing.
+	 * This test will check missing Inventory Variable. Result: this will check that inventory amount is empty and return true if value is
+	 * missing.
 	 */
 	@Test
-	public void testMissingInventoryVariable(){
+	public void testMissingInventoryVariable() {
 
 		this.list.setImportedGermplasms(this.generateImportGermplasmListDataWithSeedAmountOrNot(3, false));
 
@@ -32,11 +33,11 @@ public class ImportedGermplasmListTest {
 	}
 
 	/**
-	 * This test will check Inventory Variable is available.
-	 * Result: this will check that inventory amount is available and return false if value exists.
+	 * This test will check Inventory Variable is available. Result: this will check that inventory amount is available and return false if
+	 * value exists.
 	 */
 	@Test
-	public void testNotMissingInventoryVariable(){
+	public void testNotMissingInventoryVariable() {
 
 		this.list.setImportedGermplasms(this.generateImportGermplasmListDataWithSeedAmountOrNot(3, true));
 
@@ -45,21 +46,22 @@ public class ImportedGermplasmListTest {
 
 	/**
 	 * This will generate list of ImportedGermplasm.
+	 * 
 	 * @param numberOfEntries number of entries need to be created.
 	 * @param generateSeedAmount flag to determine that need to set seed amount blank or value.
 	 * @return List of ImportedGermplasm.
 	 */
-	private List<ImportedGermplasm> generateImportGermplasmListDataWithSeedAmountOrNot(Integer numberOfEntries, boolean generateSeedAmount){
+	private List<ImportedGermplasm> generateImportGermplasmListDataWithSeedAmountOrNot(Integer numberOfEntries, boolean generateSeedAmount) {
 		List<ImportedGermplasm> importedGermplasms = new ArrayList<>();
 
 		ImportedGermplasm importedGermplasm;
-		for(int count = 1 ; count <= numberOfEntries ; count++){
+		for (int count = 1; count <= numberOfEntries; count++) {
 			importedGermplasm = new ImportedGermplasm();
 			importedGermplasm.setInventoryId(inventoryId + count);
 
-			if(generateSeedAmount){
+			if (generateSeedAmount) {
 				importedGermplasm.setSeedAmount((double) count);
-			}else{
+			} else {
 				importedGermplasm.setSeedAmount(0.0);
 			}
 

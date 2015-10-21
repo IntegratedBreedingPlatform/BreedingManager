@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.listimport.util;
 
 import java.io.File;
@@ -60,8 +61,8 @@ public class GermplasmListParserTest {
 	public void setUp() throws Exception {
 
 		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(Matchers.eq("INVENTORY AMOUNT"))).thenReturn(true);
-		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(AdditionalMatchers.not(Matchers.eq("INVENTORY AMOUNT"))))
-				.thenReturn(false);
+		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(AdditionalMatchers.not(Matchers.eq("INVENTORY AMOUNT")))).thenReturn(
+				false);
 		Mockito.when(this.germplasmDataManager.getGermplasmByGID(Matchers.anyInt())).thenReturn(Mockito.mock(Germplasm.class));
 		Mockito.when(this.inventoryDataManager.getSimilarStockIds(Matchers.anyList())).thenReturn(new ArrayList<String>());
 
@@ -121,16 +122,15 @@ public class GermplasmListParserTest {
 	@Test
 	public void testTemplateWithNoInventoryColumn() throws Exception {
 		final File workbookFile =
-				new File(
-				ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.NO_INVENTORY_COL_FILE).toURI());
+				new File(ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.NO_INVENTORY_COL_FILE).toURI());
 
 		assert workbookFile.exists();
 		final Workbook noInventoryWorkbook = WorkbookFactory.create(workbookFile);
 
 		this.importedGermplasmList = this.parser.parseWorkbook(noInventoryWorkbook, null);
 
-		Assert.assertTrue(this.parser.getNoInventoryWarning()
-				.contains("StockIDs can only be added for germplasm if it has existing inventory in the BMS"));
+		Assert.assertTrue(this.parser.getNoInventoryWarning().contains(
+				"StockIDs can only be added for germplasm if it has existing inventory in the BMS"));
 	}
 
 	/**
@@ -142,12 +142,12 @@ public class GermplasmListParserTest {
 	public void testTemplateWithMissingStockIdValuesInObservation() throws Exception {
 		try {
 			final File workbookFile =
-					new File(
-					ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.OBSERVATION_NO_STOCK_ID_VALUES_FILE).toURI());
+					new File(ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.OBSERVATION_NO_STOCK_ID_VALUES_FILE)
+							.toURI());
 			final Workbook missingStockIDValuesWorkbook = WorkbookFactory.create(workbookFile);
 			this.importedGermplasmList = this.parser.parseWorkbook(missingStockIDValuesWorkbook, null);
 			Assert.fail();
-		} catch (FileParsingException e) {
+		} catch (final FileParsingException e) {
 			Assert.assertEquals("GERMPLSM_PARSE_GID_MISSING_SEED_AMOUNT_VALUE", e.getMessage());
 		}
 	}
