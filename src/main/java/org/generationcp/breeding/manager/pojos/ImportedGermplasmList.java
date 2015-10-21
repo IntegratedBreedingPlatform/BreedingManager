@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.base.Strings;
 import org.generationcp.commons.parsing.pojo.ImportedDescriptionDetails;
 import org.generationcp.commons.parsing.pojo.ImportedFactor;
 
@@ -107,9 +108,12 @@ public class ImportedGermplasmList extends ImportedDescriptionDetails {
 		this.hasStockIDValues = hasStockIDValues;
 	}
 
-	public boolean hasMissingStockIDValues() {
+	/**
+	 * This will check if stockId exist in germplasm and inventory variable/seed amount is empty then return true.
+	 */
+	public boolean hasMissingInventoryVariable() {
 		for (ImportedGermplasm importedGermplasm : this.getImportedGermplasms()) {
-			if (this.hasStockIDValues && importedGermplasm.getSeedAmount() != 0 && "".equals(importedGermplasm.getInventoryId())) {
+			if (this.hasStockIDValues && importedGermplasm.getSeedAmount() == 0 && !Strings.isNullOrEmpty(importedGermplasm.getInventoryId())) {
 				return true;
 			}
 		}
