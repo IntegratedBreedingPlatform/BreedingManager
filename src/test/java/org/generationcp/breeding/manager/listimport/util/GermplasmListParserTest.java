@@ -88,7 +88,8 @@ public class GermplasmListParserTest {
 		final Workbook defaultWorkbook = WorkbookFactory.create(workbookFile);
 		this.importedGermplasmList = this.parser.parseWorkbook(defaultWorkbook, null);
 
-		Assert.assertNotNull(this.importedGermplasmList);
+		Assert.assertNotNull("Parser was not able to properly retrieve the germplasm list for import from the file",
+				this.importedGermplasmList);
 		Assert.assertEquals("This template has blank list date, should be eq to current date", DateUtil.getCurrentDateInUIFormat(),
 				DateUtil.getDateInUIFormat(this.importedGermplasmList.getDate()));
 		assert this.parser.hasStockIdFactor();
@@ -109,9 +110,10 @@ public class GermplasmListParserTest {
 
 			final Workbook noStockIDWorkbook = WorkbookFactory.create(workbookFile);
 			this.importedGermplasmList = this.parser.parseWorkbook(noStockIDWorkbook, null);
-			Assert.fail();
+			Assert.fail("Header error not properly recognized by parser");
 		} catch (final FileParsingException e) {
-			Assert.assertEquals("GERMPLASM_PARSE_HEADER_ERROR", e.getMessage());
+			Assert.assertEquals("A different error from the one expected was thrown by the parser", "GERMPLASM_PARSE_HEADER_ERROR",
+					e.getMessage());
 		}
 
 	}
@@ -131,8 +133,8 @@ public class GermplasmListParserTest {
 
 		this.importedGermplasmList = this.parser.parseWorkbook(noInventoryWorkbook, null);
 
-		Assert.assertTrue(this.parser.getNoInventoryWarning().contains(
-				"StockIDs can only be added for germplasm if it has existing inventory in the BMS"));
+		Assert.assertTrue("Unable to properly provide warning for templates with no inventory column", this.parser.getNoInventoryWarning()
+				.contains("StockIDs can only be added for germplasm if it has existing inventory in the BMS"));
 	}
 
 	/**
@@ -148,9 +150,10 @@ public class GermplasmListParserTest {
 							.toURI());
 			final Workbook missingStockIDValuesWorkbook = WorkbookFactory.create(workbookFile);
 			this.importedGermplasmList = this.parser.parseWorkbook(missingStockIDValuesWorkbook, null);
-			Assert.fail();
+			Assert.fail("Unable to properly recognize error condition regarding missing stock ID values in observation sheet");
 		} catch (final FileParsingException e) {
-			Assert.assertEquals("GERMPLSM_PARSE_GID_MISSING_SEED_AMOUNT_VALUE", e.getMessage());
+			Assert.assertEquals("A different error from the one expected was thrown by the parser",
+					"GERMPLSM_PARSE_GID_MISSING_SEED_AMOUNT_VALUE", e.getMessage());
 		}
 	}
 
@@ -166,9 +169,10 @@ public class GermplasmListParserTest {
 					new File(ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.DUPLICATE_STOCK_ID_FILE).toURI());
 			final Workbook duplicateStockIdWorkbook = WorkbookFactory.create(workbookFile);
 			this.importedGermplasmList = this.parser.parseWorkbook(duplicateStockIdWorkbook, null);
-			Assert.fail();
+			Assert.fail("Unable to properly recognize error condition regarding duplicate IDs in observation sheet");
 		} catch (final FileParsingException e) {
-			Assert.assertEquals("GERMPLASM_PARSE_DUPLICATE_STOCK_ID", e.getMessage());
+			Assert.assertEquals("A different error from the one expected was thrown by the parser", "GERMPLASM_PARSE_DUPLICATE_STOCK_ID",
+					e.getMessage());
 		}
 	}
 
@@ -179,7 +183,8 @@ public class GermplasmListParserTest {
 
 		this.importedGermplasmList = this.parser.parseWorkbook(workbook, null);
 		ImportedGermplasm germplasm = importedGermplasmList.getImportedGermplasms().get(0);
-		Assert.assertEquals(2, germplasm.getNameFactors().size());
+		Assert.assertEquals("Unable to properly recognize additional name factors associated with germplasm", 2, germplasm.getNameFactors()
+				.size());
 
 	}
 
