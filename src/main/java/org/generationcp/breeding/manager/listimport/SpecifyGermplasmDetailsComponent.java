@@ -25,7 +25,6 @@ import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.DateUtil;
-import org.generationcp.commons.util.FileUtils;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -375,8 +374,10 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 	}
 
 	protected void initGermplasmDetailsTable() {
-		this.setGermplasmDetailsTable(new Table());
-		this.germplasmDetailsTable = this.getGermplasmDetailsTable();
+		if (this.getGermplasmDetailsTable() == null) {
+			this.setGermplasmDetailsTable(new Table());
+		}
+
 		this.germplasmDetailsTable.setHeight("200px");
 		this.germplasmDetailsTable.setWidth("700px");
 
@@ -523,19 +524,16 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 		}
 
 		String germplasmSource;
-		final String fileNameWithoutExtension = FileUtils.getFilenameWithoutExtension(importedGermplasmList.getFilename());
 		for (int i = 0; i < this.getImportedGermplasms().size(); i++) {
-			final ImportedGermplasm importedGermplasm = this.getImportedGermplasms().get(i);
-			if (importedGermplasm.getSource() == null) {
-				germplasmSource = fileNameWithoutExtension + ":" + (i + 1);
-			} else {
-				germplasmSource = importedGermplasm.getSource();
-			}
-			this.getGermplasmDetailsTable().addItem(
-					new Object[] {importedGermplasm.getEntryId(), importedGermplasm.getEntryCode(), importedGermplasm.getDesig(),
+			ImportedGermplasm importedGermplasm = this.getImportedGermplasms().get(i);
+			germplasmSource = importedGermplasm.getSource() == null ? "" : importedGermplasm.getSource();
+
+			this.getGermplasmDetailsTable()
+					.addItem(new Object[] {importedGermplasm.getEntryId(), importedGermplasm.getEntryCode(), importedGermplasm.getDesig(),
 							importedGermplasm.getCross(), importedGermplasm.getGid(), importedGermplasm.getInventoryId(),
 							importedGermplasm.getSeedAmount(), germplasmSource}, new Integer(i + 1));
 		}
+
 		this.updateTotalEntriesLabel();
 
 		if (this.germplasmListUploader.importFileIsAdvanced()) {
@@ -640,6 +638,10 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 
 	public void setProcessGermplasmAction(final ProcessImportedGermplasmAction processGermplasmAction) {
 		this.processGermplasmAction = processGermplasmAction;
+	}
+
+	public void setGermplasmFieldsComponent(GermplasmFieldsComponent germplasmFieldsComponent) {
+		this.germplasmFieldsComponent = germplasmFieldsComponent;
 	}
 
 	public void setContextUtil(final ContextUtil contextUtil) {

@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.generationcp.breeding.manager.listimport.validator.StockIDValidator;
+import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.commons.parsing.FileParsingException;
 import org.generationcp.commons.util.DateUtil;
@@ -39,6 +40,7 @@ public class GermplasmListParserTest {
 	public static final String OBSERVATION_NO_STOCK_ID_VALUES_FILE = "GermplasmImportTemplate-StockIDs-missing-stock-id-values.xls";
 	public static final String NO_INVENTORY_COL_FILE = "GermplasmImportTemplate-StockIDs-no-inventory-column.xls";
 	public static final String DUPLICATE_STOCK_ID_FILE = "GermplasmImportTemplate-StockIDs-duplicate-stock-ids.xls";
+	public static final String ADDITIONAL_NAME_FILE = "GermplasmImportTemplate-additional-name.xls";
 
 	@Mock
 	private OntologyDataManager ontologyDataManager;
@@ -168,6 +170,17 @@ public class GermplasmListParserTest {
 		} catch (final FileParsingException e) {
 			Assert.assertEquals("GERMPLASM_PARSE_DUPLICATE_STOCK_ID", e.getMessage());
 		}
+	}
+
+	@Test
+	public void testTemplateWithAdditionalNames() throws Exception {
+		File workbookFile = new File(ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.ADDITIONAL_NAME_FILE).toURI());
+		Workbook workbook = WorkbookFactory.create(workbookFile);
+
+		this.importedGermplasmList = this.parser.parseWorkbook(workbook, null);
+		ImportedGermplasm germplasm = importedGermplasmList.getImportedGermplasms().get(0);
+		Assert.assertEquals(2, germplasm.getNameFactors().size());
+
 	}
 
 }
