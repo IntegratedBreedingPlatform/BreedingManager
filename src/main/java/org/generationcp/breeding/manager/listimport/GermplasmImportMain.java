@@ -55,18 +55,18 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 	private final Boolean viaToolURL;
 	private boolean viaPopup;
 
-	public GermplasmImportMain(ComponentContainer parent, boolean viaToolURL) {
+	public GermplasmImportMain(final ComponentContainer parent, final boolean viaToolURL) {
 		this.parent = parent;
 		this.viaToolURL = viaToolURL;
 	}
 
-	public GermplasmImportMain(ComponentContainer parent, boolean viaToolURL, boolean viaPopup) {
+	public GermplasmImportMain(final ComponentContainer parent, final boolean viaToolURL, final boolean viaPopup) {
 		this.parent = parent;
 		this.viaToolURL = viaToolURL;
 		this.viaPopup = viaPopup;
 	}
 
-	public GermplasmImportMain(ComponentContainer parent, boolean viaToolURL, GermplasmImportPopupSource popupSource) {
+	public GermplasmImportMain(final ComponentContainer parent, final boolean viaToolURL, final GermplasmImportPopupSource popupSource) {
 		this.parent = parent;
 		this.viaToolURL = viaToolURL;
 		this.viaPopup = false;
@@ -167,13 +167,13 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 		this.wizardDisplay = new GermplasmListImportWizardDisplay(this.wizardStepNames);
 	}
 
-	private void showWizardStep(int step) {
-		Tab tab = Util.getTabAlreadyExist(this.tabSheet, this.wizardStepNames[step]);
+	private void showWizardStep(final int step) {
+		final Tab tab = Util.getTabAlreadyExist(this.tabSheet, this.wizardStepNames[step]);
 		if (tab != null) {
-			Component tabComponent = tab.getComponent();
+			final Component tabComponent = tab.getComponent();
 			this.tabSheet.setSelectedTab(tabComponent);
 			if (tabComponent instanceof StepChangeListener) {
-				StepChangeListener listener = (StepChangeListener) tabComponent;
+				final StepChangeListener listener = (StepChangeListener) tabComponent;
 				listener.updatePage();
 			}
 			this.tabSheet.setHeight(this.tabHeights[step]);
@@ -185,7 +185,7 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 	}
 
 	public void nextStep() {
-		int step = this.wizardDisplay.nextStep();
+		final int step = this.wizardDisplay.nextStep();
 		// if from upload to specify Germplasm Details step
 		if (step == 1) {
 			this.initializeSpecifyGermplasmDetailsPage();
@@ -194,7 +194,7 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 	}
 
 	public void backStep() {
-		int step = this.wizardDisplay.backStep();
+		final int step = this.wizardDisplay.backStep();
 		this.showWizardStep(step);
 	}
 
@@ -204,18 +204,17 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 	}
 
 	private void initializeSpecifyGermplasmDetailsPage() {
-		GermplasmListUploader germplasmListUploader = this.importFileComponent.getGermplasmListUploader();
+		final GermplasmListUploader germplasmListUploader = this.importFileComponent.getGermplasmListUploader();
 		if (this.germplasmDetailsComponent != null && germplasmListUploader != null
 				&& germplasmListUploader.getImportedGermplasmList() != null) {
 
-			ImportedGermplasmList importedGermplasmList = germplasmListUploader.getImportedGermplasmList();
-			List<ImportedGermplasm> importedGermplasms = importedGermplasmList.getImportedGermplasms();
+			final ImportedGermplasmList importedGermplasmList = germplasmListUploader.getImportedGermplasmList();
+			final List<ImportedGermplasm> importedGermplasms = importedGermplasmList.getImportedGermplasms();
 
 			this.germplasmDetailsComponent.setImportedGermplasms(importedGermplasms);
 			this.germplasmDetailsComponent.setGermplasmListUploader(germplasmListUploader);
 
 			this.germplasmDetailsComponent.initializeFromImportFile(importedGermplasmList);
-
 		}
 	}
 
