@@ -141,19 +141,19 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 			throw new FileParsingException("GERMPLASM_PARSE_INVENTORY_HEADER_ERROR");
 		}
 
-		WorkbookRowConverter converter =
+		final WorkbookRowConverter converter =
 				new WorkbookRowConverter<Boolean>(this.workbook, this.currentRowIndex + 1, GermplasmListParser.DESCRIPTION_SHEET_NO,
 						InventoryHeaders.values().length, InventoryHeaders.names()) {
 
 					@Override
-					public Boolean convertToObject(Map<Integer, String> rowValues) throws FileParsingException {
-						String property = rowValues.get(2) == null ? "" : rowValues.get(2).toUpperCase();
-						String scale = rowValues.get(3) == null ? "" : rowValues.get(3).toUpperCase();
+					public Boolean convertToObject(final Map<Integer, String> rowValues) throws FileParsingException {
+						final String property = rowValues.get(2) == null ? "" : rowValues.get(2).toUpperCase();
+						final String scale = rowValues.get(3) == null ? "" : rowValues.get(3).toUpperCase();
 						// stock id factor parse
 						if (FactorDetailsConverter.GERMPLASM_STOCK_ID_PROPERTY.equalsIgnoreCase(property)
 								&& FactorDetailsConverter.DBCV_SCALE.equals(scale)) {
 
-							ImportedFactor importedFactor =
+							final ImportedFactor importedFactor =
 									new ImportedFactor(rowValues.get(0), rowValues.get(1), rowValues.get(2), rowValues.get(3),
 											rowValues.get(4), rowValues.get(5), rowValues.get(6), rowValues.get(7));
 
@@ -162,45 +162,41 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 							GermplasmListParser.this.specialFactors.put(FactorTypes.STOCK, importedFactor.getFactor());
 
 							// add to importedGermplasmList
-							for (Iterator<ImportedFactor> iter =
+							for (final Iterator<ImportedFactor> iter =
 									GermplasmListParser.this.importedGermplasmList.getImportedFactors().listIterator(); iter.hasNext();) {
-								ImportedFactor factor = iter.next();
+								final ImportedFactor factor = iter.next();
 								if (factor.getFactor().equals(importedFactor.getFactor())) {
 									iter.remove();
 								}
 							}
 							GermplasmListParser.this.importedGermplasmList.addImportedFactor(importedFactor);
+							GermplasmListParser.this.headerNames.add(importedFactor.getFactor());
 
 							return true;
 						}
-					}
-					GermplasmListParser.this.importedGermplasmList.addImportedFactor(importedFactor);
 
 						// seed amount variate parse
 						try {
 							if (GermplasmListParser.this.ontologyDataManager.isSeedAmountVariable(property)) {
-								ImportedVariate seedAmountVariate =
+								final ImportedVariate seedAmountVariate =
 										new ImportedVariate(rowValues.get(0), rowValues.get(1), rowValues.get(2), rowValues.get(3),
 												rowValues.get(4), rowValues.get(5));
 
-				// seed amount variate parse
-				try {
-					if (GermplasmListParser.this.ontologyDataManager.isSeedAmountVariable(property)) {
-						ImportedVariate seedAmountVariate =
-								new ImportedVariate(rowValues.get(0), rowValues.get(1), rowValues.get(2), rowValues.get(3), rowValues.get(4),
-										rowValues.get(5));
+								seedAmountVariate.setSeedStockVariable(true);
+								GermplasmListParser.this.seedAmountVariate = seedAmountVariate.getVariate();
+								GermplasmListParser.this.importedGermplasmList.addImportedVariate(seedAmountVariate);
+								GermplasmListParser.LOG.debug("SEED STOCK :" + seedAmountVariate.getProperty());
 
 								return true;
 							}
-						} catch (MiddlewareQueryException e) {
+						} catch (final MiddlewareQueryException e) {
 							GermplasmListParser.LOG.error("SEED STOCK " + property, e);
 
 						}
 
 						return false;
 					}
-				} catch (MiddlewareQueryException e) {
-					GermplasmListParser.LOG.error("SEED STOCK " + property, e);
+				};
 
 		converter.convertWorkbookRowsToObject(new WorkbookRowConverter.ContinueTillBlank());
 
@@ -436,7 +432,6 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 			}
 		}
 	}
-
 
 	protected void parseObservationRows() throws FileParsingException {
 		ParseValidationMap validationMap = this.parseObservationHeaders();
