@@ -233,6 +233,7 @@
 		class="org.generationcp.commons.hibernate.DynamicManagerFactoryProviderConcurrency">
 		<constructor-arg ref="workbenchDataManager" />
 		<property name="maxCachedSessionFactories" value="10" />
+		<property name="pedigreeProfile" value="${pedigree.profile}"/>
 	</bean>
 
 	<bean id="managerFactory" name="managerFactory" factory-bean="managerFactoryProvider"
