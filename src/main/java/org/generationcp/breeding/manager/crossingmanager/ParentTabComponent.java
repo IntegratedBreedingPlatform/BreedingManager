@@ -377,6 +377,9 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	private boolean hasChanges = false;
 
+	// if a germplasm list should be treated as new during saving
+	private boolean isTreatAsNewList = false;
+
 	// Inventory Related Variables
 	private ReserveInventoryWindow reserveInventory;
 	private ReservationStatusWindow reservationStatus;
@@ -449,7 +452,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES));
 		this.resetInventoryMenuOptions();
 
-		this.initializeParentTable();
+		this.initializeParentTable(new TableWithSelectAllLayout(this.rowCount, ParentTabComponent.TAG_COLUMN_ID));
 		this.initializeListInventoryTable();
 
 		// Inventory Related Variables
@@ -473,11 +476,11 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		this.rowCount = rowCount;
 	}
 
-	protected void initializeParentTable() {
-		this.setTableWithSelectAllLayout(new TableWithSelectAllLayout(this.rowCount, ParentTabComponent.TAG_COLUMN_ID));
+	protected void initializeParentTable(final TableWithSelectAllLayout tableWithSelectAllLayout) {
+		this.tableWithSelectAllLayout = tableWithSelectAllLayout;
 
-		this.listDataTable = this.getTableWithSelectAllLayout().getTable();
-		this.selectAll = this.getTableWithSelectAllLayout().getCheckBox();
+		this.listDataTable = this.tableWithSelectAllLayout.getTable();
+		this.selectAll = this.tableWithSelectAllLayout.getCheckBox();
 
 		this.listDataTable.setWidth("100%");
 		this.listDataTable.setNullSelectionAllowed(true);
@@ -608,62 +611,46 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	}
 
 	public void doSaveAction() {
-		if (this.hasUnsavedChanges()) {
-
-			if (this.source.getMakeCrossesMain().getModeView().equals(ModeView.LIST_VIEW)) {
-				// new lists
-				if (this.germplasmList == null) {
-					// new lists
-					this.openSaveListAsDialog();
-				} else {
-					// existing lists
-					this.saveList(this.germplasmList);
-				}
-			} else if (this.source.getMakeCrossesMain().getModeView().equals(ModeView.INVENTORY_VIEW)) {
-				if (this.germplasmList == null) {
-					// new list in inventory view
-					this.openSaveListAsDialog();
-				} else {
-					if (this.inventoryTableDropHandler.hasChanges()) {
-						this.saveList(this.germplasmList);
-					} else {
-						// only reservations are made
-						this.saveReservationChangesAction(true);
-					}
-				}
-			}
-
-		}
+		this.doSave(this.source.getMakeCrossesMain().getModeView());
 	}
 
 	public void doSaveActionFromMain() {
-		if (this.hasUnsavedChanges()) {
-
-			if (this.prevModeView.equals(ModeView.LIST_VIEW)) {
-				// new lists
-				if (this.germplasmList == null) {
-					// new lists
-					this.openSaveListAsDialog();
-				} else {
-					// existing lists
-					this.saveList(this.germplasmList);
-				}
-			} else if (this.prevModeView.equals(ModeView.INVENTORY_VIEW)) {
-				if (this.germplasmList == null) {
-					// new list in inventory view
-					this.openSaveListAsDialog();
-				} else {
-					if (this.inventoryTableDropHandler.hasChanges()) {
-						this.saveList(this.germplasmList);
-					} else {
-						// only reservations are made
-						this.saveReservationChangesAction(true);
-						this.makeCrossesMain.updateView(this.makeCrossesMain.getModeView());
-					}
-				}
-			}
-
+		doSave(this.prevModeView);
+		if (this.isOnlyReservationsMade()){
+			this.makeCrossesMain.updateView(this.makeCrossesMain.getModeView());
 		}
+	}
+
+	private void doSave(ModeView modeView) {
+		// do nothing if there were no unsaved changes
+		if (!this.hasUnsavedChanges()) {
+			return;
+		}
+
+		if (modeView.equals(ModeView.LIST_VIEW)) {
+			if (this.isTreatAsNewList) {
+				this.openSaveListAsDialog();
+			} else {
+				this.saveList(this.germplasmList);
+			}
+		} else {
+			// Inventory view
+			if (this.germplasmList == null || this.isTreatAsNewList) {
+				// new list in inventory view
+				this.openSaveListAsDialog();
+			} else if (this.inventoryTableDropHandler.hasChanges()) {
+				this.saveList(this.germplasmList);
+			}
+		}
+
+		if (this.isOnlyReservationsMade()) {
+			this.saveReservationChangesAction(true);
+		}
+	}
+
+	private boolean isOnlyReservationsMade(){
+		return this.hasUnsavedChanges() && this.prevModeView.equals(ModeView.INVENTORY_VIEW) && this.germplasmList != null &&
+				!this.inventoryTableDropHandler.hasChanges();
 	}
 
 	private void updateListDataTableBeforeSaving() {
@@ -717,13 +704,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	}
 
 	protected void openSaveListAsDialog() {
-		this.saveListAsWindow = null;
-		if (this.germplasmList != null) {
-			this.saveListAsWindow = new SaveListAsDialog(this, this.germplasmList);
-		} else {
-			this.saveListAsWindow = new SaveListAsDialog(this, null);
-		}
-
+		this.saveListAsWindow = new SaveListAsDialog(this, this.germplasmList);
 		this.saveListAsWindow.addStyleName(Reindeer.WINDOW_LIGHT);
 		this.saveListAsWindow.setData(this);
 		this.getWindow().addWindow(this.saveListAsWindow);
@@ -1062,19 +1043,12 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	private void viewInventoryAction() {
 		if (this.hasChanges) {
-			String message = "";
-			if (this.germplasmList != null) {
-				message =
-						"You have unsaved changes to the parent list you are editing. You will need to save them before changing views. Do you want to save your changes?";
-			} else if (this.germplasmList == null) {
-				message =
-						"You need to save the parent list that you're building before you can switch to the inventory view. Do you want to save the list?";
-			}
-
 			if (this.makeCrossesMain.areBothParentsNewListWithUnsavedChanges()) {
 				MessageNotifier.showError(this.getWindow(), "Unsaved Parent Lists", "Please save parent lists first before changing view.");
 			} else {
-				this.source.getMakeCrossesMain().showUnsavedChangesConfirmDialog(message, ModeView.INVENTORY_VIEW);
+				this.source.getMakeCrossesMain().showUnsavedChangesConfirmDialog("You have unsaved changes to the male/female list you are "
+						+ "editing. You will need to save them before changing views. Do you want to save your changes?",
+						ModeView.INVENTORY_VIEW);
 			}
 		} else {
 			this.source.getMakeCrossesMain().setModeView(ModeView.INVENTORY_VIEW);
@@ -1179,9 +1153,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		// if there are no valid reservations
 		if (validReservations.isEmpty()) {
 			MessageNotifier
-					.showRequiredFieldError(
-							this.getWindow(),
-							this.messageSource
+					.showRequiredFieldError(this.getWindow(), this.messageSource
 									.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES) + ".");
 		} else if (!withInvalidReservations) {
 			MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
@@ -1480,5 +1452,13 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	public void setOntologyDataManager(OntologyDataManager ontologyDataManager) {
 		this.ontologyDataManager = ontologyDataManager;
+	}
+
+	public boolean isTreatAsNewList() {
+		return this.isTreatAsNewList;
+	}
+
+	public void setIsTreatAsNewList(boolean isTreatAsNewList) {
+		this.isTreatAsNewList = isTreatAsNewList;
 	}
 }
