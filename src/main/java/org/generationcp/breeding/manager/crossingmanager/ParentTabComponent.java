@@ -611,56 +611,46 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	}
 
 	public void doSaveAction() {
-		if (this.hasUnsavedChanges()) {
-
-			if (this.source.getMakeCrossesMain().getModeView().equals(ModeView.LIST_VIEW)) {
-				if (this.isTreatAsNewList) {
-					this.openSaveListAsDialog();
-				} else {
-					this.saveList(this.germplasmList);
-				}
-			} else if (this.source.getMakeCrossesMain().getModeView().equals(ModeView.INVENTORY_VIEW)) {
-				if (this.germplasmList == null) {
-					// new list in inventory view
-					this.openSaveListAsDialog();
-				} else {
-					if (this.inventoryTableDropHandler.hasChanges()) {
-						this.saveList(this.germplasmList);
-					} else {
-						// only reservations are made
-						this.saveReservationChangesAction(true);
-					}
-				}
-			}
-
-		}
+		this.doSave(this.source.getMakeCrossesMain().getModeView());
 	}
 
 	public void doSaveActionFromMain() {
-		if (this.hasUnsavedChanges()) {
-
-			if (this.prevModeView.equals(ModeView.LIST_VIEW)) {
-				if (this.isTreatAsNewList) {
-					this.openSaveListAsDialog();
-				} else {
-					this.saveList(this.germplasmList);
-				}
-			} else if (this.prevModeView.equals(ModeView.INVENTORY_VIEW)) {
-				if (this.germplasmList == null) {
-					// new list in inventory view
-					this.openSaveListAsDialog();
-				} else {
-					if (this.inventoryTableDropHandler.hasChanges()) {
-						this.saveList(this.germplasmList);
-					} else {
-						// only reservations are made
-						this.saveReservationChangesAction(true);
-						this.makeCrossesMain.updateView(this.makeCrossesMain.getModeView());
-					}
-				}
-			}
-
+		doSave(this.prevModeView);
+		if (this.isOnlyReservationsMade()){
+			this.makeCrossesMain.updateView(this.makeCrossesMain.getModeView());
 		}
+	}
+
+	private void doSave(ModeView modeView) {
+		// do nothing if there were no unsaved changes
+		if (!this.hasUnsavedChanges()) {
+			return;
+		}
+
+		if (modeView.equals(ModeView.LIST_VIEW)) {
+			if (this.isTreatAsNewList) {
+				this.openSaveListAsDialog();
+			} else {
+				this.saveList(this.germplasmList);
+			}
+		} else {
+			// Inventory view
+			if (this.germplasmList == null || this.isTreatAsNewList) {
+				// new list in inventory view
+				this.openSaveListAsDialog();
+			} else if (this.inventoryTableDropHandler.hasChanges()) {
+				this.saveList(this.germplasmList);
+			}
+		}
+
+		if (this.isOnlyReservationsMade()) {
+			this.saveReservationChangesAction(true);
+		}
+	}
+
+	private boolean isOnlyReservationsMade(){
+		return this.hasUnsavedChanges() && this.prevModeView.equals(ModeView.INVENTORY_VIEW) && this.germplasmList != null &&
+				!this.inventoryTableDropHandler.hasChanges();
 	}
 
 	private void updateListDataTableBeforeSaving() {
@@ -1163,9 +1153,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		// if there are no valid reservations
 		if (validReservations.isEmpty()) {
 			MessageNotifier
-					.showRequiredFieldError(
-							this.getWindow(),
-							this.messageSource
+					.showRequiredFieldError(this.getWindow(), this.messageSource
 									.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES) + ".");
 		} else if (!withInvalidReservations) {
 			MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
