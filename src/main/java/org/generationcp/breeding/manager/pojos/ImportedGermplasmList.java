@@ -113,7 +113,8 @@ public class ImportedGermplasmList extends ImportedDescriptionDetails {
 	 */
 	public boolean hasMissingInventoryVariable() {
 		for (ImportedGermplasm importedGermplasm : this.getImportedGermplasms()) {
-			if (this.hasStockIDValues && importedGermplasm.getSeedAmount() == 0 && !Strings.isNullOrEmpty(importedGermplasm.getInventoryId())) {
+			if (this.hasStockIDValues && importedGermplasm.getSeedAmount() == 0
+					&& !Strings.isNullOrEmpty(importedGermplasm.getInventoryId())) {
 				return true;
 			}
 		}
