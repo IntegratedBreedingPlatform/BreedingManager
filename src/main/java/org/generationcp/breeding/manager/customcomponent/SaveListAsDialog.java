@@ -261,12 +261,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 	}
 
 	protected boolean validateAllFields() {
-
-		if (!this.listDetailsComponent.validate()) {
-			return false;
-		}
-
-		return true;
+		return this.listDetailsComponent.validate();
 	}
 
 	public BreedingManagerListDetailsComponent getDetailsComponent() {

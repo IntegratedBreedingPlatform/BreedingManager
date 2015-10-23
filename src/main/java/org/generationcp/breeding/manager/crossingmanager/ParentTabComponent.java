@@ -714,13 +714,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	}
 
 	protected void openSaveListAsDialog() {
-		this.saveListAsWindow = null;
-		if (this.germplasmList != null) {
-			this.saveListAsWindow = new SaveListAsDialog(this, this.germplasmList);
-		} else {
-			this.saveListAsWindow = new SaveListAsDialog(this, null);
-		}
-
+		this.saveListAsWindow = new SaveListAsDialog(this, this.germplasmList);
 		this.saveListAsWindow.addStyleName(Reindeer.WINDOW_LIGHT);
 		this.saveListAsWindow.setData(this);
 		this.getWindow().addWindow(this.saveListAsWindow);
@@ -1059,19 +1053,12 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	private void viewInventoryAction() {
 		if (this.hasChanges) {
-			String message = "";
-			if (this.germplasmList != null) {
-				message =
-						"You have unsaved changes to the parent list you are editing. You will need to save them before changing views. Do you want to save your changes?";
-			} else if (this.germplasmList == null) {
-				message =
-						"You need to save the parent list that you're building before you can switch to the inventory view. Do you want to save the list?";
-			}
-
 			if (this.makeCrossesMain.areBothParentsNewListWithUnsavedChanges()) {
 				MessageNotifier.showError(this.getWindow(), "Unsaved Parent Lists", "Please save parent lists first before changing view.");
 			} else {
-				this.source.getMakeCrossesMain().showUnsavedChangesConfirmDialog(message, ModeView.INVENTORY_VIEW);
+				this.source.getMakeCrossesMain().showUnsavedChangesConfirmDialog("You have unsaved changes to the male/female list you are "
+						+ "editing. You will need to save them before changing views. Do you want to save your changes?",
+						ModeView.INVENTORY_VIEW);
 			}
 		} else {
 			this.source.getMakeCrossesMain().setModeView(ModeView.INVENTORY_VIEW);
