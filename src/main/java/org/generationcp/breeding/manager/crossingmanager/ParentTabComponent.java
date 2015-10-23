@@ -377,6 +377,9 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	private boolean hasChanges = false;
 
+	// if a germplasm list should be treated as new during saving
+	private boolean isTreatAsNewList = false;
+
 	// Inventory Related Variables
 	private ReserveInventoryWindow reserveInventory;
 	private ReservationStatusWindow reservationStatus;
@@ -611,12 +614,9 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		if (this.hasUnsavedChanges()) {
 
 			if (this.source.getMakeCrossesMain().getModeView().equals(ModeView.LIST_VIEW)) {
-				// new lists
-				if (this.germplasmList == null) {
-					// new lists
+				if (this.isTreatAsNewList) {
 					this.openSaveListAsDialog();
 				} else {
-					// existing lists
 					this.saveList(this.germplasmList);
 				}
 			} else if (this.source.getMakeCrossesMain().getModeView().equals(ModeView.INVENTORY_VIEW)) {
@@ -640,12 +640,9 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		if (this.hasUnsavedChanges()) {
 
 			if (this.prevModeView.equals(ModeView.LIST_VIEW)) {
-				// new lists
-				if (this.germplasmList == null) {
-					// new lists
+				if (this.isTreatAsNewList) {
 					this.openSaveListAsDialog();
 				} else {
-					// existing lists
 					this.saveList(this.germplasmList);
 				}
 			} else if (this.prevModeView.equals(ModeView.INVENTORY_VIEW)) {
@@ -1480,5 +1477,13 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	public void setOntologyDataManager(OntologyDataManager ontologyDataManager) {
 		this.ontologyDataManager = ontologyDataManager;
+	}
+
+	public boolean isTreatAsNewList() {
+		return this.isTreatAsNewList;
+	}
+
+	public void setIsTreatAsNewList(boolean isTreatAsNewList) {
+		this.isTreatAsNewList = isTreatAsNewList;
 	}
 }
