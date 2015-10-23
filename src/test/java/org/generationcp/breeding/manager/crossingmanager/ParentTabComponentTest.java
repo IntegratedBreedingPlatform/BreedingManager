@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.crossingmanager;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.oms.Term;
@@ -36,7 +37,7 @@ public class ParentTabComponentTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		this.parentTabComponent = Mockito.spy(new ParentTabComponent(this.makeCrossesMain, this.source, this.parentLabel, this.rowCount));
+		this.parentTabComponent = new ParentTabComponent(this.makeCrossesMain, this.source, this.parentLabel, this.rowCount);
 		this.parentTabComponent.setMessageSource(this.messageSource);
 		this.parentTabComponent.setOntologyDataManager(this.ontologyDataManager);
 	}
@@ -49,12 +50,10 @@ public class ParentTabComponentTest {
 		Mockito.when(this.messageSource.getMessage(Message.CHECK_ICON)).thenReturn("TAG");
 		Mockito.when(this.messageSource.getMessage(Message.HASHTAG)).thenReturn("HASHTAG");
 
-		TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
+		final TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
 		tableWithSelectAll.instantiateComponents();
 
-		Mockito.doReturn(tableWithSelectAll).when(this.parentTabComponent).getTableWithSelectAllLayout();
-
-		this.parentTabComponent.initializeParentTable();
+		this.parentTabComponent.initializeParentTable(tableWithSelectAll);
 
 		Table table = tableWithSelectAll.getTable();
 
@@ -82,12 +81,10 @@ public class ParentTabComponentTest {
 		Mockito.when(this.messageSource.getMessage(Message.CHECK_ICON)).thenReturn("TAG");
 		Mockito.when(this.messageSource.getMessage(Message.HASHTAG)).thenReturn("HASHTAG");
 
-		TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
+		final TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
 		tableWithSelectAll.instantiateComponents();
 
-		Mockito.doReturn(tableWithSelectAll).when(this.parentTabComponent).getTableWithSelectAllLayout();
-
-		this.parentTabComponent.initializeParentTable();
+		this.parentTabComponent.initializeParentTable(tableWithSelectAll);
 
 		Table table = tableWithSelectAll.getTable();
 

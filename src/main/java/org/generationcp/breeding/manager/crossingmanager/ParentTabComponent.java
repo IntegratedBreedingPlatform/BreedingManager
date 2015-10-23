@@ -452,7 +452,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES));
 		this.resetInventoryMenuOptions();
 
-		this.initializeParentTable();
+		this.initializeParentTable(new TableWithSelectAllLayout(this.rowCount, ParentTabComponent.TAG_COLUMN_ID));
 		this.initializeListInventoryTable();
 
 		// Inventory Related Variables
@@ -476,11 +476,11 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		this.rowCount = rowCount;
 	}
 
-	protected void initializeParentTable() {
-		this.setTableWithSelectAllLayout(new TableWithSelectAllLayout(this.rowCount, ParentTabComponent.TAG_COLUMN_ID));
+	protected void initializeParentTable(final TableWithSelectAllLayout tableWithSelectAllLayout) {
+		this.tableWithSelectAllLayout = tableWithSelectAllLayout;
 
-		this.listDataTable = this.getTableWithSelectAllLayout().getTable();
-		this.selectAll = this.getTableWithSelectAllLayout().getCheckBox();
+		this.listDataTable = this.tableWithSelectAllLayout.getTable();
+		this.selectAll = this.tableWithSelectAllLayout.getCheckBox();
 
 		this.listDataTable.setWidth("100%");
 		this.listDataTable.setNullSelectionAllowed(true);
