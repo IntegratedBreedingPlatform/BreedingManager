@@ -194,7 +194,7 @@
          <property name="templateFile" value="GermplasmListCode.xls"/>
     </bean>
     
-    <bean id="codesSheetGenerator" class="org.generationcp.commons.parsing.CodesSheetGenerator">
+    <bean id="codesSheetGenerator" class="org.generationcp.commons.workbook.generator.CodesSheetGenerator">
 		<aop:scoped-proxy />
 	</bean>
 	
