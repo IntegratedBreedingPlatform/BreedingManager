@@ -286,16 +286,13 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	}
 
 	private Map<String, Integer> mapImportedGermplasmsForDuplication(List<ImportedGermplasm> importedGermplasms) {
-
-		Map<String, Integer> germplasmMatchesMap = new HashMap<>();
+		List<String> names = new ArrayList<>();
 
 		for (final ImportedGermplasm germplasm : importedGermplasms) {
-			String designationName = germplasm.getDesig();
-			Integer count = (int) this.germplasmDataManager.countGermplasmByName(designationName, Operation.EQUAL);
-			germplasmMatchesMap.put(designationName, count);
+			names.add(germplasm.getDesig());
 		}
 
-		return germplasmMatchesMap;
+		return this.germplasmDataManager.getMapCountByNamePermutations(names);
 	}
 
 	private Integer getTotalFromGermplasmMatches(Map<String, Integer> germplasmMatchesMap){
