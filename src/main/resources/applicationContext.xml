@@ -198,6 +198,30 @@
 		<aop:scoped-proxy />
 	</bean>
 	
+	<bean id="listTypeGenerator" class="org.generationcp.commons.workbook.generator.ListTypeRowGenerator">
+		<aop:scoped-proxy />
+	</bean>
+	
+	<bean id="userGenerator" class="org.generationcp.commons.workbook.generator.UserRowGenerator">
+		<aop:scoped-proxy />
+	</bean>
+	
+	<bean id="nameTypesGenerator" class="org.generationcp.commons.workbook.generator.NameTypesRowGenerator">
+		<aop:scoped-proxy />
+	</bean>
+	
+	<bean id="inventoryScalesGenerator" class="org.generationcp.commons.workbook.generator.InventoryScalesRowGenerator">
+		<aop:scoped-proxy />
+	</bean>
+	
+	<bean id="attributeTypesGenerator" class="org.generationcp.commons.workbook.generator.AttributeTypesRowGenerator">
+		<aop:scoped-proxy />
+	</bean>
+	
+	<bean id="passportAttributeTypesGenerator" class="org.generationcp.commons.workbook.generator.PassportAttributeTypesRowGenerator">
+		<aop:scoped-proxy />
+	</bean>
+	
 	<bean id="germplasmExportedWorkbook" class="org.generationcp.commons.parsing.GermplasmExportedWorkbook">
 		<aop:scoped-proxy />
 	</bean>
