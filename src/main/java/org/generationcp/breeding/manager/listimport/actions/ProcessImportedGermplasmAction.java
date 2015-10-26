@@ -122,19 +122,8 @@ public class ProcessImportedGermplasmAction implements Serializable {
 			Integer dateIntValue = this.getGermplasmDateValue();
 
 			final Map<String, Germplasm> createdGermplasms = new HashMap<>();
-			final Map<String, Integer> germplasmMatchesMap = new HashMap<>();
-
-			Integer totalMatches = 0;
-
-			for (int i = 0; i < this.getImportedGermplasms().size(); i++) {
-				final ImportedGermplasm germplasm = this.getImportedGermplasms().get(i);
-				String designationName = germplasm.getDesig();
-				Integer count = (int) this.germplasmDataManager.countGermplasmByName(designationName, Operation.EQUAL);
-				germplasmMatchesMap.put(designationName, count);
-				if(count > 1){
-					totalMatches++;
-				}
-			}
+			final Map<String, Integer> germplasmMatchesMap = this.mapImportedGermplasmsForDuplication(this.getImportedGermplasms());
+			final Integer totalMatches = this.getTotalFromGermplasmMatches(germplasmMatchesMap);
 
 			Integer currentMatch = 1;
 
@@ -207,19 +196,8 @@ public class ProcessImportedGermplasmAction implements Serializable {
 			Integer dateIntValue = this.getGermplasmDateValue();
 
 			Map<String, Germplasm> createdGermplasms = new HashMap<>();
-			final Map<String, Integer> germplasmMatchesMap = new HashMap<>();
-
-			Integer totalMatches = 0;
-
-			for (int i = 0; i < this.getImportedGermplasms().size(); i++) {
-				final ImportedGermplasm germplasm = this.getImportedGermplasms().get(i);
-				String designationName = germplasm.getDesig();
-				Integer count = (int) this.germplasmDataManager.countGermplasmByName(designationName, Operation.EQUAL);
-				germplasmMatchesMap.put(designationName, count);
-				if(count > 1) {
-					totalMatches++;
-				}
-			}
+			final Map<String, Integer> germplasmMatchesMap = this.mapImportedGermplasmsForDuplication(this.getImportedGermplasms());
+			final Integer totalMatches = this.getTotalFromGermplasmMatches(germplasmMatchesMap);
 
 			Integer currentMatch = 1;
 
@@ -307,9 +285,32 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		}
 	}
 
+	private Map<String, Integer> mapImportedGermplasmsForDuplication(List<ImportedGermplasm> importedGermplasms) {
+
+		Map<String, Integer> germplasmMatchesMap = new HashMap<>();
+
+		for (final ImportedGermplasm germplasm : importedGermplasms) {
+			String designationName = germplasm.getDesig();
+			Integer count = (int) this.germplasmDataManager.countGermplasmByName(designationName, Operation.EQUAL);
+			germplasmMatchesMap.put(designationName, count);
+		}
+
+		return germplasmMatchesMap;
+	}
+
+	private Integer getTotalFromGermplasmMatches(Map<String, Integer> germplasmMatchesMap){
+		Integer totalMatches = 0;
+		for (Integer count : germplasmMatchesMap.values()) {
+			if(count > 0) {
+				totalMatches++;
+			}
+
+		}
+		return totalMatches;
+	}
+
 	protected boolean isNeedToDisplayGermplasmSelectionWindow(int germplasmMatchesCount) {
-		return germplasmMatchesCount > 1 || germplasmMatchesCount > 0
-				&& !this.germplasmDetailsComponent.automaticallyAcceptSingleMatchesCheckbox();
+		return germplasmMatchesCount > 0 && !this.germplasmDetailsComponent.automaticallyAcceptSingleMatchesCheckbox();
 	}
 
 	protected boolean isGidSpecified(ImportedGermplasm importedGermplasm) {
