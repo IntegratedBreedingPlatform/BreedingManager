@@ -629,21 +629,10 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		if (!this.hasUnsavedChanges()) {
 			return;
 		}
-
-		if (modeView.equals(ModeView.LIST_VIEW)) {
-			if (this.germplasmList == null || this.isTreatAsNewList) {
-				this.openSaveListAsDialog();
-			} else {
-				this.saveList(this.germplasmList);
-			}
+		if (this.germplasmList == null || this.isTreatAsNewList) {
+			this.openSaveListAsDialog();
 		} else {
-			// Inventory view
-			if (this.germplasmList == null || this.isTreatAsNewList) {
-				// new list in inventory view
-				this.openSaveListAsDialog();
-			} else if (this.inventoryTableDropHandler.hasChanges()) {
-				this.saveList(this.germplasmList);
-			}
+			this.saveList(this.germplasmList);
 		}
 
 		if (this.isOnlyReservationsMade(modeView)) {
