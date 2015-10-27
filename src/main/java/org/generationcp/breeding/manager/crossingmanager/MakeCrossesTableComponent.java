@@ -262,62 +262,61 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 	 */
 	public void multiplyParents(final List<GermplasmListEntry> parents1, final List<GermplasmListEntry> parents2,
 			final String listnameFemaleParent, final String listnameMaleParent, final boolean excludeSelf) {
-
-		// make a copy first of the parents lists
-		final List<GermplasmListEntry> femaleParents = new ArrayList<GermplasmListEntry>();
-		final List<GermplasmListEntry> maleParents = new ArrayList<GermplasmListEntry>();
-		femaleParents.addAll(parents1);
-		maleParents.addAll(parents2);
-
-		this.setMakeCrossesTableVisibleColumn();
-		this.separator = this.makeCrossesMain.getSeparatorString();
-
-		for (final GermplasmListEntry femaleParent : femaleParents) {
-
-			final String femaleSource = listnameFemaleParent + ":" + femaleParent.getEntryId();
-			final GermplasmListEntry femaleParentCopy = femaleParent.copy();
-			femaleParentCopy.setSeedSource(femaleSource);
-
-			for (final GermplasmListEntry maleParent : maleParents) {
-				final String maleSource = listnameMaleParent + ":" + maleParent.getEntryId();
-				final GermplasmListEntry maleParentCopy = maleParent.copy();
-				maleParentCopy.setSeedSource(maleSource);
-
-				final CrossParents parents = new CrossParents(femaleParentCopy, maleParentCopy);
-
-				this.addItemToMakeCrossesTable(excludeSelf, femaleParent, femaleSource, maleParent, maleSource, parents);
-			}
-		}
-		this.updateCrossesMadeUI();
-	}
-
-	void addItemToMakeCrossesTable(final boolean excludeSelf, final GermplasmListEntry femaleParent, final String femaleSource,
-			final GermplasmListEntry maleParent, final String maleSource, final CrossParents parents) {
 		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
 		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
 			@Override
 			protected void doInTransactionWithoutResult(final TransactionStatus status) {
-				final String femaleDesig = femaleParent.getDesignation();
-				final String maleDesig = maleParent.getDesignation();
+				// make a copy first of the parents lists
+				final List<GermplasmListEntry> femaleParents = new ArrayList<GermplasmListEntry>();
+				final List<GermplasmListEntry> maleParents = new ArrayList<GermplasmListEntry>();
+				femaleParents.addAll(parents1);
+				maleParents.addAll(parents2);
 
-				if (!MakeCrossesTableComponent.this.crossAlreadyExists(parents)) {
-					final String seedSource = MakeCrossesTableComponent.this.appendWithSeparator(femaleSource, maleSource);
-					final Germplasm germplasm = new Germplasm();
-					germplasm.setGnpgs(2);
-					germplasm.setGid(Integer.MAX_VALUE);
-					germplasm.setGpid1(femaleParent.getGid());
-					germplasm.setGpid2(maleParent.getGid());
+				MakeCrossesTableComponent.this.setMakeCrossesTableVisibleColumn();
+				MakeCrossesTableComponent.this.separator = MakeCrossesTableComponent.this.makeCrossesMain.getSeparatorString();
 
-					final String cross = MakeCrossesTableComponent.this.getCross(germplasm, femaleDesig, maleDesig);
-					if ((excludeSelf && !MakeCrossesTableComponent.this.hasSameParent(femaleParent, maleParent)) || !excludeSelf) {
-						MakeCrossesTableComponent.this.tableCrossesMade.addItem(
-								new Object[] {1, cross, femaleDesig, maleDesig, seedSource}, parents);
+				for (final GermplasmListEntry femaleParent : femaleParents) {
+
+					final String femaleSource = listnameFemaleParent + ":" + femaleParent.getEntryId();
+					final GermplasmListEntry femaleParentCopy = femaleParent.copy();
+					femaleParentCopy.setSeedSource(femaleSource);
+
+					for (final GermplasmListEntry maleParent : maleParents) {
+						final String maleSource = listnameMaleParent + ":" + maleParent.getEntryId();
+						final GermplasmListEntry maleParentCopy = maleParent.copy();
+						maleParentCopy.setSeedSource(maleSource);
+
+						final CrossParents parents = new CrossParents(femaleParentCopy, maleParentCopy);
+
+						MakeCrossesTableComponent.this.addItemToMakeCrossesTable(excludeSelf, femaleParent, femaleSource, maleParent,
+								maleSource, parents);
 					}
 				}
+				MakeCrossesTableComponent.this.updateCrossesMadeUI();
 			}
 		});
 
+	}
+
+	void addItemToMakeCrossesTable(final boolean excludeSelf, final GermplasmListEntry femaleParent, final String femaleSource,
+			final GermplasmListEntry maleParent, final String maleSource, final CrossParents parents) {
+		final String femaleDesig = femaleParent.getDesignation();
+		final String maleDesig = maleParent.getDesignation();
+
+		if (!this.crossAlreadyExists(parents)) {
+			final String seedSource = this.appendWithSeparator(femaleSource, maleSource);
+			final Germplasm germplasm = new Germplasm();
+			germplasm.setGnpgs(2);
+			germplasm.setGid(Integer.MAX_VALUE);
+			germplasm.setGpid1(femaleParent.getGid());
+			germplasm.setGpid2(maleParent.getGid());
+
+			final String cross = this.getCross(germplasm, femaleDesig, maleDesig);
+			if ((excludeSelf && !this.hasSameParent(femaleParent, maleParent)) || !excludeSelf) {
+				this.tableCrossesMade.addItem(new Object[] {1, cross, femaleDesig, maleDesig, seedSource}, parents);
+			}
+		}
 	}
 
 	boolean hasSameParent(final GermplasmListEntry femaleParent, final GermplasmListEntry maleParent) {
