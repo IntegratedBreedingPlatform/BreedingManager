@@ -131,4 +131,27 @@ public class ParentTabComponentTest {
 		this.parentTabComponent.doSaveAction();
 		Assert.assertNotNull(this.parentTabComponent.getSaveListAsWindow());
 	}
+
+	@Test
+	public void testDoSaveActionWithNoChanges() {
+		final Term fromOntology = new Term();
+		fromOntology.setName("Ontology Name");
+		Mockito.doReturn(fromOntology).when(this.ontologyDataManager).getTermById(Mockito.anyInt());
+		final TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
+		tableWithSelectAll.instantiateComponents();
+
+		this.parentTabComponent.initializeMainComponents();
+		this.parentTabComponent.initializeParentTable(tableWithSelectAll);
+		final CrossingManagerInventoryTable inventoryTable = new CrossingManagerInventoryTable(null);
+		inventoryTable.setMessageSource(this.messageSource);
+		inventoryTable.setOntologyDataManager(this.ontologyDataManager);
+		inventoryTable.instantiateComponents();
+		this.parentTabComponent.initializeListInventoryTable(inventoryTable);
+		this.parentTabComponent.addListeners();
+		this.parentTabComponent.setHasChanges(false);
+
+		// function to test
+		this.parentTabComponent.doSaveAction();
+		Assert.assertNull(this.parentTabComponent.getSaveListAsWindow());
+	}
 }

@@ -624,7 +624,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		}
 	}
 
-	private void doSave(ModeView modeView) {
+	private void doSave(final ModeView modeView) {
 		// do nothing if there were no unsaved changes
 		if (!this.hasUnsavedChanges()) {
 			return;
