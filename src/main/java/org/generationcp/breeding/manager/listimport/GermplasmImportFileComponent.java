@@ -231,7 +231,8 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 				try {
 					(new GermplasmListTemplateDownloader()).exportGermplasmTemplate(event.getComponent());
 				} catch (final GermplasmListTemplateDownloader.FileDownloadException e) {
-					MessageNotifier.showError(GermplasmImportFileComponent.this.getWindow(), GermplasmImportFileComponent.this.messageSource.getMessage(Message.ERROR), e.getMessage());
+					MessageNotifier.showError(GermplasmImportFileComponent.this.getWindow(),
+							GermplasmImportFileComponent.this.messageSource.getMessage(Message.ERROR), e.getMessage());
 				}
 			}
 		});

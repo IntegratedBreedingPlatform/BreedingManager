@@ -139,12 +139,14 @@ public class CrossingManagerActionHandler implements Handler {
 		if (((MakeCrossesParentsComponent) this.source).getFemaleTable().equals(table)) {
 			((MakeCrossesParentsComponent) this.source).getFemaleParentTab().updateNoOfEntries(table.size());
 			if (((MakeCrossesParentsComponent) this.source).getFemaleList().getId() > 0) {
-				((MakeCrossesParentsComponent) this.source).setFemaleParentList(null);
+				// if we've deleted something from the list, we should treat it as a new list during saving
+				((MakeCrossesParentsComponent) this.source).getFemaleParentTab().setIsTreatAsNewList(true);
 			}
 		} else if (((MakeCrossesParentsComponent) this.source).getMaleTable().equals(table)) {
 			((MakeCrossesParentsComponent) this.source).getMaleParentTab().updateNoOfEntries(table.size());
 			if (((MakeCrossesParentsComponent) this.source).getMaleList().getId() > 0) {
-				((MakeCrossesParentsComponent) this.source).setMaleParentList(null);
+				// if we've deleted something from the list, we should treat it as a new list during saving
+				((MakeCrossesParentsComponent) this.source).getMaleParentTab().setIsTreatAsNewList(true);
 			}
 		}
 	}

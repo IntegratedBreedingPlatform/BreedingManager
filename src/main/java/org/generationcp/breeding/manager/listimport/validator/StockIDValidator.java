@@ -24,7 +24,6 @@ public class StockIDValidator {
 
 	public void validate(String header,ImportedGermplasmList importedGermplasmList) throws FileParsingException {
 		this.validateForDuplicateStockIds(header,importedGermplasmList);
-		this.validateForMissingStockIDValues(header,importedGermplasmList);
 	}
 
 	private void validateForDuplicateStockIds(String header,ImportedGermplasmList importedGermplasmList) throws FileParsingException {
@@ -43,12 +42,6 @@ public class StockIDValidator {
 		} catch (MiddlewareQueryException e) {
 			StockIDValidator.LOG.error(e.getMessage(), e);
 			throw new FileParsingException(e.getMessage());
-		}
-	}
-
-	private void validateForMissingStockIDValues(String header,ImportedGermplasmList importedGermplasmList) throws FileParsingException {
-		if (importedGermplasmList.hasMissingStockIDValues()) {
-			throw new FileParsingException("GERMPLSM_PARSE_GID_MISSING_STOCK_ID_VALUE", 0, "", header);
 		}
 	}
 

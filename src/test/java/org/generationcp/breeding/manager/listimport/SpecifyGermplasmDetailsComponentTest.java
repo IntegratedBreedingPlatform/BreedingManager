@@ -4,15 +4,18 @@ package org.generationcp.breeding.manager.listimport;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -30,22 +33,30 @@ public class SpecifyGermplasmDetailsComponentTest {
 	private static final String EXTENSION = "xls";
 	private static final String COMPLETE_FILE_NAME = SpecifyGermplasmDetailsComponentTest.FILE_NAME + "."
 			+ SpecifyGermplasmDetailsComponentTest.EXTENSION;
+	private static final String TEST_SOURCE_VALUE = "ListABC";
 
-	@Mock
-	private GermplasmImportMain source;
 
 	@Mock
 	private OntologyDataManager ontologyDataManager;
 
+	@Mock
+	private SimpleResourceBundleMessageSource messageSource;
+
 	@InjectMocks
-	private final SpecifyGermplasmDetailsComponent specifyGermplasmDetailsComponent = Mockito.spy(new SpecifyGermplasmDetailsComponent(
-			this.source, false));
+	private SpecifyGermplasmDetailsComponent specifyGermplasmDetailsComponent = new SpecifyGermplasmDetailsComponent(
+			Mockito.mock(GermplasmImportMain.class), false);
+
+	@Before
+	public void setUp() throws Exception {
+		Mockito.doReturn("").when(this.messageSource).getMessage(Mockito.any(Message.class));
+		this.specifyGermplasmDetailsComponent.instantiateComponents();
+
+	}
 
 	@Test
 	public void testInitGermplasmDetailsTable_returnsTheValueFromColumLabelDefaultName() {
-		Table table = new Table();
+		final Table table = new Table();
 		this.specifyGermplasmDetailsComponent.setGermplasmDetailsTable(table);
-		Mockito.when(this.specifyGermplasmDetailsComponent.getGermplasmDetailsTable()).thenReturn(table);
 
 		this.specifyGermplasmDetailsComponent.initGermplasmDetailsTable();
 
@@ -59,11 +70,10 @@ public class SpecifyGermplasmDetailsComponentTest {
 
 	@Test
 	public void testInitGermplasmDetailsTable_returnsTheValueFromOntologyManager() throws MiddlewareQueryException {
-		Table table = new Table();
+		final Table table = new Table();
 		this.specifyGermplasmDetailsComponent.setGermplasmDetailsTable(table);
-		Mockito.when(this.specifyGermplasmDetailsComponent.getGermplasmDetailsTable()).thenReturn(table);
 
-		Term fromOntology = new Term();
+		final Term fromOntology = new Term();
 		fromOntology.setName("Ontology Name");
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.ENTRY_NO.getId())).thenReturn(fromOntology);
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.ENTRY_CODE.getId())).thenReturn(fromOntology);
@@ -83,41 +93,18 @@ public class SpecifyGermplasmDetailsComponentTest {
 	}
 
 	@Test
-	public void testInitializeFromImportFile_BasicTemplate() {
-		Table table = Mockito.spy(new Table());
-		this.specifyGermplasmDetailsComponent.setGermplasmDetailsTable(table);
-		Mockito.doReturn(table).when(this.specifyGermplasmDetailsComponent).getGermplasmDetailsTable();
-		Mockito.doNothing().when(table).setColumnCollapsed(ColumnLabels.STOCKID, true);
-		Mockito.doNothing().when(table).setColumnCollapsed(ColumnLabels.AMOUNT, true);
+	public void testInitializeFromImportFile_BasicTemplateSourceAvailable() {
+		final Table table = new Table();
 
-		GermplasmListUploader uploader = Mockito.mock(GermplasmListUploader.class);
-		Mockito.doReturn(false).when(uploader).hasStockIdFactor();
-		Mockito.doReturn(false).when(uploader).hasInventoryAmount();
-		Mockito.doReturn(false).when(uploader).hasInventoryAmountOnly();
-		Mockito.doReturn(false).when(uploader).importFileIsAdvanced();
-		this.specifyGermplasmDetailsComponent.setGermplasmListUploader(uploader);
+		final List<ImportedGermplasm> importedGermplasms = createImportedGermplasmFromBasicTemplate(TEST_SOURCE_VALUE);
 
-		GermplasmFieldsComponent fieldsComponent = Mockito.mock(GermplasmFieldsComponent.class);
-		Mockito.doNothing().when(fieldsComponent).refreshLayout(Matchers.anyBoolean());
-		Mockito.doReturn(fieldsComponent).when(this.specifyGermplasmDetailsComponent).getGermplasmFieldsComponent();
-
-		Mockito.doNothing().when(this.specifyGermplasmDetailsComponent).updateTotalEntriesLabel();
-		Mockito.doNothing().when(this.specifyGermplasmDetailsComponent).showFirstPedigreeOption(Matchers.anyBoolean());
-		Mockito.doNothing().when(this.specifyGermplasmDetailsComponent).toggleAcceptSingleMatchesCheckbox();
-		List<ImportedGermplasm> testGermplasm = this.createImportedGermplasmFromBasicTemplate();
-		Mockito.doReturn(testGermplasm).when(this.specifyGermplasmDetailsComponent).getImportedGermplasms();
-
-		ImportedGermplasmList importedList =
-				new ImportedGermplasmList(SpecifyGermplasmDetailsComponentTest.COMPLETE_FILE_NAME, "", "", "", null);
-		this.specifyGermplasmDetailsComponent.initGermplasmDetailsTable();
-		this.specifyGermplasmDetailsComponent.initializeFromImportFile(importedList);
-
+		setupInitializeFromImportedFileTest(table, importedGermplasms);
 		Assert.assertTrue(table.getItemIds().size() == 5);
 		for (int i = 1; i <= 5; i++) {
-			Integer id = new Integer(i);
+			final Integer id = new Integer(i);
 			Assert.assertEquals(id, table.getItem(id).getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue());
-			Assert.assertEquals(SpecifyGermplasmDetailsComponentTest.FILE_NAME + ":" + i,
-					table.getItem(id).getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue());
+
+			Assert.assertEquals(TEST_SOURCE_VALUE, table.getItem(id).getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue());
 			Assert.assertEquals("LEAFNODE00" + i, table.getItem(id).getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue());
 			Assert.assertNull(table.getItem(id).getItemProperty(ColumnLabels.ENTRY_CODE.getName()).getValue());
 			Assert.assertNull(table.getItem(id).getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue());
@@ -125,12 +112,54 @@ public class SpecifyGermplasmDetailsComponentTest {
 		}
 	}
 
-	private List<ImportedGermplasm> createImportedGermplasmFromBasicTemplate() {
-		List<ImportedGermplasm> testListOfGermplasm = new ArrayList<ImportedGermplasm>();
+	@Test
+	public void testInitializeFromImportFile_BasicTemplateNoSourceValue() {
+		final Table table = new Table();
+
+		// we want to test the result of importing a germplasm list with a null / empty source value from the file
+		final List<ImportedGermplasm> importedGermplasms = createImportedGermplasmFromBasicTemplate(null);
+
+		setupInitializeFromImportedFileTest(table, importedGermplasms);
+		Assert.assertTrue(table.getItemIds().size() == 5);
 		for (int i = 1; i <= 5; i++) {
-			ImportedGermplasm germplasm = new ImportedGermplasm();
+			final Integer id = new Integer(i);
+			Assert.assertEquals("", table.getItem(id).getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue());
+		}
+	}
+
+	protected void setupInitializeFromImportedFileTest(final Table table, final List<ImportedGermplasm> germplasmList) {
+
+		final GermplasmFieldsComponent germplasmFieldsComponent = Mockito.mock(GermplasmFieldsComponent.class);
+		this.specifyGermplasmDetailsComponent.setGermplasmDetailsTable(table);
+		this.specifyGermplasmDetailsComponent.setGermplasmFieldsComponent(germplasmFieldsComponent);
+
+		this.specifyGermplasmDetailsComponent.setImportedGermplasms(germplasmList);
+
+
+		final GermplasmListUploader uploader = Mockito.mock(GermplasmListUploader.class);
+		Mockito.doReturn(false).when(uploader).hasStockIdFactor();
+		Mockito.doReturn(false).when(uploader).hasInventoryAmount();
+		Mockito.doReturn(false).when(uploader).hasInventoryAmountOnly();
+		Mockito.doReturn(false).when(uploader).importFileIsAdvanced();
+		this.specifyGermplasmDetailsComponent.setGermplasmListUploader(uploader);
+
+		final GermplasmFieldsComponent fieldsComponent = Mockito.mock(GermplasmFieldsComponent.class);
+		Mockito.doNothing().when(fieldsComponent).refreshLayout(Matchers.anyBoolean());
+
+		final ImportedGermplasmList importedList =
+				new ImportedGermplasmList(SpecifyGermplasmDetailsComponentTest.COMPLETE_FILE_NAME, "", "", "", null);
+		this.specifyGermplasmDetailsComponent.initGermplasmDetailsTable();
+		this.specifyGermplasmDetailsComponent.initializeFromImportFile(importedList);
+
+	}
+
+	private List<ImportedGermplasm> createImportedGermplasmFromBasicTemplate(final String sourceValue) {
+		final List<ImportedGermplasm> testListOfGermplasm = new ArrayList<ImportedGermplasm>();
+		for (int i = 1; i <= 5; i++) {
+			final ImportedGermplasm germplasm = new ImportedGermplasm();
 			germplasm.setEntryId(i);
 			germplasm.setDesig("LEAFNODE00" + i);
+			germplasm.setSource(sourceValue);
 			testListOfGermplasm.add(germplasm);
 		}
 		return testListOfGermplasm;
