@@ -272,4 +272,12 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		this.listInventoryTable.setHeight(height);
 	}
 
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	public void setOntologyDataManager(OntologyDataManager ontologyDataManager) {
+		this.ontologyDataManager = ontologyDataManager;
+	}
+
 }
