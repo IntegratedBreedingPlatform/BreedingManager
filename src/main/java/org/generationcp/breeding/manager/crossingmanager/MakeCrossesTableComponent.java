@@ -164,27 +164,33 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 	 */
 	public void makeTopToBottomCrosses(final List<GermplasmListEntry> parents1, final List<GermplasmListEntry> parents2,
 			final String listnameFemaleParent, final String listnameMaleParent, final boolean excludeSelf) {
+		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
+		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
-		// make a copy first of the parents lists
-		final List<GermplasmListEntry> femaleParents = new ArrayList<GermplasmListEntry>();
-		final List<GermplasmListEntry> maleParents = new ArrayList<GermplasmListEntry>();
-		femaleParents.addAll(parents1);
-		maleParents.addAll(parents2);
+			@Override
+			protected void doInTransactionWithoutResult(final TransactionStatus status) {
 
-		final ListIterator<GermplasmListEntry> femaleListIterator = femaleParents.listIterator();
-		final ListIterator<GermplasmListEntry> maleListIterator = maleParents.listIterator();
+				// make a copy first of the parents lists
+				final List<GermplasmListEntry> femaleParents = new ArrayList<GermplasmListEntry>();
+				final List<GermplasmListEntry> maleParents = new ArrayList<GermplasmListEntry>();
+				femaleParents.addAll(parents1);
+				maleParents.addAll(parents2);
 
-		this.setMakeCrossesTableVisibleColumn();
+				final ListIterator<GermplasmListEntry> femaleListIterator = femaleParents.listIterator();
+				final ListIterator<GermplasmListEntry> maleListIterator = maleParents.listIterator();
 
-		this.separator = this.makeCrossesMain.getSeparatorString();
+				MakeCrossesTableComponent.this.separator = MakeCrossesTableComponent.this.makeCrossesMain.getSeparatorString();
 
-		while (femaleListIterator.hasNext()) {
-			final GermplasmListEntry femaleParent = femaleListIterator.next();
-			final GermplasmListEntry maleParent = maleListIterator.next();
+				while (femaleListIterator.hasNext()) {
+					final GermplasmListEntry femaleParent = femaleListIterator.next();
+					final GermplasmListEntry maleParent = maleListIterator.next();
 
-			this.addItemToMakeCrossesTable(listnameFemaleParent, listnameMaleParent, excludeSelf, femaleParent, maleParent);
-		}
-		this.updateCrossesMadeUI();
+					MakeCrossesTableComponent.this.addItemToMakeCrossesTable(listnameFemaleParent, listnameMaleParent, excludeSelf,
+							femaleParent, maleParent);
+				}
+				MakeCrossesTableComponent.this.updateCrossesMadeUI();
+			}
+		});
 	}
 
 	void addItemToMakeCrossesTable(final String listnameFemaleParent, final String listnameMaleParent, final boolean excludeSelf,
