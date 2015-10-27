@@ -145,9 +145,9 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 						ParentTabComponent.this.saveActionMenu.setEnabled(true);
 						ParentTabComponent.this.setHasUnsavedChanges(true);
 
-						// Checker if list is modified and list is central, clear germplasm to force new list to be saved
+						// Checker if list is modified and list is central, force new list to be saved
 						if (ParentTabComponent.this.germplasmList != null && ParentTabComponent.this.germplasmList.getId() > 0) {
-							ParentTabComponent.this.germplasmList = null;
+							ParentTabComponent.this.isTreatAsNewList = true;
 						}
 
 					}
@@ -219,6 +219,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 						} else {
 							ParentTabComponent.this.saveActionMenu.setEnabled(true);
 							ParentTabComponent.this.setHasUnsavedChanges(true);
+							ParentTabComponent.this.isTreatAsNewList = true;
 						}
 					}
 				} catch (MiddlewareQueryException e) {
@@ -628,7 +629,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		}
 
 		if (modeView.equals(ModeView.LIST_VIEW)) {
-			if (this.isTreatAsNewList) {
+			if (this.germplasmList == null || this.isTreatAsNewList) {
 				this.openSaveListAsDialog();
 			} else {
 				this.saveList(this.germplasmList);
@@ -743,7 +744,9 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 			}
 
+			//<------- Reset Markers after save is complete ----------->
 			this.setHasUnsavedChanges(false);
+			this.isTreatAsNewList = false;
 
 			if (this.prevModeView != null) {
 				this.source.getMakeCrossesMain().updateView(this.source.getMakeCrossesMain().getModeView());
