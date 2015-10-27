@@ -2,7 +2,10 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.ModeView;
+import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.customcomponent.listinventory.CrossingManagerInventoryTable;
 import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -17,18 +20,22 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Window;
 
 public class ParentTabComponentTest {
 
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
 	@Mock
-	private CrossingManagerMakeCrossesComponent makeCrossesMain;
-	@Mock
-	private MakeCrossesParentsComponent source;
+	private ManageCrossingSettingsMain makeCrossesSettingsMain;
+
 	@Mock
 	private OntologyDataManager ontologyDataManager;
+
+	@Mock
+	private Component parent;
 
 	private ParentTabComponent parentTabComponent;
 	private final String parentLabel = "Female Parents";
@@ -37,9 +44,15 @@ public class ParentTabComponentTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		this.parentTabComponent = new ParentTabComponent(this.makeCrossesMain, this.source, this.parentLabel, this.rowCount);
+		final CrossingManagerMakeCrossesComponent makeCrossesMain = new CrossingManagerMakeCrossesComponent(makeCrossesSettingsMain);
+		makeCrossesMain.setModeViewOnly(ModeView.LIST_VIEW);
+		final MakeCrossesParentsComponent source = new MakeCrossesParentsComponent(makeCrossesMain);
+		this.parentTabComponent = new ParentTabComponent(makeCrossesMain, source, this.parentLabel, this.rowCount);
+		Mockito.doReturn("TestString").when(this.messageSource).getMessage(Mockito.any(Message.class));
 		this.parentTabComponent.setMessageSource(this.messageSource);
 		this.parentTabComponent.setOntologyDataManager(this.ontologyDataManager);
+		Mockito.doReturn(new Window()).when(this.parent).getWindow();
+		this.parentTabComponent.setParent(this.parent);
 	}
 
 	@Test
@@ -67,10 +80,10 @@ public class ParentTabComponentTest {
 
 	@Test
 	public void testInitializeParentTable_returnsTheValueFromOntologyManager() throws MiddlewareQueryException {
-		Integer rowCount = 10;
+		final Integer rowCount = 10;
 		this.parentTabComponent.setRowCount(rowCount);
 
-		Term fromOntology = new Term();
+		final Term fromOntology = new Term();
 		fromOntology.setName("Ontology Name");
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.ENTRY_NO.getId())).thenReturn(fromOntology);
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.DESIG.getId())).thenReturn(fromOntology);
@@ -94,5 +107,51 @@ public class ParentTabComponentTest {
 		Assert.assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName()));
 		Assert.assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.SEED_RESERVATION.getName()));
 		Assert.assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.STOCKID.getName()));
+	}
+
+	@Test
+	public void testDoSaveAction() {
+		final Term fromOntology = new Term();
+		fromOntology.setName("Ontology Name");
+		Mockito.doReturn(fromOntology).when(this.ontologyDataManager).getTermById(Mockito.anyInt());
+		final TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
+		tableWithSelectAll.instantiateComponents();
+
+		this.parentTabComponent.initializeMainComponents();
+		this.parentTabComponent.initializeParentTable(tableWithSelectAll);
+		final CrossingManagerInventoryTable inventoryTable = new CrossingManagerInventoryTable(null);
+		inventoryTable.setMessageSource(this.messageSource);
+		inventoryTable.setOntologyDataManager(this.ontologyDataManager);
+		inventoryTable.instantiateComponents();
+		this.parentTabComponent.initializeListInventoryTable(inventoryTable);
+		this.parentTabComponent.addListeners();
+		this.parentTabComponent.setHasChanges(true);
+
+		// function to test
+		this.parentTabComponent.doSaveAction();
+		Assert.assertNotNull(this.parentTabComponent.getSaveListAsWindow());
+	}
+
+	@Test
+	public void testDoSaveActionWithNoChanges() {
+		final Term fromOntology = new Term();
+		fromOntology.setName("Ontology Name");
+		Mockito.doReturn(fromOntology).when(this.ontologyDataManager).getTermById(Mockito.anyInt());
+		final TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
+		tableWithSelectAll.instantiateComponents();
+
+		this.parentTabComponent.initializeMainComponents();
+		this.parentTabComponent.initializeParentTable(tableWithSelectAll);
+		final CrossingManagerInventoryTable inventoryTable = new CrossingManagerInventoryTable(null);
+		inventoryTable.setMessageSource(this.messageSource);
+		inventoryTable.setOntologyDataManager(this.ontologyDataManager);
+		inventoryTable.instantiateComponents();
+		this.parentTabComponent.initializeListInventoryTable(inventoryTable);
+		this.parentTabComponent.addListeners();
+		this.parentTabComponent.setHasChanges(false);
+
+		// function to test
+		this.parentTabComponent.doSaveAction();
+		Assert.assertNull(this.parentTabComponent.getSaveListAsWindow());
 	}
 }

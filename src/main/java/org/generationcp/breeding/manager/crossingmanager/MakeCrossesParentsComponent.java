@@ -705,6 +705,10 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		this.maleParentTab = maleParentTab;
 	}
 
+	public void setMakeCrossesMain(final CrossingManagerMakeCrossesComponent makeCrossesMain) {
+		this.makeCrossesMain = makeCrossesMain;
+	}
+
 	public void updateViewForAllParentLists(ModeView modeView) {
 		if (modeView.equals(ModeView.LIST_VIEW)) {
 			this.femaleParentTab.changeToListView();
