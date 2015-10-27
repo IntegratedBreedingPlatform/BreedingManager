@@ -374,6 +374,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	private final MakeCrossesParentsComponent source;
 	private CrossingManagerActionHandler parentActionListener;
 	private String listNameForCrosses;
+
 	private SaveListAsDialog saveListAsWindow;
 
 	private boolean hasChanges = false;
@@ -410,6 +411,20 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	@Override
 	public void instantiateComponents() {
+		this.initializeMainComponents();
+		this.resetInventoryMenuOptions();
+
+		this.initializeParentTable(new TableWithSelectAllLayout(this.rowCount, ParentTabComponent.TAG_COLUMN_ID));
+		this.initializeListInventoryTable(new CrossingManagerInventoryTable(this.germplasmList != null ? this.germplasmList.getId() : null));
+
+		// Inventory Related Variables
+		this.validReservationsToSave = new HashMap<ListEntryLotDetails, Double>();
+	}
+
+	/**
+	 * Exposed for usage in tests
+	 */
+	protected void initializeMainComponents() {
 		this.listEntriesLabel = new Label(this.messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
 		this.listEntriesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		this.listEntriesLabel.setWidth("160px");
@@ -451,13 +466,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
 		this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES));
 		this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES));
-		this.resetInventoryMenuOptions();
-
-		this.initializeParentTable(new TableWithSelectAllLayout(this.rowCount, ParentTabComponent.TAG_COLUMN_ID));
-		this.initializeListInventoryTable();
-
-		// Inventory Related Variables
-		this.validReservationsToSave = new HashMap<ListEntryLotDetails, Double>();
 	}
 
 	private void resetInventoryMenuOptions() {
@@ -526,18 +534,12 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		return this.tableWithSelectAllLayout;
 	}
 
-	public void setTableWithSelectAllLayout(TableWithSelectAllLayout tableWithSelectAllLayout) {
+	public void setTableWithSelectAllLayout(final TableWithSelectAllLayout tableWithSelectAllLayout) {
 		this.tableWithSelectAllLayout = tableWithSelectAllLayout;
 	}
 
-	private void initializeListInventoryTable() {
-
-		if (this.germplasmList != null) {
-			this.listInventoryTable = new CrossingManagerInventoryTable(this.germplasmList.getId());
-		} else {
-			this.listInventoryTable = new CrossingManagerInventoryTable(null);
-		}
-
+	protected void initializeListInventoryTable(final CrossingManagerInventoryTable listInventoryTable) {
+		this.listInventoryTable = listInventoryTable;
 		this.listInventoryTable.setVisible(false);
 		this.listInventoryTable.setMaxRows(this.rowCount);
 		this.listInventoryTable.setTableHeight(null);
@@ -617,7 +619,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	public void doSaveActionFromMain() {
 		doSave(this.prevModeView);
-		if (this.isOnlyReservationsMade()){
+		if (this.isOnlyReservationsMade(this.prevModeView)){
 			this.makeCrossesMain.updateView(this.makeCrossesMain.getModeView());
 		}
 	}
@@ -644,13 +646,13 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			}
 		}
 
-		if (this.isOnlyReservationsMade()) {
+		if (this.isOnlyReservationsMade(modeView)) {
 			this.saveReservationChangesAction(true);
 		}
 	}
 
-	private boolean isOnlyReservationsMade(){
-		return this.hasUnsavedChanges() && this.prevModeView.equals(ModeView.INVENTORY_VIEW) && this.germplasmList != null &&
+	private boolean isOnlyReservationsMade(ModeView modeView){
+		return this.hasUnsavedChanges() && modeView.equals(ModeView.INVENTORY_VIEW) && this.germplasmList != null &&
 				!this.inventoryTableDropHandler.hasChanges();
 	}
 
@@ -1367,6 +1369,10 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		return this.hasChanges;
 	}
 
+	public void setHasChanges(boolean hasChanges) {
+		this.hasChanges = hasChanges;
+	}
+
 	public CheckBox getSelectAllCheckBox() {
 		return this.tableWithSelectAllLayout.getCheckBox();
 	}
@@ -1463,5 +1469,9 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	public void setIsTreatAsNewList(boolean isTreatAsNewList) {
 		this.isTreatAsNewList = isTreatAsNewList;
+	}
+
+	public SaveListAsDialog getSaveListAsWindow() {
+		return this.saveListAsWindow;
 	}
 }
