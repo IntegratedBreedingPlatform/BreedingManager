@@ -55,10 +55,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -98,9 +94,6 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 
 	@Resource
 	private CrossExpansionProperties crossExpansionProperties;
-
-	@Autowired
-	private PlatformTransactionManager transactionManager;
 
 	private Label lblReviewCrosses;
 	private BreedingManagerTable tableCrossesMade;
@@ -164,68 +157,52 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 	 */
 	public void makeTopToBottomCrosses(final List<GermplasmListEntry> parents1, final List<GermplasmListEntry> parents2,
 			final String listnameFemaleParent, final String listnameMaleParent, final boolean excludeSelf) {
-		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
-		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
-			@Override
-			protected void doInTransactionWithoutResult(final TransactionStatus status) {
+		// make a copy first of the parents lists
+		final List<GermplasmListEntry> femaleParents = new ArrayList<GermplasmListEntry>();
+		final List<GermplasmListEntry> maleParents = new ArrayList<GermplasmListEntry>();
+		femaleParents.addAll(parents1);
+		maleParents.addAll(parents2);
 
-				// make a copy first of the parents lists
-				final List<GermplasmListEntry> femaleParents = new ArrayList<GermplasmListEntry>();
-				final List<GermplasmListEntry> maleParents = new ArrayList<GermplasmListEntry>();
-				femaleParents.addAll(parents1);
-				maleParents.addAll(parents2);
+		final ListIterator<GermplasmListEntry> femaleListIterator = femaleParents.listIterator();
+		final ListIterator<GermplasmListEntry> maleListIterator = maleParents.listIterator();
 
-				final ListIterator<GermplasmListEntry> femaleListIterator = femaleParents.listIterator();
-				final ListIterator<GermplasmListEntry> maleListIterator = maleParents.listIterator();
+		this.separator = this.makeCrossesMain.getSeparatorString();
 
-				MakeCrossesTableComponent.this.separator = MakeCrossesTableComponent.this.makeCrossesMain.getSeparatorString();
+		while (femaleListIterator.hasNext()) {
+			final GermplasmListEntry femaleParent = femaleListIterator.next();
+			final GermplasmListEntry maleParent = maleListIterator.next();
 
-				while (femaleListIterator.hasNext()) {
-					final GermplasmListEntry femaleParent = femaleListIterator.next();
-					final GermplasmListEntry maleParent = maleListIterator.next();
+			this.addItemToMakeCrossesTable(listnameFemaleParent, listnameMaleParent, excludeSelf, femaleParent, maleParent);
+		}
+		this.updateCrossesMadeUI();
 
-					MakeCrossesTableComponent.this.addItemToMakeCrossesTable(listnameFemaleParent, listnameMaleParent, excludeSelf,
-							femaleParent, maleParent);
-				}
-				MakeCrossesTableComponent.this.updateCrossesMadeUI();
-			}
-		});
 	}
 
 	void addItemToMakeCrossesTable(final String listnameFemaleParent, final String listnameMaleParent, final boolean excludeSelf,
 			final GermplasmListEntry femaleParent, final GermplasmListEntry maleParent) {
 
-		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
-		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+		final String femaleDesig = femaleParent.getDesignation();
+		final String maleDesig = maleParent.getDesignation();
+		final String femaleSeedSource = listnameFemaleParent + ":" + femaleParent.getEntryId();
+		final String maleSeedSource = listnameMaleParent + ":" + maleParent.getEntryId();
+		final GermplasmListEntry femaleParentCopy = femaleParent.copy();
+		femaleParentCopy.setSeedSource(femaleSeedSource);
+		final GermplasmListEntry maleParentCopy = maleParent.copy();
+		maleParentCopy.setSeedSource(maleSeedSource);
 
-			@Override
-			protected void doInTransactionWithoutResult(final TransactionStatus status) {
-				final String femaleDesig = femaleParent.getDesignation();
-				final String maleDesig = maleParent.getDesignation();
-				final String femaleSeedSource = listnameFemaleParent + ":" + femaleParent.getEntryId();
-				final String maleSeedSource = listnameMaleParent + ":" + maleParent.getEntryId();
-				final GermplasmListEntry femaleParentCopy = femaleParent.copy();
-				femaleParentCopy.setSeedSource(femaleSeedSource);
-				final GermplasmListEntry maleParentCopy = maleParent.copy();
-				maleParentCopy.setSeedSource(maleSeedSource);
+		final CrossParents parents = new CrossParents(femaleParentCopy, maleParentCopy);
+		final Germplasm germplasm = new Germplasm();
+		germplasm.setGnpgs(2);
+		germplasm.setGid(Integer.MAX_VALUE);
+		germplasm.setGpid1(femaleParent.getGid());
+		germplasm.setGpid2(maleParent.getGid());
+		final String cross = this.getCross(germplasm, femaleDesig, maleDesig);
+		final String seedSource = this.appendWithSeparator(femaleSeedSource, maleSeedSource);
 
-				final CrossParents parents = new CrossParents(femaleParentCopy, maleParentCopy);
-				final Germplasm germplasm = new Germplasm();
-				germplasm.setGnpgs(2);
-				germplasm.setGid(Integer.MAX_VALUE);
-				germplasm.setGpid1(femaleParent.getGid());
-				germplasm.setGpid2(maleParent.getGid());
-				final String cross = MakeCrossesTableComponent.this.getCross(germplasm, femaleDesig, maleDesig);
-				final String seedSource = MakeCrossesTableComponent.this.appendWithSeparator(femaleSeedSource, maleSeedSource);
-
-				if (!MakeCrossesTableComponent.this.crossAlreadyExists(parents)
-						&& ((excludeSelf && !MakeCrossesTableComponent.this.hasSameParent(femaleParent, maleParent)) || !excludeSelf)) {
-					MakeCrossesTableComponent.this.tableCrossesMade.addItem(new Object[] {1, cross, femaleDesig, maleDesig, seedSource},
-							parents);
-				}
-			}
-		});
+		if (!this.crossAlreadyExists(parents) && ((excludeSelf && !this.hasSameParent(femaleParent, maleParent)) || !excludeSelf)) {
+			this.tableCrossesMade.addItem(new Object[] {1, cross, femaleDesig, maleDesig, seedSource}, parents);
+		}
 
 	}
 
@@ -268,40 +245,33 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 	 */
 	public void multiplyParents(final List<GermplasmListEntry> parents1, final List<GermplasmListEntry> parents2,
 			final String listnameFemaleParent, final String listnameMaleParent, final boolean excludeSelf) {
-		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
-		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
-			@Override
-			protected void doInTransactionWithoutResult(final TransactionStatus status) {
-				// make a copy first of the parents lists
-				final List<GermplasmListEntry> femaleParents = new ArrayList<GermplasmListEntry>();
-				final List<GermplasmListEntry> maleParents = new ArrayList<GermplasmListEntry>();
-				femaleParents.addAll(parents1);
-				maleParents.addAll(parents2);
+		// make a copy first of the parents lists
+		final List<GermplasmListEntry> femaleParents = new ArrayList<GermplasmListEntry>();
+		final List<GermplasmListEntry> maleParents = new ArrayList<GermplasmListEntry>();
+		femaleParents.addAll(parents1);
+		maleParents.addAll(parents2);
 
-				MakeCrossesTableComponent.this.setMakeCrossesTableVisibleColumn();
-				MakeCrossesTableComponent.this.separator = MakeCrossesTableComponent.this.makeCrossesMain.getSeparatorString();
+		this.setMakeCrossesTableVisibleColumn();
+		this.separator = this.makeCrossesMain.getSeparatorString();
 
-				for (final GermplasmListEntry femaleParent : femaleParents) {
+		for (final GermplasmListEntry femaleParent : femaleParents) {
 
-					final String femaleSource = listnameFemaleParent + ":" + femaleParent.getEntryId();
-					final GermplasmListEntry femaleParentCopy = femaleParent.copy();
-					femaleParentCopy.setSeedSource(femaleSource);
+			final String femaleSource = listnameFemaleParent + ":" + femaleParent.getEntryId();
+			final GermplasmListEntry femaleParentCopy = femaleParent.copy();
+			femaleParentCopy.setSeedSource(femaleSource);
 
-					for (final GermplasmListEntry maleParent : maleParents) {
-						final String maleSource = listnameMaleParent + ":" + maleParent.getEntryId();
-						final GermplasmListEntry maleParentCopy = maleParent.copy();
-						maleParentCopy.setSeedSource(maleSource);
+			for (final GermplasmListEntry maleParent : maleParents) {
+				final String maleSource = listnameMaleParent + ":" + maleParent.getEntryId();
+				final GermplasmListEntry maleParentCopy = maleParent.copy();
+				maleParentCopy.setSeedSource(maleSource);
 
-						final CrossParents parents = new CrossParents(femaleParentCopy, maleParentCopy);
+				final CrossParents parents = new CrossParents(femaleParentCopy, maleParentCopy);
 
-						MakeCrossesTableComponent.this.addItemToMakeCrossesTable(excludeSelf, femaleParent, femaleSource, maleParent,
-								maleSource, parents);
-					}
-				}
-				MakeCrossesTableComponent.this.updateCrossesMadeUI();
+				this.addItemToMakeCrossesTable(excludeSelf, femaleParent, femaleSource, maleParent, maleSource, parents);
 			}
-		});
+		}
+		this.updateCrossesMadeUI();
 
 	}
 
