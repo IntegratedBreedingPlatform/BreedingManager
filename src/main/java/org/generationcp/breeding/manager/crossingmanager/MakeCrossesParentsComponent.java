@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.generationcp.breeding.manager.action.SaveGermplasmListActionFactory;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -106,11 +107,11 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 
 		this.femaleParentTab =
 				new ParentTabComponent(this.makeCrossesMain, this, this.messageSource.getMessage(Message.LABEL_FEMALE_PARENTS),
-						MakeCrossesParentsComponent.PARENTS_TABLE_ROW_COUNT);
+						MakeCrossesParentsComponent.PARENTS_TABLE_ROW_COUNT, new SaveGermplasmListActionFactory());
 
 		this.maleParentTab =
 				new ParentTabComponent(this.makeCrossesMain, this, this.messageSource.getMessage(Message.LABEL_MALE_PARENTS),
-						MakeCrossesParentsComponent.PARENTS_TABLE_ROW_COUNT);
+						MakeCrossesParentsComponent.PARENTS_TABLE_ROW_COUNT, new SaveGermplasmListActionFactory());
 	}
 
 	@Override

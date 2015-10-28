@@ -14,6 +14,7 @@ import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.action.SaveGermplasmListAction;
 import org.generationcp.breeding.manager.action.SaveGermplasmListActionSource;
+import org.generationcp.breeding.manager.action.SaveGermplasmListActionFactory;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -374,6 +375,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	private final MakeCrossesParentsComponent source;
 	private CrossingManagerActionHandler parentActionListener;
 	private String listNameForCrosses;
+	private SaveGermplasmListActionFactory saveGermplasmListActionFactory;
 
 	private SaveListAsDialog saveListAsWindow;
 
@@ -392,13 +394,14 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	private InventoryTableDropHandler inventoryTableDropHandler;
 
-	public ParentTabComponent(CrossingManagerMakeCrossesComponent makeCrossesMain, MakeCrossesParentsComponent source, String parentLabel,
-			Integer rowCount) {
+	public ParentTabComponent(final CrossingManagerMakeCrossesComponent makeCrossesMain, final MakeCrossesParentsComponent source,
+			final String parentLabel, final Integer rowCount, final SaveGermplasmListActionFactory saveGermplasmListActionFactory) {
 		super();
 		this.makeCrossesMain = makeCrossesMain;
 		this.source = source;
 		this.parentLabel = parentLabel;
 		this.rowCount = rowCount;
+		this.saveGermplasmListActionFactory = saveGermplasmListActionFactory;
 	}
 
 	@Override
@@ -722,7 +725,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 		// Please correct the entryID, get from the parent table
 		// Create Map <Key: "GID+ENTRYID">, <Value:CheckBox Obj>
-		SaveGermplasmListAction saveListAction = new SaveGermplasmListAction(this, list, currentListEntries);
+		final SaveGermplasmListAction saveListAction = this.saveGermplasmListActionFactory.createInstance(this, list, currentListEntries);
 		try {
 			this.germplasmList = saveListAction.saveRecords();
 			this.updateCrossesSeedSource(this.germplasmList);
@@ -1336,7 +1339,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	}
 
 	@Override
-	public void setHasUnsavedChanges(Boolean hasChanges) {
+	public void setHasUnsavedChanges(final Boolean hasChanges) {
 		this.hasChanges = hasChanges;
 
 		if (hasChanges) {

@@ -256,8 +256,16 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		return this.selectParentsComponent;
 	}
 
+	public void setSelectParentsComponent(SelectParentsComponent selectParentsComponent) {
+		this.selectParentsComponent = selectParentsComponent;
+	}
+
 	public MakeCrossesParentsComponent getParentsComponent() {
 		return this.parentsComponent;
+	}
+
+	public void setParentsComponent(final MakeCrossesParentsComponent parentsComponent) {
+		this.parentsComponent = parentsComponent;
 	}
 
 	public CrossingMethodComponent getCrossingMethodComponent() {
@@ -266,6 +274,10 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 	public MakeCrossesTableComponent getCrossesTableComponent() {
 		return this.crossesTableComponent;
+	}
+
+	public void setCrossesTableComponent(final MakeCrossesTableComponent crossesTableComponent) {
+		this.crossesTableComponent = crossesTableComponent;
 	}
 
 	public Component getSource() {

@@ -702,16 +702,20 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		return this.tableCrossesMade;
 	}
 
-	public void setTableCrossesMade(BreedingManagerTable tableCrossesMade) {
+	public void setTableCrossesMade(final BreedingManagerTable tableCrossesMade) {
 		this.tableCrossesMade = tableCrossesMade;
 	}
 
-	protected String getTermNameFromOntology(ColumnLabels columnLabels) {
+	protected String getTermNameFromOntology(final ColumnLabels columnLabels) {
 		return columnLabels.getTermNameFromOntology(this.ontologyDataManager);
 	}
 
-	public void setOntologyDataManager(OntologyDataManager ontologyDataManager) {
+	public void setOntologyDataManager(final OntologyDataManager ontologyDataManager) {
 		this.ontologyDataManager = ontologyDataManager;
+	}
+
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
 	}
 
 }
