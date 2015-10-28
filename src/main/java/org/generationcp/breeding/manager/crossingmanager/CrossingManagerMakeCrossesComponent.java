@@ -21,6 +21,8 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -38,6 +40,8 @@ import com.vaadin.ui.VerticalLayout;
 @Configurable
 public class CrossingManagerMakeCrossesComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
 		BreedingManagerLayout, StepChangeListener, UnsavedChangesConfirmDialogSource {
+
+	private static final Logger LOG = LoggerFactory.getLogger(CrossingManagerMakeCrossesComponent.class);
 
 	public static final String NEXT_BUTTON_ID = "next button";
 	public static final String BACK_BUTTON_ID = "back button";
@@ -97,47 +101,55 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 			final String listnameFemaleParent, final String listnameMaleParent, final CrossType type, final boolean makeReciprocalCrosses,
 			final boolean excludeSelf) {
 
-		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
-		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+		if (!femaleList.isEmpty() && !maleList.isEmpty()) {
+			try {
+				final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
+				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
-			@Override
-			protected void doInTransactionWithoutResult(final TransactionStatus status) {
-				if (!femaleList.isEmpty() && !maleList.isEmpty()) {
-					// Female - Male Multiplication
-					if (CrossType.MULTIPLY.equals(type)) {
-						CrossingManagerMakeCrossesComponent.this.crossesTableComponent.multiplyParents(femaleList, maleList,
-								listnameFemaleParent, listnameMaleParent, excludeSelf);
-						if (makeReciprocalCrosses) {
-							CrossingManagerMakeCrossesComponent.this.crossesTableComponent.multiplyParents(maleList, femaleList,
-									listnameMaleParent, listnameFemaleParent, excludeSelf);
-						}
-
-						// Top to Bottom Crossing
-					} else if (CrossType.TOP_TO_BOTTOM.equals(type)) {
-						if (femaleList.size() == maleList.size()) {
-							CrossingManagerMakeCrossesComponent.this.crossesTableComponent.makeTopToBottomCrosses(femaleList, maleList,
+					@Override
+					protected void doInTransactionWithoutResult(final TransactionStatus status) {
+						// Female - Male Multiplication
+						if (CrossType.MULTIPLY.equals(type)) {
+							CrossingManagerMakeCrossesComponent.this.crossesTableComponent.multiplyParents(femaleList, maleList,
 									listnameFemaleParent, listnameMaleParent, excludeSelf);
 							if (makeReciprocalCrosses) {
-								CrossingManagerMakeCrossesComponent.this.crossesTableComponent.makeTopToBottomCrosses(maleList, femaleList,
+								CrossingManagerMakeCrossesComponent.this.crossesTableComponent.multiplyParents(maleList, femaleList,
 										listnameMaleParent, listnameFemaleParent, excludeSelf);
 							}
-						} else {
-							MessageNotifier.showError(CrossingManagerMakeCrossesComponent.this.getWindow(),
-									"Error with selecting parents.", CrossingManagerMakeCrossesComponent.this.messageSource
-											.getMessage(Message.ERROR_MALE_AND_FEMALE_PARENTS_MUST_BE_EQUAL));
+
+							// Top to Bottom Crossing
+						} else if (CrossType.TOP_TO_BOTTOM.equals(type)) {
+							if (femaleList.size() == maleList.size()) {
+								CrossingManagerMakeCrossesComponent.this.crossesTableComponent.makeTopToBottomCrosses(femaleList, maleList,
+										listnameFemaleParent, listnameMaleParent, excludeSelf);
+								if (makeReciprocalCrosses) {
+									CrossingManagerMakeCrossesComponent.this.crossesTableComponent.makeTopToBottomCrosses(maleList,
+											femaleList, listnameMaleParent, listnameFemaleParent, excludeSelf);
+								}
+							} else {
+								MessageNotifier.showError(CrossingManagerMakeCrossesComponent.this.getWindow(),
+										"Error with selecting parents.", CrossingManagerMakeCrossesComponent.this.messageSource
+												.getMessage(Message.ERROR_MALE_AND_FEMALE_PARENTS_MUST_BE_EQUAL));
+							}
 						}
 					}
-				} else {
-					MessageNotifier.showError(CrossingManagerMakeCrossesComponent.this.getWindow(), "Error with selecting parents.",
-							CrossingManagerMakeCrossesComponent.this.messageSource
-									.getMessage(Message.AT_LEAST_ONE_FEMALE_AND_ONE_MALE_PARENT_MUST_BE_SELECTED));
-				}
+				});
 
-				CrossingManagerMakeCrossesComponent.this
-						.showNotificationAfterCrossing(CrossingManagerMakeCrossesComponent.this.crossesTableComponent.getTableCrossesMade()
-								.size());
+			} catch (final Throwable e) {
+				CrossingManagerMakeCrossesComponent.LOG.error(e.getMessage(), e);
+				MessageNotifier.showError(CrossingManagerMakeCrossesComponent.this.getWindow(),
+						this.messageSource.getMessage(Message.ERROR),
+						CrossingManagerMakeCrossesComponent.this.messageSource.getMessage(Message.ERROR_WITH_RETRIEVAL));
 			}
-		});
+
+		} else {
+			MessageNotifier.showError(CrossingManagerMakeCrossesComponent.this.getWindow(), "Error with selecting parents.",
+					CrossingManagerMakeCrossesComponent.this.messageSource
+							.getMessage(Message.AT_LEAST_ONE_FEMALE_AND_ONE_MALE_PARENT_MUST_BE_SELECTED));
+		}
+
+		CrossingManagerMakeCrossesComponent.this
+				.showNotificationAfterCrossing(CrossingManagerMakeCrossesComponent.this.crossesTableComponent.getTableCrossesMade().size());
 
 	}
 
