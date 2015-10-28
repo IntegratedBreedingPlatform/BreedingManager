@@ -139,7 +139,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 				CrossingManagerMakeCrossesComponent.LOG.error(e.getMessage(), e);
 				MessageNotifier.showError(CrossingManagerMakeCrossesComponent.this.getWindow(),
 						this.messageSource.getMessage(Message.ERROR),
-						CrossingManagerMakeCrossesComponent.this.messageSource.getMessage(Message.ERROR_WITH_RETRIEVAL));
+						CrossingManagerMakeCrossesComponent.this.messageSource.getMessage(Message.ERROR_WITH_CROSSES_RETRIEVAL));
 			}
 
 		} else {
