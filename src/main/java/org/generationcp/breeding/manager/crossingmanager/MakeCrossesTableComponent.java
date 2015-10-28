@@ -300,18 +300,10 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 	}
 
 	private String getCross(final Germplasm germplasm, final String femaleDesignation, final String maleDesignation) {
-		try {
-			if (CrossingUtil.isCimmytWheat(this.pedigreeProfile, this.currentCropName)) {
-				return this.pedigreeService.getCrossExpansion(germplasm, null, this.crossExpansionProperties);
-			}
-			return this.appendWithSeparator(femaleDesignation, maleDesignation);
-		} catch (final MiddlewareQueryException e) {
-			MakeCrossesTableComponent.LOG.error(e.getMessage(), e);
-			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
-					this.messageSource.getMessage(Message.ERROR_ACCESSING_PEDIGREE_STRING));
+		if (CrossingUtil.isCimmytWheat(this.pedigreeProfile, this.currentCropName)) {
+			return this.pedigreeService.getCrossExpansion(germplasm, null, this.crossExpansionProperties);
 		}
-		return "";
-
+		return this.appendWithSeparator(femaleDesignation, maleDesignation);
 	}
 
 	private void addTableCrossesMadeCounter() {
