@@ -4,7 +4,9 @@ package org.generationcp.breeding.manager.data.initializer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.Name;
 
 public class GermplasmDataInitializer {
@@ -34,5 +36,24 @@ public class GermplasmDataInitializer {
 		}
 
 		return names;
+	}
+
+	public static GermplasmList getGermplasmListTestData() {
+		final GermplasmList germplasmList = new GermplasmList();
+		germplasmList.setId(3);
+		germplasmList.setName("newName");
+		germplasmList.setDescription("newDescription");
+		germplasmList.setNotes("newNotes");
+		germplasmList.setType("TEST_TYPE");
+		return germplasmList;
+	}
+
+	public static List<GermplasmListEntry> getGermplasmListEntries() {
+		final List<GermplasmListEntry> listEntries = new ArrayList<>();
+
+		listEntries.add(new GermplasmListEntry(1, 1, 1));
+		listEntries.add(new GermplasmListEntry(2, 2, 2));
+
+		return listEntries;
 	}
 }

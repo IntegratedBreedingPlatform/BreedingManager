@@ -15,6 +15,8 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntr
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.listinventory.CrossingManagerInventoryTable;
+import org.generationcp.breeding.manager.data.initializer.GermplasmDataInitializer;
+import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
 import org.generationcp.breeding.manager.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryActionFactory;
@@ -143,13 +145,15 @@ public class ParentTabComponentTest {
 		Mockito.doReturn(this.window).when(this.parent).getWindow();
 		this.parentTabComponent.setParent(this.parent);
 
-		final SaveGermplasmListAction saveGermplasmListAction = new SaveGermplasmListAction(this.parentTabComponent, getGermplasmListTestData(),
-				getGermplasmListEntries());
+		final SaveGermplasmListAction saveGermplasmListAction = new SaveGermplasmListAction(this.parentTabComponent,
+				GermplasmDataInitializer.getGermplasmListTestData(),
+				GermplasmDataInitializer.getGermplasmListEntries());
 		saveGermplasmListAction.setContextUtil(this.contextUtil);
 		saveGermplasmListAction.setGermplasmListManager(this.germplasmListManager);
 		saveGermplasmListAction.setPedigreeService(this.pedigreeService);
 		saveGermplasmListAction.setInventoryDataManager(this.inventoryDataManager);
-		Mockito.doReturn(getGermplasmListTestData()).when(this.germplasmListManager).getGermplasmListById(Mockito.anyInt());
+		Mockito.doReturn(GermplasmDataInitializer.getGermplasmListTestData()).when(this.germplasmListManager).getGermplasmListById
+				(Mockito.anyInt());
 		Mockito.doReturn(saveGermplasmListAction).when(this.saveGermplasmListActionFactory).createInstance(
 				Mockito.any(SaveGermplasmListActionSource.class), Mockito.any(GermplasmList.class), Mockito.any(List.class));
 
@@ -290,7 +294,7 @@ public class ParentTabComponentTest {
 		this.parentTabComponent.initializeListInventoryTable(inventoryTable);
 		this.parentTabComponent.addListeners();
 		this.parentTabComponent.setHasChanges(true);
-		this.parentTabComponent.setGermplasmList(getGermplasmListTestData());
+		this.parentTabComponent.setGermplasmList(GermplasmDataInitializer.getGermplasmListTestData());
 
 		// function to test
 		this.parentTabComponent.doSaveAction();
@@ -314,8 +318,8 @@ public class ParentTabComponentTest {
 		this.parentTabComponent.initializeListInventoryTable(inventoryTable);
 		this.parentTabComponent.addListeners();
 		this.parentTabComponent.setHasChanges(true);
-		this.parentTabComponent.setGermplasmList(getGermplasmListTestData());
-		this.parentTabComponent.setValidReservationsToSave(createReservations(2));
+		this.parentTabComponent.setGermplasmList(GermplasmDataInitializer.getGermplasmListTestData());
+		this.parentTabComponent.setValidReservationsToSave(ImportedGermplasmListDataInitializer.createReservations(2));
 
 		// function to test
 		this.parentTabComponent.doSaveAction();
@@ -325,30 +329,4 @@ public class ParentTabComponentTest {
 
 	}
 
-	private GermplasmList getGermplasmListTestData() {
-		final GermplasmList germplasmList = new GermplasmList();
-		germplasmList.setId(3);
-		germplasmList.setName("newName");
-		germplasmList.setDescription("newDescription");
-		germplasmList.setNotes("newNotes");
-		germplasmList.setType("TEST_TYPE");
-		return germplasmList;
-	}
-
-	private List<GermplasmListEntry> getGermplasmListEntries() {
-		final List<GermplasmListEntry> listEntries = new ArrayList<>();
-
-		listEntries.add(new GermplasmListEntry(1, 1, 1));
-		listEntries.add(new GermplasmListEntry(2, 2, 2));
-
-		return listEntries;
-	}
-
-	private Map<ListEntryLotDetails, Double> createReservations(final int noOfEntries) {
-		final Map<ListEntryLotDetails, Double> reservations = new HashMap<>();
-		for (Integer i = 0; i < noOfEntries; i++) {
-			reservations.put(ListInventoryDataInitializer.createLotDetail(i, 1), i.doubleValue());
-		}
-		return reservations;
-	}
 }
