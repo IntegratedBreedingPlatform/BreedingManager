@@ -33,6 +33,7 @@ import org.generationcp.breeding.manager.inventory.InventoryDropTargetContainer;
 import org.generationcp.breeding.manager.inventory.ListDataAndLotDetails;
 import org.generationcp.breeding.manager.inventory.ReservationStatusWindow;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
+import org.generationcp.breeding.manager.inventory.ReserveInventoryActionFactory;
 import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryUtil;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
@@ -375,7 +376,8 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	private final MakeCrossesParentsComponent source;
 	private CrossingManagerActionHandler parentActionListener;
 	private String listNameForCrosses;
-	private SaveGermplasmListActionFactory saveGermplasmListActionFactory;
+	private final SaveGermplasmListActionFactory saveGermplasmListActionFactory;
+	private final ReserveInventoryActionFactory reserveInventoryActionFactory;
 
 	private SaveListAsDialog saveListAsWindow;
 
@@ -388,20 +390,22 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	private ReserveInventoryWindow reserveInventory;
 	private ReservationStatusWindow reservationStatus;
 	private ReserveInventoryUtil reserveInventoryUtil;
-	private ReserveInventoryAction reserveInventoryAction;
+
 	private Map<ListEntryLotDetails, Double> validReservationsToSave;
 	private ModeView prevModeView;
 
 	private InventoryTableDropHandler inventoryTableDropHandler;
 
 	public ParentTabComponent(final CrossingManagerMakeCrossesComponent makeCrossesMain, final MakeCrossesParentsComponent source,
-			final String parentLabel, final Integer rowCount, final SaveGermplasmListActionFactory saveGermplasmListActionFactory) {
+			final String parentLabel, final Integer rowCount, final SaveGermplasmListActionFactory saveGermplasmListActionFactory,
+			final ReserveInventoryActionFactory reserveInventoryActionFactory) {
 		super();
 		this.makeCrossesMain = makeCrossesMain;
 		this.source = source;
 		this.parentLabel = parentLabel;
 		this.rowCount = rowCount;
 		this.saveGermplasmListActionFactory = saveGermplasmListActionFactory;
+		this.reserveInventoryActionFactory = reserveInventoryActionFactory;
 	}
 
 	@Override
@@ -633,18 +637,11 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			return;
 		}
 
-		if (modeView.equals(ModeView.LIST_VIEW)) {
-			if (this.germplasmList == null || this.isTreatAsNewList) {
-				this.openSaveListAsDialog();
-			} else {
-				this.saveList(this.germplasmList);
-			}
+		if (this.germplasmList == null || this.isTreatAsNewList) {
+			this.openSaveListAsDialog();
 		} else {
-			// Inventory view
-			if (this.germplasmList == null || this.isTreatAsNewList) {
-				// new list in inventory view
-				this.openSaveListAsDialog();
-			} else if (this.inventoryTableDropHandler.hasChanges()) {
+			if (modeView.equals(ModeView.LIST_VIEW) || (modeView.equals(ModeView.INVENTORY_VIEW) && this.inventoryTableDropHandler
+					.hasChanges())) {
 				this.saveList(this.germplasmList);
 			}
 		}
@@ -654,7 +651,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		}
 	}
 
-	private boolean isOnlyReservationsMade(ModeView modeView){
+	private boolean isOnlyReservationsMade(final ModeView modeView){
 		return this.hasUnsavedChanges() && modeView.equals(ModeView.INVENTORY_VIEW) && this.germplasmList != null &&
 				!this.inventoryTableDropHandler.hasChanges();
 	}
@@ -1162,7 +1159,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		if (validReservations.isEmpty()) {
 			MessageNotifier
 					.showRequiredFieldError(this.getWindow(), this.messageSource
-									.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES) + ".");
+							.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES) + ".");
 		} else if (!withInvalidReservations) {
 			MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
 					"All selected entries will be reserved in their respective lots.", 3000);
@@ -1212,22 +1209,35 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		this.source.getWindow().removeWindow(this.reservationStatus);
 	}
 
-	public void saveReservationChangesAction(boolean displayReservationSuccessMessage) {
+	public boolean saveReservationChangesAction(final boolean displayReservationSuccessMessage) {
+		boolean success;
+		// do nothing if there were no unsaved changes
+		if (!this.hasUnsavedChanges()) {
+			return false;
+		}
 
-		if (this.hasUnsavedChanges()) {
-			this.reserveInventoryAction = new ReserveInventoryAction(this);
-			boolean success =
-					this.reserveInventoryAction.saveReserveTransactions(this.getValidReservationsToSave(), this.germplasmList.getId());
+		final ReserveInventoryAction reserveInventoryAction = this.reserveInventoryActionFactory.createInstance(this);
+		try {
+			success = reserveInventoryAction.saveReserveTransactions(this.getValidReservationsToSave(), this.germplasmList.getId());
 			if (success) {
 				this.refreshInventoryColumns(this.getValidReservationsToSave());
 				this.resetListInventoryTableValues();
 
 				if (displayReservationSuccessMessage) {
-					MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
-							"All reservations were saved.");
+					MessageNotifier
+							.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS), "All reservations were saved.");
 				}
+			} else {
+				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR), "The reservations were not saved "
+						+ "due to and error in the system.");
 			}
+		} catch (final MiddlewareQueryException e) {
+			ParentTabComponent.LOG.error(e.getMessage(), e);
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR), "The reservations were not saved "
+					+ "due to and error in the system.");
+			success = false;
 		}
+		return success;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1300,6 +1310,10 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	public Map<ListEntryLotDetails, Double> getValidReservationsToSave() {
 		return this.validReservationsToSave;
+	}
+
+	public void setValidReservationsToSave(final Map<ListEntryLotDetails, Double> validReservationsToSave) {
+		this.validReservationsToSave = validReservationsToSave;
 	}
 
 	public ContextMenuItem getSaveActionMenu() {
@@ -1434,7 +1448,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		}
 	}
 
-	public void setPreviousModeView(ModeView prevModeView) {
+	public void setPreviousModeView(final ModeView prevModeView) {
 		this.prevModeView = prevModeView;
 	}
 
@@ -1446,7 +1460,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		this.editHeaderButton.setVisible(true);
 	}
 
-	protected String getTermNameFromOntology(ColumnLabels columnLabels) {
+	protected String getTermNameFromOntology(final ColumnLabels columnLabels) {
 		return columnLabels.getTermNameFromOntology(this.ontologyDataManager);
 	}
 
@@ -1458,11 +1472,11 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		return this.inventoryTableDropHandler;
 	}
 
-	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 
-	public void setOntologyDataManager(OntologyDataManager ontologyDataManager) {
+	public void setOntologyDataManager(final OntologyDataManager ontologyDataManager) {
 		this.ontologyDataManager = ontologyDataManager;
 	}
 
@@ -1470,11 +1484,15 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		return this.isTreatAsNewList;
 	}
 
-	public void setIsTreatAsNewList(boolean isTreatAsNewList) {
+	public void setIsTreatAsNewList(final boolean isTreatAsNewList) {
 		this.isTreatAsNewList = isTreatAsNewList;
 	}
 
 	public SaveListAsDialog getSaveListAsWindow() {
 		return this.saveListAsWindow;
+	}
+
+	public void setInventoryDataManager(final InventoryDataManager inventoryDataManager) {
+		this.inventoryDataManager = inventoryDataManager;
 	}
 }

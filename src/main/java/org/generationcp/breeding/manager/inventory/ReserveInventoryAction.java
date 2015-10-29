@@ -45,7 +45,7 @@ public class ReserveInventoryAction implements Serializable {
 
 	private ReservationStatusWindow reservationStatus;
 
-	public ReserveInventoryAction(ReserveInventorySource source) {
+	public ReserveInventoryAction(final ReserveInventorySource source) {
 		super();
 		this.source = source;
 	}
@@ -138,50 +138,45 @@ public class ReserveInventoryAction implements Serializable {
 
 	public boolean saveReserveTransactions(Map<ListEntryLotDetails, Double> validReservationsToSave, Integer listId) {
 		List<Transaction> reserveTransactionList = new ArrayList<Transaction>();
-		try {
-			for (Map.Entry<ListEntryLotDetails, Double> entry : validReservationsToSave.entrySet()) {
-				ListEntryLotDetails lotDetail = entry.getKey();
+		for (Map.Entry<ListEntryLotDetails, Double> entry : validReservationsToSave.entrySet()) {
+			ListEntryLotDetails lotDetail = entry.getKey();
 
-				Integer lotId = lotDetail.getLotId();
-				Integer transactionDate = DateUtil.getCurrentDateAsIntegerValue();
-				Integer transacStatus = 0;
+			Integer lotId = lotDetail.getLotId();
+			Integer transactionDate = DateUtil.getCurrentDateAsIntegerValue();
+			Integer transacStatus = 0;
 
-				// since this is a reserve transaction
-				Double amountToReserve = -1 * entry.getValue();
-				String comments = "";
-				String sourceType = "LIST";
-				Integer lrecId = lotDetail.getId();
+			// since this is a reserve transaction
+			Double amountToReserve = -1 * entry.getValue();
+			String comments = "";
+			String sourceType = "LIST";
+			Integer lrecId = lotDetail.getId();
 
-				Double prevAmount = 0D;
-				Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
-				Integer personId = this.userDataManager.getPersonById(ibdbUserId).getId();
+			Double prevAmount = 0D;
+			Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
+			Integer personId = this.userDataManager.getPersonById(ibdbUserId).getId();
 
-				Transaction reserveTransaction = new Transaction();
+			Transaction reserveTransaction = new Transaction();
 
-				reserveTransaction.setUserId(ibdbUserId);
+			reserveTransaction.setUserId(ibdbUserId);
 
-				Lot lot = new Lot(lotId);
-				reserveTransaction.setLot(lot);
+			Lot lot = new Lot(lotId);
+			reserveTransaction.setLot(lot);
 
-				reserveTransaction.setTransactionDate(transactionDate);
-				reserveTransaction.setStatus(transacStatus);
-				reserveTransaction.setQuantity(amountToReserve);
-				reserveTransaction.setComments(comments);
-				reserveTransaction.setCommitmentDate(transactionDate);
-				reserveTransaction.setSourceType(sourceType);
-				reserveTransaction.setSourceId(listId);
-				reserveTransaction.setSourceRecordId(lrecId);
-				reserveTransaction.setPreviousAmount(prevAmount);
-				reserveTransaction.setPersonId(personId);
+			reserveTransaction.setTransactionDate(transactionDate);
+			reserveTransaction.setStatus(transacStatus);
+			reserveTransaction.setQuantity(amountToReserve);
+			reserveTransaction.setComments(comments);
+			reserveTransaction.setCommitmentDate(transactionDate);
+			reserveTransaction.setSourceType(sourceType);
+			reserveTransaction.setSourceId(listId);
+			reserveTransaction.setSourceRecordId(lrecId);
+			reserveTransaction.setPreviousAmount(prevAmount);
+			reserveTransaction.setPersonId(personId);
 
-				reserveTransactionList.add(reserveTransaction);
-			}
-
-			this.inventoryDataManager.addTransactions(reserveTransactionList);
-
-		} catch (MiddlewareQueryException e) {
-			ReserveInventoryAction.LOG.error(e.getMessage(), e);
+			reserveTransactionList.add(reserveTransaction);
 		}
+
+		this.inventoryDataManager.addTransactions(reserveTransactionList);
 		return true;
 	}
 
@@ -207,7 +202,18 @@ public class ReserveInventoryAction implements Serializable {
 		return lrecIds;
 	}
 
-	public void cancelReservations(List<ListEntryLotDetails> listEntries) {
+	public void cancelReservations(final List<ListEntryLotDetails> listEntries) {
 		this.inventoryDataManager.cancelReservedInventory(this.getLotIdAndLrecId(listEntries));
+	}
+	public void setContextUtil(final ContextUtil contextUtil) {
+		this.contextUtil = contextUtil;
+	}
+
+	public void setInventoryDataManager(final InventoryDataManager inventoryDataManager) {
+		this.inventoryDataManager = inventoryDataManager;
+	}
+
+	public void setUserDataManager(final UserDataManager userDataManager) {
+		this.userDataManager = userDataManager;
 	}
 }
