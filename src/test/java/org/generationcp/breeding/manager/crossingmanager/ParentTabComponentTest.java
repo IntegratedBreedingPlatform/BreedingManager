@@ -1,30 +1,24 @@
 
 package org.generationcp.breeding.manager.crossingmanager;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.generationcp.breeding.manager.action.SaveGermplasmListAction;
 import org.generationcp.breeding.manager.action.SaveGermplasmListActionFactory;
 import org.generationcp.breeding.manager.action.SaveGermplasmListActionSource;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
-import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.listinventory.CrossingManagerInventoryTable;
 import org.generationcp.breeding.manager.data.initializer.GermplasmDataInitializer;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
-import org.generationcp.breeding.manager.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryActionFactory;
 import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -95,7 +89,7 @@ public class ParentTabComponentTest {
 	private ReserveInventorySource reserveInventorySource;
 
 	@Spy
-	private Window window = new Window();
+	private final Window window = new Window();
 
 	@Captor
 	ArgumentCaptor<Window.Notification> captor;
