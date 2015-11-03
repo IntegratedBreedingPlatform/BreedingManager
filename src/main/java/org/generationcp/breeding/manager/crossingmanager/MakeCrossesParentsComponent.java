@@ -667,14 +667,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		return this.maleParentTab.getGermplasmList();
 	}
 
-	public void setFemaleParentList(GermplasmList list) {
-		this.femaleParentTab.setGermplasmList(list);
-	}
-
-	public void setMaleParentList(GermplasmList list) {
-		this.maleParentTab.setGermplasmList(list);
-	}
-
 	public String getFemaleListNameForCrosses() {
 		return this.femaleParentTab.getListNameForCrosses();
 	}
