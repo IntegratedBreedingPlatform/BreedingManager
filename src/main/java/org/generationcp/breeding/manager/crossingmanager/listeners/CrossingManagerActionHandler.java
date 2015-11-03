@@ -23,7 +23,7 @@ public class CrossingManagerActionHandler implements Handler {
 	private static final long serialVersionUID = 5470824414143199719L;
 
 	private static final Action ACTION_SELECT_ALL = new Action("Select All");
-	private static final Action ACTION_REMOVE_SELECTED_ENTRIES = new Action("Remove selected entries");
+	public static final Action ACTION_REMOVE_SELECTED_ENTRIES = new Action("Remove selected entries");
 	private static final Action ACTION_DELETE_CROSSES = new Action("Delete selected crosses");
 	private static final Action CLEAR_ALL_CROSSES = new Action("Clear All");
 	private static final Action CLEAR_ALL_PARENTS = new Action("Clear All");
@@ -51,7 +51,7 @@ public class CrossingManagerActionHandler implements Handler {
 	}
 
 	@Override
-	public void handleAction(Action action, Object sender, Object target) {
+	public void handleAction(final Action action, final Object sender, final Object target) {
 		if (CrossingManagerActionHandler.ACTION_SELECT_ALL.equals(action) && sender instanceof Table) {
 			this.selectAllAction((Table) sender);
 		} else if (CrossingManagerActionHandler.ACTION_REMOVE_SELECTED_ENTRIES.equals(action) && sender instanceof Table) {
@@ -139,5 +139,9 @@ public class CrossingManagerActionHandler implements Handler {
 				((MakeCrossesParentsComponent) this.source).getMaleParentTab().setIsTreatAsNewList(true);
 			}
 		}
+	}
+
+	public Object getSource() {
+		return this.source;
 	}
 }
