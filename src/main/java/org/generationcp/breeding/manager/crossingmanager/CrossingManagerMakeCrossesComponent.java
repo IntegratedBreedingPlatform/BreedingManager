@@ -21,9 +21,15 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -35,6 +41,8 @@ import com.vaadin.ui.VerticalLayout;
 public class CrossingManagerMakeCrossesComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
 		BreedingManagerLayout, StepChangeListener, UnsavedChangesConfirmDialogSource {
 
+	private static final Logger LOG = LoggerFactory.getLogger(CrossingManagerMakeCrossesComponent.class);
+
 	public static final String NEXT_BUTTON_ID = "next button";
 	public static final String BACK_BUTTON_ID = "back button";
 
@@ -42,6 +50,9 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
+
+	@Autowired
+	private PlatformTransactionManager transactionManager;
 
 	private final ManageCrossingSettingsMain source;
 
@@ -59,7 +70,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	private boolean hasChanges;
 	private UnsavedChangesConfirmDialog unsavedChangesDialog;
 
-	public CrossingManagerMakeCrossesComponent(ManageCrossingSettingsMain manageCrossingSettingsMain) {
+	public CrossingManagerMakeCrossesComponent(final ManageCrossingSettingsMain manageCrossingSettingsMain) {
 		this.source = manageCrossingSettingsMain;
 	}
 
@@ -86,41 +97,63 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	/*
 	 * Action handler for Make Cross button
 	 */
-	public void makeCrossButtonAction(List<GermplasmListEntry> femaleList, List<GermplasmListEntry> maleList, String listnameFemaleParent,
-			String listnameMaleParent, CrossType type, boolean makeReciprocalCrosses, boolean excludeSelf) {
+	public void makeCrossButtonAction(final List<GermplasmListEntry> femaleList, final List<GermplasmListEntry> maleList,
+			final String listnameFemaleParent, final String listnameMaleParent, final CrossType type, final boolean makeReciprocalCrosses,
+			final boolean excludeSelf) {
 
 		if (!femaleList.isEmpty() && !maleList.isEmpty()) {
-			// Female - Male Multiplication
-			if (CrossType.MULTIPLY.equals(type)) {
-				this.crossesTableComponent.multiplyParents(femaleList, maleList, listnameFemaleParent, listnameMaleParent, excludeSelf);
-				if (makeReciprocalCrosses) {
-					this.crossesTableComponent.multiplyParents(maleList, femaleList, listnameMaleParent, listnameFemaleParent, excludeSelf);
-				}
+			try {
+				final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
+				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
-				// Top to Bottom Crossing
-			} else if (CrossType.TOP_TO_BOTTOM.equals(type)) {
-				if (femaleList.size() == maleList.size()) {
-					this.crossesTableComponent.makeTopToBottomCrosses(femaleList, maleList, listnameFemaleParent, listnameMaleParent,
-							excludeSelf);
-					if (makeReciprocalCrosses) {
-						this.crossesTableComponent.makeTopToBottomCrosses(maleList, femaleList, listnameMaleParent, listnameFemaleParent,
-								excludeSelf);
+					@Override
+					protected void doInTransactionWithoutResult(final TransactionStatus status) {
+						// Female - Male Multiplication
+						if (CrossType.MULTIPLY.equals(type)) {
+							CrossingManagerMakeCrossesComponent.this.crossesTableComponent.multiplyParents(femaleList, maleList,
+									listnameFemaleParent, listnameMaleParent, excludeSelf);
+							if (makeReciprocalCrosses) {
+								CrossingManagerMakeCrossesComponent.this.crossesTableComponent.multiplyParents(maleList, femaleList,
+										listnameMaleParent, listnameFemaleParent, excludeSelf);
+							}
+
+							// Top to Bottom Crossing
+						} else if (CrossType.TOP_TO_BOTTOM.equals(type)) {
+							if (femaleList.size() == maleList.size()) {
+								CrossingManagerMakeCrossesComponent.this.crossesTableComponent.makeTopToBottomCrosses(femaleList, maleList,
+										listnameFemaleParent, listnameMaleParent, excludeSelf);
+								if (makeReciprocalCrosses) {
+									CrossingManagerMakeCrossesComponent.this.crossesTableComponent.makeTopToBottomCrosses(maleList,
+											femaleList, listnameMaleParent, listnameFemaleParent, excludeSelf);
+								}
+							} else {
+								MessageNotifier.showError(CrossingManagerMakeCrossesComponent.this.getWindow(),
+										"Error with selecting parents.", CrossingManagerMakeCrossesComponent.this.messageSource
+												.getMessage(Message.ERROR_MALE_AND_FEMALE_PARENTS_MUST_BE_EQUAL));
+							}
+						}
 					}
-				} else {
-					MessageNotifier.showError(this.getWindow(), "Error with selecting parents.",
-							this.messageSource.getMessage(Message.ERROR_MALE_AND_FEMALE_PARENTS_MUST_BE_EQUAL));
-				}
+				});
+
+			} catch (final Throwable e) {
+				CrossingManagerMakeCrossesComponent.LOG.error(e.getMessage(), e);
+				MessageNotifier.showError(CrossingManagerMakeCrossesComponent.this.getWindow(),
+						this.messageSource.getMessage(Message.ERROR),
+						CrossingManagerMakeCrossesComponent.this.messageSource.getMessage(Message.ERROR_WITH_CROSSES_RETRIEVAL));
 			}
+
 		} else {
-			MessageNotifier.showError(this.getWindow(), "Error with selecting parents.",
-					this.messageSource.getMessage(Message.AT_LEAST_ONE_FEMALE_AND_ONE_MALE_PARENT_MUST_BE_SELECTED));
+			MessageNotifier.showError(CrossingManagerMakeCrossesComponent.this.getWindow(), "Error with selecting parents.",
+					CrossingManagerMakeCrossesComponent.this.messageSource
+							.getMessage(Message.AT_LEAST_ONE_FEMALE_AND_ONE_MALE_PARENT_MUST_BE_SELECTED));
 		}
 
-		this.showNotificationAfterCrossing(this.crossesTableComponent.getTableCrossesMade().size());
+		CrossingManagerMakeCrossesComponent.this
+				.showNotificationAfterCrossing(CrossingManagerMakeCrossesComponent.this.crossesTableComponent.getTableCrossesMade().size());
 
 	}
 
-	void showNotificationAfterCrossing(int noOfCrosses) {
+	void showNotificationAfterCrossing(final int noOfCrosses) {
 		if (noOfCrosses == 0) {
 			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
 					this.messageSource.getMessage(Message.NO_CROSSES_GENERATED));
@@ -186,7 +219,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 	@Override
 	public void addListeners() {
-		CrossingManagerImportButtonClickListener listener = new CrossingManagerImportButtonClickListener(this);
+		final CrossingManagerImportButtonClickListener listener = new CrossingManagerImportButtonClickListener(this);
 		this.backButton.addListener(listener);
 		this.nextButton.addListener(listener);
 	}
@@ -197,18 +230,18 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		this.setMargin(true);
 		this.setSpacing(true);
 
-		HorizontalLayout upperLayout = new HorizontalLayout();
+		final HorizontalLayout upperLayout = new HorizontalLayout();
 		upperLayout.setSpacing(true);
 		upperLayout.setHeight("535px");
 		upperLayout.addComponent(this.selectParentsComponent);
 		upperLayout.addComponent(this.parentsComponent);
 
-		HorizontalLayout lowerLayout = new HorizontalLayout();
+		final HorizontalLayout lowerLayout = new HorizontalLayout();
 		lowerLayout.setSpacing(true);
 		lowerLayout.addComponent(this.crossingMethodComponent);
 		lowerLayout.addComponent(this.crossesTableComponent);
 
-		HorizontalLayout layoutButtonArea = new HorizontalLayout();
+		final HorizontalLayout layoutButtonArea = new HorizontalLayout();
 		layoutButtonArea.setMargin(true, true, false, true);
 		layoutButtonArea.setSpacing(true);
 		layoutButtonArea.addComponent(this.backButton);
@@ -222,7 +255,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		this.setStyleName("crosses-select-parents-tab");
 	}
 
-	public void updateCrossesSeedSource(String femaleListName, String maleListName) {
+	public void updateCrossesSeedSource(final String femaleListName, final String maleListName) {
 		this.crossesTableComponent.updateSeedSource(femaleListName, maleListName);
 	}
 
@@ -240,7 +273,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 	// SETTERS AND GETTERS
 	public String getSeparatorString() {
-		CrossNameSetting crossNameSetting = this.getCurrentCrossingSetting().getCrossNameSetting();
+		final CrossNameSetting crossNameSetting = this.getCurrentCrossingSetting().getCrossNameSetting();
 		return crossNameSetting.getSeparator();
 	}
 
@@ -276,11 +309,11 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		return this.modeView;
 	}
 
-	public void setModeViewOnly(ModeView newModeView) {
+	public void setModeViewOnly(final ModeView newModeView) {
 		this.modeView = newModeView;
 	}
 
-	public void setModeView(ModeView newModeView) {
+	public void setModeView(final ModeView newModeView) {
 		String message = "";
 
 		if (this.modeView != newModeView) {
@@ -309,8 +342,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 	public boolean areBothParentsNewListWithUnsavedChanges() {
 		// for female and male parent lists
-		ParentTabComponent femaleParentTab = this.parentsComponent.getFemaleParentTab();
-		ParentTabComponent maleParentTab = this.parentsComponent.getMaleParentTab();
+		final ParentTabComponent femaleParentTab = this.parentsComponent.getFemaleParentTab();
+		final ParentTabComponent maleParentTab = this.parentsComponent.getMaleParentTab();
 
 		if (femaleParentTab.getGermplasmList() == null && femaleParentTab.hasUnsavedChanges() && maleParentTab.getGermplasmList() == null
 				&& maleParentTab.hasUnsavedChanges()) {
@@ -320,12 +353,12 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		return false;
 	}
 
-	public void updateView(ModeView modeView) {
+	public void updateView(final ModeView modeView) {
 		this.selectParentsComponent.updateViewForAllLists(modeView);
 		this.parentsComponent.updateViewForAllParentLists(modeView);
 	}
 
-	public void showUnsavedChangesConfirmDialog(String message, ModeView newModeView) {
+	public void showUnsavedChangesConfirmDialog(final String message, final ModeView newModeView) {
 		this.modeView = newModeView;
 		this.unsavedChangesDialog = new UnsavedChangesConfirmDialog(this, message);
 		this.getWindow().addWindow(this.unsavedChangesDialog);
@@ -335,13 +368,13 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	public void saveAllListChangesAction() {
 
 		if (this.selectParentsComponent.hasUnsavedChanges()) {
-			Map<SelectParentsListDataComponent, Boolean> listToUpdate = new HashMap<SelectParentsListDataComponent, Boolean>();
+			final Map<SelectParentsListDataComponent, Boolean> listToUpdate = new HashMap<SelectParentsListDataComponent, Boolean>();
 			listToUpdate.putAll(this.selectParentsComponent.getListStatusForChanges());
 
-			for (Map.Entry<SelectParentsListDataComponent, Boolean> list : listToUpdate.entrySet()) {
-				Boolean isListHasUnsavedChanges = list.getValue();
+			for (final Map.Entry<SelectParentsListDataComponent, Boolean> list : listToUpdate.entrySet()) {
+				final Boolean isListHasUnsavedChanges = list.getValue();
 				if (isListHasUnsavedChanges) {
-					SelectParentsListDataComponent toSave = list.getKey();
+					final SelectParentsListDataComponent toSave = list.getKey();
 					toSave.saveReservationChangesAction();
 				}
 			}
@@ -349,8 +382,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 		if (this.parentsComponent.hasUnsavedChanges()) {
 			// for female and male parent lists
-			ParentTabComponent femaleParentTab = this.parentsComponent.getFemaleParentTab();
-			ParentTabComponent maleParentTab = this.parentsComponent.getMaleParentTab();
+			final ParentTabComponent femaleParentTab = this.parentsComponent.getFemaleParentTab();
+			final ParentTabComponent maleParentTab = this.parentsComponent.getMaleParentTab();
 
 			ModeView prevModeView;
 			if (this.modeView.equals(ModeView.LIST_VIEW)) {
@@ -399,7 +432,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		this.selectParentsComponent.updateViewForAllLists(this.modeView);
 
 		// for female parent list
-		ParentTabComponent femaleTabComponent = this.parentsComponent.getFemaleParentTab();
+		final ParentTabComponent femaleTabComponent = this.parentsComponent.getFemaleParentTab();
 		if (femaleTabComponent.getGermplasmList() != null) {
 			if (this.modeView.equals(ModeView.INVENTORY_VIEW)) {
 				femaleTabComponent.discardChangesInListView();
@@ -412,7 +445,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		}
 
 		// for male parent list
-		ParentTabComponent maleTabComponent = this.parentsComponent.getMaleParentTab();
+		final ParentTabComponent maleTabComponent = this.parentsComponent.getMaleParentTab();
 		if (maleTabComponent.getGermplasmList() != null) {
 			if (this.modeView.equals(ModeView.INVENTORY_VIEW)) {
 				maleTabComponent.discardChangesInListView();
@@ -444,7 +477,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		// end of cancelAllListChangesAction()
 	}
 
-	public void setHasUnsavedChangesMain(boolean hasChanges) {
+	public void setHasUnsavedChangesMain(final boolean hasChanges) {
 		this.hasChanges = hasChanges;
 	}
 
@@ -452,13 +485,13 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		return this.hasChanges;
 	}
 
-	public void showNodeOnTree(Integer listId) {
-		CrossingManagerListTreeComponent listTreeComponent = this.getSelectParentsComponent().getListTreeComponent();
+	public void showNodeOnTree(final Integer listId) {
+		final CrossingManagerListTreeComponent listTreeComponent = this.getSelectParentsComponent().getListTreeComponent();
 		listTreeComponent.setListId(listId);
 		listTreeComponent.createTree();
 	}
 
-	void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+	void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 }
