@@ -71,8 +71,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 
 	private CrossingManagerMakeCrossesComponent makeCrossesMain;
 
-	private Boolean hasChanges;
-
 	public MakeCrossesParentsComponent(CrossingManagerMakeCrossesComponent parentComponent) {
 		this.makeCrossesMain = parentComponent;
 	}
@@ -724,26 +722,12 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	}
 
 	public Boolean hasUnsavedChanges() {
-
-		this.hasChanges = false;
-
-		if (this.femaleParentTab.hasUnsavedChanges()) {
-			this.hasChanges = true;
-		} else if (this.maleParentTab.hasUnsavedChanges()) {
-			this.hasChanges = true;
-		}
-
-		return this.hasChanges;
-	}
-
-	public void setHasUnsavedChanges(boolean hasChanges) {
-		this.hasChanges = hasChanges;
-		this.setHasUnsavedChangesMain(this.hasChanges);
+		return this.femaleParentTab.hasUnsavedChanges() || this.maleParentTab.hasUnsavedChanges();
 	}
 
 	@Override
-	public void setHasUnsavedChangesMain(boolean hasChanges) {
-		if (this.femaleParentTab.hasUnsavedChanges() || this.maleParentTab.hasUnsavedChanges()) {
+	public void setHasUnsavedChangesMain(final boolean hasChanges) {
+		if (this.hasUnsavedChanges()) {
 			this.makeCrossesMain.setHasUnsavedChangesMain(true);
 		} else {
 			this.makeCrossesMain.setHasUnsavedChangesMain(hasChanges);

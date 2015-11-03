@@ -1358,7 +1358,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 		this.inventoryTableDropHandler.setHasChanges(false);
 
-		this.source.setHasUnsavedChanges(this.hasChanges);
+		this.source.setHasUnsavedChangesMain(this.hasChanges);
 	}
 
 	public boolean hasUnsavedChanges() {

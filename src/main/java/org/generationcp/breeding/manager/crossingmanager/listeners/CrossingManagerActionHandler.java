@@ -57,19 +57,9 @@ public class CrossingManagerActionHandler implements Handler {
 		} else if (CrossingManagerActionHandler.ACTION_REMOVE_SELECTED_ENTRIES.equals(action) && sender instanceof Table) {
 			this.removeSelectedEntriesAction((Table) sender);
 			if (this.source instanceof MakeCrossesParentsComponent) {
-				MakeCrossesParentsComponent makeCrosses = (MakeCrossesParentsComponent) this.source;
+				final MakeCrossesParentsComponent makeCrosses = (MakeCrossesParentsComponent) this.source;
 				makeCrosses.assignEntryNumber((Table) sender);
-				makeCrosses.setHasUnsavedChanges(true);
-
-				if (sender.equals(makeCrosses.getFemaleTable())) {
-					if (makeCrosses.getFemaleList().getId() > 0) {
-						makeCrosses.setFemaleParentList(null);
-					}
-				} else if (sender.equals(makeCrosses.getMaleTable())) {
-					if (makeCrosses.getMaleList().getId() > 0) {
-						makeCrosses.setMaleParentList(null);
-					}
-				}
+				makeCrosses.setHasUnsavedChangesMain(true);
 			}
 		} else if (CrossingManagerActionHandler.ACTION_DELETE_CROSSES.equals(action)) {
 			((MakeCrossesTableComponent) this.source).deleteCrossAction();
