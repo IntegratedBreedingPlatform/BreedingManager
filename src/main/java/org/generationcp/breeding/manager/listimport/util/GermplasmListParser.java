@@ -62,7 +62,9 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	private GermplasmDataManager germplasmDataManager;
 	@Resource
 	private OntologyDataManager ontologyDataManager;
-
+	@Resource
+	private StockIDValidator stockIDValidator;
+	
 	private int currentRowIndex = 0;
 	private ImportedGermplasmList importedGermplasmList;
 	private Map<FactorTypes, String> specialFactors = new HashMap<>();
@@ -73,7 +75,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	private Set<String> nameFactors;
 	private Set<String> attributeVariates;
 	private Set<String> headerNames = new HashSet<>();
-	private StockIDValidator stockIDValidator = new StockIDValidator();
+	
 
 	public String getNoInventoryWarning() {
 		return this.noInventoryWarning;
@@ -446,6 +448,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 				observationRowConverter.convertWorkbookRowsToObject(new WorkbookRowConverter.ContinueTillBlank());
 
 		this.importedGermplasmList.setImportedGermplasms(importedGermplasms);
+		
 		if (this.specialFactors.containsKey(FactorTypes.STOCK)) {
 			this.stockIDValidator.validate(this.specialFactors.get(FactorTypes.STOCK), this.importedGermplasmList);
 			this.validateForMissingInventoryVariable(this.specialFactors.get(FactorTypes.STOCK), this.importedGermplasmList);
@@ -935,7 +938,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		}
 	}
 	
-	private boolean validateListType(String listType) {
+	boolean validateListType(String listType) {
 		List<UserDefinedField> udFields = this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(LISTNMS, LISTTYPE);
 		for(UserDefinedField udField: udFields){
 			if(udField.getFcode().equalsIgnoreCase(listType)){
