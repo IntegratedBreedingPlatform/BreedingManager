@@ -58,6 +58,14 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	@Resource
 	private ContextUtil contextUtil;
 
+	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
+	}
+
+	public void setContextUtil(ContextUtil contextUtil) {
+		this.contextUtil = contextUtil;
+	}
+
 	public ProcessImportedGermplasmAction(SpecifyGermplasmDetailsComponent germplasmDetailsComponent) {
 		super();
 		this.germplasmDetailsComponent = germplasmDetailsComponent;
