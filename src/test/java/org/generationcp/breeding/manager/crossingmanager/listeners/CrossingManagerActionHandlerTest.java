@@ -2,6 +2,7 @@ package org.generationcp.breeding.manager.crossingmanager.listeners;
 
 import java.util.ArrayList;
 
+import org.generationcp.breeding.manager.action.SaveGermplasmListActionFactory;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
 import org.generationcp.breeding.manager.crossingmanager.MakeCrossesParentsComponent;
@@ -10,6 +11,7 @@ import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossing
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.listinventory.CrossingManagerInventoryTable;
 import org.generationcp.breeding.manager.data.initializer.GermplasmListDataInitializer;
+import org.generationcp.breeding.manager.inventory.ReserveInventoryActionFactory;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.oms.Term;
@@ -56,7 +58,8 @@ public class CrossingManagerActionHandlerTest {
 		final MakeCrossesParentsComponent makeCrossesParentsComponent = new MakeCrossesParentsComponent(Mockito.mock(
 				CrossingManagerMakeCrossesComponent.class));
 		final ParentTabComponent parentTabComponent =
-				new ParentTabComponent(Mockito.mock(CrossingManagerMakeCrossesComponent.class), makeCrossesParentsComponent, "test", 10);
+				new ParentTabComponent(Mockito.mock(CrossingManagerMakeCrossesComponent.class), makeCrossesParentsComponent, "test", 10,
+						new SaveGermplasmListActionFactory(), new ReserveInventoryActionFactory());
 		parentTabComponent.setMessageSource(this.messageSource);
 		parentTabComponent.setOntologyDataManager(this.ontologyDataManager);
 		parentTabComponent.initializeMainComponents();
