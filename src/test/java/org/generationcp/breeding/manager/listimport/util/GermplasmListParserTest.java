@@ -3,10 +3,11 @@ package org.generationcp.breeding.manager.listimport.util;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.generationcp.breeding.manager.data.initializer.GermplasmDataInitializer;
+import org.generationcp.breeding.manager.data.initializer.UserDefinedFieldTestDataInitializer;
 import org.generationcp.breeding.manager.listimport.validator.StockIDValidator;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
@@ -15,7 +16,6 @@ import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
-import org.generationcp.middleware.pojos.Germplasm;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +35,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class GermplasmListParserTest {
 
+	private static final String INVENTORY_AMOUNT = "INVENTORY AMOUNT";
 	public static final String TEST_FILE_NAME = "GermplasmImportTemplate-StockIDs-only.xls";
 	public static final String OBSERVATION_NO_STOCK_ID_FILE = "GermplasmImportTemplate-StockIDs-missing-stock-id-column.xls";
 	public static final String OBSERVATION_NO_STOCK_ID_VALUES_FILE = "GermplasmImportTemplate-StockIDs-missing-stock-id-values.xls";
@@ -50,27 +51,24 @@ public class GermplasmListParserTest {
 
 	@Mock
 	private InventoryDataManager inventoryDataManager;
-
+	
+	@Mock
+	private StockIDValidator stockIdValidator;
+	
 	@InjectMocks
-	private StockIDValidator stockIDValidator = Mockito.spy(new StockIDValidator());
-
-	@InjectMocks
-	private final GermplasmListParser parser = Mockito.spy(new GermplasmListParser());
+	private final GermplasmListParser parser = new GermplasmListParser();
 
 	private ImportedGermplasmList importedGermplasmList;
 
 	@Before
 	public void setUp() throws Exception {
 
-		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(Matchers.eq("INVENTORY AMOUNT"))).thenReturn(true);
-		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(AdditionalMatchers.not(Matchers.eq("INVENTORY AMOUNT")))).thenReturn(
+		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(Matchers.eq(INVENTORY_AMOUNT))).thenReturn(true);
+		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(AdditionalMatchers.not(Matchers.eq(INVENTORY_AMOUNT)))).thenReturn(
 				false);
-		Mockito.when(this.germplasmDataManager.getGermplasmByGID(Matchers.anyInt())).thenReturn(Mockito.mock(Germplasm.class));
+		Mockito.when(this.germplasmDataManager.getGermplasmByGID(Matchers.anyInt())).thenReturn(GermplasmDataInitializer.createGermplasm(1));
 		Mockito.when(this.inventoryDataManager.getSimilarStockIds(Matchers.anyList())).thenReturn(new ArrayList<String>());
-
-		final Map<Integer, String> preferredNames = Mockito.mock(Map.class);
-		Mockito.when(preferredNames.get(Matchers.any())).thenReturn("TEST DESIG");
-		Mockito.when(this.germplasmDataManager.getPreferredNamesByGids(Matchers.anyList())).thenReturn(preferredNames);
+		Mockito.when(this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(Matchers.anyString(), Matchers.anyString())).thenReturn(UserDefinedFieldTestDataInitializer.createUserDefinedFieldList());
 
 	}
 
@@ -157,25 +155,6 @@ public class GermplasmListParserTest {
 		}
 	}
 
-	/**
-	 * Test when we have stock id column but contain duplicate values
-	 *
-	 * @throws Exception
-	 */
-	@Test
-	public void testTemplateWithDuplicateIdsInObservation() throws Exception {
-		try {
-			final File workbookFile =
-					new File(ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.DUPLICATE_STOCK_ID_FILE).toURI());
-			final Workbook duplicateStockIdWorkbook = WorkbookFactory.create(workbookFile);
-			this.importedGermplasmList = this.parser.parseWorkbook(duplicateStockIdWorkbook, null);
-			Assert.fail("Unable to properly recognize error condition regarding duplicate IDs in observation sheet");
-		} catch (final FileParsingException e) {
-			Assert.assertEquals("A different error from the one expected was thrown by the parser", "GERMPLASM_PARSE_DUPLICATE_STOCK_ID",
-					e.getMessage());
-		}
-	}
-
 	@Test
 	public void testTemplateWithAdditionalNames() throws Exception {
 		File workbookFile = new File(ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.ADDITIONAL_NAME_FILE).toURI());
@@ -186,6 +165,16 @@ public class GermplasmListParserTest {
 		Assert.assertEquals("Unable to properly recognize additional name factors associated with germplasm", 2, germplasm.getNameFactors()
 				.size());
 
+	}
+	
+	@Test
+	public void testValidateListTypeFound(){
+		Assert.assertTrue("The listType should be accepted", this.parser.validateListType("LST"));
+	}
+	
+	@Test
+	public void testValidateListTypeNotFound(){
+		Assert.assertFalse("The return value should be false.",this.parser.validateListType("LIST"));
 	}
 
 }
