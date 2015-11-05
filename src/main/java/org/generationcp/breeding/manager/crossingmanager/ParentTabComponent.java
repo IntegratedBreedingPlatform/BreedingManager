@@ -431,7 +431,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	/**
 	 * Exposed for usage in tests
 	 */
-	protected void initializeMainComponents() {
+	public void initializeMainComponents() {
 		this.listEntriesLabel = new Label(this.messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
 		this.listEntriesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		this.listEntriesLabel.setWidth("160px");
@@ -492,7 +492,10 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		this.rowCount = rowCount;
 	}
 
-	protected void initializeParentTable(final TableWithSelectAllLayout tableWithSelectAllLayout) {
+	/**
+	 * Exposed for usage in tests
+	 */
+	public void initializeParentTable(final TableWithSelectAllLayout tableWithSelectAllLayout) {
 		this.tableWithSelectAllLayout = tableWithSelectAllLayout;
 
 		this.listDataTable = this.tableWithSelectAllLayout.getTable();
@@ -545,7 +548,11 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		this.tableWithSelectAllLayout = tableWithSelectAllLayout;
 	}
 
-	protected void initializeListInventoryTable(final CrossingManagerInventoryTable listInventoryTable) {
+	/**
+	 * Exposed for testing purposed
+	 * @param listInventoryTable
+	 */
+	public void initializeListInventoryTable(final CrossingManagerInventoryTable listInventoryTable) {
 		this.listInventoryTable = listInventoryTable;
 		this.listInventoryTable.setVisible(false);
 		this.listInventoryTable.setMaxRows(this.rowCount);
@@ -1375,7 +1382,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 		this.inventoryTableDropHandler.setHasChanges(false);
 
-		this.source.setHasUnsavedChanges(this.hasChanges);
+		this.source.setHasUnsavedChangesMain(this.hasChanges);
 	}
 
 	public boolean hasUnsavedChanges() {
@@ -1386,7 +1393,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		return this.hasChanges;
 	}
 
-	public void setHasChanges(boolean hasChanges) {
+	public void setHasChanges(final boolean hasChanges) {
 		this.hasChanges = hasChanges;
 	}
 
