@@ -242,20 +242,9 @@ public class ProcessImportedGermplasmAction implements Serializable {
 					germplasm = new Germplasm();
 				}
 
-				if (searchByNameOrNewGermplasmIsNeeded) {
-					// gid at creation is temporary, will be set properly below
-					germplasm = this.createGermplasmObject(0, 0, 0, 0, ibdbUserId, dateIntValue);
-
-					if (germplasmMatchesCount == 1 && this.germplasmDetailsComponent.automaticallyAcceptSingleMatchesCheckbox()) {
-						// If a single match is found, multiple matches will be
-						// handled by SelectGemrplasmWindow and
-						// then receiveGermplasmFromWindowAndUpdateGermplasmData()
-						final List<Germplasm> foundGermplasm =
-								this.germplasmDataManager.getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
-						germplasm.setGid(foundGermplasm.get(0).getGid());
-						this.doNotCreateGermplasmsWithId.add(foundGermplasm.get(0).getGid());
-					}
-				}
+				germplasm =
+						this.updateGidForSingleMatch(ibdbUserId, dateIntValue, importedGermplasm, germplasmMatchesCount, germplasm,
+								searchByNameOrNewGermplasmIsNeeded);
 
 				final Name name = this.createNameObject(ibdbUserId, dateIntValue, importedGermplasm.getDesig());
 
@@ -275,6 +264,36 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		} catch (final MiddlewareQueryException mqe) {
 			ProcessImportedGermplasmAction.LOG.error("Database error: " + mqe.getMessage(), mqe);
 		}
+	}
+
+	/**
+	 * Update GID to the existing germplasm's id. Otherwise, gid is set to 0
+	 * 
+	 * @param ibdbUserId
+	 * @param dateIntValue
+	 * @param importedGermplasm
+	 * @param germplasmMatchesCount
+	 * @param germplasm
+	 * @param searchByNameOrNewGermplasmIsNeeded
+	 * @return
+	 */
+	Germplasm updateGidForSingleMatch(final Integer ibdbUserId, final Integer dateIntValue, final ImportedGermplasm importedGermplasm,
+			final int germplasmMatchesCount, Germplasm germplasm, final boolean searchByNameOrNewGermplasmIsNeeded) {
+		if (searchByNameOrNewGermplasmIsNeeded) {
+			// gid at creation is temporary, will be set properly below
+			germplasm = this.createGermplasmObject(0, 0, 0, 0, ibdbUserId, dateIntValue);
+
+			if (germplasmMatchesCount == 1 && this.germplasmDetailsComponent.automaticallyAcceptSingleMatchesCheckbox()) {
+				// If a single match is found, multiple matches will be
+				// handled by SelectGemrplasmWindow and
+				// then receiveGermplasmFromWindowAndUpdateGermplasmData()
+				final List<Germplasm> foundGermplasm =
+						this.germplasmDataManager.getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
+				germplasm.setGid(foundGermplasm.get(0).getGid());
+				this.doNotCreateGermplasmsWithId.add(foundGermplasm.get(0).getGid());
+			}
+		}
+		return germplasm;
 	}
 
 	protected boolean isNeedToDisplayGermplasmSelectionWindow(final int germplasmMatchesCount) {
@@ -580,6 +599,10 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	public void addNameToGermplasm(final Name name, final Integer gid) {
 		this.doNotCreateGermplasmsWithId.add(gid);
 		this.newDesignationsForExistingGermplasm.add(name);
+	}
+
+	public void setGermplasmDataManager(final GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
 	}
 
 }
