@@ -244,7 +244,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 
 				if (searchByNameOrNewGermplasmIsNeeded) {
 					// gid at creation is temporary, will be set properly below
-					germplasm = this.createGermplasmObject(i, 0, 0, 0, ibdbUserId, dateIntValue);
+					germplasm = this.createGermplasmObject(0, 0, 0, 0, ibdbUserId, dateIntValue);
 
 					if (germplasmMatchesCount == 1 && this.germplasmDetailsComponent.automaticallyAcceptSingleMatchesCheckbox()) {
 						// If a single match is found, multiple matches will be
