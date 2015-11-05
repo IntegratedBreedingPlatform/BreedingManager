@@ -10,6 +10,7 @@ import java.util.Map;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
+import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 
 public class ImportedGermplasmListDataInitializer {
 
@@ -72,5 +73,13 @@ public class ImportedGermplasmListDataInitializer {
 		}
 
 		return ids;
+	}
+
+	public static Map<ListEntryLotDetails, Double> createReservations(final int noOfEntries) {
+		final Map<ListEntryLotDetails, Double> reservations = new HashMap<>();
+		for (Integer i = 0; i < noOfEntries; i++) {
+			reservations.put(ListInventoryDataInitializer.createLotDetail(i, 1), i.doubleValue());
+		}
+		return reservations;
 	}
 }

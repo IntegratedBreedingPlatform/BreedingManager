@@ -66,7 +66,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 
 	private Map<SelectParentsListDataComponent, Boolean> listStatusForChanges;
 
-	public SelectParentsComponent(CrossingManagerMakeCrossesComponent source) {
+	public SelectParentsComponent(final CrossingManagerMakeCrossesComponent source) {
 		super();
 		this.source = source;
 	}
@@ -86,36 +86,36 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 
 	@Override
 	public void instantiateComponents() {
-		selectParentsLabel = new Label(messageSource.getMessage(Message.SELECT_PARENTS));
-		selectParentsLabel.setStyleName(Bootstrap.Typography.H4.styleName());
-		selectParentsLabel.addStyleName(AppConstants.CssStyles.BOLD);
+		this.selectParentsLabel = new Label(this.messageSource.getMessage(Message.SELECT_PARENTS));
+		this.selectParentsLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+		this.selectParentsLabel.addStyleName(AppConstants.CssStyles.BOLD);
 
-		browseForListsButton = new Button(messageSource.getMessage(Message.BROWSE));
-		browseForListsButton.setImmediate(true);
-		browseForListsButton.setStyleName(Reindeer.BUTTON_LINK);
+		this.browseForListsButton = new Button(this.messageSource.getMessage(Message.BROWSE));
+		this.browseForListsButton.setImmediate(true);
+		this.browseForListsButton.setStyleName(Reindeer.BUTTON_LINK);
 
-		listTreeComponent = new CrossingManagerListTreeComponent(this, source);
+		this.listTreeComponent = new CrossingManagerListTreeComponent(this, this.source);
 
-		instructionForSelectParents = new Label("for a list to work with.");
+		this.instructionForSelectParents = new Label("for a list to work with.");
 
-		listDetailsTabSheet = new TabSheet();
-		listDetailsTabSheet.setWidth("460px");
-		listDetailsTabSheet.setHeight("465px");
+		this.listDetailsTabSheet = new TabSheet();
+		this.listDetailsTabSheet.setWidth("460px");
+		this.listDetailsTabSheet.setHeight("465px");
 		hideListDetailsTabSheet();
 
-		closeAllTabsButton = new Button(messageSource.getMessage(Message.CLOSE_ALL_TABS));
-		closeAllTabsButton.setStyleName(BaseTheme.BUTTON_LINK);
-		closeAllTabsButton.setVisible(false);
+		this.closeAllTabsButton = new Button(this.messageSource.getMessage(Message.CLOSE_ALL_TABS));
+		this.closeAllTabsButton.setStyleName(BaseTheme.BUTTON_LINK);
+		this.closeAllTabsButton.setVisible(false);
 
-		listStatusForChanges = new HashMap<SelectParentsListDataComponent, Boolean>();
+		this.listStatusForChanges = new HashMap<SelectParentsListDataComponent, Boolean>();
 	}
 
 	private void hideListDetailsTabSheet() {
-		listDetailsTabSheet.addStyleName(AppConstants.CssStyles.NO_TAB);
+		this.listDetailsTabSheet.addStyleName(AppConstants.CssStyles.NO_TAB);
 	}
 
 	private void showListDetailsTabSheet() {
-		listDetailsTabSheet.removeStyleName(AppConstants.CssStyles.NO_TAB);
+		this.listDetailsTabSheet.removeStyleName(AppConstants.CssStyles.NO_TAB);
 	}
 
 	@Override
@@ -198,9 +198,9 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	}
 
 	public void selectListInTree(Integer id) {
-		listTreeComponent.setListId(id);
-		listTreeComponent.createTree();
-		listTreeComponent.setSelectedListId(id);
+		this.listTreeComponent.setListId(id);
+		this.listTreeComponent.createTree();
+		this.listTreeComponent.setSelectedListId(id);
 	}
 
 	@Override
@@ -313,7 +313,11 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	}
 
 	public CrossingManagerListTreeComponent getListTreeComponent() {
-		return listTreeComponent;
+		return this.listTreeComponent;
+	}
+
+	public void setListTreeComponent(final CrossingManagerListTreeComponent listTreeComponent) {
+		this.listTreeComponent = listTreeComponent;
 	}
 
 	@Override
@@ -408,5 +412,9 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 
 	public static String generateTabDescription(Integer listId) {
 		return TAB_DESCRIPTION_PREFIX + listId;
+	}
+
+	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
 	}
 }

@@ -707,4 +707,8 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		this.ontologyDataManager = ontologyDataManager;
 	}
 
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
 }
