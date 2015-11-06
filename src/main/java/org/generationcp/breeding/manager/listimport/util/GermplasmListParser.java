@@ -35,6 +35,7 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.UserDefinedField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -48,19 +49,22 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	public static final int DESCRIPTION_SHEET_COL_SIZE = 8;
 	public static final int DESCRIPTION_SHEET_NO = 0;
 	public static final int CONDITION_HEADER_ROW_INDEX = 5;
-	public static final String TEMPLATE_LIST_TYPE = "LST";
 	public static final String LIST_DATE = "LIST DATE";
 	public static final String LIST_TYPE = "LIST TYPE";
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmListParser.class);
 	private static final int OBSERVATION_SHEET_NO = 1;
-
+	private static final String LISTTYPE = "LISTTYPE";
+	private static final String LISTNMS = "LISTNMS";
+	
 	private final Map<Integer, String> observationColumnMap = new HashMap<>();
 
 	@Resource
 	private GermplasmDataManager germplasmDataManager;
 	@Resource
 	private OntologyDataManager ontologyDataManager;
-
+	@Resource
+	private StockIDValidator stockIDValidator;
+	
 	private int currentRowIndex = 0;
 	private ImportedGermplasmList importedGermplasmList;
 	private Map<FactorTypes, String> specialFactors = new HashMap<>();
@@ -71,7 +75,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	private Set<String> nameFactors;
 	private Set<String> attributeVariates;
 	private Set<String> headerNames = new HashSet<>();
-	private StockIDValidator stockIDValidator = new StockIDValidator();
+	
 
 	public String getNoInventoryWarning() {
 		return this.noInventoryWarning;
@@ -366,7 +370,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 		final String listType = this.getCellStringValue(GermplasmListParser.DESCRIPTION_SHEET_NO, listTypeColNo, 1);
 
-		if (!GermplasmListParser.TEMPLATE_LIST_TYPE.equalsIgnoreCase(listType)) {
+		if (!validateListType(listType)) {
 			throw new FileParsingException("GERMPLASM_PARSE_LIST_TYPE_INVALID");
 		}
 
@@ -444,6 +448,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 				observationRowConverter.convertWorkbookRowsToObject(new WorkbookRowConverter.ContinueTillBlank());
 
 		this.importedGermplasmList.setImportedGermplasms(importedGermplasms);
+		
 		if (this.specialFactors.containsKey(FactorTypes.STOCK)) {
 			this.stockIDValidator.validate(this.specialFactors.get(FactorTypes.STOCK), this.importedGermplasmList);
 			this.validateForMissingInventoryVariable(this.specialFactors.get(FactorTypes.STOCK), this.importedGermplasmList);
@@ -931,5 +936,15 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		if (importedGermplasmList.hasMissingInventoryVariable()) {
 			throw new FileParsingException("GERMPLSM_PARSE_GID_MISSING_SEED_AMOUNT_VALUE", 0, "", header);
 		}
+	}
+	
+	boolean validateListType(String listType) {
+		List<UserDefinedField> udFields = this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(LISTNMS, LISTTYPE);
+		for(UserDefinedField udField: udFields){
+			if(udField.getFcode().equalsIgnoreCase(listType)){
+				return true;
+			}
+		}
+		return false;
 	}
 }
