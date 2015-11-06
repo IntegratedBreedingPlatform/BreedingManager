@@ -144,13 +144,10 @@ public class ProcessImportedGermplasmActionTest {
 		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(5)).getGermplasmFieldsComponent();
 		Mockito.verify(this.germplasmFieldsComponent).getGermplasmDateField();
 		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(4)).getImportedGermplasms();
-		Mockito.verify(this.germplasmDataManager).getCountByNamePermutations(Mockito.anyList());
 		Mockito.verify(this.germplasmFieldsComponent, Mockito.times(2)).getLocationComboBox();
 		Mockito.verify(this.germplasmFieldsComponent).getBreedingMethodComboBox();
 		Mockito.verify(this.germplasmDataManager).getGermplasmByGID(Mockito.isA(Integer.class));
 		Mockito.verify(this.germplasmFieldsComponent).getNameTypeComboBox();
-		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(2)).getSource();
-		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(2)).getWindow();
 	}
 
 	/**
@@ -215,11 +212,8 @@ public class ProcessImportedGermplasmActionTest {
 		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(5)).getGermplasmFieldsComponent();
 		Mockito.verify(this.germplasmFieldsComponent).getGermplasmDateField();
 		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(4)).getImportedGermplasms();
-		Mockito.verify(this.germplasmDataManager).getCountByNamePermutations(Mockito.anyList());
 		Mockito.verify(this.germplasmFieldsComponent, Mockito.times(2)).getLocationComboBox();
 		Mockito.verify(this.germplasmFieldsComponent).getBreedingMethodComboBox();
-		Mockito.verify(this.germplasmDataManager).getGermplasmByName(Mockito.anyString(), Mockito.anyInt(), Mockito.anyInt(),
-				Mockito.isA(Operation.class));
 		Mockito.verify(this.germplasmFieldsComponent).getNameTypeComboBox();
 		Mockito.verify(this.germplasmFieldsComponent, Mockito.times(2)).getLocationComboBox();
 
@@ -282,7 +276,6 @@ public class ProcessImportedGermplasmActionTest {
 		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(3)).getGermplasmFieldsComponent();
 		Mockito.verify(this.germplasmFieldsComponent).getGermplasmDateField();
 		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(4)).getImportedGermplasms();
-		Mockito.verify(this.germplasmDataManager).getCountByNamePermutations(Mockito.anyList());
 		Mockito.verify(this.germplasmDataManager).getGermplasmByGID(Mockito.isA(Integer.class));
 		Mockito.verify(this.germplasmDataManager)
 				.getNamesByGID(Mockito.isA(Integer.class), Mockito.anyInt(), (GermplasmNameType) Mockito.isNull());
