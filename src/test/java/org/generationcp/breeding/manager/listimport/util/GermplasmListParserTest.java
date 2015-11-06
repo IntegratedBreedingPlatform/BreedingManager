@@ -155,6 +155,26 @@ public class GermplasmListParserTest {
 		}
 	}
 
+	/**
+	 * Test when we have stock id column but contain duplicate values
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testTemplateWithDuplicateIdsInObservation() throws Exception {
+		try {
+			Mockito.doThrow(new FileParsingException("GERMPLASM_PARSE_DUPLICATE_STOCK_ID")).when(this.stockIdValidator).validate(Matchers.anyString(), (ImportedGermplasmList) Matchers.any());
+			final File workbookFile =
+					new File(ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.DUPLICATE_STOCK_ID_FILE).toURI());
+			final Workbook duplicateStockIdWorkbook = WorkbookFactory.create(workbookFile);
+			this.importedGermplasmList = this.parser.parseWorkbook(duplicateStockIdWorkbook, null);
+			Assert.fail("Unable to properly recognize error condition regarding duplicate IDs in observation sheet");
+		} catch (final FileParsingException e) {
+			Assert.assertEquals("A different error from the one expected was thrown by the parser", "GERMPLASM_PARSE_DUPLICATE_STOCK_ID",
+					e.getMessage());
+		}
+	}
+	
 	@Test
 	public void testTemplateWithAdditionalNames() throws Exception {
 		File workbookFile = new File(ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.ADDITIONAL_NAME_FILE).toURI());
