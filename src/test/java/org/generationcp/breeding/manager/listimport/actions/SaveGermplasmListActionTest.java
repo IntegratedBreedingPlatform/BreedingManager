@@ -8,6 +8,7 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.data.initializer.GermplasmDataInitializer;
 import org.generationcp.breeding.manager.data.initializer.GermplasmListDataInitializer;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
+import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -16,15 +17,13 @@ import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
-import org.generationcp.middleware.pojos.GermplasmList;
-import org.generationcp.middleware.pojos.Name;
-import org.generationcp.middleware.pojos.User;
-import org.generationcp.middleware.pojos.UserDefinedField;
+import org.generationcp.middleware.pojos.*;
 import org.generationcp.middleware.service.api.InventoryService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -45,6 +44,8 @@ public class SaveGermplasmListActionTest {
 	private static final String FTABLE_ATTRIBUTE = "ATRIBUTS";
 	private static final String FTYPE_ATTRIBUTE = "ATTRIBUTE";
 	private static final String FTYPE_PASSPORT = "PASSPORT";
+	public static final String TEST_SOURCE = "TEST SOURCE";
+	public static final String SOURCE_LIST_XLS = "SourceList.xls";
 
 	@Mock
 	private GermplasmListManager germplasmListManager;
@@ -128,9 +129,8 @@ public class SaveGermplasmListActionTest {
 
 	@Test
 	public void testSaveRecordsWhenOverridingExistingListUsingTheImportedGermplasmList() {
-		final String filename = "SourceList.xls";
-		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, filename, this.doNotCreateGermplasmsWithId,
-				this.importedGermplasmList, SEED_STORAGE_LOCATION);
+		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, SOURCE_LIST_XLS,
+				this.doNotCreateGermplasmsWithId, this.importedGermplasmList, SEED_STORAGE_LOCATION);
 
 		try {
 			Mockito.verify(this.germplasmListManager, Mockito.times(1)).deleteGermplasmListDataByListId(SAVED_GERMPLASM_LIST_ID);
@@ -141,11 +141,47 @@ public class SaveGermplasmListActionTest {
 	}
 
 	@Test
+	public void testBlankSourceSaving() {
+		final ArgumentCaptor<GermplasmListData> listData = ArgumentCaptor.forClass(GermplasmListData.class);
+
+		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, SOURCE_LIST_XLS,
+				this.doNotCreateGermplasmsWithId, this.importedGermplasmList, SEED_STORAGE_LOCATION);
+
+		try {
+			Mockito.verify(this.germplasmListManager, Mockito.atLeastOnce()).addGermplasmListData(listData.capture());
+			Assert.assertEquals("Imported germplasm data with null or empty source must be saved as blank", "", listData.getValue()
+					.getSeedSource());
+		} catch (final TooLittleActualInvocations e) {
+			Assert.fail("Expecting that the list entries of the existing list are marked deleted after trying to overwrite a list using germplasm import.");
+		}
+	}
+
+	@Test
+	public void testNonBlankSourceSaving() {
+		final ArgumentCaptor<GermplasmListData> listData = ArgumentCaptor.forClass(GermplasmListData.class);
+
+		// provide a non null source value
+		for (final ImportedGermplasm importedGermplasm : this.importedGermplasmList.getImportedGermplasms()) {
+			importedGermplasm.setSource(TEST_SOURCE);
+		}
+
+		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, SOURCE_LIST_XLS,
+				this.doNotCreateGermplasmsWithId, this.importedGermplasmList, SEED_STORAGE_LOCATION);
+
+		try {
+			Mockito.verify(this.germplasmListManager, Mockito.atLeastOnce()).addGermplasmListData(listData.capture());
+			Assert.assertEquals("Imported germplasm data with non empty source must use that value", TEST_SOURCE, listData.getValue()
+					.getSeedSource());
+		} catch (final TooLittleActualInvocations e) {
+			Assert.fail("Expecting that the list entries of the existing list are marked deleted after trying to overwrite a list using germplasm import.");
+		}
+	}
+
+	@Test
 	public void testSaveRecordsWhenOverridingNewListUsingTheImportedGermplasmList() {
-		final String filename = "SourceList.xls";
 		this.germplasmList.setId(null);
-		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, filename, this.doNotCreateGermplasmsWithId,
-				this.importedGermplasmList, SEED_STORAGE_LOCATION);
+		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, SOURCE_LIST_XLS,
+				this.doNotCreateGermplasmsWithId, this.importedGermplasmList, SEED_STORAGE_LOCATION);
 
 		try {
 			Mockito.verify(this.germplasmListManager, Mockito.times(0)).deleteGermplasmListDataByListId(SAVED_GERMPLASM_LIST_ID);

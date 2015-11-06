@@ -52,10 +52,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-/**
- * Created with IntelliJ IDEA. User: Efficio.Daniel Date: 8/20/13 Time: 1:39 PM To change this template use File | Settings | File
- * Templates.
- */
 @Configurable
 public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
@@ -156,7 +152,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 			ListCommonActionsUtil.deleteExistingListEntries(existingListId, this.germplasmListManager);
 		}
 
-		this.saveGermplasmListDataRecords(germplasmNameObjects, list, filename, importedGermplasms);
+		this.saveGermplasmListDataRecords(germplasmNameObjects, list, importedGermplasms);
 		this.addNewNamesToExistingGermplasm(newNames);
 
 		this.saveInventory();
@@ -208,7 +204,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 			name.setNstat(Integer.valueOf(1));
 
 			Integer gid = null;
-			Germplasm germplasm;
+			final Germplasm germplasm;
 
 			if (doNotCreateGermplasmsWithId.contains(germplasmName.getGermplasm().getGid())) {
 				// If do not create new germplasm
@@ -438,7 +434,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	}
 
 	private void saveGermplasmListDataRecords(final List<GermplasmName> germplasmNameObjects, final GermplasmList list,
-			final String filename, final List<ImportedGermplasm> importedGermplasms) {
+			final List<ImportedGermplasm> importedGermplasms) {
 
 		final List<GermplasmListData> listToSave = new ArrayList<GermplasmListData>();
 		final List<UserDefinedField> existingAttrUdflds = this.getUserDefinedFields(SaveGermplasmListAction.FCODE_TYPE_ATTRIBUTE);
@@ -455,11 +451,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 			final String designation = germplasmName.getName().getNval();
 
-			final String fileNameWithoutExtension = FileUtils.getFilenameWithoutExtension(filename);
-			String source = fileNameWithoutExtension + ":" + entryId;
-			if (importedGermplasm.getSource() != null && importedGermplasm.getSource().length() > 0) {
-				source = importedGermplasm.getSource();
-			}
+			final String source = importedGermplasm.getSource() == null ? "" : importedGermplasm.getSource();
 
 			String groupName = "-";
 			if (importedGermplasm.getCross() != null && importedGermplasm.getCross().length() > 0) {
