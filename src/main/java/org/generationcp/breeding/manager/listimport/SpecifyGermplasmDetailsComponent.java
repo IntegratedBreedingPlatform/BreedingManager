@@ -525,11 +525,11 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 
 		String germplasmSource;
 		for (int i = 0; i < this.getImportedGermplasms().size(); i++) {
-			ImportedGermplasm importedGermplasm = this.getImportedGermplasms().get(i);
+			final ImportedGermplasm importedGermplasm = this.getImportedGermplasms().get(i);
 			germplasmSource = importedGermplasm.getSource() == null ? "" : importedGermplasm.getSource();
 
-			this.getGermplasmDetailsTable()
-					.addItem(new Object[] {importedGermplasm.getEntryId(), importedGermplasm.getEntryCode(), importedGermplasm.getDesig(),
+			this.getGermplasmDetailsTable().addItem(
+					new Object[] {importedGermplasm.getEntryId(), importedGermplasm.getEntryCode(), importedGermplasm.getDesig(),
 							importedGermplasm.getCross(), importedGermplasm.getGid(), importedGermplasm.getInventoryId(),
 							importedGermplasm.getSeedAmount(), germplasmSource}, new Integer(i + 1));
 		}
@@ -640,7 +640,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 		this.processGermplasmAction = processGermplasmAction;
 	}
 
-	public void setGermplasmFieldsComponent(GermplasmFieldsComponent germplasmFieldsComponent) {
+	public void setGermplasmFieldsComponent(final GermplasmFieldsComponent germplasmFieldsComponent) {
 		this.germplasmFieldsComponent = germplasmFieldsComponent;
 	}
 
