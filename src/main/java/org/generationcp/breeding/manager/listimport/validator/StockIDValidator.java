@@ -12,9 +12,7 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Configurable;
 
-@Configurable
 public class StockIDValidator {
 
 	private static final Logger LOG = LoggerFactory.getLogger(StockIDValidator.class);
@@ -44,5 +42,4 @@ public class StockIDValidator {
 			throw new FileParsingException(e.getMessage());
 		}
 	}
-
 }

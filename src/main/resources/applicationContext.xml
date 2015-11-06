@@ -127,6 +127,11 @@
 		scope="request">
 		<aop:scoped-proxy />
 	</bean>
+	
+	<bean id="stockIDValidator" class="org.generationcp.breeding.manager.listimport.validator.StockIDValidator"
+		scope="request">
+		<aop:scoped-proxy />
+	</bean>
 
 	<bean id="workbenchDataManager"
 		class="org.generationcp.middleware.manager.WorkbenchDataManagerImpl"
