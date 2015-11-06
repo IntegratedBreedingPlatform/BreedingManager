@@ -274,14 +274,19 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		}
 	}
 
+
+	//TODO : Method getCountByNamePermutations of GermplasmDataManager need to be used to improve performance and efficient DB call.
 	private Map<String, Integer> mapImportedGermplasmsForDuplication(List<ImportedGermplasm> importedGermplasms) {
-		List<String> names = new ArrayList<>();
+
+		Map<String, Integer> germplasmMatchesMap = new HashMap<>();
 
 		for (final ImportedGermplasm germplasm : importedGermplasms) {
-			names.add(germplasm.getDesig());
+			String designationName = germplasm.getDesig();
+			Integer count = (int) this.germplasmDataManager.countGermplasmByName(designationName, Operation.EQUAL);
+			germplasmMatchesMap.put(designationName, count);
 		}
 
-		return this.germplasmDataManager.getMapCountByNamePermutations(names);
+		return germplasmMatchesMap;
 	}
 
 	private Integer getTotalFromGermplasmMatches(Map<String, Integer> germplasmMatchesMap){
