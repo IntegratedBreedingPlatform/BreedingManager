@@ -12,7 +12,6 @@ import java.util.Objects;
 
 import javax.annotation.Resource;
 
-import com.vaadin.ui.Window;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.listimport.GermplasmFieldsComponent;
 import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
@@ -32,6 +31,8 @@ import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+
+import com.vaadin.ui.Window;
 
 @Configurable
 public class ProcessImportedGermplasmAction implements Serializable {
@@ -55,14 +56,6 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	@Resource
 	private ContextUtil contextUtil;
 
-	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
-		this.germplasmDataManager = germplasmDataManager;
-	}
-
-	public void setContextUtil(ContextUtil contextUtil) {
-		this.contextUtil = contextUtil;
-	}
-	
 	public ProcessImportedGermplasmAction(final SpecifyGermplasmDetailsComponent germplasmDetailsComponent) {
 		super();
 		this.germplasmDetailsComponent = germplasmDetailsComponent;
@@ -92,7 +85,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	}
 
 	protected void performFirstPedigreeAction() {
-		
+
 		final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
 		final Integer dateIntValue = this.getGermplasmDateValue();
 
@@ -115,7 +108,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		}
 	}
 
-	protected void performSecondPedigreeAction() {		
+	protected void performSecondPedigreeAction() {
 		final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
 		final Integer dateIntValue = this.getGermplasmDateValue();
 
@@ -325,7 +318,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		}
 		return totalMatches;
 	}
-	
+
 	protected boolean isNeedToDisplayGermplasmSelectionWindow(int germplasmMatchesCount) {
 		return germplasmMatchesCount > 0 && !this.germplasmDetailsComponent.automaticallyAcceptSingleMatchesCheckbox();
 	}
@@ -418,7 +411,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	private SelectGermplasmWindow createSelectGermplasmWindow(String germplasmName, int rowNumber, Germplasm germplasm, Integer currentMatch, Integer totalMatches) {
 		return new SelectGermplasmWindow(this, germplasmName, rowNumber, germplasm, this.getWindow(), currentMatch, totalMatches);
 	}
-	
+
 	protected void addImportEntryListener(ImportGermplasmEntryActionListener listener) {
 		if (this.importEntryListeners.isEmpty()) {
 			this.showImportEntryListener(listener);
@@ -627,5 +620,13 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	public void addNameToGermplasm(final Name name, final Integer gid) {
 		this.doNotCreateGermplasmsWithId.add(gid);
 		this.newDesignationsForExistingGermplasm.add(name);
+	}
+
+	void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
+	}
+
+	void setContextUtil(ContextUtil contextUtil) {
+		this.contextUtil = contextUtil;
 	}
 }
