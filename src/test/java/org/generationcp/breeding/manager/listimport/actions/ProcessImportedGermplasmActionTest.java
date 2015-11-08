@@ -3,13 +3,8 @@ package org.generationcp.breeding.manager.listimport.actions;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Window;
 import org.generationcp.breeding.manager.action.SaveGermplasmListActionSource;
 import org.generationcp.breeding.manager.data.initializer.GermplasmDataInitializer;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
@@ -32,6 +27,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Window;
 
 /**
  * Unit Test to verify Process Imported Germplasm Action file
@@ -68,7 +67,7 @@ public class ProcessImportedGermplasmActionTest {
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		this.processImportedGermplasmAction = Mockito.spy(new ProcessImportedGermplasmAction(germplasmDetailsComponent));
+		this.processImportedGermplasmAction = Mockito.spy(new ProcessImportedGermplasmAction(this.germplasmDetailsComponent));
 		this.processImportedGermplasmAction.setContextUtil(this.contextUtil);
 		this.processImportedGermplasmAction.setGermplasmDataManager(this.germplasmDataManager);
 
@@ -90,14 +89,14 @@ public class ProcessImportedGermplasmActionTest {
 	@Test
 	public void testPerformSecondPedigreeActionIfGidSpecified() {
 		Mockito.when(this.contextUtil.getCurrentUserLocalId()).thenReturn(123);
-		Mockito.when(this.germplasmDetailsComponent.getGermplasmFieldsComponent()).thenReturn(germplasmFieldsComponent);
+		Mockito.when(this.germplasmDetailsComponent.getGermplasmFieldsComponent()).thenReturn(this.germplasmFieldsComponent);
 		BmsDateField bmsDateField = new BmsDateField();
 		Calendar cal = Calendar.getInstance();
 		cal.set(2015, Calendar.JANUARY, 1);
 		Date testCreatedDate = cal.getTime();
 		bmsDateField.setValue(testCreatedDate);
 
-		Mockito.when(germplasmFieldsComponent.getGermplasmDateField()).thenReturn(bmsDateField);
+		Mockito.when(this.germplasmFieldsComponent.getGermplasmDateField()).thenReturn(bmsDateField);
 
 		List<ImportedGermplasm> importedGermplasms = new ArrayList<>();
 		ImportedGermplasm importedGermplasm = new ImportedGermplasm();
@@ -106,10 +105,6 @@ public class ProcessImportedGermplasmActionTest {
 		importedGermplasms.add(importedGermplasm);
 
 		Mockito.when(this.germplasmDetailsComponent.getImportedGermplasms()).thenReturn(importedGermplasms);
-
-		Map<String, Integer> mapCountByNamePermutations = new HashMap<>();
-		mapCountByNamePermutations.put("(CML454 X CML451)-B-4-1-112", 2);
-		Mockito.when(this.germplasmDataManager.getCountByNamePermutations(Mockito.anyList())).thenReturn(mapCountByNamePermutations);
 
 		ComboBox comboBox1 = new ComboBox();
 		comboBox1.setValue(3);
@@ -138,7 +133,7 @@ public class ProcessImportedGermplasmActionTest {
 		Mockito.when(this.germplasmDetailsComponent.getSource()).thenReturn(germplasmImportMain);
 		Mockito.when(this.germplasmDetailsComponent.getWindow()).thenReturn(new Window());
 
-		processImportedGermplasmAction.performSecondPedigreeAction();
+		this.processImportedGermplasmAction.performSecondPedigreeAction();
 
 		Mockito.verify(this.contextUtil).getCurrentUserLocalId();
 		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(5)).getGermplasmFieldsComponent();
@@ -157,7 +152,7 @@ public class ProcessImportedGermplasmActionTest {
 	public void testPerformSecondPedigreeActionIfGermplasmMatchCountIsOne() {
 
 		Mockito.when(this.contextUtil.getCurrentUserLocalId()).thenReturn(123);
-		Mockito.when(this.germplasmDetailsComponent.getGermplasmFieldsComponent()).thenReturn(germplasmFieldsComponent);
+		Mockito.when(this.germplasmDetailsComponent.getGermplasmFieldsComponent()).thenReturn(this.germplasmFieldsComponent);
 		BmsDateField bmsDateField = new BmsDateField();
 		Calendar cal = Calendar.getInstance();
 		cal.set(2015, Calendar.JANUARY, 1);
@@ -172,10 +167,6 @@ public class ProcessImportedGermplasmActionTest {
 		importedGermplasms.add(importedGermplasm);
 
 		Mockito.when(this.germplasmDetailsComponent.getImportedGermplasms()).thenReturn(importedGermplasms);
-
-		Map<String, Integer> mapCountByNamePermutations = new HashMap<>();
-		mapCountByNamePermutations.put("(CML454 X CML451)-B-4-1-112", 1);
-		Mockito.when(this.germplasmDataManager.getCountByNamePermutations(Mockito.anyList())).thenReturn(mapCountByNamePermutations);
 
 		ComboBox comboBox1 = new ComboBox();
 		comboBox1.setValue(3);
@@ -206,7 +197,7 @@ public class ProcessImportedGermplasmActionTest {
 		Mockito.when(this.germplasmDetailsComponent.getSource()).thenReturn(germplasmImportMain);
 		Mockito.when(this.germplasmDetailsComponent.getWindow()).thenReturn(new Window());
 
-		processImportedGermplasmAction.performSecondPedigreeAction();
+		this.processImportedGermplasmAction.performSecondPedigreeAction();
 
 		Mockito.verify(this.contextUtil).getCurrentUserLocalId();
 		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(5)).getGermplasmFieldsComponent();
@@ -225,7 +216,7 @@ public class ProcessImportedGermplasmActionTest {
 	@Test
 	public void testPerformThirdPedigreeActionIfMatchingNameFound() {
 		Mockito.when(this.contextUtil.getCurrentUserLocalId()).thenReturn(123);
-		Mockito.when(this.germplasmDetailsComponent.getGermplasmFieldsComponent()).thenReturn(germplasmFieldsComponent);
+		Mockito.when(this.germplasmDetailsComponent.getGermplasmFieldsComponent()).thenReturn(this.germplasmFieldsComponent);
 		BmsDateField bmsDateField = new BmsDateField();
 		Calendar cal = Calendar.getInstance();
 		cal.set(2015, Calendar.JANUARY, 1);
@@ -240,10 +231,6 @@ public class ProcessImportedGermplasmActionTest {
 		importedGermplasm.setGid(1);
 		importedGermplasms.add(importedGermplasm);
 		Mockito.when(this.germplasmDetailsComponent.getImportedGermplasms()).thenReturn(importedGermplasms);
-
-		Map<String, Integer> mapCountByNamePermutations = new HashMap<>();
-		mapCountByNamePermutations.put("(CML454 X CML451)-B-4-1-112", 2);
-		Mockito.when(this.germplasmDataManager.getCountByNamePermutations(Mockito.anyList())).thenReturn(mapCountByNamePermutations);
 
 		Germplasm germplasm = new Germplasm();
 		germplasm.setGid(1);
@@ -270,7 +257,7 @@ public class ProcessImportedGermplasmActionTest {
 		locationIdComboBox.setValue(4);
 		Mockito.when(this.germplasmFieldsComponent.getLocationComboBox()).thenReturn(locationIdComboBox);
 
-		processImportedGermplasmAction.performThirdPedigreeAction();
+		this.processImportedGermplasmAction.performThirdPedigreeAction();
 
 		Mockito.verify(this.contextUtil).getCurrentUserLocalId();
 		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(3)).getGermplasmFieldsComponent();
