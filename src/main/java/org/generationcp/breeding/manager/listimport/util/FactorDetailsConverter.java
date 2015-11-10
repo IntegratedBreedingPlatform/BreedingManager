@@ -26,8 +26,8 @@ class FactorDetailsConverter extends WorkbookRowConverter<ImportedFactor> {
 	public static final String CODE_SCALE = "CODE";
 	public static final String NAME_SCALE = "NAME";
 	public static final String ASSIGNED_METHOD = "ASSIGNED";
-	private static final String GERMPLASM_NAME = "GERMPLASM NAME";
-	private static String GERMPLASM_ID = "GERMPLASM ID";
+	public static final String GERMPLASM_NAME = "GERMPLASM NAME";
+	public static final String GERMPLASM_ID = "GERMPLASM ID";
 	private final Map<GermplasmListParser.FactorTypes, String> specialFactors = new HashMap<>();
 	private final Set<String> nameFactors = new HashSet<>();
 	private boolean importFileIsAdvanced = false;
