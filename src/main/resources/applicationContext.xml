@@ -173,12 +173,9 @@
 	<bean id="ruleService"
 		class="org.generationcp.commons.ruleengine.impl.RulesServiceImpl" />
 	<!-- This component scan automatically registers all implementations of 
-		the Rule interface into the Spring context.
-		1. RuleFactory - In conjunction with the RulesPostProcessor 
-		above, this automatically populates the map in the RuleFactory
-		2. CodeSheetGenerator - Included all beans used for generating Code Sheet in Germplasm Import
-	-->
-	<context:component-scan base-package="org.generationcp.commons.ruleengine.stockid, org.generationcp.commons.workbook.generator" />
+		the Rule interface into the Spring context. In conjunction with the RulesPostProcessor 
+		above, this automatically populates the map in the RuleFactory -->
+	<context:component-scan base-package="org.generationcp.commons.ruleengine.stockid" />
 
 	<bean id="stockService" class="org.generationcp.commons.service.impl.StockServiceImpl">
 		<aop:scoped-proxy />
@@ -205,6 +202,9 @@
 	<bean id="germplasmExportedWorkbook" class="org.generationcp.commons.parsing.GermplasmExportedWorkbook">
 		<aop:scoped-proxy />
 	</bean>
+	
+	<!-- Including all beans used for generating Code Sheet when exporting Germplasm List excel file -->
+	<context:component-scan base-package="org.generationcp.commons.workbook.generator" />
 
 	<bean id="userProgramStateManager"
 		class="org.generationcp.middleware.manager.UserProgramStateDataManagerImpl"
