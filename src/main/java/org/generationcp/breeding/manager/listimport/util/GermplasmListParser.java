@@ -155,7 +155,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 						final String scale = rowValues.get(3) == null ? "" : rowValues.get(3).toUpperCase();
 						// stock id factor parse
 						if (FactorDetailsConverter.GERMPLASM_STOCK_ID_PROPERTY.equalsIgnoreCase(property)
-								&& FactorDetailsConverter.DBCV_SCALE.equals(scale)) {
+								&& FactorDetailsConverter.isStockIdScale(scale)) {
 
 							final ImportedFactor importedFactor =
 									new ImportedFactor(rowValues.get(0), rowValues.get(1), rowValues.get(2), rowValues.get(3),
@@ -304,9 +304,9 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		this.importFileIsAdvanced = factorDetailsConverter.isImportFileIsAdvanced();
 
 		// validate all factor sets
-		if (!factorDetailsConverter.specialFactors.containsKey(FactorTypes.ENTRY)) {
+		if (!factorDetailsConverter.hasSpecialFactor(FactorTypes.ENTRY)) {
 			throw new FileParsingException("GERMPLASM_PARSE_NO_ENTRY_FACTOR");
-		} else if (!factorDetailsConverter.specialFactors.containsKey(FactorTypes.DESIG)) {
+		} else if (!factorDetailsConverter.hasSpecialFactor(FactorTypes.DESIG)) {
 			throw new FileParsingException("GERMPLASM_PARSE_NO_DESIG_FACTOR");
 		}
 
@@ -593,74 +593,6 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		}
 	}
 
-	class FactorDetailsConverter extends WorkbookRowConverter<ImportedFactor> {
-
-		public static final String GERMPLASM_ENTRY_PROPERTY = "GERMPLASM ENTRY";
-		public static final String GERMPLASM_ID_PROPERTY = "GERMPLASM ID";
-		public static final String SEED_SOURCE_PROPERTY = "SEED SOURCE";
-		public static final String CROSS_NAME_PROPERTY = "CROSS NAME";
-		public static final String GERMPLASM_STOCK_ID_PROPERTY = "GERMPLASM STOCK ID";
-		public static final String NUMBER_SCALE = "NUMBER";
-		public static final String DBCV_SCALE = "DBCV";
-		public static final String DBID_SCALE = "DBID";
-		public static final String CODE_SCALE = "CODE";
-		public static final String NAME_SCALE = "NAME";
-		public static final String ASSIGNED_METHOD = "ASSIGNED";
-		private final Map<FactorTypes, String> specialFactors = new HashMap<>();
-		private final Set<String> nameFactors = new HashSet<>();
-		private boolean importFileIsAdvanced = false;
-
-		public FactorDetailsConverter(final Workbook workbook, final int startingIndex, final int targetSheetIndex, final int columnCount,
-				final String[] columnLabels) {
-			super(workbook, startingIndex, targetSheetIndex, columnCount, columnLabels);
-		}
-
-		@Override
-		public ImportedFactor convertToObject(final Map<Integer, String> rowValues) throws FileParsingException {
-			final ImportedFactor importedFactor =
-					new ImportedFactor(rowValues.get(0), rowValues.get(1), rowValues.get(2), rowValues.get(3), rowValues.get(4),
-							rowValues.get(5), rowValues.get(6), rowValues.get(7));
-
-			// row based validations here
-			final String property = importedFactor.getProperty() == null ? "" : importedFactor.getProperty().toUpperCase();
-			final String scale = importedFactor.getScale() == null ? "" : importedFactor.getScale().toUpperCase();
-			final String method = importedFactor.getMethod() == null ? "" : importedFactor.getMethod().toUpperCase();
-
-			if (FactorDetailsConverter.GERMPLASM_ENTRY_PROPERTY.equals(property) && FactorDetailsConverter.NUMBER_SCALE.equals(scale)) {
-				this.specialFactors.put(FactorTypes.ENTRY, importedFactor.getFactor());
-			} else if (FactorDetailsConverter.GERMPLASM_ID_PROPERTY.equals(property) && FactorDetailsConverter.DBCV_SCALE.equals(scale)) {
-				this.specialFactors.put(FactorTypes.DESIG, importedFactor.getFactor());
-			} else if (FactorDetailsConverter.GERMPLASM_ID_PROPERTY.equals(property) && FactorDetailsConverter.DBID_SCALE.equals(scale)) {
-				this.specialFactors.put(FactorTypes.GID, importedFactor.getFactor());
-				this.importFileIsAdvanced = true;
-			} else if (FactorDetailsConverter.GERMPLASM_ENTRY_PROPERTY.equals(property) && FactorDetailsConverter.CODE_SCALE.equals(scale)) {
-				this.specialFactors.put(FactorTypes.ENTRYCODE, importedFactor.getFactor());
-			} else if (FactorDetailsConverter.SEED_SOURCE_PROPERTY.equals(property) && FactorDetailsConverter.NAME_SCALE.equals(scale)) {
-				this.specialFactors.put(FactorTypes.SOURCE, importedFactor.getFactor());
-			} else if (FactorDetailsConverter.CROSS_NAME_PROPERTY.equals(property) && FactorDetailsConverter.NAME_SCALE.equals(scale)) {
-				this.specialFactors.put(FactorTypes.CROSS, importedFactor.getFactor());
-			} else if (FactorDetailsConverter.GERMPLASM_STOCK_ID_PROPERTY.equals(property)
-					&& FactorDetailsConverter.DBCV_SCALE.equals(scale)) {
-				this.specialFactors.put(FactorTypes.STOCK, importedFactor.getFactor());
-			} else if (FactorDetailsConverter.NAME_SCALE.equals(scale) && FactorDetailsConverter.ASSIGNED_METHOD.equals(method)) {
-				this.nameFactors.add(importedFactor.getFactor());
-			}
-
-			return importedFactor;
-		}
-
-		public Map<FactorTypes, String> getSpecialFactors() {
-			return this.specialFactors;
-		}
-
-		public Set<String> getNameFactors() {
-			return this.nameFactors;
-		}
-
-		public boolean isImportFileIsAdvanced() {
-			return this.importFileIsAdvanced;
-		}
-	}
 
 	class ConstantsDetailsConverter extends WorkbookRowConverter<ImportedConstant> {
 
