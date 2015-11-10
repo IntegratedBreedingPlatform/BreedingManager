@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.listimport.util;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,11 +11,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Collection;
 
 import javax.annotation.Resource;
 
-import com.google.common.base.Strings;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.generationcp.breeding.manager.listimport.validator.StockIDValidator;
@@ -33,12 +32,15 @@ import org.generationcp.commons.parsing.validation.ValueTypeValidator;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
+
+import com.google.common.base.Strings;
 
 /**
  * Class for parsing GermplsmList
@@ -53,11 +55,11 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	public static final String LIST_TYPE = "LIST TYPE";
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmListParser.class);
 	private static final int OBSERVATION_SHEET_NO = 1;
-	private static final String LISTTYPE = "LISTTYPE";
-	private static final String LISTNMS = "LISTNMS";
 	
 	private final Map<Integer, String> observationColumnMap = new HashMap<>();
 
+	@Resource
+	private GermplasmListManager germplasmListManager;
 	@Resource
 	private GermplasmDataManager germplasmDataManager;
 	@Resource
@@ -939,7 +941,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	}
 	
 	boolean validateListType(String listType) {
-		List<UserDefinedField> udFields = this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(LISTNMS, LISTTYPE);
+		List<UserDefinedField> udFields = this.germplasmListManager.getGermplasmListTypes();
 		for(UserDefinedField udField: udFields){
 			if(udField.getFcode().equalsIgnoreCase(listType)){
 				return true;
