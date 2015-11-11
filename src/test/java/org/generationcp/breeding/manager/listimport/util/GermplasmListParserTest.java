@@ -3,17 +3,19 @@ package org.generationcp.breeding.manager.listimport.util;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.generationcp.breeding.manager.data.initializer.GermplasmDataInitializer;
-import org.generationcp.breeding.manager.data.initializer.UserDefinedFieldTestDataInitializer;
 import org.generationcp.breeding.manager.listimport.validator.StockIDValidator;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.commons.parsing.FileParsingException;
 import org.generationcp.commons.util.DateUtil;
+import org.generationcp.breeding.manager.data.initializer.UserDefinedFieldTestDataInitializer;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.junit.Assert;
@@ -53,12 +55,15 @@ public class GermplasmListParserTest {
 	private InventoryDataManager inventoryDataManager;
 	
 	@Mock
+	private GermplasmListManager germplasmListManager;
+	@Mock
 	private StockIDValidator stockIdValidator;
 	
 	@InjectMocks
 	private final GermplasmListParser parser = new GermplasmListParser();
 
 	private ImportedGermplasmList importedGermplasmList;
+	private UserDefinedFieldTestDataInitializer userDefinedFieldTestDataInitializer = new UserDefinedFieldTestDataInitializer();
 
 	@Before
 	public void setUp() throws Exception {
@@ -68,7 +73,7 @@ public class GermplasmListParserTest {
 				false);
 		Mockito.when(this.germplasmDataManager.getGermplasmByGID(Matchers.anyInt())).thenReturn(GermplasmDataInitializer.createGermplasm(1));
 		Mockito.when(this.inventoryDataManager.getSimilarStockIds(Matchers.anyList())).thenReturn(new ArrayList<String>());
-		Mockito.when(this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(Matchers.anyString(), Matchers.anyString())).thenReturn(UserDefinedFieldTestDataInitializer.createUserDefinedFieldList());
+		Mockito.when(this.germplasmListManager.getGermplasmListTypes()).thenReturn(this.userDefinedFieldTestDataInitializer.getValidListType());
 
 	}
 
@@ -189,7 +194,9 @@ public class GermplasmListParserTest {
 	
 	@Test
 	public void testValidateListTypeFound(){
-		Assert.assertTrue("The listType should be accepted", this.parser.validateListType("LST"));
+		for(Map.Entry<String, String> item: this.userDefinedFieldTestDataInitializer.validListTypeMap.entrySet()){
+			Assert.assertTrue("The listType should be accepted", this.parser.validateListType(item.getKey()));
+		}
 	}
 	
 	@Test
