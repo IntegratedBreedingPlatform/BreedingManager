@@ -190,7 +190,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private Object selectedColumn = "";
 	private Object selectedItemId;
 	private String lastCellvalue = "";
-	private final List<Integer> gidsWithoutChildrenToDelete;
 	private final Map<Object, String> itemsToDelete;
 
 	private Button lockButton;
@@ -270,7 +269,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.source = source;
 		this.parentListDetailsComponent = parentListDetailsComponent;
 		this.germplasmList = germplasmList;
-		this.gidsWithoutChildrenToDelete = new ArrayList<Integer>();
 		this.itemsToDelete = new HashMap<Object, String>();
 	}
 
@@ -1313,37 +1311,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		// marks that there is a change in listDataTable
 		this.setHasUnsavedChanges(true);
 
-		// Marks the Local Germplasm to be deleted
-		try {
-			final List<Integer> gidsWithoutChildren = this.getGidsToDeletedWithoutChildren(selectedIds);
-			if (!gidsWithoutChildren.isEmpty()) {
-
-				// We have been forced to switch the Ok and the cancel buttons because we want to default to no when asking the user if they
-				// wish to delete associated germplasm entries.
-				ConfirmDialog.show(this.getWindow(), "Delete Germplasm from Database",
-						"Would you like to delete the germplasm(s) from the database also?", "No", "Yes", new ConfirmDialog.Listener() {
-
-							private static final long serialVersionUID = 1L;
-
-							@Override
-							public void onClose(final ConfirmDialog dialog) {
-								if (!dialog.isConfirmed()) {
-									ListComponent.this.gidsWithoutChildrenToDelete.addAll(gidsWithoutChildren);
-								}
-							}
-
-						});
-			}
-		} catch (final NumberFormatException e) {
-			ListComponent.LOG.error(e.getMessage(), e);
-			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
-					ListComponent.ERROR_WITH_DELETING_LIST_ENTRIES);
-		} catch (final MiddlewareQueryException e) {
-			ListComponent.LOG.error(e.getMessage(), e);
-			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
-					ListComponent.ERROR_WITH_DELETING_LIST_ENTRIES);
-		}
-
 		if (this.listDataTable.getItemIds().size() == selectedIds.size()) {
 			this.listDataTable.getContainerDataSource().removeAllItems();
 		} else {
@@ -1362,21 +1329,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.renumberEntryIds();
 		this.listDataTable.requestRepaint();
 		this.updateNoOfEntries();
-	}
-
-	private List<Integer> getGidsToDeletedWithoutChildren(final Collection<?> selectedIds) {
-		final List<Integer> gids = new ArrayList<Integer>();
-		for (final Object itemId : selectedIds) {
-			final Button gidButton = (Button) this.listDataTable.getItem(itemId).getItemProperty(ColumnLabels.GID.getName()).getValue();
-			final Integer germplasmID = Integer.parseInt(gidButton.getCaption());
-
-			final long count = this.pedigreeDataManager.countDescendants(germplasmID);
-			if (count == 0) {
-				gids.add(germplasmID);
-			}
-		}
-
-		return gids;
 	}
 
 	private void renumberEntryIds() {
@@ -1774,8 +1726,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 			}
 
-			this.deleteGermplasmDialogBox(this.gidsWithoutChildrenToDelete);
-
 			this.designationOfListEntriesDeleted =
 					this.designationOfListEntriesDeleted.substring(0, this.designationOfListEntriesDeleted.length() - 1);
 
@@ -1794,8 +1744,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			// reset items to delete in listDataTable
 			itemsToDelete.clear();
 
-			// Reset the gidsWithoutChildrenToDelete so that already deleted ids do not get reprocessed.
-			this.gidsWithoutChildrenToDelete.clear();
 		} catch (final NumberFormatException e) {
 			ListComponent.LOG.error(ListComponent.ERROR_WITH_DELETING_LIST_ENTRIES, e);
 			ListComponent.LOG.error("\n" + e.getStackTrace());
@@ -1811,21 +1759,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			this.germplasmListManager.deleteGermplasmListDataByListIdLrecId(this.germplasmList.getId(), lrecId);
 		} catch (final MiddlewareQueryException e) {
 			ListComponent.LOG.error(e.getMessage(), e);
-		}
-	}
-
-	protected void deleteGermplasmDialogBox(final List<Integer> gidsWithoutChildren) {
-
-		if (gidsWithoutChildren != null && !gidsWithoutChildren.isEmpty()) {
-			final List<Germplasm> gList = new ArrayList<Germplasm>();
-			for (final Integer gid : gidsWithoutChildren) {
-				final Germplasm g = this.germplasmDataManager.getGermplasmByGID(gid);
-				g.setGrplce(gid);
-				gList.add(g);
-			}
-			// end loop
-
-			this.germplasmDataManager.updateGermplasm(gList);
 		}
 	}
 
