@@ -1802,7 +1802,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		return this.germplasmList.getId();
 	}
 
-	public void toggleGermplasmListStatus() throws MiddlewareQueryException {
+	public void toggleGermplasmListStatus() {
 		final int toggledStatus;
 
 		if (this.germplasmList.isLockedList()) {
