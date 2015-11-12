@@ -1,13 +1,23 @@
 package org.generationcp.breeding.manager.listimport;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.vaadin.ui.Component;
+
+import org.apache.commons.lang.WordUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.dellroad.stuff.vaadin.ContextApplication;
+import org.generationcp.commons.service.FileService;
 import org.generationcp.commons.util.FileDownloadResource;
+import org.generationcp.commons.workbook.generator.CodesSheetGenerator;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.core.io.ClassPathResource;
 
@@ -16,26 +26,37 @@ import com.vaadin.Application;
 @Configurable
 public class GermplasmListTemplateDownloader {
 
+	@Resource
+	CodesSheetGenerator codesSheetGenerator;
+	
+	@Resource
+	private FileService fileService;
+	
 	static final String EXPANDED_TEMPLATE_FILE = "GermplasmImportTemplate-Expanded-rev5a.xls";
 
 	private static final long serialVersionUID = -9047374755825933209L;
 
 	public void exportGermplasmTemplate(Component component) throws FileDownloadException {
 		try {
-			ClassPathResource cpr = new ClassPathResource("templates/" + GermplasmListTemplateDownloader.EXPANDED_TEMPLATE_FILE);
-			File templateFile = cpr.getFile();
+			File templateFile = new File(EXPANDED_TEMPLATE_FILE);
 
+			HSSFWorkbook wb = (HSSFWorkbook) this.fileService.retrieveWorkbookTemplate("templates/" + GermplasmListTemplateDownloader.EXPANDED_TEMPLATE_FILE);
+			this.codesSheetGenerator.generateCodesSheet(wb);
+			final FileOutputStream fileOutputStream = new FileOutputStream(templateFile);
+			wb.write(fileOutputStream);
+			fileOutputStream.close();
 			FileDownloadResource fileDownloadResource = getTemplateAsDownloadResource(templateFile);
-
 			if (!this.getCurrentApplication().getMainWindow().getChildWindows().isEmpty()) {
 				this.getCurrentApplication().getMainWindow().open(fileDownloadResource);
 			} else {
 				component.getWindow().open(fileDownloadResource);
-
 			}
 
 		} catch (IOException e) {
 			throw new FileDownloadException(e.getMessage(), e);
+		} catch (InvalidFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
