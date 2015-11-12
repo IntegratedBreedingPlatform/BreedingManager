@@ -191,6 +191,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 								seedAmountVariate.setSeedStockVariable(true);
 								GermplasmListParser.this.seedAmountVariate = seedAmountVariate.getVariate();
 								GermplasmListParser.this.importedGermplasmList.addImportedVariate(seedAmountVariate);
+								GermplasmListParser.this.headerNames.add(seedAmountVariate.getVariate());
 								GermplasmListParser.LOG.debug("SEED STOCK :" + seedAmountVariate.getProperty());
 
 								return true;
