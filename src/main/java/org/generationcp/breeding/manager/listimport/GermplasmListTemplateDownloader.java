@@ -7,21 +7,16 @@ import java.io.IOException;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.vaadin.ui.Component;
-
-import org.apache.commons.lang.WordUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.dellroad.stuff.vaadin.ContextApplication;
 import org.generationcp.commons.service.FileService;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.workbook.generator.CodesSheetGenerator;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.core.io.ClassPathResource;
 
 import com.vaadin.Application;
+import com.vaadin.ui.Component;
 
 @Configurable
 public class GermplasmListTemplateDownloader {
