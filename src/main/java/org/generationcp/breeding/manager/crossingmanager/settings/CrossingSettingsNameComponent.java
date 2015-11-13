@@ -229,7 +229,7 @@ public class CrossingSettingsNameComponent extends CssLayout implements Breeding
 						separator, saveParentageDesignationAsAString);
 		final String startNumber = (String) this.startNumberTextField.getValue();
 
-		if (!startNumber.isEmpty() && NumberUtils.isDigits(startNumber)) {
+		if (StringUtils.isNotEmpty(startNumber) && NumberUtils.isDigits(startNumber)) {
 			crossNameSettingPojo.setStartNumber(Integer.parseInt(startNumber));
 		}
 
@@ -264,6 +264,10 @@ public class CrossingSettingsNameComponent extends CssLayout implements Breeding
 		this.crossNameSuffix.setValue(suffix);
 
 		this.separatorTextField.setValue(crossNameSetting.getSeparator());
+
+		if (crossNameSetting.getStartNumber() != null) {
+			this.startNumberTextField.setValue(crossNameSetting.getStartNumber().toString());
+		}
 
 		if (crossNameSetting.isSaveParentageDesignationAsAString()) {
 			this.saveParentageDesignationAsAStringGroup.select(AddSpaceOption.YES);
@@ -329,7 +333,11 @@ public class CrossingSettingsNameComponent extends CssLayout implements Breeding
 	}
 
 	private boolean validateStartNumberField() {
-		final String startNumberString = this.startNumberTextField.getValue().toString();
+
+		String startNumberString = "";
+		if (StringUtils.isNotEmpty((String) this.startNumberTextField.getValue())) {
+			startNumberString = this.startNumberTextField.getValue().toString();
+		}
 
 		if (!StringUtils.isEmpty(startNumberString)) {
 			if (startNumberString.length() > 10) {
