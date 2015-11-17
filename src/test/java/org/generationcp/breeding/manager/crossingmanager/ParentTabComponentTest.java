@@ -11,7 +11,7 @@ import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.listinventory.CrossingManagerInventoryTable;
-import org.generationcp.breeding.manager.data.initializer.GermplasmDataInitializer;
+import org.generationcp.breeding.manager.data.initializer.GermplasmListEntryTestDataInitializer;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryActionFactory;
@@ -146,7 +146,7 @@ public class ParentTabComponentTest {
 		final SaveGermplasmListAction saveGermplasmListAction =
 				new SaveGermplasmListAction(this.parentTabComponent,
 						GermplasmListTestDataInitializer.createGermplasmList(GERMPLASM_LIST_ID),
-						GermplasmDataInitializer.getGermplasmListEntries());
+						GermplasmListEntryTestDataInitializer.getGermplasmListEntries());
 		saveGermplasmListAction.setContextUtil(this.contextUtil);
 		saveGermplasmListAction.setGermplasmListManager(this.germplasmListManager);
 		saveGermplasmListAction.setPedigreeService(this.pedigreeService);

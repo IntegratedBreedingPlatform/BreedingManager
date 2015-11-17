@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
-import org.generationcp.breeding.manager.data.initializer.GermplasmDataInitializer;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
+import org.generationcp.middleware.data.initializer.GermplasmTestDataInitializer;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -90,7 +90,7 @@ public class SaveGermplasmListActionTest {
 		this.importedGermplasmList = ImportedGermplasmListDataInitializer.createImportedGermplasmList(NO_OF_ENTRIES);
 		this.germplasmNameObjects = ImportedGermplasmListDataInitializer.createGermplasmNameObjects(NO_OF_ENTRIES);
 		this.doNotCreateGermplasmsWithId = ImportedGermplasmListDataInitializer.createListOfGemplasmIds(2);
-		this.newNames = GermplasmDataInitializer.createNameList(NO_OF_ENTRIES);
+		this.newNames = GermplasmTestDataInitializer.createNameList(NO_OF_ENTRIES);
 
 		Mockito.doReturn(PROGRAM_UUID).when(this.contextUtil).getCurrentProgramUUID();
 		Mockito.doReturn(CURRENT_LOCAL_ID).when(this.contextUtil).getCurrentUserLocalId();
@@ -102,7 +102,7 @@ public class SaveGermplasmListActionTest {
 		Mockito.doReturn(this.germplasmList).when(this.germplasmListManager).getGermplasmListById(SAVED_GERMPLASM_LIST_ID);
 
 		for (int i = 1; i <= NO_OF_ENTRIES; i++) {
-			Mockito.doReturn(GermplasmDataInitializer.createGermplasm(i)).when(this.germplasmManager).getGermplasmByGID(i);
+			Mockito.doReturn(GermplasmTestDataInitializer.createGermplasm(i)).when(this.germplasmManager).getGermplasmByGID(i);
 		}
 
 	}
