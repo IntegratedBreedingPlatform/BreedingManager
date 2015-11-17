@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by cyrus on 10/11/2015.
+ * Converts parsed factors into ImportedFactor object
  */
 class FactorDetailsConverter extends WorkbookRowConverter<ImportedFactor> {
 
@@ -19,17 +19,21 @@ class FactorDetailsConverter extends WorkbookRowConverter<ImportedFactor> {
 	public static final String GERMPLASM_ID_PROPERTY = "GERMPLASM ID";
 	public static final String SEED_SOURCE_PROPERTY = "SEED SOURCE";
 	public static final String CROSS_NAME_PROPERTY = "CROSS NAME";
+	public static final String CROSS_HISTORY_PROPERTY = "CROSS HISTORY";
 	public static final String GERMPLASM_STOCK_ID_PROPERTY = "GERMPLASM STOCK ID";
 	public static final String NUMBER_SCALE = "NUMBER";
 	public static final String DBCV_SCALE = "DBCV";
 	public static final String DBID_SCALE = "DBID";
 	public static final String CODE_SCALE = "CODE";
 	public static final String NAME_SCALE = "NAME";
+	public static final String TEXT_SCALE = "TEXT";
 	public static final String ASSIGNED_METHOD = "ASSIGNED";
 	public static final String GERMPLASM_NAME = "GERMPLASM NAME";
 	public static final String GERMPLASM_ID = "GERMPLASM ID";
+
 	private final Map<GermplasmListParser.FactorTypes, String> specialFactors = new HashMap<>();
 	private final Set<String> nameFactors = new HashSet<>();
+
 	private boolean importFileIsAdvanced = false;
 
 	public FactorDetailsConverter(final Workbook workbook, final int startingIndex,
@@ -48,6 +52,19 @@ class FactorDetailsConverter extends WorkbookRowConverter<ImportedFactor> {
 	public static boolean isStockIdScale(String scale) {
 		return FactorDetailsConverter.DBCV_SCALE.equals(scale) || FactorDetailsConverter.GERMPLASM_ID.equals(scale);
 	}
+
+	public static boolean isCrossScale(String scale) {
+		return FactorDetailsConverter.NAME_SCALE.equals(scale) || FactorDetailsConverter.TEXT_SCALE.equals(scale);
+	}
+
+	public static boolean isSeedSourceScale(String scale) {
+		return FactorDetailsConverter.NAME_SCALE.equals(scale) || FactorDetailsConverter.isCodeScale(scale);
+	}
+
+	public static boolean isCrossNameProperty(String property) {
+		return FactorDetailsConverter.CROSS_NAME_PROPERTY.equals(property) || FactorDetailsConverter.CROSS_HISTORY_PROPERTY.equals(property);
+	}
+
 
 	public static boolean isCodeScale(String scale) {
 		return scale != null && scale.contains(FactorDetailsConverter.CODE_SCALE);
@@ -73,9 +90,9 @@ class FactorDetailsConverter extends WorkbookRowConverter<ImportedFactor> {
 			this.importFileIsAdvanced = true;
 		} else if (FactorDetailsConverter.GERMPLASM_ENTRY_PROPERTY.equals(property) && FactorDetailsConverter.isCodeScale(scale)) {
 			this.specialFactors.put(GermplasmListParser.FactorTypes.ENTRYCODE, importedFactor.getFactor());
-		} else if (FactorDetailsConverter.SEED_SOURCE_PROPERTY.equals(property) && FactorDetailsConverter.NAME_SCALE.equals(scale)) {
+		} else if (FactorDetailsConverter.SEED_SOURCE_PROPERTY.equals(property) && FactorDetailsConverter.isSeedSourceScale(scale)) {
 			this.specialFactors.put(GermplasmListParser.FactorTypes.SOURCE, importedFactor.getFactor());
-		} else if (FactorDetailsConverter.CROSS_NAME_PROPERTY.equals(property) && FactorDetailsConverter.NAME_SCALE.equals(scale)) {
+		} else if (FactorDetailsConverter.isCrossNameProperty(property) && FactorDetailsConverter.isCrossScale(scale)) {
 			this.specialFactors.put(GermplasmListParser.FactorTypes.CROSS, importedFactor.getFactor());
 		} else if (FactorDetailsConverter.GERMPLASM_STOCK_ID_PROPERTY.equals(property) && FactorDetailsConverter.isStockIdScale(scale)) {
 			this.specialFactors.put(GermplasmListParser.FactorTypes.STOCK, importedFactor.getFactor());
