@@ -19,6 +19,7 @@ import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -45,6 +46,8 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
 
 public class ParentTabComponentTest {
+
+	private static final int GERMPLASM_LIST_ID = 1;
 
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
@@ -115,11 +118,12 @@ public class ParentTabComponentTest {
 
 		this.makeCrossesMain.instantiateComponents();
 		this.makeCrossesMain.setModeViewOnly(ModeView.LIST_VIEW);
-		final MakeCrossesParentsComponent source =  Mockito.spy(new MakeCrossesParentsComponent(this.makeCrossesMain));
+		final MakeCrossesParentsComponent source = Mockito.spy(new MakeCrossesParentsComponent(this.makeCrossesMain));
 		final String parentLabel = "Female Parents";
 		final Integer rowCount = 10;
-		this.parentTabComponent = new ParentTabComponent(this.makeCrossesMain, source, parentLabel, rowCount,
-				this.saveGermplasmListActionFactory, this.reserveInventoryActionFactory);
+		this.parentTabComponent =
+				new ParentTabComponent(this.makeCrossesMain, source, parentLabel, rowCount, this.saveGermplasmListActionFactory,
+						this.reserveInventoryActionFactory);
 		source.setMaleParentTab(this.parentTabComponent);
 		source.setFemaleParentTab(this.parentTabComponent);
 		Mockito.doReturn(this.window).when(source).getWindow();
@@ -139,24 +143,26 @@ public class ParentTabComponentTest {
 		Mockito.doReturn(this.window).when(this.parent).getWindow();
 		this.parentTabComponent.setParent(this.parent);
 
-		final SaveGermplasmListAction saveGermplasmListAction = new SaveGermplasmListAction(this.parentTabComponent,
-				GermplasmDataInitializer.getGermplasmListTestData(),
-				GermplasmDataInitializer.getGermplasmListEntries());
+		final SaveGermplasmListAction saveGermplasmListAction =
+				new SaveGermplasmListAction(this.parentTabComponent,
+						GermplasmListTestDataInitializer.createGermplasmList(GERMPLASM_LIST_ID),
+						GermplasmDataInitializer.getGermplasmListEntries());
 		saveGermplasmListAction.setContextUtil(this.contextUtil);
 		saveGermplasmListAction.setGermplasmListManager(this.germplasmListManager);
 		saveGermplasmListAction.setPedigreeService(this.pedigreeService);
 		saveGermplasmListAction.setInventoryDataManager(this.inventoryDataManager);
-		Mockito.doReturn(GermplasmDataInitializer.getGermplasmListTestData()).when(this.germplasmListManager).getGermplasmListById
-				(Mockito.anyInt());
-		Mockito.doReturn(saveGermplasmListAction).when(this.saveGermplasmListActionFactory).createInstance(
-				Mockito.any(SaveGermplasmListActionSource.class), Mockito.any(GermplasmList.class), Mockito.any(List.class));
+		Mockito.doReturn(GermplasmListTestDataInitializer.createGermplasmList(GERMPLASM_LIST_ID)).when(this.germplasmListManager)
+				.getGermplasmListById(Mockito.anyInt());
+		Mockito.doReturn(saveGermplasmListAction)
+				.when(this.saveGermplasmListActionFactory)
+				.createInstance(Mockito.any(SaveGermplasmListActionSource.class), Mockito.any(GermplasmList.class), Mockito.any(List.class));
 
 		final ReserveInventoryAction reserveInventoryAction = new ReserveInventoryAction(this.reserveInventorySource);
 		reserveInventoryAction.setContextUtil(this.contextUtil);
 		reserveInventoryAction.setInventoryDataManager(this.inventoryDataManager);
 		reserveInventoryAction.setUserDataManager(this.userDataManager);
-		Mockito.doReturn(reserveInventoryAction).when(this.reserveInventoryActionFactory).createInstance(
-				Mockito.any(ReserveInventorySource.class));
+		Mockito.doReturn(reserveInventoryAction).when(this.reserveInventoryActionFactory)
+				.createInstance(Mockito.any(ReserveInventorySource.class));
 		final Person person = new Person();
 		person.setId(123);
 		Mockito.doReturn(person).when(this.userDataManager).getPersonById(Mockito.anyInt());
@@ -288,7 +294,7 @@ public class ParentTabComponentTest {
 		this.parentTabComponent.initializeListInventoryTable(inventoryTable);
 		this.parentTabComponent.addListeners();
 		this.parentTabComponent.setHasChanges(true);
-		this.parentTabComponent.setGermplasmList(GermplasmDataInitializer.getGermplasmListTestData());
+		this.parentTabComponent.setGermplasmList(GermplasmListTestDataInitializer.createGermplasmList(GERMPLASM_LIST_ID));
 
 		// function to test
 		this.parentTabComponent.doSaveAction();
@@ -312,7 +318,7 @@ public class ParentTabComponentTest {
 		this.parentTabComponent.initializeListInventoryTable(inventoryTable);
 		this.parentTabComponent.addListeners();
 		this.parentTabComponent.setHasChanges(true);
-		this.parentTabComponent.setGermplasmList(GermplasmDataInitializer.getGermplasmListTestData());
+		this.parentTabComponent.setGermplasmList(GermplasmListTestDataInitializer.createGermplasmList(GERMPLASM_LIST_ID));
 		this.parentTabComponent.setValidReservationsToSave(ImportedGermplasmListDataInitializer.createReservations(2));
 
 		// function to test
