@@ -215,6 +215,14 @@
 			</exclusions>
 		</dependency>
 		<dependency>
+			<groupId>org.generationcp</groupId>
+			<artifactId>middleware</artifactId>
+			<version>${ibpcommons.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
 			<groupId>javassist</groupId>
 			<artifactId>javassist</artifactId>
 			<version>3.12.1.GA</version>

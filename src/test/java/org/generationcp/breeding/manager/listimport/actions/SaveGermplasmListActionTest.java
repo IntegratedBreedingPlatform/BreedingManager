@@ -6,18 +6,22 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.data.initializer.GermplasmDataInitializer;
-import org.generationcp.breeding.manager.data.initializer.GermplasmListDataInitializer;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
-import org.generationcp.middleware.pojos.*;
+import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.service.api.InventoryService;
 import org.junit.Assert;
 import org.junit.Before;
@@ -82,7 +86,7 @@ public class SaveGermplasmListActionTest {
 
 	@Before
 	public void setup() {
-		this.germplasmList = GermplasmListDataInitializer.createGermplasmList(LIST_ID);
+		this.germplasmList = GermplasmListTestDataInitializer.createGermplasmList(LIST_ID);
 		this.importedGermplasmList = ImportedGermplasmListDataInitializer.createImportedGermplasmList(NO_OF_ENTRIES);
 		this.germplasmNameObjects = ImportedGermplasmListDataInitializer.createGermplasmNameObjects(NO_OF_ENTRIES);
 		this.doNotCreateGermplasmsWithId = ImportedGermplasmListDataInitializer.createListOfGemplasmIds(2);
