@@ -1,23 +1,14 @@
 
 package org.generationcp.breeding.manager.customfields;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
-import org.generationcp.breeding.manager.customcomponent.GermplasmListSource;
-import org.generationcp.breeding.manager.customcomponent.GermplasmListTree;
-import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
-import org.generationcp.breeding.manager.customcomponent.IconButton;
-import org.generationcp.breeding.manager.customcomponent.ToggleButton;
+import org.generationcp.breeding.manager.customcomponent.*;
 import org.generationcp.breeding.manager.customcomponent.generator.GermplasmListSourceItemDescriptionGenerator;
 import org.generationcp.breeding.manager.customcomponent.generator.GermplasmListSourceItemStyleGenerator;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
@@ -29,6 +20,7 @@ import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.breeding.manager.validator.ListNameValidator;
 import org.generationcp.commons.constant.ListTreeState;
 import org.generationcp.commons.exceptions.InternationalizableException;
+import org.generationcp.commons.service.UserTreeStateService;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -36,7 +28,6 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
-import org.generationcp.middleware.manager.api.UserProgramStateDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,15 +38,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.data.Item;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.Tree;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 
 @Configurable
 public abstract class ListSelectorComponent extends CssLayout implements InitializingBean, BreedingManagerLayout, Tree.ExpandListener {
@@ -83,7 +66,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	private ContextUtil util;
 
 	@Autowired
-	private UserProgramStateDataManager programStateManager;
+	private UserTreeStateService userTreeStateService;
 
 	@Autowired
 	protected SimpleResourceBundleMessageSource messageSource;
@@ -175,16 +158,19 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	}
 
 	protected void initializeButtonPanel() {
-		this.renameFolderBtn = new IconButton(
-				"<span class='bms-edit' style='left: 2px; color: #0083c0;font-size: 18px; font-weight: bold;'></span>", "Rename Item");
+		this.renameFolderBtn =
+				new IconButton("<span class='bms-edit' style='left: 2px; color: #0083c0;font-size: 18px; font-weight: bold;'></span>",
+						"Rename Item");
 		this.renameFolderBtn.setEnabled(false);
 
-		this.addFolderBtn = new IconButton(
-				"<span class='bms-add' style='left: 2px; color: #00a950;font-size: 18px; font-weight: bold;'></span>", "Add New Folder");
+		this.addFolderBtn =
+				new IconButton("<span class='bms-add' style='left: 2px; color: #00a950;font-size: 18px; font-weight: bold;'></span>",
+						"Add New Folder");
 		this.addFolderBtn.setEnabled(false);
 
-		this.deleteFolderBtn = new IconButton(
-				"<span class='bms-delete' style='left: 2px; color: #f4a41c;font-size: 18px; font-weight: bold;'></span>", "Delete Item");
+		this.deleteFolderBtn =
+				new IconButton("<span class='bms-delete' style='left: 2px; color: #f4a41c;font-size: 18px; font-weight: bold;'></span>",
+						"Delete Item");
 		this.deleteFolderBtn.setEnabled(false);
 		this.deleteFolderBtn.setData(this);
 
@@ -322,11 +308,20 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		return !listChildren.isEmpty();
 	}
 
-	public void reinitializeTree() {
+	public void reinitializeTree(boolean isSaveList) {
+		Collection<String> parsedState = null;
 
 		try {
-			Collection<String> parsedState = this.programStateManager.getUserProgramTreeStateByUserIdProgramUuidAndType(
-					this.util.getCurrentWorkbenchUserId(), this.getCurrentProgramUUID(), ListTreeState.GERMPLASM_LIST.name());
+			Integer userID = this.util.getCurrentUserLocalId();
+			String programUUID = this.getCurrentProgramUUID();
+
+			if (isSaveList) {
+				parsedState = this.userTreeStateService.getUserProgramTreeStateForSaveList(userID, programUUID);
+			} else {
+				parsedState =
+						this.userTreeStateService.getUserProgramTreeStateByUserIdProgramUuidAndType(userID, programUUID,
+								ListTreeState.GERMPLASM_LIST.name());
+			}
 
 			if (parsedState.isEmpty()) {
 				this.getGermplasmListSource().collapseItem(ListSelectorComponent.LISTS);
@@ -355,8 +350,9 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		List<GermplasmList> germplasmListChildren = new ArrayList<>();
 
 		try {
-			germplasmListChildren = this.germplasmListManager.getGermplasmListByParentFolderIdBatched(parentGermplasmListId,
-					this.getCurrentProgramUUID(), ListSelectorComponent.BATCH_SIZE);
+			germplasmListChildren =
+					this.germplasmListManager.getGermplasmListByParentFolderIdBatched(parentGermplasmListId, this.getCurrentProgramUUID(),
+							ListSelectorComponent.BATCH_SIZE);
 		} catch (MiddlewareQueryException e) {
 			ListSelectorComponent.LOG.error("Error in getting germplasm lists by parent id.", e);
 			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
@@ -733,12 +729,13 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 				if (!listChild.isFolder()) {
 					size = this.countGermplasmListDataByListId(listChild.getId());
 				}
-				this.getGermplasmListSource().addItem(
-						this.generateCellInfo(listChild.getName(),
-								BreedingManagerUtil.getOwnerListName(listChild.getUserId(), this.userDataManager),
-								BreedingManagerUtil.getDescriptionForDisplay(listChild),
-								BreedingManagerUtil.getTypeString(listChild.getType(), this.germplasmListManager), size),
-						listChild.getId());
+				this.getGermplasmListSource()
+						.addItem(
+								this.generateCellInfo(listChild.getName(),
+										BreedingManagerUtil.getOwnerListName(listChild.getUserId(), this.userDataManager),
+										BreedingManagerUtil.getDescriptionForDisplay(listChild),
+										BreedingManagerUtil.getTypeString(listChild.getType(), this.germplasmListManager), size),
+								listChild.getId());
 				this.setNodeItemIcon(listChild.getId(), listChild.isFolder());
 				this.getGermplasmListSource().setItemCaption(listChild.getId(), listChild.getName());
 				this.getGermplasmListSource().setParent(listChild.getId(), parentGermplasmListId);
@@ -781,7 +778,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	public void refreshComponent() {
 		this.listId = null;
 		this.createTree();
-		this.reinitializeTree();
+		this.reinitializeTree(false);
 	}
 
 	public void instantiateListComponent() {
@@ -883,12 +880,11 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		for (GermplasmList parentList : germplasmListParent) {
 			if (this.doAddItem(parentList)) {
 				String size = this.countGermplasmListDataByListId(parentList.getId());
-				this.getGermplasmListSource()
-						.addItem(this.generateCellInfo(parentList.getName(),
-								BreedingManagerUtil.getOwnerListName(parentList.getUserId(), this.userDataManager),
-								BreedingManagerUtil.getDescriptionForDisplay(parentList),
-								BreedingManagerUtil.getTypeString(parentList.getType(), this.germplasmListManager),
-								parentList.isFolder() ? "" : size), parentList.getId());
+				this.getGermplasmListSource().addItem(
+						this.generateCellInfo(parentList.getName(), BreedingManagerUtil.getOwnerListName(parentList.getUserId(),
+								this.userDataManager), BreedingManagerUtil.getDescriptionForDisplay(parentList), BreedingManagerUtil
+								.getTypeString(parentList.getType(), this.germplasmListManager), parentList.isFolder() ? "" : size),
+						parentList.getId());
 				this.setNodeItemIcon(parentList.getId(), parentList.isFolder());
 				this.getGermplasmListSource().setItemCaption(parentList.getId(), parentList.getName());
 				this.getGermplasmListSource().setChildrenAllowed(parentList.getId(), this.hasChildList(parentList.getId()));
@@ -963,9 +959,5 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 	public void setUtil(ContextUtil util) {
 		this.util = util;
-	}
-
-	public void setProgramStateManager(UserProgramStateDataManager programStateManager) {
-		this.programStateManager = programStateManager;
 	}
 }
