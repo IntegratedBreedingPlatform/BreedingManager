@@ -77,8 +77,8 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 
 	@Autowired
 	private PlatformTransactionManager transactionManager;
-	
-	public ExportListAsDialog(Component source, GermplasmList germplasmList, Table listDataTable) {
+
+	public ExportListAsDialog(final Component source, final GermplasmList germplasmList, final Table listDataTable) {
 		this.source = source;
 		this.germplasmList = germplasmList;
 		this.listDataTable = listDataTable;
@@ -135,7 +135,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				ExportListAsDialog.this.exportListAction(ExportListAsDialog.this.listDataTable);
 			}
 		});
@@ -143,10 +143,11 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 
 	protected void exportListAction(final Table table) {
 
-		final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
 		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
 			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+			protected void doInTransactionWithoutResult(final TransactionStatus status) {
 				if (ExportListAsDialog.this.germplasmList.isLockedList()) {
 					ExportListAsDialog.this.showWarningMessage(table);
 					// do the export
@@ -176,12 +177,12 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 		this.setHeight("225px");
 		this.setWidth("380px");
 
-		HorizontalLayout fieldLayout = new HorizontalLayout();
+		final HorizontalLayout fieldLayout = new HorizontalLayout();
 		fieldLayout.setSpacing(true);
 		fieldLayout.addComponent(this.chooseAnExportLbl);
 		fieldLayout.addComponent(this.formatOptionsCbx);
 
-		HorizontalLayout buttonLayout = new HorizontalLayout();
+		final HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setHeight("50px");
 		buttonLayout.setWidth("100%");
 		buttonLayout.setSpacing(true);
@@ -204,19 +205,19 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 		// do nothing
 	}
 
-	protected void exportListAsCSV(Table table) {
+	protected void exportListAsCSV(final Table table) {
 		try {
 
 			this.listExporter.exportGermplasmListCSV(ExportListAsDialog.TEMP_FILENAME, table);
-			FileDownloadResource fileDownloadResource = this.createFileDownloadResource();
-			String listName = this.germplasmList.getName();
+			final FileDownloadResource fileDownloadResource = this.createFileDownloadResource();
+			final String listName = this.germplasmList.getName();
 			fileDownloadResource.setFilename(FileDownloadResource
 					.getDownloadFileName(listName, BreedingManagerUtil.getApplicationRequest()).replace(" ", "_")
 					+ ExportListAsDialog.CSV_EXT);
 			this.source.getWindow().open(fileDownloadResource);
 			// must figure out other way to clean-up file because deleting it here makes it unavailable for download
 
-		} catch (GermplasmListExporterException e) {
+		} catch (final GermplasmListExporterException e) {
 			ExportListAsDialog.LOG.error(this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e.getMessage() + ". "
 					+ this.messageSource.getMessage(Message.ERROR_REPORT_TO));
@@ -224,17 +225,17 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 
 	}
 
-	protected void exportListAsXLS(Table table) {
+	protected void exportListAsXLS(final Table table) {
 		try {
 			this.listExporter.exportGermplasmListXLS(ExportListAsDialog.TEMP_FILENAME, table);
-			FileDownloadResource fileDownloadResource = this.createFileDownloadResource();
-			String listName = this.germplasmList.getName();
+			final FileDownloadResource fileDownloadResource = this.createFileDownloadResource();
+			final String listName = this.germplasmList.getName();
 			fileDownloadResource.setFilename(FileDownloadResource
 					.getDownloadFileName(listName, BreedingManagerUtil.getApplicationRequest()).replace(" ", "_")
 					+ ExportListAsDialog.XLS_EXT);
 			this.source.getWindow().open(fileDownloadResource);
 			// must figure out other way to clean-up file because deleting it here makes it unavailable for download
-		} catch (GermplasmListExporterException e) {
+		} catch (final GermplasmListExporterException e) {
 			ExportListAsDialog.LOG.error(this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e.getMessage() + ". "
 					+ this.messageSource.getMessage(Message.ERROR_REPORT_TO));
@@ -242,26 +243,26 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	}
 
 	protected FileDownloadResource createFileDownloadResource() {
-		FileDownloadResource fileDownloadResource =
+		final FileDownloadResource fileDownloadResource =
 				new FileDownloadResource(new File(ExportListAsDialog.TEMP_FILENAME), this.source.getApplication());
 		return fileDownloadResource;
 	}
 
-	protected void showWarningMessage(Table table) {
+	protected void showWarningMessage(final Table table) {
 		if (this.isARequiredColumnHidden(table)) {
 			this.showMessage(this.exportWarningMessage);
 		}
 	}
 
-	protected void showMessage(String message) {
+	protected void showMessage(final String message) {
 		MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING), message);
 	}
 
-	protected boolean isARequiredColumnHidden(Table listDataTable) {
+	protected boolean isARequiredColumnHidden(final Table listDataTable) {
 		int visibleRequiredColumns = 0;
-		Object[] visibleColumns = listDataTable.getVisibleColumns();
+		final Object[] visibleColumns = listDataTable.getVisibleColumns();
 
-		for (Object column : visibleColumns) {
+		for (final Object column : visibleColumns) {
 			if (this.isARequiredColumn(column.toString()) && !listDataTable.isColumnCollapsed(column)) {
 				visibleRequiredColumns++;
 			}
@@ -270,16 +271,16 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 		return visibleRequiredColumns < ExportListAsDialog.NO_OF_REQUIRED_COLUMNS;
 	}
 
-	protected boolean isARequiredColumn(String column) {
+	protected boolean isARequiredColumn(final String column) {
 		return ColumnLabels.ENTRY_ID.getName().equalsIgnoreCase(column) || ColumnLabels.GID.getName().equalsIgnoreCase(column)
 				|| ColumnLabels.DESIGNATION.getName().equalsIgnoreCase(column);
 	}
 
-	public void setListExporter(GermplasmListExporter listExporter) {
+	public void setListExporter(final GermplasmListExporter listExporter) {
 		this.listExporter = listExporter;
 	}
 
-	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 }
