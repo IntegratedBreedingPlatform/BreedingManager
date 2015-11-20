@@ -44,6 +44,7 @@ public class GermplasmListParserTest {
 	public static final String NO_INVENTORY_COL_FILE = "GermplasmImportTemplate-StockIDs-no-inventory-column.xls";
 	public static final String DUPLICATE_STOCK_ID_FILE = "GermplasmImportTemplate-StockIDs-duplicate-stock-ids.xls";
 	public static final String ADDITIONAL_NAME_FILE = "GermplasmImportTemplate-additional-name.xls";
+	public static final String INVALID_INVENTORY_VARIABLE_FILE = "GermplasmImportTemplate-invalid-inventory-variate.xls";
 
 	@Mock
 	private OntologyDataManager ontologyDataManager;
@@ -68,8 +69,9 @@ public class GermplasmListParserTest {
 	@Before
 	public void setUp() throws Exception {
 
-		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(Matchers.eq(INVENTORY_AMOUNT))).thenReturn(true);
-		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(AdditionalMatchers.not(Matchers.eq(INVENTORY_AMOUNT)))).thenReturn(
+		Mockito.when(this.ontologyDataManager.isSeedAmountProperty(Matchers.eq(INVENTORY_AMOUNT))).thenReturn(true);
+		Mockito.when(this.ontologyDataManager.isSeedAmountProperty(AdditionalMatchers.not(Matchers.eq(INVENTORY_AMOUNT))))
+				.thenReturn(
 				false);
 		Mockito.when(this.germplasmDataManager.getGermplasmByGID(Matchers.anyInt())).thenReturn(GermplasmDataInitializer.createGermplasm(1));
 		Mockito.when(this.inventoryDataManager.getSimilarStockIds(Matchers.anyList())).thenReturn(new ArrayList<String>());
@@ -138,6 +140,18 @@ public class GermplasmListParserTest {
 
 		Assert.assertTrue("Unable to properly provide warning for templates with no inventory column", this.parser.getNoInventoryWarning()
 				.contains("StockIDs can only be added for germplasm if it has existing inventory in the BMS"));
+	}
+
+	@Test(expected = FileParsingException.class)
+	public void testInvalidInventoryVariateParsing() throws Exception {
+		final File workbookFile =
+				new File(ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.INVALID_INVENTORY_VARIABLE_FILE).toURI());
+
+		assert workbookFile.exists();
+		final Workbook invalidInventoryWorkbook = WorkbookFactory.create(workbookFile);
+
+		this.parser.parseWorkbook(invalidInventoryWorkbook, null);
+
 	}
 
 	/**
