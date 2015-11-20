@@ -313,7 +313,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 		try {
 			Integer userID = this.util.getCurrentUserLocalId();
-			String programUUID = this.getCurrentProgramUUID();
+			String programUUID = this.util.getCurrentProgramUUID();
 
 			if (isSaveList) {
 				parsedState = this.userTreeStateService.getUserProgramTreeStateForSaveList(userID, programUUID);
