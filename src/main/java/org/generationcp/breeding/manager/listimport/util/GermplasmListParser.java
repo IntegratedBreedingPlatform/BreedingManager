@@ -183,10 +183,13 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 						// seed amount variate parse
 						try {
-							if (GermplasmListParser.this.ontologyDataManager.isSeedAmountVariable(property)) {
+							if (GermplasmListParser.this.ontologyDataManager.isSeedAmountProperty(property)) {
+
 								final ImportedVariate seedAmountVariate =
 										new ImportedVariate(rowValues.get(0), rowValues.get(1), rowValues.get(2), rowValues.get(3),
 												rowValues.get(4), rowValues.get(5));
+
+								GermplasmListParser.this.validateSeedAmountVariate(seedAmountVariate);
 
 								seedAmountVariate.setSeedStockVariable(true);
 								GermplasmListParser.this.seedAmountVariate = seedAmountVariate.getVariate();
@@ -195,6 +198,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 								return true;
 							}
+
 						} catch (final MiddlewareQueryException e) {
 							GermplasmListParser.LOG.error("SEED STOCK " + property, e);
 
@@ -210,6 +214,16 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 		this.currentRowIndex = converter.getCurrentIndex();
 		this.continueTillNextSection();
+	}
+
+	protected void validateSeedAmountVariate(ImportedVariate variateInfo) throws FileParsingException {
+
+		Integer varId =
+				this.ontologyDataManager.getStandardVariableIdByPropertyScaleMethod(variateInfo.getProperty(), variateInfo.getScale(),
+						variateInfo.getMethod());
+		if (varId == null || varId == 0) {
+			throw new FileParsingException("inventory.parsing.error.invalid.variable", 0, "", "");
+		}
 	}
 
 	protected void parseVariates() throws FileParsingException {
@@ -629,7 +643,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 			final String property = importedVariate.getProperty() == null ? "" : importedVariate.getProperty().toUpperCase();
 
 			try {
-				if (GermplasmListParser.this.ontologyDataManager.isSeedAmountVariable(property)) {
+				if (GermplasmListParser.this.ontologyDataManager.isSeedAmountProperty(property)) {
 					importedVariate.setSeedStockVariable(true);
 					this.seedAmountVariate = importedVariate.getVariate();
 					GermplasmListParser.LOG.debug("SEED STOCK :" + importedVariate.getProperty());
