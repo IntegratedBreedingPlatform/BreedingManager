@@ -129,6 +129,11 @@
 		<aop:scoped-proxy />
 	</bean>
 	
+	<bean id="jasperReportService" class="org.generationcp.commons.reports.service.impl.JasperReportServiceImpl"
+		scope="request">
+		<aop:scoped-proxy />
+	</bean>
+	
 	<bean id="stockIDValidator" class="org.generationcp.breeding.manager.listimport.validator.StockIDValidator"
 		scope="request">
 		<aop:scoped-proxy />
