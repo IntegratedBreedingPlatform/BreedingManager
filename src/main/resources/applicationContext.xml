@@ -52,6 +52,7 @@
 		class="org.generationcp.middleware.util.CrossExpansionProperties">
 		<property name="wheatLevel" value="${wheat.generation.level}" />
 		<property name="defaultLevel" value="${default.generation.level}" />
+		<property name="profile" value="${pedigree.profile}" />
 	</bean>
 
 	<bean id="genotypicDataManager" factory-bean="managerFactory"
