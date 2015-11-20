@@ -27,19 +27,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.CloseHandler;
 import com.vaadin.ui.TabSheet.Tab;
-import com.vaadin.ui.TreeTable;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
@@ -213,7 +204,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 				new SaveTreeStateListener((TreeTable) listTreeComponent.getGermplasmListSource(), ListTreeState.GERMPLASM_LIST.name(),
 						ListSelectorComponent.LISTS);
 		listTreeComponent.showAddRenameFolderSection(false);
-		listTreeComponent.reinitializeTree();
+		listTreeComponent.reinitializeTree(false);
 		launchListSelectionWindow(getWindow(), listTreeComponent, messageSource.getMessage(Message.BROWSE_FOR_LISTS)).addListener(
 				saveTreeStateListener);
 	}

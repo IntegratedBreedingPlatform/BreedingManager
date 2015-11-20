@@ -21,12 +21,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.TreeTable;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
@@ -155,7 +150,7 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 		launchListSelectionWindow(getWindow(), listTreeComponent, messageSource.getMessage(Message.BROWSE_FOR_LISTS)).addListener(
 				treeStateSaver);
 
-		listTreeComponent.reinitializeTree();
+		listTreeComponent.reinitializeTree(false);
 
 	}
 
