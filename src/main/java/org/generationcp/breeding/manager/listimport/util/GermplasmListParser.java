@@ -90,9 +90,9 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 			return false;
 		}
 
-		for (ImportedGermplasm germplasm : this.importedGermplasmList.getImportedGermplasms()) {
-			Double seedAmount = germplasm.getSeedAmount();
-			String stockId = germplasm.getInventoryId();
+		for (final ImportedGermplasm germplasm : this.importedGermplasmList.getImportedGermplasms()) {
+			final Double seedAmount = germplasm.getSeedAmount();
+			final String stockId = germplasm.getInventoryId();
 
 			if (seedAmount > 0.0 && Strings.isNullOrEmpty(stockId)) {
 				return true;
@@ -433,8 +433,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	}
 
 	protected void parseObservationRows() throws FileParsingException {
-		ParseValidationMap validationMap = this.parseObservationHeaders();
-		ObservationRowConverter observationRowConverter =
+		final ParseValidationMap validationMap = this.parseObservationHeaders();
+		final ObservationRowConverter observationRowConverter =
 				new ObservationRowConverter(this.workbook, 1, 1, this.observationColumnMap.size(), this.observationColumnMap.values()
 						.toArray(new String[this.observationColumnMap.size()]));
 		observationRowConverter.setValidationMap(validationMap);
@@ -576,7 +576,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 	class ConditionDetailsConverter extends WorkbookRowConverter<ImportedCondition> {
 
-		public ConditionDetailsConverter(Workbook workbook, int startingIndex, int targetSheetIndex, int columnCount, String[] columnLabels) {
+		public ConditionDetailsConverter(final Workbook workbook, final int startingIndex, final int targetSheetIndex,
+				final int columnCount, final String[] columnLabels) {
 			super(workbook, startingIndex, targetSheetIndex, columnCount, columnLabels);
 		}
 
@@ -591,7 +592,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 	class ConstantsDetailsConverter extends WorkbookRowConverter<ImportedConstant> {
 
-		public ConstantsDetailsConverter(Workbook workbook, int startingIndex, int targetSheetIndex, int columnCount, String[] columnLabels) {
+		public ConstantsDetailsConverter(final Workbook workbook, final int startingIndex, final int targetSheetIndex,
+				final int columnCount, final String[] columnLabels) {
 			super(workbook, startingIndex, targetSheetIndex, columnCount, columnLabels);
 		}
 
@@ -681,7 +683,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 					@Override
 					public void run() throws FileParsingException {
-						String designation = rowValues.get(colIndex);
+						final String designation = rowValues.get(colIndex);
 						if (designation != null && designation.length() > 255) {
 							throw new FileParsingException("GERMPLSM_PARSE_DESIGNATION_ERROR", currentIndex, "", colHeader);
 						}
@@ -808,7 +810,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 			return importedGermplasm;
 		}
 
-		public boolean executeOnFactorMatch(String header, FactorTypes type, Command e) throws FileParsingException {
+		public boolean executeOnFactorMatch(final String header, final FactorTypes type, final Command e) throws FileParsingException {
 			if (GermplasmListParser.this.specialFactors.containsKey(type)
 					&& GermplasmListParser.this.specialFactors.get(type).equalsIgnoreCase(header)) {
 				e.run();
@@ -858,16 +860,16 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	 * This method is to verify inventory variable is missing or not. This method move from StockIdValidator as now we need to check
 	 * empty/missing inventory variable not stockId.
 	 */
-	private void validateForMissingInventoryVariable(String header, ImportedGermplasmList importedGermplasmList)
+	private void validateForMissingInventoryVariable(final String header, final ImportedGermplasmList importedGermplasmList)
 			throws FileParsingException {
 		if (importedGermplasmList.hasMissingInventoryVariable()) {
 			throw new FileParsingException("GERMPLSM_PARSE_GID_MISSING_SEED_AMOUNT_VALUE", 0, "", header);
 		}
 	}
 	
-	boolean validateListType(String listType) {
-		List<UserDefinedField> udFields = this.germplasmListManager.getGermplasmListTypes();
-		for(UserDefinedField udField: udFields){
+	boolean validateListType(final String listType) {
+		final List<UserDefinedField> udFields = this.germplasmListManager.getGermplasmListTypes();
+		for (final UserDefinedField udField : udFields) {
 			if(udField.getFcode().equalsIgnoreCase(listType)){
 				return true;
 			}
