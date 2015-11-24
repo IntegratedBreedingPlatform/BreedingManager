@@ -47,11 +47,8 @@ public class GermplasmListTemplateDownloader {
 				component.getWindow().open(fileDownloadResource);
 			}
 
-		} catch (IOException e) {
+		} catch (IOException | InvalidFormatException e) {
 			throw new FileDownloadException(e.getMessage(), e);
-		} catch (InvalidFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 
