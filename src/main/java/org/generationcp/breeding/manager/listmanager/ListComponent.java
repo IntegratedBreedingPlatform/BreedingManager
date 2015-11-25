@@ -63,7 +63,6 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
-import org.generationcp.middleware.manager.api.PedigreeDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
@@ -239,9 +238,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	@Autowired
 	private PedigreeService pedigreeService;
-
-	@Autowired
-	private PedigreeDataManager pedigreeDataManager;
 
 	@Autowired
 	private InventoryDataManager inventoryDataManager;
