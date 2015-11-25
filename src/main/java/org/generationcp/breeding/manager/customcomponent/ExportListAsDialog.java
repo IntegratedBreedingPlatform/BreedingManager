@@ -2,6 +2,9 @@
 package org.generationcp.breeding.manager.customcomponent;
 
 import java.io.File;
+import java.util.List;
+
+import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
@@ -9,7 +12,11 @@ import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.commons.constant.ToolEnum;
+import org.generationcp.commons.constant.ToolSection;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
+import org.generationcp.commons.pojo.CustomReportType;
+import org.generationcp.commons.reports.service.JasperReportService;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -20,7 +27,6 @@ import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -68,15 +74,18 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 
 	private final Table listDataTable;
 
-	public String exportWarningMessage = "";
+	private String exportWarningMessage = "";
 	private static final String USER_HOME = "user.home";
 	public static final String TEMP_FILENAME = System.getProperty(ExportListAsDialog.USER_HOME) + "/temp.csv";
 
-	@Autowired
+	@Resource
 	private SimpleResourceBundleMessageSource messageSource;
 
-	@Autowired
+	@Resource
 	private PlatformTransactionManager transactionManager;
+
+	@Resource
+	private JasperReportService jasperReportService;
 
 	public ExportListAsDialog(final Component source, final GermplasmList germplasmList, final Table listDataTable) {
 		this.source = source;
@@ -105,7 +114,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 		this.formatOptionsCbx.setImmediate(true);
 		this.formatOptionsCbx.setNullSelectionAllowed(false);
 		this.formatOptionsCbx.setTextInputAllowed(false);
-		this.formatOptionsCbx.setWidth("100px");
+		this.formatOptionsCbx.setWidth("250px");
 
 		this.cancelButton = new Button(this.messageSource.getMessage(Message.CANCEL));
 		this.cancelButton.setWidth("80px");
@@ -121,9 +130,22 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	public void initializeValues() {
 		this.formatOptionsCbx.addItem(ExportListAsDialog.XLS_FORMAT);
 		this.formatOptionsCbx.addItem(ExportListAsDialog.CSV_FORMAT);
+		this.formatOptionsCbx.addItem(this.messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER));
+		this.addCustomReports(this.formatOptionsCbx);
 
 		// default value
 		this.formatOptionsCbx.setValue(ExportListAsDialog.XLS_FORMAT);
+	}
+
+	private void addCustomReports(final ComboBox formatOptions) {
+
+		final List<CustomReportType> customReports =
+				this.jasperReportService.getCustomReportTypes(ToolSection.BM_LIST_MGR_CUSTOM_REPORT.name(),
+						ToolEnum.LIST_MANAGER.getToolName());
+		for (final CustomReportType customReport : customReports) {
+			formatOptions.addItem(customReport.getCode().concat(" - ").concat(customReport.getName()));
+		}
+
 	}
 
 	@Override
@@ -151,11 +173,15 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 				if (ExportListAsDialog.this.germplasmList.isLockedList()) {
 					ExportListAsDialog.this.showWarningMessage(table);
 					// do the export
+					final String exportType = ExportListAsDialog.this.formatOptionsCbx.getValue().toString();
 					if (ExportListAsDialog.XLS_FORMAT.equalsIgnoreCase(ExportListAsDialog.this.formatOptionsCbx.getValue().toString())) {
 						ExportListAsDialog.this.exportListAsXLS(table);
 					} else if (ExportListAsDialog.CSV_FORMAT.equalsIgnoreCase(ExportListAsDialog.this.formatOptionsCbx.getValue()
 							.toString())) {
 						ExportListAsDialog.this.exportListAsCSV(table);
+					} else if (exportType.equalsIgnoreCase(ExportListAsDialog.this.messageSource
+							.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER))) {
+						ExportListAsDialog.this.exportListForGenotypingOrderAction();
 					}
 				} else {
 					MessageNotifier.showError(ExportListAsDialog.this.getWindow(),
@@ -175,7 +201,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 		this.setModal(true);
 		this.setResizable(false);
 		this.setHeight("225px");
-		this.setWidth("380px");
+		this.setWidth("450px");
 
 		final HorizontalLayout fieldLayout = new HorizontalLayout();
 		fieldLayout.setSpacing(true);
@@ -239,6 +265,33 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 			ExportListAsDialog.LOG.error(this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e.getMessage() + ". "
 					+ this.messageSource.getMessage(Message.ERROR_REPORT_TO));
+		}
+	}
+
+	private void exportListForGenotypingOrderAction() {
+		if (this.germplasmList.isLockedList()) {
+			final String tempFileName = System.getProperty(ExportListAsDialog.USER_HOME) + "/tempListForGenotyping.xls";
+			final GermplasmListExporter listExporter = new GermplasmListExporter(this.germplasmList.getId());
+
+			try {
+				listExporter.exportKBioScienceGenotypingOrderXLS(tempFileName, 96);
+				final FileDownloadResource fileDownloadResource =
+						new FileDownloadResource(new File(tempFileName), this.source.getApplication());
+				final String listName = this.germplasmList.getName();
+				fileDownloadResource.setFilename(FileDownloadResource.getDownloadFileName(listName,
+						BreedingManagerUtil.getApplicationRequest()).replace(" ", "_")
+						+ "ForGenotyping.xls");
+
+				this.source.getWindow().open(fileDownloadResource);
+
+			} catch (final GermplasmListExporterException e) {
+				ExportListAsDialog.LOG.error(e.getMessage(), e);
+				MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST),
+						e.getMessage());
+			}
+		} else {
+			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST),
+					this.messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED));
 		}
 	}
 
