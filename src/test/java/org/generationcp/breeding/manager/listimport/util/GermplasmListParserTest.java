@@ -8,12 +8,12 @@ import java.util.Map;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.generationcp.breeding.manager.data.initializer.UserDefinedFieldTestDataInitializer;
+import org.generationcp.breeding.manager.data.initializer.UserDefinedFieldTestDataInitializer;
 import org.generationcp.breeding.manager.listimport.validator.StockIDValidator;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.commons.parsing.FileParsingException;
 import org.generationcp.commons.util.DateUtil;
-import org.generationcp.middleware.data.initializer.GermplasmTestDataInitializer;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -22,11 +22,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.AdditionalMatchers;
-import org.mockito.InjectMocks;
-import org.mockito.Matchers;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 
 /**
@@ -44,6 +40,7 @@ public class GermplasmListParserTest {
 	public static final String NO_INVENTORY_COL_FILE = "GermplasmImportTemplate-StockIDs-no-inventory-column.xls";
 	public static final String DUPLICATE_STOCK_ID_FILE = "GermplasmImportTemplate-StockIDs-duplicate-stock-ids.xls";
 	public static final String ADDITIONAL_NAME_FILE = "GermplasmImportTemplate-additional-name.xls";
+	private static final int EXPECTED_DESCRIPTION_SHEET_VARIABLE_COUNT = 12;
 
 	@Mock
 	private OntologyDataManager ontologyDataManager;
@@ -98,6 +95,23 @@ public class GermplasmListParserTest {
 		Assert.assertEquals("This template has blank list date, should be eq to current date", DateUtil.getCurrentDateInUIFormat(),
 				DateUtil.getDateInUIFormat(this.importedGermplasmList.getDate()));
 		assert this.parser.hasStockIdFactor();
+	}
+
+	@Test
+	public void testProperHeaderValidationSetup() throws Exception {
+
+		final File workbookFile =
+				new File(ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.ADDITIONAL_NAME_FILE).toURI());
+
+		assert workbookFile.exists();
+
+		final Workbook noStockIDWorkbook = WorkbookFactory.create(workbookFile);
+		this.parser.parseWorkbook(noStockIDWorkbook, null);
+
+		Assert.assertEquals(
+				"Header validation setup does not properly recognize the right amount of expected headers for the observation sheet",
+				EXPECTED_DESCRIPTION_SHEET_VARIABLE_COUNT, this.parser.getDescriptionVariableNames().size());
+
 	}
 
 	/**

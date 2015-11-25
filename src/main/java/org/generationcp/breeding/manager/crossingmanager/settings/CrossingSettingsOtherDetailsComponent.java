@@ -144,8 +144,7 @@ InitializingBean {
 		this.harvestDetailsLabel.setStyleName(Bootstrap.Typography.H2.styleName());
 
 		this.harvestLocations = new ComboBox(this.messageSource.getMessage(Message.HARVEST_LOCATION) + ":");
-		this.harvestLocations.setNullSelectionAllowed(false);
-		this.harvestLocations.addStyleName("mandatory-field");
+		this.harvestLocations.setNullSelectionAllowed(true);
 
 		this.harvestDateField = new HarvestDateField(2014, this.messageSource.getMessage(Message.ESTIMATED_HARVEST_DATE) + ":");
 
@@ -313,12 +312,6 @@ InitializingBean {
 			this.harvestDateField.validate();
 		} catch (InvalidValueException e) {
 			MessageNotifier.showRequiredFieldError(this.getWindow(), e.getMessage());
-			return false;
-		}
-
-		if (this.harvestLocations.getValue() == null || this.harvestLocations.getValue().equals("")) {
-
-			MessageNotifier.showRequiredFieldError(this.getWindow(), this.messageSource.getMessage(Message.HARVEST_LOCATION_IS_MANDATORY));
 			return false;
 		}
 
