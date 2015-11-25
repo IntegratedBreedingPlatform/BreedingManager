@@ -1,7 +1,6 @@
 
 package org.generationcp.breeding.manager.listmanager;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -43,12 +42,8 @@ import org.generationcp.breeding.manager.listmanager.listeners.SaveListButtonCli
 import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
 import org.generationcp.breeding.manager.listmanager.util.DropHandlerMethods.ListUpdatedEvent;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
-import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
-import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
-import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.spring.util.ContextUtil;
-import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
@@ -229,9 +224,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.EXPORT_LIST))) {
 						ListBuilderComponent.this.exportListAction();
 					} else if (clickedItem.getName().equals(
-							ListBuilderComponent.this.messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER))) {
-						ListBuilderComponent.this.exportListForGenotypingOrderAction();
-					} else if (clickedItem.getName().equals(
 							ListBuilderComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL))) {
 						ListBuilderComponent.this.copyToNewListAction();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.INVENTORY_VIEW))) {
@@ -317,8 +309,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	private static final String LOCK_TOOLTIP = "Click to lock or unlock this germplasm list.";
 	public static final String TOOLS_BUTTON_ID = "Actions";
 	public static final String INVENTORY_TOOLS_BUTTON_ID = "Actions";
-	private static final String USER_HOME = "user.home";
-
 	// Layout Component
 	private AbsoluteLayout toolsButtonContainer;
 
@@ -1129,37 +1119,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		final ExportListAsDialog exportListAsDialog =
 				new ExportListAsDialog(this.source, this.currentlySavedGermplasmList, this.listDataTable);
 		this.getWindow().addWindow(exportListAsDialog);
-	}
-
-	private void exportListForGenotypingOrderAction() {
-		if (this.isCurrentListSaved()) {
-			if (this.currentlySavedGermplasmList.isLockedList()) {
-				final String tempFileName = System.getProperty(ListBuilderComponent.USER_HOME) + "/tempListForGenotyping.xls";
-				final GermplasmListExporter listExporter = new GermplasmListExporter(this.currentlySavedGermplasmList.getId());
-
-				try {
-					listExporter.exportKBioScienceGenotypingOrderXLS(tempFileName, 96);
-					final FileDownloadResource fileDownloadResource =
-							new FileDownloadResource(new File(tempFileName), this.source.getApplication());
-					final String listName = this.currentlySavedGermplasmList.getName();
-					fileDownloadResource.setFilename(FileDownloadResource.getDownloadFileName(listName,
-							BreedingManagerUtil.getApplicationRequest()).replace(" ", "_")
-							+ "ForGenotyping.xls");
-
-					this.source.getWindow().open(fileDownloadResource);
-
-					// must figure out other way to clean-up file because deleting it here makes it unavailable for download
-
-				} catch (final GermplasmListExporterException e) {
-					MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST),
-							e.getMessage());
-					ListBuilderComponent.LOG.error(e.getMessage(), e);
-				}
-			} else {
-				MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST),
-						this.messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED));
-			}
-		}
 	}
 
 	public void copyToNewListAction() {

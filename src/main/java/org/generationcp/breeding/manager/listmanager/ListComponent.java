@@ -1,7 +1,6 @@
 
 package org.generationcp.breeding.manager.listmanager;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,15 +40,11 @@ import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource
 import org.generationcp.breeding.manager.listmanager.dialog.ListManagerCopyToNewListDialog;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
-import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.breeding.manager.listmanager.util.ListDataPropertiesRenderer;
-import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
-import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.spring.util.ContextUtil;
-import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -154,7 +149,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	// Menu for tools button
 	private ContextMenu menu;
 	private ContextMenuItem menuExportList;
-	private ContextMenuItem menuExportForGenotypingOrder;
 	private ContextMenuItem menuCopyToList;
 	private ContextMenuItem menuAddEntry;
 	private ContextMenuItem menuSaveChanges;
@@ -185,8 +179,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	// Theme Resource
 	private BaseSubWindow listManagerCopyToNewListDialog;
-	private static final String USER_HOME = "user.home";
-
 	private Object selectedColumn = "";
 	private Object selectedItemId;
 	private String lastCellvalue = "";
@@ -359,7 +351,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.menuDeleteEntries = this.menu.addItem(this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
 		this.menuEditList = this.menu.addItem(this.messageSource.getMessage(Message.EDIT_LIST));
 		this.menuExportList = this.menu.addItem(this.messageSource.getMessage(Message.EXPORT_LIST));
-		this.menuExportForGenotypingOrder = this.menu.addItem(this.messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER));
 		this.menuInventoryView = this.menu.addItem(this.messageSource.getMessage(Message.INVENTORY_VIEW));
 		this.menuSaveChanges = this.menu.addItem(this.messageSource.getMessage(Message.SAVE_CHANGES));
 		this.menu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
@@ -955,9 +946,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						ListComponent.this.listDataTable.setValue(ListComponent.this.listDataTable.getItemIds());
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.EXPORT_LIST))) {
 						ListComponent.this.exportListAction();
-					} else if (clickedItem.getName().equals(
-							ListComponent.this.messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER))) {
-						ListComponent.this.exportListForGenotypingOrderAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
 						ListComponent.this.copyToNewListAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.ADD_ENTRIES))) {
@@ -988,7 +976,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			ListComponent.this.menu.show(event.getClientX(), event.getClientY());
 
 			if (ListComponent.this.fromUrl) {
-				ListComponent.this.menuExportForGenotypingOrder.setVisible(false);
 				ListComponent.this.menuExportList.setVisible(false);
 				ListComponent.this.menuCopyToList.setVisible(false);
 			}
@@ -1437,33 +1424,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		if (this.fillWith != null) {
 			this.fillWith.setContextMenuEnabled(!locked);
-		}
-	}
-
-	private void exportListForGenotypingOrderAction() {
-		if (this.germplasmList.isLockedList()) {
-			final String tempFileName = System.getProperty(ListComponent.USER_HOME) + "/tempListForGenotyping.xls";
-			final GermplasmListExporter listExporter = new GermplasmListExporter(this.germplasmList.getId());
-
-			try {
-				listExporter.exportKBioScienceGenotypingOrderXLS(tempFileName, 96);
-				final FileDownloadResource fileDownloadResource =
-						new FileDownloadResource(new File(tempFileName), this.source.getApplication());
-				final String listName = this.germplasmList.getName();
-				fileDownloadResource.setFilename(FileDownloadResource.getDownloadFileName(listName,
-						BreedingManagerUtil.getApplicationRequest()).replace(" ", "_")
-						+ "ForGenotyping.xls");
-
-				this.source.getWindow().open(fileDownloadResource);
-
-			} catch (final GermplasmListExporterException e) {
-				ListComponent.LOG.error(e.getMessage(), e);
-				MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST),
-						e.getMessage());
-			}
-		} else {
-			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST),
-					this.messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED));
 		}
 	}
 
