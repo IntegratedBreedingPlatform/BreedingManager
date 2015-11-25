@@ -10,9 +10,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.dellroad.stuff.vaadin.ContextApplication;
+import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.service.FileService;
 import org.generationcp.commons.util.FileDownloadResource;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.workbook.generator.CodesSheetGenerator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.Application;
@@ -28,6 +31,9 @@ public class GermplasmListTemplateDownloader {
 	private FileService fileService;
 	
 	static final String EXPANDED_TEMPLATE_FILE = "GermplasmImportTemplate-Expanded-rev5a.xls";
+	
+	@Autowired
+	private SimpleResourceBundleMessageSource messageSource;
 
 	private static final long serialVersionUID = -9047374755825933209L;
 
@@ -48,7 +54,7 @@ public class GermplasmListTemplateDownloader {
 			}
 
 		} catch (IOException | InvalidFormatException e) {
-			throw new FileDownloadException(e.getMessage(), e);
+			throw new FileDownloadException(messageSource.getMessage(Message.ERROR_IN_GERMPLASMLIST_TEMPLATE_DOWNLOAD), e);
 		}
 	}
 
