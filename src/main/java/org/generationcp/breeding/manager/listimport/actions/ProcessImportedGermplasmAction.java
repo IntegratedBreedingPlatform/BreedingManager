@@ -253,19 +253,9 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		        	germplasm = new Germplasm();
 		        }
 		        
-		        if(searchByNameOrNewGermplasmIsNeeded) {
-		        	// gid at creation is temporary, will be set properly below
-		        	germplasm = createGermplasmObject(i, 0, 0, 0, ibdbUserId, dateIntValue);
-		        	
-		        	if(germplasmMatchesCount==1 && germplasmDetailsComponent.automaticallyAcceptSingleMatchesCheckbox()){
-		                //If a single match is found, multiple matches will be 
-		                //   handled by SelectGemrplasmWindow and 
-		                //   then receiveGermplasmFromWindowAndUpdateGermplasmData()
-		                List<Germplasm> foundGermplasm = this.germplasmDataManager.getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
-		                germplasm.setGid(foundGermplasm.get(0).getGid());
-		                doNotCreateGermplasmsWithId.add(foundGermplasm.get(0).getGid());
-		            }
-		        }
+		        germplasm = updateGidForSingleMatch(ibdbUserId, dateIntValue,
+						importedGermplasm, germplasmMatchesCount, germplasm,
+						searchByNameOrNewGermplasmIsNeeded);
 
 		        Name name = createNameObject(ibdbUserId, dateIntValue, importedGermplasm.getDesig());
 		        
@@ -285,6 +275,39 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		}catch (MiddlewareQueryException mqe){
 		    LOG.error("Database error: " + mqe.getMessage(), mqe);
 		}
+	}
+
+
+	/**
+	 * Update GID to the existing germplasm's id. Otherwise, gid is set to 0
+	 * 
+	 * @param ibdbUserId
+	 * @param dateIntValue
+	 * @param importedGermplasm
+	 * @param germplasmMatchesCount
+	 * @param germplasm
+	 * @param searchByNameOrNewGermplasmIsNeeded
+	 * @return
+	 */
+	Germplasm updateGidForSingleMatch(Integer ibdbUserId,
+			Integer dateIntValue, ImportedGermplasm importedGermplasm,
+			int germplasmMatchesCount, Germplasm germplasm,
+			boolean searchByNameOrNewGermplasmIsNeeded)
+			throws MiddlewareQueryException {
+		if(searchByNameOrNewGermplasmIsNeeded) {
+			// gid at creation is temporary, will be set properly below
+			germplasm = createGermplasmObject(0, 0, 0, 0, ibdbUserId, dateIntValue);
+			
+			if(germplasmMatchesCount==1 && germplasmDetailsComponent.automaticallyAcceptSingleMatchesCheckbox()){
+		        //If a single match is found, multiple matches will be 
+		        //   handled by SelectGemrplasmWindow and 
+		        //   then receiveGermplasmFromWindowAndUpdateGermplasmData()
+		        List<Germplasm> foundGermplasm = this.germplasmDataManager.getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
+		        germplasm.setGid(foundGermplasm.get(0).getGid());
+		        doNotCreateGermplasmsWithId.add(foundGermplasm.get(0).getGid());
+		    }
+		}
+		return germplasm;
 	}
 
 
@@ -608,6 +631,13 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	public void addNameToGermplasm(Name name, Integer gid){
 		doNotCreateGermplasmsWithId.add(gid);
 		newDesignationsForExistingGermplasm.add(name);
+	}
+
+
+	public void setGermplasmDataManager(
+			GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
+		
 	}
 	
 	
