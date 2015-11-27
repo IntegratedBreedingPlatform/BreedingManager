@@ -289,7 +289,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	 * @param searchByNameOrNewGermplasmIsNeeded
 	 * @return
 	 */
-	private Germplasm updateGidForSingleMatch(Integer ibdbUserId,
+	Germplasm updateGidForSingleMatch(Integer ibdbUserId,
 			Integer dateIntValue, ImportedGermplasm importedGermplasm,
 			int germplasmMatchesCount, Germplasm germplasm,
 			boolean searchByNameOrNewGermplasmIsNeeded)
@@ -631,6 +631,13 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	public void addNameToGermplasm(Name name, Integer gid){
 		doNotCreateGermplasmsWithId.add(gid);
 		newDesignationsForExistingGermplasm.add(name);
+	}
+
+
+	public void setGermplasmDataManager(
+			GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
+		
 	}
 	
 	
