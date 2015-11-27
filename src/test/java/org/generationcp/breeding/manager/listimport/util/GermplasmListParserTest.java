@@ -7,13 +7,13 @@ import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.generationcp.breeding.manager.data.initializer.GermplasmDataInitializer;
 import org.generationcp.breeding.manager.data.initializer.UserDefinedFieldTestDataInitializer;
 import org.generationcp.breeding.manager.listimport.validator.StockIDValidator;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.commons.parsing.FileParsingException;
 import org.generationcp.commons.util.DateUtil;
+import org.generationcp.middleware.data.initializer.GermplasmTestDataInitializer;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -22,7 +22,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.AdditionalMatchers;
+import org.mockito.InjectMocks;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 /**
@@ -50,33 +54,35 @@ public class GermplasmListParserTest {
 
 	@Mock
 	private InventoryDataManager inventoryDataManager;
-	
+
 	@Mock
 	private GermplasmListManager germplasmListManager;
 	@Mock
 	private StockIDValidator stockIdValidator;
-	
+
 	@InjectMocks
 	private final GermplasmListParser parser = new GermplasmListParser();
 
 	private ImportedGermplasmList importedGermplasmList;
-	private UserDefinedFieldTestDataInitializer userDefinedFieldTestDataInitializer = new UserDefinedFieldTestDataInitializer();
+	private final UserDefinedFieldTestDataInitializer userDefinedFieldTestDataInitializer = new UserDefinedFieldTestDataInitializer();
 
 	@Before
 	public void setUp() throws Exception {
 
 		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(Matchers.eq(INVENTORY_AMOUNT))).thenReturn(true);
-		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(AdditionalMatchers.not(Matchers.eq(INVENTORY_AMOUNT)))).thenReturn(
-				false);
-		Mockito.when(this.germplasmDataManager.getGermplasmByGID(Matchers.anyInt())).thenReturn(GermplasmDataInitializer.createGermplasm(1));
+		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(AdditionalMatchers.not(Matchers.eq(INVENTORY_AMOUNT))))
+				.thenReturn(false);
+		Mockito.when(this.germplasmDataManager.getGermplasmByGID(Matchers.anyInt())).thenReturn(
+				GermplasmTestDataInitializer.createGermplasm(1));
 		Mockito.when(this.inventoryDataManager.getSimilarStockIds(Matchers.anyList())).thenReturn(new ArrayList<String>());
-		Mockito.when(this.germplasmListManager.getGermplasmListTypes()).thenReturn(this.userDefinedFieldTestDataInitializer.getValidListType());
+		Mockito.when(this.germplasmListManager.getGermplasmListTypes()).thenReturn(
+				this.userDefinedFieldTestDataInitializer.getValidListType());
 
 	}
 
 	/**
 	 * This is the default case, the template has a stock id factor
-	 *
+	 * 
 	 * @throws Exception
 	 */
 	@Test
@@ -114,7 +120,7 @@ public class GermplasmListParserTest {
 
 	/**
 	 * Test when we have no stock id column in observation
-	 *
+	 * 
 	 * @throws Exception
 	 */
 	@Test
@@ -137,7 +143,7 @@ public class GermplasmListParserTest {
 
 	/**
 	 * Test when we have no stock id column in observation
-	 *
+	 * 
 	 * @throws Exception
 	 */
 	@Test
@@ -156,7 +162,7 @@ public class GermplasmListParserTest {
 
 	/**
 	 * Test when we have stock id column but contain missing values
-	 *
+	 * 
 	 * @throws Exception
 	 */
 	@Test
@@ -176,13 +182,14 @@ public class GermplasmListParserTest {
 
 	/**
 	 * Test when we have stock id column but contain duplicate values
-	 *
+	 * 
 	 * @throws Exception
 	 */
 	@Test
 	public void testTemplateWithDuplicateIdsInObservation() throws Exception {
 		try {
-			Mockito.doThrow(new FileParsingException("GERMPLASM_PARSE_DUPLICATE_STOCK_ID")).when(this.stockIdValidator).validate(Matchers.anyString(), (ImportedGermplasmList) Matchers.any());
+			Mockito.doThrow(new FileParsingException("GERMPLASM_PARSE_DUPLICATE_STOCK_ID")).when(this.stockIdValidator)
+					.validate(Matchers.anyString(), (ImportedGermplasmList) Matchers.any());
 			final File workbookFile =
 					new File(ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.DUPLICATE_STOCK_ID_FILE).toURI());
 			final Workbook duplicateStockIdWorkbook = WorkbookFactory.create(workbookFile);
@@ -193,29 +200,30 @@ public class GermplasmListParserTest {
 					e.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void testTemplateWithAdditionalNames() throws Exception {
-		File workbookFile = new File(ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.ADDITIONAL_NAME_FILE).toURI());
-		Workbook workbook = WorkbookFactory.create(workbookFile);
+		final File workbookFile =
+				new File(ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.ADDITIONAL_NAME_FILE).toURI());
+		final Workbook workbook = WorkbookFactory.create(workbookFile);
 
 		this.importedGermplasmList = this.parser.parseWorkbook(workbook, null);
-		ImportedGermplasm germplasm = importedGermplasmList.getImportedGermplasms().get(0);
+		final ImportedGermplasm germplasm = this.importedGermplasmList.getImportedGermplasms().get(0);
 		Assert.assertEquals("Unable to properly recognize additional name factors associated with germplasm", 2, germplasm.getNameFactors()
 				.size());
 
 	}
-	
+
 	@Test
-	public void testValidateListTypeFound(){
-		for(Map.Entry<String, String> item: this.userDefinedFieldTestDataInitializer.validListTypeMap.entrySet()){
+	public void testValidateListTypeFound() {
+		for (final Map.Entry<String, String> item : this.userDefinedFieldTestDataInitializer.validListTypeMap.entrySet()) {
 			Assert.assertTrue("The listType should be accepted", this.parser.validateListType(item.getKey()));
 		}
 	}
-	
+
 	@Test
-	public void testValidateListTypeNotFound(){
-		Assert.assertFalse("The return value should be false.",this.parser.validateListType("LIST"));
+	public void testValidateListTypeNotFound() {
+		Assert.assertFalse("The return value should be false.", this.parser.validateListType("LIST"));
 	}
 
 }
