@@ -17,6 +17,7 @@ import org.generationcp.breeding.manager.listmanager.util.ListDataPropertiesRend
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.domain.gms.ListDataInfo;
@@ -124,7 +125,7 @@ public class ListComponentTest {
 		Mockito.when(this.messageSource.getMessage(Message.HASHTAG)).thenReturn(ListComponentTest.HASH);
 
 		this.germplasmList =
-				GermplasmListDataInitializer.createGermplasmListWithListData(TEST_GERMPLASM_LIST_ID, TEST_GERMPLASM_NO_OF_ENTRIES);
+				GermplasmListTestDataInitializer.createGermplasmListWithListData(TEST_GERMPLASM_LIST_ID, TEST_GERMPLASM_NO_OF_ENTRIES);
 		this.germplasmList.setStatus(1);
 		this.listComponent.setListEntries(this.germplasmList.getListData());
 		this.listComponent.setGermplasmList(this.germplasmList);
