@@ -14,10 +14,10 @@ import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.CrossingManagerInventoryTable;
-import org.generationcp.breeding.manager.data.initializer.GermplasmListDataInitializer;
 import org.generationcp.breeding.manager.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
@@ -81,7 +81,7 @@ public class SelectParentsListDataComponentTest {
 	private Component component;
 
 	@InjectMocks
-	private SelectParentsListDataComponent selectParents = new SelectParentsListDataComponent(
+	private final SelectParentsListDataComponent selectParents = new SelectParentsListDataComponent(
 			SelectParentsListDataComponentTest.GERMPLASM_LIST_ID, SelectParentsListDataComponentTest.LIST_NAME,
 			this.makeCrossesParentsComponent);
 
@@ -89,11 +89,11 @@ public class SelectParentsListDataComponentTest {
 	private Table listDataTable;
 	private Table inventoryTable;
 	private List<GermplasmListData> listEntries;
-	private List<ListEntryLotDetails> selectedLotEntries = new ArrayList<ListEntryLotDetails>();
+	private final List<ListEntryLotDetails> selectedLotEntries = new ArrayList<ListEntryLotDetails>();
 
 	@Before
 	public void setUp() throws Exception {
-		this.germplasmList = GermplasmListDataInitializer.createGermplasmList(SelectParentsListDataComponentTest.GERMPLASM_LIST_ID);
+		this.germplasmList = GermplasmListTestDataInitializer.createGermplasmList(SelectParentsListDataComponentTest.GERMPLASM_LIST_ID);
 		Mockito.doReturn(this.germplasmList).when(this.germplasmListManager)
 				.getGermplasmListById(SelectParentsListDataComponentTest.GERMPLASM_LIST_ID);
 		Mockito.doReturn(Long.valueOf(NO_OF_ENTRIES)).when(this.germplasmListManager)
@@ -134,7 +134,7 @@ public class SelectParentsListDataComponentTest {
 		this.selectParents.addListeners();
 		this.selectParents.layoutComponents();
 
-		Window window = Mockito.mock(Window.class);
+		final Window window = Mockito.mock(Window.class);
 		Mockito.doReturn(window).when(this.component).getWindow();
 		this.selectParents.setParent(this.component);
 
@@ -142,12 +142,12 @@ public class SelectParentsListDataComponentTest {
 	}
 
 	private Table prepareInventoryTable() {
-		List<ListEntryLotDetails> lotDetails = this.createLotDetails(NO_OF_ENTRIES);
-		Table table = this.createListInventoryTable(lotDetails);
+		final List<ListEntryLotDetails> lotDetails = this.createLotDetails(NO_OF_ENTRIES);
+		final Table table = this.createListInventoryTable(lotDetails);
 
 		// init selected entries
 		for (int i = 0; i < NO_OF_SELECTED; i++) {
-			ListEntryLotDetails lotDetail = lotDetails.get(i);
+			final ListEntryLotDetails lotDetail = lotDetails.get(i);
 			this.selectedLotEntries.add(lotDetail);
 			table.select(lotDetail);
 		}
@@ -155,22 +155,22 @@ public class SelectParentsListDataComponentTest {
 		return table;
 	}
 
-	private List<ListEntryLotDetails> createLotDetails(int noOfEntries) {
-		List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
+	private List<ListEntryLotDetails> createLotDetails(final int noOfEntries) {
+		final List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
 		for (int i = 0; i < noOfEntries; i++) {
-			ListEntryLotDetails lotDetail = ListInventoryDataInitializer.createLotDetail(i, 1);
+			final ListEntryLotDetails lotDetail = ListInventoryDataInitializer.createLotDetail(i, 1);
 			lotDetails.add(lotDetail);
 		}
 		return lotDetails;
 	}
 
-	private Table createListInventoryTable(List<ListEntryLotDetails> lotDetails) {
-		Table table = new Table();
+	private Table createListInventoryTable(final List<ListEntryLotDetails> lotDetails) {
+		final Table table = new Table();
 		table.setMultiSelect(true);
 		table.addContainerProperty(ColumnLabels.NEWLY_RESERVED.getName(), Double.class, null);
 
-		for (ListEntryLotDetails lotDetail : lotDetails) {
-			Item item = table.addItem(lotDetail);
+		for (final ListEntryLotDetails lotDetail : lotDetails) {
+			final Item item = table.addItem(lotDetail);
 			item.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(0.0);
 		}
 
@@ -182,9 +182,9 @@ public class SelectParentsListDataComponentTest {
 		Mockito.when(this.messageSource.getMessage(Message.CHECK_ICON)).thenReturn("TAG");
 		Mockito.when(this.messageSource.getMessage(Message.HASHTAG)).thenReturn("HASHTAG");
 
-		TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
+		final TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
 		tableWithSelectAll.instantiateComponents();
-		Table table = tableWithSelectAll.getTable();
+		final Table table = tableWithSelectAll.getTable();
 
 		this.selectParents.initializeListDataTable(table);
 
@@ -202,12 +202,12 @@ public class SelectParentsListDataComponentTest {
 
 	@Test
 	public void testInitializeListDataTable_returnsTheValueFromOntologyManager() throws MiddlewareQueryException {
-		Long count = 5L;
+		final Long count = 5L;
 		this.selectParents.setCount(count);
 		Mockito.when(this.messageSource.getMessage(Message.CHECK_ICON)).thenReturn("TAG");
 		Mockito.when(this.messageSource.getMessage(Message.HASHTAG)).thenReturn("HASHTAG");
 
-		Term fromOntology = new Term();
+		final Term fromOntology = new Term();
 		fromOntology.setName("Ontology Name");
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.ENTRY_NO.getId())).thenReturn(fromOntology);
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.DESIG.getId())).thenReturn(fromOntology);
@@ -219,9 +219,9 @@ public class SelectParentsListDataComponentTest {
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.GID.getId())).thenReturn(fromOntology);
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.SEED_SOURCE.getId())).thenReturn(fromOntology);
 
-		TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
+		final TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
 		tableWithSelectAll.instantiateComponents();
-		Table table = tableWithSelectAll.getTable();
+		final Table table = tableWithSelectAll.getTable();
 
 		this.selectParents.initializeListDataTable(table);
 
@@ -247,9 +247,9 @@ public class SelectParentsListDataComponentTest {
 
 	private Table initListDataTable() {
 		// Initialize List Data Table first
-		TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
+		final TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
 		tableWithSelectAll.instantiateComponents();
-		Table listDataTable = tableWithSelectAll.getTable();
+		final Table listDataTable = tableWithSelectAll.getTable();
 		this.selectParents.initializeListDataTable(listDataTable);
 		this.selectParents.setListDataTableWithSelectAll(tableWithSelectAll);
 		return listDataTable;
@@ -258,11 +258,11 @@ public class SelectParentsListDataComponentTest {
 	@Test
 	public void testUpdateNoOfEntries_InListViewAndCountHasValue() {
 		Mockito.doReturn(ModeView.LIST_VIEW).when(this.makeCrossesMain).getModeView();
-		long count = 10L;
+		final long count = 10L;
 
 		this.selectParents.updateNoOfEntries(count);
 
-		String actualValue = this.selectParents.getTotalListEntriesLabel().getValue().toString();
+		final String actualValue = this.selectParents.getTotalListEntriesLabel().getValue().toString();
 		Assert.assertTrue("Expecting that the count is included in the caption of the total list entries label for list view but didn't.",
 				actualValue.contains(String.valueOf(count)));
 		Assert.assertTrue("Expecting that the label caption is set to " + TOTAL_ENTRIES + " but didn't.l",
@@ -272,11 +272,11 @@ public class SelectParentsListDataComponentTest {
 	@Test
 	public void testUpdateNoOfEntries_InListViewAndCountIsZero() {
 		Mockito.doReturn(ModeView.LIST_VIEW).when(this.makeCrossesMain).getModeView();
-		long count = 0;
+		final long count = 0;
 
 		this.selectParents.updateNoOfEntries(count);
 
-		String actualValue = this.selectParents.getTotalListEntriesLabel().getValue().toString();
+		final String actualValue = this.selectParents.getTotalListEntriesLabel().getValue().toString();
 		Assert.assertFalse(
 				"Expecting that the count is not included in the caption of the total list entries label for list view but didn't.",
 				actualValue.contains(String.valueOf(count)));
@@ -288,11 +288,11 @@ public class SelectParentsListDataComponentTest {
 	@Test
 	public void testUpdateNoOfEntries_InInventoryViewAndCountHasValue() {
 		Mockito.doReturn(ModeView.INVENTORY_VIEW).when(this.makeCrossesMain).getModeView();
-		long count = 10L;
+		final long count = 10L;
 
 		this.selectParents.updateNoOfEntries(count);
 
-		String actualValue = this.selectParents.getTotalListEntriesLabel().getValue().toString();
+		final String actualValue = this.selectParents.getTotalListEntriesLabel().getValue().toString();
 		Assert.assertTrue("Expecting that the count is included in the caption of the total list entries label for list view but didn't.",
 				actualValue.contains(String.valueOf(count)));
 		Assert.assertTrue("Expecting that the label caption is set to " + TOTAL_LOTS + " but didn't.l", actualValue.startsWith(TOTAL_LOTS));
@@ -302,10 +302,10 @@ public class SelectParentsListDataComponentTest {
 	public void testUpdateNoOfEntries_InListView() {
 		Mockito.doReturn(ModeView.LIST_VIEW).when(this.makeCrossesMain).getModeView();
 		this.selectParents.initializeValues();
-		long count = this.selectParents.getListDataTable().size();
+		final long count = this.selectParents.getListDataTable().size();
 
 		this.selectParents.updateNoOfEntries();
-		String actualValue = this.selectParents.getTotalListEntriesLabel().getValue().toString();
+		final String actualValue = this.selectParents.getTotalListEntriesLabel().getValue().toString();
 		Assert.assertTrue(
 				"Expecting that the count included in the caption of the total list entries label is from the list data table but didn't.",
 				actualValue.contains(String.valueOf(count)));
@@ -314,13 +314,13 @@ public class SelectParentsListDataComponentTest {
 	@Test
 	public void testUpdateNoOfEntries_InInventoryView() {
 		Mockito.doReturn(ModeView.INVENTORY_VIEW).when(this.makeCrossesMain).getModeView();
-		Table table = new Table();
+		final Table table = new Table();
 		table.addItem(ListInventoryDataInitializer.createLotDetail(1, 1));
 		Mockito.doReturn(table).when(this.listInventoryTable).getTable();
 
-		long count = this.selectParents.getListInventoryTable().getTable().size();
+		final long count = this.selectParents.getListInventoryTable().getTable().size();
 		this.selectParents.updateNoOfEntries();
-		String actualValue = this.selectParents.getTotalListEntriesLabel().getValue().toString();
+		final String actualValue = this.selectParents.getTotalListEntriesLabel().getValue().toString();
 		Assert.assertTrue(
 				"Expecting that the count included in the caption of the total lot entries label is from inventory table but didn't.",
 				actualValue.contains(String.valueOf(count)));
@@ -332,14 +332,14 @@ public class SelectParentsListDataComponentTest {
 
 		// select at least 2 entry from the list data table
 		this.selectParents.initializeValues();
-		Table table = this.selectParents.getListDataTable();
+		final Table table = this.selectParents.getListDataTable();
 		for (int i = 1; i <= NO_OF_SELECTED; i++) {
 			table.select(i);
 		}
 
 		this.selectParents.updateNoOfSelectedEntries();
 
-		String selectedEntriesLabel = this.selectParents.getTotalSelectedListEntriesLabel().getValue().toString();
+		final String selectedEntriesLabel = this.selectParents.getTotalSelectedListEntriesLabel().getValue().toString();
 		Assert.assertTrue("Expecting that the count included in the caption of the Selected label is from list data table but didn't.",
 				selectedEntriesLabel.contains(String.valueOf(NO_OF_SELECTED)));
 	}
@@ -350,7 +350,7 @@ public class SelectParentsListDataComponentTest {
 
 		this.selectParents.updateNoOfSelectedEntries();
 
-		String selectedEntriesLabel = this.selectParents.getTotalSelectedListEntriesLabel().getValue().toString();
+		final String selectedEntriesLabel = this.selectParents.getTotalSelectedListEntriesLabel().getValue().toString();
 		Assert.assertTrue(
 				"Expecting that the count included in the caption of the Selected label is from list inventory table but didn't.",
 				selectedEntriesLabel.contains(String.valueOf(NO_OF_SELECTED)));
@@ -416,7 +416,7 @@ public class SelectParentsListDataComponentTest {
 
 		try {
 			Mockito.verify(this.listInventoryTable, Mockito.times(1)).setVisible(false);
-		} catch (TooLittleActualInvocations e) {
+		} catch (final TooLittleActualInvocations e) {
 			Assert.fail("Expecting the the listInventoryTable is hidden after calling the method but didn't.");
 		}
 	}
@@ -429,7 +429,7 @@ public class SelectParentsListDataComponentTest {
 
 		try {
 			Mockito.verify(this.listInventoryTable, Mockito.times(0)).setVisible(false);
-		} catch (NeverWantedButInvoked e) {
+		} catch (final NeverWantedButInvoked e) {
 			Assert.fail("Expecting the the listInventoryTable is already hidden after calling the method so no need to actually set it to hidden but didn't.");
 		}
 
@@ -437,9 +437,9 @@ public class SelectParentsListDataComponentTest {
 
 	@Test
 	public void testChangeToInventoryView_WhenTableWithSelectAllLayoutIsVisible() {
-		TableWithSelectAllLayout tableWithSelectAllLayout = Mockito.mock(TableWithSelectAllLayout.class);
+		final TableWithSelectAllLayout tableWithSelectAllLayout = Mockito.mock(TableWithSelectAllLayout.class);
 		Mockito.doReturn(true).when(tableWithSelectAllLayout).isVisible();
-		Table table = new Table();
+		final Table table = new Table();
 		table.setMultiSelect(true);
 		table.addItem(1);
 		table.addItem(2);
@@ -449,20 +449,20 @@ public class SelectParentsListDataComponentTest {
 		this.selectParents.setListDataTableWithSelectAll(tableWithSelectAllLayout);
 
 		this.selectParents.changeToInventoryView();
-		String label = this.selectParents.getListEntriesLabel().getValue().toString();
+		final String label = this.selectParents.getListEntriesLabel().getValue().toString();
 		Assert.assertTrue("Expecting that the label starts with LOT.", label.startsWith(label));
 	}
 
 	@Test
 	public void testChangeToInventoryView_WhenTableWithSelectAllLayoutIsInvisible() {
-		TableWithSelectAllLayout tableWithSelectAllLayout = Mockito.mock(TableWithSelectAllLayout.class);
+		final TableWithSelectAllLayout tableWithSelectAllLayout = Mockito.mock(TableWithSelectAllLayout.class);
 		Mockito.doReturn(false).when(tableWithSelectAllLayout).isVisible();
 		this.selectParents.setListDataTableWithSelectAll(tableWithSelectAllLayout);
 
 		this.selectParents.changeToInventoryView();
 		try {
 			Mockito.verify(this.messageSource, Mockito.times(0)).getMessage(Message.LOTS);
-		} catch (NeverWantedButInvoked e) {
+		} catch (final NeverWantedButInvoked e) {
 			Assert.fail("Expecting that the label is not set at all but didn't.");
 		}
 
@@ -475,7 +475,7 @@ public class SelectParentsListDataComponentTest {
 
 		try {
 			Mockito.verify(this.messageSource, Mockito.times(1)).getMessage(Message.WARNING);
-		} catch (TooLittleActualInvocations e) {
+		} catch (final TooLittleActualInvocations e) {
 			Assert.fail("Expecting that the warning message is called when the user tries to perform inventory reservation in List View.");
 		}
 	}
@@ -488,7 +488,7 @@ public class SelectParentsListDataComponentTest {
 
 		try {
 			Mockito.verify(this.messageSource, Mockito.times(1)).getMessage(Message.WARNING);
-		} catch (TooLittleActualInvocations e) {
+		} catch (final TooLittleActualInvocations e) {
 			Assert.fail("Expecting that the warning message is called when the user tries to perform inventory reservation without selected lots.");
 		}
 	}
@@ -501,7 +501,7 @@ public class SelectParentsListDataComponentTest {
 
 		try {
 			Mockito.verify(this.messageSource, Mockito.times(1)).getMessage(Message.WARNING);
-		} catch (TooLittleActualInvocations e) {
+		} catch (final TooLittleActualInvocations e) {
 			Assert.fail("Expecting that the warning message is called when the user tries to perform inventory reservation without selected lots.");
 		}
 	}
@@ -509,14 +509,14 @@ public class SelectParentsListDataComponentTest {
 	@Test
 	public void testReserveInventoryAction_InInventoryViewWithSelectedLots() {
 		Mockito.doReturn(true).when(this.listInventoryTable).isVisible();
-		List<ListEntryLotDetails> lotDetails = this.createLotDetails(NO_OF_ENTRIES);
+		final List<ListEntryLotDetails> lotDetails = this.createLotDetails(NO_OF_ENTRIES);
 		Mockito.doReturn(lotDetails).when(this.listInventoryTable).getSelectedLots();
 
 		this.selectParents.reserveInventoryAction();
 
 		try {
 			Mockito.verify(this.messageSource, Mockito.times(0)).getMessage(Message.WARNING);
-		} catch (NeverWantedButInvoked e) {
+		} catch (final NeverWantedButInvoked e) {
 			Assert.fail("Expecting that NO warning message is called when the user tries to perform inventory reservation with selected lots.");
 		}
 	}
@@ -524,10 +524,10 @@ public class SelectParentsListDataComponentTest {
 	@Test
 	public void testUpdateListInventoryTable_WithAllValidReservation() {
 
-		Map<ListEntryLotDetails, Double> validReservations = new HashMap<ListEntryLotDetails, Double>();
+		final Map<ListEntryLotDetails, Double> validReservations = new HashMap<ListEntryLotDetails, Double>();
 
 		Double reservationAmount = 1.5D;
-		for (ListEntryLotDetails lotDetail : this.selectedLotEntries) {
+		for (final ListEntryLotDetails lotDetail : this.selectedLotEntries) {
 			validReservations.put(lotDetail, reservationAmount++);
 		}
 
@@ -535,7 +535,7 @@ public class SelectParentsListDataComponentTest {
 
 		try {
 			Mockito.verify(this.messageSource, Mockito.times(1)).getMessage(Message.SUCCESS);
-		} catch (TooLittleActualInvocations e) {
+		} catch (final TooLittleActualInvocations e) {
 			Assert.fail("Expecting that the success notification is invoked when all reservations are valid but didn't.");
 		}
 	}
@@ -548,27 +548,27 @@ public class SelectParentsListDataComponentTest {
 		try {
 			Mockito.verify(this.messageSource, Mockito.times(1)).getMessage(
 					Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES);
-		} catch (TooLittleActualInvocations e) {
+		} catch (final TooLittleActualInvocations e) {
 			Assert.fail("Expecting that the error notification is invoked when there is an invalid reservation didn't.");
 		}
 	}
 
 	@Test
 	public void testRefreshInventoryColumns() {
-		Map<ListEntryLotDetails, Double> validReservations = new HashMap<ListEntryLotDetails, Double>();
+		final Map<ListEntryLotDetails, Double> validReservations = new HashMap<ListEntryLotDetails, Double>();
 
 		Double reservationAmount = 1.5D;
-		for (ListEntryLotDetails lotDetail : this.selectedLotEntries) {
+		for (final ListEntryLotDetails lotDetail : this.selectedLotEntries) {
 			validReservations.put(lotDetail, reservationAmount++);
 		}
 
-		Set<Integer> entryIds = new HashSet<Integer>();
-		for (Entry<ListEntryLotDetails, Double> details : validReservations.entrySet()) {
+		final Set<Integer> entryIds = new HashSet<Integer>();
+		for (final Entry<ListEntryLotDetails, Double> details : validReservations.entrySet()) {
 			entryIds.add(details.getKey().getId());
 		}
 
-		List<GermplasmListData> selectedListEntries = new ArrayList<GermplasmListData>();
-		for (Integer entryId : entryIds) {
+		final List<GermplasmListData> selectedListEntries = new ArrayList<GermplasmListData>();
+		for (final Integer entryId : entryIds) {
 			selectedListEntries.add(this.listEntries.get(entryId - 1));
 		}
 
@@ -578,16 +578,16 @@ public class SelectParentsListDataComponentTest {
 
 		this.selectParents.refreshInventoryColumns(validReservations);
 
-		for (GermplasmListData listData : selectedListEntries) {
-			Item item = this.listDataTable.getItem(listData.getId());
+		for (final GermplasmListData listData : selectedListEntries) {
+			final Item item = this.listDataTable.getItem(listData.getId());
 
-			Button inventoryButton = (Button) item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue();
-			String expectedAvailInv = listData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
-			String actualAvailInv = inventoryButton.getCaption();
+			final Button inventoryButton = (Button) item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue();
+			final String expectedAvailInv = listData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
+			final String actualAvailInv = inventoryButton.getCaption();
 			Assert.assertEquals("Unable to set the available inventory value to " + expectedAvailInv, expectedAvailInv, actualAvailInv);
 
-			String expectedSeedRes = listData.getInventoryInfo().getReservedLotCount().toString().trim();
-			String actualSeedRes = (String) item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue();
+			final String expectedSeedRes = listData.getInventoryInfo().getReservedLotCount().toString().trim();
+			final String actualSeedRes = (String) item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue();
 			Assert.assertEquals("Unable to set the seed reservation value to " + expectedSeedRes, expectedSeedRes, actualSeedRes);
 		}
 	}

@@ -1,6 +1,9 @@
+
 package org.generationcp.breeding.manager.crossingmanager.listeners;
 
 import java.util.ArrayList;
+
+import junit.framework.Assert;
 
 import org.generationcp.breeding.manager.action.SaveGermplasmListActionFactory;
 import org.generationcp.breeding.manager.application.Message;
@@ -10,10 +13,10 @@ import org.generationcp.breeding.manager.crossingmanager.ParentTabComponent;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.listinventory.CrossingManagerInventoryTable;
-import org.generationcp.breeding.manager.data.initializer.GermplasmListDataInitializer;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryActionFactory;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.junit.Before;
@@ -24,8 +27,6 @@ import org.mockito.MockitoAnnotations;
 
 import com.vaadin.data.Container;
 import com.vaadin.ui.Table;
-
-import junit.framework.Assert;
 
 public class CrossingManagerActionHandlerTest {
 
@@ -49,14 +50,14 @@ public class CrossingManagerActionHandlerTest {
 		fromOntology.setName("Ontology Name");
 		Mockito.doReturn(fromOntology).when(this.ontologyDataManager).getTermById(Mockito.anyInt());
 
-		Mockito.doReturn(new ArrayList<Integer> ()).when(this.table).getValue();
+		Mockito.doReturn(new ArrayList<Integer>()).when(this.table).getValue();
 		Mockito.doReturn(Mockito.mock(Container.class)).when(this.table).getContainerDataSource();
 
 		final TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
 		tableWithSelectAll.instantiateComponents();
 
-		final MakeCrossesParentsComponent makeCrossesParentsComponent = new MakeCrossesParentsComponent(Mockito.mock(
-				CrossingManagerMakeCrossesComponent.class));
+		final MakeCrossesParentsComponent makeCrossesParentsComponent =
+				new MakeCrossesParentsComponent(Mockito.mock(CrossingManagerMakeCrossesComponent.class));
 		final ParentTabComponent parentTabComponent =
 				new ParentTabComponent(Mockito.mock(CrossingManagerMakeCrossesComponent.class), makeCrossesParentsComponent, "test", 10,
 						new SaveGermplasmListActionFactory(), new ReserveInventoryActionFactory());
@@ -70,22 +71,22 @@ public class CrossingManagerActionHandlerTest {
 		inventoryTable.instantiateComponents();
 		parentTabComponent.initializeListInventoryTable(inventoryTable);
 		parentTabComponent.addListeners();
-		parentTabComponent.setGermplasmList(GermplasmListDataInitializer.createGermplasmList(10));
+		parentTabComponent.setGermplasmList(GermplasmListTestDataInitializer.createGermplasmList(10));
 		makeCrossesParentsComponent.setFemaleParentTab(parentTabComponent);
 		makeCrossesParentsComponent.setMaleParentTab(parentTabComponent);
-		makeCrossesParentsComponent.setMakeCrossesMain(new CrossingManagerMakeCrossesComponent(Mockito.mock(ManageCrossingSettingsMain
-				.class)));
+		makeCrossesParentsComponent.setMakeCrossesMain(new CrossingManagerMakeCrossesComponent(Mockito
+				.mock(ManageCrossingSettingsMain.class)));
 		this.crossingManagerActionHandler = new CrossingManagerActionHandler(makeCrossesParentsComponent);
 	}
 
 	@Test
 	public void testHandleActionRemoveSelectedEntries() throws Exception {
 
-		this.crossingManagerActionHandler.handleAction(CrossingManagerActionHandler.ACTION_REMOVE_SELECTED_ENTRIES, this.table, Mockito.mock
-				(Table.class));
+		this.crossingManagerActionHandler.handleAction(CrossingManagerActionHandler.ACTION_REMOVE_SELECTED_ENTRIES, this.table,
+				Mockito.mock(Table.class));
 
 		Assert.assertTrue(this.crossingManagerActionHandler.getSource() instanceof MakeCrossesParentsComponent);
-		final MakeCrossesParentsComponent makeCrosses = (MakeCrossesParentsComponent)this.crossingManagerActionHandler.getSource();
+		final MakeCrossesParentsComponent makeCrosses = (MakeCrossesParentsComponent) this.crossingManagerActionHandler.getSource();
 		Assert.assertTrue(makeCrosses.getMakeCrossesMain().hasUnsavedChangesMain());
 		Assert.assertNotNull(makeCrosses.getFemaleList());
 		Assert.assertNotNull(makeCrosses.getMaleList());
