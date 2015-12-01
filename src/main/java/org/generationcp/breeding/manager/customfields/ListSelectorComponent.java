@@ -1,14 +1,23 @@
 
 package org.generationcp.breeding.manager.customfields;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
-import org.generationcp.breeding.manager.customcomponent.*;
+import org.generationcp.breeding.manager.customcomponent.GermplasmListSource;
+import org.generationcp.breeding.manager.customcomponent.GermplasmListTree;
+import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
+import org.generationcp.breeding.manager.customcomponent.IconButton;
+import org.generationcp.breeding.manager.customcomponent.ToggleButton;
 import org.generationcp.breeding.manager.customcomponent.generator.GermplasmListSourceItemDescriptionGenerator;
 import org.generationcp.breeding.manager.customcomponent.generator.GermplasmListSourceItemStyleGenerator;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
@@ -38,7 +47,15 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.data.Item;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.Tree;
+import com.vaadin.ui.VerticalLayout;
 
 @Configurable
 public abstract class ListSelectorComponent extends CssLayout implements InitializingBean, BreedingManagerLayout, Tree.ExpandListener {
@@ -130,7 +147,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		return this.germplasmListSource;
 	}
 
-	public void setGermplasmListSource(GermplasmListSource newGermplasmListSource) {
+	public void setGermplasmListSource(final GermplasmListSource newGermplasmListSource) {
 		this.germplasmListSource = newGermplasmListSource;
 	}
 
@@ -214,7 +231,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	protected void initializeAddRenameFolderPanel() {
 		this.folderLabel = new Label("Folder");
 		this.folderLabel.addStyleName(AppConstants.CssStyles.BOLD);
-		Label mandatoryMarkLabel = new MandatoryMarkLabel();
+		final Label mandatoryMarkLabel = new MandatoryMarkLabel();
 
 		this.folderTextField = new TextField();
 		this.folderTextField.setMaxLength(50);
@@ -238,7 +255,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		this.addRenameFolderLayout = new HorizontalLayout();
 		this.addRenameFolderLayout.setSpacing(true);
 
-		HorizontalLayout rightPanelLayout = new HorizontalLayout();
+		final HorizontalLayout rightPanelLayout = new HorizontalLayout();
 		rightPanelLayout.addComponent(this.folderTextField);
 		rightPanelLayout.addComponent(this.saveFolderButton);
 		rightPanelLayout.addComponent(this.cancelFolderButton);
@@ -250,7 +267,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		this.addRenameFolderLayout.setVisible(false);
 	}
 
-	public void updateButtons(Object itemId) {
+	public void updateButtons(final Object itemId) {
 		this.setSelectedListId(itemId);
 
 		// If any of the lists/folders is selected
@@ -265,7 +282,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		}
 	}
 
-	public void showAddRenameFolderSection(boolean showFolderSection) {
+	public void showAddRenameFolderSection(final boolean showFolderSection) {
 		this.addRenameFolderLayout.setVisible(showFolderSection);
 
 		if (showFolderSection && this.folderSaveMode != null) {
@@ -276,7 +293,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 				// If rename, set existing name
 			} else if (this.selectedListId != null) {
-				String itemCaption = this.getSelectedItemCaption();
+				final String itemCaption = this.getSelectedItemCaption();
 				if (itemCaption != null) {
 					this.listNameValidator.setCurrentListName(itemCaption);
 					this.folderTextField.setValue(itemCaption);
@@ -287,18 +304,18 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		}
 	}
 
-	protected boolean isEmptyFolder(GermplasmList list) throws MiddlewareQueryException {
-		boolean isFolder = list.getType().equalsIgnoreCase(AppConstants.DB.FOLDER);
+	protected boolean isEmptyFolder(final GermplasmList list) throws MiddlewareQueryException {
+		final boolean isFolder = list.getType().equalsIgnoreCase(AppConstants.DB.FOLDER);
 		return isFolder && !this.hasChildList(list.getId());
 	}
 
-	protected boolean hasChildList(int listId) {
+	protected boolean hasChildList(final int listId) {
 
 		List<GermplasmList> listChildren = new ArrayList<GermplasmList>();
 
 		try {
 			listChildren = this.germplasmListManager.getGermplasmListByParentFolderId(listId, this.getCurrentProgramUUID(), 0, 1);
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			ListSelectorComponent.LOG.error("Error in getting germplasm lists by parent id.", e);
 			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
 					this.messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LISTS_BY_PARENT_FOLDER_ID));
@@ -308,12 +325,12 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		return !listChildren.isEmpty();
 	}
 
-	public void reinitializeTree(boolean isSaveList) {
+	public void reinitializeTree(final boolean isSaveList) {
 		Collection<String> parsedState = null;
 
 		try {
-			Integer userID = this.util.getCurrentUserLocalId();
-			String programUUID = this.util.getCurrentProgramUUID();
+			final Integer userID = this.util.getCurrentUserLocalId();
+			final String programUUID = this.util.getCurrentProgramUUID();
 
 			if (isSaveList) {
 				parsedState = this.userTreeStateService.getUserProgramTreeStateForSaveList(userID, programUUID);
@@ -330,30 +347,30 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 			this.getGermplasmListSource().expandItem(ListSelectorComponent.LISTS);
 
-			for (String s : parsedState) {
-				String trimmed = s.trim();
+			for (final String s : parsedState) {
+				final String trimmed = s.trim();
 				if (!StringUtils.isNumeric(trimmed)) {
 					continue;
 				}
 
-				int itemId = Integer.parseInt(trimmed);
+				final int itemId = Integer.parseInt(trimmed);
 				this.getGermplasmListSource().expandItem(itemId);
 			}
 
 			this.getGermplasmListSource().clearSelection();
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			ListSelectorComponent.LOG.error(e.getMessage(), e);
 		}
 	}
 
-	public void addGermplasmListNode(int parentGermplasmListId) {
+	public void addGermplasmListNode(final int parentGermplasmListId) {
 		List<GermplasmList> germplasmListChildren = new ArrayList<>();
 
 		try {
 			germplasmListChildren =
 					this.germplasmListManager.getGermplasmListByParentFolderIdBatched(parentGermplasmListId, this.getCurrentProgramUUID(),
 							ListSelectorComponent.BATCH_SIZE);
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			ListSelectorComponent.LOG.error("Error in getting germplasm lists by parent id.", e);
 			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
 					this.messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LISTS_BY_PARENT_FOLDER_ID));
@@ -367,23 +384,23 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		return this.util.getCurrentProgramUUID();
 	}
 
-	public boolean doAddItem(GermplasmList list) {
+	public boolean doAddItem(final GermplasmList list) {
 		return !this.doShowFoldersOnly() || this.isFolder(list.getId());
 	}
 
-	public boolean isFolder(Object itemId) {
+	public boolean isFolder(final Object itemId) {
 		try {
-			int currentListId = Integer.valueOf(itemId.toString());
-			GermplasmList currentGermplasmList = this.germplasmListManager.getGermplasmListById(currentListId);
+			final int currentListId = Integer.valueOf(itemId.toString());
+			final GermplasmList currentGermplasmList = this.germplasmListManager.getGermplasmListById(currentListId);
 			if (currentGermplasmList == null) {
 				return false;
 			}
 			return currentGermplasmList.getType().equalsIgnoreCase(AppConstants.DB.FOLDER);
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			ListSelectorComponent.LOG.debug("Checking is folder, cause the MW exception");
 			ListSelectorComponent.LOG.error(e.getMessage(), e);
 			return false;
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			boolean returnVal = false;
 			if (this.listId != null && this.listId.toString().equals(ListSelectorComponent.LISTS)) {
 				returnVal = true;
@@ -396,12 +413,12 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		return this.selectedListId;
 	}
 
-	public void setListId(Integer listId) {
+	public void setListId(final Integer listId) {
 		this.listId = listId;
 	}
 
-	public void assignNewNameToGermplasmListMap(String key, String newName) {
-		GermplasmList germplasmListFromMap = this.germplasmListsMap.get(Integer.valueOf(key.toString()));
+	public void assignNewNameToGermplasmListMap(final String key, final String newName) {
+		final GermplasmList germplasmListFromMap = this.germplasmListsMap.get(Integer.valueOf(key.toString()));
 		if (germplasmListFromMap != null) {
 			germplasmListFromMap.setName(newName);
 		}
@@ -415,7 +432,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 				private static final long serialVersionUID = 1L;
 
 				@Override
-				public void buttonClick(Button.ClickEvent event) {
+				public void buttonClick(final Button.ClickEvent event) {
 					ListSelectorComponent.this.refreshComponent();
 				}
 			});
@@ -436,7 +453,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 			private static final long serialVersionUID = 4606520616351364666L;
 
 			@Override
-			public void buttonClick(Button.ClickEvent event) {
+			public void buttonClick(final Button.ClickEvent event) {
 				ListSelectorComponent.this.folderSaveMode = FolderSaveMode.RENAME;
 				ListSelectorComponent.this.showAddRenameFolderSection(true);
 			}
@@ -450,7 +467,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 			private static final long serialVersionUID = -7317775128679479757L;
 
 			@Override
-			public void buttonClick(Button.ClickEvent event) {
+			public void buttonClick(final Button.ClickEvent event) {
 				ListSelectorComponent.this.folderSaveMode = FolderSaveMode.ADD;
 				ListSelectorComponent.this.showAddRenameFolderSection(true);
 			}
@@ -464,8 +481,8 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 			private static final long serialVersionUID = 3963269144924095369L;
 
 			@Override
-			public void buttonClick(Button.ClickEvent event) {
-				Object data = event.getButton().getData();
+			public void buttonClick(final Button.ClickEvent event) {
+				final Object data = event.getButton().getData();
 				if (data instanceof ListSelectorComponent) {
 					ListSelectorComponent.this.germplasmListTreeUtil.deleteFolderOrList((ListSelectorComponent) data,
 							Integer.valueOf(ListSelectorComponent.this.selectedListId.toString()),
@@ -482,7 +499,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 			private static final long serialVersionUID = 3453562703942122213L;
 
 			@Override
-			public void handleAction(Object sender, Object target) {
+			public void handleAction(final Object sender, final Object target) {
 				ListSelectorComponent.this.addRenameItemAction();
 			}
 		});
@@ -495,7 +512,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 			private static final long serialVersionUID = 8280338644831541745L;
 
 			@Override
-			public void buttonClick(Button.ClickEvent event) {
+			public void buttonClick(final Button.ClickEvent event) {
 				ListSelectorComponent.this.addRenameItemAction();
 			}
 		});
@@ -508,7 +525,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 			private static final long serialVersionUID = 2812915644280474197L;
 
 			@Override
-			public void buttonClick(Button.ClickEvent event) {
+			public void buttonClick(final Button.ClickEvent event) {
 				ListSelectorComponent.this.showAddRenameFolderSection(false);
 			}
 		});
@@ -517,13 +534,13 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	public void refreshRemoteTree() {
 	}
 
-	public void studyClickedAction(GermplasmList germplasmList) {
+	public void studyClickedAction(final GermplasmList germplasmList) {
 		if (this.treeActionsListener != null && germplasmList != null) {
 			this.treeActionsListener.studyClicked(germplasmList);
 		}
 	}
 
-	public void folderClickedAction(GermplasmList germplasmList) {
+	public void folderClickedAction(final GermplasmList germplasmList) {
 		if (this.treeActionsListener != null && germplasmList != null) {
 			this.treeActionsListener.folderClicked(germplasmList);
 		}
@@ -552,7 +569,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	public void layoutComponents() {
 		this.setWidth("100%");
 
-		VerticalLayout layout = new VerticalLayout();
+		final VerticalLayout layout = new VerticalLayout();
 		layout.setSpacing(true);
 		layout.setWidth("100%");
 
@@ -644,7 +661,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		this.getGermplasmListSource().setItemDescriptionGenerator(new GermplasmListSourceItemDescriptionGenerator(this));
 	}
 
-	public void setSelectedListId(Object listId) {
+	public void setSelectedListId(final Object listId) {
 		this.selectedListId = listId;
 		this.selectListSourceDetails(listId, false);
 	}
@@ -653,13 +670,13 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		return this.getGermplasmListSource().getItemCaption(this.selectedListId);
 	}
 
-	public void removeListFromTree(GermplasmList germplasmList) {
-		Integer currentListId = germplasmList.getId();
-		Item item = this.getGermplasmListSource().getItem(currentListId);
+	public void removeListFromTree(final GermplasmList germplasmList) {
+		final Integer currentListId = germplasmList.getId();
+		final Item item = this.getGermplasmListSource().getItem(currentListId);
 		if (item != null) {
 			this.getGermplasmListSource().removeItem(currentListId);
 		}
-		GermplasmList parent = germplasmList.getParent();
+		final GermplasmList parent = germplasmList.getParent();
 		if (parent == null) {
 			this.getGermplasmListSource().select(ListSelectorComponent.LISTS);
 			this.setSelectedListId(ListSelectorComponent.LISTS);
@@ -671,16 +688,16 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		this.updateButtons(this.selectedListId);
 	}
 
-	public void treeItemClickAction(int germplasmListId) {
+	public void treeItemClickAction(final int germplasmListId) {
 
 		try {
 
 			this.germplasmList = this.germplasmListManager.getGermplasmListById(germplasmListId);
 			this.selectedListId = germplasmListId;
 
-			boolean isEmptyFolder = this.isEmptyFolder(this.germplasmList);
+			final boolean isEmptyFolder = this.isEmptyFolder(this.germplasmList);
 			if (!isEmptyFolder) {
-				boolean hasChildList = this.hasChildList(germplasmListId);
+				final boolean hasChildList = this.hasChildList(germplasmListId);
 
 				if (!hasChildList) {
 					this.studyClickedAction(this.germplasmList);
@@ -696,18 +713,18 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 				this.folderClickedAction(this.germplasmList);
 			}
 
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 
 			ListSelectorComponent.LOG.error("Error clicking of list.", e);
 			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.ERROR_INVALID_FORMAT),
 					this.messageSource.getMessage(Message.ERROR_IN_NUMBER_FORMAT));
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			ListSelectorComponent.LOG.error("Error in displaying germplasm list details.", e);
 			throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_CREATING_GERMPLASMLIST_DETAILS_WINDOW);
 		}
 	}
 
-	public void expandOrCollapseListTreeNode(Object nodeId) {
+	public void expandOrCollapseListTreeNode(final Object nodeId) {
 
 		if (!this.getGermplasmListSource().isExpanded(nodeId)) {
 			this.getGermplasmListSource().expandItem(nodeId);
@@ -718,12 +735,12 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		this.selectListSourceDetails(nodeId, false);
 	}
 
-	public void expandNode(Object itemId) {
+	public void expandNode(final Object itemId) {
 		this.getGermplasmListSource().expandItem(itemId);
 	}
 
-	public void addGermplasmListNodeToComponent(List<GermplasmList> germplasmListChildren, int parentGermplasmListId) {
-		for (GermplasmList listChild : germplasmListChildren) {
+	public void addGermplasmListNodeToComponent(final List<GermplasmList> germplasmListChildren, final int parentGermplasmListId) {
+		for (final GermplasmList listChild : germplasmListChildren) {
 			if (this.doAddItem(listChild)) {
 				String size = "";
 				if (!listChild.isFolder()) {
@@ -746,18 +763,18 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		this.selectListSourceDetails(parentGermplasmListId, false);
 	}
 
-	private String countGermplasmListDataByListId(Integer id) {
+	private String countGermplasmListDataByListId(final Integer id) {
 		String size = "0";
 		try {
-			long numberOfEntries = this.germplasmListManager.countGermplasmListDataByListId(id);
+			final long numberOfEntries = this.germplasmListManager.countGermplasmListDataByListId(id);
 			size = Long.toString(numberOfEntries);
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			ListSelectorComponent.LOG.error("Error in getting number of entries for list id " + id, e);
 		}
 		return size;
 	}
 
-	private void selectListSourceDetails(Object itemId, boolean nullSelectAllowed) {
+	private void selectListSourceDetails(final Object itemId, final boolean nullSelectAllowed) {
 		this.getGermplasmListSource().setNullSelectionAllowed(nullSelectAllowed);
 		this.getGermplasmListSource().select(itemId);
 		this.getGermplasmListSource().setValue(itemId);
@@ -768,7 +785,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 			this.germplasmListTreeUtil.addFolder(this.selectedListId, this.folderTextField);
 		} else {
 
-			String oldName = this.getGermplasmListSource().getItemCaption(this.selectedListId);
+			final String oldName = this.getGermplasmListSource().getItemCaption(this.selectedListId);
 			this.germplasmListTreeUtil.renameFolderOrList(Integer.valueOf(this.selectedListId.toString()), this.treeActionsListener,
 					this.folderTextField, oldName);
 		}
@@ -826,16 +843,16 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	private void initializeGermplasmList() {
 		try {
 			if (this.listId != null) {
-				GermplasmList list = this.germplasmListManager.getGermplasmListById(this.listId);
+				final GermplasmList list = this.germplasmListManager.getGermplasmListById(this.listId);
 
 				if (list != null) {
-					Deque<GermplasmList> parents = new ArrayDeque<GermplasmList>();
+					final Deque<GermplasmList> parents = new ArrayDeque<GermplasmList>();
 					GermplasmListTreeUtil.traverseParentsOfList(this.germplasmListManager, list, parents);
 
 					this.getGermplasmListSource().expandItem(ListSelectorComponent.LISTS);
 
 					while (!parents.isEmpty()) {
-						GermplasmList parent = parents.pop();
+						final GermplasmList parent = parents.pop();
 						this.getGermplasmListSource().setChildrenAllowed(parent.getId(), true);
 						this.addGermplasmListNode(parent.getId().intValue());
 						this.getGermplasmListSource().expandItem(parent.getId());
@@ -853,7 +870,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 				this.getGermplasmListSource().setValue(ListSelectorComponent.LISTS);
 				this.updateButtons(ListSelectorComponent.LISTS);
 			}
-		} catch (MiddlewareQueryException ex) {
+		} catch (final MiddlewareQueryException ex) {
 			ListSelectorComponent.LOG.error("Error with getting parents for hierarchy of list id: " + this.listId, ex);
 		}
 	}
@@ -863,7 +880,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		try {
 			germplasmListParent =
 					this.germplasmListManager.getAllTopLevelListsBatched(this.getCurrentProgramUUID(), ListSelectorComponent.BATCH_SIZE);
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			ListSelectorComponent.LOG.error("Error in getting top level lists.", e);
 			if (this.getWindow() != null) {
 				MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
@@ -877,9 +894,9 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		this.setNodeItemIcon(ListSelectorComponent.LISTS, true);
 		this.getGermplasmListSource().setItemCaption(ListSelectorComponent.LISTS, ListSelectorComponent.LISTS);
 
-		for (GermplasmList parentList : germplasmListParent) {
+		for (final GermplasmList parentList : germplasmListParent) {
 			if (this.doAddItem(parentList)) {
-				String size = this.countGermplasmListDataByListId(parentList.getId());
+				final String size = this.countGermplasmListDataByListId(parentList.getId());
 				this.getGermplasmListSource().addItem(
 						this.generateCellInfo(parentList.getName(), BreedingManagerUtil.getOwnerListName(parentList.getUserId(),
 								this.userDataManager), BreedingManagerUtil.getDescriptionForDisplay(parentList), BreedingManagerUtil
@@ -896,11 +913,11 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 	// logic used when expanding nodes
 	@Override
-	public void nodeExpand(Tree.ExpandEvent event) {
+	public void nodeExpand(final Tree.ExpandEvent event) {
 		if (!event.getItemId().toString().equals(ListSelectorComponent.LISTS)) {
 			try {
 				this.addGermplasmListNode(Integer.valueOf(event.getItemId().toString()));
-			} catch (InternationalizableException e) {
+			} catch (final InternationalizableException e) {
 				ListSelectorComponent.LOG.error(e.getMessage(), e);
 				MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
 			}
@@ -917,19 +934,19 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		this.getGermplasmListSource().addListener(new GermplasmListTreeCollapseListener(this));
 	}
 
-	public void setGermplasmListManager(GermplasmListManager germplasmListManager) {
+	public void setGermplasmListManager(final GermplasmListManager germplasmListManager) {
 		this.germplasmListManager = germplasmListManager;
 	}
 
-	public void setUserDataManager(UserDataManager userDataManager) {
+	public void setUserDataManager(final UserDataManager userDataManager) {
 		this.userDataManager = userDataManager;
 	}
 
-	public void setFolderTextField(TextField folderTextField) {
+	public void setFolderTextField(final TextField folderTextField) {
 		this.folderTextField = folderTextField;
 	}
 
-	public void setFolderSaveMode(FolderSaveMode folderSaveMode) {
+	public void setFolderSaveMode(final FolderSaveMode folderSaveMode) {
 		this.folderSaveMode = folderSaveMode;
 	}
 
@@ -941,7 +958,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		return this.messageSource;
 	}
 
-	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 
@@ -957,7 +974,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		return this.renameFolderBtn;
 	}
 
-	public void setUtil(ContextUtil util) {
+	public void setUtil(final ContextUtil util) {
 		this.util = util;
 	}
 }

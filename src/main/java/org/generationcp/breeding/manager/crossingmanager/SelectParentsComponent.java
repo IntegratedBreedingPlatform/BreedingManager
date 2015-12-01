@@ -27,10 +27,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.CloseHandler;
 import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.TreeTable;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
@@ -122,10 +131,10 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 			private static final long serialVersionUID = -7085023295466691749L;
 
 			@Override
-			public void onTabClose(TabSheet tabsheet, Component tabContent) {
+			public void onTabClose(final TabSheet tabsheet, final Component tabContent) {
 				if (tabsheet.getComponentCount() > 1) {
-					String tabCaption = tabsheet.getTab(tabContent).getCaption();
-					Tab tab = Util.getTabToFocus(tabsheet, tabCaption);
+					final String tabCaption = tabsheet.getTab(tabContent).getCaption();
+					final Tab tab = Util.getTabToFocus(tabsheet, tabCaption);
 					tabsheet.removeTab(tabsheet.getTab(tabContent));
 					tabsheet.setSelectedTab(tab.getComponent());
 				} else {
@@ -140,7 +149,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 			private static final long serialVersionUID = -2946008623293356900L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				Util.closeAllTab(listDetailsTabSheet);
 				hideListDetailsTabSheet();
 				closeAllTabsButton.setVisible(false);
@@ -169,14 +178,14 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 		setSpacing(true);
 		setWidth("460px");
 
-		HeaderLabelLayout selectParentsHeaderLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_SELECT_PARENTS, selectParentsLabel);
+		final HeaderLabelLayout selectParentsHeaderLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_SELECT_PARENTS, selectParentsLabel);
 
-		HorizontalLayout leftLayout = new HorizontalLayout();
+		final HorizontalLayout leftLayout = new HorizontalLayout();
 		leftLayout.setSpacing(true);
 		leftLayout.addComponent(browseForListsButton);
 		leftLayout.addComponent(instructionForSelectParents);
 
-		HorizontalLayout instructionForSelectParentsLayout = new HorizontalLayout();
+		final HorizontalLayout instructionForSelectParentsLayout = new HorizontalLayout();
 		instructionForSelectParentsLayout.setWidth("100%");
 		instructionForSelectParentsLayout.addComponent(leftLayout);
 		instructionForSelectParentsLayout.addComponent(closeAllTabsButton);
@@ -188,19 +197,19 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 		addComponent(listDetailsTabSheet);
 	}
 
-	public void selectListInTree(Integer id) {
+	public void selectListInTree(final Integer id) {
 		this.listTreeComponent.setListId(id);
 		this.listTreeComponent.createTree();
 		this.listTreeComponent.setSelectedListId(id);
 	}
 
 	@Override
-	public void studyClicked(GermplasmList list) {
+	public void studyClicked(final GermplasmList list) {
 		createListDetailsTab(list.getId(), list.getName());
 	}
 
 	public void openBrowseForListDialog() {
-		SaveTreeStateListener saveTreeStateListener =
+		final SaveTreeStateListener saveTreeStateListener =
 				new SaveTreeStateListener((TreeTable) listTreeComponent.getGermplasmListSource(), ListTreeState.GERMPLASM_LIST.name(),
 						ListSelectorComponent.LISTS);
 		listTreeComponent.showAddRenameFolderSection(false);
@@ -236,7 +245,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 		return popupWindow;
 	}
 
-	public void createListDetailsTab(Integer listId, String listName) {
+	public void createListDetailsTab(final Integer listId, final String listName) {
 
 		if (listDetailsTabSheet.getComponentCount() == 0) {
 			showListDetailsTabSheet();
@@ -245,7 +254,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 		if (Util.isTabExist(listDetailsTabSheet, listName)) {
 			Tab tabToFocus = null;
 			for (int ctr = 0; ctr < listDetailsTabSheet.getComponentCount(); ctr++) {
-				Tab tab = listDetailsTabSheet.getTab(ctr);
+				final Tab tab = listDetailsTabSheet.getTab(ctr);
 				if (tab != null && tab.getCaption().equals(listName)) {
 					tabToFocus = tab;
 				}
@@ -254,7 +263,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 				listDetailsTabSheet.setSelectedTab(tabToFocus);
 			}
 		} else {
-			Tab newTab =
+			final Tab newTab =
 					listDetailsTabSheet
 							.addTab(new SelectParentsListDataComponent(listId, listName, source.getParentsComponent()), listName);
 			newTab.setDescription(generateTabDescription(listId));
@@ -270,10 +279,10 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 
 	}
 
-	public void updateUIForDeletedList(GermplasmList list) {
-		String listName = list.getName();
+	public void updateUIForDeletedList(final GermplasmList list) {
+		final String listName = list.getName();
 		for (int ctr = 0; ctr < listDetailsTabSheet.getComponentCount(); ctr++) {
-			Tab tab = listDetailsTabSheet.getTab(ctr);
+			final Tab tab = listDetailsTabSheet.getTab(ctr);
 			if (tab != null && tab.getCaption().equals(listName)) {
 				listDetailsTabSheet.removeTab(tab);
 				return;
@@ -281,11 +290,11 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 		}
 	}
 
-	public void updateUIForRenamedList(GermplasmList list, String newName) {
-		Integer listId = list.getId();
-		String description = generateTabDescription(listId);
+	public void updateUIForRenamedList(final GermplasmList list, final String newName) {
+		final Integer listId = list.getId();
+		final String description = generateTabDescription(listId);
 		for (int ctr = 0; ctr < listDetailsTabSheet.getComponentCount(); ctr++) {
-			Tab tab = listDetailsTabSheet.getTab(ctr);
+			final Tab tab = listDetailsTabSheet.getTab(ctr);
 			if (tab != null && tab.getDescription().equals(description)) {
 				tab.setCaption(newName);
 				return;
@@ -294,7 +303,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	}
 
 	@Override
-	public void folderClicked(GermplasmList list) {
+	public void folderClicked(final GermplasmList list) {
 		// do nothing
 	}
 
@@ -312,26 +321,26 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	}
 
 	@Override
-	public void addListToFemaleList(Integer germplasmListId) {
+	public void addListToFemaleList(final Integer germplasmListId) {
 		source.getParentsComponent().addListToFemaleTable(germplasmListId);
 
 	}
 
 	@Override
-	public void addListToMaleList(Integer germplasmListId) {
+	public void addListToMaleList(final Integer germplasmListId) {
 		source.getParentsComponent().addListToMaleTable(germplasmListId);
 	}
 
-	public void updateViewForAllLists(ModeView modeView) {
-		List<SelectParentsListDataComponent> selectParentComponents = new ArrayList<SelectParentsListDataComponent>();
+	public void updateViewForAllLists(final ModeView modeView) {
+		final List<SelectParentsListDataComponent> selectParentComponents = new ArrayList<SelectParentsListDataComponent>();
 		selectParentComponents.addAll(listStatusForChanges.keySet());
 
 		if (modeView.equals(ModeView.LIST_VIEW)) {
-			for (SelectParentsListDataComponent selectParentComponent : selectParentComponents) {
+			for (final SelectParentsListDataComponent selectParentComponent : selectParentComponents) {
 				selectParentComponent.changeToListView();
 			}
 		} else if (modeView.equals(ModeView.INVENTORY_VIEW)) {
-			for (SelectParentsListDataComponent selectParentComponent : selectParentComponents) {
+			for (final SelectParentsListDataComponent selectParentComponent : selectParentComponents) {
 				selectParentComponent.viewInventoryActionConfirmed();
 			}
 		}
@@ -341,7 +350,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 		return listStatusForChanges;
 	}
 
-	public void addUpdateListStatusForChanges(SelectParentsListDataComponent selectParentsListDataComponent, boolean hasChanges) {
+	public void addUpdateListStatusForChanges(final SelectParentsListDataComponent selectParentsListDataComponent, final boolean hasChanges) {
 		removeListStatusForChanges(selectParentsListDataComponent);
 		listStatusForChanges.put(selectParentsListDataComponent, hasChanges);
 
@@ -353,11 +362,11 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	}
 
 	public boolean hasUnsavedChanges() {
-		List<Boolean> listOfStatus = new ArrayList<Boolean>();
+		final List<Boolean> listOfStatus = new ArrayList<Boolean>();
 
 		listOfStatus.addAll(listStatusForChanges.values());
 
-		for (Boolean status : listOfStatus) {
+		for (final Boolean status : listOfStatus) {
 			if (status) {
 				return true;
 			}
@@ -366,22 +375,22 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 		return false;
 	}
 
-	public void removeListStatusForChanges(SelectParentsListDataComponent selectParentsListDataComponent) {
+	public void removeListStatusForChanges(final SelectParentsListDataComponent selectParentsListDataComponent) {
 		if (listStatusForChanges.containsKey(selectParentsListDataComponent)) {
 			listStatusForChanges.remove(selectParentsListDataComponent);
 		}
 	}
 
 	@Override
-	public void setHasUnsavedChangesMain(boolean hasChanges) {
+	public void setHasUnsavedChangesMain(final boolean hasChanges) {
 		source.setHasUnsavedChangesMain(hasChanges);
 	}
 
-	public void updateHasChangesForAllList(boolean hasChanges) {
-		List<SelectParentsListDataComponent> selectParentComponents = new ArrayList<SelectParentsListDataComponent>();
+	public void updateHasChangesForAllList(final boolean hasChanges) {
+		final List<SelectParentsListDataComponent> selectParentComponents = new ArrayList<SelectParentsListDataComponent>();
 		selectParentComponents.addAll(listStatusForChanges.keySet());
 
-		for (SelectParentsListDataComponent selectParentComponent : selectParentComponents) {
+		for (final SelectParentsListDataComponent selectParentComponent : selectParentComponents) {
 			selectParentComponent.setHasUnsavedChanges(hasChanges);
 		}
 	}
@@ -391,21 +400,21 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	}
 
 	public void resetInventoryViewForCancelledChanges() {
-		List<SelectParentsListDataComponent> listDataComponents = new ArrayList<SelectParentsListDataComponent>();
+		final List<SelectParentsListDataComponent> listDataComponents = new ArrayList<SelectParentsListDataComponent>();
 		listDataComponents.addAll(listStatusForChanges.keySet());
 
-		for (SelectParentsListDataComponent listDataComponent : listDataComponents) {
+		for (final SelectParentsListDataComponent listDataComponent : listDataComponents) {
 			if (listDataComponent.hasUnsavedChanges()) {
 				listDataComponent.resetListInventoryTableValues();
 			}
 		}
 	}
 
-	public static String generateTabDescription(Integer listId) {
+	public static String generateTabDescription(final Integer listId) {
 		return TAB_DESCRIPTION_PREFIX + listId;
 	}
 
-	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 }
