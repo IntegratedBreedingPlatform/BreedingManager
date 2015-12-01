@@ -31,7 +31,6 @@ public class HarvestDateField extends HorizontalLayout {
 
 	private void layoutComponent() {
 		this.setSpacing(true);
-		this.addStyleName("mandatory-field");
 		this.addComponent(this.harvestYear);
 		this.addComponent(this.harvestMonth);
 	}

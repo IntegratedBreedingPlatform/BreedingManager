@@ -63,7 +63,7 @@ public class CrossingSettingsNameComponent extends CssLayout implements Breeding
 
 	public enum AddSpaceOption {
 		YES, NO
-	};
+	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -87,6 +87,7 @@ public class CrossingSettingsNameComponent extends CssLayout implements Breeding
 
 	@Override
 	public void instantiateComponents() {
+
 		this.namingLabel = new Label(this.messageSource.getMessage(Message.NAMING).toUpperCase());
 		this.namingLabel.setStyleName(Bootstrap.Typography.H2.styleName());
 
@@ -215,7 +216,8 @@ public class CrossingSettingsNameComponent extends CssLayout implements Breeding
 			suffix = suffix.trim();
 		}
 		if (suffix.length() == 0) {
-			suffix = null; // set as null so attribute will not be marshalled
+			// set as null so attribute will not be marshaled
+			suffix = null;
 		}
 
 		final boolean addSpaceBetweenPrefixAndCode = AddSpaceOption.YES.equals(this.addSpaceBetPrefixAndCodeOptionGroup.getValue());
@@ -229,7 +231,7 @@ public class CrossingSettingsNameComponent extends CssLayout implements Breeding
 						separator, saveParentageDesignationAsAString);
 		final String startNumber = (String) this.startNumberTextField.getValue();
 
-		if (!startNumber.isEmpty() && NumberUtils.isDigits(startNumber)) {
+		if (StringUtils.isNotEmpty(startNumber) && NumberUtils.isDigits(startNumber)) {
 			crossNameSettingPojo.setStartNumber(Integer.parseInt(startNumber));
 		}
 
@@ -237,6 +239,7 @@ public class CrossingSettingsNameComponent extends CssLayout implements Breeding
 	}
 
 	public void setFields(CrossNameSetting crossNameSetting) {
+
 		this.crossNamePrefix.setValue(crossNameSetting.getPrefix());
 
 		if (crossNameSetting.isAddSpaceBetweenPrefixAndCode()) {
@@ -264,6 +267,10 @@ public class CrossingSettingsNameComponent extends CssLayout implements Breeding
 		this.crossNameSuffix.setValue(suffix);
 
 		this.separatorTextField.setValue(crossNameSetting.getSeparator());
+
+		if (crossNameSetting.getStartNumber() != null) {
+			this.startNumberTextField.setValue(crossNameSetting.getStartNumber().toString());
+		}
 
 		if (crossNameSetting.isSaveParentageDesignationAsAString()) {
 			this.saveParentageDesignationAsAStringGroup.select(AddSpaceOption.YES);
@@ -328,8 +335,12 @@ public class CrossingSettingsNameComponent extends CssLayout implements Breeding
 		return !StringUtils.isEmpty(prefix) && this.validateStartNumberField();
 	}
 
-	private boolean validateStartNumberField() {
-		final String startNumberString = this.startNumberTextField.getValue().toString();
+	protected boolean validateStartNumberField() {
+
+		String startNumberString = "";
+		if (StringUtils.isNotEmpty((String) this.startNumberTextField.getValue())) {
+			startNumberString = this.startNumberTextField.getValue().toString();
+		}
 
 		if (!StringUtils.isEmpty(startNumberString)) {
 			if (startNumberString.length() > 10) {

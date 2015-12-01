@@ -4,8 +4,8 @@ package org.generationcp.breeding.manager.listmanager.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.generationcp.breeding.manager.data.initializer.GermplasmListDataInitializer;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -44,8 +44,8 @@ public class ListCommonActionsUtilTest {
 	@Test
 	public void testGetNewEntriesToSaveUpdateDelete_ForNewEntries() throws MiddlewareQueryException {
 		this.forceHasChanges = false;
-		this.listToSave = GermplasmListDataInitializer.createGermplasmList(1);
-		this.listEntries = GermplasmListDataInitializer.createGermplasmListData(5);
+		this.listToSave = GermplasmListTestDataInitializer.createGermplasmList(1);
+		this.listEntries = GermplasmListTestDataInitializer.createGermplasmListData(5);
 		this.newEntries = new ArrayList<GermplasmListData>();
 		this.entriesToUpdate = new ArrayList<GermplasmListData>();
 		this.entriesToDelete = new ArrayList<GermplasmListData>();
@@ -162,7 +162,7 @@ public class ListCommonActionsUtilTest {
 
 	@Test
 	public void testDeleteExistingListEntries() {
-		this.listToSave = GermplasmListDataInitializer.createGermplasmList(1);
+		this.listToSave = GermplasmListTestDataInitializer.createGermplasmList(1);
 		final Integer listId = this.listToSave.getId();
 
 		ListCommonActionsUtil.deleteExistingListEntries(listId, this.dataManager);
