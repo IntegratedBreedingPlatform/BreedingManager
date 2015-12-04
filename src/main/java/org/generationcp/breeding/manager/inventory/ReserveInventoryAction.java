@@ -148,7 +148,7 @@ public class ReserveInventoryAction implements Serializable {
 				ListEntryLotDetails lotDetail = entry.getKey();
 				
 				Integer lotId = lotDetail.getLotId();
-				Integer transactionDate = DateUtil.getCurrentDate();
+				Integer transactionDate = DateUtil.getCurrentDateAsIntegerValue();
 				Integer transacStatus = 0;
 				Double amountToReserve = -1 * entry.getValue(); //since this is a reserve transaction
 				String comments = "";

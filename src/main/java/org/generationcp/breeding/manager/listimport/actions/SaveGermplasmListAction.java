@@ -262,7 +262,7 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
 		newUdfld.setFdesc("-");
 		newUdfld.setLfldno(0);
 		newUdfld.setUser(new User(ibdbUserId));
-		newUdfld.setFdate(Util.getCurrentDate());
+		newUdfld.setFdate(Util.getCurrentDateAsIntegerValue());
 		newUdfld.setScaleid(0);
 		
 		return newUdfld;
@@ -279,7 +279,7 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
 		newUdfld.setFdesc("-");
 		newUdfld.setLfldno(0);
 		newUdfld.setUser(new User(ibdbUserId));
-		newUdfld.setFdate(Util.getCurrentDate());
+		newUdfld.setFdate(Util.getCurrentDateAsIntegerValue());
 		newUdfld.setScaleid(0);
 		
 		return newUdfld;
@@ -513,7 +513,7 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
 	                newAttr.setAval(value);
 	                newAttr.setLocationId(germplasm.getLocationId());
 	                newAttr.setReferenceId(0);
-	                newAttr.setAdate(Util.getCurrentDate());
+	                newAttr.setAdate(Util.getCurrentDateAsIntegerValue());
 	                
 	                attrs.add(newAttr);
 	    		}
@@ -543,7 +543,7 @@ public class SaveGermplasmListAction  implements Serializable, InitializingBean 
 	    			newName.setNval(value);
 	    			newName.setLocationId(germplasm.getLocationId());
 	    			newName.setReferenceId(0);
-	    			newName.setNdate(Util.getCurrentDate());
+	    			newName.setNdate(Util.getCurrentDateAsIntegerValue());
 	                
 	                names.add(newName);
 	    		}
