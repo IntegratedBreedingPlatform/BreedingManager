@@ -19,7 +19,7 @@
 		<vaadin.version>6.8.13</vaadin.version>
 		<gwt.version>2.5.1</gwt.version>
 		<gwt.plugin.version>2.5.1</gwt.plugin.version>
-        <ibpcommons.version>4.0.0.BETA.5</ibpcommons.version>
+        <ibpcommons.version>${version}</ibpcommons.version>
 		<spring.version>3.2.11.RELEASE</spring.version>
 		<spring.security.version>3.2.5.RELEASE</spring.security.version>
 		<envConfig>${user.name}</envConfig>
