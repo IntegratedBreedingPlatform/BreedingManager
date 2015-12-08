@@ -30,18 +30,23 @@ public class ListDataPropertiesRenderer {
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
 
-	private final Integer listId;
-	private final Table targetTable;
+	private Integer listId;
 
-	public ListDataPropertiesRenderer(Integer listId, Table targetTable) {
+	private Table targetTable;
+
+	public ListDataPropertiesRenderer() {
+
+	}
+
+	public ListDataPropertiesRenderer(final Integer listId, final Table targetTable) {
 		this.listId = listId;
 		this.targetTable = targetTable;
 	}
 
 	public void render() {
-		GermplasmListNewColumnsInfo columnsInfo = this.listManager.getAdditionalColumnsForList(this.listId);
-		for (Entry<String, List<ListDataColumnValues>> columnEntry : columnsInfo.getColumnValuesMap().entrySet()) {
-			String column = columnEntry.getKey();
+		final GermplasmListNewColumnsInfo columnsInfo = this.listManager.getAdditionalColumnsForList(this.listId);
+		for (final Entry<String, List<ListDataColumnValues>> columnEntry : columnsInfo.getColumnValuesMap().entrySet()) {
+			final String column = columnEntry.getKey();
 			this.targetTable.addContainerProperty(column, String.class, "");
 			this.targetTable.setColumnHeader(column, ColumnLabels.get(column).getTermNameFromOntology(this.ontologyDataManager));
 			this.targetTable.setColumnWidth(column, 250);
@@ -50,15 +55,23 @@ public class ListDataPropertiesRenderer {
 
 	}
 
-	public void setColumnValues(String column, List<ListDataColumnValues> columnValues) {
-		for (ListDataColumnValues columnValue : columnValues) {
-			Integer listDataId = columnValue.getListDataId();
-			Item tableItem = this.targetTable.getItem(listDataId);
+	public void setColumnValues(final String column, final List<ListDataColumnValues> columnValues) {
+		for (final ListDataColumnValues columnValue : columnValues) {
+			final Integer listDataId = columnValue.getListDataId();
+			final Item tableItem = this.targetTable.getItem(listDataId);
 			if (tableItem != null) {
-				String value = columnValue.getValue();
+				final String value = columnValue.getValue();
 				tableItem.getItemProperty(column).setValue(value == null ? "" : value);
 			}
 		}
+	}
+
+	public void setListId(final Integer listId) {
+		this.listId = listId;
+	}
+
+	public void setTargetTable(final Table targetTable) {
+		this.targetTable = targetTable;
 	}
 
 }

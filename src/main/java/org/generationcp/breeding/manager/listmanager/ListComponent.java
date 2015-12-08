@@ -132,9 +132,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private static final int MINIMUM_WIDTH = 10;
 	private final Map<Object, Map<Object, Field>> fields = new HashMap<Object, Map<Object, Field>>();
 
-	private final ListManagerMain source;
-	private final ListTabComponent parentListDetailsComponent;
+	private ListManagerMain source;
+	private ListTabComponent parentListDetailsComponent;
 	private GermplasmList germplasmList;
+
 	private List<GermplasmListData> listEntries;
 	private long listEntriesCount;
 	private String designationOfListEntriesDeleted = "";
@@ -227,6 +228,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private Map<ListEntryLotDetails, Double> validReservationsToSave;
 	private Boolean hasChanges;
 
+	private ListDataPropertiesRenderer newColumnsRenderer = new ListDataPropertiesRenderer();
+
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
@@ -257,8 +260,15 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	private SaveListAsDialog dialog;
 
+	private BreedingManagerApplication breedingManagerApplication;
+
 	@Resource
 	private CrossExpansionProperties crossExpansionProperties;
+
+	public ListComponent() {
+		super();
+		this.itemsToDelete = new HashMap<Object, String>();
+	}
 
 	public ListComponent(final ListManagerMain source, final ListTabComponent parentListDetailsComponent, final GermplasmList germplasmList) {
 		super();
@@ -266,6 +276,13 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.parentListDetailsComponent = parentListDetailsComponent;
 		this.germplasmList = germplasmList;
 		this.itemsToDelete = new HashMap<Object, String>();
+
+	}
+
+	@Override
+	public void attach() {
+		super.attach();
+		this.breedingManagerApplication = (BreedingManagerApplication) this.getApplication();
 	}
 
 	@Override
@@ -280,6 +297,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		} else if (this.source.getModeView().equals(ModeView.INVENTORY_VIEW)) {
 			this.viewInventoryActionConfirmed();
 		}
+
 	}
 
 	@Override
@@ -343,7 +361,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.menu.setWidth(ListComponent.CONTEXT_MENU_WIDTH);
 
 		// Add Column menu will be initialized after list data table is created
-		this.initializeListDataTable(); // listDataTable
+		this.initializeListDataTable(new TableWithSelectAllLayout(Long.valueOf(this.listEntriesCount).intValue(), this.getNoOfEntries(),
+				ColumnLabels.TAG.getName())); // listDataTable
 		this.initializeListInventoryTable(); // listInventoryTable
 
 		// Generate main level items
@@ -400,10 +419,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.menuCopyToNewListFromInventory.setEnabled(false);
 	}
 
-	protected void initializeListDataTable() {
+	protected void initializeListDataTable(TableWithSelectAllLayout tableWithSelectAllLayout) {
 
-		this.setListDataTableWithSelectAll(new TableWithSelectAllLayout(Long.valueOf(this.listEntriesCount).intValue(), this
-				.getNoOfEntries(), ColumnLabels.TAG.getName()));
+		this.setListDataTableWithSelectAll(tableWithSelectAllLayout);
 
 		if (this.getListDataTableWithSelectAll().getTable() == null) {
 			return;
@@ -506,10 +524,11 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			this.listDataTable.sort(new Object[] {ColumnLabels.ENTRY_ID.getName()}, new boolean[] {true});
 
 			// render additional columns
-			final ListDataPropertiesRenderer newColumnsRenderer =
-					new ListDataPropertiesRenderer(this.germplasmList.getId(), this.listDataTable);
+			this.newColumnsRenderer.setListId(this.germplasmList.getId());
+			this.newColumnsRenderer.setTargetTable(this.listDataTable);
+
 			try {
-				newColumnsRenderer.render();
+				this.newColumnsRenderer.render();
 			} catch (final MiddlewareQueryException ex) {
 				ListComponent.LOG.error("Error with displaying added columns for entries of list: " + this.germplasmList.getId(), ex);
 			}
@@ -1517,7 +1536,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 			// create table if added entry is first listdata record
 			if (this.listDataTable == null) {
-				this.initializeListDataTable();
+				this.initializeListDataTable(new TableWithSelectAllLayout(Long.valueOf(this.listEntriesCount).intValue(), this
+						.getNoOfEntries(), ColumnLabels.TAG.getName()));
 				this.initializeValues();
 			} else {
 				this.listDataTable.setEditable(false);
@@ -1612,10 +1632,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	public Boolean saveChangesAction(final Window window, final Boolean showSuccessMessage) {
 
-		// selected entries to entries
-		if (!this.itemsToDelete.isEmpty()) {
-			this.performListEntriesDeletion(this.itemsToDelete);
-		}
+		this.deleteRemovedGermplasmEntriesFromTable();
 
 		try {
 			this.listEntries = this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId());
@@ -1750,7 +1767,20 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		// end of performListEntriesDeletion
 	}
 
-	private void deleteGermplasmListDataByListIdLrecId(final int listId, final int lrecId) {
+	protected void deleteRemovedGermplasmEntriesFromTable() {
+		if (this.listDataTable.getItemIds().isEmpty()) {
+
+			// If the list table is empty, delete all the list entries in the database
+			this.germplasmListManager.deleteGermplasmListDataByListId(this.germplasmList.getId());
+
+		} else if (!this.itemsToDelete.isEmpty()) {
+
+			// Delete the removed selected entries individually
+			this.performListEntriesDeletion(this.itemsToDelete);
+		}
+	}
+
+	protected void deleteGermplasmListDataByListIdLrecId(final int listId, final int lrecId) {
 		try {
 			this.germplasmListManager.deleteGermplasmListDataByListIdLrecId(this.germplasmList.getId(), lrecId);
 		} catch (final MiddlewareQueryException e) {
@@ -1790,8 +1820,13 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}
 
 	/* SETTERS AND GETTERS */
+
 	public GermplasmList getGermplasmList() {
 		return this.germplasmList;
+	}
+
+	protected void setGermplasmList(GermplasmList germplasmList) {
+		this.germplasmList = germplasmList;
 	}
 
 	public Integer getGermplasmListId() {
@@ -1861,7 +1896,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}
 
 	protected void refreshTreeOnSave() {
-		((BreedingManagerApplication) this.getApplication()).refreshListManagerTree();
+		this.breedingManagerApplication.refreshListManagerTree();
 	}
 
 	public void openViewListHeaderWindow() {
@@ -2334,5 +2369,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	@Override
 	public ListManagerMain getListManagerMain() {
 		return this.source;
+	}
+
+	public Map<Object, String> getItemsToDelete() {
+		return this.itemsToDelete;
 	}
 }
