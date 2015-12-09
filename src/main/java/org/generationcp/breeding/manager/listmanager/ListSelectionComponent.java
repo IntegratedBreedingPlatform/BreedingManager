@@ -97,14 +97,14 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 	public void studyClicked(final GermplasmList list) {
 		try {
 			listSelectionLayout.createListDetailsTab(list.getId());
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			LOG.error("Error in displaying germplasm list details.", e);
 			throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_CREATING_GERMPLASMLIST_DETAILS_WINDOW);
 		}
 	}
 
 	@Override
-	public void updateUIForRenamedList(GermplasmList list, String newName) {
+	public void updateUIForRenamedList(final GermplasmList list, final String newName) {
 		this.listSelectionLayout.renameTab(list.getId(), newName);
 	}
 
@@ -155,7 +155,7 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 		launchListSelectionWindow(getWindow(), listTreeComponent, messageSource.getMessage(Message.BROWSE_FOR_LISTS)).addListener(
 				treeStateSaver);
 
-		listTreeComponent.reinitializeTree();
+		listTreeComponent.reinitializeTree(false);
 
 	}
 
@@ -164,11 +164,11 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 	}
 
 	@Override
-	public void folderClicked(GermplasmList list) {
+	public void folderClicked(final GermplasmList list) {
 		// do nothing
 	}
 
-	public void showNodeOnTree(Integer listId) {
+	public void showNodeOnTree(final Integer listId) {
 		listTreeComponent.setListId(listId);
 		listTreeComponent.createTree();
 	}
@@ -178,12 +178,12 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 	}
 
 	public void openListImportDialog() {
-		Window window = getWindow();
-		Window popupWindow = new BaseSubWindow();
+		final Window window = getWindow();
+		final Window popupWindow = new BaseSubWindow();
 
-		GermplasmImportMain germplasmImportMain = new GermplasmImportMain(popupWindow, false, this);
+		final GermplasmImportMain germplasmImportMain = new GermplasmImportMain(popupWindow, false, this);
 
-		VerticalLayout content = new VerticalLayout();
+		final VerticalLayout content = new VerticalLayout();
 		content.addComponent(germplasmImportMain);
 		content.setComponentAlignment(germplasmImportMain, Alignment.TOP_CENTER);
 
@@ -201,7 +201,7 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 	}
 
 	@Override
-	public void openSavedGermplasmList(GermplasmList germplasmList) {
+	public void openSavedGermplasmList(final GermplasmList germplasmList) {
 		studyClicked(germplasmList);
 	}
 
