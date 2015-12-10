@@ -316,23 +316,15 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	}
 
 	protected void processSeedStockVariate(final ImportedVariate importedVariate) throws BreedingManagerException {
-		// create the non-null exception case
-		StandardVariable stdVariable = new StandardVariable();
-		stdVariable.setId(0);
 
 		// find stick variable via name at top of column in the sheet - should be one
 		Set<StandardVariable> terms = this.ontologyDataManager.findStandardVariablesByNameOrSynonym(importedVariate.getVariate(),
 				this.contextUtil.getCurrentProgramUUID());
 		if (terms.size() == 1) {
 			// ok to get only record with the size check
-			stdVariable = new ArrayList<>(terms).get(0);
-		}
-
-		// switch on variable id (0 is not found, return to user)
-		if (stdVariable.getId() != 0) {
+			StandardVariable stdVariable = new ArrayList<>(terms).get(0);
 			importedVariate.setScaleId(stdVariable.getId());
 			this.seedAmountScaleId = importedVariate.getScaleId();
-
 		} else {
 			// TODO
 			// sorry non-i18N message
