@@ -2,7 +2,10 @@
 package org.generationcp.breeding.manager.customfields;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import junit.framework.Assert;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -11,6 +14,8 @@ import org.generationcp.breeding.manager.customcomponent.GermplasmListTreeTable;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent.FolderSaveMode;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
+import org.generationcp.commons.constant.ListTreeState;
+import org.generationcp.commons.service.UserTreeStateService;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -19,34 +24,43 @@ import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import com.vaadin.data.Item;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.Window;
-
-import junit.framework.Assert;
 
 /**
  * Created by EfficioDaniel on 9/29/2014.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class ListSelectorComponentTest {
 
 	private static final String PROGRAM_UUID = "1234567";
+	private static final Integer TEST_USER_ID = 1;
+
+	@Mock
+	private UserTreeStateService userTreeStateService;
+
+	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
-	private ListSelectorComponent listSelectorComponent;
+
+	@Mock
 	private GermplasmListManager germplasmListManager;
+
+	@Mock
 	private ContextUtil contextUtil;
+
+	@InjectMocks
+	private ListSelectorComponent listSelectorComponent = new ListManagerTreeComponent();
 
 	@Before
 	public void setUp() {
-		this.messageSource = Mockito.mock(SimpleResourceBundleMessageSource.class);
-		this.listSelectorComponent = Mockito.mock(ListSelectorComponent.class);
-		this.germplasmListManager = Mockito.mock(GermplasmListManager.class);
-		this.contextUtil = Mockito.mock(ContextUtil.class);
-
 		Mockito.when(this.messageSource.getMessage(Message.LISTS)).thenReturn("Lists");
-		Mockito.doReturn(ListSelectorComponentTest.PROGRAM_UUID).when(this.listSelectorComponent).getCurrentProgramUUID();
+
 		Mockito.doReturn(ListSelectorComponentTest.PROGRAM_UUID).when(this.contextUtil).getCurrentProgramUUID();
 	}
 
@@ -214,12 +228,13 @@ public class ListSelectorComponentTest {
 		Integer sourceItemId = new Integer(-11);
 		Integer targetItemId = new Integer(-12);
 
-		Mockito.when(this.listSelectorComponent.getWindow()).thenReturn(new Window());
-
 		Mockito.when(this.germplasmListManager.getGermplasmListById(sourceItemId)).thenReturn(Mockito.mock(GermplasmList.class));
 		Mockito.when(this.germplasmListManager.getGermplasmListById(targetItemId)).thenReturn(Mockito.mock(GermplasmList.class));
 
-		treeUtil.setTargetListSource(Mockito.mock(GermplasmListSource.class));
+		GermplasmListSource source = Mockito.mock(GermplasmListSource.class);
+
+		treeUtil.setTargetListSource(source);
+		this.listSelectorComponent.setGermplasmListSource(source);
 		treeUtil.setGermplasmListManager(this.germplasmListManager);
 		treeUtil.setSource(this.listSelectorComponent);
 		treeUtil.setMessageSource(this.messageSource);
@@ -300,4 +315,42 @@ public class ListSelectorComponentTest {
 		Long actualNoOfEntries = Long.parseLong((String) item.getItemProperty(GermplasmListTreeTable.NUMBER_OF_ENTRIES_COL).getValue());
 		Assert.assertEquals("The number of entries should be the same", expectedNoOfEntries, actualNoOfEntries);
 	}
+
+	@Test
+	public void testTreeInitializationNotSaveListDialog() {
+		List<String> navigationState = Arrays.asList(new String[] {ListSelectorComponent.LISTS, "1", "2"});
+		Mockito.when(
+				userTreeStateService.getUserProgramTreeStateByUserIdProgramUuidAndType(TEST_USER_ID, PROGRAM_UUID,
+						ListTreeState.GERMPLASM_LIST.name())).thenReturn(navigationState);
+		Mockito.when(this.contextUtil.getCurrentUserLocalId()).thenReturn(TEST_USER_ID);
+		GermplasmListSource source = Mockito.mock(GermplasmListSource.class);
+		listSelectorComponent.setGermplasmListSource(source);
+
+		listSelectorComponent.reinitializeTree(false);
+
+		Mockito.verify(userTreeStateService).getUserProgramTreeStateByUserIdProgramUuidAndType(TEST_USER_ID, PROGRAM_UUID,
+				ListTreeState.GERMPLASM_LIST.name());
+		Mockito.verify(source).expandItem(ListSelectorComponent.LISTS);
+		Mockito.verify(source).expandItem(Integer.parseInt(navigationState.get(1)));
+		Mockito.verify(source).expandItem(Integer.parseInt(navigationState.get(2)));
+		Mockito.verify(source).clearSelection();
+	}
+
+	@Test
+	public void testTreeInitializationSaveDialog() {
+		List<String> saveHierarchy = Arrays.asList(new String[] {ListSelectorComponent.LISTS, "1", "2"});
+		Mockito.when(userTreeStateService.getUserProgramTreeStateForSaveList(TEST_USER_ID, PROGRAM_UUID)).thenReturn(saveHierarchy);
+		Mockito.when(this.contextUtil.getCurrentUserLocalId()).thenReturn(TEST_USER_ID);
+		GermplasmListSource source = Mockito.mock(GermplasmListSource.class);
+		listSelectorComponent.setGermplasmListSource(source);
+
+		listSelectorComponent.reinitializeTree(true);
+
+		Mockito.verify(userTreeStateService).getUserProgramTreeStateForSaveList(TEST_USER_ID, PROGRAM_UUID);
+		Mockito.verify(source).expandItem(ListSelectorComponent.LISTS);
+		Mockito.verify(source).expandItem(Integer.parseInt(saveHierarchy.get(1)));
+		Mockito.verify(source).expandItem(Integer.parseInt(saveHierarchy.get(2)));
+		Mockito.verify(source).clearSelection();
+	}
+
 }
