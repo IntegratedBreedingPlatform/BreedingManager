@@ -234,20 +234,9 @@ public class ProcessImportedGermplasmAction implements Serializable {
 				germplasm = new Germplasm();
 			}
 
-			if (searchByNameOrNewGermplasmIsNeeded) {
-				// gid at creation is temporary, will be set properly below
-				germplasm = this.createGermplasmObject(i, 0, 0, 0, ibdbUserId, dateIntValue);
-
-				if (germplasmMatchesCount == 1 && this.germplasmDetailsComponent.automaticallyAcceptSingleMatchesCheckbox()) {
-					// If a single match is found, multiple matches will be
-					// handled by SelectGemrplasmWindow and
-					// then receiveGermplasmFromWindowAndUpdateGermplasmData()
-					final List<Germplasm> foundGermplasm =
-							this.germplasmDataManager.getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
-					germplasm.setGid(foundGermplasm.get(0).getGid());
-					this.doNotCreateGermplasmsWithId.add(foundGermplasm.get(0).getGid());
-				}
-			}
+			germplasm =
+					this.updateGidForSingleMatch(ibdbUserId, dateIntValue, importedGermplasm, germplasmMatchesCount, germplasm,
+							searchByNameOrNewGermplasmIsNeeded);
 
 			final Name name = this.createNameObject(ibdbUserId, dateIntValue, importedGermplasm.getDesig());
 
