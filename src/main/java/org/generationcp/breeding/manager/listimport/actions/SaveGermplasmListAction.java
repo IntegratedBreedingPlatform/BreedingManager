@@ -8,10 +8,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
+import org.generationcp.breeding.manager.exception.BreedingManagerException;
 import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
@@ -19,12 +21,7 @@ import org.generationcp.commons.parsing.pojo.ImportedFactor;
 import org.generationcp.commons.parsing.pojo.ImportedVariate;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.DateUtil;
-import org.generationcp.commons.util.FileUtils;
-import org.generationcp.middleware.domain.dms.PhenotypicType;
 import org.generationcp.middleware.domain.dms.StandardVariable;
-import org.generationcp.middleware.domain.oms.CvId;
-import org.generationcp.middleware.domain.oms.Term;
-import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -123,10 +120,11 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	 * @param importedGermplasmList
 	 * @param seedStorageLocation
 	 * @return id of new Germplasm List created @
+	 * @throws BreedingManagerException 
 	 */
 	public Integer saveRecords(final GermplasmList germplasmList, final List<GermplasmName> germplasmNameObjects,
 			final List<Name> newNames, final String filename, final List<Integer> doNotCreateGermplasmsWithId,
-			final ImportedGermplasmList importedGermplasmList, final Integer seedStorageLocation) {
+			final ImportedGermplasmList importedGermplasmList, final Integer seedStorageLocation) throws BreedingManagerException {
 
 		germplasmList.setUserId(this.contextUtil.getCurrentUserLocalId());
 		germplasmList.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
@@ -243,7 +241,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		}
 	}
 
-	protected void processVariates(final ImportedGermplasmList importedGermplasmList) {
+	protected void processVariates(final ImportedGermplasmList importedGermplasmList) throws BreedingManagerException {
 		final List<UserDefinedField> existingUdflds = this.getUserDefinedFields(SaveGermplasmListAction.FCODE_TYPE_ATTRIBUTE);
 		final List<UserDefinedField> newUdflds = new ArrayList<UserDefinedField>();
 		final Map<String, String> attributeVariates = importedGermplasmList.getImportedGermplasms().get(0).getAttributeVariates();
@@ -317,54 +315,31 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		return newUdfld;
 	}
 
-	protected void processSeedStockVariate(final ImportedVariate importedVariate) {
-		final String trait = importedVariate.getProperty().toUpperCase();
-		final String scale = importedVariate.getScale().toUpperCase();
-		final String method = importedVariate.getMethod().toUpperCase();
+	protected void processSeedStockVariate(final ImportedVariate importedVariate) throws BreedingManagerException {
+		// create the non-null exception case
+		StandardVariable stdVariable = new StandardVariable();
+		stdVariable.setId(0);
 
-		StandardVariable stdVariable =
-				this.ontologyDataManager.findStandardVariableByTraitScaleMethodNames(trait, scale, method,
-						this.contextUtil.getCurrentProgramUUID());
-		// create new variate if PSMR doesn't exist
-		if (stdVariable == null) {
-
-			Term traitTerm = this.ontologyDataManager.findTermByName(trait, CvId.PROPERTIES);
-			if (traitTerm == null) {
-				traitTerm = new Term();
-				traitTerm.setName(trait);
-				traitTerm.setDefinition(trait);
-
-			}
-
-			Term scaleTerm = this.ontologyDataManager.findTermByName(scale, CvId.SCALES);
-			if (scaleTerm == null) {
-				scaleTerm = new Term();
-				scaleTerm.setName(scale);
-				scaleTerm.setDefinition(scale);
-			}
-
-			Term methodTerm = this.ontologyDataManager.findTermByName(method, CvId.METHODS);
-			if (methodTerm == null) {
-				methodTerm = new Term();
-				methodTerm.setName(method);
-				methodTerm.setDefinition(method);
-			}
-
-			final Term dataType = new Term();
-			dataType.setId("N".equals(importedVariate.getDataType()) ? TermId.NUMERIC_VARIABLE.getId() : TermId.CHARACTER_VARIABLE.getId());
-
-			stdVariable = new StandardVariable(traitTerm, scaleTerm, methodTerm, dataType, null, PhenotypicType.VARIATE);
-			stdVariable.setName(importedVariate.getVariate());
-			stdVariable.setDescription(importedVariate.getDescription());
-
-			this.ontologyDataManager.addStandardVariable(stdVariable, this.contextUtil.getCurrentProgramUUID());
+		// find stick variable via name at top of column in the sheet - should be one
+		Set<StandardVariable> terms = this.ontologyDataManager.findStandardVariablesByNameOrSynonym(importedVariate.getVariate(),
+				this.contextUtil.getCurrentProgramUUID());
+		if (terms.size() == 1) {
+			// ok to get only record with the size check
+			stdVariable = new ArrayList<>(terms).get(0);
 		}
 
+		// switch on variable id (0 is not found, return to user)
 		if (stdVariable.getId() != 0) {
 			importedVariate.setScaleId(stdVariable.getId());
 			this.seedAmountScaleId = importedVariate.getScaleId();
 
+		} else {
+			// TODO
+			// sorry non-i18N message
+			throw new BreedingManagerException("The BMS does not contain a Variable called " + importedVariate.getVariate()
+					+ ". Please create it in the Ontology Manager or change your import sheet.");
 		}
+
 	}
 
 	private boolean isUdfldsExist(final List<UserDefinedField> existingUdflds, final String fcode) {

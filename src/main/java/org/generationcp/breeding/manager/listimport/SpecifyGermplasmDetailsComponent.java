@@ -14,6 +14,7 @@ import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
+import org.generationcp.breeding.manager.exception.BreedingManagerException;
 import org.generationcp.breeding.manager.listimport.actions.ProcessImportedGermplasmAction;
 import org.generationcp.breeding.manager.listimport.actions.SaveGermplasmListAction;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
@@ -580,8 +581,9 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 		} catch (final MiddlewareException e) {
 			MessageNotifier.showError(window, "ERROR", "Error with saving germplasm list. Please see log for details.");
 			SpecifyGermplasmDetailsComponent.LOG.error(e.getMessage(), e);
-		}
-
+		} catch (BreedingManagerException e) {
+			MessageNotifier.showError(window, "ERROR", e.getMessage());
+			SpecifyGermplasmDetailsComponent.LOG.error(e.getMessage(), e);		}
 	}
 
 	private Integer getSeedStorageLocation() {
