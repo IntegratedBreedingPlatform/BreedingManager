@@ -24,9 +24,11 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
+import org.generationcp.middleware.pojos.Attribute;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.slf4j.Logger;
@@ -217,7 +219,16 @@ public class DropHandlerMethods {
 			if (newItem != null && gidButton != null) {
 				newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
 			}
-			newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue("Germplasm Search");
+			
+			String plotCode = "Unknown";
+			final List<Attribute> attributes = this.germplasmDataManager.getAttributesByGID(gid);
+			final UserDefinedField plotCodeAttribute = this.germplasmDataManager.getPlotCodeField();
+			for (Attribute attr : attributes) {
+				if (attr.getTypeId().equals(plotCodeAttribute.getFldno())) {
+					plotCode = attr.getAval();
+				}
+			}
+			newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(plotCode);
 			newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
 			newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(crossExpansion);
 
