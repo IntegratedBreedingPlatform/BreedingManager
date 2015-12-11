@@ -286,7 +286,7 @@ public class DropHandlerMethods {
 		return this.addGermplasmFromList(listId, lrecid, germplasmList, false);
 	}
 
-	private Integer addGermplasmFromList(Integer listId, Integer lrecid, GermplasmList germplasmList, Boolean forEditList) {
+	Integer addGermplasmFromList(Integer listId, Integer lrecid, GermplasmList germplasmList, Boolean forEditList) {
 
 		this.currentListId = listId;
 
@@ -753,4 +753,26 @@ public class DropHandlerMethods {
 		this.listManagerMain.getListBuilderComponent().setHasUnsavedChanges(changed);
 	}
 
+	
+	void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
+	}
+
+	
+	void setGermplasmListManager(GermplasmListManager germplasmListManager) {
+		this.germplasmListManager = germplasmListManager;
+	}
+
+	
+	void setCurrentColumnsInfo(GermplasmListNewColumnsInfo currentColumnsInfo) {
+		this.currentColumnsInfo = currentColumnsInfo;
+	}
+
+	void setTargetTable(Table targetTable) {
+		this.targetTable = targetTable;
+	}
+
+	void setListManagerMain(ListManagerMain listManagerMain) {
+		this.listManagerMain = listManagerMain;
+	}
 }
