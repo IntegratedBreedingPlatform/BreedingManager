@@ -345,12 +345,7 @@ public class DropHandlerMethods {
 					newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
 				}
 				newItem.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(germplasmListData.getEntryCode());
-				if (forEditList.equals(true)) {
-					newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(germplasmListData.getSeedSource());
-				} else {
-					newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(
-							germplasmList.getName() + ": " + germplasmListData.getEntryId());
-				}
+				newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(germplasmListData.getSeedSource());
 				newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
 				newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(germplasmListData.getGroupName());
 
