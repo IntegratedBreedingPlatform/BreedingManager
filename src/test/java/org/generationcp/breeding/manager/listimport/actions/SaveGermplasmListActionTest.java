@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
+import org.generationcp.breeding.manager.exception.BreedingManagerException;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -132,7 +133,7 @@ public class SaveGermplasmListActionTest {
 	}
 
 	@Test
-	public void testSaveRecordsWhenOverridingExistingListUsingTheImportedGermplasmList() {
+	public void testSaveRecordsWhenOverridingExistingListUsingTheImportedGermplasmList() throws BreedingManagerException {
 		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, SOURCE_LIST_XLS,
 				this.doNotCreateGermplasmsWithId, this.importedGermplasmList, SEED_STORAGE_LOCATION);
 
@@ -145,7 +146,7 @@ public class SaveGermplasmListActionTest {
 	}
 
 	@Test
-	public void testBlankSourceSaving() {
+	public void testBlankSourceSaving() throws BreedingManagerException {
 		final ArgumentCaptor<GermplasmListData> listData = ArgumentCaptor.forClass(GermplasmListData.class);
 
 		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, SOURCE_LIST_XLS,
@@ -161,7 +162,7 @@ public class SaveGermplasmListActionTest {
 	}
 
 	@Test
-	public void testNonBlankSourceSaving() {
+	public void testNonBlankSourceSaving() throws BreedingManagerException {
 		final ArgumentCaptor<GermplasmListData> listData = ArgumentCaptor.forClass(GermplasmListData.class);
 
 		// provide a non null source value
@@ -182,7 +183,7 @@ public class SaveGermplasmListActionTest {
 	}
 
 	@Test
-	public void testSaveRecordsWhenOverridingNewListUsingTheImportedGermplasmList() {
+	public void testSaveRecordsWhenOverridingNewListUsingTheImportedGermplasmList() throws BreedingManagerException {
 		this.germplasmList.setId(null);
 		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, SOURCE_LIST_XLS,
 				this.doNotCreateGermplasmsWithId, this.importedGermplasmList, SEED_STORAGE_LOCATION);
