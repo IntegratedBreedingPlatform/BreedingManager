@@ -226,6 +226,7 @@ public class DropHandlerMethods {
 			for (Attribute attr : attributes) {
 				if (attr.getTypeId().equals(plotCodeAttribute.getFldno())) {
 					plotCode = attr.getAval();
+					break;
 				}
 			}
 			newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(plotCode);
