@@ -24,9 +24,11 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
+import org.generationcp.middleware.pojos.Attribute;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.slf4j.Logger;
@@ -217,7 +219,17 @@ public class DropHandlerMethods {
 			if (newItem != null && gidButton != null) {
 				newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
 			}
-			newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue("Germplasm Search");
+			
+			String plotCode = "Unknown";
+			final List<Attribute> attributes = this.germplasmDataManager.getAttributesByGID(gid);
+			final UserDefinedField plotCodeAttribute = this.germplasmDataManager.getPlotCodeField();
+			for (Attribute attr : attributes) {
+				if (attr.getTypeId().equals(plotCodeAttribute.getFldno())) {
+					plotCode = attr.getAval();
+					break;
+				}
+			}
+			newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(plotCode);
 			newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
 			newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(crossExpansion);
 
@@ -275,7 +287,7 @@ public class DropHandlerMethods {
 		return this.addGermplasmFromList(listId, lrecid, germplasmList, false);
 	}
 
-	private Integer addGermplasmFromList(Integer listId, Integer lrecid, GermplasmList germplasmList, Boolean forEditList) {
+	Integer addGermplasmFromList(Integer listId, Integer lrecid, GermplasmList germplasmList, Boolean forEditList) {
 
 		this.currentListId = listId;
 
@@ -345,12 +357,7 @@ public class DropHandlerMethods {
 					newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
 				}
 				newItem.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(germplasmListData.getEntryCode());
-				if (forEditList.equals(true)) {
-					newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(germplasmListData.getSeedSource());
-				} else {
-					newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(
-							germplasmList.getName() + ": " + germplasmListData.getEntryId());
-				}
+				newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(germplasmListData.getSeedSource());
 				newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
 				newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(germplasmListData.getGroupName());
 
@@ -747,4 +754,26 @@ public class DropHandlerMethods {
 		this.listManagerMain.getListBuilderComponent().setHasUnsavedChanges(changed);
 	}
 
+	
+	void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
+	}
+
+	
+	void setGermplasmListManager(GermplasmListManager germplasmListManager) {
+		this.germplasmListManager = germplasmListManager;
+	}
+
+	
+	void setCurrentColumnsInfo(GermplasmListNewColumnsInfo currentColumnsInfo) {
+		this.currentColumnsInfo = currentColumnsInfo;
+	}
+
+	void setTargetTable(Table targetTable) {
+		this.targetTable = targetTable;
+	}
+
+	void setListManagerMain(ListManagerMain listManagerMain) {
+		this.listManagerMain = listManagerMain;
+	}
 }
