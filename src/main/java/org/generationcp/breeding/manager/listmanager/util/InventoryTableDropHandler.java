@@ -321,7 +321,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 							newItem.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(0);
 							newItem.getItemProperty(ColumnLabels.COMMENT.getName()).setValue(lotDetail.getCommentOfLot());
 							newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotDetail.getLotId());
-
+							newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(inventoryDetail.getSeedSource());
 						}
 					}
 				}
