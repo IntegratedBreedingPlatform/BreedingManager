@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
@@ -370,6 +371,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		Button desigButton = new Button();
 
 		Item itemFromSourceTable = sourceTable.getItem(lotDetail);
+		String seedSource = "";
 		if (itemFromSourceTable != null) {
 			sourceDesigButton = (Button) itemFromSourceTable.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue();
 			if (sourceDesigButton != null) {
@@ -378,6 +380,11 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 				for (Object listener : sourceDesigButton.getListeners(ClickEvent.class)) {
 					desigButton.addListener((GidLinkButtonClickListener) listener);
 				}
+			}
+			
+			Property ssProperty = itemFromSourceTable.getItemProperty(ColumnLabels.SEED_SOURCE.getName());
+			if (ssProperty != null) {
+				seedSource = (String) ssProperty.getValue();
 			}
 		}
 
@@ -395,6 +402,8 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		newItem.getItemProperty(ColumnLabels.COMMENT.getName()).setValue(lotDetail.getCommentOfLot());
 		newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(new Label(""));
 		newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotDetail.getLotId());
+		newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(seedSource);
+		
 
 		return newItem;
 	}
