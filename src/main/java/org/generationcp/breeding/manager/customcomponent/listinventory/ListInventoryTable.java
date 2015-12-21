@@ -104,6 +104,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		this.listInventoryTable.addContainerProperty(ColumnLabels.COMMENT.getName(), String.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.LOT_ID.getName(), Integer.class, null);
+		this.listInventoryTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
 
 		this.listInventoryTable.setColumnHeader(ColumnLabels.TAG.getName(), this.messageSource.getMessage(Message.CHECK_ICON));
 		this.listInventoryTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), this.messageSource.getMessage(Message.HASHTAG));
@@ -127,6 +128,8 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 				ColumnLabels.STOCKID.getTermNameFromOntology(this.ontologyDataManager));
 		this.listInventoryTable.setColumnHeader(ColumnLabels.LOT_ID.getName(),
 				ColumnLabels.LOT_ID.getTermNameFromOntology(this.ontologyDataManager));
+		this.listInventoryTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(),
+				ColumnLabels.SEED_SOURCE.getTermNameFromOntology(this.ontologyDataManager));
 	}
 
 	public void loadInventoryData() {
@@ -194,8 +197,8 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 					Label stockIdsLbl = new Label(stockIds);
 					stockIdsLbl.setDescription(stockIds);
 					newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdsLbl);
-
 					newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotDetail.getLotId());
+					newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(inventoryDetail.getSeedSource());
 				}
 			}
 		}
