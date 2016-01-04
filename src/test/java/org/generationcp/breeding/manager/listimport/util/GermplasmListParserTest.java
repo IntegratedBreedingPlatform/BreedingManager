@@ -44,6 +44,7 @@ public class GermplasmListParserTest {
 	public static final String NO_INVENTORY_COL_FILE = "GermplasmImportTemplate-StockIDs-no-inventory-column.xls";
 	public static final String DUPLICATE_STOCK_ID_FILE = "GermplasmImportTemplate-StockIDs-duplicate-stock-ids.xls";
 	public static final String ADDITIONAL_NAME_FILE = "GermplasmImportTemplate-additional-name.xls";
+	public static final String INVALID_INVENTORY_VARIABLE_FILE = "GermplasmImportTemplate-invalid-inventory-variate.xls";
 	private static final int EXPECTED_DESCRIPTION_SHEET_VARIABLE_COUNT = 12;
 
 	@Mock
@@ -69,11 +70,11 @@ public class GermplasmListParserTest {
 	@Before
 	public void setUp() throws Exception {
 
-		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(Matchers.eq(INVENTORY_AMOUNT))).thenReturn(true);
-		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(AdditionalMatchers.not(Matchers.eq(INVENTORY_AMOUNT))))
-				.thenReturn(false);
-		Mockito.when(this.germplasmDataManager.getGermplasmByGID(Matchers.anyInt())).thenReturn(
-				GermplasmTestDataInitializer.createGermplasm(1));
+		Mockito.when(this.ontologyDataManager.isSeedAmountProperty(Matchers.eq(INVENTORY_AMOUNT))).thenReturn(true);
+		Mockito.when(this.ontologyDataManager.isSeedAmountProperty(AdditionalMatchers.not(Matchers.eq(INVENTORY_AMOUNT))))
+				.thenReturn(
+				false);
+		Mockito.when(this.germplasmDataManager.getGermplasmByGID(Matchers.anyInt())).thenReturn(GermplasmDataInitializer.createGermplasm(1));
 		Mockito.when(this.inventoryDataManager.getSimilarStockIds(Matchers.anyList())).thenReturn(new ArrayList<String>());
 		Mockito.when(this.germplasmListManager.getGermplasmListTypes()).thenReturn(
 				this.userDefinedFieldTestDataInitializer.getValidListType());
@@ -82,7 +83,7 @@ public class GermplasmListParserTest {
 
 	/**
 	 * This is the default case, the template has a stock id factor
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -120,7 +121,7 @@ public class GermplasmListParserTest {
 
 	/**
 	 * Test when we have no stock id column in observation
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -143,7 +144,7 @@ public class GermplasmListParserTest {
 
 	/**
 	 * Test when we have no stock id column in observation
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -160,9 +161,21 @@ public class GermplasmListParserTest {
 				.contains("StockIDs can only be added for germplasm if it has existing inventory in the BMS"));
 	}
 
+	@Test(expected = FileParsingException.class)
+	public void testInvalidInventoryVariateParsing() throws Exception {
+		final File workbookFile =
+				new File(ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.INVALID_INVENTORY_VARIABLE_FILE).toURI());
+
+		assert workbookFile.exists();
+		final Workbook invalidInventoryWorkbook = WorkbookFactory.create(workbookFile);
+
+		this.parser.parseWorkbook(invalidInventoryWorkbook, null);
+
+	}
+
 	/**
 	 * Test when we have stock id column but contain missing values
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -182,7 +195,7 @@ public class GermplasmListParserTest {
 
 	/**
 	 * Test when we have stock id column but contain duplicate values
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
