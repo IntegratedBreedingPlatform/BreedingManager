@@ -63,10 +63,12 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
+import org.generationcp.middleware.pojos.Attribute;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.slf4j.Logger;
@@ -1519,7 +1521,17 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		listData.setLocalRecordId(Integer.valueOf(0));
 		listData.setStatus(Integer.valueOf(0));
 		listData.setEntryCode(listData.getEntryId().toString());
-		listData.setSeedSource("From Add Entry Feature of List Manager");
+		
+		String plotCode = "Unknown";
+		final List<Attribute> attributes = this.germplasmDataManager.getAttributesByGID(gid);
+		final UserDefinedField plotCodeAttribute = this.germplasmDataManager.getPlotCodeField();
+		for (Attribute attr : attributes) {
+			if (attr.getTypeId().equals(plotCodeAttribute.getFldno())) {
+				plotCode = attr.getAval();
+				break;
+			}
+		}
+		listData.setSeedSource(plotCode);
 
 		String groupName = "-";
 		try {
