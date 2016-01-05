@@ -363,11 +363,12 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 			Property pEntryId = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.ENTRY_ID.getName());
 			Property pGid = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.GID.getName());
 			Property pDesignation = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.DESIGNATION.getName());
+			Property pSeedSource = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.SEED_SOURCE.getName());
 
 			Button pGidButton = (Button) pGid.getValue();
 			int gid = Integer.valueOf(pGidButton.getCaption().toString());
 			String entryIdOfList = String.valueOf(pEntryId.getValue().toString());
-			String seedSource = this.listName + ": " + entryIdOfList;
+			String seedSource = String.valueOf(pSeedSource.getValue().toString());
 			Button pDesigButton = (Button) pDesignation.getValue();
 			String designation = String.valueOf(pDesigButton.getCaption().toString());
 			this.designationOfListEntriesCopied += designation + ",";
