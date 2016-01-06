@@ -36,7 +36,6 @@ import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
-import org.generationcp.commons.util.CrossingUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -49,6 +48,7 @@ import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.service.api.PedigreeService;
+import org.generationcp.middleware.service.pedigree.PedigreeFactory;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -300,7 +300,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 	}
 
 	private String getCross(final Germplasm germplasm, final String femaleDesignation, final String maleDesignation) {
-		if (CrossingUtil.isCimmytWheat(this.pedigreeProfile, this.currentCropName)) {
+		if (PedigreeFactory.isCimmytWheat(this.pedigreeProfile, this.currentCropName)) {
 			return this.pedigreeService.getCrossExpansion(germplasm, null, this.crossExpansionProperties);
 		}
 		return this.appendWithSeparator(femaleDesignation, maleDesignation);
