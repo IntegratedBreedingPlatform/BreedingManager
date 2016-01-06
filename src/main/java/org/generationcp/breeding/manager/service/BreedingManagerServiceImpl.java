@@ -111,7 +111,7 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 		this.validateEmptySearchString(q);
 
 		try {
-			List<GermplasmList> results = this.germplasmListManager.searchForGermplasmList(q, o);
+			List<GermplasmList> results = this.germplasmListManager.searchForGermplasmList(q, contextUtil.getCurrentProgramUUID(), o);
 
 			if (null == results || results.isEmpty()) {
 				throw new BreedingManagerSearchException(Message.NO_SEARCH_RESULTS);
