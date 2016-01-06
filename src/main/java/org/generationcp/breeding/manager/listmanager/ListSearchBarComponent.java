@@ -88,7 +88,7 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 		this.searchButton.setData(ListSearchBarComponent.SEARCH_BUTTON);
 		this.searchButton.setClickShortcut(KeyCode.ENTER);
 
-		Label descLbl = new Label(ListSearchBarComponent.GUIDE, Label.CONTENT_XHTML);
+		final Label descLbl = new Label(ListSearchBarComponent.GUIDE, Label.CONTENT_XHTML);
 		descLbl.setWidth("300px");
 		this.popup = new PopupView(" ? ", descLbl);
 		this.popup.setStyleName("gcp-popup-view");
@@ -111,7 +111,7 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 			private static final long serialVersionUID = 1926462184420334992L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				ListSearchBarComponent.this.searchButtonClickAction();
 			}
 		});
@@ -121,7 +121,7 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 			private static final long serialVersionUID = 288627665348761948L;
 
 			@Override
-			public void handleAction(Object sender, Object target) {
+			public void handleAction(final Object sender, final Object target) {
 				ListSearchBarComponent.this.searchButtonClickAction();
 			}
 		});
@@ -156,18 +156,18 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 	}
 
 	public void searchButtonClickAction() {
-		String q = this.searchField.getValue().toString();
+		final String q = this.searchField.getValue().toString();
 		this.doSearch(q);
 	}
 
-	public void doSearch(String q) {
-		boolean exactMatchedOnly = (Boolean) this.exactMatchesOnlyCheckBox.getValue();
+	public void doSearch(final String q) {
+		final boolean exactMatchedOnly = (Boolean) this.exactMatchesOnlyCheckBox.getValue();
 
 		try {
 			this.searchResultsComponent.applyGermplasmListResults(this.breedingManagerService.doGermplasmListSearch(q,
 					exactMatchedOnly ? Operation.EQUAL : Operation.LIKE));
 
-		} catch (BreedingManagerSearchException e) {
+		} catch (final BreedingManagerSearchException e) {
 			this.searchResultsComponent.applyGermplasmListResults(new ArrayList<GermplasmList>());
 			if (Message.SEARCH_QUERY_CANNOT_BE_EMPTY.equals(e.getErrorMessage())) {
 				// invalid search string
