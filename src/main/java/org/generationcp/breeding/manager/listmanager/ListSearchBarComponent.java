@@ -1,6 +1,8 @@
 
 package org.generationcp.breeding.manager.listmanager;
 
+import java.util.ArrayList;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.service.BreedingManagerSearchException;
@@ -10,6 +12,7 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.manager.Operation;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -165,6 +168,7 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 					exactMatchedOnly ? Operation.EQUAL : Operation.LIKE));
 
 		} catch (BreedingManagerSearchException e) {
+			this.searchResultsComponent.applyGermplasmListResults(new ArrayList<GermplasmList>());
 			if (Message.SEARCH_QUERY_CANNOT_BE_EMPTY.equals(e.getErrorMessage())) {
 				// invalid search string
 				MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.UNABLE_TO_SEARCH),
