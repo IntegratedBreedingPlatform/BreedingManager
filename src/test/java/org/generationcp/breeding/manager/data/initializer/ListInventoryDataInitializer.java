@@ -28,6 +28,7 @@ public class ListInventoryDataInitializer {
 			listData.setGid(id);
 			listData.setInventoryInfo(createInventoryInfo(id));
 			listData.setStatus(0);
+			listData.setSeedSource("Seed Source for gid " + id);
 			inventoryDetails.add(listData);
 		}
 
