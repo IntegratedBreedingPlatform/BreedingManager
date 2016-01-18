@@ -239,10 +239,6 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 		if (list.getName() == null || list.getName().length() == 0) {
 			MessageNotifier.showRequiredFieldError(this.source.getWindow(), this.messageSource.getMessage(Message.NAME_CAN_NOT_BE_BLANK));
 			isValid = false;
-		} else if (list.getDescription() == null || list.getDescription().length() == 0) {
-			MessageNotifier.showRequiredFieldError(this.source.getWindow(),
-					this.messageSource.getMessage(Message.DESCRIPTION_CAN_NOT_BE_BLANK));
-			isValid = false;
 		} else if (list.getName().length() > 50) {
 			MessageNotifier.showRequiredFieldError(this.source.getWindow(), this.messageSource.getMessage(Message.NAME_CAN_NOT_BE_LONG));
 			isValid = false;

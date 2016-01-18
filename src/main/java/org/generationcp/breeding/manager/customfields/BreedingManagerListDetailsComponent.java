@@ -96,7 +96,7 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout implemen
 		this.indicatesMandatoryLabel = new Label(this.messageSource.getMessage(Message.INDICATES_A_MANDATORY_FIELD));
 		this.indicatesMandatoryLabel.addStyleName("italic");
 		this.listNameField = new ListNameField(this.messageSource.getMessage(Message.LIST_NAME), true);
-		this.listDescriptionField = new ListDescriptionField(this.messageSource.getMessage(Message.DESCRIPTION_LABEL), true);
+		this.listDescriptionField = new ListDescriptionField(this.messageSource.getMessage(Message.DESCRIPTION_LABEL), false);
 		this.listTypeField = new ListTypeField(this.messageSource.getMessage(Message.LIST_TYPE), true);
 		this.listDateField = new ListDateField(this.messageSource.getMessage(Message.LIST_DATE), true);
 		this.listNotesField = new ListNotesField(this.messageSource.getMessage(Message.NOTES), false);
