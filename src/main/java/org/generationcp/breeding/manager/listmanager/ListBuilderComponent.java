@@ -259,6 +259,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	private InventoryDataManager inventoryDataManager;
 
 	@Autowired
+	@Resource
 	private OntologyDataManager ontologyDataManager;
 
 	@Autowired
@@ -837,31 +838,49 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 
 	@SuppressWarnings("unchecked")
-	private void deleteSelectedEntries() {
+	protected void deleteSelectedEntries() {
 		Collection<? extends Integer> selectedIdsToDelete =
 				(Collection<? extends Integer>) this.tableWithSelectAllLayout.getTable().getValue();
 		if (!selectedIdsToDelete.isEmpty()) {
-			if (this.listDataTable.getItemIds().size() == selectedIdsToDelete.size()) {
-				this.tableWithSelectAllLayout.getTable().getContainerDataSource().removeAllItems();
-			} else {
-				for (Integer selectedItemId : selectedIdsToDelete) {
-					this.tableWithSelectAllLayout.getTable().getContainerDataSource().removeItem(selectedItemId);
-				}
-			}
-			this.assignSerializedEntryNumber();
-			this.setHasUnsavedChanges(true);
+			ConfirmDialog.show(ListBuilderComponent.this.getWindow(), this.messageSource.getMessage(Message.DELETE_GERMPLASM_ENTRIES),
+					this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES_CONFIRM), this.messageSource.getMessage(Message.YES),
+					this.messageSource.getMessage(Message.NO),	new ConfirmDialog.Listener() {
+
+						private static final long serialVersionUID = 1L;
+
+						@Override
+						public void onClose(final ConfirmDialog dialog) {
+							if (dialog.isConfirmed()) {
+								ListBuilderComponent.this.doDeleteSelectedEntries();
+							}
+						}
+					});
 		} else {
 			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_DELETING_LIST_ENTRIES),
 					this.messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
 		}
-
+	}
+	
+	protected void doDeleteSelectedEntries() {
+		Collection<? extends Integer> selectedIdsToDelete =
+				(Collection<? extends Integer>) this.tableWithSelectAllLayout.getTable().getValue();
+		if (this.listDataTable.getItemIds().size() == selectedIdsToDelete.size()) {
+			this.tableWithSelectAllLayout.getTable().getContainerDataSource().removeAllItems();
+		} else {
+			for (Integer selectedItemId : selectedIdsToDelete) {
+				this.tableWithSelectAllLayout.getTable().getContainerDataSource().removeItem(selectedItemId);
+			}
+		}
+		this.assignSerializedEntryNumber();
+		this.setHasUnsavedChanges(true);
+		this.listDataTable.focus();
 		// reset value
 		this.tableWithSelectAllLayout.getTable().setValue(null);
 
 		this.updateNoOfEntries();
 		this.updateNoOfSelectedEntries();
 	}
-
+	
 	private void updateNoOfEntries(long count) {
 		String countLabel = "  <b>" + count + "</b>";
 		if (this.source.getModeView().equals(ModeView.LIST_VIEW)) {
@@ -1734,8 +1753,31 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		return columnLabel.getTermNameFromOntology(this.ontologyDataManager);
 	}
 
+	/*
+	 * For test purposes
+	 * */
 	protected void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
-
+	
+	protected void setOntologyDataManager(OntologyDataManager ontologyDataManager){
+		this.ontologyDataManager = ontologyDataManager;
+	}
+	
+	protected void setSource(ListManagerMain source){
+		this.source = source;
+	}
+	
+	protected void setListDataTable(Table listDataTable){
+		this.listDataTable = listDataTable;
+	}
+	
+	protected void setTotalListEntriesLabel(Label totalListEntriesLabel){
+		this.totalListEntriesLabel = totalListEntriesLabel;
+	}
+	
+	protected void setTotalSelectedListEntriesLabel(Label totalSelectedListEntriesLabel){
+		this.totalSelectedListEntriesLabel = totalSelectedListEntriesLabel;
+	}
+	
 }

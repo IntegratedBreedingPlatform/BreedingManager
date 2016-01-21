@@ -1296,25 +1296,21 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		final Collection<?> selectedIdsToDelete = (Collection<?>) this.listDataTable.getValue();
 
 		if (!selectedIdsToDelete.isEmpty()) {
-			if (this.listDataTable.size() == selectedIdsToDelete.size()) {
-				ConfirmDialog.show(this.getWindow(), this.messageSource.getMessage(Message.DELETE_ALL_ENTRIES),
-						this.messageSource.getMessage(Message.DELETE_ALL_ENTRIES_CONFIRM), this.messageSource.getMessage(Message.YES),
-						this.messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
+			ConfirmDialog.show(this.getWindow(), this.messageSource.getMessage(Message.DELETE_GERMPLASM_ENTRIES),
+				this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES_CONFIRM), this.messageSource.getMessage(Message.YES),
+				this.messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
 
-							private static final long serialVersionUID = 1L;
+					private static final long serialVersionUID = 1L;
 
-							@Override
-							public void onClose(final ConfirmDialog dialog) {
-								if (dialog.isConfirmed()) {
-									ListComponent.this.removeRowsInListDataTable((Collection<?>) ListComponent.this.listDataTable
-											.getValue());
-								}
-							}
+					@Override
+					public void onClose(final ConfirmDialog dialog) {
+						if (dialog.isConfirmed()) {
+							ListComponent.this.removeRowsInListDataTable((Collection<?>) ListComponent.this.listDataTable
+									.getValue());
+						}
+					}
 
-						});
-			} else {
-				this.removeRowsInListDataTable(selectedIdsToDelete);
-			}
+				});
 
 		} else {
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DELETING_LIST_ENTRIES),
