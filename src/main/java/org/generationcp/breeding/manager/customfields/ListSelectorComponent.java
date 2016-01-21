@@ -64,7 +64,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 	private static final Logger LOG = LoggerFactory.getLogger(ListSelectorComponent.class);
 
-	public static final int BATCH_SIZE = 50;
+	public static final int BATCH_SIZE = 500;
 	public static final String REFRESH_BUTTON_ID = "ListManagerTreeComponent Refresh Button";
 	public static final String LISTS = "Lists";
 
@@ -757,7 +757,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 				this.getGermplasmListSource().setItemCaption(listChild.getId(), listChild.getName());
 				this.getGermplasmListSource().setParent(listChild.getId(), parentGermplasmListId);
 				// allow children if list has sub-lists
-				this.getGermplasmListSource().setChildrenAllowed(listChild.getId(), this.hasChildList(listChild.getId()));
+				this.getGermplasmListSource().setChildrenAllowed(listChild.getId(), listChild.isFolder());
 			}
 		}
 		this.selectListSourceDetails(parentGermplasmListId, false);
@@ -904,7 +904,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 						parentList.getId());
 				this.setNodeItemIcon(parentList.getId(), parentList.isFolder());
 				this.getGermplasmListSource().setItemCaption(parentList.getId(), parentList.getName());
-				this.getGermplasmListSource().setChildrenAllowed(parentList.getId(), this.hasChildList(parentList.getId()));
+				this.getGermplasmListSource().setChildrenAllowed(parentList.getId(), parentList.isFolder());
 				this.getGermplasmListSource().setParent(parentList.getId(), ListSelectorComponent.LISTS);
 			}
 		}
