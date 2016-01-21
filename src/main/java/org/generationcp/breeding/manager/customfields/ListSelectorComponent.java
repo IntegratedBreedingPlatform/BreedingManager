@@ -64,7 +64,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 	private static final Logger LOG = LoggerFactory.getLogger(ListSelectorComponent.class);
 
-	public static final int BATCH_SIZE = 50;
+	public static final int BATCH_SIZE = 500;
 	public static final String REFRESH_BUTTON_ID = "ListManagerTreeComponent Refresh Button";
 	public static final String LISTS = "Lists";
 
