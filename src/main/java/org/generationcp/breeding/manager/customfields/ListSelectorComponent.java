@@ -757,7 +757,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 				this.getGermplasmListSource().setItemCaption(listChild.getId(), listChild.getName());
 				this.getGermplasmListSource().setParent(listChild.getId(), parentGermplasmListId);
 				// allow children if list has sub-lists
-				this.getGermplasmListSource().setChildrenAllowed(listChild.getId(), this.hasChildList(listChild.getId()));
+				this.getGermplasmListSource().setChildrenAllowed(listChild.getId(), listChild.isFolder());
 			}
 		}
 		this.selectListSourceDetails(parentGermplasmListId, false);
@@ -904,7 +904,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 						parentList.getId());
 				this.setNodeItemIcon(parentList.getId(), parentList.isFolder());
 				this.getGermplasmListSource().setItemCaption(parentList.getId(), parentList.getName());
-				this.getGermplasmListSource().setChildrenAllowed(parentList.getId(), this.hasChildList(parentList.getId()));
+				this.getGermplasmListSource().setChildrenAllowed(parentList.getId(), parentList.isFolder());
 				this.getGermplasmListSource().setParent(parentList.getId(), ListSelectorComponent.LISTS);
 			}
 		}
