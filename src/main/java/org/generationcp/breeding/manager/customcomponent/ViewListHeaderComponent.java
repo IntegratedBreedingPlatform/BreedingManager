@@ -1,6 +1,8 @@
 
 package org.generationcp.breeding.manager.customcomponent;
 
+import java.util.List;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
@@ -9,6 +11,7 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.UserDefinedField;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -94,7 +97,8 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 		this.typeLabel = new Label(this.messageSource.getMessage(Message.TYPE_LABEL) + ":");
 		this.typeLabel.addStyleName("bold");
 
-		final String typeValue = BreedingManagerUtil.getTypeString(this.germplasmList.getType(), this.germplasmListManager);
+		List<UserDefinedField> listTypes = germplasmListManager.getGermplasmListTypes();
+		final String typeValue = BreedingManagerUtil.getTypeString(this.germplasmList.getType(), listTypes);
 		this.typeValueLabel = new Label(typeValue);
 		this.typeValueLabel.setDescription(typeValue);
 		this.typeValueLabel.setWidth("200px");
@@ -216,7 +220,8 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 
 		builder.append("<tr>\n");
 		builder.append("<td><b>Type:</b></td>\n");
-		builder.append("<td>" + BreedingManagerUtil.getTypeString(this.germplasmList.getType(), this.germplasmListManager) + "</td>\n");
+		List<UserDefinedField> listTypes = germplasmListManager.getGermplasmListTypes();
+		builder.append("<td>" + BreedingManagerUtil.getTypeString(this.germplasmList.getType(), listTypes) + "</td>\n");
 		builder.append("</tr>\n");
 
 		builder.append("<tr>\n");

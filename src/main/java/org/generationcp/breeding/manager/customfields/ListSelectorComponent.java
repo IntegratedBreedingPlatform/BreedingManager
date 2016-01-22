@@ -38,6 +38,7 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.UserDefinedField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -740,6 +741,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	}
 
 	public void addGermplasmListNodeToComponent(final List<GermplasmList> germplasmListChildren, final int parentGermplasmListId) {
+		List<UserDefinedField> listTypes = germplasmListManager.getGermplasmListTypes();
 		for (final GermplasmList listChild : germplasmListChildren) {
 			if (this.doAddItem(listChild)) {
 				String size = "";
@@ -751,7 +753,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 								this.generateCellInfo(listChild.getName(),
 										BreedingManagerUtil.getOwnerListName(listChild.getUserId(), this.userDataManager),
 										BreedingManagerUtil.getDescriptionForDisplay(listChild),
-										BreedingManagerUtil.getTypeString(listChild.getType(), this.germplasmListManager), size),
+										BreedingManagerUtil.getTypeString(listChild.getType(), listTypes), size),
 								listChild.getId());
 				this.setNodeItemIcon(listChild.getId(), listChild.isFolder());
 				this.getGermplasmListSource().setItemCaption(listChild.getId(), listChild.getName());
@@ -893,14 +895,14 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 				ListSelectorComponent.LISTS);
 		this.setNodeItemIcon(ListSelectorComponent.LISTS, true);
 		this.getGermplasmListSource().setItemCaption(ListSelectorComponent.LISTS, ListSelectorComponent.LISTS);
-
+		List<UserDefinedField> listTypes = germplasmListManager.getGermplasmListTypes();
 		for (final GermplasmList parentList : germplasmListParent) {
 			if (this.doAddItem(parentList)) {
 				final String size = this.countGermplasmListDataByListId(parentList.getId());
 				this.getGermplasmListSource().addItem(
 						this.generateCellInfo(parentList.getName(), BreedingManagerUtil.getOwnerListName(parentList.getUserId(),
 								this.userDataManager), BreedingManagerUtil.getDescriptionForDisplay(parentList), BreedingManagerUtil
-								.getTypeString(parentList.getType(), this.germplasmListManager), parentList.isFolder() ? "" : size),
+								.getTypeString(parentList.getType(), listTypes), parentList.isFolder() ? "" : size),
 						parentList.getId());
 				this.setNodeItemIcon(parentList.getId(), parentList.isFolder());
 				this.getGermplasmListSource().setItemCaption(parentList.getId(), parentList.getName());
