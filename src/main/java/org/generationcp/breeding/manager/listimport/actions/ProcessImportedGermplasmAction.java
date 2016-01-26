@@ -257,7 +257,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 
 	/**
 	 * Update GID to the existing germplasm's id. Otherwise, gid is set to 0
-	 * 
+	 *
 	 * @param ibdbUserId
 	 * @param dateIntValue
 	 * @param importedGermplasm
@@ -310,8 +310,8 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	}
 
 	protected boolean isNeedToDisplayGermplasmSelectionWindow(final int germplasmMatchesCount) {
-		if (germplasmMatchesCount > 1
-				|| (germplasmMatchesCount == 1 && !this.germplasmDetailsComponent.automaticallyAcceptSingleMatchesCheckbox())) {
+		if (germplasmMatchesCount > 1 || germplasmMatchesCount == 1
+				&& !this.germplasmDetailsComponent.automaticallyAcceptSingleMatchesCheckbox()) {
 			return true;
 		}
 		return false;
