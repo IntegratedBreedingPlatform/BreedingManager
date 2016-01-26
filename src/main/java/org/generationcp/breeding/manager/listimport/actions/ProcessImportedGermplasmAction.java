@@ -311,7 +311,11 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	}
 
 	protected boolean isNeedToDisplayGermplasmSelectionWindow(final int germplasmMatchesCount) {
-		return germplasmMatchesCount > 0 && !this.germplasmDetailsComponent.automaticallyAcceptSingleMatchesCheckbox();
+		if (germplasmMatchesCount > 1
+				|| (germplasmMatchesCount == 1 && !this.germplasmDetailsComponent.automaticallyAcceptSingleMatchesCheckbox())) {
+			return true;
+		}
+		return false;
 	}
 
 	protected boolean isGidSpecified(final ImportedGermplasm importedGermplasm) {
