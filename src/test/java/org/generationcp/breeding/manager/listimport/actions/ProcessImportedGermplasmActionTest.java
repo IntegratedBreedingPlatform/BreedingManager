@@ -315,4 +315,46 @@ public class ProcessImportedGermplasmActionTest {
 		Mockito.verify(this.germplasmDataManager, Mockito.times(0)).getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
 		Assert.assertEquals("Expecting that the gid is set to 0 when there is no existing germplasm.", 0, germplasm.getGid().intValue());
 	}
+
+	@Test
+	public void testIsNeedToDisplayGermplasmSelectionWindowForNoMatchWithoutAutomaticMatching() {
+		Mockito.doReturn(false).when(germplasmDetailsComponent).automaticallyAcceptSingleMatchesCheckbox();
+		Assert.assertFalse("Germplasm Selection Window should not be displayed",
+				processImportedGermplasmAction.isNeedToDisplayGermplasmSelectionWindow(0));
+	}
+
+	@Test
+	public void testIsNeedToDisplayGermplasmSelectionWindowForNoMatchWithAutomaticMatching() {
+		Mockito.doReturn(true).when(germplasmDetailsComponent).automaticallyAcceptSingleMatchesCheckbox();
+		Assert.assertFalse("Germplasm Selection Window should not be displayed",
+				processImportedGermplasmAction.isNeedToDisplayGermplasmSelectionWindow(0));
+	}
+
+	@Test
+	public void testIsNeedToDisplayGermplasmSelectionWindowForSingleMatchWithoutAutomaticMatching() {
+		Mockito.doReturn(false).when(germplasmDetailsComponent).automaticallyAcceptSingleMatchesCheckbox();
+		Assert.assertTrue("Germplasm Selection Window should be displayed",
+				processImportedGermplasmAction.isNeedToDisplayGermplasmSelectionWindow(1));
+	}
+
+	@Test
+	public void testIsNeedToDisplayGermplasmSelectionWindowForSingleMatchWithAutomaticMatching() {
+		Mockito.doReturn(true).when(germplasmDetailsComponent).automaticallyAcceptSingleMatchesCheckbox();
+		Assert.assertFalse("Germplasm Selection Window should not be displayed",
+				processImportedGermplasmAction.isNeedToDisplayGermplasmSelectionWindow(1));
+	}
+
+	@Test
+	public void testIsNeedToDisplayGermplasmSelectionWindowForMultipleMatchWithoutAutomaticMatching() {
+		Mockito.doReturn(false).when(germplasmDetailsComponent).automaticallyAcceptSingleMatchesCheckbox();
+		Assert.assertTrue("Germplasm Selection Window should be displayed",
+				processImportedGermplasmAction.isNeedToDisplayGermplasmSelectionWindow(2));
+	}
+
+	@Test
+	public void testIsNeedToDisplayGermplasmSelectionWindowForMultipleMatchWithAutomaticMatching() {
+		Mockito.doReturn(true).when(germplasmDetailsComponent).automaticallyAcceptSingleMatchesCheckbox();
+		Assert.assertTrue("Germplasm Selection Window should be displayed",
+				processImportedGermplasmAction.isNeedToDisplayGermplasmSelectionWindow(2));
+	}
 }
