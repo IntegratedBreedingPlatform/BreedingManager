@@ -285,7 +285,6 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		return germplasm;
 	}
 
-	// TODO : Method getCountByNamePermutations of GermplasmDataManager need to be used to improve performance and efficient DB call.
 	private Map<String, Integer> mapImportedGermplasmsForDuplication(final List<ImportedGermplasm> importedGermplasms) {
 
 		final Map<String, Integer> germplasmMatchesMap = new HashMap<>();
