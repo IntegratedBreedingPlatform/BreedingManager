@@ -58,7 +58,6 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
-import org.generationcp.middleware.manager.api.PedigreeDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
@@ -128,9 +127,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private static final int MINIMUM_WIDTH = 10;
 	private final Map<Object, Map<Object, Field>> fields = new HashMap<Object, Map<Object, Field>>();
 
-	private final ListManagerMain source;
-	private final ListTabComponent parentListDetailsComponent;
+	private ListManagerMain source;
+	private ListTabComponent parentListDetailsComponent;
 	private GermplasmList germplasmList;
+
 	private List<GermplasmListData> listEntries;
 	private long listEntriesCount;
 	private String designationOfListEntriesDeleted = "";
@@ -182,7 +182,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private Object selectedColumn = "";
 	private Object selectedItemId;
 	private String lastCellvalue = "";
-	private final List<Integer> gidsWithoutChildrenToDelete;
 	private final Map<Object, String> itemsToDelete;
 
 	private Button lockButton;
@@ -221,6 +220,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private Map<ListEntryLotDetails, Double> validReservationsToSave;
 	private Boolean hasChanges;
 
+	private ListDataPropertiesRenderer newColumnsRenderer = new ListDataPropertiesRenderer();
+
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
@@ -232,9 +233,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	@Autowired
 	private PedigreeService pedigreeService;
-
-	@Autowired
-	private PedigreeDataManager pedigreeDataManager;
 
 	@Autowired
 	private InventoryDataManager inventoryDataManager;
@@ -254,16 +252,29 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	private SaveListAsDialog dialog;
 
+	private BreedingManagerApplication breedingManagerApplication;
+
 	@Resource
 	private CrossExpansionProperties crossExpansionProperties;
+
+	public ListComponent() {
+		super();
+		this.itemsToDelete = new HashMap<Object, String>();
+	}
 
 	public ListComponent(final ListManagerMain source, final ListTabComponent parentListDetailsComponent, final GermplasmList germplasmList) {
 		super();
 		this.source = source;
 		this.parentListDetailsComponent = parentListDetailsComponent;
 		this.germplasmList = germplasmList;
-		this.gidsWithoutChildrenToDelete = new ArrayList<Integer>();
 		this.itemsToDelete = new HashMap<Object, String>();
+
+	}
+
+	@Override
+	public void attach() {
+		super.attach();
+		this.breedingManagerApplication = (BreedingManagerApplication) this.getApplication();
 	}
 
 	@Override
@@ -278,6 +289,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		} else if (this.source.getModeView().equals(ModeView.INVENTORY_VIEW)) {
 			this.viewInventoryActionConfirmed();
 		}
+
 	}
 
 	@Override
@@ -341,7 +353,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.menu.setWidth(ListComponent.CONTEXT_MENU_WIDTH);
 
 		// Add Column menu will be initialized after list data table is created
-		this.initializeListDataTable(); // listDataTable
+		this.initializeListDataTable(new TableWithSelectAllLayout(Long.valueOf(this.listEntriesCount).intValue(), this.getNoOfEntries(),
+				ColumnLabels.TAG.getName())); // listDataTable
 		this.initializeListInventoryTable(); // listInventoryTable
 
 		// Generate main level items
@@ -397,10 +410,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.menuCopyToNewListFromInventory.setEnabled(false);
 	}
 
-	protected void initializeListDataTable() {
+	protected void initializeListDataTable(TableWithSelectAllLayout tableWithSelectAllLayout) {
 
-		this.setListDataTableWithSelectAll(new TableWithSelectAllLayout(Long.valueOf(this.listEntriesCount).intValue(), this
-				.getNoOfEntries(), ColumnLabels.TAG.getName()));
+		this.setListDataTableWithSelectAll(tableWithSelectAllLayout);
 
 		if (this.getListDataTableWithSelectAll().getTable() == null) {
 			return;
@@ -503,10 +515,11 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			this.listDataTable.sort(new Object[] {ColumnLabels.ENTRY_ID.getName()}, new boolean[] {true});
 
 			// render additional columns
-			final ListDataPropertiesRenderer newColumnsRenderer =
-					new ListDataPropertiesRenderer(this.germplasmList.getId(), this.listDataTable);
+			this.newColumnsRenderer.setListId(this.germplasmList.getId());
+			this.newColumnsRenderer.setTargetTable(this.listDataTable);
+
 			try {
-				newColumnsRenderer.render();
+				this.newColumnsRenderer.render();
 			} catch (final MiddlewareQueryException ex) {
 				ListComponent.LOG.error("Error with displaying added columns for entries of list: " + this.germplasmList.getId(), ex);
 			}
@@ -946,6 +959,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						ListComponent.this.listDataTable.setValue(ListComponent.this.listDataTable.getItemIds());
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.EXPORT_LIST))) {
 						ListComponent.this.exportListAction();
+							ListComponent.this.messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER))) {
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
 						ListComponent.this.copyToNewListAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.ADD_ENTRIES))) {
@@ -1300,37 +1314,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		// marks that there is a change in listDataTable
 		this.setHasUnsavedChanges(true);
 
-		// Marks the Local Germplasm to be deleted
-		try {
-			final List<Integer> gidsWithoutChildren = this.getGidsToDeletedWithoutChildren(selectedIds);
-			if (!gidsWithoutChildren.isEmpty()) {
-
-				// We have been forced to switch the Ok and the cancel buttons because we want to default to no when asking the user if they
-				// wish to delete associated germplasm entries.
-				ConfirmDialog.show(this.getWindow(), "Delete Germplasm from Database",
-						"Would you like to delete the germplasm(s) from the database also?", "No", "Yes", new ConfirmDialog.Listener() {
-
-							private static final long serialVersionUID = 1L;
-
-							@Override
-							public void onClose(final ConfirmDialog dialog) {
-								if (!dialog.isConfirmed()) {
-									ListComponent.this.gidsWithoutChildrenToDelete.addAll(gidsWithoutChildren);
-								}
-							}
-
-						});
-			}
-		} catch (final NumberFormatException e) {
-			ListComponent.LOG.error(e.getMessage(), e);
-			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
-					ListComponent.ERROR_WITH_DELETING_LIST_ENTRIES);
-		} catch (final MiddlewareQueryException e) {
-			ListComponent.LOG.error(e.getMessage(), e);
-			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
-					ListComponent.ERROR_WITH_DELETING_LIST_ENTRIES);
-		}
-
 		if (this.listDataTable.getItemIds().size() == selectedIds.size()) {
 			this.listDataTable.getContainerDataSource().removeAllItems();
 		} else {
@@ -1349,21 +1332,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.renumberEntryIds();
 		this.listDataTable.requestRepaint();
 		this.updateNoOfEntries();
-	}
-
-	private List<Integer> getGidsToDeletedWithoutChildren(final Collection<?> selectedIds) {
-		final List<Integer> gids = new ArrayList<Integer>();
-		for (final Object itemId : selectedIds) {
-			final Button gidButton = (Button) this.listDataTable.getItem(itemId).getItemProperty(ColumnLabels.GID.getName()).getValue();
-			final Integer germplasmID = Integer.parseInt(gidButton.getCaption());
-
-			final long count = this.pedigreeDataManager.countDescendants(germplasmID);
-			if (count == 0) {
-				gids.add(germplasmID);
-			}
-		}
-
-		return gids;
 	}
 
 	private void renumberEntryIds() {
@@ -1427,6 +1395,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		}
 	}
 
+						new FileDownloadResource(new File(tempFileName), this.source.getApplication());
 	private void copyToNewListAction() {
 		final Collection<?> newListEntries = (Collection<?>) this.listDataTable.getValue();
 		if (newListEntries == null || newListEntries.isEmpty()) {
@@ -1511,8 +1480,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		listData.setGid(gid);
 		listData.setLocalRecordId(Integer.valueOf(0));
 		listData.setStatus(Integer.valueOf(0));
-		listData.setEntryCode(listData.getEntryId().toString());
-		listData.setSeedSource("From Add Entry Feature of List Manager");
+		listData.setEntryCode(listData.getEntryId().toString());	
+		listData.setSeedSource(this.germplasmDataManager.getPlotCodeValue(gid));
 
 		String groupName = "-";
 		try {
@@ -1529,7 +1498,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 			// create table if added entry is first listdata record
 			if (this.listDataTable == null) {
-				this.initializeListDataTable();
+				this.initializeListDataTable(new TableWithSelectAllLayout(Long.valueOf(this.listEntriesCount).intValue(), this
+						.getNoOfEntries(), ColumnLabels.TAG.getName()));
 				this.initializeValues();
 			} else {
 				this.listDataTable.setEditable(false);
@@ -1624,10 +1594,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	public Boolean saveChangesAction(final Window window, final Boolean showSuccessMessage) {
 
-		// selected entries to entries
-		if (!this.itemsToDelete.isEmpty()) {
-			this.performListEntriesDeletion(this.itemsToDelete);
-		}
+		this.deleteRemovedGermplasmEntriesFromTable();
 
 		try {
 			this.listEntries = this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId());
@@ -1734,8 +1701,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 			}
 
-			this.deleteGermplasmDialogBox(this.gidsWithoutChildrenToDelete);
-
 			this.designationOfListEntriesDeleted =
 					this.designationOfListEntriesDeleted.substring(0, this.designationOfListEntriesDeleted.length() - 1);
 
@@ -1754,8 +1719,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			// reset items to delete in listDataTable
 			itemsToDelete.clear();
 
-			// Reset the gidsWithoutChildrenToDelete so that already deleted ids do not get reprocessed.
-			this.gidsWithoutChildrenToDelete.clear();
 		} catch (final NumberFormatException e) {
 			ListComponent.LOG.error(ListComponent.ERROR_WITH_DELETING_LIST_ENTRIES, e);
 			ListComponent.LOG.error("\n" + e.getStackTrace());
@@ -1766,26 +1729,24 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		// end of performListEntriesDeletion
 	}
 
-	private void deleteGermplasmListDataByListIdLrecId(final int listId, final int lrecId) {
+	protected void deleteRemovedGermplasmEntriesFromTable() {
+		if (this.listDataTable.getItemIds().isEmpty()) {
+
+			// If the list table is empty, delete all the list entries in the database
+			this.germplasmListManager.deleteGermplasmListDataByListId(this.germplasmList.getId());
+
+		} else if (!this.itemsToDelete.isEmpty()) {
+
+			// Delete the removed selected entries individually
+			this.performListEntriesDeletion(this.itemsToDelete);
+		}
+	}
+
+	protected void deleteGermplasmListDataByListIdLrecId(final int listId, final int lrecId) {
 		try {
 			this.germplasmListManager.deleteGermplasmListDataByListIdLrecId(this.germplasmList.getId(), lrecId);
 		} catch (final MiddlewareQueryException e) {
 			ListComponent.LOG.error(e.getMessage(), e);
-		}
-	}
-
-	protected void deleteGermplasmDialogBox(final List<Integer> gidsWithoutChildren) {
-
-		if (gidsWithoutChildren != null && !gidsWithoutChildren.isEmpty()) {
-			final List<Germplasm> gList = new ArrayList<Germplasm>();
-			for (final Integer gid : gidsWithoutChildren) {
-				final Germplasm g = this.germplasmDataManager.getGermplasmByGID(gid);
-				g.setGrplce(gid);
-				gList.add(g);
-			}
-			// end loop
-
-			this.germplasmDataManager.updateGermplasm(gList);
 		}
 	}
 
@@ -1821,15 +1782,20 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}
 
 	/* SETTERS AND GETTERS */
+
 	public GermplasmList getGermplasmList() {
 		return this.germplasmList;
+	}
+
+	protected void setGermplasmList(GermplasmList germplasmList) {
+		this.germplasmList = germplasmList;
 	}
 
 	public Integer getGermplasmListId() {
 		return this.germplasmList.getId();
 	}
 
-	public void toggleGermplasmListStatus() throws MiddlewareQueryException {
+	public void toggleGermplasmListStatus() {
 		final int toggledStatus;
 
 		if (this.germplasmList.isLockedList()) {
@@ -1892,7 +1858,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}
 
 	protected void refreshTreeOnSave() {
-		((BreedingManagerApplication) this.getApplication()).refreshListManagerTree();
+		this.breedingManagerApplication.refreshListManagerTree();
 	}
 
 	public void openViewListHeaderWindow() {
@@ -2365,5 +2331,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	@Override
 	public ListManagerMain getListManagerMain() {
 		return this.source;
+	}
+
+	public Map<Object, String> getItemsToDelete() {
+		return this.itemsToDelete;
 	}
 }

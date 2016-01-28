@@ -11,6 +11,8 @@ import org.generationcp.breeding.manager.data.initializer.ListInventoryDataIniti
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
+import org.generationcp.middleware.domain.inventory.LotDetails;
+import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
@@ -24,6 +26,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Table;
 
@@ -59,42 +62,55 @@ public class ListInventoryTableTest {
 	@Test
 	public void testInstantiateComponentsHeaderNameFromOntology() throws MiddlewareQueryException {
 
-		Mockito.doReturn(ListInventoryDataInitializer.createTerm("DESIGNATION")).when(this.ontologyDataManager)
-				.getTermById(ColumnLabels.DESIGNATION.getTermId().getId());
-		Mockito.doReturn(ListInventoryDataInitializer.createTerm("LOCATION")).when(this.ontologyDataManager)
-				.getTermById(ColumnLabels.LOT_LOCATION.getTermId().getId());
-		Mockito.doReturn(ListInventoryDataInitializer.createTerm("UNITS")).when(this.ontologyDataManager)
-				.getTermById(ColumnLabels.UNITS.getTermId().getId());
-		Mockito.doReturn(ListInventoryDataInitializer.createTerm("AVAIL_INV")).when(this.ontologyDataManager)
-				.getTermById(ColumnLabels.AVAILABLE_INVENTORY.getTermId().getId());
-		Mockito.doReturn(ListInventoryDataInitializer.createTerm("TOTAL")).when(this.ontologyDataManager)
-				.getTermById(ColumnLabels.TOTAL.getTermId().getId());
-		Mockito.doReturn(ListInventoryDataInitializer.createTerm("RES")).when(this.ontologyDataManager)
-				.getTermById(ColumnLabels.RESERVED.getTermId().getId());
-		Mockito.doReturn(ListInventoryDataInitializer.createTerm("NEW RES")).when(this.ontologyDataManager)
-				.getTermById(ColumnLabels.NEWLY_RESERVED.getTermId().getId());
-		Mockito.doReturn(ListInventoryDataInitializer.createTerm("COMMENT")).when(this.ontologyDataManager)
-				.getTermById(ColumnLabels.COMMENT.getTermId().getId());
-		Mockito.doReturn(ListInventoryDataInitializer.createTerm("STOCKID")).when(this.ontologyDataManager)
-				.getTermById(ColumnLabels.STOCKID.getTermId().getId());
-		Mockito.doReturn(ListInventoryDataInitializer.createTerm("LOT_ID")).when(this.ontologyDataManager)
-				.getTermById(ColumnLabels.LOT_ID.getTermId().getId());
+		Term desigTerm = ListInventoryDataInitializer.createTerm("Designation");
+		Mockito.doReturn(desigTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.DESIGNATION.getTermId().getId());
+
+		Term locTerm = ListInventoryDataInitializer.createTerm("Location");
+		Mockito.doReturn(locTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.LOT_LOCATION.getTermId().getId());
+
+		Term unitsTerm = ListInventoryDataInitializer.createTerm("Units");
+		Mockito.doReturn(unitsTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.UNITS.getTermId().getId());
+
+		Term availInvTerm = ListInventoryDataInitializer.createTerm("Available Inventory");
+		Mockito.doReturn(availInvTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.AVAILABLE_INVENTORY.getTermId().getId());
+
+		Term totalTerm = ListInventoryDataInitializer.createTerm("Total");
+		Mockito.doReturn(totalTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.TOTAL.getTermId().getId());
+
+		Term reservedTerm = ListInventoryDataInitializer.createTerm("RES");
+		Mockito.doReturn(reservedTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.RESERVED.getTermId().getId());
+
+		Term newlyResTerm = ListInventoryDataInitializer.createTerm("Newly Reserved");
+		Mockito.doReturn(newlyResTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.NEWLY_RESERVED.getTermId().getId());
+
+		Term commentTerm = ListInventoryDataInitializer.createTerm("Comment");
+		Mockito.doReturn(commentTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.COMMENT.getTermId().getId());
+
+		Term stockIdTerm = ListInventoryDataInitializer.createTerm("Stock ID");
+		Mockito.doReturn(stockIdTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.STOCKID.getTermId().getId());
+
+		Term lotIdTerm = ListInventoryDataInitializer.createTerm("Lot ID");
+		Mockito.doReturn(lotIdTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.LOT_ID.getTermId().getId());
+
+		Term seedSourceTerm = ListInventoryDataInitializer.createTerm("Seed Source");
+		Mockito.doReturn(seedSourceTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.SEED_SOURCE.getTermId().getId());
 
 		this.listInventoryTable.instantiateComponents();
 
 		Table table = this.listInventoryTable.getTable();
 		Assert.assertEquals("CHECK", table.getColumnHeader(ColumnLabels.TAG.getName()));
 		Assert.assertEquals("#", table.getColumnHeader(ColumnLabels.ENTRY_ID.getName()));
-		Assert.assertEquals("DESIGNATION", table.getColumnHeader(ColumnLabels.DESIGNATION.getName()));
-		Assert.assertEquals("LOCATION", table.getColumnHeader(ColumnLabels.LOT_LOCATION.getName()));
-		Assert.assertEquals("UNITS", table.getColumnHeader(ColumnLabels.UNITS.getName()));
-		Assert.assertEquals("AVAIL_INV", table.getColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName()));
-		Assert.assertEquals("TOTAL", table.getColumnHeader(ColumnLabels.TOTAL.getName()));
-		Assert.assertEquals("RES", table.getColumnHeader(ColumnLabels.RESERVED.getName()));
-		Assert.assertEquals("NEW RES", table.getColumnHeader(ColumnLabels.NEWLY_RESERVED.getName()));
-		Assert.assertEquals("COMMENT", table.getColumnHeader(ColumnLabels.COMMENT.getName()));
-		Assert.assertEquals("STOCKID", table.getColumnHeader(ColumnLabels.STOCKID.getName()));
-		Assert.assertEquals("LOT_ID", table.getColumnHeader(ColumnLabels.LOT_ID.getName()));
+		Assert.assertEquals(desigTerm.getName(), table.getColumnHeader(ColumnLabels.DESIGNATION.getName()));
+		Assert.assertEquals(locTerm.getName(), table.getColumnHeader(ColumnLabels.LOT_LOCATION.getName()));
+		Assert.assertEquals(unitsTerm.getName(), table.getColumnHeader(ColumnLabels.UNITS.getName()));
+		Assert.assertEquals(availInvTerm.getName(), table.getColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName()));
+		Assert.assertEquals(totalTerm.getName(), table.getColumnHeader(ColumnLabels.TOTAL.getName()));
+		Assert.assertEquals(reservedTerm.getName(), table.getColumnHeader(ColumnLabels.RESERVED.getName()));
+		Assert.assertEquals(newlyResTerm.getName(), table.getColumnHeader(ColumnLabels.NEWLY_RESERVED.getName()));
+		Assert.assertEquals(commentTerm.getName(), table.getColumnHeader(ColumnLabels.COMMENT.getName()));
+		Assert.assertEquals(stockIdTerm.getName(), table.getColumnHeader(ColumnLabels.STOCKID.getName()));
+		Assert.assertEquals(lotIdTerm.getName(), table.getColumnHeader(ColumnLabels.LOT_ID.getName()));
+		Assert.assertEquals(seedSourceTerm.getName(), table.getColumnHeader(ColumnLabels.SEED_SOURCE.getName()));
 	}
 
 	@Test
@@ -109,6 +125,7 @@ public class ListInventoryTableTest {
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.NEWLY_RESERVED.getTermId().getId());
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.COMMENT.getTermId().getId());
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.LOT_ID.getTermId().getId());
+		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.SEED_SOURCE.getTermId().getId());
 
 		this.listInventoryTable.instantiateComponents();
 
@@ -124,6 +141,7 @@ public class ListInventoryTableTest {
 		Assert.assertEquals(ColumnLabels.NEWLY_RESERVED.getName(), table.getColumnHeader(ColumnLabels.NEWLY_RESERVED.getName()));
 		Assert.assertEquals(ColumnLabels.COMMENT.getName(), table.getColumnHeader(ColumnLabels.COMMENT.getName()));
 		Assert.assertEquals(ColumnLabels.LOT_ID.getName(), table.getColumnHeader(ColumnLabels.LOT_ID.getName()));
+		Assert.assertEquals(ColumnLabels.SEED_SOURCE.getName(), table.getColumnHeader(ColumnLabels.SEED_SOURCE.getName()));
 	}
 
 	@Test
@@ -132,8 +150,24 @@ public class ListInventoryTableTest {
 		this.listInventoryTable.displayInventoryDetails(inventoryDetails);
 
 		int expectedNoOFLotEntries = ListInventoryDataInitializer.getNumberOfEntriesInInventoryView();
+		Table table = this.listInventoryTable.getTable();
 		Assert.assertEquals("Expecting that all entries from inventoryDetails are properly inserted in listinventory table but didn't.",
-				expectedNoOFLotEntries, this.listInventoryTable.getTable().getContainerDataSource().size());
+				expectedNoOFLotEntries, table.getContainerDataSource().size());
+		
+		GermplasmListData row1InventoryDetails = inventoryDetails.get(0);
+		final LotDetails row1LotDetails = row1InventoryDetails.getInventoryInfo().getLotRows().get(0);
+		Item row1VaadinTable = table.getItem(row1LotDetails);
+		Assert.assertNotNull(row1VaadinTable);
+		
+		Assert.assertEquals(row1InventoryDetails.getEntryId(), row1VaadinTable.getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue());
+		Assert.assertEquals(row1LotDetails.getLocationOfLot().getLname(), row1VaadinTable.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).getValue());
+		Assert.assertEquals(row1LotDetails.getScaleOfLot().getName(), row1VaadinTable.getItemProperty(ColumnLabels.UNITS.getName()).getValue());
+		Assert.assertEquals(row1LotDetails.getActualLotBalance(), row1VaadinTable.getItemProperty(ColumnLabels.TOTAL.getName()).getValue());
+		Assert.assertEquals(0.0, row1VaadinTable.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).getValue());
+		Assert.assertEquals(row1LotDetails.getCommentOfLot(), row1VaadinTable.getItemProperty(ColumnLabels.COMMENT.getName()).getValue());
+		Assert.assertEquals(row1LotDetails.getLotId(), row1VaadinTable.getItemProperty(ColumnLabels.LOT_ID.getName()).getValue());
+		Assert.assertEquals(row1InventoryDetails.getSeedSource(), row1VaadinTable.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue());
+		
 	}
 
 	@Test

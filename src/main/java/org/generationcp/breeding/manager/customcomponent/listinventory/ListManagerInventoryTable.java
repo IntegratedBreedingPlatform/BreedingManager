@@ -124,6 +124,7 @@ public class ListManagerInventoryTable extends ListInventoryTable {
 					newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdsLbl);
 
 					newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotDetail.getLotId());
+					newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(inventoryDetail.getSeedSource());
 				}
 			}
 		}

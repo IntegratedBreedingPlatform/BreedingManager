@@ -217,7 +217,8 @@ public class DropHandlerMethods {
 			if (newItem != null && gidButton != null) {
 				newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
 			}
-			newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue("Germplasm Search");
+			
+			newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(this.germplasmDataManager.getPlotCodeValue(gid));
 			newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
 			newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(crossExpansion);
 
@@ -275,7 +276,7 @@ public class DropHandlerMethods {
 		return this.addGermplasmFromList(listId, lrecid, germplasmList, false);
 	}
 
-	private Integer addGermplasmFromList(Integer listId, Integer lrecid, GermplasmList germplasmList, Boolean forEditList) {
+	Integer addGermplasmFromList(Integer listId, Integer lrecid, GermplasmList germplasmList, Boolean forEditList) {
 
 		this.currentListId = listId;
 
@@ -345,12 +346,7 @@ public class DropHandlerMethods {
 					newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
 				}
 				newItem.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(germplasmListData.getEntryCode());
-				if (forEditList.equals(true)) {
-					newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(germplasmListData.getSeedSource());
-				} else {
-					newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(
-							germplasmList.getName() + ": " + germplasmListData.getEntryId());
-				}
+				newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(germplasmListData.getSeedSource());
 				newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
 				newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(germplasmListData.getGroupName());
 
@@ -747,4 +743,26 @@ public class DropHandlerMethods {
 		this.listManagerMain.getListBuilderComponent().setHasUnsavedChanges(changed);
 	}
 
+	
+	void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
+	}
+
+	
+	void setGermplasmListManager(GermplasmListManager germplasmListManager) {
+		this.germplasmListManager = germplasmListManager;
+	}
+
+	
+	void setCurrentColumnsInfo(GermplasmListNewColumnsInfo currentColumnsInfo) {
+		this.currentColumnsInfo = currentColumnsInfo;
+	}
+
+	void setTargetTable(Table targetTable) {
+		this.targetTable = targetTable;
+	}
+
+	void setListManagerMain(ListManagerMain listManagerMain) {
+		this.listManagerMain = listManagerMain;
+	}
 }

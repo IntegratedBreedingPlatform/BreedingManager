@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
@@ -320,7 +321,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 							newItem.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(0);
 							newItem.getItemProperty(ColumnLabels.COMMENT.getName()).setValue(lotDetail.getCommentOfLot());
 							newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotDetail.getLotId());
-
+							newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(inventoryDetail.getSeedSource());
 						}
 					}
 				}
@@ -366,26 +367,32 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 
 		});
 
-		Button sourceDesigButton = new Button();
-		Button desigButton = new Button();
+		Button sourceDesignationButton = new Button();
+		Button targetDesignationButton = new Button();
 
 		Item itemFromSourceTable = sourceTable.getItem(lotDetail);
+		String seedSource = "";
 		if (itemFromSourceTable != null) {
-			sourceDesigButton = (Button) itemFromSourceTable.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue();
-			if (sourceDesigButton != null) {
-				desigButton.setValue(sourceDesigButton.getValue());
-				desigButton.setCaption(sourceDesigButton.getCaption());
-				for (Object listener : sourceDesigButton.getListeners(ClickEvent.class)) {
-					desigButton.addListener((GidLinkButtonClickListener) listener);
+			sourceDesignationButton = (Button) itemFromSourceTable.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue();
+			if (sourceDesignationButton != null) {
+				targetDesignationButton.setValue(sourceDesignationButton.getValue());
+				targetDesignationButton.setCaption(sourceDesignationButton.getCaption());
+				for (Object listener : sourceDesignationButton.getListeners(ClickEvent.class)) {
+					targetDesignationButton.addListener((GidLinkButtonClickListener) listener);
 				}
+			}
+			
+			Property seedSourceProperty = itemFromSourceTable.getItemProperty(ColumnLabels.SEED_SOURCE.getName());
+			if (seedSourceProperty != null) {
+				seedSource = (String) seedSourceProperty.getValue();
 			}
 		}
 
-		desigButton.setStyleName(BaseTheme.BUTTON_LINK);
+		targetDesignationButton.setStyleName(BaseTheme.BUTTON_LINK);
 
 		newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(itemCheckBox);
 		newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entryId);
-		newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(desigButton);
+		newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(targetDesignationButton);
 		newItem.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).setValue(lotDetail.getLocationOfLot().getLname());
 		newItem.getItemProperty(ColumnLabels.UNITS.getName()).setValue(lotDetail.getScaleOfLot().getName());
 		newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(lotDetail.getAvailableLotBalance());
@@ -395,6 +402,8 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		newItem.getItemProperty(ColumnLabels.COMMENT.getName()).setValue(lotDetail.getCommentOfLot());
 		newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(new Label(""));
 		newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotDetail.getLotId());
+		newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(seedSource);
+		
 
 		return newItem;
 	}

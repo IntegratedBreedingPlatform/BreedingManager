@@ -359,19 +359,20 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 		this.designationOfListEntriesCopied = "";
 		Collection<?> selectedIds = (Collection<?>) this.listEntriesTable.getValue();
 		for (final Object itemId : selectedIds) {
-			Property pParentage = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.PARENTAGE.getName());
-			Property pEntryId = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.ENTRY_ID.getName());
-			Property pGid = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.GID.getName());
-			Property pDesignation = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.DESIGNATION.getName());
+			Property parentageProperty = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.PARENTAGE.getName());
+			Property entryIdProperty = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.ENTRY_ID.getName());
+			Property gidProperty = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.GID.getName());
+			Property designationProperty = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.DESIGNATION.getName());
+			Property seedSourceProperty = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.SEED_SOURCE.getName());
 
-			Button pGidButton = (Button) pGid.getValue();
-			int gid = Integer.valueOf(pGidButton.getCaption().toString());
-			String entryIdOfList = String.valueOf(pEntryId.getValue().toString());
-			String seedSource = this.listName + ": " + entryIdOfList;
-			Button pDesigButton = (Button) pDesignation.getValue();
-			String designation = String.valueOf(pDesigButton.getCaption().toString());
+			Button gidLinkButton = (Button) gidProperty.getValue();
+			int gid = Integer.valueOf(gidLinkButton.getCaption().toString());
+			String entryIdOfList = String.valueOf(entryIdProperty.getValue().toString());
+			String seedSource = String.valueOf(seedSourceProperty.getValue().toString());
+			Button designationLinkButton = (Button) designationProperty.getValue();
+			String designation = String.valueOf(designationLinkButton.getCaption().toString());
 			this.designationOfListEntriesCopied += designation + ",";
-			String groupName = String.valueOf(pParentage.getValue().toString());
+			String groupName = String.valueOf(parentageProperty.getValue().toString());
 
 			GermplasmListData germplasmListData = new GermplasmListData(null, germList, gid, germplasmListDataEntryId, entryIdOfList,
 					seedSource, designation, groupName, status, localRecordId);

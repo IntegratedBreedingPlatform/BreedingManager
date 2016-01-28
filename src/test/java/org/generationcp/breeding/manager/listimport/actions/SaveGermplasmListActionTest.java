@@ -5,19 +5,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
-import org.generationcp.breeding.manager.data.initializer.GermplasmDataInitializer;
-import org.generationcp.breeding.manager.data.initializer.GermplasmListDataInitializer;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
+import org.generationcp.breeding.manager.exception.BreedingManagerException;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
+import org.generationcp.middleware.data.initializer.GermplasmTestDataInitializer;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
-import org.generationcp.middleware.pojos.*;
+import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.service.api.InventoryService;
 import org.junit.Assert;
 import org.junit.Before;
@@ -82,11 +87,11 @@ public class SaveGermplasmListActionTest {
 
 	@Before
 	public void setup() {
-		this.germplasmList = GermplasmListDataInitializer.createGermplasmList(LIST_ID);
+		this.germplasmList = GermplasmListTestDataInitializer.createGermplasmList(LIST_ID);
 		this.importedGermplasmList = ImportedGermplasmListDataInitializer.createImportedGermplasmList(NO_OF_ENTRIES);
 		this.germplasmNameObjects = ImportedGermplasmListDataInitializer.createGermplasmNameObjects(NO_OF_ENTRIES);
 		this.doNotCreateGermplasmsWithId = ImportedGermplasmListDataInitializer.createListOfGemplasmIds(2);
-		this.newNames = GermplasmDataInitializer.createNameList(NO_OF_ENTRIES);
+		this.newNames = GermplasmTestDataInitializer.createNameList(NO_OF_ENTRIES);
 
 		Mockito.doReturn(PROGRAM_UUID).when(this.contextUtil).getCurrentProgramUUID();
 		Mockito.doReturn(CURRENT_LOCAL_ID).when(this.contextUtil).getCurrentUserLocalId();
@@ -98,7 +103,7 @@ public class SaveGermplasmListActionTest {
 		Mockito.doReturn(this.germplasmList).when(this.germplasmListManager).getGermplasmListById(SAVED_GERMPLASM_LIST_ID);
 
 		for (int i = 1; i <= NO_OF_ENTRIES; i++) {
-			Mockito.doReturn(GermplasmDataInitializer.createGermplasm(i)).when(this.germplasmManager).getGermplasmByGID(i);
+			Mockito.doReturn(GermplasmTestDataInitializer.createGermplasm(i)).when(this.germplasmManager).getGermplasmByGID(i);
 		}
 
 	}
@@ -128,7 +133,7 @@ public class SaveGermplasmListActionTest {
 	}
 
 	@Test
-	public void testSaveRecordsWhenOverridingExistingListUsingTheImportedGermplasmList() {
+	public void testSaveRecordsWhenOverridingExistingListUsingTheImportedGermplasmList() throws BreedingManagerException {
 		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, SOURCE_LIST_XLS,
 				this.doNotCreateGermplasmsWithId, this.importedGermplasmList, SEED_STORAGE_LOCATION);
 
@@ -141,7 +146,7 @@ public class SaveGermplasmListActionTest {
 	}
 
 	@Test
-	public void testBlankSourceSaving() {
+	public void testBlankSourceSaving() throws BreedingManagerException {
 		final ArgumentCaptor<GermplasmListData> listData = ArgumentCaptor.forClass(GermplasmListData.class);
 
 		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, SOURCE_LIST_XLS,
@@ -157,7 +162,7 @@ public class SaveGermplasmListActionTest {
 	}
 
 	@Test
-	public void testNonBlankSourceSaving() {
+	public void testNonBlankSourceSaving() throws BreedingManagerException {
 		final ArgumentCaptor<GermplasmListData> listData = ArgumentCaptor.forClass(GermplasmListData.class);
 
 		// provide a non null source value
@@ -178,7 +183,7 @@ public class SaveGermplasmListActionTest {
 	}
 
 	@Test
-	public void testSaveRecordsWhenOverridingNewListUsingTheImportedGermplasmList() {
+	public void testSaveRecordsWhenOverridingNewListUsingTheImportedGermplasmList() throws BreedingManagerException {
 		this.germplasmList.setId(null);
 		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, SOURCE_LIST_XLS,
 				this.doNotCreateGermplasmsWithId, this.importedGermplasmList, SEED_STORAGE_LOCATION);
