@@ -1518,8 +1518,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		listData.setGid(gid);
 		listData.setLocalRecordId(Integer.valueOf(0));
 		listData.setStatus(Integer.valueOf(0));
-		listData.setEntryCode(listData.getEntryId().toString());
-		listData.setSeedSource("From Add Entry Feature of List Manager");
+		listData.setEntryCode(listData.getEntryId().toString());	
+		listData.setSeedSource(this.germplasmDataManager.getPlotCodeValue(gid));
 
 		String groupName = "-";
 		try {

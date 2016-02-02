@@ -291,7 +291,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		newUdfld.setFfmt(fmt);
 		newUdfld.setFdesc("-");
 		newUdfld.setLfldno(0);
-		newUdfld.setUser(new User(this.contextUtil.getCurrentUserLocalId()));
+		newUdfld.setFuid(this.contextUtil.getCurrentUserLocalId());
 		newUdfld.setFdate(Util.getCurrentDateAsIntegerValue());
 		newUdfld.setScaleid(0);
 
@@ -308,7 +308,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		newUdfld.setFfmt(fmt);
 		newUdfld.setFdesc("-");
 		newUdfld.setLfldno(0);
-		newUdfld.setUser(new User(this.contextUtil.getCurrentUserLocalId()));
+		newUdfld.setFuid(this.contextUtil.getCurrentUserLocalId());
 		newUdfld.setFdate(Util.getCurrentDateAsIntegerValue());
 		newUdfld.setScaleid(0);
 
