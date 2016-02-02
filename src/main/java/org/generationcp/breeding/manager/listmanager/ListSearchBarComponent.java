@@ -168,8 +168,9 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 					exactMatchedOnly ? Operation.EQUAL : Operation.LIKE));
 
 		} catch (final BreedingManagerSearchException e) {
-			this.searchResultsComponent.applyGermplasmListResults(new ArrayList<GermplasmList>());
-			if (Message.SEARCH_QUERY_CANNOT_BE_EMPTY.equals(e.getErrorMessage())) {
+			if (Message.NO_SEARCH_RESULTS.equals(e.getErrorMessage())) {
+				this.searchResultsComponent.applyGermplasmListResults(new ArrayList<GermplasmList>());
+			} else if (Message.SEARCH_QUERY_CANNOT_BE_EMPTY.equals(e.getErrorMessage())) {
 				// invalid search string
 				MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.UNABLE_TO_SEARCH),
 						this.messageSource.getMessage(e.getErrorMessage()));
@@ -184,6 +185,18 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 
 	public TextField getSearchField() {
 		return this.searchField;
+	}
+
+	public void setExactMatchesOnlyCheckBox(final CheckBox exactMatchesOnlyCheckBox) {
+		this.exactMatchesOnlyCheckBox = exactMatchesOnlyCheckBox;
+	}
+
+	public void setBreedingManagerService(final BreedingManagerService breedingManagerService) {
+		this.breedingManagerService = breedingManagerService;
+	}
+
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
 	}
 
 }
