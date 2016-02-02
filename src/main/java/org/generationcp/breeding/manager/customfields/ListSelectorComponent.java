@@ -747,7 +747,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 		for (final GermplasmList listChild : germplasmListChildren) {
 			if (this.doAddItem(listChild)) {
-				GermplasmListMetadata listMetadata = allListMetaData.get(listChild.getId());
+				GermplasmListMetadata listMetadata = allListMetaData.get(Long.valueOf(listChild.getId()));
 				final String listSize = listMetadata != null ? String.valueOf(listMetadata.getNumberOfEntries()) : "";
 				final String listOwner = listMetadata != null ? listMetadata.getOwnerName() : "";
 
@@ -891,7 +891,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 		for (final GermplasmList parentList : germplasmListParent) {
 			if (this.doAddItem(parentList)) {
-				GermplasmListMetadata listMetadata = allListMetaData.get(parentList.getId());
+				GermplasmListMetadata listMetadata = allListMetaData.get(Long.valueOf(parentList.getId()));
 				final String listSize = listMetadata != null ? String.valueOf(listMetadata.getNumberOfEntries()) : "";
 				final String listOwner = listMetadata != null ? listMetadata.getOwnerName() : "";
 				this.getGermplasmListSource().addItem(
