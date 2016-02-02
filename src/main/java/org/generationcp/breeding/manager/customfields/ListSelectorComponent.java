@@ -743,11 +743,11 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 	public void addGermplasmListNodeToComponent(final List<GermplasmList> germplasmListChildren, final int parentGermplasmListId) {
 		List<UserDefinedField> listTypes = germplasmListManager.getGermplasmListTypes();
-		Map<Long, GermplasmListMetadata> allListMetaData = germplasmListManager.getAllGermplasmListMetadata();
+		Map<Integer, GermplasmListMetadata> allListMetaData = germplasmListManager.getAllGermplasmListMetadata();
 
 		for (final GermplasmList listChild : germplasmListChildren) {
 			if (this.doAddItem(listChild)) {
-				GermplasmListMetadata listMetadata = allListMetaData.get(Long.valueOf(listChild.getId()));
+				GermplasmListMetadata listMetadata = allListMetaData.get(listChild.getId());
 				final String listSize = listMetadata != null ? String.valueOf(listMetadata.getNumberOfEntries()) : "";
 				final String listOwner = listMetadata != null ? listMetadata.getOwnerName() : "";
 
@@ -887,11 +887,11 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		this.getGermplasmListSource().setItemCaption(ListSelectorComponent.LISTS, ListSelectorComponent.LISTS);
 		List<UserDefinedField> listTypes = germplasmListManager.getGermplasmListTypes();
 
-		Map<Long, GermplasmListMetadata> allListMetaData = germplasmListManager.getAllGermplasmListMetadata();
+		Map<Integer, GermplasmListMetadata> allListMetaData = germplasmListManager.getAllGermplasmListMetadata();
 
 		for (final GermplasmList parentList : germplasmListParent) {
 			if (this.doAddItem(parentList)) {
-				GermplasmListMetadata listMetadata = allListMetaData.get(Long.valueOf(parentList.getId()));
+				GermplasmListMetadata listMetadata = allListMetaData.get(parentList.getId());
 				final String listSize = listMetadata != null ? String.valueOf(listMetadata.getNumberOfEntries()) : "";
 				final String listOwner = listMetadata != null ? listMetadata.getOwnerName() : "";
 				this.getGermplasmListSource().addItem(
