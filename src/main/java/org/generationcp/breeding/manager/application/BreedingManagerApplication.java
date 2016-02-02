@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.dellroad.stuff.vaadin.ContextApplication;
 import org.dellroad.stuff.vaadin.SpringContextApplication;
+import org.generationcp.breeding.manager.crossingmanager.CrossingManagerListTreeComponent;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
@@ -134,6 +135,20 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 
 				manageCrossingSettings.setContent(this.manageCrossingSettingsMain);
 				this.addWindow(manageCrossingSettings);
+				return manageCrossingSettings;
+			} else if (name.startsWith("cross-")) {
+				String listIdPart = name.substring(name.indexOf("-") + 1);
+				Integer listId = Integer.parseInt(listIdPart);
+				Window manageCrossingSettings = new Window(this.messageSource.getMessage(Message.MANAGE_CROSSES));
+				manageCrossingSettings.setName(name);
+				manageCrossingSettings.setSizeUndefined();
+
+				this.manageCrossingSettingsMain = new ManageCrossingSettingsMain(manageCrossingSettings, listId);
+
+				manageCrossingSettings.setContent(this.manageCrossingSettingsMain);
+				this.addWindow(manageCrossingSettings);
+				this.manageCrossingSettingsMain.nextStep();
+
 				return manageCrossingSettings;
 			}
 		}

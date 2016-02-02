@@ -54,9 +54,17 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 
 	private final String[] wizardStepNames = new String[ManageCrossingSettingsMain.NUMBER_OF_STEPS];
 
+	private Integer selectedListId = -1;
+
 	public ManageCrossingSettingsMain(ComponentContainer parent) {
 		this.parent = parent;
 	}
+
+	public ManageCrossingSettingsMain(ComponentContainer parent, Integer listId) {
+		this.parent = parent;
+		this.selectedListId = listId;
+	}
+
 
 	@Override
 	public void updateLabels() {
@@ -96,6 +104,10 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 
 		this.detailComponent = new CrossingSettingsDetailComponent(this);
 		this.makeCrossesComponent = new CrossingManagerMakeCrossesComponent(this);
+		if (selectedListId != -1) {
+			//TODO Change the list name to the actual name
+			this.makeCrossesComponent.getSelectParentsComponent().createListDetailsTab(selectedListId, "testChangeMeLater");
+		}
 
 		this.tabSheet.addTab(this.detailComponent, this.wizardStepNames[0]);
 		this.tabSheet.addTab(this.makeCrossesComponent, this.wizardStepNames[1]);
@@ -151,7 +163,10 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 
 		int step = this.wizardDisplay.nextStep();
 		this.showNextWizardStep(step);
-		this.getWindow().setScrollTop(0);
+		if (this.getWindow() != null) {
+			this.getWindow().setScrollTop(0);
+		}
+
 	}
 
 	public void backStep() {
