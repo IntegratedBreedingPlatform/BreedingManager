@@ -13,6 +13,7 @@ import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
 import org.generationcp.commons.vaadin.actions.UpdateComponentLabelsAction;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,11 +40,16 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 	public static final String LIST_MANAGER_WITH_OPEN_LIST_WINDOW_NAME = "listmanager-";
 	public static final String LIST_MANAGER_SIDEBYSIDE = "list-manager-sidebyside";
 	public static final String MANAGE_SETTINGS_CROSSING_MANAGER = "crosses-settings";
+	public static final String NAVIGATION_FROM_NURSERY_PREFIX = "cross-";
+	public static final String ID_PREFIX = "-";
 
 	private Window window;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
+
+	@Autowired
+	private GermplasmListManager germplasmListManager;
 
 	private UpdateComponentLabelsAction messageSourceListener;
 
@@ -53,16 +59,16 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 	private ManageCrossingSettingsMain manageCrossingSettingsMain;
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) {
+	public void setApplicationContext(final ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
 	}
 
-	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 
 	@Override
-	public void initSpringApplication(ConfigurableWebApplicationContext arg0) {
+	public void initSpringApplication(final ConfigurableWebApplicationContext arg0) {
 
 		this.messageSourceListener = new UpdateComponentLabelsAction(this);
 		this.messageSource.addListener(this.messageSourceListener);
@@ -77,12 +83,12 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 	}
 
 	@Override
-	public Window getWindow(String name) {
+	public Window getWindow(final String name) {
 		// dynamically create other application-level windows which is associated with specific URLs
 		// these windows are the jumping on points to parts of the application
 		if (super.getWindow(name) == null) {
 			if (name.equals(BreedingManagerApplication.GERMPLASM_IMPORT_WINDOW_NAME)) {
-				Window germplasmImportWindow = new Window(this.messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
+				final Window germplasmImportWindow = new Window(this.messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
 				germplasmImportWindow.setName(BreedingManagerApplication.GERMPLASM_IMPORT_WINDOW_NAME);
 				germplasmImportWindow.setSizeUndefined();
 				germplasmImportWindow.setContent(new GermplasmImportMain(germplasmImportWindow, false));
@@ -90,7 +96,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 				return germplasmImportWindow;
 
 			} else if (name.equals(BreedingManagerApplication.GERMPLASM_IMPORT_WINDOW_NAME_POPUP)) {
-				Window germplasmImportWindow = new Window(this.messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
+				final Window germplasmImportWindow = new Window(this.messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
 				germplasmImportWindow.setName(BreedingManagerApplication.GERMPLASM_IMPORT_WINDOW_NAME_POPUP);
 				germplasmImportWindow.setSizeUndefined();
 				germplasmImportWindow.setContent(new GermplasmImportMain(germplasmImportWindow, false, true));
@@ -98,16 +104,16 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 				return germplasmImportWindow;
 
 			} else if (name.equals(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)) {
-				Window listManagerWindow = this.instantiateListManagerWindow(name);
+				final Window listManagerWindow = this.instantiateListManagerWindow(name);
 				this.addWindow(listManagerWindow);
 
 				return listManagerWindow;
 
 			} else if (name.startsWith(BreedingManagerApplication.LIST_MANAGER_WITH_OPEN_LIST_WINDOW_NAME)) {
-				String listIdPart = name.substring(name.indexOf("-") + 1);
+				String listIdPart = name.substring(name.indexOf(ID_PREFIX) + 1);
 				try {
-					Integer listId = Integer.parseInt(listIdPart);
-					Window listManagerWindow = new Window(this.messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
+					final Integer listId = Integer.parseInt(listIdPart);
+					final Window listManagerWindow = new Window(this.messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
 					listManagerWindow.setName(name);
 					listManagerWindow.setSizeFull();
 
@@ -117,16 +123,12 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 					this.addWindow(listManagerWindow);
 
 					return listManagerWindow;
-				} catch (NumberFormatException ex) {
-					Window emptyGermplasmListDetailsWindow = new Window(this.messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
-					emptyGermplasmListDetailsWindow.setSizeUndefined();
-					emptyGermplasmListDetailsWindow.addComponent(new Label(this.messageSource.getMessage(Message.INVALID_LIST_ID)));
-					this.addWindow(emptyGermplasmListDetailsWindow);
-					return emptyGermplasmListDetailsWindow;
+				} catch (final NumberFormatException ex) {
+					return getEmptyWindowWithErrorMessage();
 				}
 
 			} else if (name.equals(BreedingManagerApplication.CROSSING_MANAGER_WINDOW_NAME)) {
-				Window manageCrossingSettings = new Window(this.messageSource.getMessage(Message.MANAGE_CROSSES));
+				final Window manageCrossingSettings = new Window(this.messageSource.getMessage(Message.MANAGE_CROSSES));
 				manageCrossingSettings.setName(BreedingManagerApplication.CROSSING_MANAGER_WINDOW_NAME);
 				manageCrossingSettings.setSizeUndefined();
 
@@ -135,14 +137,55 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 				manageCrossingSettings.setContent(this.manageCrossingSettingsMain);
 				this.addWindow(manageCrossingSettings);
 				return manageCrossingSettings;
+			} else if (name.startsWith(NAVIGATION_FROM_NURSERY_PREFIX)) {
+				final Window manageCrossingSettings = new Window(this.messageSource.getMessage(Message.MANAGE_CROSSES));
+				try {
+					final String listIdPart = name.substring(name.indexOf(ID_PREFIX) + 1);
+					final Integer listId = Integer.parseInt(listIdPart);
+					manageCrossingSettings.setName(name);
+					manageCrossingSettings.setSizeUndefined();
+
+					if (listId != -1) {
+						final GermplasmList germplasmList = germplasmListManager.getGermplasmListById(listId);
+						this.manageCrossingSettingsMain = new ManageCrossingSettingsMain(manageCrossingSettings, germplasmList);
+						manageCrossingSettings.setContent(this.manageCrossingSettingsMain);
+						this.addWindow(manageCrossingSettings);
+						this.manageCrossingSettingsMain.nextStep();
+					} else {
+						 return getWindowWithErrorMessage(manageCrossingSettings);
+					}
+
+					return manageCrossingSettings;
+				} catch (final NumberFormatException nfe) {
+					return getWindowWithErrorMessage(manageCrossingSettings);
+				}
 			}
 		}
 
 		return super.getWindow(name);
 	}
 
-	private Window instantiateListManagerWindow(String name) {
-		Window listManagerWindow = new Window(this.messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
+	private Window getWindowWithErrorMessage(final Window manageCrossingSettings) {
+		this.manageCrossingSettingsMain = new ManageCrossingSettingsMain(manageCrossingSettings);
+		manageCrossingSettings.setContent(this.manageCrossingSettingsMain);
+		this.addWindow(manageCrossingSettings);
+		this.manageCrossingSettingsMain.nextStep();
+		MessageNotifier.showWarning(this.getWindow(manageCrossingSettings.getName()),
+				this.messageSource.getMessage(Message.ERROR_WITH_REQUEST_PARAMETERS),
+				this.messageSource.getMessage(Message.ERROR_WRONG_GRRMPLASM_LIST_ID));
+		return manageCrossingSettings;
+	}
+
+	protected Window getEmptyWindowWithErrorMessage() {
+		final Window emptyGermplasmListDetailsWindow = new Window(this.messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
+		emptyGermplasmListDetailsWindow.setSizeUndefined();
+		emptyGermplasmListDetailsWindow.addComponent(new Label(this.messageSource.getMessage(Message.INVALID_LIST_ID)));
+		this.addWindow(emptyGermplasmListDetailsWindow);
+		return emptyGermplasmListDetailsWindow;
+	}
+
+	private Window instantiateListManagerWindow(final String name) {
+		final Window listManagerWindow = new Window(this.messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
 		listManagerWindow.setName(name);
 		listManagerWindow.setSizeFull();
 
@@ -156,7 +199,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 	 * Override terminalError() to handle terminal errors, to avoid showing the stack trace in the application
 	 */
 	@Override
-	public void terminalError(Terminal.ErrorEvent event) {
+	public void terminalError(final Terminal.ErrorEvent event) {
 		BreedingManagerApplication.LOG.error("An unchecked exception occurred: ", event.getThrowable());
 		event.getThrowable().printStackTrace();
 		// Some custom behaviour.
@@ -181,7 +224,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 	}
 
 	@Override
-	protected void doOnRequestStart(HttpServletRequest request, HttpServletResponse response) {
+	protected void doOnRequestStart(final HttpServletRequest request, final HttpServletResponse response) {
 		super.doOnRequestStart(request, response);
 		BreedingManagerApplication.LOG.trace("Request started " + request.getRequestURI() + "?" + request.getQueryString());
 		synchronized (this) {
@@ -190,7 +233,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 	}
 
 	@Override
-	protected void doOnRequestEnd(HttpServletRequest request, HttpServletResponse response) {
+	protected void doOnRequestEnd(final HttpServletRequest request, final HttpServletResponse response) {
 		super.doOnRequestEnd(request, response);
 		BreedingManagerApplication.LOG.trace("Request ended " + request.getRequestURI() + "?" + request.getQueryString());
 
@@ -215,13 +258,13 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 	}
 
 	public void refreshCrossingManagerTree() {
-		ManageCrossingSettingsMain manageCrossSettingsMain = this.getManageCrossingSettingsMain();
+		final ManageCrossingSettingsMain manageCrossSettingsMain = this.getManageCrossingSettingsMain();
 		if (manageCrossSettingsMain != null) {
 			manageCrossSettingsMain.getMakeCrossesComponent().getSelectParentsComponent().getListTreeComponent().refreshComponent();
 		}
 	}
 
-	public void updateUIForDeletedList(GermplasmList germplasmList) {
+	public void updateUIForDeletedList(final GermplasmList germplasmList) {
 		if (this.getListManagerMain() != null) {
 			this.getListManagerMain().updateUIForDeletedList(germplasmList);
 		}
@@ -232,4 +275,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 		}
 	}
 
+	public void setGermplasmListManager(final GermplasmListManager germplasmListManager) {
+		this.germplasmListManager = germplasmListManager;
+	}
 }
