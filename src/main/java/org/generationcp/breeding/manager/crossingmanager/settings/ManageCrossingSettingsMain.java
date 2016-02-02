@@ -54,17 +54,16 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 
 	private final String[] wizardStepNames = new String[ManageCrossingSettingsMain.NUMBER_OF_STEPS];
 
-	private Integer selectedListId = -1;
+	private GermplasmList germplasmList = null;
 
 	public ManageCrossingSettingsMain(ComponentContainer parent) {
 		this.parent = parent;
 	}
 
-	public ManageCrossingSettingsMain(ComponentContainer parent, Integer listId) {
+	public ManageCrossingSettingsMain(ComponentContainer parent, GermplasmList germplasmList) {
 		this.parent = parent;
-		this.selectedListId = listId;
+		this.germplasmList = germplasmList;
 	}
-
 
 	@Override
 	public void updateLabels() {
@@ -104,9 +103,9 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 
 		this.detailComponent = new CrossingSettingsDetailComponent(this);
 		this.makeCrossesComponent = new CrossingManagerMakeCrossesComponent(this);
-		if (selectedListId != -1) {
-			//TODO Change the list name to the actual name
-			this.makeCrossesComponent.getSelectParentsComponent().createListDetailsTab(selectedListId, "testChangeMeLater");
+		if (this.germplasmList != null) {
+			this.makeCrossesComponent.getSelectParentsComponent().createListDetailsTab(this.germplasmList.getId(),
+					this.germplasmList.getName());
 		}
 
 		this.tabSheet.addTab(this.detailComponent, this.wizardStepNames[0]);

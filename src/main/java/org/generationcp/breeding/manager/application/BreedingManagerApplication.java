@@ -14,6 +14,7 @@ import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
 import org.generationcp.commons.vaadin.actions.UpdateComponentLabelsAction;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +46,9 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
+
+	@Autowired
+	private GermplasmListManager germplasmListManager;
 
 	private UpdateComponentLabelsAction messageSourceListener;
 
@@ -143,7 +147,13 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 				manageCrossingSettings.setName(name);
 				manageCrossingSettings.setSizeUndefined();
 
-				this.manageCrossingSettingsMain = new ManageCrossingSettingsMain(manageCrossingSettings, listId);
+				if (listId != -1) {
+					final GermplasmList germplasmList = germplasmListManager.getGermplasmListById(listId);
+					this.manageCrossingSettingsMain = new ManageCrossingSettingsMain(manageCrossingSettings, germplasmList);
+				} else {
+					//TODO display error?
+					this.manageCrossingSettingsMain = new ManageCrossingSettingsMain(manageCrossingSettings);
+				}
 
 				manageCrossingSettings.setContent(this.manageCrossingSettingsMain);
 				this.addWindow(manageCrossingSettings);
@@ -247,4 +257,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 		}
 	}
 
+	public void setGermplasmListManager(GermplasmListManager germplasmListManager) {
+		this.germplasmListManager = germplasmListManager;
+	}
 }
