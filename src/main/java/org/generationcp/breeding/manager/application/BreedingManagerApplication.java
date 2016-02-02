@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.dellroad.stuff.vaadin.ContextApplication;
 import org.dellroad.stuff.vaadin.SpringContextApplication;
-import org.generationcp.breeding.manager.crossingmanager.CrossingManagerListTreeComponent;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
@@ -41,6 +40,8 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 	public static final String LIST_MANAGER_WITH_OPEN_LIST_WINDOW_NAME = "listmanager-";
 	public static final String LIST_MANAGER_SIDEBYSIDE = "list-manager-sidebyside";
 	public static final String MANAGE_SETTINGS_CROSSING_MANAGER = "crosses-settings";
+	public static final String NAVIGATION_FROM_NURSERY_PREFIX = "cross-";
+	public static final String ID_PREFIX = "-";
 
 	private Window window;
 
@@ -109,10 +110,10 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 				return listManagerWindow;
 
 			} else if (name.startsWith(BreedingManagerApplication.LIST_MANAGER_WITH_OPEN_LIST_WINDOW_NAME)) {
-				String listIdPart = name.substring(name.indexOf("-") + 1);
+				String listIdPart = name.substring(name.indexOf(ID_PREFIX) + 1);
 				try {
-					Integer listId = Integer.parseInt(listIdPart);
-					Window listManagerWindow = new Window(this.messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
+					final Integer listId = Integer.parseInt(listIdPart);
+					final Window listManagerWindow = new Window(this.messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
 					listManagerWindow.setName(name);
 					listManagerWindow.setSizeFull();
 
@@ -122,12 +123,8 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 					this.addWindow(listManagerWindow);
 
 					return listManagerWindow;
-				} catch (NumberFormatException ex) {
-					Window emptyGermplasmListDetailsWindow = new Window(this.messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
-					emptyGermplasmListDetailsWindow.setSizeUndefined();
-					emptyGermplasmListDetailsWindow.addComponent(new Label(this.messageSource.getMessage(Message.INVALID_LIST_ID)));
-					this.addWindow(emptyGermplasmListDetailsWindow);
-					return emptyGermplasmListDetailsWindow;
+				} catch (final NumberFormatException ex) {
+					return getWindowWIthErrorMessage();
 				}
 
 			} else if (name.equals(BreedingManagerApplication.CROSSING_MANAGER_WINDOW_NAME)) {
@@ -140,30 +137,41 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 				manageCrossingSettings.setContent(this.manageCrossingSettingsMain);
 				this.addWindow(manageCrossingSettings);
 				return manageCrossingSettings;
-			} else if (name.startsWith("cross-")) {
-				String listIdPart = name.substring(name.indexOf("-") + 1);
-				Integer listId = Integer.parseInt(listIdPart);
-				Window manageCrossingSettings = new Window(this.messageSource.getMessage(Message.MANAGE_CROSSES));
-				manageCrossingSettings.setName(name);
-				manageCrossingSettings.setSizeUndefined();
+			} else if (name.startsWith(NAVIGATION_FROM_NURSERY_PREFIX)) {
+				try {
+					final String listIdPart = name.substring(name.indexOf(ID_PREFIX) + 1);
+					final Integer listId = Integer.parseInt(listIdPart);
+					final Window manageCrossingSettings = new Window(this.messageSource.getMessage(Message.MANAGE_CROSSES));
+					manageCrossingSettings.setName(name);
+					manageCrossingSettings.setSizeUndefined();
 
-				if (listId != -1) {
-					final GermplasmList germplasmList = germplasmListManager.getGermplasmListById(listId);
-					this.manageCrossingSettingsMain = new ManageCrossingSettingsMain(manageCrossingSettings, germplasmList);
-				} else {
-					//TODO display error?
-					this.manageCrossingSettingsMain = new ManageCrossingSettingsMain(manageCrossingSettings);
+					if (listId != -1) {
+						final GermplasmList germplasmList = germplasmListManager.getGermplasmListById(listId);
+						this.manageCrossingSettingsMain = new ManageCrossingSettingsMain(manageCrossingSettings, germplasmList);
+					} else {
+						return this.getWindowWIthErrorMessage();
+					}
+
+					manageCrossingSettings.setContent(this.manageCrossingSettingsMain);
+					this.addWindow(manageCrossingSettings);
+					this.manageCrossingSettingsMain.nextStep();
+
+					return manageCrossingSettings;
+				} catch (final NumberFormatException nfe) {
+					return this.getWindowWIthErrorMessage();
 				}
-
-				manageCrossingSettings.setContent(this.manageCrossingSettingsMain);
-				this.addWindow(manageCrossingSettings);
-				this.manageCrossingSettingsMain.nextStep();
-
-				return manageCrossingSettings;
 			}
 		}
 
 		return super.getWindow(name);
+	}
+
+	protected Window getWindowWIthErrorMessage() {
+		Window emptyGermplasmListDetailsWindow = new Window(this.messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
+		emptyGermplasmListDetailsWindow.setSizeUndefined();
+		emptyGermplasmListDetailsWindow.addComponent(new Label(this.messageSource.getMessage(Message.INVALID_LIST_ID)));
+		this.addWindow(emptyGermplasmListDetailsWindow);
+		return emptyGermplasmListDetailsWindow;
 	}
 
 	private Window instantiateListManagerWindow(String name) {
