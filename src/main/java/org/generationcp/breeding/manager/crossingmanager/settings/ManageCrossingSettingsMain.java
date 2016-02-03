@@ -2,6 +2,7 @@
 package org.generationcp.breeding.manager.crossingmanager.settings;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
+import org.generationcp.breeding.manager.application.CrossingManagerParameterHandler;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainer;
@@ -24,12 +25,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.Component;
-import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 @Configurable
 public class ManageCrossingSettingsMain extends VerticalLayout implements InitializingBean, InternationalizableComponent,
@@ -37,6 +38,7 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 
 	private static final long serialVersionUID = 1L;
 	private static final int NUMBER_OF_STEPS = 2;
+	private final CrossingManagerParameterHandler crossingManagerParameterHandler;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -50,18 +52,20 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 	private TabSheet tabSheet;
 
 	private CrossesMade crossesMade = new CrossesMade();
-	private final ComponentContainer parent;
+	private final Window parent;
 
 	private final String[] wizardStepNames = new String[ManageCrossingSettingsMain.NUMBER_OF_STEPS];
 
 	private GermplasmList germplasmList = null;
 
-	public ManageCrossingSettingsMain(ComponentContainer parent) {
+	public ManageCrossingSettingsMain(final Window parent) {
 		this.parent = parent;
+		this.crossingManagerParameterHandler = new CrossingManagerParameterHandler();
+		this.parent.addParameterHandler(this.crossingManagerParameterHandler);
 	}
 
-	public ManageCrossingSettingsMain(ComponentContainer parent, GermplasmList germplasmList) {
-		this.parent = parent;
+	public ManageCrossingSettingsMain(final Window parent, final GermplasmList germplasmList) {
+		this(parent);
 		this.germplasmList = germplasmList;
 	}
 

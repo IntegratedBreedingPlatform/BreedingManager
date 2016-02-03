@@ -1,43 +1,44 @@
 
 package org.generationcp.breeding.manager.crossingmanager.settings;
 
+import java.util.Iterator;
+
 import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 public class ManageCrossingSettingsMainTest {
 
-	private VerticalLayout parent;
+	private Window parent;
 	private ManageCrossingSettingsMain crossingSettingsMain;
 
 	@Before
 	public void setUp() {
-		this.parent = new VerticalLayout();
+		this.parent = new Window();
 
 		this.crossingSettingsMain = new ManageCrossingSettingsMain(this.parent);
-		this.parent.addComponent(this.crossingSettingsMain);
+		this.parent.setContent(this.crossingSettingsMain);
 	}
 
 	@Test
 	public void testReset() {
-		int index;
-
-		index = this.parent.getComponentIndex(this.crossingSettingsMain);
-		ManageCrossingSettingsMain crossingSettingsMainBeforeReset = (ManageCrossingSettingsMain) this.parent.getComponent(index);
+		final ManageCrossingSettingsMain manageCrossingSettingsMainBeforeReset = this.crossingSettingsMain;
 
 		this.crossingSettingsMain.reset();
 
-		Assert.assertTrue("Expecting the parent layout contains only 1 component, ManagerCrossingSettingsMain",
-				this.parent.getComponentCount() == 1);
-
-		index = this.parent.getComponentIndex(this.parent.getComponent(0));
-		ManageCrossingSettingsMain crossingSettingsMainAfterReset = (ManageCrossingSettingsMain) this.parent.getComponent(index);
+		final Iterator<Component> componentIterator = this.parent.getContent().getComponentIterator();
+		Assert.assertTrue("Expecting the parent layout contains only 1 component, ManagerCrossingSettingsMain", componentIterator.hasNext());
+		componentIterator.next();
+		Assert.assertFalse("Expecting the parent layout contains only 1 component, ManagerCrossingSettingsMain",
+				componentIterator.hasNext());
 
 		Assert.assertNotSame("Expected two different ManagerCrossingSettingsMain instances here but didn't",
-				crossingSettingsMainBeforeReset, crossingSettingsMainAfterReset);
+				manageCrossingSettingsMainBeforeReset, (ManageCrossingSettingsMain) this.parent.getContent().getComponentIterator().next());
 	}
 
 }
