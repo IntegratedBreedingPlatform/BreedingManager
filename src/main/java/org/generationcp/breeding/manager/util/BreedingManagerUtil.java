@@ -407,7 +407,6 @@ public class BreedingManagerUtil {
 	public static HttpServletRequest getApplicationRequest() {
 		HttpServletRequest req = null;
 		try {
-			;
 			BreedingManagerApplication.get();
 			req = ContextApplication.currentRequest();
 		} catch (IllegalStateException e) {

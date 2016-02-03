@@ -253,6 +253,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		layoutButtonArea.addComponent(this.nextButton);
 
 		// show the link to navigate back to the Crossing Manager only if we came from the Nursery Manager previously
+		// TODO Wright test  -- HttppRequest currentRequest = BreedingManagerUtil.getApplicationRequest();
 		if (BreedingManagerUtil.getApplicationRequest().getPathInfo().contains(BreedingManagerApplication.NAVIGATION_FROM_NURSERY_PREFIX)) {
 			final String nurseryId = BreedingManagerUtil.getApplicationRequest()
 					.getParameterValues(BreedingManagerApplication.REQ_PARAM_NURSERY_ID).length > 0 ?
