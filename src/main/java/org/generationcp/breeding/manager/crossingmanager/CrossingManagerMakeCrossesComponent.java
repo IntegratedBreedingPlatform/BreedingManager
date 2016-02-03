@@ -17,6 +17,7 @@ import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSett
 import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDisplay.StepChangeListener;
 import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialog;
 import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialogSource;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -31,10 +32,12 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
@@ -246,6 +249,16 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		layoutButtonArea.setSpacing(true);
 		layoutButtonArea.addComponent(this.backButton);
 		layoutButtonArea.addComponent(this.nextButton);
+
+		// TODO show the link only if we came from the Nursery Manager
+		final Link backToNurseryLink = new Link("",
+				new ExternalResource("http://" + BreedingManagerUtil.getApplicationRequest().getServerName() + ":"
+						+ BreedingManagerUtil.getApplicationRequest().getServerPort() + "/Fieldbook/NurseryManager/editNursery/"
+						+ BreedingManagerUtil.getApplicationRequest().getParameterValues("nurseryid")[0]));
+		backToNurseryLink.setData("nursery back button");
+		this.messageSource.setCaption(backToNurseryLink, Message.BACK_TO_NURSERY);
+		layoutButtonArea.addComponent(backToNurseryLink);
+
 
 		this.addComponent(upperLayout);
 		this.addComponent(lowerLayout);

@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.vaadin.ui.Component;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 public class ManageCrossingSettingsMainTest {

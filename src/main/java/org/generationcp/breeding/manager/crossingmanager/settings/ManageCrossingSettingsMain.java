@@ -2,7 +2,6 @@
 package org.generationcp.breeding.manager.crossingmanager.settings;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
-import org.generationcp.breeding.manager.application.CrossingManagerParameterHandler;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainer;
@@ -38,7 +37,6 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 
 	private static final long serialVersionUID = 1L;
 	private static final int NUMBER_OF_STEPS = 2;
-	private final CrossingManagerParameterHandler crossingManagerParameterHandler;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -60,8 +58,6 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 
 	public ManageCrossingSettingsMain(final Window parent) {
 		this.parent = parent;
-		this.crossingManagerParameterHandler = new CrossingManagerParameterHandler();
-		this.parent.addParameterHandler(this.crossingManagerParameterHandler);
 	}
 
 	public ManageCrossingSettingsMain(final Window parent, final GermplasmList germplasmList) {
