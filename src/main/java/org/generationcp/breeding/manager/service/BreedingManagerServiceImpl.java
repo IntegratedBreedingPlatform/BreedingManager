@@ -43,15 +43,15 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 	private ContextUtil contextUtil;
 
 	@Override
-	public String getOwnerListName(Integer userId) {
-		String username = "";
+	public String getOwnerListName(final Integer userId) {
+		final String username = "";
 
 		try {
 			if (userId != null) {
 				return this.computeListName(this.userDataManager.getUserById(userId));
 			}
 
-		} catch (MiddlewareQueryException ex) {
+		} catch (final MiddlewareQueryException ex) {
 			BreedingManagerServiceImpl.LOG.error("Error with getting list owner name of user with id: " + userId, ex);
 			throw ex;
 		}
@@ -59,11 +59,11 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 		return username;
 	}
 
-	protected String computeListName(User user) {
+	protected String computeListName(final User user) {
 		String userName = "";
 		if (user != null) {
-			int personId = user.getPersonid();
-			Person p = this.userDataManager.getPersonById(personId);
+			final int personId = user.getPersonid();
+			final Person p = this.userDataManager.getPersonById(personId);
 
 			if (p != null) {
 				userName = p.getFirstName() + " " + p.getMiddleName() + " " + p.getLastName();
@@ -78,21 +78,21 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 	@Override
 	public String getDefaultOwnerListName() {
 		try {
-			int currentUser = this.contextUtil.getCurrentUserLocalId();
+			final int currentUser = this.contextUtil.getCurrentUserLocalId();
 
 			return this.computeListName(this.userDataManager.getUserById(currentUser));
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			BreedingManagerServiceImpl.LOG.error("Error with getting list owner name of default user ", e);
 			throw e;
 		}
 	}
 
 	@Override
-	public List<Germplasm> doGermplasmSearch(String q, Operation o, boolean includeParents, boolean withInventoryOnly)
-			throws BreedingManagerSearchException {
+	public List<Germplasm> doGermplasmSearch(final String q, final Operation o, final boolean includeParents,
+			final boolean withInventoryOnly) throws BreedingManagerSearchException {
 		this.validateEmptySearchString(q);
 		try {
-			List<Germplasm> results = this.germplasmDataManager.searchForGermplasm(q, o, includeParents, withInventoryOnly);
+			final List<Germplasm> results = this.germplasmDataManager.searchForGermplasm(q, o, includeParents, withInventoryOnly);
 
 			if (null == results || results.isEmpty()) {
 				throw new BreedingManagerSearchException(Message.NO_SEARCH_RESULTS);
@@ -100,18 +100,19 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 
 			return results;
 
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			BreedingManagerServiceImpl.LOG.error(e.getMessage(), e);
 			throw new BreedingManagerSearchException(Message.ERROR_DATABASE, e);
 		}
 	}
 
 	@Override
-	public List<GermplasmList> doGermplasmListSearch(String q, Operation o) throws BreedingManagerSearchException {
+	public List<GermplasmList> doGermplasmListSearch(final String q, final Operation o) throws BreedingManagerSearchException {
 		this.validateEmptySearchString(q);
 
 		try {
-			List<GermplasmList> results = this.germplasmListManager.searchForGermplasmList(q, o);
+			final List<GermplasmList> results =
+					this.germplasmListManager.searchForGermplasmList(q, this.contextUtil.getCurrentProgramUUID(), o);
 
 			if (null == results || results.isEmpty()) {
 				throw new BreedingManagerSearchException(Message.NO_SEARCH_RESULTS);
@@ -119,13 +120,13 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 
 			return results;
 
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			BreedingManagerServiceImpl.LOG.error(e.getMessage(), e);
 			throw new BreedingManagerSearchException(Message.ERROR_DATABASE, e);
 		}
 	}
 
-	protected void validateEmptySearchString(String q) throws BreedingManagerSearchException {
+	protected void validateEmptySearchString(final String q) throws BreedingManagerSearchException {
 		if ("".equals(q.replaceAll(" ", "").trim())) {
 			throw new BreedingManagerSearchException(Message.SEARCH_QUERY_CANNOT_BE_EMPTY);
 		}
@@ -135,7 +136,7 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 		return this.germplasmDataManager;
 	}
 
-	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+	public void setGermplasmDataManager(final GermplasmDataManager germplasmDataManager) {
 		this.germplasmDataManager = germplasmDataManager;
 	}
 
