@@ -42,6 +42,9 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 	public static final String MANAGE_SETTINGS_CROSSING_MANAGER = "crosses-settings";
 	public static final String NAVIGATION_FROM_NURSERY_PREFIX = "cross-";
 	public static final String ID_PREFIX = "-";
+	public static final String REQ_PARAM_NURSERY_ID = "nurseryid";
+	public static final String PATH_TO_NURSERY = "/Fieldbook/NurseryManager/";
+	public static final String PATH_TO_EDIT_NURSERY = "/Fieldbook/NurseryManager/editNursery/";
 
 	private Window window;
 
