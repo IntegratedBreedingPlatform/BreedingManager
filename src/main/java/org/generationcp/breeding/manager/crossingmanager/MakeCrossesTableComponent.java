@@ -587,6 +587,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 
 			// enable NEXT button if all lists saved
 			this.makeCrossesMain.toggleNextButton();
+			this.makeCrossesMain.updateNurseryLink(this.crossList.getId());
 
 		} catch (final MiddlewareQueryException e) {
 			MakeCrossesTableComponent.LOG.error(e.getMessage(), e);

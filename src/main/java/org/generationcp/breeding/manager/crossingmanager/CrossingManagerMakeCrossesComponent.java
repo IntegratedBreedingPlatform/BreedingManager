@@ -76,6 +76,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	// marks if there are unsaved changes in List from ListSelectorComponent and ListBuilderComponent
 	private boolean hasChanges;
 	private UnsavedChangesConfirmDialog unsavedChangesDialog;
+	private Link nurseryLink;
 
 	public CrossingManagerMakeCrossesComponent(final ManageCrossingSettingsMain manageCrossingSettingsMain) {
 		this.source = manageCrossingSettingsMain;
@@ -171,6 +172,16 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		this.nextButton.setEnabled(this.isAllListsSaved());
 	}
 
+	public void updateNurseryLink(final Integer id) {
+		if( null == id) {
+			return;
+		}
+		final String oldNurseryLinkUrl = ((ExternalResource)this.nurseryLink.getResource()).getURL();
+		final ExternalResource urlToNursery = new ExternalResource(oldNurseryLinkUrl + "?" + BreedingManagerApplication
+				.REQ_PARAM_CROSSES_LIST_ID + "=" + id);
+		this.nurseryLink.setResource(urlToNursery);
+	}
+
 	private boolean isAllListsSaved() {
 		return this.parentsComponent.getFemaleList() != null && this.parentsComponent.getMaleList() != null
 				&& this.crossesTableComponent.getCrossList() != null;
@@ -258,7 +269,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		final boolean isNavigatedFromNursery = BreedingManagerUtil.getApplicationRequest().getPathInfo().contains(BreedingManagerApplication
 				.NAVIGATION_FROM_NURSERY_PREFIX);
 		if (isNavigatedFromNursery) {
-			layoutButtonArea.addComponent(this.constructLinkToNursery(BreedingManagerUtil.getApplicationRequest()));
+			this.nurseryLink = this.constructLinkToNursery(BreedingManagerUtil.getApplicationRequest());
+			layoutButtonArea.addComponent(this.nurseryLink);
 		}
 
 		this.addComponent(upperLayout);
