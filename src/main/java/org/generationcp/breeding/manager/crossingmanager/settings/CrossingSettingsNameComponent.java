@@ -169,7 +169,7 @@ public class CrossingSettingsNameComponent extends CssLayout implements Breeding
 			private static final long serialVersionUID = -8395381042668695941L;
 
 			@Override
-			public void valueChange(ValueChangeEvent event) {
+			public void valueChange(final ValueChangeEvent event) {
 				CrossingSettingsNameComponent.this.updateDesignationExample();
 			}
 		});
@@ -235,7 +235,7 @@ public class CrossingSettingsNameComponent extends CssLayout implements Breeding
 		return crossNameSettingPojo;
 	}
 
-	public void setFields(CrossNameSetting crossNameSetting) {
+	public void setFields(final CrossNameSetting crossNameSetting) {
 
 		this.crossNamePrefix.setValue(crossNameSetting.getPrefix());
 
@@ -305,7 +305,7 @@ public class CrossingSettingsNameComponent extends CssLayout implements Breeding
 		private static final long serialVersionUID = -8395381042668695941L;
 
 		@Override
-		public void valueChange(ValueChangeEvent event) {
+		public void valueChange(final ValueChangeEvent event) {
 			CrossingSettingsNameComponent.this.generateNextNameAction();
 		}
 	}
@@ -316,7 +316,7 @@ public class CrossingSettingsNameComponent extends CssLayout implements Breeding
 				final GenerateCrossNameAction generateAction = new GenerateCrossNameAction();
 				this.updateNextNameInSequence(generateAction.getNextNameInSequence(this.getCrossNameSettingObject()));
 
-			} catch (MiddlewareQueryException e) {
+			} catch (final MiddlewareQueryException e) {
 				CrossingSettingsNameComponent.LOG.error(e.toString() + "\n" + e.getStackTrace());
 				LOG.error(e.getMessage(), e);
 				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
