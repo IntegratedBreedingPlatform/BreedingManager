@@ -65,7 +65,7 @@ public class SaveListButtonClickListenerTest {
 
 		Mockito.when(this.contextUtil.getCurrentUserLocalId()).thenReturn(SaveListButtonClickListenerTest.DUMMY_ID);
 
-		SaveListButtonClickListener _listener = new SaveListButtonClickListener(this.source, this.listDataTable, this.messageSource);
+		final SaveListButtonClickListener _listener = new SaveListButtonClickListener(this.source, this.listDataTable, this.messageSource);
 
 		FieldUtils.writeDeclaredField(_listener, "contextUtil", this.contextUtil, true);
 
@@ -143,7 +143,6 @@ public class SaveListButtonClickListenerTest {
 	public void testValidateListDetailsForDateThatIsNull() {
 		this.initializeGermplasmList();
 		this.germplasmList.setDate(null);
-		;
 		Assert.assertFalse("Expected to invalidate for germplasm list without date.",
 				this.saveListener.validateListDetails(this.germplasmList, null));
 
@@ -151,7 +150,7 @@ public class SaveListButtonClickListenerTest {
 
 	@Test
 	public void testCreateContainerPropertyOfAddedColumnToTempTable() {
-		Table newTable = new Table();
+		final Table newTable = new Table();
 		Integer noOfColumnsAdded = 0;
 
 		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "PREFERRED ID");
