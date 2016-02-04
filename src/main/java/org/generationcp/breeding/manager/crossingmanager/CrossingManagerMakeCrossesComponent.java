@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.math.NumberUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -253,25 +255,10 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		layoutButtonArea.addComponent(this.nextButton);
 
 		// show the link to navigate back to the Crossing Manager only if we came from the Nursery Manager previously
-		// TODO Wright test  -- HttppRequest currentRequest = BreedingManagerUtil.getApplicationRequest();
-		if (BreedingManagerUtil.getApplicationRequest().getPathInfo().contains(BreedingManagerApplication.NAVIGATION_FROM_NURSERY_PREFIX)) {
-			final String nurseryId = BreedingManagerUtil.getApplicationRequest()
-					.getParameterValues(BreedingManagerApplication.REQ_PARAM_NURSERY_ID).length > 0 ?
-					BreedingManagerUtil.getApplicationRequest().getParameterValues(BreedingManagerApplication.REQ_PARAM_NURSERY_ID)[0] : "";
-			final ExternalResource urlToNursery;
-			if (nurseryId.isEmpty() || !NumberUtils.isDigits(nurseryId)) {
-				urlToNursery = new ExternalResource(
-						"http://" + BreedingManagerUtil.getApplicationRequest().getServerName() + ":" + BreedingManagerUtil
-								.getApplicationRequest().getServerPort() + BreedingManagerApplication.PATH_TO_NURSERY);
-			} else {
-				urlToNursery = new ExternalResource(
-						"http://" + BreedingManagerUtil.getApplicationRequest().getServerName() + ":" + BreedingManagerUtil
-								.getApplicationRequest().getServerPort() + BreedingManagerApplication.PATH_TO_EDIT_NURSERY + nurseryId);
-			}
-			final Link backToNurseryLink = new Link("", urlToNursery);
-			backToNurseryLink.setData("nursery back button");
-			this.messageSource.setCaption(backToNurseryLink, Message.BACK_TO_NURSERY);
-			layoutButtonArea.addComponent(backToNurseryLink);
+		final boolean isNavigatedFromNursery = BreedingManagerUtil.getApplicationRequest().getPathInfo().contains(BreedingManagerApplication
+				.NAVIGATION_FROM_NURSERY_PREFIX);
+		if (isNavigatedFromNursery) {
+			layoutButtonArea.addComponent(this.constructLinkToNursery(BreedingManagerUtil.getApplicationRequest()));
 		}
 
 		this.addComponent(upperLayout);
@@ -280,6 +267,24 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 		this.setComponentAlignment(layoutButtonArea, Alignment.MIDDLE_CENTER);
 		this.setStyleName("crosses-select-parents-tab");
+	}
+
+	protected Link constructLinkToNursery(final HttpServletRequest currentRequest) {
+		final String nurseryId = currentRequest
+				.getParameterValues(BreedingManagerApplication.REQ_PARAM_NURSERY_ID).length > 0 ?
+				currentRequest.getParameterValues(BreedingManagerApplication.REQ_PARAM_NURSERY_ID)[0] : "";
+		final ExternalResource urlToNursery;
+		if (nurseryId.isEmpty() || !NumberUtils.isDigits(nurseryId)) {
+			urlToNursery = new ExternalResource("http://" + currentRequest.getServerName() + ":" + currentRequest.getServerPort()
+					+ BreedingManagerApplication.PATH_TO_NURSERY);
+		} else {
+			urlToNursery = new ExternalResource("http://" + currentRequest.getServerName() + ":" + currentRequest.getServerPort()
+					+ BreedingManagerApplication.PATH_TO_EDIT_NURSERY + nurseryId);
+		}
+		final Link backToNurseryLink = new Link("", urlToNursery);
+		backToNurseryLink.setData("nursery back button");
+		this.messageSource.setCaption(backToNurseryLink, Message.BACK_TO_NURSERY);
+		return backToNurseryLink;
 	}
 
 	public void updateCrossesSeedSource(final String femaleListName, final String maleListName) {
