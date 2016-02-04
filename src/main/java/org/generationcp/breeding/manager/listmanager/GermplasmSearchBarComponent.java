@@ -206,6 +206,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 	public void searchButtonClickAction() {
 
 		final String q = GermplasmSearchBarComponent.this.searchField.getValue().toString();
+
 		final String searchType = (String) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
 		if (GermplasmSearchBarComponent.this.matchesContaining.equals(searchType)) {
 			ConfirmDialog.show(GermplasmSearchBarComponent.this.getWindow(),
@@ -223,9 +224,18 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 							}
 						}
 					});
-		} else {
+		} else if (this.validateIfSearchKeywordIsNotEmpty(q)) {
 			GermplasmSearchBarComponent.this.doSearch(q);
 		}
+	}
+
+	boolean validateIfSearchKeywordIsNotEmpty(final String keyword) {
+		if (keyword != null && keyword.trim().length() == 0) {
+			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.UNABLE_TO_SEARCH),
+					this.messageSource.getMessage(Message.SEARCH_KEYWORD_MUST_NOT_BE_EMPTY));
+			return false;
+		}
+		return true;
 	}
 
 	public void doSearch(final String q) {

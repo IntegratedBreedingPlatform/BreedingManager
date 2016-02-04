@@ -20,6 +20,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Window;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GermplasmSearchBarComponentTest {
@@ -100,6 +101,16 @@ public class GermplasmSearchBarComponentTest {
 		} catch (final Exception e) {
 			Assert.fail("Test fails with error : " + e.getMessage());
 		}
+	}
+
+	@Test
+	public void testValidateIfSearchKeywordIsNotEmpty() {
+		this.messageSource = Mockito.mock(SimpleResourceBundleMessageSource.class);
+		this.spyComponent.setMessageSource(this.messageSource);
+		final String keyword = "";
+		Mockito.doReturn(new Window()).when(this.spyComponent).getWindow();
+		this.spyComponent.validateIfSearchKeywordIsNotEmpty(keyword);
+		Mockito.verify(this.messageSource).getMessage(Message.SEARCH_KEYWORD_MUST_NOT_BE_EMPTY);
 	}
 
 	private String getSearchKeyword(final String query, final String searchType) {
