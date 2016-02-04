@@ -1,6 +1,7 @@
 
 package org.generationcp.breeding.manager.crossingmanager.settings;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -146,7 +147,9 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout implements 
 		this.harvestLocations = new ComboBox(this.messageSource.getMessage(Message.HARVEST_LOCATION) + ":");
 		this.harvestLocations.setNullSelectionAllowed(true);
 
-		this.harvestDateField = new HarvestDateField(2014, this.messageSource.getMessage(Message.ESTIMATED_HARVEST_DATE) + ":");
+		this.harvestDateField =
+				new HarvestDateField(Calendar.getInstance().get(Calendar.YEAR),
+						this.messageSource.getMessage(Message.ESTIMATED_HARVEST_DATE) + ":");
 
 		this.showFavouriteLocations = new CheckBox();
 		this.showFavouriteLocations.setImmediate(true);
