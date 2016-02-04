@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.ConfirmOption;
 import org.generationcp.breeding.manager.crossingmanager.actions.GenerateCrossNameAction;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -60,10 +61,6 @@ public class CrossingSettingsNameComponent extends CssLayout implements Breeding
 	private TextField generatedExampleParentage;
 
 	private OptionGroup saveParentageDesignationAsAStringGroup;
-
-	public enum AddSpaceOption {
-		YES, NO
-	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -147,20 +144,20 @@ public class CrossingSettingsNameComponent extends CssLayout implements Breeding
 		final String yes = this.messageSource.getMessage(Message.YES);
 		final String no = this.messageSource.getMessage(Message.NO);
 
-		this.addSpaceBetPrefixAndCodeOptionGroup.addItem(AddSpaceOption.YES);
-		this.addSpaceBetPrefixAndCodeOptionGroup.setItemCaption(AddSpaceOption.YES, yes);
-		this.addSpaceBetPrefixAndCodeOptionGroup.addItem(AddSpaceOption.NO);
-		this.addSpaceBetPrefixAndCodeOptionGroup.setItemCaption(AddSpaceOption.NO, no);
+		this.addSpaceBetPrefixAndCodeOptionGroup.addItem(ConfirmOption.YES);
+		this.addSpaceBetPrefixAndCodeOptionGroup.setItemCaption(ConfirmOption.YES, yes);
+		this.addSpaceBetPrefixAndCodeOptionGroup.addItem(ConfirmOption.NO);
+		this.addSpaceBetPrefixAndCodeOptionGroup.setItemCaption(ConfirmOption.NO, no);
 
-		this.addSpaceBetSuffixAndCodeOptionGroup.addItem(AddSpaceOption.YES);
-		this.addSpaceBetSuffixAndCodeOptionGroup.setItemCaption(AddSpaceOption.YES, yes);
-		this.addSpaceBetSuffixAndCodeOptionGroup.addItem(AddSpaceOption.NO);
-		this.addSpaceBetSuffixAndCodeOptionGroup.setItemCaption(AddSpaceOption.NO, no);
+		this.addSpaceBetSuffixAndCodeOptionGroup.addItem(ConfirmOption.YES);
+		this.addSpaceBetSuffixAndCodeOptionGroup.setItemCaption(ConfirmOption.YES, yes);
+		this.addSpaceBetSuffixAndCodeOptionGroup.addItem(ConfirmOption.NO);
+		this.addSpaceBetSuffixAndCodeOptionGroup.setItemCaption(ConfirmOption.NO, no);
 
-		this.saveParentageDesignationAsAStringGroup.addItem(AddSpaceOption.YES);
-		this.saveParentageDesignationAsAStringGroup.setItemCaption(AddSpaceOption.YES, yes);
-		this.saveParentageDesignationAsAStringGroup.addItem(AddSpaceOption.NO);
-		this.saveParentageDesignationAsAStringGroup.setItemCaption(AddSpaceOption.NO, no);
+		this.saveParentageDesignationAsAStringGroup.addItem(ConfirmOption.YES);
+		this.saveParentageDesignationAsAStringGroup.setItemCaption(ConfirmOption.YES, yes);
+		this.saveParentageDesignationAsAStringGroup.addItem(ConfirmOption.NO);
+		this.saveParentageDesignationAsAStringGroup.setItemCaption(ConfirmOption.NO, no);
 
 		this.setFieldsDefaultValue();
 	}
@@ -220,10 +217,10 @@ public class CrossingSettingsNameComponent extends CssLayout implements Breeding
 			suffix = null;
 		}
 
-		final boolean addSpaceBetweenPrefixAndCode = AddSpaceOption.YES.equals(this.addSpaceBetPrefixAndCodeOptionGroup.getValue());
-		final boolean addSpaceBetweenSuffixAndCode = AddSpaceOption.YES.equals(this.addSpaceBetSuffixAndCodeOptionGroup.getValue());
+		final boolean addSpaceBetweenPrefixAndCode = ConfirmOption.YES.equals(this.addSpaceBetPrefixAndCodeOptionGroup.getValue());
+		final boolean addSpaceBetweenSuffixAndCode = ConfirmOption.YES.equals(this.addSpaceBetSuffixAndCodeOptionGroup.getValue());
 		final Integer numOfDigits = this.leadingZerosSelect.getValue() == null ? null : (Integer) this.leadingZerosSelect.getValue();
-		final boolean saveParentageDesignationAsAString = AddSpaceOption.YES.equals(this.saveParentageDesignationAsAStringGroup.getValue());
+		final boolean saveParentageDesignationAsAString = ConfirmOption.YES.equals(this.saveParentageDesignationAsAStringGroup.getValue());
 
 		final String separator = (String) this.separatorTextField.getValue();
 		final CrossNameSetting crossNameSettingPojo =
@@ -243,15 +240,15 @@ public class CrossingSettingsNameComponent extends CssLayout implements Breeding
 		this.crossNamePrefix.setValue(crossNameSetting.getPrefix());
 
 		if (crossNameSetting.isAddSpaceBetweenPrefixAndCode()) {
-			this.addSpaceBetPrefixAndCodeOptionGroup.select(AddSpaceOption.YES);
+			this.addSpaceBetPrefixAndCodeOptionGroup.select(ConfirmOption.YES);
 		} else {
-			this.addSpaceBetPrefixAndCodeOptionGroup.select(AddSpaceOption.NO);
+			this.addSpaceBetPrefixAndCodeOptionGroup.select(ConfirmOption.NO);
 		}
 
 		if (crossNameSetting.isAddSpaceBetweenSuffixAndCode()) {
-			this.addSpaceBetSuffixAndCodeOptionGroup.select(AddSpaceOption.YES);
+			this.addSpaceBetSuffixAndCodeOptionGroup.select(ConfirmOption.YES);
 		} else {
-			this.addSpaceBetSuffixAndCodeOptionGroup.select(AddSpaceOption.NO);
+			this.addSpaceBetSuffixAndCodeOptionGroup.select(ConfirmOption.NO);
 		}
 
 		if (crossNameSetting.getNumOfDigits() != null && crossNameSetting.getNumOfDigits() > 0) {
@@ -273,23 +270,23 @@ public class CrossingSettingsNameComponent extends CssLayout implements Breeding
 		}
 
 		if (crossNameSetting.isSaveParentageDesignationAsAString()) {
-			this.saveParentageDesignationAsAStringGroup.select(AddSpaceOption.YES);
+			this.saveParentageDesignationAsAStringGroup.select(ConfirmOption.YES);
 		} else {
-			this.saveParentageDesignationAsAStringGroup.select(AddSpaceOption.NO);
+			this.saveParentageDesignationAsAStringGroup.select(ConfirmOption.NO);
 		}
 	}
 
 	public void setFieldsDefaultValue() {
 		this.crossNamePrefix.setValue("");
 		this.crossNameSuffix.setValue("");
-		this.addSpaceBetPrefixAndCodeOptionGroup.select(AddSpaceOption.NO);
-		this.addSpaceBetSuffixAndCodeOptionGroup.select(AddSpaceOption.NO);
+		this.addSpaceBetPrefixAndCodeOptionGroup.select(ConfirmOption.NO);
+		this.addSpaceBetSuffixAndCodeOptionGroup.select(ConfirmOption.NO);
 		this.leadingZerosSelect.select(null);
 		this.startNumberTextField.setValue("");
 		this.separatorTextField.setValue(CrossNameSetting.DEFAULT_SEPARATOR);
 		this.updateNextNameInSequence("");
 		this.updateDesignationExample();
-		this.saveParentageDesignationAsAStringGroup.select(AddSpaceOption.NO);
+		this.saveParentageDesignationAsAStringGroup.select(ConfirmOption.NO);
 	}
 
 	public boolean validateInputFields() {
