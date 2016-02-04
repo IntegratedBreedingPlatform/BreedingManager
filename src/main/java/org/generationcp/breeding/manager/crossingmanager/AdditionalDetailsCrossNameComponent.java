@@ -83,31 +83,36 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
 				suffix = AdditionalDetailsCrossNameComponent.this.suffixTextField.getValue().toString().trim();
 			}
 
-			int numOfZerosNeeded = 0;
+			int numOfAllowedDigits = 0;
 			final boolean isNumOfZerosNeeded = AdditionalDetailsCrossNameComponent.this.sequenceNumCheckBox.booleanValue();
 			if (isNumOfZerosNeeded) {
-				numOfZerosNeeded = ((Integer) AdditionalDetailsCrossNameComponent.this.leadingZerosSelect.getValue()).intValue();
+				numOfAllowedDigits = ((Integer) AdditionalDetailsCrossNameComponent.this.leadingZerosSelect.getValue()).intValue();
 			}
 
-			if (AdditionalDetailsCrossNameComponent.this.startNumberTextField.getValue() == null
-					|| AdditionalDetailsCrossNameComponent.this.startNumberTextField.getValue().toString().length() == 0) {
+			final Object startNumberObj = AdditionalDetailsCrossNameComponent.this.startNumberTextField.getValue();
+			if (startNumberObj == null || startNumberObj.toString().length() == 0) {
 				MessageNotifier.showRequiredFieldError(AdditionalDetailsCrossNameComponent.this.parentWindow,
 						AdditionalDetailsCrossNameComponent.this.messageSource.getMessage(Message.PLEASE_SPECIFY_A_STARTING_NUMBER));
 				return;
-			} else if (AdditionalDetailsCrossNameComponent.this.startNumberTextField.getValue().toString().length() > 9) {
+			} else if (startNumberObj != null && numOfAllowedDigits > 0 && startNumberObj.toString().length() > numOfAllowedDigits) {
+				MessageNotifier.showRequiredFieldError(AdditionalDetailsCrossNameComponent.this.parentWindow,
+						AdditionalDetailsCrossNameComponent.this.messageSource
+								.getMessage(Message.STARTING_NUMBER_IS_GREATER_THAN_THE_ALLOWED_NO_OF_DIGITS));
+				return;
+			} else if (startNumberObj.toString().length() > 9) {
 				MessageNotifier.showRequiredFieldError(AdditionalDetailsCrossNameComponent.this.parentWindow,
 						AdditionalDetailsCrossNameComponent.this.messageSource.getMessage(Message.STARTING_NUMBER_HAS_TOO_MANY_DIGITS));
 				return;
 			} else {
 				try {
-					Integer.parseInt(AdditionalDetailsCrossNameComponent.this.startNumberTextField.getValue().toString());
+					Integer.parseInt(startNumberObj.toString());
 				} catch (final NumberFormatException ex) {
 					MessageNotifier.showRequiredFieldError(AdditionalDetailsCrossNameComponent.this.parentWindow,
 							AdditionalDetailsCrossNameComponent.this.messageSource.getMessage(Message.PLEASE_ENTER_VALID_STARTING_NUMBER));
 					return;
 				}
 			}
-			final int startNumber = Integer.parseInt(AdditionalDetailsCrossNameComponent.this.startNumberTextField.getValue().toString());
+			final int startNumber = Integer.parseInt(startNumberObj.toString());
 
 			final int numberOfEntries = AdditionalDetailsCrossNameComponent.this.fillWithSource.getNumberOfEntries();
 			final StringBuilder builder = new StringBuilder();
@@ -116,8 +121,8 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
 				builder.append(" ");
 			}
 
-			if (numOfZerosNeeded > 0) {
-				for (int i = 0; i < numOfZerosNeeded; i++) {
+			if (numOfAllowedDigits > 0) {
+				for (int i = 0; i < numOfAllowedDigits; i++) {
 					builder.append("0");
 				}
 			}
@@ -145,7 +150,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
 			}
 
 			AdditionalDetailsCrossNameComponent.this.fillWithSource.fillWithSequence(
-					AdditionalDetailsCrossNameComponent.this.propertyIdToFill, prefix, suffix, startNumber, numOfZerosNeeded,
+					AdditionalDetailsCrossNameComponent.this.propertyIdToFill, prefix, suffix, startNumber, numOfAllowedDigits,
 					spaceBetweenPrefixAndCode, spaceBetweenSuffixAndCode);
 			final Window parent = AdditionalDetailsCrossNameComponent.this.parentWindow.getParent();
 			parent.removeWindow(AdditionalDetailsCrossNameComponent.this.parentWindow);
