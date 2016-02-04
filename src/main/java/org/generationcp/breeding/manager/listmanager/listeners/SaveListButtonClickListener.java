@@ -242,7 +242,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 		} else if (list.getName().length() > 50) {
 			MessageNotifier.showRequiredFieldError(this.source.getWindow(), this.messageSource.getMessage(Message.NAME_CAN_NOT_BE_LONG));
 			isValid = false;
-		} else if (list.getDescription().length() > 255) {
+		} else if (list.getDescription() != null && list.getDescription().length() > 255) {
 			MessageNotifier.showRequiredFieldError(this.source.getWindow(),
 					this.messageSource.getMessage(Message.DESCRIPTION_CAN_NOT_BE_LONG));
 			isValid = false;
