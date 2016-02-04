@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
- *
+ * 
  * Generation Challenge Programme (GCP)
- *
- *
+ * 
+ * 
  * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
  * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
- *
+ * 
  *******************************************************************************/
 
 package org.generationcp.breeding.manager.crossingmanager;
@@ -51,9 +51,9 @@ import com.vaadin.ui.Window;
 /**
  * This class contains the absolute layout of UI elements in Cross Name section in "Enter Additional Details..." tab in Crossing Manager
  * application
- *
+ * 
  * @author Darla Ani
- *
+ * 
  */
 @Configurable
 public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent,
@@ -64,9 +64,9 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
 		private static final long serialVersionUID = -3519880320817778816L;
 
 		@Override
-		public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-			boolean spaceBetweenPrefixAndCode = AdditionalDetailsCrossNameComponent.this.addSpaceCheckBox.booleanValue();
-			boolean spaceBetweenSuffixAndCode = AdditionalDetailsCrossNameComponent.this.addSpaceAfterSuffixCheckBox.booleanValue();
+		public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
+			final boolean spaceBetweenPrefixAndCode = AdditionalDetailsCrossNameComponent.this.addSpaceCheckBox.booleanValue();
+			final boolean spaceBetweenSuffixAndCode = AdditionalDetailsCrossNameComponent.this.addSpaceAfterSuffixCheckBox.booleanValue();
 
 			String prefix = null;
 			if (AdditionalDetailsCrossNameComponent.this.prefixTextField.getValue() == null
@@ -84,7 +84,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
 			}
 
 			int numOfZerosNeeded = 0;
-			boolean isNumOfZerosNeeded = AdditionalDetailsCrossNameComponent.this.sequenceNumCheckBox.booleanValue();
+			final boolean isNumOfZerosNeeded = AdditionalDetailsCrossNameComponent.this.sequenceNumCheckBox.booleanValue();
 			if (isNumOfZerosNeeded) {
 				numOfZerosNeeded = ((Integer) AdditionalDetailsCrossNameComponent.this.leadingZerosSelect.getValue()).intValue();
 			}
@@ -101,16 +101,16 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
 			} else {
 				try {
 					Integer.parseInt(AdditionalDetailsCrossNameComponent.this.startNumberTextField.getValue().toString());
-				} catch (NumberFormatException ex) {
+				} catch (final NumberFormatException ex) {
 					MessageNotifier.showRequiredFieldError(AdditionalDetailsCrossNameComponent.this.parentWindow,
 							AdditionalDetailsCrossNameComponent.this.messageSource.getMessage(Message.PLEASE_ENTER_VALID_STARTING_NUMBER));
 					return;
 				}
 			}
-			int startNumber = Integer.parseInt(AdditionalDetailsCrossNameComponent.this.startNumberTextField.getValue().toString());
+			final int startNumber = Integer.parseInt(AdditionalDetailsCrossNameComponent.this.startNumberTextField.getValue().toString());
 
-			int numberOfEntries = AdditionalDetailsCrossNameComponent.this.fillWithSource.getNumberOfEntries();
-			StringBuilder builder = new StringBuilder();
+			final int numberOfEntries = AdditionalDetailsCrossNameComponent.this.fillWithSource.getNumberOfEntries();
+			final StringBuilder builder = new StringBuilder();
 			builder.append(prefix);
 			if (spaceBetweenPrefixAndCode) {
 				builder.append(" ");
@@ -121,7 +121,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
 					builder.append("0");
 				}
 			}
-			int lastNumber = startNumber + numberOfEntries;
+			final int lastNumber = startNumber + numberOfEntries;
 			builder.append(lastNumber);
 
 			if (suffix != null && spaceBetweenSuffixAndCode) {
@@ -147,7 +147,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
 			AdditionalDetailsCrossNameComponent.this.fillWithSource.fillWithSequence(
 					AdditionalDetailsCrossNameComponent.this.propertyIdToFill, prefix, suffix, startNumber, numOfZerosNeeded,
 					spaceBetweenPrefixAndCode, spaceBetweenSuffixAndCode);
-			Window parent = AdditionalDetailsCrossNameComponent.this.parentWindow.getParent();
+			final Window parent = AdditionalDetailsCrossNameComponent.this.parentWindow.getParent();
 			parent.removeWindow(AdditionalDetailsCrossNameComponent.this.parentWindow);
 		}
 	}
@@ -201,7 +201,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
 		this.forFillWith = false;
 	}
 
-	public AdditionalDetailsCrossNameComponent(FillWith fillWithSource, String propertyIdToFill, Window parentWindow) {
+	public AdditionalDetailsCrossNameComponent(final FillWith fillWithSource, final String propertyIdToFill, final Window parentWindow) {
 		super();
 		this.forFillWith = true;
 		this.fillWithSource = fillWithSource;
@@ -225,7 +225,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
 			private static final long serialVersionUID = 547145467273073423L;
 
 			@Override
-			public void valueChange(ValueChangeEvent event) {
+			public void valueChange(final ValueChangeEvent event) {
 				AdditionalDetailsCrossNameComponent.this
 						.enableSpecifyLeadingZerosComponents(AdditionalDetailsCrossNameComponent.this.sequenceNumCheckBox.booleanValue());
 			}
@@ -275,8 +275,8 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
 				private static final long serialVersionUID = -3519880320817778816L;
 
 				@Override
-				public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-					Window parent = AdditionalDetailsCrossNameComponent.this.parentWindow.getParent();
+				public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
+					final Window parent = AdditionalDetailsCrossNameComponent.this.parentWindow.getParent();
 					parent.removeWindow(AdditionalDetailsCrossNameComponent.this.parentWindow);
 				}
 			});
@@ -342,7 +342,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
 			this.addComponent(this.suffixTextField, "top:130px;left:175px");
 			this.addComponent(this.addSpaceAfterSuffixCheckBox, "top:162px;left:10px");
 
-			HorizontalLayout layoutButtonArea = new HorizontalLayout();
+			final HorizontalLayout layoutButtonArea = new HorizontalLayout();
 			layoutButtonArea.setSpacing(true);
 			layoutButtonArea.addComponent(this.cancelButton);
 			layoutButtonArea.addComponent(this.okButton);
@@ -369,15 +369,15 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
 	}
 
 	// Enables / disables UI elements for specifying Cross Name details
-	private void enableSpecifyCrossNameComponents(boolean enabled) {
-		for (AbstractComponent component : this.otherToggableComponents) {
+	private void enableSpecifyCrossNameComponents(final boolean enabled) {
+		for (final AbstractComponent component : this.otherToggableComponents) {
 			component.setEnabled(enabled);
 		}
 		this.enableSpecifyLeadingZerosComponents(enabled && this.sequenceNumCheckBox.booleanValue());
 	}
 
-	private void enableSpecifyLeadingZerosComponents(boolean enabled) {
-		for (AbstractComponent component : this.digitsToggableComponents) {
+	private void enableSpecifyLeadingZerosComponents(final boolean enabled) {
+		for (final AbstractComponent component : this.digitsToggableComponents) {
 			component.setEnabled(enabled);
 		}
 	}
@@ -385,16 +385,16 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
 	// Action handler for generating cross names
 	public void generateNextNameButtonAction() {
 		if (this.validateCrossNameFields()) {
-			String suffix = ((String) this.suffixTextField.getValue()).trim();
+			final String suffix = ((String) this.suffixTextField.getValue()).trim();
 
 			try {
 				this.lastPrefixUsed = this.buildPrefixString();
-				String nextSequenceNumberString = this.germplasmManager.getNextSequenceNumberForCrossName(this.lastPrefixUsed.trim());
+				final String nextSequenceNumberString = this.germplasmManager.getNextSequenceNumberForCrossName(this.lastPrefixUsed.trim());
 
 				this.nextNumberInSequence = Integer.parseInt(nextSequenceNumberString);
 				this.generatedNameLabel.setCaption(this.buildNextNameInSequence(this.lastPrefixUsed, suffix, this.nextNumberInSequence));
 
-			} catch (MiddlewareQueryException e) {
+			} catch (final MiddlewareQueryException e) {
 				AdditionalDetailsCrossNameComponent.LOG.error(e.toString() + "\n" + e.getStackTrace(), e);
 				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
 						this.messageSource.getMessage(Message.ERROR_IN_GETTING_NEXT_NUMBER_IN_CROSS_NAME_SEQUENCE));
@@ -404,8 +404,8 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
 	}
 
 	private boolean validateCrossNameFields() {
-		Window window = this.getWindow();
-		String prefix = ((String) this.prefixTextField.getValue()).trim();
+		final Window window = this.getWindow();
+		final String prefix = ((String) this.prefixTextField.getValue()).trim();
 
 		if (StringUtils.isEmpty(prefix)) {
 			MessageNotifier.showError(window, this.messageSource.getMessage(Message.ERROR_WITH_CROSS_CODE),
@@ -426,7 +426,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
 
 			// if prefix specifications were changed and next name in sequence not generated first
 		} else {
-			String currentPrefixString = this.buildPrefixString();
+			final String currentPrefixString = this.buildPrefixString();
 			if (!currentPrefixString.equals(this.lastPrefixUsed)) {
 				MessageNotifier.showError(
 						this.getWindow(),
@@ -447,8 +447,8 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
 		return ((String) this.prefixTextField.getValue()).trim();
 	}
 
-	private String buildNextNameInSequence(String prefix, String suffix, Integer number) {
-		StringBuilder sb = new StringBuilder();
+	private String buildNextNameInSequence(final String prefix, final String suffix, final Integer number) {
+		final StringBuilder sb = new StringBuilder();
 		sb.append(prefix);
 		sb.append(this.getNumberWithLeadingZeroesAsString(number));
 		if (!StringUtils.isEmpty(suffix)) {
@@ -458,12 +458,12 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
 		return sb.toString();
 	}
 
-	private String getNumberWithLeadingZeroesAsString(Integer number) {
-		StringBuilder sb = new StringBuilder();
-		String numberString = number.toString();
+	private String getNumberWithLeadingZeroesAsString(final Integer number) {
+		final StringBuilder sb = new StringBuilder();
+		final String numberString = number.toString();
 		if (this.sequenceNumCheckBox.booleanValue()) {
-			Integer numOfZeros = (Integer) this.leadingZerosSelect.getValue();
-			int numOfZerosNeeded = numOfZeros - numberString.length();
+			final Integer numOfZeros = (Integer) this.leadingZerosSelect.getValue();
+			final int numOfZerosNeeded = numOfZeros - numberString.length();
 			if (numOfZerosNeeded > 0) {
 				for (int i = 0; i < numOfZerosNeeded; i++) {
 					sb.append("0");
@@ -475,26 +475,26 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
 	}
 
 	@Override
-	public boolean updateCrossesMadeContainer(CrossesMadeContainer container) {
+	public boolean updateCrossesMadeContainer(final CrossesMadeContainer container) {
 
 		if (this.container != null && this.container.getCrossesMade() != null && this.container.getCrossesMade().getCrossesMap() != null
 				&& this.validateCrossNameFields() && this.validateGeneratedName()) {
 
 			int ctr = this.nextNumberInSequence;
-			String suffix = (String) this.suffixTextField.getValue();
+			final String suffix = (String) this.suffixTextField.getValue();
 
-			Map<Germplasm, Name> crossesMap = this.container.getCrossesMade().getCrossesMap();
-			List<GermplasmListEntry> oldCrossNames = new ArrayList<GermplasmListEntry>();
+			final Map<Germplasm, Name> crossesMap = this.container.getCrossesMade().getCrossesMap();
+			final List<GermplasmListEntry> oldCrossNames = new ArrayList<GermplasmListEntry>();
 
 			// Store old cross name and generate new names based on prefix, suffix specifications
-			for (Map.Entry<Germplasm, Name> entry : crossesMap.entrySet()) {
-				Name nameObject = entry.getValue();
-				String oldCrossName = nameObject.getNval();
+			for (final Map.Entry<Germplasm, Name> entry : crossesMap.entrySet()) {
+				final Name nameObject = entry.getValue();
+				final String oldCrossName = nameObject.getNval();
 				nameObject.setNval(this.buildNextNameInSequence(this.lastPrefixUsed, suffix, ctr++));
 
-				Germplasm germplasm = entry.getKey();
-				Integer tempGid = germplasm.getGid();
-				GermplasmListEntry oldNameEntry = new GermplasmListEntry(tempGid, tempGid, tempGid, oldCrossName);
+				final Germplasm germplasm = entry.getKey();
+				final Integer tempGid = germplasm.getGid();
+				final GermplasmListEntry oldNameEntry = new GermplasmListEntry(tempGid, tempGid, tempGid, oldCrossName);
 
 				oldCrossNames.add(oldNameEntry);
 			}
