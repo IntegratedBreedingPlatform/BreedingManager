@@ -1,6 +1,9 @@
 
 package org.generationcp.breeding.manager.crossingmanager;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -12,11 +15,18 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.exceptions.verification.NeverWantedButInvoked;
 import org.mockito.exceptions.verification.TooLittleActualInvocations;
+import org.springframework.mock.web.MockHttpServletRequest;
 
+import com.vaadin.terminal.ExternalResource;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.Window;
 
 public class CrossingManagerMakeCrossesComponentTest {
 
+	public static final String LOCALHOST = "localhost";
+	public static final String NURSERY_ID = "25019";
+	public static final int PORT = 8080;
+	public static final String LIST_ID = "38";
 	@Mock
 	private ManageCrossingSettingsMain manageCrossingSettingsMain;
 	@Mock
@@ -53,5 +63,34 @@ public class CrossingManagerMakeCrossesComponentTest {
 		} catch (NeverWantedButInvoked e) {
 			Assert.fail("Expecting not show a notification message but didn't.");
 		}
+	}
+
+	@Test
+	public void testConstructLinkToNursery_Edit() {
+		HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
+		Mockito.doReturn(new String[]{NURSERY_ID}).when(mockRequest).getParameterValues(BreedingManagerApplication.REQ_PARAM_NURSERY_ID);
+		Mockito.doReturn(new String[]{LIST_ID}).when(mockRequest).getParameterValues(BreedingManagerApplication.REQ_PARAM_LIST_ID);
+		Mockito.doReturn(LOCALHOST).when(mockRequest).getServerName();
+		Mockito.doReturn(PORT).when(mockRequest).getServerPort();
+
+		final Link linkToEditNursery = this.makeCrosses.constructLinkToNursery(mockRequest);
+
+		Assert.assertEquals("http://" + LOCALHOST + ":" + PORT + BreedingManagerApplication.PATH_TO_EDIT_NURSERY + NURSERY_ID,
+				((ExternalResource) linkToEditNursery.getResource()).getURL());
+	}
+
+	@Test
+	public void testConstructLinkToNursery_Create() {
+		HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
+		Mockito.doReturn(new String[]{"not_a_valid_id"}).when(mockRequest).getParameterValues(BreedingManagerApplication
+				.REQ_PARAM_NURSERY_ID);
+		Mockito.doReturn(new String[]{LIST_ID}).when(mockRequest).getParameterValues(BreedingManagerApplication.REQ_PARAM_LIST_ID);
+		Mockito.doReturn(LOCALHOST).when(mockRequest).getServerName();
+		Mockito.doReturn(PORT).when(mockRequest).getServerPort();
+
+		final Link linkToCreateNursery = this.makeCrosses.constructLinkToNursery(mockRequest);
+
+		Assert.assertEquals("http://" + LOCALHOST + ":" + PORT + BreedingManagerApplication.PATH_TO_NURSERY,
+				((ExternalResource) linkToCreateNursery.getResource()).getURL());
 	}
 }

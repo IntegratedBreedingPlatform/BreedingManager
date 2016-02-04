@@ -56,12 +56,12 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 
 	private GermplasmList germplasmList = null;
 
-	public ManageCrossingSettingsMain(ComponentContainer parent) {
+	public ManageCrossingSettingsMain(final ComponentContainer parent) {
 		this.parent = parent;
 	}
 
-	public ManageCrossingSettingsMain(ComponentContainer parent, GermplasmList germplasmList) {
-		this.parent = parent;
+	public ManageCrossingSettingsMain(final ComponentContainer parent, final GermplasmList germplasmList) {
+		this(parent);
 		this.germplasmList = germplasmList;
 	}
 

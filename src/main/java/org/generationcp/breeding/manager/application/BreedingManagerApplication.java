@@ -4,11 +4,13 @@ package org.generationcp.breeding.manager.application;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.dellroad.stuff.vaadin.ContextApplication;
 import org.dellroad.stuff.vaadin.SpringContextApplication;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
 import org.generationcp.commons.vaadin.actions.UpdateComponentLabelsAction;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -22,6 +24,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 
+import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.Terminal;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
@@ -40,8 +43,12 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 	public static final String LIST_MANAGER_WITH_OPEN_LIST_WINDOW_NAME = "listmanager-";
 	public static final String LIST_MANAGER_SIDEBYSIDE = "list-manager-sidebyside";
 	public static final String MANAGE_SETTINGS_CROSSING_MANAGER = "crosses-settings";
-	public static final String NAVIGATION_FROM_NURSERY_PREFIX = "cross-";
+	public static final String NAVIGATION_FROM_NURSERY_PREFIX = "createcrosses";
 	public static final String ID_PREFIX = "-";
+	public static final String REQ_PARAM_NURSERY_ID = "nurseryid";
+	public static final String REQ_PARAM_LIST_ID = "germplasmlistid";
+	public static final String PATH_TO_NURSERY = "/Fieldbook/NurseryManager/";
+	public static final String PATH_TO_EDIT_NURSERY = "/Fieldbook/NurseryManager/editNursery/";
 
 	private Window window;
 
@@ -140,24 +147,26 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 			} else if (name.startsWith(NAVIGATION_FROM_NURSERY_PREFIX)) {
 				final Window manageCrossingSettings = new Window(this.messageSource.getMessage(Message.MANAGE_CROSSES));
 				try {
-					final String listIdPart = name.substring(name.indexOf(ID_PREFIX) + 1);
-					final Integer listId = Integer.parseInt(listIdPart);
-					manageCrossingSettings.setName(name);
+					final String[] listIdParameterValues =
+							BreedingManagerUtil.getApplicationRequest().getParameterValues(BreedingManagerApplication.REQ_PARAM_LIST_ID);
+					final String listIdParam = listIdParameterValues != null && listIdParameterValues.length > 0 ?
+							listIdParameterValues[0] : "";
+					final Integer listId = Integer.parseInt(listIdParam);
+
+					final String[] nurseryIdParameterValues =
+							BreedingManagerUtil.getApplicationRequest().getParameterValues(BreedingManagerApplication.REQ_PARAM_NURSERY_ID);
+					final String nurseryId = nurseryIdParameterValues != null && nurseryIdParameterValues.length > 0 ?
+							nurseryIdParameterValues[0] : "";
+					final boolean errorWithListIdReqParam = listId == -1;
+					final boolean errorWithNurseryIdReqParam = nurseryId.isEmpty() || !NumberUtils.isDigits(nurseryId);
+
+					manageCrossingSettings.setName(name + ID_PREFIX + listId + ID_PREFIX + nurseryId);
 					manageCrossingSettings.setSizeUndefined();
 
-					if (listId != -1) {
-						final GermplasmList germplasmList = germplasmListManager.getGermplasmListById(listId);
-						this.manageCrossingSettingsMain = new ManageCrossingSettingsMain(manageCrossingSettings, germplasmList);
-						manageCrossingSettings.setContent(this.manageCrossingSettingsMain);
-						this.addWindow(manageCrossingSettings);
-						this.manageCrossingSettingsMain.nextStep();
-					} else {
-						 return getWindowWithErrorMessage(manageCrossingSettings);
-					}
-
-					return manageCrossingSettings;
+					return validateAndConstructWindow(manageCrossingSettings, listId, errorWithListIdReqParam, errorWithNurseryIdReqParam);
 				} catch (final NumberFormatException nfe) {
-					return getWindowWithErrorMessage(manageCrossingSettings);
+					return getWindowWithErrorMessage(manageCrossingSettings,
+							this.messageSource.getMessage(Message.ERROR_WRONG_GERMPLASM_LIST_ID));
 				}
 			}
 		}
@@ -165,14 +174,42 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 		return super.getWindow(name);
 	}
 
-	private Window getWindowWithErrorMessage(final Window manageCrossingSettings) {
+	private Window validateAndConstructWindow(final Window manageCrossingSettings, final Integer listId, final boolean errorWithListIdReqParam,
+			final boolean errorWithNurseryIdReqParam) {
+		if (!errorWithListIdReqParam && !errorWithNurseryIdReqParam) {
+			constructCreateCrossesWindow(manageCrossingSettings, listId);
+		} else if (errorWithListIdReqParam && errorWithNurseryIdReqParam) {
+			return getWindowWithErrorMessage(manageCrossingSettings,
+					this.messageSource.getMessage(Message.ERROR_WRONG_GERMPLASM_LIST_ID) + " "
+							+ this.messageSource.getMessage(Message.ERROR_WRONG_NURSERY_ID));
+		} else if  (errorWithNurseryIdReqParam) {
+			constructCreateCrossesWindow(manageCrossingSettings, listId);
+			MessageNotifier.showWarning(manageCrossingSettings, this.messageSource.getMessage(Message.ERROR_WITH_REQUEST_PARAMETERS),
+					this.messageSource.getMessage(Message.ERROR_WRONG_NURSERY_ID));
+		} else {
+			return getWindowWithErrorMessage(manageCrossingSettings,
+					this.messageSource.getMessage(Message.ERROR_WRONG_GERMPLASM_LIST_ID));
+		}
+
+		return manageCrossingSettings;
+	}
+
+	private void constructCreateCrossesWindow(final Window manageCrossingSettings, final Integer listId) {
+		final GermplasmList germplasmList = germplasmListManager.getGermplasmListById(listId);
+		this.manageCrossingSettingsMain = new ManageCrossingSettingsMain(manageCrossingSettings, germplasmList);
+		manageCrossingSettings.setContent(this.manageCrossingSettingsMain);
+		this.addWindow(manageCrossingSettings);
+		this.manageCrossingSettingsMain.nextStep();
+	}
+
+	private Window getWindowWithErrorMessage(final Window manageCrossingSettings, final String description) {
 		this.manageCrossingSettingsMain = new ManageCrossingSettingsMain(manageCrossingSettings);
 		manageCrossingSettings.setContent(this.manageCrossingSettingsMain);
 		this.addWindow(manageCrossingSettings);
 		this.manageCrossingSettingsMain.nextStep();
 		MessageNotifier.showWarning(this.getWindow(manageCrossingSettings.getName()),
 				this.messageSource.getMessage(Message.ERROR_WITH_REQUEST_PARAMETERS),
-				this.messageSource.getMessage(Message.ERROR_WRONG_GRRMPLASM_LIST_ID));
+				description);
 		return manageCrossingSettings;
 	}
 
