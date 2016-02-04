@@ -129,14 +129,6 @@ public class SaveListButtonClickListenerTest {
 	}
 
 	@Test
-	public void testValidateListDetailsForDescriptionThatIsNull() {
-		this.initializeGermplasmList();
-		this.germplasmList.setDescription(null);
-		Assert.assertFalse("Expected to invalidate for germplasm list without description.",
-				this.saveListener.validateListDetails(this.germplasmList, null));
-	}
-
-	@Test
 	public void testValidateListDetailsForDescriptionThatIsGreaterThan255() {
 		this.initializeGermplasmList();
 		this.germplasmList.setDescription("abcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijkabcdefghijk"
