@@ -161,7 +161,6 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 					final boolean errorWithListIdReqParam = listId == -1;
 					final boolean errorWithNurseryIdReqParam = nurseryId.isEmpty() || !NumberUtils.isDigits(nurseryId);
 
-					manageCrossingSettings.setName(name + ID_PREFIX + listId + ID_PREFIX + nurseryId);
 					manageCrossingSettings.setSizeUndefined();
 
 					return validateAndConstructWindow(manageCrossingSettings, listId, errorWithListIdReqParam, errorWithNurseryIdReqParam);
