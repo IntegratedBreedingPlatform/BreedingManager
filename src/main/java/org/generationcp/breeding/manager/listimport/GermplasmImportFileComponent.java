@@ -1,7 +1,9 @@
 
 package org.generationcp.breeding.manager.listimport;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -14,10 +16,14 @@ import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportBut
 import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
 import org.generationcp.commons.parsing.FileParsingException;
 import org.generationcp.commons.parsing.InvalidFileDataException;
+import org.generationcp.commons.parsing.pojo.ImportedFactor;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.commons.workbook.generator.RowColumnType;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.pojos.UserDefinedField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -37,7 +43,7 @@ import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
 public class GermplasmImportFileComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent,
-		BreedingManagerLayout {
+		BreedingManagerLayout, NameHandlingDialogSource {
 
 	public static final String FB_CLOSE_WINDOW_JS_CALL = "window.parent.cancelImportGermplasm()";
 	private static final long serialVersionUID = 9097810121003895303L;
@@ -57,6 +63,9 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
+
+	@Autowired
+	private GermplasmDataManager germplasmDataManager;
 
 	public GermplasmImportFileComponent(final GermplasmImportMain source) {
 		this.source = source;
@@ -107,7 +116,13 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 				MessageNotifier.showWarning(this.source.getWindow(), "Warning", this.germplasmListUploader.hasWarnings());
 			}
 
-			this.source.nextStep();
+			final List<ImportedFactor> importedNameFactors = this.extractListOfImportedNames();
+			if (importedNameFactors.size() > 0) {
+				final NameHandlingDialog nameHandlingDialog = new NameHandlingDialog(this, importedNameFactors);
+				this.getWindow().addWindow(nameHandlingDialog);
+			} else {
+				this.source.nextStep();
+			}
 
 		} catch (final GermplasmImportException e) {
 			GermplasmImportFileComponent.LOG.debug("Error importing " + e.getMessage(), e);
@@ -123,6 +138,28 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 			MessageNotifier.showError(this.getWindow(), "Error", message);
 			this.nextButton.setEnabled(false);
 		}
+	}
+
+	private List<ImportedFactor> extractListOfImportedNames() {
+
+		final List<UserDefinedField> nameFields =
+				this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(RowColumnType.NAME_TYPES.getFtable(),
+						RowColumnType.NAME_TYPES.getFtype());
+
+		final List<String> validNameTypes = new ArrayList<String>();
+		for (final UserDefinedField nameField : nameFields) {
+			validNameTypes.add(nameField.getFcode().trim());
+		}
+
+		final List<ImportedFactor> importedFactors = this.germplasmListUploader.getImportedGermplasmList().getImportedFactors();
+
+		final List<ImportedFactor> importedNameFactors = new ArrayList<ImportedFactor>();
+		for (final ImportedFactor factor : importedFactors) {
+			if (validNameTypes.contains(factor.getFactor())) {
+				importedNameFactors.add(factor);
+			}
+		}
+		return importedNameFactors;
 	}
 
 	public GermplasmImportMain getSource() {
@@ -199,7 +236,6 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 		this.uploadComponents.setFileFactory(this.germplasmListUploader);
 	}
 
-	@SuppressWarnings("serial")
 	@Override
 	public void addListeners() {
 
@@ -207,9 +243,6 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 
 		this.cancelButton.addListener(new Button.ClickListener() {
 
-			/**
-			 *
-			 */
 			private static final long serialVersionUID = -8787686200326172252L;
 
 			@Override
@@ -231,6 +264,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 				try {
 					(new GermplasmListTemplateDownloader()).exportGermplasmTemplate(event.getComponent());
 				} catch (final GermplasmListTemplateDownloader.FileDownloadException e) {
+					LOG.error(e.getMessage(), e);
 					MessageNotifier.showError(GermplasmImportFileComponent.this.getWindow(),
 							GermplasmImportFileComponent.this.messageSource.getMessage(Message.ERROR), e.getMessage());
 				}
@@ -277,5 +311,12 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 		} else {
 			this.source.getGermplasmImportPopupSource().getParentWindow().removeWindow((Window) this.source.getComponentContainer());
 		}
+	}
+
+	@Override
+	public void setImportedNameAsPreferredName(final boolean setImportedNameAsPreferredName, final String preferredNameType) {
+		this.germplasmListUploader.getImportedGermplasmList().setSetImportedNameAsPreferredName(setImportedNameAsPreferredName);
+		this.germplasmListUploader.getImportedGermplasmList().setPreferredNameCode(preferredNameType);
+		this.source.nextStep();
 	}
 }

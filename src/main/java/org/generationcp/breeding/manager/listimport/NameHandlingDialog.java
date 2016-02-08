@@ -1,12 +1,15 @@
 
 package org.generationcp.breeding.manager.listimport;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ConfirmOption;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
+import org.generationcp.commons.parsing.pojo.ImportedFactor;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
@@ -17,6 +20,8 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -40,14 +45,18 @@ public class NameHandlingDialog extends BaseSubWindow implements BreedingManager
 	private Button cancelBtn;
 	private Button continueBtn;
 
+	private final NameHandlingDialogSource source;
+	private final List<ImportedFactor> importedNameFactors;
+
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
 	@Resource
 	private OntologyDataManager ontologyDataManager;
 
-	public NameHandlingDialog() {
-
+	public NameHandlingDialog(final NameHandlingDialogSource source, final List<ImportedFactor> importedNameFactors) {
+		this.source = source;
+		this.importedNameFactors = importedNameFactors;
 	}
 
 	@Override
@@ -97,11 +106,33 @@ public class NameHandlingDialog extends BaseSubWindow implements BreedingManager
 		this.setAsPreferredNameOption.addItem(ConfirmOption.NO);
 		this.setAsPreferredNameOption.setItemCaption(ConfirmOption.NO, this.messageSource.getMessage(Message.NO));
 		this.setAsPreferredNameOption.select(ConfirmOption.NO);
+
+		for (final ImportedFactor nameFactor : this.importedNameFactors) {
+			this.nameTypesComboBox.addItem(nameFactor.getFactor());
+		}
+
+		this.nameTypesComboBox.setValue(this.importedNameFactors.get(0).getFactor());
+
 	}
 
 	@Override
 	public void addListeners() {
 		this.cancelBtn.addListener(new CloseWindowAction());
+
+		this.continueBtn.addListener(new ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(final ClickEvent event) {
+				final boolean setImportedNameAsPreferredName =
+						NameHandlingDialog.this.setAsPreferredNameOption.getValue().equals(ConfirmOption.YES) ? true : false;
+				final String preferredNameType = NameHandlingDialog.this.nameTypesComboBox.getValue().toString();
+				NameHandlingDialog.this.source.setImportedNameAsPreferredName(setImportedNameAsPreferredName, preferredNameType);
+			}
+		});
+
+		this.continueBtn.addListener(new CloseWindowAction());
 	}
 
 	@Override

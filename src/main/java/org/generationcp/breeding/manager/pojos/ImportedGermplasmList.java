@@ -16,12 +16,11 @@ import com.google.common.base.Strings;
 
 public class ImportedGermplasmList extends ImportedDescriptionDetails {
 
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = -7039616815348588609L;
 	private List<ImportedGermplasm> importedGermplasms = new ArrayList<>();
 	private boolean hasStockIDValues = false;
+	private boolean setImportedNameAsPreferredName = false;
+	private String preferredNameCode = "";
 
 	public static final String INVENTORY_AMOUNT_PROPERTY = "INVENTORY AMOUNT";
 
@@ -109,6 +108,22 @@ public class ImportedGermplasmList extends ImportedDescriptionDetails {
 		this.hasStockIDValues = hasStockIDValues;
 	}
 
+	public boolean isSetImportedNameAsPreferredName() {
+		return this.setImportedNameAsPreferredName;
+	}
+
+	public void setSetImportedNameAsPreferredName(final boolean setImportedNameAsPreferredName) {
+		this.setImportedNameAsPreferredName = setImportedNameAsPreferredName;
+	}
+
+	public String getPreferredNameCode() {
+		return this.preferredNameCode;
+	}
+
+	public void setPreferredNameCode(final String preferredNameCode) {
+		this.preferredNameCode = preferredNameCode;
+	}
+
 	/**
 	 * This will check if stockId exist in germplasm and inventory variable/seed amount is empty then return true.
 	 */
@@ -130,4 +145,5 @@ public class ImportedGermplasmList extends ImportedDescriptionDetails {
 		}
 
 	}
+
 }
