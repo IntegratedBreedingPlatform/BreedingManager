@@ -120,7 +120,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	 * @param importedGermplasmList
 	 * @param seedStorageLocation
 	 * @return id of new Germplasm List created @
-	 * @throws BreedingManagerException 
+	 * @throws BreedingManagerException
 	 */
 	public Integer saveRecords(final GermplasmList germplasmList, final List<GermplasmName> germplasmNameObjects,
 			final List<Name> newNames, final String filename, final List<Integer> doNotCreateGermplasmsWithId,
@@ -318,11 +318,12 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	protected void processSeedStockVariate(final ImportedVariate importedVariate) throws BreedingManagerException {
 
 		// find stick variable via name at top of column in the sheet - should be one
-		Set<StandardVariable> terms = this.ontologyDataManager.findStandardVariablesByNameOrSynonym(importedVariate.getVariate(),
-				this.contextUtil.getCurrentProgramUUID());
+		final Set<StandardVariable> terms =
+				this.ontologyDataManager.findStandardVariablesByNameOrSynonym(importedVariate.getVariate(),
+						this.contextUtil.getCurrentProgramUUID());
 		if (terms.size() == 1) {
 			// ok to get only record with the size check
-			StandardVariable stdVariable = new ArrayList<>(terms).get(0);
+			final StandardVariable stdVariable = new ArrayList<>(terms).get(0);
 			importedVariate.setScaleId(stdVariable.getId());
 			this.seedAmountScaleId = importedVariate.getScaleId();
 		} else {
