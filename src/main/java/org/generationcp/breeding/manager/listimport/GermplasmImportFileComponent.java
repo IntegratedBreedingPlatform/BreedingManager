@@ -12,8 +12,8 @@ import org.generationcp.breeding.manager.customfields.UploadField;
 import org.generationcp.breeding.manager.listimport.exceptions.GermplasmImportException;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
 import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
-import org.generationcp.commons.parsing.InvalidFileDataException;
 import org.generationcp.commons.parsing.FileParsingException;
+import org.generationcp.commons.parsing.InvalidFileDataException;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -53,7 +53,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 	private Button nextButton;
 	private Button openTemplateButton;
 	private GermplasmListUploader germplasmListUploader;
-	private Set<String> extensionSet = new HashSet<>();
+	private final Set<String> extensionSet = new HashSet<>();
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -84,8 +84,8 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 	}
 
 	public void initializeExtensionSet() {
-		extensionSet.add("xls");
-		extensionSet.add("xlsx");
+		this.extensionSet.add("xls");
+		this.extensionSet.add("xlsx");
 	}
 
 	public void nextButtonClickAction() {
@@ -93,7 +93,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 		// NOTE: Display Error message if Germplasm Import file contains invalid extension like .doc, .pdf, .docx etc.
 		// Valid File Extensions are .xls and .xlsx
 		final String extension = FilenameUtils.getExtension(this.germplasmListUploader.getOriginalFilename()).toLowerCase();
-		if (!extensionSet.contains(extension)) {
+		if (!this.extensionSet.contains(extension)) {
 			MessageNotifier.showError(this.getWindow(), "Error", this.messageSource.getMessage("GERMPLSM_INVALID_FILE_EXTENSION_ERROR"));
 			return;
 		}

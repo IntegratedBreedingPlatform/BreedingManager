@@ -9,9 +9,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.base.Strings;
 import org.generationcp.commons.parsing.pojo.ImportedDescriptionDetails;
 import org.generationcp.commons.parsing.pojo.ImportedFactor;
+
+import com.google.common.base.Strings;
 
 public class ImportedGermplasmList extends ImportedDescriptionDetails {
 
@@ -24,12 +25,12 @@ public class ImportedGermplasmList extends ImportedDescriptionDetails {
 
 	public static final String INVENTORY_AMOUNT_PROPERTY = "INVENTORY AMOUNT";
 
-	public ImportedGermplasmList(String filename, String name, String title, String type, Date date) {
+	public ImportedGermplasmList(final String filename, final String name, final String title, final String type, final Date date) {
 		super(filename, name, title, type, date);
 	}
 
-	public void removeImportedFactor(String factorName) {
-		for (ImportedFactor factor : this.getImportedFactors()) {
+	public void removeImportedFactor(final String factorName) {
+		for (final ImportedFactor factor : this.getImportedFactors()) {
 			if (factor.getFactor().equalsIgnoreCase(factorName)) {
 				this.importedFactors.remove(factor);
 				break;
@@ -37,8 +38,8 @@ public class ImportedGermplasmList extends ImportedDescriptionDetails {
 		}
 	}
 
-	public boolean isUniqueStockId(String stockId) {
-		for (ImportedGermplasm germplasm : this.getImportedGermplasms()) {
+	public boolean isUniqueStockId(final String stockId) {
+		for (final ImportedGermplasm germplasm : this.getImportedGermplasms()) {
 			if (stockId.equals(germplasm.getInventoryId())) {
 				// oops we have retrieved an existing stockId in the list
 				return false;
@@ -49,9 +50,9 @@ public class ImportedGermplasmList extends ImportedDescriptionDetails {
 	}
 
 	public List<String> getStockIdsAsList() {
-		List<String> stockIDList = new ArrayList<>();
+		final List<String> stockIDList = new ArrayList<>();
 
-		for (ImportedGermplasm germplasm : this.getImportedGermplasms()) {
+		for (final ImportedGermplasm germplasm : this.getImportedGermplasms()) {
 			stockIDList.add(germplasm.getInventoryId());
 		}
 
@@ -62,11 +63,11 @@ public class ImportedGermplasmList extends ImportedDescriptionDetails {
 		return this.importedGermplasms;
 	}
 
-	public void setImportedGermplasms(List<ImportedGermplasm> importedGermplasms) {
+	public void setImportedGermplasms(final List<ImportedGermplasm> importedGermplasms) {
 		this.importedGermplasms = importedGermplasms;
 	}
 
-	public void addImportedGermplasm(ImportedGermplasm importedGermplasm) {
+	public void addImportedGermplasm(final ImportedGermplasm importedGermplasm) {
 		this.importedGermplasms.add(importedGermplasm);
 	}
 
@@ -77,7 +78,7 @@ public class ImportedGermplasmList extends ImportedDescriptionDetails {
 	}
 
 	public boolean isUniqueStockId() {
-		for (String stockId : this.getStockIdsAsList()) {
+		for (final String stockId : this.getStockIdsAsList()) {
 			if (!this.isUniqueStockId(stockId)) {
 				return false;
 			}
@@ -87,9 +88,9 @@ public class ImportedGermplasmList extends ImportedDescriptionDetails {
 	}
 
 	public String getDuplicateStockIdIfExists() {
-		Set<String> set = new HashSet<>();
+		final Set<String> set = new HashSet<>();
 
-		for (String stockId : this.getStockIdsAsList()) {
+		for (final String stockId : this.getStockIdsAsList()) {
 			if (set.contains(stockId)) {
 				return stockId;
 			} else {
@@ -104,7 +105,7 @@ public class ImportedGermplasmList extends ImportedDescriptionDetails {
 		return this.hasStockIDValues;
 	}
 
-	public void setHasStockIDValues(boolean hasStockIDValues) {
+	public void setHasStockIDValues(final boolean hasStockIDValues) {
 		this.hasStockIDValues = hasStockIDValues;
 	}
 
@@ -112,7 +113,7 @@ public class ImportedGermplasmList extends ImportedDescriptionDetails {
 	 * This will check if stockId exist in germplasm and inventory variable/seed amount is empty then return true.
 	 */
 	public boolean hasMissingInventoryVariable() {
-		for (ImportedGermplasm importedGermplasm : this.getImportedGermplasms()) {
+		for (final ImportedGermplasm importedGermplasm : this.getImportedGermplasms()) {
 			if (this.hasStockIDValues && importedGermplasm.getSeedAmount() == 0
 					&& !Strings.isNullOrEmpty(importedGermplasm.getInventoryId())) {
 				return true;
@@ -124,7 +125,7 @@ public class ImportedGermplasmList extends ImportedDescriptionDetails {
 	private class ImportedGermplasmSorter implements Comparator<ImportedGermplasm> {
 
 		@Override
-		public int compare(ImportedGermplasm o1, ImportedGermplasm o2) {
+		public int compare(final ImportedGermplasm o1, final ImportedGermplasm o2) {
 			return o1.getEntryId().compareTo(o2.getEntryId());
 		}
 
