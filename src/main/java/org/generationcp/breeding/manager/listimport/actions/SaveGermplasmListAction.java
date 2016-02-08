@@ -153,6 +153,11 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		this.saveGermplasmListDataRecords(germplasmNameObjects, list, importedGermplasms);
 		this.addNewNamesToExistingGermplasm(newNames);
 
+		if (importedGermplasmList.isSetImportedNameAsPreferredName()) {
+			this.updateExportedGermplasmPreferredName(importedGermplasmList.getPreferredNameCode(),
+					importedGermplasmList.getImportedGermplasms());
+		}
+
 		this.saveInventory();
 
 		// log project activity in Workbench
@@ -160,6 +165,19 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 				+ filename);
 
 		return list.getId();
+	}
+
+	/**
+	 * Update the preferred name of the imported germplasm using the selected name type from the Name Handling Dialog
+	 * 
+	 * @param preferredNameCode
+	 * @param importedGermplasms
+	 */
+	private void updateExportedGermplasmPreferredName(final String preferredNameCode, final List<ImportedGermplasm> importedGermplasms) {
+		for (final ImportedGermplasm importedGermplasm : importedGermplasms) {
+			final String newPreferredName = importedGermplasm.getNameFactors().get(preferredNameCode);
+			this.germplasmManager.updateGermplasmPrefName(importedGermplasm.getGid(), newPreferredName);
+		}
 	}
 
 	protected void saveInventory() {
@@ -413,9 +431,11 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		int ctr = 1;
 		for (final GermplasmName germplasmName : germplasmNameObjects) {
 
+			final Integer gid = germplasmName.getGermplasm().getGid();
+
 			final int entryId = ctr++;
 			final ImportedGermplasm importedGermplasm = importedGermplasms.get(entryId - 1);
-			final Integer gid = germplasmName.getGermplasm().getGid();
+			importedGermplasm.setGid(gid);
 
 			final String designation = germplasmName.getName().getNval();
 
