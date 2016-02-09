@@ -31,8 +31,8 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
-public class BreedingManagerListDetailsComponent extends VerticalLayout
-		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+public class BreedingManagerListDetailsComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
+		BreedingManagerLayout {
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = LoggerFactory.getLogger(BreedingManagerListDetailsComponent.class);
@@ -67,12 +67,12 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout
 		super();
 	}
 
-	public BreedingManagerListDetailsComponent(GermplasmList germplasmList) {
+	public BreedingManagerListDetailsComponent(final GermplasmList germplasmList) {
 		super();
 		this.germplasmList = germplasmList;
 	}
 
-	public BreedingManagerListDetailsComponent(String defaultListType, GermplasmList germplasmList) {
+	public BreedingManagerListDetailsComponent(final String defaultListType, final GermplasmList germplasmList) {
 		super();
 		this.defaultListType = defaultListType;
 		this.germplasmList = germplasmList;
@@ -96,7 +96,7 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout
 		this.indicatesMandatoryLabel = new Label(this.messageSource.getMessage(Message.INDICATES_A_MANDATORY_FIELD));
 		this.indicatesMandatoryLabel.addStyleName("italic");
 		this.listNameField = new ListNameField(this.messageSource.getMessage(Message.LIST_NAME), true);
-		this.listDescriptionField = new ListDescriptionField(this.messageSource.getMessage(Message.DESCRIPTION_LABEL), true);
+		this.listDescriptionField = new ListDescriptionField(this.messageSource.getMessage(Message.DESCRIPTION_LABEL), false);
 		this.listTypeField = new ListTypeField(this.messageSource.getMessage(Message.LIST_TYPE), true);
 		this.listDateField = new ListDateField(this.messageSource.getMessage(Message.LIST_DATE), true);
 		this.listNotesField = new ListNotesField(this.messageSource.getMessage(Message.NOTES), false);
@@ -155,7 +155,7 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout
 
 			return true;
 
-		} catch (InvalidValueException e) {
+		} catch (final InvalidValueException e) {
 			MessageNotifier.showRequiredFieldError(this.getWindow(), e.getMessage());
 			BreedingManagerListDetailsComponent.LOG.error(e.getMessage(), e);
 			return false;
@@ -163,11 +163,11 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout
 	}
 
 	public GermplasmList getGermplasmList() {
-		String listName = this.listNameField.getValue().toString();
-		String listDescription = this.listDescriptionField.getValue().toString();
-		Date date = this.listDateField.getValue();
+		final String listName = this.listNameField.getValue().toString();
+		final String listDescription = this.listDescriptionField.getValue().toString();
+		final Date date = this.listDateField.getValue();
 
-		GermplasmList list = new GermplasmList();
+		final GermplasmList list = new GermplasmList();
 
 		list.setName(listName);
 
@@ -190,7 +190,7 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout
 		return list;
 	}
 
-	public void setGermplasmListDetails(GermplasmList germplasmList) {
+	public void setGermplasmListDetails(final GermplasmList germplasmList) {
 		this.germplasmList = germplasmList;
 
 		if (germplasmList != null) {
@@ -202,16 +202,16 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout
 			Date germplasmDate = new Date();
 			try {
 				germplasmDate = this.getParsedDate(germplasmList.getDate().toString());
-			} catch (ReadOnlyException e) {
+			} catch (final ReadOnlyException e) {
 				BreedingManagerListDetailsComponent.LOG.error(e.getMessage(), e);
-			} catch (ConversionException e) {
+			} catch (final ConversionException e) {
 				BreedingManagerListDetailsComponent.LOG.error(e.getMessage(), e);
-			} catch (ParseException e) {
+			} catch (final ParseException e) {
 				BreedingManagerListDetailsComponent.LOG.error(e.getMessage(), e);
 			}
 			this.listDateField.setValue(germplasmDate);
 
-			String notes = germplasmList.getNotes() == null ? "" : germplasmList.getNotes();
+			final String notes = germplasmList.getNotes() == null ? "" : germplasmList.getNotes();
 			this.listNotesField.setValue(notes);
 		} else {
 			this.listNameField.setValue("");
@@ -222,11 +222,11 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout
 		}
 
 		// set list owner
-		String listOwner = this.getListOwnerValue(germplasmList);
+		final String listOwner = this.getListOwnerValue(germplasmList);
 		this.listOwnerField.setValue(listOwner);
 	}
 
-	protected String getListOwnerValue(GermplasmList germplasmList) {
+	protected String getListOwnerValue(final GermplasmList germplasmList) {
 		String listOwner = "";
 		try {
 			if (germplasmList != null) {
@@ -234,14 +234,14 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout
 			} else {
 				listOwner = this.breedingManagerService.getDefaultOwnerListName();
 			}
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			BreedingManagerListDetailsComponent.LOG.error(e.getMessage(), e);
 		}
 
 		return listOwner;
 	}
 
-	protected Date getParsedDate(String dateToParse) throws ParseException {
+	protected Date getParsedDate(final String dateToParse) throws ParseException {
 		String finalDateToParse = dateToParse;
 		if (finalDateToParse.length() < 8) {
 			finalDateToParse = this.getParsableDateString(finalDateToParse);
@@ -249,10 +249,10 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout
 		return DateUtil.parseDate(finalDateToParse, DateUtil.DATE_AS_NUMBER_FORMAT);
 	}
 
-	protected String getParsableDateString(String dateToParse) {
-		int dateLenght = dateToParse.length();
+	protected String getParsableDateString(final String dateToParse) {
+		final int dateLenght = dateToParse.length();
 
-		StringBuilder parsedDate = new StringBuilder();
+		final StringBuilder parsedDate = new StringBuilder();
 		for (int i = 1; i <= 8 - dateLenght; i++) {
 			parsedDate.append("0");
 		}
@@ -261,13 +261,13 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout
 		return parsedDate.toString();
 	}
 
-	public void resetListNameFieldForExistingList(GermplasmList germplasmList) {
-		ListNameValidator listNameValidator = this.getListNameField().getListNameValidator();
+	public void resetListNameFieldForExistingList(final GermplasmList germplasmList) {
+		final ListNameValidator listNameValidator = this.getListNameField().getListNameValidator();
 		if (germplasmList.getId() != null) {
 			listNameValidator.setCurrentListName(germplasmList.getName());
 		}
 
-		GermplasmList parentList = germplasmList.getParent();
+		final GermplasmList parentList = germplasmList.getParent();
 		if (parentList != null) {
 			listNameValidator.setParentFolder(parentList.getName());
 		}
@@ -291,7 +291,7 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout
 		return false;
 	}
 
-	public void setChanged(boolean changed) {
+	public void setChanged(final boolean changed) {
 		// Reset Marked Changes
 		this.listNameField.setChanged(changed);
 		this.listDescriptionField.setChanged(changed);
@@ -305,7 +305,7 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout
 		return this.headerListLabel;
 	}
 
-	public void setHeaderListLabel(String header) {
+	public void setHeaderListLabel(final String header) {
 		this.headerListLabel.setValue(header);
 	}
 
@@ -313,7 +313,7 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout
 		return this.listNameField;
 	}
 
-	public void setListNameField(ListNameField listNameField) {
+	public void setListNameField(final ListNameField listNameField) {
 		this.listNameField = listNameField;
 	}
 
@@ -321,7 +321,7 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout
 		return this.listDescriptionField;
 	}
 
-	public void setListDescriptionField(ListDescriptionField listDescriptionField) {
+	public void setListDescriptionField(final ListDescriptionField listDescriptionField) {
 		this.listDescriptionField = listDescriptionField;
 	}
 
@@ -329,7 +329,7 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout
 		return this.listTypeField;
 	}
 
-	public void setListTypeField(ListTypeField listTypeField) {
+	public void setListTypeField(final ListTypeField listTypeField) {
 		this.listTypeField = listTypeField;
 	}
 
@@ -337,7 +337,7 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout
 		return this.listDateField;
 	}
 
-	public void setListDateField(ListDateField listDateField) {
+	public void setListDateField(final ListDateField listDateField) {
 		this.listDateField = listDateField;
 	}
 
@@ -345,7 +345,7 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout
 		return this.listNotesField;
 	}
 
-	public void setListNotesField(ListNotesField listNotesField) {
+	public void setListNotesField(final ListNotesField listNotesField) {
 		this.listNotesField = listNotesField;
 	}
 
@@ -357,7 +357,7 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout
 		return this.germplasmList;
 	}
 
-	public void setBreedingManagerService(BreedingManagerService breedingManagerService) {
+	public void setBreedingManagerService(final BreedingManagerService breedingManagerService) {
 		this.breedingManagerService = breedingManagerService;
 	}
 
@@ -365,7 +365,7 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout
 		return this.listOwnerField;
 	}
 
-	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 

@@ -1,6 +1,8 @@
 
 package org.generationcp.breeding.manager.listmanager;
 
+import java.util.ArrayList;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.service.BreedingManagerSearchException;
@@ -10,6 +12,7 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.manager.Operation;
+import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -85,7 +88,7 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 		this.searchButton.setData(ListSearchBarComponent.SEARCH_BUTTON);
 		this.searchButton.setClickShortcut(KeyCode.ENTER);
 
-		Label descLbl = new Label(ListSearchBarComponent.GUIDE, Label.CONTENT_XHTML);
+		final Label descLbl = new Label(ListSearchBarComponent.GUIDE, Label.CONTENT_XHTML);
 		descLbl.setWidth("300px");
 		this.popup = new PopupView(" ? ", descLbl);
 		this.popup.setStyleName("gcp-popup-view");
@@ -108,7 +111,7 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 			private static final long serialVersionUID = 1926462184420334992L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				ListSearchBarComponent.this.searchButtonClickAction();
 			}
 		});
@@ -118,7 +121,7 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 			private static final long serialVersionUID = 288627665348761948L;
 
 			@Override
-			public void handleAction(Object sender, Object target) {
+			public void handleAction(final Object sender, final Object target) {
 				ListSearchBarComponent.this.searchButtonClickAction();
 			}
 		});
@@ -153,19 +156,21 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 	}
 
 	public void searchButtonClickAction() {
-		String q = this.searchField.getValue().toString();
+		final String q = this.searchField.getValue().toString();
 		this.doSearch(q);
 	}
 
-	public void doSearch(String q) {
-		boolean exactMatchedOnly = (Boolean) this.exactMatchesOnlyCheckBox.getValue();
+	public void doSearch(final String q) {
+		final boolean exactMatchedOnly = (Boolean) this.exactMatchesOnlyCheckBox.getValue();
 
 		try {
 			this.searchResultsComponent.applyGermplasmListResults(this.breedingManagerService.doGermplasmListSearch(q,
 					exactMatchedOnly ? Operation.EQUAL : Operation.LIKE));
 
-		} catch (BreedingManagerSearchException e) {
-			if (Message.SEARCH_QUERY_CANNOT_BE_EMPTY.equals(e.getErrorMessage())) {
+		} catch (final BreedingManagerSearchException e) {
+			if (Message.NO_SEARCH_RESULTS.equals(e.getErrorMessage())) {
+				this.searchResultsComponent.applyGermplasmListResults(new ArrayList<GermplasmList>());
+			} else if (Message.SEARCH_QUERY_CANNOT_BE_EMPTY.equals(e.getErrorMessage())) {
 				// invalid search string
 				MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.UNABLE_TO_SEARCH),
 						this.messageSource.getMessage(e.getErrorMessage()));
@@ -180,6 +185,18 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 
 	public TextField getSearchField() {
 		return this.searchField;
+	}
+
+	public void setExactMatchesOnlyCheckBox(final CheckBox exactMatchesOnlyCheckBox) {
+		this.exactMatchesOnlyCheckBox = exactMatchesOnlyCheckBox;
+	}
+
+	public void setBreedingManagerService(final BreedingManagerService breedingManagerService) {
+		this.breedingManagerService = breedingManagerService;
+	}
+
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
 	}
 
 }

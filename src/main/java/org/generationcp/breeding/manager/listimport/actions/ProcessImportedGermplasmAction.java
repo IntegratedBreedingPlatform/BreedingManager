@@ -257,7 +257,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 
 	/**
 	 * Update GID to the existing germplasm's id. Otherwise, gid is set to 0
-	 * 
+	 *
 	 * @param ibdbUserId
 	 * @param dateIntValue
 	 * @param importedGermplasm
@@ -285,7 +285,6 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		return germplasm;
 	}
 
-	// TODO : Method getCountByNamePermutations of GermplasmDataManager need to be used to improve performance and efficient DB call.
 	private Map<String, Integer> mapImportedGermplasmsForDuplication(final List<ImportedGermplasm> importedGermplasms) {
 
 		final Map<String, Integer> germplasmMatchesMap = new HashMap<>();
@@ -311,7 +310,11 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	}
 
 	protected boolean isNeedToDisplayGermplasmSelectionWindow(final int germplasmMatchesCount) {
-		return germplasmMatchesCount > 0 && !this.germplasmDetailsComponent.automaticallyAcceptSingleMatchesCheckbox();
+		if (germplasmMatchesCount > 1 || germplasmMatchesCount == 1
+				&& !this.germplasmDetailsComponent.automaticallyAcceptSingleMatchesCheckbox()) {
+			return true;
+		}
+		return false;
 	}
 
 	protected boolean isGidSpecified(final ImportedGermplasm importedGermplasm) {
