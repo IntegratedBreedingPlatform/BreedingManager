@@ -1,6 +1,8 @@
 
 package org.generationcp.breeding.manager.listmanager.util;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import javax.annotation.Resource;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
+import net.sf.jasperreports.engine.JRException;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.ExportColumnHeader;
@@ -41,6 +44,9 @@ import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Person;
 import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.reports.BuildReportException;
+import org.generationcp.middleware.reports.Reporter;
+import org.generationcp.middleware.service.api.ReportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,6 +88,9 @@ public class GermplasmListExporter {
 
 	@Resource
 	private ContextUtil contextUtil;
+
+	@Resource
+	private ReportService reportService;
 
 	@Resource
 	private GermplasmExportService germplasmExportService;
@@ -175,6 +184,20 @@ public class GermplasmListExporter {
 			wellNumberIndex++;
 		}
 		return exportColumnValues;
+	}
+
+	public Reporter exportGermplasmListCustomReport(String fileName, String reportCode) throws GermplasmListExporterException {
+		try {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			final Reporter customReport =
+					this.reportService.getStreamGermplasmListReport(reportCode, this.listId, contextUtil.getProjectInContext()
+							.getProjectName(), baos);
+			final File createdFile = new File(fileName);
+			baos.writeTo(new FileOutputStream(createdFile));
+			return customReport;
+		} catch (JRException | IOException | BuildReportException e) {
+			throw new GermplasmListExporterException("Error with exporting using a custom report", e);
+		}
 	}
 
 	public FileOutputStream exportGermplasmListXLS(String fileName, Table listDataTable) throws GermplasmListExporterException {
@@ -381,7 +404,8 @@ public class GermplasmListExporter {
 	private void addVariableToMap(Map<Integer, Variable> variableMap, int termId) {
 
 		try {
-			Variable variable = this.ontologyVariableDataManager.getVariable(this.contextUtil.getCurrentProgramUUID(), termId, false, false);
+			Variable variable =
+					this.ontologyVariableDataManager.getVariable(this.contextUtil.getCurrentProgramUUID(), termId, false, false);
 			if (variable != null) {
 				variableMap.put(variable.getId(), variable);
 			}
@@ -394,14 +418,14 @@ public class GermplasmListExporter {
 	private void addOntologyTermToMap(Map<Integer, Term> termMap, int termId) {
 
 		try {
-			//Term should exist with that id in database.
+			// Term should exist with that id in database.
 			Term term = this.ontologyDataManager.getTermById(termId);
 
-			GermplasmListExporter.LOG.debug("Finding term with id:" + termId + ". Found: " + (term!= null));
+			GermplasmListExporter.LOG.debug("Finding term with id:" + termId + ". Found: " + (term != null));
 
-            if(term == null){
-                throw new MiddlewareException("Term does not exist with id:" + termId);
-            }
+			if (term == null) {
+				throw new MiddlewareException("Term does not exist with id:" + termId);
+			}
 
 			CvId cvId = CvId.valueOf(term.getVocabularyId());
 
