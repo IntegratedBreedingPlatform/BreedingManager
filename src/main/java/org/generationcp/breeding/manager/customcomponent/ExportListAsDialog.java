@@ -24,6 +24,7 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.reports.Reporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -182,6 +183,10 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 					} else if (exportType.equalsIgnoreCase(ExportListAsDialog.this.messageSource
 							.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER))) {
 						ExportListAsDialog.this.exportListForGenotypingOrderAction();
+					} else {
+						final String userSelection = ExportListAsDialog.this.formatOptionsCbx.getValue().toString();
+						final String reportCode = userSelection.substring(0, userSelection.indexOf("-")).trim();
+						ExportListAsDialog.this.exportCustomReport(reportCode);
 					}
 				} else {
 					MessageNotifier.showError(ExportListAsDialog.this.getWindow(),
@@ -235,13 +240,9 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 		try {
 
 			this.listExporter.exportGermplasmListCSV(ExportListAsDialog.TEMP_FILENAME, table);
-			final FileDownloadResource fileDownloadResource = this.createFileDownloadResource();
-			final String listName = this.germplasmList.getName();
-			fileDownloadResource.setFilename(FileDownloadResource
-					.getDownloadFileName(listName, BreedingManagerUtil.getApplicationRequest()).replace(" ", "_")
-					+ ExportListAsDialog.CSV_EXT);
-			this.source.getWindow().open(fileDownloadResource);
-			// must figure out other way to clean-up file because deleting it here makes it unavailable for download
+            final String visibleFileName = this.germplasmList.getName() +  ExportListAsDialog.CSV_EXT;
+
+            this.makeExportDownloadable(visibleFileName);
 
 		} catch (final GermplasmListExporterException e) {
 			ExportListAsDialog.LOG.error(this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
@@ -249,17 +250,27 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 					+ this.messageSource.getMessage(Message.ERROR_REPORT_TO));
 		}
 
+	}
+
+	protected void exportCustomReport(final String reportCode) {
+		try {
+			final Reporter customReport = this.listExporter.exportGermplasmListCustomReport(ExportListAsDialog.TEMP_FILENAME, reportCode);
+
+			this.makeExportDownloadable(customReport.getFileName());
+
+		} catch (final GermplasmListExporterException e) {
+			ExportListAsDialog.LOG.error(this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e.getMessage() + ". "
+					+ this.messageSource.getMessage(Message.ERROR_REPORT_TO));
+		}
 	}
 
 	protected void exportListAsXLS(final Table table) {
 		try {
 			this.listExporter.exportGermplasmListXLS(ExportListAsDialog.TEMP_FILENAME, table);
-			final FileDownloadResource fileDownloadResource = this.createFileDownloadResource();
-			final String listName = this.germplasmList.getName();
-			fileDownloadResource.setFilename(FileDownloadResource
-					.getDownloadFileName(listName, BreedingManagerUtil.getApplicationRequest()).replace(" ", "_")
-					+ ExportListAsDialog.XLS_EXT);
-			this.source.getWindow().open(fileDownloadResource);
+			final String visibleFileName = this.germplasmList.getName() + ExportListAsDialog.XLS_EXT;
+
+            this.makeExportDownloadable(visibleFileName);
 			// must figure out other way to clean-up file because deleting it here makes it unavailable for download
 		} catch (final GermplasmListExporterException e) {
 			ExportListAsDialog.LOG.error(this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
@@ -267,6 +278,21 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 					+ this.messageSource.getMessage(Message.ERROR_REPORT_TO));
 		}
 	}
+
+    /**
+     * This method makes an assumption that, prior to this method call, the list has been exported and the contents stored
+     * inside the temporary file. The contents of this file is then made available as a download for the user, with a visible filename
+     * equal to the parameter provided for this method
+     * @param visibleFileName
+     */
+    protected void makeExportDownloadable(final String visibleFileName) {
+        final String adjustedFileName = FileDownloadResource.getDownloadFileName(visibleFileName,
+                BreedingManagerUtil.getApplicationRequest());
+        final FileDownloadResource fileDownloadResource =
+                new FileDownloadResource(new File(ExportListAsDialog.TEMP_FILENAME), this.source.getApplication());
+        fileDownloadResource.setFilename(adjustedFileName);
+        this.source.getWindow().open(fileDownloadResource);
+    }
 
 	private void exportListForGenotypingOrderAction() {
 		if (this.germplasmList.isLockedList()) {
