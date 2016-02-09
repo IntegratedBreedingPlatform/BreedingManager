@@ -956,7 +956,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						ListComponent.this.listDataTable.setValue(ListComponent.this.listDataTable.getItemIds());
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.EXPORT_LIST))) {
 						ListComponent.this.exportListAction();
-						ListComponent.this.messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER);
+
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
 						ListComponent.this.copyToNewListAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.ADD_ENTRIES))) {
