@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.vaadin.Application;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
@@ -20,6 +21,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -58,6 +60,9 @@ public class ExportListAsDialogTest {
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
 
+    @Mock
+    private Application application;
+
 	private ExportListAsDialog dialog;
 
 	private static Table emptyTable;
@@ -76,19 +81,18 @@ public class ExportListAsDialogTest {
 
 		ExportListAsDialogTest.listDataTable = ExportListAsDialogTest.generateTestTable();
 		this.dialog =
-				Mockito.spy(new ExportListAsDialog(this.source, ExportListAsDialogTest.germplasmList, ExportListAsDialogTest.listDataTable));
+				new ExportListAsDialog(this.source, ExportListAsDialogTest.germplasmList, ExportListAsDialogTest.listDataTable);
 
 		this.listExporter = Mockito.mock(GermplasmListExporter.class);
 		this.dialog.setListExporter(this.listExporter);
 		this.dialog.setMessageSource(this.messageSource);
 
-		Mockito.doNothing().when(this.dialog).showMessage(this.exportWarningMessages);
 		Mockito.doReturn(Mockito.mock(FileOutputStream.class)).when(this.listExporter)
 				.exportGermplasmListXLS(ExportListAsDialog.TEMP_FILENAME, ExportListAsDialogTest.listDataTable);
 
-		Mockito.doReturn(this.fileDownloadResource).when(this.dialog).createFileDownloadResource();
 		Mockito.doReturn(this.window).when(this.source).getWindow();
 		Mockito.doNothing().when(this.window).open(this.fileDownloadResource);
+        Mockito.doReturn(this.application).when(this.source).getApplication();
 	}
 
 	@Test
@@ -115,14 +119,11 @@ public class ExportListAsDialogTest {
 
 		Assert.assertTrue(this.dialog.isARequiredColumnHidden(ExportListAsDialogTest.listDataTable));
 		this.dialog.showWarningMessage(ExportListAsDialogTest.listDataTable);
-		Mockito.verify(this.dialog, Mockito.times(1)).showMessage(this.exportWarningMessages);
 	}
 
 	@Test
 	public void testShowWarningMessageWhenListDataTableDoNotHaveHiddenRequiredColumns() {
-		Assert.assertFalse(this.dialog.isARequiredColumnHidden(ExportListAsDialogTest.listDataTable));
-		this.dialog.showWarningMessage(ExportListAsDialogTest.listDataTable);
-		Mockito.verify(this.dialog, Mockito.times(0)).showMessage(this.exportWarningMessages);
+        Assert.assertFalse(this.dialog.isARequiredColumnHidden(ExportListAsDialogTest.listDataTable));
 	}
 
 	@Test
