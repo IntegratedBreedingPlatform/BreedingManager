@@ -71,7 +71,6 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 
 	private final Component source;
 	private final GermplasmList germplasmList;
-	private GermplasmListExporter listExporter;
 
 	private final Table listDataTable;
 
@@ -87,6 +86,9 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 
 	@Resource
 	private JasperReportService jasperReportService;
+
+    @Resource
+    private GermplasmListExporter germplasmListExporter;
 
 	public ExportListAsDialog(final Component source, final GermplasmList germplasmList, final Table listDataTable) {
 		this.source = source;
@@ -123,8 +125,6 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 		this.finishButton = new Button(this.messageSource.getMessage(Message.FINISH));
 		this.finishButton.setWidth("80px");
 		this.finishButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-
-		this.listExporter = new GermplasmListExporter(this.germplasmList.getId());
 	}
 
 	@Override
@@ -239,10 +239,10 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	protected void exportListAsCSV(final Table table) {
 		try {
 
-			this.listExporter.exportGermplasmListCSV(ExportListAsDialog.TEMP_FILENAME, table);
-            final String visibleFileName = this.germplasmList.getName() +  ExportListAsDialog.CSV_EXT;
+			this.germplasmListExporter.exportGermplasmListCSV(ExportListAsDialog.TEMP_FILENAME, table);
+			final String visibleFileName = this.germplasmList.getName() + ExportListAsDialog.CSV_EXT;
 
-            this.makeExportDownloadable(visibleFileName);
+			this.makeExportDownloadable(visibleFileName);
 
 		} catch (final GermplasmListExporterException e) {
 			ExportListAsDialog.LOG.error(this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
@@ -254,7 +254,8 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 
 	protected void exportCustomReport(final String reportCode) {
 		try {
-			final Reporter customReport = this.listExporter.exportGermplasmListCustomReport(ExportListAsDialog.TEMP_FILENAME, reportCode);
+			final Reporter customReport = this.germplasmListExporter.exportGermplasmListCustomReport(
+                    this.germplasmList.getId(), ExportListAsDialog.TEMP_FILENAME, reportCode);
 
 			this.makeExportDownloadable(customReport.getFileName());
 
@@ -267,10 +268,11 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 
 	protected void exportListAsXLS(final Table table) {
 		try {
-			this.listExporter.exportGermplasmListXLS(ExportListAsDialog.TEMP_FILENAME, table);
+			this.germplasmListExporter.exportGermplasmListXLS(this.germplasmList.getId(),
+                    ExportListAsDialog.TEMP_FILENAME, table);
 			final String visibleFileName = this.germplasmList.getName() + ExportListAsDialog.XLS_EXT;
 
-            this.makeExportDownloadable(visibleFileName);
+			this.makeExportDownloadable(visibleFileName);
 			// must figure out other way to clean-up file because deleting it here makes it unavailable for download
 		} catch (final GermplasmListExporterException e) {
 			ExportListAsDialog.LOG.error(this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
@@ -279,28 +281,28 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 		}
 	}
 
-    /**
-     * This method makes an assumption that, prior to this method call, the list has been exported and the contents stored
-     * inside the temporary file. The contents of this file is then made available as a download for the user, with a visible filename
-     * equal to the parameter provided for this method
-     * @param visibleFileName
-     */
-    protected void makeExportDownloadable(final String visibleFileName) {
-        final String adjustedFileName = FileDownloadResource.getDownloadFileName(visibleFileName,
-                BreedingManagerUtil.getApplicationRequest());
-        final FileDownloadResource fileDownloadResource =
-                new FileDownloadResource(new File(ExportListAsDialog.TEMP_FILENAME), this.source.getApplication());
-        fileDownloadResource.setFilename(adjustedFileName);
-        this.source.getWindow().open(fileDownloadResource);
-    }
+	/**
+	 * This method makes an assumption that, prior to this method call, the list has been exported and the contents stored inside the
+	 * temporary file. The contents of this file is then made available as a download for the user, with a visible filename equal to the
+	 * parameter provided for this method
+	 * 
+	 * @param visibleFileName
+	 */
+	protected void makeExportDownloadable(final String visibleFileName) {
+		final String adjustedFileName =
+				FileDownloadResource.getDownloadFileName(visibleFileName, BreedingManagerUtil.getApplicationRequest());
+		final FileDownloadResource fileDownloadResource =
+				new FileDownloadResource(new File(ExportListAsDialog.TEMP_FILENAME), this.source.getApplication());
+		fileDownloadResource.setFilename(adjustedFileName);
+		this.source.getWindow().open(fileDownloadResource);
+	}
 
 	private void exportListForGenotypingOrderAction() {
 		if (this.germplasmList.isLockedList()) {
 			final String tempFileName = System.getProperty(ExportListAsDialog.USER_HOME) + "/tempListForGenotyping.xls";
-			final GermplasmListExporter listExporter = new GermplasmListExporter(this.germplasmList.getId());
 
 			try {
-				listExporter.exportKBioScienceGenotypingOrderXLS(tempFileName, 96);
+				this.germplasmListExporter.exportKBioScienceGenotypingOrderXLS(this.germplasmList.getId(),tempFileName, 96);
 				final FileDownloadResource fileDownloadResource =
 						new FileDownloadResource(new File(tempFileName), this.source.getApplication());
 				final String listName = this.germplasmList.getName();
@@ -356,10 +358,18 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	}
 
 	public void setListExporter(final GermplasmListExporter listExporter) {
-		this.listExporter = listExporter;
+		this.germplasmListExporter = listExporter;
 	}
 
 	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
+
+    public void setExportOptionValue(String comboValue) {
+        this.formatOptionsCbx.setValue(comboValue);
+    }
+
+    protected String formatCustomReportString(CustomReportType type) {
+        return type.getCode() + " - " + type.getName();
+    }
 }

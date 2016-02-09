@@ -265,6 +265,8 @@
         <aop:scoped-proxy />
     </bean>
 
+    <bean id="germplasmListExporter" class="org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter"/>
+
 	<bean id="managerFactory" name="managerFactory" factory-bean="managerFactoryProvider"
 		factory-method="createInstance" scope="request">
 		<aop:scoped-proxy />

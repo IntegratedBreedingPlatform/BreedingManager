@@ -91,16 +91,13 @@ public class GermplasmListExporter {
 	@Resource
 	private GermplasmExportService germplasmExportService;
 
-	private final Integer listId;
+    public GermplasmListExporter() {
+    }
 
-	public GermplasmListExporter(final Integer germplasmListId) {
-		this.listId = germplasmListId;
-	}
-
-	public FileOutputStream exportKBioScienceGenotypingOrderXLS(final String filename, final int plateSize) throws GermplasmListExporterException {
+	public FileOutputStream exportKBioScienceGenotypingOrderXLS(final int germplasmListID, final String filename, final int plateSize) throws GermplasmListExporterException {
 
 		final List<ExportColumnHeader> exportColumnHeaders = this.getColumnHeadersForGenotypingData(plateSize);
-		final List<Map<Integer, ExportColumnValue>> exportColumnValues = this.getColumnValuesForGenotypingData(plateSize);
+		final List<Map<Integer, ExportColumnValue>> exportColumnValues = this.getColumnValuesForGenotypingData(germplasmListID, plateSize);
 
 		try {
 			return this.germplasmExportService.generateExcelFileForSingleSheet(exportColumnValues, exportColumnHeaders, filename, "List");
@@ -123,11 +120,11 @@ public class GermplasmListExporter {
 		return exportColumnHeaders;
 	}
 
-	protected List<Map<Integer, ExportColumnValue>> getColumnValuesForGenotypingData(final int plateSize) throws GermplasmListExporterException {
+	protected List<Map<Integer, ExportColumnValue>> getColumnValuesForGenotypingData(final int germplasmListID, final int plateSize) throws GermplasmListExporterException {
 
 		final List<Map<Integer, ExportColumnValue>> exportColumnValues = new ArrayList<>();
 
-		final GermplasmList germplasmList = this.getGermplasmListAndListData(this.listId);
+		final GermplasmList germplasmList = this.getGermplasmListAndListData(germplasmListID);
 		final String listName = germplasmList.getName();
 
 		final List<GermplasmListData> listDatas = germplasmList.getListData();
@@ -182,11 +179,11 @@ public class GermplasmListExporter {
 		return exportColumnValues;
 	}
 
-	public Reporter exportGermplasmListCustomReport(final String fileName, final String reportCode) throws GermplasmListExporterException {
+	public Reporter exportGermplasmListCustomReport(final int germplasmListID, final String fileName, final String reportCode) throws GermplasmListExporterException {
 		try {
 			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			final Reporter customReport =
-					this.reportService.getStreamGermplasmListReport(reportCode, this.listId, contextUtil.getProjectInContext()
+					this.reportService.getStreamGermplasmListReport(reportCode, germplasmListID, contextUtil.getProjectInContext()
 							.getProjectName(), baos);
 			final File createdFile = new File(fileName);
 			baos.writeTo(new FileOutputStream(createdFile));
@@ -196,14 +193,14 @@ public class GermplasmListExporter {
 		}
 	}
 
-	public FileOutputStream exportGermplasmListXLS(final String fileName, final Table listDataTable) throws GermplasmListExporterException {
+	public FileOutputStream exportGermplasmListXLS(final int germplasmListID, final String fileName, final Table listDataTable) throws GermplasmListExporterException {
 
 		final Integer currentLocalIbdbUserId = this.getCurrentLocalIbdbUserId();
 
 		final GermplasmListExportInputValues input = new GermplasmListExportInputValues();
 		input.setFileName(fileName);
 
-		final GermplasmList germplasmList = this.getGermplasmListAndListData(this.listId);
+		final GermplasmList germplasmList = this.getGermplasmListAndListData(germplasmListID);
 
 		input.setGermplasmList(germplasmList);
 
@@ -223,7 +220,7 @@ public class GermplasmListExporter {
 
 		input.setVariateVariableMap(this.getVariateVariables());
 
-		input.setGermplasmParents(this.getGermplasmParentsMap(listDataTable, this.listId));
+		input.setGermplasmParents(this.getGermplasmParentsMap(listDataTable, germplasmListID));
 
 		return this.germplasmExportService.generateGermplasmListExcelFile(input);
 	}
