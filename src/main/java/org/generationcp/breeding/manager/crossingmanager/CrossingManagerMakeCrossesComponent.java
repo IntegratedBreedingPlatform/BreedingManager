@@ -173,7 +173,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	}
 
 	public void updateNurseryLink(final Integer id) {
-		if( null == id) {
+		if( null == id || this.nurseryLink == null) {
 			return;
 		}
 		final String oldNurseryLinkUrl = ((ExternalResource)this.nurseryLink.getResource()).getURL();
