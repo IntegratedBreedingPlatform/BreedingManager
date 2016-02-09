@@ -146,4 +146,11 @@ public class ImportedGermplasmList extends ImportedDescriptionDetails {
 
 	}
 
+	/**
+	 * @param importedFactors
+	 */
+	public void setImportedFactors(final List<ImportedFactor> importedFactors) {
+		this.importedFactors = importedFactors;
+	}
+
 }

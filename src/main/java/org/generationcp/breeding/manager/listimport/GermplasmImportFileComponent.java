@@ -118,13 +118,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 				MessageNotifier.showWarning(this.source.getWindow(), "Warning", this.germplasmListUploader.hasWarnings());
 			}
 
-			final List<ImportedFactor> importedNameFactors = this.extractListOfImportedNames();
-			if (!importedNameFactors.isEmpty()) {
-				final NameHandlingDialog nameHandlingDialog = new NameHandlingDialog(this, importedNameFactors);
-				this.getWindow().addWindow(nameHandlingDialog);
-			} else {
-				this.source.nextStep();
-			}
+			this.nextStep();
 
 		} catch (final GermplasmImportException e) {
 			GermplasmImportFileComponent.LOG.debug(ERROR_IMPORTING + e.getMessage(), e);
@@ -142,7 +136,23 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 		}
 	}
 
-	private List<ImportedFactor> extractListOfImportedNames() {
+	/**
+	 * Will display a pop up for Name Handling Dialog, if the imported germplasm list has name types, if not proceed to the next screen
+	 */
+	void nextStep() {
+		final List<ImportedFactor> importedNameFactors = this.extractListOfImportedNames();
+		if (!importedNameFactors.isEmpty()) {
+			final NameHandlingDialog nameHandlingDialog = new NameHandlingDialog(this, importedNameFactors);
+
+			if (this.getWindow() != null) {
+				this.getWindow().addWindow(nameHandlingDialog);
+			}
+		} else {
+			this.source.nextStep();
+		}
+	}
+
+	List<ImportedFactor> extractListOfImportedNames() {
 
 		final List<UserDefinedField> nameFields =
 				this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(RowColumnType.NAME_TYPES.getFtable(),
@@ -302,6 +312,10 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 		return this.germplasmListUploader;
 	}
 
+	void setGermplasmListUploader(final GermplasmListUploader germplasmListUploader) {
+		this.germplasmListUploader = germplasmListUploader;
+	}
+
 	protected void cancelButtonAction() {
 		final Window window = this.source.getWindow();
 		if (this.source.getGermplasmImportPopupSource() == null) {
@@ -321,4 +335,14 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 		this.germplasmListUploader.getImportedGermplasmList().setPreferredNameCode(preferredNameType);
 		this.source.nextStep();
 	}
+
+	/**
+	 * FOR TEST ONLY
+	 * 
+	 * @param germplasmDataManager
+	 */
+	void setGermplasmDataManager(final GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
+	}
+
 }
