@@ -260,6 +260,11 @@
 		<property name="pedigreeProfile" value="${pedigree.profile}"/>
 	</bean>
 
+    <bean id="reportService" factory-bean="managerFactory"
+          factory-method="getReportService" scope="request">
+        <aop:scoped-proxy />
+    </bean>
+
 	<bean id="managerFactory" name="managerFactory" factory-bean="managerFactoryProvider"
 		factory-method="createInstance" scope="request">
 		<aop:scoped-proxy />
