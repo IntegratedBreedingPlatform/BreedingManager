@@ -45,6 +45,8 @@ import com.vaadin.ui.themes.BaseTheme;
 public class GermplasmImportFileComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent,
 		BreedingManagerLayout, NameHandlingDialogSource {
 
+	private static final String ERROR_IMPORTING = "Error importing ";
+	private static final String ERROR = "Error";
 	public static final String FB_CLOSE_WINDOW_JS_CALL = "window.parent.cancelImportGermplasm()";
 	private static final long serialVersionUID = 9097810121003895303L;
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmImportFileComponent.class);
@@ -103,7 +105,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 		// Valid File Extensions are .xls and .xlsx
 		final String extension = FilenameUtils.getExtension(this.germplasmListUploader.getOriginalFilename()).toLowerCase();
 		if (!this.extensionSet.contains(extension)) {
-			MessageNotifier.showError(this.getWindow(), "Error", this.messageSource.getMessage("GERMPLSM_INVALID_FILE_EXTENSION_ERROR"));
+			MessageNotifier.showError(this.getWindow(), ERROR, this.messageSource.getMessage("GERMPLSM_INVALID_FILE_EXTENSION_ERROR"));
 			return;
 		}
 
@@ -117,7 +119,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 			}
 
 			final List<ImportedFactor> importedNameFactors = this.extractListOfImportedNames();
-			if (importedNameFactors.size() > 0) {
+			if (!importedNameFactors.isEmpty()) {
 				final NameHandlingDialog nameHandlingDialog = new NameHandlingDialog(this, importedNameFactors);
 				this.getWindow().addWindow(nameHandlingDialog);
 			} else {
@@ -125,17 +127,17 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 			}
 
 		} catch (final GermplasmImportException e) {
-			GermplasmImportFileComponent.LOG.debug("Error importing " + e.getMessage(), e);
+			GermplasmImportFileComponent.LOG.debug(ERROR_IMPORTING + e.getMessage(), e);
 			MessageNotifier.showError(this.getWindow(), e.getCaption(), e.getMessage());
 		} catch (final FileParsingException e) {
-			GermplasmImportFileComponent.LOG.debug("Error importing " + e.getMessage(), e);
+			GermplasmImportFileComponent.LOG.debug(ERROR_IMPORTING + e.getMessage(), e);
 			final String message = this.messageSource.getMessage(e.getMessage(), e.getMessageParameters(), Locale.getDefault());
-			MessageNotifier.showError(this.getWindow(), "Error", message);
+			MessageNotifier.showError(this.getWindow(), ERROR, message);
 		} catch (final InvalidFileDataException e) {
 			// Display Error message if Observations is empty and disable Next Button.
-			GermplasmImportFileComponent.LOG.debug("Error importing " + e.getMessage(), e);
+			GermplasmImportFileComponent.LOG.debug(ERROR_IMPORTING + e.getMessage(), e);
 			final String message = this.messageSource.getMessage(e.getMessage(), e.getMessageParameters(), Locale.getDefault());
-			MessageNotifier.showError(this.getWindow(), "Error", message);
+			MessageNotifier.showError(this.getWindow(), ERROR, message);
 			this.nextButton.setEnabled(false);
 		}
 	}

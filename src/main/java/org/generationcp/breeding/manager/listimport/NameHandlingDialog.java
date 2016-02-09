@@ -3,8 +3,6 @@ package org.generationcp.breeding.manager.listimport;
 
 import java.util.List;
 
-import javax.annotation.Resource;
-
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ConfirmOption;
@@ -13,7 +11,6 @@ import org.generationcp.commons.parsing.pojo.ImportedFactor;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
-import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -50,9 +47,6 @@ public class NameHandlingDialog extends BaseSubWindow implements BreedingManager
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
-
-	@Resource
-	private OntologyDataManager ontologyDataManager;
 
 	public NameHandlingDialog(final NameHandlingDialogSource source, final List<ImportedFactor> importedNameFactors) {
 		this.source = source;
@@ -169,8 +163,7 @@ public class NameHandlingDialog extends BaseSubWindow implements BreedingManager
 
 	@Override
 	public void windowClose(final CloseEvent e) {
-		// TODO Auto-generated method stub
-
+		// do nothing
 	}
 
 }
