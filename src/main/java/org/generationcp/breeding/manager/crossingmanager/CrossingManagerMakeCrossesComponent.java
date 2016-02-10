@@ -7,7 +7,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.poi.util.StringUtil;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
@@ -176,7 +178,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		if( null == id || this.nurseryLink == null) {
 			return;
 		}
-		final String oldNurseryLinkUrl = ((ExternalResource)this.nurseryLink.getResource()).getURL();
+		// get the part of the link already on the page without URL parameters part
+		final String oldNurseryLinkUrl = StringUtils.substringBefore(((ExternalResource) this.nurseryLink.getResource()).getURL(), "?");
 		final ExternalResource urlToNursery = new ExternalResource(oldNurseryLinkUrl + "?" + BreedingManagerApplication
 				.REQ_PARAM_CROSSES_LIST_ID + "=" + id);
 		this.nurseryLink.setResource(urlToNursery);
