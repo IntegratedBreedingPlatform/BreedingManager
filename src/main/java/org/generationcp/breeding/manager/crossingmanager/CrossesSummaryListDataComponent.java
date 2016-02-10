@@ -77,6 +77,9 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 	@Autowired
 	private PlatformTransactionManager transactionManager;
 
+    @Autowired
+    private GermplasmListExporter exporter;
+
 	private Label listEntriesLabel;
 
 	private Table listDataTable;
@@ -107,7 +110,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 	// Gid, Method of germplasm
 	private Map<Integer, Object> methodMap;
 
-	public CrossesSummaryListDataComponent(GermplasmList list) {
+	public CrossesSummaryListDataComponent(final GermplasmList list) {
 		this.list = list;
 	}
 
@@ -154,41 +157,41 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 	}
 
 	private void populateTable() {
-		this.parentsInfo = new HashMap<Integer, CrossParents>();
+		this.parentsInfo = new HashMap<>();
 
-		for (GermplasmListData entry : this.listEntries) {
-			Integer gid = entry.getGid();
-			String gidString = String.format("%s", gid.toString());
+		for (final GermplasmListData entry : this.listEntries) {
+			final Integer gid = entry.getGid();
+			final String gidString = String.format("%s", gid.toString());
 
-			Button gidButton =
+			final Button gidButton =
 					this.generateLaunchGermplasmDetailsButton(gidString, gidString,
 							CrossesSummaryListDataComponent.CLICK_TO_VIEW_CROSS_INFORMATION);
-			Button desigButton =
+			final Button desigButton =
 					this.generateLaunchGermplasmDetailsButton(entry.getDesignation(), gidString,
 							CrossesSummaryListDataComponent.CLICK_TO_VIEW_CROSS_INFORMATION);
 
-			Germplasm germplasm = this.germplasmMap.get(gid);
-			Integer femaleGid = germplasm.getGpid1();
-			String femaleGidString = femaleGid.toString();
-			Button femaleGidButton =
+			final Germplasm germplasm = this.germplasmMap.get(gid);
+			final Integer femaleGid = germplasm.getGpid1();
+			final String femaleGidString = femaleGid.toString();
+			final Button femaleGidButton =
 					this.generateLaunchGermplasmDetailsButton(femaleGidString, femaleGidString,
 							CrossesSummaryListDataComponent.CLICK_TO_VIEW_FEMALE_INFORMATION);
-			String femaleDesig = this.parentGermplasmNames.get(femaleGid);
-			Button femaleDesigButton =
+			final String femaleDesig = this.parentGermplasmNames.get(femaleGid);
+			final Button femaleDesigButton =
 					this.generateLaunchGermplasmDetailsButton(femaleDesig, femaleGidString,
 							CrossesSummaryListDataComponent.CLICK_TO_VIEW_FEMALE_INFORMATION);
 
-			Integer maleGid = germplasm.getGpid2();
-			String maleGidString = maleGid.toString();
-			Button maleGidButton =
+			final Integer maleGid = germplasm.getGpid2();
+			final String maleGidString = maleGid.toString();
+			final Button maleGidButton =
 					this.generateLaunchGermplasmDetailsButton(maleGidString, maleGidString,
 							CrossesSummaryListDataComponent.CLICK_TO_VIEW_MALE_INFORMATION);
-			String maleDesig = this.parentGermplasmNames.get(maleGid);
-			Button maleDesigButton =
+			final String maleDesig = this.parentGermplasmNames.get(maleGid);
+			final Button maleDesigButton =
 					this.generateLaunchGermplasmDetailsButton(maleDesig, maleGidString,
 							CrossesSummaryListDataComponent.CLICK_TO_VIEW_MALE_INFORMATION);
 
-			Method method = (Method) this.methodMap.get(gid);
+			final Method method = (Method) this.methodMap.get(gid);
 
 			this.listDataTable.addItem(
 					new Object[] {entry.getEntryId(), desigButton, entry.getGroupName(), entry.getEntryCode(), gidButton,
@@ -200,16 +203,16 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 
 	}
 
-	private void addToParentsInfoMap(Integer id, Integer femaleGid, String femaleDesig, Integer maleGid, String maleDesig) {
+	private void addToParentsInfoMap(final Integer id, final Integer femaleGid, final String femaleDesig, final Integer maleGid, final String maleDesig) {
 
-		GermplasmListEntry femaleEntry = new GermplasmListEntry(null, femaleGid, null, femaleDesig);
-		GermplasmListEntry maleEntry = new GermplasmListEntry(null, maleGid, null, maleDesig);
-		CrossParents parents = new CrossParents(femaleEntry, maleEntry);
+		final GermplasmListEntry femaleEntry = new GermplasmListEntry(null, femaleGid, null, femaleDesig);
+		final GermplasmListEntry maleEntry = new GermplasmListEntry(null, maleGid, null, maleDesig);
+		final CrossParents parents = new CrossParents(femaleEntry, maleEntry);
 		this.parentsInfo.put(id, parents);
 	}
 
-	private Button generateLaunchGermplasmDetailsButton(String caption, String gid, String description) {
-		Button gidButton = new Button(caption, new GidLinkClickListener(gid, true));
+	private Button generateLaunchGermplasmDetailsButton(final String caption, final String gid, final String description) {
+		final Button gidButton = new Button(caption, new GidLinkClickListener(gid, true));
 		gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 		gidButton.setDescription(description);
 		return gidButton;
@@ -222,7 +225,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 			private static final long serialVersionUID = -7600642919550425308L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				CrossesSummaryListDataComponent.this.menu.show(event.getClientX(), event.getClientY());
 			}
 		});
@@ -236,8 +239,8 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 				final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
 				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 					@Override
-					protected void doInTransactionWithoutResult(TransactionStatus status) {
-						ContextMenuItem clickedItem = event.getClickedItem();
+					protected void doInTransactionWithoutResult(final TransactionStatus status) {
+						final ContextMenuItem clickedItem = event.getClickedItem();
 						if (CrossesSummaryListDataComponent.this.menuExportList.equals(clickedItem)) {
 							CrossesSummaryListDataComponent.this.exportCrossesMadeAction();
 						}
@@ -251,7 +254,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 			private static final long serialVersionUID = 329434322390122057L;
 
 			@Override
-			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+			public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
 				CrossesSummaryListDataComponent.this.openViewListHeaderWindow();
 			}
 		});
@@ -262,11 +265,11 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 	public void layoutComponents() {
 		this.setSpacing(true);
 
-		HorizontalLayout tableHeaderLayout = new HorizontalLayout();
+		final HorizontalLayout tableHeaderLayout = new HorizontalLayout();
 		tableHeaderLayout.setHeight("27px");
 		tableHeaderLayout.setWidth("100%");
 
-		HorizontalLayout leftHeaderLayout = new HorizontalLayout();
+		final HorizontalLayout leftHeaderLayout = new HorizontalLayout();
 		leftHeaderLayout.setSpacing(true);
 		leftHeaderLayout.setHeight("100%");
 		leftHeaderLayout.addComponent(this.listEntriesLabel);
@@ -278,7 +281,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 		tableHeaderLayout.setComponentAlignment(leftHeaderLayout, Alignment.MIDDLE_LEFT);
 		tableHeaderLayout.setComponentAlignment(this.toolsButton, Alignment.MIDDLE_RIGHT);
 
-		VerticalLayout tableLayout = new VerticalLayout();
+		final VerticalLayout tableLayout = new VerticalLayout();
 		this.listDataTable.setWidth("100%");
 		tableLayout.addComponent(this.listDataTable);
 		tableLayout.setComponentAlignment(this.listDataTable, Alignment.TOP_LEFT);
@@ -290,29 +293,29 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 
 	private void retrieveGermplasmsInformation() {
 		try {
-			List<Integer> germplasmIds = new ArrayList<Integer>();
-			this.germplasmMap = new HashMap<Integer, Germplasm>();
+			final List<Integer> germplasmIds = new ArrayList<>();
+			this.germplasmMap = new HashMap<>();
 
 			// retrieve germplasm of list data to get its parent germplasms
 			this.listEntries = this.germplasmListManager.getGermplasmListDataByListId(this.list.getId());
-			for (GermplasmListData entry : this.listEntries) {
+			for (final GermplasmListData entry : this.listEntries) {
 				germplasmIds.add(entry.getGid());
 			}
-			List<Germplasm> existingGermplasms = this.germplasmDataManager.getGermplasms(germplasmIds);
+			final List<Germplasm> existingGermplasms = this.germplasmDataManager.getGermplasms(germplasmIds);
 
 			// retrieve methods of germplasms
 			this.methodMap = this.germplasmDataManager.getMethodsByGids(germplasmIds);
 
 			// retrieve preferred names of parent germplasms
-			List<Integer> parentIds = new ArrayList<Integer>();
-			for (Germplasm germplasm : existingGermplasms) {
+			final List<Integer> parentIds = new ArrayList<>();
+			for (final Germplasm germplasm : existingGermplasms) {
 				this.germplasmMap.put(germplasm.getGid(), germplasm);
 				parentIds.add(germplasm.getGpid1());
 				parentIds.add(germplasm.getGpid2());
 			}
 			this.parentGermplasmNames = this.germplasmDataManager.getPreferredNamesByGids(parentIds);
 
-		} catch (MiddlewareQueryException ex) {
+		} catch (final MiddlewareQueryException ex) {
 			CrossesSummaryListDataComponent.LOG.error(ex.getMessage() + this.list.getId(), ex);
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
 					"Error in getting list and/or germplasm information.");
@@ -323,7 +326,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 		this.count = Long.valueOf(0);
 		try {
 			this.count = this.germplasmListManager.countGermplasmListDataByListId(this.list.getId());
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			CrossesSummaryListDataComponent.LOG.error(e.getMessage(), e);
 		}
 
@@ -365,12 +368,11 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 	}
 
 	private void exportCrossesMadeAction() {
-		GermplasmListExporter exporter = new GermplasmListExporter(this.list.getId());
-		String tempFileName = System.getProperty(AppConstants.USER_HOME) + "/temp.xls";
+		final String tempFileName = System.getProperty(AppConstants.USER_HOME) + "/temp.xls";
 
 		try {
-			exporter.exportGermplasmListXLS(tempFileName, this.listDataTable);
-			FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
+			exporter.exportGermplasmListXLS(this.list.getId(), tempFileName, this.listDataTable);
+			final FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
 			fileDownloadResource.setFilename(FileDownloadResource.getDownloadFileName(this.list.getName(),
 					BreedingManagerUtil.getApplicationRequest()).replace(" ", "_")
 					+ ".xls");
@@ -391,7 +393,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 		this.listDataTable.focus();
 	}
 
-	protected String getTermNameFromOntology(ColumnLabels columnLabels) {
+	protected String getTermNameFromOntology(final ColumnLabels columnLabels) {
 		return columnLabels.getTermNameFromOntology(this.ontologyDataManager);
 	}
 
@@ -399,19 +401,19 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 		return this.listDataTable;
 	}
 
-	public void setListDataTable(Table listDataTable) {
+	public void setListDataTable(final Table listDataTable) {
 		this.listDataTable = listDataTable;
 	}
 
-	public void setOntologyDataManager(OntologyDataManager ontologyDataManager) {
+	public void setOntologyDataManager(final OntologyDataManager ontologyDataManager) {
 		this.ontologyDataManager = ontologyDataManager;
 	}
 
-	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 
-	public void setGermplasmListManager(GermplasmListManager germplasmListManager) {
+	public void setGermplasmListManager(final GermplasmListManager germplasmListManager) {
 		this.germplasmListManager = germplasmListManager;
 	}
 
