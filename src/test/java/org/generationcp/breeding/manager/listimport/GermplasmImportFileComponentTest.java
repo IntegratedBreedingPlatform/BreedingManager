@@ -2,9 +2,9 @@
 package org.generationcp.breeding.manager.listimport;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
+import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
 import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.commons.parsing.pojo.ImportedFactor;
@@ -107,24 +107,11 @@ public class GermplasmImportFileComponentTest {
 
 	private void initImportedGermplasmList(final boolean withNameFactors) {
 		final ImportedGermplasmList importedGermplasmList =
-				new ImportedGermplasmList("GermplasmImportTemplate.xls", "", "", "", new Date());
-		importedGermplasmList.setImportedFactors(this.createImportedFactors(withNameFactors));
+				ImportedGermplasmListDataInitializer.createImportedGermplasmList(10, withNameFactors);
 
 		Mockito.doReturn(this.createUserDefinedFieldsForNameType()).when(this.germplasmDataManager)
 				.getUserDefinedFieldByFieldTableNameAndType(RowColumnType.NAME_TYPES.getFtable(), RowColumnType.NAME_TYPES.getFtype());
 		Mockito.doReturn(importedGermplasmList).when(this.germplasmListUploader).getImportedGermplasmList();
-	}
-
-	private List<ImportedFactor> createImportedFactors(final boolean withNameFactors) {
-		final List<ImportedFactor> importedFactors = new ArrayList<ImportedFactor>();
-
-		importedFactors.add(new ImportedFactor("ENTRY", "The germplasm entry number", "GERMPLASM ENTRY", "NUMBER", "ENUMERATED", "C", ""));
-		importedFactors.add(new ImportedFactor("DESIGNATION", "The name of the germplasm", "GERMPLASM ID", "DBCV", "ASSIGNED", "C", ""));
-		if (withNameFactors) {
-			importedFactors.add(new ImportedFactor("DRVNM", "Derivative Name", "GERMPLASM ID", "NAME", "ASSIGNED", "C", ""));
-		}
-
-		return importedFactors;
 	}
 
 	@Test

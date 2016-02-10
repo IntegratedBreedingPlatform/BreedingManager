@@ -173,10 +173,12 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	 * @param preferredNameCode
 	 * @param importedGermplasms
 	 */
-	private void updateExportedGermplasmPreferredName(final String preferredNameCode, final List<ImportedGermplasm> importedGermplasms) {
+	void updateExportedGermplasmPreferredName(final String preferredNameCode, final List<ImportedGermplasm> importedGermplasms) {
 		for (final ImportedGermplasm importedGermplasm : importedGermplasms) {
 			final String newPreferredName = importedGermplasm.getNameFactors().get(preferredNameCode);
-			this.germplasmManager.updateGermplasmPrefName(importedGermplasm.getGid(), newPreferredName);
+			if (newPreferredName != null && newPreferredName.trim().length() > 0) {
+				this.germplasmManager.updateGermplasmPrefName(importedGermplasm.getGid(), newPreferredName);
+			}
 		}
 	}
 
