@@ -274,7 +274,7 @@ public class ProcessImportedGermplasmActionTest {
 	@Test
 	public void testUpdateGidWhenGermplasmIdIsExisting() {
 		final int gid = 100;
-		final ImportedGermplasm importedGermplasm = ImportedGermplasmListDataInitializer.createImportedGermplasm(gid);
+		final ImportedGermplasm importedGermplasm = ImportedGermplasmListDataInitializer.createImportedGermplasm(gid, true);
 		importedGermplasm.setDesig("Name" + gid);
 
 		final int germplasmMatchesCount = 1;
@@ -300,7 +300,7 @@ public class ProcessImportedGermplasmActionTest {
 	@Test
 	public void testUpdateGidWhenNoGermplasmIdIsExisting() {
 		final int gid = 0;
-		final ImportedGermplasm importedGermplasm = ImportedGermplasmListDataInitializer.createImportedGermplasm(gid);
+		final ImportedGermplasm importedGermplasm = ImportedGermplasmListDataInitializer.createImportedGermplasm(gid, true);
 		importedGermplasm.setDesig("Name" + gid);
 
 		final int germplasmMatchesCount = 0;
