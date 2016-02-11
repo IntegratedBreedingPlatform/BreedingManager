@@ -47,6 +47,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 	public static final String ID_PREFIX = "-";
 	public static final String REQ_PARAM_NURSERY_ID = "nurseryid";
 	public static final String REQ_PARAM_LIST_ID = "germplasmlistid";
+	public static final String REQ_PARAM_CROSSES_LIST_ID = "crosseslistid";
 	public static final String PATH_TO_NURSERY = "/Fieldbook/NurseryManager/";
 	public static final String PATH_TO_EDIT_NURSERY = "/Fieldbook/NurseryManager/editNursery/";
 
@@ -160,7 +161,6 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 					final boolean errorWithListIdReqParam = listId == -1;
 					final boolean errorWithNurseryIdReqParam = nurseryId.isEmpty() || !NumberUtils.isDigits(nurseryId);
 
-					manageCrossingSettings.setName(name + ID_PREFIX + listId + ID_PREFIX + nurseryId);
 					manageCrossingSettings.setSizeUndefined();
 
 					return validateAndConstructWindow(manageCrossingSettings, listId, errorWithListIdReqParam, errorWithNurseryIdReqParam);
