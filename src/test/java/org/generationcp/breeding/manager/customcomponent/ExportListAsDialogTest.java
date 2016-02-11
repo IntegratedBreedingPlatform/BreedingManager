@@ -5,17 +5,26 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.vaadin.Application;
+import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.data.initializer.GermplasmExportDataInitializer;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
+import org.generationcp.breeding.manager.util.FileDownloaderUtility;
 import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.commons.constant.ToolEnum;
+import org.generationcp.commons.constant.ToolSection;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
+import org.generationcp.commons.pojo.CustomReportType;
+import org.generationcp.commons.reports.service.JasperReportService;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.reports.Reporter;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -32,12 +41,13 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
+import org.springframework.transaction.PlatformTransactionManager;
 
 public class ExportListAsDialogTest {
 
 	private static final int NO_OF_LIST_ENTRIES = 10;
 	private static final Integer USER_ID = 1;
-	private final String exportWarningMessages = "";
+	private static final Integer TEST_GERMPLASM_LIST_ID = 2;
 
 	private static Table listDataTable;
 	private static List<GermplasmListData> listEntries;
@@ -58,6 +68,18 @@ public class ExportListAsDialogTest {
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
 
+	@Mock
+	private PlatformTransactionManager transactionManager;
+
+	@Mock
+	private JasperReportService jasperReportService;
+
+	@Mock
+	private FileDownloaderUtility fileDownloaderUtility;
+
+	@Mock
+	private Application application;
+
 	private ExportListAsDialog dialog;
 
 	private static Table emptyTable;
@@ -75,20 +97,27 @@ public class ExportListAsDialogTest {
 		MockitoAnnotations.initMocks(this);
 
 		ExportListAsDialogTest.listDataTable = ExportListAsDialogTest.generateTestTable();
-		this.dialog =
-				Mockito.spy(new ExportListAsDialog(this.source, ExportListAsDialogTest.germplasmList, ExportListAsDialogTest.listDataTable));
+		this.dialog = new ExportListAsDialog(this.source, ExportListAsDialogTest.germplasmList, ExportListAsDialogTest.listDataTable);
 
-		this.listExporter = Mockito.mock(GermplasmListExporter.class);
 		this.dialog.setListExporter(this.listExporter);
 		this.dialog.setMessageSource(this.messageSource);
+		this.dialog.setTransactionManager(this.transactionManager);
+		this.dialog.setJasperReportService(this.jasperReportService);
+		this.dialog.setFileDownloaderUtility(this.fileDownloaderUtility);
 
-		Mockito.doNothing().when(this.dialog).showMessage(this.exportWarningMessages);
 		Mockito.doReturn(Mockito.mock(FileOutputStream.class)).when(this.listExporter)
-				.exportGermplasmListXLS(ExportListAsDialog.TEMP_FILENAME, ExportListAsDialogTest.listDataTable);
+				.exportGermplasmListXLS(TEST_GERMPLASM_LIST_ID, ExportListAsDialog.TEMP_FILENAME, ExportListAsDialogTest.listDataTable);
+		Mockito.doReturn("Export Format").when(this.messageSource).getMessage(Message.EXPORT_FORMAT);
+		Mockito.doReturn("Genotyping Order").when(this.messageSource).getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER);
+		Mockito.doReturn(GermplasmExportDataInitializer.createCustomReportTypeList()).when(this.jasperReportService)
+				.getCustomReportTypes(ToolSection.BM_LIST_MGR_CUSTOM_REPORT.name(), ToolEnum.LIST_MANAGER.getToolName());
 
-		Mockito.doReturn(this.fileDownloadResource).when(this.dialog).createFileDownloadResource();
 		Mockito.doReturn(this.window).when(this.source).getWindow();
 		Mockito.doNothing().when(this.window).open(this.fileDownloadResource);
+		Mockito.doReturn(this.application).when(this.source).getApplication();
+
+		dialog.instantiateComponents();
+		dialog.initializeValues();
 	}
 
 	@Test
@@ -115,27 +144,24 @@ public class ExportListAsDialogTest {
 
 		Assert.assertTrue(this.dialog.isARequiredColumnHidden(ExportListAsDialogTest.listDataTable));
 		this.dialog.showWarningMessage(ExportListAsDialogTest.listDataTable);
-		Mockito.verify(this.dialog, Mockito.times(1)).showMessage(this.exportWarningMessages);
 	}
 
 	@Test
 	public void testShowWarningMessageWhenListDataTableDoNotHaveHiddenRequiredColumns() {
 		Assert.assertFalse(this.dialog.isARequiredColumnHidden(ExportListAsDialogTest.listDataTable));
-		this.dialog.showWarningMessage(ExportListAsDialogTest.listDataTable);
-		Mockito.verify(this.dialog, Mockito.times(0)).showMessage(this.exportWarningMessages);
 	}
 
 	@Test
 	public void testExportListAsXLS() throws GermplasmListExporterException, MiddlewareQueryException {
 		this.dialog.exportListAsXLS(ExportListAsDialogTest.listDataTable);
-		Mockito.verify(this.listExporter, Mockito.times(1)).exportGermplasmListXLS(ExportListAsDialog.TEMP_FILENAME,
-				ExportListAsDialogTest.listDataTable);
+		Mockito.verify(this.listExporter, Mockito.times(1)).exportGermplasmListXLS(TEST_GERMPLASM_LIST_ID,
+				ExportListAsDialog.TEMP_FILENAME, ExportListAsDialogTest.listDataTable);
 	}
 
 	@Test
 	public void testExportListAsXLSWithException() throws GermplasmListExporterException, MiddlewareQueryException {
 		Mockito.doThrow(new GermplasmListExporterException()).when(this.listExporter)
-				.exportGermplasmListXLS(ExportListAsDialog.TEMP_FILENAME, ExportListAsDialogTest.emptyTable);
+				.exportGermplasmListXLS(TEST_GERMPLASM_LIST_ID, ExportListAsDialog.TEMP_FILENAME, ExportListAsDialogTest.emptyTable);
 		this.dialog.exportListAsXLS(ExportListAsDialogTest.emptyTable);
 		Mockito.verify(this.window, Mockito.times(0)).open(this.fileDownloadResource);
 	}
@@ -146,6 +172,27 @@ public class ExportListAsDialogTest {
 		this.dialog.exportListAsCSV(ExportListAsDialogTest.listDataTable);
 		Mockito.verify(this.listExporter, Mockito.times(1)).exportGermplasmListCSV(ExportListAsDialog.TEMP_FILENAME,
 				ExportListAsDialogTest.listDataTable);
+	}
+
+	@Test
+	public void testExportListAsCustomReport() throws GermplasmListExporterException {
+
+		// set the drop down so that it simulates selection of the user of a custom report type
+		List<CustomReportType> customReportTypes = GermplasmExportDataInitializer.createCustomReportTypeList();
+        CustomReportType customReport = customReportTypes.get(0);
+        this.dialog.setExportOptionValue(this.dialog.formatCustomReportString(customReport));
+
+        Reporter reporter = Mockito.mock(Reporter.class);
+		Mockito.doReturn(reporter)
+				.when(this.listExporter)
+				.exportGermplasmListCustomReport(TEST_GERMPLASM_LIST_ID, ExportListAsDialog.TEMP_FILENAME,
+						customReport.getCode());
+
+		this.dialog.exportListAction(new Table());
+
+		// verify that custom report generation is triggered when executing the current export action
+		Mockito.verify(this.listExporter).exportGermplasmListCustomReport(TEST_GERMPLASM_LIST_ID, ExportListAsDialog.TEMP_FILENAME,
+				customReport.getCode());
 	}
 
 	@Test
@@ -165,6 +212,8 @@ public class ExportListAsDialogTest {
 		germplasmList.setDate(20141112L);
 		germplasmList.setNotes("Sample Notes");
 		germplasmList.setListData(ExportListAsDialogTest.generateListEntries());
+		germplasmList.setId(TEST_GERMPLASM_LIST_ID);
+		germplasmList.setStatus(100);
 
 		return germplasmList;
 	}

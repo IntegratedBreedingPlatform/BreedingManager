@@ -3,7 +3,9 @@ package org.generationcp.breeding.manager.customfields;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import junit.framework.Assert;
 
@@ -22,6 +24,7 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.GermplasmListMetadata;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -140,24 +143,30 @@ public class ListSelectorComponentTest {
 		listManagerTreeComponent.setUtil(this.contextUtil);
 
 		UserDataManager userDataManager = Mockito.mock(UserDataManager.class);
-		GermplasmList germplasmList = Mockito.mock(GermplasmList.class);
+		GermplasmList germplasmList = new GermplasmList();
 
-		Mockito.when(germplasmList.getType()).thenReturn(AppConstants.DB.LST);
-		Mockito.when(germplasmList.getId()).thenReturn(childGermplasmListId);
+		germplasmList.setType(AppConstants.DB.LST);
+		germplasmList.setId(childGermplasmListId);
 
 		List<GermplasmList> germplasmListChildren = new ArrayList<GermplasmList>();
 		germplasmListChildren.add(germplasmList);
 		Mockito.when(this.germplasmListManager.getGermplasmListByParentFolderIdBatched(parentGermplasmListId,
 				ListSelectorComponentTest.PROGRAM_UUID, ListSelectorComponent.BATCH_SIZE)).thenReturn(germplasmListChildren);
-		Long expectedNoOfEntries = 10L;
-		Mockito.when(this.germplasmListManager.countGermplasmListDataByListId(childGermplasmListId)).thenReturn(expectedNoOfEntries);
+
+		Integer expectedNoOfEntries = 10;
+		Map<Integer, GermplasmListMetadata> allListMetaData = new HashMap<Integer, GermplasmListMetadata>();
+		allListMetaData.put(childGermplasmListId, new GermplasmListMetadata(childGermplasmListId,
+				expectedNoOfEntries, "Child List Owner Name"));
+
+		Mockito.when(this.germplasmListManager.getAllGermplasmListMetadata()).thenReturn(allListMetaData);
 
 		listManagerTreeComponent.instantiateGermplasmListSourceComponent();
 		listManagerTreeComponent.setGermplasmListManager(this.germplasmListManager);
 		listManagerTreeComponent.setUserDataManager(userDataManager);
 		listManagerTreeComponent.addGermplasmListNode(parentGermplasmListId);
 		Item item = listManagerTreeComponent.getGermplasmListSource().getItem(childGermplasmListId);
-		Long actualNoOfEntries = Long.parseLong((String) item.getItemProperty(GermplasmListTreeTable.NUMBER_OF_ENTRIES_COL).getValue());
+		Integer actualNoOfEntries =
+				Integer.parseInt((String) item.getItemProperty(GermplasmListTreeTable.NUMBER_OF_ENTRIES_COL).getValue());
 		Assert.assertEquals("The number of entries should be the same", expectedNoOfEntries, actualNoOfEntries);
 
 	}
@@ -307,12 +316,17 @@ public class ListSelectorComponentTest {
 
 		Mockito.when(this.germplasmListManager.getAllTopLevelListsBatched(ListSelectorComponentTest.PROGRAM_UUID,
 				ListSelectorComponent.BATCH_SIZE)).thenReturn(germplasmListChildren);
-		Long expectedNoOfEntries = 10L;
-		Mockito.when(this.germplasmListManager.countGermplasmListDataByListId(childGermplasmListId)).thenReturn(expectedNoOfEntries);
+		Integer expectedNoOfEntries = 10;
+		Map<Integer, GermplasmListMetadata> allListMetaData = new HashMap<Integer, GermplasmListMetadata>();
+		allListMetaData.put(childGermplasmListId, new GermplasmListMetadata(childGermplasmListId,
+				expectedNoOfEntries, "Child List Owner Name"));
+		Mockito.when(this.germplasmListManager.getAllGermplasmListMetadata()).thenReturn(allListMetaData);
+
 		Mockito.when(userDataManager.getUserById(userId)).thenReturn(null);
 		listManagerTreeComponent.createGermplasmList();
 		Item item = listManagerTreeComponent.getGermplasmListSource().getItem(childGermplasmListId);
-		Long actualNoOfEntries = Long.parseLong((String) item.getItemProperty(GermplasmListTreeTable.NUMBER_OF_ENTRIES_COL).getValue());
+		Integer actualNoOfEntries =
+				Integer.parseInt((String) item.getItemProperty(GermplasmListTreeTable.NUMBER_OF_ENTRIES_COL).getValue());
 		Assert.assertEquals("The number of entries should be the same", expectedNoOfEntries, actualNoOfEntries);
 	}
 

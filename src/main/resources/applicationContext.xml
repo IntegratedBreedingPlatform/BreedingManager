@@ -129,6 +129,11 @@
 		<aop:scoped-proxy />
 	</bean>
 	
+	<bean id="jasperReportService" class="org.generationcp.commons.reports.service.impl.JasperReportServiceImpl"
+		scope="request">
+		<aop:scoped-proxy />
+	</bean>
+	
 	<bean id="stockIDValidator" class="org.generationcp.breeding.manager.listimport.validator.StockIDValidator"
 		scope="request">
 		<aop:scoped-proxy />
@@ -254,6 +259,14 @@
 		<property name="maxCachedSessionFactories" value="10" />
 		<property name="pedigreeProfile" value="${pedigree.profile}"/>
 	</bean>
+
+    <bean id="reportService" factory-bean="managerFactory"
+          factory-method="getReportService" scope="request">
+        <aop:scoped-proxy />
+    </bean>
+
+    <bean id="germplasmListExporter" class="org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter"/>
+    <bean id="fileDownloadUtility" class="org.generationcp.breeding.manager.util.FileDownloaderUtility"/>
 
 	<bean id="managerFactory" name="managerFactory" factory-bean="managerFactoryProvider"
 		factory-method="createInstance" scope="request">

@@ -71,14 +71,15 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 	@Autowired
 	private PlatformTransactionManager transactionManager;
 
-	public SaveListButtonClickListener(ListBuilderComponent source, Table listDataTable, SimpleResourceBundleMessageSource messageSource) {
+	public SaveListButtonClickListener(final ListBuilderComponent source, final Table listDataTable,
+			final SimpleResourceBundleMessageSource messageSource) {
 		this.source = source;
 		this.listDataTable = listDataTable;
 		this.messageSource = messageSource;
 	}
 
 	@Override
-	public void buttonClick(ClickEvent event) {
+	public void buttonClick(final ClickEvent event) {
 		this.doSaveAction();
 	}
 
@@ -86,7 +87,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 		this.doSaveAction(true);
 	}
 
-	public void doSaveAction(Boolean showMessages) {
+	public void doSaveAction(final Boolean showMessages) {
 		this.doSaveAction(showMessages, true);
 	}
 
@@ -95,7 +96,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
 			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+			protected void doInTransactionWithoutResult(final TransactionStatus status) {
 				GermplasmList currentlySavedList = SaveListButtonClickListener.this.source.getCurrentlySavedGermplasmList();
 				GermplasmList listToSave = SaveListButtonClickListener.this.source.getCurrentlySetGermplasmListInfo();
 
@@ -103,7 +104,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 
 					return;
 				}
-				List<GermplasmListData> listEntries = SaveListButtonClickListener.this.source.getListEntriesFromTable();
+				final List<GermplasmListData> listEntries = SaveListButtonClickListener.this.source.getListEntriesFromTable();
 
 				if (!SaveListButtonClickListener.this.validateListDetails(listToSave, currentlySavedList)) {
 					return;
@@ -116,10 +117,11 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 						listToSave.setUserId(SaveListButtonClickListener.this.contextUtil.getCurrentUserLocalId());
 						listToSave.setProgramUUID(SaveListButtonClickListener.this.contextUtil.getCurrentProgramUUID());
 
-						Integer listId = SaveListButtonClickListener.this.germplasmListManager.addGermplasmList(listToSave);
+						final Integer listId = SaveListButtonClickListener.this.germplasmListManager.addGermplasmList(listToSave);
 
 						if (listId != null) {
-							GermplasmList listSaved = SaveListButtonClickListener.this.germplasmListManager.getGermplasmListById(listId);
+							final GermplasmList listSaved =
+									SaveListButtonClickListener.this.germplasmListManager.getGermplasmListById(listId);
 							currentlySavedList = listSaved;
 							SaveListButtonClickListener.this.source.setCurrentlySavedGermplasmList(listSaved);
 
@@ -131,7 +133,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 							SaveListButtonClickListener.this.showErrorOnSavingGermplasmList(showMessages);
 							return;
 						}
-					} catch (MiddlewareQueryException ex) {
+					} catch (final MiddlewareQueryException ex) {
 						SaveListButtonClickListener.LOG.error("Error in saving germplasm list: " + listToSave, ex);
 						SaveListButtonClickListener.this.showErrorOnSavingGermplasmList(showMessages);
 						return;
@@ -158,14 +160,18 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 							return;
 						}
 
-						listToSave = ListCommonActionsUtil.overwriteList(listToSave, SaveListButtonClickListener.this.germplasmListManager,
-								SaveListButtonClickListener.this.source, SaveListButtonClickListener.this.messageSource, showMessages);
+						listToSave =
+								ListCommonActionsUtil.overwriteList(listToSave, SaveListButtonClickListener.this.germplasmListManager,
+										SaveListButtonClickListener.this.source, SaveListButtonClickListener.this.messageSource,
+										showMessages);
 					}
 
 					if (listToSave != null) {
-						boolean thereAreChangesInListEntries = ListCommonActionsUtil.overwriteListEntries(listToSave, listEntries,
-								SaveListButtonClickListener.this.forceHasChanges, SaveListButtonClickListener.this.germplasmListManager,
-								SaveListButtonClickListener.this.source, SaveListButtonClickListener.this.messageSource, showMessages);
+						final boolean thereAreChangesInListEntries =
+								ListCommonActionsUtil.overwriteListEntries(listToSave, listEntries,
+										SaveListButtonClickListener.this.forceHasChanges,
+										SaveListButtonClickListener.this.germplasmListManager, SaveListButtonClickListener.this.source,
+										SaveListButtonClickListener.this.messageSource, showMessages);
 
 						if (thereAreChangesInListEntries) {
 							SaveListButtonClickListener.this.updateListDataTableContent(currentlySavedList);
@@ -178,13 +184,14 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 				}
 
 				try {
-					SaveListButtonClickListener.this.contextUtil.logProgramActivity("List Manager Save List",
+					SaveListButtonClickListener.this.contextUtil.logProgramActivity(
+							"List Manager Save List",
 							"Successfully saved list and list entries for: " + currentlySavedList.getId() + " - "
 									+ currentlySavedList.getName());
 
 					SaveListButtonClickListener.this.source.getBuildNewListDropHandler().setChanged(false);
 
-				} catch (MiddlewareQueryException ex) {
+				} catch (final MiddlewareQueryException ex) {
 					SaveListButtonClickListener.LOG.error("Error with saving Workbench activity.", ex);
 				}
 
@@ -209,37 +216,33 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 		return this.contextUtil.getCurrentProgramUUID();
 	}
 
-	public void showErrorOnSavingGermplasmList(Boolean showMessages) {
+	public void showErrorOnSavingGermplasmList(final Boolean showMessages) {
 		if (showMessages) {
 			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
 					this.messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
 		}
 	}
 
-	private void saveListDataColumns(GermplasmList listToSave) {
+	private void saveListDataColumns(final GermplasmList listToSave) {
 		try {
-			this.germplasmListManager
-					.saveListDataColumns(this.source.getAddColumnContextMenu().getListDataCollectionFromTable(this.listDataTable));
-		} catch (MiddlewareQueryException e) {
+			this.germplasmListManager.saveListDataColumns(this.source.getAddColumnContextMenu().getListDataCollectionFromTable(
+					this.listDataTable));
+		} catch (final MiddlewareQueryException e) {
 			SaveListButtonClickListener.LOG.error("Error in saving added germplasm list columns: " + listToSave, e);
 			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
 					this.messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST));
 		}
 	}
 
-	public boolean validateListDetails(GermplasmList list, GermplasmList currentlySavedList) {
+	public boolean validateListDetails(final GermplasmList list, final GermplasmList currentlySavedList) {
 		boolean isValid = true;
 		if (list.getName() == null || list.getName().length() == 0) {
 			MessageNotifier.showRequiredFieldError(this.source.getWindow(), this.messageSource.getMessage(Message.NAME_CAN_NOT_BE_BLANK));
 			isValid = false;
-		} else if (list.getDescription() == null || list.getDescription().length() == 0) {
-			MessageNotifier.showRequiredFieldError(this.source.getWindow(),
-					this.messageSource.getMessage(Message.DESCRIPTION_CAN_NOT_BE_BLANK));
-			isValid = false;
 		} else if (list.getName().length() > 50) {
 			MessageNotifier.showRequiredFieldError(this.source.getWindow(), this.messageSource.getMessage(Message.NAME_CAN_NOT_BE_LONG));
 			isValid = false;
-		} else if (list.getDescription().length() > 255) {
+		} else if (list.getDescription() != null && list.getDescription().length() > 255) {
 			MessageNotifier.showRequiredFieldError(this.source.getWindow(),
 					this.messageSource.getMessage(Message.DESCRIPTION_CAN_NOT_BE_LONG));
 			isValid = false;
@@ -254,16 +257,16 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 		return isValid;
 	}
 
-	private boolean validateListName(GermplasmList list) {
+	private boolean validateListName(final GermplasmList list) {
 		try {
-			List<GermplasmList> lists =
+			final List<GermplasmList> lists =
 					this.germplasmListManager.getGermplasmListByName(list.getName(), this.getCurrentProgramUUID(), 0, 5, Operation.EQUAL);
 			if (!lists.isEmpty() && lists.size() == 1 && lists.get(0).getId() != list.getId()) {
 				MessageNotifier.showRequiredFieldError(this.source.getWindow(),
 						this.messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE));
 				return false;
 			}
-		} catch (MiddlewareQueryException ex) {
+		} catch (final MiddlewareQueryException ex) {
 			SaveListButtonClickListener.LOG.error("Error with getting germplasm list by list name - " + list.getName(), ex);
 			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
 					this.messageSource.getMessage(Message.ERROR_VALIDATING_LIST));
@@ -273,13 +276,13 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 		return true;
 	}
 
-	private void updateListDataTableContent(GermplasmList currentlySavedList) {
+	private void updateListDataTableContent(final GermplasmList currentlySavedList) {
 		try {
-			int listDataCount = (int) this.germplasmListManager.countGermplasmListDataByListId(currentlySavedList.getId());
-			List<GermplasmListData> savedListEntries =
+			final int listDataCount = (int) this.germplasmListManager.countGermplasmListDataByListId(currentlySavedList.getId());
+			final List<GermplasmListData> savedListEntries =
 					this.inventoryDataManager.getLotCountsForList(currentlySavedList.getId(), 0, listDataCount);
 
-			Table tempTable = this.cloneAddedColumnsToTemp(this.listDataTable);
+			final Table tempTable = this.cloneAddedColumnsToTemp(this.listDataTable);
 
 			this.listDataTable.setImmediate(true);
 			this.listDataTable.removeAllItems();
@@ -287,19 +290,19 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 			for (final GermplasmListData entry : savedListEntries) {
 				final Item item = this.listDataTable.addItem(entry.getId());
 
-				Button gidButton =
+				final Button gidButton =
 						new Button(String.format("%s", entry.getGid()), new GidLinkClickListener(entry.getGid().toString(), true));
 				gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 
-				CheckBox tagCheckBox = new CheckBox();
+				final CheckBox tagCheckBox = new CheckBox();
 				tagCheckBox.setImmediate(true);
 				tagCheckBox.addListener(new ClickListener() {
 
 					private static final long serialVersionUID = 1L;
 
 					@Override
-					public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-						CheckBox itemCheckBox = (CheckBox) event.getButton();
+					public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
+						final CheckBox itemCheckBox = (CheckBox) event.getButton();
 						if (((Boolean) itemCheckBox.getValue()).equals(true)) {
 							SaveListButtonClickListener.this.listDataTable.select(entry.getId());
 						} else {
@@ -309,7 +312,8 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 
 				});
 
-				Button designationButton = new Button(entry.getDesignation(), new GidLinkClickListener(entry.getGid().toString(), true));
+				final Button designationButton =
+						new Button(entry.getDesignation(), new GidLinkClickListener(entry.getGid().toString(), true));
 				designationButton.setStyleName(BaseTheme.BUTTON_LINK);
 				designationButton.setDescription("Click to view Germplasm information");
 
@@ -321,8 +325,9 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 						&& entry.getInventoryInfo().getActualInventoryLotCount() != 0) {
 					availInv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
 				}
-				Button inventoryButton = new Button(availInv,
-						new InventoryLinkButtonClickListener(this.source, currentlySavedList.getId(), entry.getId(), entry.getGid()));
+				final Button inventoryButton =
+						new Button(availInv, new InventoryLinkButtonClickListener(this.source, currentlySavedList.getId(), entry.getId(),
+								entry.getGid()));
 				inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 				inventoryButton.setDescription("Click to view Inventory Details");
 
@@ -354,29 +359,29 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 			this.copyAddedColumnsFromTemp(tempTable);
 			this.listDataTable.requestRepaint();
 
-		} catch (MiddlewareQueryException ex) {
+		} catch (final MiddlewareQueryException ex) {
 			SaveListButtonClickListener.LOG.error("Error with getting the saved list entries.", ex);
 			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
 					this.messageSource.getMessage(Message.ERROR_GETTING_SAVED_ENTRIES));
 		}
 	}
 
-	private Table cloneAddedColumnsToTemp(Table sourceTable) {
-		Table newTable = new Table();
+	private Table cloneAddedColumnsToTemp(final Table sourceTable) {
+		final Table newTable = new Table();
 
 		// copy added column values from source table
-		for (Object sourceItemId : sourceTable.getItemIds()) {
-			Item sourceItem = sourceTable.getItem(sourceItemId);
-			Item newItem = newTable.addItem(sourceItemId);
+		for (final Object sourceItemId : sourceTable.getItemIds()) {
+			final Item sourceItem = sourceTable.getItem(sourceItemId);
+			final Item newItem = newTable.addItem(sourceItemId);
 
-			for (String addablePropertyId : AddColumnContextMenu.ADDABLE_PROPERTY_IDS) {
+			for (final String addablePropertyId : AddColumnContextMenu.ADDABLE_PROPERTY_IDS) {
 				// copy only addable properties present in source table
 				if (AddColumnContextMenu.propertyExists(addablePropertyId, sourceTable)) {
 					// setup added columns first before copying values
 					this.createContainerPropertyOfAddedColumnToTempTable(newTable, addablePropertyId);
 
 					// copy value to new table
-					Property sourceItemProperty = sourceItem.getItemProperty(addablePropertyId);
+					final Property sourceItemProperty = sourceItem.getItemProperty(addablePropertyId);
 					newItem.getItemProperty(addablePropertyId).setValue(sourceItemProperty.getValue());
 				}
 			}
@@ -385,32 +390,32 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 		return newTable;
 	}
 
-	public void createContainerPropertyOfAddedColumnToTempTable(Table newTable, String addablePropertyId) {
+	public void createContainerPropertyOfAddedColumnToTempTable(final Table newTable, final String addablePropertyId) {
 
 		if (AddColumnContextMenuOption.isPartOfAddColumnContextMenuOption(addablePropertyId)) {
 			newTable.addContainerProperty(addablePropertyId, AddColumnContextMenuOption.getClassProperty(addablePropertyId), "");
 		}
 	}
 
-	private void copyAddedColumnsFromTemp(Table tempTable) {
-		List<Object> listDataIdList = new ArrayList<Object>(this.listDataTable.getItemIds());
-		List<Object> tempTableIdList = new ArrayList<Object>(tempTable.getItemIds());
+	private void copyAddedColumnsFromTemp(final Table tempTable) {
+		final List<Object> listDataIdList = new ArrayList<Object>(this.listDataTable.getItemIds());
+		final List<Object> tempTableIdList = new ArrayList<Object>(tempTable.getItemIds());
 
 		// iterate through actual table rows using index (so temp table counterpart items can be accessed easily)
 		for (int i = 0; i < listDataIdList.size(); i++) {
-			Item listDataItem = this.listDataTable.getItem(listDataIdList.get(i));
-			Item tempItem = tempTable.getItem(tempTableIdList.get(i));
+			final Item listDataItem = this.listDataTable.getItem(listDataIdList.get(i));
+			final Item tempItem = tempTable.getItem(tempTableIdList.get(i));
 
 			// for each row, get columns from temp table, then copy to actual table
-			for (Object tempPropertyId : tempTable.getContainerPropertyIds()) {
+			for (final Object tempPropertyId : tempTable.getContainerPropertyIds()) {
 				// copy value from temp table to actual list data table
-				Property tempItemProperty = tempItem.getItemProperty(tempPropertyId);
+				final Property tempItemProperty = tempItem.getItemProperty(tempPropertyId);
 				listDataItem.getItemProperty(tempPropertyId).setValue(tempItemProperty.getValue());
 			}
 		}
 	}
 
-	private boolean areThereChangesToList(GermplasmList currentlySavedList, GermplasmList newListInfo) {
+	private boolean areThereChangesToList(final GermplasmList currentlySavedList, final GermplasmList newListInfo) {
 		if (!currentlySavedList.getName().equals(newListInfo.getName())) {
 			return true;
 		} else if (!currentlySavedList.getDescription().equals(newListInfo.getDescription())) {
@@ -424,17 +429,17 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 		return false;
 	}
 
-	private void setNeededValuesForNewListEntries(GermplasmList list, List<GermplasmListData> listEntries) {
-		for (GermplasmListData listEntry : listEntries) {
+	private void setNeededValuesForNewListEntries(final GermplasmList list, final List<GermplasmListData> listEntries) {
+		for (final GermplasmListData listEntry : listEntries) {
 			listEntry.setList(list);
 			listEntry.setStatus(Integer.valueOf(0));
 			listEntry.setLocalRecordId(Integer.valueOf(0));
 		}
 	}
 
-	private boolean saveNewListEntries(List<GermplasmListData> listEntries) {
+	private boolean saveNewListEntries(final List<GermplasmListData> listEntries) {
 		try {
-			List<Integer> savedEntryPKs = this.germplasmListManager.addGermplasmListData(listEntries);
+			final List<Integer> savedEntryPKs = this.germplasmListManager.addGermplasmListData(listEntries);
 
 			if (!(savedEntryPKs.size() == listEntries.size())) {
 				MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
@@ -442,7 +447,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 				return false;
 			}
 			return true;
-		} catch (MiddlewareQueryException ex) {
+		} catch (final MiddlewareQueryException ex) {
 			SaveListButtonClickListener.LOG.error("Error in saving germplasm list entries.", ex);
 			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
 					this.messageSource.getMessage(Message.ERROR_SAVING_GERMPLASM_LIST_ENTRIES));
@@ -450,27 +455,27 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 		}
 	}
 
-	public void setForceHasChanges(Boolean hasChanges) {
+	public void setForceHasChanges(final Boolean hasChanges) {
 		this.forceHasChanges = hasChanges;
 	}
 
-	public void setDataManager(GermplasmListManager germplasmListManager) {
+	public void setDataManager(final GermplasmListManager germplasmListManager) {
 		this.germplasmListManager = germplasmListManager;
 	}
 
-	public void setInventoryDataManager(InventoryDataManager inventoryDataManager) {
+	public void setInventoryDataManager(final InventoryDataManager inventoryDataManager) {
 		this.inventoryDataManager = inventoryDataManager;
 	}
 
-	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 
-	public void setSource(ListBuilderComponent source) {
+	public void setSource(final ListBuilderComponent source) {
 		this.source = source;
 	}
 
-	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+	public void setTransactionManager(final PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
 
