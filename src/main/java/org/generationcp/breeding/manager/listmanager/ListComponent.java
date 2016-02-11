@@ -62,6 +62,7 @@ import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.service.api.GermplasmGroupingService;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.slf4j.Logger;
@@ -153,6 +154,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private ContextMenuItem menuAddEntry;
 	private ContextMenuItem menuSaveChanges;
 	private ContextMenuItem menuDeleteEntries;
+	private ContextMenuItem menuMarkLinesAsFixed;
 	private ContextMenuItem menuEditList;
 	private ContextMenuItem menuDeleteList;
 	@SuppressWarnings("unused")
@@ -227,6 +229,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	@Autowired
 	private GermplasmListManager germplasmListManager;
+
+	@Autowired
+	private GermplasmGroupingService germplasmGroupingService;
 
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
@@ -359,6 +364,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.menuCopyToList = this.menu.addItem(this.messageSource.getMessage(Message.COPY_TO_NEW_LIST));
 		this.menuDeleteList = this.menu.addItem(this.messageSource.getMessage(Message.DELETE_LIST));
 		this.menuDeleteEntries = this.menu.addItem(this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
+		this.menuMarkLinesAsFixed = this.menu.addItem(this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED));
 		this.menuEditList = this.menu.addItem(this.messageSource.getMessage(Message.EDIT_LIST));
 		this.menuExportList = this.menu.addItem(this.messageSource.getMessage(Message.EXPORT_LIST));
 		this.menuInventoryView = this.menu.addItem(this.messageSource.getMessage(Message.INVENTORY_VIEW));
@@ -965,6 +971,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						ListComponent.this.saveChangesAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES))) {
 						ListComponent.this.deleteEntriesButtonClickAction();
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED))) {
+						ListComponent.this.markLinesAsFixedAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.EDIT_LIST))) {
 						ListComponent.this.editListButtonClickAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.DELETE_LIST))) {
@@ -1002,6 +1010,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				// show only Delete List when user is owner
 				ListComponent.this.menuDeleteList.setVisible(ListComponent.this.localUserIsListOwner());
 				ListComponent.this.menuDeleteEntries.setVisible(true);
+				ListComponent.this.menuMarkLinesAsFixed.setVisible(true);
 				ListComponent.this.menuSaveChanges.setVisible(true);
 				ListComponent.this.menuAddEntry.setVisible(true);
 				ListComponent.this.addColumnContextMenu.showHideAddColumnMenu(true);
@@ -1009,6 +1018,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				ListComponent.this.menuEditList.setVisible(false);
 				ListComponent.this.menuDeleteList.setVisible(false);
 				ListComponent.this.menuDeleteEntries.setVisible(false);
+				ListComponent.this.menuMarkLinesAsFixed.setVisible(false);
 				ListComponent.this.menuSaveChanges.setVisible(false);
 				ListComponent.this.menuAddEntry.setVisible(false);
 				ListComponent.this.addColumnContextMenu.showHideAddColumnMenu(false);
@@ -1304,6 +1314,20 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		} else {
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DELETING_LIST_ENTRIES),
 					this.messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
+		}
+	}
+
+	public void markLinesAsFixedAction() {
+		final Collection<?> selectedIdsToFix = (Collection<?>) this.listDataTable.getValue();
+
+		final String notificationMessageCaption = this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED);
+
+		if (!selectedIdsToFix.isEmpty()) {
+			MessageNotifier.showMessage(this.getWindow(), notificationMessageCaption, "GIDs to fix are :"
+				+ selectedIdsToFix.toString());
+		} else {
+			MessageNotifier.showError(this.getWindow(), notificationMessageCaption,
+					this.messageSource.getMessage(Message.ERROR_MARK_LINES_AS_FIXED_NOTHING_SELECTED));
 		}
 	}
 
