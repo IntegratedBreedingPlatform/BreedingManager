@@ -75,7 +75,7 @@
 		<aop:scoped-proxy />
 	</bean>
 	
-	<bean id="germplasmListManager" factory-bean="managerFactory"
+	<bean id="germplasmGroupingService" factory-bean="managerFactory"
 		factory-method="getGermplasmGroupingService" scope="request">
 		<aop:scoped-proxy />
 	</bean>
