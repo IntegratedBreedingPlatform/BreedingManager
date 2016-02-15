@@ -72,11 +72,9 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 
 	@Override
 	public void instantiateComponents() {
-		this.preserveExistingGroupId = new CheckBox("Preserve existing group");
-		this.includeDescendants = new CheckBox("Include descendants");
-
+		this.preserveExistingGroupId = new CheckBox();
+		this.includeDescendants = new CheckBox();
 		this.cancelButton = new Button();
-
 		this.continueButton = new Button();
 		this.continueButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 	}
@@ -108,7 +106,6 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 
 	private void groupGermplasm() {
 
-		final String notificationMessageCaption = this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED);
 		final boolean includeDescendantsChoice = this.includeDescendants.booleanValue();
 		final boolean preserveExistingGroupChoice = this.preserveExistingGroupId.booleanValue();
 
@@ -126,7 +123,8 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 			}
 		});
 
-		MessageNotifier.showMessage(this.getParent(), notificationMessageCaption, "Successfully fixed GIDs: " + this.gidsToProcess);
+		MessageNotifier.showMessage(this.getParent(), this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
+				this.messageSource.getMessage(Message.SUCCESS_MARK_LINES_AS_FIXED));
 		this.close();
 	}
 
@@ -143,7 +141,6 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 		this.setHeight("210px");
 		this.setResizable(false);
 		this.addStyleName(Reindeer.WINDOW_LIGHT);
-		this.setCaption("Mark Lines as Fixed");
 
 		this.center();
 		this.dialogLayout = new VerticalLayout();
@@ -175,6 +172,9 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 
 	@Override
 	public void updateLabels() {
+		this.messageSource.setCaption(this, Message.MARK_LINES_AS_FIXED);
+		this.messageSource.setCaption(this.preserveExistingGroupId, Message.PRESERVE_EXISTING_GROUP);
+		this.messageSource.setCaption(this.includeDescendants, Message.INCLUDE_DESCENDANTS);
 		this.messageSource.setCaption(this.continueButton, Message.CONTINUE);
 		this.messageSource.setCaption(this.cancelButton, Message.CANCEL);
 	}
