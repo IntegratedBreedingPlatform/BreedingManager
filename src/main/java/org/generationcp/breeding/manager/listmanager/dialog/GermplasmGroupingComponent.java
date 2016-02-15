@@ -58,6 +58,10 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 
 	private Set<Integer> gidsToProcess = new HashSet<>();
 
+	public GermplasmGroupingComponent() {
+
+	}
+
 	public GermplasmGroupingComponent(final Set<Integer> gidsToProcess) {
 		this.gidsToProcess = gidsToProcess;
 	}
@@ -104,7 +108,7 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 		});
 	}
 
-	private void groupGermplasm() {
+	void groupGermplasm() {
 
 		final boolean includeDescendantsChoice = this.includeDescendants.booleanValue();
 		final boolean preserveExistingGroupChoice = this.preserveExistingGroupId.booleanValue();
@@ -123,6 +127,10 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 			}
 		});
 
+		reportSuccessAndClose();
+	}
+
+	void reportSuccessAndClose() {
 		MessageNotifier.showMessage(this.getParent(), this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
 				this.messageSource.getMessage(Message.SUCCESS_MARK_LINES_AS_FIXED));
 		this.close();
@@ -179,4 +187,25 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 		this.messageSource.setCaption(this.cancelButton, Message.CANCEL);
 	}
 
+	// Setters for unit testing
+
+	void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	void setGermplasmGroupingService(GermplasmGroupingService germplasmGroupingService) {
+		this.germplasmGroupingService = germplasmGroupingService;
+	}
+
+	void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
+	}
+
+	void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
+
+	void setGidsToProcess(Set<Integer> gidsToProcess) {
+		this.gidsToProcess = gidsToProcess;
+	}
 }
