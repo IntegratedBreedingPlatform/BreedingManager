@@ -37,6 +37,7 @@ import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource;
+import org.generationcp.breeding.manager.listmanager.dialog.GermplasmGroupingComponent;
 import org.generationcp.breeding.manager.listmanager.dialog.ListManagerCopyToNewListDialog;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
@@ -62,7 +63,6 @@ import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
-import org.generationcp.middleware.service.api.GermplasmGroupingService;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.slf4j.Logger;
@@ -229,9 +229,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	@Autowired
 	private GermplasmListManager germplasmListManager;
-
-	@Autowired
-	private GermplasmGroupingService germplasmGroupingService;
 
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
@@ -1318,13 +1315,15 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}
 
 	public void markLinesAsFixedAction() {
-		final Collection<?> selectedIdsToFix = (Collection<?>) this.listDataTable.getValue();
-
+		@SuppressWarnings("unchecked")
+		final Collection<Integer> selectedIdsToFix = (Collection<Integer>) this.listDataTable.getValue();
 		final String notificationMessageCaption = this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED);
 
 		if (!selectedIdsToFix.isEmpty()) {
-			MessageNotifier.showMessage(this.getWindow(), notificationMessageCaption, "GIDs to fix are :"
-				+ selectedIdsToFix.toString());
+			final HashSet<Integer> gidsToProcess = new HashSet<Integer>();
+			gidsToProcess.addAll(selectedIdsToFix);
+			final GermplasmGroupingComponent germplasmGroupingComponent = new GermplasmGroupingComponent(gidsToProcess);
+			this.getWindow().addWindow(germplasmGroupingComponent);
 		} else {
 			MessageNotifier.showError(this.getWindow(), notificationMessageCaption,
 					this.messageSource.getMessage(Message.ERROR_MARK_LINES_AS_FIXED_NOTHING_SELECTED));
