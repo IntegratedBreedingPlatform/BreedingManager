@@ -65,6 +65,7 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.instantiateComponents();
+		this.initializeValues();
 		this.addListeners();
 		this.layoutComponents();
 	}
@@ -82,8 +83,7 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 
 	@Override
 	public void initializeValues() {
-		// Nothing to do (yet).
-
+		// Nothing to do.
 	}
 
 	@Override
@@ -118,15 +118,16 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 			@Override
 			protected void doInTransactionWithoutResult(final TransactionStatus status) {
 
-				for (final Integer gid : gidsToProcess) {
-					Germplasm germplasm = germplasmDataManager.getGermplasmByGID(gid);
-					germplasmGroupingService.markFixed(germplasm, includeDescendantsChoice, preserveExistingGroupChoice);
+				for (final Integer gid : GermplasmGroupingComponent.this.gidsToProcess) {
+					Germplasm germplasm = GermplasmGroupingComponent.this.germplasmDataManager.getGermplasmByGID(gid);
+					GermplasmGroupingComponent.this.germplasmGroupingService.markFixed(germplasm, includeDescendantsChoice,
+							preserveExistingGroupChoice);
 				}
-
-				MessageNotifier.showMessage(getWindow(), notificationMessageCaption, "Successfully fixed GIDs :" + gidsToProcess);
-				close();
 			}
 		});
+
+		MessageNotifier.showMessage(this.getParent(), notificationMessageCaption, "Successfully fixed GIDs: " + this.gidsToProcess);
+		this.close();
 	}
 
 	@Override
@@ -144,13 +145,11 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 		this.addStyleName(Reindeer.WINDOW_LIGHT);
 		this.setCaption("Mark Lines as Fixed");
 
-		// center window within the browser
 		this.center();
 		this.dialogLayout = new VerticalLayout();
 		this.dialogLayout.setMargin(true);
 		this.dialogLayout.setSpacing(true);
 
-		// Buttons Layout
 		final HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setWidth("100%");
 		buttonLayout.setHeight("40px");

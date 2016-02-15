@@ -1315,17 +1315,22 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}
 
 	public void markLinesAsFixedAction() {
-		@SuppressWarnings("unchecked")
-		final Collection<Integer> selectedIdsToFix = (Collection<Integer>) this.listDataTable.getValue();
-		final String notificationMessageCaption = this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED);
 
-		if (!selectedIdsToFix.isEmpty()) {
-			final HashSet<Integer> gidsToProcess = new HashSet<Integer>();
-			gidsToProcess.addAll(selectedIdsToFix);
-			final GermplasmGroupingComponent germplasmGroupingComponent = new GermplasmGroupingComponent(gidsToProcess);
-			this.getWindow().addWindow(germplasmGroupingComponent);
+		@SuppressWarnings("unchecked")
+		final Collection<Integer> selectedTableRows = (Collection<Integer>) this.listDataTable.getValue();
+
+		if (!selectedTableRows.isEmpty()) {
+			final Set<Integer> gidsToProcess = new HashSet<Integer>();
+			for (final Integer selectedRowId : selectedTableRows) {
+				final Item selectedRowItem = this.listDataTable.getItem(selectedRowId);
+				final Button gidCell = (Button) selectedRowItem.getItemProperty(ColumnLabels.GID.getName()).getValue();
+				if (gidCell != null) {
+					gidsToProcess.add(Integer.valueOf(gidCell.getCaption()));
+				}
+			}
+			this.getWindow().addWindow(new GermplasmGroupingComponent(gidsToProcess));
 		} else {
-			MessageNotifier.showError(this.getWindow(), notificationMessageCaption,
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
 					this.messageSource.getMessage(Message.ERROR_MARK_LINES_AS_FIXED_NOTHING_SELECTED));
 		}
 	}
