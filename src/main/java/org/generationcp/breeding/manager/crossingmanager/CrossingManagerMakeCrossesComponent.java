@@ -265,8 +265,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		final HorizontalLayout layoutButtonArea = new HorizontalLayout();
 		layoutButtonArea.setMargin(true, true, false, true);
 		layoutButtonArea.setSpacing(true);
-		layoutButtonArea.addComponent(this.backButton);
-		layoutButtonArea.addComponent(this.nextButton);
 
 		// show the link to navigate back to the Crossing Manager only if we came from the Nursery Manager previously
 		final boolean isNavigatedFromNursery = BreedingManagerUtil.getApplicationRequest().getPathInfo().contains(BreedingManagerApplication
@@ -274,6 +272,9 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		if (isNavigatedFromNursery) {
 			this.nurseryLink = this.constructLinkToNursery(BreedingManagerUtil.getApplicationRequest());
 			layoutButtonArea.addComponent(this.nurseryLink);
+		} else {
+			layoutButtonArea.addComponent(this.backButton);
+			layoutButtonArea.addComponent(this.nextButton);
 		}
 
 		this.addComponent(upperLayout);
@@ -298,6 +299,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		}
 		final Link backToNurseryLink = new Link("", urlToNursery);
 		backToNurseryLink.setData("nursery back button");
+		this.messageSource.setDescription(backToNurseryLink, Message.BACK_TO_NURSERY_DESCRIPTION);
 		this.messageSource.setCaption(backToNurseryLink, Message.BACK_TO_NURSERY);
 		return backToNurseryLink;
 	}
