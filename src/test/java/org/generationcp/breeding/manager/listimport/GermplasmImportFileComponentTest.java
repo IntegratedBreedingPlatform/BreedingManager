@@ -117,6 +117,10 @@ public class GermplasmImportFileComponentTest {
 	@Test
 	public void testNextStepShowsNameHandlingDialogWhenThereIsImportedNameFactor() {
 		this.initImportedGermplasmList(true);
+		final GermplasmImportPopupSource importPopupSource = Mockito.mock(GermplasmImportPopupSource.class);
+		Mockito.doReturn(importPopupSource).when(this.importMain).getGermplasmImportPopupSource();
+		Mockito.doReturn(new Window()).when(importPopupSource).getParentWindow();
+
 		this.importFileComponent.nextStep();
 		Mockito.verify(this.importMain, Mockito.times(0)).nextStep();
 	}
