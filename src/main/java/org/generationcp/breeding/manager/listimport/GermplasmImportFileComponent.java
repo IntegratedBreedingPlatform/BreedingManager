@@ -145,7 +145,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 			final NameHandlingDialog nameHandlingDialog = new NameHandlingDialog(this, importedNameFactors);
 
 			if (this.getWindow() != null) {
-				this.getWindow().addWindow(nameHandlingDialog);
+				this.getApplication().getMainWindow().addWindow(nameHandlingDialog);
 			}
 		} else {
 			this.source.nextStep();
