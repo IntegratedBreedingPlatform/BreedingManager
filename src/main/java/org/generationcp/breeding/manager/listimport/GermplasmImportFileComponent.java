@@ -143,9 +143,11 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 		final List<ImportedFactor> importedNameFactors = this.extractListOfImportedNames();
 		if (!importedNameFactors.isEmpty()) {
 			final NameHandlingDialog nameHandlingDialog = new NameHandlingDialog(this, importedNameFactors);
-
-			if (this.getWindow() != null) {
+			// If not from popup
+			if (this.getWindow() != null && this.source.getGermplasmImportPopupSource() == null) {
 				this.getWindow().addWindow(nameHandlingDialog);
+			} else {
+				this.source.getGermplasmImportPopupSource().getParentWindow().addWindow(nameHandlingDialog);
 			}
 		} else {
 			this.source.nextStep();
