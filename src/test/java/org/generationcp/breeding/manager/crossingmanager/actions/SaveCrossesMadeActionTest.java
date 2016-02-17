@@ -16,6 +16,7 @@ import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.service.api.GermplasmGroupingService;
 import org.generationcp.middleware.util.Util;
 import org.junit.Assert;
 import org.junit.Before;
@@ -41,6 +42,9 @@ public class SaveCrossesMadeActionTest {
 	@Mock
 	private PlatformTransactionManager transactionManager;
 
+	@Mock
+	private GermplasmGroupingService germplasmGroupingService;
+
 	private SaveCrossesMadeAction action;
 
 	private CrossesMade crossesMade;
@@ -54,7 +58,7 @@ public class SaveCrossesMadeActionTest {
 		this.action.setContextUtil(this.contextUtil);
 		this.action.setTransactionManager(this.transactionManager);
 		this.action.setGermplasmListManager(this.germplasmListManager);
-
+		this.action.setGermplasmGroupingService(this.germplasmGroupingService);
 
 		this.crossesMade = new CrossesMade();
 		this.crossesMade.setCrossesMap(this.getCrossesMap());
