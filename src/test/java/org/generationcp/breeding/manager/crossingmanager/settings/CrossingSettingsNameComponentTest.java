@@ -4,7 +4,7 @@ package org.generationcp.breeding.manager.crossingmanager.settings;
 import junit.framework.Assert;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.crossingmanager.settings.CrossingSettingsNameComponent.AddSpaceOption;
+import org.generationcp.breeding.manager.constants.ConfirmOption;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.junit.Before;
@@ -76,44 +76,44 @@ public class CrossingSettingsNameComponentTest {
 	@Test
 	public void testSetFieldsDefaultValues() throws Exception {
 
-		CrossNameSetting crossNameSetting = new CrossNameSetting();
+		final CrossNameSetting crossNameSetting = new CrossNameSetting();
 		crossNameSetting.setSeparator(CrossNameSetting.DEFAULT_SEPARATOR);
 
 		this.crossingSettingsNameComponent.setFields(crossNameSetting);
 
 		Mockito.verify(this.crossNamePrefix).setValue(null);
 		Mockito.verify(this.crossNameSuffix).setValue("");
-		Mockito.verify(this.addSpaceBetPrefixAndCodeOptionGroup).select(AddSpaceOption.NO);
-		Mockito.verify(this.addSpaceBetSuffixAndCodeOptionGroup).select(AddSpaceOption.NO);
+		Mockito.verify(this.addSpaceBetPrefixAndCodeOptionGroup).select(ConfirmOption.NO);
+		Mockito.verify(this.addSpaceBetSuffixAndCodeOptionGroup).select(ConfirmOption.NO);
 		Mockito.verify(this.leadingZerosSelect).select(null);
 		Mockito.verify(this.separatorTextField).setValue(CrossNameSetting.DEFAULT_SEPARATOR);
 		Mockito.verify(this.startNumberTextField, Mockito.times(0)).setValue(null);
-		Mockito.verify(this.saveParentageDesignationAsAStringGroup).select(AddSpaceOption.NO);
+		Mockito.verify(this.saveParentageDesignationAsAStringGroup).select(ConfirmOption.NO);
 
 	}
 
 	@Test
 	public void testSetFields() throws Exception {
 
-		CrossNameSetting crossNameSetting = this.createNameSetting();
+		final CrossNameSetting crossNameSetting = this.createNameSetting();
 
 		this.crossingSettingsNameComponent.setFields(crossNameSetting);
 
 		Mockito.verify(this.crossNamePrefix).setValue(CROSS_NAME_PREFIX);
-		Mockito.verify(this.addSpaceBetPrefixAndCodeOptionGroup).select(AddSpaceOption.YES);
-		Mockito.verify(this.addSpaceBetSuffixAndCodeOptionGroup).select(AddSpaceOption.YES);
+		Mockito.verify(this.addSpaceBetPrefixAndCodeOptionGroup).select(ConfirmOption.YES);
+		Mockito.verify(this.addSpaceBetSuffixAndCodeOptionGroup).select(ConfirmOption.YES);
 		Mockito.verify(this.leadingZerosSelect).select(LEADING_ZEROS);
 		Mockito.verify(this.crossNameSuffix).setValue(CROSS_NAME_SUFFIX);
 		Mockito.verify(this.separatorTextField).setValue(CrossNameSetting.DEFAULT_SEPARATOR);
 		Mockito.verify(this.startNumberTextField).setValue(START_NUMBER);
-		Mockito.verify(this.saveParentageDesignationAsAStringGroup).select(AddSpaceOption.YES);
+		Mockito.verify(this.saveParentageDesignationAsAStringGroup).select(ConfirmOption.YES);
 
 	}
 
 	@Test
 	public void testGetCrossNameSettingObject() {
 
-		CrossNameSetting crossNameSetting = this.crossingSettingsNameComponent.getCrossNameSettingObject();
+		final CrossNameSetting crossNameSetting = this.crossingSettingsNameComponent.getCrossNameSettingObject();
 
 		Assert.assertEquals(true, crossNameSetting.isAddSpaceBetweenPrefixAndCode());
 		Assert.assertEquals(true, crossNameSetting.isAddSpaceBetweenSuffixAndCode());
@@ -156,7 +156,7 @@ public class CrossingSettingsNameComponentTest {
 
 	private CrossNameSetting createNameSetting() {
 
-		CrossNameSetting crossNameSetting = new CrossNameSetting();
+		final CrossNameSetting crossNameSetting = new CrossNameSetting();
 
 		crossNameSetting.setAddSpaceBetweenPrefixAndCode(true);
 		crossNameSetting.setAddSpaceBetweenSuffixAndCode(true);
@@ -174,10 +174,10 @@ public class CrossingSettingsNameComponentTest {
 
 		Mockito.when(this.crossNamePrefix.getValue()).thenReturn(CROSS_NAME_PREFIX);
 		Mockito.when(this.crossNameSuffix.getValue()).thenReturn(CROSS_NAME_SUFFIX);
-		Mockito.when(this.addSpaceBetPrefixAndCodeOptionGroup.getValue()).thenReturn(AddSpaceOption.YES);
-		Mockito.when(this.addSpaceBetSuffixAndCodeOptionGroup.getValue()).thenReturn(AddSpaceOption.YES);
+		Mockito.when(this.addSpaceBetPrefixAndCodeOptionGroup.getValue()).thenReturn(ConfirmOption.YES);
+		Mockito.when(this.addSpaceBetSuffixAndCodeOptionGroup.getValue()).thenReturn(ConfirmOption.YES);
 		Mockito.when(this.leadingZerosSelect.getValue()).thenReturn(9);
-		Mockito.when(this.saveParentageDesignationAsAStringGroup.getValue()).thenReturn(AddSpaceOption.YES);
+		Mockito.when(this.saveParentageDesignationAsAStringGroup.getValue()).thenReturn(ConfirmOption.YES);
 		Mockito.when(this.separatorTextField.getValue()).thenReturn(CrossNameSetting.DEFAULT_SEPARATOR);
 		Mockito.when(this.startNumberTextField.getValue()).thenReturn(START_NUMBER);
 

@@ -120,7 +120,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	 * @param importedGermplasmList
 	 * @param seedStorageLocation
 	 * @return id of new Germplasm List created @
-	 * @throws BreedingManagerException 
+	 * @throws BreedingManagerException
 	 */
 	public Integer saveRecords(final GermplasmList germplasmList, final List<GermplasmName> germplasmNameObjects,
 			final List<Name> newNames, final String filename, final List<Integer> doNotCreateGermplasmsWithId,
@@ -153,6 +153,11 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		this.saveGermplasmListDataRecords(germplasmNameObjects, list, importedGermplasms);
 		this.addNewNamesToExistingGermplasm(newNames);
 
+		if (importedGermplasmList.isSetImportedNameAsPreferredName()) {
+			this.updateExportedGermplasmPreferredName(importedGermplasmList.getPreferredNameCode(),
+					importedGermplasmList.getImportedGermplasms());
+		}
+
 		this.saveInventory();
 
 		// log project activity in Workbench
@@ -160,6 +165,21 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 				+ filename);
 
 		return list.getId();
+	}
+
+	/**
+	 * Update the preferred name of the imported germplasm using the selected name type from the Name Handling Dialog
+	 * 
+	 * @param preferredNameCode
+	 * @param importedGermplasms
+	 */
+	void updateExportedGermplasmPreferredName(final String preferredNameCode, final List<ImportedGermplasm> importedGermplasms) {
+		for (final ImportedGermplasm importedGermplasm : importedGermplasms) {
+			final String newPreferredName = importedGermplasm.getNameFactors().get(preferredNameCode);
+			if (newPreferredName != null && newPreferredName.trim().length() > 0) {
+				this.germplasmManager.updateGermplasmPrefName(importedGermplasm.getGid(), newPreferredName);
+			}
+		}
 	}
 
 	protected void saveInventory() {
@@ -318,11 +338,12 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	protected void processSeedStockVariate(final ImportedVariate importedVariate) throws BreedingManagerException {
 
 		// find stick variable via name at top of column in the sheet - should be one
-		Set<StandardVariable> terms = this.ontologyDataManager.findStandardVariablesByNameOrSynonym(importedVariate.getVariate(),
-				this.contextUtil.getCurrentProgramUUID());
+		final Set<StandardVariable> terms =
+				this.ontologyDataManager.findStandardVariablesByNameOrSynonym(importedVariate.getVariate(),
+						this.contextUtil.getCurrentProgramUUID());
 		if (terms.size() == 1) {
 			// ok to get only record with the size check
-			StandardVariable stdVariable = new ArrayList<>(terms).get(0);
+			final StandardVariable stdVariable = new ArrayList<>(terms).get(0);
 			importedVariate.setScaleId(stdVariable.getId());
 			this.seedAmountScaleId = importedVariate.getScaleId();
 		} else {
@@ -412,9 +433,11 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		int ctr = 1;
 		for (final GermplasmName germplasmName : germplasmNameObjects) {
 
+			final Integer gid = germplasmName.getGermplasm().getGid();
+
 			final int entryId = ctr++;
 			final ImportedGermplasm importedGermplasm = importedGermplasms.get(entryId - 1);
-			final Integer gid = germplasmName.getGermplasm().getGid();
+			importedGermplasm.setGid(gid);
 
 			final String designation = germplasmName.getName().getNval();
 

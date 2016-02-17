@@ -88,7 +88,7 @@ public class SaveGermplasmListActionTest {
 	@Before
 	public void setup() {
 		this.germplasmList = GermplasmListTestDataInitializer.createGermplasmList(LIST_ID);
-		this.importedGermplasmList = ImportedGermplasmListDataInitializer.createImportedGermplasmList(NO_OF_ENTRIES);
+		this.importedGermplasmList = ImportedGermplasmListDataInitializer.createImportedGermplasmList(NO_OF_ENTRIES, true);
 		this.germplasmNameObjects = ImportedGermplasmListDataInitializer.createGermplasmNameObjects(NO_OF_ENTRIES);
 		this.doNotCreateGermplasmsWithId = ImportedGermplasmListDataInitializer.createListOfGemplasmIds(2);
 		this.newNames = GermplasmTestDataInitializer.createNameList(NO_OF_ENTRIES);
@@ -195,4 +195,36 @@ public class SaveGermplasmListActionTest {
 		}
 
 	}
+
+	@Test
+	public void testUpdateExportedGermplasmPreferredNameWhenImportGermplasmListHasNameFactors() {
+		final String preferredNameCode = "DRVNM";
+		final int noOfEntries = 10;
+		final ImportedGermplasmList importedGermplasmList =
+				ImportedGermplasmListDataInitializer.createImportedGermplasmList(noOfEntries, true);
+		this.action.updateExportedGermplasmPreferredName(preferredNameCode, importedGermplasmList.getImportedGermplasms());
+
+		try {
+			Mockito.verify(this.germplasmManager, Mockito.times(noOfEntries))
+					.updateGermplasmPrefName(Mockito.anyInt(), Mockito.anyString());
+		} catch (final TooLittleActualInvocations e) {
+			Assert.fail("Not all germplasm's name are updated");
+		}
+	}
+
+	@Test
+	public void testUpdateExportedGermplasmPreferredNameWhenImportGermplasmListHasNoNameFactors() {
+		final String preferredNameCode = "DRVNM";
+		final int noOfEntries = 10;
+		final ImportedGermplasmList importedGermplasmList =
+				ImportedGermplasmListDataInitializer.createImportedGermplasmList(noOfEntries, false);
+		this.action.updateExportedGermplasmPreferredName(preferredNameCode, importedGermplasmList.getImportedGermplasms());
+
+		try {
+			Mockito.verify(this.germplasmManager, Mockito.times(0)).updateGermplasmPrefName(Mockito.anyInt(), Mockito.anyString());
+		} catch (final TooLittleActualInvocations e) {
+			Assert.fail("No germplasm's will be updated.");
+		}
+	}
+
 }
