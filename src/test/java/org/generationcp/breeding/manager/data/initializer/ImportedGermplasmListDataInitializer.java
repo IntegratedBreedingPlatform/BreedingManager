@@ -10,12 +10,13 @@ import java.util.Map;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
+import org.generationcp.commons.parsing.pojo.ImportedFactor;
 import org.generationcp.middleware.data.initializer.GermplasmTestDataInitializer;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 
 public class ImportedGermplasmListDataInitializer {
 
-	public static ImportedGermplasmList createImportedGermplasmList(final int noOfEntries) {
+	public static ImportedGermplasmList createImportedGermplasmList(final int noOfEntries, final boolean withNameFactors) {
 		final String filename = "SourceList.xls";
 		final String name = "Import List 001";
 		final String title = "Import List 001 description";
@@ -23,27 +24,50 @@ public class ImportedGermplasmListDataInitializer {
 		final Date date = new Date();
 
 		final ImportedGermplasmList importedGermplasmList = new ImportedGermplasmList(filename, name, title, type, date);
-		importedGermplasmList.setImportedGermplasms(createListOfImportedGermplasm(noOfEntries));
+		importedGermplasmList.setImportedGermplasms(createListOfImportedGermplasm(noOfEntries, withNameFactors));
+		importedGermplasmList.setImportedFactors(createImportedFactors(withNameFactors));
 		return importedGermplasmList;
 	}
 
-	public static List<ImportedGermplasm> createListOfImportedGermplasm(final int noOfEntries) {
+	public static List<ImportedFactor> createImportedFactors(final boolean withNameFactors) {
+		final List<ImportedFactor> importedFactors = new ArrayList<ImportedFactor>();
+
+		importedFactors.add(new ImportedFactor("ENTRY", "The germplasm entry number", "GERMPLASM ENTRY", "NUMBER", "ENUMERATED", "C", ""));
+		importedFactors.add(new ImportedFactor("DESIGNATION", "The name of the germplasm", "GERMPLASM ID", "DBCV", "ASSIGNED", "C", ""));
+		if (withNameFactors) {
+			importedFactors.add(new ImportedFactor("DRVNM", "Derivative Name", "GERMPLASM ID", "NAME", "ASSIGNED", "C", ""));
+		}
+
+		return importedFactors;
+	}
+
+	public static List<ImportedGermplasm> createListOfImportedGermplasm(final int noOfEntries, final boolean withNameFactors) {
 		final List<ImportedGermplasm> importedGermplasmList = new ArrayList<ImportedGermplasm>();
 
 		for (int i = 1; i <= noOfEntries; i++) {
 
-			importedGermplasmList.add(createImportedGermplasm(i));
+			importedGermplasmList.add(createImportedGermplasm(i, withNameFactors));
 		}
 
 		return importedGermplasmList;
 	}
 
-	public static ImportedGermplasm createImportedGermplasm(final int id) {
+	public static ImportedGermplasm createImportedGermplasm(final int id, final boolean withNameFactors) {
 		final ImportedGermplasm importedGermplasm = new ImportedGermplasm();
+
+		if (withNameFactors) {
+			importedGermplasm.setNameFactors(createNameFactors(id, withNameFactors));
+		}
 
 		importedGermplasm.setAttributeVariates(createAttributeVariates(id));
 
 		return importedGermplasm;
+	}
+
+	private static Map<String, String> createNameFactors(final int id, final boolean withNameFactors) {
+		final Map<String, String> nameFactors = new HashMap<String, String>();
+		nameFactors.put("DRVNM", "DRVNM " + id);
+		return nameFactors;
 	}
 
 	private static Map<String, String> createAttributeVariates(final int id) {
