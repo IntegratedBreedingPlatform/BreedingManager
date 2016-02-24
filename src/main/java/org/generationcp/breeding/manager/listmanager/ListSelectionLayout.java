@@ -395,6 +395,16 @@ public class ListSelectionLayout extends VerticalLayout implements International
 				germplasmList.setName(newName);
 				((ListTabComponent) tab.getComponent()).getListComponent().setViewListHeaderWindow(new ViewListHeaderWindow(germplasmList));
 			}
+
+		}
+
+		this.updateGermplasmListInListBuilder(listId, newName);
+	}
+
+	void updateGermplasmListInListBuilder(final Integer listId, final String newName) {
+		final GermplasmList germplasmListInListBuilder = this.source.getListBuilderComponent().getCurrentListInSaveDialog();
+		if (germplasmListInListBuilder != null && germplasmListInListBuilder.getId().intValue() == listId.intValue()) {
+			this.source.getListBuilderComponent().getCurrentlySavedGermplasmList().setName(newName);
 		}
 	}
 

@@ -490,6 +490,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 		// reset the marker for unsaved changes on initial loading
 		this.resetUnsavedChangesFlag();
+
+		this.dialog = new SaveListAsDialog(this, this.currentlySavedGermplasmList, this.messageSource.getMessage(Message.EDIT_LIST_HEADER));
 	}
 
 	public void resetMenuOptions() {
@@ -966,6 +968,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		}
 
 		this.enableMenuOptionsAfterSave();
+
+		this.dialog.setGermplasmList(this.currentlySavedGermplasmList);
 	}
 
 	public void addListsFromSearchResults(final Set<Integer> lists) {
@@ -1224,7 +1228,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 
 	public GermplasmList getCurrentListInSaveDialog() {
-		return this.dialog.getGermplasmListToSave();
+		if (this.dialog != null) {
+			return this.dialog.getGermplasmListToSave();
+		}
+		return null;
 	}
 
 	/**
