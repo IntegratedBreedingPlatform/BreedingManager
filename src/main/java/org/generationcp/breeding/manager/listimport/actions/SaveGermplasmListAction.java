@@ -539,7 +539,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 					newAttr.setTypeId(this.getUdfldID(existingUdflds, code));
 					newAttr.setUserId(this.contextUtil.getCurrentUserLocalId());
 					newAttr.setAval(value);
-					newAttr.setLocationId(germplasm.getLocationId());
+					newAttr.setLocationId(0);
 					newAttr.setReferenceId(0);
 					newAttr.setAdate(Util.getCurrentDateAsIntegerValue());
 
