@@ -18,6 +18,8 @@ import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
+import org.generationcp.middleware.pojos.Attribute;
+import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
@@ -227,4 +229,19 @@ public class SaveGermplasmListActionTest {
 		}
 	}
 
+	@Test
+	public void testPrepareAllAttributesToAdd() {
+		final ImportedGermplasm importedGermplasm = this.importedGermplasmList.getImportedGermplasms().get(0);
+		final List<UserDefinedField> existingUdflds = new ArrayList<UserDefinedField>();
+		final UserDefinedField udfld = new UserDefinedField(1);
+		udfld.setFcode("Fcode");
+		existingUdflds.add(udfld);
+
+		final Germplasm germplasm = new Germplasm();
+		final List<Attribute> attributes = this.action.prepareAllAttributesToAdd(importedGermplasm, existingUdflds, germplasm);
+
+		for (final Attribute attr : attributes) {
+			Assert.assertEquals("Make sure that the attribute's location is set to 0.", attr.getLocationId().intValue(), 0);
+		}
+	}
 }

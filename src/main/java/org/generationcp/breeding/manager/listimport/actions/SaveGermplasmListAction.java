@@ -522,8 +522,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		return cropPersonId;
 	}
 
-	private List<Attribute> prepareAllAttributesToAdd(final ImportedGermplasm importedGermplasm,
-			final List<UserDefinedField> existingUdflds, final Germplasm germplasm) {
+	List<Attribute> prepareAllAttributesToAdd(final ImportedGermplasm importedGermplasm, final List<UserDefinedField> existingUdflds,
+			final Germplasm germplasm) {
 		final List<Attribute> attrs = new ArrayList<Attribute>();
 
 		final Map<String, String> otherAttributes = importedGermplasm.getAttributeVariates();
