@@ -66,9 +66,9 @@ public class GermplasmGroupingResultsComponent extends BaseSubWindow implements 
 
 		this.groupingResultsTable = new Table();
 		this.groupingResultsTable.setWidth("100%");
-		this.groupingResultsTable.addContainerProperty("Founder GID", Integer.class, null);
+		this.groupingResultsTable.addContainerProperty("GID", Integer.class, null);
 		this.groupingResultsTable.addContainerProperty("Group Id (MGID)", Integer.class, null);
-		this.groupingResultsTable.addContainerProperty("Group Member GIDs", String.class, null);
+		this.groupingResultsTable.addContainerProperty("Group Members", String.class, null);
 	}
 
 	@Override
@@ -101,8 +101,8 @@ public class GermplasmGroupingResultsComponent extends BaseSubWindow implements 
 	@Override
 	public void layoutComponents() {
 		this.setModal(true);
-		this.setWidth("500px");
-		this.setHeight("300px");
+		this.setWidth("600px");
+		this.setHeight("400px");
 		this.setResizable(false);
 		this.addStyleName(Reindeer.WINDOW_LIGHT);
 
