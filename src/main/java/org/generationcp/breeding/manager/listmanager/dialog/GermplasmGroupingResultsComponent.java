@@ -2,15 +2,14 @@ package org.generationcp.breeding.manager.listmanager.dialog;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
+import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.service.impl.GermplasmGroupingResult;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,22 +67,36 @@ public class GermplasmGroupingResultsComponent extends BaseSubWindow implements 
 		this.groupingResultsTable.setWidth("100%");
 		this.groupingResultsTable.addContainerProperty("GID", Integer.class, null);
 		this.groupingResultsTable.addContainerProperty("Group Id (MGID)", Integer.class, null);
+		this.groupingResultsTable.addContainerProperty("Total Members", Integer.class, null);
 		this.groupingResultsTable.addContainerProperty("Group Members", String.class, null);
 	}
 
 	@Override
 	public void initializeValues() {
-		int index = 1;
+		int rowId = 1;
 		for (Map.Entry<Integer, GermplasmGroupingResult> mapEntry : this.groupingResults.entrySet()) {
 			GermplasmGroupingResult groupingResult = mapEntry.getValue();
-				Set<Integer> groupMemberGids = groupingResult.getGroupMemberGids();
-				
-			this.groupingResultsTable.addItem(
-					new Object[] {groupingResult.getFounderGid(), groupingResult.getGroupMgid(),
-							StringUtils.join(groupMemberGids.iterator(), ", ")}, index++);
-		}
 
-		this.groupingResultsTable.setPageLength(index);
+			StringBuffer memberString = new StringBuffer();
+			int memberCounter = 1;
+			for (Germplasm member : groupingResult.getGroupMembers()) {
+				memberString.append(member.getGid());
+				if (member.getPreferredName() != null) {
+					memberString.append(" [");
+					memberString.append(member.getPreferredName().getNval());
+					if (memberCounter == groupingResult.getGroupMembers().size()) {
+						memberString.append("]. ");
+					} else {
+						memberString.append("], ");
+					}
+				}
+				memberCounter++;
+			}
+				
+			this.groupingResultsTable.addItem(new Object[] {groupingResult.getFounderGid(), groupingResult.getGroupMgid(),
+					groupingResult.getGroupMembers().size(), memberString.toString()}, rowId++);
+		}
+		this.groupingResultsTable.setPageLength(rowId);
 	}
 
 	@Override
