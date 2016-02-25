@@ -10,6 +10,7 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.service.impl.GermplasmGroupingResult;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,14 +82,16 @@ public class GermplasmGroupingResultsComponent extends BaseSubWindow implements 
 			int memberCounter = 1;
 			for (Germplasm member : groupingResult.getGroupMembers()) {
 				memberString.append(member.getGid());
-				if (member.getPreferredName() != null) {
+				Name preferredName = member.findPreferredName();
+				if (preferredName != null) {
 					memberString.append(" [");
-					memberString.append(member.getPreferredName().getNval());
-					if (memberCounter == groupingResult.getGroupMembers().size()) {
-						memberString.append("]. ");
-					} else {
-						memberString.append("], ");
-					}
+					memberString.append(preferredName.getNval());
+					memberString.append("]");
+				}
+				if (memberCounter == groupingResult.getGroupMembers().size()) {
+					memberString.append(".");
+				} else {
+					memberString.append(",");
 				}
 				memberCounter++;
 			}
