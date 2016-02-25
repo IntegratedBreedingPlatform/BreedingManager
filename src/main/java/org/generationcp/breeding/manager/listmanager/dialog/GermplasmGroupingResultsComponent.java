@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.listmanager.dialog;
 
 import java.util.HashMap;
@@ -29,17 +30,19 @@ public class GermplasmGroupingResultsComponent extends BaseSubWindow implements 
 		BreedingManagerLayout, Window.CloseListener {
 
 	private Map<Integer, GermplasmGroup> groupingResults = new HashMap<Integer, GermplasmGroup>();
-	
+
 	private Table groupingResultsTable;
 	private Button okButton;
+
+	static final int MAX_MEMBERS_TO_DISPLAY = 15;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
-	public GermplasmGroupingResultsComponent(Map<Integer, GermplasmGroup> groupingResults) {
+	public GermplasmGroupingResultsComponent(final Map<Integer, GermplasmGroup> groupingResults) {
 		this.groupingResults = groupingResults;
 	}
-	
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.instantiateComponents();
@@ -55,7 +58,7 @@ public class GermplasmGroupingResultsComponent extends BaseSubWindow implements 
 	}
 
 	@Override
-	public void windowClose(CloseEvent e) {
+	public void windowClose(final CloseEvent e) {
 		super.close();
 	}
 
@@ -75,27 +78,35 @@ public class GermplasmGroupingResultsComponent extends BaseSubWindow implements 
 	@Override
 	public void initializeValues() {
 		int rowId = 1;
-		for (Map.Entry<Integer, GermplasmGroup> mapEntry : this.groupingResults.entrySet()) {
-			GermplasmGroup groupingResult = mapEntry.getValue();
+		for (final Map.Entry<Integer, GermplasmGroup> mapEntry : this.groupingResults.entrySet()) {
+			final GermplasmGroup groupingResult = mapEntry.getValue();
 
-			StringBuffer memberString = new StringBuffer();
-			int memberCounter = 1;
-			for (Germplasm member : groupingResult.getGroupMembers()) {
+			final StringBuffer memberString = new StringBuffer();
+			int memberNumber = 1;
+
+			for (final Germplasm member : groupingResult.getGroupMembers()) {
 				memberString.append(member.getGid());
-				Name preferredName = member.findPreferredName();
+				final Name preferredName = member.findPreferredName();
 				if (preferredName != null) {
 					memberString.append(" [");
 					memberString.append(preferredName.getNval());
 					memberString.append("]");
 				}
-				if (memberCounter == groupingResult.getGroupMembers().size()) {
+				if (memberNumber == groupingResult.getGroupMembers().size()) {
 					memberString.append(".");
 				} else {
 					memberString.append(",");
 				}
-				memberCounter++;
+				if (memberNumber == MAX_MEMBERS_TO_DISPLAY) {
+					break;
+				}
+				memberNumber++;
 			}
-				
+
+			if (groupingResult.getGroupMembers().size() > MAX_MEMBERS_TO_DISPLAY) {
+				memberString.append("....");
+			}
+
 			this.groupingResultsTable.addItem(new Object[] {groupingResult.getFounderGid(), groupingResult.getGroupMgid(),
 					groupingResult.getGroupMembers().size(), memberString.toString()}, rowId++);
 		}
@@ -124,7 +135,7 @@ public class GermplasmGroupingResultsComponent extends BaseSubWindow implements 
 
 		this.center();
 
-		VerticalLayout verticleLayout = new VerticalLayout();
+		final VerticalLayout verticleLayout = new VerticalLayout();
 		verticleLayout.setMargin(true);
 		verticleLayout.setSpacing(true);
 
@@ -141,4 +152,27 @@ public class GermplasmGroupingResultsComponent extends BaseSubWindow implements 
 		this.messageSource.setCaption(this.okButton, Message.OK);
 	}
 
+	Table getGroupingResultsTable() {
+		return this.groupingResultsTable;
+	}
+
+	void setGroupingResultsTable(final Table groupingResultsTable) {
+		this.groupingResultsTable = groupingResultsTable;
+	}
+
+	Button getOkButton() {
+		return this.okButton;
+	}
+
+	void setOkButton(final Button okButton) {
+		this.okButton = okButton;
+	}
+
+	SimpleResourceBundleMessageSource getMessageSource() {
+		return this.messageSource;
+	}
+
+	void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
 }
