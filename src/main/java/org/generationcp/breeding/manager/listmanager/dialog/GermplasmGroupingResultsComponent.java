@@ -11,7 +11,7 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Name;
-import org.generationcp.middleware.service.impl.GermplasmGroupingResult;
+import org.generationcp.middleware.service.impl.GermplasmGroup;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -28,7 +28,7 @@ import com.vaadin.ui.themes.Reindeer;
 public class GermplasmGroupingResultsComponent extends BaseSubWindow implements InitializingBean, InternationalizableComponent,
 		BreedingManagerLayout, Window.CloseListener {
 
-	private Map<Integer, GermplasmGroupingResult> groupingResults = new HashMap<Integer, GermplasmGroupingResult>();
+	private Map<Integer, GermplasmGroup> groupingResults = new HashMap<Integer, GermplasmGroup>();
 	
 	private Table groupingResultsTable;
 	private Button okButton;
@@ -36,7 +36,7 @@ public class GermplasmGroupingResultsComponent extends BaseSubWindow implements 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
-	public GermplasmGroupingResultsComponent(Map<Integer, GermplasmGroupingResult> groupingResults) {
+	public GermplasmGroupingResultsComponent(Map<Integer, GermplasmGroup> groupingResults) {
 		this.groupingResults = groupingResults;
 	}
 	
@@ -75,8 +75,8 @@ public class GermplasmGroupingResultsComponent extends BaseSubWindow implements 
 	@Override
 	public void initializeValues() {
 		int rowId = 1;
-		for (Map.Entry<Integer, GermplasmGroupingResult> mapEntry : this.groupingResults.entrySet()) {
-			GermplasmGroupingResult groupingResult = mapEntry.getValue();
+		for (Map.Entry<Integer, GermplasmGroup> mapEntry : this.groupingResults.entrySet()) {
+			GermplasmGroup groupingResult = mapEntry.getValue();
 
 			StringBuffer memberString = new StringBuffer();
 			int memberCounter = 1;
