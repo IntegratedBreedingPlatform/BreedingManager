@@ -113,7 +113,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		this.listManagerMain = listManagerMain;
 	}
 
-	public GermplasmSearchResultsComponent(final ListManagerMain listManagerMain, boolean viaToolUrl, boolean showAddToList) {
+	public GermplasmSearchResultsComponent(final ListManagerMain listManagerMain, final boolean viaToolUrl, final boolean showAddToList) {
 		this(listManagerMain);
 
 		this.viaToolUrl = viaToolUrl;
@@ -197,10 +197,11 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public String generateDescription(Component source, Object itemId, Object propertyId) {
+			public String generateDescription(final Component source, final Object itemId, final Object propertyId) {
 				if (propertyId == GermplasmSearchResultsComponent.NAMES) {
-					Item item = GermplasmSearchResultsComponent.this.matchingGermplasmsTable.getItem(itemId);
-					Integer gid = Integer.valueOf(((Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue()).getCaption());
+					final Item item = GermplasmSearchResultsComponent.this.matchingGermplasmsTable.getItem(itemId);
+					final Integer gid =
+							Integer.valueOf(((Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue()).getCaption());
 					return GermplasmSearchResultsComponent.this.getGermplasmNames(gid);
 				} else {
 					return null;
@@ -213,12 +214,12 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 			private static final long serialVersionUID = -897257270314381555L;
 
 			@Override
-			public Action[] getActions(Object target, Object sender) {
+			public Action[] getActions(final Object target, final Object sender) {
 				return GermplasmSearchResultsComponent.GERMPLASMS_TABLE_CONTEXT_MENU;
 			}
 
 			@Override
-			public void handleAction(Action action, Object sender, Object target) {
+			public void handleAction(final Action action, final Object sender, final Object target) {
 				if (GermplasmSearchResultsComponent.ACTION_COPY_TO_NEW_LIST == action) {
 					GermplasmSearchResultsComponent.this.addSelectedEntriesToNewList();
 				} else if (GermplasmSearchResultsComponent.ACTION_SELECT_ALL == action) {
@@ -234,7 +235,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		return new TableWithSelectAllLayout(10, GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID);
 	}
 
-	private void updateActionMenuOptions(boolean status) {
+	private void updateActionMenuOptions(final boolean status) {
 		this.menuAddNewEntry.setEnabled(status);
 		this.menuSelectAll.setEnabled(status);
 	}
@@ -252,7 +253,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				GermplasmSearchResultsComponent.this.menu.show(event.getClientX(), event.getClientY());
 			}
 
@@ -263,8 +264,8 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 			private static final long serialVersionUID = -2343109406180457070L;
 
 			@Override
-			public void contextItemClick(org.vaadin.peter.contextmenu.ContextMenu.ClickEvent event) {
-				ContextMenuItem clickedItem = event.getClickedItem();
+			public void contextItemClick(final org.vaadin.peter.contextmenu.ContextMenu.ClickEvent event) {
+				final ContextMenuItem clickedItem = event.getClickedItem();
 
 				if (clickedItem.getName().equals(
 						GermplasmSearchResultsComponent.this.messageSource.getMessage(Message.ADD_SELECTED_ENTRIES_TO_NEW_LIST))) {
@@ -284,13 +285,13 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void valueChange(ValueChangeEvent event) {
+			public void valueChange(final ValueChangeEvent event) {
 				GermplasmSearchResultsComponent.this.updateNoOfSelectedEntries();
 			}
 		});
 	}
 
-	public void setRightClickActionHandlerEnabled(Boolean isEnabled) {
+	public void setRightClickActionHandlerEnabled(final Boolean isEnabled) {
 		this.matchingGermplasmsTable.removeActionHandler(this.rightClickActionHandler);
 		if (isEnabled) {
 			this.matchingGermplasmsTable.addActionHandler(this.rightClickActionHandler);
@@ -301,14 +302,14 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	public void layoutComponents() {
 		this.setSpacing(true);
 
-		HorizontalLayout leftHeaderLayout = new HorizontalLayout();
+		final HorizontalLayout leftHeaderLayout = new HorizontalLayout();
 		leftHeaderLayout.setSpacing(true);
 		leftHeaderLayout.addComponent(this.totalMatchingGermplasmsLabel);
 		leftHeaderLayout.addComponent(this.totalSelectedMatchingGermplasmsLabel);
 		leftHeaderLayout.setComponentAlignment(this.totalMatchingGermplasmsLabel, Alignment.MIDDLE_LEFT);
 		leftHeaderLayout.setComponentAlignment(this.totalSelectedMatchingGermplasmsLabel, Alignment.MIDDLE_LEFT);
 
-		HorizontalLayout headerLayout = new HorizontalLayout();
+		final HorizontalLayout headerLayout = new HorizontalLayout();
 		headerLayout.setWidth("100%");
 		headerLayout.setSpacing(true);
 		headerLayout.addComponent(leftHeaderLayout);
@@ -321,22 +322,22 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		this.addComponent(this.matchingGermplasmsTableWithSelectAll);
 	}
 
-	public void applyGermplasmResults(List<Germplasm> germplasms) {
+	public void applyGermplasmResults(final List<Germplasm> germplasms) {
 
-		Monitor monitor = MonitorFactory.start("GermplasmSearchResultsComponent.applyGermplasmResults()");
+		final Monitor monitor = MonitorFactory.start("GermplasmSearchResultsComponent.applyGermplasmResults()");
 		this.updateNoOfEntries(germplasms.size());
 		this.matchingGermplasmsTable.removeAllItems();
-		for (Germplasm germplasm : germplasms) {
+		for (final Germplasm germplasm : germplasms) {
 
-			GidLinkButtonClickListener listener =
+			final GidLinkButtonClickListener listener =
 					new GidLinkButtonClickListener(this.listManagerMain, germplasm.getGid().toString(), this.viaToolUrl, this.showAddToList);
-			Button gidButton = new Button(String.format("%s", germplasm.getGid().toString()), listener);
+			final Button gidButton = new Button(String.format("%s", germplasm.getGid().toString()), listener);
 			gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 
-			String germplasmFullName = this.getGermplasmNames(germplasm.getGid());
-			String shortenedNames = germplasmFullName.length() > 20 ? germplasmFullName.substring(0, 20) + "..." : germplasmFullName;
+			final String germplasmFullName = this.getGermplasmNames(germplasm.getGid());
+			final String shortenedNames = germplasmFullName.length() > 20 ? germplasmFullName.substring(0, 20) + "..." : germplasmFullName;
 
-			Button namesButton = new Button(shortenedNames, listener);
+			final Button namesButton = new Button(shortenedNames, listener);
 			namesButton.setStyleName(BaseTheme.BUTTON_LINK);
 			namesButton.setDescription(germplasmFullName);
 
@@ -346,13 +347,13 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 					if (this.germplasmDataManager != null) {
 						crossExpansion = this.pedigreeService.getCrossExpansion(germplasm.getGid(), this.crossExpansionProperties);
 					}
-				} catch (MiddlewareQueryException ex) {
+				} catch (final MiddlewareQueryException ex) {
 					GermplasmSearchResultsComponent.LOG.error(ex.getMessage(), ex);
 					crossExpansion = "-";
 				}
 			}
 
-			CheckBox itemCheckBox = new CheckBox();
+			final CheckBox itemCheckBox = new CheckBox();
 			itemCheckBox.setData(germplasm.getGid());
 			itemCheckBox.setImmediate(true);
 			itemCheckBox.addListener(new ClickListener() {
@@ -360,8 +361,8 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 				private static final long serialVersionUID = 1L;
 
 				@Override
-				public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-					CheckBox itemCheckBox = (CheckBox) event.getButton();
+				public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
+					final CheckBox itemCheckBox = (CheckBox) event.getButton();
 					if (((Boolean) itemCheckBox.getValue()).equals(true)) {
 						GermplasmSearchResultsComponent.this.matchingGermplasmsTable.select(itemCheckBox.getData());
 					} else {
@@ -373,29 +374,29 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 			String methodName = "-";
 			try {
-				Method germplasmMethod = this.germplasmDataManager.getMethodByID(germplasm.getMethodId());
+				final Method germplasmMethod = this.germplasmDataManager.getMethodByID(germplasm.getMethodId());
 				if (germplasmMethod != null && germplasmMethod.getMname() != null) {
 					methodName = germplasmMethod.getMname();
 				}
-			} catch (MiddlewareQueryException e) {
+			} catch (final MiddlewareQueryException e) {
 				GermplasmSearchResultsComponent.LOG.error(e.getMessage(), e);
 			}
 
 			String locationName = "-";
 			try {
 				@SuppressWarnings("deprecation")
-				Location germplasmLocation = this.germplasmDataManager.getLocationByID(germplasm.getLocationId());
+				final Location germplasmLocation = this.germplasmDataManager.getLocationByID(germplasm.getLocationId());
 				if (germplasmLocation != null && germplasmLocation.getLname() != null) {
 					locationName = germplasmLocation.getLname();
 				}
-			} catch (MiddlewareQueryException e) {
+			} catch (final MiddlewareQueryException e) {
 				GermplasmSearchResultsComponent.LOG.error(e.getMessage(), e);
 			}
 
-			GermplasmInventory inventoryInfo = germplasm.getInventoryInfo();
-			Label stockLabel = this.getStockIDs(inventoryInfo);
-			String availInv = this.getAvailableInventory(inventoryInfo);
-			String seedRes = this.getSeedReserved(inventoryInfo);
+			final GermplasmInventory inventoryInfo = germplasm.getInventoryInfo();
+			final Label stockLabel = this.getStockIDs(inventoryInfo);
+			final String availInv = this.getAvailableInventory(inventoryInfo);
+			final String seedRes = this.getSeedReserved(inventoryInfo);
 
 			this.matchingGermplasmsTable.addItem(new Object[] {itemCheckBox, namesButton, crossExpansion, availInv, seedRes, stockLabel,
 					gidButton, locationName, methodName}, germplasm.getGid());
@@ -409,38 +410,38 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		GermplasmSearchResultsComponent.LOG.debug("" + monitor.stop());
 	}
 
-	private String getSeedReserved(GermplasmInventory inventoryInfo) {
+	private String getSeedReserved(final GermplasmInventory inventoryInfo) {
 		String seedRes = "-";
-		Integer reservedLotCount = inventoryInfo.getReservedLotCount();
+		final Integer reservedLotCount = inventoryInfo.getReservedLotCount();
 		if (reservedLotCount != null && reservedLotCount.intValue() != 0) {
 			seedRes = reservedLotCount.toString();
 		}
 		return seedRes;
 	}
 
-	private String getAvailableInventory(GermplasmInventory inventoryInfo) {
+	private String getAvailableInventory(final GermplasmInventory inventoryInfo) {
 		String availInv = "-";
-		Integer actualInventoryLotCount = inventoryInfo.getActualInventoryLotCount();
+		final Integer actualInventoryLotCount = inventoryInfo.getActualInventoryLotCount();
 		if (actualInventoryLotCount != null && actualInventoryLotCount.intValue() != 0) {
 			availInv = actualInventoryLotCount.toString();
 		}
 		return availInv;
 	}
 
-	private Label getStockIDs(GermplasmInventory inventoryInfo) {
-		String stockIDs = inventoryInfo.getStockIDs();
-		Label stockLabel = new Label(stockIDs);
+	private Label getStockIDs(final GermplasmInventory inventoryInfo) {
+		final String stockIDs = inventoryInfo.getStockIDs();
+		final Label stockLabel = new Label(stockIDs);
 		stockLabel.setDescription(stockIDs);
 		return stockLabel;
 	}
 
-	private String getGermplasmNames(int gid) {
+	private String getGermplasmNames(final int gid) {
 
 		try {
-			List<Name> names = this.germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
-			StringBuilder germplasmNames = new StringBuilder("");
+			final List<Name> names = this.germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
+			final StringBuilder germplasmNames = new StringBuilder("");
 			int i = 0;
-			for (Name n : names) {
+			for (final Name n : names) {
 				if (i < names.size() - 1) {
 					germplasmNames.append(n.getNval() + ", ");
 				} else {
@@ -450,7 +451,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 			}
 
 			return germplasmNames.toString();
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			GermplasmSearchResultsComponent.LOG.error(e.getMessage(), e);
 			return null;
 		}
@@ -464,7 +465,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		return this.matchingGermplasmsTable;
 	}
 
-	private void updateNoOfEntries(long count) {
+	private void updateNoOfEntries(final long count) {
 		this.totalMatchingGermplasmsLabel.setValue(this.messageSource.getMessage(Message.TOTAL_RESULTS) + ": " + "  <b>" + count + "</b>");
 	}
 
@@ -474,7 +475,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		this.updateNoOfEntries(count);
 	}
 
-	private void updateNoOfSelectedEntries(int count) {
+	private void updateNoOfSelectedEntries(final int count) {
 		this.totalSelectedMatchingGermplasmsLabel.setValue("<i>" + this.messageSource.getMessage(Message.SELECTED) + ": " + "  <b>" + count
 				+ "</b></i>");
 	}
@@ -482,7 +483,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	private void updateNoOfSelectedEntries() {
 		int count = 0;
 
-		Collection<?> selectedItems = (Collection<?>) this.matchingGermplasmsTable.getValue();
+		final Collection<?> selectedItems = (Collection<?>) this.matchingGermplasmsTable.getValue();
 		count = selectedItems.size();
 
 		this.updateNoOfSelectedEntries(count);
@@ -490,14 +491,14 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 	@SuppressWarnings("unchecked")
 	public void addSelectedEntriesToNewList() {
-		List<Integer> gids = new ArrayList<Integer>();
+		final List<Integer> gids = new ArrayList<Integer>();
 		gids.addAll((Collection<? extends Integer>) this.matchingGermplasmsTable.getValue());
 
 		if (gids.isEmpty()) {
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
 					this.messageSource.getMessage(Message.ERROR_GERMPLASM_MUST_BE_SELECTED));
 		} else {
-			for (Integer gid : gids) {
+			for (final Integer gid : gids) {
 				this.listManagerMain.addPlantToList(gid);
 			}
 		}
@@ -507,7 +508,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		return this.viaToolUrl;
 	}
 
-	public void setViaToolUrl(boolean viaToolUrl) {
+	public void setViaToolUrl(final boolean viaToolUrl) {
 		this.viaToolUrl = viaToolUrl;
 	}
 
@@ -515,7 +516,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		return this.showAddToList;
 	}
 
-	public void setShowAddToList(boolean showAddToList) {
+	public void setShowAddToList(final boolean showAddToList) {
 		this.showAddToList = showAddToList;
 	}
 }
