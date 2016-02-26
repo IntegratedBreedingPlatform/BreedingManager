@@ -335,7 +335,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 			gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 
 			final String germplasmFullName = this.getGermplasmNames(germplasm.getGid());
-			final String shortenedNames = germplasmFullName.length() > 20 ? germplasmFullName.substring(0, 20) + "..." : germplasmFullName;
+			final String shortenedNames = this.getShortenedNames(germplasmFullName);
 
 			final Button namesButton = new Button(shortenedNames, listener);
 			namesButton.setStyleName(BaseTheme.BUTTON_LINK);
@@ -408,6 +408,14 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 			this.updateActionMenuOptions(true);
 		}
 		GermplasmSearchResultsComponent.LOG.debug("" + monitor.stop());
+	}
+
+	String getShortenedNames(final String germplasmFullName) {
+		String shortenedNames = "";
+		if (germplasmFullName != null) {
+			shortenedNames = germplasmFullName.length() > 20 ? germplasmFullName.substring(0, 20) + "..." : germplasmFullName;
+		}
+		return shortenedNames;
 	}
 
 	private String getSeedReserved(final GermplasmInventory inventoryInfo) {
