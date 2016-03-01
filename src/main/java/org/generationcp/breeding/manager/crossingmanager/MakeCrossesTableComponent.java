@@ -61,6 +61,7 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -100,6 +101,9 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 
 	private Label totalCrossesLabel;
 	private Label totalSelectedCrossesLabel;
+
+	private CheckBox applyNewGroupToCurrentCrossOnly;
+
 	private Button saveButton;
 
 	private SaveListAsDialog saveListAsWindow;
@@ -415,6 +419,8 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		this.totalSelectedCrossesLabel.setContentMode(Label.CONTENT_XHTML);
 		this.totalSelectedCrossesLabel.setWidth("95px");
 
+		this.applyNewGroupToCurrentCrossOnly = new CheckBox(this.messageSource.getMessage(Message.APPLY_NEW_GROUP_TO_CURRENT_CROSS_ONLY));
+
 		this.saveButton = new Button(this.messageSource.getMessage(Message.SAVE_LABEL));
 		this.saveButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 		this.saveButton.setEnabled(false);
@@ -531,6 +537,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		makeCrossesLayout.setSpacing(true);
 		makeCrossesLayout.setMargin(true);
 		makeCrossesLayout.addComponent(labelContainer);
+		makeCrossesLayout.addComponent(this.applyNewGroupToCurrentCrossOnly);
 		makeCrossesLayout.addComponent(this.tableCrossesMade);
 
 		final Panel makeCrossesPanel = new Panel();
@@ -581,8 +588,8 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		final SaveCrossesMadeAction saveAction = new SaveCrossesMadeAction(this.getCrossList());
 
 		try {
-			boolean applyNewGroupToCurrentCrossOnly =
-					this.makeCrossesMain.getCrossingMethodComponent().getApplyNewGroupToCurrentCrossOnlyValue();
+			boolean applyNewGroupToCurrentCrossOnly = this.applyNewGroupToCurrentCrossOnly.booleanValue();
+
 			this.crossList =
 					saveAction
 							.saveRecords(this.makeCrossesMain.getCrossesMadeContainer().getCrossesMade(), applyNewGroupToCurrentCrossOnly);
