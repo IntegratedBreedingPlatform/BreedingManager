@@ -21,6 +21,7 @@ import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossing
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDisplay.StepChangeListener;
+import org.generationcp.breeding.manager.customcomponent.LinkButton;
 import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialog;
 import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialogSource;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
@@ -78,7 +79,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	// marks if there are unsaved changes in List from ListSelectorComponent and ListBuilderComponent
 	private boolean hasChanges;
 	private UnsavedChangesConfirmDialog unsavedChangesDialog;
-	private Link nurseryLink;
+	private LinkButton nurseryCancelButton;
+	private Button nurseryBackButton;
 
 	public CrossingManagerMakeCrossesComponent(final ManageCrossingSettingsMain manageCrossingSettingsMain) {
 		this.source = manageCrossingSettingsMain;
@@ -174,15 +176,20 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		this.nextButton.setEnabled(this.isAllListsSaved());
 	}
 
-	public void updateNurseryLink(final Integer id) {
-		if( null == id || this.nurseryLink == null) {
+	public void updateNurseryBackButton(final Integer id) {
+		if( null == id || this.nurseryBackButton == null) {
 			return;
 		}
-		// get the part of the link already on the page without URL parameters part
-		final String oldNurseryLinkUrl = StringUtils.substringBefore(((ExternalResource) this.nurseryLink.getResource()).getURL(), "?");
-		final ExternalResource urlToNursery = new ExternalResource(oldNurseryLinkUrl + "?" + BreedingManagerApplication
-				.REQ_PARAM_CROSSES_LIST_ID + "=" + id);
-		this.nurseryLink.setResource(urlToNursery);
+		this.nurseryBackButton.addListener(new Button.ClickListener() {
+			@Override
+			public void buttonClick(final Button.ClickEvent event) {
+				// get the cancel button returning to nursery  link as a root url
+				final String urlToSpecificNurseryWithParams = CrossingManagerMakeCrossesComponent.this.nurseryCancelButton.getResource()
+						.getURL() + "?" + BreedingManagerApplication.REQ_PARAM_CROSSES_LIST_ID + "=" + id;
+				final ExternalResource urlToNursery = new ExternalResource(urlToSpecificNurseryWithParams);
+				CrossingManagerMakeCrossesComponent.this.getWindow().open(urlToNursery, "_self");
+			}
+		});
 	}
 
 	private boolean isAllListsSaved() {
@@ -270,8 +277,11 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		final boolean isNavigatedFromNursery = BreedingManagerUtil.getApplicationRequest().getPathInfo().contains(BreedingManagerApplication
 				.NAVIGATION_FROM_NURSERY_PREFIX);
 		if (isNavigatedFromNursery) {
-			this.nurseryLink = this.constructLinkToNursery(BreedingManagerUtil.getApplicationRequest());
-			layoutButtonArea.addComponent(this.nurseryLink);
+			this.nurseryCancelButton = this.constructNurseryCancelButton(BreedingManagerUtil.getApplicationRequest());
+			this.nurseryBackButton = this.constructNurseryBackButton();
+			this.nurseryBackButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+			layoutButtonArea.addComponent(this.nurseryCancelButton);
+			layoutButtonArea.addComponent(this.nurseryBackButton);
 		} else {
 			layoutButtonArea.addComponent(this.backButton);
 			layoutButtonArea.addComponent(this.nextButton);
@@ -285,23 +295,41 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		this.setStyleName("crosses-select-parents-tab");
 	}
 
-	protected Link constructLinkToNursery(final HttpServletRequest currentRequest) {
+	private Button constructNurseryBackButton() {
+		final Button nurseryBackButton = new Button();
+		nurseryBackButton.setData("nursery back button");
+		this.messageSource.setDescription(nurseryBackButton, Message.BACK_TO_NURSERY_DESCRIPTION);
+		this.messageSource.setCaption(nurseryBackButton, Message.BACK_TO_NURSERY);
+		nurseryBackButton.addListener(new Button.ClickListener() {
+
+			@Override
+			public void buttonClick(Button.ClickEvent event) {
+				MessageNotifier.showWarning(CrossingManagerMakeCrossesComponent.this.getWindow(),
+						CrossingManagerMakeCrossesComponent.this.messageSource.getMessage(Message.WARNING),
+						CrossingManagerMakeCrossesComponent.this.messageSource.getMessage(Message.BACK_TO_NURSERY_DESCRIPTION));
+			}
+		});
+		return nurseryBackButton;
+	}
+
+	protected LinkButton constructNurseryCancelButton(final HttpServletRequest currentRequest) {
 		final String nurseryId = currentRequest
 				.getParameterValues(BreedingManagerApplication.REQ_PARAM_NURSERY_ID).length > 0 ?
 				currentRequest.getParameterValues(BreedingManagerApplication.REQ_PARAM_NURSERY_ID)[0] : "";
 		final ExternalResource urlToNursery;
 		if (nurseryId.isEmpty() || !NumberUtils.isDigits(nurseryId)) {
-			urlToNursery = new ExternalResource("http://" + currentRequest.getServerName() + ":" + currentRequest.getServerPort()
+			urlToNursery = new ExternalResource(currentRequest.getScheme() + "://" + currentRequest.getServerName() + ":" + currentRequest
+					.getServerPort()
 					+ BreedingManagerApplication.PATH_TO_NURSERY);
 		} else {
-			urlToNursery = new ExternalResource("http://" + currentRequest.getServerName() + ":" + currentRequest.getServerPort()
+			urlToNursery = new ExternalResource(currentRequest.getScheme() + "://" + currentRequest.getServerName() + ":" + currentRequest
+					.getServerPort()
 					+ BreedingManagerApplication.PATH_TO_EDIT_NURSERY + nurseryId);
 		}
-		final Link backToNurseryLink = new Link("", urlToNursery);
-		backToNurseryLink.setData("nursery back button");
-		this.messageSource.setDescription(backToNurseryLink, Message.BACK_TO_NURSERY_DESCRIPTION);
-		this.messageSource.setCaption(backToNurseryLink, Message.BACK_TO_NURSERY);
-		return backToNurseryLink;
+		final LinkButton nurseryCancelButton = new LinkButton(urlToNursery, "");
+		nurseryCancelButton.setData("nursery cancel button");
+		this.messageSource.setCaption(nurseryCancelButton, Message.CANCEL);
+		return nurseryCancelButton;
 	}
 
 	public void updateCrossesSeedSource(final String femaleListName, final String maleListName) {

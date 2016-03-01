@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
+import org.generationcp.breeding.manager.customcomponent.LinkButton;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,6 +28,7 @@ public class CrossingManagerMakeCrossesComponentTest {
 	public static final String NURSERY_ID = "25019";
 	public static final int PORT = 8080;
 	public static final String LIST_ID = "38";
+	public static final String HTTP = "http";
 	@Mock
 	private ManageCrossingSettingsMain manageCrossingSettingsMain;
 	@Mock
@@ -66,29 +68,31 @@ public class CrossingManagerMakeCrossesComponentTest {
 	}
 
 	@Test
-	public void testConstructLinkToNursery_Edit() {
+	public void testConstructNurseryCancelButton_Edit() {
 		HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
 		Mockito.doReturn(new String[]{NURSERY_ID}).when(mockRequest).getParameterValues(BreedingManagerApplication.REQ_PARAM_NURSERY_ID);
 		Mockito.doReturn(new String[]{LIST_ID}).when(mockRequest).getParameterValues(BreedingManagerApplication.REQ_PARAM_LIST_ID);
 		Mockito.doReturn(LOCALHOST).when(mockRequest).getServerName();
 		Mockito.doReturn(PORT).when(mockRequest).getServerPort();
+		Mockito.doReturn(HTTP).when(mockRequest).getScheme();
 
-		final Link linkToEditNursery = this.makeCrosses.constructLinkToNursery(mockRequest);
+		final LinkButton linkToEditNursery = this.makeCrosses.constructNurseryCancelButton(mockRequest);
 
 		Assert.assertEquals("http://" + LOCALHOST + ":" + PORT + BreedingManagerApplication.PATH_TO_EDIT_NURSERY + NURSERY_ID,
 				((ExternalResource) linkToEditNursery.getResource()).getURL());
 	}
 
 	@Test
-	public void testConstructLinkToNursery_Create() {
+	public void testConstructNurseryCancelButton_Create() {
 		HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
 		Mockito.doReturn(new String[]{"not_a_valid_id"}).when(mockRequest).getParameterValues(BreedingManagerApplication
 				.REQ_PARAM_NURSERY_ID);
 		Mockito.doReturn(new String[]{LIST_ID}).when(mockRequest).getParameterValues(BreedingManagerApplication.REQ_PARAM_LIST_ID);
 		Mockito.doReturn(LOCALHOST).when(mockRequest).getServerName();
 		Mockito.doReturn(PORT).when(mockRequest).getServerPort();
+		Mockito.doReturn(HTTP).when(mockRequest).getScheme();
 
-		final Link linkToCreateNursery = this.makeCrosses.constructLinkToNursery(mockRequest);
+		final LinkButton linkToCreateNursery = this.makeCrosses.constructNurseryCancelButton(mockRequest);
 
 		Assert.assertEquals("http://" + LOCALHOST + ":" + PORT + BreedingManagerApplication.PATH_TO_NURSERY,
 				((ExternalResource) linkToCreateNursery.getResource()).getURL());
