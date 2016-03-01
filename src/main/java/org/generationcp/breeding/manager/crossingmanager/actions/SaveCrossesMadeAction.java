@@ -108,7 +108,7 @@ public class SaveCrossesMadeAction implements Serializable {
 	 * @param crossesMade where crosses information is defined
 	 * @return id of new Germplasm List created
 	 */
-	public GermplasmList saveRecords(final CrossesMade crossesMade) {
+	public GermplasmList saveRecords(final CrossesMade crossesMade, final boolean applyNewGroupToCurrentCrossOnly) {
 		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
 		return transactionTemplate.execute(new TransactionCallback<GermplasmList>() {
 
@@ -117,6 +117,9 @@ public class SaveCrossesMadeAction implements Serializable {
 				SaveCrossesMadeAction.this.updateConstantFields(crossesMade);
 
 				List<Integer> germplasmIDs = SaveCrossesMadeAction.this.saveGermplasmsAndNames(crossesMade);
+
+				SaveCrossesMadeAction.this.germplasmGroupingService.processGroupInheritanceForCrosses(germplasmIDs,
+						!applyNewGroupToCurrentCrossOnly);
 
 				if (crossesMade.getSetting().getCrossNameSetting().isSaveParentageDesignationAsAString()) {
 					SaveCrossesMadeAction.this.savePedigreeDesignationName(crossesMade, germplasmIDs);
@@ -183,7 +186,6 @@ public class SaveCrossesMadeAction implements Serializable {
 
 		if (!crossesToInsert.isEmpty()) {
 			germplasmIDs = this.germplasmManager.addGermplasm(crossesToInsert);
-			this.germplasmGroupingService.processGroupInheritanceForCrosses(germplasmIDs);
 		}
 		return germplasmIDs;
 	}

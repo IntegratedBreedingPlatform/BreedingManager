@@ -74,12 +74,14 @@ public class SaveCrossesMadeActionTest {
 
 		this.setUpReturnValueForSaveRecordsMethods();
 
-		this.action.saveRecords(this.crossesMade);
+		this.action.saveRecords(this.crossesMade, true);
 		try {
 			Mockito.verify(this.action, Mockito.times(1)).savePedigreeDesignationName(this.crossesMade, this.germplasmIDs);
 		} catch (TooLittleActualInvocations e) {
 			Assert.fail("Expecting to save parentage designation namebut didn't.");
 		}
+
+		Mockito.verify(this.germplasmGroupingService).processGroupInheritanceForCrosses(Mockito.anyList(), Mockito.anyBoolean());
 	}
 
 	@Test
@@ -88,12 +90,14 @@ public class SaveCrossesMadeActionTest {
 
 		this.setUpReturnValueForSaveRecordsMethods();
 
-		this.action.saveRecords(this.crossesMade);
+		this.action.saveRecords(this.crossesMade, true);
 		try {
 			Mockito.verify(this.action, Mockito.times(0)).savePedigreeDesignationName(this.crossesMade, this.germplasmIDs);
 		} catch (NeverWantedButInvoked e) {
 			Assert.fail("Expecting to NOT save parentage designation names but didn't.");
 		}
+		
+		Mockito.verify(this.germplasmGroupingService).processGroupInheritanceForCrosses(Mockito.anyList(), Mockito.anyBoolean());
 	}
 
 	private void setUpReturnValueForSaveRecordsMethods() {

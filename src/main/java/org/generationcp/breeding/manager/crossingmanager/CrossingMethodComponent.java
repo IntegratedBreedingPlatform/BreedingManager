@@ -44,6 +44,8 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 	private ComboBox crossingMethodComboBox;
 	private CheckBox chkBoxMakeReciprocalCrosses;
 	private CheckBox chkBoxExcludeSelf;
+	private CheckBox applyNewGroupToCurrentCrossOnly;
+
 	private Button btnMakeCross;
 
 	private final CrossingManagerMakeCrossesComponent makeCrossesMain;
@@ -81,6 +83,7 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 
 		this.chkBoxMakeReciprocalCrosses = new CheckBox(this.messageSource.getMessage(Message.MAKE_CROSSES_CHECKBOX_LABEL));
 		this.chkBoxExcludeSelf = new CheckBox(this.messageSource.getMessage(Message.EXCLUDE_SELF_LABEL));
+		this.applyNewGroupToCurrentCrossOnly = new CheckBox(this.messageSource.getMessage(Message.APPLY_NEW_GROUP_TO_CURRENT_CROSS_ONLY));
 
 		this.btnMakeCross = new Button(this.messageSource.getMessage(Message.MAKE_CROSSES_BUTTON_LABEL));
 		this.btnMakeCross.setData(CrossingMethodComponent.MAKE_CROSS_BUTTON_ID);
@@ -118,6 +121,7 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 		layoutCrossOption.addComponent(this.crossingMethodComboBox);
 		layoutCrossOption.addComponent(this.chkBoxMakeReciprocalCrosses);
 		layoutCrossOption.addComponent(this.chkBoxExcludeSelf);
+		layoutCrossOption.addComponent(this.applyNewGroupToCurrentCrossOnly);
 		layoutCrossOption.addComponent(this.btnMakeCross);
 
 		this.crossingMethodPanel = new Panel();
@@ -159,4 +163,7 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 		}
 	}
 
+	public boolean getApplyNewGroupToCurrentCrossOnlyValue() {
+		return this.applyNewGroupToCurrentCrossOnly.booleanValue();
+	}
 }

@@ -581,7 +581,11 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		final SaveCrossesMadeAction saveAction = new SaveCrossesMadeAction(this.getCrossList());
 
 		try {
-			this.crossList = saveAction.saveRecords(this.makeCrossesMain.getCrossesMadeContainer().getCrossesMade());
+			boolean applyNewGroupToCurrentCrossOnly =
+					this.makeCrossesMain.getCrossingMethodComponent().getApplyNewGroupToCurrentCrossOnlyValue();
+			this.crossList =
+					saveAction
+							.saveRecords(this.makeCrossesMain.getCrossesMadeContainer().getCrossesMade(), applyNewGroupToCurrentCrossOnly);
 			MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
 					this.messageSource.getMessage(Message.CROSSES_SAVED_SUCCESSFULLY), 3000);
 
