@@ -38,11 +38,13 @@ import com.vaadin.ui.Window;
 public class ProcessImportedGermplasmAction implements Serializable {
 
 	private static final long serialVersionUID = -9047259985457065559L;
+
 	private static final int PREFERRED_NAME_STATUS = 1;
 
 	private final SpecifyGermplasmDetailsComponent germplasmDetailsComponent;
 
 	private List<Integer> doNotCreateGermplasmsWithId = new ArrayList<>();
+
 	private final List<ImportGermplasmEntryActionListener> importEntryListeners = new ArrayList<>();
 	private List<GermplasmName> germplasmNameObjects = new ArrayList<>();
 	private List<Name> newDesignationsForExistingGermplasm = new ArrayList<>();
