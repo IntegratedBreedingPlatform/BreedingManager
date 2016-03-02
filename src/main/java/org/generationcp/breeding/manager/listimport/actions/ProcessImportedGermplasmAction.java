@@ -35,7 +35,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.ui.Window;
 
 @Configurable
-public class ProcessImportedGermplasmAction implements Serializable,GNPGSCalculator {
+public class ProcessImportedGermplasmAction implements Serializable,GNPGSCalculator,NoPedigreeConncetionProcess {
 
 	private static final long serialVersionUID = -9047259985457065559L;
 
@@ -95,19 +95,27 @@ public class ProcessImportedGermplasmAction implements Serializable,GNPGSCalcula
 
 		for (int i = 0; i < this.getImportedGermplasms().size(); i++) {
 			final ImportedGermplasm importedGermplasm = this.getImportedGermplasms().get(i);
-
-			final Germplasm germplasm = this.createGermplasmObject(i, -1, 0, 0, ibdbUserId, dateIntValue);
-
-			final Name name = this.createNameObject(ibdbUserId, dateIntValue, importedGermplasm.getDesig());
-
-			if (!createdGermplasms.containsKey(name.getNval())) {
-				createdGermplasms.put(name.getNval(), germplasm);
-
-				this.germplasmNameObjects.add(new GermplasmName(germplasm, name));
-			} else {
-				this.germplasmNameObjects.add(new GermplasmName(createdGermplasms.get(name.getNval()), name));
-			}
+			GermplasmName germplasmName = processGermplasmWithoutConnections(ibdbUserId, dateIntValue, createdGermplasms, i, importedGermplasm);
+			this.germplasmNameObjects.add(germplasmName);
 		}
+	}
+	@Override
+	public GermplasmName processGermplasmWithoutConnections(Integer ibdbUserId, Integer dateIntValue,
+			Map<String, Germplasm> createdGermplasms, int gid, ImportedGermplasm importedGermplasm) {
+
+
+		final Germplasm germplasm = this.createGermplasmObject(gid, -1, 0, 0, ibdbUserId, dateIntValue);
+
+		final Name name = this.createNameObject(ibdbUserId, dateIntValue, importedGermplasm.getDesig());
+
+		GermplasmName germplasmName;
+		if (!createdGermplasms.containsKey(name.getNval())) {
+			createdGermplasms.put(name.getNval(), germplasm);
+			germplasmName = new GermplasmName(germplasm, name);
+		} else {
+			germplasmName = new GermplasmName(createdGermplasms.get(name.getNval()), name);
+		}
+		return germplasmName;
 	}
 
 	protected void performSecondPedigreeAction() {
@@ -336,7 +344,7 @@ public class ProcessImportedGermplasmAction implements Serializable,GNPGSCalcula
 		return name;
 	}
 
-	protected Germplasm createGermplasmObject(final Integer gid, final Integer gnpgs, final Integer gpid1, final Integer gpid2,
+	public  Germplasm createGermplasmObject(final Integer gid, final Integer gnpgs, final Integer gpid1, final Integer gpid2,
 			final Integer ibdbUserId, final Integer dateIntValue) {
 		final Germplasm germplasm = new Germplasm();
 
@@ -370,13 +378,13 @@ public class ProcessImportedGermplasmAction implements Serializable,GNPGSCalcula
 	}
 
 	private int getGermplasmGnpgs(final Integer methodId, final Integer prevGnpgs) {
-		return calculateGNPGS(methodId, prevGnpgs);
+		return calculate(methodId, prevGnpgs);
 	}
 
-	public int calculateGNPGS(Integer methodId, Integer prevGnpgs) {
+	public int calculate(Integer methodId, Integer prevGnpgs) {
 		int gnpgs = 0;
 		if (Objects.equals(methodId, ProcessImportedGermplasmAction.UNKNOWN_DERIVATIVE_METHOD)) {
-			gnpgs = -1;
+			gnpgs =  -1;
 		} else {
 			final Method selectedMethod = this.germplasmDataManager.getMethodByID(methodId);
 			if ("GEN".equals(selectedMethod.getMtype())) {
