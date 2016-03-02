@@ -107,7 +107,7 @@ public class GermplasmGroupingResultsComponent extends BaseSubWindow implements 
 				memberString.append("....");
 			}
 
-			this.groupingResultsTable.addItem(new Object[] {groupingResult.getFounderGid(), groupingResult.getGroupMgid(),
+			this.groupingResultsTable.addItem(new Object[] {groupingResult.getFounderGid(), groupingResult.getGroupId(),
 					groupingResult.getGroupMembers().size(), memberString.toString()}, rowId++);
 		}
 		this.groupingResultsTable.setPageLength(rowId);
