@@ -35,7 +35,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.ui.Window;
 
 @Configurable
-public class ProcessImportedGermplasmAction implements Serializable {
+public class ProcessImportedGermplasmAction implements Serializable,GNPGSCalculator {
 
 	private static final long serialVersionUID = -9047259985457065559L;
 
@@ -370,6 +370,10 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	}
 
 	private int getGermplasmGnpgs(final Integer methodId, final Integer prevGnpgs) {
+		return calculateGNPGS(methodId, prevGnpgs);
+	}
+
+	public int calculateGNPGS(Integer methodId, Integer prevGnpgs) {
 		int gnpgs = 0;
 		if (Objects.equals(methodId, ProcessImportedGermplasmAction.UNKNOWN_DERIVATIVE_METHOD)) {
 			gnpgs = -1;
