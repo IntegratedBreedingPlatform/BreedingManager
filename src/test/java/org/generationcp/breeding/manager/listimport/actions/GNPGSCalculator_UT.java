@@ -9,7 +9,8 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -20,9 +21,10 @@ public class GNPGSCalculator_UT {
     public static final String METHOD_GEN_TYPE = "GEN";
 
     public static final int UNKNOWN_DERIVATIVE_METHOD_ID = 31;
-    private static final Integer KNOWN_DERIVATIVE_METHOD_ID = 10;
+    private static final Integer KNOWN_DERIVATIVE_METHOD_ID = 80;
     public static final int EXPECTED_GNPGS_VALUE_FOR_DERIVATIVES = -1;
     public static final String METHOD_DER_TYPE = "DER";
+    public static final int PREV_GNPGS = 10;
 
 
     GNPGSCalculator action;
@@ -52,10 +54,14 @@ public class GNPGSCalculator_UT {
     }
 
     @Test
-    public void givenAKnownDerivativeMethodThenGpngsValueIsMinus1() throws Exception {
+    public void givenAKnownDerivativeMethodThenGpngsValueIsPrevGNPGS() throws Exception {
+        Method method = new Method(KNOWN_DERIVATIVE_METHOD_ID);
+        method.setMtype(METHOD_DER_TYPE);
+        when(germplasmDataManagerMock.getMethodByID(KNOWN_DERIVATIVE_METHOD_ID)).thenReturn(method);
 
-        int gnpgs = action.calculateGNPGS(UNKNOWN_DERIVATIVE_METHOD_ID, null);
-        assertEquals(EXPECTED_GNPGS_VALUE_FOR_DERIVATIVES, gnpgs);
+        int gnpgs = action.calculateGNPGS(KNOWN_DERIVATIVE_METHOD_ID, PREV_GNPGS);
+
+        assertEquals(PREV_GNPGS,gnpgs);
     }
 
     @Test
