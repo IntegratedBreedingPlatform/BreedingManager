@@ -49,7 +49,7 @@ public class GNPGSCalculator_UT {
     @Test
     public void givenADerivativeMethodThenGpngsValueIsMinus1() throws Exception {
 
-        int gnpgs = action.calculateGNPGS(UNKNOWN_DERIVATIVE_METHOD_ID, null);
+        int gnpgs = action.calculate(UNKNOWN_DERIVATIVE_METHOD_ID, null);
         assertEquals(EXPECTED_GNPGS_VALUE_FOR_DERIVATIVES, gnpgs);
     }
 
@@ -59,7 +59,7 @@ public class GNPGSCalculator_UT {
         method.setMtype(METHOD_DER_TYPE);
         when(germplasmDataManagerMock.getMethodByID(KNOWN_DERIVATIVE_METHOD_ID)).thenReturn(method);
 
-        int gnpgs = action.calculateGNPGS(KNOWN_DERIVATIVE_METHOD_ID, PREV_GNPGS);
+        int gnpgs = action.calculate(KNOWN_DERIVATIVE_METHOD_ID, PREV_GNPGS);
 
         assertEquals(PREV_GNPGS,gnpgs);
     }
