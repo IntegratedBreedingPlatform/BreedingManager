@@ -13,7 +13,9 @@ public class LinkButton extends Button {
 		setImmediate(true);
 		addListener(new Button.ClickListener() {
 			public void buttonClick(final ClickEvent event) {
-				LinkButton.this.getWindow().open(new ExternalResource(LinkButton.this.url.getURL()), "_self");
+				if (LinkButton.this.url != null) {
+					LinkButton.this.getWindow().open(new ExternalResource(LinkButton.this.url.getURL()), "_self");
+				}
 			}
 		});
 	}

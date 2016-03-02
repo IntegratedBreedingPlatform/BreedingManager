@@ -297,7 +297,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 	private Button constructNurseryBackButton() {
 		final Button nurseryBackButton = new Button();
-		nurseryBackButton.setData("nursery back button");
 		this.messageSource.setDescription(nurseryBackButton, Message.BACK_TO_NURSERY_DESCRIPTION);
 		this.messageSource.setCaption(nurseryBackButton, Message.BACK_TO_NURSERY);
 		nurseryBackButton.addListener(new Button.ClickListener() {
@@ -327,7 +326,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 					+ BreedingManagerApplication.PATH_TO_EDIT_NURSERY + nurseryId);
 		}
 		final LinkButton nurseryCancelButton = new LinkButton(urlToNursery, "");
-		nurseryCancelButton.setData("nursery cancel button");
 		this.messageSource.setCaption(nurseryCancelButton, Message.CANCEL);
 		return nurseryCancelButton;
 	}
