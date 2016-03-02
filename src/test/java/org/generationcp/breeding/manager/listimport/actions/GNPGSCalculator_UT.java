@@ -3,7 +3,6 @@ package org.generationcp.breeding.manager.listimport.actions;
 import org.generationcp.breeding.manager.listimport.SpecifyGermplasmDetailsComponent;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
-import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,11 +19,20 @@ public class GNPGSCalculator_UT {
     public static final int EXPECTED_GNPGS_VALUE_FOR_GENERATIVES = 2;
     public static final String METHOD_GEN_TYPE = "GEN";
 
+    public static final int UNKNOWN_DERIVATIVE_METHOD_ID = 31;
+    private static final Integer KNOWN_DERIVATIVE_METHOD_ID = 10;
+    public static final int EXPECTED_GNPGS_VALUE_FOR_DERIVATIVES = -1;
+    public static final String METHOD_DER_TYPE = "DER";
+
+
     GNPGSCalculator action;
+
     @Mock
     SpecifyGermplasmDetailsComponent germplasmDetailsComponentMock;
+
     @Mock
     private ContextUtil contextUtilMock;
+
     @Mock
     GermplasmDataManager germplasmDataManagerMock;
 
@@ -38,8 +46,16 @@ public class GNPGSCalculator_UT {
 
     @Test
     public void givenADerivativeMethodThenGpngsValueIsMinus1() throws Exception {
-        //action.calculateGNPGS();
-        fail();
+
+        int gnpgs = action.calculateGNPGS(UNKNOWN_DERIVATIVE_METHOD_ID, null);
+        assertEquals(EXPECTED_GNPGS_VALUE_FOR_DERIVATIVES, gnpgs);
+    }
+
+    @Test
+    public void givenAKnownDerivativeMethodThenGpngsValueIsMinus1() throws Exception {
+
+        int gnpgs = action.calculateGNPGS(UNKNOWN_DERIVATIVE_METHOD_ID, null);
+        assertEquals(EXPECTED_GNPGS_VALUE_FOR_DERIVATIVES, gnpgs);
     }
 
     @Test
