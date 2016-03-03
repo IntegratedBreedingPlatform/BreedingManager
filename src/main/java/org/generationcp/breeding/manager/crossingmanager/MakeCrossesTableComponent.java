@@ -222,15 +222,10 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 	}
 
 	public void updateCrossesMadeSaveButton() {
-		final boolean isFemaleListSave = this.makeCrossesMain.getParentsComponent().isFemaleListSaved();
-		final boolean isMaleListSave = this.makeCrossesMain.getParentsComponent().isMaleListSaved();
-
-		if (isFemaleListSave && isMaleListSave && !this.tableCrossesMade.getItemIds().isEmpty()) {
+		if (!this.tableCrossesMade.getItemIds().isEmpty()) {
 			this.saveButton.setEnabled(true);
-			this.saveButton.setDescription("");
 		} else {
 			this.saveButton.setEnabled(false);
-			this.saveButton.setDescription(this.messageSource.getMessage(Message.SAVE_CROSS_LIST_DESCRIPTION));
 		}
 	}
 
@@ -418,7 +413,6 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		this.saveButton = new Button(this.messageSource.getMessage(Message.SAVE_LABEL));
 		this.saveButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 		this.saveButton.setEnabled(false);
-		this.saveButton.setDescription(this.messageSource.getMessage(Message.SAVE_CROSS_LIST_DESCRIPTION));
 		this.initializeCrossesMadeTable();
 	}
 
