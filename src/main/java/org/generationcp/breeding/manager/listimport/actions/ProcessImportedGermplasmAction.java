@@ -35,7 +35,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.ui.Window;
 
 @Configurable
-public class ProcessImportedGermplasmAction implements Serializable,GNPGSCalculator,NoPedigreeConncetionProcess {
+public class ProcessImportedGermplasmAction implements Serializable,GNPGSCalculator,NoPedigreeConnectionProcess {
 
 	private static final long serialVersionUID = -9047259985457065559L;
 
@@ -131,6 +131,8 @@ public class ProcessImportedGermplasmAction implements Serializable,GNPGSCalcula
 
 			final ImportedGermplasm importedGermplasm = this.getImportedGermplasms().get(i);
 			final String designationName = importedGermplasm.getDesig();
+			// gpid1 and gpid 2 values are default here, actual values will be set below based on matched germplasm
+			final Germplasm germplasm = this.createGermplasmObject(i, -1, 0, 0, ibdbUserId, dateIntValue);
 			List<Germplasm> foundGermplasm = new ArrayList<>();
 			final Integer germplasmMatchesCount = germplasmMatchesMap.get(designationName);
 
@@ -142,8 +144,6 @@ public class ProcessImportedGermplasmAction implements Serializable,GNPGSCalcula
 				// then receiveGermplasmFromWindowAndUpdateGermplasmData()
 				foundGermplasm = this.germplasmDataManager.getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
 			}
-			// gpid1 and gpid 2 values are default here, actual values will be set below based on matched germplasm
-			final Germplasm germplasm = this.createGermplasmObject(i, -1, 0, 0, ibdbUserId, dateIntValue);
 
 			if (foundGermplasm != null && !foundGermplasm.isEmpty() && foundGermplasm.get(0) != null) {
 				this.updatePedigreeConnections(germplasm, foundGermplasm.get(0));
@@ -343,25 +343,75 @@ public class ProcessImportedGermplasmAction implements Serializable,GNPGSCalcula
 		return name;
 	}
 
-	protected Germplasm createGermplasmObject(final Integer gid, final Integer gnpgs, final Integer gpid1, final Integer gpid2,
+	public  Germplasm createGermplasmObject(final Integer gid, final Integer gnpgs, final Integer gpid1, final Integer gpid2,
 			final Integer ibdbUserId, final Integer dateIntValue) {
-		final Germplasm germplasm = new Germplasm();
-
-		germplasm.setGid(gid);
-		germplasm.setUserId(ibdbUserId);
-		germplasm.setLocationId((Integer) this.getGermplasmFieldsComponent().getLocationComboBox().getValue());
-		germplasm.setGdate(dateIntValue);
+		GermplasmBuilder builder = new GermplasmBuilderImpl();
 
 		final int methodId = this.getGermplasmMethodId(this.getGermplasmFieldsComponent().getBreedingMethodComboBox().getValue());
-		germplasm.setMethodId(methodId);
-		germplasm.setGnpgs(this.getGermplasmGnpgs(methodId, gnpgs));
-		germplasm.setGpid1(gpid1);
-		germplasm.setGpid2(gpid2);
 
-		germplasm.setLgid(0);
-		germplasm.setGrplce(0);
-		germplasm.setReferenceId(0);
-		germplasm.setMgid(0);
+		Germplasm germplasm = builder.build(new GermplasmDataProvider() {
+
+			@Override
+			public Integer getGID() {
+				return gid;
+			}
+
+			@Override
+			public Integer getProgenitors() {
+				return gnpgs;
+			}
+
+			@Override
+			public Integer getGPID1() {
+				return gpid1;
+			}
+
+			@Override
+			public Integer getGPID2() {
+				return gpid2;
+			}
+
+			@Override
+			public Integer getUserId() {
+				return ibdbUserId;
+			}
+
+			@Override
+			public Integer getDateValue() {
+				return dateIntValue;
+			}
+
+			@Override
+			public Integer getLocationId() {
+				return (Integer) getGermplasmFieldsComponent().getLocationComboBox().getValue();
+			}
+
+			@Override
+			public Integer getMethodId() {
+				return methodId;
+			}
+
+			@Override
+			public Integer getLgid() {
+				return 0;
+			}
+
+			@Override
+			public Integer getGrplce() {
+				return 0;
+			}
+
+			@Override
+			public Integer getReferenceId() {
+				return 0;
+			}
+
+			@Override
+			public Integer getMgid() {
+				return 0;
+			}
+
+		});
 
 		return germplasm;
 	}
