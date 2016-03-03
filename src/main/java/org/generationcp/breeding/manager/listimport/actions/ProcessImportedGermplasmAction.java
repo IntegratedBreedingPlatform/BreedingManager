@@ -93,23 +93,22 @@ public class ProcessImportedGermplasmAction implements Serializable,GNPGSCalcula
 
 		final Map<String, Germplasm> createdGermplasms = new HashMap<>();
 
+
 		for (int i = 0; i < this.getImportedGermplasms().size(); i++) {
 			final ImportedGermplasm importedGermplasm = this.getImportedGermplasms().get(i);
-			GermplasmName germplasmName = processGermplasmWithoutConnections(ibdbUserId, dateIntValue, createdGermplasms, i, importedGermplasm);
+			GermplasmName germplasmName = generateGermplasmNameProcess(ibdbUserId, dateIntValue, createdGermplasms, i, importedGermplasm.getDesig());
 			this.germplasmNameObjects.add(germplasmName);
 		}
 	}
 	@Override
-	public GermplasmName processGermplasmWithoutConnections(Integer ibdbUserId, Integer dateIntValue,
-			Map<String, Germplasm> createdGermplasms, int gid, ImportedGermplasm importedGermplasm) {
+	public GermplasmName generateGermplasmNameProcess(Integer ibdbUserId, Integer dateIntValue,
+			Map<String, Germplasm> createdGermplasms, int gid, String desig) {
 
-
-		final Germplasm germplasm = this.createGermplasmObject(gid, -1, 0, 0, ibdbUserId, dateIntValue);
-
-		final Name name = this.createNameObject(ibdbUserId, dateIntValue, importedGermplasm.getDesig());
+		final Name name = this.createNameObject(ibdbUserId, dateIntValue, desig);
 
 		GermplasmName germplasmName;
 		if (!createdGermplasms.containsKey(name.getNval())) {
+			Germplasm germplasm = this.createGermplasmObject(gid, -1, 0, 0, ibdbUserId, dateIntValue);
 			createdGermplasms.put(name.getNval(), germplasm);
 			germplasmName = new GermplasmName(germplasm, name);
 		} else {
@@ -132,8 +131,6 @@ public class ProcessImportedGermplasmAction implements Serializable,GNPGSCalcula
 
 			final ImportedGermplasm importedGermplasm = this.getImportedGermplasms().get(i);
 			final String designationName = importedGermplasm.getDesig();
-			// gpid1 and gpid 2 values are default here, actual values will be set below based on matched germplasm
-			final Germplasm germplasm = this.createGermplasmObject(i, -1, 0, 0, ibdbUserId, dateIntValue);
 			List<Germplasm> foundGermplasm = new ArrayList<>();
 			final Integer germplasmMatchesCount = germplasmMatchesMap.get(designationName);
 
@@ -145,6 +142,8 @@ public class ProcessImportedGermplasmAction implements Serializable,GNPGSCalcula
 				// then receiveGermplasmFromWindowAndUpdateGermplasmData()
 				foundGermplasm = this.germplasmDataManager.getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
 			}
+			// gpid1 and gpid 2 values are default here, actual values will be set below based on matched germplasm
+			final Germplasm germplasm = this.createGermplasmObject(i, -1, 0, 0, ibdbUserId, dateIntValue);
 
 			if (foundGermplasm != null && !foundGermplasm.isEmpty() && foundGermplasm.get(0) != null) {
 				this.updatePedigreeConnections(germplasm, foundGermplasm.get(0));
@@ -344,66 +343,16 @@ public class ProcessImportedGermplasmAction implements Serializable,GNPGSCalcula
 		return name;
 	}
 
-	public  Germplasm createGermplasmObject(final Integer gid, final Integer gnpgs, final Integer gpid1, final Integer gpid2,
+	protected Germplasm createGermplasmObject(final Integer gid, final Integer gnpgs, final Integer gpid1, final Integer gpid2,
 			final Integer ibdbUserId, final Integer dateIntValue) {
-		GermplasmBuilder builder = new GermplasmBuilderImpl();
-
-		final int methodId = this.getGermplasmMethodId(this.getGermplasmFieldsComponent().getBreedingMethodComboBox().getValue());
-
-		Germplasm germplasm = builder.build(new GermplasmDataProvider() {
-
-			@Override
-			public Integer getGID() {
-				return gid;
-			}
-
-			@Override
-			public Integer getProgenitors() {
-				return gnpgs;
-			}
-
-			@Override
-			public Integer getGPID1() {
-				return gpid1;
-			}
-
-			@Override
-			public Integer getGPID2() {
-				return gpid2;
-			}
-
-			@Override
-			public Integer getUserId() {
-				return ibdbUserId;
-			}
-
-			@Override
-			public Integer getDateValue() {
-				return dateIntValue;
-			}
-
-			@Override
-			public Integer getLocationId() {
-				return (Integer) getGermplasmFieldsComponent().getLocationComboBox().getValue();
-			}
-
-			@Override
-			public int getMethodId() {
-				return methodId;
-			}
-
-			@Override
-			public int getLgid() {
-				return 0;
-			}
-		});
+		final Germplasm germplasm = new Germplasm();
 
 		germplasm.setGid(gid);
 		germplasm.setUserId(ibdbUserId);
 		germplasm.setLocationId((Integer) this.getGermplasmFieldsComponent().getLocationComboBox().getValue());
 		germplasm.setGdate(dateIntValue);
 
-
+		final int methodId = this.getGermplasmMethodId(this.getGermplasmFieldsComponent().getBreedingMethodComboBox().getValue());
 		germplasm.setMethodId(methodId);
 		germplasm.setGnpgs(this.getGermplasmGnpgs(methodId, gnpgs));
 		germplasm.setGpid1(gpid1);
