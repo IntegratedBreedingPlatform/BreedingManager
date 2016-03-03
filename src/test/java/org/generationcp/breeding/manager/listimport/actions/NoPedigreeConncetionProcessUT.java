@@ -33,7 +33,7 @@ public class NoPedigreeConncetionProcessUT {
 	private static final int COMBO_BOX_NAME_OPTION = 6;
 	public static final int DUMMY_METHOD_ID = 5;
 
-	NoPedigreeConncetionProcess process;
+	NoPedigreeConnectionProcess process;
 
 	@Mock
 	SpecifyGermplasmDetailsComponent germplasmDetailsComponentMock;
