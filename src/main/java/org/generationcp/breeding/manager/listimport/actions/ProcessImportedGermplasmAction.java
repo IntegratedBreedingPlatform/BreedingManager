@@ -346,14 +346,64 @@ public class ProcessImportedGermplasmAction implements Serializable,GNPGSCalcula
 
 	public  Germplasm createGermplasmObject(final Integer gid, final Integer gnpgs, final Integer gpid1, final Integer gpid2,
 			final Integer ibdbUserId, final Integer dateIntValue) {
-		final Germplasm germplasm = new Germplasm();
+		GermplasmBuilder builder = new GermplasmBuilderImpl();
+
+		final int methodId = this.getGermplasmMethodId(this.getGermplasmFieldsComponent().getBreedingMethodComboBox().getValue());
+
+		Germplasm germplasm = builder.build(new GermplasmDataProvider() {
+
+			@Override
+			public Integer getGID() {
+				return gid;
+			}
+
+			@Override
+			public Integer getProgenitors() {
+				return gnpgs;
+			}
+
+			@Override
+			public Integer getGPID1() {
+				return gpid1;
+			}
+
+			@Override
+			public Integer getGPID2() {
+				return gpid2;
+			}
+
+			@Override
+			public Integer getUserId() {
+				return ibdbUserId;
+			}
+
+			@Override
+			public Integer getDateValue() {
+				return dateIntValue;
+			}
+
+			@Override
+			public Integer getLocationId() {
+				return (Integer) getGermplasmFieldsComponent().getLocationComboBox().getValue();
+			}
+
+			@Override
+			public int getMethodId() {
+				return methodId;
+			}
+
+			@Override
+			public int getLgid() {
+				return 0;
+			}
+		});
 
 		germplasm.setGid(gid);
 		germplasm.setUserId(ibdbUserId);
 		germplasm.setLocationId((Integer) this.getGermplasmFieldsComponent().getLocationComboBox().getValue());
 		germplasm.setGdate(dateIntValue);
 
-		final int methodId = this.getGermplasmMethodId(this.getGermplasmFieldsComponent().getBreedingMethodComboBox().getValue());
+
 		germplasm.setMethodId(methodId);
 		germplasm.setGnpgs(this.getGermplasmGnpgs(methodId, gnpgs));
 		germplasm.setGpid1(gpid1);
