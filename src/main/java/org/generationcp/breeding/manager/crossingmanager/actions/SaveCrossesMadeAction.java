@@ -31,6 +31,7 @@ import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.service.api.GermplasmGroupingService;
+import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.generationcp.middleware.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -86,6 +87,9 @@ public class SaveCrossesMadeAction implements Serializable {
 	@Autowired
 	private GermplasmGroupingService germplasmGroupingService;
 
+	@Autowired
+	private CrossExpansionProperties crossExpansionProperties;
+
 	private GermplasmList germplasmList;
 	private List<GermplasmListData> existingListEntries = new ArrayList<GermplasmListData>();
 	private List<Germplasm> existingGermplasms = new ArrayList<Germplasm>();
@@ -119,7 +123,7 @@ public class SaveCrossesMadeAction implements Serializable {
 				List<Integer> germplasmIDs = SaveCrossesMadeAction.this.saveGermplasmsAndNames(crossesMade);
 
 				SaveCrossesMadeAction.this.germplasmGroupingService.processGroupInheritanceForCrosses(germplasmIDs,
-						!applyNewGroupToCurrentCrossOnly);
+						!applyNewGroupToCurrentCrossOnly, SaveCrossesMadeAction.this.crossExpansionProperties.getHybridBreedingMethods());
 
 				if (crossesMade.getSetting().getCrossNameSetting().isSaveParentageDesignationAsAString()) {
 					SaveCrossesMadeAction.this.savePedigreeDesignationName(crossesMade, germplasmIDs);

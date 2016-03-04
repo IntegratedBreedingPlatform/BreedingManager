@@ -81,7 +81,8 @@ public class SaveCrossesMadeActionTest {
 			Assert.fail("Expecting to save parentage designation namebut didn't.");
 		}
 
-		Mockito.verify(this.germplasmGroupingService).processGroupInheritanceForCrosses(Mockito.anyList(), Mockito.anyBoolean());
+		Mockito.verify(this.germplasmGroupingService).processGroupInheritanceForCrosses(Mockito.anyList(), Mockito.anyBoolean(),
+				Mockito.anySet());
 	}
 
 	@Test
@@ -97,7 +98,8 @@ public class SaveCrossesMadeActionTest {
 			Assert.fail("Expecting to NOT save parentage designation names but didn't.");
 		}
 		
-		Mockito.verify(this.germplasmGroupingService).processGroupInheritanceForCrosses(Mockito.anyList(), Mockito.anyBoolean());
+		Mockito.verify(this.germplasmGroupingService).processGroupInheritanceForCrosses(Mockito.anyList(), Mockito.anyBoolean(),
+				Mockito.anySet());
 	}
 
 	private void setUpReturnValueForSaveRecordsMethods() {
