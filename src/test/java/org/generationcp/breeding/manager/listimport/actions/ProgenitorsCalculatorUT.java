@@ -15,7 +15,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
-public class GNPGSCalculatorUT {
+public class ProgenitorsCalculatorUT {
     public static final int GENERATIVE_METHOD_ID = 5;
     public static final int EXPECTED_GNPGS_VALUE_FOR_GENERATIVES = 2;
     public static final String METHOD_GEN_TYPE = "GEN";
@@ -27,7 +27,7 @@ public class GNPGSCalculatorUT {
     public static final int PREV_GNPGS = 10;
 
 
-    GNPGSCalculator action;
+    ProgenitorsCalculator action;
 
     @Mock
     SpecifyGermplasmDetailsComponent germplasmDetailsComponentMock;
