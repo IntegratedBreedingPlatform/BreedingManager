@@ -1,7 +1,11 @@
 package org.generationcp.breeding.manager.listimport.actions;
 
-
-public interface GermplasmDataProvider {
+/**
+ * This interface a specific DataProvider for Germplasm generation.
+ * Despite the source from which we are trying to create a Germplasm, this interface contains everything
+ * the GermplasmBuilder require to fulfil it's task.
+ */
+public interface GermplasmDataProvider extends DataProvider {
 
 	public Integer getGID() ;
 	public Integer getProgenitors() ;
