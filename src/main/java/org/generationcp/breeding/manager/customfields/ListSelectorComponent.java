@@ -38,6 +38,8 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.GermplasmListMetadata;
+import org.generationcp.middleware.pojos.UserDefinedField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -64,7 +66,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 	private static final Logger LOG = LoggerFactory.getLogger(ListSelectorComponent.class);
 
-	public static final int BATCH_SIZE = 50;
+	public static final int BATCH_SIZE = 500;
 	public static final String REFRESH_BUTTON_ID = "ListManagerTreeComponent Refresh Button";
 	public static final String LISTS = "Lists";
 
@@ -326,7 +328,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	}
 
 	public void reinitializeTree(final boolean isSaveList) {
-		Collection<String> parsedState = null;
+		List<String> parsedState = null;
 
 		try {
 			final Integer userID = this.util.getCurrentUserLocalId();
@@ -357,14 +359,20 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 				this.getGermplasmListSource().expandItem(itemId);
 			}
 
-			this.getGermplasmListSource().clearSelection();
+            if (isSaveList) {
+                // the tree state returned for save list navigation has, as its last item, the folder previously used to save
+                String previousSavedFolder = parsedState.get(parsedState.size() - 1);
+                this.getGermplasmListSource().select(previousSavedFolder);
+            } else {
+                this.getGermplasmListSource().clearSelection();
+            }
 		} catch (final MiddlewareQueryException e) {
 			ListSelectorComponent.LOG.error(e.getMessage(), e);
 		}
 	}
 
 	public void addGermplasmListNode(final int parentGermplasmListId) {
-		List<GermplasmList> germplasmListChildren = new ArrayList<>();
+		List<GermplasmList> germplasmListChildren;
 
 		try {
 			germplasmListChildren =
@@ -374,7 +382,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 			ListSelectorComponent.LOG.error("Error in getting germplasm lists by parent id.", e);
 			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
 					this.messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LISTS_BY_PARENT_FOLDER_ID));
-			germplasmListChildren = new ArrayList<GermplasmList>();
+			germplasmListChildren = new ArrayList<>();
 		}
 		this.addGermplasmListNodeToComponent(germplasmListChildren, parentGermplasmListId);
 
@@ -740,38 +748,28 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	}
 
 	public void addGermplasmListNodeToComponent(final List<GermplasmList> germplasmListChildren, final int parentGermplasmListId) {
+		List<UserDefinedField> listTypes = germplasmListManager.getGermplasmListTypes();
+		Map<Integer, GermplasmListMetadata> allListMetaData = germplasmListManager.getAllGermplasmListMetadata();
+
 		for (final GermplasmList listChild : germplasmListChildren) {
 			if (this.doAddItem(listChild)) {
-				String size = "";
-				if (!listChild.isFolder()) {
-					size = this.countGermplasmListDataByListId(listChild.getId());
-				}
+				GermplasmListMetadata listMetadata = allListMetaData.get(listChild.getId());
+				final String listSize = listMetadata != null ? String.valueOf(listMetadata.getNumberOfEntries()) : "";
+				final String listOwner = listMetadata != null ? listMetadata.getOwnerName() : "";
+
 				this.getGermplasmListSource()
-						.addItem(
-								this.generateCellInfo(listChild.getName(),
-										BreedingManagerUtil.getOwnerListName(listChild.getUserId(), this.userDataManager),
-										BreedingManagerUtil.getDescriptionForDisplay(listChild),
-										BreedingManagerUtil.getTypeString(listChild.getType(), this.germplasmListManager), size),
+						.addItem(this.generateCellInfo(listChild.getName(), listOwner,
+								BreedingManagerUtil.getDescriptionForDisplay(listChild),
+								BreedingManagerUtil.getTypeString(listChild.getType(), listTypes), listSize),
 								listChild.getId());
 				this.setNodeItemIcon(listChild.getId(), listChild.isFolder());
 				this.getGermplasmListSource().setItemCaption(listChild.getId(), listChild.getName());
 				this.getGermplasmListSource().setParent(listChild.getId(), parentGermplasmListId);
 				// allow children if list has sub-lists
-				this.getGermplasmListSource().setChildrenAllowed(listChild.getId(), this.hasChildList(listChild.getId()));
+				this.getGermplasmListSource().setChildrenAllowed(listChild.getId(), listChild.isFolder());
 			}
 		}
 		this.selectListSourceDetails(parentGermplasmListId, false);
-	}
-
-	private String countGermplasmListDataByListId(final Integer id) {
-		String size = "0";
-		try {
-			final long numberOfEntries = this.germplasmListManager.countGermplasmListDataByListId(id);
-			size = Long.toString(numberOfEntries);
-		} catch (final MiddlewareQueryException e) {
-			ListSelectorComponent.LOG.error("Error in getting number of entries for list id " + id, e);
-		}
-		return size;
 	}
 
 	private void selectListSourceDetails(final Object itemId, final boolean nullSelectAllowed) {
@@ -893,18 +891,22 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 				ListSelectorComponent.LISTS);
 		this.setNodeItemIcon(ListSelectorComponent.LISTS, true);
 		this.getGermplasmListSource().setItemCaption(ListSelectorComponent.LISTS, ListSelectorComponent.LISTS);
+		List<UserDefinedField> listTypes = germplasmListManager.getGermplasmListTypes();
+
+		Map<Integer, GermplasmListMetadata> allListMetaData = germplasmListManager.getAllGermplasmListMetadata();
 
 		for (final GermplasmList parentList : germplasmListParent) {
 			if (this.doAddItem(parentList)) {
-				final String size = this.countGermplasmListDataByListId(parentList.getId());
+				GermplasmListMetadata listMetadata = allListMetaData.get(parentList.getId());
+				final String listSize = listMetadata != null ? String.valueOf(listMetadata.getNumberOfEntries()) : "";
+				final String listOwner = listMetadata != null ? listMetadata.getOwnerName() : "";
 				this.getGermplasmListSource().addItem(
-						this.generateCellInfo(parentList.getName(), BreedingManagerUtil.getOwnerListName(parentList.getUserId(),
-								this.userDataManager), BreedingManagerUtil.getDescriptionForDisplay(parentList), BreedingManagerUtil
-								.getTypeString(parentList.getType(), this.germplasmListManager), parentList.isFolder() ? "" : size),
+						this.generateCellInfo(parentList.getName(), listOwner, BreedingManagerUtil.getDescriptionForDisplay(parentList),
+								BreedingManagerUtil.getTypeString(parentList.getType(), listTypes), listSize),
 						parentList.getId());
 				this.setNodeItemIcon(parentList.getId(), parentList.isFolder());
 				this.getGermplasmListSource().setItemCaption(parentList.getId(), parentList.getName());
-				this.getGermplasmListSource().setChildrenAllowed(parentList.getId(), this.hasChildList(parentList.getId()));
+				this.getGermplasmListSource().setChildrenAllowed(parentList.getId(), parentList.isFolder());
 				this.getGermplasmListSource().setParent(parentList.getId(), ListSelectorComponent.LISTS);
 			}
 		}

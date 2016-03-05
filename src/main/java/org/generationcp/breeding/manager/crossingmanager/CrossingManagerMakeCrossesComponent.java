@@ -5,6 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.math.NumberUtils;
+import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
@@ -15,8 +19,10 @@ import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossing
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDisplay.StepChangeListener;
+import org.generationcp.breeding.manager.customcomponent.LinkButton;
 import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialog;
 import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialogSource;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -31,6 +37,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -69,6 +76,17 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	// marks if there are unsaved changes in List from ListSelectorComponent and ListBuilderComponent
 	private boolean hasChanges;
 	private UnsavedChangesConfirmDialog unsavedChangesDialog;
+	private LinkButton nurseryCancelButton;
+	private Button nurseryBackButton;
+	private final Button.ClickListener nurseryBackButtonDefaultClickListener = new Button.ClickListener() {
+
+		@Override
+		public void buttonClick(final Button.ClickEvent event) {
+			MessageNotifier.showWarning(CrossingManagerMakeCrossesComponent.this.getWindow(),
+					CrossingManagerMakeCrossesComponent.this.messageSource.getMessage(Message.WARNING),
+					CrossingManagerMakeCrossesComponent.this.messageSource.getMessage(Message.BACK_TO_NURSERY_DESCRIPTION));
+		}
+	};
 
 	public CrossingManagerMakeCrossesComponent(final ManageCrossingSettingsMain manageCrossingSettingsMain) {
 		this.source = manageCrossingSettingsMain;
@@ -164,6 +182,22 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		this.nextButton.setEnabled(this.isAllListsSaved());
 	}
 
+	public void updateNurseryBackButton(final Integer id) {
+		if( null == id || this.nurseryBackButton == null) {
+			return;
+		}
+		this.nurseryBackButton.addListener(new Button.ClickListener() {
+			@Override
+			public void buttonClick(final Button.ClickEvent event) {
+				// get the cancel button returning to nursery  link as a root url
+				final String urlToSpecificNurseryWithParams = CrossingManagerMakeCrossesComponent.this.nurseryCancelButton.getResource()
+						.getURL() + "?" + BreedingManagerApplication.REQ_PARAM_CROSSES_LIST_ID + "=" + id;
+				final ExternalResource urlToNursery = new ExternalResource(urlToSpecificNurseryWithParams);
+				CrossingManagerMakeCrossesComponent.this.getWindow().open(urlToNursery, "_self");
+			}
+		});
+	}
+
 	private boolean isAllListsSaved() {
 		return this.parentsComponent.getFemaleList() != null && this.parentsComponent.getMaleList() != null
 				&& this.crossesTableComponent.getCrossList() != null;
@@ -244,8 +278,20 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		final HorizontalLayout layoutButtonArea = new HorizontalLayout();
 		layoutButtonArea.setMargin(true, true, false, true);
 		layoutButtonArea.setSpacing(true);
-		layoutButtonArea.addComponent(this.backButton);
-		layoutButtonArea.addComponent(this.nextButton);
+
+		// show the link to navigate back to the Crossing Manager only if we came from the Nursery Manager previously
+		final boolean isNavigatedFromNursery = BreedingManagerUtil.getApplicationRequest().getPathInfo().contains(BreedingManagerApplication
+				.NAVIGATION_FROM_NURSERY_PREFIX);
+		if (isNavigatedFromNursery) {
+			this.nurseryCancelButton = this.constructNurseryCancelButton(BreedingManagerUtil.getApplicationRequest());
+			this.nurseryBackButton = this.constructNurseryBackButton();
+			this.nurseryBackButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+			layoutButtonArea.addComponent(this.nurseryCancelButton);
+			layoutButtonArea.addComponent(this.nurseryBackButton);
+		} else {
+			layoutButtonArea.addComponent(this.backButton);
+			layoutButtonArea.addComponent(this.nextButton);
+		}
 
 		this.addComponent(upperLayout);
 		this.addComponent(lowerLayout);
@@ -253,6 +299,33 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 		this.setComponentAlignment(layoutButtonArea, Alignment.MIDDLE_CENTER);
 		this.setStyleName("crosses-select-parents-tab");
+	}
+
+	protected Button constructNurseryBackButton() {
+		final Button nurseryBackButton = new Button();
+		nurseryBackButton.setDescription(this.messageSource.getMessage(Message.BACK_TO_NURSERY_DESCRIPTION));
+		nurseryBackButton.setCaption(this.messageSource.getMessage(Message.BACK_TO_NURSERY));
+		nurseryBackButton.addListener(this.nurseryBackButtonDefaultClickListener);
+		return nurseryBackButton;
+	}
+
+	protected LinkButton constructNurseryCancelButton(final HttpServletRequest currentRequest) {
+		final String nurseryId = currentRequest
+				.getParameterValues(BreedingManagerApplication.REQ_PARAM_NURSERY_ID).length > 0 ?
+				currentRequest.getParameterValues(BreedingManagerApplication.REQ_PARAM_NURSERY_ID)[0] : "";
+		final ExternalResource urlToNursery;
+		if (nurseryId.isEmpty() || !NumberUtils.isDigits(nurseryId)) {
+			urlToNursery = new ExternalResource(currentRequest.getScheme() + "://" + currentRequest.getServerName() + ":" + currentRequest
+					.getServerPort()
+					+ BreedingManagerApplication.PATH_TO_NURSERY);
+		} else {
+			urlToNursery = new ExternalResource(currentRequest.getScheme() + "://" + currentRequest.getServerName() + ":" + currentRequest
+					.getServerPort()
+					+ BreedingManagerApplication.PATH_TO_EDIT_NURSERY + nurseryId);
+		}
+		final LinkButton nurseryCancelButton = new LinkButton(urlToNursery, "");
+		this.messageSource.setCaption(nurseryCancelButton, Message.CANCEL);
+		return nurseryCancelButton;
 	}
 
 	public void updateCrossesSeedSource(final String femaleListName, final String maleListName) {
@@ -289,7 +362,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		return this.selectParentsComponent;
 	}
 
-	public void setSelectParentsComponent(SelectParentsComponent selectParentsComponent) {
+	public void setSelectParentsComponent(final SelectParentsComponent selectParentsComponent) {
 		this.selectParentsComponent = selectParentsComponent;
 	}
 
@@ -357,12 +430,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		final ParentTabComponent femaleParentTab = this.parentsComponent.getFemaleParentTab();
 		final ParentTabComponent maleParentTab = this.parentsComponent.getMaleParentTab();
 
-		if (femaleParentTab.getGermplasmList() == null && femaleParentTab.hasUnsavedChanges() && maleParentTab.getGermplasmList() == null
-				&& maleParentTab.hasUnsavedChanges()) {
-			return true;
-		}
-
-		return false;
+		return (femaleParentTab.getGermplasmList() == null && femaleParentTab.hasUnsavedChanges() &&
+				maleParentTab.getGermplasmList() == null && maleParentTab.hasUnsavedChanges());
 	}
 
 	public void updateView(final ModeView modeView) {
@@ -380,7 +449,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	public void saveAllListChangesAction() {
 
 		if (this.selectParentsComponent.hasUnsavedChanges()) {
-			final Map<SelectParentsListDataComponent, Boolean> listToUpdate = new HashMap<SelectParentsListDataComponent, Boolean>();
+			final Map<SelectParentsListDataComponent, Boolean> listToUpdate = new HashMap<>();
 			listToUpdate.putAll(this.selectParentsComponent.getListStatusForChanges());
 
 			for (final Map.Entry<SelectParentsListDataComponent, Boolean> list : listToUpdate.entrySet()) {
@@ -397,7 +466,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 			final ParentTabComponent femaleParentTab = this.parentsComponent.getFemaleParentTab();
 			final ParentTabComponent maleParentTab = this.parentsComponent.getMaleParentTab();
 
-			ModeView prevModeView;
+			final ModeView prevModeView;
 			if (this.modeView.equals(ModeView.LIST_VIEW)) {
 				prevModeView = ModeView.INVENTORY_VIEW;
 			} else {

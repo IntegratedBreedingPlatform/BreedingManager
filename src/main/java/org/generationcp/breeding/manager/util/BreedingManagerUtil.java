@@ -356,10 +356,8 @@ public class BreedingManagerUtil {
 
 	}
 
-	public static String getTypeString(String typeCode, GermplasmListManager germplasmListManager) {
+	public static String getTypeString(String typeCode, List<UserDefinedField> listTypes) {
 		try {
-			List<UserDefinedField> listTypes = germplasmListManager.getGermplasmListTypes();
-
 			for (UserDefinedField listType : listTypes) {
 				if (typeCode.equals(listType.getFcode())) {
 					return listType.getFname();
@@ -409,7 +407,6 @@ public class BreedingManagerUtil {
 	public static HttpServletRequest getApplicationRequest() {
 		HttpServletRequest req = null;
 		try {
-			;
 			BreedingManagerApplication.get();
 			req = ContextApplication.currentRequest();
 		} catch (IllegalStateException e) {

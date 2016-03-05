@@ -30,6 +30,7 @@ import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.service.api.GermplasmGroupingService;
 import org.generationcp.middleware.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -82,6 +83,9 @@ public class SaveCrossesMadeAction implements Serializable {
 	@Autowired
 	private PlatformTransactionManager transactionManager;
 
+	@Autowired
+	private GermplasmGroupingService germplasmGroupingService;
+
 	private GermplasmList germplasmList;
 	private List<GermplasmListData> existingListEntries = new ArrayList<GermplasmListData>();
 	private List<Germplasm> existingGermplasms = new ArrayList<Germplasm>();
@@ -133,6 +137,7 @@ public class SaveCrossesMadeAction implements Serializable {
 
 	}
 
+	// Here is where crossed germplasm is saved.
 	List<Integer> saveGermplasmsAndNames(CrossesMade crossesMade) {
 		List<Integer> germplasmIDs = new ArrayList<Integer>();
 
@@ -178,6 +183,7 @@ public class SaveCrossesMadeAction implements Serializable {
 
 		if (!crossesToInsert.isEmpty()) {
 			germplasmIDs = this.germplasmManager.addGermplasm(crossesToInsert);
+			this.germplasmGroupingService.processGroupInheritanceForCrosses(germplasmIDs);
 		}
 		return germplasmIDs;
 	}
@@ -446,5 +452,9 @@ public class SaveCrossesMadeAction implements Serializable {
 	
 	protected void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
+	}
+
+	void setGermplasmGroupingService(GermplasmGroupingService germplasmGroupingService) {
+		this.germplasmGroupingService = germplasmGroupingService;
 	}
 }

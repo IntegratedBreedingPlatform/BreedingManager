@@ -193,10 +193,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 						if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
 						ListBuilderComponent.this.reserveInventoryAction();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
-						ListBuilderComponent.this.listInventoryTable.getTable()
-								.setValue(ListBuilderComponent.this.listInventoryTable.getTable().getItemIds());
-					} else
-						if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.CANCEL_RESERVATIONS))) {
+						ListBuilderComponent.this.listInventoryTable.getTable().setValue(
+								ListBuilderComponent.this.listInventoryTable.getTable().getItemIds());
+					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.CANCEL_RESERVATIONS))) {
 						ListBuilderComponent.this.cancelReservationsAction();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESET_LIST))) {
 						ListBuilderComponent.this.resetButton.click();
@@ -320,7 +319,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	public static final String TOOLS_BUTTON_ID = "Actions";
 	public static final String INVENTORY_TOOLS_BUTTON_ID = "Actions";
 	private static final String USER_HOME = "user.home";
-
+	
 	// Layout Component
 	private AbsoluteLayout toolsButtonContainer;
 
@@ -1146,15 +1145,15 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 				new ExportListAsDialog(this.source, this.currentlySavedGermplasmList, this.listDataTable);
 		this.getWindow().addWindow(exportListAsDialog);
 	}
-
+	
 	private void exportListForGenotypingOrderAction() {
 		if (this.isCurrentListSaved()) {
 			if (this.currentlySavedGermplasmList.isLockedList()) {
 				final String tempFileName = System.getProperty(ListBuilderComponent.USER_HOME) + "/tempListForGenotyping.xls";
-				final GermplasmListExporter listExporter = new GermplasmListExporter(this.currentlySavedGermplasmList.getId());
+				final GermplasmListExporter listExporter = new GermplasmListExporter();
 
 				try {
-					listExporter.exportKBioScienceGenotypingOrderXLS(tempFileName, 96);
+					listExporter.exportKBioScienceGenotypingOrderXLS(this.currentlySavedGermplasmList.getId(), tempFileName, 96);
 					final FileDownloadResource fileDownloadResource =
 							new FileDownloadResource(new File(tempFileName), this.source.getApplication());
 					final String listName = this.currentlySavedGermplasmList.getName();
@@ -1434,8 +1433,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			this.listInventoryTable.getInventoryTableDropHandler().resetListDataAndLotDetails();
 
 			this.reserveInventoryAction = new ReserveInventoryAction(this);
+
 			final boolean success = this.reserveInventoryAction.saveReserveTransactions(this.getValidReservationsToSave(),
 					this.currentlySavedGermplasmList.getId());
+
 			if (success) {
 				this.refreshInventoryColumns(this.getValidReservationsToSave());
 				this.resetListInventoryTableValues();
@@ -1519,8 +1520,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			if (listData.getInventoryInfo().getLotCount().intValue() != 0) {
 				availInv = listData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
 			}
+
 			final Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(this.source,
 					this.currentlySavedGermplasmList.getId(), listData.getId(), listData.getGid()));
+
 			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 			inventoryButton.setDescription("Click to view Inventory Details");
 

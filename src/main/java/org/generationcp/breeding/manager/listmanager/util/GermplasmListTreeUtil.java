@@ -24,6 +24,7 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.UserDefinedField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -387,11 +388,12 @@ public class GermplasmListTreeUtil implements Serializable {
 	public void addFolderToTree(final Object parentItemId, String folderName, Integer newFolderId, GermplasmList newFolder,
 			GermplasmList parentList) {
 		if (newFolderId != null) {
+			List<UserDefinedField> listTypes = germplasmListManager.getGermplasmListTypes();
 			this.targetListSource.addItem(
 					this.source.generateCellInfo(folderName,
 							BreedingManagerUtil.getOwnerListName(newFolder.getUserId(), this.userDataManager),
 							BreedingManagerUtil.getDescriptionForDisplay(newFolder),
-							BreedingManagerUtil.getTypeString(newFolder.getType(), this.germplasmListManager), ""), newFolderId);
+							BreedingManagerUtil.getTypeString(newFolder.getType(), listTypes), ""), newFolderId);
 			this.source.setNodeItemIcon(newFolderId, true);
 			this.targetListSource.setItemCaption(newFolderId, folderName);
 			this.targetListSource.setChildrenAllowed(newFolderId, true);

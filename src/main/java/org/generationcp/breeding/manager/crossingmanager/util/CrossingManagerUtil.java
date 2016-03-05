@@ -21,6 +21,9 @@ public class CrossingManagerUtil {
 	/**
 	 * Determines the proper crossing method for a germplasm based on how its parental lines have been created.
 	 * 
+	 * @see <a href="https://leafnode.atlassian.net/wiki/pages/viewpage.action?pageId=5013789">Leafnode confluence page</a>
+	 * @see <a href="http://iwis.cimmyt.org/confluence/display/MBP/Application+2.2.2+Tool+4.5+-+Cross+Algorithm">CIMMYT confuence page</a>
+	 * 
 	 * @param child - the germplasm whose breeding method will be set
 	 * @param female - female parent
 	 * @param male - male parent

@@ -54,8 +54,15 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 
 	private final String[] wizardStepNames = new String[ManageCrossingSettingsMain.NUMBER_OF_STEPS];
 
-	public ManageCrossingSettingsMain(ComponentContainer parent) {
+	private GermplasmList germplasmList = null;
+
+	public ManageCrossingSettingsMain(final ComponentContainer parent) {
 		this.parent = parent;
+	}
+
+	public ManageCrossingSettingsMain(final ComponentContainer parent, final GermplasmList germplasmList) {
+		this(parent);
+		this.germplasmList = germplasmList;
 	}
 
 	@Override
@@ -96,6 +103,10 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 
 		this.detailComponent = new CrossingSettingsDetailComponent(this);
 		this.makeCrossesComponent = new CrossingManagerMakeCrossesComponent(this);
+		if (this.germplasmList != null) {
+			this.makeCrossesComponent.getSelectParentsComponent().createListDetailsTab(this.germplasmList.getId(),
+					this.germplasmList.getName());
+		}
 
 		this.tabSheet.addTab(this.detailComponent, this.wizardStepNames[0]);
 		this.tabSheet.addTab(this.makeCrossesComponent, this.wizardStepNames[1]);
@@ -151,7 +162,10 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 
 		int step = this.wizardDisplay.nextStep();
 		this.showNextWizardStep(step);
-		this.getWindow().setScrollTop(0);
+		if (this.getWindow() != null) {
+			this.getWindow().setScrollTop(0);
+		}
+
 	}
 
 	public void backStep() {
