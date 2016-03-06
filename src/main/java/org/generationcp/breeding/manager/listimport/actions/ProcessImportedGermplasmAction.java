@@ -62,8 +62,6 @@ public class ProcessImportedGermplasmAction implements Serializable,ProgenitorsC
 	@Resource
 	private GenerateGermplasmNameProcess generateGermplasmNameProcess;
 
-	@Resource
-	private SetPedigreeConnectionProcess setPedigreeConnectionProcess;
 
 	@Resource
 	private ContextUtil contextUtil;
@@ -129,9 +127,6 @@ public class ProcessImportedGermplasmAction implements Serializable,ProgenitorsC
 		}
 
 	}
-
-
-
 
 	protected void performSecondPedigreeAction() {
 		final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
