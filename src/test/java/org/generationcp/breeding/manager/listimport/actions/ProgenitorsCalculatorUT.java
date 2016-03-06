@@ -30,26 +30,18 @@ public class ProgenitorsCalculatorUT {
     ProgenitorsCalculator action;
 
     @Mock
-    SpecifyGermplasmDetailsComponent germplasmDetailsComponentMock;
-
-    @Mock
-    private ContextUtil contextUtilMock;
-
-    @Mock
     GermplasmDataManager germplasmDataManagerMock;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        action = new ProcessImportedGermplasmAction(germplasmDetailsComponentMock);
-        ((ProcessImportedGermplasmAction) action).setContextUtil(contextUtilMock);
-        ((ProcessImportedGermplasmAction) action).setGermplasmDataManager(germplasmDataManagerMock);
+        action = new ProgenitorsCalculatorImpl(germplasmDataManagerMock);
     }
 
     @Test
     public void givenADerivativeMethodThenGpngsValueIsMinus1() throws Exception {
 
-        int gnpgs = action.calculate(UNKNOWN_DERIVATIVE_METHOD_ID, null);
+        int gnpgs = action.calculate(UNKNOWN_DERIVATIVE_METHOD_ID, 0);
         assertEquals(EXPECTED_GNPGS_VALUE_FOR_DERIVATIVES, gnpgs);
     }
 
@@ -70,7 +62,7 @@ public class ProgenitorsCalculatorUT {
         method.setMtype(METHOD_GEN_TYPE);
         when(germplasmDataManagerMock.getMethodByID(GENERATIVE_METHOD_ID)).thenReturn(method);
 
-        int gnpgs = action.calculate(GENERATIVE_METHOD_ID, null);
+        int gnpgs = action.calculate(GENERATIVE_METHOD_ID, 0);
 
         assertEquals(EXPECTED_GNPGS_VALUE_FOR_GENERATIVES,gnpgs);
         verify(germplasmDataManagerMock).getMethodByID(GENERATIVE_METHOD_ID);
