@@ -40,8 +40,7 @@ public class GenerateGermplasmNameProcessUT {
 
 	GermplasmRegistrationContext context;
 
-	private List<ImportedGermplasm> list;
-	private ImportedGermplasm importedDuplicateGermplasm;
+
 	private ImportedGermplasm importedGermplasm;
 	Map<String, Germplasm> map = new HashMap<>();
 
@@ -50,8 +49,7 @@ public class GenerateGermplasmNameProcessUT {
 		MockitoAnnotations.initMocks(this);
 		process = new GenerateGermplasmNameProcess(nameBuilderMock, germplasmBuilderMock);
 		importedGermplasm = new ImportedGermplasm(ENTRY_ID, GERMPLASM_NAME);
-		//		importedDuplicateGermplasm = new ImportedGermplasm(DUPLICATED_ENTRY_ID, GERMPLASM_NAME);
-		//		list = Lists.newArrayList(importedGermplasm);
+
 		context = new GermplasmRegistrationContext();
 		context.setImportedGermplasm(importedGermplasm);
 
