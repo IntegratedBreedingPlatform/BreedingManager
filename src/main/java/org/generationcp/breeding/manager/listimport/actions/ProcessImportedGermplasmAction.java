@@ -35,11 +35,12 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.ui.Window;
 
 @Configurable
-public class ProcessImportedGermplasmAction implements Serializable,GNPGSCalculator,NoPedigreeConnectionProcess {
+public class ProcessImportedGermplasmAction implements Serializable,ProgenitorsCalculator{
 
 	private static final long serialVersionUID = -9047259985457065559L;
 
 	private static final int PREFERRED_NAME_STATUS = 1;
+	public static final int NUMBER_PROGENITORS_FOR_DERIVATIVE_METHOD = -1;
 
 	private final SpecifyGermplasmDetailsComponent germplasmDetailsComponent;
 
@@ -50,13 +51,24 @@ public class ProcessImportedGermplasmAction implements Serializable,GNPGSCalcula
 	private List<Name> newDesignationsForExistingGermplasm = new ArrayList<>();
 
 	private Map<String, Germplasm> nameGermplasmMap = new HashMap<>();
-	private static final Integer UNKNOWN_DERIVATIVE_METHOD = 31;
+	public static final int UNKNOWN_DERIVATIVE_METHOD = 31;
 
-	@Autowired
+	@Resource
 	private GermplasmDataManager germplasmDataManager;
 
 	@Resource
+	private ProgenitorsCalculator calculator;
+
+	@Resource
+	private GenerateGermplasmNameProcess generateGermplasmNameProcess;
+
+	@Resource
+	private SetPedigreeConnectionProcess setPedigreeConnectionProcess;
+
+	@Resource
 	private ContextUtil contextUtil;
+
+
 
 	public ProcessImportedGermplasmAction(final SpecifyGermplasmDetailsComponent germplasmDetailsComponent) {
 		super();
@@ -85,37 +97,41 @@ public class ProcessImportedGermplasmAction implements Serializable,GNPGSCalcula
 			this.saveImport();
 		}
 	}
+	private GermplasmRegistrationContext createGermplasmRegistrationContext() {
+		int location = (Integer) getGermplasmFieldsComponent().getLocationComboBox().getValue();
+		Integer value = (Integer) this.getGermplasmFieldsComponent().getBreedingMethodComboBox().getValue();
+		int methodId = this.getGermplasmMethodId(value);
 
-	protected void performFirstPedigreeAction() {
+		GermplasmRegistrationContext context = new GermplasmRegistrationContext();
+		context.setUserId(contextUtil.getCurrentUserLocalId());
+		context.setTypeId((Integer) getGermplasmFieldsComponent().getNameTypeComboBox().getValue());
+		context.setDateValue(getGermplasmDateValue());
+		context.setLocationId(location);
+		context.setMethodId(methodId);
 
-		final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
-		final Integer dateIntValue = this.getGermplasmDateValue();
 
-		final Map<String, Germplasm> createdGermplasms = new HashMap<>();
-
-
-		for (int i = 0; i < this.getImportedGermplasms().size(); i++) {
-			final ImportedGermplasm importedGermplasm = this.getImportedGermplasms().get(i);
-			GermplasmName germplasmName = generateGermplasmNameProcess(ibdbUserId, dateIntValue, createdGermplasms, i, importedGermplasm.getDesig());
-			this.germplasmNameObjects.add(germplasmName);
-		}
+		return context;
 	}
-	@Override
-	public GermplasmName generateGermplasmNameProcess(Integer ibdbUserId, Integer dateIntValue,
-			Map<String, Germplasm> createdGermplasms, int gid, String desig) {
 
-		final Name name = this.createNameObject(ibdbUserId, dateIntValue, desig);
+	protected void performFirstPedigreeAction()  {
+		GermplasmRegistrationContext context = createGermplasmRegistrationContext();
 
-		GermplasmName germplasmName;
-		if (!createdGermplasms.containsKey(name.getNval())) {
-			Germplasm germplasm = this.createGermplasmObject(gid, -1, 0, 0, ibdbUserId, dateIntValue);
-			createdGermplasms.put(name.getNval(), germplasm);
-			germplasmName = new GermplasmName(germplasm, name);
-		} else {
-			germplasmName = new GermplasmName(createdGermplasms.get(name.getNval()), name);
+		try {
+			for (ImportedGermplasm importedGermplasm : getImportedGermplasms()) {
+				context.setImportedGermplasm(importedGermplasm);
+				context.setProgenitors(calculator.calculate(context.getMethodId(),NUMBER_PROGENITORS_FOR_DERIVATIVE_METHOD));
+				generateGermplasmNameProcess.execute(context);
+				germplasmNameObjects.add(context.getGermplasmNameObject());
+			}
+		} catch (BMSExecutionException e) {
+			e.printStackTrace();
+			//TODO: No Exception handling !!! I suggest that once the refactor of the 3 registrators is done come back to this tech debt.
 		}
-		return germplasmName;
+
 	}
+
+
+
 
 	protected void performSecondPedigreeAction() {
 		final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
@@ -130,15 +146,17 @@ public class ProcessImportedGermplasmAction implements Serializable,GNPGSCalcula
 		for (int i = 0; i < this.getImportedGermplasms().size(); i++) {
 
 			final ImportedGermplasm importedGermplasm = this.getImportedGermplasms().get(i);
+
 			final String designationName = importedGermplasm.getDesig();
 			// gpid1 and gpid 2 values are default here, actual values will be set below based on matched germplasm
 			final Germplasm germplasm = this.createGermplasmObject(i, -1, 0, 0, ibdbUserId, dateIntValue);
 			List<Germplasm> foundGermplasm = new ArrayList<>();
+
 			final Integer germplasmMatchesCount = germplasmMatchesMap.get(designationName);
 
 			if (this.isGidSpecified(importedGermplasm)) {
 				foundGermplasm.add(this.germplasmDataManager.getGermplasmByGID(importedGermplasm.getGid()));
-			} else if (germplasmMatchesCount == 1) {
+			} else if (germplasmMatchesCount == 1) { // what happens if there is more than one
 				// If a single match is found, multiple matches will be
 				// handled by SelectGemrplasmWindow and
 				// then receiveGermplasmFromWindowAndUpdateGermplasmData()
@@ -343,75 +361,25 @@ public class ProcessImportedGermplasmAction implements Serializable,GNPGSCalcula
 		return name;
 	}
 
-	public  Germplasm createGermplasmObject(final Integer gid, final Integer gnpgs, final Integer gpid1, final Integer gpid2,
+	protected Germplasm createGermplasmObject(final Integer gid, final Integer gnpgs, final Integer gpid1, final Integer gpid2,
 			final Integer ibdbUserId, final Integer dateIntValue) {
-		GermplasmBuilder builder = new GermplasmBuilderImpl();
+		final Germplasm germplasm = new Germplasm();
+
+		germplasm.setGid(gid);
+		germplasm.setUserId(ibdbUserId);
+		germplasm.setLocationId((Integer) this.getGermplasmFieldsComponent().getLocationComboBox().getValue());
+		germplasm.setGdate(dateIntValue);
 
 		final int methodId = this.getGermplasmMethodId(this.getGermplasmFieldsComponent().getBreedingMethodComboBox().getValue());
+		germplasm.setMethodId(methodId);
+		germplasm.setGnpgs(this.getGermplasmGnpgs(methodId, gnpgs));
+		germplasm.setGpid1(gpid1);
+		germplasm.setGpid2(gpid2);
 
-		Germplasm germplasm = builder.build(new GermplasmDataProvider() {
-
-			@Override
-			public Integer getGID() {
-				return gid;
-			}
-
-			@Override
-			public Integer getProgenitors() {
-				return gnpgs;
-			}
-
-			@Override
-			public Integer getGPID1() {
-				return gpid1;
-			}
-
-			@Override
-			public Integer getGPID2() {
-				return gpid2;
-			}
-
-			@Override
-			public Integer getUserId() {
-				return ibdbUserId;
-			}
-
-			@Override
-			public Integer getDateValue() {
-				return dateIntValue;
-			}
-
-			@Override
-			public Integer getLocationId() {
-				return (Integer) getGermplasmFieldsComponent().getLocationComboBox().getValue();
-			}
-
-			@Override
-			public Integer getMethodId() {
-				return methodId;
-			}
-
-			@Override
-			public Integer getLgid() {
-				return 0;
-			}
-
-			@Override
-			public Integer getGrplce() {
-				return 0;
-			}
-
-			@Override
-			public Integer getReferenceId() {
-				return 0;
-			}
-
-			@Override
-			public Integer getMgid() {
-				return 0;
-			}
-
-		});
+		germplasm.setLgid(0);
+		germplasm.setGrplce(0);
+		germplasm.setReferenceId(0);
+		germplasm.setMgid(0);
 
 		return germplasm;
 	}
@@ -426,13 +394,13 @@ public class ProcessImportedGermplasmAction implements Serializable,GNPGSCalcula
 		return methodId;
 	}
 
-	private int getGermplasmGnpgs(final Integer methodId, final Integer prevGnpgs) {
+	private int getGermplasmGnpgs(int methodId, int prevGnpgs) {
 		return calculate(methodId, prevGnpgs);
 	}
 
-	public int calculate(Integer methodId, Integer prevGnpgs) {
+	public int calculate(int methodId, int prevGnpgs) {
 		int gnpgs = 0;
-		if (Objects.equals(methodId, ProcessImportedGermplasmAction.UNKNOWN_DERIVATIVE_METHOD)) {
+		if (methodId == ProcessImportedGermplasmAction.UNKNOWN_DERIVATIVE_METHOD) {
 			gnpgs =  -1;
 		} else {
 			final Method selectedMethod = this.germplasmDataManager.getMethodByID(methodId);
