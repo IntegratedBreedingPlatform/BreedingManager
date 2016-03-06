@@ -70,7 +70,7 @@ public class GenerateGermplasmNameProcessUT {
 
 		GermplasmRegistrationContext resultContext = process.execute(context);
 
-		assertThat(resultContext.getGermplasmNameObjects()).containsExactly(expectedGermplasmName);
+		assertThat(resultContext.getGermplasmNameObject()).isSameAs(expectedGermplasmName);
 	}
 
 	@Test
@@ -86,7 +86,7 @@ public class GenerateGermplasmNameProcessUT {
 		map.put(DUMMY_DESIG, germplasm);
 		GermplasmRegistrationContext resultContext = process.execute(context);
 
-		assertThat(resultContext.getGermplasmNameObjects()).containsExactly(expectedGermplasmName);
+		assertThat(resultContext.getGermplasmNameObject()).isSameAs(expectedGermplasmName);;
 		verify(nameBuilderMock).build(context.getNameDataProvider());
 		verify(germplasmBuilderMock, never()).build(context.getGermplasmDataProvider());
 

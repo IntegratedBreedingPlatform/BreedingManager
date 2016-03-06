@@ -35,7 +35,7 @@ public class GenerateGermplasmNameProcess implements Executable<GermplasmRegistr
 		}
 
 		GermplasmName germplasmName = new GermplasmName(germplasm, name);
-		context.addGermplasmName(germplasmName);
+		context.setGermplasmNameObject(germplasmName);
 		return context;
 	}
 }
