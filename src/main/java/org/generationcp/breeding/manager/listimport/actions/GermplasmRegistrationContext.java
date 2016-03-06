@@ -13,11 +13,14 @@ public class GermplasmRegistrationContext implements NameDataProvider,GermplasmD
 
 
 	private Map<String, Germplasm> createdGermplasmMap = new HashMap<String, Germplasm>();
-	private List<GermplasmName> germplasmNameObjects = new ArrayList<GermplasmName>();
+	private GermplasmName germplasmNameObject;
 	private int userId;
 	private int dateIntValue;
 	private int locationId;
 	private int methodId;
+	private int nstat;
+	private int progenitors;
+	private int typeId;
 	private ImportedGermplasm importedGermplasm;
 
 	public NameDataProvider getNameDataProvider() {
@@ -25,9 +28,6 @@ public class GermplasmRegistrationContext implements NameDataProvider,GermplasmD
 	}
 
 
-	public void addGermplasmName(GermplasmName germplasmName) {
-		germplasmNameObjects.add(germplasmName);
-	}
 
 	public Map<String, Germplasm>  getCreatedGermplasmMap() {
 		return createdGermplasmMap;
@@ -41,10 +41,14 @@ public class GermplasmRegistrationContext implements NameDataProvider,GermplasmD
 		return this;
 	}
 
-	public List<GermplasmName> getGermplasmNameObjects() {
-		return germplasmNameObjects;
+
+	public GermplasmName getGermplasmNameObject() {
+		return germplasmNameObject;
 	}
 
+	public void setGermplasmNameObject(GermplasmName germplasmNameObject) {
+		this.germplasmNameObject = germplasmNameObject;
+	}
 
 	// ------------------INTERFACE METHODS----------------------//
 
@@ -55,7 +59,7 @@ public class GermplasmRegistrationContext implements NameDataProvider,GermplasmD
 
 	@Override
 	public int getProgenitors() {
-		return 0;
+		return progenitors;
 	}
 
 	@Override
@@ -110,12 +114,17 @@ public class GermplasmRegistrationContext implements NameDataProvider,GermplasmD
 
 	@Override
 	public int getTypeId() {
-		return 0;
+		return typeId;
 	}
 
 	@Override
 	public String getName() {
 		return importedGermplasm.getDesig();
+	}
+
+	@Override
+	public int getNstat() {
+		return nstat;
 	}
 
 	public void setUserId(int userId) {
@@ -141,6 +150,15 @@ public class GermplasmRegistrationContext implements NameDataProvider,GermplasmD
 	public ImportedGermplasm getImportedGermplasm() {
 		return importedGermplasm;
 	}
+	public void setNstat(int nstat) {
+		this.nstat = nstat;
+	}
 
+	public void setProgenitors(int progenitors) {
+		this.progenitors = progenitors;
+	}
 
+	public void setTypeId(int typeId) {
+		this.typeId = typeId;
+	}
 }

@@ -13,4 +13,5 @@ public interface NameDataProvider extends DataProvider {
 	public int getLocationId();
 	public int getTypeId();
 	public String getName();
+	public int getNstat();
 }
