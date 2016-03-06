@@ -272,4 +272,5 @@
 		factory-method="createInstance" scope="request">
 		<aop:scoped-proxy />
 	</bean>
+	<context:component-scan base-package="org.generationcp.breeding.manager.listimport.actions"/>
 </beans>
