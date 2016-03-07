@@ -30,6 +30,7 @@ class FactorDetailsConverter extends WorkbookRowConverter<ImportedFactor> {
 	public static final String ASSIGNED_METHOD = "ASSIGNED";
 	public static final String GERMPLASM_NAME = "GERMPLASM NAME";
 	public static final String GERMPLASM_ID = "GERMPLASM ID";
+	public static final String ENUMERATED = "ENUMERATED";
 
 	private final Map<GermplasmListParser.FactorTypes, String> specialFactors = new HashMap<>();
 	private final Set<String> nameFactors = new HashSet<>();
@@ -81,7 +82,7 @@ class FactorDetailsConverter extends WorkbookRowConverter<ImportedFactor> {
 		final String scale = importedFactor.getScale() == null ? "" : importedFactor.getScale().toUpperCase();
 		final String method = importedFactor.getMethod() == null ? "" : importedFactor.getMethod().toUpperCase();
 
-		if (FactorDetailsConverter.GERMPLASM_ENTRY_PROPERTY.equals(property) && FactorDetailsConverter.NUMBER_SCALE.equals(scale)) {
+		if (FactorDetailsConverter.GERMPLASM_ENTRY_PROPERTY.equals(property) && FactorDetailsConverter.NUMBER_SCALE.equals(scale) && ENUMERATED.equals(method)) {
 			this.specialFactors.put(GermplasmListParser.FactorTypes.ENTRY, importedFactor.getFactor());
 		} else if (FactorDetailsConverter.GERMPLASM_ID_PROPERTY.equals(property) && FactorDetailsConverter.isGermplasmNameScale(scale)) {
 			this.specialFactors.put(GermplasmListParser.FactorTypes.DESIG, importedFactor.getFactor());
