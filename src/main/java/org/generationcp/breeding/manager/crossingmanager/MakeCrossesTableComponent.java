@@ -29,6 +29,7 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ApplyCrossingSettingAction;
+import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
@@ -102,6 +103,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 	private Label totalCrossesLabel;
 	private Label totalSelectedCrossesLabel;
 
+	private Label groupInheritanceOptionMessage;
 	private CheckBox applyNewGroupToCurrentCrossOnly;
 
 	private Button saveButton;
@@ -419,6 +421,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		this.totalSelectedCrossesLabel.setContentMode(Label.CONTENT_XHTML);
 		this.totalSelectedCrossesLabel.setWidth("95px");
 
+		this.groupInheritanceOptionMessage = new Label(this.messageSource.getMessage(Message.GROUP_INHERITANCE_OPTION_MESSAGE));
 		this.applyNewGroupToCurrentCrossOnly = new CheckBox(this.messageSource.getMessage(Message.APPLY_NEW_GROUP_TO_CURRENT_CROSS_ONLY));
 
 		this.saveButton = new Button(this.messageSource.getMessage(Message.SAVE_LABEL));
@@ -537,6 +540,8 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		makeCrossesLayout.setSpacing(true);
 		makeCrossesLayout.setMargin(true);
 		makeCrossesLayout.addComponent(labelContainer);
+
+		makeCrossesLayout.addComponent(this.groupInheritanceOptionMessage);
 		makeCrossesLayout.addComponent(this.applyNewGroupToCurrentCrossOnly);
 		makeCrossesLayout.addComponent(this.tableCrossesMade);
 
@@ -548,6 +553,19 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		final HeaderLabelLayout reviewCrossesLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_CROSSES, this.lblReviewCrosses);
 		this.addComponent(reviewCrossesLayout);
 		this.addComponent(makeCrossesPanel);
+	}
+
+	public void showOrHideGroupInheritanceOptions() {
+		// Only show group inheritance options if breeding method chosen is hybrid
+		CrossingManagerSetting currentCrossingSetting = this.makeCrossesMain.getCurrentCrossingSetting();
+		Integer selectedBreedingMethodId = currentCrossingSetting.getBreedingMethodSetting().getMethodId();
+		if (this.crossExpansionProperties.getHybridBreedingMethods().contains(selectedBreedingMethodId)) {
+			this.groupInheritanceOptionMessage.setVisible(true);
+			this.applyNewGroupToCurrentCrossOnly.setVisible(true);
+		} else {
+			this.groupInheritanceOptionMessage.setVisible(false);
+			this.applyNewGroupToCurrentCrossOnly.setVisible(false);
+		}
 	}
 
 	private void launchSaveListAsWindow() {
