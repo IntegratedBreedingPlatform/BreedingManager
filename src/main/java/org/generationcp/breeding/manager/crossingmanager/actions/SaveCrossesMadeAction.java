@@ -463,4 +463,8 @@ public class SaveCrossesMadeAction implements Serializable {
 	void setGermplasmGroupingService(GermplasmGroupingService germplasmGroupingService) {
 		this.germplasmGroupingService = germplasmGroupingService;
 	}
+
+	void setCrossExpansionProperties(CrossExpansionProperties crossExpansionProperties) {
+		this.crossExpansionProperties = crossExpansionProperties;
+	}
 }
