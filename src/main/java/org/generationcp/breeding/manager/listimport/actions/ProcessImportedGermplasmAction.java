@@ -328,7 +328,10 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		name.setUserId(ibdbUserId);
 		name.setNval(desig);
 		name.setLocationId((Integer) this.getGermplasmFieldsComponent().getLocationComboBox().getValue());
-		name.setNdate(dateIntValue);
+		String sDate = DateUtil.formatDateAsStringValue(new Date(), GermplasmImportMain.DATE_FORMAT);
+		int dateVale = Integer.parseInt(sDate.replace("-", ""));
+
+		name.setNdate(dateVale);
 		name.setReferenceId(0);
 
 		return name;
