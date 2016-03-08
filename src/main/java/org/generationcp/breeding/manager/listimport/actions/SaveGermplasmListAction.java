@@ -138,7 +138,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		this.gidLotMap.clear();
 		this.gidTransactionSetMap.clear();
 
-		this.processGermplasmNamesAndLots(germplasmNameObjects, doNotCreateGermplasmsWithId, seedStorageLocation);
+		this.processGermplasmNamesAndLots(germplasmNameObjects, doNotCreateGermplasmsWithId, seedStorageLocation,filename);
 
 		final List<ImportedGermplasm> importedGermplasms = importedGermplasmList.getImportedGermplasms();
 
@@ -212,7 +212,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	}
 
 	protected void processGermplasmNamesAndLots(final List<GermplasmName> germplasmNameObjects,
-			final List<Integer> doNotCreateGermplasmsWithId, final Integer seedStorageLocation) {
+			final List<Integer> doNotCreateGermplasmsWithId, final Integer seedStorageLocation,String filename) {
 
 		final Map<Integer, GermplasmName> addedGermplasmNameMap = new HashMap<Integer, GermplasmName>();
 
@@ -253,9 +253,12 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 			}
 
 			if (this.seedAmountScaleId != null) {
+				StringBuilder filenameBuilder = new StringBuilder(INVENTORY_COMMENT);
+				filenameBuilder.append(" ");
+				filenameBuilder.append(filename);
 				final Lot lot =
 						new Lot(null, this.contextUtil.getCurrentUserLocalId(), EntityType.GERMPLSM.name(), gid, seedStorageLocation,
-								this.seedAmountScaleId, 0, 0, SaveGermplasmListAction.INVENTORY_COMMENT);
+								this.seedAmountScaleId, 0, 0, filenameBuilder.toString());
 				this.gidLotMap.put(gid, lot);
 			}
 		}
