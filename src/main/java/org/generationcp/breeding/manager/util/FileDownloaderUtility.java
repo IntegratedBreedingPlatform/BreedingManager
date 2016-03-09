@@ -13,13 +13,11 @@ public class FileDownloaderUtility {
             return false;
         }
 
-        final FileDownloadResource fileDownloadResource =
-                new FileDownloadResource(new File(sourceFilename), source.getApplication());
-        if (visibleFilename != null) {
-            final String adjustedFileName =
-                    FileDownloadResource.getDownloadFileName(visibleFilename, BreedingManagerUtil.getApplicationRequest());
-            fileDownloadResource.setFilename(adjustedFileName);
-        }
+		final FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(sourceFilename), source.getApplication());
+		if (visibleFilename != null) {
+			final String adjustedFileName = FileUtils.encodeFilenameForDownload(visibleFilename);
+			fileDownloadResource.setFilename(adjustedFileName);
+		}
 
         source.getWindow().open(fileDownloadResource);
 

@@ -19,6 +19,7 @@ import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.CustomReportType;
 import org.generationcp.commons.reports.service.JasperReportService;
 import org.generationcp.commons.util.FileDownloadResource;
+import org.generationcp.commons.util.FileUtils;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -305,9 +306,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 				final FileDownloadResource fileDownloadResource =
 						new FileDownloadResource(new File(tempFileName), this.source.getApplication());
 				final String listName = this.germplasmList.getName();
-				fileDownloadResource.setFilename(FileDownloadResource.getDownloadFileName(listName,
-						BreedingManagerUtil.getApplicationRequest()).replace(" ", "_")
-						+ "ForGenotyping.xls");
+				fileDownloadResource.setFilename(FileUtils.encodeFilenameForDownload(listName).replace(" ", "_") + "ForGenotyping.xls");
 
 				this.source.getWindow().open(fileDownloadResource);
 

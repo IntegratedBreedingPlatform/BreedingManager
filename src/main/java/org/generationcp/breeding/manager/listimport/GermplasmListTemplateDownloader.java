@@ -13,6 +13,7 @@ import org.dellroad.stuff.vaadin.ContextApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.service.FileService;
 import org.generationcp.commons.util.FileDownloadResource;
+import org.generationcp.commons.util.FileUtils;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.workbook.generator.CodesSheetGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,8 +67,7 @@ public class GermplasmListTemplateDownloader {
 			fileDownloadResource = new FileDownloadResource(templateFile, getCurrentApplication());
 		}
 
-		fileDownloadResource.setFilename(
-				FileDownloadResource.getDownloadFileName(EXPANDED_TEMPLATE_FILE, getCurrentRequest()));
+		fileDownloadResource.setFilename(FileUtils.encodeFilenameForDownload(EXPANDED_TEMPLATE_FILE));
 		return fileDownloadResource;
 	}
 
