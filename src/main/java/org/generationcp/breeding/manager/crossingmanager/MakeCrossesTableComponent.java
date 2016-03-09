@@ -67,6 +67,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.PopupView;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
@@ -103,8 +104,9 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 	private Label totalCrossesLabel;
 	private Label totalSelectedCrossesLabel;
 
-	private Label groupInheritanceOptionMessage;
-	private CheckBox applyNewGroupToCurrentCrossOnly;
+	private PopupView applyGroupingToNewCrossesOnlyHelpPopup;
+	private Label applyGroupingToNewCrossesOnlyHelpText;
+	private CheckBox applyGroupingToNewCrossesOnly;
 
 	private Button saveButton;
 
@@ -421,8 +423,15 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		this.totalSelectedCrossesLabel.setContentMode(Label.CONTENT_XHTML);
 		this.totalSelectedCrossesLabel.setWidth("95px");
 
-		this.groupInheritanceOptionMessage = new Label(this.messageSource.getMessage(Message.GROUP_INHERITANCE_OPTION_MESSAGE));
-		this.applyNewGroupToCurrentCrossOnly = new CheckBox(this.messageSource.getMessage(Message.APPLY_NEW_GROUP_TO_CURRENT_CROSS_ONLY));
+		this.applyGroupingToNewCrossesOnly = new CheckBox(this.messageSource.getMessage(Message.APPLY_NEW_GROUP_TO_CURRENT_CROSS_ONLY));
+
+		this.applyGroupingToNewCrossesOnlyHelpText = new Label(this.messageSource.getMessage(Message.GROUP_INHERITANCE_OPTION_MESSAGE));
+		this.applyGroupingToNewCrossesOnlyHelpText.setWidth("300px");
+		this.applyGroupingToNewCrossesOnlyHelpText.addStyleName("gcp-content-help-text");
+
+		this.applyGroupingToNewCrossesOnlyHelpPopup = new PopupView("?", this.applyGroupingToNewCrossesOnlyHelpText);
+		this.applyGroupingToNewCrossesOnlyHelpPopup.addStyleName(AppConstants.CssStyles.POPUP_VIEW);
+		this.applyGroupingToNewCrossesOnlyHelpPopup.addStyleName("cs-inline-icon");
 
 		this.saveButton = new Button(this.messageSource.getMessage(Message.SAVE_LABEL));
 		this.saveButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
@@ -541,8 +550,12 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		makeCrossesLayout.setMargin(true);
 		makeCrossesLayout.addComponent(labelContainer);
 
-		makeCrossesLayout.addComponent(this.groupInheritanceOptionMessage);
-		makeCrossesLayout.addComponent(this.applyNewGroupToCurrentCrossOnly);
+		final HorizontalLayout groupInheritanceOptionsContainer = new HorizontalLayout();
+		groupInheritanceOptionsContainer.setSpacing(true);
+		groupInheritanceOptionsContainer.addComponent(this.applyGroupingToNewCrossesOnly);
+		groupInheritanceOptionsContainer.addComponent(this.applyGroupingToNewCrossesOnlyHelpPopup);
+		makeCrossesLayout.addComponent(groupInheritanceOptionsContainer);
+
 		makeCrossesLayout.addComponent(this.tableCrossesMade);
 
 		final Panel makeCrossesPanel = new Panel();
@@ -560,11 +573,11 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		CrossingManagerSetting currentCrossingSetting = this.makeCrossesMain.getCurrentCrossingSetting();
 		Integer selectedBreedingMethodId = currentCrossingSetting.getBreedingMethodSetting().getMethodId();
 		if (this.crossExpansionProperties.getHybridBreedingMethods().contains(selectedBreedingMethodId)) {
-			this.groupInheritanceOptionMessage.setVisible(true);
-			this.applyNewGroupToCurrentCrossOnly.setVisible(true);
+			this.applyGroupingToNewCrossesOnlyHelpPopup.setVisible(true);
+			this.applyGroupingToNewCrossesOnly.setVisible(true);
 		} else {
-			this.groupInheritanceOptionMessage.setVisible(false);
-			this.applyNewGroupToCurrentCrossOnly.setVisible(false);
+			this.applyGroupingToNewCrossesOnlyHelpPopup.setVisible(false);
+			this.applyGroupingToNewCrossesOnly.setVisible(false);
 		}
 	}
 
@@ -606,7 +619,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		final SaveCrossesMadeAction saveAction = new SaveCrossesMadeAction(this.getCrossList());
 
 		try {
-			boolean applyNewGroupToCurrentCrossOnly = this.applyNewGroupToCurrentCrossOnly.booleanValue();
+			boolean applyNewGroupToCurrentCrossOnly = this.applyGroupingToNewCrossesOnly.booleanValue();
 
 			this.crossList =
 					saveAction
