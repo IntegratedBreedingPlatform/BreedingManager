@@ -1,7 +1,6 @@
 package org.generationcp.breeding.manager.listimport.actions;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
@@ -31,17 +30,16 @@ public class GenerateGermplasmNameProcessUT {
 	NameBuilder nameBuilderMock;
 	@Mock
 	GermplasmBuilder germplasmBuilderMock;
+
 	@Mock
-	NameDataProvider nameDataProvider;
-	@Mock
-	GermplasmDataProvider germplasmDataProvider;
+	GermplasmDataProviderImpl providerMock;
 
 	GenerateGermplasmNameProcess process;
 
-	GermplasmRegistrationContext context;
-
+	GermplasmImportationContext context;
 
 	private ImportedGermplasm importedGermplasm;
+
 	Map<String, Germplasm> map = new HashMap<>();
 
 	@Before
@@ -50,9 +48,7 @@ public class GenerateGermplasmNameProcessUT {
 		process = new GenerateGermplasmNameProcess(nameBuilderMock, germplasmBuilderMock);
 		importedGermplasm = new ImportedGermplasm(ENTRY_ID, GERMPLASM_NAME);
 
-		context = new GermplasmRegistrationContext();
-		context.setImportedGermplasm(importedGermplasm);
-
+		context = new GermplasmImportationContext(providerMock);
 		context.setCreatedGermplasmMap(map);
 
 	}
@@ -63,10 +59,10 @@ public class GenerateGermplasmNameProcessUT {
 		Name name = new Name();
 		name.setNval(DUMMY_DESIG);
 		GermplasmName expectedGermplasmName = new GermplasmName(germplasm, name);
-		when(germplasmBuilderMock.build(context)).thenReturn(germplasm);
-		when(nameBuilderMock.build(context)).thenReturn(name);
+		when(germplasmBuilderMock.build(providerMock)).thenReturn(germplasm);
+		when(nameBuilderMock.build(providerMock)).thenReturn(name);
 
-		GermplasmRegistrationContext resultContext = process.execute(context);
+		GermplasmImportationContext resultContext = process.execute(context);
 
 		assertThat(resultContext.getGermplasmNameObject()).isEqualTo(expectedGermplasmName);
 	}
@@ -79,14 +75,14 @@ public class GenerateGermplasmNameProcessUT {
 		name.setNval(DUMMY_DESIG);
 		GermplasmName expectedGermplasmName = new GermplasmName(germplasm, name);
 
-		when(germplasmBuilderMock.build(context)).thenReturn(germplasm);
-		when(nameBuilderMock.build(context)).thenReturn(name);
+		when(germplasmBuilderMock.build(providerMock)).thenReturn(germplasm);
+		when(nameBuilderMock.build(providerMock)).thenReturn(name);
 		map.put(DUMMY_DESIG, germplasm);
-		GermplasmRegistrationContext resultContext = process.execute(context);
+		GermplasmImportationContext resultContext = process.execute(context);
 
 		assertThat(resultContext.getGermplasmNameObject()).isEqualTo(expectedGermplasmName);;
-		verify(nameBuilderMock).build(context.getNameDataProvider());
-		verify(germplasmBuilderMock, never()).build(context.getGermplasmDataProvider());
+		verify(nameBuilderMock).build(providerMock);
+		verify(germplasmBuilderMock, never()).build(providerMock);
 
 	}
 

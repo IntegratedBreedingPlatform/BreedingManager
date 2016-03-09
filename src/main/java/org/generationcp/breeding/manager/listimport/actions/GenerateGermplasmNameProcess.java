@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GenerateGermplasmNameProcess implements Executable<GermplasmRegistrationContext> {
+public class GenerateGermplasmNameProcess implements Executable<GermplasmImportationContext> {
 
 	NameBuilder nameBuilder;
 	GermplasmBuilder germplasmBuilder;
@@ -21,14 +21,18 @@ public class GenerateGermplasmNameProcess implements Executable<GermplasmRegistr
 	}
 
 	@Override
-	public GermplasmRegistrationContext execute(GermplasmRegistrationContext context) throws BMSExecutionException {
+	public GermplasmImportationContext execute(GermplasmImportationContext context) throws BMSExecutionException {
 
-		final Name name =  nameBuilder.build(context.getNameDataProvider());
+		if(context.isMultipleMatches()){
+			return context;
+		}
+
+		final Name name =  nameBuilder.build(context.getDataProvider());
 
 		Map<String, Germplasm> map = context.getCreatedGermplasmMap();
 		Germplasm germplasm;
 		if (!map.containsKey(name.getNval())) {
-			germplasm = germplasmBuilder.build(context.getGermplasmDataProvider());
+			germplasm = germplasmBuilder.build(context.getDataProvider());
 			map.put(name.getNval(), germplasm);
 		} else {
 			germplasm = map.get(name.getNval());

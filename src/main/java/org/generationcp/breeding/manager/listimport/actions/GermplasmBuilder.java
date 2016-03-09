@@ -10,10 +10,10 @@ public class GermplasmBuilder implements Builder<Germplasm,GermplasmDataProvider
 	public Germplasm build(GermplasmDataProvider provider){
 		Germplasm germplasm = new Germplasm();
 
-		germplasm.setGid(provider.getGID());
+		germplasm.setGid(provider.getGid());
 		germplasm.setGnpgs(provider.getProgenitors());
-		germplasm.setGpid1(provider.getGPID1());
-		germplasm.setGpid2(provider.getGPID2());
+		germplasm.setGpid1(provider.getFemaleParent());
+		germplasm.setGpid2(provider.getMaleParent());
 		germplasm.setGdate(provider.getDateValue());
 		germplasm.setUserId(provider.getUserId());
 		germplasm.setLocationId(provider.getLocationId());

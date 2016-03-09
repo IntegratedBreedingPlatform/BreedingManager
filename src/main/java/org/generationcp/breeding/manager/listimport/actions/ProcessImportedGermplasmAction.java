@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import javax.annotation.Resource;
 
@@ -29,7 +28,6 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.ui.Window;
@@ -95,37 +93,78 @@ public class ProcessImportedGermplasmAction implements Serializable,ProgenitorsC
 			this.saveImport();
 		}
 	}
-	private GermplasmRegistrationContext createGermplasmRegistrationContext() {
+	private GermplasmImportationContext  createGermplasmImportationProcessContext() {
 		int location = (Integer) getGermplasmFieldsComponent().getLocationComboBox().getValue();
 		Integer value = (Integer) this.getGermplasmFieldsComponent().getBreedingMethodComboBox().getValue();
 		int methodId = this.getGermplasmMethodId(value);
 
-		GermplasmRegistrationContext context = new GermplasmRegistrationContext();
-		context.setUserId(contextUtil.getCurrentUserLocalId());
-		context.setTypeId((Integer) getGermplasmFieldsComponent().getNameTypeComboBox().getValue());
-		context.setDateValue(getGermplasmDateValue());
-		context.setLocationId(location);
-		context.setMethodId(methodId);
-
-
+		GermplasmDataProviderImpl provider = new GermplasmDataProviderImpl();
+		provider.setUserId(contextUtil.getCurrentUserLocalId());
+		provider.setDateValue(getGermplasmDateValue());
+		provider.setLocationId(location);
+		provider.setMethodId(methodId);
+		provider.setTypeId((Integer) getGermplasmFieldsComponent().getNameTypeComboBox().getValue());
+		GermplasmImportationContext context = new GermplasmImportationContext(provider);
 		return context;
 	}
 
 	protected void performFirstPedigreeAction()  {
-		GermplasmRegistrationContext context = createGermplasmRegistrationContext();
+		GermplasmImportationContext context = createGermplasmImportationProcessContext();
 
 		try {
+			GermplasmDataProviderImpl provider;
 			for (ImportedGermplasm importedGermplasm : getImportedGermplasms()) {
-				context.setImportedGermplasm(importedGermplasm);
-				context.setProgenitors(calculator.calculate(context.getMethodId(),NUMBER_PROGENITORS_FOR_DERIVATIVE_METHOD));
+				provider = context.getDataProvider();
+				provider.setImportedGermplasm(importedGermplasm);
+				provider.setProgenitors(calculator.calculate(provider.getMethodId(),NUMBER_PROGENITORS_FOR_DERIVATIVE_METHOD));
+				context.setMultipleMatches(false);
+				context.setAmountMatches(0);
 				generateGermplasmNameProcess.execute(context);
 				germplasmNameObjects.add(context.getGermplasmNameObject());
+
+			}
+		} catch (BMSExecutionException e) {
+			e.printStackTrace();
+
+		}
+
+	}
+
+
+
+	@Resource
+	private ConnectProgenitorsToExistingGermplasmProcess connectProgenitorsToExistingGermplasmProcess;
+
+	protected void performSecondPedigreeAction2()  {
+		GermplasmImportationContext context = createGermplasmImportationProcessContext();
+
+		try {
+			GermplasmDataProviderImpl provider;
+			int currentMatch = 0;
+			int i=0;
+			Integer totalMatches = new Integer(0);
+			Germplasm germplasm = new Germplasm();
+			for (ImportedGermplasm importedGermplasm : getImportedGermplasms()) {
+				provider = context.getDataProvider();
+				provider.setImportedGermplasm(importedGermplasm);
+				provider.setProgenitors(calculator.calculate(provider.getMethodId(),NUMBER_PROGENITORS_FOR_DERIVATIVE_METHOD));
+				context.setMultipleMatches(false);
+				context.setAmountMatches(0);
+
+				connectProgenitorsToExistingGermplasmProcess.execute(context);
+				generateGermplasmNameProcess.execute(context);
+
+				if (context.getAmountMatches() > 1) {
+					this.displaySelectGermplasmWindowIfNecessary(importedGermplasm.getDesig(), i, germplasm, currentMatch, totalMatches);
+					// increment current match for referring to current iteration
+					currentMatch++;
+					totalMatches++;
+				}
 			}
 		} catch (BMSExecutionException e) {
 			e.printStackTrace();
 			//TODO: No Exception handling !!! I suggest that once the refactor of the 3 registrators is done come back to this tech debt.
 		}
-
 	}
 
 	protected void performSecondPedigreeAction() {
@@ -160,6 +199,7 @@ public class ProcessImportedGermplasmAction implements Serializable,ProgenitorsC
 
 			if (foundGermplasm != null && !foundGermplasm.isEmpty() && foundGermplasm.get(0) != null) {
 				this.updatePedigreeConnections(germplasm, foundGermplasm.get(0));
+
 			}
 
 			final Name name = this.createNameObject(ibdbUserId, dateIntValue, importedGermplasm.getDesig());

@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface Locator<K,T> {
 
-	public List<T> locate(K key) throws NoElementFoundException;
+	public List<T> locate(K key) ;
 }
