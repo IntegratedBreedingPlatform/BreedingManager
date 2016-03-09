@@ -207,8 +207,9 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 	}
 
 	private void setMakeCrossesTableVisibleColumn() {
-		this.tableCrossesMade.setVisibleColumns(new Object[] {ColumnLabels.ENTRY_ID.getName(), ColumnLabels.PARENTAGE.getName(),
-				ColumnLabels.FEMALE_PARENT.getName(), ColumnLabels.MALE_PARENT.getName(), ColumnLabels.SEED_SOURCE.getName()});
+		this.tableCrossesMade.setVisibleColumns(
+				new Object[] {ColumnLabels.ENTRY_ID.getName(), ColumnLabels.PARENTAGE.getName(), ColumnLabels.FEMALE_PARENT.getName(),
+						ColumnLabels.MALE_PARENT.getName(), ColumnLabels.SEED_SOURCE.getName()});
 	}
 
 	private void updateCrossesMadeUI() {
@@ -222,16 +223,12 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 	}
 
 	public void updateCrossesMadeSaveButton() {
-		final boolean isFemaleListSave = this.makeCrossesMain.getParentsComponent().isFemaleListSaved();
-		final boolean isMaleListSave = this.makeCrossesMain.getParentsComponent().isMaleListSaved();
-
-		if (isFemaleListSave && isMaleListSave && !this.tableCrossesMade.getItemIds().isEmpty()) {
-			this.saveButton.setEnabled(true);
-			this.saveButton.setDescription("");
-		} else {
-			this.saveButton.setEnabled(false);
-			this.saveButton.setDescription(this.messageSource.getMessage(Message.SAVE_CROSS_LIST_DESCRIPTION));
+		if (this.tableCrossesMade.getItemIds() == null){
+			return;
 		}
+
+		final boolean isCrossesInTable = !this.tableCrossesMade.getItemIds().isEmpty();
+		this.saveButton.setEnabled(isCrossesInTable);
 	}
 
 	/**
@@ -418,7 +415,6 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		this.saveButton = new Button(this.messageSource.getMessage(Message.SAVE_LABEL));
 		this.saveButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 		this.saveButton.setEnabled(false);
-		this.saveButton.setDescription(this.messageSource.getMessage(Message.SAVE_CROSS_LIST_DESCRIPTION));
 		this.initializeCrossesMadeTable();
 	}
 
