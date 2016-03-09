@@ -1,17 +1,21 @@
-package org.generationcp.breeding.manager.util;
 
-import com.vaadin.ui.Component;
-import org.apache.commons.lang3.StringUtils;
-import org.generationcp.commons.util.FileDownloadResource;
+package org.generationcp.breeding.manager.util;
 
 import java.io.File;
 
-public class FileDownloaderUtility {
-    public boolean initiateFileDownload(final String sourceFilename, final String visibleFilename, final Component source) {
+import org.apache.commons.lang3.StringUtils;
+import org.generationcp.commons.util.FileDownloadResource;
+import org.generationcp.commons.util.FileUtils;
 
-        if (StringUtils.isEmpty(sourceFilename) || ! new File(sourceFilename).exists()) {
-            return false;
-        }
+import com.vaadin.ui.Component;
+
+public class FileDownloaderUtility {
+
+	public boolean initiateFileDownload(final String sourceFilename, final String visibleFilename, final Component source) {
+
+		if (StringUtils.isEmpty(sourceFilename) || !new File(sourceFilename).exists()) {
+			return false;
+		}
 
 		final FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(sourceFilename), source.getApplication());
 		if (visibleFilename != null) {
@@ -19,8 +23,8 @@ public class FileDownloaderUtility {
 			fileDownloadResource.setFilename(adjustedFileName);
 		}
 
-        source.getWindow().open(fileDownloadResource);
+		source.getWindow().open(fileDownloadResource);
 
-        return true;
-    }
+		return true;
+	}
 }
