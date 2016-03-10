@@ -342,6 +342,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		if (this.doUpdateTable() && this.crossesTableComponent.getCrossList() == null) {
 			this.crossesTableComponent.updateSeparatorForCrossesMade();
 		}
+		this.crossesTableComponent.showOrHideGroupInheritanceOptions();
 	}
 
 	// SETTERS AND GETTERS

@@ -31,6 +31,7 @@ import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.service.api.GermplasmGroupingService;
+import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.generationcp.middleware.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -86,6 +87,9 @@ public class SaveCrossesMadeAction implements Serializable {
 	@Autowired
 	private GermplasmGroupingService germplasmGroupingService;
 
+	@Autowired
+	private CrossExpansionProperties crossExpansionProperties;
+
 	private GermplasmList germplasmList;
 	private List<GermplasmListData> existingListEntries = new ArrayList<GermplasmListData>();
 	private List<Germplasm> existingGermplasms = new ArrayList<Germplasm>();
@@ -108,7 +112,7 @@ public class SaveCrossesMadeAction implements Serializable {
 	 * @param crossesMade where crosses information is defined
 	 * @return id of new Germplasm List created
 	 */
-	public GermplasmList saveRecords(final CrossesMade crossesMade) {
+	public GermplasmList saveRecords(final CrossesMade crossesMade, final boolean applyNewGroupToCurrentCrossOnly) {
 		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
 		return transactionTemplate.execute(new TransactionCallback<GermplasmList>() {
 
@@ -117,6 +121,9 @@ public class SaveCrossesMadeAction implements Serializable {
 				SaveCrossesMadeAction.this.updateConstantFields(crossesMade);
 
 				List<Integer> germplasmIDs = SaveCrossesMadeAction.this.saveGermplasmsAndNames(crossesMade);
+
+				SaveCrossesMadeAction.this.germplasmGroupingService.processGroupInheritanceForCrosses(germplasmIDs,
+						!applyNewGroupToCurrentCrossOnly, SaveCrossesMadeAction.this.crossExpansionProperties.getHybridBreedingMethods());
 
 				if (crossesMade.getSetting().getCrossNameSetting().isSaveParentageDesignationAsAString()) {
 					SaveCrossesMadeAction.this.savePedigreeDesignationName(crossesMade, germplasmIDs);
@@ -183,7 +190,6 @@ public class SaveCrossesMadeAction implements Serializable {
 
 		if (!crossesToInsert.isEmpty()) {
 			germplasmIDs = this.germplasmManager.addGermplasm(crossesToInsert);
-			this.germplasmGroupingService.processGroupInheritanceForCrosses(germplasmIDs);
 		}
 		return germplasmIDs;
 	}
@@ -456,5 +462,9 @@ public class SaveCrossesMadeAction implements Serializable {
 
 	void setGermplasmGroupingService(GermplasmGroupingService germplasmGroupingService) {
 		this.germplasmGroupingService = germplasmGroupingService;
+	}
+
+	void setCrossExpansionProperties(CrossExpansionProperties crossExpansionProperties) {
+		this.crossExpansionProperties = crossExpansionProperties;
 	}
 }
