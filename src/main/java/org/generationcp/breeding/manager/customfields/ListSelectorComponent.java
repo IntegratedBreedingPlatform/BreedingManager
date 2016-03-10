@@ -328,7 +328,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	}
 
 	public void reinitializeTree(final boolean isSaveList) {
-		Collection<String> parsedState = null;
+		List<String> parsedState = null;
 
 		try {
 			final Integer userID = this.util.getCurrentUserLocalId();
@@ -359,14 +359,20 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 				this.getGermplasmListSource().expandItem(itemId);
 			}
 
-			this.getGermplasmListSource().clearSelection();
+            if (isSaveList) {
+                // the tree state returned for save list navigation has, as its last item, the folder previously used to save
+                String previousSavedFolder = parsedState.get(parsedState.size() - 1);
+                this.getGermplasmListSource().select(previousSavedFolder);
+            } else {
+                this.getGermplasmListSource().clearSelection();
+            }
 		} catch (final MiddlewareQueryException e) {
 			ListSelectorComponent.LOG.error(e.getMessage(), e);
 		}
 	}
 
 	public void addGermplasmListNode(final int parentGermplasmListId) {
-		List<GermplasmList> germplasmListChildren = new ArrayList<>();
+		List<GermplasmList> germplasmListChildren;
 
 		try {
 			germplasmListChildren =
@@ -376,7 +382,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 			ListSelectorComponent.LOG.error("Error in getting germplasm lists by parent id.", e);
 			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
 					this.messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LISTS_BY_PARENT_FOLDER_ID));
-			germplasmListChildren = new ArrayList<GermplasmList>();
+			germplasmListChildren = new ArrayList<>();
 		}
 		this.addGermplasmListNodeToComponent(germplasmListChildren, parentGermplasmListId);
 

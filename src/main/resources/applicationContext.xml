@@ -52,6 +52,7 @@
 		class="org.generationcp.middleware.util.CrossExpansionProperties">
 		<property name="defaultLevel" value="${default.generation.level}" />
 		<property name="profile" value="${pedigree.profile}" />
+		<property name="hybridBreedingMethods" value="#{'${hybrid.breeding.methods}'.split(',')}" />
 	</bean>
 
 	<bean id="genotypicDataManager" factory-bean="managerFactory"
