@@ -18,9 +18,9 @@
 
 	<!-- Enable Spring annotations -->
 	<context:annotation-config />
-	<!-- Enable load-time-weaving so we can use @Configurable annotation. To 
-		make this work, we need to set the -java.agent VM argument to the spring-instrument 
-		JAR file's path. In windows, you can use: -javaagent:${env_var:HOMEDRIVE}${env_var:HOMEPATH}\.m2\repository\org\springframework\spring-instrument\3.1.1.RELEASE\spring-instrument-3.1.1.RELEASE.jar 
+	<!-- Enable load-time-weaving so we can use @Configurable annotation. To
+		make this work, we need to set the -java.agent VM argument to the spring-instrument
+		JAR file's path. In windows, you can use: -javaagent:${env_var:HOMEDRIVE}${env_var:HOMEPATH}\.m2\repository\org\springframework\spring-instrument\3.1.1.RELEASE\spring-instrument-3.1.1.RELEASE.jar
 		Mac and Linux users, add your path here. -->
 	<context:load-time-weaver />
 
@@ -30,8 +30,8 @@
 		class="org.generationcp.breeding.manager.application.BreedingManagerApplication"
 		scope="prototype" />
 
-	<!-- Reuseable UI components can be declared here, but don't do it just 
-		so you can have auto-wiring. Add @Configurable annotation to your class if 
+	<!-- Reuseable UI components can be declared here, but don't do it just
+		so you can have auto-wiring. Add @Configurable annotation to your class if
 		you only need auto-wiring. -->
 
 	<!-- The Message Source -->
@@ -50,9 +50,9 @@
 
 	<bean id="crossExpansionProperties"
 		class="org.generationcp.middleware.util.CrossExpansionProperties">
-		<property name="wheatLevel" value="${wheat.generation.level}" />
 		<property name="defaultLevel" value="${default.generation.level}" />
 		<property name="profile" value="${pedigree.profile}" />
+		<property name="hybridBreedingMethods" value="#{'${hybrid.breeding.methods}'.split(',')}" />
 	</bean>
 
 	<bean id="genotypicDataManager" factory-bean="managerFactory"
@@ -138,7 +138,6 @@
 		scope="request">
 		<aop:scoped-proxy />
 	</bean>
-	
 	<bean id="stockIDValidator" class="org.generationcp.breeding.manager.listimport.validator.StockIDValidator"
 		scope="request">
 		<aop:scoped-proxy />
@@ -156,8 +155,8 @@
 		<property name="password" value="${tomcat.manager.password}" />
 	</bean>
 
-	<!-- Reuseable UI components can be declared here, but don't do it just 
-		so you can have auto-wiring. Add @Configurable annotation to your class if 
+	<!-- Reuseable UI components can be declared here, but don't do it just
+		so you can have auto-wiring. Add @Configurable annotation to your class if
 		you only need auto-wiring. -->
 
 	<bean id="pedigreeService" factory-bean="managerFactory"
@@ -183,8 +182,8 @@
 
 	<bean id="ruleService"
 		class="org.generationcp.commons.ruleengine.impl.RulesServiceImpl" />
-	<!-- This component scan automatically registers all implementations of 
-		the Rule interface into the Spring context. In conjunction with the RulesPostProcessor 
+	<!-- This component scan automatically registers all implementations of
+		the Rule interface into the Spring context. In conjunction with the RulesPostProcessor
 		above, this automatically populates the map in the RuleFactory -->
 	<context:component-scan base-package="org.generationcp.commons.ruleengine.stockid" />
 
@@ -200,20 +199,20 @@
 		factory-method="getInventoryMiddlewareService" scope="request">
 		<aop:scoped-proxy />
 	</bean>
-	
+
 	<bean id="ontologyService" factory-bean="managerFactory"
 		factory-method="getOntologyService" scope="request">
 		<aop:scoped-proxy />
 	</bean>
-	
+
 	<bean id="germplasmExportService" class="org.generationcp.commons.service.impl.GermplasmExportServiceImpl">
          <property name="templateFile" value="GermplasmListCode.xls"/>
     </bean>
-	
+
 	<bean id="germplasmExportedWorkbook" class="org.generationcp.commons.parsing.GermplasmExportedWorkbook">
 		<aop:scoped-proxy />
 	</bean>
-	
+
 	<!-- Including all beans used for generating Code Sheet when exporting Germplasm List excel file -->
 	<context:component-scan base-package="org.generationcp.commons.workbook.generator" />
 
@@ -253,7 +252,7 @@
 		scope="request">
 		<property name="sessionFactory" ref="WORKBENCH_SessionFactory" />
 
-		<!-- JDK Standard Proxy around this request scoped bean, so we can use 
+		<!-- JDK Standard Proxy around this request scoped bean, so we can use
 			it on longer scoped beans -->
 		<aop:scoped-proxy proxy-target-class="false" />
 	</bean>
