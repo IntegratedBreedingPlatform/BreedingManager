@@ -91,7 +91,7 @@ class FactorDetailsConverter extends WorkbookRowConverter<ImportedFactor> {
 		} else if (FactorDetailsConverter.GERMPLASM_ID_PROPERTY.equals(property) && FactorDetailsConverter.isGermplasmIdScale(scale) && ASSIGNED_METHOD.equals(method)) {
 			this.specialFactors.put(GermplasmListParser.FactorTypes.GID, importedFactor.getFactor());
 			this.importFileIsAdvanced = true;
-		} else if (FactorDetailsConverter.GERMPLASM_ENTRY_PROPERTY.equals(property) && FactorDetailsConverter.isCodeScale(scale) && ENUMERATED_METHOD.equals(method)) {
+		} else if (FactorDetailsConverter.GERMPLASM_ENTRY_PROPERTY.equals(property) && FactorDetailsConverter.isCodeScale(scale) && ASSIGNED_METHOD.equals(method)) {
 			this.specialFactors.put(GermplasmListParser.FactorTypes.ENTRYCODE, importedFactor.getFactor());
 		} else if (FactorDetailsConverter.SEED_SOURCE_PROPERTY.equals(property) && FactorDetailsConverter.isSeedSourceScale(scale) && SEED_SOURCE_METHOD.equals(method)) {
 			this.specialFactors.put(GermplasmListParser.FactorTypes.SOURCE, importedFactor.getFactor());
