@@ -257,7 +257,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 					} else
 						if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
 						ParentTabComponent.this.viewListAction();
-					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
+					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {
 						// no implementation yet for this condition
 					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
 						ParentTabComponent.this.reserveInventoryAction();
@@ -476,7 +476,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 		this.inventoryViewActionMenu = new ContextMenu();
 		this.inventoryViewActionMenu.setWidth("295px");
-		this.menuCopyToListFromInventory = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.COPY_TO_NEW_LIST));
+		this.menuCopyToListFromInventory = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
 		this.menuReserveInventory = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
 		this.menuListView = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
 		this.menuInventorySaveChanges = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SAVE_CHANGES));

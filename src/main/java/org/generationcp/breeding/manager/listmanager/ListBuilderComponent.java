@@ -188,7 +188,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 					final ContextMenuItem clickedItem = event.getClickedItem();
 					if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
 						ListBuilderComponent.this.viewListAction();
-					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
+					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {
 						ListBuilderComponent.this.copyToNewListFromInventoryViewAction();
 					} else
 						if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
@@ -462,7 +462,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.inventoryViewMenu = new ContextMenu();
 		this.inventoryViewMenu.setWidth("300px");
 		this.menuCancelReservation = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.CANCEL_RESERVATIONS));
-		this.menuCopyToListFromInventory = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.COPY_TO_NEW_LIST));
+		this.menuCopyToListFromInventory = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
 		this.menuReserveInventory = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
 		this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.RESET_LIST));
 		this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
