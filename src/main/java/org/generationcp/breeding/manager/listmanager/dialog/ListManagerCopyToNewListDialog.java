@@ -33,7 +33,6 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
@@ -232,17 +231,15 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 	private void populateComboBoxListName() {
 		try {
 			this.germplasmList =
-					this.germplasmListManager.getAllGermplasmLists(0, (int) this.germplasmListManager.countAllGermplasmLists());
+					this.germplasmListManager.getAllGermplasmListsByProgramUUID(this.contextUtil.getCurrentProgramUUID());
 			this.mapExistingList = new HashMap<String, Integer>();
 			this.comboBoxListName.addItem("");
 			for (GermplasmList gList : this.germplasmList) {
-				if (!gList.getName().equals(this.listName)) {
-					if (!gList.getType().equals(ListManagerCopyToNewListDialog.FOLDER_TYPE)) {
-						this.comboBoxListName.addItem(gList.getName());
-						this.mapExistingList.put(gList.getName(), new Integer(gList.getId()));
-					} else {
-						this.localFolderNames.add(gList.getName());
-					}
+				if (!gList.getType().equals(ListManagerCopyToNewListDialog.FOLDER_TYPE)) {
+					this.comboBoxListName.addItem(gList.getName());
+					this.mapExistingList.put(gList.getName(), new Integer(gList.getId()));
+				} else {
+					this.localFolderNames.add(gList.getName());
 				}
 			}
 			this.comboBoxListName.select("");
@@ -259,28 +256,10 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 
 		Boolean proceedWithSave = true;
 
-		try {
-			Long matchingNamesCount = this.germplasmListManager.countGermplasmListByName(this.listNameValue, Operation.EQUAL);
-			String existingListMsg = "There is already an existing germplasm list with that name";
-			if (matchingNamesCount > 0) {
-				MessageNotifier.showRequiredFieldError(this.getWindow(), existingListMsg);
-				proceedWithSave = false;
-			}
-
-			// if list name from copy source is equal to specified value in combo box
-			if (!"".equals(this.listNameValue) && this.listName.equals(this.listNameValue)) {
-				MessageNotifier.showRequiredFieldError(this.getWindow(), existingListMsg);
-				proceedWithSave = false;
-			}
-
-			if (this.localFolderNames.contains(this.listNameValue)) {
-				MessageNotifier.showRequiredFieldError(this.getWindow(),
-						"There is already an existing germplasm list folder with that name");
-				proceedWithSave = false;
-			}
-		} catch (MiddlewareQueryException e) {
-			ListManagerCopyToNewListDialog.LOG.error("Error in counting germplasm list by name.", e);
-			ListManagerCopyToNewListDialog.LOG.error("\n" + e.getStackTrace());
+		if (this.localFolderNames.contains(this.listNameValue)) {
+			MessageNotifier.showRequiredFieldError(this.getWindow(),
+					"There is already an existing germplasm list folder with that name");
+			proceedWithSave = false;
 		}
 
 		if (proceedWithSave) {
