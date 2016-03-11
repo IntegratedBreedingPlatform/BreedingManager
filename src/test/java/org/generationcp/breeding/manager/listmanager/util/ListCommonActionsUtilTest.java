@@ -13,12 +13,14 @@ import org.generationcp.middleware.pojos.GermplasmListData;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import com.vaadin.ui.Component;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ListCommonActionsUtilTest {
 
 	private GermplasmList listToSave;
@@ -34,18 +36,19 @@ public class ListCommonActionsUtilTest {
 	private Component source;
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
+	
+	GermplasmListTestDataInitializer germplasmListTestDataInitializer;
 
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
-
+		this.germplasmListTestDataInitializer = new GermplasmListTestDataInitializer();
 	}
 
 	@Test
 	public void testGetNewEntriesToSaveUpdateDelete_ForNewEntries() throws MiddlewareQueryException {
 		this.forceHasChanges = false;
-		this.listToSave = GermplasmListTestDataInitializer.createGermplasmList(1);
-		this.listEntries = GermplasmListTestDataInitializer.createGermplasmListData(5);
+		this.listToSave = this.germplasmListTestDataInitializer.createGermplasmList(1);
+		this.listEntries = this.germplasmListTestDataInitializer.createGermplasmListData(5);
 		this.newEntries = new ArrayList<GermplasmListData>();
 		this.entriesToUpdate = new ArrayList<GermplasmListData>();
 		this.entriesToDelete = new ArrayList<GermplasmListData>();
@@ -162,7 +165,7 @@ public class ListCommonActionsUtilTest {
 
 	@Test
 	public void testDeleteExistingListEntries() {
-		this.listToSave = GermplasmListTestDataInitializer.createGermplasmList(1);
+		this.listToSave = this.germplasmListTestDataInitializer.createGermplasmList(1);
 		final Integer listId = this.listToSave.getId();
 
 		ListCommonActionsUtil.deleteExistingListEntries(listId, this.dataManager);

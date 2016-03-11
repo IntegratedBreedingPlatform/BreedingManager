@@ -21,13 +21,16 @@ import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import com.vaadin.data.Container;
 import com.vaadin.ui.Table;
 
+@RunWith(MockitoJUnitRunner.class)
 public class CrossingManagerActionHandlerTest {
 
 	@Mock
@@ -40,10 +43,12 @@ public class CrossingManagerActionHandlerTest {
 	private Table table;
 
 	private CrossingManagerActionHandler crossingManagerActionHandler;
+	
+	GermplasmListTestDataInitializer germplasmListTestDataInitializer;
 
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
+		this.germplasmListTestDataInitializer = new GermplasmListTestDataInitializer();
 
 		Mockito.doReturn("TestString").when(this.messageSource).getMessage(Mockito.any(Message.class));
 		final Term fromOntology = new Term();
@@ -71,7 +76,7 @@ public class CrossingManagerActionHandlerTest {
 		inventoryTable.instantiateComponents();
 		parentTabComponent.initializeListInventoryTable(inventoryTable);
 		parentTabComponent.addListeners();
-		parentTabComponent.setGermplasmList(GermplasmListTestDataInitializer.createGermplasmList(10));
+		parentTabComponent.setGermplasmList(this.germplasmListTestDataInitializer.createGermplasmList(10));
 		makeCrossesParentsComponent.setFemaleParentTab(parentTabComponent);
 		makeCrossesParentsComponent.setMaleParentTab(parentTabComponent);
 		makeCrossesParentsComponent.setMakeCrossesMain(new CrossingManagerMakeCrossesComponent(Mockito

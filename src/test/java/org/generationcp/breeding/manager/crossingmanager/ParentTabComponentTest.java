@@ -34,17 +34,19 @@ import org.generationcp.middleware.service.api.PedigreeService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ParentTabComponentTest {
 
 	private static final int GERMPLASM_LIST_ID = 1;
@@ -99,10 +101,10 @@ public class ParentTabComponentTest {
 
 	private ParentTabComponent parentTabComponent;
 	private CrossingManagerMakeCrossesComponent makeCrossesMain;
-
+	GermplasmListTestDataInitializer germplasmListTestDataInitializer;
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
+		this.germplasmListTestDataInitializer = new GermplasmListTestDataInitializer();
 		ManagerFactory.getCurrentManagerFactoryThreadLocal().set(Mockito.mock(ManagerFactory.class));
 
 		final Term fromOntology = new Term();
@@ -145,13 +147,13 @@ public class ParentTabComponentTest {
 
 		final SaveGermplasmListAction saveGermplasmListAction =
 				new SaveGermplasmListAction(this.parentTabComponent,
-						GermplasmListTestDataInitializer.createGermplasmList(GERMPLASM_LIST_ID),
+						this.germplasmListTestDataInitializer.createGermplasmList(GERMPLASM_LIST_ID),
 						GermplasmListEntryTestDataInitializer.getGermplasmListEntries());
 		saveGermplasmListAction.setContextUtil(this.contextUtil);
 		saveGermplasmListAction.setGermplasmListManager(this.germplasmListManager);
 		saveGermplasmListAction.setPedigreeService(this.pedigreeService);
 		saveGermplasmListAction.setInventoryDataManager(this.inventoryDataManager);
-		Mockito.doReturn(GermplasmListTestDataInitializer.createGermplasmList(GERMPLASM_LIST_ID)).when(this.germplasmListManager)
+		Mockito.doReturn(this.germplasmListTestDataInitializer.createGermplasmList(GERMPLASM_LIST_ID)).when(this.germplasmListManager)
 				.getGermplasmListById(Mockito.anyInt());
 		Mockito.doReturn(saveGermplasmListAction)
 				.when(this.saveGermplasmListActionFactory)
@@ -294,7 +296,7 @@ public class ParentTabComponentTest {
 		this.parentTabComponent.initializeListInventoryTable(inventoryTable);
 		this.parentTabComponent.addListeners();
 		this.parentTabComponent.setHasChanges(true);
-		this.parentTabComponent.setGermplasmList(GermplasmListTestDataInitializer.createGermplasmList(GERMPLASM_LIST_ID));
+		this.parentTabComponent.setGermplasmList(this.germplasmListTestDataInitializer.createGermplasmList(GERMPLASM_LIST_ID));
 
 		// function to test
 		this.parentTabComponent.doSaveAction();
@@ -318,7 +320,7 @@ public class ParentTabComponentTest {
 		this.parentTabComponent.initializeListInventoryTable(inventoryTable);
 		this.parentTabComponent.addListeners();
 		this.parentTabComponent.setHasChanges(true);
-		this.parentTabComponent.setGermplasmList(GermplasmListTestDataInitializer.createGermplasmList(GERMPLASM_LIST_ID));
+		this.parentTabComponent.setGermplasmList(this.germplasmListTestDataInitializer.createGermplasmList(GERMPLASM_LIST_ID));
 		this.parentTabComponent.setValidReservationsToSave(ImportedGermplasmListDataInitializer.createReservations(2));
 
 		// function to test

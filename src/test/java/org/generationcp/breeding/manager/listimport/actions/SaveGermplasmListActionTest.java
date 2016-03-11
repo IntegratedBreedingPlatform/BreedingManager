@@ -84,10 +84,12 @@ public class SaveGermplasmListActionTest {
 	private List<Name> newNames;
 	private List<Integer> doNotCreateGermplasmsWithId;
 	private ImportedGermplasmList importedGermplasmList;
-
+	GermplasmListTestDataInitializer germplasmListTestDataInitializer;
+	
 	@Before
 	public void setup() {
-		this.germplasmList = GermplasmListTestDataInitializer.createGermplasmList(LIST_ID);
+		this.germplasmListTestDataInitializer = new GermplasmListTestDataInitializer();
+		this.germplasmList = this.germplasmListTestDataInitializer.createGermplasmList(LIST_ID);
 		this.importedGermplasmList = ImportedGermplasmListDataInitializer.createImportedGermplasmList(NO_OF_ENTRIES, true);
 		this.germplasmNameObjects = ImportedGermplasmListDataInitializer.createGermplasmNameObjects(NO_OF_ENTRIES);
 		this.doNotCreateGermplasmsWithId = ImportedGermplasmListDataInitializer.createListOfGemplasmIds(2);

@@ -77,11 +77,11 @@ public class MakeCrossesParentsComponentTest {
 	private Table maleParent;
 	private Table sourceTable;
 	private TabSheet listDetailsTabSheet;
+	GermplasmListTestDataInitializer germplasmListTestDataInitializer;
 
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
-
+		this.germplasmListTestDataInitializer = new GermplasmListTestDataInitializer();
 		Mockito.doReturn("Parent List").when(this.messageSource).getMessage(Message.PARENTS_LISTS);
 		Mockito.doReturn("Reserve Inventory").when(this.messageSource).getMessage(Message.RESERVE_INVENTORY);
 
@@ -97,7 +97,7 @@ public class MakeCrossesParentsComponentTest {
 		this.makeCrossesParentsComponent.setMaleParentTab(this.maleParentTab);
 		this.makeCrossesParentsComponent.setFemaleParentTab(this.femaleParentTab);
 
-		this.germplasmList = GermplasmListTestDataInitializer.createGermplasmList(GERMPLASM_LIST_ID);
+		this.germplasmList = this.germplasmListTestDataInitializer.createGermplasmList(GERMPLASM_LIST_ID);
 		this.sourceTable = this.createSourceTable();
 		this.createContextMenuOnParentTab(this.femaleParentTab);
 		this.createContextMenuOnParentTab(this.maleParentTab);

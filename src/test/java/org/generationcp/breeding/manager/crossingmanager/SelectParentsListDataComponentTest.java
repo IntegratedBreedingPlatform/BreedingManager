@@ -90,10 +90,12 @@ public class SelectParentsListDataComponentTest {
 	private Table inventoryTable;
 	private List<GermplasmListData> listEntries;
 	private final List<ListEntryLotDetails> selectedLotEntries = new ArrayList<ListEntryLotDetails>();
+	private GermplasmListTestDataInitializer germplasmListTestDataInitializer;
 
 	@Before
 	public void setUp() throws Exception {
-		this.germplasmList = GermplasmListTestDataInitializer.createGermplasmList(SelectParentsListDataComponentTest.GERMPLASM_LIST_ID);
+		this.germplasmListTestDataInitializer = new GermplasmListTestDataInitializer();
+		this.germplasmList = this.germplasmListTestDataInitializer.createGermplasmList(SelectParentsListDataComponentTest.GERMPLASM_LIST_ID);
 		Mockito.doReturn(this.germplasmList).when(this.germplasmListManager)
 				.getGermplasmListById(SelectParentsListDataComponentTest.GERMPLASM_LIST_ID);
 		Mockito.doReturn(Long.valueOf(NO_OF_ENTRIES)).when(this.germplasmListManager)
@@ -112,7 +114,7 @@ public class SelectParentsListDataComponentTest {
 		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.SELECT_ALL);
 		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.SELECT_EVEN_ENTRIES);
 		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.SELECT_ODD_ENTRIES);
-		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.COPY_TO_NEW_LIST);
+		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.COPY_TO_LIST);
 		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.RESERVE_INVENTORY);
 		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.RETURN_TO_LIST_VIEW);
 		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.SAVE_CHANGES);
