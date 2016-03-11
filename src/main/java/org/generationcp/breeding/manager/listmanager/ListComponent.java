@@ -162,7 +162,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private AddColumnContextMenu addColumnContextMenu;
 
 	private ContextMenu inventoryViewMenu;
-	private ContextMenuItem menuCopyToNewListFromInventory;
+	private ContextMenuItem menuCopyToListFromInventory;
 	private ContextMenuItem menuInventorySaveChanges;
 	@SuppressWarnings("unused")
 	private ContextMenuItem menuListView;
@@ -358,7 +358,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		// Generate main level items
 		this.menuAddEntry = this.menu.addItem(this.messageSource.getMessage(Message.ADD_ENTRIES));
-		this.menuCopyToList = this.menu.addItem(this.messageSource.getMessage(Message.COPY_TO_NEW_LIST));
+		this.menuCopyToList = this.menu.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
 		this.menuDeleteList = this.menu.addItem(this.messageSource.getMessage(Message.DELETE_LIST));
 		this.menuDeleteEntries = this.menu.addItem(this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
 		this.menuMarkLinesAsFixed = this.menu.addItem(this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED));
@@ -371,7 +371,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.inventoryViewMenu = new ContextMenu();
 		this.inventoryViewMenu.setWidth(ListComponent.CONTEXT_MENU_WIDTH);
 		this.menuCancelReservation = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.CANCEL_RESERVATIONS));
-		this.menuCopyToNewListFromInventory = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.COPY_TO_NEW_LIST));
+		this.menuCopyToListFromInventory = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
 		this.menuReserveInventory = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
 		this.menuListView = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
 		this.menuInventorySaveChanges = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.SAVE_RESERVATIONS));
@@ -405,9 +405,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		// disable the save button at first since there are no reservations yet
 		this.menuInventorySaveChanges.setEnabled(false);
 
-		// Temporarily disable to Copy to New List in InventoryView
+		// Temporarily disable to Copy to List in InventoryView
 		// implement the function
-		this.menuCopyToNewListFromInventory.setEnabled(false);
+		this.menuCopyToListFromInventory.setEnabled(false);
 	}
 
 	protected void initializeListDataTable(final TableWithSelectAllLayout tableWithSelectAllLayout) {
@@ -925,7 +925,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						ListComponent.this.saveReservationChangesAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
 						ListComponent.this.viewListAction();
-					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {
 						ListComponent.this.copyToNewListFromInventoryViewAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
 						ListComponent.this.reserveInventoryAction();
@@ -960,7 +960,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.EXPORT_LIST))) {
 						ListComponent.this.exportListAction();
 
-					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {
 						ListComponent.this.copyToNewListAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.ADD_ENTRIES))) {
 						ListComponent.this.addEntryButtonClickAction();
