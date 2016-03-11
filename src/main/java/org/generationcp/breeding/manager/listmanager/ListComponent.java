@@ -351,7 +351,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.initializeListInventoryTable(); // listInventoryTable
 
 		this.menuCancelReservation = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.CANCEL_RESERVATIONS));
-		this.menuCopyToListFromInventory = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.COPY_TO_NEW_LIST));
+		this.menuCopyToListFromInventory = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
+
 		this.menuReserveInventory = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
 		this.menuListView = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
 		this.menuInventorySaveChanges = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.SAVE_RESERVATIONS));
@@ -901,7 +902,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						ListComponent.this.saveReservationChangesAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
 						ListComponent.this.viewListAction();
-					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {
 						ListComponent.this.copyToNewListFromInventoryViewAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
 						ListComponent.this.reserveInventoryAction();
@@ -936,7 +937,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						ListComponent.this.listDataTable.setValue(ListComponent.this.listDataTable.getItemIds());
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.EXPORT_LIST))) {
 						ListComponent.this.exportListAction();
-					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {
 						ListComponent.this.copyToNewListAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.ADD_ENTRIES))) {
 						ListComponent.this.addEntryButtonClickAction();
