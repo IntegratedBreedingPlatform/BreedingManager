@@ -69,6 +69,7 @@ public class SaveGermplasmListActionTest {
 	public static final int DUMMY_AID = 10;
 	private static final int DUMMY_NID = 10;
 	private static final String DUMMY_NAME = "DUMMY_NAME";
+	public static final int DUMMY_GID = 0;
 
 	@Mock
 	private GermplasmListManager germplasmListManager;
@@ -327,6 +328,22 @@ public class SaveGermplasmListActionTest {
 		assertThat(names).isNullOrEmpty();
 	}
 
-	//@Test
+	@Test
+	public void processGermplasmNamesAndLotsGermplasmIsAudited() throws BreedingManagerException, AuditoryException {
+
+		String filename="";
+		int location=10;
+		List<Integer> notCreate=Lists.newArrayList();
+		Germplasm germplasm = new Germplasm(DUMMY_GID);
+		germplasm.setGdate(0);
+		Name name = new Name(DUMMY_NID);
+		GermplasmName elem = new GermplasmName(germplasm,name);
+		List<GermplasmName> nameObjects = Lists.newArrayList(elem);
+
+		action.processGermplasmNamesAndLots(nameObjects,notCreate,location,filename);
+
+		verify(auditor).audit(germplasm);
+
+	}
 
 }

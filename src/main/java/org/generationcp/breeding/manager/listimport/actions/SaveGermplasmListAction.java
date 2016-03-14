@@ -257,13 +257,13 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 					try {
 						auditor.audit(germplasm);
 						auditor.audit(name);
+						gid = this.germplasmManager.addGermplasm(germplasm, name);
+						addedGermplasmNameMap.put(germplasmName.getGermplasm().getGid(), germplasmName);
+						// if already addded (re-use that one)
 					} catch (AuditoryException e) {
 						e.printStackTrace();
 						throw new BreedingManagerException("BMS Could not audit germplasm element creation");
 					}
-					gid = this.germplasmManager.addGermplasm(germplasm, name);//MILDO MIRA ACA
-					addedGermplasmNameMap.put(germplasmName.getGermplasm().getGid(), germplasmName);
-					// if already addded (re-use that one)
 				} else {
 					germplasm = addedGermplasmMatch;
 					germplasmName.setGermplasm(addedGermplasmMatch);
