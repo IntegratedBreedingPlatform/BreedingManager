@@ -281,7 +281,7 @@
 
 	<bean id="auditorDataManager" factory-bean="managerFactory"
 		  factory-method="getAuditorDataManager" scope="request">
-		<aop:scoped-proxy />
+		<aop:scoped-proxy proxy-target-class="false" />
 	</bean>
 
 </beans>

@@ -1,4 +1,3 @@
-
 package org.generationcp.breeding.manager.listimport.actions;
 
 import java.io.Serializable;
@@ -21,6 +20,8 @@ import org.generationcp.commons.parsing.pojo.ImportedFactor;
 import org.generationcp.commons.parsing.pojo.ImportedVariate;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.DateUtil;
+import org.generationcp.middleware.auditory.Auditor;
+import org.generationcp.middleware.auditory.AuditoryException;
 import org.generationcp.middleware.domain.dms.StandardVariable;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -68,6 +69,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	private static final String FTYPE_PASSPORT = "PASSPORT";
 
 	private static final long serialVersionUID = -6273933938066390358L;
+	public static final String ATTRIBUTE_COULD_NOT_BE_AUDITED = "Attribute could not be audited";
+	public static final String NAME_COULD_NOT_BE_AUDITED = "Name could not be audited";
 
 	@Autowired
 	private GermplasmListManager germplasmListManager;
@@ -92,6 +95,9 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 	@Resource
 	private ContextUtil contextUtil;
+
+	@Autowired
+	Auditor auditor;
 
 	// Lot related variables
 	private Integer seedAmountScaleId;
@@ -128,8 +134,13 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 		germplasmList.setUserId(this.contextUtil.getCurrentUserLocalId());
 		germplasmList.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
-
 		// Retrieve seed stock variable and/or attribute types (or create new one) as needed
+		try {
+			auditor.startAuditory(this.contextUtil.getCurrentWorkbenchUsername(),filename);
+		} catch (AuditoryException e) {
+			e.printStackTrace();
+			throw new BreedingManagerException("The BMS could not create the bibliographic reference.");
+		}
 		this.processVariates(importedGermplasmList);
 
 		// Create new udfld records as needed
@@ -163,7 +174,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		// log project activity in Workbench
 		this.contextUtil.logProgramActivity(SaveGermplasmListAction.WB_ACTIVITY_NAME, SaveGermplasmListAction.WB_ACTIVITY_DESCRIPTION
 				+ filename);
-
+		auditor.closeAuditory();
 		return list.getId();
 	}
 
@@ -212,7 +223,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	}
 
 	protected void processGermplasmNamesAndLots(final List<GermplasmName> germplasmNameObjects,
-			final List<Integer> doNotCreateGermplasmsWithId, final Integer seedStorageLocation,String filename) {
+			final List<Integer> doNotCreateGermplasmsWithId, final Integer seedStorageLocation,String filename)
+			throws BreedingManagerException {
 
 		final Map<Integer, GermplasmName> addedGermplasmNameMap = new HashMap<Integer, GermplasmName>();
 
@@ -242,7 +254,14 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 						final Date today = new Date();
 						germplasm.setGdate(Integer.valueOf(dateFormat.format(today)));
 					}
-					gid = this.germplasmManager.addGermplasm(germplasm, name);
+					try {
+						auditor.audit(germplasm);
+						auditor.audit(name);
+					} catch (AuditoryException e) {
+						e.printStackTrace();
+						throw new BreedingManagerException("BMS Could not audit germplasm element creation");
+					}
+					gid = this.germplasmManager.addGermplasm(germplasm, name);//MILDO MIRA ACA
 					addedGermplasmNameMap.put(germplasmName.getGermplasm().getGid(), germplasmName);
 					// if already addded (re-use that one)
 				} else {
@@ -425,7 +444,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	}
 
 	private void saveGermplasmListDataRecords(final List<GermplasmName> germplasmNameObjects, final GermplasmList list,
-			final List<ImportedGermplasm> importedGermplasms) {
+			final List<ImportedGermplasm> importedGermplasms) throws BreedingManagerException {
 
 		final List<GermplasmListData> listToSave = new ArrayList<GermplasmListData>();
 		final List<UserDefinedField> existingAttrUdflds = this.getUserDefinedFields(SaveGermplasmListAction.FCODE_TYPE_ATTRIBUTE);
@@ -525,8 +544,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		return cropPersonId;
 	}
 
-	private List<Attribute> prepareAllAttributesToAdd(final ImportedGermplasm importedGermplasm,
-			final List<UserDefinedField> existingUdflds, final Germplasm germplasm) {
+	public List<Attribute> prepareAllAttributesToAdd(final ImportedGermplasm importedGermplasm,
+			final List<UserDefinedField> existingUdflds, final Germplasm germplasm) throws BreedingManagerException {
 		final List<Attribute> attrs = new ArrayList<Attribute>();
 
 		final Map<String, String> otherAttributes = importedGermplasm.getAttributeVariates();
@@ -543,10 +562,15 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 					newAttr.setUserId(this.contextUtil.getCurrentUserLocalId());
 					newAttr.setAval(value);
 					newAttr.setLocationId(germplasm.getLocationId());
-					newAttr.setReferenceId(0);
 					newAttr.setAdate(Util.getCurrentDateAsIntegerValue());
 
-					attrs.add(newAttr);
+					try {
+						attrs.add((Attribute) auditor.audit(newAttr));
+					} catch (AuditoryException e) {
+						throw new BreedingManagerException(ATTRIBUTE_COULD_NOT_BE_AUDITED);
+					}
+
+
 				}
 			}
 		}
@@ -554,8 +578,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		return attrs;
 	}
 
-	private List<Name> prepareAllNamesToAdd(final ImportedGermplasm importedGermplasm, final List<UserDefinedField> existingUdflds,
-			final Germplasm germplasm) {
+	public List<Name> prepareAllNamesToAdd(final ImportedGermplasm importedGermplasm, final List<UserDefinedField> existingUdflds,
+			final Germplasm germplasm) throws BreedingManagerException {
 		final List<Name> names = new ArrayList<Name>();
 
 		final Map<String, String> otherNames = importedGermplasm.getNameFactors();
@@ -573,10 +597,13 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 					newName.setNstat(0);
 					newName.setNval(value);
 					newName.setLocationId(germplasm.getLocationId());
-					newName.setReferenceId(0);
 					newName.setNdate(Util.getCurrentDateAsIntegerValue());
 
-					names.add(newName);
+					try {
+						names.add((Name) auditor.audit(newName));
+					} catch (AuditoryException e) {
+						throw new BreedingManagerException(NAME_COULD_NOT_BE_AUDITED);
+					}
 				}
 			}
 		}
