@@ -32,7 +32,7 @@ class FactorDetailsConverter extends WorkbookRowConverter<ImportedFactor> {
 	public static final String GERMPLASM_ID = "GERMPLASM ID";
 	public static final String ENUMERATED_METHOD = "ENUMERATED";
 	//to make the method constant independent of the property constant.
-	public static final String SEED_SOURCE_METHOD = "SEED_SOURCE";
+	public static final String SEED_SOURCE_METHOD = "SELECTED";
 
 	private final Map<GermplasmListParser.FactorTypes, String> specialFactors = new HashMap<>();
 	private final Set<String> nameFactors = new HashSet<>();
