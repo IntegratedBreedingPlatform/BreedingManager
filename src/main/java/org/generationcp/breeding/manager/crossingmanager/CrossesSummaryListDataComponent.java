@@ -17,10 +17,10 @@ import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
-import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.util.FileDownloadResource;
+import org.generationcp.commons.util.FileUtils;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -73,12 +73,12 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
-	
+
 	@Autowired
 	private PlatformTransactionManager transactionManager;
 
-    @Autowired
-    private GermplasmListExporter exporter;
+	@Autowired
+	private GermplasmListExporter exporter;
 
 	private Label listEntriesLabel;
 
@@ -203,7 +203,8 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 
 	}
 
-	private void addToParentsInfoMap(final Integer id, final Integer femaleGid, final String femaleDesig, final Integer maleGid, final String maleDesig) {
+	private void addToParentsInfoMap(final Integer id, final Integer femaleGid, final String femaleDesig, final Integer maleGid,
+			final String maleDesig) {
 
 		final GermplasmListEntry femaleEntry = new GermplasmListEntry(null, femaleGid, null, femaleDesig);
 		final GermplasmListEntry maleEntry = new GermplasmListEntry(null, maleGid, null, maleDesig);
@@ -236,8 +237,10 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 
 			@Override
 			public void contextItemClick(final org.vaadin.peter.contextmenu.ContextMenu.ClickEvent event) {
-				final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+				final TransactionTemplate transactionTemplate =
+						new TransactionTemplate(CrossesSummaryListDataComponent.this.transactionManager);
 				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
 					@Override
 					protected void doInTransactionWithoutResult(final TransactionStatus status) {
 						final ContextMenuItem clickedItem = event.getClickedItem();
@@ -371,12 +374,9 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 		final String tempFileName = System.getProperty(AppConstants.USER_HOME) + "/temp.xls";
 
 		try {
-			exporter.exportGermplasmListXLS(this.list.getId(), tempFileName, this.listDataTable);
+			this.exporter.exportGermplasmListXLS(this.list.getId(), tempFileName, this.listDataTable);
 			final FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
-			fileDownloadResource.setFilename(FileDownloadResource.getDownloadFileName(this.list.getName(),
-					BreedingManagerUtil.getApplicationRequest()).replace(" ", "_")
-					+ ".xls");
-
+			fileDownloadResource.setFilename(FileUtils.encodeFilenameForDownload(this.list.getName()).replace(" ", "_") + ".xls");
 			this.getWindow().open(fileDownloadResource);
 		} catch (GermplasmListExporterException | MiddlewareQueryException e) {
 			CrossesSummaryListDataComponent.LOG.error(e.getMessage(), e);
