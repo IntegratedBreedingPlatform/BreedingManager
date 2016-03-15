@@ -11,6 +11,7 @@ import org.generationcp.commons.parsing.pojo.ImportedCrosses;
 import org.generationcp.commons.service.GermplasmOriginGenerationParameters;
 import org.generationcp.commons.service.GermplasmOriginGenerationService;
 import org.generationcp.commons.service.GermplasmOriginParameterBuilder;
+import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.Workbook;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
@@ -224,7 +225,7 @@ public class MakeCrossesTableComponentTest {
 
 	@Test
 	public void testGenerateSeedSourceStandaloneCrossing() {
-		String seedSource = this.makeCrossesTableComponent.generateSeedSource("F:1", "M:2");
+		String seedSource = this.makeCrossesTableComponent.generateSeedSource(1, "F:1", 2, "M:2");
 		Assert.assertEquals("When crossing standalone (not in context of a Nursery), default seed source format is expected.", "F:1/M:2",
 				seedSource);
 	}
@@ -234,14 +235,17 @@ public class MakeCrossesTableComponentTest {
 		String nurseryId = "1";
 		Mockito.when(this.makeCrossesMain.getNurseryId()).thenReturn(nurseryId);
 
-		Mockito.when(this.fieldbookMiddlewareService.getNurseryDataSet(Integer.valueOf(nurseryId))).thenReturn(new Workbook());
+		Workbook testWorkbook = new Workbook();
+		testWorkbook.setObservations(new ArrayList<MeasurementRow>());
+
+		Mockito.when(this.fieldbookMiddlewareService.getNurseryDataSet(Integer.valueOf(nurseryId))).thenReturn(testWorkbook);
 		Mockito.when(this.germplasmOriginParameterBuilder.build(Mockito.any(Workbook.class), Mockito.any(ImportedCrosses.class)))
 				.thenReturn(new GermplasmOriginGenerationParameters());
 
 		Mockito.when(this.germplasmOriginGenerationService.generateOriginString(Mockito.any(GermplasmOriginGenerationParameters.class)))
 				.thenReturn("IND-Winter-TestNurseryName");
 
-		String seedSource = this.makeCrossesTableComponent.generateSeedSource("WhateverF", "WhateverM");
+		String seedSource = this.makeCrossesTableComponent.generateSeedSource(1, "WhateverF", 2, "WhateverM");
 		Assert.assertEquals(
 				"When crossing in context of a Nursery, seed source should be generated using GermplasmOriginGenerationService.",
 				"IND-Winter-TestNurseryName", seedSource);

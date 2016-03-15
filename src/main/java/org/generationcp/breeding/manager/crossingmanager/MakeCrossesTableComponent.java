@@ -47,7 +47,10 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.etl.MeasurementData;
+import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.Workbook;
+import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -222,7 +225,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		germplasm.setGpid1(femaleParent.getGid());
 		germplasm.setGpid2(maleParent.getGid());
 		final String cross = this.getCross(germplasm, femaleDesig, maleDesig);
-		String seedSource = this.generateSeedSource(femaleSeedSource, maleSeedSource);
+		String seedSource = this.generateSeedSource(femaleParent.getGid(), femaleSeedSource, maleParent.getGid(), maleSeedSource);
 
 		if (!this.crossAlreadyExists(parents) && ((excludeSelf && !this.hasSameParent(femaleParent, maleParent)) || !excludeSelf)) {
 			this.tableCrossesMade.addItem(new Object[] {1, cross, femaleDesig, maleDesig, seedSource}, parents);
@@ -302,7 +305,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		final String maleDesig = maleParent.getDesignation();
 
 		if (!this.crossAlreadyExists(parents)) {
-			String seedSource = this.generateSeedSource(femaleSource, maleSource);
+			String seedSource = this.generateSeedSource(femaleParent.getGid(), femaleSource, maleParent.getGid(), maleSource);
 
 			final Germplasm germplasm = new Germplasm();
 			germplasm.setGnpgs(2);
@@ -317,7 +320,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		}
 	}
 
-	String generateSeedSource(String femaleSource, String maleSource) {
+	String generateSeedSource(Integer femaleParentGid, String femaleSource, Integer maleParentGid, String maleSource) {
 
 		// Default as before
 		String seedSource = this.appendWithSeparator(femaleSource, maleSource);
@@ -329,8 +332,29 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 			nurseryWorkbook = this.fieldbookMiddlewareService.getNurseryDataSet(Integer.valueOf(nurseryId));
 			if (nurseryWorkbook != null) {
 				ImportedCrosses cross = new ImportedCrosses();
+
+				// Single nursery is in context here set the same name. For import crosses case, these could be different Nurseries.
 				cross.setMaleStudyName(nurseryWorkbook.getStudyName());
 				cross.setFemaleStudyName(nurseryWorkbook.getStudyName());
+
+				// Look at the observation rows of Nursery to find plot number assigned to the male/female parent germplasm of the cross.
+				for (MeasurementRow row : nurseryWorkbook.getObservations()) {
+					MeasurementData gidData = row.getMeasurementData(TermId.GID.getId());
+					MeasurementData plotNumberData = row.getMeasurementData(TermId.PLOT_NO.getId());
+
+					if (gidData != null && gidData.getValue().equals(femaleParentGid.toString())) {
+						if (plotNumberData != null) {
+							cross.setFemalePlotNo(plotNumberData.getValue());
+						}
+					}
+
+					if (gidData != null && gidData.getValue().equals(maleParentGid.toString())) {
+						if (plotNumberData != null) {
+							cross.setMalePlotNo(plotNumberData.getValue());
+						}
+					}
+				}
+
 				GermplasmOriginGenerationParameters seedSourceGenerationParameters =
 						this.germplasmOriginParameterBuilder.build(nurseryWorkbook, cross);
 				seedSourceGenerationParameters.setCross(true);
