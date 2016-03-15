@@ -60,13 +60,13 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 @Configurable
-public class ListManagerCopyToNewListDialog extends VerticalLayout implements InitializingBean, InternationalizableComponent,
+public class ListManagerCopyToListDialog extends VerticalLayout implements InitializingBean, InternationalizableComponent,
 		Property.ValueChangeListener, AbstractSelect.NewItemHandler, BreedingManagerLayout {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ListManagerCopyToNewListDialog.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ListManagerCopyToListDialog.class);
 	private static final long serialVersionUID = 1L;
 
-	private static final String FOLDER_TYPE = "FOLDER";
+	static final String FOLDER_TYPE = "FOLDER";
 
 	public static final Object SAVE_BUTTON_ID = "Save New List Entries";
 	public static final String CANCEL_BUTTON_ID = "Cancel Copying New List Entries";
@@ -107,7 +107,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 
 	private final ListManagerMain listManagerMain;
 
-	public ListManagerCopyToNewListDialog(Window mainWindow, Window dialogWindow, String listName, Table listEntriesTable, int ibdbUserId,
+	public ListManagerCopyToListDialog(Window mainWindow, Window dialogWindow, String listName, Table listEntriesTable, int ibdbUserId,
 			ListManagerMain listManagerMain) {
 		this.dialogWindow = dialogWindow;
 		this.mainWindow = mainWindow;
@@ -154,13 +154,13 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 
 		this.btnSave = new Button(this.messageSource.getMessage(Message.SAVE_LABEL));
 		this.btnSave.setWidth("80px");
-		this.btnSave.setData(ListManagerCopyToNewListDialog.SAVE_BUTTON_ID);
+		this.btnSave.setData(ListManagerCopyToListDialog.SAVE_BUTTON_ID);
 		this.btnSave.setDescription("Save New Germplasm List ");
 		this.btnSave.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 
 		this.btnCancel = new Button(this.messageSource.getMessage(Message.CANCEL));
 		this.btnCancel.setWidth("80px");
-		this.btnCancel.setData(ListManagerCopyToNewListDialog.CANCEL_BUTTON_ID);
+		this.btnCancel.setData(ListManagerCopyToListDialog.CANCEL_BUTTON_ID);
 		this.btnCancel.setDescription("Cancel Saving New Germplasm List");
 		this.btnCancel.setClickShortcut(ShortcutAction.KeyCode.ESCAPE);
 	}
@@ -203,7 +203,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 		this.setComponentAlignment(hButton, Alignment.MIDDLE_CENTER);
 	}
 
-	private void populateSelectType(Select selectType) {
+	void populateSelectType(Select selectType) {
 		List<UserDefinedField> listTypes;
 		try {
 			listTypes = this.germplasmListManager.getGermplasmListTypes();
@@ -219,7 +219,9 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 			}
 
 		} catch (MiddlewareQueryException e) {
-			ListManagerCopyToNewListDialog.LOG.error(e.getMessage(), e);
+			ListManagerCopyToListDialog.LOG.error(e.getMessage(), e);
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
+					this.messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LIST_BY_PROGRAMUUID));
 		}
 	}
 
@@ -228,14 +230,14 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 		// not needed to override for now
 	}
 
-	private void populateComboBoxListName() {
+	void populateComboBoxListName() {
 		try {
 			this.germplasmList =
 					this.germplasmListManager.getAllGermplasmListsByProgramUUID(this.contextUtil.getCurrentProgramUUID());
 			this.mapExistingList = new HashMap<String, Integer>();
 			this.comboBoxListName.addItem("");
 			for (GermplasmList gList : this.germplasmList) {
-				if (!gList.getType().equals(ListManagerCopyToNewListDialog.FOLDER_TYPE)) {
+				if (!gList.getType().equals(ListManagerCopyToListDialog.FOLDER_TYPE)) {
 					this.comboBoxListName.addItem(gList.getName());
 					this.mapExistingList.put(gList.getName(), new Integer(gList.getId()));
 				} else {
@@ -245,7 +247,9 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 			this.comboBoxListName.select("");
 
 		} catch (MiddlewareQueryException e) {
-			ListManagerCopyToNewListDialog.LOG.error(e.getMessage(), e);
+			ListManagerCopyToListDialog.LOG.error(e.getMessage(), e);
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
+					this.messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LIST_TYPES));
 		}
 	}
 
@@ -258,17 +262,17 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 
 		if (this.localFolderNames.contains(this.listNameValue)) {
 			MessageNotifier.showRequiredFieldError(this.getWindow(),
-					"There is already an existing germplasm list folder with that name");
+					this.messageSource.getMessage(Message.ERROR_EXISTING_GERMPLASM_LIST_FOLDER_NAME));
 			proceedWithSave = false;
 		}
 
 		if (proceedWithSave) {
 
 			if (this.listNameValue.trim().length() == 0) {
-				MessageNotifier.showRequiredFieldError(this.getWindow(), "Please specify a List Name before saving");
+				MessageNotifier.showRequiredFieldError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_SPECIFY_LIST_NAME));
 			} else if (this.listNameValue.trim().length() > 50) {
 				MessageNotifier.showRequiredFieldError(this.getWindow(),
-						"Listname input is too large limit the name only up to 50 characters");
+						this.messageSource.getMessage(Message.ERROR_LIST_NAME_TOO_LONG));
 				this.comboBoxListName.setValue("");
 			} else {
 
@@ -285,7 +289,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 						this.mainWindow.removeWindow(this.dialogWindow);
 
 					} catch (MiddlewareQueryException e) {
-						ListManagerCopyToNewListDialog.LOG.error(e.getMessage(), e);
+						ListManagerCopyToListDialog.LOG.error(e.getMessage(), e);
 						MessageNotifier.showError(this.getWindow().getParent().getWindow(),
 								this.messageSource.getMessage(Message.UNSUCCESSFUL),
 								this.messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_NEW_LIST_FAILED));
@@ -306,7 +310,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 								.treeItemClickAction(Integer.valueOf(listId));
 
 					} catch (MiddlewareQueryException e) {
-						ListManagerCopyToNewListDialog.LOG.error(e.getMessage(), e);
+						ListManagerCopyToListDialog.LOG.error(e.getMessage(), e);
 						MessageNotifier.showError(this.getWindow().getParent().getWindow(),
 								this.messageSource.getMessage(Message.UNSUCCESSFUL),
 								this.messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_EXISTING_LIST_FAILED));
@@ -325,7 +329,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 			this.listManagerMain.getListSelectionComponent().getListTreeComponent().treeItemClickAction(this.newListid);
 		} catch (MiddlewareQueryException e) {
 			this.germplasmListManager.deleteGermplasmListByListId(this.newListid);
-			ListManagerCopyToNewListDialog.LOG.error(e.getMessage(), e);
+			ListManagerCopyToListDialog.LOG.error(e.getMessage(), e);
 			MessageNotifier.showError(this.getWindow().getParent().getWindow(), "Error with copying list entries.",
 					"Copying of entries to a new list failed. " + this.messageSource.getMessage(Message.ERROR_REPORT_TO));
 		}
@@ -374,7 +378,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 			this.contextUtil.logProgramActivity("Copied entries into a new list.",
 					"Copied entries to list " + this.newListid + " - " + this.listNameValue);
 		} catch (MiddlewareQueryException e) {
-			ListManagerCopyToNewListDialog.LOG.error("Error with logging workbench activity.", e);
+			ListManagerCopyToListDialog.LOG.error("Error with logging workbench activity.", e);
 		}
 	}
 
@@ -413,8 +417,8 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 					this.selectType.setEnabled(true);
 				}
 			} catch (MiddlewareQueryException e) {
-				ListManagerCopyToNewListDialog.LOG.error("Error in retrieving germplasm list.", e);
-				ListManagerCopyToNewListDialog.LOG.error("\n" + e.getStackTrace());
+				ListManagerCopyToListDialog.LOG.error("Error in retrieving germplasm list.", e);
+				ListManagerCopyToListDialog.LOG.error("\n" + e.getStackTrace());
 				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
 						this.messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LIST_BY_ID));
 			}
@@ -428,5 +432,22 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 			this.selectType.setEnabled(true);
 		}
 		this.lastAdded = false;
+	}
+	
+	/*For Test purposes*/
+	void setGermplasmListManager(GermplasmListManager germplasmListManager){
+		this.germplasmListManager = germplasmListManager;
+	}
+	
+	void setContextUtil(ContextUtil contextUtil){
+		this.contextUtil = contextUtil;
+	}
+	
+	void setComboListName(ComboBox comboBox){
+		this.comboBoxListName = comboBox;
+	}
+	
+	Set<String> getLocalFolderNames(){
+		return this.localFolderNames;
 	}
 }
