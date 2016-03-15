@@ -32,7 +32,7 @@ class FactorDetailsConverter extends WorkbookRowConverter<ImportedFactor> {
 	public static final String GERMPLASM_ID = "GERMPLASM ID";
 	public static final String ENUMERATED_METHOD = "ENUMERATED";
 	//to make the method constant independent of the property constant.
-	public static final String SEED_SOURCE_METHOD = "SEED SOURCE";
+	public static final String SEED_SOURCE_METHOD = "SELECTED";
 
 	private final Map<GermplasmListParser.FactorTypes, String> specialFactors = new HashMap<>();
 	private final Set<String> nameFactors = new HashSet<>();
@@ -85,21 +85,36 @@ class FactorDetailsConverter extends WorkbookRowConverter<ImportedFactor> {
 		final String method = importedFactor.getMethod() == null ? "" : importedFactor.getMethod().toUpperCase();
 
 		if (FactorDetailsConverter.GERMPLASM_ENTRY_PROPERTY.equals(property) && FactorDetailsConverter.NUMBER_SCALE.equals(scale) && ENUMERATED_METHOD.equals(method)) {
+
 			this.specialFactors.put(GermplasmListParser.FactorTypes.ENTRY, importedFactor.getFactor());
+
 		} else if (FactorDetailsConverter.GERMPLASM_ID_PROPERTY.equals(property) && FactorDetailsConverter.isGermplasmNameScale(scale) && ASSIGNED_METHOD.equals(method)) {
+
 			this.specialFactors.put(GermplasmListParser.FactorTypes.DESIG, importedFactor.getFactor());
+
 		} else if (FactorDetailsConverter.GERMPLASM_ID_PROPERTY.equals(property) && FactorDetailsConverter.isGermplasmIdScale(scale) && ASSIGNED_METHOD.equals(method)) {
+
 			this.specialFactors.put(GermplasmListParser.FactorTypes.GID, importedFactor.getFactor());
 			this.importFileIsAdvanced = true;
-		} else if (FactorDetailsConverter.GERMPLASM_ENTRY_PROPERTY.equals(property) && FactorDetailsConverter.isCodeScale(scale) && ENUMERATED_METHOD.equals(method)) {
+
+		} else if (FactorDetailsConverter.GERMPLASM_ENTRY_PROPERTY.equals(property) && FactorDetailsConverter.isCodeScale(scale) && ASSIGNED_METHOD.equals(method)) {
+
 			this.specialFactors.put(GermplasmListParser.FactorTypes.ENTRYCODE, importedFactor.getFactor());
+
 		} else if (FactorDetailsConverter.SEED_SOURCE_PROPERTY.equals(property) && FactorDetailsConverter.isSeedSourceScale(scale) && SEED_SOURCE_METHOD.equals(method)) {
+
 			this.specialFactors.put(GermplasmListParser.FactorTypes.SOURCE, importedFactor.getFactor());
+
 		} else if (FactorDetailsConverter.isCrossNameProperty(property) && FactorDetailsConverter.isCrossScale(scale) && ASSIGNED_METHOD.equals(method)) {
+
 			this.specialFactors.put(GermplasmListParser.FactorTypes.CROSS, importedFactor.getFactor());
-		} else if (FactorDetailsConverter.GERMPLASM_STOCK_ID_PROPERTY.equals(property) && FactorDetailsConverter.isStockIdScale(scale) && ASSIGNED_METHOD.equals(method)) {
+
+		} else if (FactorDetailsConverter.GERMPLASM_STOCK_ID_PROPERTY.equals(property) && FactorDetailsConverter.isStockIdScale(scale)) {
+
 			this.specialFactors.put(GermplasmListParser.FactorTypes.STOCK, importedFactor.getFactor());
+
 		} else if (FactorDetailsConverter.NAME_SCALE.equals(scale) && FactorDetailsConverter.ASSIGNED_METHOD.equals(method)) {
+
 			this.nameFactors.add(importedFactor.getFactor());
 		}
 
