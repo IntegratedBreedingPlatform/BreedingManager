@@ -14,7 +14,7 @@ package org.generationcp.breeding.manager.listmanager.listeners;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.customfields.ListTreeComponent;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
-import org.generationcp.breeding.manager.listmanager.dialog.ListManagerCopyToNewListDialog;
+import org.generationcp.breeding.manager.listmanager.dialog.ListManagerCopyToListDialog;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.slf4j.Logger;
@@ -41,14 +41,14 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
 		if (event.getButton().getData().equals(ListSelectorComponent.REFRESH_BUTTON_ID) // "Refresh"
 				&& this.source instanceof ListTreeComponent) {
 			((ListTreeComponent) this.source).refreshComponent();
-		} else if (event.getButton().getData().equals(ListManagerCopyToNewListDialog.SAVE_BUTTON_ID)
-				&& this.source instanceof ListManagerCopyToNewListDialog) {
+		} else if (event.getButton().getData().equals(ListManagerCopyToListDialog.SAVE_BUTTON_ID)
+				&& this.source instanceof ListManagerCopyToListDialog) {
 			// "Save Germplasm List"
-			((ListManagerCopyToNewListDialog) this.source).saveGermplasmListButtonClickAction();
-		} else if (event.getButton().getData().equals(ListManagerCopyToNewListDialog.CANCEL_BUTTON_ID)
-				&& this.source instanceof ListManagerCopyToNewListDialog) {
+			((ListManagerCopyToListDialog) this.source).saveGermplasmListButtonClickAction();
+		} else if (event.getButton().getData().equals(ListManagerCopyToListDialog.CANCEL_BUTTON_ID)
+				&& this.source instanceof ListManagerCopyToListDialog) {
 			// "Cancel Germplasm List"
-			((ListManagerCopyToNewListDialog) this.source).cancelGermplasmListButtonClickAction();
+			((ListManagerCopyToListDialog) this.source).cancelGermplasmListButtonClickAction();
 		} else if (event.getButton().getData().equals(AddEntryDialog.DONE_BUTTON_ID) && this.source instanceof AddEntryDialog) {
 			try {
 				((AddEntryDialog) this.source).nextButtonClickAction(event);
