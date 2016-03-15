@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.generationcp.breeding.manager.data.initializer.UserDefinedFieldTestDataInitializer;
+import org.generationcp.middleware.data.initializer.UserDefinedFieldTestDataInitializer;
 import org.generationcp.breeding.manager.listimport.validator.StockIDValidator;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
@@ -64,11 +64,12 @@ public class GermplasmListParserTest {
 	private final GermplasmListParser parser = new GermplasmListParser();
 
 	private ImportedGermplasmList importedGermplasmList;
-	private final UserDefinedFieldTestDataInitializer userDefinedFieldTestDataInitializer = new UserDefinedFieldTestDataInitializer();
+	
+	private UserDefinedFieldTestDataInitializer userDefinedFieldTestDataInitializer;
 
 	@Before
 	public void setUp() throws Exception {
-
+		this.userDefinedFieldTestDataInitializer = new UserDefinedFieldTestDataInitializer();
 		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(Matchers.eq(INVENTORY_AMOUNT))).thenReturn(true);
 		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(AdditionalMatchers.not(Matchers.eq(INVENTORY_AMOUNT))))
 				.thenReturn(false);
