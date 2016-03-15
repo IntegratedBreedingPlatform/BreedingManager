@@ -10,7 +10,6 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
-import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.breeding.manager.util.FileDownloaderUtility;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.constant.ToolEnum;
@@ -19,6 +18,7 @@ import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.CustomReportType;
 import org.generationcp.commons.reports.service.JasperReportService;
 import org.generationcp.commons.util.FileDownloadResource;
+import org.generationcp.commons.util.FileUtils;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -88,11 +88,11 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	@Resource
 	private JasperReportService jasperReportService;
 
-    @Resource
-    private GermplasmListExporter germplasmListExporter;
+	@Resource
+	private GermplasmListExporter germplasmListExporter;
 
-    @Resource
-    private FileDownloaderUtility  fileDownloaderUtility;
+	@Resource
+	private FileDownloaderUtility fileDownloaderUtility;
 
 	public ExportListAsDialog(final Component source, final GermplasmList germplasmList, final Table listDataTable) {
 		this.source = source;
@@ -178,7 +178,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 				if (ExportListAsDialog.this.germplasmList.isLockedList()) {
 					ExportListAsDialog.this.showWarningMessage(table);
 					// do the export
-					final String exportType = formatOptionsCbx.getValue().toString();
+					final String exportType = ExportListAsDialog.this.formatOptionsCbx.getValue().toString();
 					if (ExportListAsDialog.XLS_FORMAT.equalsIgnoreCase(ExportListAsDialog.this.formatOptionsCbx.getValue().toString())) {
 						ExportListAsDialog.this.exportListAsXLS(table);
 					} else if (ExportListAsDialog.CSV_FORMAT.equalsIgnoreCase(ExportListAsDialog.this.formatOptionsCbx.getValue()
@@ -258,10 +258,11 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 
 	protected void exportCustomReport(final String reportCode) {
 		try {
-			final Reporter customReport = this.germplasmListExporter.exportGermplasmListCustomReport(
-                    this.germplasmList.getId(), ExportListAsDialog.TEMP_FILENAME, reportCode);
+			final Reporter customReport =
+					this.germplasmListExporter.exportGermplasmListCustomReport(this.germplasmList.getId(),
+							ExportListAsDialog.TEMP_FILENAME, reportCode);
 
-            this.fileDownloaderUtility.initiateFileDownload(TEMP_FILENAME, customReport.getFileName(), this.source);
+			this.fileDownloaderUtility.initiateFileDownload(TEMP_FILENAME, customReport.getFileName(), this.source);
 
 		} catch (final GermplasmListExporterException e) {
 			ExportListAsDialog.LOG.error(this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
@@ -272,11 +273,10 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 
 	protected void exportListAsXLS(final Table table) {
 		try {
-			this.germplasmListExporter.exportGermplasmListXLS(this.germplasmList.getId(),
-                    ExportListAsDialog.TEMP_FILENAME, table);
+			this.germplasmListExporter.exportGermplasmListXLS(this.germplasmList.getId(), ExportListAsDialog.TEMP_FILENAME, table);
 			final String visibleFileName = this.germplasmList.getName() + ExportListAsDialog.XLS_EXT;
 
-            this.fileDownloaderUtility.initiateFileDownload(TEMP_FILENAME, visibleFileName, this.source);
+			this.fileDownloaderUtility.initiateFileDownload(TEMP_FILENAME, visibleFileName, this.source);
 			// must figure out other way to clean-up file because deleting it here makes it unavailable for download
 		} catch (final GermplasmListExporterException e) {
 			ExportListAsDialog.LOG.error(this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
@@ -301,13 +301,11 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 			final String tempFileName = System.getProperty(ExportListAsDialog.USER_HOME) + "/tempListForGenotyping.xls";
 
 			try {
-				this.germplasmListExporter.exportKBioScienceGenotypingOrderXLS(this.germplasmList.getId(),tempFileName, 96);
+				this.germplasmListExporter.exportKBioScienceGenotypingOrderXLS(this.germplasmList.getId(), tempFileName, 96);
 				final FileDownloadResource fileDownloadResource =
 						new FileDownloadResource(new File(tempFileName), this.source.getApplication());
 				final String listName = this.germplasmList.getName();
-				fileDownloadResource.setFilename(FileDownloadResource.getDownloadFileName(listName,
-						BreedingManagerUtil.getApplicationRequest()).replace(" ", "_")
-						+ "ForGenotyping.xls");
+				fileDownloadResource.setFilename(FileUtils.encodeFilenameForDownload(listName).replace(" ", "_") + "ForGenotyping.xls");
 
 				this.source.getWindow().open(fileDownloadResource);
 
@@ -364,23 +362,23 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 		this.messageSource = messageSource;
 	}
 
-    public void setTransactionManager(PlatformTransactionManager transactionManager) {
-        this.transactionManager = transactionManager;
-    }
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
 
-    public void setJasperReportService(JasperReportService jasperReportService) {
-        this.jasperReportService = jasperReportService;
-    }
+	public void setJasperReportService(JasperReportService jasperReportService) {
+		this.jasperReportService = jasperReportService;
+	}
 
-    public void setFileDownloaderUtility(FileDownloaderUtility fileDownloaderUtility) {
-        this.fileDownloaderUtility = fileDownloaderUtility;
-    }
+	public void setFileDownloaderUtility(FileDownloaderUtility fileDownloaderUtility) {
+		this.fileDownloaderUtility = fileDownloaderUtility;
+	}
 
-    public void setExportOptionValue(String comboValue) {
-        this.formatOptionsCbx.setValue(comboValue);
-    }
+	public void setExportOptionValue(String comboValue) {
+		this.formatOptionsCbx.setValue(comboValue);
+	}
 
-    protected String formatCustomReportString(CustomReportType type) {
-        return type.getCode() + " - " + type.getName();
-    }
+	protected String formatCustomReportString(CustomReportType type) {
+		return type.getCode() + " - " + type.getName();
+	}
 }
