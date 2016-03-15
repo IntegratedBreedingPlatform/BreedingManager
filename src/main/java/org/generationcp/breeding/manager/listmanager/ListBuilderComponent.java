@@ -37,7 +37,7 @@ import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryUtil;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
-import org.generationcp.breeding.manager.listmanager.dialog.ListManagerCopyToNewListDialog;
+import org.generationcp.breeding.manager.listmanager.dialog.ListManagerCopyToListDialog;
 import org.generationcp.breeding.manager.listmanager.listeners.ResetListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.SaveListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
@@ -310,7 +310,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	private FillWith fillWith;
 
-	private Window listManagerCopyToNewListDialog;
+	private Window listManagerCopyToListDialog;
 
 	// String Literals
 	public static final String LOCK_BUTTON_ID = "Lock Germplasm List";
@@ -1185,20 +1185,20 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 				MessageNotifier.showRequiredFieldError(this.source.getWindow(),
 						this.messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
 			} else {
-				this.listManagerCopyToNewListDialog =
+				this.listManagerCopyToListDialog =
 						new BaseSubWindow(this.messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
-				this.listManagerCopyToNewListDialog.setModal(true);
-				this.listManagerCopyToNewListDialog.setWidth("617px");
-				this.listManagerCopyToNewListDialog.setHeight("230px");
-				this.listManagerCopyToNewListDialog.setResizable(false);
-				this.listManagerCopyToNewListDialog.addStyleName(Reindeer.WINDOW_LIGHT);
+				this.listManagerCopyToListDialog.setModal(true);
+				this.listManagerCopyToListDialog.setWidth("617px");
+				this.listManagerCopyToListDialog.setHeight("230px");
+				this.listManagerCopyToListDialog.setResizable(false);
+				this.listManagerCopyToListDialog.addStyleName(Reindeer.WINDOW_LIGHT);
 
 				try {
-					this.listManagerCopyToNewListDialog.addComponent(new ListManagerCopyToNewListDialog(this.source.getWindow(),
-							this.listManagerCopyToNewListDialog, this.currentlySavedGermplasmList.getName(),
+					this.listManagerCopyToListDialog.addComponent(new ListManagerCopyToListDialog(this.source.getWindow(),
+							this.listManagerCopyToListDialog, this.currentlySavedGermplasmList.getName(),
 							this.tableWithSelectAllLayout.getTable(), this.contextUtil.getCurrentUserLocalId(), this.source));
-					this.source.getWindow().addWindow(this.listManagerCopyToNewListDialog);
-					this.listManagerCopyToNewListDialog.center();
+					this.source.getWindow().addWindow(this.listManagerCopyToListDialog);
+					this.listManagerCopyToListDialog.center();
 				} catch (final MiddlewareQueryException e) {
 					ListBuilderComponent.LOG.error("Error copying list entries.", e);
 				}
