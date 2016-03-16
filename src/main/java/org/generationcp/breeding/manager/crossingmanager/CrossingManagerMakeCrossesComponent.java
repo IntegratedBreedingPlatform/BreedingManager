@@ -77,6 +77,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	private boolean hasChanges;
 	private UnsavedChangesConfirmDialog unsavedChangesDialog;
 	private LinkButton nurseryCancelButton;
+	private String nurseryId;
+
 	private Button nurseryBackButton;
 	private final Button.ClickListener nurseryBackButtonDefaultClickListener = new Button.ClickListener() {
 
@@ -310,9 +312,10 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	}
 
 	protected LinkButton constructNurseryCancelButton(final HttpServletRequest currentRequest) {
-		final String nurseryId = currentRequest
-				.getParameterValues(BreedingManagerApplication.REQ_PARAM_NURSERY_ID).length > 0 ?
-				currentRequest.getParameterValues(BreedingManagerApplication.REQ_PARAM_NURSERY_ID)[0] : "";
+		final String[] parameterValues = currentRequest.getParameterValues(BreedingManagerApplication.REQ_PARAM_NURSERY_ID);
+		final String nurseryId = parameterValues != null && parameterValues.length > 0 ? parameterValues[0] : "";
+		this.nurseryId = nurseryId;
+
 		final ExternalResource urlToNursery;
 		if (nurseryId.isEmpty() || !NumberUtils.isDigits(nurseryId)) {
 			urlToNursery = new ExternalResource(currentRequest.getScheme() + "://" + currentRequest.getServerName() + ":" + currentRequest
@@ -326,6 +329,10 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		final LinkButton nurseryCancelButton = new LinkButton(urlToNursery, "");
 		this.messageSource.setCaption(nurseryCancelButton, Message.CANCEL);
 		return nurseryCancelButton;
+	}
+
+	public String getNurseryId() {
+		return this.nurseryId;
 	}
 
 	public void updateCrossesSeedSource(final String femaleListName, final String maleListName) {
