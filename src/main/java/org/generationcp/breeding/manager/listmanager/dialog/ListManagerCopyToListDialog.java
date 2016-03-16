@@ -84,9 +84,8 @@ public class ListManagerCopyToListDialog extends VerticalLayout implements Initi
 	private Button btnSave;
 	private Button btnCancel;
 	private Select selectType;
-	private final Table listEntriesTable;
+	private Table listEntriesTable;
 	private final String listName;
-	private String designationOfListEntriesCopied;
 	private int newListid;
 	private String listNameValue;
 	private final int ibdbUserId;
@@ -106,7 +105,7 @@ public class ListManagerCopyToListDialog extends VerticalLayout implements Initi
 	@Resource
 	private ContextUtil contextUtil;
 
-	private final ListManagerMain listManagerMain;
+	private ListManagerMain listManagerMain;
 
 	public ListManagerCopyToListDialog(Window mainWindow, Window dialogWindow, String listName, Table listEntriesTable, int ibdbUserId,
 			ListManagerMain listManagerMain) {
@@ -315,7 +314,6 @@ public class ListManagerCopyToListDialog extends VerticalLayout implements Initi
 		int status = 0;
 		int localRecordId = 0;
 		int germplasmListDataEntryId = entryid;
-		this.designationOfListEntriesCopied = "";
 		Collection<?> selectedIds = (Collection<?>) this.listEntriesTable.getValue();
 		for (final Object itemId : selectedIds) {
 			Property parentageProperty = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.PARENTAGE.getName());
@@ -330,7 +328,6 @@ public class ListManagerCopyToListDialog extends VerticalLayout implements Initi
 			String seedSource = String.valueOf(seedSourceProperty.getValue().toString());
 			Button designationLinkButton = (Button) designationProperty.getValue();
 			String designation = String.valueOf(designationLinkButton.getCaption().toString());
-			this.designationOfListEntriesCopied += designation + ",";
 			String groupName = String.valueOf(parentageProperty.getValue().toString());
 
 			GermplasmListData germplasmListData = new GermplasmListData(null, germList, gid, germplasmListDataEntryId, entryIdOfList,
@@ -339,10 +336,6 @@ public class ListManagerCopyToListDialog extends VerticalLayout implements Initi
 
 			germplasmListDataEntryId++;
 		}
-
-		this.designationOfListEntriesCopied =
-				this.designationOfListEntriesCopied.substring(0, this.designationOfListEntriesCopied.length() - 1);
-
 		MessageNotifier.showMessage(this.getWindow().getParent().getWindow(), this.messageSource.getMessage(Message.SUCCESS),
 				this.messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_NEW_LIST_SUCCESS), 3000);
 
@@ -430,7 +423,31 @@ public class ListManagerCopyToListDialog extends VerticalLayout implements Initi
 		this.localFolderNames = localFolderNames;
 	}
 	
+	void setSelectType(Select selectType){
+		this.selectType = selectType;
+	}
+	
 	Set<String> getLocalFolderNames(){
 		return this.localFolderNames;
+	}
+	
+	void setMessageSource(SimpleResourceBundleMessageSource messageSource){
+		this.messageSource = messageSource;
+	}
+	
+	void setExistingListSelected(boolean existingListSelected){
+		this.existingListSelected = existingListSelected;
+	}
+	
+	void setListEntriesTable(Table table){
+		this.listEntriesTable = table;
+	}
+	
+	void setListManagerMain(ListManagerMain listManagerMain){
+		this.listManagerMain = listManagerMain;
+	}
+	
+	void setMapExistingList(Map<String, Integer> mapExistingList){
+		this.mapExistingList = mapExistingList;
 	}
 }
