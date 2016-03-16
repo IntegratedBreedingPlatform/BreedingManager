@@ -31,6 +31,7 @@ import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.VaadinComponentsUtil;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -204,25 +205,8 @@ public class ListManagerCopyToListDialog extends VerticalLayout implements Initi
 	}
 
 	void populateSelectType(Select selectType) {
-		List<UserDefinedField> listTypes;
-		try {
-			listTypes = this.germplasmListManager.getGermplasmListTypes();
-
-			for (UserDefinedField listType : listTypes) {
-				String typeCode = listType.getFcode();
-				selectType.addItem(typeCode);
-				selectType.setItemCaption(typeCode, listType.getFname());
-				// set "GERMPLASMLISTS" as the default value
-				if ("LST".equals(typeCode)) {
-					selectType.setValue(typeCode);
-				}
-			}
-
-		} catch (MiddlewareQueryException e) {
-			ListManagerCopyToListDialog.LOG.error(e.getMessage(), e);
-			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
-					this.messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LIST_BY_PROGRAMUUID));
-		}
+		List<UserDefinedField> listTypes = this.germplasmListManager.getGermplasmListTypes();
+		VaadinComponentsUtil.populateSelectType(selectType, listTypes);
 	}
 
 	@Override
@@ -231,26 +215,19 @@ public class ListManagerCopyToListDialog extends VerticalLayout implements Initi
 	}
 
 	void populateComboBoxListName() {
-		try {
-			this.germplasmList =
-					this.germplasmListManager.getAllGermplasmListsByProgramUUID(this.contextUtil.getCurrentProgramUUID());
-			this.mapExistingList = new HashMap<String, Integer>();
-			this.comboBoxListName.addItem("");
-			for (GermplasmList gList : this.germplasmList) {
-				if (!gList.getType().equals(ListManagerCopyToListDialog.FOLDER_TYPE)) {
-					this.comboBoxListName.addItem(gList.getName());
-					this.mapExistingList.put(gList.getName(), new Integer(gList.getId()));
-				} else {
-					this.localFolderNames.add(gList.getName());
-				}
+		this.germplasmList = this.germplasmListManager.getAllGermplasmListsByProgramUUID(this.contextUtil.getCurrentProgramUUID());
+		this.mapExistingList = new HashMap<String, Integer>();
+		this.comboBoxListName.addItem("");
+		for (GermplasmList gList : this.germplasmList) {
+			if (!gList.getType().equals(ListManagerCopyToListDialog.FOLDER_TYPE)) {
+				this.comboBoxListName.addItem(gList.getName());
+				this.mapExistingList.put(gList.getName(), new Integer(gList.getId()));
+			} else {
+				this.localFolderNames.add(gList.getName());
 			}
-			this.comboBoxListName.select("");
-
-		} catch (MiddlewareQueryException e) {
-			ListManagerCopyToListDialog.LOG.error(e.getMessage(), e);
-			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
-					this.messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LIST_TYPES));
 		}
+		this.comboBoxListName.select("");
+
 	}
 
 	public void saveGermplasmListButtonClickAction() {
@@ -417,7 +394,6 @@ public class ListManagerCopyToListDialog extends VerticalLayout implements Initi
 				}
 			} catch (MiddlewareQueryException e) {
 				ListManagerCopyToListDialog.LOG.error("Error in retrieving germplasm list.", e);
-				ListManagerCopyToListDialog.LOG.error("\n" + e.getStackTrace());
 				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
 						this.messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LIST_BY_ID));
 			}
