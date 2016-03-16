@@ -1,6 +1,8 @@
 package org.generationcp.breeding.manager.listmanager.dialog;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -18,6 +20,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Select;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
 
 import junit.framework.Assert;
@@ -26,7 +29,7 @@ import junit.framework.Assert;
 public class ListManagerCopyToListDialogTest {
 	private static final String LIST_NAME = "List 1";
 
-		@Mock
+	@Mock
 	private GermplasmListManager germplasmListManager;
 	
 	@Mock
@@ -38,7 +41,9 @@ public class ListManagerCopyToListDialogTest {
 	
 	private GermplasmListTestDataInitializer germplasmListTestDataInitializer;
 	
-	ComboBox comboBox;
+	private ComboBox comboBox;
+	
+	private TextField txtDescription;
 	
 	@Before
 	public void setUp(){
@@ -54,7 +59,6 @@ public class ListManagerCopyToListDialogTest {
 		Select selectType = new Select();
 		this.listManagerCopyToListDialog.populateSelectType(selectType);
 		Assert.assertEquals("The Select's value should be LST", "LST", selectType.getValue());
-		
 	}
 	
 	@Test
@@ -74,6 +78,16 @@ public class ListManagerCopyToListDialogTest {
 		Assert.assertTrue("The Local Folder Names should contain " + LIST_NAME, this.listManagerCopyToListDialog.getLocalFolderNames().contains(LIST_NAME));
 	}
 	
+	@Test
+	public void testSaveGermplasmListButtonClickActionProceedWithSaveIsFalse() {
+		this.comboBox.setValue(LIST_NAME);
+		this.listManagerCopyToListDialog.setComboListName(comboBox);
+		Set<String> localFolderNames = new HashSet<String>();
+		localFolderNames.add(LIST_NAME);
+		this.listManagerCopyToListDialog.setLocalFolderNames(localFolderNames);
+		this.listManagerCopyToListDialog.saveGermplasmListButtonClickAction();
+	}
+	
 	private void initializeListManagerCopyToListDialog() {
 		Window mainWindow = Mockito.mock(Window.class);
 		Window dialogWindow = Mockito.mock(Window.class);
@@ -89,6 +103,10 @@ public class ListManagerCopyToListDialogTest {
 		this.listManagerCopyToListDialog.setContextUtil(this.contextUtil);
 		
 		comboBox = new ComboBox();
+		this.comboBox.setNewItemsAllowed(true);
+		this.comboBox.setNullSelectionAllowed(false);
+		this.comboBox.setImmediate(true);
 		this.listManagerCopyToListDialog.setComboListName(comboBox);
+		this.listManagerCopyToListDialog.setTxtDescription(this.txtDescription);
 	}
 }

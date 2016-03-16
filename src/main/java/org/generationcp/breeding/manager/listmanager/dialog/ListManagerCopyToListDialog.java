@@ -94,7 +94,7 @@ public class ListManagerCopyToListDialog extends VerticalLayout implements Initi
 	private boolean lastAdded = false;
 	private boolean existingListSelected = false;
 
-	private final Set<String> localFolderNames = new HashSet<String>();
+	private Set<String> localFolderNames = new HashSet<String>();
 
 	@Autowired
 	private GermplasmListManager germplasmListManager;
@@ -254,7 +254,6 @@ public class ListManagerCopyToListDialog extends VerticalLayout implements Initi
 	}
 
 	public void saveGermplasmListButtonClickAction() {
-
 		this.listNameValue = this.comboBoxListName.getValue().toString();
 		String description = this.txtDescription.getValue().toString();
 
@@ -445,6 +444,14 @@ public class ListManagerCopyToListDialog extends VerticalLayout implements Initi
 	
 	void setComboListName(ComboBox comboBox){
 		this.comboBoxListName = comboBox;
+	}
+	
+	void setTxtDescription(TextField txtDescription){
+		this.txtDescription = txtDescription;
+	}
+	
+	void setLocalFolderNames(Set<String> localFolderNames){
+		this.localFolderNames = localFolderNames;
 	}
 	
 	Set<String> getLocalFolderNames(){
