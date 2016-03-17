@@ -76,7 +76,7 @@ public class MakeCrossesParentsComponentTest {
 	private Table maleParent;
 	private Table sourceTable;
 	private TabSheet listDetailsTabSheet;
-	private GermplasmListTestDataInitializer germplasmListTestDataInitializer;
+	GermplasmListTestDataInitializer germplasmListTestDataInitializer;
 
 	@Before
 	public void setUp() {

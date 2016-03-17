@@ -37,7 +37,7 @@ public class ListCommonActionsUtilTest {
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
 
-	private GermplasmListTestDataInitializer germplasmListTestDataInitializer;
+	GermplasmListTestDataInitializer germplasmListTestDataInitializer;
 
 	@Before
 	public void setUp() {

@@ -44,7 +44,7 @@ public class CrossingManagerActionHandlerTest {
 
 	private CrossingManagerActionHandler crossingManagerActionHandler;
 
-	private GermplasmListTestDataInitializer germplasmListTestDataInitializer;
+	GermplasmListTestDataInitializer germplasmListTestDataInitializer;
 
 	@Before
 	public void setUp() {

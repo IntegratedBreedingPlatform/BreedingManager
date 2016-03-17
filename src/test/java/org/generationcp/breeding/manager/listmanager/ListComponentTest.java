@@ -113,7 +113,7 @@ public class ListComponentTest {
 
 	private GermplasmList germplasmList;
 
-	private GermplasmListTestDataInitializer germplasmListTestDataInitializer;
+	GermplasmListTestDataInitializer germplasmListTestDataInitializer;
 
 	@Before
 	public void setUp() throws Exception {
