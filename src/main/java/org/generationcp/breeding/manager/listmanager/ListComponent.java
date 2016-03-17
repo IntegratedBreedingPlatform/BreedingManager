@@ -222,7 +222,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private Map<ListEntryLotDetails, Double> validReservationsToSave;
 	private Boolean hasChanges;
 
-	private final ListDataPropertiesRenderer newColumnsRenderer = new ListDataPropertiesRenderer();
+	private ListDataPropertiesRenderer newColumnsRenderer = new ListDataPropertiesRenderer();
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -263,8 +263,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		super();
 	}
 
-	public ListComponent(final ListManagerMain source, final ListTabComponent parentListDetailsComponent,
-			final GermplasmList germplasmList) {
+	public ListComponent(final ListManagerMain source, final ListTabComponent parentListDetailsComponent, final GermplasmList germplasmList) {
 		super();
 		this.source = source;
 		this.parentListDetailsComponent = parentListDetailsComponent;
@@ -306,9 +305,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			this.viewHeaderButton.setDescription(this.viewListHeaderWindow.getListHeaderComponent().toString());
 		}
 
-		this.editHeaderButton = new IconButton(
-				"<span class='glyphicon glyphicon-pencil' style='left: 2px; top:10px; color: #7c7c7c;font-size: 16px; font-weight: bold;'></span>",
-				"Edit List Header");
+		this.editHeaderButton =
+				new IconButton(
+						"<span class='glyphicon glyphicon-pencil' style='left: 2px; top:10px; color: #7c7c7c;font-size: 16px; font-weight: bold;'></span>",
+						"Edit List Header");
 
 		this.actionsButton = new ActionButton();
 		this.actionsButton.setData(ListComponent.TOOLS_BUTTON_ID);
@@ -336,14 +336,16 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.totalSelectedListEntriesLabel.setWidth("95px");
 		this.updateNoOfSelectedEntries(0);
 
-		this.unlockButton = new IconButton(
-				"<span class='bms-locked' style='position: relative; top:5px; left: 2px; color: #666666;font-size: 16px; font-weight: bold;'></span>",
-				ListComponent.LOCK_TOOLTIP);
+		this.unlockButton =
+				new IconButton(
+						"<span class='bms-locked' style='position: relative; top:5px; left: 2px; color: #666666;font-size: 16px; font-weight: bold;'></span>",
+						ListComponent.LOCK_TOOLTIP);
 		this.unlockButton.setData(ListComponent.UNLOCK_BUTTON_ID);
 
-		this.lockButton = new IconButton(
-				"<span class='bms-lock-open' style='position: relative; top:5px; left: 2px; left: 2px; color: #666666;font-size: 16px; font-weight: bold;'></span>",
-				ListComponent.LOCK_TOOLTIP);
+		this.lockButton =
+				new IconButton(
+						"<span class='bms-lock-open' style='position: relative; top:5px; left: 2px; left: 2px; color: #666666;font-size: 16px; font-weight: bold;'></span>",
+						ListComponent.LOCK_TOOLTIP);
 		this.lockButton.setData(ListComponent.LOCK_BUTTON_ID);
 
 		this.menu = new ContextMenu();
@@ -572,8 +574,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		if (entry.getInventoryInfo().getLotCount() != 0) {
 			availInv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
 		}
-		final Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(this.parentListDetailsComponent,
-				this.germplasmList.getId(), entry.getId(), entry.getGid()));
+		final Button inventoryButton =
+				new Button(availInv, new InventoryLinkButtonClickListener(this.parentListDetailsComponent, this.germplasmList.getId(),
+						entry.getId(), entry.getGid()));
 		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 		inventoryButton.setDescription(ListComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
 		newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
@@ -603,8 +606,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private void getAllListEntries() {
 		final List<GermplasmListData> entries;
 		try {
-			entries = this.inventoryDataManager.getLotCountsForList(this.germplasmList.getId(), 0,
-					Long.valueOf(this.listEntriesCount).intValue());
+			entries =
+					this.inventoryDataManager.getLotCountsForList(this.germplasmList.getId(), 0, Long.valueOf(this.listEntriesCount)
+							.intValue());
 
 			this.listEntries.addAll(entries);
 		} catch (final MiddlewareQueryException ex) {
@@ -665,8 +669,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 					ListComponent.this.toggleGermplasmListStatus();
 				} catch (final MiddlewareQueryException mqe) {
 					ListComponent.LOG.error("Error with locking list.", mqe);
-					MessageNotifier.showError(ListComponent.this.getWindow(), ListComponent.DATABASE_ERROR,
-							"Error with locking list. " + ListComponent.this.messageSource.getMessage(Message.ERROR_REPORT_TO));
+					MessageNotifier.showError(ListComponent.this.getWindow(), ListComponent.DATABASE_ERROR, "Error with locking list. "
+							+ ListComponent.this.messageSource.getMessage(Message.ERROR_REPORT_TO));
 				}
 			}
 		});
@@ -681,8 +685,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 					ListComponent.this.toggleGermplasmListStatus();
 				} catch (final MiddlewareQueryException mqe) {
 					ListComponent.LOG.error("Error with unlocking list.", mqe);
-					MessageNotifier.showError(ListComponent.this.getWindow(), ListComponent.DATABASE_ERROR,
-							"Error with unlocking list. " + ListComponent.this.messageSource.getMessage(Message.ERROR_REPORT_TO));
+					MessageNotifier.showError(ListComponent.this.getWindow(), ListComponent.DATABASE_ERROR, "Error with unlocking list. "
+							+ ListComponent.this.messageSource.getMessage(Message.ERROR_REPORT_TO));
 				}
 			}
 		});
@@ -713,8 +717,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	private void setFillWith() {
 		if (!this.germplasmList.isLockedList()) {
-			this.fillWith = new FillWith(this.parentListDetailsComponent, this.parentListDetailsComponent, this.messageSource,
-					this.listDataTable, ColumnLabels.GID.getName());
+			this.fillWith =
+					new FillWith(this.parentListDetailsComponent, this.parentListDetailsComponent, this.messageSource, this.listDataTable,
+							ColumnLabels.GID.getName());
 		} else {
 			this.fillWith = null;
 		}
@@ -925,8 +930,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
 						ListComponent.this.reserveInventoryAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
-						ListComponent.this.listInventoryTable.getTable()
-								.setValue(ListComponent.this.listInventoryTable.getTable().getItemIds());
+						ListComponent.this.listInventoryTable.getTable().setValue(
+								ListComponent.this.listInventoryTable.getTable().getItemIds());
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.CANCEL_RESERVATIONS))) {
 						ListComponent.this.cancelReservationsAction();
 					}
@@ -1182,8 +1187,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 					} else {
 						ConfirmDialog.show(ListComponent.this.getWindow(), "Update Designation",
 								"The value you entered is not one of the germplasm names. "
-										+ "Are you sure you want to update Designation with new value?",
-								"Yes", "No", new ConfirmDialog.Listener() {
+										+ "Are you sure you want to update Designation with new value?", "Yes", "No",
+								new ConfirmDialog.Listener() {
 
 									private static final long serialVersionUID = 1L;
 
@@ -1193,8 +1198,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 											TextFieldBlurListener.this.tf.setReadOnly(false);
 											TextFieldBlurListener.this.tf.setValue(ListComponent.this.lastCellvalue);
 										} else {
-											final Double d = TextFieldBlurListener.this
-													.computeTextFieldWidth(TextFieldBlurListener.this.tf.getValue().toString());
+											final Double d =
+													TextFieldBlurListener.this.computeTextFieldWidth(TextFieldBlurListener.this.tf
+															.getValue().toString());
 											TextFieldBlurListener.this.tf.setWidth(d.floatValue(), Sizeable.UNITS_EM);
 										}
 										TextFieldBlurListener.this.tf.setReadOnly(true);
@@ -1266,8 +1272,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		} catch (final Exception e) {
 			ListComponent.LOG.error("Database error!", e);
-			MessageNotifier.showError(this.getWindow(), ListComponent.DATABASE_ERROR,
-					"Error with validating designation." + this.messageSource.getMessage(Message.ERROR_REPORT_TO));
+			MessageNotifier.showError(this.getWindow(), ListComponent.DATABASE_ERROR, "Error with validating designation."
+					+ this.messageSource.getMessage(Message.ERROR_REPORT_TO));
 		}
 
 		return false;
@@ -1283,19 +1289,20 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		if (!selectedIdsToDelete.isEmpty()) {
 			ConfirmDialog.show(this.getWindow(), this.messageSource.getMessage(Message.DELETE_GERMPLASM_ENTRIES),
-					this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES_CONFIRM), this.messageSource.getMessage(Message.YES),
-					this.messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
+				this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES_CONFIRM), this.messageSource.getMessage(Message.YES),
+				this.messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
 
-						private static final long serialVersionUID = 1L;
+					private static final long serialVersionUID = 1L;
 
-						@Override
-						public void onClose(final ConfirmDialog dialog) {
-							if (dialog.isConfirmed()) {
-								ListComponent.this.removeRowsInListDataTable((Collection<?>) ListComponent.this.listDataTable.getValue());
-							}
+					@Override
+					public void onClose(final ConfirmDialog dialog) {
+						if (dialog.isConfirmed()) {
+							ListComponent.this.removeRowsInListDataTable((Collection<?>) ListComponent.this.listDataTable
+									.getValue());
 						}
+					}
 
-					});
+				});
 
 		} else {
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DELETING_LIST_ENTRIES),
@@ -1425,9 +1432,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			this.listManagerCopyToListDialog.addStyleName(Reindeer.WINDOW_LIGHT);
 
 			try {
-				this.listManagerCopyToListDialog.addComponent(
-						new ListManagerCopyToListDialog(this.parentListDetailsComponent.getWindow(), this.listManagerCopyToListDialog,
-								this.germplasmList.getName(), this.listDataTable, this.contextUtil.getCurrentUserLocalId(), this.source));
+				this.listManagerCopyToListDialog.addComponent(new ListManagerCopyToListDialog(this.parentListDetailsComponent
+						.getWindow(), this.listManagerCopyToListDialog, this.germplasmList.getName(), this.listDataTable,
+						this.contextUtil.getCurrentUserLocalId(), this.source));
 				this.parentListDetailsComponent.getWindow().addWindow(this.listManagerCopyToListDialog);
 				this.listManagerCopyToListDialog.center();
 			} catch (final MiddlewareQueryException e) {
@@ -1462,8 +1469,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			germplasm = this.germplasmDataManager.getGermplasmWithPrefName(gid);
 		} catch (final MiddlewareQueryException ex) {
 			ListComponent.LOG.error("Error with getting germplasm with id: " + gid, ex);
-			MessageNotifier.showError(this.getWindow(), ListComponent.DATABASE_ERROR,
-					"Error with getting germplasm with id: " + gid + ". " + this.messageSource.getMessage(Message.ERROR_REPORT_TO));
+			MessageNotifier.showError(this.getWindow(), ListComponent.DATABASE_ERROR, "Error with getting germplasm with id: " + gid + ". "
+					+ this.messageSource.getMessage(Message.ERROR_REPORT_TO));
 			return false;
 		}
 
@@ -1511,13 +1518,14 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 			// create table if added entry is first listdata record
 			if (this.listDataTable == null) {
-				this.initializeListDataTable(new TableWithSelectAllLayout(Long.valueOf(this.listEntriesCount).intValue(),
-						this.getNoOfEntries(), ColumnLabels.TAG.getName()));
+				this.initializeListDataTable(new TableWithSelectAllLayout(Long.valueOf(this.listEntriesCount).intValue(), this
+						.getNoOfEntries(), ColumnLabels.TAG.getName()));
 				this.initializeValues();
 			} else {
 				this.listDataTable.setEditable(false);
-				final List<GermplasmListData> inventoryData = this.inventoryDataManager
-						.getLotCountsForListEntries(this.germplasmList.getId(), new ArrayList<>(Collections.singleton(listDataId)));
+				final List<GermplasmListData> inventoryData =
+						this.inventoryDataManager.getLotCountsForListEntries(this.germplasmList.getId(),
+                                new ArrayList<>(Collections.singleton(listDataId)));
 				if (inventoryData != null) {
 					listData = inventoryData.get(0);
 				}
@@ -1735,7 +1743,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			ListComponent.LOG.error(ListComponent.ERROR_WITH_DELETING_LIST_ENTRIES, e);
 			ListComponent.LOG.error("\n" + e.getStackTrace());
 		}
-		// end of performListEntriesDeletion
+        // end of performListEntriesDeletion
 	}
 
 	protected void deleteRemovedGermplasmEntriesFromTable() {
@@ -1777,8 +1785,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	public void deleteGermplasmListConfirmed() {
 		if (!this.germplasmList.isLockedList()) {
 			try {
-				ListCommonActionsUtil.deleteGermplasmList(this.germplasmListManager, this.germplasmList, this.contextUtil, this.getWindow(),
-						this.messageSource, "list");
+				ListCommonActionsUtil.deleteGermplasmList(this.germplasmListManager, this.germplasmList, this.contextUtil,
+						this.getWindow(), this.messageSource, "list");
 
 				this.source.getListSelectionComponent().getListTreeComponent().removeListFromTree(this.germplasmList);
 				this.source.updateUIForDeletedList(this.germplasmList);
@@ -1821,11 +1829,11 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.setLockedState(this.germplasmList.isLockedList());
 
 		if (this.germplasmList.isLockedList()) {
-			this.contextUtil.logProgramActivity("Locked a germplasm list.",
-					"Locked list " + this.germplasmList.getId() + " - " + this.germplasmList.getName());
+			this.contextUtil.logProgramActivity("Locked a germplasm list.", "Locked list " + this.germplasmList.getId() + " - "
+					+ this.germplasmList.getName());
 		} else {
-			this.contextUtil.logProgramActivity("Unlocked a germplasm list.",
-					"Unlocked list " + this.germplasmList.getId() + " - " + this.germplasmList.getName());
+			this.contextUtil.logProgramActivity("Unlocked a germplasm list.", "Unlocked list " + this.germplasmList.getId() + " - "
+					+ this.germplasmList.getName());
 		}
 		this.viewListHeaderWindow.setGermplasmListStatus(this.germplasmList.getStatus());
 	}
@@ -1850,9 +1858,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				ListCommonActionsUtil.overwriteList(list, this.germplasmListManager, this.source, this.messageSource, true);
 		if (savedList != null) {
 			if (!savedList.getId().equals(this.germplasmList.getId())) {
-				ListCommonActionsUtil.overwriteListEntries(savedList, this.listEntries,
-						this.germplasmList.getId().intValue() != savedList.getId().intValue(), this.germplasmListManager, this.source,
-						this.messageSource, true);
+				ListCommonActionsUtil.overwriteListEntries(savedList, this.listEntries, this.germplasmList.getId().intValue() != savedList
+						.getId().intValue(), this.germplasmListManager, this.source, this.messageSource, true);
 				this.source.closeList(savedList);
 			} else {
 				this.germplasmList = savedList;
@@ -1915,8 +1922,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}
 
 	private void updateNoOfSelectedEntries(final int count) {
-		this.totalSelectedListEntriesLabel
-				.setValue("<i>" + this.messageSource.getMessage(Message.SELECTED) + ": " + "  <b>" + count + "</b></i>");
+		this.totalSelectedListEntriesLabel.setValue("<i>" + this.messageSource.getMessage(Message.SELECTED) + ": " + "  <b>" + count
+				+ "</b></i>");
 	}
 
 	private void updateNoOfSelectedEntries() {
@@ -1948,8 +1955,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		if (!this.hasUnsavedChanges()) {
 			this.source.setModeView(ModeView.LIST_VIEW);
 		} else {
-			final String message = "You have unsaved reservations for this list. " + "You will need to save them before changing views. "
-					+ "Do you want to save your changes?";
+			final String message =
+					"You have unsaved reservations for this list. " + "You will need to save them before changing views. "
+							+ "Do you want to save your changes?";
 
 			this.source.showUnsavedChangesConfirmDialog(message, ModeView.LIST_VIEW);
 
@@ -1999,8 +2007,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		if (!this.hasUnsavedChanges()) {
 			this.source.setModeView(ModeView.INVENTORY_VIEW);
 		} else {
-			final String message = "You have unsaved changes to the list you are currently editing.. "
-					+ "You will need to save them before changing views. " + "Do you want to save your changes?";
+			final String message =
+					"You have unsaved changes to the list you are currently editing.. "
+							+ "You will need to save them before changing views. " + "Do you want to save your changes?";
 			this.source.showUnsavedChangesConfirmDialog(message, ModeView.INVENTORY_VIEW);
 		}
 	}
@@ -2121,8 +2130,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			if (listData.getInventoryInfo().getLotCount() != 0) {
 				availInv = listData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
 			}
-			final Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(this.parentListDetailsComponent,
-					this.germplasmList.getId(), listData.getId(), listData.getGid()));
+			final Button inventoryButton =
+					new Button(availInv, new InventoryLinkButtonClickListener(this.parentListDetailsComponent, this.germplasmList.getId(),
+							listData.getId(), listData.getGid()));
 			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 			inventoryButton.setDescription(ListComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
 
@@ -2184,9 +2194,11 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		// if there are no valid reservations
 		if (validReservations.isEmpty()) {
-			MessageNotifier.showRequiredFieldError(this.getWindow(),
-					this.messageSource.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES)
-							+ ".");
+			MessageNotifier
+					.showRequiredFieldError(
+							this.getWindow(),
+							this.messageSource
+									.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES) + ".");
 
 		} else if (!withInvalidReservations) {
 			MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS),

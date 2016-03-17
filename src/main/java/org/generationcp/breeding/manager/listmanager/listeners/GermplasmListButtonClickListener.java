@@ -31,12 +31,12 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
 
 	private final Component source;
 
-	public GermplasmListButtonClickListener(final Component source) {
+	public GermplasmListButtonClickListener(Component source) {
 		this.source = source;
 	}
 
 	@Override
-	public void buttonClick(final ClickEvent event) {
+	public void buttonClick(ClickEvent event) {
 
 		if (event.getButton().getData().equals(ListSelectorComponent.REFRESH_BUTTON_ID) // "Refresh"
 				&& this.source instanceof ListTreeComponent) {
@@ -52,7 +52,7 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
 		} else if (event.getButton().getData().equals(AddEntryDialog.DONE_BUTTON_ID) && this.source instanceof AddEntryDialog) {
 			try {
 				((AddEntryDialog) this.source).nextButtonClickAction(event);
-			} catch (final InternationalizableException e) {
+			} catch (InternationalizableException e) {
 				GermplasmListButtonClickListener.LOG.error(e.toString() + "\n" + e.getStackTrace());
 				MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
 			}

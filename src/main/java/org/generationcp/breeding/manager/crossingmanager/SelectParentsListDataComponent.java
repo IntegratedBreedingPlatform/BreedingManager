@@ -68,8 +68,8 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
-public class SelectParentsListDataComponent extends VerticalLayout
-		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, ReserveInventorySource {
+public class SelectParentsListDataComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
+		BreedingManagerLayout, ReserveInventorySource {
 
 	private static final String NO_LOT_FOR_THIS_GERMPLASM = "No Lot for this Germplasm";
 	private static final String CLICK_TO_VIEW_INVENTORY_DETAILS = "Click to view Inventory Details";
@@ -83,7 +83,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 		private static final long serialVersionUID = -2173636726748988046L;
 
 		@Override
-		public void handleAction(final Action action, final Object sender, final Object target) {
+		public void handleAction(Action action, Object sender, Object target) {
 			if (action.equals(SelectParentsListDataComponent.ACTION_ADD_TO_FEMALE_LIST)) {
 				SelectParentsListDataComponent.this.makeCrossesParentsComponent.dropToFemaleOrMaleTable(
 						SelectParentsListDataComponent.this.listDataTable,
@@ -102,7 +102,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 		}
 
 		@Override
-		public Action[] getActions(final Object target, final Object sender) {
+		public Action[] getActions(Object target, Object sender) {
 			return SelectParentsListDataComponent.LIST_DATA_TABLE_ACTIONS;
 		}
 	}
@@ -117,15 +117,15 @@ public class SelectParentsListDataComponent extends VerticalLayout
 			transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
 				@Override
-				protected void doInTransactionWithoutResult(final TransactionStatus status) {
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
 					// Get reference to clicked item
-					final ContextMenuItem clickedItem = event.getClickedItem();
+					ContextMenuItem clickedItem = event.getClickedItem();
 					if (clickedItem.getName().equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
-						SelectParentsListDataComponent.this.listDataTable
-								.setValue(SelectParentsListDataComponent.this.listDataTable.getItemIds());
-					} else if (clickedItem.getName()
-							.equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.ADD_TO_FEMALE_LIST))) {
-						final Collection<?> selectedIdsToAdd = (Collection<?>) SelectParentsListDataComponent.this.listDataTable.getValue();
+						SelectParentsListDataComponent.this.listDataTable.setValue(SelectParentsListDataComponent.this.listDataTable
+								.getItemIds());
+					} else if (clickedItem.getName().equals(
+							SelectParentsListDataComponent.this.messageSource.getMessage(Message.ADD_TO_FEMALE_LIST))) {
+						Collection<?> selectedIdsToAdd = (Collection<?>) SelectParentsListDataComponent.this.listDataTable.getValue();
 						if (!selectedIdsToAdd.isEmpty()) {
 							SelectParentsListDataComponent.this.makeCrossesParentsComponent.dropToFemaleOrMaleTable(
 									SelectParentsListDataComponent.this.listDataTable,
@@ -139,9 +139,9 @@ public class SelectParentsListDataComponent extends VerticalLayout
 									SelectParentsListDataComponent.this.messageSource
 											.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
 						}
-					} else if (clickedItem.getName()
-							.equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.ADD_TO_MALE_LIST))) {
-						final Collection<?> selectedIdsToAdd = (Collection<?>) SelectParentsListDataComponent.this.listDataTable.getValue();
+					} else if (clickedItem.getName().equals(
+							SelectParentsListDataComponent.this.messageSource.getMessage(Message.ADD_TO_MALE_LIST))) {
+						Collection<?> selectedIdsToAdd = (Collection<?>) SelectParentsListDataComponent.this.listDataTable.getValue();
 						if (!selectedIdsToAdd.isEmpty()) {
 							SelectParentsListDataComponent.this.makeCrossesParentsComponent.dropToFemaleOrMaleTable(
 									SelectParentsListDataComponent.this.listDataTable,
@@ -155,17 +155,17 @@ public class SelectParentsListDataComponent extends VerticalLayout
 									SelectParentsListDataComponent.this.messageSource
 											.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
 						}
-					} else if (clickedItem.getName()
-							.equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.INVENTORY_VIEW))) {
+					} else if (clickedItem.getName().equals(
+							SelectParentsListDataComponent.this.messageSource.getMessage(Message.INVENTORY_VIEW))) {
 						SelectParentsListDataComponent.this.viewInventoryAction();
-					} else if (clickedItem.getName()
-							.equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES))) {
-						SelectParentsListDataComponent.this.listDataTable
-								.setValue(CrossingManagerUtil.getEvenEntries(SelectParentsListDataComponent.this.listDataTable));
-					} else if (clickedItem.getName()
-							.equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES))) {
-						SelectParentsListDataComponent.this.listDataTable
-								.setValue(CrossingManagerUtil.getOddEntries(SelectParentsListDataComponent.this.listDataTable));
+					} else if (clickedItem.getName().equals(
+							SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES))) {
+						SelectParentsListDataComponent.this.listDataTable.setValue(CrossingManagerUtil
+								.getEvenEntries(SelectParentsListDataComponent.this.listDataTable));
+					} else if (clickedItem.getName().equals(
+							SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES))) {
+						SelectParentsListDataComponent.this.listDataTable.setValue(CrossingManagerUtil
+								.getOddEntries(SelectParentsListDataComponent.this.listDataTable));
 					}
 				}
 			});
@@ -181,8 +181,8 @@ public class SelectParentsListDataComponent extends VerticalLayout
 
 	private static final Action ACTION_ADD_TO_FEMALE_LIST = new Action("Add to Female List");
 	private static final Action ACTION_ADD_TO_MALE_LIST = new Action("Add to Male List");
-	private static final Action[] LIST_DATA_TABLE_ACTIONS =
-			new Action[] {SelectParentsListDataComponent.ACTION_ADD_TO_FEMALE_LIST, SelectParentsListDataComponent.ACTION_ADD_TO_MALE_LIST};
+	private static final Action[] LIST_DATA_TABLE_ACTIONS = new Action[] {SelectParentsListDataComponent.ACTION_ADD_TO_FEMALE_LIST,
+			SelectParentsListDataComponent.ACTION_ADD_TO_MALE_LIST};
 
 	private final Integer germplasmListId;
 	private GermplasmList germplasmList;
@@ -227,7 +227,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 	private ReserveInventoryAction reserveInventoryAction;
 	private Map<ListEntryLotDetails, Double> validReservationsToSave;
 
-	private final MakeCrossesParentsComponent makeCrossesParentsComponent;
+	private MakeCrossesParentsComponent makeCrossesParentsComponent;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -241,8 +241,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
 
-	public SelectParentsListDataComponent(final Integer germplasmListId, final String listName,
-			final MakeCrossesParentsComponent makeCrossesParentsComponent) {
+	public SelectParentsListDataComponent(Integer germplasmListId, String listName, MakeCrossesParentsComponent makeCrossesParentsComponent) {
 		super();
 		this.germplasmListId = germplasmListId;
 		this.listName = listName;
@@ -326,9 +325,8 @@ public class SelectParentsListDataComponent extends VerticalLayout
 		this.validReservationsToSave = new HashMap<ListEntryLotDetails, Double>();
 
 		// ListSelectionComponent is null when tool launched from BMS dashboard
-		if (this.makeCrossesParentsComponent.getMakeCrossesMain() != null
-				&& this.makeCrossesParentsComponent.getMakeCrossesMain() != null) {
-			final SelectParentsComponent selectParentComponent =
+		if (this.makeCrossesParentsComponent.getMakeCrossesMain() != null && this.makeCrossesParentsComponent.getMakeCrossesMain() != null) {
+			SelectParentsComponent selectParentComponent =
 					this.makeCrossesParentsComponent.getMakeCrossesMain().getSelectParentsComponent();
 			selectParentComponent.addUpdateListStatusForChanges(this, this.hasChanges);
 		}
@@ -359,7 +357,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 		this.initializeListDataTable(this.listDataTable);
 	}
 
-	void initializeListDataTable(final Table listDataTable) {
+	void initializeListDataTable(Table listDataTable) {
 		if (listDataTable != null) {
 			listDataTable.setWidth("100%");
 			listDataTable.setData(SelectParentsListDataComponent.LIST_DATA_TABLE_ID);
@@ -428,7 +426,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 		try {
 			this.germplasmList = this.germplasmListManager.getGermplasmListById(this.germplasmListId);
 			this.count = this.germplasmListManager.countGermplasmListDataByListId(this.germplasmListId);
-		} catch (final MiddlewareQueryException e) {
+		} catch (MiddlewareQueryException e) {
 			SelectParentsListDataComponent.LOG.error("Error getting list details" + e.getMessage(), e);
 		}
 	}
@@ -436,20 +434,19 @@ public class SelectParentsListDataComponent extends VerticalLayout
 	@Override
 	public void initializeValues() {
 		try {
-			final List<GermplasmListData> listEntries =
-					this.inventoryDataManager.getLotCountsForList(this.germplasmListId, 0, Integer.MAX_VALUE);
+			List<GermplasmListData> listEntries = this.inventoryDataManager.getLotCountsForList(this.germplasmListId, 0, Integer.MAX_VALUE);
 
-			for (final GermplasmListData entry : listEntries) {
-				final String gid = String.format("%s", entry.getGid().toString());
-				final Button gidButton = new Button(gid, new GidLinkClickListener(gid, true));
+			for (GermplasmListData entry : listEntries) {
+				String gid = String.format("%s", entry.getGid().toString());
+				Button gidButton = new Button(gid, new GidLinkClickListener(gid, true));
 				gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 				gidButton.setDescription("Click to view Germplasm information");
 
-				final Button desigButton = new Button(entry.getDesignation(), new GidLinkClickListener(gid, true));
+				Button desigButton = new Button(entry.getDesignation(), new GidLinkClickListener(gid, true));
 				desigButton.setStyleName(BaseTheme.BUTTON_LINK);
 				desigButton.setDescription("Click to view Germplasm information");
 
-				final CheckBox itemCheckBox = new CheckBox();
+				CheckBox itemCheckBox = new CheckBox();
 				itemCheckBox.setData(entry.getId());
 				itemCheckBox.setImmediate(true);
 				itemCheckBox.addListener(new ClickListener() {
@@ -457,8 +454,8 @@ public class SelectParentsListDataComponent extends VerticalLayout
 					private static final long serialVersionUID = 1L;
 
 					@Override
-					public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
-						final CheckBox itemCheckBox = (CheckBox) event.getButton();
+					public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+						CheckBox itemCheckBox = (CheckBox) event.getButton();
 						if (((Boolean) itemCheckBox.getValue()).equals(true)) {
 							SelectParentsListDataComponent.this.getListDataTable().select(itemCheckBox.getData());
 						} else {
@@ -474,9 +471,9 @@ public class SelectParentsListDataComponent extends VerticalLayout
 					availInv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
 				}
 
-				final InventoryLinkButtonClickListener inventoryLinkButtonClickListener =
+				InventoryLinkButtonClickListener inventoryLinkButtonClickListener =
 						new InventoryLinkButtonClickListener(this, this.germplasmList.getId(), entry.getId(), entry.getGid());
-				final Button inventoryButton = new Button(availInv, inventoryLinkButtonClickListener);
+				Button inventoryButton = new Button(availInv, inventoryLinkButtonClickListener);
 				inventoryButton.setData(inventoryLinkButtonClickListener);
 				inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 				inventoryButton.setDescription(SelectParentsListDataComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
@@ -495,7 +492,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 					seedRes = entry.getInventoryInfo().getReservedLotCount().toString().trim();
 				}
 
-				final Item newItem = this.getListDataTable().getContainerDataSource().addItem(entry.getId());
+				Item newItem = this.getListDataTable().getContainerDataSource().addItem(entry.getId());
 				newItem.getItemProperty(SelectParentsListDataComponent.CHECKBOX_COLUMN_ID).setValue(itemCheckBox);
 				newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entry.getEntryId());
 				newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(desigButton);
@@ -507,13 +504,13 @@ public class SelectParentsListDataComponent extends VerticalLayout
 				newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
 
 				if (entry.getInventoryInfo().getStockIDs() != null) {
-					final Label stockIdsLabel = new Label(entry.getInventoryInfo().getStockIDs());
+					Label stockIdsLabel = new Label(entry.getInventoryInfo().getStockIDs());
 					stockIdsLabel.setDescription(entry.getInventoryInfo().getStockIDs());
 					newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdsLabel);
 				}
 
 			}
-		} catch (final MiddlewareQueryException ex) {
+		} catch (MiddlewareQueryException ex) {
 			SelectParentsListDataComponent.LOG.error("Error with getting list entries for list: " + this.germplasmListId, ex);
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
 					"Error in getting list entries.");
@@ -528,7 +525,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 				SelectParentsListDataComponent.this.actionMenu.show(event.getClientX(), event.getClientY());
 			}
 		});
@@ -540,7 +537,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 			private static final long serialVersionUID = 272707576878821700L;
 
 			@Override
-			public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 				SelectParentsListDataComponent.this.inventoryViewActionMenu.show(event.getClientX(), event.getClientY());
 			}
 		});
@@ -556,31 +553,31 @@ public class SelectParentsListDataComponent extends VerticalLayout
 				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
 					@Override
-					protected void doInTransactionWithoutResult(final TransactionStatus status) {
+					protected void doInTransactionWithoutResult(TransactionStatus status) {
 						// Get reference to clicked item
-						final ContextMenuItem clickedItem = event.getClickedItem();
+						ContextMenuItem clickedItem = event.getClickedItem();
 						if (clickedItem.getName()
 								.equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.SAVE_CHANGES))) {
 							SelectParentsListDataComponent.this.saveReservationChangesAction();
-						} else if (clickedItem.getName()
-								.equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
+						} else if (clickedItem.getName().equals(
+								SelectParentsListDataComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
 							SelectParentsListDataComponent.this.viewListAction();
-						} else if (clickedItem.getName()
-								.equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {
+						} else if (clickedItem.getName().equals(
+								SelectParentsListDataComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {
 							// no implementation yet for this method
-						} else if (clickedItem.getName()
-								.equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
+						} else if (clickedItem.getName().equals(
+								SelectParentsListDataComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
 							SelectParentsListDataComponent.this.reserveInventoryAction();
-						} else if (clickedItem.getName()
-								.equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
-							SelectParentsListDataComponent.this.listInventoryTable.getTable()
-									.setValue(SelectParentsListDataComponent.this.listInventoryTable.getTable().getItemIds());
-						} else if (clickedItem.getName()
-								.equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES))) {
+						} else if (clickedItem.getName().equals(
+								SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
+							SelectParentsListDataComponent.this.listInventoryTable.getTable().setValue(
+									SelectParentsListDataComponent.this.listInventoryTable.getTable().getItemIds());
+						} else if (clickedItem.getName().equals(
+								SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES))) {
 							SelectParentsListDataComponent.this.listInventoryTable.getTable().setValue(
 									CrossingManagerUtil.getEvenEntries(SelectParentsListDataComponent.this.listInventoryTable.getTable()));
-						} else if (clickedItem.getName()
-								.equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES))) {
+						} else if (clickedItem.getName().equals(
+								SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES))) {
 							SelectParentsListDataComponent.this.listInventoryTable.getTable().setValue(
 									CrossingManagerUtil.getOddEntries(SelectParentsListDataComponent.this.listInventoryTable.getTable()));
 						}
@@ -595,7 +592,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 			private static final long serialVersionUID = 329434322390122057L;
 
 			@Override
-			public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 				SelectParentsListDataComponent.this.openViewListHeaderWindow();
 			}
 		});
@@ -607,7 +604,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void valueChange(final ValueChangeEvent event) {
+			public void valueChange(ValueChangeEvent event) {
 				SelectParentsListDataComponent.this.updateNoOfSelectedEntries();
 			}
 		});
@@ -617,7 +614,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void valueChange(final ValueChangeEvent event) {
+			public void valueChange(ValueChangeEvent event) {
 				SelectParentsListDataComponent.this.updateNoOfSelectedEntries();
 			}
 		});
@@ -633,13 +630,13 @@ public class SelectParentsListDataComponent extends VerticalLayout
 
 		this.headerLayout = new HorizontalLayout();
 		this.headerLayout.setWidth("100%");
-		final HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, this.listEntriesLabel);
+		HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, this.listEntriesLabel);
 		this.headerLayout.addComponent(headingLayout);
 		this.headerLayout.addComponent(this.viewListHeaderButton);
 		this.headerLayout.setComponentAlignment(headingLayout, Alignment.MIDDLE_LEFT);
 		this.headerLayout.setComponentAlignment(this.viewListHeaderButton, Alignment.MIDDLE_RIGHT);
 
-		final HorizontalLayout leftSubHeaderLayout = new HorizontalLayout();
+		HorizontalLayout leftSubHeaderLayout = new HorizontalLayout();
 		leftSubHeaderLayout.setSpacing(true);
 		leftSubHeaderLayout.addComponent(this.totalListEntriesLabel);
 		leftSubHeaderLayout.addComponent(this.totalSelectedListEntriesLabel);
@@ -660,13 +657,13 @@ public class SelectParentsListDataComponent extends VerticalLayout
 
 	}
 
-	void updateNoOfEntries(final long count) {
+	void updateNoOfEntries(long count) {
 		if (this.makeCrossesParentsComponent.getMakeCrossesMain().getModeView().equals(ModeView.LIST_VIEW)) {
 			if (count == 0) {
 				this.totalListEntriesLabel.setValue(this.messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
 			} else {
-				this.totalListEntriesLabel
-						.setValue(this.messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " + "  <b>" + count + "</b>");
+				this.totalListEntriesLabel.setValue(this.messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " + "  <b>" + count
+						+ "</b>");
 			}
 			// Inventory View
 		} else {
@@ -686,19 +683,19 @@ public class SelectParentsListDataComponent extends VerticalLayout
 		this.updateNoOfEntries(entryCount);
 	}
 
-	private void updateNoOfSelectedEntries(final int count) {
-		this.totalSelectedListEntriesLabel
-				.setValue("<i>" + this.messageSource.getMessage(Message.SELECTED) + ": " + "  <b>" + count + "</b></i>");
+	private void updateNoOfSelectedEntries(int count) {
+		this.totalSelectedListEntriesLabel.setValue("<i>" + this.messageSource.getMessage(Message.SELECTED) + ": " + "  <b>" + count
+				+ "</b></i>");
 	}
 
 	void updateNoOfSelectedEntries() {
 		int entryCount = 0;
 
 		if (this.makeCrossesParentsComponent.getMakeCrossesMain().getModeView().equals(ModeView.LIST_VIEW)) {
-			final Collection<?> selectedItems = (Collection<?>) this.getListDataTable().getValue();
+			Collection<?> selectedItems = (Collection<?>) this.getListDataTable().getValue();
 			entryCount = selectedItems.size();
 		} else {
-			final Collection<?> selectedItems = (Collection<?>) this.listInventoryTable.getTable().getValue();
+			Collection<?> selectedItems = (Collection<?>) this.listInventoryTable.getTable().getValue();
 			entryCount = selectedItems.size();
 		}
 
@@ -712,7 +709,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 		if (!this.hasUnsavedChanges()) {
 			this.makeCrossesParentsComponent.getMakeCrossesMain().setModeView(ModeView.LIST_VIEW);
 		} else {
-			final String message =
+			String message =
 					"You have unsaved reservations for this list. You will need to save them before changing views. Do you want to save your changes?";
 
 			this.makeCrossesParentsComponent.getMakeCrossesMain().showUnsavedChangesConfirmDialog(message, ModeView.LIST_VIEW);
@@ -743,8 +740,9 @@ public class SelectParentsListDataComponent extends VerticalLayout
 		if (!this.hasUnsavedChanges()) {
 			this.makeCrossesParentsComponent.getMakeCrossesMain().setModeView(ModeView.INVENTORY_VIEW);
 		} else {
-			final String message = "You have unsaved changes to the list you are currently editing.. "
-					+ "You will need to save them before changing views. " + "Do you want to save your changes?";
+			String message =
+					"You have unsaved changes to the list you are currently editing.. "
+							+ "You will need to save them before changing views. " + "Do you want to save your changes?";
 			this.makeCrossesParentsComponent.getMakeCrossesMain().showUnsavedChangesConfirmDialog(message, ModeView.INVENTORY_VIEW);
 		}
 	}
@@ -780,7 +778,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
 					"Please change to Inventory View first.");
 		} else {
-			final List<ListEntryLotDetails> lotDetailsGid = this.listInventoryTable.getSelectedLots();
+			List<ListEntryLotDetails> lotDetailsGid = this.listInventoryTable.getSelectedLots();
 
 			if (lotDetailsGid == null || lotDetailsGid.isEmpty()) {
 				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
@@ -794,12 +792,12 @@ public class SelectParentsListDataComponent extends VerticalLayout
 	}
 
 	@Override
-	public void updateListInventoryTable(final Map<ListEntryLotDetails, Double> validReservations, final boolean withInvalidReservations) {
-		for (final Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()) {
-			final ListEntryLotDetails lot = entry.getKey();
-			final Double newRes = entry.getValue();
+	public void updateListInventoryTable(Map<ListEntryLotDetails, Double> validReservations, boolean withInvalidReservations) {
+		for (Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()) {
+			ListEntryLotDetails lot = entry.getKey();
+			Double newRes = entry.getValue();
 
-			final Item itemToUpdate = this.listInventoryTable.getTable().getItem(lot);
+			Item itemToUpdate = this.listInventoryTable.getTable().getItem(lot);
 			itemToUpdate.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(newRes);
 		}
 
@@ -813,19 +811,21 @@ public class SelectParentsListDataComponent extends VerticalLayout
 
 		// if there are no valid reservations
 		if (validReservations.isEmpty()) {
-			MessageNotifier.showRequiredFieldError(this.getWindow(),
-					this.messageSource.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES)
-							+ ".");
+			MessageNotifier
+					.showRequiredFieldError(
+							this.getWindow(),
+							this.messageSource
+									.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES) + ".");
 		} else if (!withInvalidReservations) {
 			MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
 					"All selected entries will be reserved in their respective lots.", 3000);
 		}
 	}
 
-	private void updateLotReservationsToSave(final Map<ListEntryLotDetails, Double> validReservations) {
-		for (final Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()) {
-			final ListEntryLotDetails lot = entry.getKey();
-			final Double amountToReserve = entry.getValue();
+	private void updateLotReservationsToSave(Map<ListEntryLotDetails, Double> validReservations) {
+		for (Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()) {
+			ListEntryLotDetails lot = entry.getKey();
+			Double amountToReserve = entry.getValue();
 
 			if (this.validReservationsToSave.containsKey(lot)) {
 				this.validReservationsToSave.remove(lot);
@@ -841,26 +841,26 @@ public class SelectParentsListDataComponent extends VerticalLayout
 	}
 
 	@Override
-	public void addReserveInventoryWindow(final ReserveInventoryWindow reserveInventory) {
+	public void addReserveInventoryWindow(ReserveInventoryWindow reserveInventory) {
 		this.reserveInventory = reserveInventory;
 		this.makeCrossesParentsComponent.getWindow().addWindow(this.reserveInventory);
 	}
 
 	@Override
-	public void addReservationStatusWindow(final ReservationStatusWindow reservationStatus) {
+	public void addReservationStatusWindow(ReservationStatusWindow reservationStatus) {
 		this.reservationStatus = reservationStatus;
 		this.removeReserveInventoryWindow(this.reserveInventory);
 		this.makeCrossesParentsComponent.getWindow().addWindow(this.reservationStatus);
 	}
 
 	@Override
-	public void removeReserveInventoryWindow(final ReserveInventoryWindow reserveInventory) {
+	public void removeReserveInventoryWindow(ReserveInventoryWindow reserveInventory) {
 		this.reserveInventory = reserveInventory;
 		this.makeCrossesParentsComponent.getWindow().removeWindow(this.reserveInventory);
 	}
 
 	@Override
-	public void removeReservationStatusWindow(final ReservationStatusWindow reservationStatus) {
+	public void removeReservationStatusWindow(ReservationStatusWindow reservationStatus) {
 		this.reservationStatus = reservationStatus;
 		this.makeCrossesParentsComponent.getWindow().removeWindow(this.reservationStatus);
 	}
@@ -868,7 +868,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 	public void saveReservationChangesAction() {
 		if (this.hasUnsavedChanges()) {
 			this.reserveInventoryAction = new ReserveInventoryAction(this);
-			final boolean success =
+			boolean success =
 					this.reserveInventoryAction.saveReserveTransactions(this.getValidReservationsToSave(), this.germplasmList.getId());
 			if (success) {
 				this.refreshInventoryColumns(this.getValidReservationsToSave());
@@ -879,10 +879,10 @@ public class SelectParentsListDataComponent extends VerticalLayout
 		}
 	}
 
-	public void refreshInventoryColumns(final Map<ListEntryLotDetails, Double> validReservationsToSave) {
+	public void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReservationsToSave) {
 
-		final Set<Integer> entryIds = new HashSet<Integer>();
-		for (final Entry<ListEntryLotDetails, Double> details : validReservationsToSave.entrySet()) {
+		Set<Integer> entryIds = new HashSet<Integer>();
+		for (Entry<ListEntryLotDetails, Double> details : validReservationsToSave.entrySet()) {
 			entryIds.add(details.getKey().getId());
 		}
 
@@ -893,12 +893,12 @@ public class SelectParentsListDataComponent extends VerticalLayout
 				germplasmListDataEntries =
 						this.inventoryDataManager.getLotCountsForListEntries(this.germplasmList.getId(), new ArrayList<Integer>(entryIds));
 			}
-		} catch (final MiddlewareQueryException e) {
+		} catch (MiddlewareQueryException e) {
 			SelectParentsListDataComponent.LOG.error(e.getMessage(), e);
 		}
 
-		for (final GermplasmListData listData : germplasmListDataEntries) {
-			final Item item = this.getListDataTable().getItem(listData.getId());
+		for (GermplasmListData listData : germplasmListDataEntries) {
+			Item item = this.getListDataTable().getItem(listData.getId());
 
 			// #1 Available Inventory
 			// default value
@@ -906,8 +906,9 @@ public class SelectParentsListDataComponent extends VerticalLayout
 			if (listData.getInventoryInfo().getLotCount().intValue() != 0) {
 				availInv = listData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
 			}
-			final Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(this.makeCrossesParentsComponent,
-					this.germplasmList.getId(), listData.getId(), listData.getGid()));
+			Button inventoryButton =
+					new Button(availInv, new InventoryLinkButtonClickListener(this.makeCrossesParentsComponent, this.germplasmList.getId(),
+							listData.getId(), listData.getGid()));
 			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 			inventoryButton.setDescription(SelectParentsListDataComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
 
@@ -971,7 +972,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 		return this.germplasmList;
 	}
 
-	public void setHasUnsavedChanges(final Boolean hasChanges) {
+	public void setHasUnsavedChanges(Boolean hasChanges) {
 		this.hasChanges = hasChanges;
 
 		if (hasChanges) {
@@ -980,8 +981,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 			this.menuInventorySaveChanges.setEnabled(false);
 		}
 
-		final SelectParentsComponent selectParentComponent =
-				this.makeCrossesParentsComponent.getMakeCrossesMain().getSelectParentsComponent();
+		SelectParentsComponent selectParentComponent = this.makeCrossesParentsComponent.getMakeCrossesMain().getSelectParentsComponent();
 		selectParentComponent.addUpdateListStatusForChanges(this, this.hasChanges);
 	}
 
@@ -989,11 +989,11 @@ public class SelectParentsListDataComponent extends VerticalLayout
 		return this.germplasmListId;
 	}
 
-	protected String getTermNameFromOntology(final ColumnLabels columnLabels) {
+	protected String getTermNameFromOntology(ColumnLabels columnLabels) {
 		return columnLabels.getTermNameFromOntology(this.ontologyDataManager);
 	}
 
-	protected void setListDataTableWithSelectAll(final TableWithSelectAllLayout tableWithSelectAllLayout) {
+	protected void setListDataTableWithSelectAll(TableWithSelectAllLayout tableWithSelectAllLayout) {
 		this.tableWithSelectAllLayout = tableWithSelectAllLayout;
 	}
 
@@ -1001,7 +1001,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 		return this.tableWithSelectAllLayout;
 	}
 
-	protected void setListInventoryTable(final CrossingManagerInventoryTable listInventoryTable) {
+	protected void setListInventoryTable(CrossingManagerInventoryTable listInventoryTable) {
 		this.listInventoryTable = listInventoryTable;
 	}
 
@@ -1009,7 +1009,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 		return this.listInventoryTable;
 	}
 
-	public void setCount(final Long count) {
+	public void setCount(Long count) {
 		this.count = count;
 	}
 

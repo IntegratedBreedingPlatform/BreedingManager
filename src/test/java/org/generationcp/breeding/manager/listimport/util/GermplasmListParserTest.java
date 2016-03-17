@@ -7,13 +7,13 @@ import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.generationcp.middleware.data.initializer.UserDefinedFieldTestDataInitializer;
 import org.generationcp.breeding.manager.listimport.validator.StockIDValidator;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.commons.parsing.FileParsingException;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.data.initializer.GermplasmTestDataInitializer;
-import org.generationcp.middleware.data.initializer.UserDefinedFieldTestDataInitializer;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -64,20 +64,20 @@ public class GermplasmListParserTest {
 	private final GermplasmListParser parser = new GermplasmListParser();
 
 	private ImportedGermplasmList importedGermplasmList;
-
+	
 	private UserDefinedFieldTestDataInitializer userDefinedFieldTestDataInitializer;
 
 	@Before
 	public void setUp() throws Exception {
 		this.userDefinedFieldTestDataInitializer = new UserDefinedFieldTestDataInitializer();
-		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(Matchers.eq(GermplasmListParserTest.INVENTORY_AMOUNT))).thenReturn(true);
-		Mockito.when(this.ontologyDataManager
-				.isSeedAmountVariable(AdditionalMatchers.not(Matchers.eq(GermplasmListParserTest.INVENTORY_AMOUNT)))).thenReturn(false);
-		Mockito.when(this.germplasmDataManager.getGermplasmByGID(Matchers.anyInt()))
-				.thenReturn(GermplasmTestDataInitializer.createGermplasm(1));
+		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(Matchers.eq(INVENTORY_AMOUNT))).thenReturn(true);
+		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(AdditionalMatchers.not(Matchers.eq(INVENTORY_AMOUNT))))
+				.thenReturn(false);
+		Mockito.when(this.germplasmDataManager.getGermplasmByGID(Matchers.anyInt())).thenReturn(
+				GermplasmTestDataInitializer.createGermplasm(1));
 		Mockito.when(this.inventoryDataManager.getSimilarStockIds(Matchers.anyList())).thenReturn(new ArrayList<String>());
-		Mockito.when(this.germplasmListManager.getGermplasmListTypes())
-				.thenReturn(this.userDefinedFieldTestDataInitializer.getValidListType());
+		Mockito.when(this.germplasmListManager.getGermplasmListTypes()).thenReturn(
+				this.userDefinedFieldTestDataInitializer.getValidListType());
 
 	}
 
@@ -115,7 +115,7 @@ public class GermplasmListParserTest {
 
 		Assert.assertEquals(
 				"Header validation setup does not properly recognize the right amount of expected headers for the observation sheet",
-				GermplasmListParserTest.EXPECTED_DESCRIPTION_SHEET_VARIABLE_COUNT, this.parser.getDescriptionVariableNames().size());
+				EXPECTED_DESCRIPTION_SHEET_VARIABLE_COUNT, this.parser.getDescriptionVariableNames().size());
 
 	}
 
@@ -169,8 +169,9 @@ public class GermplasmListParserTest {
 	@Test
 	public void testTemplateWithMissingStockIdValuesInObservation() throws Exception {
 		try {
-			final File workbookFile = new File(
-					ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.OBSERVATION_NO_STOCK_ID_VALUES_FILE).toURI());
+			final File workbookFile =
+					new File(ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.OBSERVATION_NO_STOCK_ID_VALUES_FILE)
+							.toURI());
 			final Workbook missingStockIDValuesWorkbook = WorkbookFactory.create(workbookFile);
 			this.importedGermplasmList = this.parser.parseWorkbook(missingStockIDValuesWorkbook, null);
 			Assert.fail("Unable to properly recognize error condition regarding missing stock ID values in observation sheet");
@@ -209,14 +210,14 @@ public class GermplasmListParserTest {
 
 		this.importedGermplasmList = this.parser.parseWorkbook(workbook, null);
 		final ImportedGermplasm germplasm = this.importedGermplasmList.getImportedGermplasms().get(0);
-		Assert.assertEquals("Unable to properly recognize additional name factors associated with germplasm", 2,
-				germplasm.getNameFactors().size());
+		Assert.assertEquals("Unable to properly recognize additional name factors associated with germplasm", 2, germplasm.getNameFactors()
+				.size());
 
 	}
 
 	@Test
 	public void testValidateListTypeFound() {
-		for (final Map.Entry<String, String> item : UserDefinedFieldTestDataInitializer.validListTypeMap.entrySet()) {
+		for (final Map.Entry<String, String> item : this.userDefinedFieldTestDataInitializer.validListTypeMap.entrySet()) {
 			Assert.assertTrue("The listType should be accepted", this.parser.validateListType(item.getKey()));
 		}
 	}
