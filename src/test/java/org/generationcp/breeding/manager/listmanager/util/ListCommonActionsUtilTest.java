@@ -36,8 +36,8 @@ public class ListCommonActionsUtilTest {
 	private Component source;
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
-	
-	GermplasmListTestDataInitializer germplasmListTestDataInitializer;
+
+	private GermplasmListTestDataInitializer germplasmListTestDataInitializer;
 
 	@Before
 	public void setUp() {
@@ -95,8 +95,8 @@ public class ListCommonActionsUtilTest {
 
 		ListCommonActionsUtil.setEntryCodeOfMatchingSavedEntry(entry, matchingSavedEntry);
 
-		Assert.assertEquals("Expecting that the entry code value is " + entry.getEntryId() + " when the source entry is null.", entry
-				.getEntryId().toString(), matchingSavedEntry.getEntryCode());
+		Assert.assertEquals("Expecting that the entry code value is " + entry.getEntryId() + " when the source entry is null.",
+				entry.getEntryId().toString(), matchingSavedEntry.getEntryCode());
 	}
 
 	@Test

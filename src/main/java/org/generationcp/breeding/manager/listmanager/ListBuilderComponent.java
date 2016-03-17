@@ -108,20 +108,20 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		@Override
 		public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
 			if (!ListBuilderComponent.this.currentlySavedGermplasmList.isLockedList()) {
-				ListBuilderComponent.this.currentlySavedGermplasmList.setStatus(ListBuilderComponent.this.currentlySavedGermplasmList
-						.getStatus() + 100);
+				ListBuilderComponent.this.currentlySavedGermplasmList
+						.setStatus(ListBuilderComponent.this.currentlySavedGermplasmList.getStatus() + 100);
 				try {
 					ListBuilderComponent.this.currentlySetGermplasmInfo = ListBuilderComponent.this.currentlySavedGermplasmList;
 					ListBuilderComponent.this.saveListButtonListener.doSaveAction(false);
 
-					ListBuilderComponent.this.contextUtil.logProgramActivity("Locked a germplasm list.", "Locked list "
-							+ ListBuilderComponent.this.currentlySavedGermplasmList.getId() + " - "
-							+ ListBuilderComponent.this.currentlySavedGermplasmList.getName());
+					ListBuilderComponent.this.contextUtil.logProgramActivity("Locked a germplasm list.",
+							"Locked list " + ListBuilderComponent.this.currentlySavedGermplasmList.getId() + " - "
+									+ ListBuilderComponent.this.currentlySavedGermplasmList.getName());
 
 				} catch (final MiddlewareQueryException e) {
 					ListBuilderComponent.LOG.error("Error with unlocking list.", e);
-					MessageNotifier.showError(ListBuilderComponent.this.getWindow(), "Database Error!", "Error with loocking list. "
-							+ ListBuilderComponent.this.messageSource.getMessage(Message.ERROR_REPORT_TO));
+					MessageNotifier.showError(ListBuilderComponent.this.getWindow(), "Database Error!",
+							"Error with loocking list. " + ListBuilderComponent.this.messageSource.getMessage(Message.ERROR_REPORT_TO));
 				}
 				ListBuilderComponent.this.setUIForLockedList();
 			}
@@ -135,20 +135,20 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		@Override
 		public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
 			if (ListBuilderComponent.this.currentlySavedGermplasmList.isLockedList()) {
-				ListBuilderComponent.this.currentlySavedGermplasmList.setStatus(ListBuilderComponent.this.currentlySavedGermplasmList
-						.getStatus() - 100);
+				ListBuilderComponent.this.currentlySavedGermplasmList
+						.setStatus(ListBuilderComponent.this.currentlySavedGermplasmList.getStatus() - 100);
 				try {
 					ListBuilderComponent.this.currentlySetGermplasmInfo = ListBuilderComponent.this.currentlySavedGermplasmList;
 					ListBuilderComponent.this.saveListButtonListener.doSaveAction(false);
 
-					ListBuilderComponent.this.contextUtil.logProgramActivity("Unlocked a germplasm list.", "Unlocked list "
-							+ ListBuilderComponent.this.currentlySavedGermplasmList.getId() + " - "
-							+ ListBuilderComponent.this.currentlySavedGermplasmList.getName());
+					ListBuilderComponent.this.contextUtil.logProgramActivity("Unlocked a germplasm list.",
+							"Unlocked list " + ListBuilderComponent.this.currentlySavedGermplasmList.getId() + " - "
+									+ ListBuilderComponent.this.currentlySavedGermplasmList.getName());
 
 				} catch (final MiddlewareQueryException e) {
 					ListBuilderComponent.LOG.error("Error with unlocking list.", e);
-					MessageNotifier.showError(ListBuilderComponent.this.getWindow(), "Database Error!", "Error with unlocking list. "
-							+ ListBuilderComponent.this.messageSource.getMessage(Message.ERROR_REPORT_TO));
+					MessageNotifier.showError(ListBuilderComponent.this.getWindow(), "Database Error!",
+							"Error with unlocking list. " + ListBuilderComponent.this.messageSource.getMessage(Message.ERROR_REPORT_TO));
 				}
 				ListBuilderComponent.this.setUIForUnlockedList();
 			}
@@ -189,13 +189,14 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 						ListBuilderComponent.this.viewListAction();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {
 						ListBuilderComponent.this.copyToNewListFromInventoryViewAction();
-					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
+					} else
+						if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
 						ListBuilderComponent.this.reserveInventoryAction();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
-						ListBuilderComponent.this.listInventoryTable.getTable().setValue(
-								ListBuilderComponent.this.listInventoryTable.getTable().getItemIds());
-					} else if (clickedItem.getName()
-							.equals(ListBuilderComponent.this.messageSource.getMessage(Message.CANCEL_RESERVATIONS))) {
+						ListBuilderComponent.this.listInventoryTable.getTable()
+								.setValue(ListBuilderComponent.this.listInventoryTable.getTable().getItemIds());
+					} else
+						if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.CANCEL_RESERVATIONS))) {
 						ListBuilderComponent.this.cancelReservationsAction();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESET_LIST))) {
 						ListBuilderComponent.this.resetButton.click();
@@ -223,16 +224,16 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 					final Table germplasmsTable = ListBuilderComponent.this.tableWithSelectAllLayout.getTable();
 					if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
 						germplasmsTable.setValue(germplasmsTable.getItemIds());
-					} else if (clickedItem.getName().equals(
-							ListBuilderComponent.this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES))) {
+					} else if (clickedItem.getName()
+							.equals(ListBuilderComponent.this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES))) {
 						ListBuilderComponent.this.deleteSelectedEntries();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.EXPORT_LIST))) {
 						ListBuilderComponent.this.exportListAction();
-					} else if (clickedItem.getName().equals(
-							ListBuilderComponent.this.messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER))) {
+					} else if (clickedItem.getName()
+							.equals(ListBuilderComponent.this.messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER))) {
 						ListBuilderComponent.this.exportListForGenotypingOrderAction();
-					} else if (clickedItem.getName().equals(
-							ListBuilderComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL))) {
+					} else if (clickedItem.getName()
+							.equals(ListBuilderComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL))) {
 						ListBuilderComponent.this.copyToNewListAction();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.INVENTORY_VIEW))) {
 						ListBuilderComponent.this.viewInventoryAction();
@@ -281,8 +282,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	public static final String GERMPLASMS_TABLE_DATA = "Germplasms Table Data";
 	static final Action ACTION_SELECT_ALL = new Action("Select All");
 	static final Action ACTION_DELETE_SELECTED_ENTRIES = new Action("Delete Selected Entries");
-	static final Action[] GERMPLASMS_TABLE_CONTEXT_MENU = new Action[] {ListBuilderComponent.ACTION_SELECT_ALL,
-			ListBuilderComponent.ACTION_DELETE_SELECTED_ENTRIES};
+	static final Action[] GERMPLASMS_TABLE_CONTEXT_MENU =
+			new Action[] {ListBuilderComponent.ACTION_SELECT_ALL, ListBuilderComponent.ACTION_DELETE_SELECTED_ENTRIES};
 	static final Action[] GERMPLASMS_TABLE_CONTEXT_MENU_LOCKED = new Action[] {ListBuilderComponent.ACTION_SELECT_ALL};
 
 	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
@@ -379,17 +380,15 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	@Override
 	public void instantiateComponents() {
 
-		this.unlockButton =
-				new IconButton(
-						"<span class='bms-locked' style='position: relative; top:5px; left: 2px; color: #666666;font-size: 16px; font-weight: bold;'></span>",
-						ListBuilderComponent.LOCK_TOOLTIP);
+		this.unlockButton = new IconButton(
+				"<span class='bms-locked' style='position: relative; top:5px; left: 2px; color: #666666;font-size: 16px; font-weight: bold;'></span>",
+				ListBuilderComponent.LOCK_TOOLTIP);
 		this.unlockButton.setData(ListBuilderComponent.UNLOCK_BUTTON_ID);
 		this.unlockButton.setVisible(false);
 
-		this.lockButton =
-				new IconButton(
-						"<span class='bms-lock-open' style='position: relative; top:5px; left: 2px; left: 2px; color: #666666;font-size: 16px; font-weight: bold;'></span>",
-						ListBuilderComponent.LOCK_TOOLTIP);
+		this.lockButton = new IconButton(
+				"<span class='bms-lock-open' style='position: relative; top:5px; left: 2px; left: 2px; color: #666666;font-size: 16px; font-weight: bold;'></span>",
+				ListBuilderComponent.LOCK_TOOLTIP);
 		this.lockButton.setData(ListBuilderComponent.LOCK_BUTTON_ID);
 		this.lockButton.setVisible(false);
 
@@ -481,10 +480,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.inventoryViewToolsButton = new ActionButton();
 		this.inventoryViewToolsButton.setData(ListBuilderComponent.TOOLS_BUTTON_ID);
 
-		this.dropHandler =
-				new BuildNewListDropHandler(this.source, this.germplasmDataManager, this.germplasmListManager, this.inventoryDataManager,
-						this.pedigreeService, this.crossExpansionProperties, this.tableWithSelectAllLayout.getTable(),
-						this.transactionManager);
+		this.dropHandler = new BuildNewListDropHandler(this.source, this.germplasmDataManager, this.germplasmListManager,
+				this.inventoryDataManager, this.pedigreeService, this.crossExpansionProperties, this.tableWithSelectAllLayout.getTable(),
+				this.transactionManager);
 
 		this.saveButton = new Button();
 		this.saveButton.setCaption(this.messageSource.getMessage(Message.SAVE_LABEL));
@@ -907,8 +905,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 
 	private void updateNoOfSelectedEntries(final int count) {
-		this.totalSelectedListEntriesLabel.setValue("<i>" + this.messageSource.getMessage(Message.SELECTED) + ": " + "  <b>" + count
-				+ "</b></i>");
+		this.totalSelectedListEntriesLabel
+				.setValue("<i>" + this.messageSource.getMessage(Message.SELECTED) + ": " + "  <b>" + count + "</b></i>");
 	}
 
 	private void updateNoOfSelectedEntries() {
@@ -1028,10 +1026,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		// Rename the Build New List Header
 		this.buildNewListTitle.setValue(this.messageSource.getMessage(Message.BUILD_A_NEW_LIST));
 
-		this.dropHandler =
-				new BuildNewListDropHandler(this.source, this.germplasmDataManager, this.germplasmListManager, this.inventoryDataManager,
-						this.pedigreeService, this.crossExpansionProperties, this.tableWithSelectAllLayout.getTable(),
-						this.transactionManager);
+		this.dropHandler = new BuildNewListDropHandler(this.source, this.germplasmDataManager, this.germplasmListManager,
+				this.inventoryDataManager, this.pedigreeService, this.crossExpansionProperties, this.tableWithSelectAllLayout.getTable(),
+				this.transactionManager);
 		this.initializeHandlers();
 
 		// Reset Save Listener
@@ -1187,8 +1184,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 				MessageNotifier.showRequiredFieldError(this.source.getWindow(),
 						this.messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
 			} else {
-				this.listManagerCopyToListDialog =
-						new BaseSubWindow(this.messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
+				this.listManagerCopyToListDialog = new BaseSubWindow(this.messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
 				this.listManagerCopyToListDialog.setModal(true);
 				this.listManagerCopyToListDialog.setWidth("617px");
 				this.listManagerCopyToListDialog.setHeight("230px");
@@ -1326,9 +1322,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		if (!this.hasUnsavedChanges()) {
 			this.source.setModeView(ModeView.LIST_VIEW);
 		} else {
-			final String message =
-					"You have unsaved reservations for this list. " + "You will need to save them before changing views. "
-							+ "Do you want to save your changes?";
+			final String message = "You have unsaved reservations for this list. " + "You will need to save them before changing views. "
+					+ "Do you want to save your changes?";
 			this.source.showUnsavedChangesConfirmDialog(message, ModeView.LIST_VIEW);
 		}
 	}
@@ -1429,17 +1424,16 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			this.saveList(this.currentlySavedGermplasmList, false);
 
 			for (final ListDataAndLotDetails listDataAndLotDetail : listDataAndLotDetails) {
-				this.listInventoryTable.getInventoryTableDropHandler().assignLrecIdToRowsFromListWithEntryId(
-						listDataAndLotDetail.getListId(), listDataAndLotDetail.getEntryId());
+				this.listInventoryTable.getInventoryTableDropHandler()
+						.assignLrecIdToRowsFromListWithEntryId(listDataAndLotDetail.getListId(), listDataAndLotDetail.getEntryId());
 			}
 
 			this.listInventoryTable.getInventoryTableDropHandler().resetListDataAndLotDetails();
 
 			this.reserveInventoryAction = new ReserveInventoryAction(this);
 
-			final boolean success =
-					this.reserveInventoryAction.saveReserveTransactions(this.getValidReservationsToSave(),
-							this.currentlySavedGermplasmList.getId());
+			final boolean success = this.reserveInventoryAction.saveReserveTransactions(this.getValidReservationsToSave(),
+					this.currentlySavedGermplasmList.getId());
 
 			if (success) {
 				this.refreshInventoryColumns(this.getValidReservationsToSave());
@@ -1507,9 +1501,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		List<GermplasmListData> germplasmListDataEntries = new ArrayList<GermplasmListData>();
 		try {
 			if (!entryIds.isEmpty()) {
-				germplasmListDataEntries =
-						this.inventoryDataManager.getLotCountsForListEntries(this.currentlySavedGermplasmList.getId(),
-								new ArrayList<Integer>(entryIds));
+				germplasmListDataEntries = this.inventoryDataManager.getLotCountsForListEntries(this.currentlySavedGermplasmList.getId(),
+						new ArrayList<Integer>(entryIds));
 			}
 		} catch (final MiddlewareQueryException e) {
 			ListBuilderComponent.LOG.error(e.getMessage(), e);
@@ -1526,9 +1519,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 				availInv = listData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
 			}
 
-			final Button inventoryButton =
-					new Button(availInv, new InventoryLinkButtonClickListener(this.source, this.currentlySavedGermplasmList.getId(),
-							listData.getId(), listData.getGid()));
+			final Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(this.source,
+					this.currentlySavedGermplasmList.getId(), listData.getId(), listData.getGid()));
 
 			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 			inventoryButton.setDescription("Click to view Inventory Details");
@@ -1589,11 +1581,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 		// if there are no valid reservations
 		if (validReservations.isEmpty()) {
-			MessageNotifier
-					.showRequiredFieldError(
-							this.getWindow(),
-							this.messageSource
-									.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES) + ".");
+			MessageNotifier.showRequiredFieldError(this.getWindow(),
+					this.messageSource.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES)
+							+ ".");
 
 		} else if (!withInvalidReservations) {
 			MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
