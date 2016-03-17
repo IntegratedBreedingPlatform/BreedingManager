@@ -102,7 +102,7 @@ public class ParentTabComponentTest {
 
 	private ParentTabComponent parentTabComponent;
 	private CrossingManagerMakeCrossesComponent makeCrossesMain;
-	GermplasmListTestDataInitializer germplasmListTestDataInitializer;
+	private GermplasmListTestDataInitializer germplasmListTestDataInitializer;
 
 	@Before
 	public void setUp() {

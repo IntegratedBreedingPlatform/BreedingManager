@@ -85,7 +85,7 @@ public class SaveGermplasmListActionTest {
 	private List<Name> newNames;
 	private List<Integer> doNotCreateGermplasmsWithId;
 	private ImportedGermplasmList importedGermplasmList;
-	GermplasmListTestDataInitializer germplasmListTestDataInitializer;
+	private GermplasmListTestDataInitializer germplasmListTestDataInitializer;
 
 	@Before
 	public void setup() {
