@@ -324,14 +324,14 @@ public class SaveGermplasmListActionTest {
 
 		when(auditor.audit(any(Name.class))).thenThrow(new AuditoryException(Auditor.MISSUSE_OF_AUDITOR_COMPONENT));
 
-		List<Name> names = null;
+
 		try {
-			names = action.prepareAllNamesToAdd(imported, new ArrayList<UserDefinedField>(), new Germplasm());
+			action.prepareAllNamesToAdd(imported, new ArrayList<UserDefinedField>(), new Germplasm());
 			fail("Should have failed");
 		} catch (BreedingManagerException e) {
 			assertThat(e).hasMessage(action.NAME_COULD_NOT_BE_AUDITED);
 		}
-		assertThat(names).isNullOrEmpty();
+
 	}
 
 	@Test
