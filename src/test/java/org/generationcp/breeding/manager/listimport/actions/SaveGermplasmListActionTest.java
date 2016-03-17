@@ -47,6 +47,7 @@ import com.google.common.collect.Maps;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -343,6 +344,18 @@ public class SaveGermplasmListActionTest {
 		action.processGermplasmNamesAndLots(nameObjects,notCreate,location,filename);
 
 		verify(auditor).audit(germplasm);
+
+	}
+
+
+	@Test
+	public void auditoryIsCreatedAndClosedWhenSavingGermplasmListRecords() throws AuditoryException, BreedingManagerException {
+
+		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, SOURCE_LIST_XLS,
+				this.doNotCreateGermplasmsWithId, this.importedGermplasmList, SEED_STORAGE_LOCATION);
+
+		verify(auditor).startAuditory(anyString(),anyString());
+		verify(auditor).closeAuditory();
 
 	}
 
