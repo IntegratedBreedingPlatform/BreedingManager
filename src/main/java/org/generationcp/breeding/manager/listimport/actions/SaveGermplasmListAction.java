@@ -71,6 +71,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	private static final long serialVersionUID = -6273933938066390358L;
 	public static final String ATTRIBUTE_COULD_NOT_BE_AUDITED = "Attribute could not be audited";
 	public static final String NAME_COULD_NOT_BE_AUDITED = "Name could not be audited";
+	public static final String AUDITORY_NOT_STARTED_ERROR = "The BMS could not create the bibliographic reference.";
 
 	@Autowired
 	private GermplasmListManager germplasmListManager;
@@ -139,7 +140,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 			auditor.startAuditory(this.contextUtil.getCurrentWorkbenchUsername(),filename);
 		} catch (AuditoryException e) {
 			e.printStackTrace();
-			throw new BreedingManagerException("The BMS could not create the bibliographic reference.");
+			throw new BreedingManagerException(AUDITORY_NOT_STARTED_ERROR);
 		}
 		this.processVariates(importedGermplasmList);
 

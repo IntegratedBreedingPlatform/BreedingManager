@@ -11,6 +11,7 @@ import org.generationcp.breeding.manager.exception.BreedingManagerException;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.middleware.auditory.Auditable;
 import org.generationcp.middleware.auditory.Auditor;
 import org.generationcp.middleware.auditory.AuditoryException;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
@@ -48,6 +49,8 @@ import static org.fest.assertions.api.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -67,10 +70,12 @@ public class SaveGermplasmListActionTest {
 	public static final String SOURCE_LIST_XLS = "SourceList.xls";
 	public static final String DUMMY_VALUE = "DUMMY_VALUE";
 	public static final String DUMMY_VARIATE = "DUMMY_VARIATE";
-	public static final int DUMMY_AID = 10;
 	private static final int DUMMY_NID = 10;
 	private static final String DUMMY_NAME = "DUMMY_NAME";
 	public static final int DUMMY_GID = 0;
+	public static final int DUMMY_AID = 10;
+	public static final int DUMMY_REFERENCE_ID = 1;
+	public static final int ONE_ENTRY= 1;
 
 	@Mock
 	private GermplasmListManager germplasmListManager;
@@ -330,7 +335,7 @@ public class SaveGermplasmListActionTest {
 	}
 
 	@Test
-	public void processGermplasmNamesAndLotsGermplasmIsAudited() throws BreedingManagerException, AuditoryException {
+	public void germplasmIsAuditedWhenGermplasmNamesAndLotsAreProcessed() throws BreedingManagerException, AuditoryException {
 
 		String filename="";
 		int location=10;
@@ -347,12 +352,27 @@ public class SaveGermplasmListActionTest {
 
 	}
 
+	@Test
+	public void failSavingGermplasmListRecordsWhenAuditoryCouldNotBeStarted() throws AuditoryException {
+
+		when(auditor.startAuditory(anyString(),anyString())).thenThrow(AuditoryException.class);
+
+		try {
+			this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, SOURCE_LIST_XLS,
+					this.doNotCreateGermplasmsWithId, importedGermplasmList, SEED_STORAGE_LOCATION);
+		} catch (BreedingManagerException e) {
+			assertThat(e).hasMessage("The BMS could not create the bibliographic reference.");
+		}
+		verify(germplasmManager,never()).addGermplasmAttribute(any(List.class));
+		verify(auditor,never()).closeAuditory();
+	}
 
 	@Test
 	public void auditoryIsCreatedAndClosedWhenSavingGermplasmListRecords() throws AuditoryException, BreedingManagerException {
 
 		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, SOURCE_LIST_XLS,
-				this.doNotCreateGermplasmsWithId, this.importedGermplasmList, SEED_STORAGE_LOCATION);
+				this.doNotCreateGermplasmsWithId, importedGermplasmList, SEED_STORAGE_LOCATION);
+
 
 		verify(auditor).startAuditory(anyString(),anyString());
 		verify(auditor).closeAuditory();
