@@ -23,7 +23,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.exceptions.verification.TooLittleActualInvocations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.vaadin.peter.contextmenu.ContextMenu;
@@ -97,7 +96,7 @@ public class MakeCrossesParentsComponentTest {
 		this.makeCrossesParentsComponent.setMaleParentTab(this.maleParentTab);
 		this.makeCrossesParentsComponent.setFemaleParentTab(this.femaleParentTab);
 
-		this.germplasmList = this.germplasmListTestDataInitializer.createGermplasmList(GERMPLASM_LIST_ID);
+		this.germplasmList = this.germplasmListTestDataInitializer.createGermplasmList(MakeCrossesParentsComponentTest.GERMPLASM_LIST_ID);
 		this.sourceTable = this.createSourceTable();
 		this.createContextMenuOnParentTab(this.femaleParentTab);
 		this.createContextMenuOnParentTab(this.maleParentTab);
@@ -121,7 +120,7 @@ public class MakeCrossesParentsComponentTest {
 		sourceTable.setSelectable(true);
 		sourceTable.setMultiSelect(true);
 
-		sourceTable.addContainerProperty(CHECKBOX_COLUMN_ID, CheckBox.class, null);
+		sourceTable.addContainerProperty(MakeCrossesParentsComponentTest.CHECKBOX_COLUMN_ID, CheckBox.class, null);
 		sourceTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
 		sourceTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
 		sourceTable.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Button.class, null);
@@ -132,7 +131,7 @@ public class MakeCrossesParentsComponentTest {
 		sourceTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
 		sourceTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
 
-		sourceTable.setColumnHeader(CHECKBOX_COLUMN_ID, this.messageSource.getMessage(Message.CHECK_ICON));
+		sourceTable.setColumnHeader(MakeCrossesParentsComponentTest.CHECKBOX_COLUMN_ID, this.messageSource.getMessage(Message.CHECK_ICON));
 		sourceTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), this.messageSource.getMessage(Message.HASHTAG));
 		sourceTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(), ColumnLabels.DESIGNATION.getName());
 		sourceTable.setColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName(), ColumnLabels.AVAILABLE_INVENTORY.getName());
@@ -144,7 +143,7 @@ public class MakeCrossesParentsComponentTest {
 		sourceTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(), ColumnLabels.SEED_SOURCE.getName());
 
 		// init entries
-		for (int i = 1; i <= NO_OF_ENTRIES; i++) {
+		for (int i = 1; i <= MakeCrossesParentsComponentTest.NO_OF_ENTRIES; i++) {
 			final Item newItem = sourceTable.getContainerDataSource().addItem(i);
 			newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(i);
 
@@ -158,10 +157,10 @@ public class MakeCrossesParentsComponentTest {
 			final Button inventoryButton = new Button(availInv, inventoryLinkButtonClickListener);
 			inventoryButton.setData(inventoryLinkButtonClickListener);
 			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-			inventoryButton.setDescription(CLICK_TO_VIEW_INVENTORY_DETAILS);
+			inventoryButton.setDescription(MakeCrossesParentsComponentTest.CLICK_TO_VIEW_INVENTORY_DETAILS);
 
 			newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-			newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(STRING_DASH);
+			newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(MakeCrossesParentsComponentTest.STRING_DASH);
 
 			final Button gidButton = new Button();
 			gidButton.setCaption(String.valueOf(i));
@@ -190,7 +189,7 @@ public class MakeCrossesParentsComponentTest {
 		parentTable.setColumnHeader(ColumnLabels.STOCKID.getName(), ColumnLabels.STOCKID.getName());
 
 		// init entries
-		for (int i = 1; i <= NO_OF_ENTRIES; i++) {
+		for (int i = 1; i <= MakeCrossesParentsComponentTest.NO_OF_ENTRIES; i++) {
 			this.addItemToParentTable(i, parentTable);
 		}
 		return parentTable;
@@ -226,7 +225,8 @@ public class MakeCrossesParentsComponentTest {
 		this.testUpdateParentTabForUnsavedChanges(this.maleParentTab, this.maleParent, "Male");
 	}
 
-	private void testUpdateParentTabForUnsavedChanges(final ParentTabComponent parentTab, final Table parentTable, final String parentType) {
+	private void testUpdateParentTabForUnsavedChanges(final ParentTabComponent parentTab, final Table parentTable,
+			final String parentType) {
 		Mockito.doNothing().when(parentTab).setHasUnsavedChanges(true);
 
 		// test method
@@ -245,7 +245,7 @@ public class MakeCrossesParentsComponentTest {
 		this.makeCrossesParentsComponent.clearSeedReservationValues(this.femaleParent);
 		final String actualValue =
 				(String) this.femaleParent.getItem(entryObject).getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue();
-		Assert.assertEquals("Expecting that the value is set to '-' but didn't.", STRING_DASH, actualValue);
+		Assert.assertEquals("Expecting that the value is set to '-' but didn't.", MakeCrossesParentsComponentTest.STRING_DASH, actualValue);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -303,7 +303,7 @@ public class MakeCrossesParentsComponentTest {
 			final String parentType) {
 		parentTable.removeAllItems();
 
-		for (int i = 1; i <= NO_OF_ENTRIES; i++) {
+		for (int i = 1; i <= MakeCrossesParentsComponentTest.NO_OF_ENTRIES; i++) {
 			this.sourceTable.select(i);
 		}
 
@@ -311,8 +311,8 @@ public class MakeCrossesParentsComponentTest {
 
 		Assert.assertEquals("Expecting that the entries of sourceTable has the same number of entries of " + parentType + " table",
 				this.sourceTable.size(), parentTable.size());
-		Assert.assertFalse("Expecting that the Save List option in " + parentType + "tab is disabled but didn't. ", parentTab
-				.getSaveActionMenu().isEnabled());
+		Assert.assertFalse("Expecting that the Save List option in " + parentType + "tab is disabled but didn't. ",
+				parentTab.getSaveActionMenu().isEnabled());
 	}
 
 	@Test
@@ -341,37 +341,39 @@ public class MakeCrossesParentsComponentTest {
 	@Test
 	public void testAddListToMaleTable() {
 		Mockito.doReturn(ModeView.LIST_VIEW).when(this.makeCrossesMain).getModeView();
-		Mockito.doReturn(this.germplasmList).when(this.germplasmListManager).getGermplasmListById(GERMPLASM_LIST_ID);
+		Mockito.doReturn(this.germplasmList).when(this.germplasmListManager)
+				.getGermplasmListById(MakeCrossesParentsComponentTest.GERMPLASM_LIST_ID);
 		Mockito.doReturn(ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails()).when(this.inventoryDataManager)
-				.getLotCountsForList(GERMPLASM_LIST_ID, 0, Integer.MAX_VALUE);
+				.getLotCountsForList(MakeCrossesParentsComponentTest.GERMPLASM_LIST_ID, 0, Integer.MAX_VALUE);
 
 		final int beforeSize = this.maleParent.size();
-		this.makeCrossesParentsComponent.addListToMaleTable(GERMPLASM_LIST_ID);
+		this.makeCrossesParentsComponent.addListToMaleTable(MakeCrossesParentsComponentTest.GERMPLASM_LIST_ID);
 		final int afterSize = this.maleParent.size();
 
-		Assert.assertEquals("Expecting that all entries of source germplasm list are added to male table but didn't.", beforeSize
-				+ NO_OF_ENTRIES, afterSize);
+		Assert.assertEquals("Expecting that all entries of source germplasm list are added to male table but didn't.",
+				beforeSize + MakeCrossesParentsComponentTest.NO_OF_ENTRIES, afterSize);
 	}
 
 	@Test
 	public void testAddListToFemaleTable() {
 		Mockito.doReturn(ModeView.LIST_VIEW).when(this.makeCrossesMain).getModeView();
-		Mockito.doReturn(this.germplasmList).when(this.germplasmListManager).getGermplasmListById(GERMPLASM_LIST_ID);
+		Mockito.doReturn(this.germplasmList).when(this.germplasmListManager)
+				.getGermplasmListById(MakeCrossesParentsComponentTest.GERMPLASM_LIST_ID);
 		Mockito.doReturn(ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails()).when(this.inventoryDataManager)
-				.getLotCountsForList(GERMPLASM_LIST_ID, 0, Integer.MAX_VALUE);
+				.getLotCountsForList(MakeCrossesParentsComponentTest.GERMPLASM_LIST_ID, 0, Integer.MAX_VALUE);
 
 		final int beforeSize = this.femaleParent.size();
-		this.makeCrossesParentsComponent.addListToFemaleTable(GERMPLASM_LIST_ID);
+		this.makeCrossesParentsComponent.addListToFemaleTable(MakeCrossesParentsComponentTest.GERMPLASM_LIST_ID);
 		final int afterSize = this.femaleParent.size();
 
-		Assert.assertEquals("Expecting that all entries of source germplasm list are added to female table but didn't.", beforeSize
-				+ NO_OF_ENTRIES, afterSize);
+		Assert.assertEquals("Expecting that all entries of source germplasm list are added to female table but didn't.",
+				beforeSize + MakeCrossesParentsComponentTest.NO_OF_ENTRIES, afterSize);
 	}
 
 	private GermplasmListEntry addItemToParentTable(final int id, final Table parentTable) {
 		final GermplasmListEntry entryObject = new GermplasmListEntry(id, id, id, "Designation", "List Name: " + id);
 		final Item newItem = parentTable.addItem(entryObject);
-		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(STOCK_ID);
+		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(MakeCrossesParentsComponentTest.STOCK_ID);
 		return entryObject;
 	}
 }

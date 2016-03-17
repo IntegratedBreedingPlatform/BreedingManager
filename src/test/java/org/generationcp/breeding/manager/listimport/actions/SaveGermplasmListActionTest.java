@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.exceptions.verification.NeverWantedButInvoked;
@@ -85,26 +86,30 @@ public class SaveGermplasmListActionTest {
 	private List<Integer> doNotCreateGermplasmsWithId;
 	private ImportedGermplasmList importedGermplasmList;
 	GermplasmListTestDataInitializer germplasmListTestDataInitializer;
-	
+
 	@Before
 	public void setup() {
 		this.germplasmListTestDataInitializer = new GermplasmListTestDataInitializer();
-		this.germplasmList = this.germplasmListTestDataInitializer.createGermplasmList(LIST_ID);
-		this.importedGermplasmList = ImportedGermplasmListDataInitializer.createImportedGermplasmList(NO_OF_ENTRIES, true);
-		this.germplasmNameObjects = ImportedGermplasmListDataInitializer.createGermplasmNameObjects(NO_OF_ENTRIES);
+		this.germplasmList = this.germplasmListTestDataInitializer.createGermplasmList(SaveGermplasmListActionTest.LIST_ID);
+		this.importedGermplasmList =
+				ImportedGermplasmListDataInitializer.createImportedGermplasmList(SaveGermplasmListActionTest.NO_OF_ENTRIES, true);
+		this.germplasmNameObjects =
+				ImportedGermplasmListDataInitializer.createGermplasmNameObjects(SaveGermplasmListActionTest.NO_OF_ENTRIES);
 		this.doNotCreateGermplasmsWithId = ImportedGermplasmListDataInitializer.createListOfGemplasmIds(2);
-		this.newNames = GermplasmTestDataInitializer.createNameList(NO_OF_ENTRIES);
+		this.newNames = GermplasmTestDataInitializer.createNameList(SaveGermplasmListActionTest.NO_OF_ENTRIES);
 
-		Mockito.doReturn(PROGRAM_UUID).when(this.contextUtil).getCurrentProgramUUID();
-		Mockito.doReturn(CURRENT_LOCAL_ID).when(this.contextUtil).getCurrentUserLocalId();
-		Mockito.doReturn(new ArrayList<UserDefinedField>()).when(this.germplasmManager)
-				.getUserDefinedFieldByFieldTableNameAndType(FTABLE_ATTRIBUTE, FTYPE_ATTRIBUTE);
-		Mockito.doReturn(new ArrayList<UserDefinedField>()).when(this.germplasmManager)
-				.getUserDefinedFieldByFieldTableNameAndType(FTABLE_ATTRIBUTE, FTYPE_PASSPORT);
-		Mockito.doReturn(SAVED_GERMPLASM_LIST_ID).when(this.germplasmListManager).addGermplasmList(Mockito.any(GermplasmList.class));
-		Mockito.doReturn(this.germplasmList).when(this.germplasmListManager).getGermplasmListById(SAVED_GERMPLASM_LIST_ID);
+		Mockito.doReturn(SaveGermplasmListActionTest.PROGRAM_UUID).when(this.contextUtil).getCurrentProgramUUID();
+		Mockito.doReturn(SaveGermplasmListActionTest.CURRENT_LOCAL_ID).when(this.contextUtil).getCurrentUserLocalId();
+		Mockito.doReturn(new ArrayList<UserDefinedField>()).when(this.germplasmManager).getUserDefinedFieldByFieldTableNameAndType(
+				SaveGermplasmListActionTest.FTABLE_ATTRIBUTE, SaveGermplasmListActionTest.FTYPE_ATTRIBUTE);
+		Mockito.doReturn(new ArrayList<UserDefinedField>()).when(this.germplasmManager).getUserDefinedFieldByFieldTableNameAndType(
+				SaveGermplasmListActionTest.FTABLE_ATTRIBUTE, SaveGermplasmListActionTest.FTYPE_PASSPORT);
+		Mockito.doReturn(SaveGermplasmListActionTest.SAVED_GERMPLASM_LIST_ID).when(this.germplasmListManager)
+				.addGermplasmList(Matchers.any(GermplasmList.class));
+		Mockito.doReturn(this.germplasmList).when(this.germplasmListManager)
+				.getGermplasmListById(SaveGermplasmListActionTest.SAVED_GERMPLASM_LIST_ID);
 
-		for (int i = 1; i <= NO_OF_ENTRIES; i++) {
+		for (int i = 1; i <= SaveGermplasmListActionTest.NO_OF_ENTRIES; i++) {
 			Mockito.doReturn(GermplasmTestDataInitializer.createGermplasm(i)).when(this.germplasmManager).getGermplasmByGID(i);
 		}
 
@@ -136,13 +141,15 @@ public class SaveGermplasmListActionTest {
 
 	@Test
 	public void testSaveRecordsWhenOverridingExistingListUsingTheImportedGermplasmList() throws BreedingManagerException {
-		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, SOURCE_LIST_XLS,
-				this.doNotCreateGermplasmsWithId, this.importedGermplasmList, SEED_STORAGE_LOCATION);
+		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, SaveGermplasmListActionTest.SOURCE_LIST_XLS,
+				this.doNotCreateGermplasmsWithId, this.importedGermplasmList, SaveGermplasmListActionTest.SEED_STORAGE_LOCATION);
 
 		try {
-			Mockito.verify(this.germplasmListManager, Mockito.times(1)).deleteGermplasmListDataByListId(SAVED_GERMPLASM_LIST_ID);
+			Mockito.verify(this.germplasmListManager, Mockito.times(1))
+					.deleteGermplasmListDataByListId(SaveGermplasmListActionTest.SAVED_GERMPLASM_LIST_ID);
 		} catch (final TooLittleActualInvocations e) {
-			Assert.fail("Expecting that the list entries of the existing list are marked deleted after trying to overwrite a list using germplasm import.");
+			Assert.fail(
+					"Expecting that the list entries of the existing list are marked deleted after trying to overwrite a list using germplasm import.");
 		}
 
 	}
@@ -151,15 +158,16 @@ public class SaveGermplasmListActionTest {
 	public void testBlankSourceSaving() throws BreedingManagerException {
 		final ArgumentCaptor<GermplasmListData> listData = ArgumentCaptor.forClass(GermplasmListData.class);
 
-		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, SOURCE_LIST_XLS,
-				this.doNotCreateGermplasmsWithId, this.importedGermplasmList, SEED_STORAGE_LOCATION);
+		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, SaveGermplasmListActionTest.SOURCE_LIST_XLS,
+				this.doNotCreateGermplasmsWithId, this.importedGermplasmList, SaveGermplasmListActionTest.SEED_STORAGE_LOCATION);
 
 		try {
 			Mockito.verify(this.germplasmListManager, Mockito.atLeastOnce()).addGermplasmListData(listData.capture());
-			Assert.assertEquals("Imported germplasm data with null or empty source must be saved as blank", "", listData.getValue()
-					.getSeedSource());
+			Assert.assertEquals("Imported germplasm data with null or empty source must be saved as blank", "",
+					listData.getValue().getSeedSource());
 		} catch (final TooLittleActualInvocations e) {
-			Assert.fail("Expecting that the list entries of the existing list are marked deleted after trying to overwrite a list using germplasm import.");
+			Assert.fail(
+					"Expecting that the list entries of the existing list are marked deleted after trying to overwrite a list using germplasm import.");
 		}
 	}
 
@@ -169,29 +177,31 @@ public class SaveGermplasmListActionTest {
 
 		// provide a non null source value
 		for (final ImportedGermplasm importedGermplasm : this.importedGermplasmList.getImportedGermplasms()) {
-			importedGermplasm.setSource(TEST_SOURCE);
+			importedGermplasm.setSource(SaveGermplasmListActionTest.TEST_SOURCE);
 		}
 
-		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, SOURCE_LIST_XLS,
-				this.doNotCreateGermplasmsWithId, this.importedGermplasmList, SEED_STORAGE_LOCATION);
+		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, SaveGermplasmListActionTest.SOURCE_LIST_XLS,
+				this.doNotCreateGermplasmsWithId, this.importedGermplasmList, SaveGermplasmListActionTest.SEED_STORAGE_LOCATION);
 
 		try {
 			Mockito.verify(this.germplasmListManager, Mockito.atLeastOnce()).addGermplasmListData(listData.capture());
-			Assert.assertEquals("Imported germplasm data with non empty source must use that value", TEST_SOURCE, listData.getValue()
-					.getSeedSource());
+			Assert.assertEquals("Imported germplasm data with non empty source must use that value",
+					SaveGermplasmListActionTest.TEST_SOURCE, listData.getValue().getSeedSource());
 		} catch (final TooLittleActualInvocations e) {
-			Assert.fail("Expecting that the list entries of the existing list are marked deleted after trying to overwrite a list using germplasm import.");
+			Assert.fail(
+					"Expecting that the list entries of the existing list are marked deleted after trying to overwrite a list using germplasm import.");
 		}
 	}
 
 	@Test
 	public void testSaveRecordsWhenOverridingNewListUsingTheImportedGermplasmList() throws BreedingManagerException {
 		this.germplasmList.setId(null);
-		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, SOURCE_LIST_XLS,
-				this.doNotCreateGermplasmsWithId, this.importedGermplasmList, SEED_STORAGE_LOCATION);
+		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, SaveGermplasmListActionTest.SOURCE_LIST_XLS,
+				this.doNotCreateGermplasmsWithId, this.importedGermplasmList, SaveGermplasmListActionTest.SEED_STORAGE_LOCATION);
 
 		try {
-			Mockito.verify(this.germplasmListManager, Mockito.times(0)).deleteGermplasmListDataByListId(SAVED_GERMPLASM_LIST_ID);
+			Mockito.verify(this.germplasmListManager, Mockito.times(0))
+					.deleteGermplasmListDataByListId(SaveGermplasmListActionTest.SAVED_GERMPLASM_LIST_ID);
 		} catch (final NeverWantedButInvoked e) {
 			Assert.fail("Expecting that there is no existing list entries to mark as deleted for new list using germplasm import.");
 		}
@@ -207,8 +217,8 @@ public class SaveGermplasmListActionTest {
 		this.action.updateExportedGermplasmPreferredName(preferredNameCode, importedGermplasmList.getImportedGermplasms());
 
 		try {
-			Mockito.verify(this.germplasmManager, Mockito.times(noOfEntries))
-					.updateGermplasmPrefName(Mockito.anyInt(), Mockito.anyString());
+			Mockito.verify(this.germplasmManager, Mockito.times(noOfEntries)).updateGermplasmPrefName(Matchers.anyInt(),
+					Matchers.anyString());
 		} catch (final TooLittleActualInvocations e) {
 			Assert.fail("Not all germplasm's name are updated");
 		}
@@ -223,7 +233,7 @@ public class SaveGermplasmListActionTest {
 		this.action.updateExportedGermplasmPreferredName(preferredNameCode, importedGermplasmList.getImportedGermplasms());
 
 		try {
-			Mockito.verify(this.germplasmManager, Mockito.times(0)).updateGermplasmPrefName(Mockito.anyInt(), Mockito.anyString());
+			Mockito.verify(this.germplasmManager, Mockito.times(0)).updateGermplasmPrefName(Matchers.anyInt(), Matchers.anyString());
 		} catch (final TooLittleActualInvocations e) {
 			Assert.fail("No germplasm's will be updated.");
 		}
