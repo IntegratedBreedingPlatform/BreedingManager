@@ -50,7 +50,7 @@ public class GermplasmGroupingComponentTest {
 		this.germplasmGroupingComponent.setMessageSource(this.messageSource);
 
 		// This is what spying is used for.
-		Mockito.doNothing().when(this.germplasmGroupingComponent).reportSuccessAndClose();
+		Mockito.doNothing().when(this.germplasmGroupingComponent).reportSuccessAndClose(Mockito.anyMap());
 	}
 
 	@Test

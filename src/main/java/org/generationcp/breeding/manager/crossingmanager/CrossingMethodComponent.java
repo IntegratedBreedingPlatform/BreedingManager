@@ -44,6 +44,7 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 	private ComboBox crossingMethodComboBox;
 	private CheckBox chkBoxMakeReciprocalCrosses;
 	private CheckBox chkBoxExcludeSelf;
+
 	private Button btnMakeCross;
 
 	private final CrossingManagerMakeCrossesComponent makeCrossesMain;
@@ -158,5 +159,4 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 			}
 		}
 	}
-
 }
