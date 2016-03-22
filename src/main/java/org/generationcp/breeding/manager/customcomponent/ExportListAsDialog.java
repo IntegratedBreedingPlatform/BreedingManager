@@ -10,6 +10,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.breeding.manager.util.FileDownloaderUtility;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.constant.ToolEnum;
@@ -302,8 +303,10 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 
 			try {
 				this.germplasmListExporter.exportKBioScienceGenotypingOrderXLS(this.germplasmList.getId(), tempFileName, 96);
+
+				final String userAgent = BreedingManagerUtil.getApplicationRequest().getHeader("User-Agent");
 				final FileDownloadResource fileDownloadResource =
-						new FileDownloadResource(new File(tempFileName), this.source.getApplication());
+						new FileDownloadResource(new File(tempFileName), this.source.getApplication(), userAgent);
 				final String listName = this.germplasmList.getName();
 				fileDownloadResource.setFilename(FileUtils.encodeFilenameForDownload(listName).replace(" ", "_") + "ForGenotyping.xls");
 
@@ -321,8 +324,9 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	}
 
 	protected FileDownloadResource createFileDownloadResource() {
+		final String userAgent = BreedingManagerUtil.getApplicationRequest().getHeader("User-Agent");
 		final FileDownloadResource fileDownloadResource =
-				new FileDownloadResource(new File(ExportListAsDialog.TEMP_FILENAME), this.source.getApplication());
+				new FileDownloadResource(new File(ExportListAsDialog.TEMP_FILENAME), this.source.getApplication(), userAgent);
 		return fileDownloadResource;
 	}
 
