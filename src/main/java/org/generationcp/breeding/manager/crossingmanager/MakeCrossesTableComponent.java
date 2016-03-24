@@ -38,10 +38,7 @@ import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
-import org.generationcp.commons.parsing.pojo.ImportedCrosses;
-import org.generationcp.commons.service.GermplasmOriginGenerationParameters;
-import org.generationcp.commons.service.GermplasmOriginGenerationService;
-import org.generationcp.commons.service.GermplasmOriginParameterBuilder;
+import org.generationcp.commons.service.impl.seedsource.SeedSourceGenerator;
 import org.generationcp.commons.util.CrossingUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -112,10 +109,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 	private FieldbookService fieldbookMiddlewareService;
 
 	@Autowired
-	private GermplasmOriginGenerationService germplasmOriginGenerationService;
-
-	@Autowired
-	private GermplasmOriginParameterBuilder germplasmOriginParameterBuilder;
+	private SeedSourceGenerator seedSourceGenerator;
 
 	private Label lblReviewCrosses;
 	private BreedingManagerTable tableCrossesMade;
@@ -331,11 +325,8 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 			Workbook nurseryWorkbook = null;
 			nurseryWorkbook = this.fieldbookMiddlewareService.getNurseryDataSet(Integer.valueOf(nurseryId));
 			if (nurseryWorkbook != null) {
-				ImportedCrosses cross = new ImportedCrosses();
-
-				// Single nursery is in context here set the same name. For import crosses case, these could be different Nurseries.
-				cross.setMaleStudyName(nurseryWorkbook.getStudyName());
-				cross.setFemaleStudyName(nurseryWorkbook.getStudyName());
+				String malePlotNo = "";
+				String femalePlotNo = "";
 
 				// Look at the observation rows of Nursery to find plot number assigned to the male/female parent germplasm of the cross.
 				for (MeasurementRow row : nurseryWorkbook.getObservations()) {
@@ -344,22 +335,22 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 
 					if (gidData != null && gidData.getValue().equals(femaleParentGid.toString())) {
 						if (plotNumberData != null) {
-							cross.setFemalePlotNo(plotNumberData.getValue());
+							femalePlotNo = plotNumberData.getValue();
 						}
 					}
 
 					if (gidData != null && gidData.getValue().equals(maleParentGid.toString())) {
 						if (plotNumberData != null) {
-							cross.setMalePlotNo(plotNumberData.getValue());
+							malePlotNo = plotNumberData.getValue();
 						}
 					}
 				}
 
-				GermplasmOriginGenerationParameters seedSourceGenerationParameters =
-						this.germplasmOriginParameterBuilder.build(nurseryWorkbook, cross);
-				seedSourceGenerationParameters.setCross(true);
-				seedSourceGenerationParameters.setSelectionNumber(null);
-				seedSource = this.germplasmOriginGenerationService.generateOriginString(seedSourceGenerationParameters);
+				// Single nursery is in context here, so set the same study name as both male/female parts. For import crosses case, these
+				// could be different Nurseries.
+				seedSource =
+						this.seedSourceGenerator.generateSeedSourceForCross(nurseryWorkbook, malePlotNo, femalePlotNo,
+								nurseryWorkbook.getStudyName(), nurseryWorkbook.getStudyName());
 			}
 		}
 		return seedSource;
@@ -824,11 +815,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		this.fieldbookMiddlewareService = fieldbookMiddlewareService;
 	}
 
-	public void setGermplasmOriginGenerationService(GermplasmOriginGenerationService germplasmOriginGenerationService) {
-		this.germplasmOriginGenerationService = germplasmOriginGenerationService;
-	}
-
-	public void setGermplasmOriginParameterBuilder(GermplasmOriginParameterBuilder germplasmOriginParameterBuilder) {
-		this.germplasmOriginParameterBuilder = germplasmOriginParameterBuilder;
+	public void setSeedSourceGenerator(SeedSourceGenerator seedSourceGenerator) {
+		this.seedSourceGenerator = seedSourceGenerator;
 	}
 }
