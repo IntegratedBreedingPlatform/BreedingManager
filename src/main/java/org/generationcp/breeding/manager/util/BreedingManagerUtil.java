@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.dellroad.stuff.vaadin.ContextApplication;
-import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -405,13 +404,6 @@ public class BreedingManagerUtil {
 	}
 
 	public static HttpServletRequest getApplicationRequest() {
-		HttpServletRequest req = null;
-		try {
-			BreedingManagerApplication.get();
-			req = ContextApplication.currentRequest();
-		} catch (IllegalStateException e) {
-			BreedingManagerUtil.LOG.error(e.getMessage(), e);
-		}
-		return req;
+		return ContextApplication.currentRequest();
 	}
 }

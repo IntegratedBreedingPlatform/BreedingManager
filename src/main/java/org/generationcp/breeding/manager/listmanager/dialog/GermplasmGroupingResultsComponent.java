@@ -73,6 +73,7 @@ public class GermplasmGroupingResultsComponent extends BaseSubWindow implements 
 		this.groupingResultsTable.addContainerProperty("Group Id (MGID)", Integer.class, null);
 		this.groupingResultsTable.addContainerProperty("Total Members", Integer.class, null);
 		this.groupingResultsTable.addContainerProperty("Group Members", String.class, null);
+		this.groupingResultsTable.addContainerProperty("Notes", String.class, null);
 	}
 
 	@Override
@@ -107,8 +108,12 @@ public class GermplasmGroupingResultsComponent extends BaseSubWindow implements 
 				memberString.append("....");
 			}
 
-			this.groupingResultsTable.addItem(new Object[] {groupingResult.getFounderGid(), groupingResult.getGroupId(),
-					groupingResult.getGroupMembers().size(), memberString.toString()}, rowId++);
+			String notes =
+					groupingResult.getFounder().getMethod().isGenerative() ? this.messageSource
+							.getMessage(Message.GENERATIVE_GERMPLASM_NOT_GROUPED)
+							: "";
+			this.groupingResultsTable.addItem(new Object[] {groupingResult.getFounder().getGid(), groupingResult.getGroupId(),
+					groupingResult.getGroupMembers().size(), memberString.toString(), notes}, rowId++);
 		}
 		this.groupingResultsTable.setPageLength(rowId);
 	}
@@ -128,7 +133,7 @@ public class GermplasmGroupingResultsComponent extends BaseSubWindow implements 
 	@Override
 	public void layoutComponents() {
 		this.setModal(true);
-		this.setWidth("600px");
+		this.setWidth("800px");
 		this.setHeight("400px");
 		this.setResizable(false);
 		this.addStyleName(Reindeer.WINDOW_LIGHT);
