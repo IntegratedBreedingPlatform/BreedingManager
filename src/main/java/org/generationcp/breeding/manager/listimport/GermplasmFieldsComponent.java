@@ -16,6 +16,9 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.fields.BmsDateField;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.components.CodeNamesLocator;
+import org.generationcp.middleware.components.validator.ExecutionException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
@@ -39,6 +42,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmFieldsComponent.class);
 
 	private static final String DEFAULT_NAME_TYPE = "Line Name";
+	public static final String ERROR_MESSAGE_CAPTION = "Error!";
 
 	private Label addGermplasmDetailsLabel;
 	private Label addGermplasmDetailsMessage;
@@ -62,6 +66,9 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 
 	@Autowired
 	private ContextUtil contextUtil;
+
+	@Autowired
+	private CodeNamesLocator codeNamesLocator;
 
 	private Window parentWindow;
 
@@ -234,23 +241,26 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 	}
 
 	protected void populateNameTypes() {
-		List<UserDefinedField> userDefinedFieldList = this.germplasmListManager.getGermplasmNameTypes();
-		Integer firstId = null;
-		boolean hasDefault = false;
-		for (UserDefinedField userDefinedField : userDefinedFieldList) {
-			if (firstId == null) {
-				firstId = userDefinedField.getFldno();
+		List<UserDefinedField> userDefinedFieldList = null;
+		try {
+			userDefinedFieldList = codeNamesLocator.locateNonCodeNames();
+			boolean hasDefault = false;
+			for (UserDefinedField userDefinedField : userDefinedFieldList) {
+				this.nameTypeComboBox.addItem(userDefinedField.getFldno());
+				this.nameTypeComboBox.setItemCaption(userDefinedField.getFldno(), userDefinedField.getFname());
+				if (GermplasmFieldsComponent.DEFAULT_NAME_TYPE.equalsIgnoreCase(userDefinedField.getFname())) {
+					this.nameTypeComboBox.setValue(userDefinedField.getFldno());
+					hasDefault = true;
+				}
 			}
-			this.nameTypeComboBox.addItem(userDefinedField.getFldno());
-			this.nameTypeComboBox.setItemCaption(userDefinedField.getFldno(), userDefinedField.getFname());
-			if (GermplasmFieldsComponent.DEFAULT_NAME_TYPE.equalsIgnoreCase(userDefinedField.getFname())) {
-				this.nameTypeComboBox.setValue(userDefinedField.getFldno());
-				hasDefault = true;
+			if (!hasDefault && userDefinedFieldList.size()>0) {
+				this.nameTypeComboBox.setValue(userDefinedFieldList.get(0).getFldno());
 			}
+		} catch (ExecutionException e) {
+			MessageNotifier.showError(this.getWindow(), ERROR_MESSAGE_CAPTION,e.getMessage());
 		}
-		if (!hasDefault && firstId != null) {
-			this.nameTypeComboBox.setValue(firstId);
-		}
+
+
 	}
 
 	public void setGermplasmBreedingMethod(String breedingMethod) {
@@ -306,5 +316,9 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 
 	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
+	}
+
+	public void setCodeNamesLocator(CodeNamesLocator codeNamesLocator) {
+		this.codeNamesLocator = codeNamesLocator;
 	}
 }

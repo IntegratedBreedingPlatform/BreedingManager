@@ -11,6 +11,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.generationcp.breeding.manager.listimport.validator.StockIDValidator;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
+import org.generationcp.breeding.manager.validator.ImportedGermplasmValidator;
 import org.generationcp.commons.parsing.AbstractExcelFileParser;
 import org.generationcp.commons.parsing.FileParsingException;
 import org.generationcp.commons.parsing.WorkbookRowConverter;
@@ -22,6 +23,7 @@ import org.generationcp.commons.parsing.validation.NonEmptyValidator;
 import org.generationcp.commons.parsing.validation.ParseValidationMap;
 import org.generationcp.commons.parsing.validation.ValueTypeValidator;
 import org.generationcp.commons.util.DateUtil;
+import org.generationcp.middleware.components.validator.ExecutionException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -30,6 +32,7 @@ import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.google.common.base.Strings;
@@ -58,7 +61,10 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	private OntologyDataManager ontologyDataManager;
 	@Resource
 	private StockIDValidator stockIDValidator;
-	
+
+	@Autowired
+	ImportedGermplasmValidator importedGermplasmValidator;
+
 	private int currentRowIndex = 0;
 	private ImportedGermplasmList importedGermplasmList;
 	private Map<FactorTypes, String> specialFactors = new HashMap<>();
@@ -807,6 +813,12 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 								+ " is being added in the import. Some of the StockIDs in this import file do not meet these requirements and will be ignored.";
 			}
 
+			try {
+				importedGermplasmValidator.validate(importedGermplasm);
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+				throw new FileParsingException("GERMPLSM_PARSE_USE_CODED_NAMES", this.currentIndex, "", specialFactors.get(FactorTypes.NAME));
+			}
 			return importedGermplasm;
 		}
 

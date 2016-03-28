@@ -15,6 +15,7 @@
 		location="classpath:workbench.properties, classpath:crossing.properties" />
 	<util:properties id="workbenchProperties" location="classpath:workbench.properties" />
 	<util:properties id="helpProperties" location="classpath:helplinks.properties" />
+	<util:properties id="codeNamesProperties" location="classpath:codenames.properties" />
 
 	<!-- Enable Spring annotations -->
 	<context:annotation-config />
@@ -306,4 +307,18 @@
 		factory-method="createInstance" scope="request">
 		<aop:scoped-proxy />
 	</bean>
+
+	<bean id="userDefinedFieldsDataManager" factory-bean="managerFactory"
+		  factory-method="getUserDefinedFieldsDataManager" scope="request">
+		<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
+	<bean id="namesDataManager" factory-bean="managerFactory"
+		  factory-method="getNamesDataManager" scope="request">
+		<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
+
+	<context:component-scan base-package="org.generationcp.breeding.manager.validator"/>
+	<context:component-scan base-package="org.generationcp.middleware.components"/>
+
+
 </beans>

@@ -20,9 +20,11 @@ import org.generationcp.breeding.manager.listimport.SelectGermplasmWindow;
 import org.generationcp.breeding.manager.listimport.SpecifyGermplasmDetailsComponent;
 import org.generationcp.breeding.manager.listimport.listeners.ImportGermplasmEntryActionListener;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
+import org.generationcp.breeding.manager.validator.ImportedGermplasmValidator;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.components.validator.ExecutionException;
 import org.generationcp.middleware.manager.GermplasmDataManagerUtil;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -39,6 +41,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 
 	private static final long serialVersionUID = -9047259985457065559L;
 	private static final int PREFERRED_NAME_STATUS = 1;
+	public static final String ERROR = "Error!";
 
 	private final SpecifyGermplasmDetailsComponent germplasmDetailsComponent;
 
@@ -52,6 +55,9 @@ public class ProcessImportedGermplasmAction implements Serializable {
 
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
+
+	@Autowired
+	private ImportedGermplasmValidator importedGermplasmValidator;
 
 	@Resource
 	private ContextUtil contextUtil;
@@ -70,21 +76,26 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		this.nameGermplasmMap = new HashMap<>();
 		this.importEntryListeners.clear();
 		this.newDesignationsForExistingGermplasm = new ArrayList<>();
+		try {
+			final String pedigreeOptionChosen = this.germplasmDetailsComponent.getPedigreeOption();
+			if ("1".equalsIgnoreCase(pedigreeOptionChosen) && this.getImportedGermplasms() != null) {
+				this.performFirstPedigreeAction();
+			} else if ("2".equalsIgnoreCase(pedigreeOptionChosen) && this.getImportedGermplasms() != null) {
+				this.performSecondPedigreeAction();
+			} else if ("3".equalsIgnoreCase(pedigreeOptionChosen) && this.getImportedGermplasms() != null) {
+				this.performThirdPedigreeAction();
+			}
+			if (this.importEntryListeners.isEmpty()) {
+				this.saveImport();
+			}
+		}catch(ExecutionException ex){
 
-		final String pedigreeOptionChosen = this.germplasmDetailsComponent.getPedigreeOption();
-		if ("1".equalsIgnoreCase(pedigreeOptionChosen) && this.getImportedGermplasms() != null) {
-			this.performFirstPedigreeAction();
-		} else if ("2".equalsIgnoreCase(pedigreeOptionChosen) && this.getImportedGermplasms() != null) {
-			this.performSecondPedigreeAction();
-		} else if ("3".equalsIgnoreCase(pedigreeOptionChosen) && this.getImportedGermplasms() != null) {
-			this.performThirdPedigreeAction();
-		}
-		if (this.importEntryListeners.isEmpty()) {
-			this.saveImport();
+			MessageNotifier.showWarning(this.germplasmDetailsComponent.getWindow(), ERROR,
+					ex.getMessage());
 		}
 	}
 
-	protected void performFirstPedigreeAction() {
+	protected void performFirstPedigreeAction() throws ExecutionException{
 
 		final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
 		final Integer dateIntValue = this.getGermplasmDateValue();
@@ -93,7 +104,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 
 		for (int i = 0; i < this.getImportedGermplasms().size(); i++) {
 			final ImportedGermplasm importedGermplasm = this.getImportedGermplasms().get(i);
-
+			importedGermplasmValidator.validate(importedGermplasm);
 			final Germplasm germplasm = this.createGermplasmObject(i, -1, 0, 0, ibdbUserId, dateIntValue);
 
 			final Name name = this.createNameObject(ibdbUserId, dateIntValue, importedGermplasm.getDesig());
