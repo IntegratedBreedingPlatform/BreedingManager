@@ -17,6 +17,7 @@ import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.util.FileDownloadResource;
@@ -374,8 +375,11 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 		final String tempFileName = System.getProperty(AppConstants.USER_HOME) + "/temp.xls";
 
 		try {
+
+			final String userAgent = BreedingManagerUtil.getApplicationRequest().getHeader("User-Agent");
 			this.exporter.exportGermplasmListXLS(this.list.getId(), tempFileName, this.listDataTable);
-			final FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName), this.getApplication());
+			final FileDownloadResource fileDownloadResource =
+					new FileDownloadResource(new File(tempFileName), this.getApplication(), userAgent);
 			fileDownloadResource.setFilename(FileUtils.encodeFilenameForDownload(this.list.getName()).replace(" ", "_") + ".xls");
 			this.getWindow().open(fileDownloadResource);
 		} catch (GermplasmListExporterException | MiddlewareQueryException e) {

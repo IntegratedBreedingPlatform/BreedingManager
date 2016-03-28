@@ -12,6 +12,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.dellroad.stuff.vaadin.ContextApplication;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.service.FileService;
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.commons.util.FileUtils;
@@ -41,6 +42,7 @@ public class GermplasmListTemplateDownloader {
 		try {
 			File templateFile = new File(EXPANDED_TEMPLATE_FILE);
 
+			final String userAgent = BreedingManagerUtil.getApplicationRequest().getHeader("User-Agent");
 			HSSFWorkbook wb =
 					(HSSFWorkbook) this.fileService.retrieveWorkbookTemplate("templates/"
 							+ GermplasmListTemplateDownloader.EXPANDED_TEMPLATE_FILE);
@@ -48,7 +50,7 @@ public class GermplasmListTemplateDownloader {
 			final FileOutputStream fileOutputStream = new FileOutputStream(templateFile);
 			wb.write(fileOutputStream);
 			fileOutputStream.close();
-			FileDownloadResource fileDownloadResource = this.getTemplateAsDownloadResource(templateFile);
+			FileDownloadResource fileDownloadResource = this.getTemplateAsDownloadResource(templateFile, userAgent);
 			if (!this.getCurrentApplication().getMainWindow().getChildWindows().isEmpty()) {
 				this.getCurrentApplication().getMainWindow().open(fileDownloadResource);
 			} else {
@@ -60,12 +62,12 @@ public class GermplasmListTemplateDownloader {
 		}
 	}
 
-	protected FileDownloadResource getTemplateAsDownloadResource(File templateFile) throws IOException {
+	protected FileDownloadResource getTemplateAsDownloadResource(File templateFile, String userAgent) throws IOException {
 		FileDownloadResource fileDownloadResource = null;
 		if (!templateFile.exists()) {
 			throw new IOException("Germplasm Template File does not exist.");
 		} else {
-			fileDownloadResource = new FileDownloadResource(templateFile, this.getCurrentApplication());
+			fileDownloadResource = new FileDownloadResource(templateFile, this.getCurrentApplication(), userAgent);
 		}
 
 		fileDownloadResource.setFilename(FileUtils.encodeFilenameForDownload(EXPANDED_TEMPLATE_FILE));
