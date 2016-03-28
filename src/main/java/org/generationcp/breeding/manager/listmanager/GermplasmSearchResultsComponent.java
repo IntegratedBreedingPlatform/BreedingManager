@@ -342,15 +342,12 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 			namesButton.setStyleName(BaseTheme.BUTTON_LINK);
 			namesButton.setDescription(germplasmFullName);
 
-			String crossExpansion = "";
-			if (germplasm != null) {
+			String crossExpansion = "-";
+			if (germplasm != null && this.germplasmDataManager != null) {
 				try {
-					if (this.germplasmDataManager != null) {
-						crossExpansion = this.pedigreeService.getCrossExpansion(germplasm.getGid(), this.crossExpansionProperties);
-					}
+					crossExpansion = this.pedigreeService.getCrossExpansion(germplasm.getGid(), this.crossExpansionProperties);
 				} catch (final MiddlewareQueryException ex) {
 					GermplasmSearchResultsComponent.LOG.error(ex.getMessage(), ex);
-					crossExpansion = "-";
 				}
 			}
 
