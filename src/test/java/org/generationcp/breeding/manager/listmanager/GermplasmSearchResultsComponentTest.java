@@ -99,13 +99,6 @@ public class GermplasmSearchResultsComponentTest {
 	}
 
 	@Test
-	public void testGetShortenedNamesIfNameIsNull() {
-		final String germplasmFullName = null;
-		final String shortenedNames = this.germplasmSearchResultsComponent.getShortenedNames(germplasmFullName);
-		Assert.assertEquals("Expecting to return empty string when name is null.", "", shortenedNames);
-	}
-
-	@Test
 	public void testGetShortenedNamesIfNameLengthIsAtLeast20() {
 		final String germplasmFullName = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		final String shortenedNames = this.germplasmSearchResultsComponent.getShortenedNames(germplasmFullName);
