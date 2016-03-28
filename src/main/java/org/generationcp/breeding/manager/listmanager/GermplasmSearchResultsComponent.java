@@ -198,14 +198,15 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 			@Override
 			public String generateDescription(final Component source, final Object itemId, final Object propertyId) {
+				// set the default value to empty string instead of null for germplasm without name
+				String germplasmNames = "";
 				if (propertyId == GermplasmSearchResultsComponent.NAMES) {
 					final Item item = GermplasmSearchResultsComponent.this.matchingGermplasmsTable.getItem(itemId);
 					final Integer gid =
 							Integer.valueOf(((Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue()).getCaption());
-					return GermplasmSearchResultsComponent.this.getGermplasmNames(gid);
-				} else {
-					return null;
+					germplasmNames = GermplasmSearchResultsComponent.this.getGermplasmNames(gid);
 				}
+				return germplasmNames;
 			}
 		});
 
@@ -444,10 +445,11 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	}
 
 	private String getGermplasmNames(final int gid) {
+		final StringBuilder germplasmNames = new StringBuilder("");
 
 		try {
 			final List<Name> names = this.germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
-			final StringBuilder germplasmNames = new StringBuilder("");
+
 			int i = 0;
 			for (final Name n : names) {
 				if (i < names.size() - 1) {
@@ -458,11 +460,11 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 				i++;
 			}
 
-			return germplasmNames.toString();
 		} catch (final MiddlewareQueryException e) {
 			GermplasmSearchResultsComponent.LOG.error(e.getMessage(), e);
-			return null;
 		}
+
+		return germplasmNames.toString();
 	}
 
 	public TableWithSelectAllLayout getMatchingGermplasmsTableWithSelectAll() {
