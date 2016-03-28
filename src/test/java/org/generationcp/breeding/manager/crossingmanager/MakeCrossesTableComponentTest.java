@@ -7,7 +7,7 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.generationcp.commons.constant.ColumnLabels;
-import org.generationcp.commons.service.impl.seedsource.SeedSourceGenerator;
+import org.generationcp.commons.service.impl.SeedSourceGenerator;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.Workbook;
 import org.generationcp.middleware.domain.oms.Term;

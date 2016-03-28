@@ -234,7 +234,7 @@
 		<property name="germplasmOriginTrialsMaize" value="${germplasm.origin.trials.maize}"/>
 	</bean>
 	
-	<bean id="seedSourceGenerator" class="org.generationcp.commons.service.impl.seedsource.SeedSourceGenerator">
+	<bean id="seedSourceGenerator" class="org.generationcp.commons.service.impl.SeedSourceGenerator">
 		<constructor-arg name="germplasmNamingProperties" ref="germplasmNamingProperties"/>
 		<constructor-arg name="contextUtil" ref="contextUtil"/>
 		<constructor-arg name="ontologyVariableDataManager" ref="ontologyVariableManager"/>

@@ -38,7 +38,7 @@ import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
-import org.generationcp.commons.service.impl.seedsource.SeedSourceGenerator;
+import org.generationcp.commons.service.impl.SeedSourceGenerator;
 import org.generationcp.commons.util.CrossingUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
