@@ -412,11 +412,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	}
 
 	String getShortenedNames(final String germplasmFullName) {
-		String shortenedNames = "";
-		if (germplasmFullName != null) {
-			shortenedNames = germplasmFullName.length() > 20 ? germplasmFullName.substring(0, 20) + "..." : germplasmFullName;
-		}
-		return shortenedNames;
+		return germplasmFullName.length() > 20 ? germplasmFullName.substring(0, 20) + "..." : germplasmFullName;
 	}
 
 	private String getSeedReserved(final GermplasmInventory inventoryInfo) {
