@@ -17,7 +17,6 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.inventory.GermplasmInventory;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
@@ -344,11 +343,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 			String crossExpansion = "-";
 			if (germplasm != null && this.germplasmDataManager != null) {
-				try {
-					crossExpansion = this.pedigreeService.getCrossExpansion(germplasm.getGid(), this.crossExpansionProperties);
-				} catch (final MiddlewareQueryException ex) {
-					GermplasmSearchResultsComponent.LOG.error(ex.getMessage(), ex);
-				}
+				crossExpansion = this.pedigreeService.getCrossExpansion(germplasm.getGid(), this.crossExpansionProperties);
 			}
 
 			final CheckBox itemCheckBox = new CheckBox();
@@ -371,24 +366,16 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 			});
 
 			String methodName = "-";
-			try {
-				final Method germplasmMethod = this.germplasmDataManager.getMethodByID(germplasm.getMethodId());
-				if (germplasmMethod != null && germplasmMethod.getMname() != null) {
-					methodName = germplasmMethod.getMname();
-				}
-			} catch (final MiddlewareQueryException e) {
-				GermplasmSearchResultsComponent.LOG.error(e.getMessage(), e);
+			final Method germplasmMethod = this.germplasmDataManager.getMethodByID(germplasm.getMethodId());
+			if (germplasmMethod != null && germplasmMethod.getMname() != null) {
+				methodName = germplasmMethod.getMname();
 			}
 
 			String locationName = "-";
-			try {
-				@SuppressWarnings("deprecation")
-				final Location germplasmLocation = this.germplasmDataManager.getLocationByID(germplasm.getLocationId());
-				if (germplasmLocation != null && germplasmLocation.getLname() != null) {
-					locationName = germplasmLocation.getLname();
-				}
-			} catch (final MiddlewareQueryException e) {
-				GermplasmSearchResultsComponent.LOG.error(e.getMessage(), e);
+			@SuppressWarnings("deprecation")
+			final Location germplasmLocation = this.germplasmDataManager.getLocationByID(germplasm.getLocationId());
+			if (germplasmLocation != null && germplasmLocation.getLname() != null) {
+				locationName = germplasmLocation.getLname();
 			}
 
 			final GermplasmInventory inventoryInfo = germplasm.getInventoryInfo();
@@ -440,21 +427,16 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	private String getGermplasmNames(final int gid) {
 		final StringBuilder germplasmNames = new StringBuilder("");
 
-		try {
-			final List<Name> names = this.germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
+		final List<Name> names = this.germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
 
-			int i = 0;
-			for (final Name n : names) {
-				if (i < names.size() - 1) {
-					germplasmNames.append(n.getNval() + ", ");
-				} else {
-					germplasmNames.append(n.getNval());
-				}
-				i++;
+		int i = 0;
+		for (final Name n : names) {
+			if (i < names.size() - 1) {
+				germplasmNames.append(n.getNval() + ", ");
+			} else {
+				germplasmNames.append(n.getNval());
 			}
-
-		} catch (final MiddlewareQueryException e) {
-			GermplasmSearchResultsComponent.LOG.error(e.getMessage(), e);
+			i++;
 		}
 
 		return germplasmNames.toString();
