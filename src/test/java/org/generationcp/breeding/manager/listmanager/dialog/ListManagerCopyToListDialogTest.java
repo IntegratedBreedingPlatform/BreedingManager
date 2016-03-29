@@ -204,7 +204,7 @@ public class ListManagerCopyToListDialogTest {
 		this.listManagerCopyToListDialog.setExistingListSelected(true);
 		this.listManagerCopyToListDialog.saveGermplasmListButtonClickAction();
 		try {
-			Mockito.verify(this.messageSource, Mockito.times(1)).getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_NEW_LIST_SUCCESS);
+			Mockito.verify(this.messageSource, Mockito.times(1)).getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_EXISTING_LIST_SUCCESS, ListManagerCopyToListDialogTest.LIST_NAME);
 		} catch (final NeverWantedButInvoked e) {
 			Assert.fail("Expecting that the list name is too long.");
 		}

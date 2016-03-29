@@ -22,6 +22,7 @@ import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
@@ -54,6 +55,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.PopupView;
 import com.vaadin.ui.Select;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
@@ -74,6 +76,8 @@ public class ListManagerCopyToListDialog extends VerticalLayout implements Initi
 	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
 
 	private Label labelListName;
+	private Label labelListNameDescription;
+	private PopupView labelListNameDescriptionPopUpView;
 	private Label labelDescription;
 	private ComboBox comboBoxListName;
 	private TextField txtDescription;
@@ -129,7 +133,13 @@ public class ListManagerCopyToListDialog extends VerticalLayout implements Initi
 	public void instantiateComponents() {
 		this.labelListName = new Label(this.messageSource.getMessage(Message.LIST_NAME_LABEL));
 		this.labelListName.addStyleName("bold");
-
+		
+		this.labelListNameDescription = new Label(this.messageSource.getMessage(Message.LIST_NAME_LABEL_DESCRIPTION));
+		this.labelListNameDescription.setWidth("250px");
+		
+		this.labelListNameDescriptionPopUpView = new PopupView("?", this.labelListNameDescription);
+		this.labelListNameDescriptionPopUpView.addStyleName(AppConstants.CssStyles.POPUP_VIEW);
+		
 		this.labelDescription = new Label(this.messageSource.getMessage(Message.DESCRIPTION_LABEL));
 		this.labelDescription.addStyleName("bold");
 
@@ -192,7 +202,12 @@ public class ListManagerCopyToListDialog extends VerticalLayout implements Initi
 		gridLayout.setColumns(2);
 		gridLayout.setSpacing(true);
 		gridLayout.addComponent(this.labelListName, 0, 0);
-		gridLayout.addComponent(this.comboBoxListName, 1, 0);
+		
+		HorizontalLayout comboBoxVerticalLayout = new HorizontalLayout();
+		comboBoxVerticalLayout.addComponent(this.comboBoxListName);
+		comboBoxVerticalLayout.addComponent(this.labelListNameDescriptionPopUpView);
+		gridLayout.addComponent(comboBoxVerticalLayout, 1, 0);
+		
 		gridLayout.addComponent(this.labelDescription, 0, 1);
 		gridLayout.addComponent(this.txtDescription, 1, 1);
 		gridLayout.addComponent(this.labelType, 0, 2);
@@ -336,9 +351,13 @@ public class ListManagerCopyToListDialog extends VerticalLayout implements Initi
 
 			germplasmListDataEntryId++;
 		}
-		MessageNotifier.showMessage(this.getWindow().getParent().getWindow(), this.messageSource.getMessage(Message.SUCCESS),
-				this.messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_NEW_LIST_SUCCESS), 3000);
-
+		if(!this.existingListSelected) {
+			MessageNotifier.showMessage(this.getWindow().getParent().getWindow(), this.messageSource.getMessage(Message.SUCCESS),
+					this.messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_NEW_LIST_SUCCESS), 3000);
+		} else {
+			MessageNotifier.showMessage(this.getWindow().getParent().getWindow(), this.messageSource.getMessage(Message.SUCCESS),
+					this.messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_EXISTING_LIST_SUCCESS, this.listNameValue), 3000);
+		}
 		this.logCopyToNewListEntriesToWorkbenchProjectActivity();
 	}
 
