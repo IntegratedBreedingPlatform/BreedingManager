@@ -341,10 +341,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 			namesButton.setStyleName(BaseTheme.BUTTON_LINK);
 			namesButton.setDescription(germplasmFullName);
 
-			String crossExpansion = "-";
-			if (germplasm != null && this.germplasmDataManager != null) {
-				crossExpansion = this.pedigreeService.getCrossExpansion(germplasm.getGid(), this.crossExpansionProperties);
-			}
+			final String crossExpansion = this.pedigreeService.getCrossExpansion(germplasm.getGid(), this.crossExpansionProperties);
 
 			final CheckBox itemCheckBox = new CheckBox();
 			itemCheckBox.setData(germplasm.getGid());
