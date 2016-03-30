@@ -21,6 +21,10 @@ import com.vaadin.ui.Table;
 
 public class GermplasmSearchResultsComponentTest {
 
+	private static final String GERMPLASM_NAMES_WITH_MORE_THAN_20_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+	private static final String GERMPLASM_NAMES_WITH_20_CHARS = "ABCDEFGHIJKLMNOPQRST";
+
 	@Mock
 	private OntologyDataManager ontologyDataManager;
 
@@ -100,19 +104,16 @@ public class GermplasmSearchResultsComponentTest {
 
 	@Test
 	public void testGetShortenedNamesIfNameLengthIsAtLeast20() {
-		final String germplasmFullName = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		final String shortenedNames = this.germplasmSearchResultsComponent.getShortenedNames(germplasmFullName);
+		final String shortenedNames = this.germplasmSearchResultsComponent.getShortenedNames(GERMPLASM_NAMES_WITH_MORE_THAN_20_CHARS);
 
-		Assert.assertEquals("Expecting to return string with only 20 characters with ellipsis(...) at the end.", germplasmFullName
-				.substring(0, 20).concat("..."), shortenedNames);
+		Assert.assertEquals("Expecting to return string with only 20 characters with ellipsis(...) at the end.",
+				GERMPLASM_NAMES_WITH_MORE_THAN_20_CHARS.substring(0, 20).concat("..."), shortenedNames);
 	}
 
 	@Test
 	public void testGetShortenedNamesIfNameLengthIsAtMost20() {
-		final String germplasmFullName = "ABCDEFGHIJKLMNOPQRST";
-		final String shortenedNames = this.germplasmSearchResultsComponent.getShortenedNames(germplasmFullName);
-
-		Assert.assertEquals("Expecting to return the same name.", germplasmFullName, shortenedNames);
+		final String shortenedNames = this.germplasmSearchResultsComponent.getShortenedNames(GERMPLASM_NAMES_WITH_20_CHARS);
+		Assert.assertEquals("Expecting to return the same name.", GERMPLASM_NAMES_WITH_20_CHARS, shortenedNames);
 	}
 
 	private Term createTerm(final String name) {
