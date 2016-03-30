@@ -37,6 +37,7 @@ import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource;
+import org.generationcp.breeding.manager.listmanager.dialog.AssignCodesDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.GermplasmGroupingComponent;
 import org.generationcp.breeding.manager.listmanager.dialog.ListManagerCopyToNewListDialog;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
@@ -155,6 +156,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private ContextMenuItem menuSaveChanges;
 	private ContextMenuItem menuDeleteEntries;
 	private ContextMenuItem menuMarkLinesAsFixed;
+	private ContextMenuItem menuAssignCodes;
 	private ContextMenuItem menuEditList;
 	private ContextMenuItem menuDeleteList;
 	@SuppressWarnings("unused")
@@ -362,6 +364,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.menuDeleteList = this.menu.addItem(this.messageSource.getMessage(Message.DELETE_LIST));
 		this.menuDeleteEntries = this.menu.addItem(this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
 		this.menuMarkLinesAsFixed = this.menu.addItem(this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED));
+		this.menuAssignCodes = this.menu.addItem(this.messageSource.getMessage(Message.ASSIGN_CODES));
 		this.menuEditList = this.menu.addItem(this.messageSource.getMessage(Message.EDIT_LIST));
 		this.menuExportList = this.menu.addItem(this.messageSource.getMessage(Message.EXPORT_LIST));
 		this.menuInventoryView = this.menu.addItem(this.messageSource.getMessage(Message.INVENTORY_VIEW));
@@ -970,6 +973,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						ListComponent.this.deleteEntriesButtonClickAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED))) {
 						ListComponent.this.markLinesAsFixedAction();
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.ASSIGN_CODES))) {
+						ListComponent.this.assignCodesAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.EDIT_LIST))) {
 						ListComponent.this.editListButtonClickAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.DELETE_LIST))) {
@@ -1008,6 +1013,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				ListComponent.this.menuDeleteList.setVisible(ListComponent.this.localUserIsListOwner());
 				ListComponent.this.menuDeleteEntries.setVisible(true);
 				ListComponent.this.menuMarkLinesAsFixed.setVisible(true);
+				ListComponent.this.menuAssignCodes.setVisible(true);
 				ListComponent.this.menuSaveChanges.setVisible(true);
 				ListComponent.this.menuAddEntry.setVisible(true);
 				ListComponent.this.addColumnContextMenu.showHideAddColumnMenu(true);
@@ -1016,6 +1022,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				ListComponent.this.menuDeleteList.setVisible(false);
 				ListComponent.this.menuDeleteEntries.setVisible(false);
 				ListComponent.this.menuMarkLinesAsFixed.setVisible(false);
+				ListComponent.this.menuAssignCodes.setVisible(false);
 				ListComponent.this.menuSaveChanges.setVisible(false);
 				ListComponent.this.menuAddEntry.setVisible(false);
 				ListComponent.this.addColumnContextMenu.showHideAddColumnMenu(false);
@@ -1328,6 +1335,27 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		} else {
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
 					this.messageSource.getMessage(Message.ERROR_MARK_LINES_AS_FIXED_NOTHING_SELECTED));
+		}
+	}
+
+	public void assignCodesAction() {
+		//TODO
+		@SuppressWarnings("unchecked")
+		final Collection<Integer> selectedTableRows = (Collection<Integer>) this.listDataTable.getValue();
+
+		if (!selectedTableRows.isEmpty()) {
+			final Set<Integer> gidsToProcess = new HashSet<Integer>();
+			for (final Integer selectedRowId : selectedTableRows) {
+				final Item selectedRowItem = this.listDataTable.getItem(selectedRowId);
+				final Button gidCell = (Button) selectedRowItem.getItemProperty(ColumnLabels.GID.getName()).getValue();
+				if (gidCell != null) {
+					gidsToProcess.add(Integer.valueOf(gidCell.getCaption()));
+				}
+			}
+			this.getWindow().addWindow(new AssignCodesDialog(gidsToProcess));
+		} else {
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ASSIGN_CODES),
+					this.messageSource.getMessage(Message.ERROR_ASSIGN_CODES_NOTHING_SELECTED));
 		}
 	}
 

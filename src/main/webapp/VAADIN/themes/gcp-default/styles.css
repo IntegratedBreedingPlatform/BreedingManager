@@ -849,3 +849,20 @@ div.unsaved-changes-dialog div.v-window-contents>div {
 	border-color: white !important;
 	background: white !important;
 }
+
+/* The classes for horisontal radiobuttons group */
+/* Lay the options horizontally */
+.lst-horizontal-options .v-select-option {
+    display: inline-block;
+}
+
+/* Avoid wrapping if the layout is too tight */
+.lst-horizontal-options {
+    white-space: nowrap;
+}
+
+/* Some extra spacing is needed */
+.lst-horizontal-options
+  .v-select-option.v-radiobutton {
+    padding-right: 10px;
+}
