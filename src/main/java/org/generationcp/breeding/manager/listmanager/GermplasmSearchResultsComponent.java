@@ -12,11 +12,13 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.service.BreedingManagerSearchException;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.inventory.GermplasmInventory;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
@@ -203,7 +205,19 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 					final Item item = GermplasmSearchResultsComponent.this.matchingGermplasmsTable.getItem(itemId);
 					final Integer gid =
 							Integer.valueOf(((Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue()).getCaption());
-					germplasmNames = GermplasmSearchResultsComponent.this.getGermplasmNames(gid);
+
+					try {
+						germplasmNames = GermplasmSearchResultsComponent.this.getGermplasmNames(gid);
+					} catch (final BreedingManagerSearchException e) {
+						// case for database error where there is a problem encountered while retrieving germplasm names
+						MessageNotifier.showWarning(GermplasmSearchResultsComponent.this.getWindow(),
+								GermplasmSearchResultsComponent.this.messageSource.getMessage(Message.SEARCH_RESULTS),
+								GermplasmSearchResultsComponent.this.messageSource.getMessage(e.getErrorMessage()));
+						if (Message.ERROR_DATABASE.equals(e.getErrorMessage())) {
+							GermplasmSearchResultsComponent.LOG.error("Error retrieving germplasm names of gid=" + gid, e);
+						}
+					}
+
 				}
 				return germplasmNames;
 			}
@@ -322,7 +336,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		this.addComponent(this.matchingGermplasmsTableWithSelectAll);
 	}
 
-	public void applyGermplasmResults(final List<Germplasm> germplasms) {
+	public void applyGermplasmResults(final List<Germplasm> germplasms) throws BreedingManagerSearchException {
 
 		final Monitor monitor = MonitorFactory.start("GermplasmSearchResultsComponent.applyGermplasmResults()");
 		this.updateNoOfEntries(germplasms.size());
@@ -421,19 +435,25 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		return stockLabel;
 	}
 
-	private String getGermplasmNames(final int gid) {
+	private String getGermplasmNames(final int gid) throws BreedingManagerSearchException {
 		final StringBuilder germplasmNames = new StringBuilder("");
 
-		final List<Name> names = this.germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
+		try {
+			final List<Name> names = this.germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
 
-		int i = 0;
-		for (final Name n : names) {
-			if (i < names.size() - 1) {
-				germplasmNames.append(n.getNval() + ", ");
-			} else {
-				germplasmNames.append(n.getNval());
+			int i = 0;
+			for (final Name n : names) {
+				if (i < names.size() - 1) {
+					germplasmNames.append(n.getNval() + ", ");
+				} else {
+					germplasmNames.append(n.getNval());
+				}
+				i++;
 			}
-			i++;
+
+		} catch (final MiddlewareQueryException e) {
+			GermplasmSearchResultsComponent.LOG.error("Database error occured while retrieving names from germplasm with gid=" + gid, e);
+			throw new BreedingManagerSearchException(Message.ERROR_DATABASE, e);
 		}
 
 		return germplasmNames.toString();
