@@ -24,7 +24,7 @@ import org.generationcp.breeding.manager.validator.ImportedGermplasmValidator;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.components.validator.ExecutionException;
+import org.generationcp.middleware.components.validator.ErrorCollection;
 import org.generationcp.middleware.manager.GermplasmDataManagerUtil;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -76,7 +76,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		this.nameGermplasmMap = new HashMap<>();
 		this.importEntryListeners.clear();
 		this.newDesignationsForExistingGermplasm = new ArrayList<>();
-		try {
+
 			final String pedigreeOptionChosen = this.germplasmDetailsComponent.getPedigreeOption();
 			if ("1".equalsIgnoreCase(pedigreeOptionChosen) && this.getImportedGermplasms() != null) {
 				this.performFirstPedigreeAction();
@@ -88,14 +88,9 @@ public class ProcessImportedGermplasmAction implements Serializable {
 			if (this.importEntryListeners.isEmpty()) {
 				this.saveImport();
 			}
-		}catch(ExecutionException ex){
-
-			MessageNotifier.showWarning(this.germplasmDetailsComponent.getWindow(), ERROR,
-					ex.getMessage());
-		}
 	}
 
-	protected void performFirstPedigreeAction() throws ExecutionException{
+	protected void performFirstPedigreeAction(){
 
 		final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
 		final Integer dateIntValue = this.getGermplasmDateValue();
@@ -104,7 +99,13 @@ public class ProcessImportedGermplasmAction implements Serializable {
 
 		for (int i = 0; i < this.getImportedGermplasms().size(); i++) {
 			final ImportedGermplasm importedGermplasm = this.getImportedGermplasms().get(i);
-			importedGermplasmValidator.validate(importedGermplasm);
+			ErrorCollection errors = importedGermplasmValidator.validate(importedGermplasm);
+			if(!errors.isEmpty()){
+				//ErrorCollection contains at least one error message
+				MessageNotifier.showError(this.germplasmDetailsComponent.getWindow(), "Error!",
+						"GID: " + importedGermplasm.getGid() + " " + errors.iterator().next());
+				return;
+			}
 			final Germplasm germplasm = this.createGermplasmObject(i, -1, 0, 0, ibdbUserId, dateIntValue);
 
 			final Name name = this.createNameObject(ibdbUserId, dateIntValue, importedGermplasm.getDesig());
@@ -132,6 +133,13 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		for (int i = 0; i < this.getImportedGermplasms().size(); i++) {
 
 			final ImportedGermplasm importedGermplasm = this.getImportedGermplasms().get(i);
+			ErrorCollection errors = importedGermplasmValidator.validate(importedGermplasm);
+			if(!errors.isEmpty()){
+				//ErrorCollection contains at least one error message
+				MessageNotifier.showError(this.germplasmDetailsComponent.getWindow(), "Error!",
+						"GID: " + importedGermplasm.getGid() + " " + errors.iterator().next());
+				return;
+			}
 			final String designationName = importedGermplasm.getDesig();
 			// gpid1 and gpid 2 values are default here, actual values will be set below based on matched germplasm
 			final Germplasm germplasm = this.createGermplasmObject(i, -1, 0, 0, ibdbUserId, dateIntValue);
@@ -199,6 +207,13 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		for (int i = 0; i < this.getImportedGermplasms().size(); i++) {
 
 			final ImportedGermplasm importedGermplasm = this.getImportedGermplasms().get(i);
+			ErrorCollection errors = importedGermplasmValidator.validate(importedGermplasm);
+			if(!errors.isEmpty()){
+				//ErrorCollection contains at least one error message
+				MessageNotifier.showError(this.germplasmDetailsComponent.getWindow(), "Error!",
+						"GID: " + importedGermplasm.getGid() + " " + errors.iterator().next());
+				return;
+			}
 			final String designationName = importedGermplasm.getDesig();
 			Germplasm germplasm = new Germplasm();
 			final Integer germplasmMatchesCount = germplasmMatchesMap.get(designationName);

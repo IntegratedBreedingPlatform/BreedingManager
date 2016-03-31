@@ -1,24 +1,22 @@
 package org.generationcp.breeding.manager.validator;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.middleware.components.CodeNamesLocator;
-import org.generationcp.middleware.components.validator.Executable;
-import org.generationcp.middleware.components.validator.ExecutionException;
-import org.generationcp.middleware.manager.GermplasmDataManagerUtil;
-import org.generationcp.middleware.manager.Operation;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.components.validator.ValidationRule;
 import org.generationcp.middleware.manager.api.NamesDataManager;
-import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Name;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component
-public class CheckGermplasmWithoutCodedNamesValidationRule implements Executable<ImportedGermplasm> {
+import com.google.common.base.Optional;
 
-	public static final String ERROR_MESSAGE_GERMPLASM_USING_CODENAME = "Germplasm is using a coded name value.";
+@Component
+public class CheckGermplasmWithoutCodedNamesValidationRule implements ValidationRule<ImportedGermplasm> {
+
+	public static final String ERROR_MESSAGE_GERMPLASM_USING_CODENAME = "Germplasm designation value '{0}' is marked as a coded name value.";
 	CodeNamesLocator codedNamesLocator;
 	NamesDataManager manager;
 
@@ -29,15 +27,15 @@ public class CheckGermplasmWithoutCodedNamesValidationRule implements Executable
 	}
 
 	@Override
-	public ImportedGermplasm execute(ImportedGermplasm importedGermplasm) throws ExecutionException {
+	public Optional<String> validate(ImportedGermplasm importedGermplasm)  {
 
 		List<Integer> typeList =  codedNamesLocator.getCodedNamesIds();
 
 		List<Name> names =  manager.getNamesByNvalInTypeList(importedGermplasm.getDesig(),typeList);
 
 		if(names.size()>0){
-			throw new ExecutionException(ERROR_MESSAGE_GERMPLASM_USING_CODENAME);
+			return Optional.of(MessageFormat.format(ERROR_MESSAGE_GERMPLASM_USING_CODENAME, importedGermplasm));
 		}
-		return importedGermplasm;
+		return Optional.absent();
 	}
 }

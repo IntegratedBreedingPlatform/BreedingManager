@@ -23,7 +23,7 @@ import org.generationcp.commons.parsing.validation.NonEmptyValidator;
 import org.generationcp.commons.parsing.validation.ParseValidationMap;
 import org.generationcp.commons.parsing.validation.ValueTypeValidator;
 import org.generationcp.commons.util.DateUtil;
-import org.generationcp.middleware.components.validator.ExecutionException;
+import org.generationcp.middleware.components.validator.ErrorCollection;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -813,10 +813,9 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 								+ " is being added in the import. Some of the StockIDs in this import file do not meet these requirements and will be ignored.";
 			}
 
-			try {
-				importedGermplasmValidator.validate(importedGermplasm);
-			} catch (ExecutionException e) {
-				e.printStackTrace();
+			ErrorCollection errors = importedGermplasmValidator.validate(importedGermplasm);
+			if(!errors.isEmpty()){
+				// Seems like the error handling is by throwing  an exception
 				throw new FileParsingException("GERMPLSM_PARSE_USE_CODED_NAMES", this.currentIndex, "", specialFactors.get(FactorTypes.NAME));
 			}
 			return importedGermplasm;
