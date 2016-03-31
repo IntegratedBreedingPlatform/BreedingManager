@@ -9,11 +9,19 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
+import org.generationcp.middleware.pojos.UserDefinedField;
+import org.generationcp.middleware.service.api.GermplasmNameTypeResolver;
+import org.generationcp.middleware.service.api.GermplasmNamingService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
@@ -25,6 +33,15 @@ public class AssignCodesDialog extends BaseSubWindow implements InitializingBean
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
+
+	@Autowired
+	private GermplasmNamingService germplasmNamingService;
+
+	@Autowired
+	private GermplasmNameTypeResolver germplasmNameTypeResolver;
+
+	@Autowired
+	private PlatformTransactionManager transactionManager;
 
 	private OptionGroup codingLevelOptions;
 	private Button cancelButton;
@@ -68,6 +85,27 @@ public class AssignCodesDialog extends BaseSubWindow implements InitializingBean
 			@Override
 			public void buttonClick(final Button.ClickEvent event) {
 				AssignCodesDialog.super.close();
+			}
+		});
+
+		this.continueButton.addListener(new Button.ClickListener() {
+			@Override
+			public void buttonClick(final ClickEvent event) {
+				AssignCodesDialog.this.assignCodes();
+			}
+		});
+	}
+
+	void assignCodes() {
+		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
+		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(final TransactionStatus status) {
+				// TODO hard coded level = 1, derive from UI choice..
+				UserDefinedField nameType = AssignCodesDialog.this.germplasmNameTypeResolver.resolve(1);
+				for (final Integer gid : AssignCodesDialog.this.gidsToProcess) {
+					AssignCodesDialog.this.germplasmNamingService.applyGroupName(gid, "CML-BLAH", nameType, 1, 1);
+				}
 			}
 		});
 	}

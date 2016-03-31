@@ -85,6 +85,11 @@
 		<aop:scoped-proxy />
 	</bean>
 	
+	<bean id="germplasmNameTypeResolver" factory-bean="managerFactory"
+		factory-method="getGermplasmNameTypeResolver" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+	
 	<bean id="pedigreeDataManager" factory-bean="managerFactory"
 		factory-method="getPedigreeDataManager" scope="request">
 		<aop:scoped-proxy />
