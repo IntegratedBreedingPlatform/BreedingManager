@@ -1,6 +1,8 @@
 
 package org.generationcp.breeding.manager.listmanager.dialog;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -58,6 +60,7 @@ public class AssignCodesDialog extends BaseSubWindow
 	private Set<Integer> gidsToProcess = new HashSet<>();
 	private ComboBox programIdentifiersComboBox;
 	private ComboBox germplasmTypeComboBox;
+	private TextField yearSuffix;
 
 	AssignCodesDialog() {
 	}
@@ -79,6 +82,7 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.codingLevelOptions = new OptionGroup();
 		this.programIdentifiersComboBox = new ComboBox();
 		this.germplasmTypeComboBox = new ComboBox();
+		this.yearSuffix = new TextField();
 		this.cancelButton = new Button();
 		this.continueButton = new Button();
 		this.continueButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
@@ -98,6 +102,11 @@ public class AssignCodesDialog extends BaseSubWindow
 		for (final GermplasmType germplasmType : this.germplasmNamingService.getGermplasmTypes()) {
 			this.germplasmTypeComboBox.addItem(germplasmType.name());
 		}
+
+		// by default the current year in 2 digits format will be set to yearSuffix text field
+		final Date today = new Date();
+		final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yy");
+		this.yearSuffix.setValue(simpleDateFormat.format(today));
 
 		this.programIdentifiersComboBox.setNullSelectionAllowed(false);
 		this.germplasmTypeComboBox.setNullSelectionAllowed(false);
@@ -218,10 +227,10 @@ public class AssignCodesDialog extends BaseSubWindow
 		codesControlsLayout.addComponent(this.germplasmTypeComboBox);
 		codesControlsLayout.setComponentAlignment(this.germplasmTypeComboBox, Alignment.MIDDLE_LEFT);
 
-		final TextField yearSuffix = new TextField();
-		yearSuffix.setWidth(5, 3);
-		codesControlsLayout.addComponent(yearSuffix);
-		codesControlsLayout.setComponentAlignment(yearSuffix, Alignment.MIDDLE_LEFT);
+		this.yearSuffix.setWidth(5, 3);
+		codesControlsLayout.addComponent(this.yearSuffix);
+		codesControlsLayout.setComponentAlignment(this.yearSuffix, Alignment.MIDDLE_LEFT);
+
 		final Label sequnceSuffix = new Label("SEQ");
 		codesControlsLayout.addComponent(sequnceSuffix);
 		codesControlsLayout.setComponentAlignment(sequnceSuffix, Alignment.MIDDLE_LEFT);
