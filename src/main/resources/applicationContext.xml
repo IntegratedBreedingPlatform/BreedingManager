@@ -80,8 +80,8 @@
 		<aop:scoped-proxy />
 	</bean>
 	
-	<bean id="germplasmCodingService" factory-bean="managerFactory"
-		factory-method="getGermplasmCodingService" scope="request">
+	<bean id="germplasmNamingService" factory-bean="managerFactory"
+		factory-method="getGermplasmNamingService" scope="request">
 		<aop:scoped-proxy />
 	</bean>
 	
