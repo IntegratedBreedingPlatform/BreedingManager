@@ -16,6 +16,7 @@ import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.service.api.GermplasmGroupNamingResult;
 import org.generationcp.middleware.service.api.GermplasmNameTypeResolver;
 import org.generationcp.middleware.service.api.GermplasmNamingService;
+import org.generationcp.middleware.service.api.GermplasmType;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -56,6 +57,7 @@ public class AssignCodesDialog extends BaseSubWindow
 	private VerticalLayout dialogLayout;
 	private Set<Integer> gidsToProcess = new HashSet<>();
 	private ComboBox programIdentifiersComboBox;
+	private ComboBox germplasmTypeComboBox;
 
 	AssignCodesDialog() {
 	}
@@ -76,6 +78,7 @@ public class AssignCodesDialog extends BaseSubWindow
 	public void instantiateComponents() {
 		this.codingLevelOptions = new OptionGroup();
 		this.programIdentifiersComboBox = new ComboBox();
+		this.germplasmTypeComboBox = new ComboBox();
 		this.cancelButton = new Button();
 		this.continueButton = new Button();
 		this.continueButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
@@ -92,6 +95,12 @@ public class AssignCodesDialog extends BaseSubWindow
 		for (final String programIdentifier : this.germplasmNamingService.getProgramIdentifiers(1)) {
 			this.programIdentifiersComboBox.addItem(programIdentifier);
 		}
+		for (final GermplasmType germplasmType : this.germplasmNamingService.getGermplasmTypes()) {
+			this.germplasmTypeComboBox.addItem(germplasmType.name());
+		}
+
+		this.programIdentifiersComboBox.setNullSelectionAllowed(false);
+		this.germplasmTypeComboBox.setNullSelectionAllowed(false);
 	}
 
 	@Override
@@ -205,10 +214,10 @@ public class AssignCodesDialog extends BaseSubWindow
 		codesControlsLayout.addComponent(this.programIdentifiersComboBox);
 		codesControlsLayout.setComponentAlignment(this.programIdentifiersComboBox, Alignment.MIDDLE_LEFT);
 
-		final ComboBox comboBox2 = new ComboBox();
-		comboBox2.setWidth(5, 3);
-		codesControlsLayout.addComponent(comboBox2);
-		codesControlsLayout.setComponentAlignment(comboBox2, Alignment.MIDDLE_LEFT);
+		this.germplasmTypeComboBox.setWidth(5, 3);
+		codesControlsLayout.addComponent(this.germplasmTypeComboBox);
+		codesControlsLayout.setComponentAlignment(this.germplasmTypeComboBox, Alignment.MIDDLE_LEFT);
+
 		final TextField yearSuffix = new TextField();
 		yearSuffix.setWidth(5, 3);
 		codesControlsLayout.addComponent(yearSuffix);
@@ -232,7 +241,7 @@ public class AssignCodesDialog extends BaseSubWindow
 	}
 
 	@Override
-	public void windowClose(CloseEvent e) {
+	public void windowClose(final CloseEvent e) {
 		super.close();
 	}
 
