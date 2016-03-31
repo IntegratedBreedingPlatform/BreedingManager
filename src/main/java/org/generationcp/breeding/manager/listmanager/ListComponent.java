@@ -436,6 +436,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.listDataTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
+		this.listDataTable.addContainerProperty(ColumnLabels.MGID.getName(), Integer.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
 
@@ -449,6 +450,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				this.getTermNameFromOntology(ColumnLabels.SEED_RESERVATION));
 		this.listDataTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(), this.getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
 		this.listDataTable.setColumnHeader(ColumnLabels.GID.getName(), this.getTermNameFromOntology(ColumnLabels.GID));
+		this.listDataTable.setColumnHeader(ColumnLabels.MGID.getName(), this.getTermNameFromOntology(ColumnLabels.MGID));
 		this.listDataTable.setColumnHeader(ColumnLabels.STOCKID.getName(), this.getTermNameFromOntology(ColumnLabels.STOCKID));
 		this.listDataTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(), this.getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
 
@@ -565,6 +567,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		newItem.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(entry.getEntryCode());
 		newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
 		newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
+		newItem.getItemProperty(ColumnLabels.MGID.getName()).setValue(entry.getMgid() == null  ? 0 : entry.getMgid());
 
 		// Inventory Related Columns
 
@@ -810,8 +813,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		@Override
 		public Field createField(final Container container, final Object itemId, final Object propertyId, final Component uiContext) {
 
-			if (propertyId.equals(ColumnLabels.GID.getName()) || propertyId.equals(ColumnLabels.ENTRY_ID.getName())
-					|| propertyId.equals(ColumnLabels.DESIGNATION.getName()) || ListComponent.this.isInventoryColumn(propertyId)) {
+			if (isNonEditableColumn(propertyId)) {
 				return null;
 			}
 
@@ -889,6 +891,11 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			});
 
 			return tf;
+		}
+
+		private boolean isNonEditableColumn(Object propertyId) {
+			return propertyId.equals(ColumnLabels.GID.getName()) || propertyId.equals(ColumnLabels.ENTRY_ID.getName())
+					|| propertyId.equals(ColumnLabels.DESIGNATION.getName()) || propertyId.equals(ColumnLabels.MGID.getName()) || ListComponent.this.isInventoryColumn(propertyId);
 		}
 
 		private Double computeTextFieldWidth(final String value) {
