@@ -866,3 +866,16 @@ div.unsaved-changes-dialog div.v-window-contents>div {
   .v-select-option.v-radiobutton {
     padding-right: 10px;
 }
+
+.lst-border {
+    border: 1px solid black;
+}
+
+.lst-example-text {
+	font-weight: bold;
+    font-size: x-large;
+}
+
+.lst-margin-left {
+	margin-left: 15px;
+}

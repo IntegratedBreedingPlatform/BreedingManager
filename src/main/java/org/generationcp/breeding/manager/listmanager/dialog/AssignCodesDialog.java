@@ -22,8 +22,11 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
@@ -77,6 +80,7 @@ public class AssignCodesDialog extends BaseSubWindow implements InitializingBean
 		this.codingLevelOptions.addItem("Level 1");
 		this.codingLevelOptions.addItem("Level 2");
 		this.codingLevelOptions.addItem("Level 3");
+		this.codingLevelOptions.select("Level 1");
 	}
 
 	@Override
@@ -119,8 +123,8 @@ public class AssignCodesDialog extends BaseSubWindow implements InitializingBean
 	@Override
 	public void layoutComponents() {
 		this.setModal(true);
-		this.setWidth("400px");
-		this.setHeight("300px");
+		this.setWidth("550px");
+		this.setHeight("380px");
 		this.setResizable(false);
 		this.addStyleName(Reindeer.WINDOW_LIGHT);
 
@@ -139,7 +143,7 @@ public class AssignCodesDialog extends BaseSubWindow implements InitializingBean
 		buttonLayout.setComponentAlignment(this.cancelButton, Alignment.BOTTOM_RIGHT);
 		buttonLayout.setComponentAlignment(this.continueButton, Alignment.BOTTOM_LEFT);
 
-		//TODO Add the rest here
+		// area with level options
 		final HorizontalLayout optionsLayout = new HorizontalLayout();
 		optionsLayout.setWidth("100%");
 		optionsLayout.setHeight("60px");
@@ -149,7 +153,57 @@ public class AssignCodesDialog extends BaseSubWindow implements InitializingBean
 		optionsLayout.addComponent(this.codingLevelOptions);
 		optionsLayout.setComponentAlignment(this.codingLevelOptions, Alignment.MIDDLE_CENTER);
 
+		// bordered area
+		final HorizontalLayout codesLayout = new HorizontalLayout();
+		codesLayout.setWidth("97%");
+		codesLayout.setHeight("160px");
+		codesLayout.setSpacing(true);
+		codesLayout.setStyleName("lst-border");
+
+		//example area
+		final VerticalLayout exampleLayout = new VerticalLayout();
+		exampleLayout.setWidth("100%");
+		exampleLayout.setHeight("60px");
+		exampleLayout.setSpacing(true);
+		final Label exampleLabel = new Label("Example:");
+		exampleLabel.setStyleName("lst-margin-left");
+		exampleLayout.addComponent(exampleLabel);
+		final Label exampleText = new Label("ABH051a");
+		exampleText.setStyleName("lst-example-text lst-margin-left");
+		exampleLayout.addComponent(exampleText);
+		exampleLayout.setComponentAlignment(exampleLabel, Alignment.MIDDLE_LEFT);
+		exampleLayout.setComponentAlignment(exampleText, Alignment.MIDDLE_LEFT);
+
+		//codes controls area
+		final HorizontalLayout codesControlsLayout = new HorizontalLayout();
+		codesControlsLayout.setWidth("100%");
+		codesControlsLayout.setHeight("55px");
+		codesControlsLayout.setSpacing(true);
+		final ComboBox comboBox1 = new ComboBox();
+		comboBox1.setWidth(5, 3);
+		codesControlsLayout.addComponent(comboBox1);
+		codesControlsLayout.setComponentAlignment(comboBox1, Alignment.MIDDLE_LEFT);
+		final ComboBox comboBox2 = new ComboBox();
+		comboBox2.setWidth(5, 3);
+		codesControlsLayout.addComponent(comboBox2);
+		codesControlsLayout.setComponentAlignment(comboBox2, Alignment.MIDDLE_LEFT);
+		final TextField yearSuffix = new TextField();
+		yearSuffix.setWidth(5, 3);
+		codesControlsLayout.addComponent(yearSuffix);
+		codesControlsLayout.setComponentAlignment(yearSuffix, Alignment.MIDDLE_LEFT);
+		final Label sequnceSuffix = new Label("SEQ");
+		codesControlsLayout.addComponent(sequnceSuffix);
+		codesControlsLayout.setComponentAlignment(sequnceSuffix, Alignment.MIDDLE_LEFT);
+
+		codesLayout.addComponent(exampleLayout);
+		codesLayout.addComponent(codesControlsLayout);
+		codesLayout.setComponentAlignment(exampleLayout, Alignment.MIDDLE_LEFT);
+		codesLayout.setComponentAlignment(codesControlsLayout, Alignment.MIDDLE_LEFT);
+		codesLayout.setExpandRatio(exampleLayout, 1);
+		codesLayout.setExpandRatio(codesControlsLayout, 2);
+
 		this.dialogLayout.addComponent(optionsLayout);
+		this.dialogLayout.addComponent(codesLayout);
 		this.dialogLayout.addComponent(buttonLayout);
 		this.setContent(this.dialogLayout);
 
