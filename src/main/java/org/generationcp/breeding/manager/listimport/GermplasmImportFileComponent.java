@@ -23,7 +23,7 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.commons.workbook.generator.RowColumnType;
-import org.generationcp.middleware.components.validator.ExecutionException;
+import org.generationcp.middleware.components.validator.ErrorCollection;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.slf4j.Logger;
@@ -145,21 +145,19 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 	 * Will display a pop up for Name Handling Dialog, if the imported germplasm list has name types, if not proceed to the next screen
 	 */
 	void nextStep() {
-
-		try {
-			List<ImportedGermplasm> importedGermplasms = getGermplasmListUploader().getImportedGermplasmList().getImportedGermplasms();
-			showNameHandlingPopUpValidator.validate(importedGermplasms);
-			final List<ImportedFactor> importedNameFactors = this.extractListOfImportedNames();
+		List<ImportedGermplasm> importedGermplasms = getGermplasmListUploader().getImportedGermplasmList().getImportedGermplasms();
+		ErrorCollection validationErrorMessages = showNameHandlingPopUpValidator.validate(importedGermplasms);
+		if (validationErrorMessages.isEmpty()) {
+			List<ImportedFactor> importedNameFactors = this.extractListOfImportedNames();
 			//if there were no namefactors then the showNameHandlingPopUpValidationRule would have failed already.
-			final NameHandlingDialog nameHandlingDialog = new NameHandlingDialog(this, importedNameFactors);
+			NameHandlingDialog nameHandlingDialog = new NameHandlingDialog(this, importedNameFactors);
 			// If not from popup
 			if (this.getWindow() != null && this.source.getGermplasmImportPopupSource() == null) {
 				this.getWindow().addWindow(nameHandlingDialog);
 			} else {
 				this.source.getGermplasmImportPopupSource().getParentWindow().addWindow(nameHandlingDialog);
 			}
-
-		} catch (ExecutionException e) {
+		} else {
 			//no need to show the name handling window.
 			this.source.nextStep();
 		}

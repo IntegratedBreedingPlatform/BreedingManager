@@ -10,7 +10,7 @@ import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.validator.ShowNameHandlingPopUpValidator;
 import org.generationcp.commons.parsing.pojo.ImportedFactor;
 import org.generationcp.commons.workbook.generator.RowColumnType;
-import org.generationcp.middleware.components.validator.ExecutionException;
+import org.generationcp.middleware.components.validator.ErrorCollection;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.junit.Assert;
@@ -22,10 +22,9 @@ import org.mockito.MockitoAnnotations;
 
 import com.vaadin.ui.Window;
 
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class GermplasmImportFileComponentTest {
 
@@ -129,13 +128,14 @@ public class GermplasmImportFileComponentTest {
 	}
 
 	@Test
-	public void testNextStepShowsNameHandlingDialogWhenThereIsImportedNameFactor() throws ExecutionException {
+	public void testNextStepShowsNameHandlingDialogWhenThereIsImportedNameFactor(){
 		ImportedGermplasmList importedGermplasmList = this.initImportedGermplasmList(true);
 		final GermplasmImportPopupSource importPopupSource = Mockito.mock(GermplasmImportPopupSource.class);
 		doReturn(importPopupSource).when(this.importMain).getGermplasmImportPopupSource();
 		doReturn(new Window()).when(importPopupSource).getParentWindow();
 		List<ImportedGermplasm> list = importedGermplasmList.getImportedGermplasms();
-		doNothing().when(showNameHandlingPopUpValidator).validate(list);
+		ErrorCollection success = new ErrorCollection();
+		when(showNameHandlingPopUpValidator.validate(list)).thenReturn(success);
 
 		this.importFileComponent.nextStep();
 
@@ -143,10 +143,13 @@ public class GermplasmImportFileComponentTest {
 	}
 
 	@Test
-	public void testNextStepGoesDirectlyToNextScreenWhenThereIsNoImportedNameFactor() throws ExecutionException {
+	public void testNextStepGoesDirectlyToNextScreenWhenThereIsNoImportedNameFactor() {
 		ImportedGermplasmList importedGermplasmList = this.initImportedGermplasmList(false);
 		List<ImportedGermplasm> list = importedGermplasmList.getImportedGermplasms();
-		doThrow(new ExecutionException(DUMMY_MESSAGE)).when(showNameHandlingPopUpValidator).validate(list);
+		ErrorCollection error = new ErrorCollection();
+		error.add(DUMMY_MESSAGE);
+		when(showNameHandlingPopUpValidator.validate(list)).thenReturn(error);
+
 
 		this.importFileComponent.nextStep();
 
