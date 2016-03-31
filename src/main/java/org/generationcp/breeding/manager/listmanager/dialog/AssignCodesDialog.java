@@ -1,15 +1,19 @@
+
 package org.generationcp.breeding.manager.listmanager.dialog;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.pojos.UserDefinedField;
+import org.generationcp.middleware.service.api.GermplasmGroupNamingResult;
 import org.generationcp.middleware.service.api.GermplasmNameTypeResolver;
 import org.generationcp.middleware.service.api.GermplasmNamingService;
 import org.springframework.beans.factory.InitializingBean;
@@ -31,8 +35,8 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
-public class AssignCodesDialog extends BaseSubWindow implements InitializingBean, InternationalizableComponent, BreedingManagerLayout,
-		Window.CloseListener {
+public class AssignCodesDialog extends BaseSubWindow
+		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, Window.CloseListener {
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -52,7 +56,7 @@ public class AssignCodesDialog extends BaseSubWindow implements InitializingBean
 	private VerticalLayout dialogLayout;
 	private Set<Integer> gidsToProcess = new HashSet<>();
 
-	AssignCodesDialog(){
+	AssignCodesDialog() {
 	}
 
 	public AssignCodesDialog(final Set<Integer> gidsToProcess) {
@@ -86,6 +90,7 @@ public class AssignCodesDialog extends BaseSubWindow implements InitializingBean
 	@Override
 	public void addListeners() {
 		this.cancelButton.addListener(new Button.ClickListener() {
+
 			@Override
 			public void buttonClick(final Button.ClickEvent event) {
 				AssignCodesDialog.super.close();
@@ -93,6 +98,7 @@ public class AssignCodesDialog extends BaseSubWindow implements InitializingBean
 		});
 
 		this.continueButton.addListener(new Button.ClickListener() {
+
 			@Override
 			public void buttonClick(final ClickEvent event) {
 				AssignCodesDialog.this.assignCodes();
@@ -102,16 +108,24 @@ public class AssignCodesDialog extends BaseSubWindow implements InitializingBean
 
 	void assignCodes() {
 		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
+		final StringBuffer resultMessages = new StringBuffer();
 		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
 			@Override
 			protected void doInTransactionWithoutResult(final TransactionStatus status) {
 				// TODO hard coded level = 1, derive from UI choice..
 				UserDefinedField nameType = AssignCodesDialog.this.germplasmNameTypeResolver.resolve(1);
 				for (final Integer gid : AssignCodesDialog.this.gidsToProcess) {
-					AssignCodesDialog.this.germplasmNamingService.applyGroupName(gid, "CML-BLAH", nameType, 1, 1);
+					final GermplasmGroupNamingResult result =
+							AssignCodesDialog.this.germplasmNamingService.applyGroupName(gid, "AB-H-15-01", nameType, 1, 1);
+					resultMessages.append(StringUtils.join(result.getMessages(), "<br/>"));
 				}
+				resultMessages.append("<br/>");
 			}
 		});
+		// TODO replace with proper dialog window..
+		MessageNotifier.showMessage(this.getWindow(), AssignCodesDialog.this.messageSource.getMessage(Message.ASSIGN_CODES),
+				resultMessages.toString());
 	}
 
 	@Override
