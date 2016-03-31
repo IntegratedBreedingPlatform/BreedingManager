@@ -55,6 +55,7 @@ public class AssignCodesDialog extends BaseSubWindow
 	private Button continueButton;
 	private VerticalLayout dialogLayout;
 	private Set<Integer> gidsToProcess = new HashSet<>();
+	private ComboBox programIdentifiersComboBox;
 
 	AssignCodesDialog() {
 	}
@@ -74,6 +75,7 @@ public class AssignCodesDialog extends BaseSubWindow
 	@Override
 	public void instantiateComponents() {
 		this.codingLevelOptions = new OptionGroup();
+		this.programIdentifiersComboBox = new ComboBox();
 		this.cancelButton = new Button();
 		this.continueButton = new Button();
 		this.continueButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
@@ -84,7 +86,12 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.codingLevelOptions.addItem("Level 1");
 		this.codingLevelOptions.addItem("Level 2");
 		this.codingLevelOptions.addItem("Level 3");
+
+		// by default the level 1 is selected
 		this.codingLevelOptions.select("Level 1");
+		for (final String programIdentifier : this.germplasmNamingService.getProgramIdentifiers(1)) {
+			this.programIdentifiersComboBox.addItem(programIdentifier);
+		}
 	}
 
 	@Override
@@ -193,10 +200,11 @@ public class AssignCodesDialog extends BaseSubWindow
 		codesControlsLayout.setWidth("100%");
 		codesControlsLayout.setHeight("55px");
 		codesControlsLayout.setSpacing(true);
-		final ComboBox comboBox1 = new ComboBox();
-		comboBox1.setWidth(5, 3);
-		codesControlsLayout.addComponent(comboBox1);
-		codesControlsLayout.setComponentAlignment(comboBox1, Alignment.MIDDLE_LEFT);
+
+		this.programIdentifiersComboBox.setWidth(5, 3);
+		codesControlsLayout.addComponent(this.programIdentifiersComboBox);
+		codesControlsLayout.setComponentAlignment(this.programIdentifiersComboBox, Alignment.MIDDLE_LEFT);
+
 		final ComboBox comboBox2 = new ComboBox();
 		comboBox2.setWidth(5, 3);
 		codesControlsLayout.addComponent(comboBox2);
