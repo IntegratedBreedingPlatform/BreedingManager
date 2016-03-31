@@ -188,6 +188,8 @@ public class DropHandlerMethods {
 
 			});
 
+			newItem.getItemProperty(ColumnLabels.MGID.getName()).setValue(germplasm.getMgid());
+
 			// Inventory Related Columns
 
 			// #1 Available Inventory
@@ -349,6 +351,8 @@ public class DropHandlerMethods {
 				newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(germplasmListData.getSeedSource());
 				newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
 				newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(germplasmListData.getGroupName());
+				newItem.getItemProperty(ColumnLabels.MGID.getName()).setValue(germplasmListData.getMgid());
+
 
 				// Inventory Related Columns
 
@@ -516,12 +520,14 @@ public class DropHandlerMethods {
 			String parentage = (String) itemFromSourceTable.getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue();
 			String entryCode = (String) itemFromSourceTable.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).getValue();
 			String seedSource = (String) itemFromSourceTable.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue();
+			Object mGid = itemFromSourceTable.getItemProperty(ColumnLabels.MGID.getName()).getValue();
 
 			// #2 Seed Reserved
 			String seedRes = DropHandlerMethods.STRING_DASH;
 
 			newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(itemCheckBox);
 			newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
+			newItem.getItemProperty(ColumnLabels.MGID.getName()).setValue(mGid);
 			newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(seedSource);
 			newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
 			newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(parentage);

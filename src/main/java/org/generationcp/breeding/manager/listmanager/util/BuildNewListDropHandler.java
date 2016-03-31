@@ -108,18 +108,19 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 							Item oldItem = sourceTable.getItem(transferable.getItemId());
 							Object oldCheckBox = oldItem.getItemProperty(ColumnLabels.TAG.getName()).getValue();
 							Object oldGid = oldItem.getItemProperty(ColumnLabels.GID.getName()).getValue();
+							Object oldMgid = oldItem.getItemProperty(ColumnLabels.MGID.getName()).getValue();
 							Object oldEntryCode = oldItem.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).getValue();
 							Object oldSeedSource = oldItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue();
 							Object oldDesignation = oldItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue();
 							Object oldParentage = oldItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue();
 							Object oldAvailInv = oldItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue();
 							Object oldSeedRes = oldItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue();
-
 							sourceTable.removeItem(transferable.getItemId());
 
 							Item newItem = sourceTable.addItemAfter(droppedOverItemId, transferable.getItemId());
 							newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(oldCheckBox);
 							newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(oldGid);
+							newItem.getItemProperty(ColumnLabels.MGID.getName()).setValue(oldMgid);
 							newItem.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(oldEntryCode);
 							newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(oldSeedSource);
 							newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(oldDesignation);
