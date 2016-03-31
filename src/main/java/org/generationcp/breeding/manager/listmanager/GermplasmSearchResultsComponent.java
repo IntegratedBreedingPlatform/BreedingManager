@@ -166,6 +166,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
 		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
 		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
+		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.MGID.getName(), Integer.class, null);
 		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class, null);
 		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, null);
 		this.matchingGermplasmsTable.setWidth("100%");
@@ -187,6 +188,8 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 				ColumnLabels.STOCKID.getTermNameFromOntology(this.ontologyDataManager));
 		this.matchingGermplasmsTable.setColumnHeader(ColumnLabels.GID.getName(),
 				ColumnLabels.GID.getTermNameFromOntology(this.ontologyDataManager));
+		this.matchingGermplasmsTable.setColumnHeader(ColumnLabels.MGID.getName(),
+				ColumnLabels.MGID.getTermNameFromOntology(this.ontologyDataManager));
 		this.matchingGermplasmsTable.setColumnHeader(ColumnLabels.GERMPLASM_LOCATION.getName(),
 				ColumnLabels.GERMPLASM_LOCATION.getTermNameFromOntology(this.ontologyDataManager));
 		this.matchingGermplasmsTable.setColumnHeader(ColumnLabels.BREEDING_METHOD_NAME.getName(),
@@ -396,9 +399,10 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 			Label stockLabel = this.getStockIDs(inventoryInfo);
 			String availInv = this.getAvailableInventory(inventoryInfo);
 			String seedRes = this.getSeedReserved(inventoryInfo);
+			Integer mgid = germplasm.getMgid();
 
 			this.matchingGermplasmsTable.addItem(new Object[] {itemCheckBox, namesButton, crossExpansion, availInv, seedRes, stockLabel,
-					gidButton, locationName, methodName}, germplasm.getGid());
+					gidButton, mgid, locationName, methodName}, germplasm.getGid());
 		}
 
 		this.updateNoOfEntries();
