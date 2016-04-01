@@ -24,6 +24,7 @@ import org.generationcp.commons.parsing.validation.ParseValidationMap;
 import org.generationcp.commons.parsing.validation.ValueTypeValidator;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.components.validator.ErrorCollection;
+import org.generationcp.middleware.components.validator.ErrorMessage;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -815,8 +816,10 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 			ErrorCollection errors = importedGermplasmValidator.validate(importedGermplasm);
 			if(!errors.isEmpty()){
-				// Seems like the error handling is by throwing  an exception
-				throw new FileParsingException("GERMPLSM_PARSE_USE_CODED_NAMES", this.currentIndex, "", specialFactors.get(FactorTypes.NAME));
+				// there is at least one error;
+				ErrorMessage message = errors.iterator().next();
+				String errorParameter = message.getParameters().size() > 0 ? message.getParameters().get(0) : "";
+				throw new FileParsingException(message.getKey(), this.currentIndex, errorParameter, specialFactors.get(FactorTypes.NAME));
 			}
 			return importedGermplasm;
 		}

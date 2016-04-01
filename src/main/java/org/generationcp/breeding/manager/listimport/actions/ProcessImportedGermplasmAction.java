@@ -56,9 +56,6 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
 
-	@Autowired
-	private ImportedGermplasmValidator importedGermplasmValidator;
-
 	@Resource
 	private ContextUtil contextUtil;
 
@@ -99,13 +96,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 
 		for (int i = 0; i < this.getImportedGermplasms().size(); i++) {
 			final ImportedGermplasm importedGermplasm = this.getImportedGermplasms().get(i);
-			ErrorCollection errors = importedGermplasmValidator.validate(importedGermplasm);
-			if(!errors.isEmpty()){
-				//ErrorCollection contains at least one error message
-				MessageNotifier.showError(this.germplasmDetailsComponent.getWindow(), "Error!",
-						"GID: " + importedGermplasm.getGid() + " " + errors.iterator().next());
-				return;
-			}
+
 			final Germplasm germplasm = this.createGermplasmObject(i, -1, 0, 0, ibdbUserId, dateIntValue);
 
 			final Name name = this.createNameObject(ibdbUserId, dateIntValue, importedGermplasm.getDesig());
@@ -133,13 +124,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		for (int i = 0; i < this.getImportedGermplasms().size(); i++) {
 
 			final ImportedGermplasm importedGermplasm = this.getImportedGermplasms().get(i);
-			ErrorCollection errors = importedGermplasmValidator.validate(importedGermplasm);
-			if(!errors.isEmpty()){
-				//ErrorCollection contains at least one error message
-				MessageNotifier.showError(this.germplasmDetailsComponent.getWindow(), "Error!",
-						"GID: " + importedGermplasm.getGid() + " " + errors.iterator().next());
-				return;
-			}
+
 			final String designationName = importedGermplasm.getDesig();
 			// gpid1 and gpid 2 values are default here, actual values will be set below based on matched germplasm
 			final Germplasm germplasm = this.createGermplasmObject(i, -1, 0, 0, ibdbUserId, dateIntValue);
@@ -207,13 +192,6 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		for (int i = 0; i < this.getImportedGermplasms().size(); i++) {
 
 			final ImportedGermplasm importedGermplasm = this.getImportedGermplasms().get(i);
-			ErrorCollection errors = importedGermplasmValidator.validate(importedGermplasm);
-			if(!errors.isEmpty()){
-				//ErrorCollection contains at least one error message
-				MessageNotifier.showError(this.germplasmDetailsComponent.getWindow(), "Error!",
-						"GID: " + importedGermplasm.getGid() + " " + errors.iterator().next());
-				return;
-			}
 			final String designationName = importedGermplasm.getDesig();
 			Germplasm germplasm = new Germplasm();
 			final Integer germplasmMatchesCount = germplasmMatchesMap.get(designationName);
