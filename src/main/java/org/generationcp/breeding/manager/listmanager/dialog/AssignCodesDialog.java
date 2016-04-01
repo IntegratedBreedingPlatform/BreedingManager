@@ -3,7 +3,9 @@ package org.generationcp.breeding.manager.listmanager.dialog;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +28,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.vaadin.data.Property;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -61,6 +64,7 @@ public class AssignCodesDialog extends BaseSubWindow
 	private ComboBox programIdentifiersComboBox;
 	private ComboBox germplasmTypeComboBox;
 	private TextField yearSuffix;
+	private Label exampleText;
 
 	AssignCodesDialog() {
 	}
@@ -80,6 +84,7 @@ public class AssignCodesDialog extends BaseSubWindow
 	@Override
 	public void instantiateComponents() {
 		this.codingLevelOptions = new OptionGroup();
+		this.exampleText = new Label();
 		this.programIdentifiersComboBox = new ComboBox();
 		this.germplasmTypeComboBox = new ComboBox();
 		this.yearSuffix = new TextField();
@@ -114,6 +119,24 @@ public class AssignCodesDialog extends BaseSubWindow
 
 	@Override
 	public void addListeners() {
+
+		final Property.ValueChangeListener codeOptionsListener = new Property.ValueChangeListener() {
+
+			@Override
+			public void valueChange(final Property.ValueChangeEvent event) {
+				// TODO this will be different for each level and configurable
+				AssignCodesDialog.this.exampleText.setValue(
+						(String)AssignCodesDialog.this.programIdentifiersComboBox.getValue() +
+								(String)AssignCodesDialog.this.germplasmTypeComboBox.getValue() +
+								(String)AssignCodesDialog.this.yearSuffix.getValue() + "[SEQ]");
+
+			}
+		};
+		this.programIdentifiersComboBox.addListener(codeOptionsListener);
+		this.germplasmTypeComboBox.addListener(codeOptionsListener);
+		this.yearSuffix.addListener(codeOptionsListener);
+
+
 		this.cancelButton.addListener(new Button.ClickListener() {
 
 			@Override
@@ -134,6 +157,7 @@ public class AssignCodesDialog extends BaseSubWindow
 	void assignCodes() {
 		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
 		final StringBuffer resultMessages = new StringBuffer();
+		final Map<Integer, GermplasmGroupNamingResult> assignCodesResultsMap = new HashMap<>();
 		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
 			@Override
@@ -143,14 +167,15 @@ public class AssignCodesDialog extends BaseSubWindow
 				for (final Integer gid : AssignCodesDialog.this.gidsToProcess) {
 					final GermplasmGroupNamingResult result =
 							AssignCodesDialog.this.germplasmNamingService.applyGroupName(gid, "AB-H-15-01", nameType, 1, 1);
-					resultMessages.append(StringUtils.join(result.getMessages(), "<br/>"));
+					assignCodesResultsMap.put(gid, result);
 				}
-				resultMessages.append("<br/>");
 			}
 		});
 		// TODO replace with proper dialog window..
 		MessageNotifier.showMessage(this.getWindow(), AssignCodesDialog.this.messageSource.getMessage(Message.ASSIGN_CODES),
 				resultMessages.toString());
+		this.getParent().addWindow(new AssignCodesResultsDialog(assignCodesResultsMap));
+		this.closeWindow();
 	}
 
 	@Override
@@ -190,7 +215,7 @@ public class AssignCodesDialog extends BaseSubWindow
 
 		this.codingLevelOptions.addStyleName("lst-horizontal-options");
 		optionsLayout.addComponent(this.codingLevelOptions);
-		optionsLayout.setComponentAlignment(this.codingLevelOptions, Alignment.MIDDLE_CENTER);
+		optionsLayout.setComponentAlignment(this.codingLevelOptions, Alignment.MIDDLE_LEFT);
 
 		// bordered area
 		final HorizontalLayout codesLayout = new HorizontalLayout();
@@ -207,19 +232,19 @@ public class AssignCodesDialog extends BaseSubWindow
 		final Label exampleLabel = new Label("Example:");
 		exampleLabel.setStyleName("lst-margin-left");
 		exampleLayout.addComponent(exampleLabel);
-		final Label exampleText = new Label("ABH051a");
-		exampleText.setStyleName("lst-example-text lst-margin-left");
-		exampleLayout.addComponent(exampleText);
+
+		this.exampleText.setStyleName("lst-example-text lst-margin-left");
+		exampleLayout.addComponent(this.exampleText);
 		exampleLayout.setComponentAlignment(exampleLabel, Alignment.MIDDLE_LEFT);
-		exampleLayout.setComponentAlignment(exampleText, Alignment.MIDDLE_LEFT);
+		exampleLayout.setComponentAlignment(this.exampleText, Alignment.MIDDLE_LEFT);
 
 		//codes controls area
 		final HorizontalLayout codesControlsLayout = new HorizontalLayout();
 		codesControlsLayout.setWidth("100%");
-		codesControlsLayout.setHeight("55px");
-		codesControlsLayout.setSpacing(true);
+		codesControlsLayout.setHeight("60px");
 
 		this.programIdentifiersComboBox.setWidth(5, 3);
+		this.programIdentifiersComboBox.setStyleName("lst-option-control");
 		codesControlsLayout.addComponent(this.programIdentifiersComboBox);
 		codesControlsLayout.setComponentAlignment(this.programIdentifiersComboBox, Alignment.MIDDLE_LEFT);
 
@@ -231,9 +256,10 @@ public class AssignCodesDialog extends BaseSubWindow
 		codesControlsLayout.addComponent(this.yearSuffix);
 		codesControlsLayout.setComponentAlignment(this.yearSuffix, Alignment.MIDDLE_LEFT);
 
-		final Label sequnceSuffix = new Label("SEQ");
-		codesControlsLayout.addComponent(sequnceSuffix);
-		codesControlsLayout.setComponentAlignment(sequnceSuffix, Alignment.MIDDLE_LEFT);
+		final Label sequenceLabel = new Label("SEQ");
+		sequenceLabel.setStyleName("lst-sequence-label");
+		codesControlsLayout.addComponent(sequenceLabel);
+		codesControlsLayout.setComponentAlignment(sequenceLabel, Alignment.MIDDLE_LEFT);
 
 		codesLayout.addComponent(exampleLayout);
 		codesLayout.addComponent(codesControlsLayout);

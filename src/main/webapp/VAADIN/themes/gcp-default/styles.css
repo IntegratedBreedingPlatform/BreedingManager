@@ -879,3 +879,7 @@ div.unsaved-changes-dialog div.v-window-contents>div {
 .lst-margin-left {
 	margin-left: 15px;
 }
+
+.lst-option-control {
+	padding-right: 5px;
+}
