@@ -8,6 +8,7 @@ import junit.framework.Assert;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -34,6 +35,10 @@ public class SaveListAsDialogTest {
 		SaveListAsDialogTest.germplasmList.setNotes("Sample Notes");
 	}
 
+	/**
+	 * The test is location dependant.
+	 */
+	@Ignore
 	@Test
 	public void testGetCurrentParsedListDateForValidDateFormat() {
 		Long expectedDate = 20111106L;

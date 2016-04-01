@@ -15,7 +15,6 @@
 		location="classpath:workbench.properties, classpath:crossing.properties" />
 	<util:properties id="workbenchProperties" location="classpath:workbench.properties" />
 	<util:properties id="helpProperties" location="classpath:helplinks.properties" />
-
 	<!-- Enable Spring annotations -->
 	<context:annotation-config />
 	<!-- Enable load-time-weaving so we can use @Configurable annotation. To
@@ -303,4 +302,6 @@
 		factory-method="createInstance" scope="request">
 		<aop:scoped-proxy />
 	</bean>
+
+	<context:component-scan base-package="org.generationcp.breeding.manager.validator"/>
 </beans>
