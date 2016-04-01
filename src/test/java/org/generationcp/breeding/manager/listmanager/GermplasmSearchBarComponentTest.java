@@ -75,34 +75,34 @@ public class GermplasmSearchBarComponentTest {
 	@Test
 	public void testDoSearch() {
 
-		CheckBox includeParentsCheckBox = this.spyComponent.getIncludeParentsCheckBox();
-		CheckBox withInventoryOnlyCheckBox = this.spyComponent.getWithInventoryOnlyCheckBox();
-		boolean includeParents = (Boolean) includeParentsCheckBox.getValue();
-		boolean withInventoryOnly = (Boolean) withInventoryOnlyCheckBox.getValue();
+		final CheckBox includeParentsCheckBox = this.spyComponent.getIncludeParentsCheckBox();
+		final CheckBox withInventoryOnlyCheckBox = this.spyComponent.getWithInventoryOnlyCheckBox();
+		final boolean includeParents = (Boolean) includeParentsCheckBox.getValue();
+		final boolean withInventoryOnly = (Boolean) withInventoryOnlyCheckBox.getValue();
 
-		String searchType = (String) this.spyComponent.getSearchTypeOptions().getValue();
-		String searchKeyword = this.getSearchKeyword(GermplasmSearchBarComponentTest.TEST_SEARCH_STRING, searchType);
+		final String searchType = (String) this.spyComponent.getSearchTypeOptions().getValue();
+		final String searchKeyword = this.getSearchKeyword(GermplasmSearchBarComponentTest.TEST_SEARCH_STRING, searchType);
 
-		boolean exactMatchesOnly = false;
-		Operation operation = exactMatchesOnly ? Operation.EQUAL : Operation.LIKE;
-		List<Germplasm> results = null;
+		final boolean exactMatchesOnly = false;
+		final Operation operation = exactMatchesOnly ? Operation.EQUAL : Operation.LIKE;
+		final List<Germplasm> results = null;
 
 		try {
 			Mockito.when(this.germplasmDataManager.searchForGermplasm(searchKeyword, operation, includeParents, withInventoryOnly))
-			.thenReturn(null);
+					.thenReturn(null);
 			Mockito.doNothing().when(this.germplasmSearchResultsComponent).applyGermplasmResults(results);
 			this.spyComponent.doSearch(GermplasmSearchBarComponentTest.TEST_SEARCH_STRING);
 			Mockito.verify(this.breedingManagerService).doGermplasmSearch(searchKeyword, operation, includeParents, withInventoryOnly);
-		} catch (BreedingManagerSearchException e) {
-			Message errorMessage = e.getErrorMessage();
+		} catch (final BreedingManagerSearchException e) {
+			final Message errorMessage = e.getErrorMessage();
 			Assert.assertEquals("Error message should be " + GermplasmSearchBarComponentTest.NO_SEARCH_RESULTS_UNCHECKED_PUBLIC_DATA,
 					GermplasmSearchBarComponentTest.NO_SEARCH_RESULTS_UNCHECKED_PUBLIC_DATA, this.messageSource.getMessage(errorMessage));
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			Assert.fail("Test fails with error : " + e.getMessage());
 		}
 	}
 
-	private String getSearchKeyword(String query, String searchType) {
+	private String getSearchKeyword(final String query, final String searchType) {
 		String searchKeyword = query;
 		if (GermplasmSearchBarComponentTest.MATCHES_STARTING_WITH.equals(searchType)) {
 			searchKeyword = searchKeyword + GermplasmSearchBarComponentTest.PERCENT;
