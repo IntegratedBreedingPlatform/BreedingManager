@@ -1,10 +1,10 @@
 package org.generationcp.breeding.manager.validator;
 
-import java.text.MessageFormat;
 import java.util.List;
 
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.middleware.components.CodeNamesLocator;
+import org.generationcp.middleware.components.validator.ErrorMessage;
 import org.generationcp.middleware.components.validator.ValidationRule;
 import org.generationcp.middleware.manager.api.NamesDataManager;
 import org.generationcp.middleware.pojos.Name;
@@ -16,9 +16,9 @@ import com.google.common.base.Optional;
 @Component
 public class CheckGermplasmWithoutCodedNamesValidationRule implements ValidationRule<ImportedGermplasm> {
 
-	public static final String ERROR_MESSAGE_GERMPLASM_USING_CODENAME = "Germplasm designation value '{0}' is marked as a coded name value.";
-	CodeNamesLocator codedNamesLocator;
-	NamesDataManager manager;
+	public static final String ERROR_MESSAGE_GERMPLASM_USING_CODENAME = "GERMPLSM_PARSE_USE_CODED_NAMES";
+	private CodeNamesLocator codedNamesLocator;
+	private NamesDataManager manager;
 
 	@Autowired
 	public CheckGermplasmWithoutCodedNamesValidationRule(CodeNamesLocator codedNamesLocator, NamesDataManager manager) {
@@ -27,15 +27,16 @@ public class CheckGermplasmWithoutCodedNamesValidationRule implements Validation
 	}
 
 	@Override
-	public Optional<String> validate(ImportedGermplasm importedGermplasm)  {
+	public Optional<ErrorMessage> validate(ImportedGermplasm importedGermplasm)  {
+		ErrorMessage message = null;
 
 		List<Integer> typeList =  codedNamesLocator.getCodedNamesIds();
-
 		List<Name> names =  manager.getNamesByNvalInTypeList(importedGermplasm.getDesig(),typeList);
 
 		if(names.size()>0){
-			return Optional.of(MessageFormat.format(ERROR_MESSAGE_GERMPLASM_USING_CODENAME, importedGermplasm));
+			message= new ErrorMessage(ERROR_MESSAGE_GERMPLASM_USING_CODENAME);
+			message.addParameters(importedGermplasm.getDesig());
 		}
-		return Optional.absent();
+		return Optional.fromNullable(message);
 	}
 }
