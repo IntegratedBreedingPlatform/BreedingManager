@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,6 +45,7 @@ import com.vaadin.ui.themes.Reindeer;
 public class AssignCodesDialog extends BaseSubWindow
 		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, Window.CloseListener {
 
+	public static final String SEQUENCE_PLACEHOLDER = "[SEQ]";
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
@@ -101,11 +103,23 @@ public class AssignCodesDialog extends BaseSubWindow
 
 		// by default the level 1 is selected
 		this.codingLevelOptions.select("Level 1");
-		for (final String programIdentifier : this.germplasmNamingService.getProgramIdentifiers(1)) {
+		final List<String> programIdentifiers = this.germplasmNamingService.getProgramIdentifiers(1);
+		for (final String programIdentifier : programIdentifiers) {
 			this.programIdentifiersComboBox.addItem(programIdentifier);
 		}
-		for (final GermplasmType germplasmType : this.germplasmNamingService.getGermplasmTypes()) {
+		//the first value in the list is a default selection
+		if (!programIdentifiers.isEmpty()) {
+			this.programIdentifiersComboBox.setValue(programIdentifiers.get(0));
+		}
+
+		final Set<GermplasmType> germplasmTypes = this.germplasmNamingService.getGermplasmTypes();
+		for (final GermplasmType germplasmType : germplasmTypes) {
 			this.germplasmTypeComboBox.addItem(germplasmType.name());
+		}
+		//the first value in the list is a default selection
+		if (!germplasmTypes.isEmpty()) {
+			final GermplasmType germplasmType = (GermplasmType) germplasmTypes.toArray()[0];
+			this.germplasmTypeComboBox.setValue(germplasmType.name());
 		}
 
 		// by default the current year in 2 digits format will be set to yearSuffix text field
@@ -115,6 +129,10 @@ public class AssignCodesDialog extends BaseSubWindow
 
 		this.programIdentifiersComboBox.setNullSelectionAllowed(false);
 		this.germplasmTypeComboBox.setNullSelectionAllowed(false);
+
+		//update example text after setting defaults
+		this.exampleText.setValue(this.programIdentifiersComboBox.getValue().toString() +
+				this.germplasmTypeComboBox.getValue().toString() + this.yearSuffix.getValue().toString() + SEQUENCE_PLACEHOLDER);
 	}
 
 	@Override
@@ -126,9 +144,9 @@ public class AssignCodesDialog extends BaseSubWindow
 			public void valueChange(final Property.ValueChangeEvent event) {
 				// TODO this will be different for each level and configurable
 				AssignCodesDialog.this.exampleText.setValue(
-						(String)AssignCodesDialog.this.programIdentifiersComboBox.getValue() +
-								(String)AssignCodesDialog.this.germplasmTypeComboBox.getValue() +
-								(String)AssignCodesDialog.this.yearSuffix.getValue() + "[SEQ]");
+						AssignCodesDialog.this.programIdentifiersComboBox.getValue().toString() +
+								AssignCodesDialog.this.germplasmTypeComboBox.getValue().toString() +
+								AssignCodesDialog.this.yearSuffix.getValue().toString() + SEQUENCE_PLACEHOLDER);
 
 			}
 		};
@@ -235,7 +253,7 @@ public class AssignCodesDialog extends BaseSubWindow
 
 		this.exampleText.setStyleName("lst-example-text lst-margin-left");
 		exampleLayout.addComponent(this.exampleText);
-		exampleLayout.setComponentAlignment(exampleLabel, Alignment.MIDDLE_LEFT);
+		exampleLayout.setComponentAlignment(exampleLabel, Alignment.TOP_LEFT);
 		exampleLayout.setComponentAlignment(this.exampleText, Alignment.MIDDLE_LEFT);
 
 		//codes controls area
