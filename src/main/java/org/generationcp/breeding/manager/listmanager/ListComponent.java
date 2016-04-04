@@ -810,7 +810,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.listDataTable.setEditable(true);
 	}
 
-	private final class ListDataTableFieldFactory implements TableFieldFactory {
+	final class ListDataTableFieldFactory implements TableFieldFactory {
 
 		private static final long serialVersionUID = 1L;
 
@@ -897,7 +897,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			return tf;
 		}
 
-		private boolean isNonEditableColumn(final Object propertyId) {
+		boolean isNonEditableColumn(final Object propertyId) {
 			return propertyId.equals(ColumnLabels.GID.getName()) || propertyId.equals(ColumnLabels.ENTRY_ID.getName())
 					|| propertyId.equals(ColumnLabels.DESIGNATION.getName()) || propertyId.equals(ColumnLabels.GROUP_ID.getName())
 					|| ListComponent.this.isInventoryColumn(propertyId);
