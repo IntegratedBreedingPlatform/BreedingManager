@@ -222,7 +222,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private Map<ListEntryLotDetails, Double> validReservationsToSave;
 	private Boolean hasChanges;
 
-	private ListDataPropertiesRenderer newColumnsRenderer = new ListDataPropertiesRenderer();
+	private final ListDataPropertiesRenderer newColumnsRenderer = new ListDataPropertiesRenderer();
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -818,7 +818,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		@Override
 		public Field createField(final Container container, final Object itemId, final Object propertyId, final Component uiContext) {
 
-			if (isNonEditableColumn(propertyId)) {
+			if (this.isNonEditableColumn(propertyId)) {
 				return null;
 			}
 
@@ -898,9 +898,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			return tf;
 		}
 
-		private boolean isNonEditableColumn(Object propertyId) {
+		private boolean isNonEditableColumn(final Object propertyId) {
 			return propertyId.equals(ColumnLabels.GID.getName()) || propertyId.equals(ColumnLabels.ENTRY_ID.getName())
-					|| propertyId.equals(ColumnLabels.DESIGNATION.getName()) || propertyId.equals(ColumnLabels.MGID.getName()) || ListComponent.this.isInventoryColumn(propertyId);
+					|| propertyId.equals(ColumnLabels.DESIGNATION.getName()) || propertyId.equals(ColumnLabels.MGID.getName())
+					|| ListComponent.this.isInventoryColumn(propertyId);
 		}
 
 		private Double computeTextFieldWidth(final String value) {
@@ -1301,20 +1302,19 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		if (!selectedIdsToDelete.isEmpty()) {
 			ConfirmDialog.show(this.getWindow(), this.messageSource.getMessage(Message.DELETE_GERMPLASM_ENTRIES),
-				this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES_CONFIRM), this.messageSource.getMessage(Message.YES),
-				this.messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
+					this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES_CONFIRM), this.messageSource.getMessage(Message.YES),
+					this.messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
 
-					private static final long serialVersionUID = 1L;
+						private static final long serialVersionUID = 1L;
 
-					@Override
-					public void onClose(final ConfirmDialog dialog) {
-						if (dialog.isConfirmed()) {
-							ListComponent.this.removeRowsInListDataTable((Collection<?>) ListComponent.this.listDataTable
-									.getValue());
+						@Override
+						public void onClose(final ConfirmDialog dialog) {
+							if (dialog.isConfirmed()) {
+								ListComponent.this.removeRowsInListDataTable((Collection<?>) ListComponent.this.listDataTable.getValue());
+							}
 						}
-					}
 
-				});
+					});
 
 		} else {
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DELETING_LIST_ENTRIES),
@@ -1538,7 +1538,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				this.listDataTable.setEditable(false);
 				final List<GermplasmListData> inventoryData =
 						this.inventoryDataManager.getLotCountsForListEntries(this.germplasmList.getId(),
-                                new ArrayList<>(Collections.singleton(listDataId)));
+								new ArrayList<>(Collections.singleton(listDataId)));
 				if (inventoryData != null) {
 					listData = inventoryData.get(0);
 				}
@@ -1756,7 +1756,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			ListComponent.LOG.error(ListComponent.ERROR_WITH_DELETING_LIST_ENTRIES, e);
 			ListComponent.LOG.error("\n" + e.getStackTrace());
 		}
-        // end of performListEntriesDeletion
+		// end of performListEntriesDeletion
 	}
 
 	protected void deleteRemovedGermplasmEntriesFromTable() {

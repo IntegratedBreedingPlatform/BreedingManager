@@ -31,11 +31,12 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 
 	private static final Logger LOG = LoggerFactory.getLogger(BuildNewListDropHandler.class);
 	private static final long serialVersionUID = 1L;
-	private PlatformTransactionManager transactionManager;
+	private final PlatformTransactionManager transactionManager;
 
-	public BuildNewListDropHandler(ListManagerMain listManagerMain, GermplasmDataManager germplasmDataManager,
-			GermplasmListManager germplasmListManager, InventoryDataManager inventoryDataManager, PedigreeService pedigreeService,
-			CrossExpansionProperties crossExpansionProperties, Table targetTable, PlatformTransactionManager transactionManager) {
+	public BuildNewListDropHandler(final ListManagerMain listManagerMain, final GermplasmDataManager germplasmDataManager,
+			final GermplasmListManager germplasmListManager, final InventoryDataManager inventoryDataManager,
+			final PedigreeService pedigreeService, final CrossExpansionProperties crossExpansionProperties, final Table targetTable,
+			final PlatformTransactionManager transactionManager) {
 		this.listManagerMain = listManagerMain;
 		this.germplasmDataManager = germplasmDataManager;
 		this.germplasmListManager = germplasmListManager;
@@ -49,17 +50,17 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 	@Override
 	public void drop(final DragAndDropEvent event) {
 
-		final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
 		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
 			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+			protected void doInTransactionWithoutResult(final TransactionStatus status) {
 				if (event.getTransferable() instanceof TableTransferable) {
 
-					TableTransferable transferable = (TableTransferable) event.getTransferable();
-					Table sourceTable = transferable.getSourceComponent();
-					String sourceTableData = sourceTable.getData().toString();
-					AbstractSelectTargetDetails dropData = (AbstractSelectTargetDetails) event.getTargetDetails();
+					final TableTransferable transferable = (TableTransferable) event.getTransferable();
+					final Table sourceTable = transferable.getSourceComponent();
+					final String sourceTableData = sourceTable.getData().toString();
+					final AbstractSelectTargetDetails dropData = (AbstractSelectTargetDetails) event.getTargetDetails();
 					BuildNewListDropHandler.this.targetTable = (Table) dropData.getTarget();
 
 					if (sourceTableData.equals(DropHandlerMethods.MATCHING_GERMPLASMS_TABLE_DATA)) {
@@ -92,32 +93,32 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 							BuildNewListDropHandler.this.addFromListDataTable(sourceTable);
 						} else if (transferable.getSourceComponent().getParent().getParent() instanceof ListComponent) {
 							// If none, add what was dropped
-							Integer listId =
+							final Integer listId =
 									((ListComponent) transferable.getSourceComponent().getParent().getParent()).getGermplasmListId();
 							BuildNewListDropHandler.this.addGermplasmFromList(listId, (Integer) transferable.getItemId());
 						}
 
 					} else if (sourceTableData.equals(ListBuilderComponent.GERMPLASMS_TABLE_DATA)) {
-						Object droppedOverItemId = dropData.getItemIdOver();
+						final Object droppedOverItemId = dropData.getItemIdOver();
 
 						// Check first if item is dropped on top of itself
 						if (!transferable.getItemId().equals(droppedOverItemId)) {
 
 							BuildNewListDropHandler.super.setHasUnsavedChanges(true);
 
-							Item oldItem = sourceTable.getItem(transferable.getItemId());
-							Object oldCheckBox = oldItem.getItemProperty(ColumnLabels.TAG.getName()).getValue();
-							Object oldGid = oldItem.getItemProperty(ColumnLabels.GID.getName()).getValue();
-							Object oldMgid = oldItem.getItemProperty(ColumnLabels.MGID.getName()).getValue();
-							Object oldEntryCode = oldItem.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).getValue();
-							Object oldSeedSource = oldItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue();
-							Object oldDesignation = oldItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue();
-							Object oldParentage = oldItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue();
-							Object oldAvailInv = oldItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue();
-							Object oldSeedRes = oldItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue();
+							final Item oldItem = sourceTable.getItem(transferable.getItemId());
+							final Object oldCheckBox = oldItem.getItemProperty(ColumnLabels.TAG.getName()).getValue();
+							final Object oldGid = oldItem.getItemProperty(ColumnLabels.GID.getName()).getValue();
+							final Object oldMgid = oldItem.getItemProperty(ColumnLabels.MGID.getName()).getValue();
+							final Object oldEntryCode = oldItem.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).getValue();
+							final Object oldSeedSource = oldItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue();
+							final Object oldDesignation = oldItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue();
+							final Object oldParentage = oldItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue();
+							final Object oldAvailInv = oldItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue();
+							final Object oldSeedRes = oldItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue();
 							sourceTable.removeItem(transferable.getItemId());
 
-							Item newItem = sourceTable.addItemAfter(droppedOverItemId, transferable.getItemId());
+							final Item newItem = sourceTable.addItemAfter(droppedOverItemId, transferable.getItemId());
 							newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(oldCheckBox);
 							newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(oldGid);
 							newItem.getItemProperty(ColumnLabels.MGID.getName()).setValue(oldMgid);
@@ -139,7 +140,7 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 
 				} else {
 					// If source is from tree
-					Transferable transferable = event.getTransferable();
+					final Transferable transferable = event.getTransferable();
 					BuildNewListDropHandler.this.addGermplasmList((Integer) transferable.getData("itemId"));
 				}
 			}
