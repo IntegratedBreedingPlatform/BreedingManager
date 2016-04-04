@@ -15,7 +15,7 @@
 		location="classpath:workbench.properties, classpath:crossing.properties" />
 	<util:properties id="workbenchProperties" location="classpath:workbench.properties" />
 	<util:properties id="helpProperties" location="classpath:helplinks.properties" />
-
+	<util:properties id="crossingProperties" location="classpath:crossing.properties" />
 
 	<!-- Enable Spring annotations -->
 	<context:annotation-config />
