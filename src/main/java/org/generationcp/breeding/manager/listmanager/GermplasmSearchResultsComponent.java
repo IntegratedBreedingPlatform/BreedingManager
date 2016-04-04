@@ -384,10 +384,10 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 			final Label stockLabel = this.getStockIDs(inventoryInfo);
 			final String availInv = this.getAvailableInventory(inventoryInfo);
 			final String seedRes = this.getSeedReserved(inventoryInfo);
-			final String mgid = germplasm.getMgid() == 0 ? "-" : germplasm.getMgid().toString();
+			final String groupID = germplasm.getMgid() == 0 ? "-" : germplasm.getMgid().toString();
 
 			this.matchingGermplasmsTable.addItem(new Object[] {itemCheckBox, namesButton, crossExpansion, availInv, seedRes, stockLabel,
-					gidButton, mgid, locationName, methodName}, germplasm.getGid());
+					gidButton, groupID, locationName, methodName}, germplasm.getGid());
 		}
 
 		this.updateNoOfEntries();

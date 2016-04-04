@@ -511,7 +511,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			this.getAllListEntries();
 
 			for (final GermplasmListData entry : this.listEntries) {
-				entry.setMgid(entry.getGermplasm().getMgid());
 				this.addListEntryToTable(entry);
 			}
 
@@ -569,8 +568,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
 		newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
 
-		final String mGidDisplayValue = entry.getMgid() == 0 ? "-" : entry.getMgid().toString();
-		newItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(mGidDisplayValue);
+		final String groupIdDisplayValue = entry.getGroupId() == 0 ? "-" : entry.getGroupId().toString();
+		newItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(groupIdDisplayValue);
 
 		// Inventory Related Columns
 
