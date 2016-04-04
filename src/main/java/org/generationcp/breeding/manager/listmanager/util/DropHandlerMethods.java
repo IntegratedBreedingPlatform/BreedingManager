@@ -351,7 +351,7 @@ public class DropHandlerMethods {
 				newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(germplasmListData.getSeedSource());
 				newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
 				newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(germplasmListData.getGroupName());
-				newItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(germplasmListData.getMgid());
+				newItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue("-");
 
 				// Inventory Related Columns
 
