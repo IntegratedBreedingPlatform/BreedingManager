@@ -174,7 +174,6 @@ public class AssignCodesDialog extends BaseSubWindow
 
 	void assignCodes() {
 		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
-		final StringBuffer resultMessages = new StringBuffer();
 		final Map<Integer, GermplasmGroupNamingResult> assignCodesResultsMap = new HashMap<>();
 		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
@@ -189,9 +188,6 @@ public class AssignCodesDialog extends BaseSubWindow
 				}
 			}
 		});
-		// TODO replace with proper dialog window..
-		MessageNotifier.showMessage(this.getWindow(), AssignCodesDialog.this.messageSource.getMessage(Message.ASSIGN_CODES),
-				resultMessages.toString());
 		this.getParent().addWindow(new AssignCodesResultsDialog(assignCodesResultsMap));
 		this.closeWindow();
 	}

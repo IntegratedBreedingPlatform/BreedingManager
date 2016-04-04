@@ -75,13 +75,30 @@ public class AssignCodesResultsDialog extends BaseSubWindow implements Initializ
 		for (final Map.Entry<Integer, GermplasmGroupNamingResult> mapEntry : this.assignCodesResults.entrySet()) {
 			final GermplasmGroupNamingResult groupNamingResult = mapEntry.getValue();
 
-			final StringBuffer memberString = new StringBuffer();
+			final StringBuffer messageString = new StringBuffer();
 
-			if (groupNamingResult.getMessages().size() > MAX_MESSAGES_TO_DISPLAY) {
-				memberString.append("....");
+			int messageNumber = 1;
+
+			for (final String message : groupNamingResult.getMessages()) {
+				//TODO add GID ????
+				//TODO add new name
+				messageString.append(message);
+				if (messageNumber == groupNamingResult.getMessages().size()) {
+					messageString.append(".");
+				} else {
+					messageString.append(",");
+				}
+				if (messageNumber == MAX_MESSAGES_TO_DISPLAY) {
+					break;
+				}
+				messageNumber++;
 			}
 
-			this.assignCodesResultsTable.addItem(new Object[] {mapEntry.getKey(), "test naming result"}, rowId++);
+			if (groupNamingResult.getMessages().size() > MAX_MESSAGES_TO_DISPLAY) {
+				messageString.append("....");
+			}
+
+			this.assignCodesResultsTable.addItem(new Object[] {mapEntry.getKey(), messageString}, rowId++);
 		}
 		this.assignCodesResultsTable.setPageLength(rowId);
 
