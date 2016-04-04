@@ -11,6 +11,7 @@ import org.generationcp.breeding.manager.validator.ShowNameHandlingPopUpValidato
 import org.generationcp.commons.parsing.pojo.ImportedFactor;
 import org.generationcp.commons.workbook.generator.RowColumnType;
 import org.generationcp.middleware.components.validator.ErrorCollection;
+import org.generationcp.middleware.components.validator.ErrorMessage;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.junit.Assert;
@@ -146,9 +147,10 @@ public class GermplasmImportFileComponentTest {
 	public void testNextStepGoesDirectlyToNextScreenWhenThereIsNoImportedNameFactor() {
 		ImportedGermplasmList importedGermplasmList = this.initImportedGermplasmList(false);
 		List<ImportedGermplasm> list = importedGermplasmList.getImportedGermplasms();
-		ErrorCollection error = new ErrorCollection();
-		error.add(DUMMY_MESSAGE);
-		when(showNameHandlingPopUpValidator.validate(list)).thenReturn(error);
+		ErrorCollection errorCollection = new ErrorCollection();
+		ErrorMessage message = new ErrorMessage(DUMMY_MESSAGE);
+		errorCollection.add(message);
+		when(showNameHandlingPopUpValidator.validate(list)).thenReturn(errorCollection);
 
 
 		this.importFileComponent.nextStep();
