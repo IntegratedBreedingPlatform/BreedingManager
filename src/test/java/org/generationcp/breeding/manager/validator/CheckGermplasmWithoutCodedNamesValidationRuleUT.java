@@ -40,7 +40,7 @@ public class CheckGermplasmWithoutCodedNamesValidationRuleUT {
 		rule = new CheckGermplasmWithoutCodedNamesValidationRule(codedNameLocator,manager);
 		Integer elem1 = new Integer(1);
 		codedIds = Lists.newArrayList(elem1);
-		when(codedNameLocator.getCodedNamesIds()).thenReturn(codedIds);
+		when(codedNameLocator.locateCodedNamesIds()).thenReturn(codedIds);
 	}
 
 	@Test

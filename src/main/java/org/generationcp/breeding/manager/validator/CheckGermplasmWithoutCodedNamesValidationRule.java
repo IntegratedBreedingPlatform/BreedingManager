@@ -16,7 +16,7 @@ import com.google.common.base.Optional;
 @Component
 public class CheckGermplasmWithoutCodedNamesValidationRule implements ValidationRule<ImportedGermplasm> {
 
-	public static final String ERROR_MESSAGE_GERMPLASM_USING_CODENAME = "GERMPLSM_PARSE_USE_CODED_NAMES";
+	public static final String ERROR_MESSAGE_GERMPLASM_USING_CODENAME = "GERMPLASM_PARSER_USE_CODED_NAMES";
 	private CodeNamesLocator codedNamesLocator;
 	private NamesDataManager manager;
 
@@ -30,7 +30,7 @@ public class CheckGermplasmWithoutCodedNamesValidationRule implements Validation
 	public Optional<ErrorMessage> validate(ImportedGermplasm importedGermplasm)  {
 		ErrorMessage message = null;
 
-		List<Integer> typeList =  codedNamesLocator.getCodedNamesIds();
+		List<Integer> typeList =  codedNamesLocator.locateCodedNamesIds();
 		List<Name> names =  manager.getNamesByNvalInTypeList(importedGermplasm.getDesig(),typeList);
 
 		if(names.size()>0){
