@@ -436,7 +436,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.listDataTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
-		this.listDataTable.addContainerProperty(ColumnLabels.GROUP_ID.getName(), Integer.class, null);
+		this.listDataTable.addContainerProperty(ColumnLabels.GROUP_ID.getName(), String.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
 

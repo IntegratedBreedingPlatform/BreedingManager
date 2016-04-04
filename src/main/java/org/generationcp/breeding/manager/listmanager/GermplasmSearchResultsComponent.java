@@ -166,7 +166,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
 		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
 		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
-		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.GROUP_ID.getName(), Integer.class, null);
+		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.GROUP_ID.getName(), String.class, null);
 		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class, null);
 		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, null);
 		this.matchingGermplasmsTable.setWidth("100%");
