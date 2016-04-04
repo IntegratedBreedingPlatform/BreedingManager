@@ -570,8 +570,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
 		newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
 
-		final String mGidDisplayValue = "-";
-		newItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(mGidDisplayValue);
+		final String groupIdDisplayValue = entry.getGroupId() == 0 ? "-" : entry.getGroupId().toString();
+		newItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(groupIdDisplayValue);
 
 		// Inventory Related Columns
 
