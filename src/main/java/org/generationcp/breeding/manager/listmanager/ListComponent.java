@@ -569,9 +569,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
 		newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
 
-		// TODO FIXME: Determine why we have a null value for entry.getMgid, while on germplasmSearchComponent case we have 0 as value
-		// also a quick query from the database, germplasm table has mGid value in 0
-		newItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(entry.getMgid());
+		final String mGidDisplayValue = entry.getMgid() == 0 ? "-" : entry.getMgid().toString();
+		newItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(mGidDisplayValue);
 
 		// Inventory Related Columns
 
