@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.middleware.components.validator.ErrorCollection;
+import org.generationcp.middleware.components.validator.ErrorMessage;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -42,7 +43,7 @@ public class ShowNameHandlingPopUpValidatorUT {
 
 		ImportedGermplasm item = new ImportedGermplasm();
 		List<ImportedGermplasm> list = Lists.newArrayList(item);
-		Optional<String> success = Optional.absent();
+		Optional<ErrorMessage> success = Optional.absent();
 		when(validationRule.validate(anyListOf(ImportedGermplasm.class))).thenReturn(success);
 
 
@@ -57,13 +58,14 @@ public class ShowNameHandlingPopUpValidatorUT {
 	public void validatorFailsWhenAtLeastOneValidationRuleFails() {
 		ImportedGermplasm item = new ImportedGermplasm();
 		List<ImportedGermplasm> list = Lists.newArrayList(item);
-		Optional<String> failure = Optional.of(DUMMY_MESSAGE);
-		when(validationRule.validate(list)).thenReturn(failure);
+		ErrorMessage expectedError = new ErrorMessage(DUMMY_MESSAGE);
+		Optional<ErrorMessage> errorMessageOptional = Optional.of(expectedError);
+		when(validationRule.validate(list)).thenReturn(errorMessageOptional);
 
 
 		ErrorCollection expectedErrorCollection = target.validate(list);
 
-		assertThat(expectedErrorCollection).containsOnly(DUMMY_MESSAGE);
+		assertThat(expectedErrorCollection).containsOnly(expectedError);
 		assertThat(expectedErrorCollection).hasSize(EXPECTED_SIZE);
 	}
 }
