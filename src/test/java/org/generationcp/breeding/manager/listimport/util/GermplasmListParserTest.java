@@ -2,13 +2,9 @@
 package org.generationcp.breeding.manager.listimport.util;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.generationcp.breeding.manager.data.initializer.UserDefinedFieldTestDataInitializer;
@@ -17,10 +13,8 @@ import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.validator.ImportedGermplasmValidator;
 import org.generationcp.commons.parsing.FileParsingException;
-import org.generationcp.commons.parsing.validation.ParseValidationMap;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.components.validator.ErrorCollection;
-import org.generationcp.middleware.components.validator.ErrorMessage;
 import org.generationcp.middleware.data.initializer.GermplasmTestDataInitializer;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -37,10 +31,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -59,15 +50,6 @@ public class GermplasmListParserTest {
 	public static final String DUPLICATE_STOCK_ID_FILE = "GermplasmImportTemplate-StockIDs-duplicate-stock-ids.xls";
 	public static final String ADDITIONAL_NAME_FILE = "GermplasmImportTemplate-additional-name.xls";
 	private static final int EXPECTED_DESCRIPTION_SHEET_VARIABLE_COUNT = 12;
-	public static final int INDEX = 0;
-	public static final int TARGET_SHEET_INDEX = 0;
-	public static final int COLUMN_COUNT = 1;
-	public static final String DUMMY_STRING = "DUMMY_STRING";
-	public static final int COLUMN_0 = 0;
-	public static final String DUMMY_ERROR = "DUMMY_ERROR";
-	private static final Integer COLUMN_1 = 1;
-	private static final Integer COLUMN_2 = 2;
-	public static final String DUMMY_GID_VALUE = "1";
 
 	@Mock
 	private OntologyDataManager ontologyDataManager;
