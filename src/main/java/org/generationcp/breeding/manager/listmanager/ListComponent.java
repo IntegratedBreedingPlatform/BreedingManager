@@ -1051,6 +1051,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				if (ListComponent.this.selectedColumn.equals(ColumnLabels.TAG.getName())
 						|| ListComponent.this.selectedColumn.equals(ColumnLabels.GID.getName())
 						|| ListComponent.this.selectedColumn.equals(ColumnLabels.ENTRY_ID.getName())
+						|| ListComponent.this.selectedColumn.equals(ColumnLabels.GROUP_ID.getName())
 						|| ListComponent.this.selectedColumn.equals(ColumnLabels.DESIGNATION.getName())
 						|| ListComponent.this.isInventoryColumn(ListComponent.this.selectedColumn)) {
 					ListComponent.this.tableContextMenuDeleteEntries.setVisible(!ListComponent.this.germplasmList.isLockedList());
