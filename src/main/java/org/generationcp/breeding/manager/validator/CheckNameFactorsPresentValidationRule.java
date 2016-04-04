@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.validator;
 import java.util.List;
 
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
+import org.generationcp.middleware.components.validator.ErrorMessage;
 import org.generationcp.middleware.components.validator.ValidationRule;
 import org.springframework.stereotype.Component;
 
@@ -16,10 +17,10 @@ import com.google.common.base.Optional;
 @Component
 public class CheckNameFactorsPresentValidationRule implements ValidationRule<List<ImportedGermplasm>> {
 
-	public static final String ERROR_MESSAGE_NO_NAMES_PRESENT = "No names were present in excel observation sheet";
+	public static final String ERROR_MESSAGE_NO_NAMES_PRESENT = "GERMPLASM_PARSER_NO_NAME_FACTOR_PRESENT";
 
 	@Override
-	public Optional<String> validate (List<ImportedGermplasm> target) {
+	public Optional<ErrorMessage> validate (List<ImportedGermplasm> target) {
 		for (ImportedGermplasm importedGermplasm : target) {
 			if(importedGermplasm.getNameFactors()!=null){
 				for (String name : importedGermplasm.getNameFactors().values()) {
@@ -29,7 +30,7 @@ public class CheckNameFactorsPresentValidationRule implements ValidationRule<Lis
 				}
 			}
 		}
-
-		return Optional.of(ERROR_MESSAGE_NO_NAMES_PRESENT);
+		ErrorMessage message = new ErrorMessage(ERROR_MESSAGE_NO_NAMES_PRESENT);
+		return Optional.of(message);
 	}
 }

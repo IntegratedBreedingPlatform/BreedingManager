@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.middleware.components.validator.ErrorCollection;
+import org.generationcp.middleware.components.validator.ErrorMessage;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,6 +20,7 @@ public class CheckNameFactorsPresentValidationRuleUT {
 	public static final String NAME_FACTOR = "NAME_FACTOR";
 	public static final String EMPTY_STRING = "";
 	public static final String NAME = "NAME";
+	public static final String DUMMY_STRING = "DUMMY_STRING";
 
 	CheckNameFactorsPresentValidationRule validationRule;
 
@@ -42,11 +44,12 @@ public class CheckNameFactorsPresentValidationRuleUT {
 		ImportedGermplasm importedWithoutName = new ImportedGermplasm();
 		importedWithoutName.setNameFactors(nameFactors);
 		List<ImportedGermplasm> target = Lists.newArrayList(importedWithoutName);
+		ErrorMessage expectedMessage = new ErrorMessage(ERROR_MESSAGE_NO_NAMES_PRESENT);
 
-		Optional<String> errorValidationMessage = validationRule.validate(target);
+		Optional<ErrorMessage> errorValidationMessage = validationRule.validate(target);
 
 		assertThat(errorValidationMessage.isPresent()).isTrue();
-		assertThat(errorValidationMessage.get()).isEqualToIgnoringCase(ERROR_MESSAGE_NO_NAMES_PRESENT);
+		assertThat(errorValidationMessage.get()).isEqualsToByComparingFields(expectedMessage);
 
 	}
 	/**
@@ -60,7 +63,7 @@ public class CheckNameFactorsPresentValidationRuleUT {
 		importedWithName.setNameFactors(nameFactors);
 		List<ImportedGermplasm> target = Lists.newArrayList(importedWithName);
 
-		Optional<String> errorValidationMessage = validationRule.validate(target);
+		Optional<ErrorMessage> errorValidationMessage = validationRule.validate(target);
 
 		assertThat(errorValidationMessage.isPresent()).isFalse();
 
