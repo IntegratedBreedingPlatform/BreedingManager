@@ -436,7 +436,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.listDataTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
-		this.listDataTable.addContainerProperty(ColumnLabels.MGID.getName(), Integer.class, null);
+		this.listDataTable.addContainerProperty(ColumnLabels.MGID.getName(), String.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
 
@@ -571,7 +571,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		// TODO FIXME: Determine why we have a null value for entry.getMgid, while on germplasmSearchComponent case we have 0 as value
 		// also a quick query from the database, germplasm table has mGid value in 0
-		newItem.getItemProperty(ColumnLabels.MGID.getName()).setValue(entry.getMgid());
+		final String mGidDisplayValue = entry.getMgid() == 0 ? "-" : entry.getMgid().toString();
+		newItem.getItemProperty(ColumnLabels.MGID.getName()).setValue(mGidDisplayValue);
 
 		// Inventory Related Columns
 

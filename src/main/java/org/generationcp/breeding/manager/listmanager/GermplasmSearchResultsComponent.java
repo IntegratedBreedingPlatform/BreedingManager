@@ -166,7 +166,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
 		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
 		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
-		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.MGID.getName(), Integer.class, null);
+		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.MGID.getName(), String.class, null);
 		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class, null);
 		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, null);
 		this.matchingGermplasmsTable.setWidth("100%");
@@ -384,7 +384,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 			final Label stockLabel = this.getStockIDs(inventoryInfo);
 			final String availInv = this.getAvailableInventory(inventoryInfo);
 			final String seedRes = this.getSeedReserved(inventoryInfo);
-			final Integer mgid = germplasm.getMgid();
+			final String mgid = germplasm.getMgid() == 0 ? "-" : germplasm.getMgid().toString();
 
 			this.matchingGermplasmsTable.addItem(new Object[] {itemCheckBox, namesButton, crossExpansion, availInv, seedRes, stockLabel,
 					gidButton, mgid, locationName, methodName}, germplasm.getGid());
