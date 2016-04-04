@@ -436,7 +436,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.listDataTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
-		this.listDataTable.addContainerProperty(ColumnLabels.MGID.getName(), String.class, null);
+		this.listDataTable.addContainerProperty(ColumnLabels.GROUP_ID.getName(), Integer.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
 
@@ -450,7 +450,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				this.getTermNameFromOntology(ColumnLabels.SEED_RESERVATION));
 		this.listDataTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(), this.getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
 		this.listDataTable.setColumnHeader(ColumnLabels.GID.getName(), this.getTermNameFromOntology(ColumnLabels.GID));
-		this.listDataTable.setColumnHeader(ColumnLabels.MGID.getName(), this.getTermNameFromOntology(ColumnLabels.MGID));
+		this.listDataTable.setColumnHeader(ColumnLabels.GROUP_ID.getName(), this.getTermNameFromOntology(ColumnLabels.GROUP_ID));
 		this.listDataTable.setColumnHeader(ColumnLabels.STOCKID.getName(), this.getTermNameFromOntology(ColumnLabels.STOCKID));
 		this.listDataTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(), this.getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
 
@@ -571,8 +571,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		// TODO FIXME: Determine why we have a null value for entry.getMgid, while on germplasmSearchComponent case we have 0 as value
 		// also a quick query from the database, germplasm table has mGid value in 0
-		final String mGidDisplayValue = entry.getMgid() == 0 ? "-" : entry.getMgid().toString();
-		newItem.getItemProperty(ColumnLabels.MGID.getName()).setValue(mGidDisplayValue);
+		newItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(entry.getMgid());
 
 		// Inventory Related Columns
 
@@ -900,7 +899,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		private boolean isNonEditableColumn(final Object propertyId) {
 			return propertyId.equals(ColumnLabels.GID.getName()) || propertyId.equals(ColumnLabels.ENTRY_ID.getName())
-					|| propertyId.equals(ColumnLabels.DESIGNATION.getName()) || propertyId.equals(ColumnLabels.MGID.getName())
+					|| propertyId.equals(ColumnLabels.DESIGNATION.getName()) || propertyId.equals(ColumnLabels.GROUP_ID.getName())
 					|| ListComponent.this.isInventoryColumn(propertyId);
 		}
 
