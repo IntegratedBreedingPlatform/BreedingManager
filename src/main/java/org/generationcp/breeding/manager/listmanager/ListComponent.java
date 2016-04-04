@@ -222,7 +222,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private Map<ListEntryLotDetails, Double> validReservationsToSave;
 	private Boolean hasChanges;
 
-	private final ListDataPropertiesRenderer newColumnsRenderer = new ListDataPropertiesRenderer();
+	private ListDataPropertiesRenderer newColumnsRenderer;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -278,6 +278,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		this.newColumnsRenderer = new ListDataPropertiesRenderer();
+
 		this.instantiateComponents();
 		this.initializeValues();
 		this.addListeners();
@@ -511,7 +513,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			this.getAllListEntries();
 
 			for (final GermplasmListData entry : this.listEntries) {
-				entry.setMgid(entry.getGermplasm().getMgid());
 				this.addListEntryToTable(entry);
 			}
 
@@ -569,7 +570,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
 		newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
 
-		final String mGidDisplayValue = entry.getMgid() == 0 ? "-" : entry.getMgid().toString();
+		final String mGidDisplayValue = "-";
 		newItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(mGidDisplayValue);
 
 		// Inventory Related Columns
