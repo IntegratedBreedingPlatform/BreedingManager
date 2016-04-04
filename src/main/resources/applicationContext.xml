@@ -15,7 +15,7 @@
 		location="classpath:workbench.properties, classpath:crossing.properties" />
 	<util:properties id="workbenchProperties" location="classpath:workbench.properties" />
 	<util:properties id="helpProperties" location="classpath:helplinks.properties" />
-	<util:properties id="codeNamesProperties" location="classpath:codenames.properties" />
+
 
 	<!-- Enable Spring annotations -->
 	<context:annotation-config />
@@ -234,22 +234,13 @@
 		<property name="germplasmOriginTrialsWheat" value="${germplasm.origin.trials.wheat}"/>
 		<property name="germplasmOriginTrialsMaize" value="${germplasm.origin.trials.maize}"/>
 	</bean>
-	<!-- Revisar -->
-	<bean id="germplasmOriginGenerationService" class="org.generationcp.commons.service.impl.GermplasmOriginGenerationServiceImpl">
-		<property name="germplasmNamingProperties" ref="germplasmNamingProperties"/>
-	</bean>
-	<!-- Revisar -->
+
 	<bean id="seedSourceGenerator" class="org.generationcp.commons.service.impl.SeedSourceGenerator">
 		<constructor-arg name="germplasmNamingProperties" ref="germplasmNamingProperties"/>
 		<constructor-arg name="contextUtil" ref="contextUtil"/>
 		<constructor-arg name="ontologyVariableDataManager" ref="ontologyVariableManager"/>
 	</bean>
 
-
-	<bean id="germplasmOriginParameterBuilder" class="org.generationcp.commons.service.impl.GermplasmOriginParameterBuilderImpl">
-		<property name="contextUtil" ref="contextUtil"/>
-		<property name="ontologyVariableDataManager" ref="ontologyVariableManager"/>
-	</bean>
 
 	<!-- Including all beans used for generating Code Sheet when exporting Germplasm List excel file -->
 	<context:component-scan base-package="org.generationcp.commons.workbook.generator" />
