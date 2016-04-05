@@ -276,6 +276,11 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 		return true;
 	}
 
+	/**
+	 * This method is used for refreshing entries from list data table in List Builder Component after saving
+	 * 
+	 * @param currentlySavedList - the germplasm list currently saved in Build New List section
+	 */
 	private void updateListDataTableContent(final GermplasmList currentlySavedList) {
 		try {
 			final int listDataCount = (int) this.germplasmListManager.countGermplasmListDataByListId(currentlySavedList.getId());
@@ -344,8 +349,12 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 					seedRes = entry.getInventoryInfo().getReservedLotCount().toString().trim();
 				}
 
+				// GROUP ID - the maintenance group id(gid) of a germplasm
+				final String groupId = entry.getGroupId() == 0 ? "-" : entry.getGroupId().toString();
+
 				item.getItemProperty(ColumnLabels.TAG.getName()).setValue(tagCheckBox);
 				item.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
+				item.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(groupId);
 				item.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
 				item.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(entry.getEntryCode());
 				item.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entry.getEntryId());
