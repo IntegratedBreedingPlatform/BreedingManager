@@ -98,6 +98,7 @@ public class AssignCodesResultsDialog extends BaseSubWindow implements Initializ
 				messageString.append("....");
 			}
 
+			//TODO add a list with bullet points instead of a messageString
 			this.assignCodesResultsTable.addItem(new Object[] {mapEntry.getKey(), messageString}, rowId++);
 		}
 		this.assignCodesResultsTable.setPageLength(rowId);

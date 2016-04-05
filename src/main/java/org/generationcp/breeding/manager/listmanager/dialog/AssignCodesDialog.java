@@ -123,6 +123,7 @@ public class AssignCodesDialog extends BaseSubWindow
 	@Override
 	public void initializeValues() {
 		//TODO Remove hardcoding of levels ??
+		//TODO Localise these values
 		this.codingLevelOptions.addItem(LEVEL1);
 		this.codingLevelOptions.addItem(LEVEL2);
 		this.codingLevelOptions.addItem(LEVEL3);
