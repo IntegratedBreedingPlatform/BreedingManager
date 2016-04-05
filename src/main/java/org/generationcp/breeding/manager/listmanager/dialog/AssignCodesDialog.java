@@ -248,24 +248,26 @@ public class AssignCodesDialog extends BaseSubWindow
 	}
 
 	void assignCodes() {
-		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
-		final Map<Integer, GermplasmGroupNamingResult> assignCodesResultsMap = new HashMap<>();
-		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+		synchronized (AssignCodesDialog.class) {
+			final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
+			final Map<Integer, GermplasmGroupNamingResult> assignCodesResultsMap = new HashMap<>();
+			transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
-			@Override
-			protected void doInTransactionWithoutResult(final TransactionStatus status) {
-				final UserDefinedField nameType = AssignCodesDialog.this.germplasmNameTypeResolver.resolve(AssignCodesDialog.this.getLevel());
-				for (final Integer gid : AssignCodesDialog.this.gidsToProcess) {
-					//TODO pass user and location. Hardcoded to 0 = unknown for now.
-					final GermplasmGroupNamingResult result =
-							AssignCodesDialog.this.germplasmNamingService.applyGroupName(gid, AssignCodesDialog.this.getGroupName(),
-									nameType, 0, 0);
-					assignCodesResultsMap.put(gid, result);
+				@Override
+				protected void doInTransactionWithoutResult(final TransactionStatus status) {
+					final UserDefinedField nameType =
+							AssignCodesDialog.this.germplasmNameTypeResolver.resolve(AssignCodesDialog.this.getLevel());
+					for (final Integer gid : AssignCodesDialog.this.gidsToProcess) {
+						// TODO pass user and location. Hardcoded to 0 = unknown for now.
+						final GermplasmGroupNamingResult result = AssignCodesDialog.this.germplasmNamingService.applyGroupName(gid,
+								AssignCodesDialog.this.getGroupName(), nameType, 0, 0);
+						assignCodesResultsMap.put(gid, result);
+					}
 				}
-			}
-		});
-		this.getParent().addWindow(new AssignCodesResultsDialog(assignCodesResultsMap));
-		this.closeWindow();
+			});
+			this.getParent().addWindow(new AssignCodesResultsDialog(assignCodesResultsMap));
+			this.closeWindow();
+		}
 	}
 
 	private int getLevel() {
