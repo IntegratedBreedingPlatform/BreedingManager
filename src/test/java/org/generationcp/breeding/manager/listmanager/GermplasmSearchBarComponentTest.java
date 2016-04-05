@@ -88,11 +88,11 @@ public class GermplasmSearchBarComponentTest {
 		final List<Germplasm> results = null;
 
 		try {
-			Mockito.when(this.germplasmDataManager.searchForGermplasm(searchKeyword, operation, includeParents, withInventoryOnly))
+			Mockito.when(this.germplasmDataManager.searchForGermplasm(searchKeyword, operation, includeParents, withInventoryOnly, false))
 					.thenReturn(null);
 			Mockito.doNothing().when(this.germplasmSearchResultsComponent).applyGermplasmResults(results);
 			this.spyComponent.doSearch(GermplasmSearchBarComponentTest.TEST_SEARCH_STRING);
-			Mockito.verify(this.breedingManagerService).doGermplasmSearch(searchKeyword, operation, includeParents, withInventoryOnly);
+			Mockito.verify(this.breedingManagerService).doGermplasmSearch(searchKeyword, operation, includeParents, withInventoryOnly, false);
 		} catch (final BreedingManagerSearchException e) {
 			final Message errorMessage = e.getErrorMessage();
 			Assert.assertEquals("Error message should be " + GermplasmSearchBarComponentTest.NO_SEARCH_RESULTS_UNCHECKED_PUBLIC_DATA,
