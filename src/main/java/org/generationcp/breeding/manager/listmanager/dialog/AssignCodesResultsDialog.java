@@ -106,6 +106,12 @@ public class AssignCodesResultsDialog extends BaseSubWindow implements Initializ
 
 	@Override
 	public void addListeners() {
+		this.okButton.addListener(new Button.ClickListener() {
+			@Override
+			public void buttonClick(final Button.ClickEvent event) {
+				AssignCodesResultsDialog.super.close();
+			}
+		});
 
 	}
 
