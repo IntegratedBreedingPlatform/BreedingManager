@@ -256,9 +256,10 @@ public class AssignCodesDialog extends BaseSubWindow
 			protected void doInTransactionWithoutResult(final TransactionStatus status) {
 				final UserDefinedField nameType = AssignCodesDialog.this.germplasmNameTypeResolver.resolve(AssignCodesDialog.this.getLevel());
 				for (final Integer gid : AssignCodesDialog.this.gidsToProcess) {
+					//TODO pass user and location. Hardcoded to 0 = unknown for now.
 					final GermplasmGroupNamingResult result =
 							AssignCodesDialog.this.germplasmNamingService.applyGroupName(gid, AssignCodesDialog.this.getGroupName(),
-									nameType, 1, 1);
+									nameType, 0, 0);
 					assignCodesResultsMap.put(gid, result);
 				}
 			}
