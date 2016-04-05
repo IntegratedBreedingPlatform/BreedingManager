@@ -46,6 +46,9 @@ public class AssignCodesDialog extends BaseSubWindow
 	public static final String SEQUENCE_PLACEHOLDER = "[SEQ]";
 	public static final String SEQUENCE_LABEL = "SEQ";
 	public static final String LST_SEQUENCE_LABEL_CLASS = "lst-sequence-label";
+	public static final String LEVEL1 = "Level 1";
+	public static final String LEVEL2 = "Level 2";
+	public static final String LEVEL3 = "Level 3";
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
@@ -116,12 +119,12 @@ public class AssignCodesDialog extends BaseSubWindow
 	@Override
 	public void initializeValues() {
 		//TODO Remove hardcoding
-		this.codingLevelOptions.addItem("Level 1");
-		this.codingLevelOptions.addItem("Level 2");
-		this.codingLevelOptions.addItem("Level 3");
+		this.codingLevelOptions.addItem(LEVEL1);
+		this.codingLevelOptions.addItem(LEVEL2);
+		this.codingLevelOptions.addItem(LEVEL3);
 
 		// by default the level 1 is selected
-		this.codingLevelOptions.select("Level 1");
+		this.codingLevelOptions.select(LEVEL1);
 		final List<String> programIdentifiers = this.germplasmNamingService.getProgramIdentifiers(1);
 		for (final String programIdentifier : programIdentifiers) {
 			this.programIdentifiersComboBox.addItem(programIdentifier);
@@ -177,15 +180,15 @@ public class AssignCodesDialog extends BaseSubWindow
 			public void valueChange(final Property.ValueChangeEvent event) {
 				// TODO this will be configurable (the order and fields)
 				String exampleValue = "";
-				if (AssignCodesDialog.this.codingLevelOptions.getValue().equals("Level 1")) {
+				if (AssignCodesDialog.this.codingLevelOptions.getValue().equals(LEVEL1)) {
 					exampleValue = AssignCodesDialog.this.programIdentifiersComboBox.getValue().toString() +
 							AssignCodesDialog.this.germplasmTypeComboBoxLevel1.getValue().toString() +
 							AssignCodesDialog.this.yearSuffixLevel1.getValue().toString() + SEQUENCE_PLACEHOLDER;
-				} else if (AssignCodesDialog.this.codingLevelOptions.getValue().equals("Level 2")) {
+				} else if (AssignCodesDialog.this.codingLevelOptions.getValue().equals(LEVEL2)) {
 					exampleValue = AssignCodesDialog.this.locationIdentifierCombobox.getValue().toString() +
 							AssignCodesDialog.this.germplasmTypeComboBoxLevel2.getValue().toString() +
 							AssignCodesDialog.this.yearSuffixLevel2.getValue().toString() + SEQUENCE_PLACEHOLDER;
-				} else if (AssignCodesDialog.this.codingLevelOptions.getValue().equals("Level 3")) {
+				} else if (AssignCodesDialog.this.codingLevelOptions.getValue().equals(LEVEL3)) {
 					//TODO Level 3
 					exampleValue = "CML504";
 				}
@@ -201,17 +204,17 @@ public class AssignCodesDialog extends BaseSubWindow
 			public void valueChange(final Property.ValueChangeEvent event) {
 				//toggle codes controls panel
 				//TODO add level 3
-				if (AssignCodesDialog.this.codingLevelOptions.getValue().equals("Level 1")) {
+				if (AssignCodesDialog.this.codingLevelOptions.getValue().equals(LEVEL1)) {
 					AssignCodesDialog.this.codeControlsLayoutLevel1.setVisible(true);
 					AssignCodesDialog.this.codeControlsLayoutLevel2.setVisible(false);
 					AssignCodesDialog.this.codesLayout.setExpandRatio(AssignCodesDialog.this.codeControlsLayoutLevel2, 0);
 					AssignCodesDialog.this.codesLayout.setExpandRatio(AssignCodesDialog.this.codeControlsLayoutLevel1, 2);
-				} else if (AssignCodesDialog.this.codingLevelOptions.getValue().equals("Level 2")) {
+				} else if (AssignCodesDialog.this.codingLevelOptions.getValue().equals(LEVEL2)) {
 					AssignCodesDialog.this.codeControlsLayoutLevel1.setVisible(false);
 					AssignCodesDialog.this.codeControlsLayoutLevel2.setVisible(true);
 					AssignCodesDialog.this.codesLayout.setExpandRatio(AssignCodesDialog.this.codeControlsLayoutLevel2, 2);
 					AssignCodesDialog.this.codesLayout.setExpandRatio(AssignCodesDialog.this.codeControlsLayoutLevel1, 0);
-				} else if (AssignCodesDialog.this.codingLevelOptions.getValue().equals("Level 3")) {
+				} else if (AssignCodesDialog.this.codingLevelOptions.getValue().equals(LEVEL3)) {
 					AssignCodesDialog.this.codeControlsLayoutLevel1.setVisible(false);
 					AssignCodesDialog.this.codeControlsLayoutLevel2.setVisible(false);
 				}
@@ -251,17 +254,48 @@ public class AssignCodesDialog extends BaseSubWindow
 
 			@Override
 			protected void doInTransactionWithoutResult(final TransactionStatus status) {
-				// TODO hard coded level = 1, derive from UI choice..
-				UserDefinedField nameType = AssignCodesDialog.this.germplasmNameTypeResolver.resolve(1);
+				final UserDefinedField nameType = AssignCodesDialog.this.germplasmNameTypeResolver.resolve(AssignCodesDialog.this.getLevel());
 				for (final Integer gid : AssignCodesDialog.this.gidsToProcess) {
 					final GermplasmGroupNamingResult result =
-							AssignCodesDialog.this.germplasmNamingService.applyGroupName(gid, "AB-H-15-01", nameType, 1, 1);
+							AssignCodesDialog.this.germplasmNamingService.applyGroupName(gid, AssignCodesDialog.this.getGroupName(),
+									nameType, 1, 1);
 					assignCodesResultsMap.put(gid, result);
 				}
 			}
 		});
 		this.getParent().addWindow(new AssignCodesResultsDialog(assignCodesResultsMap));
 		this.closeWindow();
+	}
+
+	private int getLevel() {
+		int level = 1;
+		if (this.codingLevelOptions.getValue().equals(LEVEL1)) {
+			level = 1;
+		} else if (this.codingLevelOptions.getValue().equals(LEVEL2)) {
+			level = 2;
+		} else if (this.codingLevelOptions.getValue().equals(LEVEL3)) {
+			level = 3;
+		}
+		return level;
+	}
+
+	private String getGroupName() {
+		String name = "";
+		String prefix = "";
+		//TODO this should depend on configuration
+		if (this.codingLevelOptions.getValue().equals(LEVEL1)) {
+			prefix = this.programIdentifiersComboBox.getValue().toString() + this.germplasmTypeComboBoxLevel1.getValue().toString() + this
+					.yearSuffixLevel1.getValue().toString();
+			name =  prefix + this.germplasmNamingService.getNextSequence(prefix);
+		} else if (this.codingLevelOptions.getValue().equals(LEVEL2)) {
+			prefix = this.locationIdentifierCombobox.getValue().toString() + this.germplasmTypeComboBoxLevel2.getValue().toString() + this
+					.yearSuffixLevel2.getValue().toString();
+			name =  prefix + this.germplasmNamingService.getNextSequence(prefix);
+		} else if (this.codingLevelOptions.getValue().equals(LEVEL3)) {
+			//TODO Level 3
+			name= "CML504";
+		}
+		return name;
 	}
 
 	@Override
