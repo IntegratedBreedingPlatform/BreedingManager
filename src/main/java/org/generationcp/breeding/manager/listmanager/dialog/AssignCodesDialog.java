@@ -286,22 +286,18 @@ public class AssignCodesDialog extends BaseSubWindow
 	}
 
 	private String getGroupName() {
-		String name = "";
-		final String prefix;
+		String prefix = "";
 		//TODO this should depend on configuration
 		if (this.codingLevelOptions.getValue().equals(LEVEL1)) {
 			prefix = this.programIdentifiersComboBox.getValue().toString() + this.germplasmTypeComboBoxLevel1.getValue().toString() + this
 					.yearSuffixLevel1.getValue().toString();
-			name =  prefix + this.germplasmNamingService.getNextSequence(prefix);
 		} else if (this.codingLevelOptions.getValue().equals(LEVEL2)) {
 			prefix = this.locationIdentifierCombobox.getValue().toString() + this.germplasmTypeComboBoxLevel2.getValue().toString() + this
 					.yearSuffixLevel2.getValue().toString();
-			name =  prefix + this.germplasmNamingService.getNextSequence(prefix);
 		} else if (this.codingLevelOptions.getValue().equals(LEVEL3)) {
 			prefix = this.determineLevel3Prefix();
-			name= prefix + this.germplasmNamingService.getNextSequence(prefix);
 		}
-		return name;
+		return prefix;
 	}
 
 	private String getExampleValue() {
