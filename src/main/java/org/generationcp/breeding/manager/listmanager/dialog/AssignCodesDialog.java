@@ -248,6 +248,12 @@ public class AssignCodesDialog extends BaseSubWindow
 	}
 
 	void assignCodes() {
+		/**
+		 * This block of code is thread synchronized at the entire class level wich means that the lock applies to all instances of
+		 * AssignCodesDialog class that are invoking this operation. This is pessimistic locking based on the assumption that assigning code
+		 * is not a massively parallel operation. It happens few times a year. It is OK for other users doing the same operation to wait
+		 * while one user completes this operation.
+		 */
 		synchronized (AssignCodesDialog.class) {
 			final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
 			final Map<Integer, GermplasmGroupNamingResult> assignCodesResultsMap = new HashMap<>();
