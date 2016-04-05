@@ -64,7 +64,6 @@ public class AssignCodesDialog extends BaseSubWindow
 	private OptionGroup codingLevelOptions;
 	private Button cancelButton;
 	private Button continueButton;
-	private VerticalLayout dialogLayout;
 	private Set<Integer> gidsToProcess = new HashSet<>();
 	private ComboBox programIdentifiersComboBox;
 	private ComboBox germplasmTypeComboBoxLevel1;
@@ -79,6 +78,7 @@ public class AssignCodesDialog extends BaseSubWindow
 	private HorizontalLayout codesLayout;
 	private ComboBox locationIdentifierCombobox;
 
+	// used for unit tests
 	AssignCodesDialog() {
 	}
 
@@ -188,7 +188,6 @@ public class AssignCodesDialog extends BaseSubWindow
 			}
 		};
 
-
 		final Property.ValueChangeListener codingLevelsListener = new Property.ValueChangeListener() {
 
 			@Override
@@ -288,7 +287,7 @@ public class AssignCodesDialog extends BaseSubWindow
 
 	private String getGroupName() {
 		String name = "";
-		String prefix = "";
+		final String prefix;
 		//TODO this should depend on configuration
 		if (this.codingLevelOptions.getValue().equals(LEVEL1)) {
 			prefix = this.programIdentifiersComboBox.getValue().toString() + this.germplasmTypeComboBoxLevel1.getValue().toString() + this
@@ -353,9 +352,9 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.addStyleName(Reindeer.WINDOW_LIGHT);
 
 		this.center();
-		this.dialogLayout = new VerticalLayout();
-		this.dialogLayout.setMargin(true);
-		this.dialogLayout.setSpacing(true);
+		final VerticalLayout dialogLayout = new VerticalLayout();
+		dialogLayout.setMargin(true);
+		dialogLayout.setSpacing(true);
 
 		final HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setWidth("100%");
@@ -478,10 +477,10 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.codesLayout.setExpandRatio(this.codeControlsLayoutLevel2, 0);
 		this.codesLayout.setExpandRatio(this.codeControlsLayoutLevel3, 0);
 
-		this.dialogLayout.addComponent(optionsLayout);
-		this.dialogLayout.addComponent(this.codesLayout);
-		this.dialogLayout.addComponent(buttonLayout);
-		this.setContent(this.dialogLayout);
+		dialogLayout.addComponent(optionsLayout);
+		dialogLayout.addComponent(this.codesLayout);
+		dialogLayout.addComponent(buttonLayout);
+		this.setContent(dialogLayout);
 	}
 
 	@Override
