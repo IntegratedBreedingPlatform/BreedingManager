@@ -883,3 +883,17 @@ div.unsaved-changes-dialog div.v-window-contents>div {
 .lst-option-control {
 	padding-right: 5px;
 }
+
+/* styles for the horizontal label of level 1-2-3 options*/
+.v-caption-lst-horizontal-options {
+	display: inline;
+}
+
+.v-caption-lst-horizontal-options .v-captiontext {
+	padding-right: 3em;
+}
+
+.v-caption-lst-horizontal-options .v-caption-clearelem {
+	display: none;
+}
+/* end of styles for the horizontal label of level 1-2-3 options*/
