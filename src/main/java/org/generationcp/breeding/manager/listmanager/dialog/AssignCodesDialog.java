@@ -489,7 +489,7 @@ public class AssignCodesDialog extends BaseSubWindow
 	public void updateLabels() {
 		this.messageSource.setCaption(this, Message.ASSIGN_CODES_HEADER);
 		this.messageSource.setCaption(this.codingLevelOptions, Message.CODING_LEVEL);
-		this.messageSource.setCaption(this.continueButton, Message.CONTINUE);
+		this.messageSource.setCaption(this.continueButton, Message.APPLY_CODES);
 		this.messageSource.setCaption(this.cancelButton, Message.CANCEL);
 	}
 }
