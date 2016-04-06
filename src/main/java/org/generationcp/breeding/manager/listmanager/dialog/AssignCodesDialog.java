@@ -29,6 +29,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.vaadin.data.Property;
+import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -50,6 +51,9 @@ public class AssignCodesDialog extends BaseSubWindow
 	public static final String LEVEL1 = "Level 1";
 	public static final String LEVEL2 = "Level 2";
 	public static final String LEVEL3 = "Level 3";
+	public static final String LAYOUT_CUSTOM = "cymmit";
+	public static final String LAYOUT_DEFAULT = "default";
+
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
@@ -72,13 +76,17 @@ public class AssignCodesDialog extends BaseSubWindow
 	private ComboBox programIdentifiersComboBox;
 	private ComboBox germplasmTypeComboBoxLevel1;
 	private ComboBox germplasmTypeComboBoxLevel2;
-	private ComboBox germplasmTypeComboBoxLevel3;
+	private TextField prefixDefault;
 	private TextField yearSuffixLevel1;
 	private TextField yearSuffixLevel2;
 	private Label exampleText;
+
 	private HorizontalLayout codeControlsLayoutLevel1;
 	private HorizontalLayout codeControlsLayoutLevel2;
 	private HorizontalLayout codeControlsLayoutLevel3;
+
+	private HorizontalLayout codeControlsLayoutDefault;
+
 	private HorizontalLayout codesLayout;
 	private ComboBox locationIdentifierCombobox;
 
@@ -105,7 +113,7 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.programIdentifiersComboBox = new ComboBox();
 		this.germplasmTypeComboBoxLevel1 = new ComboBox();
 		this.germplasmTypeComboBoxLevel2 = new ComboBox();
-		this.germplasmTypeComboBoxLevel3 = new ComboBox();
+		this.prefixDefault = new TextField();
 		this.yearSuffixLevel1 = new TextField();
 		this.yearSuffixLevel2 = new TextField();
 		this.locationIdentifierCombobox = new ComboBox();
@@ -118,7 +126,7 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.programIdentifiersComboBox.setImmediate(true);
 		this.germplasmTypeComboBoxLevel1.setImmediate(true);
 		this.germplasmTypeComboBoxLevel2.setImmediate(true);
-		this.germplasmTypeComboBoxLevel3.setImmediate(true);
+		this.prefixDefault.setImmediate(true);
 		this.yearSuffixLevel1.setImmediate(true);
 		this.yearSuffixLevel2.setImmediate(true);
 		this.locationIdentifierCombobox.setImmediate(true);
@@ -147,14 +155,12 @@ public class AssignCodesDialog extends BaseSubWindow
 		for (final GermplasmType germplasmType : germplasmTypes) {
 			this.germplasmTypeComboBoxLevel1.addItem(germplasmType.name());
 			this.germplasmTypeComboBoxLevel2.addItem(germplasmType.name());
-			this.germplasmTypeComboBoxLevel3.addItem(germplasmType.name());
 		}
 		//the first value in the list is a default selection
 		if (!germplasmTypes.isEmpty()) {
 			final GermplasmType germplasmType = (GermplasmType) germplasmTypes.toArray()[0];
 			this.germplasmTypeComboBoxLevel1.setValue(germplasmType.name());
 			this.germplasmTypeComboBoxLevel2.setValue(germplasmType.name());
-			this.germplasmTypeComboBoxLevel3.setValue(germplasmType.name());
 		}
 
 		// by default the current year in 2 digits format will be set to yearSuffix text field
@@ -166,7 +172,6 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.programIdentifiersComboBox.setNullSelectionAllowed(false);
 		this.germplasmTypeComboBoxLevel1.setNullSelectionAllowed(false);
 		this.germplasmTypeComboBoxLevel2.setNullSelectionAllowed(false);
-		this.germplasmTypeComboBoxLevel3.setNullSelectionAllowed(false);
 
 		//update example text after setting defaults
 		this.exampleText.setValue(this.programIdentifiersComboBox.getValue().toString() +
@@ -227,7 +232,7 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.programIdentifiersComboBox.addListener(codeOptionsListener);
 		this.germplasmTypeComboBoxLevel1.addListener(codeOptionsListener);
 		this.germplasmTypeComboBoxLevel2.addListener(codeOptionsListener);
-		this.germplasmTypeComboBoxLevel3.addListener(codeOptionsListener);
+		this.prefixDefault.addListener(codeOptionsListener);
 		this.yearSuffixLevel1.addListener(codeOptionsListener);
 		this.yearSuffixLevel2.addListener(codeOptionsListener);
 		this.locationIdentifierCombobox.addListener(codeOptionsListener);
@@ -300,7 +305,7 @@ public class AssignCodesDialog extends BaseSubWindow
 			prefix = this.locationIdentifierCombobox.getValue().toString() + this.germplasmTypeComboBoxLevel2.getValue().toString() + this
 					.yearSuffixLevel2.getValue().toString();
 		} else if (this.codingLevelOptions.getValue().equals(LEVEL3)) {
-			prefix = this.determineLevel3Prefix();
+			prefix = this.prefixDefault.getValue().toString();
 		}
 		return prefix;
 	}
@@ -317,25 +322,13 @@ public class AssignCodesDialog extends BaseSubWindow
 					AssignCodesDialog.this.germplasmTypeComboBoxLevel2.getValue().toString() +
 					AssignCodesDialog.this.yearSuffixLevel2.getValue().toString() + SEQUENCE_PLACEHOLDER;
 		} else if (AssignCodesDialog.this.codingLevelOptions.getValue().equals(LEVEL3)) {
-			exampleValue = this.determineLevel3Prefix() + SEQUENCE_PLACEHOLDER;
+			exampleValue = AssignCodesDialog.this.prefixDefault.getValue().toString() + SEQUENCE_PLACEHOLDER;
 		}
 		return exampleValue;
 	}
 
 	private void updateExampleValue() {
 		this.exampleText.setValue(this.getExampleValue());
-	}
-
-	private String determineLevel3Prefix() {
-		String prefix = "";
-		if (this.germplasmTypeComboBoxLevel3.getValue().equals(GermplasmType.H.toString())) {
-			prefix = "TBD";
-		} else if (this.germplasmTypeComboBoxLevel3.getValue().equals(GermplasmType.L.toString())) {
-			prefix = "CML";
-		} else if (this.germplasmTypeComboBoxLevel3.getValue().equals(GermplasmType.P.toString())) {
-			prefix = "ZM";
-		}
-		return prefix;
 	}
 
 	@Override
@@ -380,16 +373,18 @@ public class AssignCodesDialog extends BaseSubWindow
 		//example area
 		final VerticalLayout exampleLayout = new VerticalLayout();
 		exampleLayout.setWidth("100%");
-		exampleLayout.setHeight("60px");
-		exampleLayout.setSpacing(true);
+		exampleLayout.setHeight("120px");
+		exampleLayout.setSpacing(false);
+		exampleLayout.setStyleName("lst-example-layout");
 		final Label exampleLabel = new Label(this.messageSource.getMessage(Message.ASSIGN_CODES_EXAMPLE));
 		exampleLabel.setStyleName("lst-margin-left");
+		exampleLabel.setSizeUndefined();
 		exampleLayout.addComponent(exampleLabel);
 
 		this.exampleText.setStyleName("lst-example-text lst-margin-left");
 		exampleLayout.addComponent(this.exampleText);
 		exampleLayout.setComponentAlignment(exampleLabel, Alignment.TOP_LEFT);
-		exampleLayout.setComponentAlignment(this.exampleText, Alignment.MIDDLE_LEFT);
+		exampleLayout.setComponentAlignment(this.exampleText, Alignment.TOP_LEFT);
 
 		//codes controls area
 		//Level 1
@@ -397,16 +392,16 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.codeControlsLayoutLevel1.setWidth("100%");
 		this.codeControlsLayoutLevel1.setHeight("60px");
 
-		this.programIdentifiersComboBox.setWidth(5, 3);
+		this.programIdentifiersComboBox.setWidth(5, Sizeable.UNITS_EM);
 		this.programIdentifiersComboBox.setStyleName("lst-option-control");
 		this.codeControlsLayoutLevel1.addComponent(this.programIdentifiersComboBox);
 		this.codeControlsLayoutLevel1.setComponentAlignment(this.programIdentifiersComboBox, Alignment.MIDDLE_LEFT);
 
-		this.germplasmTypeComboBoxLevel1.setWidth(5, 3);
+		this.germplasmTypeComboBoxLevel1.setWidth(5, Sizeable.UNITS_EM);
 		this.codeControlsLayoutLevel1.addComponent(this.germplasmTypeComboBoxLevel1);
 		this.codeControlsLayoutLevel1.setComponentAlignment(this.germplasmTypeComboBoxLevel1, Alignment.MIDDLE_LEFT);
 
-		this.yearSuffixLevel1.setWidth(5, 3);
+		this.yearSuffixLevel1.setWidth(5, Sizeable.UNITS_EM);
 		this.codeControlsLayoutLevel1.addComponent(this.yearSuffixLevel1);
 		this.codeControlsLayoutLevel1.setComponentAlignment(this.yearSuffixLevel1, Alignment.MIDDLE_LEFT);
 
@@ -420,16 +415,16 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.codeControlsLayoutLevel2.setWidth("100%");
 		this.codeControlsLayoutLevel2.setHeight("60px");
 
-		this.locationIdentifierCombobox.setWidth(5, 3);
+		this.locationIdentifierCombobox.setWidth(5, Sizeable.UNITS_EM);
 		this.locationIdentifierCombobox.setStyleName("lst-option-control");
 		this.codeControlsLayoutLevel2.addComponent(this.locationIdentifierCombobox);
 		this.codeControlsLayoutLevel2.setComponentAlignment(this.locationIdentifierCombobox, Alignment.MIDDLE_LEFT);
 
-		this.germplasmTypeComboBoxLevel2.setWidth(5, 3);
+		this.germplasmTypeComboBoxLevel2.setWidth(5, Sizeable.UNITS_EM);
 		this.codeControlsLayoutLevel2.addComponent(this.germplasmTypeComboBoxLevel2);
 		this.codeControlsLayoutLevel2.setComponentAlignment(this.germplasmTypeComboBoxLevel2, Alignment.MIDDLE_LEFT);
 
-		this.yearSuffixLevel2.setWidth(5, 3);
+		this.yearSuffixLevel2.setWidth(5, Sizeable.UNITS_EM);
 		this.codeControlsLayoutLevel2.addComponent(this.yearSuffixLevel2);
 		this.codeControlsLayoutLevel2.setComponentAlignment(this.yearSuffixLevel2, Alignment.MIDDLE_LEFT);
 
@@ -441,19 +436,8 @@ public class AssignCodesDialog extends BaseSubWindow
 		// by default only level 1 panel is visible
 		this.codeControlsLayoutLevel2.setVisible(false);
 
-		//Level 3
-		this.codeControlsLayoutLevel3 = new HorizontalLayout();
-		this.codeControlsLayoutLevel3.setWidth("100%");
-		this.codeControlsLayoutLevel3.setHeight("60px");
-
-		this.germplasmTypeComboBoxLevel3.setWidth(5, 3);
-		this.codeControlsLayoutLevel3.addComponent(this.germplasmTypeComboBoxLevel3);
-		this.codeControlsLayoutLevel3.setComponentAlignment(this.germplasmTypeComboBoxLevel3, Alignment.MIDDLE_LEFT);
-
-		final Label sequenceLabel3 = new Label(SEQUENCE_LABEL);
-		sequenceLabel3.setStyleName(LST_SEQUENCE_LABEL_CLASS);
-		this.codeControlsLayoutLevel3.addComponent(sequenceLabel3);
-		this.codeControlsLayoutLevel3.setComponentAlignment(sequenceLabel3, Alignment.MIDDLE_LEFT);
+		//Level 3 layout is the same as the default layout
+		this.codeControlsLayoutLevel3 = this.constructDefaultCodeControlsLayout();
 
 		// by default only level 1 panel is visible
 		this.codeControlsLayoutLevel3.setVisible(false);
@@ -469,7 +453,7 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.codesLayout.addComponent(this.codeControlsLayoutLevel1);
 		this.codesLayout.addComponent(this.codeControlsLayoutLevel2);
 		this.codesLayout.addComponent(this.codeControlsLayoutLevel3);
-		this.codesLayout.setComponentAlignment(exampleLayout, Alignment.MIDDLE_LEFT);
+		this.codesLayout.setComponentAlignment(exampleLayout, Alignment.TOP_LEFT);
 		this.codesLayout.setComponentAlignment(this.codeControlsLayoutLevel1, Alignment.MIDDLE_LEFT);
 		this.codesLayout.setComponentAlignment(this.codeControlsLayoutLevel2, Alignment.MIDDLE_LEFT);
 		this.codesLayout.setComponentAlignment(this.codeControlsLayoutLevel3, Alignment.MIDDLE_LEFT);
@@ -482,6 +466,22 @@ public class AssignCodesDialog extends BaseSubWindow
 		dialogLayout.addComponent(this.codesLayout);
 		dialogLayout.addComponent(buttonLayout);
 		this.setContent(dialogLayout);
+	}
+
+	private HorizontalLayout constructDefaultCodeControlsLayout() {
+		final HorizontalLayout codeControlsLayout = new HorizontalLayout();
+		codeControlsLayout.setWidth("100%");
+		codeControlsLayout.setHeight("60px");
+
+		this.prefixDefault.setWidth(10, Sizeable.UNITS_EM);
+		codeControlsLayout.addComponent(this.prefixDefault);
+		codeControlsLayout.setComponentAlignment(this.prefixDefault, Alignment.MIDDLE_LEFT);
+
+		final Label sequenceLabel3 = new Label(SEQUENCE_LABEL);
+		sequenceLabel3.setStyleName(LST_SEQUENCE_LABEL_CLASS);
+		codeControlsLayout.addComponent(sequenceLabel3);
+		codeControlsLayout.setComponentAlignment(sequenceLabel3, Alignment.MIDDLE_LEFT);
+		return codeControlsLayout;
 	}
 
 	@Override

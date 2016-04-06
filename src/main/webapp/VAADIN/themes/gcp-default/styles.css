@@ -901,3 +901,7 @@ div.unsaved-changes-dialog div.v-window-contents>div {
 .v-table .v-label.lst-assign-codes-results-message {
 	overflow: auto;
 }
+
+.lst-example-layout {
+	padding-top: 33px;
+}
