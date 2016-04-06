@@ -19,7 +19,7 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.service.api.GermplasmGroupNamingResult;
-import org.generationcp.middleware.service.api.GermplasmNameTypeResolver;
+import org.generationcp.middleware.service.api.GermplasmNamingReferenceDataResolver;
 import org.generationcp.middleware.service.api.GermplasmNamingService;
 import org.generationcp.middleware.service.api.GermplasmType;
 import org.springframework.beans.factory.InitializingBean;
@@ -62,7 +62,7 @@ public class AssignCodesDialog extends BaseSubWindow
 	private GermplasmNamingService germplasmNamingService;
 
 	@Autowired
-	private GermplasmNameTypeResolver germplasmNameTypeResolver;
+	private GermplasmNamingReferenceDataResolver germplasmNamingReferenceDataResolver;
 
 	@Autowired
 	private PlatformTransactionManager transactionManager;
@@ -272,7 +272,7 @@ public class AssignCodesDialog extends BaseSubWindow
 				@Override
 				protected void doInTransactionWithoutResult(final TransactionStatus status) {
 					final UserDefinedField nameType =
-							AssignCodesDialog.this.germplasmNameTypeResolver.resolve(AssignCodesDialog.this.getLevel());
+							AssignCodesDialog.this.germplasmNamingReferenceDataResolver.resolveNameType(AssignCodesDialog.this.getLevel());
 					for (final Integer gid : AssignCodesDialog.this.gidsToProcess) {
 						// TODO pass user and location. Hardcoded to 0 = unknown for now.
 						final GermplasmGroupNamingResult result = AssignCodesDialog.this.germplasmNamingService.applyGroupName(gid,
