@@ -874,6 +874,7 @@ div.unsaved-changes-dialog div.v-window-contents>div {
 .lst-example-text {
 	font-weight: bold;
     font-size: x-large;
+    padding-top: 29px;
 }
 
 .lst-margin-left {
@@ -900,8 +901,4 @@ div.unsaved-changes-dialog div.v-window-contents>div {
 
 .v-table .v-label.lst-assign-codes-results-message {
 	overflow: auto;
-}
-
-.lst-example-layout {
-	padding-top: 33px;
 }
