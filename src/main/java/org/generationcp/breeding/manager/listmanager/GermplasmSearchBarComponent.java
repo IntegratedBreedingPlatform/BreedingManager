@@ -224,11 +224,11 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 						private static final long serialVersionUID = 1L;
 
 						@Override
-				public void onClose(ConfirmDialog dialog) {
-					if (dialog.isConfirmed()) {
-						GermplasmSearchBarComponent.this.doSearch(q);
-					}
-				}
+						public void onClose(ConfirmDialog dialog) {
+							if (dialog.isConfirmed()) {
+								GermplasmSearchBarComponent.this.doSearch(q);
+							}
+						}
 			});
 		} else {
 			GermplasmSearchBarComponent.this.doSearch(q);
@@ -286,14 +286,6 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		return searchKeyword;
 	}
 
-	public CheckBox getIncludeParentsCheckBox() {
-		return this.includeParentsCheckBox;
-	}
-
-	public void setIncludeParentsCheckBox(CheckBox includeParentsCheckBox) {
-		this.includeParentsCheckBox = includeParentsCheckBox;
-	}
-
 	public SimpleResourceBundleMessageSource getMessageSource() {
 		return this.messageSource;
 	}
@@ -302,24 +294,8 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		this.messageSource = messageSource;
 	}
 
-	public BreedingManagerService getBreedingManagerService() {
-		return this.breedingManagerService;
-	}
-
 	public void setBreedingManagerService(BreedingManagerService breedingManagerService) {
 		this.breedingManagerService = breedingManagerService;
-	}
-
-	public OptionGroup getSearchTypeOptions() {
-		return this.searchTypeOptions;
-	}
-
-	public CheckBox getWithInventoryOnlyCheckBox() {
-		return this.withInventoryOnlyCheckBox;
-	}
-
-	public void setSearchTypeOptions(OptionGroup searchTypeOptions) {
-		this.searchTypeOptions = searchTypeOptions;
 	}
 
 	protected void setTransactionManager(PlatformTransactionManager transactionManager) {
