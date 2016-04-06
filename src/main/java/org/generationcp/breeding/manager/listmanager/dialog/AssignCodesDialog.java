@@ -378,7 +378,7 @@ public class AssignCodesDialog extends BaseSubWindow
 		exampleLayout.setWidth("100%");
 		exampleLayout.setHeight("60px");
 		exampleLayout.setSpacing(true);
-		final Label exampleLabel = new Label("Example:");
+		final Label exampleLabel = new Label(this.messageSource.getMessage(Message.ASSIGN_CODES_EXAMPLE));
 		exampleLabel.setStyleName("lst-margin-left");
 		exampleLayout.addComponent(exampleLabel);
 
