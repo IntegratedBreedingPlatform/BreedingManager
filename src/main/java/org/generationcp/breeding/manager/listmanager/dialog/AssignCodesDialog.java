@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -60,6 +61,9 @@ public class AssignCodesDialog extends BaseSubWindow
 
 	@Autowired
 	private PlatformTransactionManager transactionManager;
+
+	@Autowired
+	private ContextUtil contextUtil;
 
 	private OptionGroup codingLevelOptions;
 	private Button cancelButton;
@@ -130,7 +134,7 @@ public class AssignCodesDialog extends BaseSubWindow
 
 		// by default the level 1 is selected
 		this.codingLevelOptions.select(LEVEL1);
-		final List<String> programIdentifiers = this.germplasmNamingService.getProgramIdentifiers(1);
+		final List<String> programIdentifiers = this.germplasmNamingService.getProgramIdentifiers(1, contextUtil.getCurrentProgramUUID());
 		for (final String programIdentifier : programIdentifiers) {
 			this.programIdentifiersComboBox.addItem(programIdentifier);
 		}
@@ -169,7 +173,7 @@ public class AssignCodesDialog extends BaseSubWindow
 				this.germplasmTypeComboBoxLevel1.getValue().toString() + this.yearSuffixLevel1.getValue().toString() + SEQUENCE_PLACEHOLDER);
 
 		// setting up the possible values for location identifiers for level2
-		final List<String> locationIdentifiers = this.germplasmNamingService.getLocationIdentifiers();
+		final List<String> locationIdentifiers = this.germplasmNamingService.getProgramIdentifiers(2, contextUtil.getCurrentProgramUUID());
 		for (final String locationIdentifier : locationIdentifiers) {
 			this.locationIdentifierCombobox.addItem(locationIdentifier);
 		}
