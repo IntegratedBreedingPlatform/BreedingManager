@@ -897,3 +897,7 @@ div.unsaved-changes-dialog div.v-window-contents>div {
 	display: none;
 }
 /* end of styles for the horizontal label of level 1-2-3 options*/
+
+.v-table .v-label.lst-assign-codes-results-message {
+	overflow: auto;
+}

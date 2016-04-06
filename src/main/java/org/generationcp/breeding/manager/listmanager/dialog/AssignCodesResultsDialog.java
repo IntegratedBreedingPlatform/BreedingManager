@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -66,7 +67,8 @@ public class AssignCodesResultsDialog extends BaseSubWindow implements Initializ
 		this.assignCodesResultsTable = new Table();
 		this.assignCodesResultsTable.setWidth("100%");
 		this.assignCodesResultsTable.addContainerProperty("GID", Integer.class, null);
-		this.assignCodesResultsTable.addContainerProperty("Results", String.class, null);
+		this.assignCodesResultsTable.addContainerProperty("Results", Label.class, null);
+		this.assignCodesResultsTable.setColumnWidth("GID", 40);
 	}
 
 	@Override
@@ -76,30 +78,25 @@ public class AssignCodesResultsDialog extends BaseSubWindow implements Initializ
 			final GermplasmGroupNamingResult groupNamingResult = mapEntry.getValue();
 
 			final StringBuffer messageString = new StringBuffer();
+			final Label resultsList = new Label();
+			resultsList.setContentMode(Label.CONTENT_XHTML);
+			resultsList.setStyleName("lst-assign-codes-results-message");
 
 			int messageNumber = 1;
 
 			for (final String message : groupNamingResult.getMessages()) {
-				//TODO add GID ????
-				//TODO add new name
-				messageString.append(message);
-				if (messageNumber == groupNamingResult.getMessages().size()) {
-					messageString.append(".");
-				} else {
-					messageString.append(",");
-				}
+				messageString.append("<li>").append(message).append("</li>");
 				if (messageNumber == MAX_MESSAGES_TO_DISPLAY) {
 					break;
 				}
 				messageNumber++;
 			}
-
 			if (groupNamingResult.getMessages().size() > MAX_MESSAGES_TO_DISPLAY) {
-				messageString.append("....");
+				messageString.append("<li>").append("....").append("</li>");
 			}
 
-			//TODO add a list with bullet points instead of a messageString
-			this.assignCodesResultsTable.addItem(new Object[] {mapEntry.getKey(), messageString}, rowId++);
+			resultsList.setValue(messageString);
+			this.assignCodesResultsTable.addItem(new Object[] {mapEntry.getKey(), resultsList}, rowId++);
 		}
 		this.assignCodesResultsTable.setPageLength(rowId);
 
@@ -119,7 +116,7 @@ public class AssignCodesResultsDialog extends BaseSubWindow implements Initializ
 	@Override
 	public void layoutComponents() {
 		this.setModal(true);
-		this.setWidth("800px");
+		this.setWidth("900px");
 		this.setHeight("400px");
 		this.setResizable(false);
 		this.addStyleName(Reindeer.WINDOW_LIGHT);
