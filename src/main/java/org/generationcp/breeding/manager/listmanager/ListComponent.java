@@ -1069,13 +1069,13 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			// make the edit cell context menu available when selected column is editable and list is not locked
 			ListComponent.this.tableContextMenuEditCell.setVisible(!isNonEditableColumn && !isLockedList);
 
-			// make delete entries context menu available when current germplasm list is not locked
+			// delete entries context menu will be available when current germplasm list is not locked
 			ListComponent.this.tableContextMenuDeleteEntries.setVisible(!isLockedList);
 
 			// set doneInitializing to true if germplasm list is locked, else do not update doneInitializing
 			ListComponent.this.doneInitializing = isLockedList ? true : ListComponent.this.doneInitializing;
 
-			// make copy to new list context menu available if list builder is un-locked
+			// copy to new list context menu will be available if list builder is un-locked
 			ListComponent.this.tableContextMenuCopyToNewList.setVisible(!isListBuilderLocked && isListComponentSourceAvailable);
 
 		}
