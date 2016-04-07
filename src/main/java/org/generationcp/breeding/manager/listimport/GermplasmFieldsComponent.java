@@ -239,9 +239,8 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 	}
 
 	protected void populateNameTypes() {
-		List<UserDefinedField> userDefinedFieldList = null;
-
-		userDefinedFieldList = codeNamesLocator.locateNonCodeNames();
+		String cropName = contextUtil.getProjectInContext().getCropType().getCropName();
+		List<UserDefinedField> userDefinedFieldList = codeNamesLocator.locateNonCodeNamesForCrop(cropName);
 		boolean hasDefault = false;
 		for (UserDefinedField userDefinedField : userDefinedFieldList) {
 			this.nameTypeComboBox.addItem(userDefinedField.getFldno());

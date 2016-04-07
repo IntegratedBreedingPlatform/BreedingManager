@@ -9,8 +9,15 @@ import org.springframework.stereotype.Component;
 public class ImportedGermplasmValidator extends ChainValidator<ImportedGermplasm> {
 
 	@Autowired
-	public void checkGermplasmWithoutCodedNamesValidationRule (CheckGermplasmWithoutCodedNamesValidationRule checkGermplasmWithoutCodedNamesValidationRule){
+	public void setCheckGermplasmWithoutCodedNamesValidationRule(
+			CheckGermplasmWithoutCodedNamesValidationRule checkGermplasmWithoutCodedNamesValidationRule) {
 		this.add(checkGermplasmWithoutCodedNamesValidationRule);
+	}
+
+	@Autowired
+	public void setCheckGIDNotLinkedToGermplasmWithCodedNamesValidationRule(
+			CheckGIDNotLinkedToGermplasmWithCodedNamesValidationRule checkGIDNotLinkedToGermplasmWithCodedNamesValidationRule) {
+		this.add(checkGIDNotLinkedToGermplasmWithCodedNamesValidationRule);
 	}
 
 }
