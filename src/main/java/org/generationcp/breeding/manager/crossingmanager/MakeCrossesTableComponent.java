@@ -20,7 +20,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -55,7 +54,6 @@ import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.Name;
-import org.generationcp.middleware.service.api.FieldbookService;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.slf4j.Logger;
@@ -104,9 +102,6 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 
 	@Resource
 	private CrossExpansionProperties crossExpansionProperties;
-
-	@Autowired
-	private FieldbookService fieldbookMiddlewareService;
 
 	@Autowired
 	private SeedSourceGenerator seedSourceGenerator;
@@ -320,38 +315,33 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		String seedSource = this.appendWithSeparator(femaleSource, maleSource);
 
 		// If crossing for a Nursery, use the seed source generation service.
-		String nurseryId = this.makeCrossesMain.getNurseryId();
-		if (!StringUtils.isBlank(nurseryId)) {
-			Workbook nurseryWorkbook = null;
-			nurseryWorkbook = this.fieldbookMiddlewareService.getNurseryDataSet(Integer.valueOf(nurseryId));
-			if (nurseryWorkbook != null) {
-				String malePlotNo = "";
-				String femalePlotNo = "";
+		final Workbook nurseryWorkbook = this.makeCrossesMain.getNurseryWorkbook();
+		if (nurseryWorkbook != null) {
+			String malePlotNo = "";
+			String femalePlotNo = "";
 
-				// Look at the observation rows of Nursery to find plot number assigned to the male/female parent germplasm of the cross.
-				for (MeasurementRow row : nurseryWorkbook.getObservations()) {
-					MeasurementData gidData = row.getMeasurementData(TermId.GID.getId());
-					MeasurementData plotNumberData = row.getMeasurementData(TermId.PLOT_NO.getId());
+			// Look at the observation rows of Nursery to find plot number assigned to the male/female parent germplasm of the cross.
+			for (MeasurementRow row : nurseryWorkbook.getObservations()) {
+				MeasurementData gidData = row.getMeasurementData(TermId.GID.getId());
+				MeasurementData plotNumberData = row.getMeasurementData(TermId.PLOT_NO.getId());
 
-					if (gidData != null && gidData.getValue().equals(femaleParentGid.toString())) {
-						if (plotNumberData != null) {
-							femalePlotNo = plotNumberData.getValue();
-						}
-					}
-
-					if (gidData != null && gidData.getValue().equals(maleParentGid.toString())) {
-						if (plotNumberData != null) {
-							malePlotNo = plotNumberData.getValue();
-						}
+				if (gidData != null && gidData.getValue().equals(femaleParentGid.toString())) {
+					if (plotNumberData != null) {
+						femalePlotNo = plotNumberData.getValue();
 					}
 				}
 
-				// Single nursery is in context here, so set the same study name as both male/female parts. For import crosses case, these
-				// could be different Nurseries.
-				seedSource =
-						this.seedSourceGenerator.generateSeedSourceForCross(nurseryWorkbook, malePlotNo, femalePlotNo,
-								nurseryWorkbook.getStudyName(), nurseryWorkbook.getStudyName());
+				if (gidData != null && gidData.getValue().equals(maleParentGid.toString())) {
+					if (plotNumberData != null) {
+						malePlotNo = plotNumberData.getValue();
+					}
+				}
 			}
+
+			// Single nursery is in context here, so set the same study name as both male/female parts. For import crosses case, these
+			// could be different Nurseries.
+			seedSource = this.seedSourceGenerator.generateSeedSourceForCross(nurseryWorkbook, malePlotNo, femalePlotNo,
+					nurseryWorkbook.getStudyName(), nurseryWorkbook.getStudyName());
 		}
 		return seedSource;
 	}
@@ -809,10 +799,6 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 
 	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
-	}
-
-	public void setFieldbookMiddlewareService(FieldbookService fieldbookMiddlewareService) {
-		this.fieldbookMiddlewareService = fieldbookMiddlewareService;
 	}
 
 	public void setSeedSourceGenerator(SeedSourceGenerator seedSourceGenerator) {
