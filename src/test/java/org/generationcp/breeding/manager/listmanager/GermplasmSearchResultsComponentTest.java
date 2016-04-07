@@ -21,6 +21,10 @@ import com.vaadin.ui.Table;
 
 public class GermplasmSearchResultsComponentTest {
 
+	private static final String GERMPLASM_NAMES_WITH_MORE_THAN_20_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+	private static final String GERMPLASM_NAMES_WITH_20_CHARS = "ABCDEFGHIJKLMNOPQRST";
+
 	@Mock
 	private OntologyDataManager ontologyDataManager;
 
@@ -38,7 +42,7 @@ public class GermplasmSearchResultsComponentTest {
 		Mockito.doReturn("MENU").when(this.messageSource).getMessage(Message.ADD_SELECTED_ENTRIES_TO_NEW_LIST);
 		Mockito.doReturn("SELECT ALL").when(this.messageSource).getMessage(Message.SELECT_ALL);
 
-		TableWithSelectAllLayout table = new TableWithSelectAllLayout(10, GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID);
+		final TableWithSelectAllLayout table = new TableWithSelectAllLayout(10, GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID);
 		table.instantiateComponents();
 
 		Mockito.doReturn(table).when(this.germplasmSearchResultsComponent).getTableWithSelectAllLayout();
@@ -59,7 +63,7 @@ public class GermplasmSearchResultsComponentTest {
 
 		this.germplasmSearchResultsComponent.instantiateComponents();
 
-		Table table = this.germplasmSearchResultsComponent.getMatchingGermplasmsTableWithSelectAll().getTable();
+		final Table table = this.germplasmSearchResultsComponent.getMatchingGermplasmsTableWithSelectAll().getTable();
 
 		Assert.assertEquals("Tag All Column", table.getColumnHeader(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID));
 		Assert.assertEquals("NAMES", table.getColumnHeader(GermplasmSearchResultsComponent.NAMES));
@@ -84,7 +88,7 @@ public class GermplasmSearchResultsComponentTest {
 
 		this.germplasmSearchResultsComponent.instantiateComponents();
 
-		Table table = this.germplasmSearchResultsComponent.getMatchingGermplasmsTableWithSelectAll().getTable();
+		final Table table = this.germplasmSearchResultsComponent.getMatchingGermplasmsTableWithSelectAll().getTable();
 
 		Assert.assertEquals("Tag All Column", table.getColumnHeader(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID));
 		Assert.assertEquals("NAMES", table.getColumnHeader(GermplasmSearchResultsComponent.NAMES));
@@ -98,8 +102,22 @@ public class GermplasmSearchResultsComponentTest {
 
 	}
 
-	private Term createTerm(String name) {
-		Term term = new Term();
+	@Test
+	public void testGetShortenedNamesIfNameLengthIsAtLeast20() {
+		final String shortenedNames = this.germplasmSearchResultsComponent.getShortenedNames(GERMPLASM_NAMES_WITH_MORE_THAN_20_CHARS);
+
+		Assert.assertEquals("Expecting to return string with only 20 characters with ellipsis(...) at the end.",
+				GERMPLASM_NAMES_WITH_MORE_THAN_20_CHARS.substring(0, 20).concat("..."), shortenedNames);
+	}
+
+	@Test
+	public void testGetShortenedNamesIfNameLengthIsAtMost20() {
+		final String shortenedNames = this.germplasmSearchResultsComponent.getShortenedNames(GERMPLASM_NAMES_WITH_20_CHARS);
+		Assert.assertEquals("Expecting to return the same name.", GERMPLASM_NAMES_WITH_20_CHARS, shortenedNames);
+	}
+
+	private Term createTerm(final String name) {
+		final Term term = new Term();
 		term.setName(name);
 		term.setId(0);
 		return term;
