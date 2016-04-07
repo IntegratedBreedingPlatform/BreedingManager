@@ -77,14 +77,16 @@ public class AssignCodesDialog extends BaseSubWindow
 	private Button cancelButton;
 	private Button continueButton;
 	private Set<Integer> gidsToProcess = new HashSet<>();
-	private final boolean isCustomLayout = false;
+	private final boolean isCustomLayout;
 
-	// used for unit tests
-	AssignCodesDialog() {
+	// will be used for unit tests
+	AssignCodesDialog(boolean isCustomLayout) {
+		this.isCustomLayout = isCustomLayout;
 	}
 
-	public AssignCodesDialog(final Set<Integer> gidsToProcess) {
+	public AssignCodesDialog(final Set<Integer> gidsToProcess, final boolean isCustomLayout) {
 		this.gidsToProcess = gidsToProcess;
+		this.isCustomLayout = isCustomLayout;
 	}
 
 	@Override

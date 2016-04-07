@@ -108,9 +108,7 @@ public class AssignCodeCustomLayout {
 		this.germplasmTypeComboBoxLevel2.setNullSelectionAllowed(false);
 
 		//update example text after setting defaults
-		this.exampleText.setValue(this.programIdentifiersComboBox.getValue().toString() +
-				this.germplasmTypeComboBoxLevel1.getValue().toString() + this.yearSuffixLevel1.getValue().toString() +
-				AssignCodesDialog.SEQUENCE_PLACEHOLDER);
+		this.updateExampleValue();
 
 		// setting up the possible values for location identifiers for level2
 		final List<String> locationIdentifiers = this.germplasmNamingReferenceDataResolver

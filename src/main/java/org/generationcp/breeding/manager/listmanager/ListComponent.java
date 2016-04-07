@@ -47,6 +47,7 @@ import org.generationcp.breeding.manager.listmanager.util.ListDataPropertiesRend
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.commons.util.CrossingUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -56,6 +57,7 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.GermplasmDataManagerUtil;
+import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -258,15 +260,26 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	private BreedingManagerApplication breedingManagerApplication;
 
+	private String currentCropName;
+	private String pedigreeProfile;
+
 	@Resource
 	private CrossExpansionProperties crossExpansionProperties;
 
 	public ListComponent() {
 		super();
+		final ManagerFactory managerFactory = ManagerFactory.getCurrentManagerFactoryThreadLocal().get();
+		if (managerFactory != null) {
+			this.currentCropName = managerFactory.getCropName();
+			this.pedigreeProfile = managerFactory.getPedigreeProfile();
+		} else {
+			throw new IllegalStateException("Must have access to the Manager Factory thread local variable. "
+					+ "Please contact support for further help.");
+		}
 	}
 
 	public ListComponent(final ListManagerMain source, final ListTabComponent parentListDetailsComponent, final GermplasmList germplasmList) {
-		super();
+		this();
 		this.source = source;
 		this.parentListDetailsComponent = parentListDetailsComponent;
 		this.germplasmList = germplasmList;
@@ -1352,7 +1365,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 					gidsToProcess.add(Integer.valueOf(gidCell.getCaption()));
 				}
 			}
-			this.getWindow().addWindow(new AssignCodesDialog(gidsToProcess));
+			final boolean isCustomLayout = CrossingUtil.isCimmytMaize(this.pedigreeProfile, this.currentCropName);
+			this.getWindow().addWindow(new AssignCodesDialog(gidsToProcess, isCustomLayout));
 		} else {
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ASSIGN_CODES),
 					this.messageSource.getMessage(Message.ERROR_ASSIGN_CODES_NOTHING_SELECTED));
