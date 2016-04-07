@@ -145,7 +145,8 @@ public class AssignCodesDialog extends BaseSubWindow
 
 		// by default the level 1 is selected
 		this.codingLevelOptions.select(LEVEL1);
-		final List<String> programIdentifiers = this.germplasmNamingService.getProgramIdentifiers(1, contextUtil.getCurrentProgramUUID());
+		final List<String> programIdentifiers =
+				this.germplasmNamingReferenceDataResolver.getProgramIdentifiers(1, contextUtil.getCurrentProgramUUID());
 		for (final String programIdentifier : programIdentifiers) {
 			this.programIdentifiersComboBox.addItem(programIdentifier);
 		}
@@ -154,7 +155,7 @@ public class AssignCodesDialog extends BaseSubWindow
 			this.programIdentifiersComboBox.setValue(programIdentifiers.get(0));
 		}
 
-		final Set<GermplasmType> germplasmTypes = this.germplasmNamingService.getGermplasmTypes();
+		final Set<GermplasmType> germplasmTypes = this.germplasmNamingReferenceDataResolver.getGermplasmTypes();
 		for (final GermplasmType germplasmType : germplasmTypes) {
 			this.germplasmTypeComboBoxLevel1.addItem(germplasmType.name());
 			this.germplasmTypeComboBoxLevel2.addItem(germplasmType.name());
@@ -181,7 +182,8 @@ public class AssignCodesDialog extends BaseSubWindow
 				this.germplasmTypeComboBoxLevel1.getValue().toString() + this.yearSuffixLevel1.getValue().toString() + SEQUENCE_PLACEHOLDER);
 
 		// setting up the possible values for location identifiers for level2
-		final List<String> locationIdentifiers = this.germplasmNamingService.getProgramIdentifiers(2, contextUtil.getCurrentProgramUUID());
+		final List<String> locationIdentifiers =
+				this.germplasmNamingReferenceDataResolver.getProgramIdentifiers(2, contextUtil.getCurrentProgramUUID());
 		for (final String locationIdentifier : locationIdentifiers) {
 			this.locationIdentifierCombobox.addItem(locationIdentifier);
 		}
