@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.validator;
 import java.util.List;
 
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.components.CodeNamesLocator;
 import org.generationcp.middleware.components.validator.ErrorMessage;
 import org.generationcp.middleware.components.validator.ValidationRule;
@@ -19,19 +20,30 @@ public class CheckGermplasmWithoutCodedNamesValidationRule implements Validation
 	public static final String ERROR_MESSAGE_GERMPLASM_USING_CODENAME = "GERMPLASM_PARSER_USE_CODED_NAMES";
 	private CodeNamesLocator codedNamesLocator;
 	private NamesDataManager manager;
+	private ContextUtil context;
 
 	@Autowired
-	public CheckGermplasmWithoutCodedNamesValidationRule(CodeNamesLocator codedNamesLocator, NamesDataManager manager) {
+	public CheckGermplasmWithoutCodedNamesValidationRule(CodeNamesLocator codedNamesLocator, NamesDataManager manager,ContextUtil context) {
 		this.codedNamesLocator = codedNamesLocator;
 		this.manager = manager;
+		this.context = context;
+
 	}
 
+	/**
+	 * This rule checks that that the germplasm being imported should not reference to any germplasm with coded name
+	 *
+	 * @param importedGermplasm
+	 * @return
+	 */
 	@Override
 	public Optional<ErrorMessage> validate(ImportedGermplasm importedGermplasm)  {
 		ErrorMessage message = null;
 
-		List<Integer> typeList =  codedNamesLocator.locateCodedNamesIds();
-		List<Name> names =  manager.getNamesByNvalInTypeList(importedGermplasm.getDesig(),typeList);
+
+		String cropName = context.getProjectInContext().getCropType().getCropName();
+		List<String> fCodecodedNames =  codedNamesLocator.locateCodeNamesForCrop(cropName);
+		List<Name> names =  manager.getNamesByNvalInFCodeList(importedGermplasm.getDesig(),fCodecodedNames);
 
 		if(names.size()>0){
 			message= new ErrorMessage(ERROR_MESSAGE_GERMPLASM_USING_CODENAME);
