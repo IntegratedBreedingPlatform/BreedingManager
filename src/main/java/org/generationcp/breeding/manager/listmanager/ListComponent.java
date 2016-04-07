@@ -1045,36 +1045,39 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			ListComponent.this.selectedColumn = event.getPropertyId();
 			ListComponent.this.selectedItemId = event.getItemId();
 
-			if (event.getButton() == com.vaadin.event.MouseEvents.ClickEvent.BUTTON_RIGHT) {
-
-				ListComponent.this.tableContextMenu.show(event.getClientX(), event.getClientY());
-
-				if (ListComponent.this.selectedColumn.equals(ColumnLabels.TAG.getName())
-						|| ListComponent.this.selectedColumn.equals(ColumnLabels.GID.getName())
-						|| ListComponent.this.selectedColumn.equals(ColumnLabels.ENTRY_ID.getName())
-						|| ListComponent.this.selectedColumn.equals(ColumnLabels.GROUP_ID.getName())
-						|| ListComponent.this.selectedColumn.equals(ColumnLabels.DESIGNATION.getName())
-						|| ListComponent.this.isInventoryColumn(ListComponent.this.selectedColumn)) {
-					ListComponent.this.tableContextMenuDeleteEntries.setVisible(!ListComponent.this.germplasmList.isLockedList());
-					ListComponent.this.tableContextMenuEditCell.setVisible(false);
-					if (ListComponent.this.source != null) {
-						ListComponent.this.tableContextMenuCopyToNewList.setVisible(!ListComponent.this.source.listBuilderIsLocked());
-					}
-				} else if (!ListComponent.this.germplasmList.isLockedList()) {
-					ListComponent.this.tableContextMenuDeleteEntries.setVisible(true);
-					ListComponent.this.tableContextMenuEditCell.setVisible(true);
-					if (ListComponent.this.source != null) {
-						ListComponent.this.tableContextMenuCopyToNewList.setVisible(!ListComponent.this.source.listBuilderIsLocked());
-					}
-					ListComponent.this.doneInitializing = true;
-				} else {
-					ListComponent.this.tableContextMenuDeleteEntries.setVisible(false);
-					ListComponent.this.tableContextMenuEditCell.setVisible(false);
-					if (ListComponent.this.source != null) {
-						ListComponent.this.tableContextMenuCopyToNewList.setVisible(!ListComponent.this.source.listBuilderIsLocked());
-					}
-				}
+			// Only perform action if mouse event is right click
+			if (event.getButton() != com.vaadin.event.MouseEvents.ClickEvent.BUTTON_RIGHT) {
+				return;
 			}
+
+			ListComponent.this.tableContextMenu.show(event.getClientX(), event.getClientY());
+
+			// Note: Code change looks like I changed the logic but I've just condensed it by calculating the
+			// boolean conditions and set it to the setVisible methods without going through if else code blocks
+			// this solves the "Reduce the number of conditional operators (5) used in the expression" sonar violation
+			final boolean isNonEditableColumn = ListComponent.this.selectedColumn.equals(ColumnLabels.TAG.getName())
+					|| ListComponent.this.selectedColumn.equals(ColumnLabels.GID.getName())
+					|| ListComponent.this.selectedColumn.equals(ColumnLabels.ENTRY_ID.getName())
+					|| ListComponent.this.selectedColumn.equals(ColumnLabels.GROUP_ID.getName())
+					|| ListComponent.this.selectedColumn.equals(ColumnLabels.DESIGNATION.getName())
+					|| ListComponent.this.isInventoryColumn(ListComponent.this.selectedColumn);
+
+			final boolean isLockedList = ListComponent.this.germplasmList.isLockedList();
+			final boolean isListBuilderLocked = ListComponent.this.source.listBuilderIsLocked();
+			final boolean isListComponentSourceAvailable = ListComponent.this.source != null;
+
+			// make the edit cell context menu available when selected column is editable and list is not locked
+			ListComponent.this.tableContextMenuEditCell.setVisible(!isNonEditableColumn && !isLockedList);
+
+			// make delete entries context menu available when current germplasm list is not locked
+			ListComponent.this.tableContextMenuDeleteEntries.setVisible(!isLockedList);
+
+			// set doneInitializing to true if germplasm list is locked, else do not update doneInitializing
+			ListComponent.this.doneInitializing = isLockedList ? true : ListComponent.this.doneInitializing;
+
+			// make copy to new list context menu available if list builder is un-locked
+			ListComponent.this.tableContextMenuCopyToNewList.setVisible(!isListBuilderLocked && isListComponentSourceAvailable);
+
 		}
 	}
 
