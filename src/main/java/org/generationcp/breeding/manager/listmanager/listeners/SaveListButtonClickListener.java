@@ -359,26 +359,26 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 		}
 	}
 
-		private CheckBox initializeTagCheckBox(final GermplasmListData entry) {
-				final CheckBox tagCheckBox = new CheckBox();
-				tagCheckBox.setImmediate(true);
-				tagCheckBox.addListener(new ClickListener() {
+	private CheckBox initializeTagCheckBox(final GermplasmListData entry) {
+		final CheckBox tagCheckBox = new CheckBox();
+		tagCheckBox.setImmediate(true);
+		tagCheckBox.addListener(new ClickListener() {
 
-					private static final long serialVersionUID = 1L;
+			private static final long serialVersionUID = 1L;
 
-					@Override
-					public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
-						final CheckBox itemCheckBox = (CheckBox) event.getButton();
-						if (((Boolean) itemCheckBox.getValue()).equals(true)) {
-							SaveListButtonClickListener.this.listDataTable.select(entry.getId());
-						} else {
-							SaveListButtonClickListener.this.listDataTable.unselect(entry.getId());
-						}
-					}
+			@Override
+			public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
+				final CheckBox itemCheckBox = (CheckBox) event.getButton();
+				if (((Boolean) itemCheckBox.getValue()).equals(true)) {
+					SaveListButtonClickListener.this.listDataTable.select(entry.getId());
+				} else {
+					SaveListButtonClickListener.this.listDataTable.unselect(entry.getId());
+				}
+			}
 
-				});
-				return tagCheckBox;
-		}
+		});
+		return tagCheckBox;
+	}
 
 	private Table cloneAddedColumnsToTemp(final Table sourceTable) {
 		final Table newTable = new Table();
