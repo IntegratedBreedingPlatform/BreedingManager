@@ -18,6 +18,7 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
+import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.service.api.GermplasmGroupNamingResult;
 import org.generationcp.middleware.service.api.GermplasmNamingReferenceDataResolver;
@@ -29,6 +30,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.vaadin.data.Validator;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -146,6 +148,23 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.continueButton.addListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(final ClickEvent event) {
+				if (AssignCodesDialog.this.isCustomLayout) {
+					try {
+						AssignCodesDialog.this.assignCodesCustomLayout.validate();
+					} catch (final Validator.InvalidValueException ex) {
+						MessageNotifier.showError(AssignCodesDialog.this.getWindow(),
+								AssignCodesDialog.this.messageSource.getMessage(Message.ASSIGN_CODES), ex.getMessage());
+						return;
+					}
+				} else {
+					try {
+						AssignCodesDialog.this.assignCodesDefaultLayout.validate();
+					} catch (final Validator.InvalidValueException ex) {
+						MessageNotifier.showError(AssignCodesDialog.this.getWindow(),
+								AssignCodesDialog.this.messageSource.getMessage(Message.ASSIGN_CODES), ex.getMessage());
+						return;
+					}
+				}
 				AssignCodesDialog.this.assignCodes();
 			}
 		});

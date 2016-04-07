@@ -12,6 +12,7 @@ import org.generationcp.middleware.service.api.GermplasmNamingReferenceDataResol
 import org.generationcp.middleware.service.api.GermplasmType;
 
 import com.vaadin.data.Property;
+import com.vaadin.data.Validator;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.ComboBox;
@@ -274,5 +275,9 @@ public class AssignCodeCustomLayout {
 
 	public HorizontalLayout getCodeControlsLayoutLevel3() {
 		return this.codeControlsLayoutLevel3;
+	}
+
+	public void validate() throws Validator.InvalidValueException {
+		this.assignCodesDefaultLayout.validate();
 	}
 }

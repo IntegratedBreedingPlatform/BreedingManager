@@ -4,6 +4,7 @@ import org.generationcp.breeding.manager.listmanager.dialog.AssignCodesDialog;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 
 import com.vaadin.data.Property;
+import com.vaadin.data.Validator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.Alignment;
@@ -33,6 +34,7 @@ public class AssignCodesDefaultLayout {
 	public void instantiateComponents() {
 		this.prefixDefault = new TextField();
 		this.prefixDefault.setImmediate(true);
+		//TODO localise message
 		this.prefixDefault.addValidator(new StringLengthValidator("The prefix could not exceed 50 characters", 0, 50, false));
 	}
 
@@ -83,5 +85,9 @@ public class AssignCodesDefaultLayout {
 		this.codesLayout.addComponent(this.codeControlsLayoutDefault);
 		this.codesLayout.setComponentAlignment(this.codeControlsLayoutDefault, Alignment.MIDDLE_LEFT);
 		this.codesLayout.setExpandRatio(this.codeControlsLayoutDefault, 2);
+	}
+
+	public void validate() throws Validator.InvalidValueException {
+		this.prefixDefault.validate();
 	}
 }
