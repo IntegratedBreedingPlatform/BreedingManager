@@ -36,6 +36,9 @@ public class AssignCodesDefaultLayout {
 		this.prefixDefault.setImmediate(true);
 		//TODO localise message
 		this.prefixDefault.addValidator(new StringLengthValidator("The prefix could not exceed 50 characters", 0, 50, false));
+
+		//update example text after setting defaults
+		this.updateExampleValue();
 	}
 
 	public HorizontalLayout constructDefaultCodeControlsLayout() {

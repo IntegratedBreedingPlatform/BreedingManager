@@ -77,7 +77,7 @@ public class AssignCodesDialog extends BaseSubWindow
 	private Button cancelButton;
 	private Button continueButton;
 	private Set<Integer> gidsToProcess = new HashSet<>();
-	private final boolean isCustomLayout = true;
+	private final boolean isCustomLayout = false;
 
 	// used for unit tests
 	AssignCodesDialog() {
