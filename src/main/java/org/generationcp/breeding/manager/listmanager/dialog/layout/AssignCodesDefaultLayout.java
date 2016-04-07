@@ -1,7 +1,10 @@
 package org.generationcp.breeding.manager.listmanager.dialog.layout;
 
+import org.generationcp.breeding.manager.listmanager.dialog.AssignCodesDialog;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 
+import com.vaadin.data.Property;
+import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -16,11 +19,21 @@ public class AssignCodesDefaultLayout {
 	public static final String LST_SEQUENCE_LABEL_CLASS = "lst-sequence-label";
 
 	private TextField prefixDefault;
+	private HorizontalLayout codeControlsLayoutDefault;
+
+	// the value we are getting from the common layout
+	private Label exampleText;
+	private final HorizontalLayout codesLayout;
+
+	public AssignCodesDefaultLayout(final Label exampleText, final HorizontalLayout codesLayout) {
+		this.exampleText = exampleText;
+		this.codesLayout = codesLayout;
+	}
 
 	public void instantiateComponents() {
 		this.prefixDefault = new TextField();
-
 		this.prefixDefault.setImmediate(true);
+		this.prefixDefault.addValidator(new StringLengthValidator("The prefix could not exceed 50 characters", 0, 50, false));
 	}
 
 	public HorizontalLayout constructDefaultCodeControlsLayout() {
@@ -39,6 +52,20 @@ public class AssignCodesDefaultLayout {
 		return codeControlsLayout;
 	}
 
+	public void addListeners() {
+		final Property.ValueChangeListener prefixChangeListener = new Property.ValueChangeListener() {
+			@Override
+			public void valueChange(final Property.ValueChangeEvent event) {
+				AssignCodesDefaultLayout.this.updateExampleValue();
+			}
+		};
+		this.prefixDefault.addListener(prefixChangeListener);
+	}
+
+	public String getGroupNamePrefix() {
+		return this.prefixDefault.getValue().toString();
+	}
+
 	public TextField getPrefixDefault() {
 		return this.prefixDefault;
 	}
@@ -46,5 +73,15 @@ public class AssignCodesDefaultLayout {
 	public void setPrefixDefault(TextField prefixDefault) {
 		this.prefixDefault = prefixDefault;
 	}
+	public void updateExampleValue() {
+		this.exampleText.setValue(this.prefixDefault.getValue() + AssignCodesDialog.SEQUENCE_PLACEHOLDER);
+	}
 
+	public void layoutComponents() {
+		//TODO Implement layout for the default case
+		this.codeControlsLayoutDefault = this.constructDefaultCodeControlsLayout();
+		this.codesLayout.addComponent(this.codeControlsLayoutDefault);
+		this.codesLayout.setComponentAlignment(this.codeControlsLayoutDefault, Alignment.MIDDLE_LEFT);
+		this.codesLayout.setExpandRatio(this.codeControlsLayoutDefault, 2);
+	}
 }
