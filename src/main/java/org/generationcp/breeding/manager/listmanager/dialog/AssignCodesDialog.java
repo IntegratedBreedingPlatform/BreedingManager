@@ -108,7 +108,7 @@ public class AssignCodesDialog extends BaseSubWindow
 
 		// set immediate to true for those fields we will listen to for the changes on the screen
 		this.codingLevelOptions.setImmediate(true);
-		this.assignCodesDefaultLayout = new AssignCodesDefaultLayout(this.exampleText, this.codesLayout);
+		this.assignCodesDefaultLayout = new AssignCodesDefaultLayout(this.exampleText, this.codesLayout, this.messageSource);
 		this.assignCodesDefaultLayout.instantiateComponents();
 		if (this.isCustomLayout) {
 			this.assignCodesCustomLayout = new AssignCodeCustomLayout(this.germplasmNamingReferenceDataResolver, this.contextUtil,
