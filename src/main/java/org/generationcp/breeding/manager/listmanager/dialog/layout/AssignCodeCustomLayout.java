@@ -5,14 +5,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listeners.AssignCodesLevelOptionsCustomListener;
 import org.generationcp.breeding.manager.listmanager.dialog.AssignCodesDialog;
 import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.service.api.GermplasmNamingReferenceDataResolver;
 import org.generationcp.middleware.service.api.GermplasmType;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
+import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.ComboBox;
@@ -40,6 +43,7 @@ public class AssignCodeCustomLayout {
 	//items we are getting from general layout
 	private final GermplasmNamingReferenceDataResolver germplasmNamingReferenceDataResolver;
 	private final ContextUtil contextUtil;
+	private final SimpleResourceBundleMessageSource messageSource;
 	private final AssignCodesDefaultLayout assignCodesDefaultLayout;
 	private final OptionGroup codingLevelOptions;
 	private final HorizontalLayout codesLayout;
@@ -47,9 +51,11 @@ public class AssignCodeCustomLayout {
 
 	public AssignCodeCustomLayout(final GermplasmNamingReferenceDataResolver germplasmNamingReferenceDataResolver,
 			final ContextUtil contextUtil,
+			final SimpleResourceBundleMessageSource messageSource,
 			final AssignCodesDefaultLayout assignCodesDefaultLayout, final OptionGroup codingLevelOptions,
 			final HorizontalLayout codesLayout, final Label exampleText) {
 		this.germplasmNamingReferenceDataResolver = germplasmNamingReferenceDataResolver;
+		this.messageSource = messageSource;
 		this.contextUtil = contextUtil;
 		this.assignCodesDefaultLayout = assignCodesDefaultLayout;
 		this.codingLevelOptions = codingLevelOptions;
@@ -72,6 +78,12 @@ public class AssignCodeCustomLayout {
 		this.yearSuffixLevel1.setImmediate(true);
 		this.yearSuffixLevel2.setImmediate(true);
 		this.locationIdentifierCombobox.setImmediate(true);
+
+		// add validators
+		this.yearSuffixLevel1.addValidator(new StringLengthValidator(this.messageSource.getMessage(Message.ERROR_YEAR_TOO_LONG), 0, 4,
+				false));
+		this.yearSuffixLevel2.addValidator(new StringLengthValidator(this.messageSource.getMessage(Message.ERROR_YEAR_TOO_LONG), 0, 4,
+				false));
 	}
 
 	public void initializeValues() {
@@ -278,5 +290,7 @@ public class AssignCodeCustomLayout {
 
 	public void validate() throws Validator.InvalidValueException {
 		this.assignCodesDefaultLayout.validate();
+		this.yearSuffixLevel1.validate();
+		this.yearSuffixLevel2.validate();
 	}
 }

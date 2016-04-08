@@ -112,7 +112,7 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.assignCodesDefaultLayout.instantiateComponents();
 		if (this.isCustomLayout) {
 			this.assignCodesCustomLayout = new AssignCodeCustomLayout(this.germplasmNamingReferenceDataResolver, this.contextUtil,
-					this.assignCodesDefaultLayout, this.codingLevelOptions, this.codesLayout, this.exampleText);
+					this.messageSource,	this.assignCodesDefaultLayout, this.codingLevelOptions, this.codesLayout, this.exampleText);
 			this.assignCodesCustomLayout.instantiateComponents();
 		}
 	}
