@@ -104,6 +104,7 @@ public class AssignCodeCustomLayout {
 		this.yearSuffixLevel2.setValue(simpleDateFormat.format(today));
 
 		this.programIdentifiersComboBox.setNullSelectionAllowed(false);
+		this.locationIdentifierCombobox.setNullSelectionAllowed(false);
 		this.germplasmTypeComboBoxLevel1.setNullSelectionAllowed(false);
 		this.germplasmTypeComboBoxLevel2.setNullSelectionAllowed(false);
 
