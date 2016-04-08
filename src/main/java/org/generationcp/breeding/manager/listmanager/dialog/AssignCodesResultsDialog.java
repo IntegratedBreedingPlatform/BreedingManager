@@ -98,8 +98,7 @@ public class AssignCodesResultsDialog extends BaseSubWindow implements Initializ
 			resultsList.setValue(messageString);
 			this.assignCodesResultsTable.addItem(new Object[] {mapEntry.getKey(), resultsList}, rowId++);
 		}
-		this.assignCodesResultsTable.setPageLength(rowId);
-
+		this.assignCodesResultsTable.setPageLength(this.assignCodesResults.size());
 	}
 
 	@Override
