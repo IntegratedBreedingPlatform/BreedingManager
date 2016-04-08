@@ -42,9 +42,9 @@ public class AssignCodesDialog extends BaseSubWindow
 		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, Window.CloseListener {
 
 	public static final String SEQUENCE_PLACEHOLDER = "[SEQ]";
-	public static final String LEVEL1 = "Level 1";
-	public static final String LEVEL2 = "Level 2";
-	public static final String LEVEL3 = "Level 3";
+	public static final String LEVEL1 = "Level1";
+	public static final String LEVEL2 = "Level2";
+	public static final String LEVEL3 = "Level3";
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -75,7 +75,7 @@ public class AssignCodesDialog extends BaseSubWindow
 	private final boolean isCustomLayout;
 
 	// will be used for unit tests
-	AssignCodesDialog(boolean isCustomLayout) {
+	AssignCodesDialog(final boolean isCustomLayout) {
 		this.isCustomLayout = isCustomLayout;
 	}
 
@@ -114,11 +114,12 @@ public class AssignCodesDialog extends BaseSubWindow
 
 	@Override
 	public void initializeValues() {
-		//TODO Remove hardcoding of levels ??
-		//TODO Localise these values
 		this.codingLevelOptions.addItem(LEVEL1);
 		this.codingLevelOptions.addItem(LEVEL2);
 		this.codingLevelOptions.addItem(LEVEL3);
+		this.codingLevelOptions.setItemCaption(LEVEL1, this.messageSource.getMessage(Message.LEVEL1));
+		this.codingLevelOptions.setItemCaption(LEVEL2, this.messageSource.getMessage(Message.LEVEL2));
+		this.codingLevelOptions.setItemCaption(LEVEL3, this.messageSource.getMessage(Message.LEVEL3));
 
 		// by default the level 1 is selected
 		this.codingLevelOptions.select(LEVEL1);
