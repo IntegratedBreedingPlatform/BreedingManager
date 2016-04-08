@@ -1,11 +1,8 @@
 
 package org.generationcp.breeding.manager.listmanager.dialog;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -48,8 +45,6 @@ public class AssignCodesDialog extends BaseSubWindow
 	public static final String LEVEL1 = "Level 1";
 	public static final String LEVEL2 = "Level 2";
 	public static final String LEVEL3 = "Level 3";
-	public static final String LAYOUT_CUSTOM = "cymmit";
-	public static final String LAYOUT_DEFAULT = "default";
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -190,7 +185,7 @@ public class AssignCodesDialog extends BaseSubWindow
 							AssignCodesDialog.this.germplasmNamingReferenceDataResolver.resolveNameType(AssignCodesDialog.this.getLevel());
 					for (final Integer gid : AssignCodesDialog.this.gidsToProcess) {
 						// TODO pass user and location. Hardcoded to 0 = unknown for now.
-						String groupNamePrefix = "";
+						final String groupNamePrefix;
 						if (AssignCodesDialog.this.isCustomLayout) {
 							groupNamePrefix = AssignCodesDialog.this.assignCodesCustomLayout.getGroupNamePrefix();
 						} else {
