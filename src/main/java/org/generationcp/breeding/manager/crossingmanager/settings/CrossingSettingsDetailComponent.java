@@ -15,7 +15,6 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.xml.AdditionalDetailsSetting;
-import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -62,7 +61,6 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 
 	private final ManageCrossingSettingsMain manageCrossingSettingsMain;
 	private DefineCrossingSettingComponent defineSettingComponent;
-	private CrossingSettingsMethodComponent methodComponent;
 	private CrossingSettingsNameComponent nameComponent;
 	private CrossingSettingsOtherDetailsComponent additionalDetailsComponent;
 	private Button nextButton;
@@ -102,7 +100,6 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 
 		this.defineSettingComponent = new DefineCrossingSettingComponent(this);
 
-		this.methodComponent = new CrossingSettingsMethodComponent();
 		this.nameComponent = new CrossingSettingsNameComponent();
 		this.additionalDetailsComponent = new CrossingSettingsOtherDetailsComponent();
 
@@ -170,11 +167,9 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 		// cs is our crossing settings namespace
 		sectionLayout.addStyleName("cs");
 		this.defineSettingComponent.addStyleName(CrossingSettingsDetailComponent.CS_PANEL_SECTION);
-		this.methodComponent.addStyleName(CrossingSettingsDetailComponent.CS_PANEL_SECTION);
 		this.nameComponent.addStyleName(CrossingSettingsDetailComponent.CS_PANEL_SECTION);
 
 		sectionLayout.addComponent(this.defineSettingComponent);
-		sectionLayout.addComponent(this.methodComponent);
 		sectionLayout.addComponent(this.nameComponent);
 		sectionLayout.addComponent(this.additionalDetailsComponent);
 
@@ -232,8 +227,7 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 			try {
 				templateSetting = this.readXmlStringForSetting(this.currentSetting.getConfiguration());
 
-				// set now all the fields in crossing settings
-				this.methodComponent.setFields(templateSetting.getBreedingMethodSetting());
+                // TODO update the crossing setting functionality so that it is able to affect the breeding method selection found in the next screen
 				this.nameComponent.setFields(templateSetting.getCrossNameSetting());
 				this.additionalDetailsComponent.setFields(templateSetting.getAdditionalDetailsSetting(), templateSetting.getName(),
 						this.currentSetting.isDefault());
@@ -279,8 +273,7 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 	}
 
 	private void doNextAction() {
-		if (this.nameComponent.validateInputFields() && this.additionalDetailsComponent.validateInputFields()
-				&& this.methodComponent.validateInputFields()) {
+		if (this.nameComponent.validateInputFields() && this.additionalDetailsComponent.validateInputFields()) {
 			if (this.additionalDetailsComponent.settingsFileNameProvided()) {
 
 				if (this.defaultSetting != null && !this.defaultSetting.equals(this.currentSetting)
@@ -546,12 +539,7 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 		final AdditionalDetailsSetting additionalDetails = new AdditionalDetailsSetting(locId, harvestDate);
 		toreturn.setAdditionalDetailsSetting(additionalDetails);
 
-		final Integer methodId = this.methodComponent.getSelectedBreedingMethodId();
-		final boolean isBasedOnStatusOfParentalLines = this.methodComponent.isBasedOnStatusOfParentalLines();
-
-		final BreedingMethodSetting breedingMethodSetting = new BreedingMethodSetting(methodId, isBasedOnStatusOfParentalLines);
-		toreturn.setBreedingMethodSetting(breedingMethodSetting);
-
+        // TODO update setting retrieval given that breeding method selection has moved to the next page
 		String settingName = (String) this.additionalDetailsComponent.getSettingsNameTextfield().getValue();
 		settingName = settingName.trim();
 		toreturn.setName(settingName);
@@ -582,7 +570,6 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 	}
 
 	public void setDefaultManageCrossingSettingsFields() {
-		this.methodComponent.setFieldsDefaultValue();
 		this.nameComponent.setFieldsDefaultValue();
 		this.additionalDetailsComponent.setFieldsDefaultValue();
 	}
