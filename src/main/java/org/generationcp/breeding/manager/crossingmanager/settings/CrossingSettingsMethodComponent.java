@@ -10,6 +10,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
+import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.breeding.manager.util.Util;
@@ -36,7 +37,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.PopupView;
@@ -47,7 +48,7 @@ import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
-public class CrossingSettingsMethodComponent extends CssLayout implements InternationalizableComponent, InitializingBean,
+public class CrossingSettingsMethodComponent extends VerticalLayout implements InternationalizableComponent, InitializingBean,
 BreedingManagerLayout {
 
 	private static final long serialVersionUID = 8287596386088188565L;
@@ -113,14 +114,18 @@ BreedingManagerLayout {
 	@Override
 	public void instantiateComponents() {
 
-		this.breedingMethodLabel = new Label(this.messageSource.getMessage(Message.BREEDING_METHOD).toUpperCase());
-		this.breedingMethodLabel.setStyleName(Bootstrap.Typography.H2.styleName());
+		this.breedingMethodLabel = new Label(this.messageSource.getMessage(Message.BREEDING_METHOD));
+        this.breedingMethodLabel.setWidth("200px");
+        this.breedingMethodLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+        this.breedingMethodLabel.addStyleName(AppConstants.CssStyles.BOLD);
+
 
 		this.breedingMethodDescLabel = new Label(this.messageSource.getMessage(Message.BREEDING_METHOD_DESC));
 		this.breedingMethodDescLabel.addStyleName("gcp-content-help-text");
 
 		this.selectMethod = new CheckBox(this.messageSource.getMessage(Message.SELECT_A_METHOD_TO_USE_FOR_ALL_CROSSES) + ":");
 		this.selectMethod.setImmediate(true);
+        this.selectMethod.addStyleName(AppConstants.CssStyles.BOLD);
 
 		this.breedingMethods = new ComboBox();
 		this.breedingMethods.setImmediate(true);
@@ -250,25 +255,36 @@ BreedingManagerLayout {
 	@Override
 	public void layoutComponents() {
 
-		this.addComponent(this.breedingMethodLabel);
-		this.addComponent(this.breedingMethodDescLabel);
+        this.setSpacing(true);
 
-		final HorizontalLayout comboBoxLayout = new HorizontalLayout();
-		comboBoxLayout.addComponent(this.selectMethod);
-
-		final VerticalLayout comboBoxAndSettings = new VerticalLayout();
-
-		comboBoxAndSettings.addComponent(this.breedingMethods);
-		comboBoxAndSettings.addComponent(this.favoriteMethodsCheckbox);
-		comboBoxAndSettings.addComponent(this.manageFavoriteMethodsLink);
-
-		this.selectMethod.addStyleName("cs-form-label");
 		this.breedingMethods.addStyleName("cs-form-input");
 		this.methodPopupView.addStyleName("cs-inline-icon");
 
-		comboBoxLayout.addComponent(comboBoxAndSettings);
-		comboBoxLayout.addComponent(this.methodPopupView);
-		this.addComponent(comboBoxLayout);
+        final VerticalLayout methodSelectLayout = new VerticalLayout();
+        methodSelectLayout.addComponent(this.breedingMethods);
+        methodSelectLayout.addComponent(this.favoriteMethodsCheckbox);
+        methodSelectLayout.addComponent(this.manageFavoriteMethodsLink);
+
+        final HorizontalLayout selectWithPopupLayout = new HorizontalLayout();
+        selectWithPopupLayout.addComponent(methodSelectLayout);
+        selectWithPopupLayout.addComponent(this.methodPopupView);
+
+        final VerticalLayout internalPanelLayout = new VerticalLayout();
+        internalPanelLayout.setSpacing(true);
+        internalPanelLayout.setMargin(true);
+        internalPanelLayout.addComponent(breedingMethodDescLabel);
+        internalPanelLayout.addComponent(this.selectMethod);
+        internalPanelLayout.addComponent(selectWithPopupLayout);
+
+
+        final Panel breedingMethodPanel = new Panel();
+        breedingMethodPanel.setWidth("460px");
+        breedingMethodPanel.setLayout(internalPanelLayout);
+        breedingMethodPanel.addStyleName("section_panel_layout");
+
+        final HeaderLabelLayout breedingMethodLayout = new HeaderLabelLayout(null, this.breedingMethodLabel);
+        this.addComponent(breedingMethodLayout);
+        this.addComponent(breedingMethodPanel);
 	}
 
 	public void setFields(BreedingMethodSetting breedingMethodSetting) {
@@ -323,16 +339,16 @@ BreedingManagerLayout {
 		return (Integer) this.breedingMethods.getValue();
 	}
 
-	private void showMethodDescription(Integer methodId) {
+	private void showMethodDescription(final Integer methodId) {
 		if (methodId != null) {
 			try {
 				final String methodDescription = this.germplasmDataManager.getMethodByID(methodId).getMdesc();
 				this.breedingMethodsHelpPopup.setValue(methodDescription);
 				this.breedingMethods.setDescription(methodDescription);
 
-			} catch (MiddlewareQueryException e) {
+			} catch (final MiddlewareQueryException e) {
 				CrossingSettingsMethodComponent.LOG.error(e.getMessage(), e);
-			} catch (ClassCastException e) {
+			} catch (final ClassCastException e) {
 				CrossingSettingsMethodComponent.LOG.error(e.getMessage(), e);
 			}
 		}
@@ -351,7 +367,7 @@ BreedingManagerLayout {
 		this.methodPopupView.setVisible(show);
 	}
 
-	private void populateBreedingMethods(boolean showOnlyFavorites, String programUUID) {
+	private void populateBreedingMethods(final boolean showOnlyFavorites, final String programUUID) {
 		this.breedingMethods.removeAllItems();
 
 		this.mapMethods = new HashMap<String, Integer>();
@@ -360,7 +376,7 @@ BreedingManagerLayout {
 			try {
 				BreedingManagerUtil.populateWithFavoriteMethods(this.workbenchDataManager, this.germplasmDataManager, this.breedingMethods,
 						this.mapMethods, programUUID);
-			} catch (MiddlewareQueryException e) {
+			} catch (final MiddlewareQueryException e) {
 				LOG.error(e.getMessage(), e);
 				MessageNotifier
 						.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR), "Error getting favorite methods!");
@@ -371,19 +387,19 @@ BreedingManagerLayout {
 		}
 	}
 
-	private void populateBreedingMethod(String programUUID) {
+	private void populateBreedingMethod(final String programUUID) {
 
 		try {
 			this.methods = this.germplasmDataManager.getMethodsByType("GEN", programUUID);
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			CrossingSettingsMethodComponent.LOG.error(e.getMessage());
 		}
 
 		this.breedingMethods.removeAllItems();
 		this.mapMethods = new HashMap<String, Integer>();
 
-		for (Method m : this.methods) {
-			Integer methodId = m.getMid();
+		for (final Method m : this.methods) {
+			final Integer methodId = m.getMid();
 			this.breedingMethods.addItem(methodId);
 			this.breedingMethods.setItemCaption(methodId, m.getMname());
 			this.mapMethods.put(m.getMname(), new Integer(methodId));
@@ -402,7 +418,7 @@ BreedingManagerLayout {
 		return this.messageSource;
 	}
 
-	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 
@@ -410,11 +426,11 @@ BreedingManagerLayout {
 		return this.germplasmDataManager;
 	}
 
-	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+	public void setGermplasmDataManager(final GermplasmDataManager germplasmDataManager) {
 		this.germplasmDataManager = germplasmDataManager;
 	}
 
-	public void setBreedingManagerService(BreedingManagerService breedingManagerService) {
+	public void setBreedingManagerService(final BreedingManagerService breedingManagerService) {
 		this.breedingManagerService = breedingManagerService;
 	}
 }
