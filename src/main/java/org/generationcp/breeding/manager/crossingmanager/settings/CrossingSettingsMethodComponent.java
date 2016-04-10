@@ -433,4 +433,8 @@ BreedingManagerLayout {
 	public void setBreedingManagerService(final BreedingManagerService breedingManagerService) {
 		this.breedingManagerService = breedingManagerService;
 	}
+
+    public void registerBreedingMethodChangeListener(Property.ValueChangeListener changeListener) {
+        this.breedingMethods.addListener(changeListener);
+    }
 }
