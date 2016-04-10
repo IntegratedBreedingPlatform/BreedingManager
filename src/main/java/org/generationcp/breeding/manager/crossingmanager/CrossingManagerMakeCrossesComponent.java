@@ -369,7 +369,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	}
 
 	public CrossingManagerSetting getCurrentCrossingSetting() {
-		return this.source.getDetailComponent().getCurrentlyDefinedSetting();
+		return this.source.compileCurrentSetting();
 	}
 
 	public CrossesMadeContainer getCrossesMadeContainer() {
@@ -593,4 +593,12 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
+
+    public BreedingMethodSetting getCurrentBreedingMethodSetting() {
+        final Integer methodId = this.crossingSettingsMethodComponent.getSelectedBreedingMethodId();
+        boolean isBasedOnStatusOfParentalLines = this.crossingSettingsMethodComponent.isBasedOnStatusOfParentalLines();
+
+        BreedingMethodSetting breedingMethodSetting = new BreedingMethodSetting(methodId, isBasedOnStatusOfParentalLines);
+        return breedingMethodSetting;
+    }
 }

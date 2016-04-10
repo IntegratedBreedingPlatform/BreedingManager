@@ -321,7 +321,8 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 
 		this.updateTemplateSettingVariables();
 
-		final CrossingManagerSetting currentlyDefinedSettingsInUi = this.getCurrentlyDefinedSetting();
+        // TODO clarify the saving of setting operation now that all settings are not on the same page
+		final CrossingManagerSetting currentlyDefinedSettingsInUi = this.getPartialCurrentSetting();
 
 		if (this.currentSetting == null) {
 			final TemplateSetting templateSetting = new TemplateSetting();
@@ -407,7 +408,8 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 	}
 
 	public void overwriteSetting() {
-		final CrossingManagerSetting currentlyDefinedSettingsInUi = this.getCurrentlyDefinedSetting();
+        // TODO clarify the saving of setting operation now that all settings are not on the same page
+		final CrossingManagerSetting currentlyDefinedSettingsInUi = this.getPartialCurrentSetting();
 
 		// get the existing setting
 		final TemplateSetting templateSettingToOverwrite =
@@ -525,10 +527,11 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 
 	/**
 	 * Make sure to validate the input fields first before calling this method.
-	 * 
+	 *
+     * The method is named getPartialCurrentSetting because it does not include the breeding method setting
 	 * @return
 	 */
-	public CrossingManagerSetting getCurrentlyDefinedSetting() {
+	public CrossingManagerSetting getPartialCurrentSetting() {
 		final CrossingManagerSetting toreturn = new CrossingManagerSetting();
 
 		final CrossNameSetting crossNameSettingPojo = this.nameComponent.getCrossNameSettingObject();
@@ -539,8 +542,7 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 		final AdditionalDetailsSetting additionalDetails = new AdditionalDetailsSetting(locId, harvestDate);
 		toreturn.setAdditionalDetailsSetting(additionalDetails);
 
-        // TODO update setting retrieval given that breeding method selection has moved to the next page
-		String settingName = (String) this.additionalDetailsComponent.getSettingsNameTextfield().getValue();
+        String settingName = (String) this.additionalDetailsComponent.getSettingsNameTextfield().getValue();
 		settingName = settingName.trim();
 		toreturn.setName(settingName);
 

@@ -30,6 +30,7 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ApplyCrossingSettingAction;
+import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
@@ -622,8 +623,8 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 
 	public void showOrHideGroupInheritanceOptions() {
 		// Only show group inheritance options if breeding method chosen is hybrid
-		CrossingManagerSetting currentCrossingSetting = this.makeCrossesMain.getCurrentCrossingSetting();
-		Integer selectedBreedingMethodId = currentCrossingSetting.getBreedingMethodSetting().getMethodId();
+		BreedingMethodSetting currentBreedingSetting = this.makeCrossesMain.getCurrentBreedingMethodSetting();
+		Integer selectedBreedingMethodId = currentBreedingSetting.getMethodId();
 		if (this.crossExpansionProperties.getHybridBreedingMethods().contains(selectedBreedingMethodId)) {
 			this.applyGroupingToNewCrossesOnlyHelpPopup.setVisible(true);
 			this.applyGroupingToNewCrossesOnly.setVisible(true);
