@@ -15,6 +15,7 @@ import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.crossingmanager.constants.CrossType;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
+import org.generationcp.breeding.manager.crossingmanager.settings.CrossingSettingsMethodComponent;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
@@ -70,6 +71,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	private MakeCrossesParentsComponent parentsComponent;
 	private CrossingMethodComponent crossingMethodComponent;
 	private MakeCrossesTableComponent crossesTableComponent;
+    private CrossingSettingsMethodComponent crossingSettingsMethodComponent;
 
 	// Handles Universal Mode View for ListManagerMain
 	private ModeView modeView;
@@ -233,6 +235,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		this.parentsComponent = new MakeCrossesParentsComponent(this);
 		this.crossingMethodComponent = new CrossingMethodComponent(this);
 		this.crossesTableComponent = new MakeCrossesTableComponent(this);
+        this.crossingSettingsMethodComponent = new CrossingSettingsMethodComponent();
 
 		this.backButton = new Button();
 		this.backButton.setData(CrossingManagerMakeCrossesComponent.BACK_BUTTON_ID);
@@ -272,9 +275,16 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		upperLayout.addComponent(this.selectParentsComponent);
 		upperLayout.addComponent(this.parentsComponent);
 
+        final VerticalLayout methodLayout = new VerticalLayout();
+        methodLayout.setSpacing(true);
+        methodLayout.addComponent(this.crossingSettingsMethodComponent);
+        methodLayout.addComponent(this.crossingMethodComponent);
+
+
 		final HorizontalLayout lowerLayout = new HorizontalLayout();
+
 		lowerLayout.setSpacing(true);
-		lowerLayout.addComponent(this.crossingMethodComponent);
+		lowerLayout.addComponent(methodLayout);
 		lowerLayout.addComponent(this.crossesTableComponent);
 
 		final HorizontalLayout layoutButtonArea = new HorizontalLayout();
