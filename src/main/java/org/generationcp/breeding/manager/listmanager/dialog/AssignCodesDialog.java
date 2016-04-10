@@ -8,8 +8,8 @@ import java.util.Set;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.listmanager.dialog.layout.AssignCodesDefaultLayout;
 import org.generationcp.breeding.manager.listmanager.dialog.layout.AssignCodeCustomLayout;
+import org.generationcp.breeding.manager.listmanager.dialog.layout.AssignCodesDefaultLayout;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -184,6 +184,8 @@ public class AssignCodesDialog extends BaseSubWindow
 				protected void doInTransactionWithoutResult(final TransactionStatus status) {
 					final UserDefinedField nameType =
 							AssignCodesDialog.this.germplasmNamingReferenceDataResolver.resolveNameType(AssignCodesDialog.this.getLevel());
+
+					// TODO performace tuning when processing large number of list entries..
 					for (final Integer gid : AssignCodesDialog.this.gidsToProcess) {
 						// TODO pass user and location. Hardcoded to 0 = unknown for now.
 						final String groupNamePrefix;
