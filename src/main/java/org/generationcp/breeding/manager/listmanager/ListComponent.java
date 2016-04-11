@@ -1352,7 +1352,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}
 
 	public void assignCodesAction() {
-		//TODO
+		//TODO extract common logic for gids to process
 		@SuppressWarnings("unchecked")
 		final Collection<Integer> selectedTableRows = (Collection<Integer>) this.listDataTable.getValue();
 

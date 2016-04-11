@@ -22,6 +22,7 @@ import org.generationcp.middleware.service.api.GermplasmNamingReferenceDataResol
 import org.generationcp.middleware.service.api.GermplasmNamingService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -38,6 +39,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
+@Configurable
 public class AssignCodesDialog extends BaseSubWindow
 		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, Window.CloseListener {
 
@@ -105,8 +107,10 @@ public class AssignCodesDialog extends BaseSubWindow
 
 		// set immediate to true for those fields we will listen to for the changes on the screen
 		this.codingLevelOptions.setImmediate(true);
+
 		this.assignCodesDefaultLayout = new AssignCodesDefaultLayout(this.exampleText, this.codesLayout, this.messageSource);
 		this.assignCodesDefaultLayout.instantiateComponents();
+
 		if (this.isCustomLayout) {
 			this.assignCodesCustomLayout = new AssignCodeCustomLayout(this.germplasmNamingReferenceDataResolver, this.contextUtil,
 					this.messageSource,	this.assignCodesDefaultLayout, this.codingLevelOptions, this.codesLayout, this.exampleText, this
@@ -117,6 +121,7 @@ public class AssignCodesDialog extends BaseSubWindow
 
 	@Override
 	public void initializeValues() {
+		//TODO There could be custom number of levels in the future
 		this.codingLevelOptions.addItem(LEVEL1);
 		this.codingLevelOptions.addItem(LEVEL2);
 		this.codingLevelOptions.addItem(LEVEL3);

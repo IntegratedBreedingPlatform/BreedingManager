@@ -46,6 +46,7 @@ public class AssignCodesDefaultLayout {
 		final HorizontalLayout codeControlsLayout = new HorizontalLayout();
 		codeControlsLayout.setWidth("40%");
 		codeControlsLayout.setHeight("60px");
+		//TODO do we still need this?
 		codeControlsLayout.setSpacing(false);
 		codeControlsLayout.setMargin(false);
 
