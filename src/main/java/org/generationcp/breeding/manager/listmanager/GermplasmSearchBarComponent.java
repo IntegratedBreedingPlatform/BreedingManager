@@ -110,7 +110,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		this.searchButton.setData(GermplasmSearchBarComponent.SEARCH_BUTTON);
 		this.searchButton.setClickShortcut(KeyCode.ENTER);
 
-		Label descLbl = new Label(GermplasmSearchBarComponent.GUIDE, Label.CONTENT_XHTML);
+		final Label descLbl = new Label(GermplasmSearchBarComponent.GUIDE, Label.CONTENT_XHTML);
 		descLbl.setWidth("300px");
 		this.popup = new PopupView(" ? ", descLbl);
 		this.popup.setStyleName("gcp-popup-view");
@@ -122,7 +122,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		this.includeParentsCheckBox = new CheckBox();
 		this.includeParentsCheckBox.setValue(false);
 		this.includeParentsCheckBox.setCaption(this.messageSource.getMessage(Message.INCLUDE_PARENTS));
-		
+
 		this.includeMGMembersCheckbox = new CheckBox();
 		this.includeMGMembersCheckbox.setValue(false);
 		this.includeMGMembersCheckbox.setCaption(this.messageSource.getMessage(Message.INCLUDE_MAINTENANCE_GROUP_MEMBERS));
@@ -131,7 +131,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		this.exactMatches = this.messageSource.getMessage(Message.EXACT_MATCHES);
 		this.matchesContaining = this.messageSource.getMessage(Message.MATCHES_CONTAINING);
 
-		List<String> searchTypes = Arrays.asList(new String[] {this.matchesStartingWith, this.exactMatches, this.matchesContaining});
+		final List<String> searchTypes = Arrays.asList(new String[] {this.matchesStartingWith, this.exactMatches, this.matchesContaining});
 		this.searchTypeOptions = new OptionGroup(null, searchTypes);
 		this.searchTypeOptions.setValue(this.matchesStartingWith);
 		this.searchTypeOptions.setStyleName("v-select-optiongroup-horizontal");
@@ -149,7 +149,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 			private static final long serialVersionUID = 1926462184420334992L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				GermplasmSearchBarComponent.this.searchButtonClickAction();
 			}
 		});
@@ -160,7 +160,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		this.setMargin(true);
 		this.addStyleName("lm-search-bar");
 		this.setWidth("100%");
-		VerticalLayout verticalLayout = new VerticalLayout();
+		final VerticalLayout verticalLayout = new VerticalLayout();
 		verticalLayout.addComponent(this.getFirstRow());
 		verticalLayout.addComponent(this.getSecondRow());
 		this.addComponent(verticalLayout);
@@ -188,7 +188,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		this.searchBarLayoutRight.addComponent(this.includeMGMembersCheckbox);
 		this.searchBarLayoutLeft.setComponentAlignment(this.popup, Alignment.MIDDLE_CENTER);
 
-		CssLayout firstRow = new CssLayout();
+		final CssLayout firstRow = new CssLayout();
 		firstRow.addComponent(this.searchBarLayoutLeft);
 		firstRow.addComponent(this.searchBarLayoutRight);
 		firstRow.setHeight("34px");
@@ -213,7 +213,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 	public void searchButtonClickAction() {
 
 		final String q = GermplasmSearchBarComponent.this.searchField.getValue().toString();
-		String searchType = (String) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
+		final String searchType = (String) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
 		if (GermplasmSearchBarComponent.this.matchesContaining.equals(searchType)) {
 			ConfirmDialog.show(GermplasmSearchBarComponent.this.getWindow(),
 					GermplasmSearchBarComponent.this.messageSource.getMessage(Message.WARNING),
@@ -224,12 +224,12 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 						private static final long serialVersionUID = 1L;
 
 						@Override
-						public void onClose(ConfirmDialog dialog) {
+						public void onClose(final ConfirmDialog dialog) {
 							if (dialog.isConfirmed()) {
 								GermplasmSearchBarComponent.this.doSearch(q);
 							}
 						}
-			});
+					});
 		} else {
 			GermplasmSearchBarComponent.this.doSearch(q);
 		}
@@ -237,24 +237,25 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 
 	public void doSearch(final String q) {
 
-		TransactionTemplate inTx = new TransactionTemplate(this.transactionManager);
+		final TransactionTemplate inTx = new TransactionTemplate(this.transactionManager);
 		inTx.execute(new TransactionCallbackWithoutResult() {
 
 			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				Monitor monitor = MonitorFactory.start("GermplasmSearchBarComponent.doSearch()");
-				String searchType = (String) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
-				String searchKeyword = GermplasmSearchBarComponent.this.getSearchKeyword(q, searchType);
-				Operation operation = GermplasmSearchBarComponent.this.exactMatches.equals(searchType) ? Operation.EQUAL : Operation.LIKE;
+			protected void doInTransactionWithoutResult(final TransactionStatus status) {
+				final Monitor monitor = MonitorFactory.start("GermplasmSearchBarComponent.doSearch()");
+				final String searchType = (String) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
+				final String searchKeyword = GermplasmSearchBarComponent.this.getSearchKeyword(q, searchType);
+				final Operation operation =
+						GermplasmSearchBarComponent.this.exactMatches.equals(searchType) ? Operation.EQUAL : Operation.LIKE;
 
 				try {
-					boolean includeParents = (boolean) GermplasmSearchBarComponent.this.includeParentsCheckBox.getValue();
-					boolean withInventoryOnly = (boolean) GermplasmSearchBarComponent.this.withInventoryOnlyCheckBox.getValue();
-					boolean includeMGMembers = (boolean)  GermplasmSearchBarComponent.this.includeMGMembersCheckbox.getValue();
+					final boolean includeParents = (boolean) GermplasmSearchBarComponent.this.includeParentsCheckBox.getValue();
+					final boolean withInventoryOnly = (boolean) GermplasmSearchBarComponent.this.withInventoryOnlyCheckBox.getValue();
+					final boolean includeMGMembers = (boolean) GermplasmSearchBarComponent.this.includeMGMembersCheckbox.getValue();
 					GermplasmSearchBarComponent.this.searchResultsComponent
-					.applyGermplasmResults(GermplasmSearchBarComponent.this.breedingManagerService.doGermplasmSearch(searchKeyword,
-							operation, includeParents, withInventoryOnly, includeMGMembers));
-				} catch (BreedingManagerSearchException e) {
+							.applyGermplasmResults(GermplasmSearchBarComponent.this.breedingManagerService.doGermplasmSearch(searchKeyword,
+									operation, includeParents, withInventoryOnly, includeMGMembers));
+				} catch (final BreedingManagerSearchException e) {
 					if (Message.SEARCH_QUERY_CANNOT_BE_EMPTY.equals(e.getErrorMessage())) {
 						// invalid search string
 						MessageNotifier.showWarning(GermplasmSearchBarComponent.this.getWindow(),
@@ -276,7 +277,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		});
 	}
 
-	private String getSearchKeyword(String query, String searchType) {
+	private String getSearchKeyword(final String query, final String searchType) {
 		String searchKeyword = query;
 		if (this.matchesStartingWith.equals(searchType)) {
 			searchKeyword = searchKeyword + GermplasmSearchBarComponent.PERCENT;
@@ -290,15 +291,15 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		return this.messageSource;
 	}
 
-	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 
-	public void setBreedingManagerService(BreedingManagerService breedingManagerService) {
+	public void setBreedingManagerService(final BreedingManagerService breedingManagerService) {
 		this.breedingManagerService = breedingManagerService;
 	}
 
-	protected void setTransactionManager(PlatformTransactionManager transactionManager) {
+	protected void setTransactionManager(final PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
 }
