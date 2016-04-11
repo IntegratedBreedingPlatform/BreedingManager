@@ -29,6 +29,8 @@ import com.vaadin.ui.Table;
 
 public class DropHandlerMethodsTest {
 
+	private static final int GROUP_ID = 1;
+
 	@Mock
 	private GermplasmDataManager germplasmDataManager;
 
@@ -49,7 +51,6 @@ public class DropHandlerMethodsTest {
 	@Before
 	public void beforeEachTest() {
 		MockitoAnnotations.initMocks(this);
-
 	}
 
 	@Test
@@ -80,6 +81,8 @@ public class DropHandlerMethodsTest {
 		listData.setSeedSource("IND-Winter-Maize Study-1");
 		listData.setGroupName("IND-M-1230-Parents");
 		listData.setStatus(1);
+		// MGID or group ID of Germplasm List Data has default value to 0, so this field will never be null
+		listData.setMgid(GROUP_ID);
 		final ListDataInventory inventoryInfo = new ListDataInventory(1, 1);
 		inventoryInfo.setLotCount(10);
 		inventoryInfo.setActualInventoryLotCount(100);
