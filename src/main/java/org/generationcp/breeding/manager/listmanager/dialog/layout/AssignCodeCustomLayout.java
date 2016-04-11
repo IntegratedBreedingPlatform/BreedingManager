@@ -97,8 +97,8 @@ public class AssignCodeCustomLayout {
 	}
 
 	public void initializeValues() {
-		final List<String> programIdentifiers = this.germplasmNamingReferenceDataResolver.getProgramIdentifiers(1, this.contextUtil.getCurrentProgramUUID
-				());
+		final List<String> programIdentifiers = this.germplasmNamingReferenceDataResolver.getCategoryValues("Project_Prefix",
+				this.contextUtil.getCurrentProgramUUID());
 		for (final String programIdentifier : programIdentifiers) {
 			this.programIdentifiersComboBox.addItem(programIdentifier);
 		}
@@ -134,8 +134,9 @@ public class AssignCodeCustomLayout {
 		this.updateExampleValue();
 
 		// setting up the possible values for location identifiers for level2
-		final List<String> locationIdentifiers = this.germplasmNamingReferenceDataResolver
-				.getProgramIdentifiers(2, this.contextUtil.getCurrentProgramUUID());
+		final List<String> locationIdentifiers =
+				this.germplasmNamingReferenceDataResolver.getCategoryValues("CIMMYT_Target_Region",
+						this.contextUtil.getCurrentProgramUUID());
 		for (final String locationIdentifier : locationIdentifiers) {
 			this.locationIdentifierCombobox.addItem(locationIdentifier);
 		}
