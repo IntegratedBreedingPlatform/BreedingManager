@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
+import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
-import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -28,6 +28,10 @@ import com.vaadin.data.Property;
 import com.vaadin.ui.Table;
 
 public class DropHandlerMethodsTest {
+
+	private static final int NO_OF_ENTRIES = 5;
+
+	private static final int GERMPLASM_LIST_ID = 1;
 
 	private static final int GROUP_ID = 1;
 
@@ -70,27 +74,17 @@ public class DropHandlerMethodsTest {
 		final Property mockProperty = Mockito.mock(Property.class);
 		Mockito.when(mockTableItem.getItemProperty(Matchers.anyString())).thenReturn(mockProperty);
 
-		final GermplasmList testList = new GermplasmList();
-		testList.setId(1);
+		final GermplasmList testList =
+				GermplasmListTestDataInitializer.createGermplasmListWithListDataAndInventoryInfo(GERMPLASM_LIST_ID, NO_OF_ENTRIES);
 
-		final GermplasmListData listData = new GermplasmListData();
-		listData.setId(1);
-		listData.setGid(1);
-		listData.setDesignation("IND-M-123");
-		listData.setEntryCode("Entry1");
-		listData.setSeedSource("IND-Winter-Maize Study-1");
-		listData.setGroupName("IND-M-1230-Parents");
-		listData.setStatus(1);
+		// retrieve the first list entry from list data with inventory information
+		final GermplasmListData listData = testList.getListData().get(0);
 		// MGID or group ID of Germplasm List Data has default value to 0, so this field will never be null
 		listData.setMgid(GROUP_ID);
-		final ListDataInventory inventoryInfo = new ListDataInventory(1, 1);
-		inventoryInfo.setLotCount(10);
-		inventoryInfo.setActualInventoryLotCount(100);
-		listData.setInventoryInfo(inventoryInfo);
-		testList.setListData(Lists.newArrayList(listData));
 
-		this.dropHandlerMethods.addGermplasmFromList(1, 1, testList, false);
+		this.dropHandlerMethods.addGermplasmFromList(GERMPLASM_LIST_ID, listData.getId(), testList, false);
 
+		// verify if the list data fields are properly retrieved
 		Mockito.verify(mockProperty).setValue(listData.getEntryCode());
 		Mockito.verify(mockProperty).setValue(listData.getSeedSource());
 		Mockito.verify(mockProperty).setValue(listData.getGroupName());
