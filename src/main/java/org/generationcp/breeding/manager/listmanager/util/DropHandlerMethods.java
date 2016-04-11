@@ -188,7 +188,8 @@ public class DropHandlerMethods {
 
 			});
 
-			newItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(germplasm.getMgid());
+			final String groupIdDisplayValue = germplasm.getMgid() == 0 ? "-" : germplasm.getMgid().toString();
+			newItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(groupIdDisplayValue);
 
 			// Inventory Related Columns
 
@@ -351,7 +352,9 @@ public class DropHandlerMethods {
 				newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(germplasmListData.getSeedSource());
 				newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
 				newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(germplasmListData.getGroupName());
-				newItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(germplasmListData.getGroupId());
+
+				final String groupIdDisplayValue = germplasmListData.getMgid() == 0 ? "-" : germplasmListData.getMgid().toString();
+				newItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(groupIdDisplayValue);
 
 				// Inventory Related Columns
 
