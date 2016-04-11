@@ -27,7 +27,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
@@ -38,7 +37,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 
 @Configurable
 public class GermplasmSearchBarComponent extends CssLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
@@ -160,38 +158,38 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		this.setMargin(true);
 		this.addStyleName("lm-search-bar");
 		this.setWidth("100%");
-		final VerticalLayout verticalLayout = new VerticalLayout();
-		verticalLayout.addComponent(this.getFirstRow());
-		verticalLayout.addComponent(this.getSecondRow());
-		this.addComponent(verticalLayout);
+
+		final CssLayout mainLayout = new CssLayout();
+		mainLayout.addComponent(this.getFirstRow());
+		mainLayout.addComponent(this.getSecondRow());
+
+		this.addComponent(mainLayout);
 		this.focusOnSearchField();
 	}
 
 	private Component getFirstRow() {
-		this.searchBarLayoutLeft = new HorizontalLayout();
-		this.searchBarLayoutLeft.setSpacing(true);
-		this.searchBarLayoutRight = new CssLayout();
-
 		// To allow for all of the elements to fit in the default width of the search bar. There may be a better way..
 		this.searchField.setWidth("120px");
 
+		this.searchBarLayoutLeft = new HorizontalLayout();
+		this.searchBarLayoutLeft.setSpacing(true);
 		this.searchBarLayoutLeft.addComponent(this.searchField);
 		this.searchBarLayoutLeft.addComponent(this.searchButton);
 		this.searchBarLayoutLeft.addComponent(this.popup);
 
+		this.searchBarLayoutRight = new CssLayout();
+		this.searchBarLayoutRight.addComponent(this.withInventoryOnlyCheckBox);
+		this.searchBarLayoutRight.addComponent(this.includeParentsCheckBox);
+		this.searchBarLayoutRight.addComponent(this.includeMGMembersCheckbox);
+
+		this.searchBarLayoutLeft.addStyleName(GermplasmSearchBarComponent.LM_COMPONENT_WRAP);
 		this.withInventoryOnlyCheckBox.addStyleName(GermplasmSearchBarComponent.LM_COMPONENT_WRAP);
 		this.includeParentsCheckBox.addStyleName(GermplasmSearchBarComponent.LM_COMPONENT_WRAP);
 		this.includeMGMembersCheckbox.addStyleName(GermplasmSearchBarComponent.LM_COMPONENT_WRAP);
 
-		this.searchBarLayoutRight.addComponent(this.withInventoryOnlyCheckBox);
-		this.searchBarLayoutRight.addComponent(this.includeParentsCheckBox);
-		this.searchBarLayoutRight.addComponent(this.includeMGMembersCheckbox);
-		this.searchBarLayoutLeft.setComponentAlignment(this.popup, Alignment.MIDDLE_CENTER);
-
 		final CssLayout firstRow = new CssLayout();
 		firstRow.addComponent(this.searchBarLayoutLeft);
 		firstRow.addComponent(this.searchBarLayoutRight);
-		firstRow.setHeight("34px");
 		return firstRow;
 	}
 
