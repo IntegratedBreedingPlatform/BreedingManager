@@ -873,8 +873,8 @@ div.unsaved-changes-dialog div.v-window-contents>div {
 
 .lst-example-text {
 	font-weight: bold;
-    font-size: x-large;
-    padding-top: 32px;
+    font-size: large;
+    padding-top: 0px;
 }
 
 .lst-margin-left {

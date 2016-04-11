@@ -66,13 +66,14 @@ public class AssignCodesDialog extends BaseSubWindow
 
 	private HorizontalLayout codeControlsLayoutDefault;
 
-	private HorizontalLayout codesLayout;
+	private VerticalLayout codesLayout;
 	private OptionGroup codingLevelOptions;
 	private Label exampleText;
 	private Button cancelButton;
 	private Button continueButton;
 	private Set<Integer> gidsToProcess = new HashSet<>();
 	private final boolean isCustomLayout;
+	private VerticalLayout exampleLayout;
 
 	// will be used for unit tests
 	AssignCodesDialog(final boolean isCustomLayout) {
@@ -99,7 +100,8 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.cancelButton = new Button();
 		this.continueButton = new Button();
 		this.continueButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-		this.codesLayout = new HorizontalLayout();
+		this.codesLayout = new VerticalLayout();
+		this.exampleLayout = new VerticalLayout();
 
 		// set immediate to true for those fields we will listen to for the changes on the screen
 		this.codingLevelOptions.setImmediate(true);
@@ -107,7 +109,8 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.assignCodesDefaultLayout.instantiateComponents();
 		if (this.isCustomLayout) {
 			this.assignCodesCustomLayout = new AssignCodeCustomLayout(this.germplasmNamingReferenceDataResolver, this.contextUtil,
-					this.messageSource,	this.assignCodesDefaultLayout, this.codingLevelOptions, this.codesLayout, this.exampleText);
+					this.messageSource,	this.assignCodesDefaultLayout, this.codingLevelOptions, this.codesLayout, this.exampleText, this
+					.exampleLayout);
 			this.assignCodesCustomLayout.instantiateComponents();
 		}
 	}
@@ -185,7 +188,7 @@ public class AssignCodesDialog extends BaseSubWindow
 					final UserDefinedField nameType =
 							AssignCodesDialog.this.germplasmNamingReferenceDataResolver.resolveNameType(AssignCodesDialog.this.getLevel());
 
-					// TODO performace tuning when processing large number of list entries..
+					// TODO performance tuning when processing large number of list entries..
 					for (final Integer gid : AssignCodesDialog.this.gidsToProcess) {
 						// TODO pass user and location. Hardcoded to 0 = unknown for now.
 						final String groupNamePrefix;
@@ -234,10 +237,10 @@ public class AssignCodesDialog extends BaseSubWindow
 		// bordered area
 		this.codesLayout.setWidth("97%");
 		this.codesLayout.setHeight("160px");
-		this.codesLayout.setSpacing(true);
-		this.codesLayout.setStyleName("lst-border");
+		this.codesLayout.addStyleName("lst-border");
 
 		this.center();
+
 		final VerticalLayout dialogLayout = new VerticalLayout();
 		dialogLayout.setMargin(true);
 		dialogLayout.setSpacing(true);
@@ -263,33 +266,28 @@ public class AssignCodesDialog extends BaseSubWindow
 		optionsLayout.setComponentAlignment(this.codingLevelOptions, Alignment.MIDDLE_LEFT);
 
 		//example area
-		final VerticalLayout exampleLayout = new VerticalLayout();
-		exampleLayout.setWidth("100%");
-		exampleLayout.setHeight("120px");
-		exampleLayout.setSpacing(false);
-		exampleLayout.setStyleName("lst-example-layout");
+		this.exampleLayout.setWidth("100%");
+		this.exampleLayout.setHeight("40px");
+		this.exampleLayout.setSpacing(false);
+		this.exampleLayout.setStyleName("lst-example-layout");
 		final Label exampleLabel = new Label(this.messageSource.getMessage(Message.ASSIGN_CODES_EXAMPLE));
 		exampleLabel.setStyleName("lst-margin-left");
 		exampleLabel.setSizeUndefined();
-		exampleLayout.addComponent(exampleLabel);
+		this.exampleLayout.addComponent(exampleLabel);
 		this.exampleText.setStyleName("lst-example-text lst-margin-left");
-		exampleLayout.addComponent(this.exampleText);
-		//TODO Remove that temporary solution for the layout of the components with custom proper layout
-		final Label emptyLabel = new Label("");
-		exampleLayout.addComponent(emptyLabel);
+		this.exampleLayout.addComponent(this.exampleText);
 
-		exampleLayout.setComponentAlignment(exampleLabel, Alignment.BOTTOM_LEFT);
-		exampleLayout.setComponentAlignment(this.exampleText, Alignment.TOP_LEFT);
-
-		this.codesLayout.addComponent(exampleLayout);
-		this.codesLayout.setComponentAlignment(exampleLayout, Alignment.TOP_LEFT);
-		this.codesLayout.setExpandRatio(exampleLayout, 1);
+		this.exampleLayout.setComponentAlignment(exampleLabel, Alignment.TOP_LEFT);
+		this.exampleLayout.setComponentAlignment(this.exampleText, Alignment.TOP_LEFT);
 
 		if (this.isCustomLayout) {
 			this.assignCodesCustomLayout.layoutComponents();
 		} else {
 			this.assignCodesDefaultLayout.layoutComponents();
 		}
+
+		this.codesLayout.addComponent(this.exampleLayout);
+		this.codesLayout.setComponentAlignment(this.exampleLayout, Alignment.TOP_LEFT);
 
 		dialogLayout.addComponent(optionsLayout);
 		dialogLayout.addComponent(this.codesLayout);

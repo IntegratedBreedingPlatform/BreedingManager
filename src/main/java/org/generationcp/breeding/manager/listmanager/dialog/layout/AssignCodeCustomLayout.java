@@ -23,6 +23,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
 
 public class AssignCodeCustomLayout {
 	public static final String SEQUENCE_PLACEHOLDER = "[SEQ]";
@@ -46,14 +47,15 @@ public class AssignCodeCustomLayout {
 	private final SimpleResourceBundleMessageSource messageSource;
 	private final AssignCodesDefaultLayout assignCodesDefaultLayout;
 	private final OptionGroup codingLevelOptions;
-	private final HorizontalLayout codesLayout;
+	private final VerticalLayout codesLayout;
 	private final Label exampleText;
+	private final VerticalLayout exampleLayout;
 
 	public AssignCodeCustomLayout(final GermplasmNamingReferenceDataResolver germplasmNamingReferenceDataResolver,
 			final ContextUtil contextUtil,
 			final SimpleResourceBundleMessageSource messageSource,
 			final AssignCodesDefaultLayout assignCodesDefaultLayout, final OptionGroup codingLevelOptions,
-			final HorizontalLayout codesLayout, final Label exampleText) {
+			final VerticalLayout codesLayout, final Label exampleText, final VerticalLayout exampleLayout) {
 		this.germplasmNamingReferenceDataResolver = germplasmNamingReferenceDataResolver;
 		this.messageSource = messageSource;
 		this.contextUtil = contextUtil;
@@ -61,6 +63,7 @@ public class AssignCodeCustomLayout {
 		this.codingLevelOptions = codingLevelOptions;
 		this.codesLayout = codesLayout;
 		this.exampleText = exampleText;
+		this.exampleLayout = exampleLayout;
 	}
 
 	public void instantiateComponents() {
@@ -78,6 +81,14 @@ public class AssignCodeCustomLayout {
 		this.yearSuffixLevel1.setImmediate(true);
 		this.yearSuffixLevel2.setImmediate(true);
 		this.locationIdentifierCombobox.setImmediate(true);
+
+		//TODO Localise labels
+		this.programIdentifiersComboBox.setCaption("Program identifier");
+		this.germplasmTypeComboBoxLevel1.setCaption("Germplasm type");
+		this.germplasmTypeComboBoxLevel2.setCaption("Germplasm type");
+		this.yearSuffixLevel1.setCaption("Year");
+		this.yearSuffixLevel2.setCaption("Year");
+		this.locationIdentifierCombobox.setCaption("Location identifier");
 
 		// add validators
 		this.yearSuffixLevel1.addValidator(new StringLengthValidator(this.messageSource.getMessage(Message.ERROR_YEAR_TOO_LONG), 0, 4,
@@ -143,8 +154,8 @@ public class AssignCodeCustomLayout {
 				AssignCodeCustomLayout.this.updateExampleValue();
 			}
 		};
-		final AssignCodesLevelOptionsCustomListener assignCodesLevelOptionsCustomListener = new AssignCodesLevelOptionsCustomListener(this
-					.codingLevelOptions, this.codesLayout, this);
+		final AssignCodesLevelOptionsCustomListener assignCodesLevelOptionsCustomListener = new AssignCodesLevelOptionsCustomListener(
+				this.codingLevelOptions, this.codesLayout, this, this.exampleLayout);
 		codingLevelOptions.addListener(assignCodesLevelOptionsCustomListener);
 
 		this.programIdentifiersComboBox.addListener(codeOptionsListener);
@@ -212,68 +223,61 @@ public class AssignCodeCustomLayout {
 		//codes controls area
 		//Level 1
 		this.codeControlsLayoutLevel1 = new HorizontalLayout();
-		this.codeControlsLayoutLevel1.setWidth("100%");
+		this.codeControlsLayoutLevel1.setWidth("85%");
 		this.codeControlsLayoutLevel1.setHeight("60px");
+		this.codeControlsLayoutLevel1.setSpacing(false);
+		this.codeControlsLayoutLevel1.setMargin(false);
+		this.codeControlsLayoutLevel1.addStyleName("lst-margin-left");
 
-		this.programIdentifiersComboBox.setWidth(5, Sizeable.UNITS_EM);
-		this.programIdentifiersComboBox.setStyleName("lst-option-control");
+		this.programIdentifiersComboBox.setWidth(8, Sizeable.UNITS_EM);
+		this.programIdentifiersComboBox.addStyleName("lst-option-control");
 		this.codeControlsLayoutLevel1.addComponent(this.programIdentifiersComboBox);
 		this.codeControlsLayoutLevel1.setComponentAlignment(this.programIdentifiersComboBox, Alignment.MIDDLE_LEFT);
 
-		this.germplasmTypeComboBoxLevel1.setWidth(5, Sizeable.UNITS_EM);
+		this.germplasmTypeComboBoxLevel1.setWidth(8, Sizeable.UNITS_EM);
 		this.codeControlsLayoutLevel1.addComponent(this.germplasmTypeComboBoxLevel1);
 		this.codeControlsLayoutLevel1.setComponentAlignment(this.germplasmTypeComboBoxLevel1, Alignment.MIDDLE_LEFT);
 
-		this.yearSuffixLevel1.setWidth(5, Sizeable.UNITS_EM);
+		this.yearSuffixLevel1.setWidth(8, Sizeable.UNITS_EM);
 		this.codeControlsLayoutLevel1.addComponent(this.yearSuffixLevel1);
 		this.codeControlsLayoutLevel1.setComponentAlignment(this.yearSuffixLevel1, Alignment.MIDDLE_LEFT);
 
 		final Label sequenceLabel1 = new Label(SEQUENCE_LABEL);
-		sequenceLabel1.setStyleName(LST_SEQUENCE_LABEL_CLASS);
+		sequenceLabel1.addStyleName(LST_SEQUENCE_LABEL_CLASS);
 		this.codeControlsLayoutLevel1.addComponent(sequenceLabel1);
 		this.codeControlsLayoutLevel1.setComponentAlignment(sequenceLabel1, Alignment.MIDDLE_LEFT);
 
 		//Level 2
 		this.codeControlsLayoutLevel2 = new HorizontalLayout();
-		this.codeControlsLayoutLevel2.setWidth("100%");
+		this.codeControlsLayoutLevel2.setWidth("85%");
 		this.codeControlsLayoutLevel2.setHeight("60px");
+		this.codeControlsLayoutLevel2.setSpacing(false);
+		this.codeControlsLayoutLevel2.setMargin(false);
+		this.codeControlsLayoutLevel2.addStyleName("lst-margin-left");
 
-		this.locationIdentifierCombobox.setWidth(5, Sizeable.UNITS_EM);
-		this.locationIdentifierCombobox.setStyleName("lst-option-control");
+		this.locationIdentifierCombobox.setWidth(8, Sizeable.UNITS_EM);
+		this.locationIdentifierCombobox.addStyleName("lst-option-control");
 		this.codeControlsLayoutLevel2.addComponent(this.locationIdentifierCombobox);
 		this.codeControlsLayoutLevel2.setComponentAlignment(this.locationIdentifierCombobox, Alignment.MIDDLE_LEFT);
 
-		this.germplasmTypeComboBoxLevel2.setWidth(5, Sizeable.UNITS_EM);
+		this.germplasmTypeComboBoxLevel2.setWidth(8, Sizeable.UNITS_EM);
 		this.codeControlsLayoutLevel2.addComponent(this.germplasmTypeComboBoxLevel2);
 		this.codeControlsLayoutLevel2.setComponentAlignment(this.germplasmTypeComboBoxLevel2, Alignment.MIDDLE_LEFT);
 
-		this.yearSuffixLevel2.setWidth(5, Sizeable.UNITS_EM);
+		this.yearSuffixLevel2.setWidth(8, Sizeable.UNITS_EM);
 		this.codeControlsLayoutLevel2.addComponent(this.yearSuffixLevel2);
 		this.codeControlsLayoutLevel2.setComponentAlignment(this.yearSuffixLevel2, Alignment.MIDDLE_LEFT);
 
 		final Label sequenceLabel2 = new Label(SEQUENCE_LABEL);
-		sequenceLabel2.setStyleName(LST_SEQUENCE_LABEL_CLASS);
+		sequenceLabel2.addStyleName(LST_SEQUENCE_LABEL_CLASS);
 		this.codeControlsLayoutLevel2.addComponent(sequenceLabel2);
 		this.codeControlsLayoutLevel2.setComponentAlignment(sequenceLabel2, Alignment.MIDDLE_LEFT);
-
-		// by default only level 1 panel is visible
-		this.codeControlsLayoutLevel2.setVisible(false);
 
 		//Level 3 layout is the same as the default layout
 		this.codeControlsLayoutLevel3 = this.assignCodesDefaultLayout.constructDefaultCodeControlsLayout();
 
 		// by default only level 1 panel is visible
-		this.codeControlsLayoutLevel3.setVisible(false);
-
 		this.codesLayout.addComponent(this.codeControlsLayoutLevel1);
-		this.codesLayout.addComponent(this.codeControlsLayoutLevel2);
-		this.codesLayout.addComponent(this.codeControlsLayoutLevel3);
-		this.codesLayout.setComponentAlignment(this.codeControlsLayoutLevel1, Alignment.MIDDLE_LEFT);
-		this.codesLayout.setComponentAlignment(this.codeControlsLayoutLevel2, Alignment.MIDDLE_LEFT);
-		this.codesLayout.setComponentAlignment(this.codeControlsLayoutLevel3, Alignment.MIDDLE_LEFT);
-		this.codesLayout.setExpandRatio(this.codeControlsLayoutLevel1, 2);
-		this.codesLayout.setExpandRatio(this.codeControlsLayoutLevel2, 0);
-		this.codesLayout.setExpandRatio(this.codeControlsLayoutLevel3, 0);
 	}
 
 	public HorizontalLayout getCodeControlsLayoutLevel1() {

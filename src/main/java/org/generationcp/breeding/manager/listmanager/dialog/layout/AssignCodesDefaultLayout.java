@@ -12,6 +12,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
 
 public class AssignCodesDefaultLayout {
 	public static final String SEQUENCE_LABEL = "SEQ";
@@ -21,10 +22,10 @@ public class AssignCodesDefaultLayout {
 
 	// the value we are getting from the common layout
 	private final Label exampleText;
-	private final HorizontalLayout codesLayout;
+	private final VerticalLayout codesLayout;
 	private final SimpleResourceBundleMessageSource messageSource;
 
-	public AssignCodesDefaultLayout(final Label exampleText, final HorizontalLayout codesLayout, final SimpleResourceBundleMessageSource messageSource) {
+	public AssignCodesDefaultLayout(final Label exampleText, final VerticalLayout codesLayout, final SimpleResourceBundleMessageSource messageSource) {
 		this.exampleText = exampleText;
 		this.codesLayout = codesLayout;
 		this.messageSource = messageSource;
@@ -33,7 +34,10 @@ public class AssignCodesDefaultLayout {
 	public void instantiateComponents() {
 		this.prefixDefault = new TextField();
 		this.prefixDefault.setImmediate(true);
-		this.prefixDefault.addValidator(new StringLengthValidator(this.messageSource.getMessage(Message.ERROR_PREFIX_TOO_LONG), 0, 50, false));
+		this.prefixDefault.addValidator(
+				new StringLengthValidator(this.messageSource.getMessage(Message.ERROR_PREFIX_TOO_LONG), 0, 50, false));
+		//TODO Localise label
+		this.prefixDefault.setCaption("Prefix");
 
 		//update example text after setting defaults
 		this.updateExampleValue();
@@ -41,8 +45,10 @@ public class AssignCodesDefaultLayout {
 
 	public HorizontalLayout constructDefaultCodeControlsLayout() {
 		final HorizontalLayout codeControlsLayout = new HorizontalLayout();
-		codeControlsLayout.setWidth("100%");
+		codeControlsLayout.setWidth("40%");
 		codeControlsLayout.setHeight("60px");
+		codeControlsLayout.setSpacing(false);
+		codeControlsLayout.setMargin(false);
 
 		this.prefixDefault.setWidth(10, Sizeable.UNITS_EM);
 		codeControlsLayout.addComponent(this.prefixDefault);
@@ -52,6 +58,7 @@ public class AssignCodesDefaultLayout {
 		sequenceLabel3.setStyleName(LST_SEQUENCE_LABEL_CLASS);
 		codeControlsLayout.addComponent(sequenceLabel3);
 		codeControlsLayout.setComponentAlignment(sequenceLabel3, Alignment.MIDDLE_LEFT);
+		codeControlsLayout.addStyleName("lst-margin-left");
 		return codeControlsLayout;
 	}
 
@@ -81,7 +88,6 @@ public class AssignCodesDefaultLayout {
 		final HorizontalLayout codeControlsLayoutDefault = this.constructDefaultCodeControlsLayout();
 		this.codesLayout.addComponent(codeControlsLayoutDefault);
 		this.codesLayout.setComponentAlignment(codeControlsLayoutDefault, Alignment.MIDDLE_LEFT);
-		this.codesLayout.setExpandRatio(codeControlsLayoutDefault, 2);
 	}
 
 	public void validate() throws Validator.InvalidValueException {
