@@ -260,22 +260,11 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	private BreedingManagerApplication breedingManagerApplication;
 
-	private String currentCropName;
-	private String pedigreeProfile;
-
 	@Resource
 	private CrossExpansionProperties crossExpansionProperties;
 
 	public ListComponent() {
 		super();
-		final ManagerFactory managerFactory = ManagerFactory.getCurrentManagerFactoryThreadLocal().get();
-		if (managerFactory != null) {
-			this.currentCropName = managerFactory.getCropName();
-			this.pedigreeProfile = managerFactory.getPedigreeProfile();
-		} else {
-			throw new IllegalStateException("Must have access to the Manager Factory thread local variable. "
-					+ "Please contact support for further help.");
-		}
 	}
 
 	public ListComponent(final ListManagerMain source, final ListTabComponent parentListDetailsComponent, final GermplasmList germplasmList) {
@@ -1365,7 +1354,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 					gidsToProcess.add(Integer.valueOf(gidCell.getCaption()));
 				}
 			}
-			final boolean isCustomLayout = CrossingUtil.isCimmytMaize(this.pedigreeProfile, this.currentCropName);
+			final boolean isCustomLayout = CrossingUtil.isCimmytMaize(crossExpansionProperties.getProfile(), contextUtil.getProjectInContext().getCropType().getCropName());
 			this.getWindow().addWindow(new AssignCodesDialog(gidsToProcess, isCustomLayout));
 		} else {
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ASSIGN_CODES),
