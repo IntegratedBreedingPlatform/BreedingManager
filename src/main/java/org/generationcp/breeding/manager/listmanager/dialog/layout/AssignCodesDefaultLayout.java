@@ -36,8 +36,7 @@ public class AssignCodesDefaultLayout {
 		this.prefixDefault.setImmediate(true);
 		this.prefixDefault.addValidator(
 				new StringLengthValidator(this.messageSource.getMessage(Message.ERROR_PREFIX_TOO_LONG), 0, 50, false));
-		//TODO Localise label
-		this.prefixDefault.setCaption("Prefix");
+		this.prefixDefault.setCaption(this.messageSource.getMessage(Message.PREFIX_LABEL));
 
 		//update example text after setting defaults
 		this.updateExampleValue();

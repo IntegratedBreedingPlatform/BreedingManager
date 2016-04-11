@@ -82,13 +82,12 @@ public class AssignCodeCustomLayout {
 		this.yearSuffixLevel2.setImmediate(true);
 		this.locationIdentifierCombobox.setImmediate(true);
 
-		//TODO Localise labels
-		this.programIdentifiersComboBox.setCaption("Program identifier");
-		this.germplasmTypeComboBoxLevel1.setCaption("Germplasm type");
-		this.germplasmTypeComboBoxLevel2.setCaption("Germplasm type");
-		this.yearSuffixLevel1.setCaption("Year");
-		this.yearSuffixLevel2.setCaption("Year");
-		this.locationIdentifierCombobox.setCaption("Location identifier");
+		this.programIdentifiersComboBox.setCaption(this.messageSource.getMessage(Message.PROGRAM_IDENTIFIER_LABEL));
+		this.germplasmTypeComboBoxLevel1.setCaption(this.messageSource.getMessage(Message.GERMPLASM_TYPE_LABEL));
+		this.germplasmTypeComboBoxLevel2.setCaption(this.messageSource.getMessage(Message.GERMPLASM_TYPE_LABEL));
+		this.yearSuffixLevel1.setCaption(this.messageSource.getMessage(Message.YEAR_LABEL));
+		this.yearSuffixLevel2.setCaption(this.messageSource.getMessage(Message.YEAR_LABEL));
+		this.locationIdentifierCombobox.setCaption(this.messageSource.getMessage(Message.LOCATION_IDENTIFIER_LABEL));
 
 		// add validators
 		this.yearSuffixLevel1.addValidator(new StringLengthValidator(this.messageSource.getMessage(Message.ERROR_YEAR_TOO_LONG), 0, 4,
