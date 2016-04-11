@@ -39,6 +39,7 @@ import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource;
 import org.generationcp.breeding.manager.listmanager.dialog.GermplasmGroupingComponent;
 import org.generationcp.breeding.manager.listmanager.dialog.ListManagerCopyToNewListDialog;
+import org.generationcp.breeding.manager.listmanager.listcomponent.ListViewActionMenu;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
@@ -147,18 +148,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private HorizontalLayout headerLayout;
 	private HorizontalLayout subHeaderLayout;
 
-	// Menu for tools button
-	private ContextMenu menu;
-	private ContextMenuItem menuExportList;
-	private ContextMenuItem menuCopyToList;
-	private ContextMenuItem menuAddEntry;
-	private ContextMenuItem menuSaveChanges;
-	private ContextMenuItem menuDeleteEntries;
-	private ContextMenuItem menuMarkLinesAsFixed;
-	private ContextMenuItem menuEditList;
-	private ContextMenuItem menuDeleteList;
-	@SuppressWarnings("unused")
-	private ContextMenuItem menuInventoryView;
+	// Menu for Actions button in List View
+	private ListViewActionMenu menu;
+
 	private AddColumnContextMenu addColumnContextMenu;
 
 	private ContextMenu inventoryViewMenu;
@@ -350,25 +342,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						ListComponent.LOCK_TOOLTIP);
 		this.lockButton.setData(ListComponent.LOCK_BUTTON_ID);
 
-		this.menu = new ContextMenu();
-		this.menu.setWidth(ListComponent.CONTEXT_MENU_WIDTH);
+		this.menu = new ListViewActionMenu();
 
 		// Add Column menu will be initialized after list data table is created
 		this.initializeListDataTable(new TableWithSelectAllLayout(Long.valueOf(this.listEntriesCount).intValue(), this.getNoOfEntries(),
 				ColumnLabels.TAG.getName())); // listDataTable
 		this.initializeListInventoryTable(); // listInventoryTable
-
-		// Generate main level items
-		this.menuAddEntry = this.menu.addItem(this.messageSource.getMessage(Message.ADD_ENTRIES));
-		this.menuCopyToList = this.menu.addItem(this.messageSource.getMessage(Message.COPY_TO_NEW_LIST));
-		this.menuDeleteList = this.menu.addItem(this.messageSource.getMessage(Message.DELETE_LIST));
-		this.menuDeleteEntries = this.menu.addItem(this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
-		this.menuMarkLinesAsFixed = this.menu.addItem(this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED));
-		this.menuEditList = this.menu.addItem(this.messageSource.getMessage(Message.EDIT_LIST));
-		this.menuExportList = this.menu.addItem(this.messageSource.getMessage(Message.EXPORT_LIST));
-		this.menuInventoryView = this.menu.addItem(this.messageSource.getMessage(Message.INVENTORY_VIEW));
-		this.menuSaveChanges = this.menu.addItem(this.messageSource.getMessage(Message.SAVE_CHANGES));
-		this.menu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
 
 		this.inventoryViewMenu = new ContextMenu();
 		this.inventoryViewMenu.setWidth(ListComponent.CONTEXT_MENU_WIDTH);
@@ -971,7 +950,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						ListComponent.this.listDataTable.setValue(ListComponent.this.listDataTable.getItemIds());
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.EXPORT_LIST))) {
 						ListComponent.this.exportListAction();
-
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
 						ListComponent.this.copyToNewListAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.ADD_ENTRIES))) {
@@ -1003,36 +981,22 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			ListComponent.this.addColumnContextMenu.refreshAddColumnMenu();
 			ListComponent.this.menu.show(event.getClientX(), event.getClientY());
 
-			if (ListComponent.this.fromUrl) {
-				ListComponent.this.menuExportList.setVisible(false);
-				ListComponent.this.menuCopyToList.setVisible(false);
-			}
-
-			if (ListComponent.this.source != null) {
-				ListComponent.this.menuCopyToList.setVisible(!ListComponent.this.source.listBuilderIsLocked());
-			}
+			// update list view action menu based on the following criteria:
+			// 1. If it is loaded directly from the url
+			// 2. If the list in Build New List section is locked or not
+			// 3. If the list manager main source is existing (I think 'source' will be null only for test purposes)
+			ListComponent.this.menu.updateListViewActionMenu(ListComponent.this.fromUrl, !ListComponent.this.source.listBuilderIsLocked(),
+					ListComponent.this.source != null);
 
 			// when the Germplasm List is not locked, and when not accessed
 			// directly from URL or popup window
 			if (!ListComponent.this.germplasmList.isLockedList() && !ListComponent.this.fromUrl) {
-				ListComponent.this.menuEditList.setVisible(true);
-				// show only Delete List when user is owner
-				ListComponent.this.menuDeleteList.setVisible(ListComponent.this.localUserIsListOwner());
-				ListComponent.this.menuDeleteEntries.setVisible(true);
-				ListComponent.this.menuMarkLinesAsFixed.setVisible(true);
-				ListComponent.this.menuSaveChanges.setVisible(true);
-				ListComponent.this.menuAddEntry.setVisible(true);
+				ListComponent.this.menu.setActionMenuWhenListIsLocked(ListComponent.this.localUserIsListOwner());
 				ListComponent.this.addColumnContextMenu.showHideAddColumnMenu(true);
 			} else {
-				ListComponent.this.menuEditList.setVisible(false);
-				ListComponent.this.menuDeleteList.setVisible(false);
-				ListComponent.this.menuDeleteEntries.setVisible(false);
-				ListComponent.this.menuMarkLinesAsFixed.setVisible(false);
-				ListComponent.this.menuSaveChanges.setVisible(false);
-				ListComponent.this.menuAddEntry.setVisible(false);
+				ListComponent.this.menu.setActionMenuWhenListIsUnlocked();
 				ListComponent.this.addColumnContextMenu.showHideAddColumnMenu(false);
 			}
-
 		}
 	}
 
