@@ -39,6 +39,7 @@ import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource;
 import org.generationcp.breeding.manager.listmanager.dialog.GermplasmGroupingComponent;
 import org.generationcp.breeding.manager.listmanager.dialog.ListManagerCopyToNewListDialog;
+import org.generationcp.breeding.manager.listmanager.listcomponent.InventoryViewActionMenu;
 import org.generationcp.breeding.manager.listmanager.listcomponent.ListViewActionMenu;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
@@ -151,17 +152,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	// Menu for Actions button in List View
 	private ListViewActionMenu menu;
 
-	private AddColumnContextMenu addColumnContextMenu;
+	// Menu for Actions button in Inventory View
+	private InventoryViewActionMenu inventoryViewMenu;
 
-	private ContextMenu inventoryViewMenu;
-	private ContextMenuItem menuCopyToNewListFromInventory;
-	private ContextMenuItem menuInventorySaveChanges;
-	@SuppressWarnings("unused")
-	private ContextMenuItem menuListView;
-	@SuppressWarnings("unused")
-	private ContextMenuItem menuReserveInventory;
-	@SuppressWarnings("unused")
-	private ContextMenuItem menuCancelReservation;
+	private AddColumnContextMenu addColumnContextMenu;
 
 	// Tooltips
 	public static final String TOOLS_BUTTON_ID = "Actions";
@@ -349,16 +343,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				ColumnLabels.TAG.getName())); // listDataTable
 		this.initializeListInventoryTable(); // listInventoryTable
 
-		this.inventoryViewMenu = new ContextMenu();
-		this.inventoryViewMenu.setWidth(ListComponent.CONTEXT_MENU_WIDTH);
-		this.menuCancelReservation = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.CANCEL_RESERVATIONS));
-		this.menuCopyToNewListFromInventory = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.COPY_TO_NEW_LIST));
-		this.menuReserveInventory = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
-		this.menuListView = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
-		this.menuInventorySaveChanges = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.SAVE_RESERVATIONS));
-		this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
-
-		this.resetInventoryMenuOptions();
+		this.inventoryViewMenu = new InventoryViewActionMenu();
+		this.inventoryViewMenu.resetInventoryMenuOptions();
 
 		this.tableContextMenu = new ContextMenu();
 		this.tableContextMenu.setWidth(ListComponent.CONTEXT_MENU_WIDTH);
@@ -380,15 +366,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			final ListSelectionLayout listSelection = this.source.getListSelectionComponent().getListDetailsLayout();
 			listSelection.addUpdateListStatusForChanges(this, this.hasChanges);
 		}
-	}
-
-	private void resetInventoryMenuOptions() {
-		// disable the save button at first since there are no reservations yet
-		this.menuInventorySaveChanges.setEnabled(false);
-
-		// Temporarily disable to Copy to New List in InventoryView
-		// implement the function
-		this.menuCopyToNewListFromInventory.setEnabled(false);
 	}
 
 	protected void initializeListDataTable(final TableWithSelectAllLayout tableWithSelectAllLayout) {
@@ -2166,11 +2143,11 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		this.removeReserveInventoryWindow(this.reserveInventory);
 
-		// update lot reservatios to save
+		// update lot reservations to save
 		this.updateLotReservationsToSave(validReservations);
 
 		// enable now the Save Changes option
-		this.menuInventorySaveChanges.setEnabled(true);
+		this.inventoryViewMenu.setMenuInventorySaveChanges();
 
 		// if there are no valid reservations
 		if (validReservations.isEmpty()) {
@@ -2238,7 +2215,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	public void resetListInventoryTableValues() {
 		this.listInventoryTable.updateListInventoryTableAfterSave();
 
-		this.resetInventoryMenuOptions();
+		this.inventoryViewMenu.resetInventoryMenuOptions();
 
 		// reset the reservations to save.
 		this.validReservationsToSave.clear();
