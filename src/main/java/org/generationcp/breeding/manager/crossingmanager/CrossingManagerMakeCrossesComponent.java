@@ -196,8 +196,12 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 			@Override
 			public void buttonClick(final Button.ClickEvent event) {
 				// get the cancel button returning to nursery  link as a root url
-				final String urlToSpecificNurseryWithParams = CrossingManagerMakeCrossesComponent.this.nurseryCancelButton.getResource()
+				String urlToSpecificNurseryWithParams = CrossingManagerMakeCrossesComponent.this.nurseryCancelButton.getResource()
 						.getURL() + "?" + BreedingManagerApplication.REQ_PARAM_CROSSES_LIST_ID + "=" + id;
+
+                final BreedingMethodSetting methodSetting = CrossingManagerMakeCrossesComponent.this.getCurrentBreedingMethodSetting();
+                urlToSpecificNurseryWithParams = urlToSpecificNurseryWithParams.concat("&" + BreedingManagerApplication.PARAM_BREEDING_METHOD_ID + "=" + (methodSetting.getMethodId() == null ? 0 : methodSetting.getMethodId()));
+
 				final ExternalResource urlToNursery = new ExternalResource(urlToSpecificNurseryWithParams);
 				CrossingManagerMakeCrossesComponent.this.getWindow().open(urlToNursery, "_self");
 			}
@@ -267,7 +271,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
         this.crossingSettingsMethodComponent.registerBreedingMethodChangeListener(new Property.ValueChangeListener() {
             @Override
-            public void valueChange(Property.ValueChangeEvent event) {
+            public void valueChange(final Property.ValueChangeEvent event) {
                 CrossingManagerMakeCrossesComponent.this.crossesTableComponent.showOrHideGroupInheritanceOptions();
             }
         });
@@ -606,9 +610,9 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
     public BreedingMethodSetting getCurrentBreedingMethodSetting() {
         final Integer methodId = this.crossingSettingsMethodComponent.getSelectedBreedingMethodId();
-        boolean isBasedOnStatusOfParentalLines = this.crossingSettingsMethodComponent.isBasedOnStatusOfParentalLines();
+        final boolean isBasedOnStatusOfParentalLines = this.crossingSettingsMethodComponent.isBasedOnStatusOfParentalLines();
 
-        BreedingMethodSetting breedingMethodSetting = new BreedingMethodSetting(methodId, isBasedOnStatusOfParentalLines);
+        final BreedingMethodSetting breedingMethodSetting = new BreedingMethodSetting(methodId, isBasedOnStatusOfParentalLines);
         return breedingMethodSetting;
     }
 }
