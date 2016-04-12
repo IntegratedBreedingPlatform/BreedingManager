@@ -48,13 +48,16 @@ public class DropHandlerMethodsTest {
 	private ListManagerMain listManagerMain;
 
 	private final GermplasmListNewColumnsInfo germplasmListNewColumnsInfo = new GermplasmListNewColumnsInfo(1);
-
+	
+	private GermplasmListTestDataInitializer germplasmListTestDataInitializer;
+	
 	@InjectMocks
 	private DropHandlerMethods dropHandlerMethods;
 
 	@Before
 	public void beforeEachTest() {
 		MockitoAnnotations.initMocks(this);
+		germplasmListTestDataInitializer = new GermplasmListTestDataInitializer();
 	}
 
 	@Test
@@ -75,7 +78,7 @@ public class DropHandlerMethodsTest {
 		Mockito.when(mockTableItem.getItemProperty(Matchers.anyString())).thenReturn(mockProperty);
 
 		final GermplasmList testList =
-				GermplasmListTestDataInitializer.createGermplasmListWithListDataAndInventoryInfo(GERMPLASM_LIST_ID, NO_OF_ENTRIES);
+				this.germplasmListTestDataInitializer.createGermplasmListWithListDataAndInventoryInfo(GERMPLASM_LIST_ID, NO_OF_ENTRIES);
 
 		// retrieve the first list entry from list data with inventory information
 		final GermplasmListData listData = testList.getListData().get(0);
