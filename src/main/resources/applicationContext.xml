@@ -79,6 +79,16 @@
 		<aop:scoped-proxy />
 	</bean>
 	
+	<bean id="germplasmNamingService" factory-bean="managerFactory"
+		factory-method="getGermplasmNamingService" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+	
+	<bean id="germplasmNamingReferenceDataResolver" factory-bean="managerFactory"
+		factory-method="getGermplasmNamingReferenceDataResolver" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+	
 	<bean id="pedigreeDataManager" factory-bean="managerFactory"
 		factory-method="getPedigreeDataManager" scope="request">
 		<aop:scoped-proxy />
