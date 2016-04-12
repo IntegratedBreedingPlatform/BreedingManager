@@ -39,6 +39,7 @@ import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource;
 import org.generationcp.breeding.manager.listmanager.dialog.GermplasmGroupingComponent;
 import org.generationcp.breeding.manager.listmanager.dialog.ListManagerCopyToNewListDialog;
+import org.generationcp.breeding.manager.listmanager.listcomponent.GermplasmListTableContextMenu;
 import org.generationcp.breeding.manager.listmanager.listcomponent.InventoryViewActionMenu;
 import org.generationcp.breeding.manager.listmanager.listcomponent.ListViewActionMenu;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
@@ -117,8 +118,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	private static final String ERROR_WITH_DELETING_LIST_ENTRIES = "Error with deleting list entries.";
 
-	private static final String CONTEXT_MENU_WIDTH = "295px";
-
 	private static final long serialVersionUID = -3367108805414232721L;
 
 	private static final Logger LOG = LoggerFactory.getLogger(ListComponent.class);
@@ -155,6 +154,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	// Menu for Actions button in Inventory View
 	private InventoryViewActionMenu inventoryViewMenu;
 
+	// Menu shown when the user right-click on the germplasm list table
+	private GermplasmListTableContextMenu tableContextMenu;
+
 	private AddColumnContextMenu addColumnContextMenu;
 
 	// Tooltips
@@ -186,15 +188,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	public static final String UNLOCK_BUTTON_ID = "Unlock Germplasm List";
 
 	private static final String LOCK_TOOLTIP = "Click to lock or unlock this germplasm list.";
-
-	private ContextMenu tableContextMenu;
-
-	@SuppressWarnings("unused")
-	private ContextMenuItem tableContextMenuSelectAll;
-
-	private ContextMenuItem tableContextMenuCopyToNewList;
-	private ContextMenuItem tableContextMenuDeleteEntries;
-	private ContextMenuItem tableContextMenuEditCell;
 
 	// Value change event is fired when table is populated, so we need a flag
 	private Boolean doneInitializing = false;
@@ -346,13 +339,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.inventoryViewMenu = new InventoryViewActionMenu();
 		this.inventoryViewMenu.resetInventoryMenuOptions();
 
-		this.tableContextMenu = new ContextMenu();
-		this.tableContextMenu.setWidth(ListComponent.CONTEXT_MENU_WIDTH);
-		this.tableContextMenuSelectAll = this.tableContextMenu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
-		this.tableContextMenuDeleteEntries = this.tableContextMenu.addItem(this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
-		this.tableContextMenuEditCell = this.tableContextMenu.addItem(this.messageSource.getMessage(Message.EDIT_VALUE));
-		this.tableContextMenuCopyToNewList =
-				this.tableContextMenu.addItem(this.messageSource.getMessage(Message.ADD_SELECTED_ENTRIES_TO_NEW_LIST));
+		this.tableContextMenu = new GermplasmListTableContextMenu();
 
 		// Inventory Related Variables
 		this.validReservationsToSave = new HashMap<>();
@@ -996,28 +983,23 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			// Note: Code change looks like I changed the logic but I've just condensed it by calculating the
 			// boolean conditions and set it to the setVisible methods without going through if else code blocks
 			// this solves the "Reduce the number of conditional operators (5) used in the expression" sonar violation
-			final boolean isNonEditableColumn = ListComponent.this.selectedColumn.equals(ColumnLabels.TAG.getName())
-					|| ListComponent.this.selectedColumn.equals(ColumnLabels.GID.getName())
-					|| ListComponent.this.selectedColumn.equals(ColumnLabels.ENTRY_ID.getName())
-					|| ListComponent.this.selectedColumn.equals(ColumnLabels.GROUP_ID.getName())
-					|| ListComponent.this.selectedColumn.equals(ColumnLabels.DESIGNATION.getName())
-					|| ListComponent.this.isInventoryColumn(ListComponent.this.selectedColumn);
+			final boolean isNonEditableColumn =
+					ListComponent.this.selectedColumn.equals(ColumnLabels.TAG.getName())
+							|| ListComponent.this.selectedColumn.equals(ColumnLabels.GID.getName())
+							|| ListComponent.this.selectedColumn.equals(ColumnLabels.ENTRY_ID.getName())
+							|| ListComponent.this.selectedColumn.equals(ColumnLabels.GROUP_ID.getName())
+							|| ListComponent.this.selectedColumn.equals(ColumnLabels.DESIGNATION.getName())
+							|| ListComponent.this.isInventoryColumn(ListComponent.this.selectedColumn);
 
 			final boolean isLockedList = ListComponent.this.germplasmList.isLockedList();
 			final boolean isListBuilderLocked = ListComponent.this.source.listBuilderIsLocked();
 			final boolean isListComponentSourceAvailable = ListComponent.this.source != null;
 
-			// make the edit cell context menu available when selected column is editable and list is not locked
-			ListComponent.this.tableContextMenuEditCell.setVisible(!isNonEditableColumn && !isLockedList);
-
-			// delete entries context menu will be available when current germplasm list is not locked
-			ListComponent.this.tableContextMenuDeleteEntries.setVisible(!isLockedList);
+			ListComponent.this.tableContextMenu.updateGermplasmListTableContextMenu(isNonEditableColumn, isLockedList, isListBuilderLocked,
+					isListComponentSourceAvailable);
 
 			// set doneInitializing to true if germplasm list is locked, else do not update doneInitializing
 			ListComponent.this.doneInitializing = isLockedList ? true : ListComponent.this.doneInitializing;
-
-			// copy to new list context menu will be available if list builder is un-locked
-			ListComponent.this.tableContextMenuCopyToNewList.setVisible(!isListBuilderLocked && isListComponentSourceAvailable);
 
 		}
 	}
