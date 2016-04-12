@@ -353,7 +353,7 @@ public class DropHandlerMethods {
 				newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
 				newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(germplasmListData.getGroupName());
 
-				final String groupIdDisplayValue = germplasmListData.getMgid() == 0 ? "-" : germplasmListData.getMgid().toString();
+				final String groupIdDisplayValue = germplasmListData.getMgid() == null || (germplasmListData.getMgid() == 0 )  ? "-" : germplasmListData.getMgid().toString();
 				newItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(groupIdDisplayValue);
 
 				// Inventory Related Columns
