@@ -29,6 +29,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -61,11 +62,14 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 
 	private Set<Integer> gidsToProcess = new HashSet<>();
 
-	public GermplasmGroupingComponent() {
+	private final GermplasmGroupingSource source;
 
+	public GermplasmGroupingComponent(final GermplasmGroupingSource source) {
+		this.source = source;
 	}
 
-	public GermplasmGroupingComponent(final Set<Integer> gidsToProcess) {
+	public GermplasmGroupingComponent(final GermplasmGroupingSource source, final Set<Integer> gidsToProcess) {
+		this.source = source;
 		this.gidsToProcess = gidsToProcess;
 	}
 
@@ -137,11 +141,15 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 	}
 
 	void reportSuccessAndClose(final Map<Integer, GermplasmGroup> groupingResults) {
-		MessageNotifier.showMessage(this.getParent(), this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
-				this.messageSource.getMessage(Message.SUCCESS_MARK_LINES_AS_FIXED));
+		final Component parentComponent = this.getParent();
+		if (parentComponent != null) {
+			MessageNotifier.showMessage(this.getParent(), this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
+					this.messageSource.getMessage(Message.SUCCESS_MARK_LINES_AS_FIXED));
+			this.getParent().addWindow(new GermplasmGroupingResultsComponent(groupingResults));
+			this.closeWindow();
+		}
 
-		this.getParent().addWindow(new GermplasmGroupingResultsComponent(groupingResults));
-		this.closeWindow();
+		this.source.updateGermplasmListTable(groupingResults.keySet());
 	}
 
 	@Override

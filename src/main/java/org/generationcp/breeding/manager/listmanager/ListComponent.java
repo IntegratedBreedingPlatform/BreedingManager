@@ -38,6 +38,7 @@ import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListe
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource;
 import org.generationcp.breeding.manager.listmanager.dialog.GermplasmGroupingComponent;
+import org.generationcp.breeding.manager.listmanager.dialog.GermplasmGroupingSource;
 import org.generationcp.breeding.manager.listmanager.dialog.ListManagerCopyToNewListDialog;
 import org.generationcp.breeding.manager.listmanager.listcomponent.GermplasmListTableContextMenu;
 import org.generationcp.breeding.manager.listmanager.listcomponent.InventoryViewActionMenu;
@@ -114,7 +115,7 @@ import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class ListComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout,
-		AddEntryDialogSource, SaveListAsDialogSource, ReserveInventorySource {
+		AddEntryDialogSource, SaveListAsDialogSource, ReserveInventorySource, GermplasmGroupingSource {
 
 	private static final String ERROR_WITH_DELETING_LIST_ENTRIES = "Error with deleting list entries.";
 
@@ -1262,7 +1263,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 					gidsToProcess.add(Integer.valueOf(gidCell.getCaption()));
 				}
 			}
-			this.getWindow().addWindow(new GermplasmGroupingComponent(gidsToProcess));
+			this.getWindow().addWindow(new GermplasmGroupingComponent(this, gidsToProcess));
 		} else {
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
 					this.messageSource.getMessage(Message.ERROR_MARK_LINES_AS_FIXED_NOTHING_SELECTED));
@@ -2291,5 +2292,24 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	public Map<Object, String> getItemsToDelete() {
 		return this.itemsToDelete;
+	}
+
+	@Override
+	public void updateGermplasmListTable(final Set<Integer> gidsProcessed) {
+		// retrieve the new MGID (Group ID) of the germplasm apply marking line as fixed
+		final List<Germplasm> germplasms = this.germplasmDataManager.getGermplasms(new ArrayList(gidsProcessed));
+		final Map<Integer, Integer> germplasmMgidMap = new HashMap<Integer, Integer>();
+		for (final Germplasm germplasm : germplasms) {
+			germplasmMgidMap.put(germplasm.getGid(), germplasm.getMgid());
+		}
+
+		// update the MGID(Group Id) of the specific rows marked as fixed lines
+		for (final GermplasmListData listEntry : this.listEntries) {
+			final Integer gid = listEntry.getGid();
+			if (gidsProcessed.contains(gid)) {
+				final Item selectedRowItem = this.listDataTable.getItem(listEntry.getId());
+				selectedRowItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(germplasmMgidMap.get(gid));
+			}
+		}
 	}
 }
