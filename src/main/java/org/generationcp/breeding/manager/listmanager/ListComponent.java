@@ -222,7 +222,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private Map<ListEntryLotDetails, Double> validReservationsToSave;
 	private Boolean hasChanges;
 
-	private ListDataPropertiesRenderer newColumnsRenderer = new ListDataPropertiesRenderer();
+	private ListDataPropertiesRenderer newColumnsRenderer;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -278,6 +278,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		this.newColumnsRenderer = new ListDataPropertiesRenderer();
+
 		this.instantiateComponents();
 		this.initializeValues();
 		this.addListeners();
@@ -436,6 +438,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.listDataTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
+		this.listDataTable.addContainerProperty(ColumnLabels.GROUP_ID.getName(), String.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
 
@@ -449,6 +452,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				this.getTermNameFromOntology(ColumnLabels.SEED_RESERVATION));
 		this.listDataTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(), this.getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
 		this.listDataTable.setColumnHeader(ColumnLabels.GID.getName(), this.getTermNameFromOntology(ColumnLabels.GID));
+		this.listDataTable.setColumnHeader(ColumnLabels.GROUP_ID.getName(), this.getTermNameFromOntology(ColumnLabels.GROUP_ID));
 		this.listDataTable.setColumnHeader(ColumnLabels.STOCKID.getName(), this.getTermNameFromOntology(ColumnLabels.STOCKID));
 		this.listDataTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(), this.getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
 
@@ -565,6 +569,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		newItem.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(entry.getEntryCode());
 		newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
 		newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
+
+		final String groupIdDisplayValue = entry.getGroupId() == 0 ? "-" : entry.getGroupId().toString();
+		newItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(groupIdDisplayValue);
 
 		// Inventory Related Columns
 
@@ -803,15 +810,14 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.listDataTable.setEditable(true);
 	}
 
-	private final class ListDataTableFieldFactory implements TableFieldFactory {
+	final class ListDataTableFieldFactory implements TableFieldFactory {
 
 		private static final long serialVersionUID = 1L;
 
 		@Override
 		public Field createField(final Container container, final Object itemId, final Object propertyId, final Component uiContext) {
 
-			if (propertyId.equals(ColumnLabels.GID.getName()) || propertyId.equals(ColumnLabels.ENTRY_ID.getName())
-					|| propertyId.equals(ColumnLabels.DESIGNATION.getName()) || ListComponent.this.isInventoryColumn(propertyId)) {
+			if (this.isNonEditableColumn(propertyId)) {
 				return null;
 			}
 
@@ -889,6 +895,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			});
 
 			return tf;
+		}
+
+		boolean isNonEditableColumn(final Object propertyId) {
+			return propertyId.equals(ColumnLabels.GID.getName()) || propertyId.equals(ColumnLabels.ENTRY_ID.getName())
+					|| propertyId.equals(ColumnLabels.DESIGNATION.getName()) || propertyId.equals(ColumnLabels.GROUP_ID.getName())
+					|| ListComponent.this.isInventoryColumn(propertyId);
 		}
 
 		private Double computeTextFieldWidth(final String value) {
@@ -1033,35 +1045,39 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			ListComponent.this.selectedColumn = event.getPropertyId();
 			ListComponent.this.selectedItemId = event.getItemId();
 
-			if (event.getButton() == com.vaadin.event.MouseEvents.ClickEvent.BUTTON_RIGHT) {
-
-				ListComponent.this.tableContextMenu.show(event.getClientX(), event.getClientY());
-
-				if (ListComponent.this.selectedColumn.equals(ColumnLabels.TAG.getName())
-						|| ListComponent.this.selectedColumn.equals(ColumnLabels.GID.getName())
-						|| ListComponent.this.selectedColumn.equals(ColumnLabels.ENTRY_ID.getName())
-						|| ListComponent.this.selectedColumn.equals(ColumnLabels.DESIGNATION.getName())
-						|| ListComponent.this.isInventoryColumn(ListComponent.this.selectedColumn)) {
-					ListComponent.this.tableContextMenuDeleteEntries.setVisible(!ListComponent.this.germplasmList.isLockedList());
-					ListComponent.this.tableContextMenuEditCell.setVisible(false);
-					if (ListComponent.this.source != null) {
-						ListComponent.this.tableContextMenuCopyToNewList.setVisible(!ListComponent.this.source.listBuilderIsLocked());
-					}
-				} else if (!ListComponent.this.germplasmList.isLockedList()) {
-					ListComponent.this.tableContextMenuDeleteEntries.setVisible(true);
-					ListComponent.this.tableContextMenuEditCell.setVisible(true);
-					if (ListComponent.this.source != null) {
-						ListComponent.this.tableContextMenuCopyToNewList.setVisible(!ListComponent.this.source.listBuilderIsLocked());
-					}
-					ListComponent.this.doneInitializing = true;
-				} else {
-					ListComponent.this.tableContextMenuDeleteEntries.setVisible(false);
-					ListComponent.this.tableContextMenuEditCell.setVisible(false);
-					if (ListComponent.this.source != null) {
-						ListComponent.this.tableContextMenuCopyToNewList.setVisible(!ListComponent.this.source.listBuilderIsLocked());
-					}
-				}
+			// Only perform action if mouse event is right click
+			if (event.getButton() != com.vaadin.event.MouseEvents.ClickEvent.BUTTON_RIGHT) {
+				return;
 			}
+
+			ListComponent.this.tableContextMenu.show(event.getClientX(), event.getClientY());
+
+			// Note: Code change looks like I changed the logic but I've just condensed it by calculating the
+			// boolean conditions and set it to the setVisible methods without going through if else code blocks
+			// this solves the "Reduce the number of conditional operators (5) used in the expression" sonar violation
+			final boolean isNonEditableColumn = ListComponent.this.selectedColumn.equals(ColumnLabels.TAG.getName())
+					|| ListComponent.this.selectedColumn.equals(ColumnLabels.GID.getName())
+					|| ListComponent.this.selectedColumn.equals(ColumnLabels.ENTRY_ID.getName())
+					|| ListComponent.this.selectedColumn.equals(ColumnLabels.GROUP_ID.getName())
+					|| ListComponent.this.selectedColumn.equals(ColumnLabels.DESIGNATION.getName())
+					|| ListComponent.this.isInventoryColumn(ListComponent.this.selectedColumn);
+
+			final boolean isLockedList = ListComponent.this.germplasmList.isLockedList();
+			final boolean isListBuilderLocked = ListComponent.this.source.listBuilderIsLocked();
+			final boolean isListComponentSourceAvailable = ListComponent.this.source != null;
+
+			// make the edit cell context menu available when selected column is editable and list is not locked
+			ListComponent.this.tableContextMenuEditCell.setVisible(!isNonEditableColumn && !isLockedList);
+
+			// delete entries context menu will be available when current germplasm list is not locked
+			ListComponent.this.tableContextMenuDeleteEntries.setVisible(!isLockedList);
+
+			// set doneInitializing to true if germplasm list is locked, else do not update doneInitializing
+			ListComponent.this.doneInitializing = isLockedList ? true : ListComponent.this.doneInitializing;
+
+			// copy to new list context menu will be available if list builder is un-locked
+			ListComponent.this.tableContextMenuCopyToNewList.setVisible(!isListBuilderLocked && isListComponentSourceAvailable);
+
 		}
 	}
 
@@ -1289,20 +1305,19 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		if (!selectedIdsToDelete.isEmpty()) {
 			ConfirmDialog.show(this.getWindow(), this.messageSource.getMessage(Message.DELETE_GERMPLASM_ENTRIES),
-				this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES_CONFIRM), this.messageSource.getMessage(Message.YES),
-				this.messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
+					this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES_CONFIRM), this.messageSource.getMessage(Message.YES),
+					this.messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
 
-					private static final long serialVersionUID = 1L;
+						private static final long serialVersionUID = 1L;
 
-					@Override
-					public void onClose(final ConfirmDialog dialog) {
-						if (dialog.isConfirmed()) {
-							ListComponent.this.removeRowsInListDataTable((Collection<?>) ListComponent.this.listDataTable
-									.getValue());
+						@Override
+						public void onClose(final ConfirmDialog dialog) {
+							if (dialog.isConfirmed()) {
+								ListComponent.this.removeRowsInListDataTable((Collection<?>) ListComponent.this.listDataTable.getValue());
+							}
 						}
-					}
 
-				});
+					});
 
 		} else {
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DELETING_LIST_ENTRIES),
@@ -1502,6 +1517,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		listData.setStatus(0);
 		listData.setEntryCode(listData.getEntryId().toString());
 		listData.setSeedSource(this.germplasmDataManager.getPlotCodeValue(gid));
+		listData.setMgid(germplasm.getMgid());
 
 		String groupName;
 		try {
@@ -1525,7 +1541,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				this.listDataTable.setEditable(false);
 				final List<GermplasmListData> inventoryData =
 						this.inventoryDataManager.getLotCountsForListEntries(this.germplasmList.getId(),
-                                new ArrayList<>(Collections.singleton(listDataId)));
+								new ArrayList<>(Collections.singleton(listDataId)));
 				if (inventoryData != null) {
 					listData = inventoryData.get(0);
 				}
@@ -1743,7 +1759,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			ListComponent.LOG.error(ListComponent.ERROR_WITH_DELETING_LIST_ENTRIES, e);
 			ListComponent.LOG.error("\n" + e.getStackTrace());
 		}
-        // end of performListEntriesDeletion
+		// end of performListEntriesDeletion
 	}
 
 	protected void deleteRemovedGermplasmEntriesFromTable() {

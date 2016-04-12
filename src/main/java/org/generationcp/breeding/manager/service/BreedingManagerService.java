@@ -19,7 +19,7 @@ public interface BreedingManagerService {
 
 	public List<GermplasmList> doGermplasmListSearch(String q, Operation o) throws BreedingManagerSearchException;
 
-	public List<Germplasm> doGermplasmSearch(String q, Operation o, boolean includeParents, boolean withInventoryOnly)
+	public List<Germplasm> doGermplasmSearch(String q, Operation o, boolean includeParents, boolean withInventoryOnly, boolean includeMGMembers)
 			throws BreedingManagerSearchException;
 
 	public Project getCurrentProject();
