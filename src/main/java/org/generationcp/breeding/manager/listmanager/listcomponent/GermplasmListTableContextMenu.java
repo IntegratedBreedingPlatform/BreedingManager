@@ -6,12 +6,14 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.peter.contextmenu.ContextMenu;
 
 /**
  * This class is used as the Context Menu for Germplasm list table in "List View" for View List section in List Manager
  * 
  */
+@Configurable
 public class GermplasmListTableContextMenu extends ContextMenu implements InitializingBean, InternationalizableComponent {
 
 	private static final long serialVersionUID = 1L;
@@ -71,5 +73,12 @@ public class GermplasmListTableContextMenu extends ContextMenu implements Initia
 
 		// copy to new list context menu will be available if list builder is un-locked
 		this.tableContextMenuCopyToNewList.setVisible(!isListBuilderLocked && isListComponentSourceAvailable);
+	}
+
+	/**
+	 * For Test Purposes
+	 */
+	void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
 	}
 }

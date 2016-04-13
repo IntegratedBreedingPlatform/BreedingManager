@@ -45,6 +45,8 @@ public class InventoryViewActionMenu extends ContextMenu implements Initializing
 		this.menuListView = this.addItem(this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
 		this.menuInventorySaveChanges = this.addItem(this.messageSource.getMessage(Message.SAVE_RESERVATIONS));
 		this.menuSelectAll = this.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
+
+		this.resetInventoryMenuOptions();
 	}
 
 	@Override
@@ -87,5 +89,12 @@ public class InventoryViewActionMenu extends ContextMenu implements Initializing
 
 	public void setMenuInventorySaveChanges() {
 		this.menuInventorySaveChanges.setEnabled(true);
+	}
+
+	/**
+	 * For Test Purposes
+	 */
+	void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
 	}
 }

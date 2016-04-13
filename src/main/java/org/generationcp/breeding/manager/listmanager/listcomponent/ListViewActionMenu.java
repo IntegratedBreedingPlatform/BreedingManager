@@ -22,6 +22,7 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 	private ContextMenuItem menuExportList;
 	private ContextMenuItem menuCopyToList;
 	private ContextMenuItem menuAddEntry;
+	private ContextMenuItem menuAssignCodes;
 	private ContextMenuItem menuSaveChanges;
 	private ContextMenuItem menuDeleteEntries;
 	private ContextMenuItem menuMarkLinesAsFixed;
@@ -43,6 +44,7 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 
 		// Generate main level items
 		this.menuAddEntry = this.addItem(this.messageSource.getMessage(Message.ADD_ENTRIES));
+		this.menuAssignCodes = this.addItem(this.messageSource.getMessage(Message.ASSIGN_CODES));
 		this.menuCopyToList = this.addItem(this.messageSource.getMessage(Message.COPY_TO_NEW_LIST));
 		this.menuDeleteList = this.addItem(this.messageSource.getMessage(Message.DELETE_LIST));
 		this.menuDeleteEntries = this.addItem(this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
@@ -69,6 +71,10 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 
 	public ContextMenuItem getMenuAddEntry() {
 		return this.menuAddEntry;
+	}
+
+	public ContextMenuItem getMenuAssignCodes() {
+		return this.menuAssignCodes;
 	}
 
 	public ContextMenuItem getMenuSaveChanges() {
@@ -110,6 +116,7 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		this.menuMarkLinesAsFixed.setVisible(true);
 		this.menuSaveChanges.setVisible(true);
 		this.menuAddEntry.setVisible(true);
+		this.menuAssignCodes.setVisible(true);
 	}
 
 	public void setActionMenuWhenListIsUnlocked() {
@@ -119,6 +126,7 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		this.menuMarkLinesAsFixed.setVisible(false);
 		this.menuSaveChanges.setVisible(false);
 		this.menuAddEntry.setVisible(false);
+		this.menuAssignCodes.setVisible(false);
 	}
 
 	/**
@@ -138,4 +146,12 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 			this.menuCopyToList.setVisible(!listBuilderIsLocked);
 		}
 	}
+
+	/**
+	 * For Test Purposes
+	 */
+	void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
 }

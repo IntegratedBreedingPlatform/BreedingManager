@@ -61,7 +61,6 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.GermplasmDataManagerUtil;
-import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -154,7 +153,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	// Menu for Actions button in List View
 	private ListViewActionMenu menu;
-	private ContextMenuItem menuAssignCodes;
 
 	// Menu for Actions button in Inventory View
 	private InventoryViewActionMenu inventoryViewMenu;
@@ -342,8 +340,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.initializeListInventoryTable(); // listInventoryTable
 
 		this.inventoryViewMenu = new InventoryViewActionMenu();
-		this.inventoryViewMenu.resetInventoryMenuOptions();
-		this.menuAssignCodes = this.menu.addItem(this.messageSource.getMessage(Message.ASSIGN_CODES));
 
 		this.tableContextMenu = new GermplasmListTableContextMenu();
 
@@ -964,11 +960,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			// directly from URL or popup window
 			if (!ListComponent.this.germplasmList.isLockedList() && !ListComponent.this.fromUrl) {
 				ListComponent.this.menu.setActionMenuWhenListIsLocked(ListComponent.this.localUserIsListOwner());
-				ListComponent.this.menuAssignCodes.setVisible(true);
 				ListComponent.this.addColumnContextMenu.showHideAddColumnMenu(true);
 			} else {
 				ListComponent.this.menu.setActionMenuWhenListIsUnlocked();
-				ListComponent.this.menuAssignCodes.setVisible(false);
 				ListComponent.this.addColumnContextMenu.showHideAddColumnMenu(false);
 			}
 		}
