@@ -3,7 +3,6 @@ package org.generationcp.breeding.manager.listmanager;
 
 import java.util.Arrays;
 import java.util.List;
-
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.service.BreedingManagerSearchException;
@@ -23,9 +22,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
-
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -37,6 +33,9 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.TextField;
+
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 
 @Configurable
 public class GermplasmSearchBarComponent extends CssLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
@@ -210,7 +209,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 
 	public void searchButtonClickAction() {
 
-		final String q = GermplasmSearchBarComponent.this.searchField.getValue().toString();
+		final String searchValue = GermplasmSearchBarComponent.this.searchField.getValue().toString();
 		final String searchType = (String) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
 		if (GermplasmSearchBarComponent.this.matchesContaining.equals(searchType)) {
 			ConfirmDialog.show(GermplasmSearchBarComponent.this.getWindow(),
@@ -224,16 +223,16 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 						@Override
 						public void onClose(final ConfirmDialog dialog) {
 							if (dialog.isConfirmed()) {
-								GermplasmSearchBarComponent.this.doSearch(q);
+								GermplasmSearchBarComponent.this.doSearch(searchValue);
 							}
 						}
 					});
 		} else {
-			GermplasmSearchBarComponent.this.doSearch(q);
+			GermplasmSearchBarComponent.this.doSearch(searchValue);
 		}
 	}
 
-	public void doSearch(final String q) {
+	public void doSearch(final String searchValue) {
 
 		final TransactionTemplate inTx = new TransactionTemplate(this.transactionManager);
 		inTx.execute(new TransactionCallbackWithoutResult() {
@@ -242,7 +241,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 			protected void doInTransactionWithoutResult(final TransactionStatus status) {
 				final Monitor monitor = MonitorFactory.start("GermplasmSearchBarComponent.doSearch()");
 				final String searchType = (String) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
-				final String searchKeyword = GermplasmSearchBarComponent.this.getSearchKeyword(q, searchType);
+				final String searchKeyword = GermplasmSearchBarComponent.this.getSearchKeyword(searchValue, searchType);
 				final Operation operation =
 						GermplasmSearchBarComponent.this.exactMatches.equals(searchType) ? Operation.EQUAL : Operation.LIKE;
 
@@ -265,7 +264,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 								GermplasmSearchBarComponent.this.messageSource.getMessage(Message.SEARCH_RESULTS),
 								GermplasmSearchBarComponent.this.messageSource.getMessage(e.getErrorMessage()));
 						if (Message.ERROR_DATABASE.equals(e.getErrorMessage())) {
-							GermplasmSearchBarComponent.LOG.error("Database error occured while searching. Search string was: " + q, e);
+							GermplasmSearchBarComponent.LOG.error("Database error occured while searching. Search string was: " + searchValue, e);
 						}
 					}
 				} finally {
