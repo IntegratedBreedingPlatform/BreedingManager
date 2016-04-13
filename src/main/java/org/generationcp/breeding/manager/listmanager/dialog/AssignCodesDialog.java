@@ -66,8 +66,6 @@ public class AssignCodesDialog extends BaseSubWindow
 	private AssignCodesDefaultLayout assignCodesDefaultLayout;
 	private AssignCodeCustomLayout assignCodesCustomLayout;
 
-	private HorizontalLayout codeControlsLayoutDefault;
-
 	private VerticalLayout codesLayout;
 	private OptionGroup codingLevelOptions;
 	private Label exampleText;
