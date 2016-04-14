@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.crossingmanager.MakeCrossesParentsComponent;
 import org.generationcp.breeding.manager.crossingmanager.MakeCrossesTableComponent;
+import org.generationcp.breeding.manager.util.Util;
 
 import com.vaadin.event.Action;
 import com.vaadin.event.Action.Handler;
@@ -58,7 +59,7 @@ public class CrossingManagerActionHandler implements Handler {
 			this.removeSelectedEntriesAction((Table) sender);
 			if (this.source instanceof MakeCrossesParentsComponent) {
 				final MakeCrossesParentsComponent makeCrosses = (MakeCrossesParentsComponent) this.source;
-				makeCrosses.assignEntryNumber((Table) sender);
+				Util.assignEntryNumberForGermplasmListTable((Table) sender);
 				makeCrosses.setHasUnsavedChangesMain(true);
 			}
 		} else if (CrossingManagerActionHandler.ACTION_DELETE_CROSSES.equals(action)) {

@@ -15,30 +15,39 @@ package org.generationcp.breeding.manager.util;
 import java.io.File;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.dellroad.stuff.vaadin.ContextApplication;
+import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
+import org.generationcp.breeding.manager.customcomponent.listinventory.CrossingManagerInventoryTable;
 import org.generationcp.breeding.manager.exception.BreedingManagerException;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
+import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.workbench.Tool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.Application;
+import com.vaadin.data.Item;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
@@ -158,7 +167,7 @@ public class Util {
 
 	/**
 	 * Validates if an existing path is a directory
-	 * 
+	 *
 	 * @param path
 	 * @return true if the given path is a directory
 	 */
@@ -179,7 +188,7 @@ public class Util {
 	 *
 	 * @param application
 	 * @return file pointing to desktop or application path
-	 * 
+	 *
 	 */
 	public static File getDefaultBrowseDirectory(Application application) throws BreedingManagerException {
 
@@ -202,7 +211,7 @@ public class Util {
 
 	/**
 	 * Gets the directory based on the given path string
-	 * 
+	 *
 	 * @param path
 	 * @return file pointing to the path
 	 * @throws BreedingManagerException
@@ -220,7 +229,7 @@ public class Util {
 
 	/**
 	 * Gets one directory up the tree
-	 * 
+	 *
 	 * @param path
 	 * @return
 	 */
@@ -247,7 +256,7 @@ public class Util {
 
 	/**
 	 * Opens and attaches a modal window containing the location manager
-	 * 
+	 *
 	 * @param workbenchDataManager - workbenchDataManager, this is used by this method to get tool URL (if available)
 	 * @param programId - used to load the locations for the given programId
 	 * @param window - modal window will be attached to this window
@@ -297,7 +306,7 @@ public class Util {
 
 	 /**
 	  * Opens and attaches a modal window containing the method manager
-	  * 
+	  *
 	 * @param workbenchDataManager - workbenchDataManager, this is used by this method to get tool URL (if available)
 	  * @param programId - used to load the locations for the given programId
 	  * @param window - modal window will be attached to this window
@@ -437,4 +446,62 @@ public class Util {
 		return addtlParams;
 	 }
 
+	@SuppressWarnings("unchecked")
+	public static void assignEntryNumberForGermplasmListTable(Table parentTable) {
+
+		int entryNumber = 1;
+		List<GermplasmListEntry> itemIds = new ArrayList<>();
+		itemIds.addAll((Collection<GermplasmListEntry>) parentTable.getItemIds());
+
+		for (GermplasmListEntry entry : itemIds) {
+			Item item = parentTable.getItem(entry);
+			item.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entryNumber);
+			entry.setEntryId(entryNumber);
+			entryNumber++;
+		}
+	}
+
+	public static String constructGermplasmNames(GermplasmDataManager germplasmDataManager, int gid) {
+
+		List<Name> names = germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
+		StringBuilder germplasmNames = new StringBuilder("");
+
+		int i = 0;
+		for (Name n : names) {
+			if (i < names.size() - 1) {
+				germplasmNames.append(n.getNval() + ", ");
+			} else {
+				germplasmNames.append(n.getNval());
+			}
+			i++;
+		}
+
+		return germplasmNames.toString();
+	}
+
+	public static void mapValidReservationToCrossingInventory(Map<ListEntryLotDetails, Double> validReservations, CrossingManagerInventoryTable listInventoryTable) {
+
+		for (Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()) {
+			ListEntryLotDetails lot = entry.getKey();
+			Double newRes = entry.getValue();
+
+			Item itemToUpdate = listInventoryTable.getTable().getItem(lot);
+			itemToUpdate.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(newRes);
+		}
+	}
+
+	public static void mapValidPersistableReservation(Map<ListEntryLotDetails, Double> validReservations, Map<ListEntryLotDetails, Double> validReservationsToSave) {
+
+		for (Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()) {
+			ListEntryLotDetails lot = entry.getKey();
+			Double amountToReserve = entry.getValue();
+
+			if (validReservationsToSave.containsKey(lot)) {
+				validReservationsToSave.remove(lot);
+
+			}
+
+			validReservationsToSave.put(lot, amountToReserve);
+		}
+	}
 }

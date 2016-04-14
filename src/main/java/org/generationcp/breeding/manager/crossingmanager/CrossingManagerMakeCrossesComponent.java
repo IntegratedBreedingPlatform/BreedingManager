@@ -522,29 +522,11 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 		// for female parent list
 		final ParentTabComponent femaleTabComponent = this.parentsComponent.getFemaleParentTab();
-		if (femaleTabComponent.getGermplasmList() != null) {
-			if (this.modeView.equals(ModeView.INVENTORY_VIEW)) {
-				femaleTabComponent.discardChangesInListView();
-			} else if (this.modeView.equals(ModeView.LIST_VIEW)) {
-				femaleTabComponent.discardChangesInInventoryView();
-			}
-		} else {
-			// if no list save, just reset the list
-			femaleTabComponent.resetList();
-		}
+		this.discardChangesInListAndInventoryView(femaleTabComponent);
 
 		// for male parent list
 		final ParentTabComponent maleTabComponent = this.parentsComponent.getMaleParentTab();
-		if (maleTabComponent.getGermplasmList() != null) {
-			if (this.modeView.equals(ModeView.INVENTORY_VIEW)) {
-				maleTabComponent.discardChangesInListView();
-			} else if (this.modeView.equals(ModeView.LIST_VIEW)) {
-				maleTabComponent.discardChangesInInventoryView();
-			}
-		} else {
-			// if no list save, just reset the list
-			maleTabComponent.resetList();
-		}
+		this.discardChangesInListAndInventoryView(maleTabComponent);
 
 		this.resetUnsavedStatus();
 		this.updateView(this.modeView);
@@ -582,5 +564,19 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 	void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
+	}
+
+	public void discardChangesInListAndInventoryView(ParentTabComponent parentTabComponent) {
+
+		if (parentTabComponent.getGermplasmList() != null) {
+			if (this.modeView.equals(ModeView.INVENTORY_VIEW)) {
+				parentTabComponent.discardChangesInListView();
+			} else if (this.modeView.equals(ModeView.LIST_VIEW)) {
+				parentTabComponent.discardChangesInInventoryView();
+			}
+		} else {
+			// if no list save, just reset the list
+			parentTabComponent.resetList();
+		}
 	}
 }

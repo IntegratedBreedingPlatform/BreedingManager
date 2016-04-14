@@ -17,6 +17,7 @@ import org.generationcp.breeding.manager.customcomponent.UnsavedChangesSource;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryActionFactory;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
+import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -292,21 +293,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public void assignEntryNumber(Table parentsTable) {
-
-		int entryNumber = 1;
-		List<GermplasmListEntry> itemIds = new ArrayList<GermplasmListEntry>();
-		itemIds.addAll((Collection<GermplasmListEntry>) parentsTable.getItemIds());
-
-		for (GermplasmListEntry entry : itemIds) {
-			Item item = parentsTable.getItem(entry);
-			item.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(Integer.valueOf(entryNumber));
-			entry.setEntryId(entryNumber);
-			entryNumber++;
-		}
-	}
-
 	public void updateCrossesSeedSource(ParentTabComponent parentTab, GermplasmList savedList) {
 		if (parentTab.equals(this.femaleParentTab)) {
 			this.femaleParentTab.setGermplasmList(savedList);
@@ -509,7 +495,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 			MakeCrossesParentsComponent.LOG.error("Error in getting list by GID", e);
 		}
 
-		this.assignEntryNumber(this.maleParentTab.getListDataTable());
+		Util.assignEntryNumberForGermplasmListTable(this.maleParentTab.getListDataTable());
 		this.parentTabSheet.setSelectedTab(1);
 
 		if (this.makeCrossesMain.getModeView().equals(ModeView.LIST_VIEW)) {
@@ -621,7 +607,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 			MakeCrossesParentsComponent.LOG.error("Error in getting list by GID", e);
 		}
 
-		this.assignEntryNumber(this.femaleParentTab.getListDataTable());
+		Util.assignEntryNumberForGermplasmListTable(this.femaleParentTab.getListDataTable());
 		this.parentTabSheet.setSelectedTab(0);
 
 		if (this.makeCrossesMain.getModeView().equals(ModeView.LIST_VIEW)) {

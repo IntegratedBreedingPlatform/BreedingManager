@@ -10,6 +10,7 @@ import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
+import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
@@ -251,7 +252,7 @@ public class MakeCrossesParentsComponentTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testAssignEntryNumber() {
-		this.makeCrossesParentsComponent.assignEntryNumber(this.femaleParent);
+		Util.assignEntryNumberForGermplasmListTable(this.femaleParent);
 
 		final List<GermplasmListEntry> itemIds = new ArrayList<GermplasmListEntry>();
 		itemIds.addAll((Collection<GermplasmListEntry>) this.femaleParent.getItemIds());

@@ -15,6 +15,7 @@ import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.service.BreedingManagerSearchException;
+import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -26,7 +27,6 @@ import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.pojos.Method;
-import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.slf4j.Logger;
@@ -37,8 +37,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -56,6 +54,9 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
+
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 
 @Configurable
 public class GermplasmSearchResultsComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
@@ -468,18 +469,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 	private String getGermplasmNames(final int gid) {
 		final StringBuilder germplasmNames = new StringBuilder("");
-
-		final List<Name> names = this.germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
-
-		int i = 0;
-		for (final Name n : names) {
-			if (i < names.size() - 1) {
-				germplasmNames.append(n.getNval() + ", ");
-			} else {
-				germplasmNames.append(n.getNval());
-			}
-			i++;
-		}
+		Util.constructGermplasmNames(this.germplasmDataManager, gid);
 
 		return germplasmNames.toString();
 	}

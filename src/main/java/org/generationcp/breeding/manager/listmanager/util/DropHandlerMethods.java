@@ -289,13 +289,7 @@ public class DropHandlerMethods {
 				this.currentColumnsInfo = this.germplasmListManager.getAdditionalColumnsForList(listId);
 			}
 
-			for (final Entry<String, List<ListDataColumnValues>> columnEntry : this.currentColumnsInfo.getColumnValuesMap().entrySet()) {
-				final String column = columnEntry.getKey();
-				if (!AddColumnContextMenu.propertyExists(column, this.targetTable)) {
-					this.targetTable.addContainerProperty(column, String.class, DropHandlerMethods.STRING_EMPTY);
-					this.targetTable.setColumnWidth(column, 250);
-				}
-			}
+			this.mapColumnValues();
 
 			final GermplasmListData germplasmListData = this.getListDataByListIdAndLrecId(listId, lrecid, germplasmList);
 
@@ -459,13 +453,7 @@ public class DropHandlerMethods {
 			}
 		}
 
-		for (final Entry<String, List<ListDataColumnValues>> columnEntry : this.currentColumnsInfo.getColumnValuesMap().entrySet()) {
-			final String column = columnEntry.getKey();
-			if (!AddColumnContextMenu.propertyExists(column, this.targetTable)) {
-				this.targetTable.addContainerProperty(column, String.class, DropHandlerMethods.STRING_EMPTY);
-				this.targetTable.setColumnWidth(column, 250);
-			}
-		}
+		this.mapColumnValues();
 
 		for (final Integer itemId : itemIds) {
 
@@ -769,4 +757,15 @@ public class DropHandlerMethods {
 	void setListManagerMain(final ListManagerMain listManagerMain) {
 		this.listManagerMain = listManagerMain;
 	}
+
+	public void mapColumnValues() {
+		for (final Entry<String, List<ListDataColumnValues>> columnEntry : this.currentColumnsInfo.getColumnValuesMap().entrySet()) {
+			final String column = columnEntry.getKey();
+			if (!AddColumnContextMenu.propertyExists(column, this.targetTable)) {
+				this.targetTable.addContainerProperty(column, String.class, DropHandlerMethods.STRING_EMPTY);
+				this.targetTable.setColumnWidth(column, 250);
+			}
+		}
+	}
+
 }

@@ -13,8 +13,8 @@ import java.util.Set;
 import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.action.SaveGermplasmListAction;
-import org.generationcp.breeding.manager.action.SaveGermplasmListActionSource;
 import org.generationcp.breeding.manager.action.SaveGermplasmListActionFactory;
+import org.generationcp.breeding.manager.action.SaveGermplasmListActionSource;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -40,6 +40,7 @@ import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listmanager.util.InventoryTableDropHandler;
+import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -228,7 +229,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 					ParentTabComponent.LOG.error("Error in getting list by GID", e);
 				}
 			}
-			ParentTabComponent.this.assignEntryNumber(ParentTabComponent.this.listDataTable);
+			Util.assignEntryNumberForGermplasmListTable(ParentTabComponent.this.listDataTable);
 			ParentTabComponent.this.updateNoOfEntries(ParentTabComponent.this.listDataTable.size());
 		}
 
@@ -827,21 +828,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		this.updateNoOfSelectedEntries(count);
 	}
 
-	@SuppressWarnings("unchecked")
-	public void assignEntryNumber(Table parentTable) {
-
-		int entryNumber = 1;
-		List<GermplasmListEntry> itemIds = new ArrayList<GermplasmListEntry>();
-		itemIds.addAll((Collection<GermplasmListEntry>) parentTable.getItemIds());
-
-		for (GermplasmListEntry entry : itemIds) {
-			Item item = parentTable.getItem(entry);
-			item.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(Integer.valueOf(entryNumber));
-			entry.setEntryId(entryNumber);
-			entryNumber++;
-		}
-	}
-
 	public void resetListDataTableValues() {
 		this.listDataTable.removeAllItems();
 		this.loadEntriesToListDataTable();
@@ -1144,13 +1130,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	@Override
 	public void updateListInventoryTable(Map<ListEntryLotDetails, Double> validReservations, boolean withInvalidReservations) {
-		for (Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()) {
-			ListEntryLotDetails lot = entry.getKey();
-			Double newRes = entry.getValue();
-
-			Item itemToUpdate = this.listInventoryTable.getTable().getItem(lot);
-			itemToUpdate.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(newRes);
-		}
+		Util.mapValidReservationToCrossingInventory(validReservations, this.listInventoryTable);
 
 		this.removeReserveInventoryWindow(this.reserveInventory);
 
@@ -1174,17 +1154,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	}
 
 	private void updateLotReservationsToSave(Map<ListEntryLotDetails, Double> validReservations) {
-		for (Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()) {
-			ListEntryLotDetails lot = entry.getKey();
-			Double amountToReserve = entry.getValue();
-
-			if (this.validReservationsToSave.containsKey(lot)) {
-				this.validReservationsToSave.remove(lot);
-
-			}
-
-			this.validReservationsToSave.put(lot, amountToReserve);
-		}
+		Util.mapValidPersistableReservation(validReservations,  validReservations);
 
 		if (!this.validReservationsToSave.isEmpty()) {
 			this.setHasUnsavedChanges(true);

@@ -44,6 +44,7 @@ import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClic
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.breeding.manager.listmanager.util.ListDataPropertiesRenderer;
+import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -1106,22 +1107,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 					} else if (action.equals(ListComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
 						ListComponent.this.listDataTable.setValue(ListComponent.this.listDataTable.getItemIds());
 					} else if (action.equals(ListComponent.this.messageSource.getMessage(Message.EDIT_VALUE))) {
-
 						final Map<Object, Field> itemMap = ListComponent.this.fields.get(ListComponent.this.selectedItemId);
-
 						// go through each field, set previous edited fields to
 						// blurred/readonly
-						for (final Map.Entry<Object, Field> entry : itemMap.entrySet()) {
-							final Field f = entry.getValue();
-							final Object fieldValue = f.getValue();
-							if (!f.isReadOnly()) {
-								f.setReadOnly(true);
-
-								if (!fieldValue.equals(ListComponent.this.lastCellvalue)) {
-									ListComponent.this.setHasUnsavedChanges(true);
-								}
-							}
-						}
+						MapItemValue(itemMap);
 
 						// Make the entire item editable
 
@@ -1167,16 +1156,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 			// go through each field, set previous edited fields to
 			// blurred/readonly
-			for (final Map.Entry<Object, Field> entry : itemMap.entrySet()) {
-				final Field f = entry.getValue();
-				final Object fieldValue = f.getValue();
-				if (!f.isReadOnly()) {
-					f.setReadOnly(true);
-					if (!fieldValue.equals(ListComponent.this.lastCellvalue)) {
-						ListComponent.this.setHasUnsavedChanges(true);
-					}
-				}
-			}
+			MapItemValue(itemMap);
 
 			for (final Map.Entry<Object, Field> entry : itemMap.entrySet()) {
 				final Object column = entry.getKey();
@@ -1340,13 +1320,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		if (!selectedTableRows.isEmpty()) {
 			final Set<Integer> gidsToProcess = new HashSet<Integer>();
-			for (final Integer selectedRowId : selectedTableRows) {
-				final Item selectedRowItem = this.listDataTable.getItem(selectedRowId);
-				final Button gidCell = (Button) selectedRowItem.getItemProperty(ColumnLabels.GID.getName()).getValue();
-				if (gidCell != null) {
-					gidsToProcess.add(Integer.valueOf(gidCell.getCaption()));
-				}
-			}
+			SelectTableRow(selectedTableRows, gidsToProcess);
 			this.getWindow().addWindow(new GermplasmGroupingComponent(gidsToProcess));
 		} else {
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
@@ -1361,13 +1335,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		if (!selectedTableRows.isEmpty()) {
 			final Set<Integer> gidsToProcess = new HashSet<Integer>();
-			for (final Integer selectedRowId : selectedTableRows) {
-				final Item selectedRowItem = this.listDataTable.getItem(selectedRowId);
-				final Button gidCell = (Button) selectedRowItem.getItemProperty(ColumnLabels.GID.getName()).getValue();
-				if (gidCell != null) {
-					gidsToProcess.add(Integer.valueOf(gidCell.getCaption()));
-				}
-			}
+			SelectTableRow(selectedTableRows, gidsToProcess);
 			final boolean isCustomLayout = CrossingUtil.isCimmytMaize(crossExpansionProperties.getProfile(), contextUtil.getProjectInContext().getCropType().getCropName());
 			this.getWindow().addWindow(new AssignCodesDialog(gidsToProcess, isCustomLayout));
 		} else {
@@ -2255,17 +2223,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	private void updateLotReservationsToSave(final Map<ListEntryLotDetails, Double> validReservations) {
 
-		for (final Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()) {
-			final ListEntryLotDetails lot = entry.getKey();
-			final Double amountToReserve = entry.getValue();
-
-			if (this.validReservationsToSave.containsKey(lot)) {
-				this.validReservationsToSave.remove(lot);
-
-			}
-
-			this.validReservationsToSave.put(lot, amountToReserve);
-		}
+		Util.mapValidPersistableReservation(validReservations, validReservations);
 
 		if (!this.validReservationsToSave.isEmpty()) {
 			this.setHasUnsavedChanges(true);
@@ -2398,5 +2356,30 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	public Map<Object, String> getItemsToDelete() {
 		return this.itemsToDelete;
+	}
+
+	public void MapItemValue(Map<Object, Field> itemMap) {
+
+		for (final Map.Entry<Object, Field> entry : itemMap.entrySet()) {
+			final Field f = entry.getValue();
+			final Object fieldValue = f.getValue();
+			if (!f.isReadOnly()) {
+				f.setReadOnly(true);
+
+				if (!fieldValue.equals(ListComponent.this.lastCellvalue)) {
+					ListComponent.this.setHasUnsavedChanges(true);
+				}
+			}
+		}
+	}
+
+	public void SelectTableRow(Collection<Integer> selectedTableRows, Set<Integer> gidsToProcess) {
+		for (final Integer selectedRowId : selectedTableRows) {
+			final Item selectedRowItem = this.listDataTable.getItem(selectedRowId);
+			final Button gidCell = (Button) selectedRowItem.getItemProperty(ColumnLabels.GID.getName()).getValue();
+			if (gidCell != null) {
+				gidsToProcess.add(Integer.valueOf(gidCell.getCaption()));
+			}
+		}
 	}
 }

@@ -45,6 +45,7 @@ import org.generationcp.breeding.manager.listmanager.util.DropHandlerMethods.Lis
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
+import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -1649,17 +1650,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	private void updateLotReservationsToSave(final Map<ListEntryLotDetails, Double> validReservations) {
 
-		for (final Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()) {
-			final ListEntryLotDetails lot = entry.getKey();
-			final Double amountToReserve = entry.getValue();
-
-			if (this.validReservationsToSave.containsKey(lot)) {
-				this.validReservationsToSave.remove(lot);
-
-			}
-
-			this.validReservationsToSave.put(lot, amountToReserve);
-		}
+		Util.mapValidPersistableReservation(validReservations, validReservations);
 
 		if (!this.validReservationsToSave.isEmpty()) {
 			this.setHasUnsavedChanges(true);

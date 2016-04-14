@@ -27,6 +27,7 @@ import org.generationcp.breeding.manager.inventory.ReserveInventoryUtil;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
+import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -88,15 +89,13 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 				SelectParentsListDataComponent.this.makeCrossesParentsComponent.dropToFemaleOrMaleTable(
 						SelectParentsListDataComponent.this.listDataTable,
 						SelectParentsListDataComponent.this.makeCrossesParentsComponent.getFemaleTable(), null);
-				SelectParentsListDataComponent.this.makeCrossesParentsComponent
-						.assignEntryNumber(SelectParentsListDataComponent.this.makeCrossesParentsComponent.getFemaleTable());
+				Util.assignEntryNumberForGermplasmListTable(SelectParentsListDataComponent.this.makeCrossesParentsComponent.getFemaleTable());
 				SelectParentsListDataComponent.this.makeCrossesParentsComponent.getParentTabSheet().setSelectedTab(0);
 			} else if (action.equals(SelectParentsListDataComponent.ACTION_ADD_TO_MALE_LIST)) {
 				SelectParentsListDataComponent.this.makeCrossesParentsComponent.dropToFemaleOrMaleTable(
 						SelectParentsListDataComponent.this.listDataTable,
 						SelectParentsListDataComponent.this.makeCrossesParentsComponent.getMaleTable(), null);
-				SelectParentsListDataComponent.this.makeCrossesParentsComponent
-						.assignEntryNumber(SelectParentsListDataComponent.this.makeCrossesParentsComponent.getMaleTable());
+						Util.assignEntryNumberForGermplasmListTable(SelectParentsListDataComponent.this.makeCrossesParentsComponent.getMaleTable());
 				SelectParentsListDataComponent.this.makeCrossesParentsComponent.getParentTabSheet().setSelectedTab(1);
 			}
 		}
@@ -130,8 +129,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 							SelectParentsListDataComponent.this.makeCrossesParentsComponent.dropToFemaleOrMaleTable(
 									SelectParentsListDataComponent.this.listDataTable,
 									SelectParentsListDataComponent.this.makeCrossesParentsComponent.getFemaleTable(), null);
-							SelectParentsListDataComponent.this.makeCrossesParentsComponent
-									.assignEntryNumber(SelectParentsListDataComponent.this.makeCrossesParentsComponent.getFemaleTable());
+									Util.assignEntryNumberForGermplasmListTable(SelectParentsListDataComponent.this.makeCrossesParentsComponent.getFemaleTable());
 							SelectParentsListDataComponent.this.makeCrossesParentsComponent.getParentTabSheet().setSelectedTab(0);
 						} else {
 							MessageNotifier.showWarning(SelectParentsListDataComponent.this.getWindow(),
@@ -146,8 +144,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 							SelectParentsListDataComponent.this.makeCrossesParentsComponent.dropToFemaleOrMaleTable(
 									SelectParentsListDataComponent.this.listDataTable,
 									SelectParentsListDataComponent.this.makeCrossesParentsComponent.getMaleTable(), null);
-							SelectParentsListDataComponent.this.makeCrossesParentsComponent
-									.assignEntryNumber(SelectParentsListDataComponent.this.makeCrossesParentsComponent.getMaleTable());
+									Util.assignEntryNumberForGermplasmListTable(SelectParentsListDataComponent.this.makeCrossesParentsComponent.getMaleTable());
 							SelectParentsListDataComponent.this.makeCrossesParentsComponent.getParentTabSheet().setSelectedTab(1);
 						} else {
 							MessageNotifier.showWarning(SelectParentsListDataComponent.this.getWindow(),
@@ -793,13 +790,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 
 	@Override
 	public void updateListInventoryTable(Map<ListEntryLotDetails, Double> validReservations, boolean withInvalidReservations) {
-		for (Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()) {
-			ListEntryLotDetails lot = entry.getKey();
-			Double newRes = entry.getValue();
-
-			Item itemToUpdate = this.listInventoryTable.getTable().getItem(lot);
-			itemToUpdate.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(newRes);
-		}
+		Util.mapValidReservationToCrossingInventory(validReservations, this.listInventoryTable);
 
 		this.removeReserveInventoryWindow(this.reserveInventory);
 
@@ -823,17 +814,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 	}
 
 	private void updateLotReservationsToSave(Map<ListEntryLotDetails, Double> validReservations) {
-		for (Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()) {
-			ListEntryLotDetails lot = entry.getKey();
-			Double amountToReserve = entry.getValue();
-
-			if (this.validReservationsToSave.containsKey(lot)) {
-				this.validReservationsToSave.remove(lot);
-
-			}
-
-			this.validReservationsToSave.put(lot, amountToReserve);
-		}
+		Util.mapValidPersistableReservation(validReservations, validReservations);
 
 		if (!this.validReservationsToSave.isEmpty()) {
 			this.setHasUnsavedChanges(true);

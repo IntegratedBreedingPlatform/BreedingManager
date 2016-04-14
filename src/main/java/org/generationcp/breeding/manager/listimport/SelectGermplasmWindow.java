@@ -23,6 +23,7 @@ import org.generationcp.breeding.manager.listimport.listeners.CloseWindowAction;
 import org.generationcp.breeding.manager.listimport.listeners.GermplasmImportButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.ImportGermplasmEntryActionListener;
+import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -188,17 +189,8 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 	private String getGermplasmNames(int gid) {
 
 		try {
-			List<Name> names = this.germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
 			StringBuilder germplasmNames = new StringBuilder("");
-			int i = 0;
-			for (Name n : names) {
-				if (i < names.size() - 1) {
-					germplasmNames.append(n.getNval() + ", ");
-				} else {
-					germplasmNames.append(n.getNval());
-				}
-				i++;
-			}
+			Util.constructGermplasmNames(germplasmDataManager, gid);
 
 			return germplasmNames.toString();
 		} catch (MiddlewareQueryException e) {
