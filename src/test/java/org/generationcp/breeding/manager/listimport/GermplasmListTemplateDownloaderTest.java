@@ -12,7 +12,6 @@ import java.io.File;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 import org.generationcp.commons.util.FileDownloadResource;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.junit.Before;
@@ -50,13 +49,15 @@ public class GermplasmListTemplateDownloaderTest {
 	public void setUp() throws Exception {
 		doReturn(this.application).when(this.exportDialog).getCurrentApplication();
 		doReturn(this.request).when(this.exportDialog).getCurrentRequest();
-		doReturn(mock(FileDownloadResource.class)).when(this.exportDialog).getTemplateAsDownloadResource(any(File.class));
+		doReturn(mock(FileDownloadResource.class)).when(this.exportDialog)
+				.getTemplateAsDownloadResource(any(File.class), any(String.class));
 
 		when(this.application.getMainWindow()).thenReturn(this.window);
 	}
 
 	@Test
-	@Ignore(value = "This test runs fine in IDE but fails on mvn commandline due to classpath issues in loading the xls file from commons. Team Manila to fix and enable soon.")
+	@Ignore(
+			value = "This test runs fine in IDE but fails on mvn commandline due to classpath issues in loading the xls file from commons. Team Manila to fix and enable soon.")
 	public void testExportGermplasmTemplate() throws Exception {
 		Component component = mock(Component.class);
 		when(component.getWindow()).thenReturn(this.window);
@@ -66,7 +67,8 @@ public class GermplasmListTemplateDownloaderTest {
 	}
 
 	@Test
-	@Ignore(value = "This test runs fine in IDE but fails on mvn commandline due to classpath issues in loading the xls file from commons. Team Manila to fix and enable soon.")
+	@Ignore(
+			value = "This test runs fine in IDE but fails on mvn commandline due to classpath issues in loading the xls file from commons. Team Manila to fix and enable soon.")
 	public void testGermplasmTemplateExists() throws Exception {
 		ClassPathResource cpr = new ClassPathResource("templates/" + GermplasmListTemplateDownloader.EXPANDED_TEMPLATE_FILE);
 		File templateFile = cpr.getFile();

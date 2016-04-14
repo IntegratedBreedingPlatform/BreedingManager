@@ -4,6 +4,7 @@ package org.generationcp.breeding.manager.customcomponent;
 import java.util.Collection;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
+import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Property;
@@ -64,6 +65,10 @@ public class TableWithSelectAllLayout extends TableLayout implements BreedingMan
 	@Override
 	public Table getTable() {
 		return this.table;
+	}
+	
+	public void setTable(BreedingManagerTable table){
+		this.table = table;
 	}
 
 	public CheckBox getCheckBox() {

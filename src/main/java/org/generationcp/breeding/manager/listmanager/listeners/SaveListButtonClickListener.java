@@ -276,6 +276,11 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 		return true;
 	}
 
+	/**
+	 * This method is used for refreshing entries from list data table in List Builder Component after saving
+	 * 
+	 * @param currentlySavedList - the germplasm list currently saved in Build New List section
+	 */
 	private void updateListDataTableContent(final GermplasmList currentlySavedList) {
 		try {
 			final int listDataCount = (int) this.germplasmListManager.countGermplasmListDataByListId(currentlySavedList.getId());
@@ -294,23 +299,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 						new Button(String.format("%s", entry.getGid()), new GidLinkClickListener(entry.getGid().toString(), true));
 				gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 
-				final CheckBox tagCheckBox = new CheckBox();
-				tagCheckBox.setImmediate(true);
-				tagCheckBox.addListener(new ClickListener() {
-
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
-						final CheckBox itemCheckBox = (CheckBox) event.getButton();
-						if (((Boolean) itemCheckBox.getValue()).equals(true)) {
-							SaveListButtonClickListener.this.listDataTable.select(entry.getId());
-						} else {
-							SaveListButtonClickListener.this.listDataTable.unselect(entry.getId());
-						}
-					}
-
-				});
+				final CheckBox tagCheckBox = initializeTagCheckBox(entry);
 
 				final Button designationButton =
 						new Button(entry.getDesignation(), new GidLinkClickListener(entry.getGid().toString(), true));
@@ -344,8 +333,12 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 					seedRes = entry.getInventoryInfo().getReservedLotCount().toString().trim();
 				}
 
+				// GROUP ID - the maintenance group id(gid) of a germplasm
+				final String groupId = entry.getGroupId() == 0 ? "-" : entry.getGroupId().toString();
+
 				item.getItemProperty(ColumnLabels.TAG.getName()).setValue(tagCheckBox);
 				item.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
+				item.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(groupId);
 				item.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
 				item.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(entry.getEntryCode());
 				item.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entry.getEntryId());
@@ -364,6 +357,27 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
 					this.messageSource.getMessage(Message.ERROR_GETTING_SAVED_ENTRIES));
 		}
+	}
+
+	private CheckBox initializeTagCheckBox(final GermplasmListData entry) {
+		final CheckBox tagCheckBox = new CheckBox();
+		tagCheckBox.setImmediate(true);
+		tagCheckBox.addListener(new ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
+				final CheckBox itemCheckBox = (CheckBox) event.getButton();
+				if (((Boolean) itemCheckBox.getValue()).equals(true)) {
+					SaveListButtonClickListener.this.listDataTable.select(entry.getId());
+				} else {
+					SaveListButtonClickListener.this.listDataTable.unselect(entry.getId());
+				}
+			}
+
+		});
+		return tagCheckBox;
 	}
 
 	private Table cloneAddedColumnsToTemp(final Table sourceTable) {

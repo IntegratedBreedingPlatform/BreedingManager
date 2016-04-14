@@ -58,7 +58,7 @@ public class ListSelectorComponentTest {
 	private ContextUtil contextUtil;
 
 	@InjectMocks
-	private ListSelectorComponent listSelectorComponent = new ListManagerTreeComponent();
+	private final ListSelectorComponent listSelectorComponent = new ListManagerTreeComponent();
 
 	@Before
 	public void setUp() {
@@ -69,10 +69,10 @@ public class ListSelectorComponentTest {
 
 	@Test
 	public void testReturnTrueIfGermplasmListIdIsFolder() throws MiddlewareQueryException {
-		Integer itemId = new Integer(5);
-		ListManagerTreeComponent listManagerTreeComponent = new ListManagerTreeComponent();
+		final Integer itemId = 5;
+		final ListManagerTreeComponent listManagerTreeComponent = new ListManagerTreeComponent();
 
-		GermplasmList germplasmList = Mockito.mock(GermplasmList.class);
+		final GermplasmList germplasmList = Mockito.mock(GermplasmList.class);
 		Mockito.when(germplasmList.getType()).thenReturn(AppConstants.DB.FOLDER);
 		Mockito.when(this.germplasmListManager.getGermplasmListById(itemId)).thenReturn(germplasmList);
 		listManagerTreeComponent.setGermplasmListManager(this.germplasmListManager);
@@ -82,10 +82,10 @@ public class ListSelectorComponentTest {
 
 	@Test
 	public void testReturnFalseIfGermplasmListIdIsNotAFolder() throws MiddlewareQueryException {
-		Integer itemId = new Integer(5);
-		ListManagerTreeComponent listManagerTreeComponent = new ListManagerTreeComponent();
+		final Integer itemId = 5;
+		final ListManagerTreeComponent listManagerTreeComponent = new ListManagerTreeComponent();
 
-		GermplasmList germplasmList = Mockito.mock(GermplasmList.class);
+		final GermplasmList germplasmList = Mockito.mock(GermplasmList.class);
 		Mockito.when(germplasmList.getType()).thenReturn("Not Folder");
 		Mockito.when(this.germplasmListManager.getGermplasmListById(itemId)).thenReturn(germplasmList);
 		listManagerTreeComponent.setGermplasmListManager(this.germplasmListManager);
@@ -95,10 +95,10 @@ public class ListSelectorComponentTest {
 
 	@Test
 	public void testDoAddItemReturnTrueIfGermplasmListIsAFolderAndDoShowFoldersOnlyIsFalse() throws MiddlewareQueryException {
-		Integer itemId = new Integer(5);
-		ListManagerTreeComponent listManagerTreeComponent = new ListManagerTreeComponent();
+		final Integer itemId = 5;
+		final ListManagerTreeComponent listManagerTreeComponent = new ListManagerTreeComponent();
 
-		GermplasmList germplasmList = Mockito.mock(GermplasmList.class);
+		final GermplasmList germplasmList = Mockito.mock(GermplasmList.class);
 		Mockito.when(germplasmList.getType()).thenReturn(AppConstants.DB.FOLDER);
 		Mockito.when(this.germplasmListManager.getGermplasmListById(itemId)).thenReturn(germplasmList);
 		listManagerTreeComponent.setGermplasmListManager(this.germplasmListManager);
@@ -109,18 +109,18 @@ public class ListSelectorComponentTest {
 
 	@Test
 	public void testAddGermplasmListNodeUsingAParentGermplasmListId() throws MiddlewareQueryException {
-		Integer parentGermplasmListId = new Integer(5);
-		Integer childGermplasmListId = new Integer(20);
-		ListManagerTreeComponent listManagerTreeComponent = new ListManagerTreeComponent();
+		final Integer parentGermplasmListId = 5;
+		final Integer childGermplasmListId = 20;
+		final ListManagerTreeComponent listManagerTreeComponent = new ListManagerTreeComponent();
 		listManagerTreeComponent.setUtil(this.contextUtil);
 
-		UserDataManager userDataManager = Mockito.mock(UserDataManager.class);
-		GermplasmList germplasmList = Mockito.mock(GermplasmList.class);
+		final UserDataManager userDataManager = Mockito.mock(UserDataManager.class);
+		final GermplasmList germplasmList = Mockito.mock(GermplasmList.class);
 
 		Mockito.when(germplasmList.getType()).thenReturn(AppConstants.DB.FOLDER);
 		Mockito.when(germplasmList.getId()).thenReturn(childGermplasmListId);
 
-		List<GermplasmList> germplasmListChildren = new ArrayList<GermplasmList>();
+		final List<GermplasmList> germplasmListChildren = new ArrayList<>();
 		germplasmListChildren.add(germplasmList);
 		Mockito.when(this.germplasmListManager.getGermplasmListByParentFolderIdBatched(parentGermplasmListId,
 				ListSelectorComponentTest.PROGRAM_UUID, ListSelectorComponent.BATCH_SIZE)).thenReturn(germplasmListChildren);
@@ -137,24 +137,24 @@ public class ListSelectorComponentTest {
 
 	@Test
 	public void testAddGermplasmListNodeWithEntries() throws MiddlewareQueryException {
-		Integer parentGermplasmListId = new Integer(5);
-		Integer childGermplasmListId = new Integer(50);
-		ListManagerTreeComponent listManagerTreeComponent = new ListManagerTreeComponent();
+		final Integer parentGermplasmListId = 5;
+		final Integer childGermplasmListId = 50;
+		final ListManagerTreeComponent listManagerTreeComponent = new ListManagerTreeComponent();
 		listManagerTreeComponent.setUtil(this.contextUtil);
 
-		UserDataManager userDataManager = Mockito.mock(UserDataManager.class);
-		GermplasmList germplasmList = new GermplasmList();
+		final UserDataManager userDataManager = Mockito.mock(UserDataManager.class);
+		final GermplasmList germplasmList = new GermplasmList();
 
 		germplasmList.setType(AppConstants.DB.LST);
 		germplasmList.setId(childGermplasmListId);
 
-		List<GermplasmList> germplasmListChildren = new ArrayList<GermplasmList>();
+		final List<GermplasmList> germplasmListChildren = new ArrayList<>();
 		germplasmListChildren.add(germplasmList);
 		Mockito.when(this.germplasmListManager.getGermplasmListByParentFolderIdBatched(parentGermplasmListId,
 				ListSelectorComponentTest.PROGRAM_UUID, ListSelectorComponent.BATCH_SIZE)).thenReturn(germplasmListChildren);
 
-		Integer expectedNoOfEntries = 10;
-		Map<Integer, GermplasmListMetadata> allListMetaData = new HashMap<Integer, GermplasmListMetadata>();
+		final Integer expectedNoOfEntries = 10;
+		final Map<Integer, GermplasmListMetadata> allListMetaData = new HashMap<>();
 		allListMetaData.put(childGermplasmListId, new GermplasmListMetadata(childGermplasmListId,
 				expectedNoOfEntries, "Child List Owner Name"));
 
@@ -164,8 +164,8 @@ public class ListSelectorComponentTest {
 		listManagerTreeComponent.setGermplasmListManager(this.germplasmListManager);
 		listManagerTreeComponent.setUserDataManager(userDataManager);
 		listManagerTreeComponent.addGermplasmListNode(parentGermplasmListId);
-		Item item = listManagerTreeComponent.getGermplasmListSource().getItem(childGermplasmListId);
-		Integer actualNoOfEntries =
+		final Item item = listManagerTreeComponent.getGermplasmListSource().getItem(childGermplasmListId);
+		final Integer actualNoOfEntries =
 				Integer.parseInt((String) item.getItemProperty(GermplasmListTreeTable.NUMBER_OF_ENTRIES_COL).getValue());
 		Assert.assertEquals("The number of entries should be the same", expectedNoOfEntries, actualNoOfEntries);
 
@@ -173,16 +173,16 @@ public class ListSelectorComponentTest {
 
 	@Test
 	public void testRenameGermplasmListFolderIsSuccess() throws MiddlewareQueryException {
-		String newFolderName = "New Folder Name";
-		Integer germplasmListTreeId = new Integer(5);
-		ListManagerTreeComponent listManagerTreeComponent = new ListManagerTreeComponent();
+		final String newFolderName = "New Folder Name";
+		final Integer germplasmListTreeId = 5;
+		final ListManagerTreeComponent listManagerTreeComponent = new ListManagerTreeComponent();
 		listManagerTreeComponent.setUtil(this.contextUtil);
 
-		TextField folderTextField = new TextField();
+		final TextField folderTextField = new TextField();
 		folderTextField.setValue(newFolderName);
-		UserDataManager userDataManager = Mockito.mock(UserDataManager.class);
-		GermplasmList germplasmList = Mockito.mock(GermplasmList.class);
-		GermplasmListTreeTable treeTable = Mockito.mock(GermplasmListTreeTable.class);
+		final UserDataManager userDataManager = Mockito.mock(UserDataManager.class);
+		final GermplasmList germplasmList = Mockito.mock(GermplasmList.class);
+		final GermplasmListTreeTable treeTable = Mockito.mock(GermplasmListTreeTable.class);
 
 		Mockito.when(germplasmList.getType()).thenReturn(AppConstants.DB.FOLDER);
 		Mockito.when(this.germplasmListManager.getGermplasmListById(germplasmListTreeId)).thenReturn(germplasmList);
@@ -200,9 +200,9 @@ public class ListSelectorComponentTest {
 		listManagerTreeComponent.getGermplasmListTreeUtil().setGermplasmListManager(this.germplasmListManager);
 		listManagerTreeComponent.getGermplasmListTreeUtil().setMessageSource(this.messageSource);
 
-		Object[] treeTableInfo = listManagerTreeComponent.generateCellInfo("Test", "Owner", "description", "listType", "25");
+		final Object[] treeTableInfo = listManagerTreeComponent.generateCellInfo("Test", "Owner", "description", "listType", "25");
 		listManagerTreeComponent.getGermplasmListSource().addItem(treeTableInfo, germplasmListTreeId);
-		String newName = listManagerTreeComponent.getGermplasmListTreeUtil().renameFolderOrList(germplasmListTreeId,
+		final String newName = listManagerTreeComponent.getGermplasmListTreeUtil().renameFolderOrList(germplasmListTreeId,
 				listManagerTreeComponent.getTreeActionsListener(), folderTextField, "Test");
 
 		Assert.assertEquals("Returns correct folder name when the user is renaming a folder in the tree", " " + newFolderName, newName);
@@ -210,11 +210,11 @@ public class ListSelectorComponentTest {
 
 	@Test
 	public void testDeletionOfFolderNodeInTheTree() {
-		Integer germplasmListId = new Integer(5);
-		GermplasmList germplasmList = new GermplasmList();
+		final Integer germplasmListId = 5;
+		final GermplasmList germplasmList = new GermplasmList();
 
 		germplasmList.setId(germplasmListId);
-		ListManagerTreeComponent listManagerTreeComponent = new ListManagerTreeComponent();
+		final ListManagerTreeComponent listManagerTreeComponent = new ListManagerTreeComponent();
 		listManagerTreeComponent.setGermplasmListManager(this.germplasmListManager);
 		listManagerTreeComponent.setMessageSource(this.messageSource);
 		listManagerTreeComponent.setUtil(this.contextUtil);
@@ -222,7 +222,7 @@ public class ListSelectorComponentTest {
 		listManagerTreeComponent.getGermplasmListTreeUtil().setGermplasmListManager(this.germplasmListManager);
 		listManagerTreeComponent.getGermplasmListTreeUtil().setMessageSource(this.messageSource);
 
-		Object[] info = listManagerTreeComponent.generateCellInfo("Test", "Owner", "description", "listType", "25");
+		final Object[] info = listManagerTreeComponent.generateCellInfo("Test", "Owner", "description", "listType", "25");
 		listManagerTreeComponent.getGermplasmListSource().addItem(info, germplasmListId);
 		listManagerTreeComponent.removeListFromTree(germplasmList);
 		Assert.assertNull("Should not return an object since the folder in the tree was deleted already",
@@ -232,15 +232,15 @@ public class ListSelectorComponentTest {
 	@Test
 	public void testMoveGermplasmListIfSourceIsAChildLocalNode() throws MiddlewareQueryException {
 		// start: setup for the scenario
-		GermplasmListTreeUtil treeUtil = new GermplasmListTreeUtil();
+		final GermplasmListTreeUtil treeUtil = new GermplasmListTreeUtil();
 
-		Integer sourceItemId = new Integer(-11);
-		Integer targetItemId = new Integer(-12);
+		final Integer sourceItemId = -11;
+		final Integer targetItemId = -12;
 
 		Mockito.when(this.germplasmListManager.getGermplasmListById(sourceItemId)).thenReturn(Mockito.mock(GermplasmList.class));
 		Mockito.when(this.germplasmListManager.getGermplasmListById(targetItemId)).thenReturn(Mockito.mock(GermplasmList.class));
 
-		GermplasmListSource source = Mockito.mock(GermplasmListSource.class);
+		final GermplasmListSource source = Mockito.mock(GermplasmListSource.class);
 
 		treeUtil.setTargetListSource(source);
 		this.listSelectorComponent.setGermplasmListSource(source);
@@ -250,7 +250,7 @@ public class ListSelectorComponentTest {
 		treeUtil.setContextUtil(this.contextUtil);
 		// end: setup for the scenario
 
-		boolean result = treeUtil.setParent(sourceItemId, targetItemId);
+		final boolean result = treeUtil.setParent(sourceItemId, targetItemId);
 
 		Assert.assertTrue("Should be able to move Child to any children local folder", result);
 	}
@@ -261,7 +261,7 @@ public class ListSelectorComponentTest {
 		Mockito.when(this.germplasmListManager.getAllTopLevelListsBatched(ListSelectorComponentTest.PROGRAM_UUID, 10))
 				.thenReturn(new ArrayList<GermplasmList>());
 
-		ListManagerTreeComponent listManagerTreeComponent = Mockito.spy(new ListManagerTreeComponent());
+		final ListManagerTreeComponent listManagerTreeComponent = Mockito.spy(new ListManagerTreeComponent());
 		listManagerTreeComponent.setMessageSource(this.messageSource);
 		listManagerTreeComponent.setGermplasmListManager(this.germplasmListManager);
 		listManagerTreeComponent.setUtil(this.contextUtil);
@@ -282,7 +282,7 @@ public class ListSelectorComponentTest {
 		Mockito.when(this.germplasmListManager.getAllTopLevelListsBatched(ListSelectorComponentTest.PROGRAM_UUID, 10))
 				.thenReturn(new ArrayList<GermplasmList>());
 
-		ListManagerTreeComponent listManagerTreeComponent = Mockito.spy(new ListManagerTreeComponent());
+		final ListManagerTreeComponent listManagerTreeComponent = Mockito.spy(new ListManagerTreeComponent());
 		listManagerTreeComponent.setMessageSource(this.messageSource);
 		listManagerTreeComponent.setGermplasmListManager(this.germplasmListManager);
 		listManagerTreeComponent.setUtil(this.contextUtil);
@@ -299,45 +299,45 @@ public class ListSelectorComponentTest {
 
 	@Test
 	public void testCreateGermplasmList_TestNoOfEntries() throws Exception {
-		UserDataManager userDataManager = Mockito.mock(UserDataManager.class);
-		ListManagerTreeComponent listManagerTreeComponent = new ListManagerTreeComponent();
+		final UserDataManager userDataManager = Mockito.mock(UserDataManager.class);
+		final ListManagerTreeComponent listManagerTreeComponent = new ListManagerTreeComponent();
 		listManagerTreeComponent.setGermplasmListManager(this.germplasmListManager);
 		listManagerTreeComponent.setUserDataManager(userDataManager);
 		listManagerTreeComponent.setUtil(this.contextUtil);
 
-		Integer childGermplasmListId = new Integer(50);
-		Integer userId = 1;
-		GermplasmList germplasmList = new GermplasmList();
+		final Integer childGermplasmListId = 50;
+		final Integer userId = 1;
+		final GermplasmList germplasmList = new GermplasmList();
 		germplasmList.setType(AppConstants.DB.LST);
 		germplasmList.setId(childGermplasmListId);
 		germplasmList.setUserId(userId);
-		List<GermplasmList> germplasmListChildren = new ArrayList<GermplasmList>();
+		final List<GermplasmList> germplasmListChildren = new ArrayList<>();
 		germplasmListChildren.add(germplasmList);
 
 		Mockito.when(this.germplasmListManager.getAllTopLevelListsBatched(ListSelectorComponentTest.PROGRAM_UUID,
 				ListSelectorComponent.BATCH_SIZE)).thenReturn(germplasmListChildren);
-		Integer expectedNoOfEntries = 10;
-		Map<Integer, GermplasmListMetadata> allListMetaData = new HashMap<Integer, GermplasmListMetadata>();
+		final Integer expectedNoOfEntries = 10;
+		final Map<Integer, GermplasmListMetadata> allListMetaData = new HashMap<>();
 		allListMetaData.put(childGermplasmListId, new GermplasmListMetadata(childGermplasmListId,
 				expectedNoOfEntries, "Child List Owner Name"));
 		Mockito.when(this.germplasmListManager.getAllGermplasmListMetadata()).thenReturn(allListMetaData);
 
 		Mockito.when(userDataManager.getUserById(userId)).thenReturn(null);
 		listManagerTreeComponent.createGermplasmList();
-		Item item = listManagerTreeComponent.getGermplasmListSource().getItem(childGermplasmListId);
-		Integer actualNoOfEntries =
+		final Item item = listManagerTreeComponent.getGermplasmListSource().getItem(childGermplasmListId);
+		final Integer actualNoOfEntries =
 				Integer.parseInt((String) item.getItemProperty(GermplasmListTreeTable.NUMBER_OF_ENTRIES_COL).getValue());
 		Assert.assertEquals("The number of entries should be the same", expectedNoOfEntries, actualNoOfEntries);
 	}
 
 	@Test
 	public void testTreeInitializationNotSaveListDialog() {
-		List<String> navigationState = Arrays.asList(new String[] {ListSelectorComponent.LISTS, "1", "2"});
+		final List<String> navigationState = Arrays.asList(ListSelectorComponent.LISTS, "1", "2");
 		Mockito.when(
 				userTreeStateService.getUserProgramTreeStateByUserIdProgramUuidAndType(TEST_USER_ID, PROGRAM_UUID,
 						ListTreeState.GERMPLASM_LIST.name())).thenReturn(navigationState);
 		Mockito.when(this.contextUtil.getCurrentUserLocalId()).thenReturn(TEST_USER_ID);
-		GermplasmListSource source = Mockito.mock(GermplasmListSource.class);
+		final GermplasmListSource source = Mockito.mock(GermplasmListSource.class);
 		listSelectorComponent.setGermplasmListSource(source);
 
 		listSelectorComponent.reinitializeTree(false);
@@ -352,10 +352,10 @@ public class ListSelectorComponentTest {
 
 	@Test
 	public void testTreeInitializationSaveDialog() {
-		List<String> saveHierarchy = Arrays.asList(new String[] {ListSelectorComponent.LISTS, "1", "2"});
+		final List<String> saveHierarchy = Arrays.asList(ListSelectorComponent.LISTS, "1", "2");
 		Mockito.when(userTreeStateService.getUserProgramTreeStateForSaveList(TEST_USER_ID, PROGRAM_UUID)).thenReturn(saveHierarchy);
 		Mockito.when(this.contextUtil.getCurrentUserLocalId()).thenReturn(TEST_USER_ID);
-		GermplasmListSource source = Mockito.mock(GermplasmListSource.class);
+		final GermplasmListSource source = Mockito.mock(GermplasmListSource.class);
 		listSelectorComponent.setGermplasmListSource(source);
 
 		listSelectorComponent.reinitializeTree(true);
@@ -364,7 +364,9 @@ public class ListSelectorComponentTest {
 		Mockito.verify(source).expandItem(ListSelectorComponent.LISTS);
 		Mockito.verify(source).expandItem(Integer.parseInt(saveHierarchy.get(1)));
 		Mockito.verify(source).expandItem(Integer.parseInt(saveHierarchy.get(2)));
-		Mockito.verify(source).clearSelection();
+
+        // we need to ensure that the last item in the saveHierarchy is selected
+        Mockito.verify(source).select(saveHierarchy.get(2));
 	}
 
 }

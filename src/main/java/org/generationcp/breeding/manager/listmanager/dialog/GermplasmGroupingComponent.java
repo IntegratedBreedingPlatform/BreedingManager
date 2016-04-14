@@ -1,7 +1,9 @@
 
 package org.generationcp.breeding.manager.listmanager.dialog;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -13,6 +15,7 @@ import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.service.api.GermplasmGroup;
 import org.generationcp.middleware.service.api.GermplasmGroupingService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,6 +116,7 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 		final boolean includeDescendantsChoice = this.includeDescendants.booleanValue();
 		final boolean preserveExistingGroupChoice = this.preserveExistingGroupId.booleanValue();
 
+		final Map<Integer, GermplasmGroup> allGroupingResults = new HashMap<>();
 		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
 		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
@@ -121,19 +125,23 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 
 				for (final Integer gid : GermplasmGroupingComponent.this.gidsToProcess) {
 					Germplasm germplasm = GermplasmGroupingComponent.this.germplasmDataManager.getGermplasmByGID(gid);
-					GermplasmGroupingComponent.this.germplasmGroupingService.markFixed(germplasm, includeDescendantsChoice,
+					GermplasmGroup report =
+							GermplasmGroupingComponent.this.germplasmGroupingService.markFixed(germplasm, includeDescendantsChoice,
 							preserveExistingGroupChoice);
+					allGroupingResults.put(gid, report);
 				}
 			}
 		});
 
-		reportSuccessAndClose();
+		reportSuccessAndClose(allGroupingResults);
 	}
 
-	void reportSuccessAndClose() {
+	void reportSuccessAndClose(Map<Integer, GermplasmGroup> groupingResults) {
 		MessageNotifier.showMessage(this.getParent(), this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
 				this.messageSource.getMessage(Message.SUCCESS_MARK_LINES_AS_FIXED));
-		this.close();
+
+		this.getParent().addWindow(new GermplasmGroupingResultsComponent(groupingResults));
+		this.closeWindow();
 	}
 
 	@Override

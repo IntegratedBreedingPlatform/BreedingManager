@@ -1,6 +1,7 @@
 
 package org.generationcp.breeding.manager.listmanager;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -42,8 +43,13 @@ import org.generationcp.breeding.manager.listmanager.listeners.SaveListButtonCli
 import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
 import org.generationcp.breeding.manager.listmanager.util.DropHandlerMethods.ListUpdatedEvent;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
+import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.commons.util.FileDownloadResource;
+import org.generationcp.commons.util.FileUtils;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
@@ -224,6 +230,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.EXPORT_LIST))) {
 						ListBuilderComponent.this.exportListAction();
 					} else if (clickedItem.getName().equals(
+							ListBuilderComponent.this.messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER))) {
+						ListBuilderComponent.this.exportListForGenotypingOrderAction();
+					} else if (clickedItem.getName().equals(
 							ListBuilderComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL))) {
 						ListBuilderComponent.this.copyToNewListAction();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.INVENTORY_VIEW))) {
@@ -255,6 +264,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	private InventoryDataManager inventoryDataManager;
 
 	@Autowired
+	@Resource
 	private OntologyDataManager ontologyDataManager;
 
 	@Autowired
@@ -309,6 +319,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	private static final String LOCK_TOOLTIP = "Click to lock or unlock this germplasm list.";
 	public static final String TOOLS_BUTTON_ID = "Actions";
 	public static final String INVENTORY_TOOLS_BUTTON_ID = "Actions";
+	private static final String USER_HOME = "user.home";
+
 	// Layout Component
 	private AbsoluteLayout toolsButtonContainer;
 
@@ -786,6 +798,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		table.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
 		table.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
 		table.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
+		table.addContainerProperty(ColumnLabels.GROUP_ID.getName(), String.class, null);
 		table.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
 		table.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
 
@@ -797,6 +810,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		table.setColumnHeader(ColumnLabels.SEED_RESERVATION.getName(), this.getTermNameFromOntology(ColumnLabels.SEED_RESERVATION));
 		table.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(), this.getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
 		table.setColumnHeader(ColumnLabels.GID.getName(), this.getTermNameFromOntology(ColumnLabels.GID));
+		table.setColumnHeader(ColumnLabels.GROUP_ID.getName(), this.getTermNameFromOntology(ColumnLabels.GROUP_ID));
 		table.setColumnHeader(ColumnLabels.STOCKID.getName(), this.getTermNameFromOntology(ColumnLabels.STOCKID));
 		table.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(), this.getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
 	}
@@ -832,24 +846,42 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 
 	@SuppressWarnings("unchecked")
-	private void deleteSelectedEntries() {
+	protected void deleteSelectedEntries() {
 		final Collection<? extends Integer> selectedIdsToDelete =
 				(Collection<? extends Integer>) this.tableWithSelectAllLayout.getTable().getValue();
 		if (!selectedIdsToDelete.isEmpty()) {
-			if (this.listDataTable.getItemIds().size() == selectedIdsToDelete.size()) {
-				this.tableWithSelectAllLayout.getTable().getContainerDataSource().removeAllItems();
-			} else {
-				for (final Integer selectedItemId : selectedIdsToDelete) {
-					this.tableWithSelectAllLayout.getTable().getContainerDataSource().removeItem(selectedItemId);
-				}
-			}
-			this.assignSerializedEntryNumber();
-			this.setHasUnsavedChanges(true);
+			ConfirmDialog.show(ListBuilderComponent.this.getWindow(), this.messageSource.getMessage(Message.DELETE_GERMPLASM_ENTRIES),
+					this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES_CONFIRM), this.messageSource.getMessage(Message.YES),
+					this.messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
+
+						private static final long serialVersionUID = 1L;
+
+						@Override
+						public void onClose(final ConfirmDialog dialog) {
+							if (dialog.isConfirmed()) {
+								ListBuilderComponent.this.doDeleteSelectedEntries();
+							}
+						}
+					});
 		} else {
 			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_DELETING_LIST_ENTRIES),
 					this.messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
 		}
+	}
 
+	void doDeleteSelectedEntries() {
+		final Collection<? extends Integer> selectedIdsToDelete =
+				(Collection<? extends Integer>) this.tableWithSelectAllLayout.getTable().getValue();
+		if (this.listDataTable.getItemIds().size() == selectedIdsToDelete.size()) {
+			this.tableWithSelectAllLayout.getTable().getContainerDataSource().removeAllItems();
+		} else {
+			for (final Integer selectedItemId : selectedIdsToDelete) {
+				this.tableWithSelectAllLayout.getTable().getContainerDataSource().removeItem(selectedItemId);
+			}
+		}
+		this.assignSerializedEntryNumber();
+		this.setHasUnsavedChanges(true);
+		this.listDataTable.focus();
 		// reset value
 		this.tableWithSelectAllLayout.getTable().setValue(null);
 
@@ -1121,6 +1153,37 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.getWindow().addWindow(exportListAsDialog);
 	}
 
+	private void exportListForGenotypingOrderAction() {
+		if (this.isCurrentListSaved()) {
+			if (this.currentlySavedGermplasmList.isLockedList()) {
+				final String tempFileName = System.getProperty(ListBuilderComponent.USER_HOME) + "/tempListForGenotyping.xls";
+				final GermplasmListExporter listExporter = new GermplasmListExporter();
+
+				try {
+					listExporter.exportKBioScienceGenotypingOrderXLS(this.currentlySavedGermplasmList.getId(), tempFileName, 96);
+
+					final String userAgent = BreedingManagerUtil.getApplicationRequest().getHeader("User-Agent");
+					final FileDownloadResource fileDownloadResource =
+							new FileDownloadResource(new File(tempFileName), this.source.getApplication(), userAgent);
+					final String listName = this.currentlySavedGermplasmList.getName();
+					fileDownloadResource.setFilename(FileUtils.encodeFilenameForDownload(listName).replace(" ", "_") + "ForGenotyping.xls");
+
+					this.source.getWindow().open(fileDownloadResource);
+
+					// must figure out other way to clean-up file because deleting it here makes it unavailable for download
+
+				} catch (final GermplasmListExporterException e) {
+					MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST),
+							e.getMessage());
+					ListBuilderComponent.LOG.error(e.getMessage(), e);
+				}
+			} else {
+				MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST),
+						this.messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED));
+			}
+		}
+	}
+
 	public void copyToNewListAction() {
 		if (this.isCurrentListSaved()) {
 			final Collection<?> listEntries = (Collection<?>) this.tableWithSelectAllLayout.getTable().getValue();
@@ -1378,9 +1441,11 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			this.listInventoryTable.getInventoryTableDropHandler().resetListDataAndLotDetails();
 
 			this.reserveInventoryAction = new ReserveInventoryAction(this);
+
 			final boolean success =
 					this.reserveInventoryAction.saveReserveTransactions(this.getValidReservationsToSave(),
 							this.currentlySavedGermplasmList.getId());
+
 			if (success) {
 				this.refreshInventoryColumns(this.getValidReservationsToSave());
 				this.resetListInventoryTableValues();
@@ -1465,9 +1530,11 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			if (listData.getInventoryInfo().getLotCount().intValue() != 0) {
 				availInv = listData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
 			}
+
 			final Button inventoryButton =
 					new Button(availInv, new InventoryLinkButtonClickListener(this.source, this.currentlySavedGermplasmList.getId(),
 							listData.getId(), listData.getGid()));
+
 			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 			inventoryButton.setDescription("Click to view Inventory Details");
 
@@ -1700,8 +1767,31 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		return columnLabel.getTermNameFromOntology(this.ontologyDataManager);
 	}
 
-	protected void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
+	/*
+	 * For test purposes
+	 */
+	void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
+	}
+
+	void setOntologyDataManager(final OntologyDataManager ontologyDataManager) {
+		this.ontologyDataManager = ontologyDataManager;
+	}
+
+	void setSource(final ListManagerMain source) {
+		this.source = source;
+	}
+
+	void setListDataTable(final Table listDataTable) {
+		this.listDataTable = listDataTable;
+	}
+
+	void setTotalListEntriesLabel(final Label totalListEntriesLabel) {
+		this.totalListEntriesLabel = totalListEntriesLabel;
+	}
+
+	void setTotalSelectedListEntriesLabel(final Label totalSelectedListEntriesLabel) {
+		this.totalSelectedListEntriesLabel = totalSelectedListEntriesLabel;
 	}
 
 }
