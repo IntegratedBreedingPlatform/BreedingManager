@@ -428,7 +428,7 @@ public class GermplasmListExporter {
 			} else if (Objects.equals(cvId, CvId.PROPERTIES)) {
 				termMap.put(term.getId(), this.ontologyPropertyDataManager.getProperty(term.getId(), false));
 			} else if (Objects.equals(cvId, CvId.SCALES)) {
-				termMap.put(term.getId(), this.ontologyScaleDataManager.getScale(term.getId(), false));
+				termMap.put(term.getId(), this.ontologyScaleDataManager.getScaleById(term.getId(), false));
 			} else {
 				termMap.put(term.getId(),
 						this.ontologyVariableDataManager.getVariable(this.contextUtil.getCurrentProgramUUID(), term.getId(), false, false));
