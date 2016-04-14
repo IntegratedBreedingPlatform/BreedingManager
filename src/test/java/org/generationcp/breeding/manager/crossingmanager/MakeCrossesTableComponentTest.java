@@ -7,11 +7,15 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.commons.service.impl.SeedSourceGenerator;
+import org.generationcp.middleware.domain.etl.MeasurementRow;
+import org.generationcp.middleware.domain.etl.Workbook;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
+import org.generationcp.middleware.service.api.FieldbookService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,10 +31,18 @@ public class MakeCrossesTableComponentTest {
 
 	@Mock
 	private CrossingManagerMakeCrossesComponent makeCrossesMain;
+
 	@Mock
 	private OntologyDataManager ontologyDataManager;
+
 	@Mock
 	private BreedingManagerTable tableCrossesMade;
+
+	@Mock
+	private FieldbookService fieldbookMiddlewareService;
+
+	@Mock
+	private SeedSourceGenerator seedSourceGenerator;
 
 	private GermplasmListEntry femaleParent;
 	private GermplasmListEntry maleParent;
@@ -49,6 +61,9 @@ public class MakeCrossesTableComponentTest {
 		this.makeCrossesTableComponent = Mockito.spy(new MakeCrossesTableComponent(this.makeCrossesMain));
 		this.makeCrossesTableComponent.setOntologyDataManager(this.ontologyDataManager);
 		this.makeCrossesTableComponent.setTableCrossesMade(this.tableCrossesMade);
+		this.makeCrossesTableComponent.setFieldbookMiddlewareService(this.fieldbookMiddlewareService);
+		this.makeCrossesTableComponent.setSeedSourceGenerator(this.seedSourceGenerator);
+		this.makeCrossesTableComponent.setSeparator("/");
 
 		this.femaleParent = new GermplasmListEntry(1, 1, 1);
 		this.femaleParent.setDesignation("female parent");
@@ -199,5 +214,30 @@ public class MakeCrossesTableComponentTest {
 		} catch (TooLittleActualInvocations e) {
 			Assert.fail("Expecting table crosses will have an added entry but didn't.");
 		}
+	}
+
+	@Test
+	public void testGenerateSeedSourceStandaloneCrossing() {
+		String seedSource = this.makeCrossesTableComponent.generateSeedSource(1, "F:1", 2, "M:2");
+		Assert.assertEquals("When crossing standalone (not in context of a Nursery), default seed source format is expected.", "F:1/M:2",
+				seedSource);
+	}
+
+	@Test
+	public void testGenerateSeedSourceCrossingWithNurseryInContext() {
+		String nurseryId = "1";
+		Mockito.when(this.makeCrossesMain.getNurseryId()).thenReturn(nurseryId);
+
+		Workbook testWorkbook = new Workbook();
+		testWorkbook.setObservations(new ArrayList<MeasurementRow>());
+
+		Mockito.when(this.fieldbookMiddlewareService.getNurseryDataSet(Integer.valueOf(nurseryId))).thenReturn(testWorkbook);
+		Mockito.when(
+				this.seedSourceGenerator.generateSeedSourceForCross(Mockito.any(Workbook.class), Mockito.anyString(), Mockito.anyString(),
+						Mockito.anyString(), Mockito.anyString())).thenReturn("MEX-DrySeason-N1-1-2");
+
+		String seedSource = this.makeCrossesTableComponent.generateSeedSource(1, "WhateverF", 2, "WhateverM");
+		Assert.assertEquals("When crossing in context of a Nursery, seed source should be generated using SeedSourceGenerator service.",
+				"MEX-DrySeason-N1-1-2", seedSource);
 	}
 }

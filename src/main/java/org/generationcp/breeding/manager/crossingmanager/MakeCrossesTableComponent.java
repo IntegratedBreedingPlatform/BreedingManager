@@ -20,6 +20,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -29,6 +30,7 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ApplyCrossingSettingAction;
+import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
@@ -36,11 +38,16 @@ import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.commons.service.impl.SeedSourceGenerator;
 import org.generationcp.commons.util.CrossingUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.etl.MeasurementData;
+import org.generationcp.middleware.domain.etl.MeasurementRow;
+import org.generationcp.middleware.domain.etl.Workbook;
+import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -48,6 +55,7 @@ import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.service.api.FieldbookService;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.slf4j.Logger;
@@ -61,10 +69,12 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.PopupView;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
@@ -95,11 +105,22 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 	@Resource
 	private CrossExpansionProperties crossExpansionProperties;
 
+	@Autowired
+	private FieldbookService fieldbookMiddlewareService;
+
+	@Autowired
+	private SeedSourceGenerator seedSourceGenerator;
+
 	private Label lblReviewCrosses;
 	private BreedingManagerTable tableCrossesMade;
 
 	private Label totalCrossesLabel;
 	private Label totalSelectedCrossesLabel;
+
+	private PopupView applyGroupingToNewCrossesOnlyHelpPopup;
+	private Label applyGroupingToNewCrossesOnlyHelpText;
+	private CheckBox applyGroupingToNewCrossesOnly;
+
 	private Button saveButton;
 
 	private SaveListAsDialog saveListAsWindow;
@@ -198,7 +219,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		germplasm.setGpid1(femaleParent.getGid());
 		germplasm.setGpid2(maleParent.getGid());
 		final String cross = this.getCross(germplasm, femaleDesig, maleDesig);
-		final String seedSource = this.appendWithSeparator(femaleSeedSource, maleSeedSource);
+		String seedSource = this.generateSeedSource(femaleParent.getGid(), femaleSeedSource, maleParent.getGid(), maleSeedSource);
 
 		if (!this.crossAlreadyExists(parents) && ((excludeSelf && !this.hasSameParent(femaleParent, maleParent)) || !excludeSelf)) {
 			this.tableCrossesMade.addItem(new Object[] {1, cross, femaleDesig, maleDesig, seedSource}, parents);
@@ -207,8 +228,9 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 	}
 
 	private void setMakeCrossesTableVisibleColumn() {
-		this.tableCrossesMade.setVisibleColumns(new Object[] {ColumnLabels.ENTRY_ID.getName(), ColumnLabels.PARENTAGE.getName(),
-				ColumnLabels.FEMALE_PARENT.getName(), ColumnLabels.MALE_PARENT.getName(), ColumnLabels.SEED_SOURCE.getName()});
+		this.tableCrossesMade.setVisibleColumns(
+				new Object[] {ColumnLabels.ENTRY_ID.getName(), ColumnLabels.PARENTAGE.getName(), ColumnLabels.FEMALE_PARENT.getName(),
+						ColumnLabels.MALE_PARENT.getName(), ColumnLabels.SEED_SOURCE.getName()});
 	}
 
 	private void updateCrossesMadeUI() {
@@ -222,16 +244,12 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 	}
 
 	public void updateCrossesMadeSaveButton() {
-		final boolean isFemaleListSave = this.makeCrossesMain.getParentsComponent().isFemaleListSaved();
-		final boolean isMaleListSave = this.makeCrossesMain.getParentsComponent().isMaleListSaved();
-
-		if (isFemaleListSave && isMaleListSave && !this.tableCrossesMade.getItemIds().isEmpty()) {
-			this.saveButton.setEnabled(true);
-			this.saveButton.setDescription("");
-		} else {
-			this.saveButton.setEnabled(false);
-			this.saveButton.setDescription(this.messageSource.getMessage(Message.SAVE_CROSS_LIST_DESCRIPTION));
+		if (this.tableCrossesMade.getItemIds() == null){
+			return;
 		}
+
+		final boolean isCrossesInTable = !this.tableCrossesMade.getItemIds().isEmpty();
+		this.saveButton.setEnabled(isCrossesInTable);
 	}
 
 	/**
@@ -281,7 +299,8 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		final String maleDesig = maleParent.getDesignation();
 
 		if (!this.crossAlreadyExists(parents)) {
-			final String seedSource = this.appendWithSeparator(femaleSource, maleSource);
+			String seedSource = this.generateSeedSource(femaleParent.getGid(), femaleSource, maleParent.getGid(), maleSource);
+
 			final Germplasm germplasm = new Germplasm();
 			germplasm.setGnpgs(2);
 			germplasm.setGid(Integer.MAX_VALUE);
@@ -293,6 +312,48 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 				this.tableCrossesMade.addItem(new Object[] {1, cross, femaleDesig, maleDesig, seedSource}, parents);
 			}
 		}
+	}
+
+	String generateSeedSource(Integer femaleParentGid, String femaleSource, Integer maleParentGid, String maleSource) {
+
+		// Default as before
+		String seedSource = this.appendWithSeparator(femaleSource, maleSource);
+
+		// If crossing for a Nursery, use the seed source generation service.
+		String nurseryId = this.makeCrossesMain.getNurseryId();
+		if (!StringUtils.isBlank(nurseryId)) {
+			Workbook nurseryWorkbook = null;
+			nurseryWorkbook = this.fieldbookMiddlewareService.getNurseryDataSet(Integer.valueOf(nurseryId));
+			if (nurseryWorkbook != null) {
+				String malePlotNo = "";
+				String femalePlotNo = "";
+
+				// Look at the observation rows of Nursery to find plot number assigned to the male/female parent germplasm of the cross.
+				for (MeasurementRow row : nurseryWorkbook.getObservations()) {
+					MeasurementData gidData = row.getMeasurementData(TermId.GID.getId());
+					MeasurementData plotNumberData = row.getMeasurementData(TermId.PLOT_NO.getId());
+
+					if (gidData != null && gidData.getValue().equals(femaleParentGid.toString())) {
+						if (plotNumberData != null) {
+							femalePlotNo = plotNumberData.getValue();
+						}
+					}
+
+					if (gidData != null && gidData.getValue().equals(maleParentGid.toString())) {
+						if (plotNumberData != null) {
+							malePlotNo = plotNumberData.getValue();
+						}
+					}
+				}
+
+				// Single nursery is in context here, so set the same study name as both male/female parts. For import crosses case, these
+				// could be different Nurseries.
+				seedSource =
+						this.seedSourceGenerator.generateSeedSourceForCross(nurseryWorkbook, malePlotNo, femalePlotNo,
+								nurseryWorkbook.getStudyName(), nurseryWorkbook.getStudyName());
+			}
+		}
+		return seedSource;
 	}
 
 	boolean hasSameParent(final GermplasmListEntry femaleParent, final GermplasmListEntry maleParent) {
@@ -415,10 +476,19 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		this.totalSelectedCrossesLabel.setContentMode(Label.CONTENT_XHTML);
 		this.totalSelectedCrossesLabel.setWidth("95px");
 
+		this.applyGroupingToNewCrossesOnly = new CheckBox(this.messageSource.getMessage(Message.APPLY_NEW_GROUP_TO_CURRENT_CROSS_ONLY));
+
+		this.applyGroupingToNewCrossesOnlyHelpText = new Label(this.messageSource.getMessage(Message.GROUP_INHERITANCE_OPTION_MESSAGE));
+		this.applyGroupingToNewCrossesOnlyHelpText.setWidth("300px");
+		this.applyGroupingToNewCrossesOnlyHelpText.addStyleName("gcp-content-help-text");
+
+		this.applyGroupingToNewCrossesOnlyHelpPopup = new PopupView("?", this.applyGroupingToNewCrossesOnlyHelpText);
+		this.applyGroupingToNewCrossesOnlyHelpPopup.addStyleName(AppConstants.CssStyles.POPUP_VIEW);
+		this.applyGroupingToNewCrossesOnlyHelpPopup.addStyleName("cs-inline-icon");
+
 		this.saveButton = new Button(this.messageSource.getMessage(Message.SAVE_LABEL));
 		this.saveButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 		this.saveButton.setEnabled(false);
-		this.saveButton.setDescription(this.messageSource.getMessage(Message.SAVE_CROSS_LIST_DESCRIPTION));
 		this.initializeCrossesMadeTable();
 	}
 
@@ -531,6 +601,13 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		makeCrossesLayout.setSpacing(true);
 		makeCrossesLayout.setMargin(true);
 		makeCrossesLayout.addComponent(labelContainer);
+
+		final HorizontalLayout groupInheritanceOptionsContainer = new HorizontalLayout();
+		groupInheritanceOptionsContainer.setSpacing(true);
+		groupInheritanceOptionsContainer.addComponent(this.applyGroupingToNewCrossesOnly);
+		groupInheritanceOptionsContainer.addComponent(this.applyGroupingToNewCrossesOnlyHelpPopup);
+		makeCrossesLayout.addComponent(groupInheritanceOptionsContainer);
+
 		makeCrossesLayout.addComponent(this.tableCrossesMade);
 
 		final Panel makeCrossesPanel = new Panel();
@@ -541,6 +618,19 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		final HeaderLabelLayout reviewCrossesLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_CROSSES, this.lblReviewCrosses);
 		this.addComponent(reviewCrossesLayout);
 		this.addComponent(makeCrossesPanel);
+	}
+
+	public void showOrHideGroupInheritanceOptions() {
+		// Only show group inheritance options if breeding method chosen is hybrid
+		CrossingManagerSetting currentCrossingSetting = this.makeCrossesMain.getCurrentCrossingSetting();
+		Integer selectedBreedingMethodId = currentCrossingSetting.getBreedingMethodSetting().getMethodId();
+		if (this.crossExpansionProperties.getHybridBreedingMethods().contains(selectedBreedingMethodId)) {
+			this.applyGroupingToNewCrossesOnlyHelpPopup.setVisible(true);
+			this.applyGroupingToNewCrossesOnly.setVisible(true);
+		} else {
+			this.applyGroupingToNewCrossesOnlyHelpPopup.setVisible(false);
+			this.applyGroupingToNewCrossesOnly.setVisible(false);
+		}
 	}
 
 	private void launchSaveListAsWindow() {
@@ -581,14 +671,18 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		final SaveCrossesMadeAction saveAction = new SaveCrossesMadeAction(this.getCrossList());
 
 		try {
-			this.crossList = saveAction.saveRecords(this.makeCrossesMain.getCrossesMadeContainer().getCrossesMade());
+			boolean applyNewGroupToCurrentCrossOnly = this.applyGroupingToNewCrossesOnly.booleanValue();
+
+			this.crossList =
+					saveAction
+							.saveRecords(this.makeCrossesMain.getCrossesMadeContainer().getCrossesMade(), applyNewGroupToCurrentCrossOnly);
 			MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
 					this.messageSource.getMessage(Message.CROSSES_SAVED_SUCCESSFULLY), 3000);
 
 			// enable NEXT button if all lists saved
 			this.makeCrossesMain.toggleNextButton();
 			//update the link to the nursery with new parameters, if there is one on the page
-			this.makeCrossesMain.updateNurseryLink(this.crossList.getId());
+			this.makeCrossesMain.updateNurseryBackButton(this.crossList.getId());
 
 		} catch (final MiddlewareQueryException e) {
 			MakeCrossesTableComponent.LOG.error(e.getMessage(), e);
@@ -683,6 +777,10 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		return this.separator;
 	}
 
+	public void setSeparator(String separator) {
+		this.separator = separator;
+	}
+
 	@Override
 	public void setCurrentlySavedGermplasmList(final GermplasmList list) {
 		this.crossList = list;
@@ -713,4 +811,11 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		this.messageSource = messageSource;
 	}
 
+	public void setFieldbookMiddlewareService(FieldbookService fieldbookMiddlewareService) {
+		this.fieldbookMiddlewareService = fieldbookMiddlewareService;
+	}
+
+	public void setSeedSourceGenerator(SeedSourceGenerator seedSourceGenerator) {
+		this.seedSourceGenerator = seedSourceGenerator;
+	}
 }
