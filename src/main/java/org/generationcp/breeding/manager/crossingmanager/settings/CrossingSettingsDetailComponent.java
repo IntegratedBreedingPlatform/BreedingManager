@@ -154,11 +154,11 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 	@Override
 	public void layoutComponents() {
 		this.setWidth("900px");
-		this.setHeight("1060px");
+		this.setHeight("900px");
 
 		this.sectionPanel = new Panel();
 		this.sectionPanel.setWidth("100%");
-		this.sectionPanel.setHeight("1010px");
+		this.sectionPanel.setHeight("850px");
 		this.sectionPanel.addStyleName(AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
 
 		final CssLayout sectionLayout = new CssLayout();
