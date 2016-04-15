@@ -672,7 +672,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		final SaveCrossesMadeAction saveAction = new SaveCrossesMadeAction(this.getCrossList());
 
 		try {
-			boolean applyNewGroupToCurrentCrossOnly = this.applyGroupingToNewCrossesOnly.booleanValue();
+			boolean applyNewGroupToCurrentCrossOnly = this.applyGroupingToNewCrossesOnly.booleanValue(); 
 
 			this.crossList =
 					saveAction
