@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.listmanager;
 
 import java.util.Arrays;
 import java.util.List;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.service.BreedingManagerSearchException;
@@ -19,9 +20,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
+
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -234,44 +233,31 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 
 	public void doSearch(final String searchValue) {
 
-		final TransactionTemplate inTx = new TransactionTemplate(this.transactionManager);
-		inTx.execute(new TransactionCallbackWithoutResult() {
+		final Monitor monitor = MonitorFactory.start("GermplasmSearchBarComponent.doSearch()");
+		final String searchType = (String) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
+		final String searchKeyword = GermplasmSearchBarComponent.this.getSearchKeyword(searchValue, searchType);
+		final Operation operation = GermplasmSearchBarComponent.this.exactMatches.equals(searchType) ? Operation.EQUAL : Operation.LIKE;
 
-			@Override
-			protected void doInTransactionWithoutResult(final TransactionStatus status) {
-				final Monitor monitor = MonitorFactory.start("GermplasmSearchBarComponent.doSearch()");
-				final String searchType = (String) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
-				final String searchKeyword = GermplasmSearchBarComponent.this.getSearchKeyword(searchValue, searchType);
-				final Operation operation =
-						GermplasmSearchBarComponent.this.exactMatches.equals(searchType) ? Operation.EQUAL : Operation.LIKE;
+		try {
+			final boolean includeParents = (boolean) GermplasmSearchBarComponent.this.includeParentsCheckBox.getValue();
+			final boolean withInventoryOnly = (boolean) GermplasmSearchBarComponent.this.withInventoryOnlyCheckBox.getValue();
+			final boolean includeMGMembers = (boolean) GermplasmSearchBarComponent.this.includeMGMembersCheckbox.getValue();
+			GermplasmSearchBarComponent.this.searchResultsComponent.applyGermplasmResults(
+					GermplasmSearchBarComponent.this.breedingManagerService
+							.doGermplasmSearch(searchKeyword, operation, includeParents, withInventoryOnly, includeMGMembers));
+		} catch (final BreedingManagerSearchException e) {
+			// if instead of showing the errorMessage at this moment I were to rethrow the exception
+			// then the calling method will need to do it as well and as it is being called from a predefined Vaadin OnClose method
+			// I need to handle the exception here.
+			MessageNotifier.showError(GermplasmSearchBarComponent.this.getWindow(),
+					GermplasmSearchBarComponent.this.messageSource.getMessage(Message.UNABLE_TO_SEARCH),
+					GermplasmSearchBarComponent.this.messageSource.getMessage(e.getErrorMessage()));
 
-				try {
-					final boolean includeParents = (boolean) GermplasmSearchBarComponent.this.includeParentsCheckBox.getValue();
-					final boolean withInventoryOnly = (boolean) GermplasmSearchBarComponent.this.withInventoryOnlyCheckBox.getValue();
-					final boolean includeMGMembers = (boolean) GermplasmSearchBarComponent.this.includeMGMembersCheckbox.getValue();
-					GermplasmSearchBarComponent.this.searchResultsComponent
-							.applyGermplasmResults(GermplasmSearchBarComponent.this.breedingManagerService.doGermplasmSearch(searchKeyword,
-									operation, includeParents, withInventoryOnly, includeMGMembers));
-				} catch (final BreedingManagerSearchException e) {
-					if (Message.SEARCH_QUERY_CANNOT_BE_EMPTY.equals(e.getErrorMessage())) {
-						// invalid search string
-						MessageNotifier.showWarning(GermplasmSearchBarComponent.this.getWindow(),
-								GermplasmSearchBarComponent.this.messageSource.getMessage(Message.UNABLE_TO_SEARCH),
-								GermplasmSearchBarComponent.this.messageSource.getMessage(e.getErrorMessage()));
-					} else {
-						// case for no results, database error
-						MessageNotifier.showWarning(GermplasmSearchBarComponent.this.getWindow(),
-								GermplasmSearchBarComponent.this.messageSource.getMessage(Message.SEARCH_RESULTS),
-								GermplasmSearchBarComponent.this.messageSource.getMessage(e.getErrorMessage()));
-						if (Message.ERROR_DATABASE.equals(e.getErrorMessage())) {
-							GermplasmSearchBarComponent.LOG.error("Database error occured while searching. Search string was: " + searchValue, e);
-						}
-					}
-				} finally {
-					GermplasmSearchBarComponent.LOG.debug("" + monitor.stop());
-				}
-			}
-		});
+			GermplasmSearchBarComponent.LOG.error("Database error occured while searching. Search string was: " + searchValue, e);
+		} finally {
+			GermplasmSearchBarComponent.LOG.debug("" + monitor.stop());
+		}
+
 	}
 
 	private String getSearchKeyword(final String query, final String searchType) {
