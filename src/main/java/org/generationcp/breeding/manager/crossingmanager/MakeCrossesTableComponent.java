@@ -31,7 +31,6 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ApplyCrossingSettingAction;
 import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
-import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
@@ -220,7 +219,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		germplasm.setGpid1(femaleParent.getGid());
 		germplasm.setGpid2(maleParent.getGid());
 		final String cross = this.getCross(germplasm, femaleDesig, maleDesig);
-		String seedSource = this.generateSeedSource(femaleParent.getGid(), femaleSeedSource, maleParent.getGid(), maleSeedSource);
+		final String seedSource = this.generateSeedSource(femaleParent.getGid(), femaleSeedSource, maleParent.getGid(), maleSeedSource);
 
 		if (!this.crossAlreadyExists(parents) && ((excludeSelf && !this.hasSameParent(femaleParent, maleParent)) || !excludeSelf)) {
 			this.tableCrossesMade.addItem(new Object[] {1, cross, femaleDesig, maleDesig, seedSource}, parents);
@@ -229,9 +228,8 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 	}
 
 	private void setMakeCrossesTableVisibleColumn() {
-		this.tableCrossesMade.setVisibleColumns(
-				new Object[] {ColumnLabels.ENTRY_ID.getName(), ColumnLabels.PARENTAGE.getName(), ColumnLabels.FEMALE_PARENT.getName(),
-						ColumnLabels.MALE_PARENT.getName(), ColumnLabels.SEED_SOURCE.getName()});
+		this.tableCrossesMade.setVisibleColumns(new Object[] {ColumnLabels.ENTRY_ID.getName(), ColumnLabels.PARENTAGE.getName(),
+				ColumnLabels.FEMALE_PARENT.getName(), ColumnLabels.MALE_PARENT.getName(), ColumnLabels.SEED_SOURCE.getName()});
 	}
 
 	private void updateCrossesMadeUI() {
@@ -245,7 +243,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 	}
 
 	public void updateCrossesMadeSaveButton() {
-		if (this.tableCrossesMade.getItemIds() == null){
+		if (this.tableCrossesMade.getItemIds() == null) {
 			return;
 		}
 
@@ -300,7 +298,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		final String maleDesig = maleParent.getDesignation();
 
 		if (!this.crossAlreadyExists(parents)) {
-			String seedSource = this.generateSeedSource(femaleParent.getGid(), femaleSource, maleParent.getGid(), maleSource);
+			final String seedSource = this.generateSeedSource(femaleParent.getGid(), femaleSource, maleParent.getGid(), maleSource);
 
 			final Germplasm germplasm = new Germplasm();
 			germplasm.setGnpgs(2);
@@ -315,13 +313,13 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		}
 	}
 
-	String generateSeedSource(Integer femaleParentGid, String femaleSource, Integer maleParentGid, String maleSource) {
+	String generateSeedSource(final Integer femaleParentGid, final String femaleSource, final Integer maleParentGid, final String maleSource) {
 
 		// Default as before
 		String seedSource = this.appendWithSeparator(femaleSource, maleSource);
 
 		// If crossing for a Nursery, use the seed source generation service.
-		String nurseryId = this.makeCrossesMain.getNurseryId();
+		final String nurseryId = this.makeCrossesMain.getNurseryId();
 		if (!StringUtils.isBlank(nurseryId)) {
 			Workbook nurseryWorkbook = null;
 			nurseryWorkbook = this.fieldbookMiddlewareService.getNurseryDataSet(Integer.valueOf(nurseryId));
@@ -330,9 +328,9 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 				String femalePlotNo = "";
 
 				// Look at the observation rows of Nursery to find plot number assigned to the male/female parent germplasm of the cross.
-				for (MeasurementRow row : nurseryWorkbook.getObservations()) {
-					MeasurementData gidData = row.getMeasurementData(TermId.GID.getId());
-					MeasurementData plotNumberData = row.getMeasurementData(TermId.PLOT_NO.getId());
+				for (final MeasurementRow row : nurseryWorkbook.getObservations()) {
+					final MeasurementData gidData = row.getMeasurementData(TermId.GID.getId());
+					final MeasurementData plotNumberData = row.getMeasurementData(TermId.PLOT_NO.getId());
 
 					if (gidData != null && gidData.getValue().equals(femaleParentGid.toString())) {
 						if (plotNumberData != null) {
@@ -623,8 +621,8 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 
 	public void showOrHideGroupInheritanceOptions() {
 		// Only show group inheritance options if breeding method chosen is hybrid
-		BreedingMethodSetting currentBreedingSetting = this.makeCrossesMain.getCurrentBreedingMethodSetting();
-		Integer selectedBreedingMethodId = currentBreedingSetting.getMethodId();
+		final BreedingMethodSetting currentBreedingSetting = this.makeCrossesMain.getCurrentBreedingMethodSetting();
+		final Integer selectedBreedingMethodId = currentBreedingSetting.getMethodId();
 		if (this.crossExpansionProperties.getHybridBreedingMethods().contains(selectedBreedingMethodId)) {
 			this.applyGroupingToNewCrossesOnlyHelpPopup.setVisible(true);
 			this.applyGroupingToNewCrossesOnly.setVisible(true);
@@ -672,7 +670,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		final SaveCrossesMadeAction saveAction = new SaveCrossesMadeAction(this.getCrossList());
 
 		try {
-			boolean applyNewGroupToCurrentCrossOnly = this.applyGroupingToNewCrossesOnly.booleanValue(); 
+			final boolean applyNewGroupToCurrentCrossOnly = this.applyGroupingToNewCrossesOnly.booleanValue();
 
 			this.crossList =
 					saveAction
@@ -682,7 +680,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 
 			// enable NEXT button if all lists saved
 			this.makeCrossesMain.toggleNextButton();
-			//update the link to the nursery with new parameters, if there is one on the page
+			// update the link to the nursery with new parameters, if there is one on the page
 			this.makeCrossesMain.updateNurseryBackButton(this.crossList.getId());
 
 		} catch (final MiddlewareQueryException e) {
@@ -778,7 +776,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		return this.separator;
 	}
 
-	public void setSeparator(String separator) {
+	public void setSeparator(final String separator) {
 		this.separator = separator;
 	}
 
@@ -812,11 +810,11 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		this.messageSource = messageSource;
 	}
 
-	public void setFieldbookMiddlewareService(FieldbookService fieldbookMiddlewareService) {
+	public void setFieldbookMiddlewareService(final FieldbookService fieldbookMiddlewareService) {
 		this.fieldbookMiddlewareService = fieldbookMiddlewareService;
 	}
 
-	public void setSeedSourceGenerator(SeedSourceGenerator seedSourceGenerator) {
+	public void setSeedSourceGenerator(final SeedSourceGenerator seedSourceGenerator) {
 		this.seedSourceGenerator = seedSourceGenerator;
 	}
 }
