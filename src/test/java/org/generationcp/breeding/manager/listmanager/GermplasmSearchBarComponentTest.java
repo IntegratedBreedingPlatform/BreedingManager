@@ -78,8 +78,8 @@ public class GermplasmSearchBarComponentTest {
 	
 	@Test
 	public void testDoSearchWithDatabaseError() throws BreedingManagerSearchException {
-		Mockito.when(this.breedingManagerService.doGermplasmSearch(Matchers.anyString(), Matchers.eq(Operation.LIKE), Matchers.eq(false), Matchers.eq(false), Matchers.eq(false))).thenThrow(new BreedingManagerSearchException(Message.ERROR_DATABASE));
+		Mockito.when(this.breedingManagerService.doGermplasmSearch(Matchers.anyString(), Matchers.eq(Operation.LIKE), Matchers.eq(false), Matchers.eq(false), Matchers.eq(false))).thenThrow(new BreedingManagerSearchException(Message.ERROR_IN_SEARCH));
 		this.germplasmSearchBarComponent.doSearch("");
-		Mockito.verify(this.messageSource).getMessage(Message.SEARCH_RESULTS);
+		Mockito.verify(this.messageSource).getMessage(Message.SEARCH);
 	}
 }
