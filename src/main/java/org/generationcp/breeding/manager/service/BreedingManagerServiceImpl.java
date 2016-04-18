@@ -100,7 +100,6 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 			return results;
 
 		} catch (final MiddlewareQueryException e) {
-			BreedingManagerServiceImpl.LOG.error(e.getMessage(), e);
 			throw new BreedingManagerSearchException(Message.ERROR_IN_SEARCH, e);
 		}
 	}
