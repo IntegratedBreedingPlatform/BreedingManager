@@ -428,7 +428,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 			final Integer entryId2 = parents.getMaleParent().getEntryId();
 
 			final Germplasm germplasm = new Germplasm();
-			germplasm.setGid(null);
+			germplasm.setGid(ctr);
 			germplasm.setGpid1(gpId1);
 			germplasm.setGpid2(gpId2);
 
