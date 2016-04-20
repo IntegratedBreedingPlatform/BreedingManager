@@ -405,7 +405,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		this.updateCrossesMadeUI();
 	}
 
-	private Map<Germplasm, Name> generateCrossesMadeMap(final CrossesMadeContainer container) {
+	private Map<Germplasm, Name> generateCrossesMadeMap() {
 		final Map<Germplasm, Name> crossesMadeMap = new LinkedHashMap<Germplasm, Name>();
 		final List<ImportedGermplasmCross> crossesToExport = new ArrayList<ImportedGermplasmCross>();
 
@@ -660,7 +660,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		final CrossesMade crossesMade = container.getCrossesMade();
 		crossesMade.setSetting(this.makeCrossesMain.getCurrentCrossingSetting());
 		crossesMade.setGermplasmList(list);
-		crossesMade.setCrossesMap(this.generateCrossesMadeMap(container));
+		crossesMade.setCrossesMap(this.generateCrossesMadeMap());
 		final ApplyCrossingSettingAction applySetting = new ApplyCrossingSettingAction(this.makeCrossesMain.getCurrentCrossingSetting());
 		return applySetting.updateCrossesMadeContainer(container);
 	}
