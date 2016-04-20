@@ -195,12 +195,12 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		this.nurseryBackButton.addListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(final Button.ClickEvent event) {
+				final BreedingMethodSetting methodSetting = CrossingManagerMakeCrossesComponent.this.getCurrentBreedingMethodSetting();
+				final Integer methodId = methodSetting.getMethodId() == null ? 0 : methodSetting.getMethodId();
 				// get the cancel button returning to nursery  link as a root url
-				String urlToSpecificNurseryWithParams = CrossingManagerMakeCrossesComponent.this.nurseryCancelButton.getResource()
-						.getURL() + "?" + BreedingManagerApplication.REQ_PARAM_CROSSES_LIST_ID + "=" + id;
-
-                final BreedingMethodSetting methodSetting = CrossingManagerMakeCrossesComponent.this.getCurrentBreedingMethodSetting();
-                urlToSpecificNurseryWithParams = urlToSpecificNurseryWithParams.concat("&" + BreedingManagerApplication.PARAM_BREEDING_METHOD_ID + "=" + (methodSetting.getMethodId() == null ? 0 : methodSetting.getMethodId()));
+				final String urlToSpecificNurseryWithParams = CrossingManagerMakeCrossesComponent.this.nurseryCancelButton.getResource()
+						.getURL() + "?" + BreedingManagerApplication.REQ_PARAM_CROSSES_LIST_ID + "=" + id
+						+ "&" + BreedingManagerApplication.REQ_PARAM_BREEDING_METHOD_ID + "=" + methodId;
 
 				final ExternalResource urlToNursery = new ExternalResource(urlToSpecificNurseryWithParams);
 				CrossingManagerMakeCrossesComponent.this.getWindow().open(urlToNursery, "_self");
