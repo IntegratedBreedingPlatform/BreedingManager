@@ -12,7 +12,6 @@ import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
-import org.generationcp.breeding.manager.data.initializer.GermplasmListDataInitializer;
 import org.generationcp.breeding.manager.listmanager.util.ListDataPropertiesRenderer;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -360,8 +359,8 @@ public class ListComponentTest {
 	@Test
 	public void testDeleteRemovedGermplasmEntriesFromTableOnlySelectedEntries() {
 
-		GermplasmList germplasmListWithInventoryInfo =
-				GermplasmListDataInitializer.createGermplasmListWithListDataAndInventoryInfo(TEST_GERMPLASM_LIST_ID,
+		final GermplasmList germplasmListWithInventoryInfo =
+				GermplasmListTestDataInitializer.createGermplasmListWithListDataAndInventoryInfo(TEST_GERMPLASM_LIST_ID,
 						TEST_GERMPLASM_NO_OF_ENTRIES);
 		Mockito.when(this.inventoryDataManager.getLotCountsForList(TEST_GERMPLASM_LIST_ID, 0, TEST_GERMPLASM_NO_OF_ENTRIES)).thenReturn(
 				germplasmListWithInventoryInfo.getListData());
