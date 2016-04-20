@@ -407,7 +407,6 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 
 	private Map<Germplasm, Name> generateCrossesMadeMap() {
 		final Map<Germplasm, Name> crossesMadeMap = new LinkedHashMap<Germplasm, Name>();
-		final List<ImportedGermplasmCross> crossesToExport = new ArrayList<ImportedGermplasmCross>();
 
 		// get ID of User Defined Field for Crossing Name
 		final Integer crossingNameTypeId =
@@ -446,7 +445,6 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 			cross.setFemaleDesignation(parents.getFemaleParent().getDesignation());
 
 			crossesMadeMap.put(germplasm, name);
-			crossesToExport.add(cross);
 			ctr++;
 		}
 
