@@ -109,7 +109,7 @@ public class ListComponentTest {
 	private ListDataPropertiesRenderer newColumnsRenderer;
 
 	@InjectMocks
-	private ListComponent listComponent = new ListComponent();
+	private final ListComponent listComponent = new ListComponent();
 
 	private GermplasmList germplasmList;
 
@@ -431,20 +431,20 @@ public class ListComponentTest {
 		}
 	}
 
-	private Term createTerm(int id, String name) {
-		Term term = new Term(id, name, "");
+	private Term createTerm(final int id, final String name) {
+		final Term term = new Term(id, name, "");
 		return term;
 	}
 
-	private GermplasmListNewColumnsInfo createGermplasmListNewColumnInfo(int listId) {
-		GermplasmListNewColumnsInfo germplasmListNewColumnsInfo = new GermplasmListNewColumnsInfo(listId);
+	private GermplasmListNewColumnsInfo createGermplasmListNewColumnInfo(final int listId) {
+		final GermplasmListNewColumnsInfo germplasmListNewColumnsInfo = new GermplasmListNewColumnsInfo(listId);
 		germplasmListNewColumnsInfo.setColumnValuesMap(new HashMap<String, List<ListDataColumnValues>>());
 		return germplasmListNewColumnsInfo;
 	}
 
-	private Map<Object, String> createItemsToDelete(Table table) {
+	private Map<Object, String> createItemsToDelete(final Table table) {
 
-		Map<Object, String> itemsToDelete = new HashMap<>();
+		final Map<Object, String> itemsToDelete = new HashMap<>();
 
 		// delete the first record from the germplasm list data table
 		itemsToDelete.put(1, "Designation 1");
