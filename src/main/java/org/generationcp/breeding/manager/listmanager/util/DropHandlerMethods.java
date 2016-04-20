@@ -354,7 +354,7 @@ public class DropHandlerMethods {
 				newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(germplasmListData.getGroupName());
 
 				final Integer groupId = germplasmListData.getGroupId();
-				final String groupIdDisplayValue = groupId == 0 ? "-" : groupId.toString();
+				final String groupIdDisplayValue = (groupId == null || groupId == 0) ? "-" : groupId.toString();
 				newItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(groupIdDisplayValue);
 
 				// Inventory Related Columns
