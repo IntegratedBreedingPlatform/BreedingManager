@@ -57,6 +57,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	public static final String BACK_BUTTON_ID = "back button";
 
 	private static final long serialVersionUID = 9097810121003895303L;
+	public static final int BASED_ON_PARENTAGE = 0;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -196,7 +197,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 			@Override
 			public void buttonClick(final Button.ClickEvent event) {
 				final BreedingMethodSetting methodSetting = CrossingManagerMakeCrossesComponent.this.getCurrentBreedingMethodSetting();
-				final Integer methodId = methodSetting.getMethodId() == null ? 0 : methodSetting.getMethodId();
+				final Integer methodId = methodSetting.isBasedOnStatusOfParentalLines() ? BASED_ON_PARENTAGE : methodSetting.getMethodId();
+
 				// get the cancel button returning to nursery  link as a root url
 				final String urlToSpecificNurseryWithParams = CrossingManagerMakeCrossesComponent.this.nurseryCancelButton.getResource()
 						.getURL() + "?" + BreedingManagerApplication.REQ_PARAM_CROSSES_LIST_ID + "=" + id
