@@ -123,7 +123,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 
 		this.includeMGMembersCheckbox = new CheckBox();
 		this.includeMGMembersCheckbox.setValue(false);
-		this.includeMGMembersCheckbox.setCaption(this.messageSource.getMessage(Message.INCLUDE_MAINTENANCE_GROUP_MEMBERS));
+		this.includeMGMembersCheckbox.setCaption(this.messageSource.getMessage(Message.INCLUDE_GROUP_MEMBERS));
 
 		this.matchesStartingWith = this.messageSource.getMessage(Message.MATCHES_STARTING_WITH);
 		this.exactMatches = this.messageSource.getMessage(Message.EXACT_MATCHES);
