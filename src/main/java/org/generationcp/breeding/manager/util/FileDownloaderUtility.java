@@ -19,11 +19,7 @@ public class FileDownloaderUtility {
 
 		final String userAgent = BreedingManagerUtil.getApplicationRequest().getHeader("User-Agent");
 		final FileDownloadResource fileDownloadResource =
-				new FileDownloadResource(new File(sourceFilename), source.getApplication(), userAgent);
-		if (visibleFilename != null) {
-			final String adjustedFileName = FileUtils.encodeFilenameForDownload(visibleFilename);
-			fileDownloadResource.setFilename(adjustedFileName);
-		}
+				new FileDownloadResource(new File(sourceFilename),visibleFilename, source.getApplication());
 
 		source.getWindow().open(fileDownloadResource);
 

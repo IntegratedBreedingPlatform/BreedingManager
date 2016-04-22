@@ -67,10 +67,9 @@ public class GermplasmListTemplateDownloader {
 		if (!templateFile.exists()) {
 			throw new IOException("Germplasm Template File does not exist.");
 		} else {
-			fileDownloadResource = new FileDownloadResource(templateFile, this.getCurrentApplication(), userAgent);
+			fileDownloadResource = new FileDownloadResource(templateFile,EXPANDED_TEMPLATE_FILE, this.getCurrentApplication());
 		}
 
-		fileDownloadResource.setFilename(FileUtils.encodeFilenameForDownload(EXPANDED_TEMPLATE_FILE));
 		return fileDownloadResource;
 	}
 

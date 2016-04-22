@@ -379,8 +379,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 			final String userAgent = BreedingManagerUtil.getApplicationRequest().getHeader("User-Agent");
 			this.exporter.exportGermplasmListXLS(this.list.getId(), tempFileName, this.listDataTable);
 			final FileDownloadResource fileDownloadResource =
-					new FileDownloadResource(new File(tempFileName), this.getApplication(), userAgent);
-			fileDownloadResource.setFilename(FileUtils.encodeFilenameForDownload(this.list.getName()).replace(" ", "_") + ".xls");
+					new FileDownloadResource(new File(tempFileName),this.list.getName().replace(" ","_") + ".xls", this.getApplication());
 			this.getWindow().open(fileDownloadResource);
 		} catch (GermplasmListExporterException | MiddlewareQueryException e) {
 			CrossesSummaryListDataComponent.LOG.error(e.getMessage(), e);
