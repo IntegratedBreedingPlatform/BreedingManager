@@ -17,7 +17,6 @@ public class FileDownloaderUtility {
 			return false;
 		}
 
-		final String userAgent = BreedingManagerUtil.getApplicationRequest().getHeader("User-Agent");
 		final FileDownloadResource fileDownloadResource =
 				new FileDownloadResource(new File(sourceFilename),visibleFilename, source.getApplication());
 

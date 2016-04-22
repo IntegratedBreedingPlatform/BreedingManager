@@ -375,8 +375,6 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 		final String tempFileName = System.getProperty(AppConstants.USER_HOME) + "/temp.xls";
 
 		try {
-
-			final String userAgent = BreedingManagerUtil.getApplicationRequest().getHeader("User-Agent");
 			this.exporter.exportGermplasmListXLS(this.list.getId(), tempFileName, this.listDataTable);
 			final FileDownloadResource fileDownloadResource =
 					new FileDownloadResource(new File(tempFileName),this.list.getName().replace(" ","_") + ".xls", this.getApplication());

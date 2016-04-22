@@ -304,7 +304,6 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 			try {
 				this.germplasmListExporter.exportKBioScienceGenotypingOrderXLS(this.germplasmList.getId(), tempFileName, 96);
 
-				final String userAgent = BreedingManagerUtil.getApplicationRequest().getHeader("User-Agent");
 				final FileDownloadResource fileDownloadResource =
 						new FileDownloadResource(new File(tempFileName),this.germplasmList.getName().replace(" ", "_") + "ForGenotyping.xls", this.source.getApplication());
 

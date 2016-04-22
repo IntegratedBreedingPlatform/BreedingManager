@@ -1162,7 +1162,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 				try {
 					listExporter.exportKBioScienceGenotypingOrderXLS(this.currentlySavedGermplasmList.getId(), tempFileName, 96);
 
-					final String userAgent = BreedingManagerUtil.getApplicationRequest().getHeader("User-Agent");
 					final String listName = this.currentlySavedGermplasmList.getName();
 
 					final FileDownloadResource fileDownloadResource =
