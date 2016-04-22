@@ -9,6 +9,7 @@ import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainerUpd
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerSummaryComponent;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
+import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDisplay;
 import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDisplay.StepChangeListener;
 import org.generationcp.breeding.manager.util.Util;
@@ -188,7 +189,7 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 	public void viewGermplasmListCreated(GermplasmList crossList, GermplasmList femaleList, GermplasmList maleList) {
 		CrossingManagerSummaryComponent summaryComponent =
 				new CrossingManagerSummaryComponent(this, crossList, femaleList, maleList,
-						this.detailComponent.getCurrentlyDefinedSetting());
+						this.compileCurrentSetting());
 
 		this.removeComponent(this.wizardDisplay);
 		this.removeComponent(this.tabSheet);
@@ -231,5 +232,12 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 	public CrossingManagerMakeCrossesComponent getMakeCrossesComponent() {
 		return this.makeCrossesComponent;
 	}
+
+    public CrossingManagerSetting compileCurrentSetting() {
+        CrossingManagerSetting setting = detailComponent.getPartialCurrentSetting();
+        setting.setBreedingMethodSetting(makeCrossesComponent.getCurrentBreedingMethodSetting());
+
+        return setting;
+    }
 
 }
