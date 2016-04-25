@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
- *
+ * 
  * Generation Challenge Programme (GCP)
- *
- *
+ * 
+ * 
  * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
  * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
- *
+ * 
  *******************************************************************************/
 
 package org.generationcp.breeding.manager.listmanager;
@@ -107,7 +107,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
 		if (this.listId != null) {
 			try {
 				this.createListDetailsTab(this.listId);
-			} catch (MiddlewareQueryException ex) {
+			} catch (final MiddlewareQueryException ex) {
 				ListSelectionLayout.LOG.error("Error with opening list details tab of list with id: " + this.listId);
 			}
 		} else {
@@ -251,7 +251,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
 
 	@Override
 	public void addListeners() {
-		ListManagerDetailsTabCloseHandler closeHandler = new ListManagerDetailsTabCloseHandler(this);
+		final ListManagerDetailsTabCloseHandler closeHandler = new ListManagerDetailsTabCloseHandler(this);
 		this.btnCloseAllTabs.addListener(closeHandler);
 		this.detailsTabSheet.setCloseHandler(closeHandler);
 		this.detailsTabSheet.addListener(new TabSheet.SelectedTabChangeListener() {
@@ -259,7 +259,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
 			private static final long serialVersionUID = -7822326039221887888L;
 
 			@Override
-			public void selectedTabChange(SelectedTabChangeEvent event) {
+			public void selectedTabChange(final SelectedTabChangeEvent event) {
 				if (ListSelectionLayout.this.detailsTabSheet.getComponentCount() <= 1) {
 					ListSelectionLayout.this.btnCloseAllTabs.setVisible(false);
 				} else {
@@ -309,8 +309,8 @@ public class ListSelectionLayout extends VerticalLayout implements International
 		this.toWorkWith.setValue(this.messageSource.getMessage(Message.A_LIST_TO_WORK_WITH));
 	}
 
-	public void createListDetailsTab(Integer listId) {
-		GermplasmList germplasmList = this.germplasmListManager.getGermplasmListById(listId);
+	public void createListDetailsTab(final Integer listId) {
+		final GermplasmList germplasmList = this.germplasmListManager.getGermplasmListById(listId);
 		if (germplasmList == null) {
 			this.hideDetailsTabsheet();
 			this.noListLabel.setCaption("There is no list in the database with id: " + listId);
@@ -348,7 +348,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
 		}
 	}
 
-	private String generateTabDescription(Integer listId) {
+	private String generateTabDescription(final Integer listId) {
 		return ListSelectionLayout.TAB_DESCRIPTION_PREFIX + listId;
 	}
 
@@ -379,28 +379,38 @@ public class ListSelectionLayout extends VerticalLayout implements International
 		}
 	}
 
-	public void renameTab(Integer listId, String newName) {
+	public void renameTab(final Integer listId, final String newName) {
 
-		String tabDescription = this.generateTabDescription(listId);
-		Tab tab = Util.getTabWithDescription(this.detailsTabSheet, tabDescription);
+		final String tabDescription = this.generateTabDescription(listId);
+		final Tab tab = Util.getTabWithDescription(this.detailsTabSheet, tabDescription);
 		if (tab != null) {
 			tab.setCaption(newName);
-			ListTabComponent listDetails = (ListTabComponent) tab.getComponent();
+			final ListTabComponent listDetails = (ListTabComponent) tab.getComponent();
 			listDetails.setListNameLabel(newName);
 
 			if (tab.getComponent() instanceof ListTabComponent) {
 				((ListTabComponent) tab.getComponent()).getGermplasmList().setName(newName);
 
-				GermplasmList germplasmList = ((ListTabComponent) tab.getComponent()).getListComponent().getGermplasmList();
+				final GermplasmList germplasmList = ((ListTabComponent) tab.getComponent()).getListComponent().getGermplasmList();
 				germplasmList.setName(newName);
 				((ListTabComponent) tab.getComponent()).getListComponent().setViewListHeaderWindow(new ViewListHeaderWindow(germplasmList));
 			}
+
+		}
+
+		this.updateGermplasmListInListBuilder(listId, newName);
+	}
+
+	void updateGermplasmListInListBuilder(final Integer listId, final String newName) {
+		final GermplasmList germplasmListInListBuilder = this.source.getListBuilderComponent().getCurrentListInSaveDialog();
+		if (germplasmListInListBuilder != null && germplasmListInListBuilder.getId().intValue() == listId.intValue()) {
+			this.source.getListBuilderComponent().getCurrentlySavedGermplasmList().setName(newName);
 		}
 	}
 
-	public void removeTab(Integer listId) {
-		String tabDescription = this.generateTabDescription(listId);
-		Tab tab = Util.getTabWithDescription(this.detailsTabSheet, tabDescription);
+	public void removeTab(final Integer listId) {
+		final String tabDescription = this.generateTabDescription(listId);
+		final Tab tab = Util.getTabWithDescription(this.detailsTabSheet, tabDescription);
 		if (tab != null) {
 			this.detailsTabSheet.removeTab(tab);
 		}
@@ -411,7 +421,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
 	}
 
 	@Override
-	public void setHasUnsavedChangesMain(boolean hasChanges) {
+	public void setHasUnsavedChangesMain(final boolean hasChanges) {
 		this.source.setHasUnsavedChangesMain(hasChanges);
 	}
 
@@ -419,7 +429,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
 		return this.listStatusForChanges;
 	}
 
-	public void addUpdateListStatusForChanges(ListComponent listComponent, Boolean status) {
+	public void addUpdateListStatusForChanges(final ListComponent listComponent, final Boolean status) {
 		this.removeListStatusForChanges(listComponent);
 		this.listStatusForChanges.put(listComponent, status);
 
@@ -431,11 +441,11 @@ public class ListSelectionLayout extends VerticalLayout implements International
 	}
 
 	public boolean hasUnsavedChanges() {
-		List<Boolean> listOfStatus = new ArrayList<Boolean>();
+		final List<Boolean> listOfStatus = new ArrayList<Boolean>();
 
 		listOfStatus.addAll(this.listStatusForChanges.values());
 
-		for (Boolean status : listOfStatus) {
+		for (final Boolean status : listOfStatus) {
 			if (status) {
 				return true;
 			}
@@ -444,41 +454,41 @@ public class ListSelectionLayout extends VerticalLayout implements International
 		return false;
 	}
 
-	public void removeListStatusForChanges(ListComponent listComponent) {
+	public void removeListStatusForChanges(final ListComponent listComponent) {
 		if (this.listStatusForChanges.containsKey(listComponent)) {
 			this.listStatusForChanges.remove(listComponent);
 		}
 	}
 
-	public void updateViewForAllLists(ModeView modeView) {
-		List<ListComponent> listComponents = new ArrayList<ListComponent>();
+	public void updateViewForAllLists(final ModeView modeView) {
+		final List<ListComponent> listComponents = new ArrayList<ListComponent>();
 		listComponents.addAll(this.listStatusForChanges.keySet());
 
 		if (modeView.equals(ModeView.LIST_VIEW)) {
-			for (ListComponent listComponent : listComponents) {
+			for (final ListComponent listComponent : listComponents) {
 				listComponent.changeToListView();
 			}
 		} else if (modeView.equals(ModeView.INVENTORY_VIEW)) {
-			for (ListComponent listComponent : listComponents) {
+			for (final ListComponent listComponent : listComponents) {
 				listComponent.viewInventoryActionConfirmed();
 			}
 		}
 	}
 
-	public void updateHasChangesForAllList(Boolean hasChanges) {
-		List<ListComponent> listComponents = new ArrayList<ListComponent>();
+	public void updateHasChangesForAllList(final Boolean hasChanges) {
+		final List<ListComponent> listComponents = new ArrayList<ListComponent>();
 		listComponents.addAll(this.listStatusForChanges.keySet());
 
-		for (ListComponent listComponent : listComponents) {
+		for (final ListComponent listComponent : listComponents) {
 			listComponent.setHasUnsavedChanges(hasChanges);
 		}
 	}
 
 	public void resetListViewForCancelledChanges() {
-		List<ListComponent> listComponents = new ArrayList<ListComponent>();
+		final List<ListComponent> listComponents = new ArrayList<ListComponent>();
 		listComponents.addAll(this.listStatusForChanges.keySet());
 
-		for (ListComponent listComponent : listComponents) {
+		for (final ListComponent listComponent : listComponents) {
 			if (listComponent.hasUnsavedChanges()) {
 				listComponent.resetListDataTableValues();
 			}
@@ -486,10 +496,10 @@ public class ListSelectionLayout extends VerticalLayout implements International
 	}
 
 	public void resetInventoryViewForCancelledChanges() {
-		List<ListComponent> listComponents = new ArrayList<ListComponent>();
+		final List<ListComponent> listComponents = new ArrayList<ListComponent>();
 		listComponents.addAll(this.listStatusForChanges.keySet());
 
-		for (ListComponent listComponent : listComponents) {
+		for (final ListComponent listComponent : listComponents) {
 			if (listComponent.hasUnsavedChanges()) {
 				listComponent.resetListInventoryTableValues();
 			}
