@@ -24,6 +24,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.google.common.base.Strings;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -228,11 +229,20 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 							}
 						}
 					});
-		} else {
-			GermplasmSearchBarComponent.this.doSearch(q);
-		}
+		} else if (this.validateIfSearchKeywordIsNotEmpty(q)) {
+  			GermplasmSearchBarComponent.this.doSearch(q);
+  		}
 	}
-
+	
+	boolean validateIfSearchKeywordIsNotEmpty(final String keyword) {
+		 if (Strings.isNullOrEmpty(keyword)) {
+		 	MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.UNABLE_TO_SEARCH),
+		 		this.messageSource.getMessage(Message.SEARCH_KEYWORD_MUST_NOT_BE_EMPTY));
+		 	return false;
+		 }
+		 return true;
+	}
+	
 	public void doSearch(final String q) {
 
 		final TransactionTemplate inTx = new TransactionTemplate(this.transactionManager);
