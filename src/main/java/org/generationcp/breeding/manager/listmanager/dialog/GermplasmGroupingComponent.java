@@ -137,11 +137,33 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 	}
 
 	void reportSuccessAndClose(final Map<Integer, GermplasmGroup> groupingResults) {
-		MessageNotifier.showMessage(this.getParent(), this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
-				this.messageSource.getMessage(Message.SUCCESS_MARK_LINES_AS_FIXED));
+
+		if (this.verifyIfAllEntriesHasAppliedMGIDSuccessfully(groupingResults)) {
+			MessageNotifier.showMessage(this.getParent(), this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
+					this.messageSource.getMessage(Message.SUCCESS_MARK_LINES_AS_FIXED));
+		} else {
+			MessageNotifier.showWarning(this.getParent(), this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
+					this.messageSource.getMessage(Message.WARNING_MARK_LINES_AS_FIXED));
+		}
 
 		this.getParent().addWindow(new GermplasmGroupingResultsComponent(groupingResults));
 		this.closeWindow();
+	}
+
+	/**
+	 * Verify if all selected entries from list data table have its corresponding germplasm with non-generative method
+	 * 
+	 * @param groupingResults
+	 * @return true if all selected germplasm entries have generative method, otherwise will return false
+	 */
+	boolean verifyIfAllEntriesHasAppliedMGIDSuccessfully(final Map<Integer, GermplasmGroup> groupingResults) {
+		for (final Map.Entry<Integer, GermplasmGroup> mapEntry : groupingResults.entrySet()) {
+			final GermplasmGroup groupingResult = mapEntry.getValue();
+			if (groupingResult.getFounder().getMethod().isGenerative()) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
