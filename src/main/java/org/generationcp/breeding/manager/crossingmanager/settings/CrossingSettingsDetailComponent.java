@@ -15,7 +15,6 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.xml.AdditionalDetailsSetting;
-import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -62,7 +61,6 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 
 	private final ManageCrossingSettingsMain manageCrossingSettingsMain;
 	private DefineCrossingSettingComponent defineSettingComponent;
-	private CrossingSettingsMethodComponent methodComponent;
 	private CrossingSettingsNameComponent nameComponent;
 	private CrossingSettingsOtherDetailsComponent additionalDetailsComponent;
 	private Button nextButton;
@@ -73,7 +71,7 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 	private Tool crossingManagerTool;
 	private TemplateSetting defaultSetting;
 
-	public CrossingSettingsDetailComponent(ManageCrossingSettingsMain manageCrossingSettingsMain) {
+	public CrossingSettingsDetailComponent(final ManageCrossingSettingsMain manageCrossingSettingsMain) {
 		this.manageCrossingSettingsMain = manageCrossingSettingsMain;
 	}
 
@@ -102,7 +100,6 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 
 		this.defineSettingComponent = new DefineCrossingSettingComponent(this);
 
-		this.methodComponent = new CrossingSettingsMethodComponent();
 		this.nameComponent = new CrossingSettingsNameComponent();
 		this.additionalDetailsComponent = new CrossingSettingsOtherDetailsComponent();
 
@@ -136,7 +133,7 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 			private static final long serialVersionUID = -432280582291837428L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				CrossingSettingsDetailComponent.this.doNextAction();
 			}
 		});
@@ -146,7 +143,7 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				CrossingSettingsDetailComponent.this.doResetAction();
 			}
 
@@ -157,37 +154,35 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 	@Override
 	public void layoutComponents() {
 		this.setWidth("900px");
-		this.setHeight("1060px");
+		this.setHeight("900px");
 
 		this.sectionPanel = new Panel();
 		this.sectionPanel.setWidth("100%");
-		this.sectionPanel.setHeight("1010px");
+		this.sectionPanel.setHeight("850px");
 		this.sectionPanel.addStyleName(AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
 
-		CssLayout sectionLayout = new CssLayout();
+		final CssLayout sectionLayout = new CssLayout();
 		sectionLayout.setMargin(false, true, true, true);
 
 		// cs is our crossing settings namespace
 		sectionLayout.addStyleName("cs");
 		this.defineSettingComponent.addStyleName(CrossingSettingsDetailComponent.CS_PANEL_SECTION);
-		this.methodComponent.addStyleName(CrossingSettingsDetailComponent.CS_PANEL_SECTION);
 		this.nameComponent.addStyleName(CrossingSettingsDetailComponent.CS_PANEL_SECTION);
 
 		sectionLayout.addComponent(this.defineSettingComponent);
-		sectionLayout.addComponent(this.methodComponent);
 		sectionLayout.addComponent(this.nameComponent);
 		sectionLayout.addComponent(this.additionalDetailsComponent);
 
 		this.sectionPanel.setLayout(sectionLayout);
 
 		// 3
-		HorizontalLayout buttonBar = new HorizontalLayout();
+		final HorizontalLayout buttonBar = new HorizontalLayout();
 		buttonBar.setSpacing(true);
 		buttonBar.setMargin(true);
 		buttonBar.addComponent(this.cancelButton);
 		buttonBar.addComponent(this.nextButton);
 
-		HorizontalLayout buttonLayout = new HorizontalLayout();
+		final HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setWidth("100%");
 		buttonLayout.addComponent(buttonBar);
 		buttonLayout.setComponentAlignment(buttonBar, Alignment.MIDDLE_CENTER);
@@ -198,9 +193,9 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 
 	public void doResetAction() {
 
-		String message;
+		final String message;
 		if (this.currentSetting != null) {
-			message = "Are you sure you want to reset the current setting for '" + this.currentSetting.getName().toString() + "'?";
+			message = "Are you sure you want to reset the current setting for '" + this.currentSetting.getName() + "'?";
 		} else {
 			message = "Are you sure you want to reset the current setting ?";
 		}
@@ -211,7 +206,7 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 					private static final long serialVersionUID = 1L;
 
 					@Override
-					public void onClose(ConfirmDialog dialog) {
+					public void onClose(final ConfirmDialog dialog) {
 						if (dialog.isConfirmed()) {
 							if (CrossingSettingsDetailComponent.this.currentSetting != null) {
 								CrossingSettingsDetailComponent.this.setManageCrossingSettingsFields();
@@ -228,17 +223,16 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 
 	public void setManageCrossingSettingsFields() {
 		if (this.currentSetting != null) {
-			CrossingManagerSetting templateSetting;
+			final CrossingManagerSetting templateSetting;
 			try {
 				templateSetting = this.readXmlStringForSetting(this.currentSetting.getConfiguration());
 
-				// set now all the fields in crossing settings
-				this.methodComponent.setFields(templateSetting.getBreedingMethodSetting());
+                // TODO update the crossing setting functionality so that it is able to affect the breeding method selection found in the next screen
 				this.nameComponent.setFields(templateSetting.getCrossNameSetting());
 				this.additionalDetailsComponent.setFields(templateSetting.getAdditionalDetailsSetting(), templateSetting.getName(),
 						this.currentSetting.isDefault());
 
-			} catch (JAXBException e) {
+			} catch (final JAXBException e) {
 				CrossingSettingsDetailComponent.LOG.error("Error with retrieving template setting.", e);
 
 			}
@@ -247,13 +241,13 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 
 	public void doDeleteAction() {
 		if (this.currentSetting != null) {
-			String message = "Are you sure you want to delete '" + this.currentSetting.getName().toString() + "'?";
+			final String message = "Are you sure you want to delete '" + this.currentSetting.getName() + "'?";
 			ConfirmDialog.show(this.getWindow(), "Delete Crossing Manage Setting", message, "Yes", "No", new ConfirmDialog.Listener() {
 
 				private static final long serialVersionUID = 1L;
 
 				@Override
-				public void onClose(ConfirmDialog dialog) {
+				public void onClose(final ConfirmDialog dialog) {
 					if (dialog.isConfirmed()) {
 						try {
 							CrossingSettingsDetailComponent.this.workbenchDataManager
@@ -264,7 +258,7 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 							MessageNotifier.showMessage(CrossingSettingsDetailComponent.this.getWindow(),
 									CrossingSettingsDetailComponent.this.messageSource.getMessage(Message.SUCCESS),
 									"Crossing Manager Setting has been deleted.");
-						} catch (MiddlewareQueryException e) {
+						} catch (final MiddlewareQueryException e) {
 							CrossingSettingsDetailComponent.LOG.error("Error with deleting the manage crossing template setting", e);
 
 						}
@@ -279,8 +273,7 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 	}
 
 	private void doNextAction() {
-		if (this.nameComponent.validateInputFields() && this.additionalDetailsComponent.validateInputFields()
-				&& this.methodComponent.validateInputFields()) {
+		if (this.nameComponent.validateInputFields() && this.additionalDetailsComponent.validateInputFields()) {
 			if (this.additionalDetailsComponent.settingsFileNameProvided()) {
 
 				if (this.defaultSetting != null && !this.defaultSetting.equals(this.currentSetting)
@@ -292,7 +285,7 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 								private static final long serialVersionUID = 1L;
 
 								@Override
-								public void onClose(ConfirmDialog dialog) {
+								public void onClose(final ConfirmDialog dialog) {
 									if (dialog.isConfirmed()) {
 										CrossingSettingsDetailComponent.this.saveSetting();
 									} else {
@@ -316,7 +309,7 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 		try {
 			this.project = this.contextUtil.getProjectInContext();
 			this.crossingManagerTool = this.workbenchDataManager.getToolWithName(CrossingManagerSetting.CROSSING_MANAGER_TOOL_NAME);
-		} catch (MiddlewareQueryException ex) {
+		} catch (final MiddlewareQueryException ex) {
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
 					"Error with retrieving currently opened Workbench Program and Crossing Manager Tool record.");
 			CrossingSettingsDetailComponent.LOG.error(
@@ -328,11 +321,12 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 
 		this.updateTemplateSettingVariables();
 
-		CrossingManagerSetting currentlyDefinedSettingsInUi = this.getCurrentlyDefinedSetting();
+        // TODO clarify the saving of setting operation now that all settings are not on the same page
+		final CrossingManagerSetting currentlyDefinedSettingsInUi = this.getPartialCurrentSetting();
 
 		if (this.currentSetting == null) {
-			TemplateSetting templateSetting = new TemplateSetting();
-			String settingName = this.getCurrentSettingNameinUI();
+			final TemplateSetting templateSetting = new TemplateSetting();
+			final String settingName = this.getCurrentSettingNameinUI();
 			templateSetting.setName(settingName);
 			if (!this.doesSettingNameExist(settingName, this.project.getProjectId().intValue(), this.crossingManagerTool)) {
 				templateSetting.setIsDefault(this.additionalDetailsComponent.getSetAsDefaultSettingCheckbox().booleanValue());
@@ -341,9 +335,9 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 				templateSetting.setTemplateSettingId(null);
 
 				try {
-					String configuration = this.getXmlStringForSetting(currentlyDefinedSettingsInUi);
+					final String configuration = this.getXmlStringForSetting(currentlyDefinedSettingsInUi);
 					templateSetting.setConfiguration(configuration);
-				} catch (JAXBException ex) {
+				} catch (final JAXBException ex) {
 					MessageNotifier.showError(this.getWindow(), "XML Writing Error",
 							"There was an error with writing the XML for the setting.");
 					CrossingSettingsDetailComponent.LOG.error("Error with writing XML String.", ex);
@@ -351,8 +345,8 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 				}
 
 				try {
-					Integer templateSettingId = this.workbenchDataManager.addTemplateSetting(templateSetting);
-					List<TemplateSetting> results =
+					final Integer templateSettingId = this.workbenchDataManager.addTemplateSetting(templateSetting);
+					final List<TemplateSetting> results =
 							this.workbenchDataManager.getTemplateSettings(new TemplateSetting(templateSettingId, null, null, null, null,
 									null));
 					if (!results.isEmpty()) {
@@ -366,7 +360,7 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 
 					MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
 							"Crossing Manager Settings have been saved.");
-				} catch (MiddlewareQueryException ex) {
+				} catch (final MiddlewareQueryException ex) {
 					CrossingSettingsDetailComponent.LOG.error("Error with saving template setting.", ex);
 					MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
 							"Error with saving template setting.");
@@ -377,10 +371,10 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 			}
 		} else {
 			boolean thereIsAChange = false;
-			String currentSettingNameInUi = this.getCurrentSettingNameinUI();
+			final String currentSettingNameInUi = this.getCurrentSettingNameinUI();
 
 			if (!this.currentSetting.getName().equals(currentSettingNameInUi)) {
-				if (!this.doesSettingNameExist(currentSettingNameInUi, Integer.valueOf(this.project.getProjectId().intValue()),
+				if (!this.doesSettingNameExist(currentSettingNameInUi, this.project.getProjectId().intValue(),
 						this.crossingManagerTool)) {
 					this.currentSetting.setName(currentSettingNameInUi);
 					thereIsAChange = true;
@@ -403,7 +397,7 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void onClose(ConfirmDialog dialog) {
+			public void onClose(final ConfirmDialog dialog) {
 				if (dialog.isConfirmed()) {
 					CrossingSettingsDetailComponent.this.overwriteSetting();
 				} else {
@@ -414,11 +408,12 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 	}
 
 	public void overwriteSetting() {
-		CrossingManagerSetting currentlyDefinedSettingsInUi = this.getCurrentlyDefinedSetting();
+        // TODO clarify the saving of setting operation now that all settings are not on the same page
+		final CrossingManagerSetting currentlyDefinedSettingsInUi = this.getPartialCurrentSetting();
 
 		// get the existing setting
-		TemplateSetting templateSettingToOverwrite =
-				this.getExistingTemplateSetting(Integer.valueOf(this.project.getProjectId().intValue()), this.crossingManagerTool);
+		final TemplateSetting templateSettingToOverwrite =
+				this.getExistingTemplateSetting(this.project.getProjectId().intValue(), this.crossingManagerTool);
 		this.currentSetting = templateSettingToOverwrite;
 
 		this.updateSetting(currentlyDefinedSettingsInUi, false);
@@ -426,23 +421,23 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 		this.manageCrossingSettingsMain.nextStep();
 	}
 
-	public void updateSetting(CrossingManagerSetting currentlyDefinedSettingsInUi, boolean thereIsAChange) {
+	public void updateSetting(final CrossingManagerSetting currentlyDefinedSettingsInUi, final boolean thereIsAChange) {
 		boolean settingChangeResult = thereIsAChange;
 		try {
-			CrossingManagerSetting savedSetting = this.readXmlStringForSetting(this.currentSetting.getConfiguration());
+			final CrossingManagerSetting savedSetting = this.readXmlStringForSetting(this.currentSetting.getConfiguration());
 			if (!currentlyDefinedSettingsInUi.equals(savedSetting)) {
 				try {
-					String configuration = this.getXmlStringForSetting(currentlyDefinedSettingsInUi);
+					final String configuration = this.getXmlStringForSetting(currentlyDefinedSettingsInUi);
 					this.currentSetting.setConfiguration(configuration);
 					settingChangeResult = true;
-				} catch (JAXBException ex) {
+				} catch (final JAXBException ex) {
 					MessageNotifier.showError(this.getWindow(), "XML Writing Error",
 							"There was an error with writing the XML for the setting.");
 					CrossingSettingsDetailComponent.LOG.error("Error with writing XML String.", ex);
 					return;
 				}
 			}
-		} catch (JAXBException ex) {
+		} catch (final JAXBException ex) {
 			CrossingSettingsDetailComponent.LOG.error("Error with parsing crossing manager XML string.", ex);
 			MessageNotifier.showError(this.getWindow(), "XML Parsing Error", "Error with parsing XML string for Crossing Manager setting.");
 			return;
@@ -461,19 +456,19 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 				MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
 						"Crossing Manager Setting has been updated.");
 			}
-		} catch (MiddlewareQueryException ex) {
+		} catch (final MiddlewareQueryException ex) {
 			CrossingSettingsDetailComponent.LOG.error("Error with updating template setting record.", ex);
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
 					"Error with updating Crossing Manager Setting.");
 		}
 	}
 
-	public TemplateSetting getExistingTemplateSetting(Integer projectId, Tool tool) {
+	public TemplateSetting getExistingTemplateSetting(final Integer projectId, final Tool tool) {
 
-		String name = this.getCurrentSettingNameinUI();
-		TemplateSetting existingTemplateSetting;
+		final String name = this.getCurrentSettingNameinUI();
+		final TemplateSetting existingTemplateSetting;
 
-		TemplateSetting filter = new TemplateSetting();
+		final TemplateSetting filter = new TemplateSetting();
 		filter.setName(name);
 		filter.setConfiguration(null);
 		filter.setIsDefaultToNull();
@@ -481,13 +476,13 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 		filter.setTemplateSettingId(null);
 		filter.setTool(tool);
 		try {
-			List<TemplateSetting> results = this.workbenchDataManager.getTemplateSettings(filter);
+			final List<TemplateSetting> results = this.workbenchDataManager.getTemplateSettings(filter);
 			if (!results.isEmpty()) {
 				existingTemplateSetting = results.get(0);
 
 				return existingTemplateSetting;
 			}
-		} catch (MiddlewareQueryException ex) {
+		} catch (final MiddlewareQueryException ex) {
 			CrossingSettingsDetailComponent.LOG.error("Error getting template settings for project:" + projectId
 					+ "and crossing manager tool.", ex);
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
@@ -507,8 +502,8 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 		return currentSettingNameInUi;
 	}
 
-	private boolean doesSettingNameExist(String name, Integer projectId, Tool tool) {
-		TemplateSetting filter = new TemplateSetting();
+	private boolean doesSettingNameExist(final String name, final Integer projectId, final Tool tool) {
+		final TemplateSetting filter = new TemplateSetting();
 		filter.setName(name);
 		filter.setConfiguration(null);
 		filter.setIsDefaultToNull();
@@ -516,11 +511,11 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 		filter.setTemplateSettingId(null);
 		filter.setTool(tool);
 		try {
-			List<TemplateSetting> settings = this.workbenchDataManager.getTemplateSettings(filter);
+			final List<TemplateSetting> settings = this.workbenchDataManager.getTemplateSettings(filter);
 			if (!settings.isEmpty()) {
 				return true;
 			}
-		} catch (MiddlewareQueryException ex) {
+		} catch (final MiddlewareQueryException ex) {
 			CrossingSettingsDetailComponent.LOG.error("Error getting template settings for project:" + projectId
 					+ "and crossing manager tool.", ex);
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
@@ -532,44 +527,39 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 
 	/**
 	 * Make sure to validate the input fields first before calling this method.
-	 * 
+	 *
+     * The method is named getPartialCurrentSetting because it does not include the breeding method setting
 	 * @return
 	 */
-	public CrossingManagerSetting getCurrentlyDefinedSetting() {
-		CrossingManagerSetting toreturn = new CrossingManagerSetting();
+	public CrossingManagerSetting getPartialCurrentSetting() {
+		final CrossingManagerSetting toreturn = new CrossingManagerSetting();
 
-		CrossNameSetting crossNameSettingPojo = this.nameComponent.getCrossNameSettingObject();
+		final CrossNameSetting crossNameSettingPojo = this.nameComponent.getCrossNameSettingObject();
 		toreturn.setCrossNameSetting(crossNameSettingPojo);
 
-		Integer locId = (Integer) this.additionalDetailsComponent.getHarvestLocComboBox().getValue();
-		String harvestDate = this.additionalDetailsComponent.getHarvestDtDateField().getValue();
-		AdditionalDetailsSetting additionalDetails = new AdditionalDetailsSetting(locId, harvestDate);
+		final Integer locId = (Integer) this.additionalDetailsComponent.getHarvestLocComboBox().getValue();
+		final String harvestDate = this.additionalDetailsComponent.getHarvestDtDateField().getValue();
+		final AdditionalDetailsSetting additionalDetails = new AdditionalDetailsSetting(locId, harvestDate);
 		toreturn.setAdditionalDetailsSetting(additionalDetails);
 
-		final Integer methodId = this.methodComponent.getSelectedBreedingMethodId();
-		boolean isBasedOnStatusOfParentalLines = this.methodComponent.isBasedOnStatusOfParentalLines();
-
-		BreedingMethodSetting breedingMethodSetting = new BreedingMethodSetting(methodId, isBasedOnStatusOfParentalLines);
-		toreturn.setBreedingMethodSetting(breedingMethodSetting);
-
-		String settingName = (String) this.additionalDetailsComponent.getSettingsNameTextfield().getValue();
+        String settingName = (String) this.additionalDetailsComponent.getSettingsNameTextfield().getValue();
 		settingName = settingName.trim();
 		toreturn.setName(settingName);
 
 		return toreturn;
 	}
 
-	private String getXmlStringForSetting(CrossingManagerSetting setting) throws JAXBException {
-		JAXBContext context = JAXBContext.newInstance(CrossingManagerSetting.class);
-		Marshaller marshaller = context.createMarshaller();
-		StringWriter writer = new StringWriter();
+	private String getXmlStringForSetting(final CrossingManagerSetting setting) throws JAXBException {
+		final JAXBContext context = JAXBContext.newInstance(CrossingManagerSetting.class);
+		final Marshaller marshaller = context.createMarshaller();
+		final StringWriter writer = new StringWriter();
 		marshaller.marshal(setting, writer);
 		return writer.toString();
 	}
 
-	private CrossingManagerSetting readXmlStringForSetting(String xmlString) throws JAXBException {
-		JAXBContext context = JAXBContext.newInstance(CrossingManagerSetting.class);
-		Unmarshaller unmarshaller = context.createUnmarshaller();
+	private CrossingManagerSetting readXmlStringForSetting(final String xmlString) throws JAXBException {
+		final JAXBContext context = JAXBContext.newInstance(CrossingManagerSetting.class);
+		final Unmarshaller unmarshaller = context.createUnmarshaller();
 		return (CrossingManagerSetting) unmarshaller.unmarshal(new StringReader(xmlString));
 	}
 
@@ -577,17 +567,16 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 		return this.currentSetting;
 	}
 
-	public void setCurrentSetting(TemplateSetting currentSetting) {
+	public void setCurrentSetting(final TemplateSetting currentSetting) {
 		this.currentSetting = currentSetting;
 	}
 
 	public void setDefaultManageCrossingSettingsFields() {
-		this.methodComponent.setFieldsDefaultValue();
 		this.nameComponent.setFieldsDefaultValue();
 		this.additionalDetailsComponent.setFieldsDefaultValue();
 	}
 
-	public void setDefaultSetting(TemplateSetting defaultSetting) {
+	public void setDefaultSetting(final TemplateSetting defaultSetting) {
 		this.defaultSetting = defaultSetting;
 	}
 
