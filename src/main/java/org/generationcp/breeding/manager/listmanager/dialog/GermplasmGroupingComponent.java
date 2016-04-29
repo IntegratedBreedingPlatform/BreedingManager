@@ -124,19 +124,19 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 			protected void doInTransactionWithoutResult(final TransactionStatus status) {
 
 				for (final Integer gid : GermplasmGroupingComponent.this.gidsToProcess) {
-					Germplasm germplasm = GermplasmGroupingComponent.this.germplasmDataManager.getGermplasmByGID(gid);
-					GermplasmGroup report =
+					final Germplasm germplasm = GermplasmGroupingComponent.this.germplasmDataManager.getGermplasmByGID(gid);
+					final GermplasmGroup report =
 							GermplasmGroupingComponent.this.germplasmGroupingService.markFixed(germplasm, includeDescendantsChoice,
-							preserveExistingGroupChoice);
+									preserveExistingGroupChoice);
 					allGroupingResults.put(gid, report);
 				}
 			}
 		});
 
-		reportSuccessAndClose(allGroupingResults);
+		this.reportSuccessAndClose(allGroupingResults);
 	}
 
-	void reportSuccessAndClose(Map<Integer, GermplasmGroup> groupingResults) {
+	void reportSuccessAndClose(final Map<Integer, GermplasmGroup> groupingResults) {
 		MessageNotifier.showMessage(this.getParent(), this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
 				this.messageSource.getMessage(Message.SUCCESS_MARK_LINES_AS_FIXED));
 
@@ -197,23 +197,23 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 
 	// Setters for unit testing
 
-	void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+	void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 
-	void setGermplasmGroupingService(GermplasmGroupingService germplasmGroupingService) {
+	void setGermplasmGroupingService(final GermplasmGroupingService germplasmGroupingService) {
 		this.germplasmGroupingService = germplasmGroupingService;
 	}
 
-	void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+	void setGermplasmDataManager(final GermplasmDataManager germplasmDataManager) {
 		this.germplasmDataManager = germplasmDataManager;
 	}
 
-	void setTransactionManager(PlatformTransactionManager transactionManager) {
+	void setTransactionManager(final PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
 
-	void setGidsToProcess(Set<Integer> gidsToProcess) {
+	void setGidsToProcess(final Set<Integer> gidsToProcess) {
 		this.gidsToProcess = gidsToProcess;
 	}
 }
