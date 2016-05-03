@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.generationcp.breeding.manager.constants.MgidApplicationStatus;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.GermplasmGroupTestDataInitializer;
 import org.generationcp.middleware.data.initializer.MethodTestDataInitializer;
@@ -75,7 +76,7 @@ public class GermplasmGroupingComponentTest {
 	public void testGroupGermplasm() {
 		this.germplasmGroupingComponent.groupGermplasm();
 
-		// Just basic assertion that the sepcified number of germplasm were loaded and processed via the grouping service.
+		// Just basic assertion that the specified number of germplasm were loaded and processed via the grouping service.
 		Mockito.verify(this.germplasmDataManager, Mockito.times(this.gidsToProcess.size())).getGermplasmByGID(Mockito.anyInt());
 		Mockito.verify(this.germplasmGroupingService, Mockito.times(this.gidsToProcess.size())).markFixed(Mockito.any(Germplasm.class),
 				Mockito.anyBoolean(), Mockito.anyBoolean());
@@ -86,8 +87,8 @@ public class GermplasmGroupingComponentTest {
 
 		final Map<Integer, GermplasmGroup> groupingResults = this.initGroupingResults();
 
-		Assert.assertTrue("Expecting to return true for all germplasm groups since all founder germplasm has non GENERATIVE method type.",
-				this.germplasmGroupingComponent.verifyIfAllEntriesHasAppliedMGIDSuccessfully(groupingResults));
+		Assert.assertTrue("Expecting to return true for all germplasm groups since all founder germplasm has non-GENERATIVE method type.",
+				this.germplasmGroupingComponent.verifyMGIDApplicationForSelected(groupingResults).equals(MgidApplicationStatus.ALL_ENTRIES));
 
 	}
 
@@ -98,8 +99,23 @@ public class GermplasmGroupingComponentTest {
 
 		groupingResults.get(1).getFounder().setMethod(this.methodTestDataInitializer.createMethod(METHOD_ID, GEN_METHOD_TYPE));
 
-		Assert.assertFalse("Expecting to return false since not all germplasm group's founder germplasm has non-GENERATIVE method type.",
-				this.germplasmGroupingComponent.verifyIfAllEntriesHasAppliedMGIDSuccessfully(groupingResults));
+		Assert.assertTrue("Expecting to return false since not all germplasm group's founder germplasm has non-GENERATIVE method type.",
+				this.germplasmGroupingComponent.verifyMGIDApplicationForSelected(groupingResults)
+						.equals(MgidApplicationStatus.SOME_ENTRIES));
+
+	}
+
+	@Test
+	public void testVerifyIfAllEntriesHasNotAppliedMGIDToAnyEntries() {
+
+		final Map<Integer, GermplasmGroup> groupingResults = this.initGroupingResults();
+
+		for (final GermplasmGroup germplasmGroup : groupingResults.values()) {
+			germplasmGroup.getFounder().setMethod(this.methodTestDataInitializer.createMethod(METHOD_ID, GEN_METHOD_TYPE));
+		}
+
+		Assert.assertTrue("Expecting to return false since all germplasm group's founder germplasm has GENERATIVE method type.",
+				this.germplasmGroupingComponent.verifyMGIDApplicationForSelected(groupingResults).equals(MgidApplicationStatus.NO_ENTRIES));
 
 	}
 
