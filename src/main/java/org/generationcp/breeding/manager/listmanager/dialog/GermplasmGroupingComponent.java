@@ -164,8 +164,7 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 	 */
 	MgidApplicationStatus verifyMGIDApplicationForSelected(final Map<Integer, GermplasmGroup> groupingResults) {
 		int noOfGermplasmGroupWithAppliedMGID = 0;
-		for (final Map.Entry<Integer, GermplasmGroup> mapEntry : groupingResults.entrySet()) {
-			final GermplasmGroup groupingResult = mapEntry.getValue();
+		for (GermplasmGroup groupingResult : groupingResults.values()) {
 			// you can't assign mgid or group id for germplasm with generative method
 			if (!groupingResult.getFounder().getMethod().isGenerative()) {
 				noOfGermplasmGroupWithAppliedMGID++;
