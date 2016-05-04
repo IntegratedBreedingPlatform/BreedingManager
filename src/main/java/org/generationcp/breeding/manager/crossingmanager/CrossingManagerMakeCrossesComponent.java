@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.vaadin.data.Property;
 import org.apache.commons.lang.math.NumberUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -15,7 +16,9 @@ import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.crossingmanager.constants.CrossType;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
+import org.generationcp.breeding.manager.crossingmanager.settings.CrossingSettingsMethodComponent;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
+import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDisplay.StepChangeListener;
@@ -54,6 +57,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	public static final String BACK_BUTTON_ID = "back button";
 
 	private static final long serialVersionUID = 9097810121003895303L;
+	public static final int BASED_ON_PARENTAGE = 0;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -70,6 +74,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	private MakeCrossesParentsComponent parentsComponent;
 	private CrossingMethodComponent crossingMethodComponent;
 	private MakeCrossesTableComponent crossesTableComponent;
+    private CrossingSettingsMethodComponent crossingSettingsMethodComponent;
 
 	// Handles Universal Mode View for ListManagerMain
 	private ModeView modeView;
@@ -192,9 +197,14 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		this.nurseryBackButton.addListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(final Button.ClickEvent event) {
+				final BreedingMethodSetting methodSetting = CrossingManagerMakeCrossesComponent.this.getCurrentBreedingMethodSetting();
+				final Integer methodId = methodSetting.isBasedOnStatusOfParentalLines() ? BASED_ON_PARENTAGE : methodSetting.getMethodId();
+
 				// get the cancel button returning to nursery  link as a root url
 				final String urlToSpecificNurseryWithParams = CrossingManagerMakeCrossesComponent.this.nurseryCancelButton.getResource()
-						.getURL() + "?" + BreedingManagerApplication.REQ_PARAM_CROSSES_LIST_ID + "=" + id;
+						.getURL() + "?" + BreedingManagerApplication.REQ_PARAM_CROSSES_LIST_ID + "=" + id
+						+ "&" + BreedingManagerApplication.REQ_PARAM_BREEDING_METHOD_ID + "=" + methodId;
+
 				final ExternalResource urlToNursery = new ExternalResource(urlToSpecificNurseryWithParams);
 				CrossingManagerMakeCrossesComponent.this.getWindow().open(urlToNursery, "_self");
 			}
@@ -234,6 +244,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		this.parentsComponent = new MakeCrossesParentsComponent(this);
 		this.crossingMethodComponent = new CrossingMethodComponent(this);
 		this.crossesTableComponent = new MakeCrossesTableComponent(this);
+        this.crossingSettingsMethodComponent = new CrossingSettingsMethodComponent();
 
 		this.backButton = new Button();
 		this.backButton.setData(CrossingManagerMakeCrossesComponent.BACK_BUTTON_ID);
@@ -259,6 +270,14 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		final CrossingManagerImportButtonClickListener listener = new CrossingManagerImportButtonClickListener(this);
 		this.backButton.addListener(listener);
 		this.nextButton.addListener(listener);
+
+
+        this.crossingSettingsMethodComponent.registerBreedingMethodChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(final Property.ValueChangeEvent event) {
+                CrossingManagerMakeCrossesComponent.this.crossesTableComponent.showOrHideGroupInheritanceOptions();
+            }
+        });
 	}
 
 	@Override
@@ -273,9 +292,16 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		upperLayout.addComponent(this.selectParentsComponent);
 		upperLayout.addComponent(this.parentsComponent);
 
+        final VerticalLayout methodLayout = new VerticalLayout();
+        methodLayout.setSpacing(true);
+        methodLayout.addComponent(this.crossingSettingsMethodComponent);
+        methodLayout.addComponent(this.crossingMethodComponent);
+
+
 		final HorizontalLayout lowerLayout = new HorizontalLayout();
+
 		lowerLayout.setSpacing(true);
-		lowerLayout.addComponent(this.crossingMethodComponent);
+		lowerLayout.addComponent(methodLayout);
 		lowerLayout.addComponent(this.crossesTableComponent);
 
 		final HorizontalLayout layoutButtonArea = new HorizontalLayout();
@@ -360,7 +386,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	}
 
 	public CrossingManagerSetting getCurrentCrossingSetting() {
-		return this.source.getDetailComponent().getCurrentlyDefinedSetting();
+		return this.source.compileCurrentSetting();
 	}
 
 	public CrossesMadeContainer getCrossesMadeContainer() {
@@ -584,4 +610,12 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
+
+    public BreedingMethodSetting getCurrentBreedingMethodSetting() {
+        final Integer methodId = this.crossingSettingsMethodComponent.getSelectedBreedingMethodId();
+        final boolean isBasedOnStatusOfParentalLines = this.crossingSettingsMethodComponent.isBasedOnStatusOfParentalLines();
+
+        final BreedingMethodSetting breedingMethodSetting = new BreedingMethodSetting(methodId, isBasedOnStatusOfParentalLines);
+        return breedingMethodSetting;
+    }
 }
