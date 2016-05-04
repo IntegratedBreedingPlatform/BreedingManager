@@ -45,7 +45,7 @@ public class ListCommonActionsUtilTest {
 	public void testGetNewEntriesToSaveUpdateDelete_ForNewEntries() throws MiddlewareQueryException {
 		this.forceHasChanges = false;
 		this.listToSave = GermplasmListTestDataInitializer.createGermplasmList(1);
-		this.listEntries = GermplasmListTestDataInitializer.createGermplasmListData(5);
+		this.listEntries = GermplasmListTestDataInitializer.createGermplasmListData(this.listToSave, 5);
 		this.newEntries = new ArrayList<GermplasmListData>();
 		this.entriesToUpdate = new ArrayList<GermplasmListData>();
 		this.entriesToDelete = new ArrayList<GermplasmListData>();
