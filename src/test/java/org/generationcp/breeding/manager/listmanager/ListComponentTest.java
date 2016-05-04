@@ -12,7 +12,6 @@ import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
-import org.generationcp.breeding.manager.data.initializer.GermplasmListDataInitializer;
 import org.generationcp.breeding.manager.listmanager.util.ListDataPropertiesRenderer;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -110,7 +109,7 @@ public class ListComponentTest {
 	private ListDataPropertiesRenderer newColumnsRenderer;
 
 	@InjectMocks
-	private ListComponent listComponent = new ListComponent();
+	private final ListComponent listComponent = new ListComponent();
 
 	private GermplasmList germplasmList;
 
@@ -360,8 +359,8 @@ public class ListComponentTest {
 	@Test
 	public void testDeleteRemovedGermplasmEntriesFromTableOnlySelectedEntries() {
 
-		GermplasmList germplasmListWithInventoryInfo =
-				GermplasmListDataInitializer.createGermplasmListWithListDataAndInventoryInfo(TEST_GERMPLASM_LIST_ID,
+		final GermplasmList germplasmListWithInventoryInfo =
+				GermplasmListTestDataInitializer.createGermplasmListWithListDataAndInventoryInfo(TEST_GERMPLASM_LIST_ID,
 						TEST_GERMPLASM_NO_OF_ENTRIES);
 		Mockito.when(this.inventoryDataManager.getLotCountsForList(TEST_GERMPLASM_LIST_ID, 0, TEST_GERMPLASM_NO_OF_ENTRIES)).thenReturn(
 				germplasmListWithInventoryInfo.getListData());
@@ -432,20 +431,20 @@ public class ListComponentTest {
 		}
 	}
 
-	private Term createTerm(int id, String name) {
-		Term term = new Term(id, name, "");
+	private Term createTerm(final int id, final String name) {
+		final Term term = new Term(id, name, "");
 		return term;
 	}
 
-	private GermplasmListNewColumnsInfo createGermplasmListNewColumnInfo(int listId) {
-		GermplasmListNewColumnsInfo germplasmListNewColumnsInfo = new GermplasmListNewColumnsInfo(listId);
+	private GermplasmListNewColumnsInfo createGermplasmListNewColumnInfo(final int listId) {
+		final GermplasmListNewColumnsInfo germplasmListNewColumnsInfo = new GermplasmListNewColumnsInfo(listId);
 		germplasmListNewColumnsInfo.setColumnValuesMap(new HashMap<String, List<ListDataColumnValues>>());
 		return germplasmListNewColumnsInfo;
 	}
 
-	private Map<Object, String> createItemsToDelete(Table table) {
+	private Map<Object, String> createItemsToDelete(final Table table) {
 
-		Map<Object, String> itemsToDelete = new HashMap<>();
+		final Map<Object, String> itemsToDelete = new HashMap<>();
 
 		// delete the first record from the germplasm list data table
 		itemsToDelete.put(1, "Designation 1");
