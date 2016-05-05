@@ -78,7 +78,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	private ContextMenuItem menuSelectAll;
 	private ContextMenuItem menuAddNewEntry;
 
-	private TableWithSelectAllLayout matchingGermplasmsTableWithSelectAll;
+	private PagedTableWithSelectAllLayout matchingGermplasmsTableWithSelectAll;
 
 	public static final String CHECKBOX_COLUMN_ID = "Tag All Column";
 	public static final String NAMES = "NAMES";
@@ -255,7 +255,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		return container;
 	}
 
-	protected TableWithSelectAllLayout getTableWithSelectAllLayout() {
+	protected PagedTableWithSelectAllLayout getTableWithSelectAllLayout() {
 		return new PagedTableWithSelectAllLayout(10, GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID);
 	}
 
@@ -422,7 +422,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		GermplasmSearchResultsComponent.LOG.debug("" + monitor.stop());
 
 		// update controls
-		this.matchingGermplasmsTableWithSelectAll.replaceComponent(this.matchingGermplasmsTableWithSelectAll.getComponent(1),((PagedTable)this.matchingGermplasmsTable).createControls());
+		this.matchingGermplasmsTableWithSelectAll.refreshTablePagingControls();
 	}
 
 	private String retrieveMethodName(Integer methodId, Map<Integer, String> methodsMap) {

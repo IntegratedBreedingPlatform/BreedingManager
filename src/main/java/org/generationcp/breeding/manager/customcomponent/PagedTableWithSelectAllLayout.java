@@ -47,4 +47,8 @@ public class PagedTableWithSelectAllLayout extends TableWithSelectAllLayout {
 		this.addComponent(layout);
 	}
 
+	public void refreshTablePagingControls() {
+		this.replaceComponent(this.getComponent(1),((PagedTable)this.table).createControls());
+	}
+
 }
