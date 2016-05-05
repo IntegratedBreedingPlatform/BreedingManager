@@ -1,17 +1,16 @@
-
 package org.generationcp.breeding.manager.customfields;
 
 import java.util.Map;
 
-import com.vaadin.ui.Table;
+import com.jensjansson.pagedtable.PagedTable;
 
-public class BreedingManagerTable extends Table {
-
-	private static final long serialVersionUID = 745102380412622592L;
-
+/**
+ * Created by cyrus on 05/05/2016.
+ */
+public class PagedBreedingManagerTable extends PagedTable {
 	private TableMultipleSelectionHandler tableMultipleSelectionHandler;
 
-	public BreedingManagerTable(int recordCount, int maxRecords) {
+	public PagedBreedingManagerTable(int recordCount, int maxRecords) {
 		super();
 
 		Integer pageLength = Math.min(recordCount, maxRecords);

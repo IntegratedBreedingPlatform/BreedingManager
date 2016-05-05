@@ -15,7 +15,7 @@ public class TableLayout extends CssLayout implements BreedingManagerLayout, Ini
 
 	private static final long serialVersionUID = -6261586644242232751L;
 
-	protected BreedingManagerTable table;
+	protected Table table;
 	private final Label emptyTableLabel = new Label("No information retrieved.");
 
 	private int recordCount = 0;
@@ -63,7 +63,6 @@ public class TableLayout extends CssLayout implements BreedingManagerLayout, Ini
 		this.setWidth("100%");
 		if (!(this.doHideEmptyTable() && this.recordCount == 0)) {
 			this.addComponent(this.table);
-			this.addComponent(this.table.createControls());
 		} else {
 			this.addComponent(this.emptyTableLabel);
 		}
