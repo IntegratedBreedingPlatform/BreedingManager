@@ -63,6 +63,7 @@ public class TableLayout extends CssLayout implements BreedingManagerLayout, Ini
 		this.setWidth("100%");
 		if (!(this.doHideEmptyTable() && this.recordCount == 0)) {
 			this.addComponent(this.table);
+			this.addComponent(this.table.createControls());
 		} else {
 			this.addComponent(this.emptyTableLabel);
 		}

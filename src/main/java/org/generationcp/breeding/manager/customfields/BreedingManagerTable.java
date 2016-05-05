@@ -12,9 +12,10 @@ import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutAction.ModifierKey;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.ui.Table;
 
-public class BreedingManagerTable extends Table {
+import com.jensjansson.pagedtable.PagedTable;
+
+public class BreedingManagerTable extends PagedTable {
 
 	private static final long serialVersionUID = 745102380412622592L;
 
