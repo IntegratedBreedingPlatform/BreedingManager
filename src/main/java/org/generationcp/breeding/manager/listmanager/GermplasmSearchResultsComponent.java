@@ -40,10 +40,14 @@ import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
+import com.jensjansson.pagedtable.PagedTable;
+
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.Action;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -162,26 +166,17 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		this.updateActionMenuOptions(false);
 
 		this.matchingGermplasmsTableWithSelectAll = this.getTableWithSelectAllLayout();
-		this.matchingGermplasmsTableWithSelectAll.setHeight("500px");
+		this.matchingGermplasmsTableWithSelectAll.setHeight("530px");
 
 		this.matchingGermplasmsTable = this.matchingGermplasmsTableWithSelectAll.getTable();
 		this.matchingGermplasmsTable.setData(GermplasmSearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA);
-		this.matchingGermplasmsTable.addContainerProperty(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID, CheckBox.class, null);
-		this.matchingGermplasmsTable.addContainerProperty(GermplasmSearchResultsComponent.NAMES, Button.class, null);
-		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
-		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), String.class, null);
-		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
-		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
-		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
-		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.GROUP_ID.getName(), String.class, null);
-		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class, null);
-		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, null);
+		this.matchingGermplasmsTable.setContainerDataSource(createContainer());
 		this.matchingGermplasmsTable.setWidth("100%");
 		this.matchingGermplasmsTable.setMultiSelect(true);
 		this.matchingGermplasmsTable.setSelectable(true);
 		this.matchingGermplasmsTable.setImmediate(true);
 		this.matchingGermplasmsTable.setDragMode(TableDragMode.ROW);
-		this.matchingGermplasmsTable.setHeight("470px");
+		this.matchingGermplasmsTable.setHeight("440px");
 
 		this.messageSource.setColumnHeader(this.matchingGermplasmsTable, GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID,
 				Message.CHECK_ICON);
@@ -241,6 +236,23 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 			}
 		};
 
+	}
+
+	public IndexedContainer createContainer() {
+		final IndexedContainer container = new IndexedContainer();
+
+		container.addContainerProperty(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID, CheckBox.class, null);
+		container.addContainerProperty(GermplasmSearchResultsComponent.NAMES, Button.class, null);
+		container.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
+		container.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), String.class, null);
+		container.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
+		container.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
+		container.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
+		container.addContainerProperty(ColumnLabels.GROUP_ID.getName(), String.class, null);
+		container.addContainerProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class, null);
+		container.addContainerProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, null);
+
+		return container;
 	}
 
 	protected TableWithSelectAllLayout getTableWithSelectAllLayout() {
@@ -342,7 +354,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		final Monitor monitor = MonitorFactory.start("GermplasmSearchResultsComponent.applyGermplasmResults()");
 		
 		this.updateNoOfEntries(germplasms.size());
-		this.matchingGermplasmsTable.removeAllItems();
+		this.matchingGermplasmsTable.setContainerDataSource(createContainer());
 		for (final Germplasm germplasm : germplasms) {
 
 			final GidLinkButtonClickListener listener =
@@ -408,6 +420,9 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 			this.updateActionMenuOptions(true);
 		}
 		GermplasmSearchResultsComponent.LOG.debug("" + monitor.stop());
+
+		// update controls
+		this.matchingGermplasmsTableWithSelectAll.replaceComponent(this.matchingGermplasmsTableWithSelectAll.getComponent(1),((PagedTable)this.matchingGermplasmsTable).createControls());
 	}
 
 	private String retrieveMethodName(Integer methodId, Map<Integer, String> methodsMap) {
