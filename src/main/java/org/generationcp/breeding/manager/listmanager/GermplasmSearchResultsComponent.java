@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.ActionButton;
+import org.generationcp.breeding.manager.customcomponent.PagedTableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.service.BreedingManagerSearchException;
@@ -243,7 +244,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	}
 
 	protected TableWithSelectAllLayout getTableWithSelectAllLayout() {
-		return new TableWithSelectAllLayout(10, GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID);
+		return new PagedTableWithSelectAllLayout(10, GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID);
 	}
 
 	private void updateActionMenuOptions(final boolean status) {
