@@ -355,6 +355,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		
 		this.updateNoOfEntries(germplasms.size());
 		this.matchingGermplasmsTable.setContainerDataSource(createContainer());
+		
 		for (final Germplasm germplasm : germplasms) {
 
 			final GidLinkButtonClickListener listener =
@@ -500,7 +501,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		return germplasmNames.toString();
 	}
 
-	public TableWithSelectAllLayout getMatchingGermplasmsTableWithSelectAll() {
+	public PagedTableWithSelectAllLayout getMatchingGermplasmsTableWithSelectAll() {
 		return this.matchingGermplasmsTableWithSelectAll;
 	}
 

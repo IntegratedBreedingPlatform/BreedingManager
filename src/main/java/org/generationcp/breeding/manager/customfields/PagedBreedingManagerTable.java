@@ -20,12 +20,6 @@ public class PagedBreedingManagerTable extends PagedTable {
 	public PagedBreedingManagerTable(int recordCount, int maxRecords) {
 		super();
 
-		Integer pageLength = Math.min(recordCount, maxRecords);
-		if (pageLength > 0) {
-			this.setPageLength(pageLength);
-		} else {
-			this.setPageLength(maxRecords);
-		}
 		this.setImmediate(true);
 
 		this.tableMultipleSelectionHandler = new TableMultipleSelectionHandler(this);
