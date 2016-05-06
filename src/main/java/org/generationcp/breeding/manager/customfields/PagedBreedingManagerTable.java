@@ -7,7 +7,6 @@ import java.util.Map;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.TextField;
 
 import com.jensjansson.pagedtable.PagedTable;

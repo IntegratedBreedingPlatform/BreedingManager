@@ -37,21 +37,7 @@ public class TableMultipleSelectionHandler extends ShortcutListener implements I
 
 	@Override
 	public void handleAction(Object source, Object target) {
-		TableMultipleSelectionHandler targetTableSelectionHandler = (TableMultipleSelectionHandler) target;
-
-		Table tableInstance = targetTableSelectionHandler.getTableInstance();
-
-		@SuppressWarnings("unchecked")
-		List<Object> selectedIds = new ArrayList<>((Collection<Object>) tableInstance.getValue());
-		List<Object> itemIds = new ArrayList<>(tableInstance.getItemIds());
-		if (selectedIds.size() != itemIds.size()) {
-			targetTableSelectionHandler.setMultiSelectEndKey(itemIds.get(selectedIds.size()));
-			targetTableSelectionHandler.setValueForSelectedItems();
-		}
-	}
-
-	public Table getTableInstance() {
-		return tableInstance;
+		// do not need to handle
 	}
 
 	/**
