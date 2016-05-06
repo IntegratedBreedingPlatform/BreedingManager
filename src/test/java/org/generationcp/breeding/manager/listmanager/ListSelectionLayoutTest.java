@@ -3,7 +3,7 @@ package org.generationcp.breeding.manager.listmanager;
 
 import junit.framework.Assert;
 
-import org.generationcp.breeding.manager.data.initializer.GermplasmListDataInitializer;
+import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +28,7 @@ public class ListSelectionLayoutTest {
 		MockitoAnnotations.initMocks(this);
 		this.layout = new ListSelectionLayout(this.source, LIST_ID);
 
-		this.germplasmList = GermplasmListDataInitializer.createGermplasmList(LIST_ID);
+		this.germplasmList = GermplasmListTestDataInitializer.createGermplasmList(LIST_ID);
 
 		Mockito.doReturn(this.listBuilderComponent).when(this.source).getListBuilderComponent();
 		Mockito.doReturn(this.germplasmList).when(this.listBuilderComponent).getCurrentListInSaveDialog();
