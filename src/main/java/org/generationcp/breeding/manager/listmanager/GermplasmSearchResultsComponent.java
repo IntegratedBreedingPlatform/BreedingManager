@@ -256,7 +256,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	}
 
 	protected PagedTableWithSelectAllLayout getTableWithSelectAllLayout() {
-		return new PagedTableWithSelectAllLayout(10, GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID);
+		return new PagedTableWithSelectAllLayout(25, GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID);
 	}
 
 	private void updateActionMenuOptions(final boolean status) {

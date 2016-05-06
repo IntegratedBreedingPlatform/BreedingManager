@@ -1,5 +1,6 @@
 package org.generationcp.breeding.manager.customfields;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -20,26 +21,34 @@ public class PagedBreedingManagerTable extends PagedTable {
 	public PagedBreedingManagerTable(int recordCount, int maxRecords) {
 		super();
 
-		this.setImmediate(true);
+		Integer pageLength = Math.min(recordCount, maxRecords);
+		if (pageLength > 0) {
+			this.setPageLength(pageLength);
+		} else {
+			this.setPageLength(maxRecords);
+		}
 
 		this.tableMultipleSelectionHandler = new TableMultipleSelectionHandler(this);
-
 		this.addListener(this.tableMultipleSelectionHandler);
 		this.addShortcutListener(this.tableMultipleSelectionHandler);
-
 	}
 
 	@Override
 	public void changeVariables(Object source, Map<String, Object> variables) {
-		super.changeVariables(source, variables);
+		// clone the variables map into mutable hashmap
+		// this fixes the vaadin issue that the page length is being modified when this method activates
+		Map<String, Object> variablesCopy = new HashMap<>(variables);
+		if (variablesCopy.containsKey("pagelength")) {
+			variablesCopy.remove("pagelength");
+		}
+
+		super.changeVariables(source, variablesCopy);
 		tableMultipleSelectionHandler.setValueForSelectedItems();
 	}
 
 	@Override
 	public HorizontalLayout createControls() {
 		HorizontalLayout controls = super.createControls();
-
-		controls.setMargin(new Layout.MarginInfo(true, false, false, false));
 
 		Iterator<Component> iterator = controls.getComponentIterator();
 

@@ -17,30 +17,37 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout {
 	private PagedBreedingManagerTable table;
 	private final Object checkboxColumnId;
 
+	private int recordCount = 0;
+	private int maxRecords = 0;
+
 	private CheckBox selectAllCheckBox;
 
 	public PagedTableWithSelectAllLayout(int recordCount, Object checkboxColumnId) {
-		//super(recordCount, checkboxColumnId);
+		this.recordCount = this.maxRecords = recordCount;
+
 		this.checkboxColumnId = checkboxColumnId;
 
-		initComponents(recordCount);
+		initComponents();
 		initLayout();
 		initActions();
 	}
 
-	public void initComponents(int recordCount) {
-		this.table = new PagedBreedingManagerTable(recordCount,recordCount);
+	public void initComponents() {
+		this.table = new PagedBreedingManagerTable(recordCount,maxRecords);
 		this.table.setImmediate(true);
 
 		this.selectAllCheckBox = new CheckBox("Select All");
 		this.selectAllCheckBox.setImmediate(true);
-
 	}
 
 	public void initLayout() {
+		this.setSizeUndefined();
+		this.setWidth("100%");
+
 		this.addComponent(this.table);
 		this.addComponent(((PagedTable)this.table).createControls());
 		this.addComponent(this.selectAllCheckBox);
+
 	}
 
 	public void initActions() {
