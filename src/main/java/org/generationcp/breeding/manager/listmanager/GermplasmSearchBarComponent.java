@@ -24,8 +24,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -37,6 +35,9 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.TextField;
+
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 
 @Configurable
 public class GermplasmSearchBarComponent extends CssLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
@@ -210,7 +211,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 
 	public void searchButtonClickAction() {
 
-		final String q = GermplasmSearchBarComponent.this.searchField.getValue().toString();
+		final String searchValue = GermplasmSearchBarComponent.this.searchField.getValue().toString();
 		final String searchType = (String) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
 		if (GermplasmSearchBarComponent.this.matchesContaining.equals(searchType)) {
 			ConfirmDialog.show(GermplasmSearchBarComponent.this.getWindow(),
@@ -224,12 +225,12 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 						@Override
 						public void onClose(final ConfirmDialog dialog) {
 							if (dialog.isConfirmed()) {
-								GermplasmSearchBarComponent.this.doSearch(q);
+								GermplasmSearchBarComponent.this.doSearch(searchValue);
 							}
 						}
 					});
 		} else {
-			GermplasmSearchBarComponent.this.doSearch(q);
+			GermplasmSearchBarComponent.this.doSearch(searchValue);
 		}
 	}
 
