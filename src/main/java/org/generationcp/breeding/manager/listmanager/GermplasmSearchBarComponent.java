@@ -234,7 +234,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		}
 	}
 
-	public void doSearch(final String q) {
+	public void doSearch(final String searchValue) {
 
 		final TransactionTemplate inTx = new TransactionTemplate(this.transactionManager);
 		inTx.execute(new TransactionCallbackWithoutResult() {
@@ -243,7 +243,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 			protected void doInTransactionWithoutResult(final TransactionStatus status) {
 				final Monitor monitor = MonitorFactory.start("GermplasmSearchBarComponent.doSearch()");
 				final String searchType = (String) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
-				final String searchKeyword = GermplasmSearchBarComponent.this.getSearchKeyword(q, searchType);
+				final String searchKeyword = GermplasmSearchBarComponent.this.getSearchKeyword(searchValue, searchType);
 				final Operation operation =
 						GermplasmSearchBarComponent.this.exactMatches.equals(searchType) ? Operation.EQUAL : Operation.LIKE;
 
@@ -266,7 +266,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 								GermplasmSearchBarComponent.this.messageSource.getMessage(Message.SEARCH_RESULTS),
 								GermplasmSearchBarComponent.this.messageSource.getMessage(e.getErrorMessage()));
 						if (Message.ERROR_DATABASE.equals(e.getErrorMessage())) {
-							GermplasmSearchBarComponent.LOG.error("Database error occured while searching. Search string was: " + q, e);
+							GermplasmSearchBarComponent.LOG.error("Database error occured while searching. Search string was: " + searchValue, e);
 						}
 					}
 				} finally {
