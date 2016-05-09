@@ -3,7 +3,6 @@ package org.generationcp.breeding.manager.listmanager;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,8 +36,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -56,6 +53,9 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
+
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 
 @Configurable
 public class GermplasmSearchResultsComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
@@ -334,9 +334,6 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	}
 
 	public void applyGermplasmResults(final List<Germplasm> germplasms) throws BreedingManagerSearchException {
-
-		Map<Integer, String> locationsMap = new HashMap<>();
-		Map<Integer, String> methodsMap = new HashMap<>();
 		
 		final Monitor monitor = MonitorFactory.start("GermplasmSearchResultsComponent.applyGermplasmResults()");
 		
@@ -377,10 +374,6 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 			});
 
-			String methodName = this.retrieveMethodName(germplasm.getMethodId(), methodsMap);
-
-			String locationName = this.retrieveLocationName(germplasm.getLocationId(), locationsMap);
-
 			final GermplasmInventory inventoryInfo = germplasm.getInventoryInfo();
 			final Label stockLabel = this.getStockIDs(inventoryInfo);
 			final String availInv = this.getAvailableInventory(inventoryInfo);
@@ -397,8 +390,8 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 			newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockLabel);
 			newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
 			newItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(groupID);
-			newItem.getItemProperty(ColumnLabels.GERMPLASM_LOCATION.getName()).setValue(locationName);
-			newItem.getItemProperty(ColumnLabels.BREEDING_METHOD_NAME.getName()).setValue(methodName);
+			newItem.getItemProperty(ColumnLabels.GERMPLASM_LOCATION.getName()).setValue(germplasm.getLocationName());
+			newItem.getItemProperty(ColumnLabels.BREEDING_METHOD_NAME.getName()).setValue(germplasm.getMethodName());
 		}
 
 		this.updateNoOfEntries();
