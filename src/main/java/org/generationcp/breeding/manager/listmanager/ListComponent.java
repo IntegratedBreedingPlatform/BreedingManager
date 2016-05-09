@@ -434,6 +434,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.listDataTable.setData(ListComponent.LIST_DATA_COMPONENT_TABLE_DATA);
 		this.listDataTable.setColumnReorderingAllowed(false);
 		this.listDataTable.setDebugId("vaadin-listdata-tbl");
+		this.listDataTable.setImmediate(true);
 
 		this.listDataTable.addContainerProperty(ColumnLabels.TAG.getName(), CheckBox.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
