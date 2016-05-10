@@ -108,10 +108,9 @@ public class GermplasmGroupingResultsComponent extends BaseSubWindow implements 
 				memberString.append("....");
 			}
 
-			String notes =
+			final String notes =
 					groupingResult.getFounder().getMethod().isGenerative() ? this.messageSource
-							.getMessage(Message.GENERATIVE_GERMPLASM_NOT_GROUPED)
-							: "";
+							.getMessage(Message.GENERATIVE_GERMPLASM_NOT_GROUPED) : "";
 			this.groupingResultsTable.addItem(new Object[] {groupingResult.getFounder().getGid(), groupingResult.getGroupId(),
 					groupingResult.getGroupMembers().size(), memberString.toString(), notes}, rowId++);
 		}

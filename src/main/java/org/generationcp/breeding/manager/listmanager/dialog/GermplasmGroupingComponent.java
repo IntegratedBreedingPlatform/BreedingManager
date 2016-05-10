@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.MgidApplicationStatus;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -141,15 +142,45 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 	}
 
 	void reportSuccessAndClose(final Map<Integer, GermplasmGroup> groupingResults) {
-		final Component parentComponent = this.getParent();
-		if (parentComponent != null) {
+
+		if (this.verifyMGIDApplicationForSelected(groupingResults).equals(MgidApplicationStatus.ALL_ENTRIES)) {
 			MessageNotifier.showMessage(this.getParent(), this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
 					this.messageSource.getMessage(Message.SUCCESS_MARK_LINES_AS_FIXED));
+		} else if (this.verifyMGIDApplicationForSelected(groupingResults).equals(MgidApplicationStatus.SOME_ENTRIES)) {
+			MessageNotifier.showWarning(this.getParent(), this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
+					this.messageSource.getMessage(Message.WARNING_MARK_LINES_AS_FIXED_SOME_ENTRIES));
+		} else if (this.verifyMGIDApplicationForSelected(groupingResults).equals(MgidApplicationStatus.NO_ENTRIES)) {
+			MessageNotifier.showWarning(this.getParent(), this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
+					this.messageSource.getMessage(Message.WARNING_MARK_LINES_AS_FIXED_NO_ENTRIES));
+		}
 			this.getParent().addWindow(new GermplasmGroupingResultsComponent(groupingResults));
 			this.closeWindow();
 		}
 
-		this.source.updateGermplasmListTable(groupingResults.keySet());
+	/**
+	 * Returns status of mgid application based on the number of successful assignment of mgid per germplasm groups selected
+	 * 
+	 * @param groupingResults - map of mgid and germplasm groups
+	 * @return MgidApplicationStatus.ALL_ENTRIES if all germplasm group founder has non-generative method;
+	 *         MgidApplicationStatus.SOME_ENTRIES if some germplasm group founder has non-generative method;
+	 *         MgidApplicationStatus.NO_ENTRIES if all germplasm group founder has generative method;
+	 */
+	MgidApplicationStatus verifyMGIDApplicationForSelected(final Map<Integer, GermplasmGroup> groupingResults) {
+		int noOfGermplasmGroupWithAppliedMGID = 0;
+		for (GermplasmGroup groupingResult : groupingResults.values()) {
+			// you can't assign mgid or group id for germplasm with generative method
+			if (!groupingResult.getFounder().getMethod().isGenerative()) {
+				noOfGermplasmGroupWithAppliedMGID++;
+			}
+		}
+
+		if (noOfGermplasmGroupWithAppliedMGID == groupingResults.size()) {
+			return MgidApplicationStatus.ALL_ENTRIES;
+		} else if (noOfGermplasmGroupWithAppliedMGID == 0) {
+			return MgidApplicationStatus.NO_ENTRIES;
+		} else {
+			return MgidApplicationStatus.SOME_ENTRIES;
+		}
 	}
 
 	@Override
