@@ -6,8 +6,6 @@ import java.util.Set;
 /**
  * This interface is used for components that uses "Marked Line as Fixed"
  * 
- * @author Efficio
- * 
  */
 public interface GermplasmGroupingSource {
 
