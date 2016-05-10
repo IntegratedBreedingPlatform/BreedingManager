@@ -3,7 +3,9 @@ package org.generationcp.breeding.manager.listmanager;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -19,6 +21,7 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.inventory.GermplasmInventory;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.LocationDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Location;
@@ -97,6 +100,9 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	private GermplasmDataManager germplasmDataManager;
 
 	@Autowired
+	private LocationDataManager locationDataManager;
+	
+	@Autowired
 	private PedigreeService pedigreeService;
 
 	@Autowired
@@ -166,6 +172,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
 		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
 		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
+		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.GROUP_ID.getName(), String.class, null);
 		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class, null);
 		this.matchingGermplasmsTable.addContainerProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, null);
 		this.matchingGermplasmsTable.setWidth("100%");
@@ -187,6 +194,8 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 				ColumnLabels.STOCKID.getTermNameFromOntology(this.ontologyDataManager));
 		this.matchingGermplasmsTable.setColumnHeader(ColumnLabels.GID.getName(),
 				ColumnLabels.GID.getTermNameFromOntology(this.ontologyDataManager));
+		this.matchingGermplasmsTable.setColumnHeader(ColumnLabels.GROUP_ID.getName(),
+				ColumnLabels.GROUP_ID.getTermNameFromOntology(this.ontologyDataManager));
 		this.matchingGermplasmsTable.setColumnHeader(ColumnLabels.GERMPLASM_LOCATION.getName(),
 				ColumnLabels.GERMPLASM_LOCATION.getTermNameFromOntology(this.ontologyDataManager));
 		this.matchingGermplasmsTable.setColumnHeader(ColumnLabels.BREEDING_METHOD_NAME.getName(),
@@ -326,7 +335,11 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 	public void applyGermplasmResults(final List<Germplasm> germplasms) throws BreedingManagerSearchException {
 
+		Map<Integer, String> locationsMap = new HashMap<>();
+		Map<Integer, String> methodsMap = new HashMap<>();
+		
 		final Monitor monitor = MonitorFactory.start("GermplasmSearchResultsComponent.applyGermplasmResults()");
+		
 		this.updateNoOfEntries(germplasms.size());
 		this.matchingGermplasmsTable.removeAllItems();
 		for (final Germplasm germplasm : germplasms) {
@@ -364,26 +377,28 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 			});
 
-			String methodName = "-";
-			final Method germplasmMethod = this.germplasmDataManager.getMethodByID(germplasm.getMethodId());
-			if (germplasmMethod != null && germplasmMethod.getMname() != null) {
-				methodName = germplasmMethod.getMname();
-			}
+			String methodName = this.retrieveMethodName(germplasm.getMethodId(), methodsMap);
 
-			String locationName = "-";
-			@SuppressWarnings("deprecation")
-			final Location germplasmLocation = this.germplasmDataManager.getLocationByID(germplasm.getLocationId());
-			if (germplasmLocation != null && germplasmLocation.getLname() != null) {
-				locationName = germplasmLocation.getLname();
-			}
+			String locationName = this.retrieveLocationName(germplasm.getLocationId(), locationsMap);
 
 			final GermplasmInventory inventoryInfo = germplasm.getInventoryInfo();
 			final Label stockLabel = this.getStockIDs(inventoryInfo);
 			final String availInv = this.getAvailableInventory(inventoryInfo);
 			final String seedRes = this.getSeedReserved(inventoryInfo);
+			final String groupID = germplasm.getMgid() == 0 ? "-" : germplasm.getMgid().toString();
 
-			this.matchingGermplasmsTable.addItem(new Object[] {itemCheckBox, namesButton, crossExpansion, availInv, seedRes, stockLabel,
-					gidButton, locationName, methodName}, germplasm.getGid());
+			Item newItem = this.matchingGermplasmsTable.getContainerDataSource().addItem(germplasm.getGid());
+			
+			newItem.getItemProperty(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID).setValue(itemCheckBox);
+			newItem.getItemProperty(GermplasmSearchResultsComponent.NAMES).setValue(namesButton);
+			newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(crossExpansion);
+			newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(availInv);
+			newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
+			newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockLabel);
+			newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
+			newItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(groupID);
+			newItem.getItemProperty(ColumnLabels.GERMPLASM_LOCATION.getName()).setValue(locationName);
+			newItem.getItemProperty(ColumnLabels.BREEDING_METHOD_NAME.getName()).setValue(methodName);
 		}
 
 		this.updateNoOfEntries();
@@ -392,6 +407,34 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 			this.updateActionMenuOptions(true);
 		}
 		GermplasmSearchResultsComponent.LOG.debug("" + monitor.stop());
+	}
+
+	private String retrieveMethodName(Integer methodId, Map<Integer, String> methodsMap) {
+		String methodName = "-";
+		if(methodsMap.get(methodId) == null){
+			final Method germplasmMethod = this.germplasmDataManager.getMethodByID(methodId);
+			if (germplasmMethod != null && germplasmMethod.getMname() != null) {
+				methodName = germplasmMethod.getMname();
+				methodsMap.put(methodId, methodName);
+			}
+		} else {
+			methodName = methodsMap.get(methodId);
+		}
+		return methodName;
+	}
+	
+	private String retrieveLocationName(Integer locId, Map<Integer, String> locationsMap) {
+		String locationName = "-";
+		if(locationsMap.get(locId) == null){
+			final Location germplasmLocation = this.locationDataManager.getLocationByID(locId);
+			if (germplasmLocation != null && germplasmLocation.getLname() != null) {
+				locationName = germplasmLocation.getLname();
+				locationsMap.put(locId, locationName);
+			}
+		} else {
+			locationName = locationsMap.get(locId);
+		}
+		return locationName;
 	}
 
 	String getShortenedNames(final String germplasmFullName) {
