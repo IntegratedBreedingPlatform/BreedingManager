@@ -4,8 +4,7 @@ package org.generationcp.breeding.manager.listmanager.dialog;
 import java.util.Set;
 
 /**
- * This interface is used for components that uses "Marked Line as Fixed"
- * 
+ * This interface must be implemented by components that has an option to use "Marked Line as Fixed" feature i.e. ListComponent
  */
 public interface GermplasmGroupingComponentSource {
 
