@@ -30,7 +30,6 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -153,9 +152,13 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 			MessageNotifier.showWarning(this.getParent(), this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
 					this.messageSource.getMessage(Message.WARNING_MARK_LINES_AS_FIXED_NO_ENTRIES));
 		}
-			this.getParent().addWindow(new GermplasmGroupingResultsComponent(groupingResults));
-			this.closeWindow();
-		}
+
+		this.getParent().addWindow(new GermplasmGroupingResultsComponent(groupingResults));
+		this.closeWindow();
+
+		// refresh list data table after applying the MGID to selected entries
+		this.source.updateGermplasmListTable(groupingResults.keySet());
+	}
 
 	/**
 	 * Returns status of mgid application based on the number of successful assignment of mgid per germplasm groups selected
@@ -167,7 +170,7 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 	 */
 	MgidApplicationStatus verifyMGIDApplicationForSelected(final Map<Integer, GermplasmGroup> groupingResults) {
 		int noOfGermplasmGroupWithAppliedMGID = 0;
-		for (GermplasmGroup groupingResult : groupingResults.values()) {
+		for (final GermplasmGroup groupingResult : groupingResults.values()) {
 			// you can't assign mgid or group id for germplasm with generative method
 			if (!groupingResult.getFounder().getMethod().isGenerative()) {
 				noOfGermplasmGroupWithAppliedMGID++;
