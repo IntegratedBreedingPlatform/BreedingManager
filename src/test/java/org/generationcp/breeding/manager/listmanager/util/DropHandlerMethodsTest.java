@@ -80,7 +80,7 @@ public class DropHandlerMethodsTest {
 		// retrieve the first list entry from list data with inventory information
 		final GermplasmListData listData = testList.getListData().get(0);
 		// MGID or group ID of Germplasm List Data has default value to 0, so this field will never be null
-		listData.setMgid(GROUP_ID);
+		listData.setGroupId(GROUP_ID);
 
 		this.dropHandlerMethods.addGermplasmFromList(GERMPLASM_LIST_ID, listData.getId(), testList, false);
 
