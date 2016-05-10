@@ -47,7 +47,7 @@ public class GermplasmGroupingComponentTest {
 	private final Set<Integer> gidsToProcess = Sets.newHashSet(1, 2, 3);
 
 	@Mock
-	private GermplasmGroupingSource source;
+	private GermplasmGroupingComponentSource source;
 
 	private GermplasmGroupingComponent germplasmGroupingComponent;
 	private GermplasmGroupTestDataInitializer germplasmGroupTestDataInitializer;

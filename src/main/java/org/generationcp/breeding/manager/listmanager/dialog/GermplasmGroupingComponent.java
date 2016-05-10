@@ -62,13 +62,13 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 
 	private Set<Integer> gidsToProcess = new HashSet<>();
 
-	private final GermplasmGroupingSource source;
+	private final GermplasmGroupingComponentSource source;
 
-	public GermplasmGroupingComponent(final GermplasmGroupingSource source) {
+	public GermplasmGroupingComponent(final GermplasmGroupingComponentSource source) {
 		this.source = source;
 	}
 
-	public GermplasmGroupingComponent(final GermplasmGroupingSource source, final Set<Integer> gidsToProcess) {
+	public GermplasmGroupingComponent(final GermplasmGroupingComponentSource source, final Set<Integer> gidsToProcess) {
 		this.source = source;
 		this.gidsToProcess = gidsToProcess;
 	}

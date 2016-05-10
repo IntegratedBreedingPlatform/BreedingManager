@@ -7,7 +7,7 @@ import java.util.Set;
  * This interface is used for components that uses "Marked Line as Fixed"
  * 
  */
-public interface GermplasmGroupingSource {
+public interface GermplasmGroupingComponentSource {
 
 	/**
 	 * This method is use to update the germplasm list table that used this interface
