@@ -116,7 +116,7 @@ public class ListManagerCopyToListDialogTest {
 	@Test
 	public void testPopulateComboBoxListName() {
 		Mockito.when(this.germplasmListManager.getAllGermplasmListsByProgramUUID(Matchers.anyString()))
-				.thenReturn(Arrays.asList(this.germplasmListTestDataInitializer.createGermplasmList(1)));
+				.thenReturn(Arrays.asList(GermplasmListTestDataInitializer.createGermplasmList(1)));
 		this.listManagerCopyToListDialog.populateComboBoxListName();
 		Assert.assertEquals("The combo box's value should be an empty string", "", this.comboBox.getValue());
 		Assert.assertNotNull("The combo box should not return a null value",

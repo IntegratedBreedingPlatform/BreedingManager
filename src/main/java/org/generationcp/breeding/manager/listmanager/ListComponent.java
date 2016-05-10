@@ -1548,7 +1548,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		listData.setStatus(0);
 		listData.setEntryCode(listData.getEntryId().toString());
 		listData.setSeedSource(this.germplasmDataManager.getPlotCodeValue(gid));
-		listData.setMgid(germplasm.getMgid());
+		listData.setGroupId(germplasm.getMgid());
 
 		String groupName;
 		try {

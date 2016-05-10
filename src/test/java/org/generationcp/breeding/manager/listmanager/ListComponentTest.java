@@ -113,20 +113,17 @@ public class ListComponentTest {
 
 	private GermplasmList germplasmList;
 
-	private GermplasmListTestDataInitializer germplasmListTestDataInitializer;
-
 	@Before
 	public void setUp() throws Exception {
 
 		this.setUpWorkbenchDataManager();
 		this.setUpOntologyManager();
 
-		this.germplasmListTestDataInitializer = new GermplasmListTestDataInitializer();
 		Mockito.when(this.messageSource.getMessage(Matchers.any(Message.class))).thenReturn("");
 		Mockito.when(this.messageSource.getMessage(Message.CHECK_ICON)).thenReturn(ListComponentTest.CHECK);
 		Mockito.when(this.messageSource.getMessage(Message.HASHTAG)).thenReturn(ListComponentTest.HASH);
 
-		this.germplasmList = this.germplasmListTestDataInitializer.createGermplasmListWithListData(ListComponentTest.TEST_GERMPLASM_LIST_ID,
+		this.germplasmList = GermplasmListTestDataInitializer.createGermplasmListWithListData(ListComponentTest.TEST_GERMPLASM_LIST_ID,
 				ListComponentTest.TEST_GERMPLASM_NO_OF_ENTRIES);
 		this.germplasmList.setStatus(1);
 		this.listComponent.setListEntries(this.germplasmList.getListData());
@@ -363,10 +360,10 @@ public class ListComponentTest {
 	public void testDeleteRemovedGermplasmEntriesFromTableOnlySelectedEntries() {
 
 		final GermplasmList germplasmListWithInventoryInfo =
-				this.germplasmListTestDataInitializer.createGermplasmListWithListDataAndInventoryInfo(
-						ListComponentTest.TEST_GERMPLASM_LIST_ID, ListComponentTest.TEST_GERMPLASM_NO_OF_ENTRIES);
-		Mockito.when(this.inventoryDataManager.getLotCountsForList(ListComponentTest.TEST_GERMPLASM_LIST_ID, 0,
-				ListComponentTest.TEST_GERMPLASM_NO_OF_ENTRIES)).thenReturn(germplasmListWithInventoryInfo.getListData());
+				GermplasmListTestDataInitializer.createGermplasmListWithListDataAndInventoryInfo(TEST_GERMPLASM_LIST_ID,
+						TEST_GERMPLASM_NO_OF_ENTRIES);
+		Mockito.when(this.inventoryDataManager.getLotCountsForList(TEST_GERMPLASM_LIST_ID, 0, TEST_GERMPLASM_NO_OF_ENTRIES)).thenReturn(
+				germplasmListWithInventoryInfo.getListData());
 
 		final TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
 		tableWithSelectAll.instantiateComponents();
