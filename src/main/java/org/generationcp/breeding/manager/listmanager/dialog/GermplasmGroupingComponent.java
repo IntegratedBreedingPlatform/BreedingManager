@@ -141,23 +141,25 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 	}
 
 	void reportSuccessAndClose(final Map<Integer, GermplasmGroup> groupingResults) {
+		final Window parentComponent = this.getParent();
+		if (parentComponent != null) {
+			if (this.verifyMGIDApplicationForSelected(groupingResults).equals(MgidApplicationStatus.ALL_ENTRIES)) {
+				MessageNotifier.showMessage(parentComponent, this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
+						this.messageSource.getMessage(Message.SUCCESS_MARK_LINES_AS_FIXED));
+			} else if (this.verifyMGIDApplicationForSelected(groupingResults).equals(MgidApplicationStatus.SOME_ENTRIES)) {
+				MessageNotifier.showWarning(parentComponent, this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
+						this.messageSource.getMessage(Message.WARNING_MARK_LINES_AS_FIXED_SOME_ENTRIES));
+			} else if (this.verifyMGIDApplicationForSelected(groupingResults).equals(MgidApplicationStatus.NO_ENTRIES)) {
+				MessageNotifier.showWarning(parentComponent, this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
+						this.messageSource.getMessage(Message.WARNING_MARK_LINES_AS_FIXED_NO_ENTRIES));
+			}
 
-		if (this.verifyMGIDApplicationForSelected(groupingResults).equals(MgidApplicationStatus.ALL_ENTRIES)) {
-			MessageNotifier.showMessage(this.getParent(), this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
-					this.messageSource.getMessage(Message.SUCCESS_MARK_LINES_AS_FIXED));
-		} else if (this.verifyMGIDApplicationForSelected(groupingResults).equals(MgidApplicationStatus.SOME_ENTRIES)) {
-			MessageNotifier.showWarning(this.getParent(), this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
-					this.messageSource.getMessage(Message.WARNING_MARK_LINES_AS_FIXED_SOME_ENTRIES));
-		} else if (this.verifyMGIDApplicationForSelected(groupingResults).equals(MgidApplicationStatus.NO_ENTRIES)) {
-			MessageNotifier.showWarning(this.getParent(), this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
-					this.messageSource.getMessage(Message.WARNING_MARK_LINES_AS_FIXED_NO_ENTRIES));
+			this.getParent().addWindow(new GermplasmGroupingResultsComponent(groupingResults));
+			this.closeWindow();
+
+			// refresh list data table after applying the MGID to selected entries
+			this.source.updateGermplasmListTable(groupingResults.keySet());
 		}
-
-		this.getParent().addWindow(new GermplasmGroupingResultsComponent(groupingResults));
-		this.closeWindow();
-
-		// refresh list data table after applying the MGID to selected entries
-		this.source.updateGermplasmListTable(groupingResults.keySet());
 	}
 
 	/**
