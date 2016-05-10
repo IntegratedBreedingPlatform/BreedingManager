@@ -2322,18 +2322,19 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	@Override
 	public void updateGermplasmListTable(final Set<Integer> gidsProcessed) {
 		// retrieve the new MGID (Group ID) of the germplasm apply marking line as fixed
-		final List<Germplasm> germplasms = this.germplasmDataManager.getGermplasms(new ArrayList(gidsProcessed));
-		final Map<Integer, Integer> germplasmMgidMap = new HashMap<Integer, Integer>();
+		final List<Germplasm> germplasms = this.germplasmDataManager.getGermplasms(new ArrayList<Integer>(gidsProcessed));
+		final Map<Integer, Germplasm> germplasmMap = new HashMap<Integer, Germplasm>();
 		for (final Germplasm germplasm : germplasms) {
-			germplasmMgidMap.put(germplasm.getGid(), germplasm.getMgid());
+			germplasmMap.put(germplasm.getGid(), germplasm);
 		}
 
 		// update the MGID(Group Id) of the specific rows marked as fixed lines
 		for (final GermplasmListData listEntry : this.listEntries) {
 			final Integer gid = listEntry.getGid();
+			final Germplasm germplasm = germplasmMap.get(gid);
 			if (gidsProcessed.contains(gid)) {
 				final Item selectedRowItem = this.listDataTable.getItem(listEntry.getId());
-				selectedRowItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(germplasmMgidMap.get(gid));
+				selectedRowItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(germplasm.getMgid());
 			}
 		}
 	}
