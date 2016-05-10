@@ -1274,7 +1274,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}
 
 	public void assignCodesAction() {
-		//TODO extract common logic for gids to process
+		// TODO extract common logic for gids to process
 		@SuppressWarnings("unchecked")
 		final Collection<Integer> selectedTableRows = (Collection<Integer>) this.listDataTable.getValue();
 
@@ -1287,7 +1287,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 					gidsToProcess.add(Integer.valueOf(gidCell.getCaption()));
 				}
 			}
-			final boolean isCustomLayout = CrossingUtil.isCimmytMaize(crossExpansionProperties.getProfile(), contextUtil.getProjectInContext().getCropType().getCropName());
+			final boolean isCustomLayout =
+					CrossingUtil.isCimmytMaize(this.crossExpansionProperties.getProfile(), this.contextUtil.getProjectInContext()
+							.getCropType().getCropName());
 			this.getWindow().addWindow(new AssignCodesDialog(gidsToProcess, isCustomLayout));
 		} else {
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ASSIGN_CODES),
@@ -2321,7 +2323,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	@Override
 	public void updateGermplasmListTable(final Set<Integer> gidsProcessed) {
-		// retrieve the new MGID (Group ID) of the germplasm apply marking line as fixed
+		// created map of gid and germplasm as a preparation for the retrieval for mgid
 		final List<Germplasm> germplasms = this.germplasmDataManager.getGermplasms(new ArrayList<Integer>(gidsProcessed));
 		final Map<Integer, Germplasm> germplasmMap = new HashMap<Integer, Germplasm>();
 		for (final Germplasm germplasm : germplasms) {
