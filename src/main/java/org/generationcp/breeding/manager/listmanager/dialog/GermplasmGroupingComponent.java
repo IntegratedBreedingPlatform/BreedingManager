@@ -35,6 +35,9 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
+/**
+ * This class is a dialog displayed after clicking the "Marked Line as Fixed." This class is used for applying MGID to selected GID entries.
+ */
 @Configurable
 public class GermplasmGroupingComponent extends BaseSubWindow implements InitializingBean, InternationalizableComponent,
 		BreedingManagerLayout, Window.CloseListener {
@@ -62,6 +65,9 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 
 	private Set<Integer> gidsToProcess = new HashSet<>();
 
+	/**
+	 * This is the source component that implements "Marked Line as Fixed"
+	 */
 	private final GermplasmGroupingComponentSource source;
 
 	public GermplasmGroupingComponent(final GermplasmGroupingComponentSource source) {
