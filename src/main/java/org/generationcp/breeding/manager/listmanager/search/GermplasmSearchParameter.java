@@ -1,6 +1,5 @@
 package org.generationcp.breeding.manager.listmanager.search;
 
-import org.apache.lucene.analysis.bg.BulgarianAnalyzer;
 import org.generationcp.middleware.manager.Operation;
 
 /*
@@ -22,14 +21,9 @@ public class GermplasmSearchParameter {
 
 	private int numberOfEntries;
 
-	private GermplasmSearchSortingColumn sortingColumn;
-
 	public GermplasmSearchParameter(final String searchKeyword, final Operation operation) {
 		this.searchKeyword = searchKeyword;
 		this.operation = operation;
-
-		// set default sorting to GID
-		this.sortingColumn = GermplasmSearchSortingColumn.GID;
 	}
 
 	public String getSearchKeyword() {
@@ -87,14 +81,6 @@ public class GermplasmSearchParameter {
 	public void setNumberOfEntries(final int numberOfEntries) {
 		this.numberOfEntries = numberOfEntries;
 	}
-
-	public GermplasmSearchSortingColumn getSortingColumn() {
-		return this.sortingColumn;
-	}
-
-	public void setSortingColumn(final GermplasmSearchSortingColumn sortingColumn) {
-		this.sortingColumn = sortingColumn;
-	}
 	
 	@Override
 	public String toString(){
@@ -113,8 +99,6 @@ public class GermplasmSearchParameter {
 		builder.append(startingRow);
 		builder.append(", numberOfEntries=");
 		builder.append(numberOfEntries);
-		builder.append(", sortingColumn=");
-		builder.append(sortingColumn);
 		builder.append("]");
 		return builder.toString();
 	}
