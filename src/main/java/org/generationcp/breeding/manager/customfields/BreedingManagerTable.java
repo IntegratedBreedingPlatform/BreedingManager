@@ -22,16 +22,29 @@ public class BreedingManagerTable extends Table {
 		}
 		this.setImmediate(true);
 
-		this.tableMultipleSelectionHandler = new TableMultipleSelectionHandler(this);
-
-		this.addListener(this.tableMultipleSelectionHandler);
-		this.addShortcutListener(this.tableMultipleSelectionHandler);
-
+		this.setTableHandler(new TableMultipleSelectionHandler(this));
 	}
 
 	@Override
 	public void changeVariables(Object source, Map<String, Object> variables) {
 		super.changeVariables(source, variables);
 		tableMultipleSelectionHandler.setValueForSelectedItems();
+	}
+
+	/**
+	 * Set the instance of tableMultipleSelectionHandler
+	 */
+	void setTableHandler(TableMultipleSelectionHandler tableMultipleSelectionHandler) {
+
+		// remove this tables listener if exists and replace it with the new handler
+		this.removeListener(this.tableMultipleSelectionHandler);
+		this.removeShortcutListener(this.tableMultipleSelectionHandler);
+
+		// set this table's current handler
+		this.tableMultipleSelectionHandler = tableMultipleSelectionHandler;
+
+		// add the new handler as this table's listener
+		this.addListener(this.tableMultipleSelectionHandler);
+		this.addShortcutListener(this.tableMultipleSelectionHandler);
 	}
 }

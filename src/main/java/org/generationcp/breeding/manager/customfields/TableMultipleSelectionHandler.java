@@ -30,9 +30,27 @@ public class TableMultipleSelectionHandler extends ShortcutListener implements I
 		this.tableInstance = tableInstance;
 	}
 
+	/**
+	 * This will assign the markers for multiple selection
+	 * This handles the consecutive multiple selection within a table through CLICK 1st entry, then SHIFT + CLICK for the next entries
+	 * @param itemClickEvent
+	 */
 	@Override
 	public void itemClick(ItemClickEvent itemClickEvent) {
-		this.assignMarkersForMultipleSelection(itemClickEvent);
+		if (!itemClickEvent.isShiftKey()) {
+			// marks the first key selected for multi-selection
+			this.setMultiSelectStartKey(itemClickEvent.getItemId());
+			// make sure the last key has no value
+			this.setMultiSelectEndKey(null);
+		} else {
+			// if shift key is selected
+			if (this.getMultiSelectStartKey() != null && itemClickEvent.isShiftKey()) {
+				// marks the last key selected for multi-selection
+				this.setMultiSelectEndKey(itemClickEvent.getItemId());
+				this.setValueForSelectedItems();
+			}
+		}
+
 	}
 
 	@Override
@@ -41,28 +59,12 @@ public class TableMultipleSelectionHandler extends ShortcutListener implements I
 	}
 
 	/**
-	 * This handles the consecutive multiple selection within a table through CLICK 1st entry, then SHIFT + CLICK for the next entries
+	 * This will set the value of checkbox as checked when it is selected
 	 */
-	void assignMarkersForMultipleSelection(ItemClickEvent event) {
-		if (!event.isShiftKey()) {
-			// marks the first key selected for multi-selection
-			this.setMultiSelectStartKey(event.getItemId());
-			// make sure the last key has no value
-			this.setMultiSelectEndKey(null);
-		} else {
-			// if shift key is selected
-			if (this.getMultiSelectStartKey() != null && event.isShiftKey()) {
-				// marks the last key selected for multi-selection
-				this.setMultiSelectEndKey(event.getItemId());
-				this.setValueForSelectedItems();
-			}
-		}
-	}
-
 	public void setValueForSelectedItems() {
 		@SuppressWarnings("unchecked")
 		Collection<Object> entries = (Collection<Object>) tableInstance.getItemIds();
-		Map<Integer, Object> idEntryMap = new HashMap<Integer, Object>();
+		Map<Integer, Object> idEntryMap = new HashMap<>();
 		int startIndex = 0;
 		int endIndex = 0;
 		int count = 1;
