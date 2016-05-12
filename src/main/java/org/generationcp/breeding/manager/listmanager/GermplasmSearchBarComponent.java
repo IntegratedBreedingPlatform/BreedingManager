@@ -252,9 +252,14 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 					final boolean withInventoryOnly = (boolean) GermplasmSearchBarComponent.this.withInventoryOnlyCheckBox.getValue();
 					final boolean includeMGMembers = (boolean) GermplasmSearchBarComponent.this.includeMGMembersCheckbox.getValue();
 
+					// validate first the keyword, if it is empty this will raise exception
+					GermplasmSearchBarComponent.this.breedingManagerService.validateEmptySearchString(q);
+
+					// then do the search
 					final GermplasmSearchParameter searchParameter =
 							new GermplasmSearchParameter(searchKeyword, operation, includeParents, withInventoryOnly, includeMGMembers);
 					GermplasmSearchBarComponent.this.searchResultsComponent.applyGermplasmResults(searchParameter);
+
 				} catch (final BreedingManagerSearchException e) {
 					if (Message.SEARCH_QUERY_CANNOT_BE_EMPTY.equals(e.getErrorMessage())) {
 						// invalid search string

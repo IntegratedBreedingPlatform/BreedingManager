@@ -19,4 +19,6 @@ public interface BreedingManagerService {
 	public List<GermplasmList> doGermplasmListSearch(String q, Operation o) throws BreedingManagerSearchException;
 
 	public Project getCurrentProject();
+
+	public void validateEmptySearchString(String q) throws BreedingManagerSearchException;
 }

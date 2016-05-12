@@ -106,7 +106,8 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 		}
 	}
 
-	protected void validateEmptySearchString(final String q) throws BreedingManagerSearchException {
+	@Override
+	public void validateEmptySearchString(final String q) throws BreedingManagerSearchException {
 		if ("".equals(q.replaceAll(" ", "").trim())) {
 			throw new BreedingManagerSearchException(Message.SEARCH_QUERY_CANNOT_BE_EMPTY);
 		}
