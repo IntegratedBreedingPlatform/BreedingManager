@@ -34,13 +34,13 @@ public class GermplasmSearchBarComponentTest {
 
 	@Mock
 	private PlatformTransactionManager transactionManager;
-	
+
 	@Mock
 	private Component component;
-	
+
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
-	
+
 	@InjectMocks
 	private GermplasmSearchBarComponent germplasmSearchBarComponent;
 
@@ -51,34 +51,40 @@ public class GermplasmSearchBarComponentTest {
 		Mockito.when(this.messageSource.getMessage(Message.MATCHES_STARTING_WITH)).thenReturn("Matches starting with");
 		Mockito.when(this.messageSource.getMessage(Message.EXACT_MATCHES)).thenReturn("Exact Matches");
 		Mockito.when(this.messageSource.getMessage(Message.MATCHES_CONTAINING)).thenReturn("Matches containing");
-		  
+
 		this.breedingManagerService.setGermplasmDataManager(this.germplasmDataManager);
 		this.germplasmSearchBarComponent = new GermplasmSearchBarComponent(this.germplasmSearchResultsComponent);
 		this.germplasmSearchBarComponent.setMessageSource(this.messageSource);
 		this.germplasmSearchBarComponent.setBreedingManagerService(this.breedingManagerService);
 		this.germplasmSearchBarComponent.setTransactionManager(this.transactionManager);
 		this.germplasmSearchBarComponent.instantiateComponents();
-		
-		this.germplasmSearchBarComponent.setParent(component);
+
+		this.germplasmSearchBarComponent.setParent(this.component);
 		Mockito.when(this.component.getWindow()).thenReturn(new Window());
 	}
 
 	@Test
 	public void testDoSearch() throws BreedingManagerSearchException {
 		this.germplasmSearchBarComponent.doSearch(GermplasmSearchBarComponentTest.TEST_SEARCH_STRING);
-		Mockito.verify(this.breedingManagerService).doGermplasmSearch(Matchers.anyString(), Matchers.eq(Operation.LIKE), Matchers.eq(false), Matchers.eq(false), Matchers.eq(false));	
+		Mockito.verify(this.breedingManagerService).doGermplasmSearch(Matchers.anyString(), Matchers.eq(Operation.LIKE),
+				Matchers.eq(false), Matchers.eq(false), Matchers.eq(false));
 	}
-	
+
 	@Test
 	public void testDoSearchWithEmptySearchString() throws BreedingManagerSearchException {
-		Mockito.when(this.breedingManagerService.doGermplasmSearch(Matchers.anyString(), Matchers.eq(Operation.LIKE), Matchers.eq(false), Matchers.eq(false), Matchers.eq(false))).thenThrow(new BreedingManagerSearchException(Message.SEARCH_QUERY_CANNOT_BE_EMPTY));
+		Mockito.when(
+				this.breedingManagerService.doGermplasmSearch(Matchers.anyString(), Matchers.eq(Operation.LIKE), Matchers.eq(false),
+						Matchers.eq(false), Matchers.eq(false))).thenThrow(
+				new BreedingManagerSearchException(Message.SEARCH_QUERY_CANNOT_BE_EMPTY));
 		this.germplasmSearchBarComponent.doSearch("");
 		Mockito.verify(this.messageSource).getMessage(Message.UNABLE_TO_SEARCH);
 	}
-	
+
 	@Test
 	public void testDoSearchWithDatabaseError() throws BreedingManagerSearchException {
-		Mockito.when(this.breedingManagerService.doGermplasmSearch(Matchers.anyString(), Matchers.eq(Operation.LIKE), Matchers.eq(false), Matchers.eq(false), Matchers.eq(false))).thenThrow(new BreedingManagerSearchException(Message.ERROR_DATABASE));
+		Mockito.when(
+				this.breedingManagerService.doGermplasmSearch(Matchers.anyString(), Matchers.eq(Operation.LIKE), Matchers.eq(false),
+						Matchers.eq(false), Matchers.eq(false))).thenThrow(new BreedingManagerSearchException(Message.ERROR_DATABASE));
 		this.germplasmSearchBarComponent.doSearch("");
 		Mockito.verify(this.messageSource).getMessage(Message.SEARCH_RESULTS);
 	}
