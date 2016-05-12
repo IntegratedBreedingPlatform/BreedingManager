@@ -70,8 +70,8 @@ public class BreedingManagerServiceTest {
 	@Test
 	public void testGetOwnerListNamePositiveScenario() {
 
-		User sampleUser = Mockito.mock(User.class);
-		Person p = this.createDummyPerson();
+		final User sampleUser = Mockito.mock(User.class);
+		final Person p = this.createDummyPerson();
 
 		try {
 
@@ -83,19 +83,19 @@ public class BreedingManagerServiceTest {
 			Mockito.when(this.userDataManager.getPersonById(BreedingManagerServiceTest.DUMMY_PERSON_ID)).thenReturn(p);
 
 			// actual verification portion
-			String name = this.breedingManagerService.getOwnerListName(BreedingManagerServiceTest.DUMMY_USER_ID);
+			final String name = this.breedingManagerService.getOwnerListName(BreedingManagerServiceTest.DUMMY_USER_ID);
 
 			Assert.assertEquals("Generated owner name is not correct", p.getFirstName() + " " + p.getMiddleName() + " " + p.getLastName(),
 					name);
 
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			Assert.fail(e.getMessage());
 		}
 	}
 
 	@Test
 	public void testGetOwnerListNameNoPerson() {
-		User sampleUser = Mockito.mock(User.class);
+		final User sampleUser = Mockito.mock(User.class);
 		final String dummyUserName = "USER NAME";
 		try {
 
@@ -108,19 +108,19 @@ public class BreedingManagerServiceTest {
 			Mockito.when(sampleUser.getName()).thenReturn(dummyUserName);
 
 			// actual verification portion
-			String name = this.breedingManagerService.getOwnerListName(BreedingManagerServiceTest.DUMMY_USER_ID);
+			final String name = this.breedingManagerService.getOwnerListName(BreedingManagerServiceTest.DUMMY_USER_ID);
 
 			Assert.assertEquals("Generated owner name is not correct", dummyUserName, name);
 
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			Assert.fail(e.getMessage());
 		}
 	}
 
 	@Test
 	public void testGetDefaultOwnerList() {
-		User sampleUser = Mockito.mock(User.class);
-		Person p = this.createDummyPerson();
+		final User sampleUser = Mockito.mock(User.class);
+		final Person p = this.createDummyPerson();
 
 		try {
 
@@ -133,20 +133,20 @@ public class BreedingManagerServiceTest {
 			Mockito.when(this.userDataManager.getPersonById(BreedingManagerServiceTest.DUMMY_PERSON_ID)).thenReturn(p);
 
 			// actual verification portion
-			String name = this.breedingManagerService.getOwnerListName(BreedingManagerServiceTest.DUMMY_USER_ID);
+			final String name = this.breedingManagerService.getOwnerListName(BreedingManagerServiceTest.DUMMY_USER_ID);
 
 			Assert.assertEquals("Generated owner name is not correct", p.getFirstName() + " " + p.getMiddleName() + " " + p.getLastName(),
 					name);
 
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			Assert.fail(e.getMessage());
 		}
 	}
 
 	protected void setUpGetCurrentUserLocalId() throws MiddlewareQueryException {
 		final Long dummyProjectId = (long) 1;
-		Project project = Mockito.mock(Project.class);
-		WorkbenchRuntimeData runtimeData = Mockito.mock(WorkbenchRuntimeData.class);
+		final Project project = Mockito.mock(Project.class);
+		final WorkbenchRuntimeData runtimeData = Mockito.mock(WorkbenchRuntimeData.class);
 
 		Mockito.when(this.workbenchDataManager.getWorkbenchRuntimeData()).thenReturn(runtimeData);
 		Mockito.when(runtimeData.getUserId()).thenReturn(BreedingManagerServiceTest.DUMMY_USER_ID);
@@ -160,16 +160,17 @@ public class BreedingManagerServiceTest {
 
 	@Test
 	public void testDoGermplasmSearch() throws Exception {
-		List<Germplasm> expectedResult = Mockito.mock(List.class);
+		final List<Germplasm> expectedResult = Mockito.mock(List.class);
 		expectedResult.add(Mockito.mock(Germplasm.class));
 
 		Mockito.when(
 				this.germplasmDataManager.searchForGermplasm(BreedingManagerServiceTest.SAMPLE_SEARCH_STRING,
 						BreedingManagerServiceTest.CONTAINS_MATCH, BreedingManagerServiceTest.INCLUDE_PARENT,
-						BreedingManagerServiceTest.WITH_INVENTORY_ONLY, BreedingManagerServiceTest.INCLUDE_MG_MEMBERS)).thenReturn(expectedResult);
+						BreedingManagerServiceTest.WITH_INVENTORY_ONLY, BreedingManagerServiceTest.INCLUDE_MG_MEMBERS)).thenReturn(
+				expectedResult);
 
 		// assume we have a search result
-		List<Germplasm> result =
+		final List<Germplasm> result =
 				this.breedingManagerService.doGermplasmSearch(BreedingManagerServiceTest.SAMPLE_SEARCH_STRING,
 						BreedingManagerServiceTest.CONTAINS_MATCH, BreedingManagerServiceTest.INCLUDE_PARENT,
 						BreedingManagerServiceTest.WITH_INVENTORY_ONLY, BreedingManagerServiceTest.INCLUDE_MG_MEMBERS);
@@ -187,9 +188,10 @@ public class BreedingManagerServiceTest {
 
 		try {
 			this.breedingManagerService.doGermplasmSearch("", BreedingManagerServiceTest.CONTAINS_MATCH,
-					BreedingManagerServiceTest.INCLUDE_PARENT, BreedingManagerServiceTest.WITH_INVENTORY_ONLY, BreedingManagerServiceTest.INCLUDE_MG_MEMBERS);
+					BreedingManagerServiceTest.INCLUDE_PARENT, BreedingManagerServiceTest.WITH_INVENTORY_ONLY,
+					BreedingManagerServiceTest.INCLUDE_MG_MEMBERS);
 			Assert.fail("expects an error since germplasm search string is empty");
-		} catch (BreedingManagerSearchException e) {
+		} catch (final BreedingManagerSearchException e) {
 			Assert.assertEquals("Should throw a BreedingManagerSearchException with SEARCH_QUERY_CANNOT_BE_EMPTY message",
 					e.getErrorMessage(), Message.SEARCH_QUERY_CANNOT_BE_EMPTY);
 			Mockito.verifyZeroInteractions(this.germplasmDataManager); // germplasmListManager should not be called
@@ -198,7 +200,7 @@ public class BreedingManagerServiceTest {
 
 	@Test
 	public void testDoGermplasmListSearchStartsWith() throws Exception {
-		List<GermplasmList> expectedResult = new ArrayList<>();
+		final List<GermplasmList> expectedResult = new ArrayList<>();
 		expectedResult.add(new GermplasmList());
 
 		Mockito.when(
@@ -207,7 +209,7 @@ public class BreedingManagerServiceTest {
 				expectedResult);
 
 		// assume we have a search result
-		List<GermplasmList> result =
+		final List<GermplasmList> result =
 				this.breedingManagerService.doGermplasmListSearch(BreedingManagerServiceTest.SAMPLE_SEARCH_STRING,
 						BreedingManagerServiceTest.CONTAINS_MATCH);
 
@@ -219,7 +221,7 @@ public class BreedingManagerServiceTest {
 
 	@Test(expected = BreedingManagerSearchException.class)
 	public void testDoGermplasmListSearchContainsUnderADifferentProgram() throws Exception {
-		List<GermplasmList> expectedResult = new ArrayList<>();
+		final List<GermplasmList> expectedResult = new ArrayList<>();
 		expectedResult.add(new GermplasmList());
 
 		Mockito.when(
@@ -227,12 +229,12 @@ public class BreedingManagerServiceTest {
 						BreedingManagerServiceTest.CONTAINS_MATCH)).thenReturn(expectedResult);
 
 		this.breedingManagerService.doGermplasmListSearch(BreedingManagerServiceTest.CONTAINS_SEARCH_STRING,
-						BreedingManagerServiceTest.CONTAINS_MATCH);
+				BreedingManagerServiceTest.CONTAINS_MATCH);
 	}
 
 	@Test
 	public void testDoGermplasmListSearchEqual() throws Exception {
-		List<GermplasmList> expectedResult = new ArrayList<>();
+		final List<GermplasmList> expectedResult = new ArrayList<>();
 		expectedResult.add(new GermplasmList());
 
 		Mockito.when(
@@ -240,7 +242,7 @@ public class BreedingManagerServiceTest {
 						BreedingManagerServiceTest.DUMMY_PROGRAM_UUID, Operation.LIKE)).thenReturn(expectedResult);
 
 		// assume we have a search result
-		List<GermplasmList> result =
+		final List<GermplasmList> result =
 				this.breedingManagerService.doGermplasmListSearch(BreedingManagerServiceTest.SAMPLE_SEARCH_STRING, Operation.LIKE);
 
 		Mockito.verify(this.germplasmListManager).searchForGermplasmList(BreedingManagerServiceTest.SAMPLE_SEARCH_STRING,
@@ -251,7 +253,7 @@ public class BreedingManagerServiceTest {
 
 	@Test(expected = BreedingManagerSearchException.class)
 	public void testDoGermplasmListSearchEqualUnderADifferentProgram() throws Exception {
-		List<GermplasmList> expectedResult = new ArrayList<>();
+		final List<GermplasmList> expectedResult = new ArrayList<>();
 		expectedResult.add(new GermplasmList());
 
 		Mockito.when(
@@ -264,7 +266,7 @@ public class BreedingManagerServiceTest {
 
 	@Test
 	public void testDoGermplasmListSearchContains() throws Exception {
-		List<GermplasmList> expectedResult = new ArrayList<>();
+		final List<GermplasmList> expectedResult = new ArrayList<>();
 		expectedResult.add(new GermplasmList());
 
 		Mockito.when(
@@ -273,7 +275,7 @@ public class BreedingManagerServiceTest {
 				expectedResult);
 
 		// assume we have a search result
-		List<GermplasmList> result =
+		final List<GermplasmList> result =
 				this.breedingManagerService.doGermplasmListSearch(BreedingManagerServiceTest.SAMPLE_SEARCH_STRING,
 						BreedingManagerServiceTest.CONTAINS_MATCH);
 
@@ -285,7 +287,7 @@ public class BreedingManagerServiceTest {
 
 	@Test(expected = BreedingManagerSearchException.class)
 	public void testDoGermplasmListSearchStartsWithUnderADifferentProgram() throws Exception {
-		List<GermplasmList> expectedResult = new ArrayList<>();
+		final List<GermplasmList> expectedResult = new ArrayList<>();
 		expectedResult.add(new GermplasmList());
 
 		Mockito.when(
@@ -302,7 +304,7 @@ public class BreedingManagerServiceTest {
 		try {
 			this.breedingManagerService.doGermplasmListSearch("", BreedingManagerServiceTest.CONTAINS_MATCH);
 			Assert.fail("expects an error since germplasm search string is empty");
-		} catch (BreedingManagerSearchException e) {
+		} catch (final BreedingManagerSearchException e) {
 			Assert.assertEquals("Should throw a BreedingManagerSearchException with SEARCH_QUERY_CANNOT_BE_EMPTY message",
 					e.getErrorMessage(), Message.SEARCH_QUERY_CANNOT_BE_EMPTY);
 			Mockito.verifyZeroInteractions(this.germplasmListManager); // germplasmListManager should not be called
@@ -314,7 +316,7 @@ public class BreedingManagerServiceTest {
 		try {
 			this.breedingManagerService.validateEmptySearchString("");
 			Assert.fail("expects a BreedingManagerSearchException to be thrown");
-		} catch (BreedingManagerSearchException e) {
+		} catch (final BreedingManagerSearchException e) {
 			Assert.assertEquals("Should throw a BreedingManagerSearchException with SEARCH_QUERY_CANNOT_BE_EMPTY message",
 					e.getErrorMessage(), Message.SEARCH_QUERY_CANNOT_BE_EMPTY);
 		}
