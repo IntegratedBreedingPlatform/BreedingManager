@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.addons.lazyquerycontainer.Query;
+import org.vaadin.addons.lazyquerycontainer.QueryDefinition;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.ObjectProperty;
@@ -56,6 +57,7 @@ import com.vaadin.ui.themes.BaseTheme;
 public class GermplasmQuery implements Query {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmQuery.class);
+	private QueryDefinition definition;
 
 	@Resource
 	private GermplasmDataManager germplasmDataManager;
@@ -66,7 +68,6 @@ public class GermplasmQuery implements Query {
 	@Resource
 	private CrossExpansionProperties crossExpansionProperties;
 
-	private final List<String> columnIds;
 	private final ListManagerMain listManagerMain;
 	private boolean viaToolUrl = true;
 	private boolean showAddToList = true;
@@ -77,7 +78,7 @@ public class GermplasmQuery implements Query {
 	private int size;
 
 	public GermplasmQuery(final ListManagerMain listManagerMain, final boolean viaToolUrl, final boolean showAddToList,
-			final GermplasmSearchParameter searchParameter, final Table matchingGermplasmsTable) {
+			final GermplasmSearchParameter searchParameter, final Table matchingGermplasmsTable, final QueryDefinition definition) {
 
 		super();
 		this.listManagerMain = listManagerMain;
@@ -85,17 +86,13 @@ public class GermplasmQuery implements Query {
 		this.showAddToList = showAddToList;
 		this.searchParameter = searchParameter;
 		this.matchingGermplasmsTable = matchingGermplasmsTable;
-		this.columnIds = Arrays.asList(matchingGermplasmsTable.getColumnHeaders());
 		this.size = -1;
+		this.definition = definition;
 	}
 
 	@Override
 	public Item constructItem() {
-		final PropertysetItem item = new PropertysetItem();
-		for (final String id : this.columnIds) {
-			item.addItemProperty(id, new ObjectProperty<String>(id));
-		}
-		return item;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -123,39 +120,39 @@ public class GermplasmQuery implements Query {
 		final GermplasmInventory inventoryInfo = germplasm.getInventoryInfo();
 
 		final Item item = new PropertysetItem();
-		final int numOfCols = this.columnIds.size();
-		for (int i = 0; i < numOfCols; i++) {
+		for (int i = 0; i < this.definition.getPropertyIds().size(); i++) {
+			final String propertyId = (String) this.definition.getPropertyIds().toArray()[i];
 			switch (i) {
 				case 0:
-					item.addItemProperty(this.columnIds.get(i), new ObjectProperty<CheckBox>(this.getItemCheckBox(gid)));
+					item.addItemProperty(propertyId, new ObjectProperty<CheckBox>(this.getItemCheckBox(gid)));
 					break;
 				case 1:
-					item.addItemProperty(this.columnIds.get(i), new ObjectProperty<Button>(this.getNamesButton(gid)));
+					item.addItemProperty(propertyId, new ObjectProperty<Button>(this.getNamesButton(gid)));
 					break;
 				case 2:
-					item.addItemProperty(this.columnIds.get(i), new ObjectProperty<String>(this.getAvailableInventory(inventoryInfo)));
+					item.addItemProperty(propertyId, new ObjectProperty<String>(this.getAvailableInventory(inventoryInfo)));
 					break;
 				case 3:
-					item.addItemProperty(this.columnIds.get(i), new ObjectProperty<String>(this.getCrossExpansion(gid)));
+					item.addItemProperty(propertyId, new ObjectProperty<String>(this.getCrossExpansion(gid)));
 					break;
 				case 4:
-					item.addItemProperty(this.columnIds.get(i), new ObjectProperty<String>(this.getSeedReserved(inventoryInfo)));
+					item.addItemProperty(propertyId, new ObjectProperty<String>(this.getSeedReserved(inventoryInfo)));
 					break;
 				case 5:
-					item.addItemProperty(this.columnIds.get(i), new ObjectProperty<Label>(this.getStockIDs(inventoryInfo)));
+					item.addItemProperty(propertyId, new ObjectProperty<Label>(this.getStockIDs(inventoryInfo)));
 					break;
 				case 6:
-					item.addItemProperty(this.columnIds.get(i), new ObjectProperty<Button>(this.getGidButton(gid)));
+					item.addItemProperty(propertyId, new ObjectProperty<Button>(this.getGidButton(gid)));
 					break;
 				case 7:
-					item.addItemProperty(this.columnIds.get(i), new ObjectProperty<Integer>(germplasm.getMgid()));
+					item.addItemProperty(propertyId, new ObjectProperty<Integer>(germplasm.getMgid()));
 					break;
 				case 8:
-					item.addItemProperty(this.columnIds.get(i),
+					item.addItemProperty(propertyId,
 							new ObjectProperty<String>(this.retrieveMethodName(germplasm.getMethodId(), methodsMap)));
 					break;
 				case 9:
-					item.addItemProperty(this.columnIds.get(i),
+					item.addItemProperty(propertyId,
 							new ObjectProperty<String>(this.retrieveLocationName(germplasm.getLocationId(), locationsMap)));
 					break;
 				default:

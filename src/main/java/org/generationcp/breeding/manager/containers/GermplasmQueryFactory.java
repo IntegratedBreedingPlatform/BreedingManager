@@ -33,6 +33,7 @@ public class GermplasmQueryFactory implements QueryFactory {
 	private final Table matchingGermplasmsTable;
 	private final GermplasmSearchParameter searchParameter;
 
+	private QueryDefinition definition;
 	public GermplasmQueryFactory(final ListManagerMain listManagerMain, final boolean viaToolUrl, final boolean showAddToList,
 			final GermplasmSearchParameter searchParameter, final Table matchingGermplasmsTable) {
 		super();
@@ -43,6 +44,15 @@ public class GermplasmQueryFactory implements QueryFactory {
 		this.searchParameter = searchParameter;
 	}
 
+
+
+	public GermplasmQueryFactory(final ListManagerMain listManagerMain, final boolean viaToolUrl, final boolean showAddToList,
+			final GermplasmSearchParameter searchParameter, final Table matchingGermplasmsTable, final QueryDefinition queryDefinition) {
+		this(listManagerMain,viaToolUrl,showAddToList,searchParameter,matchingGermplasmsTable);
+
+		this.setQueryDefinition(queryDefinition);
+	}
+
 	/**
 	 * Create the Query object to be used by the LazyQueryContainer. Sorting is not yet supported so the parameters to this method are not
 	 * used.
@@ -51,13 +61,13 @@ public class GermplasmQueryFactory implements QueryFactory {
 	public Query constructQuery(final Object[] sortPropertyIds, final boolean[] sortStates) {
 		this.query =
 				new GermplasmQuery(this.listManagerMain, this.viaToolUrl, this.showAddToList, this.searchParameter,
-						this.matchingGermplasmsTable);
+						this.matchingGermplasmsTable,this.definition);
 		return this.query;
 	}
 
 	@Override
-	public void setQueryDefinition(final QueryDefinition arg0) {
-		// no yet used
+	public void setQueryDefinition(final QueryDefinition definition) {
+		this.definition = definition;
 	}
 
 	public int getNumberOfItems() {

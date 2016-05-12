@@ -26,6 +26,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
+import org.vaadin.addons.lazyquerycontainer.LazyQueryDefinition;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
@@ -80,6 +81,8 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 	private final org.generationcp.breeding.manager.listmanager.ListManagerMain listManagerMain;
 
+	private final LazyQueryDefinition definition = new LazyQueryDefinition(true,25);
+
 	private boolean viaToolUrl = true;
 
 	private boolean showAddToList = true;
@@ -94,11 +97,22 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	private SimpleResourceBundleMessageSource messageSource;
 
 	public GermplasmSearchResultsComponent() {
-		this.listManagerMain = null;
+		this(null);
 	}
 
 	public GermplasmSearchResultsComponent(final ListManagerMain listManagerMain) {
 		this.listManagerMain = listManagerMain;
+
+		definition.addProperty(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID, CheckBox.class, null, false, true);
+		definition.addProperty(GermplasmSearchResultsComponent.NAMES, Button.class, null, false, true);
+		definition.addProperty(ColumnLabels.PARENTAGE.getName(), String.class, null, false, true);
+		definition.addProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), String.class, null, false, true);
+		definition.addProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null, false, true);
+		definition.addProperty(ColumnLabels.STOCKID.getName(), Label.class, null, false, true);
+		definition.addProperty(ColumnLabels.GID.getName(), Button.class, null, false, true);
+		definition.addProperty(ColumnLabels.GROUP_ID.getName(), String.class, null, false, true);
+		definition.addProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class, null, false, true);
+		definition.addProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, null, false, true);
 	}
 
 	public GermplasmSearchResultsComponent(final ListManagerMain listManagerMain, final boolean viaToolUrl, final boolean showAddToList) {
@@ -219,9 +233,9 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		});
 
 		// init container
-		final GermplasmQueryFactory germplasmQueryFactory =
+		/*final GermplasmQueryFactory germplasmQueryFactory =
 				this.createGermplasmQueryFactory(new GermplasmSearchParameter("", Operation.EQUAL, false, false, false));
-		this.matchingGermplasmsTable.setContainerDataSource(this.createContainer(germplasmQueryFactory));
+		this.matchingGermplasmsTable.setContainerDataSource(this.createContainer(germplasmQueryFactory));*/
 	}
 
 	private GermplasmQueryFactory createGermplasmQueryFactory(final GermplasmSearchParameter searchParameter) {
@@ -230,23 +244,18 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		searchParameter.setNumberOfEntries(this.matchingGermplasmsTable.getPageLength());
 
 		return new GermplasmQueryFactory(this.listManagerMain, this.viaToolUrl, this.showAddToList, searchParameter,
-				this.matchingGermplasmsTable);
+				this.matchingGermplasmsTable, definition);
 	}
 
 	private LazyQueryContainer createContainer(final GermplasmQueryFactory factory) {
 
 		final LazyQueryContainer container = new LazyQueryContainer(factory, false, 25);
 
-		container.addContainerProperty(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID, CheckBox.class, null);
-		container.addContainerProperty(GermplasmSearchResultsComponent.NAMES, Button.class, null);
-		container.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
-		container.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), String.class, null);
-		container.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
-		container.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
-		container.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
-		container.addContainerProperty(ColumnLabels.GROUP_ID.getName(), String.class, null);
-		container.addContainerProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class, null);
-		container.addContainerProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, null);
+		for (Object propertyId : definition.getPropertyIds()) {
+			container.addContainerProperty(propertyId, definition.getPropertyType(propertyId),
+					definition.getPropertyDefaultValue(propertyId), definition.isPropertyReadOnly(propertyId),
+					definition.isPropertySortable(propertyId));
+		}
 
 		return container;
 	}
