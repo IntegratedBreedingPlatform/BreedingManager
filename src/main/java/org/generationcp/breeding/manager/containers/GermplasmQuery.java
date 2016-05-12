@@ -23,7 +23,9 @@ import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
+import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
 import org.generationcp.middleware.domain.inventory.GermplasmInventory;
+import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.LocationDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
@@ -69,19 +71,22 @@ public class GermplasmQuery implements Query {
 	private boolean viaToolUrl = true;
 	private boolean showAddToList = true;
 
-	private final List<Germplasm> germplasmSearchResults;
 	private final Table matchingGermplasmsTable;
+	private final GermplasmSearchParameter searchParameter;
+
+	private int size;
 
 	public GermplasmQuery(final ListManagerMain listManagerMain, final boolean viaToolUrl, final boolean showAddToList,
-			final List<Germplasm> germplasmSearchResults, final Table matchingGermplasmsTable) {
-		super();
+			final GermplasmSearchParameter searchParameter, final Table matchingGermplasmsTable) {
 
+		super();
 		this.listManagerMain = listManagerMain;
 		this.viaToolUrl = viaToolUrl;
 		this.showAddToList = showAddToList;
-		this.germplasmSearchResults = germplasmSearchResults;
+		this.searchParameter = searchParameter;
 		this.matchingGermplasmsTable = matchingGermplasmsTable;
 		this.columnIds = Arrays.asList(matchingGermplasmsTable.getColumnHeaders());
+		this.size = -1;
 	}
 
 	@Override
@@ -212,7 +217,9 @@ public class GermplasmQuery implements Query {
 	}
 
 	protected List<Germplasm> getGermplasmSearchResults(final int startIndex, final int count) {
-		return this.germplasmSearchResults.subList(startIndex, startIndex + count);
+		this.searchParameter.setStartingRow(startIndex);
+		this.searchParameter.setNumberOfEntries(count);
+		return this.germplasmDataManager.searchForGermplasm(this.searchParameter);
 	}
 
 	protected String getStudyDate(final String date, final SimpleDateFormat oldFormat, final SimpleDateFormat format) {
@@ -238,7 +245,16 @@ public class GermplasmQuery implements Query {
 
 	@Override
 	public int size() {
-		return this.germplasmSearchResults.size();
+		if (this.size == -1) {
+			final String q = this.searchParameter.getSearchKeyword();
+			final Operation o = this.searchParameter.getOperation();
+			final boolean includeParents = this.searchParameter.isIncludeParents();
+			final boolean withInventoryOnly = this.searchParameter.isWithInventoryOnly();
+			final boolean includeMGMembers = this.searchParameter.isIncludeMGMembers();
+
+			this.size = this.germplasmDataManager.countSearchForGermplasm(q, o, includeParents, withInventoryOnly, includeMGMembers);
+		}
+		return this.size;
 	}
 
 	String getShortenedNames(final String germplasmFullName) {

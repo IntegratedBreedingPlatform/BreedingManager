@@ -15,9 +15,10 @@ import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
+import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
-import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Name;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -218,12 +219,17 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		});
 
 		// init container
-		final GermplasmQueryFactory germplasmQueryFactory = this.createGermplasmQueryFactory(new ArrayList<Germplasm>());
+		final GermplasmQueryFactory germplasmQueryFactory =
+				this.createGermplasmQueryFactory(new GermplasmSearchParameter("", Operation.EQUAL, false, false, false));
 		this.matchingGermplasmsTable.setContainerDataSource(this.createContainer(germplasmQueryFactory));
 	}
 
-	private GermplasmQueryFactory createGermplasmQueryFactory(final List<Germplasm> germplasmSearchResults) {
-		return new GermplasmQueryFactory(this.listManagerMain, this.viaToolUrl, this.showAddToList, germplasmSearchResults,
+	private GermplasmQueryFactory createGermplasmQueryFactory(final GermplasmSearchParameter searchParameter) {
+		// set the start and no of entries to retrieve at initial loading
+		searchParameter.setStartingRow(1);
+		searchParameter.setNumberOfEntries(this.matchingGermplasmsTable.getPageLength());
+
+		return new GermplasmQueryFactory(this.listManagerMain, this.viaToolUrl, this.showAddToList, searchParameter,
 				this.matchingGermplasmsTable);
 	}
 
@@ -336,11 +342,11 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		this.addComponent(this.matchingGermplasmsTableWithSelectAll);
 	}
 
-	public void applyGermplasmResults(final List<Germplasm> germplasmSearchResults) throws BreedingManagerSearchException {
+	public void applyGermplasmResults(final GermplasmSearchParameter searchParameter) throws BreedingManagerSearchException {
 
 		final Monitor monitor = MonitorFactory.start("GermplasmSearchResultsComponent.applyGermplasmResults()");
 
-		final GermplasmQueryFactory factory = this.createGermplasmQueryFactory(germplasmSearchResults);
+		final GermplasmQueryFactory factory = this.createGermplasmQueryFactory(searchParameter);
 		final LazyQueryContainer container = this.createContainer(factory);
 
 		this.matchingGermplasmsTable.setContainerDataSource(container);

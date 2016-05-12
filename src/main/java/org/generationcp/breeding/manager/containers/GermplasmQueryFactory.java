@@ -11,10 +11,8 @@
 
 package org.generationcp.breeding.manager.containers;
 
-import java.util.List;
-
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
-import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
 import org.vaadin.addons.lazyquerycontainer.Query;
 import org.vaadin.addons.lazyquerycontainer.QueryDefinition;
 import org.vaadin.addons.lazyquerycontainer.QueryFactory;
@@ -29,20 +27,20 @@ public class GermplasmQueryFactory implements QueryFactory {
 
 	private Query query;
 
-	private final List<Germplasm> germplasmSearchResult;
 	private final ListManagerMain listManagerMain;
 	private boolean viaToolUrl = true;
 	private boolean showAddToList = true;
 	private final Table matchingGermplasmsTable;
+	private final GermplasmSearchParameter searchParameter;
 
 	public GermplasmQueryFactory(final ListManagerMain listManagerMain, final boolean viaToolUrl, final boolean showAddToList,
-			final List<Germplasm> germplasmSearchResult, final Table matchingGermplasmsTable) {
+			final GermplasmSearchParameter searchParameter, final Table matchingGermplasmsTable) {
 		super();
 		this.listManagerMain = listManagerMain;
 		this.viaToolUrl = viaToolUrl;
 		this.showAddToList = showAddToList;
-		this.germplasmSearchResult = germplasmSearchResult;
 		this.matchingGermplasmsTable = matchingGermplasmsTable;
+		this.searchParameter = searchParameter;
 	}
 
 	/**
@@ -52,7 +50,7 @@ public class GermplasmQueryFactory implements QueryFactory {
 	@Override
 	public Query constructQuery(final Object[] sortPropertyIds, final boolean[] sortStates) {
 		this.query =
-				new GermplasmQuery(this.listManagerMain, this.viaToolUrl, this.showAddToList, this.germplasmSearchResult,
+				new GermplasmQuery(this.listManagerMain, this.viaToolUrl, this.showAddToList, this.searchParameter,
 						this.matchingGermplasmsTable);
 		return this.query;
 	}
