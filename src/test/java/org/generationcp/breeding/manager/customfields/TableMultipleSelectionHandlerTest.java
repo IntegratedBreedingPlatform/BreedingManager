@@ -32,9 +32,12 @@ public class TableMultipleSelectionHandlerTest {
 
 	@Before
 	public void setUp() throws Exception {
+		// this is an actual object so we can add initial table entries but we partially stub it so
+		// we can use verify methods and argument captors for grabbing currently selected values
 		breedingManagerTable = Mockito.spy(new BreedingManagerTable(INIT_RECORD_COUNT,MAX_RECORD_COUNT));
 		this.initTable(breedingManagerTable);
 
+		// the object to test
 		this.tableMultipleSelectionHandler = new TableMultipleSelectionHandler(breedingManagerTable);
 
 	}
