@@ -12,7 +12,6 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.Person;
 import org.generationcp.middleware.pojos.User;
@@ -40,10 +39,6 @@ public class BreedingManagerServiceTest {
 	private static final String SAMPLE_SEARCH_STRING = "a sample search string";
 	private static final String CONTAINS_SEARCH_STRING = "%a_s_%string";
 	private static final Operation CONTAINS_MATCH = Operation.LIKE;
-	private static final Boolean INCLUDE_PARENT = true;
-	private static final Boolean WITH_INVENTORY_ONLY = true;
-	private static final boolean INCLUDE_MG_MEMBERS = true;
-
 	@Mock
 	private GermplasmDataManager germplasmDataManager;
 
@@ -156,46 +151,6 @@ public class BreedingManagerServiceTest {
 
 		Mockito.when(this.workbenchDataManager.getLocalIbdbUserId(BreedingManagerServiceTest.DUMMY_USER_ID, dummyProjectId)).thenReturn(
 				BreedingManagerServiceTest.DUMMY_USER_ID);
-	}
-
-	@Test
-	public void testDoGermplasmSearch() throws Exception {
-		final List<Germplasm> expectedResult = Mockito.mock(List.class);
-		expectedResult.add(Mockito.mock(Germplasm.class));
-
-		Mockito.when(
-				this.germplasmDataManager.searchForGermplasm(BreedingManagerServiceTest.SAMPLE_SEARCH_STRING,
-						BreedingManagerServiceTest.CONTAINS_MATCH, BreedingManagerServiceTest.INCLUDE_PARENT,
-						BreedingManagerServiceTest.WITH_INVENTORY_ONLY, BreedingManagerServiceTest.INCLUDE_MG_MEMBERS)).thenReturn(
-				expectedResult);
-
-		// assume we have a search result
-		final List<Germplasm> result =
-				this.breedingManagerService.doGermplasmSearch(BreedingManagerServiceTest.SAMPLE_SEARCH_STRING,
-						BreedingManagerServiceTest.CONTAINS_MATCH, BreedingManagerServiceTest.INCLUDE_PARENT,
-						BreedingManagerServiceTest.WITH_INVENTORY_ONLY, BreedingManagerServiceTest.INCLUDE_MG_MEMBERS);
-
-		Mockito.verify(this.germplasmDataManager).searchForGermplasm(BreedingManagerServiceTest.SAMPLE_SEARCH_STRING,
-				BreedingManagerServiceTest.CONTAINS_MATCH, BreedingManagerServiceTest.INCLUDE_PARENT,
-				BreedingManagerServiceTest.WITH_INVENTORY_ONLY, BreedingManagerServiceTest.INCLUDE_MG_MEMBERS);
-
-		Assert.assertTrue("expects the result size is equal to the expectedResult size", result.size() == expectedResult.size());
-
-	}
-
-	@Test
-	public void testDoGermplasmSearchEmptyString() throws Exception {
-
-		try {
-			this.breedingManagerService.doGermplasmSearch("", BreedingManagerServiceTest.CONTAINS_MATCH,
-					BreedingManagerServiceTest.INCLUDE_PARENT, BreedingManagerServiceTest.WITH_INVENTORY_ONLY,
-					BreedingManagerServiceTest.INCLUDE_MG_MEMBERS);
-			Assert.fail("expects an error since germplasm search string is empty");
-		} catch (final BreedingManagerSearchException e) {
-			Assert.assertEquals("Should throw a BreedingManagerSearchException with SEARCH_QUERY_CANNOT_BE_EMPTY message",
-					e.getErrorMessage(), Message.SEARCH_QUERY_CANNOT_BE_EMPTY);
-			Mockito.verifyZeroInteractions(this.germplasmDataManager); // germplasmListManager should not be called
-		}
 	}
 
 	@Test
