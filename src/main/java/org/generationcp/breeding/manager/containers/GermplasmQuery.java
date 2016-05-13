@@ -14,11 +14,9 @@ package org.generationcp.breeding.manager.containers;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
@@ -120,40 +118,40 @@ public class GermplasmQuery implements Query {
 		final GermplasmInventory inventoryInfo = germplasm.getInventoryInfo();
 
 		final Item item = new PropertysetItem();
+		final Object[] propertyIds = this.definition.getPropertyIds().toArray();
+
 		for (int i = 0; i < this.definition.getPropertyIds().size(); i++) {
-			final String propertyId = (String) this.definition.getPropertyIds().toArray()[i];
 			switch (i) {
 				case 0:
-					item.addItemProperty(propertyId, new ObjectProperty<CheckBox>(this.getItemCheckBox(gid)));
+					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.getItemCheckBox(gid)));
 					break;
 				case 1:
-					item.addItemProperty(propertyId, new ObjectProperty<Button>(this.getNamesButton(gid)));
+					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.getNamesButton(gid)));
 					break;
 				case 2:
-					item.addItemProperty(propertyId, new ObjectProperty<String>(this.getAvailableInventory(inventoryInfo)));
+					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.getAvailableInventory(inventoryInfo)));
 					break;
 				case 3:
-					item.addItemProperty(propertyId, new ObjectProperty<String>(this.getCrossExpansion(gid)));
+					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.getCrossExpansion(gid)));
 					break;
 				case 4:
-					item.addItemProperty(propertyId, new ObjectProperty<String>(this.getSeedReserved(inventoryInfo)));
+					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.getSeedReserved(inventoryInfo)));
 					break;
 				case 5:
-					item.addItemProperty(propertyId, new ObjectProperty<Label>(this.getStockIDs(inventoryInfo)));
+					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.getStockIDs(inventoryInfo)));
 					break;
 				case 6:
-					item.addItemProperty(propertyId, new ObjectProperty<Button>(this.getGidButton(gid)));
+					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.getGidButton(gid)));
 					break;
 				case 7:
-					item.addItemProperty(propertyId, new ObjectProperty<Integer>(germplasm.getMgid()));
+					item.addItemProperty(propertyIds[i], new ObjectProperty<>(germplasm.getMgid()));
 					break;
 				case 8:
-					item.addItemProperty(propertyId,
-							new ObjectProperty<String>(this.retrieveMethodName(germplasm.getMethodId(), methodsMap)));
+					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.retrieveMethodName(germplasm.getMethodId(), methodsMap)));
 					break;
 				case 9:
-					item.addItemProperty(propertyId,
-							new ObjectProperty<String>(this.retrieveLocationName(germplasm.getLocationId(), locationsMap)));
+					item.addItemProperty(propertyIds[i],
+							new ObjectProperty<>(this.retrieveLocationName(germplasm.getLocationId(), locationsMap)));
 					break;
 				default:
 					break;
