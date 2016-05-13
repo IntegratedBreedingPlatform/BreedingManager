@@ -16,7 +16,6 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
-import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.Name;
@@ -32,9 +31,12 @@ import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
+
+import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.Action;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
@@ -233,9 +235,21 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		});
 
 		// init container
-		/*final GermplasmQueryFactory germplasmQueryFactory =
-				this.createGermplasmQueryFactory(new GermplasmSearchParameter("", Operation.EQUAL, false, false, false));
-		this.matchingGermplasmsTable.setContainerDataSource(this.createContainer(germplasmQueryFactory));*/
+		this.matchingGermplasmsTable.setContainerDataSource(this.createInitialContainer());
+	}
+
+	/**
+	 * This will just create a container with the table properties so we can have headers when we load the table initially
+	 * @return
+	 */
+	private Container createInitialContainer() {
+		Container container = new IndexedContainer();
+		for (Object propertyId : definition.getPropertyIds()) {
+			container.addContainerProperty(propertyId, definition.getPropertyType(propertyId),
+					definition.getPropertyDefaultValue(propertyId));
+		}
+
+		return container;
 	}
 
 	private GermplasmQueryFactory createGermplasmQueryFactory(final GermplasmSearchParameter searchParameter) {

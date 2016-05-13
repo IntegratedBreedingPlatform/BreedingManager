@@ -88,6 +88,9 @@ public class GermplasmQuery implements Query {
 		this.definition = definition;
 	}
 
+	/**
+	 * This should only be relevant for tables with editing (add new) feature, this should never be called
+	 */
 	@Override
 	public Item constructItem() {
 		throw new UnsupportedOperationException();
@@ -98,8 +101,15 @@ public class GermplasmQuery implements Query {
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * Create List of Items to feed to the Paged table
+	 * @param startIndex - the starting index for the entry
+	 * @param count - the number of items for current page
+	 * @return
+	 */
 	@Override
 	public List<Item> loadItems(final int startIndex, final int count) {
+		LOG.info("loadItems: " + startIndex + " , " + count);
 		final List<Item> items = new ArrayList<Item>();
 		final List<Germplasm> list = this.getGermplasmSearchResults(startIndex, count);
 
