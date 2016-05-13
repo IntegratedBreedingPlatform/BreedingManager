@@ -163,6 +163,8 @@ public class GermplasmQuery implements Query {
 					item.addItemProperty(propertyIds[i],
 							new ObjectProperty<>(this.retrieveLocationName(germplasm.getLocationId(), locationsMap)));
 					break;
+				case 10:
+					item.addItemProperty(propertyIds[i], new ObjectProperty<>(gid));
 				default:
 					break;
 			}

@@ -140,7 +140,17 @@ public class DropHandlerMethods {
 	protected void addSelectedGermplasmsFromTable(final Table sourceTable) {
 		final List<Integer> selectedGermplasmIds = this.getSelectedItemIds(sourceTable);
 		for (final Integer itemId : selectedGermplasmIds) {
-			this.addGermplasm(itemId);
+			// note, for paged table, the itemId !== GID, but there is a hidden reference GID there so we can retrive actual GID
+			// todo: lets cleanup that "_REF" string later
+			final Property internalGIDReference = sourceTable.getItem(itemId).getItemProperty(ColumnLabels.GID.getName() + "_REF");
+
+			if (internalGIDReference != null && internalGIDReference.getValue() != null) {
+				this.addGermplasm((Integer) internalGIDReference.getValue());
+			} else {
+				this.addGermplasm(itemId);
+			}
+
+
 		}
 	}
 

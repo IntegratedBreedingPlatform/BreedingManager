@@ -115,6 +115,8 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		definition.addProperty(ColumnLabels.GROUP_ID.getName(), String.class, null, false, true);
 		definition.addProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class, null, false, true);
 		definition.addProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, null, false, true);
+		definition.addProperty(ColumnLabels.GID.getName()  + "_REF", Integer.class, null, false, true);
+
 	}
 
 	public GermplasmSearchResultsComponent(final ListManagerMain listManagerMain, final boolean viaToolUrl, final boolean showAddToList) {
@@ -236,6 +238,9 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 		// init container
 		this.matchingGermplasmsTable.setContainerDataSource(this.createInitialContainer());
+
+		// hide the internal GID reference ID
+		this.matchingGermplasmsTable.setVisibleColumns(new ArrayList<>(this.definition.getPropertyIds()).subList(0,this.definition.getPropertyIds().size()-1).toArray());
 	}
 
 	/**
@@ -374,6 +379,9 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 		this.matchingGermplasmsTable.setContainerDataSource(container);
 		this.matchingGermplasmsTable.setImmediate(true);
+
+		// hide the internal GID reference ID
+		this.matchingGermplasmsTable.setVisibleColumns(new ArrayList<>(this.definition.getPropertyIds()).subList(0,this.definition.getPropertyIds().size()-1).toArray());
 
 		this.updateNoOfEntries(factory.getNumberOfItems());
 
