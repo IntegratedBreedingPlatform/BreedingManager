@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
@@ -55,7 +56,7 @@ import com.vaadin.ui.themes.BaseTheme;
 public class GermplasmQuery implements Query {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmQuery.class);
-	private QueryDefinition definition;
+	private final QueryDefinition definition;
 
 	@Resource
 	private GermplasmDataManager germplasmDataManager;
@@ -103,6 +104,7 @@ public class GermplasmQuery implements Query {
 
 	/**
 	 * Create List of Items to feed to the Paged table
+	 * 
 	 * @param startIndex - the starting index for the entry
 	 * @param count - the number of items for current page
 	 * @return
@@ -154,7 +156,7 @@ public class GermplasmQuery implements Query {
 					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.getGidButton(gid)));
 					break;
 				case 7:
-					item.addItemProperty(propertyIds[i], new ObjectProperty<>(germplasm.getMgid()));
+					item.addItemProperty(propertyIds[i], new ObjectProperty<>(germplasm.getMgid() != 0 ? germplasm.getMgid() : "-"));
 					break;
 				case 8:
 					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.retrieveMethodName(germplasm.getMethodId(), methodsMap)));
