@@ -1,16 +1,20 @@
+
 package org.generationcp.breeding.manager.customcomponent;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.generationcp.breeding.manager.customfields.PagedBreedingManagerTable;
 
+import com.jensjansson.pagedtable.PagedTable;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
-
-import com.jensjansson.pagedtable.PagedTable;
 
 public class PagedTableWithSelectAllLayout extends VerticalLayout {
 
@@ -21,23 +25,30 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout {
 	private int maxRecords = 0;
 
 	private CheckBox selectAllCheckBox;
+	/**
+	 * This will serve as a marker of pages already loaded in the paged table
+	 */
+	private final Set<Integer> loadedPaged;
 
-	public PagedTableWithSelectAllLayout(int recordCount, Object checkboxColumnId) {
+	public PagedTableWithSelectAllLayout(final int recordCount, final Object checkboxColumnId) {
 		this.recordCount = this.maxRecords = recordCount;
 
 		this.checkboxColumnId = checkboxColumnId;
 
-		initComponents();
-		initLayout();
-		initActions();
+		this.initComponents();
+		this.initLayout();
+		this.initActions();
+
+		this.loadedPaged = new LinkedHashSet<Integer>();
 	}
 
 	public void initComponents() {
-		this.table = new PagedBreedingManagerTable(recordCount,maxRecords);
+		this.table = new PagedBreedingManagerTable(this.recordCount, this.maxRecords);
 		this.table.setImmediate(true);
 
 		this.selectAllCheckBox = new CheckBox("Select All");
 		this.selectAllCheckBox.setImmediate(true);
+
 	}
 
 	public void initLayout() {
@@ -45,7 +56,7 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout {
 		this.setWidth("100%");
 
 		this.addComponent(this.table);
-		this.addComponent(((PagedTable)this.table).createControls());
+		this.addComponent(((PagedTable) this.table).createControls());
 		this.addComponent(this.selectAllCheckBox);
 
 	}
@@ -67,11 +78,11 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout {
 
 			@SuppressWarnings("unchecked")
 			@Override
-			public void buttonClick(Button.ClickEvent event) {
-				boolean checkBoxValue = event.getButton().booleanValue();
-				Collection<Object> entries = (Collection<Object>) PagedTableWithSelectAllLayout.this.table.getItemIds();
-				for (Object entry : entries) {
-					CheckBox tag =
+			public void buttonClick(final Button.ClickEvent event) {
+				final boolean checkBoxValue = event.getButton().booleanValue();
+				final Collection<Object> entries = (Collection<Object>) PagedTableWithSelectAllLayout.this.table.getItemIds();
+				for (final Object entry : entries) {
+					final CheckBox tag =
 							(CheckBox) PagedTableWithSelectAllLayout.this.table.getItem(entry)
 									.getItemProperty(PagedTableWithSelectAllLayout.this.checkboxColumnId).getValue();
 					tag.setValue(checkBoxValue);
@@ -89,18 +100,34 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout {
 
 	@SuppressWarnings("unchecked")
 	public void syncItemCheckBoxes() {
-		Collection<Object> entries = (Collection<Object>) this.table.getItemIds();
-		Collection<Object> selectedEntries = (Collection<Object>) this.table.getValue();
+		final Collection<Object> entries = (Collection<Object>) this.table.getItemIds();
+		final Collection<Object> selectedEntries = (Collection<Object>) this.table.getValue();
 		if (selectedEntries.size() == entries.size() && !selectedEntries.isEmpty()) {
 			this.selectAllCheckBox.setValue(true);
 		} else {
 			this.selectAllCheckBox.setValue(false);
 		}
 
-		for (Object entry : entries) {
-			Property itemProperty = this.table.getItem(entry).getItemProperty(this.checkboxColumnId);
+		// update the loaded list of page no
+		this.addLoadedPage();
+
+		final Integer noOfEntriesPerPage = this.table.getPageLength();
+
+		final List<Object> loadedItems = new ArrayList<Object>();
+		if (entries.size() > noOfEntriesPerPage) {
+			for (final Integer pageNo : this.loadedPaged) {
+				final List<Object> entriesList = new ArrayList<>(entries);
+				final Integer startIdx = pageNo * noOfEntriesPerPage - noOfEntriesPerPage;
+				Integer endIdx = startIdx + noOfEntriesPerPage;
+				endIdx = (endIdx > entries.size()) ? entries.size() : endIdx;
+				loadedItems.addAll(entriesList.subList(startIdx, endIdx));
+			}
+		}
+
+		for (final Object entry : loadedItems) {
+			final Property itemProperty = this.table.getItem(entry).getItemProperty(this.checkboxColumnId);
 			if (itemProperty != null) {
-				CheckBox tag = (CheckBox) itemProperty.getValue();
+				final CheckBox tag = (CheckBox) itemProperty.getValue();
 				if (selectedEntries.contains(entry)) {
 					tag.setValue(true);
 				} else {
@@ -115,7 +142,16 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout {
 	}
 
 	public void refreshTablePagingControls() {
-		this.replaceComponent(this.getComponent(1),((PagedTable)this.table).createControls());
+		this.replaceComponent(this.getComponent(1), ((PagedTable) this.table).createControls());
+		this.resetLoadedPage();
+	}
+
+	public void addLoadedPage() {
+		this.loadedPaged.add(this.table.getCurrentPage());
+	}
+
+	public void resetLoadedPage() {
+		this.loadedPaged.clear();
 	}
 
 }
