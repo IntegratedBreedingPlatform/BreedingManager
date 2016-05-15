@@ -11,6 +11,10 @@
 
 package org.generationcp.breeding.manager.containers;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
 import org.vaadin.addons.lazyquerycontainer.Query;
@@ -59,6 +63,17 @@ public class GermplasmQueryFactory implements QueryFactory {
 	 */
 	@Override
 	public Query constructQuery(final Object[] sortPropertyIds, final boolean[] sortStates) {
+
+		// this will set up sort states if any (for sorting the germplasm query results)
+		if (sortPropertyIds.length > 0) {
+			Map<String,Boolean> sortStatesMap = new HashMap<>();
+			for (int i = 0; i < sortPropertyIds.length; i++) {
+				sortStatesMap.put(String.valueOf(sortPropertyIds[i]),sortStates[i]);
+			}
+
+			this.searchParameter.setSortState(sortStatesMap);
+		}
+
 		this.query =
 				new GermplasmQuery(this.listManagerMain, this.viaToolUrl, this.showAddToList, this.searchParameter,
 						this.matchingGermplasmsTable,this.definition);
