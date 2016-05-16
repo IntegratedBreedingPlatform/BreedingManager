@@ -16,16 +16,17 @@ import com.jensjansson.pagedtable.PagedTable;
 public class PagedBreedingManagerTable extends PagedTable {
 
 	private TableMultipleSelectionHandler tableMultipleSelectionHandler;
+	private Integer pageLength;
 
 	public PagedBreedingManagerTable(int recordCount, int maxRecords) {
 		super();
 
-		Integer pageLength = Math.min(recordCount, maxRecords);
-		if (pageLength > 0) {
-			this.setPageLength(pageLength);
-		} else {
-			this.setPageLength(maxRecords);
+		pageLength = Math.min(recordCount, maxRecords);
+		if (pageLength <= 0) {
+			pageLength = 20;
 		}
+
+		this.setPageLength(pageLength);
 
 		this.setTableHandler(new TableMultipleSelectionHandler(this));
 	}
@@ -77,7 +78,8 @@ public class PagedBreedingManagerTable extends PagedTable {
 		newItemsPerPageSelect.setImmediate(true);
 		newItemsPerPageSelect.setNullSelectionAllowed(false);
 		newItemsPerPageSelect.setWidth("50px");
-		newItemsPerPageSelect.select("25");
+		newItemsPerPageSelect.select(String.valueOf(this.pageLength));
+		this.setPageLength(this.pageLength);
 		newItemsPerPageSelect.addListener(new ValueChangeListener() {
 
 			@Override

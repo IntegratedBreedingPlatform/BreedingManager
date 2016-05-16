@@ -83,7 +83,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 	private final org.generationcp.breeding.manager.listmanager.ListManagerMain listManagerMain;
 
-	private final LazyQueryDefinition definition = new LazyQueryDefinition(true,25);
+	private final LazyQueryDefinition definition = new LazyQueryDefinition(true,20);
 
 	private boolean viaToolUrl = true;
 
@@ -268,7 +268,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 	private LazyQueryContainer createContainer(final GermplasmQueryFactory factory) {
 
-		final LazyQueryContainer container = new LazyQueryContainer(factory, false, 25);
+		final LazyQueryContainer container = new LazyQueryContainer(factory, false, 20);
 
 		for (Object propertyId : definition.getPropertyIds()) {
 			container.addContainerProperty(propertyId, definition.getPropertyType(propertyId),
@@ -280,7 +280,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	}
 
 	protected PagedTableWithSelectAllLayout getTableWithSelectAllLayout() {
-		return new PagedTableWithSelectAllLayout(25, GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID);
+		return new PagedTableWithSelectAllLayout(20, GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID);
 	}
 
 	private void updateActionMenuOptions(final boolean status) {
