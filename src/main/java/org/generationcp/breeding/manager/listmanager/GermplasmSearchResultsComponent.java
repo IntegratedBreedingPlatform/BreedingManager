@@ -105,7 +105,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	public GermplasmSearchResultsComponent(final ListManagerMain listManagerMain) {
 		this.listManagerMain = listManagerMain;
 
-		definition.addProperty(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID, CheckBox.class, null, false, true);
+		definition.addProperty(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID, CheckBox.class, null, false, false);
 		definition.addProperty(GermplasmSearchResultsComponent.NAMES, Button.class, null, false, true);
 		definition.addProperty(ColumnLabels.PARENTAGE.getName(), String.class, null, false, true);
 		definition.addProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), String.class, null, false, true);
