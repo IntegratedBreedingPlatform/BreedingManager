@@ -445,14 +445,17 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 	@SuppressWarnings("unchecked")
 	public void addSelectedEntriesToNewList() {
-		final List<Integer> gids = new ArrayList<Integer>();
-		gids.addAll((Collection<? extends Integer>) this.matchingGermplasmsTable.getValue());
+		final List<Integer> itemIds = new ArrayList<Integer>();
+		itemIds.addAll((Collection<? extends Integer>) this.matchingGermplasmsTable.getValue());
 
-		if (gids.isEmpty()) {
+		if (itemIds.isEmpty()) {
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
 					this.messageSource.getMessage(Message.ERROR_GERMPLASM_MUST_BE_SELECTED));
 		} else {
-			for (final Integer gid : gids) {
+			for (final Integer id : itemIds) {
+				// retrieve the actual GID from the itemId
+				final Integer gid =
+						(Integer) this.matchingGermplasmsTable.getItem(id).getItemProperty(ColumnLabels.GID + "_REF").getValue();
 				this.listManagerMain.addPlantToList(gid);
 			}
 		}
