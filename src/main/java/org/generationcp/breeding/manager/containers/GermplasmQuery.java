@@ -99,7 +99,7 @@ import com.vaadin.ui.themes.BaseTheme;
 	 * Create List of Items to feed to the Paged table
 	 *
 	 * @param startIndex - the starting index for the entry
-	 * @param count - the number of items for current page
+	 * @param count      - the number of items for current page
 	 * @return
 	 */
 	@Override
@@ -108,13 +108,17 @@ import com.vaadin.ui.themes.BaseTheme;
 		final List<Item> items = new ArrayList<Item>();
 		final List<Germplasm> list = this.getGermplasmSearchResults(startIndex, count);
 
+		for (int i = 0; i < list.size(); i++) {
+			items.add(this.getGermplasmItem(list.get(i), i + startIndex));
+		}
+
 		for (final Germplasm germplasm : list) {
-			items.add(this.getGermplasmItem(germplasm));
+			items.add(this.getGermplasmItem(germplasm, startIndex));
 		}
 		return items;
 	}
 
-	private Item getGermplasmItem(final Germplasm germplasm) {
+	private Item getGermplasmItem(final Germplasm germplasm, int index) {
 
 		final Map<Integer, String> locationsMap = new HashMap<>();
 		final Map<Integer, String> methodsMap = new HashMap<>();
@@ -128,7 +132,7 @@ import com.vaadin.ui.themes.BaseTheme;
 		for (int i = 0; i < this.definition.getPropertyIds().size(); i++) {
 			switch (i) {
 				case 0:
-					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.getItemCheckBox(gid)));
+					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.getItemCheckBox(index)));
 					break;
 				case 1:
 					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.getNamesButton(gid)));
@@ -195,9 +199,9 @@ import com.vaadin.ui.themes.BaseTheme;
 		return namesButton;
 	}
 
-	private CheckBox getItemCheckBox(final Integer gid) {
+	private CheckBox getItemCheckBox(final Integer itemIndex) {
 		final CheckBox itemCheckBox = new CheckBox();
-		itemCheckBox.setData(gid);
+		itemCheckBox.setData(itemIndex);
 		itemCheckBox.setImmediate(true);
 
 		// TODO needs to extract this listener so that the matching germplasms table will not be tightly coupled to this class

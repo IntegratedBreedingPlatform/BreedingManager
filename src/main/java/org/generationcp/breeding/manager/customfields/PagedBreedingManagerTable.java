@@ -44,10 +44,11 @@ public class PagedBreedingManagerTable extends PagedTable {
 		this.doChangeVariables(source, variablesCopy);
 	}
 
-	@Override
 	/**
 	 * This will just override the styles and look of the PagedTable paging controls
-	 */ public HorizontalLayout createControls() {
+	 */
+	@Override
+	public HorizontalLayout createControls() {
 		HorizontalLayout controls = super.createControls();
 		updateItemsPerPageSelect(controls);
 		updatePagingComponentStyles(controls);

@@ -83,7 +83,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 	private final org.generationcp.breeding.manager.listmanager.ListManagerMain listManagerMain;
 
-	private final LazyQueryDefinition definition = new LazyQueryDefinition(true,20);
+	private final LazyQueryDefinition definition = new LazyQueryDefinition(true, 20);
 
 	private boolean viaToolUrl = true;
 
