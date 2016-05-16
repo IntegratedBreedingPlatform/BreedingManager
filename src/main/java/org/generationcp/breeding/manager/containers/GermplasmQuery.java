@@ -1,12 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
- * 
+ *
  * Generation Challenge Programme (GCP)
- * 
- * 
+ *
+ *
  * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
  * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
- * 
  *******************************************************************************/
 
 package org.generationcp.breeding.manager.containers;
@@ -17,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
@@ -52,12 +50,13 @@ import com.vaadin.ui.themes.BaseTheme;
 /**
  * An implementation of Query which is needed for using the LazyQueryContainer.
  */
-@Configurable
-public class GermplasmQuery implements Query {
+@Configurable public class GermplasmQuery implements Query {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmQuery.class);
 	private final QueryDefinition definition;
-
+	private final ListManagerMain listManagerMain;
+	private final Table matchingGermplasmsTable;
+	private final GermplasmSearchParameter searchParameter;
 	@Resource
 	private GermplasmDataManager germplasmDataManager;
 	@Resource
@@ -66,14 +65,8 @@ public class GermplasmQuery implements Query {
 	private PedigreeService pedigreeService;
 	@Resource
 	private CrossExpansionProperties crossExpansionProperties;
-
-	private final ListManagerMain listManagerMain;
 	private boolean viaToolUrl = true;
 	private boolean showAddToList = true;
-
-	private final Table matchingGermplasmsTable;
-	private final GermplasmSearchParameter searchParameter;
-
 	private int size;
 
 	public GermplasmQuery(final ListManagerMain listManagerMain, final boolean viaToolUrl, final boolean showAddToList,
@@ -104,14 +97,14 @@ public class GermplasmQuery implements Query {
 
 	/**
 	 * Create List of Items to feed to the Paged table
-	 * 
+	 *
 	 * @param startIndex - the starting index for the entry
 	 * @param count - the number of items for current page
 	 * @return
 	 */
 	@Override
 	public List<Item> loadItems(final int startIndex, final int count) {
-		LOG.info("loadItems: " + startIndex + " , " + count);
+		LOG.info(String.format("LoadItems(%d,%d): %s", startIndex, count, this.searchParameter));
 		final List<Item> items = new ArrayList<Item>();
 		final List<Germplasm> list = this.getGermplasmSearchResults(startIndex, count);
 
@@ -159,7 +152,8 @@ public class GermplasmQuery implements Query {
 					item.addItemProperty(propertyIds[i], new ObjectProperty<>(germplasm.getMgid() != 0 ? germplasm.getMgid() : "-"));
 					break;
 				case 8:
-					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.retrieveMethodName(germplasm.getMethodId(), methodsMap)));
+					item.addItemProperty(propertyIds[i],
+							new ObjectProperty<>(this.retrieveMethodName(germplasm.getMethodId(), methodsMap)));
 					break;
 				case 9:
 					item.addItemProperty(propertyIds[i],
