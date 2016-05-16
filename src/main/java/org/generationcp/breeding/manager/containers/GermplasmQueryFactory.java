@@ -1,19 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
- * 
+ *
  * Generation Challenge Programme (GCP)
- * 
- * 
+ *
+ *
  * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
  * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
- * 
  *******************************************************************************/
 
 package org.generationcp.breeding.manager.containers;
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
@@ -25,19 +20,18 @@ import com.vaadin.ui.Table;
 
 /**
  * A factory that creates a list of study details by implementing QueryFactory
- * 
+ *
  */
 public class GermplasmQueryFactory implements QueryFactory {
 
-	private Query query;
-
 	private final ListManagerMain listManagerMain;
-	private boolean viaToolUrl = true;
-	private boolean showAddToList = true;
 	private final Table matchingGermplasmsTable;
 	private final GermplasmSearchParameter searchParameter;
-
+	private Query query;
+	private boolean viaToolUrl = true;
+	private boolean showAddToList = true;
 	private QueryDefinition definition;
+
 	public GermplasmQueryFactory(final ListManagerMain listManagerMain, final boolean viaToolUrl, final boolean showAddToList,
 			final GermplasmSearchParameter searchParameter, final Table matchingGermplasmsTable) {
 		super();
@@ -48,11 +42,9 @@ public class GermplasmQueryFactory implements QueryFactory {
 		this.searchParameter = searchParameter;
 	}
 
-
-
 	public GermplasmQueryFactory(final ListManagerMain listManagerMain, final boolean viaToolUrl, final boolean showAddToList,
 			final GermplasmSearchParameter searchParameter, final Table matchingGermplasmsTable, final QueryDefinition queryDefinition) {
-		this(listManagerMain,viaToolUrl,showAddToList,searchParameter,matchingGermplasmsTable);
+		this(listManagerMain, viaToolUrl, showAddToList, searchParameter, matchingGermplasmsTable);
 
 		this.setQueryDefinition(queryDefinition);
 	}
@@ -65,18 +57,10 @@ public class GermplasmQueryFactory implements QueryFactory {
 	public Query constructQuery(final Object[] sortPropertyIds, final boolean[] sortStates) {
 
 		// this will set up sort states if any (for sorting the germplasm query results)
-		if (sortPropertyIds.length > 0) {
-			Map<String,Boolean> sortStatesMap = new HashMap<>();
-			for (int i = 0; i < sortPropertyIds.length; i++) {
-				sortStatesMap.put(String.valueOf(sortPropertyIds[i]),sortStates[i]);
-			}
+		this.searchParameter.setSortState(sortPropertyIds, sortStates);
 
-			this.searchParameter.setSortState(sortStatesMap);
-		}
-
-		this.query =
-				new GermplasmQuery(this.listManagerMain, this.viaToolUrl, this.showAddToList, this.searchParameter,
-						this.matchingGermplasmsTable,this.definition);
+		this.query = new GermplasmQuery(this.listManagerMain, this.viaToolUrl, this.showAddToList, this.searchParameter,
+				this.matchingGermplasmsTable, this.definition);
 		return this.query;
 	}
 
