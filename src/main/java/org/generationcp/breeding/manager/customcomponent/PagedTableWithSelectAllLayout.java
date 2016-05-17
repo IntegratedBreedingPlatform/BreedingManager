@@ -7,7 +7,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.customfields.PagedBreedingManagerTable;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Configurable;
 
 import com.jensjansson.pagedtable.PagedTable;
 import com.vaadin.data.Property;
@@ -16,7 +19,10 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 
-public class PagedTableWithSelectAllLayout extends VerticalLayout {
+@Configurable
+public class PagedTableWithSelectAllLayout extends VerticalLayout implements BreedingManagerLayout, InitializingBean {
+
+	private static final long serialVersionUID = -4500578362272218341L;
 
 	private PagedBreedingManagerTable table;
 	private final Object checkboxColumnId;
@@ -32,36 +38,33 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout {
 
 	public PagedTableWithSelectAllLayout(final int recordCount, final Object checkboxColumnId) {
 		this.recordCount = this.maxRecords = recordCount;
-
 		this.checkboxColumnId = checkboxColumnId;
-
-		this.initComponents();
-		this.initLayout();
-		this.initActions();
-
 		this.loadedPaged = new LinkedHashSet<Integer>();
 	}
 
-	public void initComponents() {
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.instantiateComponents();
+		this.addListeners();
+		this.layoutComponents();
+	}
+
+	@Override
+	public void instantiateComponents() {
 		this.table = new PagedBreedingManagerTable(this.recordCount, this.maxRecords);
 		this.table.setImmediate(true);
 
 		this.selectAllCheckBox = new CheckBox("Select All");
 		this.selectAllCheckBox.setImmediate(true);
-
 	}
 
-	public void initLayout() {
-		this.setSizeUndefined();
-		this.setWidth("100%");
-
-		this.addComponent(this.table);
-		this.addComponent(((PagedTable) this.table).createControls());
-		this.addComponent(this.selectAllCheckBox);
-
+	@Override
+	public void initializeValues() {
+		// do nothing
 	}
 
-	public void initActions() {
+	@Override
+	public void addListeners() {
 		this.table.addListener(new Table.ValueChangeListener() {
 
 			private static final long serialVersionUID = 1L;
@@ -95,7 +98,16 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout {
 
 			}
 		});
+	}
 
+	@Override
+	public void layoutComponents() {
+		this.setSizeUndefined();
+		this.setWidth("100%");
+
+		this.addComponent(this.table);
+		this.addComponent(((PagedTable) this.table).createControls());
+		this.addComponent(this.selectAllCheckBox);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -139,6 +151,10 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout {
 
 	public PagedBreedingManagerTable getTable() {
 		return this.table;
+	}
+
+	public void setTable(final PagedBreedingManagerTable table) {
+		this.table = table;
 	}
 
 	public void refreshTablePagingControls() {
