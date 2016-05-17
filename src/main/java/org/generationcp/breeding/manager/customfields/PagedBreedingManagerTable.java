@@ -134,4 +134,8 @@ public class PagedBreedingManagerTable extends PagedTable {
 		tableMultipleSelectionHandler.setValueForSelectedItems();
 	}
 
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
 }
