@@ -3,8 +3,13 @@ package org.generationcp.breeding.manager.customfields;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import javax.annotation.Resource;
+
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Property;
+import com.vaadin.data.validator.IntegerValidator;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
@@ -13,10 +18,14 @@ import com.vaadin.ui.TextField;
 
 import com.jensjansson.pagedtable.PagedTable;
 
+@Configurable
 public class PagedBreedingManagerTable extends PagedTable {
 
 	private TableMultipleSelectionHandler tableMultipleSelectionHandler;
 	private Integer pageLength;
+
+	@Resource
+	private SimpleResourceBundleMessageSource messageSource;
 
 	public PagedBreedingManagerTable(int recordCount, int maxRecords) {
 		super();
@@ -66,6 +75,9 @@ public class PagedBreedingManagerTable extends PagedTable {
 			}
 			if (pagingComponent instanceof TextField) {
 				pagingComponent.setWidth("30px");
+				// remove existing incompatible validator created by super.createControls()
+				((TextField) pagingComponent).removeAllValidators();
+				((TextField) pagingComponent).addValidator(new IntegerValidator(messageSource.getMessage("VALIDATION_INTEGER_FORMAT")));
 			}
 		}
 	}
@@ -91,6 +103,7 @@ public class PagedBreedingManagerTable extends PagedTable {
 
 		final ComboBox oldItemsPerPageSelect = ((ComboBox) ((HorizontalLayout) controls.getComponent(0)).getComponent(1));
 		((HorizontalLayout) controls.getComponent(0)).replaceComponent(oldItemsPerPageSelect, newItemsPerPageSelect);
+
 	}
 
 	/**
