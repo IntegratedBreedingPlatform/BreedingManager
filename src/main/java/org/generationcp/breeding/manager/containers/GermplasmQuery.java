@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
- *
+ * 
  * Generation Challenge Programme (GCP)
- *
- *
+ * 
+ * 
  * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
  * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
  *******************************************************************************/
@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
@@ -50,7 +51,8 @@ import com.vaadin.ui.themes.BaseTheme;
 /**
  * An implementation of Query which is needed for using the LazyQueryContainer.
  */
-@Configurable public class GermplasmQuery implements Query {
+@Configurable
+public class GermplasmQuery implements Query {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmQuery.class);
 	private final QueryDefinition definition;
@@ -97,9 +99,9 @@ import com.vaadin.ui.themes.BaseTheme;
 
 	/**
 	 * Create List of Items to feed to the Paged table
-	 *
+	 * 
 	 * @param startIndex - the starting index for the entry
-	 * @param count      - the number of items for current page
+	 * @param count - the number of items for current page
 	 * @return
 	 */
 	@Override
@@ -118,7 +120,7 @@ import com.vaadin.ui.themes.BaseTheme;
 		return items;
 	}
 
-	private Item getGermplasmItem(final Germplasm germplasm, int index) {
+	private Item getGermplasmItem(final Germplasm germplasm, final int index) {
 
 		final Map<Integer, String> locationsMap = new HashMap<>();
 		final Map<Integer, String> methodsMap = new HashMap<>();
@@ -138,10 +140,10 @@ import com.vaadin.ui.themes.BaseTheme;
 					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.getNamesButton(gid)));
 					break;
 				case 2:
-					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.getAvailableInventory(inventoryInfo)));
+					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.getCrossExpansion(gid)));
 					break;
 				case 3:
-					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.getCrossExpansion(gid)));
+					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.getAvailableInventory(inventoryInfo)));
 					break;
 				case 4:
 					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.getSeedReserved(inventoryInfo)));
@@ -157,11 +159,10 @@ import com.vaadin.ui.themes.BaseTheme;
 					break;
 				case 8:
 					item.addItemProperty(propertyIds[i],
-							new ObjectProperty<>(this.retrieveMethodName(germplasm.getMethodId(), methodsMap)));
+							new ObjectProperty<>(this.retrieveLocationName(germplasm.getLocationId(), locationsMap)));
 					break;
 				case 9:
-					item.addItemProperty(propertyIds[i],
-							new ObjectProperty<>(this.retrieveLocationName(germplasm.getLocationId(), locationsMap)));
+					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.retrieveMethodName(germplasm.getMethodId(), methodsMap)));
 					break;
 				case 10:
 					item.addItemProperty(propertyIds[i], new ObjectProperty<>(gid));
