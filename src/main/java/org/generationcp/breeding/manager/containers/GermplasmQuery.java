@@ -18,8 +18,10 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Resource;
 
+import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
 import org.generationcp.middleware.domain.inventory.GermplasmInventory;
 import org.generationcp.middleware.manager.Operation;
@@ -129,47 +131,25 @@ import com.vaadin.ui.themes.BaseTheme;
 		final Item item = new PropertysetItem();
 		final Object[] propertyIds = this.definition.getPropertyIds().toArray();
 
-		for (int i = 0; i < this.definition.getPropertyIds().size(); i++) {
-			switch (i) {
-				case 0:
-					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.getItemCheckBox(index)));
-					break;
-				case 1:
-					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.getNamesButton(gid)));
-					break;
-				case 2:
-					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.getAvailableInventory(inventoryInfo)));
-					break;
-				case 3:
-					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.getCrossExpansion(gid)));
-					break;
-				case 4:
-					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.getSeedReserved(inventoryInfo)));
-					break;
-				case 5:
-					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.getStockIDs(inventoryInfo)));
-					break;
-				case 6:
-					item.addItemProperty(propertyIds[i], new ObjectProperty<>(this.getGidButton(gid)));
-					break;
-				case 7:
-					item.addItemProperty(propertyIds[i], new ObjectProperty<>(germplasm.getMgid() != 0 ? germplasm.getMgid() : "-"));
-					break;
-				case 8:
-					item.addItemProperty(propertyIds[i],
-							new ObjectProperty<>(this.retrieveMethodName(germplasm.getMethodId(), methodsMap)));
-					break;
-				case 9:
-					item.addItemProperty(propertyIds[i],
-							new ObjectProperty<>(this.retrieveLocationName(germplasm.getLocationId(), locationsMap)));
-					break;
-				case 10:
-					item.addItemProperty(propertyIds[i], new ObjectProperty<>(gid));
-				default:
-					break;
-			}
+		final Map<String, ObjectProperty> propertyMap = new HashMap<>();
+		propertyMap.put(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID, new ObjectProperty<>(this.getItemCheckBox(index)));
+		propertyMap.put(GermplasmSearchResultsComponent.NAMES, new ObjectProperty<>(this.getNamesButton(gid)));
+		propertyMap.put(ColumnLabels.PARENTAGE.getName(), new ObjectProperty<>(this.getCrossExpansion(gid)));
+		propertyMap.put(ColumnLabels.AVAILABLE_INVENTORY.getName(), new ObjectProperty<>(this.getAvailableInventory(inventoryInfo)));
+		propertyMap.put(ColumnLabels.SEED_RESERVATION.getName(), new ObjectProperty<>(this.getSeedReserved(inventoryInfo)));
+		propertyMap.put(ColumnLabels.STOCKID.getName(), new ObjectProperty<>(this.getStockIDs(inventoryInfo)));
+		propertyMap.put(ColumnLabels.GID.getName(), new ObjectProperty<>(this.getGidButton(gid)));
+		propertyMap.put(ColumnLabels.GROUP_ID.getName(), new ObjectProperty<>(germplasm.getMgid() != 0 ? germplasm.getMgid() : "-"));
+		propertyMap.put(ColumnLabels.GERMPLASM_LOCATION.getName(),
+				new ObjectProperty<>(this.retrieveMethodName(germplasm.getMethodId(), methodsMap)));
+		propertyMap.put(ColumnLabels.BREEDING_METHOD_NAME.getName(),
+				new ObjectProperty<>(this.retrieveLocationName(germplasm.getLocationId(), locationsMap)));
+		propertyMap.put(ColumnLabels.GID.getName() + "_REF", new ObjectProperty<>(gid));
 
+		for (String propertyId : propertyMap.keySet()) {
+			item.addItemProperty(propertyId, propertyMap.get(propertyId));
 		}
+
 		return item;
 	}
 
