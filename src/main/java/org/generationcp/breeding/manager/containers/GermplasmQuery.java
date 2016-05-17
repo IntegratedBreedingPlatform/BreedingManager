@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
- *
+ * 
  * Generation Challenge Programme (GCP)
- *
- *
+ * 
+ * 
  * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
  * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
  *******************************************************************************/
@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
@@ -52,7 +53,8 @@ import com.vaadin.ui.themes.BaseTheme;
 /**
  * An implementation of Query which is needed for using the LazyQueryContainer.
  */
-@Configurable public class GermplasmQuery implements Query {
+@Configurable
+public class GermplasmQuery implements Query {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmQuery.class);
 	private final QueryDefinition definition;
@@ -99,9 +101,9 @@ import com.vaadin.ui.themes.BaseTheme;
 
 	/**
 	 * Create List of Items to feed to the Paged table
-	 *
+	 * 
 	 * @param startIndex - the starting index for the entry
-	 * @param count      - the number of items for current page
+	 * @param count - the number of items for current page
 	 * @return
 	 */
 	@Override
@@ -120,7 +122,7 @@ import com.vaadin.ui.themes.BaseTheme;
 		return items;
 	}
 
-	private Item getGermplasmItem(final Germplasm germplasm, int index) {
+	private Item getGermplasmItem(final Germplasm germplasm, final int index) {
 
 		final Map<Integer, String> locationsMap = new HashMap<>();
 		final Map<Integer, String> methodsMap = new HashMap<>();
