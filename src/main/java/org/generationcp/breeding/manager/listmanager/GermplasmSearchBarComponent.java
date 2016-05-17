@@ -27,9 +27,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -158,7 +156,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		this.searchField.addShortcutListener(new ShortcutListener("SearchFieldEnterShortcut", ShortcutAction.KeyCode.ENTER, null) {
 
 			@Override
-			public void handleAction(Object sender, Object target) {
+			public void handleAction(final Object sender, final Object target) {
 				// prevent from responding to enter key if searchfield component is not focused
 				if (!target.equals(GermplasmSearchBarComponent.this.searchField)) {
 					return;
@@ -258,18 +256,18 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 			@Override
 			protected void doInTransactionWithoutResult(final TransactionStatus status) {
 				final Monitor monitor = MonitorFactory.start("GermplasmSearchBarComponent.doSearch()");
-				final String searchType = (String) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
-				final String searchKeyword = GermplasmSearchBarComponent.this.getSearchKeyword(q, searchType);
-				final Operation operation =
-						GermplasmSearchBarComponent.this.exactMatches.equals(searchType) ? Operation.EQUAL : Operation.LIKE;
 
 				try {
+					// validate first the keyword, if it is empty this will raise exception
+					GermplasmSearchBarComponent.this.breedingManagerService.validateEmptySearchString(q);
+
+					final String searchType = (String) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
+					final String searchKeyword = GermplasmSearchBarComponent.this.getSearchKeyword(q, searchType);
+					final Operation operation =
+							GermplasmSearchBarComponent.this.exactMatches.equals(searchType) ? Operation.EQUAL : Operation.LIKE;
 					final boolean includeParents = (boolean) GermplasmSearchBarComponent.this.includeParentsCheckBox.getValue();
 					final boolean withInventoryOnly = (boolean) GermplasmSearchBarComponent.this.withInventoryOnlyCheckBox.getValue();
 					final boolean includeMGMembers = (boolean) GermplasmSearchBarComponent.this.includeMGMembersCheckbox.getValue();
-
-					// validate first the keyword, if it is empty this will raise exception
-					GermplasmSearchBarComponent.this.breedingManagerService.validateEmptySearchString(q);
 
 					// then do the search
 					final GermplasmSearchParameter searchParameter =
