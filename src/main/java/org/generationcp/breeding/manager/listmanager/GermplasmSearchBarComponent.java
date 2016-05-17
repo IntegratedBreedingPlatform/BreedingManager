@@ -27,7 +27,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
+
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
@@ -107,7 +110,6 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		this.searchButton.setHeight("24px");
 		this.searchButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 		this.searchButton.setData(GermplasmSearchBarComponent.SEARCH_BUTTON);
-		this.searchButton.setClickShortcut(KeyCode.ENTER);
 
 		final Label descLbl = new Label(GermplasmSearchBarComponent.GUIDE, Label.CONTENT_XHTML);
 		descLbl.setWidth("300px");
@@ -152,6 +154,20 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 				GermplasmSearchBarComponent.this.searchButtonClickAction();
 			}
 		});
+
+		this.searchField.addShortcutListener(new ShortcutListener("SearchFieldEnterShortcut", ShortcutAction.KeyCode.ENTER, null) {
+
+			@Override
+			public void handleAction(Object sender, Object target) {
+				// prevent from responding to enter key if searchfield component is not focused
+				if (!target.equals(GermplasmSearchBarComponent.this.searchField)) {
+					return;
+				}
+
+				GermplasmSearchBarComponent.this.searchButtonClickAction();
+			}
+		});
+
 	}
 
 	@Override
