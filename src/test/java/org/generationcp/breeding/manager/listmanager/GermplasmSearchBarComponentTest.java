@@ -49,6 +49,7 @@ public class GermplasmSearchBarComponentTest {
 		Mockito.when(this.messageSource.getMessage(Message.MATCHES_STARTING_WITH)).thenReturn("Matches starting with");
 		Mockito.when(this.messageSource.getMessage(Message.EXACT_MATCHES)).thenReturn("Exact Matches");
 		Mockito.when(this.messageSource.getMessage(Message.MATCHES_CONTAINING)).thenReturn("Matches containing");
+		Mockito.when(this.messageSource.getMessage(Message.SEARCH_QUERY_CANNOT_BE_EMPTY)).thenReturn("Search query cannot be empty");
 
 		this.breedingManagerService.setGermplasmDataManager(this.germplasmDataManager);
 		this.germplasmSearchBarComponent = new GermplasmSearchBarComponent(this.germplasmSearchResultsComponent);
@@ -64,17 +65,22 @@ public class GermplasmSearchBarComponentTest {
 	@Test
 	public void testDoSearch() throws BreedingManagerSearchException {
 		this.germplasmSearchBarComponent.doSearch(GermplasmSearchBarComponentTest.TEST_SEARCH_STRING);
-		// TODO Need to update the necessary assertion for this line
+		Mockito.verify(this.messageSource, Mockito.times(0)).getMessage(Message.UNABLE_TO_SEARCH);
+		Mockito.verify(this.messageSource, Mockito.times(0)).getMessage(Message.SEARCH_RESULTS);
 	}
 
 	@Test
 	public void testDoSearchWithEmptySearchString() throws BreedingManagerSearchException {
+		Mockito.doThrow(new BreedingManagerSearchException(Message.SEARCH_QUERY_CANNOT_BE_EMPTY)).when(this.breedingManagerService)
+				.validateEmptySearchString("");
 		this.germplasmSearchBarComponent.doSearch("");
 		Mockito.verify(this.messageSource).getMessage(Message.UNABLE_TO_SEARCH);
 	}
 
 	@Test
 	public void testDoSearchWithDatabaseError() throws BreedingManagerSearchException {
+		Mockito.doThrow(new BreedingManagerSearchException(Message.ERROR_DATABASE)).when(this.breedingManagerService)
+				.validateEmptySearchString("");
 		this.germplasmSearchBarComponent.doSearch("");
 		Mockito.verify(this.messageSource).getMessage(Message.SEARCH_RESULTS);
 	}
