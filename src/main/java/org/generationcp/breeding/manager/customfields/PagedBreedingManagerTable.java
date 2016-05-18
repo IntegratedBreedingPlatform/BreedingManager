@@ -101,6 +101,7 @@ public class PagedBreedingManagerTable extends PagedTable {
 							return;
 						}
 
+						lastValue = value;
 						PagedBreedingManagerTable.this.setCurrentPage(Integer.valueOf(value));
 					}
 				});
