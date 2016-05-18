@@ -389,6 +389,10 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 			this.updateActionMenuOptions(true);
 		}
 
+		if (this.matchingGermplasmsTable.size() == 0) {
+			throw new BreedingManagerSearchException(Message.NO_SEARCH_RESULTS);
+		}
+
 		GermplasmSearchResultsComponent.LOG.debug("" + monitor.stop());
 
 		// update controls
