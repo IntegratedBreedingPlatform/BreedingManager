@@ -1,15 +1,17 @@
 package org.generationcp.breeding.manager.customfields;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Property;
-import com.vaadin.data.validator.IntegerValidator;
+import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
@@ -60,12 +62,12 @@ public class PagedBreedingManagerTable extends PagedTable {
 	public HorizontalLayout createControls() {
 		HorizontalLayout controls = super.createControls();
 		updateItemsPerPageSelect(controls);
-		updatePagingComponentStyles(controls);
+		updatePagingComponents(controls);
 
 		return controls;
 	}
 
-	private void updatePagingComponentStyles(HorizontalLayout controls) {
+	private void updatePagingComponents(HorizontalLayout controls) {
 		Iterator<Component> iterator = ((HorizontalLayout) controls.getComponent(1)).getComponentIterator();
 		while (iterator.hasNext()) {
 			Component pagingComponent = iterator.next();
@@ -73,11 +75,35 @@ public class PagedBreedingManagerTable extends PagedTable {
 			if (pagingComponent instanceof Button) {
 				pagingComponent.setStyleName("");
 			}
+
+			// this is the textbox in the paging components where you can change page by specifying page no.
 			if (pagingComponent instanceof TextField) {
-				pagingComponent.setWidth("30px");
+				final TextField pagingTextField = ((TextField) pagingComponent);
 				// remove existing incompatible validator created by super.createControls()
-				((TextField) pagingComponent).removeAllValidators();
-				((TextField) pagingComponent).addValidator(new IntegerValidator(messageSource.getMessage("VALIDATION_INTEGER_FORMAT")));
+				pagingTextField.removeAllValidators();
+				pagingTextField.setImmediate(true);
+				pagingTextField.setTextChangeEventMode(AbstractTextField.TextChangeEventMode.EAGER);
+				pagingTextField.setWidth("30px");
+
+				// remove existing listener, since we need to provide custom behavior to it
+				ValueChangeListener vcl = (ValueChangeListener) new ArrayList<>(pagingTextField.getListeners(Property.ValueChangeEvent.class)).get(0);
+				pagingTextField.removeListener(vcl);
+
+				// this new handle will set to last previous valid value when set to non numeric
+				pagingTextField.addListener(new ValueChangeListener() {
+					String lastValue = "1";
+					@Override
+					public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+						final String value = (String) pagingTextField.getValue();
+
+						if (!StringUtils.isNumeric(value)) {
+							pagingTextField.setValue(lastValue);
+							return;
+						}
+
+						PagedBreedingManagerTable.this.setCurrentPage(Integer.valueOf(value));
+					}
+				});
 			}
 		}
 	}
