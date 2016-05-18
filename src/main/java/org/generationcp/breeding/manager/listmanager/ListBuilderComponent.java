@@ -44,6 +44,7 @@ import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandle
 import org.generationcp.breeding.manager.listmanager.util.DropHandlerMethods.ListUpdatedEvent;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -797,6 +798,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		table.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
 		table.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
 		table.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
+		table.addContainerProperty(ColumnLabels.GROUP_ID.getName(), String.class, null);
 		table.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
 		table.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
 
@@ -808,6 +810,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		table.setColumnHeader(ColumnLabels.SEED_RESERVATION.getName(), this.getTermNameFromOntology(ColumnLabels.SEED_RESERVATION));
 		table.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(), this.getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
 		table.setColumnHeader(ColumnLabels.GID.getName(), this.getTermNameFromOntology(ColumnLabels.GID));
+		table.setColumnHeader(ColumnLabels.GROUP_ID.getName(), this.getTermNameFromOntology(ColumnLabels.GROUP_ID));
 		table.setColumnHeader(ColumnLabels.STOCKID.getName(), this.getTermNameFromOntology(ColumnLabels.STOCKID));
 		table.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(), this.getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
 	}
@@ -1158,8 +1161,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 				try {
 					listExporter.exportKBioScienceGenotypingOrderXLS(this.currentlySavedGermplasmList.getId(), tempFileName, 96);
+
+					final String userAgent = BreedingManagerUtil.getApplicationRequest().getHeader("User-Agent");
 					final FileDownloadResource fileDownloadResource =
-							new FileDownloadResource(new File(tempFileName), this.source.getApplication());
+							new FileDownloadResource(new File(tempFileName), this.source.getApplication(), userAgent);
 					final String listName = this.currentlySavedGermplasmList.getName();
 					fileDownloadResource.setFilename(FileUtils.encodeFilenameForDownload(listName).replace(" ", "_") + "ForGenotyping.xls");
 

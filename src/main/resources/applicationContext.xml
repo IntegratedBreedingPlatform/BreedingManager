@@ -15,7 +15,6 @@
 		location="classpath:workbench.properties, classpath:crossing.properties" />
 	<util:properties id="workbenchProperties" location="classpath:workbench.properties" />
 	<util:properties id="helpProperties" location="classpath:helplinks.properties" />
-
 	<!-- Enable Spring annotations -->
 	<context:annotation-config />
 	<!-- Enable load-time-weaving so we can use @Configurable annotation. To
@@ -80,6 +79,16 @@
 		<aop:scoped-proxy />
 	</bean>
 	
+	<bean id="germplasmNamingService" factory-bean="managerFactory"
+		factory-method="getGermplasmNamingService" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+
+	<bean id="germplasmNamingReferenceDataResolver" factory-bean="managerFactory"
+		factory-method="getGermplasmNamingReferenceDataResolver" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+
 	<bean id="pedigreeDataManager" factory-bean="managerFactory"
 		factory-method="getPedigreeDataManager" scope="request">
 		<aop:scoped-proxy />
@@ -213,6 +222,33 @@
 		<aop:scoped-proxy />
 	</bean>
 
+	<bean id="ontologyVariableManager" factory-bean="managerFactory"
+		factory-method="getOntologyVariableDataManager" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+
+	<bean id="fieldbookMiddlewareService" factory-bean="managerFactory"
+		factory-method="getFieldbookMiddlewareService" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+
+	<!-- Singleton bean as there is nothing request specific in here. -->
+	<bean id="germplasmNamingProperties" class="org.generationcp.commons.service.GermplasmNamingProperties">
+		<property name="germplasmOriginNurseriesDefault" value="${germplasm.origin.nurseries.default}"/>
+		<property name="germplasmOriginNurseriesWheat" value="${germplasm.origin.nurseries.wheat}"/>
+		<property name="germplasmOriginNurseriesMaize" value="${germplasm.origin.nurseries.maize}"/>
+
+		<property name="germplasmOriginTrialsDefault" value="${germplasm.origin.trials.default}"/>
+		<property name="germplasmOriginTrialsWheat" value="${germplasm.origin.trials.wheat}"/>
+		<property name="germplasmOriginTrialsMaize" value="${germplasm.origin.trials.maize}"/>
+	</bean>
+
+	<bean id="seedSourceGenerator" class="org.generationcp.commons.service.impl.SeedSourceGenerator">
+		<constructor-arg name="germplasmNamingProperties" ref="germplasmNamingProperties"/>
+		<constructor-arg name="contextUtil" ref="contextUtil"/>
+		<constructor-arg name="ontologyVariableDataManager" ref="ontologyVariableManager"/>
+	</bean>
+
 	<!-- Including all beans used for generating Code Sheet when exporting Germplasm List excel file -->
 	<context:component-scan base-package="org.generationcp.commons.workbook.generator" />
 
@@ -277,11 +313,38 @@
 		<aop:scoped-proxy />
 	</bean>
 
+	<context:component-scan base-package="org.generationcp.breeding.manager.validator"/>
+
+	<!-- Nested <beans> elements can only be at the end. -->
+
+	<!-- Only activate liquibase auto update in non-production environments.
+		Requires -Dspring.profiles.active=development in system properties to make sure auto activation works in dev environments only. -->
+
+	<!-- As a best practice, for production environments (definition of which is not yet clearly defined for BMS) database update should not trigger automatically.
+		 For this case, liquibase can generate a SQL script using the updateSQL commnad from the change log using a command that looks like following
+		 	(add "dash dash" before command line options):
+
+			java -jar <BMS_INSTALL>/infrastructure/tomcat/webapps/ibpworkbench/WEB-INF/lib/liquibase-core-3.5.0.jar
+			  classpath=<BMS_INSTALL>/infrastructure/tomcat/webapps/ibpworkbench.war
+			  driver=com.mysql.jdbc.Driver
+			  changeLogFile=db_changelog_crop.xml
+			  url="jdbc:mysql://localhost:43306/ibdbv2_maize_merged"
+			  username=root
+			  password=
+			  updateSQL
+
+		TODO: This needs to be scripted for dynamically detecting crop datbases to run against.
+
+		Script generated as such will have to be runn manually against each production database by administrators/data managers.
+	 -->
+	<beans profile="development">
+		<bean id="liquibaseInitBean" class="org.generationcp.middleware.liquibase.LiquibaseInitBean" />
+	</beans>
+
 	<context:component-scan base-package="org.generationcp.middleware.auditory"/>
 
 	<bean id="auditorDataManager" factory-bean="managerFactory"
 		  factory-method="getAuditorDataManager" scope="request">
 		<aop:scoped-proxy proxy-target-class="false" />
 	</bean>
-
 </beans>

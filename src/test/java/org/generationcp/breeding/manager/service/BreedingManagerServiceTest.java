@@ -42,6 +42,7 @@ public class BreedingManagerServiceTest {
 	private static final Operation CONTAINS_MATCH = Operation.LIKE;
 	private static final Boolean INCLUDE_PARENT = true;
 	private static final Boolean WITH_INVENTORY_ONLY = true;
+	private static final boolean INCLUDE_MG_MEMBERS = true;
 
 	@Mock
 	private GermplasmDataManager germplasmDataManager;
@@ -165,17 +166,17 @@ public class BreedingManagerServiceTest {
 		Mockito.when(
 				this.germplasmDataManager.searchForGermplasm(BreedingManagerServiceTest.SAMPLE_SEARCH_STRING,
 						BreedingManagerServiceTest.CONTAINS_MATCH, BreedingManagerServiceTest.INCLUDE_PARENT,
-						BreedingManagerServiceTest.WITH_INVENTORY_ONLY)).thenReturn(expectedResult);
+						BreedingManagerServiceTest.WITH_INVENTORY_ONLY, BreedingManagerServiceTest.INCLUDE_MG_MEMBERS)).thenReturn(expectedResult);
 
 		// assume we have a search result
 		List<Germplasm> result =
 				this.breedingManagerService.doGermplasmSearch(BreedingManagerServiceTest.SAMPLE_SEARCH_STRING,
 						BreedingManagerServiceTest.CONTAINS_MATCH, BreedingManagerServiceTest.INCLUDE_PARENT,
-						BreedingManagerServiceTest.WITH_INVENTORY_ONLY);
+						BreedingManagerServiceTest.WITH_INVENTORY_ONLY, BreedingManagerServiceTest.INCLUDE_MG_MEMBERS);
 
 		Mockito.verify(this.germplasmDataManager).searchForGermplasm(BreedingManagerServiceTest.SAMPLE_SEARCH_STRING,
 				BreedingManagerServiceTest.CONTAINS_MATCH, BreedingManagerServiceTest.INCLUDE_PARENT,
-				BreedingManagerServiceTest.WITH_INVENTORY_ONLY);
+				BreedingManagerServiceTest.WITH_INVENTORY_ONLY, BreedingManagerServiceTest.INCLUDE_MG_MEMBERS);
 
 		Assert.assertTrue("expects the result size is equal to the expectedResult size", result.size() == expectedResult.size());
 
@@ -186,7 +187,7 @@ public class BreedingManagerServiceTest {
 
 		try {
 			this.breedingManagerService.doGermplasmSearch("", BreedingManagerServiceTest.CONTAINS_MATCH,
-					BreedingManagerServiceTest.INCLUDE_PARENT, BreedingManagerServiceTest.WITH_INVENTORY_ONLY);
+					BreedingManagerServiceTest.INCLUDE_PARENT, BreedingManagerServiceTest.WITH_INVENTORY_ONLY, BreedingManagerServiceTest.INCLUDE_MG_MEMBERS);
 			Assert.fail("expects an error since germplasm search string is empty");
 		} catch (BreedingManagerSearchException e) {
 			Assert.assertEquals("Should throw a BreedingManagerSearchException with SEARCH_QUERY_CANNOT_BE_EMPTY message",

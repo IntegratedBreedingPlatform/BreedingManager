@@ -87,6 +87,7 @@ public class CrossingManagerMakeCrossesComponentTest {
 
 		Assert.assertEquals("http://" + LOCALHOST + ":" + PORT + BreedingManagerApplication.PATH_TO_EDIT_NURSERY + NURSERY_ID,
 				(buttonToEditNursery.getResource()).getURL());
+		Assert.assertEquals("Nursery ID must be set from query parameter.", NURSERY_ID, this.makeCrosses.getNurseryId());
 	}
 
 	@Test

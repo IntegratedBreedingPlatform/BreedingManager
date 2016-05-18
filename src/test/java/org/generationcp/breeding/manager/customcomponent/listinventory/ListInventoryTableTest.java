@@ -26,7 +26,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.vaadin.data.Item;
-import com.vaadin.data.Property;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Table;
 
@@ -62,6 +61,7 @@ public class ListInventoryTableTest {
 	@Test
 	public void testInstantiateComponentsHeaderNameFromOntology() throws MiddlewareQueryException {
 
+
 		Term desigTerm = ListInventoryDataInitializer.createTerm("Designation");
 		Mockito.doReturn(desigTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.DESIGNATION.getTermId().getId());
 
@@ -86,6 +86,9 @@ public class ListInventoryTableTest {
 		Term commentTerm = ListInventoryDataInitializer.createTerm("Comment");
 		Mockito.doReturn(commentTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.COMMENT.getTermId().getId());
 
+		Term groupId = ListInventoryDataInitializer.createTerm("GROUP ID");
+		Mockito.doReturn(groupId).when(this.ontologyDataManager).getTermById(ColumnLabels.GROUP_ID.getTermId().getId());
+
 		Term stockIdTerm = ListInventoryDataInitializer.createTerm("Stock ID");
 		Mockito.doReturn(stockIdTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.STOCKID.getTermId().getId());
 
@@ -108,6 +111,7 @@ public class ListInventoryTableTest {
 		Assert.assertEquals(reservedTerm.getName(), table.getColumnHeader(ColumnLabels.RESERVED.getName()));
 		Assert.assertEquals(newlyResTerm.getName(), table.getColumnHeader(ColumnLabels.NEWLY_RESERVED.getName()));
 		Assert.assertEquals(commentTerm.getName(), table.getColumnHeader(ColumnLabels.COMMENT.getName()));
+		Assert.assertEquals(groupId.getName(), table.getColumnHeader(ColumnLabels.GROUP_ID.getName()));
 		Assert.assertEquals(stockIdTerm.getName(), table.getColumnHeader(ColumnLabels.STOCKID.getName()));
 		Assert.assertEquals(lotIdTerm.getName(), table.getColumnHeader(ColumnLabels.LOT_ID.getName()));
 		Assert.assertEquals(seedSourceTerm.getName(), table.getColumnHeader(ColumnLabels.SEED_SOURCE.getName()));
@@ -126,6 +130,7 @@ public class ListInventoryTableTest {
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.COMMENT.getTermId().getId());
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.LOT_ID.getTermId().getId());
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.SEED_SOURCE.getTermId().getId());
+		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.GROUP_ID.getTermId().getId());
 
 		this.listInventoryTable.instantiateComponents();
 
@@ -142,6 +147,8 @@ public class ListInventoryTableTest {
 		Assert.assertEquals(ColumnLabels.COMMENT.getName(), table.getColumnHeader(ColumnLabels.COMMENT.getName()));
 		Assert.assertEquals(ColumnLabels.LOT_ID.getName(), table.getColumnHeader(ColumnLabels.LOT_ID.getName()));
 		Assert.assertEquals(ColumnLabels.SEED_SOURCE.getName(), table.getColumnHeader(ColumnLabels.SEED_SOURCE.getName()));
+		Assert.assertEquals(ColumnLabels.GROUP_ID.getName(), table.getColumnHeader(ColumnLabels.GROUP_ID.getName()));
+
 	}
 
 	@Test
