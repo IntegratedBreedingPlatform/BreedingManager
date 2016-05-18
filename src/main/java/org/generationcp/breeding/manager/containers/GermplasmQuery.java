@@ -1,22 +1,19 @@
 /*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
- * 
+ *
  * Generation Challenge Programme (GCP)
- * 
- * 
+ *
+ *
  * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
  * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
  *******************************************************************************/
 
 package org.generationcp.breeding.manager.containers;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
@@ -53,8 +50,7 @@ import com.vaadin.ui.themes.BaseTheme;
 /**
  * An implementation of Query which is needed for using the LazyQueryContainer.
  */
-@Configurable
-public class GermplasmQuery implements Query {
+@Configurable public class GermplasmQuery implements Query {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmQuery.class);
 	private final QueryDefinition definition;
@@ -101,7 +97,7 @@ public class GermplasmQuery implements Query {
 
 	/**
 	 * Create List of Items to feed to the Paged table
-	 * 
+	 *
 	 * @param startIndex - the starting index for the entry
 	 * @param count - the number of items for current page
 	 * @return
@@ -122,7 +118,27 @@ public class GermplasmQuery implements Query {
 		return items;
 	}
 
-	private Item getGermplasmItem(final Germplasm germplasm, final int index) {
+	@Override
+	public void saveItems(final List<Item> arg0, final List<Item> arg1, final List<Item> arg2) {
+		throw new UnsupportedOperationException();
+
+	}
+
+	@Override
+	public int size() {
+		if (this.size == -1) {
+			final String q = this.searchParameter.getSearchKeyword();
+			final Operation o = this.searchParameter.getOperation();
+			final boolean includeParents = this.searchParameter.isIncludeParents();
+			final boolean withInventoryOnly = this.searchParameter.isWithInventoryOnly();
+			final boolean includeMGMembers = this.searchParameter.isIncludeMGMembers();
+
+			this.size = this.germplasmDataManager.countSearchForGermplasm(q, o, includeParents, withInventoryOnly, includeMGMembers);
+		}
+		return this.size;
+	}
+
+	Item getGermplasmItem(final Germplasm germplasm, final int index) {
 
 		final Map<Integer, String> locationsMap = new HashMap<>();
 		final Map<Integer, String> methodsMap = new HashMap<>();
@@ -153,6 +169,16 @@ public class GermplasmQuery implements Query {
 		}
 
 		return item;
+	}
+
+	String getShortenedNames(final String germplasmFullName) {
+		return germplasmFullName.length() > 20 ? germplasmFullName.substring(0, 20) + "..." : germplasmFullName;
+	}
+
+	protected List<Germplasm> getGermplasmSearchResults(final int startIndex, final int count) {
+		this.searchParameter.setStartingRow(startIndex);
+		this.searchParameter.setNumberOfEntries(count);
+		return this.germplasmDataManager.searchForGermplasm(this.searchParameter);
 	}
 
 	private Button getGidButton(final Integer gid) {
@@ -203,51 +229,6 @@ public class GermplasmQuery implements Query {
 
 		});
 		return itemCheckBox;
-	}
-
-	protected List<Germplasm> getGermplasmSearchResults(final int startIndex, final int count) {
-		this.searchParameter.setStartingRow(startIndex);
-		this.searchParameter.setNumberOfEntries(count);
-		return this.germplasmDataManager.searchForGermplasm(this.searchParameter);
-	}
-
-	protected String getStudyDate(final String date, final SimpleDateFormat oldFormat, final SimpleDateFormat format) {
-		String value;
-		try {
-			if (date == null) {
-				value = "";
-			} else {
-				value = format.format(oldFormat.parse(date));
-			}
-		} catch (final ParseException e) {
-			GermplasmQuery.LOG.debug(e.getMessage());
-			value = "N/A";
-		}
-		return value;
-	}
-
-	@Override
-	public void saveItems(final List<Item> arg0, final List<Item> arg1, final List<Item> arg2) {
-		throw new UnsupportedOperationException();
-
-	}
-
-	@Override
-	public int size() {
-		if (this.size == -1) {
-			final String q = this.searchParameter.getSearchKeyword();
-			final Operation o = this.searchParameter.getOperation();
-			final boolean includeParents = this.searchParameter.isIncludeParents();
-			final boolean withInventoryOnly = this.searchParameter.isWithInventoryOnly();
-			final boolean includeMGMembers = this.searchParameter.isIncludeMGMembers();
-
-			this.size = this.germplasmDataManager.countSearchForGermplasm(q, o, includeParents, withInventoryOnly, includeMGMembers);
-		}
-		return this.size;
-	}
-
-	String getShortenedNames(final String germplasmFullName) {
-		return germplasmFullName.length() > 20 ? germplasmFullName.substring(0, 20) + "..." : germplasmFullName;
 	}
 
 	private String getGermplasmNames(final int gid) {
