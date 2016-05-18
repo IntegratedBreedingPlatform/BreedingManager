@@ -105,16 +105,13 @@ import com.vaadin.ui.themes.BaseTheme;
 	@Override
 	public List<Item> loadItems(final int startIndex, final int count) {
 		LOG.info(String.format("LoadItems(%d,%d): %s", startIndex, count, this.searchParameter));
-		final List<Item> items = new ArrayList<Item>();
+		final List<Item> items = new ArrayList<>();
 		final List<Germplasm> list = this.getGermplasmSearchResults(startIndex, count);
 
 		for (int i = 0; i < list.size(); i++) {
 			items.add(this.getGermplasmItem(list.get(i), i + startIndex));
 		}
 
-		for (final Germplasm germplasm : list) {
-			items.add(this.getGermplasmItem(germplasm, startIndex));
-		}
 		return items;
 	}
 
