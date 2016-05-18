@@ -75,6 +75,14 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 			}
 		});
 
+		this.table.onPageLengthChanged(new Runnable() {
+
+			@Override
+			public void run() {
+				PagedTableWithSelectAllLayout.this.syncItemCheckBoxes();
+			}
+		});
+
 		this.selectAllCheckBox.addListener(new Button.ClickListener() {
 
 			private static final long serialVersionUID = 7882379695058054587L;

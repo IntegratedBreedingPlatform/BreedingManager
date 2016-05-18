@@ -25,6 +25,7 @@ public class PagedBreedingManagerTable extends PagedTable {
 
 	private TableMultipleSelectionHandler tableMultipleSelectionHandler;
 	private Integer pageLength;
+	private Runnable runnable;
 
 	@Resource
 	private SimpleResourceBundleMessageSource messageSource;
@@ -125,6 +126,7 @@ public class PagedBreedingManagerTable extends PagedTable {
 			@Override
 			public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
 				PagedBreedingManagerTable.this.setPageLength(Integer.valueOf(String.valueOf(valueChangeEvent.getProperty().getValue())));
+				PagedBreedingManagerTable.this.runnable.run();
 			}
 		});
 
@@ -163,6 +165,10 @@ public class PagedBreedingManagerTable extends PagedTable {
 
 	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
+	}
+
+	public void onPageLengthChanged(final Runnable runnable) {
+		this.runnable = runnable;
 	}
 
 }
