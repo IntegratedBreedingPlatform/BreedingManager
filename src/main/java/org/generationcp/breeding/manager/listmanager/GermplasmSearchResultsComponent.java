@@ -176,8 +176,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 				if (GermplasmSearchResultsComponent.ACTION_COPY_TO_NEW_LIST == action) {
 					GermplasmSearchResultsComponent.this.addSelectedEntriesToNewList();
 				} else if (GermplasmSearchResultsComponent.ACTION_SELECT_ALL == action) {
-					GermplasmSearchResultsComponent.this.matchingGermplasmsTable
-							.setValue(GermplasmSearchResultsComponent.this.matchingGermplasmsTable.getItemIds());
+					GermplasmSearchResultsComponent.this.matchingGermplasmsTableWithSelectAll.selectAllEntriesOnCurrentPage();
 				}
 			}
 		};
@@ -319,8 +318,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 						GermplasmSearchResultsComponent.this.messageSource.getMessage(Message.ADD_SELECTED_ENTRIES_TO_NEW_LIST))) {
 					GermplasmSearchResultsComponent.this.addSelectedEntriesToNewList();
 				} else if (clickedItem.getName().equals(GermplasmSearchResultsComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
-					GermplasmSearchResultsComponent.this.matchingGermplasmsTable
-							.setValue(GermplasmSearchResultsComponent.this.matchingGermplasmsTable.getItemIds());
+					GermplasmSearchResultsComponent.this.matchingGermplasmsTableWithSelectAll.selectAllEntriesOnCurrentPage();
 				}
 
 			}
