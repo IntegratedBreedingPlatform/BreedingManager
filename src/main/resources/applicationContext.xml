@@ -29,6 +29,10 @@
 		class="org.generationcp.breeding.manager.application.BreedingManagerApplication"
 		scope="prototype" />
 
+    <bean id="application_gpsb"
+          class="org.generationcp.breeding.manager.application.GermplasmStudyBrowserApplication"
+          scope="prototype" />
+
 	<!-- Reuseable UI components can be declared here, but don't do it just
 		so you can have auto-wiring. Add @Configurable annotation to your class if
 		you only need auto-wiring. -->
