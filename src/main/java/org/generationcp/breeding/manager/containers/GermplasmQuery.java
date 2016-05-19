@@ -144,7 +144,6 @@ import com.vaadin.ui.themes.BaseTheme;
 		final GermplasmInventory inventoryInfo = germplasm.getInventoryInfo();
 
 		final Item item = new PropertysetItem();
-		final Object[] propertyIds = this.definition.getPropertyIds().toArray();
 
 		final Map<String, ObjectProperty> propertyMap = new HashMap<>();
 		propertyMap.put(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID, new ObjectProperty<>(this.getItemCheckBox(index)));
@@ -156,9 +155,9 @@ import com.vaadin.ui.themes.BaseTheme;
 		propertyMap.put(ColumnLabels.GID.getName(), new ObjectProperty<>(this.getGidButton(gid)));
 		propertyMap.put(ColumnLabels.GROUP_ID.getName(), new ObjectProperty<>(germplasm.getMgid() != 0 ? germplasm.getMgid() : "-"));
 		propertyMap.put(ColumnLabels.GERMPLASM_LOCATION.getName(),
-				new ObjectProperty<>(this.retrieveMethodName(germplasm.getMethodId(), methodsMap)));
-		propertyMap.put(ColumnLabels.BREEDING_METHOD_NAME.getName(),
 				new ObjectProperty<>(this.retrieveLocationName(germplasm.getLocationId(), locationsMap)));
+		propertyMap.put(ColumnLabels.BREEDING_METHOD_NAME.getName(),
+				new ObjectProperty<>(this.retrieveMethodName(germplasm.getMethodId(), methodsMap)));
 		propertyMap.put(ColumnLabels.GID.getName() + "_REF", new ObjectProperty<>(gid));
 
 		for (String propertyId : propertyMap.keySet()) {
