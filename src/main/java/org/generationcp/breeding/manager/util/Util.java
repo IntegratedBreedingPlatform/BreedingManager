@@ -20,11 +20,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.ArrayUtils;
 import org.dellroad.stuff.vaadin.ContextApplication;
 import org.generationcp.breeding.manager.exception.BreedingManagerException;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
 import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
+import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
@@ -35,6 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.Application;
 import com.vaadin.terminal.ExternalResource;
+import com.vaadin.terminal.FileResource;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.TabSheet;
@@ -437,4 +442,28 @@ public class Util {
 		return addtlParams;
 	 }
 
+	public static HttpServletRequest getApplicationRequest() {
+		return ContextApplication.currentRequest();
+	}
+
+	public static boolean showExportExcelDownloadFile(FileResource fileDownloadResource, Window window) {
+		if (window != null && fileDownloadResource != null) {
+			window.open(fileDownloadResource, null, false);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Returns true if given data type id is the id of one of the following data types: - Numeric Variable - Numeric DBID variable - Date
+	 * variable -
+	 *
+	 * @param dataTypeId
+	 * @return
+	 */
+	public static boolean isNumericVariable(int dataTypeId) {
+		return ArrayUtils
+				.contains(new int[] {TermId.NUMERIC_VARIABLE.getId(), TermId.NUMERIC_DBID_VARIABLE.getId(), TermId.DATE_VARIABLE.getId()},
+						dataTypeId);
+	}
 }
