@@ -241,7 +241,7 @@ public class ListManagerTreeComponent extends VerticalLayout implements Internat
 		this.treeContainerLayout.removeComponent(this.germplasmListTree);
 		this.germplasmListTree.removeAllItems();
 		this.germplasmListTree = this.createGermplasmListTree();
-		this.germplasmListTree.addStyleName("listManagerTree");
+		this.germplasmListTree.addStyleName("listManagerTreeGPSB");
 		this.germplasmListTree.setHeight("220px");
 
 		if (this.selectListComponent != null) {

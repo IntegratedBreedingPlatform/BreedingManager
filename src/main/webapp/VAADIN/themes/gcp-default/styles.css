@@ -903,7 +903,102 @@ div.unsaved-changes-dialog div.v-window-contents>div {
 	overflow: auto;
 }
 
+/* Added from GPSB */
+
 .v-icon {
     width: 17px;
     height: 17px;
 }
+
+.gcp-bold-italic {
+    font-weight: bold;
+    font-style: italic;
+}
+
+.listManagerTreeGPSB {
+    padding: 10px;
+    border: 1px solid e3e3e3;
+    background: #e3e3e3;
+    width: 200px;
+    height: 320px;
+    overflow: scroll;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    color: #33333;
+}
+
+.studyBrowserTree {
+    padding: 10px;
+    border: 1px solid e3e3e3;
+    background: #e3e3e3;
+    width: 100%;
+    height: 370px;
+    overflow: scroll;
+    color: #33333;
+}
+
+/* COMPONENT TREE */
+.component-tree {
+    background-color: #f6f6f6;
+    border: solid 1px #e6e6e6;
+    border-radius: 3px;
+}
+
+.componenttree-parent > div > div {
+    /* 	background: #e6e6e6; */
+    background: #f6f6f6;
+    margin-left: 5px;
+    margin-right: 5px;
+    border-radius: 3px;
+}
+
+.componenttree-parent div.v-label-h4{
+    text-transform:uppercase;
+}
+
+.white-bg,
+.white-background,
+.white-bg div div,
+.white-background div div,
+{
+    background: #ffffff !important;
+}
+
+.headerLabelLayout .v-caption {
+    height: 0px;
+}
+
+/* colorpicker fix */
+.v-colorpicker-popup .v-colorpicker-history {
+    position: absolute !important;
+    top: 370px !important;
+}
+
+.v-colorpicker-popup .v-horizontallayout {
+    position: absolute !important;
+    top: 410px !important;
+}
+
+.gsb-component-wrap {
+    display: inline-block !important;
+    float: left !important;
+}
+
+.gsb-div-wrap div.v-horizontallayout {
+    display: inline-block !important
+}
+
+.gsb-div-wrap div.v-csslayout {
+    display: inline-block !important
+}
+
+/* Fix the unnecessary scrollbar in Germplasm Details table*/
+.germplasm-details .v-scrollable {
+    overflow: overlay !important;
+}
+
+.study-browser-main .v-button .v-button-caption {
+    font-size: 13px;
+}
+
