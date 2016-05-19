@@ -176,7 +176,8 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 				if (GermplasmSearchResultsComponent.ACTION_COPY_TO_NEW_LIST == action) {
 					GermplasmSearchResultsComponent.this.addSelectedEntriesToNewList();
 				} else if (GermplasmSearchResultsComponent.ACTION_SELECT_ALL == action) {
-					GermplasmSearchResultsComponent.this.matchingGermplasmsTableWithSelectAll.selectAllEntriesOnCurrentPage();
+					GermplasmSearchResultsComponent.this.matchingGermplasmsTable
+							.setValue(GermplasmSearchResultsComponent.this.matchingGermplasmsTable.getItemIds());
 				}
 			}
 		};
@@ -318,7 +319,8 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 						GermplasmSearchResultsComponent.this.messageSource.getMessage(Message.ADD_SELECTED_ENTRIES_TO_NEW_LIST))) {
 					GermplasmSearchResultsComponent.this.addSelectedEntriesToNewList();
 				} else if (clickedItem.getName().equals(GermplasmSearchResultsComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
-					GermplasmSearchResultsComponent.this.matchingGermplasmsTableWithSelectAll.selectAllEntriesOnCurrentPage();
+					GermplasmSearchResultsComponent.this.matchingGermplasmsTable
+							.setValue(GermplasmSearchResultsComponent.this.matchingGermplasmsTable.getItemIds());
 				}
 
 			}
@@ -387,7 +389,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 			this.updateActionMenuOptions(true);
 		}
 
-		if (this.matchingGermplasmsTable.size() == 0) {
+		if (this.matchingGermplasmsTable.getContainerDataSource().getItemIds().isEmpty()) {
 			throw new BreedingManagerSearchException(Message.NO_SEARCH_RESULTS);
 		}
 

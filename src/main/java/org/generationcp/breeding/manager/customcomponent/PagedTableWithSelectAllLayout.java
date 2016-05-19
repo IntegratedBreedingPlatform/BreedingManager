@@ -76,10 +76,9 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 			}
 		});
 
-		this.table.onPageLengthChanged(new Runnable() {
-
+		this.table.registerTableSelectHandler(new PagedBreedingManagerTable.EntrySelectSyncHandler() {
 			@Override
-			public void run() {
+			public void dispatch() {
 				PagedTableWithSelectAllLayout.this.syncItemCheckBoxes();
 			}
 		});

@@ -22,10 +22,15 @@ import com.jensjansson.pagedtable.PagedTable;
 
 @Configurable
 public class PagedBreedingManagerTable extends PagedTable {
+	public interface EntrySelectSyncHandler {
+		void dispatch();
+	}
+
+	private EntrySelectSyncHandler entrySelectSyncHandler;
+
 
 	private TableMultipleSelectionHandler tableMultipleSelectionHandler;
 	private Integer pageLength;
-	private Runnable runnable;
 
 	@Resource
 	private SimpleResourceBundleMessageSource messageSource;
@@ -75,6 +80,13 @@ public class PagedBreedingManagerTable extends PagedTable {
 
 			if (pagingComponent instanceof Button) {
 				pagingComponent.setStyleName("");
+				((Button) pagingComponent).addListener(new Button.ClickListener() {
+
+					@Override
+					public void buttonClick(final Button.ClickEvent clickEvent) {
+						PagedBreedingManagerTable.this.entrySelectSyncHandler.dispatch();
+					}
+				});
 			}
 
 			// this is the textbox in the paging components where you can change page by specifying page no.
@@ -126,7 +138,7 @@ public class PagedBreedingManagerTable extends PagedTable {
 			@Override
 			public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
 				PagedBreedingManagerTable.this.setPageLength(Integer.valueOf(String.valueOf(valueChangeEvent.getProperty().getValue())));
-				PagedBreedingManagerTable.this.runnable.run();
+				PagedBreedingManagerTable.this.entrySelectSyncHandler.dispatch();
 			}
 		});
 
@@ -167,8 +179,8 @@ public class PagedBreedingManagerTable extends PagedTable {
 		this.messageSource = messageSource;
 	}
 
-	public void onPageLengthChanged(final Runnable runnable) {
-		this.runnable = runnable;
+	public void registerTableSelectHandler(final EntrySelectSyncHandler handler) {
+		this.entrySelectSyncHandler = handler;
 	}
 
 }
