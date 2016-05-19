@@ -129,7 +129,7 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 		final Collection<Object> selectedEntries = (Collection<Object>) this.table.getValue();
 
 		// update the loaded list of page no
-		this.addLoadedPage();
+		this.updateLoadedPage();
 
 		// update the select all status based on the selected items within the current page of the table
 		this.updateSelectAllCheckBoxStatus(entriesList);
@@ -261,8 +261,23 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 		this.resetLoadedPage();
 	}
 
-	public void addLoadedPage() {
+	/**
+	 * Make sure that the list of loaded page no is included to the possible no of page given the current page length
+	 */
+	public void updateLoadedPage() {
 		this.loadedPaged.add(this.table.getCurrentPage());
+
+		final Integer totalNoOfTableEntries = this.table.getItemIds().size();
+		final Integer noOfEntriesPerPage = this.table.getPageLength();
+
+		for (final Integer pageNo : this.loadedPaged) {
+			final Integer startIdx = pageNo * noOfEntriesPerPage - noOfEntriesPerPage;
+			Integer endIdx = startIdx + noOfEntriesPerPage;
+			endIdx = (endIdx > totalNoOfTableEntries) ? totalNoOfTableEntries : endIdx;
+			if (startIdx > endIdx) {
+				this.loadedPaged.remove(pageNo);
+			}
+		}
 	}
 
 	public void resetLoadedPage() {
