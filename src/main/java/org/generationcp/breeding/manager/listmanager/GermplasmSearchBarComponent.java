@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource;
 import org.generationcp.breeding.manager.service.BreedingManagerSearchException;
 import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -39,6 +40,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.Window;
 
 @Configurable
 public class GermplasmSearchBarComponent extends CssLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
@@ -56,6 +58,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 	public static final String LM_COMPONENT_WRAP = "lm-component-wrap";
 	private static final String PERCENT = "%";
 
+	private final AddEntryDialogSource source;
 	private HorizontalLayout searchBarLayoutLeft;
 	private CssLayout searchBarLayoutRight;
 	private TextField searchField;
@@ -80,8 +83,13 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 	private PlatformTransactionManager transactionManager;
 
 	public GermplasmSearchBarComponent(final GermplasmSearchResultsComponent searchResultsComponent) {
+		this(searchResultsComponent, null);
+	}
+
+	public GermplasmSearchBarComponent(final GermplasmSearchResultsComponent searchResultsComponent, final AddEntryDialogSource source) {
 		super();
 		this.searchResultsComponent = searchResultsComponent;
+		this.source = source;
 	}
 
 	public TextField getSearchField() {
@@ -228,8 +236,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		final String q = GermplasmSearchBarComponent.this.searchField.getValue().toString();
 		final String searchType = (String) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
 		if (GermplasmSearchBarComponent.this.matchesContaining.equals(searchType)) {
-			ConfirmDialog.show(GermplasmSearchBarComponent.this.getWindow(),
-					GermplasmSearchBarComponent.this.messageSource.getMessage(Message.WARNING),
+			ConfirmDialog.show(this.getSourceWindow(), GermplasmSearchBarComponent.this.messageSource.getMessage(Message.WARNING),
 					GermplasmSearchBarComponent.this.messageSource.getMessage(Message.SEARCH_TAKE_TOO_LONG_WARNING),
 					GermplasmSearchBarComponent.this.messageSource.getMessage(Message.OK),
 					GermplasmSearchBarComponent.this.messageSource.getMessage(Message.CANCEL), new ConfirmDialog.Listener() {
@@ -246,6 +253,14 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		} else {
 			GermplasmSearchBarComponent.this.doSearch(q);
 		}
+	}
+
+	private Window getSourceWindow() {
+		Window sourceWindow = this.getWindow();
+		if (this.source != null) {
+			sourceWindow = this.source.getListManagerMain().getWindow();
+		}
+		return sourceWindow;
 	}
 
 	public void doSearch(final String q) {

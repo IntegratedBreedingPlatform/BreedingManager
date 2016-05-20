@@ -326,7 +326,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		this.searchResultsComponent.getMatchingGermplasmsTableWithSelectAll().setHeight("220px");
 		this.searchResultsComponent.setRightClickActionHandlerEnabled(false);
 
-		this.searchBarComponent = new GermplasmSearchBarComponent(this.searchResultsComponent);
+		this.searchBarComponent = new GermplasmSearchBarComponent(this.searchResultsComponent, this.source);
 
 		this.step2Label = new Label(this.messageSource.getMessage(Message.HOW_DO_YOU_WANT_TO_ADD_THE_GERMPLASM_TO_THE_LIST));
 		this.step2Label.addStyleName("bold");
