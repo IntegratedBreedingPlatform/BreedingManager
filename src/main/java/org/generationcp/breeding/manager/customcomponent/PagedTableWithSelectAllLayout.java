@@ -140,6 +140,8 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 				final List<Object> entriesPerPage = this.getAllEntriesPerPage(entriesList, pageNo);
 				loadedItems.addAll(entriesPerPage);
 			}
+		} else {
+			loadedItems.addAll(entriesList);
 		}
 
 		this.updateTagPerRowItem(selectedEntries, loadedItems);
