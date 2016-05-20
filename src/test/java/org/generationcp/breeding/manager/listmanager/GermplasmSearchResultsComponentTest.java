@@ -46,7 +46,6 @@ public class GermplasmSearchResultsComponentTest {
 
 		Mockito.doReturn("DUMMY MESSAGE").when(this.messageSource).getMessage("VALIDATION_INTEGER_FORMAT");
 		final PagedBreedingManagerTable pagedTable = new PagedBreedingManagerTable(1, 50);
-		pagedTable.setMessageSource(this.messageSource);
 
 		final PagedTableWithSelectAllLayout table =
 				new PagedTableWithSelectAllLayout(10, GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID);

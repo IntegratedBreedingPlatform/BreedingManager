@@ -267,14 +267,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 	private LazyQueryContainer createContainer(final GermplasmQueryFactory factory) {
 
-		final LazyQueryContainer container = new LazyQueryContainer(factory, false, 20);
-
-		for (Object propertyId : definition.getPropertyIds()) {
-			container.addContainerProperty(propertyId, definition.getPropertyType(propertyId),
-					definition.getPropertyDefaultValue(propertyId), definition.isPropertyReadOnly(propertyId),
-					definition.isPropertySortable(propertyId));
-		}
-
+		final LazyQueryContainer container = new LazyQueryContainer(this.definition,factory);
 		return container;
 	}
 
