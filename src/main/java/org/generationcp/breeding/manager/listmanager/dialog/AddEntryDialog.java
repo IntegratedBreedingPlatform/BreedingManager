@@ -78,7 +78,6 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 	public static final String NEXT_BUTTON_ID = "AddEntryDialog Next Button";
 	public static final String CANCEL_BUTTON_ID = "AddEntryDialog Cancel Button";
 	public static final String DONE_BUTTON_ID = "AddEntryDialog Done Button";
-	private static final String GID = "gid";
 	private static final String DEFAULT_NAME_TYPE_CODE = "LNAME";
 
 	@Autowired
@@ -268,15 +267,9 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 
 	public void resultTableItemDoubleClickAction(final Table sourceTable, final Object itemId, final Item item) {
 		sourceTable.select(itemId);
-		final int gid = Integer.valueOf(item.getItemProperty(AddEntryDialog.GID).getValue().toString());
+		final int gid = Integer.valueOf(item.getItemProperty(ColumnLabels.GID.getName() + "_REF").getValue().toString());
 
-		Tool tool = null;
-		try {
-			tool = this.workbenchDataManager.getToolWithName(ToolName.GERMPLASM_BROWSER.toString());
-		} catch (final MiddlewareQueryException qe) {
-			AddEntryDialog.LOG.error(this.messageSource.getMessage(Message.QUERY_EXCEPTION), qe);
-		}
-
+		final Tool tool = this.workbenchDataManager.getToolWithName(ToolName.GERMPLASM_BROWSER.toString());
 		final String addtlParams = Util.getAdditionalParams(this.workbenchDataManager);
 		ExternalResource germplasmBrowserLink;
 		if (tool == null) {
@@ -289,7 +282,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 							+ addtlParams));
 		}
 
-		final Window germplasmWindow = new Window(this.messageSource.getMessage(Message.GERMPLASM_INFORMATION) + " - " + gid);
+		final Window germplasmWindow = new BaseSubWindow(this.messageSource.getMessage(Message.GERMPLASM_INFORMATION) + " - " + gid);
 
 		final VerticalLayout layoutForGermplasm = new VerticalLayout();
 		layoutForGermplasm.setMargin(false);
