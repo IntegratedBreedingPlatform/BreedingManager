@@ -22,6 +22,7 @@ import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItem
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListValueChangeListener;
 import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.breeding.manager.util.Util;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.constant.DefaultGermplasmStudyBrowserPath;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.DateUtil;
@@ -245,7 +246,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 
 	public void resultTableItemClickAction(final Table sourceTable) {
 
-		this.selectedGids = this.getSelectedItemIds(sourceTable);
+		this.selectedGids = this.getSelectedItemGids(sourceTable);
 
 		if (!this.selectedGids.isEmpty()) {
 			this.doneButton.setEnabled(true);
@@ -255,7 +256,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 	}
 
 	public void resultTableValueChangeAction() {
-		this.selectedGids = this.getSelectedItemIds(this.searchResultsComponent.getMatchingGermplasmsTable());
+		this.selectedGids = this.getSelectedItemGids(this.searchResultsComponent.getMatchingGermplasmsTable());
 		if (this.doneButton != null) {
 			if (!this.selectedGids.isEmpty()) {
 				this.doneButton.setEnabled(true);
@@ -613,10 +614,10 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 	}
 
 	/**
-	 * Iterates through the whole table, gets selected item ID's, make sure it's sorted as seen on the UI
+	 * Iterates through the whole table, gets selected item's GID's, make sure it's sorted as seen on the UI
 	 */
 	@SuppressWarnings("unchecked")
-	private List<Integer> getSelectedItemIds(final Table table) {
+	private List<Integer> getSelectedItemGids(final Table table) {
 		List<Integer> itemIds = new ArrayList<Integer>();
 		final List<Integer> selectedItemIds = new ArrayList<Integer>();
 		final List<Integer> trueOrderedSelectedItemIds = new ArrayList<Integer>();
@@ -626,7 +627,9 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 
 		for (final Integer itemId : itemIds) {
 			if (selectedItemIds.contains(itemId)) {
-				trueOrderedSelectedItemIds.add(itemId);
+				final Integer selectedGid =
+						Integer.valueOf(table.getItem(itemId).getItemProperty(ColumnLabels.GID.getName() + "_REF").getValue().toString());
+				trueOrderedSelectedItemIds.add(selectedGid);
 			}
 		}
 
