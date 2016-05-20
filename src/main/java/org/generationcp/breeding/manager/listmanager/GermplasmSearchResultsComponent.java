@@ -266,6 +266,8 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	}
 
 	private LazyQueryContainer createContainer(final GermplasmQueryFactory factory) {
+		// update the definitions batch size to match current state of table's page entry length
+		this.definition.setBatchSize(this.matchingGermplasmsTable.getPageLength());
 
 		final LazyQueryContainer container = new LazyQueryContainer(this.definition,factory);
 		return container;

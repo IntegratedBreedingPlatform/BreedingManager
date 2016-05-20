@@ -166,6 +166,8 @@ public class PagedBreedingManagerTableControls extends HorizontalLayout {
 			@Override
 			public void valueChange(final Property.ValueChangeEvent valueChangeEvent) {
 				pagedBreedingManagerTable.setPageLength(Integer.valueOf(String.valueOf(valueChangeEvent.getProperty().getValue())));
+				pagedBreedingManagerTable.updateBatchsize();
+
 				PagedBreedingManagerTableControls.this.entrySelectSyncHandler.dispatch();
 			}
 		});

@@ -3,9 +3,13 @@ package org.generationcp.breeding.manager.customfields;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
+
+import com.vaadin.data.Container;
 import com.vaadin.ui.HorizontalLayout;
 
 import com.jensjansson.pagedtable.PagedTable;
+import com.jensjansson.pagedtable.PagedTableContainer;
 
 public class PagedBreedingManagerTable extends PagedTable {
 
@@ -81,6 +85,21 @@ public class PagedBreedingManagerTable extends PagedTable {
 	void doChangeVariables(final Object source, final Map<String, Object> variablesCopy) {
 		super.changeVariables(source, variablesCopy);
 		tableMultipleSelectionHandler.setValueForSelectedItems();
+	}
+
+	boolean hasItems() {
+		return this.getContainerDataSource().getContainerPropertyIds().isEmpty();
+	}
+
+	void setBatchSize(int batchSize) {
+		final Container.Indexed contanerSource = this.getContainerDataSource();
+		((LazyQueryContainer)((PagedTableContainer) contanerSource).getContainer()).getQueryView().getQueryDefinition().setBatchSize(batchSize);
+	}
+
+	void updateBatchsize() {
+		if (this.hasItems()) {
+			this.setBatchSize(this.getPageLength());
+		}
 	}
 
 	/**
