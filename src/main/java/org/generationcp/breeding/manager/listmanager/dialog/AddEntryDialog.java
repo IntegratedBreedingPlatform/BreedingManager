@@ -322,7 +322,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 
 		this.searchResultsComponent = new GermplasmSearchResultsComponent(this.source.getListManagerMain(), false, false);
 		this.searchResultsComponent.getMatchingGermplasmsTable().setHeight("150px");
-		this.searchResultsComponent.getMatchingGermplasmsTableWithSelectAll().setHeight("180px");
+		this.searchResultsComponent.getMatchingGermplasmsTableWithSelectAll().setHeight("220px");
 		this.searchResultsComponent.setRightClickActionHandlerEnabled(false);
 
 		this.searchBarComponent = new GermplasmSearchBarComponent(this.searchResultsComponent);
