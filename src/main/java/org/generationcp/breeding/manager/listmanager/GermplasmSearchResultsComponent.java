@@ -258,7 +258,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 	private GermplasmQueryFactory createGermplasmQueryFactory(final GermplasmSearchParameter searchParameter) {
 		// set the start and no of entries to retrieve at initial loading
-		searchParameter.setStartingRow(1);
+		searchParameter.setStartingRow(0);
 		searchParameter.setNumberOfEntries(this.matchingGermplasmsTable.getPageLength());
 
 		return new GermplasmQueryFactory(this.listManagerMain, this.viaToolUrl, this.showAddToList, searchParameter,
