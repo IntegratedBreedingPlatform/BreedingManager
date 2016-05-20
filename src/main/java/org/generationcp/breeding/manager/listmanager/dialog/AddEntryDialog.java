@@ -127,7 +127,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 	private BreedingManagerService breedingManagerService;
 	private String programUniqueId;
 
-	public AddEntryDialog(AddEntryDialogSource source, Window parentWindow) {
+	public AddEntryDialog(final AddEntryDialogSource source, final Window parentWindow) {
 		this.setOverrideFocus(true);
 		this.source = source;
 		this.parentWindow = parentWindow;
@@ -147,7 +147,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 
 		try {
 			this.programUniqueId = this.breedingManagerService.getCurrentProject().getUniqueID();
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			AddEntryDialog.LOG.error(e.getMessage(), e);
 		}
 
@@ -177,7 +177,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void valueChange(ValueChangeEvent event) {
+			public void valueChange(final ValueChangeEvent event) {
 				if (AddEntryDialog.this.optionGroup.getValue().equals(AddEntryDialog.OPTION_1_ID)) {
 					AddEntryDialog.this.setSpecifyDetailsVisible(false);
 					if (AddEntryDialog.this.selectedGids.isEmpty()) {
@@ -227,7 +227,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		this.bottomPart.addComponent(this.nameTypeLabel, "top:185px;left:0px");
 		this.bottomPart.addComponent(this.nameTypeComboBox, "top:185px;left:130px");
 
-		HorizontalLayout buttonLayout = new HorizontalLayout();
+		final HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setWidth("100%");
 		buttonLayout.setHeight("50px");
 		buttonLayout.setSpacing(true);
@@ -243,7 +243,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		this.setSpecifyDetailsVisible(false);
 	}
 
-	public void resultTableItemClickAction(Table sourceTable) {
+	public void resultTableItemClickAction(final Table sourceTable) {
 
 		this.selectedGids = this.getSelectedItemIds(sourceTable);
 
@@ -265,18 +265,18 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		}
 	}
 
-	public void resultTableItemDoubleClickAction(Table sourceTable, Object itemId, Item item) {
+	public void resultTableItemDoubleClickAction(final Table sourceTable, final Object itemId, final Item item) {
 		sourceTable.select(itemId);
-		int gid = Integer.valueOf(item.getItemProperty(AddEntryDialog.GID).getValue().toString());
+		final int gid = Integer.valueOf(item.getItemProperty(AddEntryDialog.GID).getValue().toString());
 
 		Tool tool = null;
 		try {
 			tool = this.workbenchDataManager.getToolWithName(ToolName.GERMPLASM_BROWSER.toString());
-		} catch (MiddlewareQueryException qe) {
+		} catch (final MiddlewareQueryException qe) {
 			AddEntryDialog.LOG.error(this.messageSource.getMessage(Message.QUERY_EXCEPTION), qe);
 		}
 
-		String addtlParams = Util.getAdditionalParams(this.workbenchDataManager);
+		final String addtlParams = Util.getAdditionalParams(this.workbenchDataManager);
 		ExternalResource germplasmBrowserLink;
 		if (tool == null) {
 			germplasmBrowserLink =
@@ -288,14 +288,14 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 							+ addtlParams));
 		}
 
-		Window germplasmWindow = new Window(this.messageSource.getMessage(Message.GERMPLASM_INFORMATION) + " - " + gid);
+		final Window germplasmWindow = new Window(this.messageSource.getMessage(Message.GERMPLASM_INFORMATION) + " - " + gid);
 
-		VerticalLayout layoutForGermplasm = new VerticalLayout();
+		final VerticalLayout layoutForGermplasm = new VerticalLayout();
 		layoutForGermplasm.setMargin(false);
 		layoutForGermplasm.setWidth("98%");
 		layoutForGermplasm.setHeight("98%");
 
-		Embedded germplasmInfo = new Embedded("", germplasmBrowserLink);
+		final Embedded germplasmInfo = new Embedded("", germplasmBrowserLink);
 		germplasmInfo.setType(Embedded.TYPE_BROWSER);
 		germplasmInfo.setSizeFull();
 		layoutForGermplasm.addComponent(germplasmInfo);
@@ -380,7 +380,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		this.doneButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 	}
 
-	public void nextButtonClickAction(ClickEvent event) {
+	public void nextButtonClickAction(final ClickEvent event) {
 		if (this.optionGroup.getValue().equals(AddEntryDialog.OPTION_1_ID)) {
 			// add the germplasm selected as the list entry
 			this.validateInputForOption1(event);
@@ -391,10 +391,10 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		}
 	}
 
-	private void validateInputForOption1(ClickEvent event) {
+	private void validateInputForOption1(final ClickEvent event) {
 		if (!this.selectedGids.isEmpty()) {
 			this.source.finishAddingEntry(this.selectedGids);
-			Window window = event.getButton().getWindow();
+			final Window window = event.getButton().getWindow();
 			window.getParent().removeWindow(window);
 		} else {
 			MessageNotifier.showWarning(this, this.messageSource.getMessage(Message.WARNING),
@@ -402,7 +402,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		}
 	}
 
-	private void validateInputForOption2(ClickEvent event) {
+	private void validateInputForOption2(final ClickEvent event) {
 		if (this.breedingMethodField.getBreedingMethodComboBox().getValue() == null) {
 			MessageNotifier.showRequiredFieldError(this, this.messageSource.getMessage(Message.YOU_MUST_SELECT_A_METHOD_FOR_THE_GERMPLASM));
 		} else if (this.breedingLocationField.getBreedingLocationComboBox().getValue() == null) {
@@ -410,7 +410,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 					this.messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM));
 		} else if (!this.selectedGids.isEmpty()) {
 			if (this.doneAction()) {
-				Window window = event.getButton().getWindow();
+				final Window window = event.getButton().getWindow();
 				window.getParent().removeWindow(window);
 			}
 		} else {
@@ -419,8 +419,8 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		}
 	}
 
-	private void validateInputForOption3(ClickEvent event) {
-		String searchValue = this.searchBarComponent.getSearchField().getValue().toString();
+	private void validateInputForOption3(final ClickEvent event) {
+		final String searchValue = this.searchBarComponent.getSearchField().getValue().toString();
 		if (this.breedingMethodField.getBreedingMethodComboBox().getValue() == null) {
 			MessageNotifier.showRequiredFieldError(this, this.messageSource.getMessage(Message.YOU_MUST_SELECT_A_METHOD_FOR_THE_GERMPLASM));
 		} else if (this.breedingLocationField.getBreedingLocationComboBox().getValue() == null) {
@@ -428,7 +428,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 					this.messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM));
 		} else if (searchValue != null && searchValue.length() != 0) {
 			this.doneAction();
-			Window window = event.getButton().getWindow();
+			final Window window = event.getButton().getWindow();
 			window.getParent().removeWindow(window);
 		} else {
 			MessageNotifier.showRequiredFieldError(this,
@@ -442,9 +442,9 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 			return false;
 		}
 		if (this.optionGroup.getValue().equals(AddEntryDialog.OPTION_2_ID)) {
-			List<Integer> addedGids = new ArrayList<Integer>();
-			for (Integer selectedGid : this.selectedGids) {
-				Integer newlyCreatedGid = this.addGermplasm(selectedGid);
+			final List<Integer> addedGids = new ArrayList<Integer>();
+			for (final Integer selectedGid : this.selectedGids) {
+				final Integer newlyCreatedGid = this.addGermplasm(selectedGid);
 				if (newlyCreatedGid == null) {
 					return false;
 				}
@@ -452,7 +452,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 			}
 			this.source.finishAddingEntry(addedGids);
 		} else {
-			Integer newlyCreatedGid = this.addGermplasm(null);
+			final Integer newlyCreatedGid = this.addGermplasm(null);
 			if (newlyCreatedGid == null) {
 				return false;
 			}
@@ -461,36 +461,36 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		return true;
 	}
 
-	private Integer addGermplasm(Integer selectedGid) {
-		Integer breedingMethodId = (Integer) this.breedingMethodField.getBreedingMethodComboBox().getValue();
-		Integer nameTypeId = (Integer) this.nameTypeComboBox.getValue();
-		Integer locationId = (Integer) this.breedingLocationField.getBreedingLocationComboBox().getValue();
+	private Integer addGermplasm(final Integer selectedGid) {
+		final Integer breedingMethodId = (Integer) this.breedingMethodField.getBreedingMethodComboBox().getValue();
+		final Integer nameTypeId = (Integer) this.nameTypeComboBox.getValue();
+		final Integer locationId = (Integer) this.breedingLocationField.getBreedingLocationComboBox().getValue();
 
-		Integer date = this.getGermplasmDate();
+		final Integer date = this.getGermplasmDate();
 		if (date == null) {
 			return null;
 		}
 
-		Integer currentUserLocalId = this.getCurrentUserLocalId();
-		Germplasm selectedGermplasm = this.getSelectedGermplasm(selectedGid);
+		final Integer currentUserLocalId = this.getCurrentUserLocalId();
+		final Germplasm selectedGermplasm = this.getSelectedGermplasm(selectedGid);
 		String germplasmName = this.searchBarComponent.getSearchField().getValue().toString();
 		if (selectedGermplasm != null && selectedGermplasm.getPreferredName() != null) {
 			germplasmName = selectedGermplasm.getPreferredName().getNval();
 		}
 
-		Germplasm germplasm = this.createGermplasm(selectedGermplasm, date, locationId, breedingMethodId, currentUserLocalId);
-		Name name = this.createName(germplasmName, locationId, date, nameTypeId, currentUserLocalId);
+		final Germplasm germplasm = this.createGermplasm(selectedGermplasm, date, locationId, breedingMethodId, currentUserLocalId);
+		final Name name = this.createName(germplasmName, locationId, date, nameTypeId, currentUserLocalId);
 		return this.saveGermplasmToDatabase(germplasm, name);
 	}
 
 	private Integer getGermplasmDate() {
-		Date dateOfCreation = this.germplasmDateField.getValue();
+		final Date dateOfCreation = this.germplasmDateField.getValue();
 		if (dateOfCreation == null) {
 			AddEntryDialog.LOG.error("Invalid date on add list entries! - " + dateOfCreation);
 			MessageNotifier.showRequiredFieldError(this.getWindow(), this.messageSource.getMessage(Message.VALIDATION_DATE_FORMAT));
 			return null;
 		}
-		String parsedDate = DateUtil.formatDateAsStringValue(dateOfCreation, DateUtil.DATE_AS_NUMBER_FORMAT);
+		final String parsedDate = DateUtil.formatDateAsStringValue(dateOfCreation, DateUtil.DATE_AS_NUMBER_FORMAT);
 		if (parsedDate == null) {
 			AddEntryDialog.LOG.error("Invalid date on add list entries! - " + parsedDate);
 			MessageNotifier.showRequiredFieldError(this.getWindow(), this.messageSource.getMessage(Message.VALIDATION_DATE_FORMAT));
@@ -503,19 +503,19 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		Integer currentUserLocalId = -1;
 		try {
 			currentUserLocalId = this.contextUtil.getCurrentUserLocalId();
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			AddEntryDialog.LOG.error(e.getMessage(), e);
 		}
 		return currentUserLocalId;
 	}
 
-	private Germplasm getSelectedGermplasm(Integer selectedGid) {
+	private Germplasm getSelectedGermplasm(final Integer selectedGid) {
 		if (selectedGid == null) {
 			return null;
 		}
 		try {
 			return this.germplasmDataManager.getGermplasmWithPrefName(selectedGid);
-		} catch (MiddlewareQueryException mex) {
+		} catch (final MiddlewareQueryException mex) {
 			AddEntryDialog.LOG.error("Error with getting germplasm with id: " + selectedGid, mex);
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
 					this.messageSource.getMessage(Message.ERROR_WITH_GETTING_GERMPLASM_WITH_ID) + ": " + selectedGid + ". "
@@ -524,10 +524,10 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		return null;
 	}
 
-	private Germplasm createGermplasm(Germplasm selectedGermplasm, Integer date, Integer locationId, Integer breedingMethodId,
-			Integer currentUserLocalId) {
+	private Germplasm createGermplasm(final Germplasm selectedGermplasm, final Integer date, final Integer locationId,
+			final Integer breedingMethodId, final Integer currentUserLocalId) {
 
-		Germplasm germplasm = new Germplasm();
+		final Germplasm germplasm = new Germplasm();
 		germplasm.setGdate(date);
 		germplasm.setGnpgs(Integer.valueOf(-1));
 		germplasm.setGpid1(Integer.valueOf(0));
@@ -552,8 +552,9 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		return germplasm;
 	}
 
-	private Name createName(String germplasmName, Integer locationId, Integer date, Integer nameTypeId, Integer currentUserLocalId) {
-		Name name = new Name();
+	private Name createName(final String germplasmName, final Integer locationId, final Integer date, final Integer nameTypeId,
+			final Integer currentUserLocalId) {
+		final Name name = new Name();
 		name.setNval(germplasmName);
 		name.setLocationId(locationId);
 		name.setNdate(date);
@@ -564,11 +565,11 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		return name;
 	}
 
-	private Integer saveGermplasmToDatabase(Germplasm germplasm, Name name) {
+	private Integer saveGermplasmToDatabase(final Germplasm germplasm, final Name name) {
 		try {
 			this.germplasmDataManager.addGermplasm(germplasm, name);
 			return germplasm.getGid();
-		} catch (MiddlewareQueryException ex) {
+		} catch (final MiddlewareQueryException ex) {
 			AddEntryDialog.LOG.error("Error with saving germplasm and name records!", ex);
 			MessageNotifier.showError(
 					this.getWindow(),
@@ -581,25 +582,25 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 
 	private void populateNameTypeComboBox() {
 		try {
-			List<UserDefinedField> nameTypes = this.germplasmListManager.getGermplasmNameTypes();
-			for (UserDefinedField nameType : nameTypes) {
-				Integer nameTypeId = nameType.getFldno();
-				String nameTypeString = nameType.getFname();
-				String nameTypeCode = nameType.getFcode();
+			final List<UserDefinedField> nameTypes = this.germplasmListManager.getGermplasmNameTypes();
+			for (final UserDefinedField nameType : nameTypes) {
+				final Integer nameTypeId = nameType.getFldno();
+				final String nameTypeString = nameType.getFname();
+				final String nameTypeCode = nameType.getFcode();
 				this.nameTypeComboBox.addItem(nameTypeId);
 				this.nameTypeComboBox.setItemCaption(nameTypeId, nameTypeString);
 				if (nameTypeCode.equals(AddEntryDialog.DEFAULT_NAME_TYPE_CODE)) {
 					this.nameTypeComboBox.select(nameTypeId);
 				}
 			}
-		} catch (MiddlewareQueryException ex) {
+		} catch (final MiddlewareQueryException ex) {
 			AddEntryDialog.LOG.error("Error with getting germplasm name types!", ex);
 			MessageNotifier.showError(
 					this.getWindow(),
 					this.messageSource.getMessage(Message.ERROR_DATABASE),
 					this.messageSource.getMessage(Message.ERROR_WITH_GETTING_GERMPLASM_NAME_TYPES)
 							+ this.messageSource.getMessage(Message.ERROR_REPORT_TO));
-			Integer unknownId = Integer.valueOf(0);
+			final Integer unknownId = Integer.valueOf(0);
 			this.nameTypeComboBox.addItem(unknownId);
 			this.nameTypeComboBox.setItemCaption(unknownId, this.messageSource.getMessage(Message.UNKNOWN));
 		}
@@ -615,15 +616,15 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 	 * Iterates through the whole table, gets selected item ID's, make sure it's sorted as seen on the UI
 	 */
 	@SuppressWarnings("unchecked")
-	private List<Integer> getSelectedItemIds(Table table) {
+	private List<Integer> getSelectedItemIds(final Table table) {
 		List<Integer> itemIds = new ArrayList<Integer>();
-		List<Integer> selectedItemIds = new ArrayList<Integer>();
-		List<Integer> trueOrderedSelectedItemIds = new ArrayList<Integer>();
+		final List<Integer> selectedItemIds = new ArrayList<Integer>();
+		final List<Integer> trueOrderedSelectedItemIds = new ArrayList<Integer>();
 
 		selectedItemIds.addAll((Collection<? extends Integer>) table.getValue());
 		itemIds = this.getItemIds(table);
 
-		for (Integer itemId : itemIds) {
+		for (final Integer itemId : itemIds) {
 			if (selectedItemIds.contains(itemId)) {
 				trueOrderedSelectedItemIds.add(itemId);
 			}
@@ -639,13 +640,13 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private List<Integer> getItemIds(Table table) {
-		List<Integer> itemIds = new ArrayList<Integer>();
+	private List<Integer> getItemIds(final Table table) {
+		final List<Integer> itemIds = new ArrayList<Integer>();
 		itemIds.addAll((Collection<? extends Integer>) table.getItemIds());
 		return itemIds;
 	}
 
-	private void setSpecifyDetailsVisible(Boolean visible) {
+	private void setSpecifyDetailsVisible(final Boolean visible) {
 		int height = 530;
 		if (visible) {
 			// add height of bottom part + margin
@@ -668,16 +669,16 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 	public void updateAllLocationFields() {
 		if (this.breedingLocationField != null && this.breedingLocationField.getBreedingLocationComboBox() != null
 				&& this.breedingLocationField.getBreedingLocationComboBox().getValue() != null) {
-			Object lastValue = this.breedingLocationField.getBreedingLocationComboBox().getValue();
+			final Object lastValue = this.breedingLocationField.getBreedingLocationComboBox().getValue();
 			this.breedingLocationField.populateHarvestLocation(Integer.valueOf(lastValue.toString()), this.programUniqueId);
 		}
 	}
 
-	public void setOptionGroup(OptionGroup optionGroup) {
+	public void setOptionGroup(final OptionGroup optionGroup) {
 		this.optionGroup = optionGroup;
 	}
 
-	public void setSelectedGids(List<Integer> selectedGids) {
+	public void setSelectedGids(final List<Integer> selectedGids) {
 		this.selectedGids = selectedGids;
 	}
 
@@ -689,11 +690,11 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		return this.cancelButton;
 	}
 
-	public void setMessageSource(SimpleResourceBundleMessageSource msgSource) {
+	public void setMessageSource(final SimpleResourceBundleMessageSource msgSource) {
 		this.messageSource = msgSource;
 	}
 
-	public void setBreedingManagerService(BreedingManagerService breedingManagerService) {
+	public void setBreedingManagerService(final BreedingManagerService breedingManagerService) {
 		this.breedingManagerService = breedingManagerService;
 	}
 }
