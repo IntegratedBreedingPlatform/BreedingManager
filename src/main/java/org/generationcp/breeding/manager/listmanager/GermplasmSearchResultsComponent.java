@@ -10,6 +10,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.containers.GermplasmQueryFactory;
 import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.PagedTableWithSelectAllLayout;
+import org.generationcp.breeding.manager.customfields.PagedBreedingManagerTable;
 import org.generationcp.breeding.manager.service.BreedingManagerSearchException;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -60,7 +61,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 	private Label totalMatchingGermplasmsLabel;
 	private Label totalSelectedMatchingGermplasmsLabel;
-	private Table matchingGermplasmsTable;
+	private PagedBreedingManagerTable matchingGermplasmsTable;
 
 	private Button actionButton;
 	private ContextMenu menu;
@@ -369,6 +370,9 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 		final GermplasmQueryFactory factory = this.createGermplasmQueryFactory(searchParameter);
 		final LazyQueryContainer container = this.createContainer(factory);
+
+		// set the current page to first page before updating the entries with the new search results
+		this.matchingGermplasmsTable.setCurrentPage(1);
 
 		this.matchingGermplasmsTable.setContainerDataSource(container);
 		this.matchingGermplasmsTable.setImmediate(true);
