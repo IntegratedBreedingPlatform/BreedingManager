@@ -150,7 +150,6 @@ public class DropHandlerMethods {
 				this.addGermplasm(itemId);
 			}
 
-
 		}
 	}
 
@@ -779,5 +778,17 @@ public class DropHandlerMethods {
 
 	void setListManagerMain(final ListManagerMain listManagerMain) {
 		this.listManagerMain = listManagerMain;
+	}
+
+	void setPedigreeService(final PedigreeService pedigreeService) {
+		this.pedigreeService = pedigreeService;
+	}
+
+	void setCrossExpansionProperties(final CrossExpansionProperties crossExpansionProperties) {
+		this.crossExpansionProperties = crossExpansionProperties;
+	}
+
+	void setInventoryDataManager(final InventoryDataManager inventoryDataManager) {
+		this.inventoryDataManager = inventoryDataManager;
 	}
 }
