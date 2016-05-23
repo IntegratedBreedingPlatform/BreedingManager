@@ -1,12 +1,7 @@
 
 package org.generationcp.breeding.manager.customcomponent;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.customfields.PagedBreedingManagerTable;
@@ -154,7 +149,7 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 	 * @param pageNo - current page
 	 * @return
 	 */
-	private List<Object> getAllEntriesPerPage(final List<Object> entriesList, final Integer pageNo) {
+	List<Object> getAllEntriesPerPage(final List<Object> entriesList, final Integer pageNo) {
 		final Integer noOfEntriesPerPage = this.table.getPageLength();
 		final Integer startIdx = pageNo * noOfEntriesPerPage - noOfEntriesPerPage;
 		Integer endIdx = startIdx + noOfEntriesPerPage;
@@ -169,7 +164,7 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 	 * @param selectedEntries - list of items currently selected on the table
 	 * @param loadedItems - the list of items loaded on the paged table (could be multiple entries across pages)
 	 */
-	private void updateTagPerRowItem(final Collection<Object> selectedEntries, final List<Object> loadedItems) {
+	 void updateTagPerRowItem(final Collection<Object> selectedEntries, final List<Object> loadedItems) {
 		for (final Object entry : loadedItems) {
 			final Property itemProperty = this.table.getItem(entry).getItemProperty(this.checkboxColumnId);
 			if (itemProperty != null) {
@@ -188,7 +183,7 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 	 * 
 	 * @param entriesList - collection of all entries within the table
 	 */
-	private void updateSelectAllCheckBoxStatus(final List<Object> entriesList) {
+	 void updateSelectAllCheckBoxStatus(final List<Object> entriesList) {
 
 		final List<Object> entriesPerPage = this.getAllEntriesPerPage(entriesList, this.table.getCurrentPage());
 		int noOfSelectedEntriesPerPage = 0;
@@ -239,6 +234,7 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 	private void updatePagedTableSelectedEntries(final List<Object> entriesPerPage, final boolean addEntry) {
 		final Collection<Object> selectedEntries = (Collection<Object>) this.table.getValue();
 		final Set<Object> selectedEntriesSet = new HashSet<Object>();
+
 		selectedEntriesSet.addAll(selectedEntries);
 
 		if (addEntry) {
@@ -289,6 +285,10 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 
 	public void resetLoadedPage() {
 		this.loadedPaged.clear();
+	}
+
+	public CheckBox getSelectAllCheckBox() {
+		return selectAllCheckBox;
 	}
 
 }
