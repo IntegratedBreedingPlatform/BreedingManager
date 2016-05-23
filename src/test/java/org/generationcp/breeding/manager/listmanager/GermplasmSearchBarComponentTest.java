@@ -82,4 +82,11 @@ public class GermplasmSearchBarComponentTest {
 		this.germplasmSearchBarComponent.doSearch("");
 		Mockito.verify(this.messageSource).getMessage(Message.SEARCH_RESULTS);
 	}
+	
+	@Test
+	public void testValidateIfSearchKeywordIsNotEmpty() {
+		final String keyword = "";
+ 	 	this.germplasmSearchBarComponent.validateIfSearchKeywordIsNotEmpty(keyword);
+		Mockito.verify(this.messageSource).getMessage(Message.SEARCH_KEYWORD_MUST_NOT_BE_EMPTY);
+	}
 }
