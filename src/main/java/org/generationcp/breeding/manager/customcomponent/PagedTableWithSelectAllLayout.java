@@ -272,14 +272,19 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 		final Integer totalNoOfTableEntries = this.table.getItemIds().size();
 		final Integer noOfEntriesPerPage = this.table.getPageLength();
 
-		for (final Integer pageNo : this.loadedPaged) {
+		Iterator<Integer> loadedPagedIterator = this.loadedPaged.iterator();
+		while (loadedPagedIterator.hasNext()) {
+
+			Integer pageNo = loadedPagedIterator.next();
+
 			final Integer startIdx = pageNo * noOfEntriesPerPage - noOfEntriesPerPage;
 			Integer endIdx = startIdx + noOfEntriesPerPage;
 			endIdx = (endIdx > totalNoOfTableEntries) ? totalNoOfTableEntries : endIdx;
 			if (startIdx > endIdx) {
-				this.loadedPaged.remove(pageNo);
+				loadedPagedIterator.remove();
 			}
 		}
+
 	}
 
 	public void resetLoadedPage() {
