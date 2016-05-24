@@ -133,7 +133,7 @@ public class ListBuilderComponentTest {
 
 	@Test
 	public void testDeleteSelectedEntriesWithSelectedEntries() {
-		/*Mockito.when(this.tableWithSelectAllLayout.getTable()).thenReturn(this.breedingManagerTable);
+		Mockito.when(this.tableWithSelectAllLayout.getTable()).thenReturn(this.breedingManagerTable);
 
 		final Container container = Mockito.mock(Container.class);
 		Mockito.when(this.breedingManagerTable.getContainerDataSource()).thenReturn(container);
@@ -160,6 +160,6 @@ public class ListBuilderComponentTest {
 			Mockito.verify(container, Mockito.times(1)).removeItem(Matchers.any());
 		} catch (final WantedButNotInvoked e) {
 			Assert.fail("Expecting to show 'no selected germplasm entry' error but didn't.");
-		}*/
+		}
 	}
 }
