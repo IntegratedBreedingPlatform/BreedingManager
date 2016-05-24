@@ -87,6 +87,26 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 	}
 
 	@Override
+	public List<Germplasm> doGermplasmSearch(final String searchValue, final Operation operation, final boolean includeParents,
+			final boolean withInventoryOnly, final boolean includeMGMembers) throws BreedingManagerSearchException {
+		this.validateEmptySearchString(searchValue);
+		try {
+			final List<Germplasm> results = this.germplasmDataManager.searchForGermplasm(searchValue, operation, includeParents,
+					withInventoryOnly, includeMGMembers);
+
+			if (null == results || results.isEmpty()) {
+				throw new BreedingManagerSearchException(Message.NO_SEARCH_RESULTS);
+			}
+
+			return results;
+
+		} catch (final MiddlewareQueryException e) {
+			BreedingManagerServiceImpl.LOG.error(e.getMessage(), e);
+			throw new BreedingManagerSearchException(Message.ERROR_DATABASE, e);
+		}
+	}
+
+	@Override
 	public List<GermplasmList> doGermplasmListSearch(final String q, final Operation o) throws BreedingManagerSearchException {
 		this.validateEmptySearchString(q);
 

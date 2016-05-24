@@ -233,7 +233,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 
 	public void searchButtonClickAction() {
 
-		final String q = GermplasmSearchBarComponent.this.searchField.getValue().toString();
+		final String searchValue = GermplasmSearchBarComponent.this.searchField.getValue().toString();
 		final String searchType = (String) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
 		if (GermplasmSearchBarComponent.this.matchesContaining.equals(searchType)) {
 			ConfirmDialog.show(this.getSourceWindow(), GermplasmSearchBarComponent.this.messageSource.getMessage(Message.WARNING),
@@ -246,12 +246,12 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 						@Override
 						public void onClose(final ConfirmDialog dialog) {
 							if (dialog.isConfirmed()) {
-								GermplasmSearchBarComponent.this.doSearch(q);
+								GermplasmSearchBarComponent.this.doSearch(searchValue);
 							}
 						}
 					});
 		} else {
-			GermplasmSearchBarComponent.this.doSearch(q);
+			GermplasmSearchBarComponent.this.doSearch(searchValue);
 		}
 	}
 
@@ -301,7 +301,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 								GermplasmSearchBarComponent.this.messageSource.getMessage(Message.SEARCH_RESULTS),
 								GermplasmSearchBarComponent.this.messageSource.getMessage(e.getErrorMessage()));
 						if (Message.ERROR_DATABASE.equals(e.getErrorMessage())) {
-							GermplasmSearchBarComponent.LOG.error("Database error occured while searching. Search string was: " + q, e);
+							GermplasmSearchBarComponent.LOG.error("Database error occured while searching. Search string was: " + searchValue, e);
 						}
 					}
 				} finally {
