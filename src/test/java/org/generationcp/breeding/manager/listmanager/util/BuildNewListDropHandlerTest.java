@@ -23,7 +23,6 @@ import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -87,7 +86,6 @@ public class BuildNewListDropHandlerTest {
 	@Mock
 	private ListComponent listComponent;
 
-	@InjectMocks
 	private BuildNewListDropHandler dropHandler;
 
 	// Data Initializer
@@ -104,15 +102,9 @@ public class BuildNewListDropHandlerTest {
 		this.germplasmInitializer = new GermplasmTestDataInitializer();
 		this.germplasmListInitializer = new GermplasmListTestDataInitializer();
 
-		// other mock injections
-		this.dropHandler.setCurrentColumnsInfo(this.currentColumnsInfo);
-
 		// other mocks
-		this.mockContainer = Mockito.mock(Container.class);
 		Mockito.when(this.targetTable.getContainerDataSource()).thenReturn(this.mockContainer);
-		this.mockTableItem = Mockito.mock(Item.class);
 		Mockito.when(this.mockContainer.addItem(Matchers.any())).thenReturn(this.mockTableItem);
-		this.mockProperty = Mockito.mock(Property.class);
 		Mockito.when(this.mockTableItem.getItemProperty(Matchers.anyString())).thenReturn(this.mockProperty);
 		Mockito.doReturn(GERMPLASM_LIST_ID).when(this.currentColumnsInfo).getListId();
 		Mockito.doReturn(new HashMap<>()).when(this.currentColumnsInfo).getColumnValuesMap();
@@ -177,6 +169,12 @@ public class BuildNewListDropHandlerTest {
 			Mockito.doReturn(this.currentColumnsInfo).when(this.germplasmListManager).getAdditionalColumnsForList(itemId);
 
 		}
+
+		this.dropHandler = new BuildNewListDropHandler(listManagerMain, germplasmDataManager, germplasmListManager, inventoryDataManager,
+				pedigreeService, crossExpansionProperties, targetTable, transactionManager);
+
+		// other mock injections
+		this.dropHandler.setCurrentColumnsInfo(this.currentColumnsInfo);
 
 	}
 
