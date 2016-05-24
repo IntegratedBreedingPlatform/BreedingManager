@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource;
 import org.generationcp.breeding.manager.service.BreedingManagerSearchException;
 import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -13,6 +14,7 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
 import org.generationcp.middleware.manager.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +26,10 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.vaadin.event.ShortcutAction.KeyCode;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
@@ -35,9 +40,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.TextField;
-
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import com.vaadin.ui.Window;
 
 @Configurable
 public class GermplasmSearchBarComponent extends CssLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
@@ -55,6 +58,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 	public static final String LM_COMPONENT_WRAP = "lm-component-wrap";
 	private static final String PERCENT = "%";
 
+	private final AddEntryDialogSource source;
 	private HorizontalLayout searchBarLayoutLeft;
 	private CssLayout searchBarLayoutRight;
 	private TextField searchField;
@@ -79,8 +83,13 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 	private PlatformTransactionManager transactionManager;
 
 	public GermplasmSearchBarComponent(final GermplasmSearchResultsComponent searchResultsComponent) {
+		this(searchResultsComponent, null);
+	}
+
+	public GermplasmSearchBarComponent(final GermplasmSearchResultsComponent searchResultsComponent, final AddEntryDialogSource source) {
 		super();
 		this.searchResultsComponent = searchResultsComponent;
+		this.source = source;
 	}
 
 	public TextField getSearchField() {
@@ -107,7 +116,6 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		this.searchButton.setHeight("24px");
 		this.searchButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 		this.searchButton.setData(GermplasmSearchBarComponent.SEARCH_BUTTON);
-		this.searchButton.setClickShortcut(KeyCode.ENTER);
 
 		final Label descLbl = new Label(GermplasmSearchBarComponent.GUIDE, Label.CONTENT_XHTML);
 		descLbl.setWidth("300px");
@@ -152,6 +160,20 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 				GermplasmSearchBarComponent.this.searchButtonClickAction();
 			}
 		});
+
+		this.searchField.addShortcutListener(new ShortcutListener("SearchFieldEnterShortcut", ShortcutAction.KeyCode.ENTER, null) {
+
+			@Override
+			public void handleAction(final Object sender, final Object target) {
+				// prevent from responding to enter key if searchfield component is not focused
+				if (!target.equals(GermplasmSearchBarComponent.this.searchField)) {
+					return;
+				}
+
+				GermplasmSearchBarComponent.this.searchButtonClickAction();
+			}
+		});
+
 	}
 
 	@Override
@@ -214,8 +236,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		final String searchValue = GermplasmSearchBarComponent.this.searchField.getValue().toString();
 		final String searchType = (String) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
 		if (GermplasmSearchBarComponent.this.matchesContaining.equals(searchType)) {
-			ConfirmDialog.show(GermplasmSearchBarComponent.this.getWindow(),
-					GermplasmSearchBarComponent.this.messageSource.getMessage(Message.WARNING),
+			ConfirmDialog.show(this.getSourceWindow(), GermplasmSearchBarComponent.this.messageSource.getMessage(Message.WARNING),
 					GermplasmSearchBarComponent.this.messageSource.getMessage(Message.SEARCH_TAKE_TOO_LONG_WARNING),
 					GermplasmSearchBarComponent.this.messageSource.getMessage(Message.OK),
 					GermplasmSearchBarComponent.this.messageSource.getMessage(Message.CANCEL), new ConfirmDialog.Listener() {
@@ -234,7 +255,15 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		}
 	}
 
-	public void doSearch(final String searchValue) {
+	private Window getSourceWindow() {
+		Window sourceWindow = this.getWindow();
+		if (this.source != null) {
+			sourceWindow = this.source.getListManagerMain().getWindow();
+		}
+		return sourceWindow;
+	}
+
+	public void doSearch(final String q) {
 
 		final TransactionTemplate inTx = new TransactionTemplate(this.transactionManager);
 		inTx.execute(new TransactionCallbackWithoutResult() {
@@ -242,18 +271,24 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 			@Override
 			protected void doInTransactionWithoutResult(final TransactionStatus status) {
 				final Monitor monitor = MonitorFactory.start("GermplasmSearchBarComponent.doSearch()");
-				final String searchType = (String) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
-				final String searchKeyword = GermplasmSearchBarComponent.this.getSearchKeyword(searchValue, searchType);
-				final Operation operation =
-						GermplasmSearchBarComponent.this.exactMatches.equals(searchType) ? Operation.EQUAL : Operation.LIKE;
 
 				try {
+					// validate first the keyword, if it is empty this will raise exception
+					GermplasmSearchBarComponent.this.breedingManagerService.validateEmptySearchString(q);
+
+					final String searchType = (String) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
+					final String searchKeyword = GermplasmSearchBarComponent.this.getSearchKeyword(q, searchType);
+					final Operation operation =
+							GermplasmSearchBarComponent.this.exactMatches.equals(searchType) ? Operation.EQUAL : Operation.LIKE;
 					final boolean includeParents = (boolean) GermplasmSearchBarComponent.this.includeParentsCheckBox.getValue();
 					final boolean withInventoryOnly = (boolean) GermplasmSearchBarComponent.this.withInventoryOnlyCheckBox.getValue();
 					final boolean includeMGMembers = (boolean) GermplasmSearchBarComponent.this.includeMGMembersCheckbox.getValue();
-					GermplasmSearchBarComponent.this.searchResultsComponent
-							.applyGermplasmResults(GermplasmSearchBarComponent.this.breedingManagerService.doGermplasmSearch(searchKeyword,
-									operation, includeParents, withInventoryOnly, includeMGMembers));
+
+					// then do the search
+					final GermplasmSearchParameter searchParameter =
+							new GermplasmSearchParameter(searchKeyword, operation, includeParents, withInventoryOnly, includeMGMembers);
+					GermplasmSearchBarComponent.this.searchResultsComponent.applyGermplasmResults(searchParameter);
+
 				} catch (final BreedingManagerSearchException e) {
 					if (Message.SEARCH_QUERY_CANNOT_BE_EMPTY.equals(e.getErrorMessage())) {
 						// invalid search string

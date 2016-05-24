@@ -4,7 +4,6 @@ package org.generationcp.breeding.manager.service;
 import java.util.List;
 
 import org.generationcp.middleware.manager.Operation;
-import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.workbench.Project;
 
@@ -19,8 +18,7 @@ public interface BreedingManagerService {
 
 	public List<GermplasmList> doGermplasmListSearch(String q, Operation o) throws BreedingManagerSearchException;
 
-	public List<Germplasm> doGermplasmSearch(String q, Operation o, boolean includeParents, boolean withInventoryOnly, boolean includeMGMembers)
-			throws BreedingManagerSearchException;
-
 	public Project getCurrentProject();
+
+	public void validateEmptySearchString(String q) throws BreedingManagerSearchException;
 }

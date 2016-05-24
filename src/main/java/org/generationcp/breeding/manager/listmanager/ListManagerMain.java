@@ -282,7 +282,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		this.plantSelectionComponent.setVisible(true);
 		this.plantSelectionComponent.getSearchBarComponent().focusOnSearchField();
 
-		this.plantFinderContent.requestRepaint();
+		this.plantFinderContent.requestRepaintAll();
 	}
 
 	protected void showListSelection() {
@@ -292,7 +292,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		this.listSelectionComponent.setVisible(true);
 		this.plantSelectionComponent.setVisible(false);
 
-		this.plantFinderContent.requestRepaint();
+		this.listSelectionComponent.requestRepaintAll();
 	}
 
 	private void setTitleContent() {
@@ -446,6 +446,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	public void showListBuilder() {
 		this.splitPanel.setSplitPosition(50, Sizeable.UNITS_PERCENTAGE, true);
 
+		//TODO Localise button caption
 		final String hideTxt =
 				"<span class='bms-fa-chevron-right'" + "style='position: relative;" + " bottom: 3px;'" + "'></span>" + "Hide List Builder";
 
@@ -458,6 +459,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	public void hideListBuilder() {
 		this.splitPanel.setSplitPosition(0, Sizeable.UNITS_PIXELS, true);
 
+		//TODO Localise button caption
 		final String showTxt =
 				"<span class='bms-fa-chevron-left'" + "style='position: relative;" + " bottom: 3px;'" + "'></span>" + "Show List Builder";
 
@@ -475,10 +477,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	}
 
 	public Boolean listBuilderIsLocked() {
-		if (this.getListBuilderStatus() > 100) {
-			return true;
-		}
-		return false;
+		return this.getListBuilderStatus() > 100;
 	}
 
 	public ModeView getModeView() {

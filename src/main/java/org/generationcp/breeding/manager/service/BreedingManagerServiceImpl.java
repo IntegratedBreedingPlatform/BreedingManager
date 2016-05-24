@@ -12,7 +12,6 @@ import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
-import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.Person;
 import org.generationcp.middleware.pojos.User;
@@ -127,7 +126,8 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 		}
 	}
 
-	protected void validateEmptySearchString(final String q) throws BreedingManagerSearchException {
+	@Override
+	public void validateEmptySearchString(final String q) throws BreedingManagerSearchException {
 		if ("".equals(q.replaceAll(" ", "").trim())) {
 			throw new BreedingManagerSearchException(Message.SEARCH_QUERY_CANNOT_BE_EMPTY);
 		}
