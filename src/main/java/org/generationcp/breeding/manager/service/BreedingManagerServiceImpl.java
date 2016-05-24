@@ -12,7 +12,6 @@ import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
-import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.Person;
 import org.generationcp.middleware.pojos.User;
@@ -88,25 +87,6 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 	}
 
 	@Override
-	public List<Germplasm> doGermplasmSearch(final String q, final Operation o, final boolean includeParents,
-			final boolean withInventoryOnly, final boolean includeMGMembers) throws BreedingManagerSearchException {
-		this.validateEmptySearchString(q);
-		try {
-			final List<Germplasm> results = this.germplasmDataManager.searchForGermplasm(q, o, includeParents, withInventoryOnly, includeMGMembers);
-
-			if (null == results || results.isEmpty()) {
-				throw new BreedingManagerSearchException(Message.NO_SEARCH_RESULTS);
-			}
-
-			return results;
-
-		} catch (final MiddlewareQueryException e) {
-			BreedingManagerServiceImpl.LOG.error(e.getMessage(), e);
-			throw new BreedingManagerSearchException(Message.ERROR_DATABASE, e);
-		}
-	}
-
-	@Override
 	public List<GermplasmList> doGermplasmListSearch(final String q, final Operation o) throws BreedingManagerSearchException {
 		this.validateEmptySearchString(q);
 
@@ -126,7 +106,8 @@ public class BreedingManagerServiceImpl implements BreedingManagerService {
 		}
 	}
 
-	protected void validateEmptySearchString(final String q) throws BreedingManagerSearchException {
+	@Override
+	public void validateEmptySearchString(final String q) throws BreedingManagerSearchException {
 		if ("".equals(q.replaceAll(" ", "").trim())) {
 			throw new BreedingManagerSearchException(Message.SEARCH_QUERY_CANNOT_BE_EMPTY);
 		}
