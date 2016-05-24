@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
@@ -137,9 +138,6 @@ import com.vaadin.ui.themes.BaseTheme;
 
 	Item getGermplasmItem(final Germplasm germplasm, final int index) {
 
-		final Map<Integer, String> locationsMap = new HashMap<>();
-		final Map<Integer, String> methodsMap = new HashMap<>();
-
 		final Integer gid = germplasm.getGid();
 		final GermplasmInventory inventoryInfo = germplasm.getInventoryInfo();
 
@@ -154,10 +152,8 @@ import com.vaadin.ui.themes.BaseTheme;
 		propertyMap.put(ColumnLabels.STOCKID.getName(), new ObjectProperty<>(this.getStockIDs(inventoryInfo)));
 		propertyMap.put(ColumnLabels.GID.getName(), new ObjectProperty<>(this.getGidButton(gid)));
 		propertyMap.put(ColumnLabels.GROUP_ID.getName(), new ObjectProperty<>(germplasm.getMgid() != 0 ? germplasm.getMgid() : "-"));
-		propertyMap.put(ColumnLabels.GERMPLASM_LOCATION.getName(),
-				new ObjectProperty<>(this.retrieveLocationName(germplasm.getLocationId(), locationsMap)));
-		propertyMap.put(ColumnLabels.BREEDING_METHOD_NAME.getName(),
-				new ObjectProperty<>(this.retrieveMethodName(germplasm.getMethodId(), methodsMap)));
+		propertyMap.put(ColumnLabels.GERMPLASM_LOCATION.getName(), new ObjectProperty<>(germplasm.getLocationName()));
+		propertyMap.put(ColumnLabels.BREEDING_METHOD_NAME.getName(), new ObjectProperty<>(germplasm.getMethodName()));
 		propertyMap.put(ColumnLabels.GID.getName() + "_REF", new ObjectProperty<>(gid));
 
 		for (String propertyId : propertyMap.keySet()) {
