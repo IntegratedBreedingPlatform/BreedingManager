@@ -131,6 +131,44 @@ public class PagedTableWithSelectAllLayoutTest {
 
 	}
 
+    @Test
+    public void testUpdateLoadedPageCurrentPageDoesntExistAfterUpdate() {
+
+        final int loadedPageNumber = 21;
+
+        // Let's assume that page 21 is loaded in the screen
+        this.pagedTableWithSelectAllLayout.getLoadedPaged().add(loadedPageNumber);
+
+        PagedBreedingManagerTable table = this.pagedTableWithSelectAllLayout.getTable();
+        // then the user changed the page length (number of items per page) to a higher number
+        table.setPageLength(25);
+
+        // this will recalculate the number of page available, and since page 21 is now not available, we should remove it from loadedPage list.
+        this.pagedTableWithSelectAllLayout.updateLoadedPage();
+
+        Assert.assertFalse("Page number " + loadedPageNumber + " should be removed from loaded page", this.pagedTableWithSelectAllLayout.getLoadedPaged().contains(loadedPageNumber));
+
+    }
+
+    @Test
+    public void testUpdateLoadedPageCurrentPageStillExistAfterUpdate() {
+
+        final int loadedPageNumber = 5;
+
+        // Let's assume that page 5 is loaded in the screen
+        this.pagedTableWithSelectAllLayout.getLoadedPaged().add(loadedPageNumber);
+
+        PagedBreedingManagerTable table = this.pagedTableWithSelectAllLayout.getTable();
+        // then the user changed the page length (number of items per page) to a lower number
+        table.setPageLength(4);
+
+        // this will recalculate the number of page available, and since page 5 is still available, we should not remove it from loadedPage list.
+        this.pagedTableWithSelectAllLayout.updateLoadedPage();
+
+        Assert.assertTrue("Page number " + loadedPageNumber + " should be in loaded page list", this.pagedTableWithSelectAllLayout.getLoadedPaged().contains(loadedPageNumber));
+
+    }
+
 	private List<Object> createEntriesList() {
 
 		final List<Object> entriesList = new ArrayList<>();

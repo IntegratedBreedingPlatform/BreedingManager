@@ -27,6 +27,7 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 	private int maxRecords = 0;
 
 	private CheckBox selectAllCheckBox;
+
 	/**
 	 * This will serve as a marker of pages already loaded in the paged table
 	 */
@@ -289,6 +290,10 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 
 	public CheckBox getSelectAllCheckBox() {
 		return selectAllCheckBox;
+	}
+
+	public Set<Integer> getLoadedPaged() {
+		return loadedPaged;
 	}
 
 }
