@@ -27,8 +27,6 @@ import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.LocationDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
-import org.generationcp.middleware.pojos.Location;
-import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
@@ -265,33 +263,4 @@ import com.vaadin.ui.themes.BaseTheme;
 		stockLabel.setDescription(stockIDs);
 		return stockLabel;
 	}
-
-	private String retrieveMethodName(final Integer methodId, final Map<Integer, String> methodsMap) {
-		String methodName = "-";
-		if (methodsMap.get(methodId) == null) {
-			final Method germplasmMethod = this.germplasmDataManager.getMethodByID(methodId);
-			if (germplasmMethod != null && germplasmMethod.getMname() != null) {
-				methodName = germplasmMethod.getMname();
-				methodsMap.put(methodId, methodName);
-			}
-		} else {
-			methodName = methodsMap.get(methodId);
-		}
-		return methodName;
-	}
-
-	private String retrieveLocationName(final Integer locId, final Map<Integer, String> locationsMap) {
-		String locationName = "-";
-		if (locationsMap.get(locId) == null) {
-			final Location germplasmLocation = this.locationDataManager.getLocationByID(locId);
-			if (germplasmLocation != null && germplasmLocation.getLname() != null) {
-				locationName = germplasmLocation.getLname();
-				locationsMap.put(locId, locationName);
-			}
-		} else {
-			locationName = locationsMap.get(locId);
-		}
-		return locationName;
-	}
-
 }
