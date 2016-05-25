@@ -403,7 +403,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
 
 	void updateGermplasmListInListBuilder(final Integer listId, final String newName) {
 		final GermplasmList germplasmListInListBuilder = this.source.getListBuilderComponent().getCurrentListInSaveDialog();
-		if (germplasmListInListBuilder != null && germplasmListInListBuilder.getId().intValue() == listId.intValue()) {
+		if (germplasmListInListBuilder != null && germplasmListInListBuilder.getId() != null && germplasmListInListBuilder.getId().intValue() == listId.intValue()) {
 			this.source.getListBuilderComponent().getCurrentlySavedGermplasmList().setName(newName);
 		}
 	}
