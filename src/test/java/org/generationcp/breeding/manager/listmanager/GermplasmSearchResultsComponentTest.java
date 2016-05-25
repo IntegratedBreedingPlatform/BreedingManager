@@ -2,7 +2,8 @@
 package org.generationcp.breeding.manager.listmanager;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.customcomponent.PagedTableWithSelectAllLayout;
+import org.generationcp.breeding.manager.customfields.PagedBreedingManagerTable;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.oms.Term;
@@ -39,11 +40,16 @@ public class GermplasmSearchResultsComponentTest {
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 
+		// menu item
 		Mockito.doReturn("MENU").when(this.messageSource).getMessage(Message.ADD_SELECTED_ENTRIES_TO_NEW_LIST);
 		Mockito.doReturn("SELECT ALL").when(this.messageSource).getMessage(Message.SELECT_ALL);
 
-		final TableWithSelectAllLayout table = new TableWithSelectAllLayout(10, GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID);
-		table.instantiateComponents();
+		Mockito.doReturn("DUMMY MESSAGE").when(this.messageSource).getMessage("VALIDATION_INTEGER_FORMAT");
+		final PagedBreedingManagerTable pagedTable = new PagedBreedingManagerTable(1, 50);
+
+		final PagedTableWithSelectAllLayout table =
+				new PagedTableWithSelectAllLayout(10, GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID);
+		table.setTable(pagedTable);
 
 		Mockito.doReturn(table).when(this.germplasmSearchResultsComponent).getTableWithSelectAllLayout();
 
