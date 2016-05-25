@@ -71,7 +71,11 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 							BuildNewListDropHandler.this.addSelectedGermplasmsFromTable(sourceTable);
 						} else {
 							// If none, add what was dropped
-							BuildNewListDropHandler.this.addGermplasm((Integer) transferable.getItemId());
+
+							final Item item = transferable.getSourceComponent().getItem(transferable.getItemId());
+							final Integer selectedGid =
+									Integer.valueOf(item.getItemProperty(ColumnLabels.GID.getName() + "_REF").getValue().toString());
+							BuildNewListDropHandler.this.addGermplasm(selectedGid);
 						}
 
 					} else if (sourceTableData.equals(DropHandlerMethods.MATCHING_LISTS_TABLE_DATA)) {
