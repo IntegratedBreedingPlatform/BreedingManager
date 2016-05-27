@@ -15,11 +15,11 @@ public class TableLayout extends CssLayout implements BreedingManagerLayout, Ini
 
 	private static final long serialVersionUID = -6261586644242232751L;
 
-	protected BreedingManagerTable table;
-	private final Label emptyTableLabel = new Label("No information retrieved.");
+	protected Table table;
+	final Label emptyTableLabel = new Label("No information retrieved.");
 
-	private int recordCount = 0;
-	private int maxRecords = 0;
+	int recordCount = 0;
+	int maxRecords = 0;
 
 	public TableLayout(int recordCount, int maxRecords) {
 		super();
