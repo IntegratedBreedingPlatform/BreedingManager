@@ -165,6 +165,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 			@Override
 			public void buttonClick(final ClickEvent event) {
 				ExportListAsDialog.this.exportListAction(ExportListAsDialog.this.listDataTable);
+				ExportListAsDialog.this.closeWindow();
 			}
 		});
 	}
