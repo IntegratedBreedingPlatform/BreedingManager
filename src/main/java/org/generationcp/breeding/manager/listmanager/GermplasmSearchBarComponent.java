@@ -285,7 +285,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 			// then the calling method will need to do it as well and as it is being called from a predefined Vaadin OnClose method.
 			MessageNotifier.showError(GermplasmSearchBarComponent.this.getWindow(),
 					GermplasmSearchBarComponent.this.messageSource.getMessage(Message.UNABLE_TO_SEARCH),
-					GermplasmSearchBarComponent.this.messageSource.getMessage(e.getErrorMessage()));
+					GermplasmSearchBarComponent.this.messageSource.getMessage(Message.ERROR_IN_SEARCH));
 
 			GermplasmSearchBarComponent.LOG.error("Database error occured while searching. Search string was: " + searchValue, e);
 		} finally {
