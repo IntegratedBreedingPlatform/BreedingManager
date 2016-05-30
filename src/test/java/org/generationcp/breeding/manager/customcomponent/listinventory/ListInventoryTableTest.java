@@ -45,7 +45,7 @@ public class ListInventoryTableTest {
 	private SimpleResourceBundleMessageSource messageSource;
 
 	@InjectMocks
-	private ListInventoryTable listInventoryTable = new ListInventoryTable(ListInventoryTableTest.LIST_ID);
+	private final ListInventoryTable listInventoryTable = new ListInventoryTable(ListInventoryTableTest.LIST_ID);
 
 	@Before
 	public void setUp() throws MiddlewareQueryException {
@@ -61,52 +61,47 @@ public class ListInventoryTableTest {
 	@Test
 	public void testInstantiateComponentsHeaderNameFromOntology() throws MiddlewareQueryException {
 
-
-		Term desigTerm = ListInventoryDataInitializer.createTerm("Designation");
+		final Term desigTerm = ListInventoryDataInitializer.createTerm("Designation");
 		Mockito.doReturn(desigTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.DESIGNATION.getTermId().getId());
 
-		Term locTerm = ListInventoryDataInitializer.createTerm("Location");
+		final Term locTerm = ListInventoryDataInitializer.createTerm("Location");
 		Mockito.doReturn(locTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.LOT_LOCATION.getTermId().getId());
 
-		Term unitsTerm = ListInventoryDataInitializer.createTerm("Units");
+		final Term unitsTerm = ListInventoryDataInitializer.createTerm("Units");
 		Mockito.doReturn(unitsTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.UNITS.getTermId().getId());
 
-		Term availInvTerm = ListInventoryDataInitializer.createTerm("Available Inventory");
-		Mockito.doReturn(availInvTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.AVAILABLE_INVENTORY.getTermId().getId());
-
-		Term totalTerm = ListInventoryDataInitializer.createTerm("Total");
+		final Term totalTerm = ListInventoryDataInitializer.createTerm("Total");
 		Mockito.doReturn(totalTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.TOTAL.getTermId().getId());
 
-		Term reservedTerm = ListInventoryDataInitializer.createTerm("RES");
+		final Term reservedTerm = ListInventoryDataInitializer.createTerm("RES");
 		Mockito.doReturn(reservedTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.RESERVED.getTermId().getId());
 
-		Term newlyResTerm = ListInventoryDataInitializer.createTerm("Newly Reserved");
+		final Term newlyResTerm = ListInventoryDataInitializer.createTerm("Newly Reserved");
 		Mockito.doReturn(newlyResTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.NEWLY_RESERVED.getTermId().getId());
 
-		Term commentTerm = ListInventoryDataInitializer.createTerm("Comment");
+		final Term commentTerm = ListInventoryDataInitializer.createTerm("Comment");
 		Mockito.doReturn(commentTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.COMMENT.getTermId().getId());
 
-		Term groupId = ListInventoryDataInitializer.createTerm("GROUP ID");
+		final Term groupId = ListInventoryDataInitializer.createTerm("GROUP ID");
 		Mockito.doReturn(groupId).when(this.ontologyDataManager).getTermById(ColumnLabels.GROUP_ID.getTermId().getId());
 
-		Term stockIdTerm = ListInventoryDataInitializer.createTerm("Stock ID");
+		final Term stockIdTerm = ListInventoryDataInitializer.createTerm("Stock ID");
 		Mockito.doReturn(stockIdTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.STOCKID.getTermId().getId());
 
-		Term lotIdTerm = ListInventoryDataInitializer.createTerm("Lot ID");
+		final Term lotIdTerm = ListInventoryDataInitializer.createTerm("Lot ID");
 		Mockito.doReturn(lotIdTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.LOT_ID.getTermId().getId());
 
-		Term seedSourceTerm = ListInventoryDataInitializer.createTerm("Seed Source");
+		final Term seedSourceTerm = ListInventoryDataInitializer.createTerm("Seed Source");
 		Mockito.doReturn(seedSourceTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.SEED_SOURCE.getTermId().getId());
 
 		this.listInventoryTable.instantiateComponents();
 
-		Table table = this.listInventoryTable.getTable();
+		final Table table = this.listInventoryTable.getTable();
 		Assert.assertEquals("CHECK", table.getColumnHeader(ColumnLabels.TAG.getName()));
 		Assert.assertEquals("#", table.getColumnHeader(ColumnLabels.ENTRY_ID.getName()));
 		Assert.assertEquals(desigTerm.getName(), table.getColumnHeader(ColumnLabels.DESIGNATION.getName()));
 		Assert.assertEquals(locTerm.getName(), table.getColumnHeader(ColumnLabels.LOT_LOCATION.getName()));
 		Assert.assertEquals(unitsTerm.getName(), table.getColumnHeader(ColumnLabels.UNITS.getName()));
-		Assert.assertEquals(availInvTerm.getName(), table.getColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName()));
 		Assert.assertEquals(totalTerm.getName(), table.getColumnHeader(ColumnLabels.TOTAL.getName()));
 		Assert.assertEquals(reservedTerm.getName(), table.getColumnHeader(ColumnLabels.RESERVED.getName()));
 		Assert.assertEquals(newlyResTerm.getName(), table.getColumnHeader(ColumnLabels.NEWLY_RESERVED.getName()));
@@ -123,7 +118,6 @@ public class ListInventoryTableTest {
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.DESIGNATION.getTermId().getId());
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.LOT_LOCATION.getTermId().getId());
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.UNITS.getTermId().getId());
-		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.AVAILABLE_INVENTORY.getTermId().getId());
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.TOTAL.getTermId().getId());
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.RESERVED.getTermId().getId());
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.NEWLY_RESERVED.getTermId().getId());
@@ -134,7 +128,7 @@ public class ListInventoryTableTest {
 
 		this.listInventoryTable.instantiateComponents();
 
-		Table table = this.listInventoryTable.getTable();
+		final Table table = this.listInventoryTable.getTable();
 		Assert.assertEquals("CHECK", table.getColumnHeader(ColumnLabels.TAG.getName()));
 		Assert.assertEquals("#", table.getColumnHeader(ColumnLabels.ENTRY_ID.getName()));
 		Assert.assertEquals(ColumnLabels.DESIGNATION.getName(), table.getColumnHeader(ColumnLabels.DESIGNATION.getName()));
@@ -153,28 +147,31 @@ public class ListInventoryTableTest {
 
 	@Test
 	public void testDisplayInventoryDetails() {
-		List<GermplasmListData> inventoryDetails = ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails();
+		final List<GermplasmListData> inventoryDetails = ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails();
 		this.listInventoryTable.displayInventoryDetails(inventoryDetails);
 
-		int expectedNoOFLotEntries = ListInventoryDataInitializer.getNumberOfEntriesInInventoryView();
-		Table table = this.listInventoryTable.getTable();
+		final int expectedNoOFLotEntries = ListInventoryDataInitializer.getNumberOfEntriesInInventoryView();
+		final Table table = this.listInventoryTable.getTable();
 		Assert.assertEquals("Expecting that all entries from inventoryDetails are properly inserted in listinventory table but didn't.",
 				expectedNoOFLotEntries, table.getContainerDataSource().size());
-		
-		GermplasmListData row1InventoryDetails = inventoryDetails.get(0);
+
+		final GermplasmListData row1InventoryDetails = inventoryDetails.get(0);
 		final LotDetails row1LotDetails = row1InventoryDetails.getInventoryInfo().getLotRows().get(0);
-		Item row1VaadinTable = table.getItem(row1LotDetails);
+		final Item row1VaadinTable = table.getItem(row1LotDetails);
 		Assert.assertNotNull(row1VaadinTable);
-		
+
 		Assert.assertEquals(row1InventoryDetails.getEntryId(), row1VaadinTable.getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue());
-		Assert.assertEquals(row1LotDetails.getLocationOfLot().getLname(), row1VaadinTable.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).getValue());
-		Assert.assertEquals(row1LotDetails.getScaleOfLot().getName(), row1VaadinTable.getItemProperty(ColumnLabels.UNITS.getName()).getValue());
+		Assert.assertEquals(row1LotDetails.getLocationOfLot().getLname(),
+				row1VaadinTable.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).getValue());
+		Assert.assertEquals(row1LotDetails.getScaleOfLot().getName(), row1VaadinTable.getItemProperty(ColumnLabels.UNITS.getName())
+				.getValue());
 		Assert.assertEquals(row1LotDetails.getActualLotBalance(), row1VaadinTable.getItemProperty(ColumnLabels.TOTAL.getName()).getValue());
 		Assert.assertEquals(0.0, row1VaadinTable.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).getValue());
 		Assert.assertEquals(row1LotDetails.getCommentOfLot(), row1VaadinTable.getItemProperty(ColumnLabels.COMMENT.getName()).getValue());
 		Assert.assertEquals(row1LotDetails.getLotId(), row1VaadinTable.getItemProperty(ColumnLabels.LOT_ID.getName()).getValue());
-		Assert.assertEquals(row1InventoryDetails.getSeedSource(), row1VaadinTable.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue());
-		
+		Assert.assertEquals(row1InventoryDetails.getSeedSource(), row1VaadinTable.getItemProperty(ColumnLabels.SEED_SOURCE.getName())
+				.getValue());
+
 	}
 
 	@Test
@@ -190,7 +187,7 @@ public class ListInventoryTableTest {
 	public void testLoadInventoryData() {
 		this.initDataToInventoryTable();
 
-		int expectedNoOFLotEntries = ListInventoryDataInitializer.getNumberOfEntriesInInventoryView();
+		final int expectedNoOFLotEntries = ListInventoryDataInitializer.getNumberOfEntriesInInventoryView();
 		Assert.assertEquals("Expecting that the method for loading inventory data in inventory table is called but didn't.",
 				expectedNoOFLotEntries, this.listInventoryTable.getTable().getContainerDataSource().size());
 
@@ -207,7 +204,7 @@ public class ListInventoryTableTest {
 	}
 
 	private void initDataToInventoryTable() {
-		List<GermplasmListData> inventoryDetails = ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails();
+		final List<GermplasmListData> inventoryDetails = ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails();
 		Mockito.doReturn(inventoryDetails).when(this.inventoryDataManager)
 				.getLotDetailsForList(ListInventoryTableTest.LIST_ID, 0, Integer.MAX_VALUE);
 
@@ -218,15 +215,15 @@ public class ListInventoryTableTest {
 	public void testToggleSelectOnLotEntries() {
 		this.initDataToInventoryTable();
 
-		Table table = this.listInventoryTable.getTable();
+		final Table table = this.listInventoryTable.getTable();
 
 		// retrieve a checkbox from one of the rows in inventory table
 		@SuppressWarnings("unchecked")
-		Collection<ListEntryLotDetails> itemIds = (Collection<ListEntryLotDetails>) table.getItemIds();
-		Iterator<ListEntryLotDetails> itr = itemIds.iterator();
-		ListEntryLotDetails lotDetail = itr.next();
-		Item item = table.getItem(lotDetail);
-		CheckBox itemCheckBox = (CheckBox) item.getItemProperty(ColumnLabels.TAG.getName()).getValue();
+		final Collection<ListEntryLotDetails> itemIds = (Collection<ListEntryLotDetails>) table.getItemIds();
+		final Iterator<ListEntryLotDetails> itr = itemIds.iterator();
+		final ListEntryLotDetails lotDetail = itr.next();
+		final Item item = table.getItem(lotDetail);
+		final CheckBox itemCheckBox = (CheckBox) item.getItemProperty(ColumnLabels.TAG.getName()).getValue();
 
 		itemCheckBox.setValue(true);
 		this.listInventoryTable.toggleSelectOnLotEntries(itemCheckBox);
@@ -239,22 +236,22 @@ public class ListInventoryTableTest {
 
 	@Test
 	public void testResetRowsForCancelledReservation() {
-		List<ListEntryLotDetails> lotDetailsToCancel = new ArrayList<ListEntryLotDetails>();
+		final List<ListEntryLotDetails> lotDetailsToCancel = new ArrayList<ListEntryLotDetails>();
 		this.initDataToInventoryTable();
-		Table table = this.listInventoryTable.getTable();
+		final Table table = this.listInventoryTable.getTable();
 		this.updateReservationForLotEntries(lotDetailsToCancel, table, PREV_RESERVED_VALUE);
 
 		this.listInventoryTable.resetRowsForCancelledReservation(lotDetailsToCancel, LIST_ID);
 
-		double expectedNewAvailInventory = PREV_AVAIL_INVENTORY + PREV_RESERVED_VALUE;
-		for (ListEntryLotDetails lotDetail : lotDetailsToCancel) {
-			Item item = table.getItem(lotDetail);
-			double availVal = (double) item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue();
-			double reservedVal = (double) item.getItemProperty(ColumnLabels.RESERVED.getName()).getValue();
-			double newReservedVal = (double) item.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).getValue();
+		final double expectedNewAvailInventory = PREV_AVAIL_INVENTORY + PREV_RESERVED_VALUE;
+		for (final ListEntryLotDetails lotDetail : lotDetailsToCancel) {
+			final Item item = table.getItem(lotDetail);
+			final double totalVal = (double) item.getItemProperty(ColumnLabels.TOTAL.getName()).getValue();
+			final double reservedVal = (double) item.getItemProperty(ColumnLabels.RESERVED.getName()).getValue();
+			final double newReservedVal = (double) item.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).getValue();
 
-			Assert.assertEquals("Expecting that the available inventory is increased by the amount of reservation but didn't.",
-					expectedNewAvailInventory, availVal, 0.00);
+			Assert.assertEquals("Expecting that the total column is increased by the amount of reservation but didn't.",
+					expectedNewAvailInventory, totalVal, 0.00);
 			Assert.assertEquals("Expecting that the reservation amount is reset to 0 but didn't.", 0, reservedVal, 0.00);
 			Assert.assertEquals("Expecting that the new reservation amount is also reset to 0 but didn't", 0, newReservedVal, 0.00);
 		}
@@ -263,9 +260,9 @@ public class ListInventoryTableTest {
 
 	@Test
 	public void testIsSelectedEntriesHasReservation_WhenThereIsReservation() {
-		List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
+		final List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
 		this.initDataToInventoryTable();
-		Table table = this.listInventoryTable.getTable();
+		final Table table = this.listInventoryTable.getTable();
 		this.updateReservationForLotEntries(lotDetails, table, PREV_RESERVED_VALUE);
 
 		Assert.assertTrue("Expecting true for at least one lot details with reservation but didn't.",
@@ -274,23 +271,23 @@ public class ListInventoryTableTest {
 
 	@Test
 	public void testIsSelectedEntriesHasReservation_WhenThereIsNoReservation() {
-		List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
+		final List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
 		this.initDataToInventoryTable();
-		Table table = this.listInventoryTable.getTable();
+		final Table table = this.listInventoryTable.getTable();
 		this.updateReservationForLotEntries(lotDetails, table, 0);
 
 		Assert.assertFalse("Expecting false for at least one lot details with reservation but didn't.",
 				this.listInventoryTable.isSelectedEntriesHasReservation(lotDetails));
 	}
 
-	private void updateReservationForLotEntries(List<ListEntryLotDetails> lotEntries, Table table, double reservedVal) {
+	private void updateReservationForLotEntries(final List<ListEntryLotDetails> lotEntries, final Table table, final double reservedVal) {
 		@SuppressWarnings("unchecked")
-		Collection<ListEntryLotDetails> itemIds = (Collection<ListEntryLotDetails>) table.getItemIds();
-		Iterator<ListEntryLotDetails> itr = itemIds.iterator();
+		final Collection<ListEntryLotDetails> itemIds = (Collection<ListEntryLotDetails>) table.getItemIds();
+		final Iterator<ListEntryLotDetails> itr = itemIds.iterator();
 		while (itr.hasNext()) {
-			ListEntryLotDetails lotDetail = itr.next();
-			Item item = table.getItem(lotDetail);
-			item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(PREV_AVAIL_INVENTORY);
+			final ListEntryLotDetails lotDetail = itr.next();
+			final Item item = table.getItem(lotDetail);
+			item.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(PREV_AVAIL_INVENTORY);
 			item.getItemProperty(ColumnLabels.RESERVED.getName()).setValue(reservedVal);
 			item.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(reservedVal);
 			lotEntries.add(lotDetail);
