@@ -71,7 +71,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 	@Resource
 	protected CrossExpansionProperties crossExpansionProperties;
 
-	public ListInventoryTable(Integer listId) {
+	public ListInventoryTable(final Integer listId) {
 		super(ColumnLabels.TAG.getName());
 		this.listId = listId;
 	}
@@ -135,34 +135,34 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 	public void loadInventoryData() {
 		if (this.listId != null) {
 			try {
-				List<GermplasmListData> inventoryDetails =
+				final List<GermplasmListData> inventoryDetails =
 						this.inventoryDataManager.getLotDetailsForList(this.listId, 0, Integer.MAX_VALUE);
 				this.displayInventoryDetails(inventoryDetails);
-			} catch (MiddlewareQueryException e) {
+			} catch (final MiddlewareQueryException e) {
 				ListInventoryTable.LOG.error(e.getMessage(), e);
 			}
 		}
 
 	}
 
-	public void displayInventoryDetails(List<GermplasmListData> inventoryDetails) {
+	public void displayInventoryDetails(final List<GermplasmListData> inventoryDetails) {
 
 		this.listInventoryTable.removeAllItems();
-		Container listInventoryContainer = this.listInventoryTable.getContainerDataSource();
-		for (GermplasmListData inventoryDetail : inventoryDetails) {
+		final Container listInventoryContainer = this.listInventoryTable.getContainerDataSource();
+		for (final GermplasmListData inventoryDetail : inventoryDetails) {
 
-			Integer entryId = inventoryDetail.getEntryId();
-			String designation = inventoryDetail.getDesignation();
+			final Integer entryId = inventoryDetail.getEntryId();
+			final String designation = inventoryDetail.getDesignation();
 
-			ListDataInventory listDataInventory = inventoryDetail.getInventoryInfo();
+			final ListDataInventory listDataInventory = inventoryDetail.getInventoryInfo();
 			@SuppressWarnings("unchecked")
-			List<ListEntryLotDetails> lotDetails = (List<ListEntryLotDetails>) listDataInventory.getLotRows();
+			final List<ListEntryLotDetails> lotDetails = (List<ListEntryLotDetails>) listDataInventory.getLotRows();
 
 			if (lotDetails != null) {
-				for (ListEntryLotDetails lotDetail : lotDetails) {
-					Item newItem = listInventoryContainer.addItem(lotDetail);
+				for (final ListEntryLotDetails lotDetail : lotDetails) {
+					final Item newItem = listInventoryContainer.addItem(lotDetail);
 
-					CheckBox itemCheckBox = new CheckBox();
+					final CheckBox itemCheckBox = new CheckBox();
 					itemCheckBox.setData(lotDetail);
 					itemCheckBox.setImmediate(true);
 					itemCheckBox.addListener(new ClickListener() {
@@ -170,14 +170,14 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 						private static final long serialVersionUID = 1L;
 
 						@Override
-						public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-							CheckBox itemCheckBox = (CheckBox) event.getButton();
+						public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
+							final CheckBox itemCheckBox = (CheckBox) event.getButton();
 							ListInventoryTable.this.toggleSelectOnLotEntries(itemCheckBox);
 						}
 
 					});
 
-					Button desigButton =
+					final Button desigButton =
 							new Button(String.format("%s", designation), new GidLinkButtonClickListener(
 									inventoryDetail.getGid().toString(), true));
 					desigButton.setStyleName(BaseTheme.BUTTON_LINK);
@@ -193,8 +193,8 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 					newItem.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(0);
 					newItem.getItemProperty(ColumnLabels.COMMENT.getName()).setValue(lotDetail.getCommentOfLot());
 
-					String stockIds = lotDetail.getStockIds();
-					Label stockIdsLbl = new Label(stockIds);
+					final String stockIds = lotDetail.getStockIds();
+					final Label stockIdsLbl = new Label(stockIds);
 					stockIdsLbl.setDescription(stockIds);
 					newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdsLbl);
 					newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotDetail.getLotId());
@@ -205,7 +205,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 
 	}
 
-	protected void toggleSelectOnLotEntries(CheckBox itemCheckBox) {
+	protected void toggleSelectOnLotEntries(final CheckBox itemCheckBox) {
 		if (((Boolean) itemCheckBox.getValue()).equals(true)) {
 			this.listInventoryTable.select(itemCheckBox.getData());
 		} else {
@@ -217,14 +217,14 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		this.loadInventoryData(); // reset
 	}
 
-	public void resetRowsForCancelledReservation(List<ListEntryLotDetails> lotDetailsToCancel, Integer listId) {
+	public void resetRowsForCancelledReservation(final List<ListEntryLotDetails> lotDetailsToCancel, final Integer listId) {
 
-		for (ListEntryLotDetails lotDetail : lotDetailsToCancel) {
-			Item item = this.listInventoryTable.getItem(lotDetail);
+		for (final ListEntryLotDetails lotDetail : lotDetailsToCancel) {
+			final Item item = this.listInventoryTable.getItem(lotDetail);
 
-			Double availColumn = (Double) item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue();
-			Double reservedColumn = (Double) item.getItemProperty(ColumnLabels.RESERVED.getName()).getValue();
-			Double newAvailVal = availColumn + reservedColumn;
+			final Double availColumn = (Double) item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue();
+			final Double reservedColumn = (Double) item.getItemProperty(ColumnLabels.RESERVED.getName()).getValue();
+			final Double newAvailVal = availColumn + reservedColumn;
 
 			lotDetail.setAvailableLotBalance(newAvailVal);
 			item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(newAvailVal);
@@ -233,11 +233,11 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		}
 	}
 
-	public boolean isSelectedEntriesHasReservation(List<ListEntryLotDetails> lotDetailsGid) {
-		for (ListEntryLotDetails lotDetails : lotDetailsGid) {
-			Item item = this.listInventoryTable.getItem(lotDetails);
-			Double resColumn = (Double) item.getItemProperty(ColumnLabels.RESERVED.getName()).getValue();
-			Double newResColumn = (Double) item.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).getValue();
+	public boolean isSelectedEntriesHasReservation(final List<ListEntryLotDetails> lotDetailsGid) {
+		for (final ListEntryLotDetails lotDetails : lotDetailsGid) {
+			final Item item = this.listInventoryTable.getItem(lotDetails);
+			final Double resColumn = (Double) item.getItemProperty(ColumnLabels.RESERVED.getName()).getValue();
+			final Double newResColumn = (Double) item.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).getValue();
 
 			if (resColumn > 0 || newResColumn > 0) {
 				return true;
@@ -248,14 +248,14 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 
 	@SuppressWarnings("unchecked")
 	public List<ListEntryLotDetails> getSelectedLots() {
-		Collection<ListEntryLotDetails> selectedEntries = (Collection<ListEntryLotDetails>) this.listInventoryTable.getValue();
+		final Collection<ListEntryLotDetails> selectedEntries = (Collection<ListEntryLotDetails>) this.listInventoryTable.getValue();
 
-		List<ListEntryLotDetails> lotsSeleted = new ArrayList<ListEntryLotDetails>();
+		final List<ListEntryLotDetails> lotsSeleted = new ArrayList<ListEntryLotDetails>();
 		lotsSeleted.addAll(selectedEntries);
 		return lotsSeleted;
 	}
 
-	public void setListId(Integer listId) {
+	public void setListId(final Integer listId) {
 		this.listId = listId;
 	}
 
@@ -267,11 +267,11 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		this.listInventoryTable.removeAllItems();
 	}
 
-	public void setMaxRows(int i) {
+	public void setMaxRows(final int i) {
 		this.listInventoryTable.setPageLength(i);
 	}
 
-	public void setTableHeight(String height) {
+	public void setTableHeight(final String height) {
 		this.listInventoryTable.setHeight(height);
 	}
 
@@ -279,7 +279,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		this.messageSource = messageSource;
 	}
 
-	public void setOntologyDataManager(OntologyDataManager ontologyDataManager) {
+	public void setOntologyDataManager(final OntologyDataManager ontologyDataManager) {
 		this.ontologyDataManager = ontologyDataManager;
 	}
 
