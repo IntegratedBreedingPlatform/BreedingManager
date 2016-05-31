@@ -92,41 +92,42 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 
 	}
 
-	public BreedingLocationField(BreedingLocationFieldSource source) {
+	public BreedingLocationField(final BreedingLocationFieldSource source) {
 		this.source = source;
 		this.caption = "Location: ";
 		this.changed = false;
 	}
 
-	public BreedingLocationField(BreedingLocationFieldSource source, Window attachToWindow) {
+	public BreedingLocationField(final BreedingLocationFieldSource source, final Window attachToWindow) {
 		this(source);
 		this.attachToWindow = attachToWindow;
 	}
 
-	public BreedingLocationField(BreedingLocationFieldSource source, Window attachToWindow, int pixels) {
+	public BreedingLocationField(final BreedingLocationFieldSource source, final Window attachToWindow, final int pixels) {
 		this(source, attachToWindow);
 		this.leftIndentPixels = pixels;
 	}
 
-	public BreedingLocationField(BreedingLocationFieldSource source, int pixels) {
+	public BreedingLocationField(final BreedingLocationFieldSource source, final int pixels) {
 		this.source = source;
 		this.leftIndentPixels = pixels;
 	}
 
-	public BreedingLocationField(BreedingLocationFieldSource source, Window attachToWindow, int pixels, Integer locationType) {
+	public BreedingLocationField(final BreedingLocationFieldSource source, final Window attachToWindow, final int pixels,
+			final Integer locationType) {
 		this(source, attachToWindow);
 		this.leftIndentPixels = pixels;
 		this.locationType = locationType;
 	}
 
-	public BreedingLocationField(BreedingLocationFieldSource source, int pixels, Integer locationType) {
+	public BreedingLocationField(final BreedingLocationFieldSource source, final int pixels, final Integer locationType) {
 		this.source = source;
 		this.leftIndentPixels = pixels;
 		this.locationType = locationType;
 	}
 
-	public BreedingLocationField(BreedingLocationFieldSource source, Window attachToWindow, int pixels,
-			boolean displayFavoriteMethodsFilter, boolean displayManageMethodLink, Integer locationType) {
+	public BreedingLocationField(final BreedingLocationFieldSource source, final Window attachToWindow, final int pixels,
+			final boolean displayFavoriteMethodsFilter, final boolean displayManageMethodLink, final Integer locationType) {
 		this(source, attachToWindow);
 		this.leftIndentPixels = pixels;
 		this.displayFavoriteMethodsFilter = displayFavoriteMethodsFilter;
@@ -134,8 +135,8 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		this.locationType = locationType;
 	}
 
-	public BreedingLocationField(BreedingLocationFieldSource source, int pixels, boolean displayFavoriteMethodsFilter,
-			boolean displayManageMethodLink, Integer locationType) {
+	public BreedingLocationField(final BreedingLocationFieldSource source, final int pixels, final boolean displayFavoriteMethodsFilter,
+			final boolean displayManageMethodLink, final Integer locationType) {
 		this.source = source;
 		this.leftIndentPixels = pixels;
 		this.displayFavoriteMethodsFilter = displayFavoriteMethodsFilter;
@@ -163,7 +164,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 
 		try {
 			this.programUniqueId = this.breedingManagerService.getCurrentProject().getUniqueID();
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			BreedingLocationField.LOG.error(e.getMessage(), e);
 		}
 	}
@@ -174,7 +175,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		this.initPopulateFavLocations(this.programUniqueId);
 	}
 
-	public boolean initPopulateFavLocations(String programUUID) {
+	public boolean initPopulateFavLocations(final String programUUID) {
 		boolean hasFavorite = false;
 		if (BreedingManagerUtil.hasFavoriteLocation(this.germplasmDataManager, 0, programUUID)) {
 			this.showFavoritesCheckBox.setValue(true);
@@ -192,7 +193,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void valueChange(ValueChangeEvent event) {
+			public void valueChange(final ValueChangeEvent event) {
 				BreedingLocationField.this.changed = true;
 			}
 		});
@@ -202,7 +203,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void containerItemSetChange(ItemSetChangeEvent event) {
+			public void containerItemSetChange(final ItemSetChangeEvent event) {
 				BreedingLocationField.this.changed = true;
 			}
 		});
@@ -212,7 +213,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void valueChange(ValueChangeEvent event) {
+			public void valueChange(final ValueChangeEvent event) {
 				BreedingLocationField.this.populateHarvestLocation(((Boolean) event.getProperty().getValue()).equals(true),
 						BreedingLocationField.this.programUniqueId);
 			}
@@ -223,7 +224,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				BreedingLocationField.this.launchManageWindow();
 			}
 		});
@@ -246,7 +247,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		}
 
 		if (this.displayManageMethodLink) {
-			int pixels = this.leftIndentPixels + 220;
+			final int pixels = this.leftIndentPixels + 220;
 			this.addComponent(this.manageFavoritesLink, "top:33px; left:" + pixels + "px");
 		}
 	}
@@ -268,11 +269,11 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		return this.breedingLocationComboBox;
 	}
 
-	public void setBreedingLocationComboBox(ComboBox breedingLocationComboBox) {
+	public void setBreedingLocationComboBox(final ComboBox breedingLocationComboBox) {
 		this.breedingLocationComboBox = breedingLocationComboBox;
 	}
 
-	public void setValue(String value) {
+	public void setValue(final String value) {
 		this.breedingLocationComboBox.select(value);
 	}
 
@@ -288,18 +289,18 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		return this.changed;
 	}
 
-	public void setChanged(boolean changed) {
+	public void setChanged(final boolean changed) {
 		this.changed = changed;
 	}
 
-	public void populateHarvestLocation(Integer selectedLocation, String programUUID) {
+	public void populateHarvestLocation(final Integer selectedLocation, final String programUUID) {
 		this.populateHarvestLocation(this.showFavoritesCheckBox.getValue().equals(true), programUUID);
 		if (selectedLocation != null) {
 			this.breedingLocationComboBox.setValue(selectedLocation);
 		}
 	}
 
-	private void populateHarvestLocation(boolean showOnlyFavorites, String programUUID) {
+	private void populateHarvestLocation(final boolean showOnlyFavorites, final String programUUID) {
 		this.breedingLocationComboBox.removeAllItems();
 
 		if (showOnlyFavorites) {
@@ -307,7 +308,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 				BreedingManagerUtil.populateWithFavoriteLocations(this.workbenchDataManager, this.germplasmDataManager,
 						this.breedingLocationComboBox, null, programUUID);
 
-			} catch (MiddlewareQueryException e) {
+			} catch (final MiddlewareQueryException e) {
 				BreedingLocationField.LOG.error(e.getMessage(), e);
 				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
 						"Error getting favorite locations!");
@@ -322,7 +323,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 	/*
 	 * Fill with all locations
 	 */
-	private void populateLocations(String programUUID) {
+	private void populateLocations(final String programUUID) {
 
 		try {
 			if (this.locationType > 0) {
@@ -336,7 +337,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 
 		Integer firstId = null;
 		boolean hasDefault = false;
-		for (Location location : this.locations) {
+		for (final Location location : this.locations) {
 			if (firstId == null) {
 				firstId = location.getLocid();
 			}
@@ -354,10 +355,10 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 
 	private void launchManageWindow() {
 		try {
-			Project project = this.contextUtil.getProjectInContext();
+			final Project project = this.contextUtil.getProjectInContext();
 
-			Window window = this.attachToWindow != null ? this.attachToWindow : this.getWindow();
-			Window manageFavoriteLocationsWindow =
+			final Window window = this.attachToWindow != null ? this.attachToWindow : this.getWindow();
+			final Window manageFavoriteLocationsWindow =
 					Util.launchLocationManager(this.workbenchDataManager, project.getProjectId(), window,
 							this.messageSource.getMessage(Message.MANAGE_LOCATIONS));
 			manageFavoriteLocationsWindow.addListener(new CloseListener() {
@@ -365,17 +366,17 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 				private static final long serialVersionUID = 1L;
 
 				@Override
-				public void windowClose(CloseEvent e) {
+				public void windowClose(final CloseEvent e) {
 					BreedingLocationField.this.source.updateAllLocationFields();
 				}
 			});
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			BreedingLocationField.LOG.error("Error on manageFavoriteLocations click", e);
 		}
 	}
 
 	@Override
-	public void setCaption(String caption) {
+	public void setCaption(final String caption) {
 		this.caption = caption;
 		if (this.captionLabel != null) {
 			this.captionLabel.setValue(this.caption);
@@ -390,11 +391,11 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		return this.messageSource;
 	}
 
-	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 
-	public void setWorkbenchDataManager(WorkbenchDataManager workbenchDataManager) {
+	public void setWorkbenchDataManager(final WorkbenchDataManager workbenchDataManager) {
 		this.workbenchDataManager = workbenchDataManager;
 	}
 
@@ -402,7 +403,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		return this.germplasmDataManager;
 	}
 
-	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+	public void setGermplasmDataManager(final GermplasmDataManager germplasmDataManager) {
 		this.germplasmDataManager = germplasmDataManager;
 	}
 
@@ -410,11 +411,11 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		return this.locationDataManager;
 	}
 
-	public void setLocationDataManager(LocationDataManager locationDataManager) {
+	public void setLocationDataManager(final LocationDataManager locationDataManager) {
 		this.locationDataManager = locationDataManager;
 	}
 
-	public void setBreedingManagerService(BreedingManagerService breedingManagerService) {
+	public void setBreedingManagerService(final BreedingManagerService breedingManagerService) {
 		this.breedingManagerService = breedingManagerService;
 	}
 }
