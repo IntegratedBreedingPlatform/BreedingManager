@@ -72,6 +72,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	private Button cancelButton;
 
 	private final Component source;
+
 	private final GermplasmList germplasmList;
 
 	private final Table listDataTable;
@@ -158,16 +159,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	public void addListeners() {
 		this.cancelButton.addListener(new CloseWindowAction());
 
-		this.finishButton.addListener(new Button.ClickListener() {
-
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void buttonClick(final ClickEvent event) {
-				ExportListAsDialog.this.exportListAction(ExportListAsDialog.this.listDataTable);
-				ExportListAsDialog.this.closeWindow();
-			}
-		});
+		this.finishButton.addListener(new FinishButtonListener(this));
 	}
 
 	protected void exportListAction(final Table table) {
@@ -177,7 +169,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 
 			@Override
 			protected void doInTransactionWithoutResult(final TransactionStatus status) {
-				if (ExportListAsDialog.this.germplasmList.isLockedList()) {
+
 					ExportListAsDialog.this.showWarningMessage(table);
 					// do the export
 					final String exportType = ExportListAsDialog.this.formatOptionsCbx.getValue().toString();
@@ -194,11 +186,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 						final String reportCode = userSelection.substring(0, userSelection.indexOf("-")).trim();
 						ExportListAsDialog.this.exportCustomReport(reportCode);
 					}
-				} else {
-					MessageNotifier.showError(ExportListAsDialog.this.getWindow(),
-							ExportListAsDialog.this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST),
-							ExportListAsDialog.this.messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED));
-				}
+
 			}
 		});
 
@@ -385,5 +373,44 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 
 	protected String formatCustomReportString(CustomReportType type) {
 		return type.getCode() + " - " + type.getName();
+	}
+
+	protected GermplasmList getGermplasmList() {
+		return germplasmList;
+	}
+
+	protected Table getListDataTable() {
+		return listDataTable;
+	}
+
+	protected SimpleResourceBundleMessageSource getMessageSource() {
+		return messageSource;
+	}
+
+	static class FinishButtonListener implements Button.ClickListener {
+
+		ExportListAsDialog exportListAsDialog;
+
+		FinishButtonListener (ExportListAsDialog exportListAsDialog) {
+			this.exportListAsDialog = exportListAsDialog;
+		}
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void buttonClick(final ClickEvent event) {
+
+			if (exportListAsDialog.getGermplasmList().isLockedList()) {
+				exportListAsDialog.exportListAction(exportListAsDialog.getListDataTable());
+				exportListAsDialog.getParent().removeWindow(exportListAsDialog);
+			} else {
+				MessageNotifier.showError(exportListAsDialog.getWindow(),
+						exportListAsDialog.getMessageSource().getMessage(Message.ERROR_EXPORTING_LIST),
+						exportListAsDialog.getMessageSource().getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED));
+			}
+
+
+		}
+
 	}
 }
