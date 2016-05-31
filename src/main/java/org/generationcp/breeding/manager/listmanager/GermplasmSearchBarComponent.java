@@ -281,8 +281,6 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 			GermplasmSearchBarComponent.this.searchResultsComponent.applyGermplasmResults(searchParameter);
 
 		} catch (final BreedingManagerSearchException e) {
-			// if instead of showing the errorMessage at this moment I were to rethrow the exception
-			// then the calling method will need to do it as well and as it is being called from a predefined Vaadin OnClose method.
 			MessageNotifier.showError(GermplasmSearchBarComponent.this.getWindow(),
 					GermplasmSearchBarComponent.this.messageSource.getMessage(Message.UNABLE_TO_SEARCH),
 					GermplasmSearchBarComponent.this.messageSource.getMessage(Message.ERROR_IN_SEARCH));
