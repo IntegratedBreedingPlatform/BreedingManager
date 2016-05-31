@@ -325,8 +325,12 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 	private void populateLocations(String programUUID) {
 
 		try {
-			this.locations = this.locationDataManager.getLocationsByUniqueID(programUUID);
-		} catch (MiddlewareQueryException e) {
+			if (this.locationType > 0) {
+				this.locations = this.locationDataManager.getLocationsByType(this.locationType, programUUID);
+			} else {
+				this.locations = this.locationDataManager.getLocationsByUniqueID(programUUID);
+			}
+		} catch (final MiddlewareQueryException e) {
 			BreedingLocationField.LOG.error(e.getMessage(), e);
 		}
 
