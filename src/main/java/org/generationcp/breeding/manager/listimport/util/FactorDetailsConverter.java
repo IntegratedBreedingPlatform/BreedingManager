@@ -30,6 +30,9 @@ class FactorDetailsConverter extends WorkbookRowConverter<ImportedFactor> {
 	public static final String ASSIGNED_METHOD = "ASSIGNED";
 	public static final String GERMPLASM_NAME = "GERMPLASM NAME";
 	public static final String GERMPLASM_ID = "GERMPLASM ID";
+	public static final String ENUMERATED_METHOD = "ENUMERATED";
+	//to make the method constant independent of the property constant.
+	public static final String SEED_SOURCE_METHOD = "SELECTED";
 
 	private final Map<GermplasmListParser.FactorTypes, String> specialFactors = new HashMap<>();
 	private final Set<String> nameFactors = new HashSet<>();
@@ -70,6 +73,13 @@ class FactorDetailsConverter extends WorkbookRowConverter<ImportedFactor> {
 		return scale != null && scale.contains(FactorDetailsConverter.CODE_SCALE);
 	}
 
+
+	/**
+	 *
+	 * In the future (when the source code will be refactored) it's will inside a Categorizer to avoid add ifs every time that we have a new category.
+	 * Git Branch: GCP-10163-Adjust-importing-attributes.
+	 *
+     */
 	@Override
 	public ImportedFactor convertToObject(final Map<Integer, String> rowValues) throws FileParsingException {
 		final ImportedFactor importedFactor =
@@ -81,22 +91,37 @@ class FactorDetailsConverter extends WorkbookRowConverter<ImportedFactor> {
 		final String scale = importedFactor.getScale() == null ? "" : importedFactor.getScale().toUpperCase();
 		final String method = importedFactor.getMethod() == null ? "" : importedFactor.getMethod().toUpperCase();
 
-		if (FactorDetailsConverter.GERMPLASM_ENTRY_PROPERTY.equals(property) && FactorDetailsConverter.NUMBER_SCALE.equals(scale)) {
+		if (FactorDetailsConverter.GERMPLASM_ENTRY_PROPERTY.equals(property) && FactorDetailsConverter.NUMBER_SCALE.equals(scale) && ENUMERATED_METHOD.equals(method)) {
+
 			this.specialFactors.put(GermplasmListParser.FactorTypes.ENTRY, importedFactor.getFactor());
-		} else if (FactorDetailsConverter.GERMPLASM_ID_PROPERTY.equals(property) && FactorDetailsConverter.isGermplasmNameScale(scale)) {
+
+		} else if (FactorDetailsConverter.GERMPLASM_ID_PROPERTY.equals(property) && FactorDetailsConverter.isGermplasmNameScale(scale) && ASSIGNED_METHOD.equals(method)) {
+
 			this.specialFactors.put(GermplasmListParser.FactorTypes.DESIG, importedFactor.getFactor());
-		} else if (FactorDetailsConverter.GERMPLASM_ID_PROPERTY.equals(property) && FactorDetailsConverter.isGermplasmIdScale(scale)) {
+
+		} else if (FactorDetailsConverter.GERMPLASM_ID_PROPERTY.equals(property) && FactorDetailsConverter.isGermplasmIdScale(scale) && ASSIGNED_METHOD.equals(method)) {
+
 			this.specialFactors.put(GermplasmListParser.FactorTypes.GID, importedFactor.getFactor());
 			this.importFileIsAdvanced = true;
-		} else if (FactorDetailsConverter.GERMPLASM_ENTRY_PROPERTY.equals(property) && FactorDetailsConverter.isCodeScale(scale)) {
+
+		} else if (FactorDetailsConverter.GERMPLASM_ENTRY_PROPERTY.equals(property) && FactorDetailsConverter.isCodeScale(scale) && ASSIGNED_METHOD.equals(method)) {
+
 			this.specialFactors.put(GermplasmListParser.FactorTypes.ENTRYCODE, importedFactor.getFactor());
-		} else if (FactorDetailsConverter.SEED_SOURCE_PROPERTY.equals(property) && FactorDetailsConverter.isSeedSourceScale(scale)) {
+
+		} else if (FactorDetailsConverter.SEED_SOURCE_PROPERTY.equals(property) && FactorDetailsConverter.isSeedSourceScale(scale) && SEED_SOURCE_METHOD.equals(method)) {
+
 			this.specialFactors.put(GermplasmListParser.FactorTypes.SOURCE, importedFactor.getFactor());
-		} else if (FactorDetailsConverter.isCrossNameProperty(property) && FactorDetailsConverter.isCrossScale(scale)) {
+
+		} else if (FactorDetailsConverter.isCrossNameProperty(property) && FactorDetailsConverter.isCrossScale(scale) && ASSIGNED_METHOD.equals(method)) {
+
 			this.specialFactors.put(GermplasmListParser.FactorTypes.CROSS, importedFactor.getFactor());
+
 		} else if (FactorDetailsConverter.GERMPLASM_STOCK_ID_PROPERTY.equals(property) && FactorDetailsConverter.isStockIdScale(scale)) {
+
 			this.specialFactors.put(GermplasmListParser.FactorTypes.STOCK, importedFactor.getFactor());
+
 		} else if (FactorDetailsConverter.NAME_SCALE.equals(scale) && FactorDetailsConverter.ASSIGNED_METHOD.equals(method)) {
+
 			this.nameFactors.add(importedFactor.getFactor());
 		}
 
