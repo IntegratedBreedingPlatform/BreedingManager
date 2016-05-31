@@ -47,26 +47,28 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 	private static final long serialVersionUID = 4506866031376540836L;
 	private static final Logger LOG = LoggerFactory.getLogger(BreedingLocationField.class);
 
-	private Label captionLabel;
-	private String caption;
-	private ComboBox breedingLocationComboBox;
 	private static final String DEFAULT_LOCATION = "Unknown";
+
+	/**
+	 * CONSTRUCTOR VARIABLES
+	 */
+	private BreedingLocationFieldSource source;
+	private String caption;
 	private boolean changed;
-	private int leftIndentPixels = 130;
-
-	private List<Location> locations;
-	private CheckBox showFavoritesCheckBox;
-	private Button manageFavoritesLink;
-
+	// The parent window where the germplasm import dialog is attached to
 	private Window attachToWindow;
-
+	// The no of pixel indentation for breeding location combobox
+	private int leftIndentPixels = 130;
 	private Integer locationType = 0;
-
 	// flags
 	private boolean displayFavoriteMethodsFilter = true;
 	private boolean displayManageMethodLink = true;
 
-	private BreedingLocationFieldSource source;
+	private Label captionLabel;
+	private ComboBox breedingLocationComboBox;
+	private List<Location> locations;
+	private CheckBox showFavoritesCheckBox;
+	private Button manageFavoritesLink;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -89,7 +91,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 	private String programUniqueId;
 
 	public BreedingLocationField() {
-
+		// do nothing
 	}
 
 	public BreedingLocationField(final BreedingLocationFieldSource source) {
@@ -109,39 +111,31 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 	}
 
 	public BreedingLocationField(final BreedingLocationFieldSource source, final int pixels) {
-		this.source = source;
-		this.leftIndentPixels = pixels;
+		this(source, null, pixels);
 	}
 
 	public BreedingLocationField(final BreedingLocationFieldSource source, final Window attachToWindow, final int pixels,
 			final Integer locationType) {
-		this(source, attachToWindow);
-		this.leftIndentPixels = pixels;
+		this(source, attachToWindow, pixels);
 		this.locationType = locationType;
 	}
 
 	public BreedingLocationField(final BreedingLocationFieldSource source, final int pixels, final Integer locationType) {
-		this.source = source;
-		this.leftIndentPixels = pixels;
-		this.locationType = locationType;
+		this(source, null, pixels, locationType);
 	}
 
 	public BreedingLocationField(final BreedingLocationFieldSource source, final Window attachToWindow, final int pixels,
 			final boolean displayFavoriteMethodsFilter, final boolean displayManageMethodLink, final Integer locationType) {
-		this(source, attachToWindow);
-		this.leftIndentPixels = pixels;
+		this(source, attachToWindow, pixels, locationType);
 		this.displayFavoriteMethodsFilter = displayFavoriteMethodsFilter;
 		this.displayManageMethodLink = displayManageMethodLink;
-		this.locationType = locationType;
 	}
 
 	public BreedingLocationField(final BreedingLocationFieldSource source, final int pixels, final boolean displayFavoriteMethodsFilter,
 			final boolean displayManageMethodLink, final Integer locationType) {
-		this.source = source;
-		this.leftIndentPixels = pixels;
+		this(source, null, pixels, locationType);
 		this.displayFavoriteMethodsFilter = displayFavoriteMethodsFilter;
 		this.displayManageMethodLink = displayManageMethodLink;
-		this.locationType = locationType;
 	}
 
 	@Override
