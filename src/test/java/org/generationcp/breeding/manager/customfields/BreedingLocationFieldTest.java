@@ -13,56 +13,61 @@ import org.generationcp.middleware.pojos.dms.ProgramFavorite;
 import org.generationcp.middleware.pojos.dms.ProgramFavorite.FavoriteType;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 public class BreedingLocationFieldTest {
 
 	private static final String DUMMY_UNIQUE_ID = "1234567890";
 
+	@Mock
+	private SimpleResourceBundleMessageSource messageSource;
+	@Mock
+	private GermplasmDataManager germplasmDataManager;
+	@Mock
+	private LocationDataManager locationDataManager;
+	@Mock
+	private WorkbenchDataManager workbenchDataManager;
+	@Mock
+	private BreedingManagerServiceImpl breedingManagerService;
+	@InjectMocks
+	private BreedingLocationField breedingLocationField;
+
+	@Before
+	public void setUp() {
+		MockitoAnnotations.initMocks(this);
+		Mockito.doReturn(this.getProject(1L)).when(this.breedingManagerService).getCurrentProject();
+		this.breedingLocationField.instantiateComponents();
+	}
+
 	@Test
 	public void testinitPopulateFavLocationsReturnsFalseWhenThereAreNoFavouriteLocation() throws MiddlewareQueryException {
-
-		BreedingLocationField blf = new BreedingLocationField();
-
-		GermplasmDataManager gpdm = Mockito.mock(GermplasmDataManager.class);
-		ArrayList<ProgramFavorite> favouriteLocations = new ArrayList<ProgramFavorite>();
-		Mockito.when(gpdm.getProgramFavorites(FavoriteType.LOCATION, 1000, BreedingLocationFieldTest.DUMMY_UNIQUE_ID)).thenReturn(
-				favouriteLocations);
-		blf.setGermplasmDataManager(gpdm);
+		final ArrayList<ProgramFavorite> favouriteLocations = new ArrayList<ProgramFavorite>();
+		Mockito.when(this.germplasmDataManager.getProgramFavorites(FavoriteType.LOCATION, 1000, BreedingLocationFieldTest.DUMMY_UNIQUE_ID))
+				.thenReturn(favouriteLocations);
 
 		Assert.assertFalse("Expecting a false return value when there are no favourite locations.",
-				blf.initPopulateFavLocations(BreedingLocationFieldTest.DUMMY_UNIQUE_ID));
+				this.breedingLocationField.initPopulateFavLocations(BreedingLocationFieldTest.DUMMY_UNIQUE_ID));
 	}
 
 	@Test
 	public void testinitPopulateFavLocationsReturnsTrueWhenThereAreFavouriteLocation() throws MiddlewareQueryException {
-		GermplasmDataManager gpdm = Mockito.mock(GermplasmDataManager.class);
-		LocationDataManager ldm = Mockito.mock(LocationDataManager.class);
-		WorkbenchDataManager wdm = Mockito.mock(WorkbenchDataManager.class);
-		BreedingManagerServiceImpl service = Mockito.mock(BreedingManagerServiceImpl.class);
-
-		ArrayList<ProgramFavorite> favouriteLocations = new ArrayList<ProgramFavorite>();
+		final ArrayList<ProgramFavorite> favouriteLocations = new ArrayList<ProgramFavorite>();
 		favouriteLocations.add(Mockito.mock(ProgramFavorite.class));
-		Mockito.when(gpdm.getProgramFavorites(FavoriteType.LOCATION, 1000, BreedingLocationFieldTest.DUMMY_UNIQUE_ID)).thenReturn(
-				favouriteLocations);
-		Mockito.when(service.getCurrentProject()).thenReturn(this.getProject(1L));
 
-		BreedingLocationField blf = new BreedingLocationField();
-		blf.setGermplasmDataManager(gpdm);
-		blf.setLocationDataManager(ldm);
-		blf.setWorkbenchDataManager(wdm);
-		blf.setMessageSource(Mockito.mock(SimpleResourceBundleMessageSource.class));
-		blf.setBreedingManagerService(service);
-
-		blf.instantiateComponents();
+		Mockito.when(this.germplasmDataManager.getProgramFavorites(FavoriteType.LOCATION, 1000, BreedingLocationFieldTest.DUMMY_UNIQUE_ID))
+				.thenReturn(favouriteLocations);
 
 		Assert.assertTrue("Expecting a true return value when there are favourite locations.",
-				blf.initPopulateFavLocations(BreedingLocationFieldTest.DUMMY_UNIQUE_ID));
+				this.breedingLocationField.initPopulateFavLocations(BreedingLocationFieldTest.DUMMY_UNIQUE_ID));
 	}
 
-	private Project getProject(long id) {
-		Project project = new Project();
+	private Project getProject(final long id) {
+		final Project project = new Project();
 		project.setProjectId(id);
 		project.setUniqueID(BreedingLocationFieldTest.DUMMY_UNIQUE_ID);
 		return project;
