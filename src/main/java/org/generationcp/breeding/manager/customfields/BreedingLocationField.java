@@ -47,7 +47,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 	private static final long serialVersionUID = 4506866031376540836L;
 	private static final Logger LOG = LoggerFactory.getLogger(BreedingLocationField.class);
 
-	private static final String DEFAULT_LOCATION = "Unknown";
+	static final String DEFAULT_LOCATION = "Unknown";
 
 	/**
 	 * CONSTRUCTOR VARIABLES
@@ -320,7 +320,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 			BreedingLocationField.LOG.error(e.getMessage(), e);
 		}
 
-		this.initLocationItems(this.isDefaultValueSelected);
+		this.initLocationItems(this.locations, this.isDefaultValueSelected);
 
 	}
 
@@ -328,13 +328,15 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 	 * NOTE: If the breeding location has the default location item , "UNKNOWN", this will be preselected. Else, will use the first entry
 	 * from the list of available items from the location
 	 * 
+	 * @param locations
+	 * 
 	 * @param isDefaultValueSelected
 	 */
-	private void initLocationItems(final boolean isDefaultValueSelected) {
+	void initLocationItems(final List<Location> locations, final boolean isDefaultValueSelected) {
 		Integer selectedItemLocId = null;
 
 		// add items to the breeding location combobox
-		for (final Location location : this.locations) {
+		for (final Location location : locations) {
 
 			// retrieve the first item from the list of locations
 			if (selectedItemLocId == null) {
@@ -350,7 +352,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 			this.breedingLocationComboBox.setItemCaption(location.getLocid(), BreedingManagerUtil.getLocationNameDisplay(location));
 		}
 
-		if (isDefaultValueSelected) {
+		if (isDefaultValueSelected && selectedItemLocId != null) {
 			this.breedingLocationComboBox.setValue(selectedItemLocId);
 		}
 	}
