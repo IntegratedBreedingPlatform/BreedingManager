@@ -61,8 +61,8 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 	private int leftIndentPixels = 130;
 	private Integer locationType = 0;
 	// flags
-	private boolean displayFavoriteMethodsFilter = true;
-	private boolean displayManageMethodLink = true;
+	private boolean displayFavoriteLocationsFilter = true;
+	private boolean displayManageLocationLink = true;
 
 	private Label captionLabel;
 	private ComboBox breedingLocationComboBox;
@@ -213,7 +213,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 
 	@Override
 	public void layoutComponents() {
-		if (this.displayManageMethodLink || this.displayFavoriteMethodsFilter) {
+		if (this.displayManageLocationLink || this.displayFavoriteLocationsFilter) {
 			this.setHeight("250px");
 		} else {
 			this.setHeight("190px");
@@ -222,11 +222,11 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		this.addComponent(this.captionLabel, "top:3px; left:0;");
 		this.addComponent(this.breedingLocationComboBox, "top:0; left:" + this.leftIndentPixels + "px");
 
-		if (this.displayFavoriteMethodsFilter) {
+		if (this.displayFavoriteLocationsFilter) {
 			this.addComponent(this.showFavoritesCheckBox, "top:30px; left:" + this.leftIndentPixels + "px");
 		}
 
-		if (this.displayManageMethodLink) {
+		if (this.displayManageLocationLink) {
 			final int pixels = this.leftIndentPixels + 220;
 			this.addComponent(this.manageFavoritesLink, "top:33px; left:" + pixels + "px");
 		}
@@ -361,6 +361,22 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		if (this.captionLabel != null) {
 			this.captionLabel.setValue(this.caption);
 		}
+	}
+
+	public boolean isDisplayFavoriteLocationsFilter() {
+		return this.displayFavoriteLocationsFilter;
+	}
+
+	public void setDisplayFavoriteLocationsFilter(final boolean displayFavoriteLocationsFilter) {
+		this.displayFavoriteLocationsFilter = displayFavoriteLocationsFilter;
+	}
+
+	public boolean isDisplayManageLocationLink() {
+		return this.displayManageLocationLink;
+	}
+
+	public void setDisplayManageLocationLink(final boolean displayManageLocationLink) {
+		this.displayManageLocationLink = displayManageLocationLink;
 	}
 
 	protected int getLeftIndentPixels() {
