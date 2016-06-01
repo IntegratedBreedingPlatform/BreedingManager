@@ -362,15 +362,11 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 				new CheckBox(this.messageSource.getMessage(Message.AUTOMATICALLY_ACCEPT_SINGLE_MATCHES_WHENEVER_FOUND));
 		this.automaticallyAcceptSingleMatchesCheckbox.setVisible(false);
 
-		final GermplasmImportButtonClickListener clickListener = new GermplasmImportButtonClickListener(this);
-
 		this.backButton = new Button();
 		this.backButton.setData(SpecifyGermplasmDetailsComponent.BACK_BUTTON_ID);
-		this.backButton.addListener(clickListener);
 
 		this.nextButton = new Button();
 		this.nextButton.setData(SpecifyGermplasmDetailsComponent.NEXT_BUTTON_ID);
-		this.nextButton.addListener(clickListener);
 		this.nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 	}
 
@@ -423,16 +419,16 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 		this.initializePedigreeOptions();
 	}
 
-	@SuppressWarnings("serial")
 	@Override
 	public void addListeners() {
+		final GermplasmImportButtonClickListener clickListener = new GermplasmImportButtonClickListener(this);
+		this.backButton.addListener(clickListener);
+		this.nextButton.addListener(clickListener);
+
 		this.processGermplasmAction = new ProcessImportedGermplasmAction(this);
 
 		this.pedigreeOptionComboBox.addListener(new Property.ValueChangeListener() {
 
-			/**
-			 *
-			 */
 			private static final long serialVersionUID = -1796753441697604604L;
 
 			@Override
@@ -581,9 +577,10 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 		} catch (final MiddlewareException e) {
 			MessageNotifier.showError(window, "ERROR", "Error with saving germplasm list. Please see log for details.");
 			SpecifyGermplasmDetailsComponent.LOG.error(e.getMessage(), e);
-		} catch (BreedingManagerException e) {
+		} catch (final BreedingManagerException e) {
 			MessageNotifier.showError(window, "ERROR", e.getMessage());
-			SpecifyGermplasmDetailsComponent.LOG.error(e.getMessage(), e);		}
+			SpecifyGermplasmDetailsComponent.LOG.error(e.getMessage(), e);
+		}
 	}
 
 	private Integer getSeedStorageLocation() {
