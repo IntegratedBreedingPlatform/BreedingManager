@@ -124,20 +124,6 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		this(source, null, pixels, locationType);
 	}
 
-	public BreedingLocationField(final BreedingLocationFieldSource source, final Window attachToWindow, final int pixels,
-			final boolean displayFavoriteMethodsFilter, final boolean displayManageMethodLink, final Integer locationType) {
-		this(source, attachToWindow, pixels, locationType);
-		this.displayFavoriteMethodsFilter = displayFavoriteMethodsFilter;
-		this.displayManageMethodLink = displayManageMethodLink;
-	}
-
-	public BreedingLocationField(final BreedingLocationFieldSource source, final int pixels, final boolean displayFavoriteMethodsFilter,
-			final boolean displayManageMethodLink, final Integer locationType) {
-		this(source, null, pixels, locationType);
-		this.displayFavoriteMethodsFilter = displayFavoriteMethodsFilter;
-		this.displayManageMethodLink = displayManageMethodLink;
-	}
-
 	@Override
 	public void instantiateComponents() {
 		this.captionLabel = new Label(this.caption);
