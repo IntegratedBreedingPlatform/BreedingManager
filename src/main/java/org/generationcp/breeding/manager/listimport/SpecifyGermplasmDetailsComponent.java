@@ -165,10 +165,9 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 	}
 
 	public void nextButtonClickAction() {
-		if (this.validateLocation() && this.validatePedigreeOption()) {
+		if (this.validateLocation() && this.validateSeedLocation() && this.validatePedigreeOption()) {
 			this.processGermplasmAction.processGermplasm();
 		}
-
 	}
 
 	public void saveTheList() {
@@ -258,6 +257,17 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 		}
 		return BreedingManagerUtil.validateRequiredField(this.getWindow(), this.germplasmFieldsComponent.getLocationComboBox(),
 				this.messageSource, this.messageSource.getMessage(Message.GERMPLASM_LOCATION_LABEL));
+	}
+
+	private boolean validateSeedLocation() {
+		// BMS-2645 : If the germplasm import file contains inventory, the system must require a location to be specified whether or not
+		// StockID column is populated.
+		if (this.germplasmListUploader.hasInventoryAmount()
+				&& this.getGermplasmFieldsComponent().getSeedLocationComboBox().getValue() == null) {
+			return BreedingManagerUtil.validateRequiredField(this.getWindow(), this.germplasmFieldsComponent.getSeedLocationComboBox(),
+					this.messageSource, this.messageSource.getMessage(Message.SEED_STORAGE_LOCATION_LABEL));
+		}
+		return true;
 	}
 
 	protected void updateTotalEntriesLabel() {
