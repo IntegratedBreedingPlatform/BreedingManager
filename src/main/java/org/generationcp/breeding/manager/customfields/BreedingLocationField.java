@@ -63,6 +63,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 	// flags
 	private boolean displayFavoriteLocationsFilter = true;
 	private boolean displayManageLocationLink = true;
+	private boolean isDefaultValueSelected = false;
 
 	private Label captionLabel;
 	private ComboBox breedingLocationComboBox;
@@ -100,28 +101,31 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		this.changed = false;
 	}
 
-	public BreedingLocationField(final BreedingLocationFieldSource source, final Window attachToWindow) {
+	public BreedingLocationField(final BreedingLocationFieldSource source, final Window attachToWindow, final boolean isDefaultValueSelected) {
 		this(source);
 		this.attachToWindow = attachToWindow;
-	}
-
-	public BreedingLocationField(final BreedingLocationFieldSource source, final Window attachToWindow, final int pixels) {
-		this(source, attachToWindow);
-		this.leftIndentPixels = pixels;
-	}
-
-	public BreedingLocationField(final BreedingLocationFieldSource source, final int pixels) {
-		this(source, null, pixels);
+		this.isDefaultValueSelected = isDefaultValueSelected;
 	}
 
 	public BreedingLocationField(final BreedingLocationFieldSource source, final Window attachToWindow, final int pixels,
-			final Integer locationType) {
-		this(source, attachToWindow, pixels);
+			final boolean isDefaultValueSelected) {
+		this(source, attachToWindow, isDefaultValueSelected);
+		this.leftIndentPixels = pixels;
+	}
+
+	public BreedingLocationField(final BreedingLocationFieldSource source, final int pixels, final boolean isDefaultValueSelected) {
+		this(source, null, pixels, isDefaultValueSelected);
+	}
+
+	public BreedingLocationField(final BreedingLocationFieldSource source, final Window attachToWindow, final int pixels,
+			final Integer locationType, final boolean isDefaultValueSelected) {
+		this(source, attachToWindow, pixels, isDefaultValueSelected);
 		this.locationType = locationType;
 	}
 
-	public BreedingLocationField(final BreedingLocationFieldSource source, final int pixels, final Integer locationType) {
-		this(source, null, pixels, locationType);
+	public BreedingLocationField(final BreedingLocationFieldSource source, final int pixels, final Integer locationType,
+			final boolean isDefaultValueSelected) {
+		this(source, null, pixels, locationType, isDefaultValueSelected);
 	}
 
 	@Override
@@ -133,6 +137,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		this.breedingLocationComboBox.setWidth("320px");
 		this.breedingLocationComboBox.setImmediate(true);
 		this.breedingLocationComboBox.setNullSelectionAllowed(true);
+		this.breedingLocationComboBox.setInputPrompt("Please Choose");
 
 		this.showFavoritesCheckBox = new CheckBox();
 		this.showFavoritesCheckBox.setCaption(this.messageSource.getMessage(Message.SHOW_ONLY_FAVORITE_LOCATIONS));
@@ -315,21 +320,38 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 			BreedingLocationField.LOG.error(e.getMessage(), e);
 		}
 
-		Integer firstId = null;
-		boolean hasDefault = false;
+		this.initLocationItems(this.isDefaultValueSelected);
+
+	}
+
+	/**
+	 * NOTE: If the breeding location has the default location item , "UNKNOWN", this will be preselected. Else, will use the first entry
+	 * from the list of available items from the location
+	 * 
+	 * @param isDefaultValueSelected
+	 */
+	private void initLocationItems(final boolean isDefaultValueSelected) {
+		Integer selectedItemLocId = null;
+
+		// add items to the breeding location combobox
 		for (final Location location : this.locations) {
-			if (firstId == null) {
-				firstId = location.getLocid();
+
+			// retrieve the first item from the list of locations
+			if (selectedItemLocId == null) {
+				selectedItemLocId = location.getLocid();
 			}
+
+			// override the selected item if the default item is found from the list of locations
+			if (BreedingLocationField.DEFAULT_LOCATION.equalsIgnoreCase(location.getLname())) {
+				selectedItemLocId = location.getLocid();
+			}
+
 			this.breedingLocationComboBox.addItem(location.getLocid());
 			this.breedingLocationComboBox.setItemCaption(location.getLocid(), BreedingManagerUtil.getLocationNameDisplay(location));
-			if (BreedingLocationField.DEFAULT_LOCATION.equalsIgnoreCase(location.getLname())) {
-				this.breedingLocationComboBox.setValue(location.getLocid());
-				hasDefault = true;
-			}
 		}
-		if (!hasDefault && firstId != null) {
-			this.breedingLocationComboBox.setValue(firstId);
+
+		if (isDefaultValueSelected) {
+			this.breedingLocationComboBox.setValue(selectedItemLocId);
 		}
 	}
 
