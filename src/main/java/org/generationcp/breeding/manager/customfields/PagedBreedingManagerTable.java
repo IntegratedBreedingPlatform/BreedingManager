@@ -5,11 +5,10 @@ import java.util.Map;
 
 import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 
-import com.vaadin.data.Container;
-import com.vaadin.ui.HorizontalLayout;
-
 import com.jensjansson.pagedtable.PagedTable;
 import com.jensjansson.pagedtable.PagedTableContainer;
+import com.vaadin.data.Container;
+import com.vaadin.ui.HorizontalLayout;
 
 public class PagedBreedingManagerTable extends PagedTable {
 
@@ -88,7 +87,7 @@ public class PagedBreedingManagerTable extends PagedTable {
 	}
 
 	boolean hasItems() {
-		return this.getContainerDataSource().getContainerPropertyIds().isEmpty();
+		return !this.getItemIds().isEmpty();
 	}
 
 	void setBatchSize(int batchSize) {
