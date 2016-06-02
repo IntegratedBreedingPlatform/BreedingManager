@@ -256,7 +256,16 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 	}
 
 	public void refreshTablePagingControls() {
-		this.replaceComponent(this.getComponent(1), ((PagedTable) this.table).createControls());
+		this.replaceComponent(this.getComponent(1), this.table.createControls());
+		/*
+		 * Since the controls will only be disabled/enabled if a page change occurs, 
+		 * we need to call firePagedChangedEvent but since it is a private method
+		 * we need to have a hack where we simulate clicking the next page
+		 * That will disable the paging controls if there is only 1 page for the table
+		 */
+		if(this.table.getItemIds().size() <= this.table.getPageLength()) {
+			this.table.nextPage();
+		}
 		this.resetLoadedPage();
 	}
 
