@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import junit.framework.Assert;
+
 import org.generationcp.breeding.manager.customfields.PagedBreedingManagerTable;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,8 +15,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
-
-import junit.framework.Assert;
 
 /**
  * Created by Aldrin Batac on 5/23/16.
@@ -25,8 +25,8 @@ public class PagedTableWithSelectAllLayoutTest {
 
 	private static final int DEFAULT_NO_OF_ITEMS = 101;
 
-	private final PagedTableWithSelectAllLayout pagedTableWithSelectAllLayout =
-			new PagedTableWithSelectAllLayout(0, PagedTableWithSelectAllLayoutTest.CHECKBOX_COLUMN_ID);
+	private final PagedTableWithSelectAllLayout pagedTableWithSelectAllLayout = new PagedTableWithSelectAllLayout(0,
+			PagedTableWithSelectAllLayoutTest.CHECKBOX_COLUMN_ID);
 
 	@Before
 	public void init() {
@@ -35,8 +35,8 @@ public class PagedTableWithSelectAllLayoutTest {
 
 	@Test
 	public void testGetAllEntriesPerPage() {
-		
-		this.initializePagedBreedingManagerTable(DEFAULT_NO_OF_ITEMS);
+
+		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
 
 		final int pageLength = 5;
 		final int firstPage = 1;
@@ -57,8 +57,8 @@ public class PagedTableWithSelectAllLayoutTest {
 
 	@Test
 	public void testUpdateTagPerRowItem() {
-		
-		this.initializePagedBreedingManagerTable(DEFAULT_NO_OF_ITEMS);
+
+		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
 
 		final Integer firstSelectedObjectItemId = 1;
 		final Integer secondSelectedObjectItemId = 2;
@@ -73,13 +73,15 @@ public class PagedTableWithSelectAllLayoutTest {
 
 		final PagedBreedingManagerTable table = this.pagedTableWithSelectAllLayout.getTable();
 
-		final CheckBox checkboxOfFirstItem = (CheckBox) table.getItem(firstSelectedObjectItemId)
-				.getItemProperty(PagedTableWithSelectAllLayoutTest.CHECKBOX_COLUMN_ID).getValue();
+		final CheckBox checkboxOfFirstItem =
+				(CheckBox) table.getItem(firstSelectedObjectItemId).getItemProperty(PagedTableWithSelectAllLayoutTest.CHECKBOX_COLUMN_ID)
+						.getValue();
 		Assert.assertTrue("The first item in table is selected so the checkbox value should be true",
 				(Boolean) checkboxOfFirstItem.getValue());
 
-		final CheckBox checkboxOfSecondItem = (CheckBox) table.getItem(secondSelectedObjectItemId)
-				.getItemProperty(PagedTableWithSelectAllLayoutTest.CHECKBOX_COLUMN_ID).getValue();
+		final CheckBox checkboxOfSecondItem =
+				(CheckBox) table.getItem(secondSelectedObjectItemId).getItemProperty(PagedTableWithSelectAllLayoutTest.CHECKBOX_COLUMN_ID)
+						.getValue();
 		Assert.assertTrue("The second item in table is selected so the checkbox value should be true",
 				(Boolean) checkboxOfSecondItem.getValue());
 
@@ -94,8 +96,8 @@ public class PagedTableWithSelectAllLayoutTest {
 
 	@Test
 	public void testUpdateSelectAllCheckBoxStatusEmptyList() {
-		
-		this.initializePagedBreedingManagerTable(DEFAULT_NO_OF_ITEMS);
+
+		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
 
 		// Set the select all checkbox to true so we can verify that it's changed later
 		this.pagedTableWithSelectAllLayout.getSelectAllCheckBox().setValue(true);
@@ -109,8 +111,8 @@ public class PagedTableWithSelectAllLayoutTest {
 
 	@Test
 	public void testUpdateSelectAllCheckBoxStatusAllEntriesInAPageAreSelected() {
-		
-		this.initializePagedBreedingManagerTable(DEFAULT_NO_OF_ITEMS);
+
+		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
 
 		this.pagedTableWithSelectAllLayout.getTable().setCurrentPage(1);
 
@@ -127,8 +129,8 @@ public class PagedTableWithSelectAllLayoutTest {
 
 	@Test
 	public void testUpdateSelectAllCheckBoxStatusSomeEntriesInAPageAreSelected() {
-		
-		this.initializePagedBreedingManagerTable(DEFAULT_NO_OF_ITEMS);
+
+		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
 
 		this.pagedTableWithSelectAllLayout.getTable().setCurrentPage(1);
 
@@ -146,47 +148,51 @@ public class PagedTableWithSelectAllLayoutTest {
 
 	}
 
-    @Test
-    public void testUpdateLoadedPageCurrentPageDoesntExistAfterUpdate() {
-    	
-    	this.initializePagedBreedingManagerTable(DEFAULT_NO_OF_ITEMS);
+	@Test
+	public void testUpdateLoadedPageCurrentPageDoesntExistAfterUpdate() {
 
-        final int loadedPageNumber = 21;
+		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
 
-        // Let's assume that page 21 is loaded in the screen
-        this.pagedTableWithSelectAllLayout.getLoadedPaged().add(loadedPageNumber);
+		final int loadedPageNumber = 21;
 
-        PagedBreedingManagerTable table = this.pagedTableWithSelectAllLayout.getTable();
-        // then the user changed the page length (number of items per page) to a higher number
-        table.setPageLength(25);
+		// Let's assume that page 21 is loaded in the screen
+		this.pagedTableWithSelectAllLayout.getLoadedPaged().add(loadedPageNumber);
 
-        // this will recalculate the number of page available, and since page 21 is now not available, we should remove it from loadedPage list.
-        this.pagedTableWithSelectAllLayout.updateLoadedPage();
+		final PagedBreedingManagerTable table = this.pagedTableWithSelectAllLayout.getTable();
+		// then the user changed the page length (number of items per page) to a higher number
+		table.setPageLength(25);
 
-        Assert.assertFalse("Page number " + loadedPageNumber + " should be removed from loaded page", this.pagedTableWithSelectAllLayout.getLoadedPaged().contains(loadedPageNumber));
+		// this will recalculate the number of page available, and since page 21 is now not available, we should remove it from loadedPage
+		// list.
+		this.pagedTableWithSelectAllLayout.updateLoadedPage();
 
-    }
+		Assert.assertFalse("Page number " + loadedPageNumber + " should be removed from loaded page", this.pagedTableWithSelectAllLayout
+				.getLoadedPaged().contains(loadedPageNumber));
 
-    @Test
-    public void testUpdateLoadedPageCurrentPageStillExistAfterUpdate() {
-    	
-    	this.initializePagedBreedingManagerTable(DEFAULT_NO_OF_ITEMS);
+	}
 
-        final int loadedPageNumber = 5;
+	@Test
+	public void testUpdateLoadedPageCurrentPageStillExistAfterUpdate() {
 
-        // Let's assume that page 5 is loaded in the screen
-        this.pagedTableWithSelectAllLayout.getLoadedPaged().add(loadedPageNumber);
+		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
 
-        PagedBreedingManagerTable table = this.pagedTableWithSelectAllLayout.getTable();
-        // then the user changed the page length (number of items per page) to a lower number
-        table.setPageLength(4);
+		final int loadedPageNumber = 5;
 
-        // this will recalculate the number of page available, and since page 5 is still available, we should not remove it from loadedPage list.
-        this.pagedTableWithSelectAllLayout.updateLoadedPage();
+		// Let's assume that page 5 is loaded in the screen
+		this.pagedTableWithSelectAllLayout.getLoadedPaged().add(loadedPageNumber);
 
-        Assert.assertTrue("Page number " + loadedPageNumber + " should be in loaded page list", this.pagedTableWithSelectAllLayout.getLoadedPaged().contains(loadedPageNumber));
+		final PagedBreedingManagerTable table = this.pagedTableWithSelectAllLayout.getTable();
+		// then the user changed the page length (number of items per page) to a lower number
+		table.setPageLength(4);
 
-    }
+		// this will recalculate the number of page available, and since page 5 is still available, we should not remove it from loadedPage
+		// list.
+		this.pagedTableWithSelectAllLayout.updateLoadedPage();
+
+		Assert.assertTrue("Page number " + loadedPageNumber + " should be in loaded page list", this.pagedTableWithSelectAllLayout
+				.getLoadedPaged().contains(loadedPageNumber));
+
+	}
 
 	private List<Object> createEntriesList() {
 
@@ -211,7 +217,7 @@ public class PagedTableWithSelectAllLayoutTest {
 
 	}
 
-	void initializePagedBreedingManagerTable(int numberOfItems) {
+	void initializePagedBreedingManagerTable(final int numberOfItems) {
 
 		final PagedBreedingManagerTable table = this.pagedTableWithSelectAllLayout.getTable();
 
@@ -229,68 +235,68 @@ public class PagedTableWithSelectAllLayoutTest {
 	List<Object> createListObject() {
 		final List<Object> entriesList = new ArrayList<>();
 		int i = 1;
-		while (i <= DEFAULT_NO_OF_ITEMS) {
+		while (i <= PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS) {
 			entriesList.add(new Object());
 			i++;
 		}
 		return entriesList;
 	}
-	
+
 	@Test
 	public void testRefreshTablePagingControlsWithOnePageOnly() {
-		
+
 		this.pagedTableWithSelectAllLayout.layoutComponents();
 		this.initializePagedBreedingManagerTable(2);
-		
+
 		this.pagedTableWithSelectAllLayout.refreshTablePagingControls();
-		Iterator<Component> componentIterator = this.pagedTableWithSelectAllLayout.getComponentIterator();
+		final Iterator<Component> componentIterator = this.pagedTableWithSelectAllLayout.getComponentIterator();
 		Iterator<Component> pagingControlsIterator = null;
-		while(componentIterator.hasNext()) {
-			Component component = componentIterator.next();
-			//use this to get the paging controls
-			//because we're sure that the paging controls is the only HorizontalLayout
-			if(component instanceof HorizontalLayout) {
-				pagingControlsIterator = ((HorizontalLayout)component).getComponentIterator();
+		while (componentIterator.hasNext()) {
+			final Component component = componentIterator.next();
+			// use this to get the paging controls
+			// because we're sure that the paging controls is the only HorizontalLayout
+			if (component instanceof HorizontalLayout) {
+				pagingControlsIterator = ((HorizontalLayout) component).getComponentIterator();
 			}
 		}
-		Assert.assertNotNull("The paging controls should be displayed",pagingControlsIterator);
-		while(pagingControlsIterator.hasNext()) {
-			Component component = pagingControlsIterator.next();
-			//verify that all buttons are disabled since we only have 1 page
-			if(component instanceof Button) {
-				Button button = (Button) component;
-				Assert.assertFalse("The button should be disabled because only have 1 page",button.isEnabled());
+		Assert.assertNotNull("The paging controls should be displayed", pagingControlsIterator);
+		while (pagingControlsIterator.hasNext()) {
+			final Component component = pagingControlsIterator.next();
+			// verify that all buttons are disabled since we only have 1 page
+			if (component instanceof Button) {
+				final Button button = (Button) component;
+				Assert.assertFalse("The button should be disabled because only have 1 page", button.isEnabled());
 			}
-			
+
 		}
 	}
-	
+
 	@Test
 	public void testRefreshTablePagingControlsWithMoreThan1Page() {
-		
+
 		this.pagedTableWithSelectAllLayout.layoutComponents();
-		this.initializePagedBreedingManagerTable(DEFAULT_NO_OF_ITEMS);
-		
+		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
+
 		this.pagedTableWithSelectAllLayout.refreshTablePagingControls();
-		Iterator<Component> componentIterator = this.pagedTableWithSelectAllLayout.getComponentIterator();
+		final Iterator<Component> componentIterator = this.pagedTableWithSelectAllLayout.getComponentIterator();
 		Iterator<Component> pagingControlsIterator = null;
-		while(componentIterator.hasNext()) {
-			Component component = componentIterator.next();
-			//use this to get the paging controls
-			//because we're sure that the paging controls is the only HorizontalLayout
-			if(component instanceof HorizontalLayout) {
-				pagingControlsIterator = ((HorizontalLayout)component).getComponentIterator();
+		while (componentIterator.hasNext()) {
+			final Component component = componentIterator.next();
+			// use this to get the paging controls
+			// because we're sure that the paging controls is the only HorizontalLayout
+			if (component instanceof HorizontalLayout) {
+				pagingControlsIterator = ((HorizontalLayout) component).getComponentIterator();
 			}
 		}
-		Assert.assertNotNull("The paging controls should be displayed",pagingControlsIterator);
-		while(pagingControlsIterator.hasNext()) {
-			Component component = pagingControlsIterator.next();
-			//verify that all buttons are disabled since we only have 1 page
-			if(component instanceof Button) {
-				Button button = (Button) component;
-				Assert.assertTrue("The button should be enabled because we have more than 1 page",button.isEnabled());
+		Assert.assertNotNull("The paging controls should be displayed", pagingControlsIterator);
+		while (pagingControlsIterator.hasNext()) {
+			final Component component = pagingControlsIterator.next();
+			// verify that all buttons are disabled since we only have 1 page
+			if (component instanceof Button) {
+				final Button button = (Button) component;
+				Assert.assertTrue("The button should be enabled because we have more than 1 page", button.isEnabled());
 			}
-			
+
 		}
 	}
 
