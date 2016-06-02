@@ -260,15 +260,24 @@ public class PagedTableWithSelectAllLayoutTest {
 			}
 		}
 		Assert.assertNotNull("The paging controls should be displayed", pagingControlsIterator);
-		while (pagingControlsIterator.hasNext()) {
-			final Component component = pagingControlsIterator.next();
+		// first iteration: page size
+		final HorizontalLayout pageSize = (HorizontalLayout) pagingControlsIterator.next();
+		Assert.assertNotNull("The page size should be displayed", pageSize);
+		// second iterator: page management
+		final HorizontalLayout pageManagement = (HorizontalLayout) pagingControlsIterator.next();
+		Assert.assertNotNull("The page management should be displayed", pageManagement);
+		final Iterator<Component> pageManagementIterator = pageManagement.getComponentIterator();
+		int numberOfButtons = 0;
+		while (pageManagementIterator.hasNext()) {
+			final Component component = pageManagementIterator.next();
 			// verify that all buttons are disabled since we only have 1 page
 			if (component instanceof Button) {
+				numberOfButtons++;
 				final Button button = (Button) component;
-				Assert.assertFalse("The button should be disabled because only have 1 page", button.isEnabled());
+				Assert.assertFalse("The button should be disabled because there is only 1 page", button.isEnabled());
 			}
-
 		}
+		Assert.assertEquals("There should be 4 buttons displayed for first, previous, next and last", 4, numberOfButtons);
 	}
 
 	@Test
@@ -289,15 +298,30 @@ public class PagedTableWithSelectAllLayoutTest {
 			}
 		}
 		Assert.assertNotNull("The paging controls should be displayed", pagingControlsIterator);
-		while (pagingControlsIterator.hasNext()) {
-			final Component component = pagingControlsIterator.next();
-			// verify that all buttons are disabled since we only have 1 page
+		// first iteration: page size
+		final HorizontalLayout pageSize = (HorizontalLayout) pagingControlsIterator.next();
+		Assert.assertNotNull("The page size should be displayed", pageSize);
+		// second iterator: page management
+		final HorizontalLayout pageManagement = (HorizontalLayout) pagingControlsIterator.next();
+		Assert.assertNotNull("The page management should be displayed", pageManagement);
+		final Iterator<Component> pageManagementIterator = pageManagement.getComponentIterator();
+		int numberOfButtons = 0;
+		while (pageManagementIterator.hasNext()) {
+			final Component component = pageManagementIterator.next();
+			// verify that the first and previous buttons are disabled while the next and last buttons are enabled
 			if (component instanceof Button) {
+				numberOfButtons++;
 				final Button button = (Button) component;
-				Assert.assertTrue("The button should be enabled because we have more than 1 page", button.isEnabled());
-			}
+				// first and previous button
+				if (numberOfButtons <= 2) {
+					Assert.assertFalse("The button should be disabled because the current page is 1", button.isEnabled());
+				} else {
+					Assert.assertTrue("The button should be enabled because there are more than 1 page", button.isEnabled());
+				}
 
+			}
 		}
+		Assert.assertEquals("There should be 4 buttons displayed for first, previous, next and last", 4, numberOfButtons);
 	}
 
 }
