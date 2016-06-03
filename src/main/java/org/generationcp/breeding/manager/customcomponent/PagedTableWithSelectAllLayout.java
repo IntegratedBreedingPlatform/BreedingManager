@@ -9,6 +9,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.jensjansson.pagedtable.PagedTable;
+import com.jensjansson.pagedtable.PagedTable.PageChangeListener;
+import com.jensjansson.pagedtable.PagedTable.PagedTableChangeEvent;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
@@ -103,6 +105,17 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 				}
 
 				PagedTableWithSelectAllLayout.this.updatePagedTableSelectedEntries(entriesPerPage, checkBoxValue);
+			}
+		});
+
+		// Deselect checked entries on page changed
+		this.table.addListener(new PageChangeListener() {
+
+			@Override
+			public void pageChanged(final PagedTableChangeEvent event) {
+				final ArrayList<Object> entries =
+						new ArrayList<Object>((Collection<Object>) PagedTableWithSelectAllLayout.this.table.getValue());
+				PagedTableWithSelectAllLayout.this.updatePagedTableSelectedEntries(entries, false);
 			}
 		});
 	}
