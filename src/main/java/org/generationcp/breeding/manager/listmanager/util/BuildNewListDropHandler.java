@@ -5,6 +5,7 @@ import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.ListComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -36,7 +37,7 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 	public BuildNewListDropHandler(final ListManagerMain listManagerMain, final GermplasmDataManager germplasmDataManager,
 			final GermplasmListManager germplasmListManager, final InventoryDataManager inventoryDataManager,
 			final PedigreeService pedigreeService, final CrossExpansionProperties crossExpansionProperties, final Table targetTable,
-			final PlatformTransactionManager transactionManager) {
+			final PlatformTransactionManager transactionManager, SimpleResourceBundleMessageSource messageSource) {
 		this.listManagerMain = listManagerMain;
 		this.germplasmDataManager = germplasmDataManager;
 		this.germplasmListManager = germplasmListManager;
@@ -45,6 +46,8 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 		this.crossExpansionProperties = crossExpansionProperties;
 		this.targetTable = targetTable;
 		this.transactionManager = transactionManager;
+		this.messageSource = messageSource;
+
 	}
 
 	@Override

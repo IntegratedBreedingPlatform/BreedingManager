@@ -10,6 +10,7 @@ import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.ListComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.data.initializer.GermplasmTestDataInitializer;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
@@ -85,6 +86,8 @@ public class BuildNewListDropHandlerTest {
 	private TableWithSelectAllLayout tableWithSelectAllLayout;
 	@Mock
 	private ListComponent listComponent;
+	@Mock
+	private SimpleResourceBundleMessageSource messageSource;
 
 	private BuildNewListDropHandler dropHandler;
 
@@ -171,7 +174,7 @@ public class BuildNewListDropHandlerTest {
 		}
 
 		this.dropHandler = new BuildNewListDropHandler(listManagerMain, germplasmDataManager, germplasmListManager, inventoryDataManager,
-				pedigreeService, crossExpansionProperties, targetTable, transactionManager);
+				pedigreeService, crossExpansionProperties, targetTable, transactionManager, messageSource);
 
 		// other mock injections
 		this.dropHandler.setCurrentColumnsInfo(this.currentColumnsInfo);
