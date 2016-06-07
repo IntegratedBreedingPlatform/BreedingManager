@@ -267,8 +267,8 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 	 */
 	public void updatePagedTableSelectedEntries(final boolean addEntry) {
 		@SuppressWarnings("unchecked")
-		final ArrayList<Object> entries = new ArrayList<Object>((Collection<Object>) PagedTableWithSelectAllLayout.this.table.getValue());
-		PagedTableWithSelectAllLayout.this.updatePagedTableSelectedEntries(entries, false);
+		final ArrayList<Object> entries = new ArrayList<Object>((Collection<Object>) this.table.getValue());
+		this.updatePagedTableSelectedEntries(entries, addEntry);
 	}
 
 	public PagedBreedingManagerTable getTable() {
