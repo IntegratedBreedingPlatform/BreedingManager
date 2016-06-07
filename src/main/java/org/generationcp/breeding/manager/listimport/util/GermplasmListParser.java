@@ -86,11 +86,30 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		this.originalFilename = originalFilename;
 	}
 
+	/**
+	 * @return true if the inventory variable (i.e. SEED_AMOUNT_G) is included in the Description Sheet of the imported file
+	 */
+	public boolean hasInventoryVariable() {
+		return !this.seedAmountVariate.isEmpty();
+	}
+
+	/**
+	 * NOTE: The imported file contains 2 sheet: Description Sheet and Observation Sheet.
+	 * 
+	 * @return true if there is an Inventory Variable in the Description Sheet (i.e SEED_AMOUNT_G) and either STOCKID is not included in the
+	 *         Description Sheet or there is no values under STOCKID column in Observation Sheet
+	 */
 	public boolean hasInventoryAmountOnly() {
 		return !this.seedAmountVariate.isEmpty()
 				&& (!this.specialFactors.containsKey(FactorTypes.STOCK) || !this.importedGermplasmList.isHasStockIDValues());
 	}
 
+	/**
+	 * NOTE: The imported file contains 2 sheet: Description Sheet and Observation Sheet.
+	 * 
+	 * @return true if there is an Inventory Variable in the Description Sheet (i.e SEED_AMOUNT_G) and there is at least one value under the
+	 *         Inventory Variable column in Observation Sheet
+	 */
 	public boolean hasInventoryAmount() {
 
 		if (this.seedAmountVariate.isEmpty()) {

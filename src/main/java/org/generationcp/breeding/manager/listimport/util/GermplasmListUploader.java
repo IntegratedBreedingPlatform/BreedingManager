@@ -43,6 +43,10 @@ public class GermplasmListUploader implements FileFactory {
 	/**
 	 * Adopter methods, left over from legacy parser
 	 */
+	public boolean hasInventoryVariable() {
+		return this.germplasmListParser.hasInventoryVariable();
+	}
+
 	public boolean hasInventoryAmountOnly() {
 		return this.germplasmListParser.hasInventoryAmountOnly();
 	}
