@@ -114,14 +114,14 @@ public class GermplasmQueryTest {
 				item.getItemPropertyIds().containsAll(itemPropertyIDList) && itemPropertyIDList.containsAll(item.getItemPropertyIds()));
 
 		// The following asserts should jist verify the content / values of the item object given itemPropertyId
-		Assert.assertEquals(TEST_DASH_STRING, item.getItemProperty(ColumnLabels.GERMPLASM_LOCATION.getName()).getValue());
+		Assert.assertEquals("LocationName", item.getItemProperty(ColumnLabels.GERMPLASM_LOCATION.getName()).getValue());
 		Assert.assertEquals(TEST_DASH_STRING, item.getItemProperty(ColumnLabels.GROUP_ID.getName()).getValue());
 		Assert.assertEquals(TEST_GID, item.getItemProperty(ColumnLabels.GID.getName() + "_REF").getValue());
 		Assert.assertTrue(item.getItemProperty(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID).getValue() instanceof CheckBox);
 		Assert.assertEquals(TEST_SEED_RES_COUNT.toString(), item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue());
 		Assert.assertEquals(TEST_INVENTORY_COUNT.toString(), item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue());
 		Assert.assertEquals(TEST_CROSS_EXPANSION_STRING, item.getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue());
-		Assert.assertEquals(TEST_DASH_STRING, item.getItemProperty(ColumnLabels.BREEDING_METHOD_NAME.getName()).getValue());
+		Assert.assertEquals("MethodName", item.getItemProperty(ColumnLabels.BREEDING_METHOD_NAME.getName()).getValue());
 		Assert.assertEquals(TEST_STOCK_ID_STRING, ((Label) item.getItemProperty(ColumnLabels.STOCKID.getName()).getValue()).getValue());
 		Assert.assertTrue(item.getItemProperty(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID).getValue() instanceof Button);
 		Assert.assertTrue(item.getItemProperty(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID).getValue() instanceof Button);
