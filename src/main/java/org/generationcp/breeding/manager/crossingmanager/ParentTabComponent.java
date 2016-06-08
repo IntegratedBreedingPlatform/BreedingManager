@@ -1105,7 +1105,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			this.subHeaderLayout.addComponent(this.inventoryViewActionButton);
 			this.subHeaderLayout.setComponentAlignment(this.inventoryViewActionButton, Alignment.MIDDLE_RIGHT);
 
-			this.listEntriesLabel.setValue(this.messageSource.getMessage(Message.LOTS));
+			this.listEntriesLabel.setValue(this.messageSource.getMessage(Message.INVENTORY));
 			this.updateNoOfEntries();
 			this.updateNoOfSelectedEntries();
 

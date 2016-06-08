@@ -122,7 +122,7 @@ public class SelectParentsListDataComponentTest {
 		Mockito.doReturn(TOTAL_LOTS).when(this.messageSource).getMessage(Message.TOTAL_LOTS);
 		Mockito.doReturn(SELECTED).when(this.messageSource).getMessage(Message.SELECTED);
 		Mockito.doReturn(WARNING).when(this.messageSource).getMessage(Message.WARNING);
-		Mockito.doReturn(LOTS).when(this.messageSource).getMessage(Message.LOTS);
+		Mockito.doReturn(LOTS).when(this.messageSource).getMessage(Message.INVENTORY);
 
 		this.selectParents.instantiateComponents();
 		this.listDataTable = this.initListDataTable();
@@ -461,7 +461,7 @@ public class SelectParentsListDataComponentTest {
 
 		this.selectParents.changeToInventoryView();
 		try {
-			Mockito.verify(this.messageSource, Mockito.times(0)).getMessage(Message.LOTS);
+			Mockito.verify(this.messageSource, Mockito.times(0)).getMessage(Message.INVENTORY);
 		} catch (final NeverWantedButInvoked e) {
 			Assert.fail("Expecting that the label is not set at all but didn't.");
 		}

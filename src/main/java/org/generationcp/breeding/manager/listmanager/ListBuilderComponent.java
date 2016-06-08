@@ -1360,7 +1360,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			this.toolsButtonContainer.removeComponent(this.toolsButton);
 			this.toolsButtonContainer.addComponent(this.inventoryViewToolsButton, "top:0; right:0;");
 
-			this.topLabel.setValue(this.messageSource.getMessage(Message.LOTS));
+			this.topLabel.setValue(this.messageSource.getMessage(Message.INVENTORY));
 			this.updateNoOfEntries();
 			this.updateNoOfSelectedEntries();
 			this.resetUnsavedChangesFlag();
