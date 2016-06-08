@@ -14,7 +14,6 @@ import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -131,13 +130,9 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 
 	public void loadInventoryData() {
 		if (this.listId != null) {
-			try {
-				final List<GermplasmListData> inventoryDetails =
-						this.inventoryDataManager.getLotDetailsForList(this.listId, 0, Integer.MAX_VALUE);
-				this.displayInventoryDetails(inventoryDetails);
-			} catch (final MiddlewareQueryException e) {
-				ListInventoryTable.LOG.error(e.getMessage(), e);
-			}
+			final List<GermplasmListData> inventoryDetails =
+					this.inventoryDataManager.getLotDetailsForList(this.listId, 0, Integer.MAX_VALUE);
+			this.displayInventoryDetails(inventoryDetails);
 		}
 
 	}
