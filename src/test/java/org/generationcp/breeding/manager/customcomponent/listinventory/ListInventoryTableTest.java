@@ -193,16 +193,6 @@ public class ListInventoryTableTest {
 
 	}
 
-	@Test
-	public void testLoadInventoryDataWithException() {
-		Mockito.doThrow(new MiddlewareQueryException("Some Exception Message Here")).when(this.inventoryDataManager)
-				.getLotDetailsForList(ListInventoryTableTest.LIST_ID, 0, Integer.MAX_VALUE);
-		this.listInventoryTable.loadInventoryData();
-
-		Assert.assertEquals("Expecting that no rows is loaded in inventory table when there is an exception.", 0, this.listInventoryTable
-				.getTable().getContainerDataSource().size());
-	}
-
 	private void initDataToInventoryTable() {
 		final List<GermplasmListData> inventoryDetails = ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails();
 		Mockito.doReturn(inventoryDetails).when(this.inventoryDataManager)
