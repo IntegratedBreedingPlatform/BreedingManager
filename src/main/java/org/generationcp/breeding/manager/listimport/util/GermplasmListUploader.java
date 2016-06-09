@@ -62,6 +62,10 @@ public class GermplasmListUploader implements FileFactory {
 		return this.germplasmListParser.isSeedAmountVariable(variate);
 	}
 
+	public boolean hasStockIdValues() {
+		return this.germplasmListParser.hasStockIdValues();
+	}
+
 	public boolean hasStockIdFactor() {
 		return this.germplasmListParser.hasStockIdFactor();
 	}

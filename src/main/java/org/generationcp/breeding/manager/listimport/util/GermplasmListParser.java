@@ -40,8 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.google.common.base.Strings;
-
 /**
  * Class for parsing GermplsmList
  */
@@ -100,7 +98,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	 *         Description Sheet or there is no values under STOCKID column in Observation Sheet
 	 */
 	public boolean hasInventoryAmountOnly() {
-		return !this.seedAmountVariate.isEmpty()
+		return this.hasInventoryVariable()
 				&& (!this.specialFactors.containsKey(FactorTypes.STOCK) || !this.importedGermplasmList.isHasStockIDValues());
 	}
 
@@ -112,20 +110,24 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	 */
 	public boolean hasInventoryAmount() {
 
-		if (this.seedAmountVariate.isEmpty()) {
+		if (!this.hasInventoryVariable()) {
 			return false;
 		}
 
 		for (final ImportedGermplasm germplasm : this.importedGermplasmList.getImportedGermplasms()) {
 			final Double seedAmount = germplasm.getSeedAmount();
-			final String stockId = germplasm.getInventoryId();
 
-			if (seedAmount > 0.0 && Strings.isNullOrEmpty(stockId)) {
+			// make sure that there is at least one row with inventory amount
+			if (seedAmount > 0.0) {
 				return true;
 			}
 		}
 
 		return false;
+	}
+
+	public boolean hasStockIdValues() {
+		return this.importedGermplasmList.isHasStockIDValues();
 	}
 
 	public boolean hasStockIdFactor() {

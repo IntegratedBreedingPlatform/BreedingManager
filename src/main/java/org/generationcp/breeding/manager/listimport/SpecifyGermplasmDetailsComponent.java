@@ -171,13 +171,12 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 	}
 
 	public void saveTheList() {
-		// TODO: add condition if doesnt have stock id
-		if (this.germplasmListUploader.hasInventoryAmount()) {
+		// Only require the user to create stock id if there is an inventory amount and the STOCKID column from the imported file is blank
+		if (this.germplasmListUploader.hasInventoryAmount() && !this.germplasmListUploader.hasStockIdValues()) {
 			this.popupGenerateStockIdsDialog();
 		} else {
 			this.popupSaveAsDialog();
 		}
-
 	}
 
 	public void popupSaveAsDialog() {
