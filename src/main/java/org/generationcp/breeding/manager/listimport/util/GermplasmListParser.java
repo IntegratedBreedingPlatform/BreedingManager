@@ -40,6 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.google.common.base.Strings;
+
 /**
  * Class for parsing GermplsmList
  */
@@ -119,6 +121,26 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 			// make sure that there is at least one row with inventory amount
 			if (seedAmount > 0.0) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public boolean hasAtLeastOneRowWithInventoryAmountButNoDefinedStockID() {
+
+		if (!this.hasInventoryVariable()) {
+			return false;
+		}
+
+		for (final ImportedGermplasm germplasm : this.importedGermplasmList.getImportedGermplasms()) {
+			final Double seedAmount = germplasm.getSeedAmount();
+			final String stockId = germplasm.getInventoryId();
+
+			// make sure that there is at least one row with inventory amount
+			// and stock Id is blank
+			if (seedAmount > 0.0 && Strings.isNullOrEmpty(stockId)) {
 				return true;
 			}
 		}

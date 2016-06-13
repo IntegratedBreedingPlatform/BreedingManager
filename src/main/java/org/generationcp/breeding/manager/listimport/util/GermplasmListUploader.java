@@ -55,6 +55,10 @@ public class GermplasmListUploader implements FileFactory {
 		return this.germplasmListParser.hasInventoryAmount();
 	}
 
+	public boolean hasAtLeastOneRowWithInventoryAmountButNoDefinedStockID() {
+		return this.germplasmListParser.hasAtLeastOneRowWithInventoryAmountButNoDefinedStockID();
+	}
+
 	/*
 	 * Returns true if variate property = "INVENTORY AMOUNT" or any of its synonyms
 	 */
