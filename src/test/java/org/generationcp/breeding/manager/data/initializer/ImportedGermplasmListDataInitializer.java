@@ -16,7 +16,11 @@ import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 
 public class ImportedGermplasmListDataInitializer {
 
-	public static ImportedGermplasmList createImportedGermplasmList(final int noOfEntries, final boolean withNameFactors) {
+	public ImportedGermplasmListDataInitializer() {
+		// do nothing
+	}
+
+	public ImportedGermplasmList createImportedGermplasmList(final int noOfEntries, final boolean withNameFactors) {
 		final String filename = "SourceList.xls";
 		final String name = "Import List 001";
 		final String title = "Import List 001 description";
@@ -24,12 +28,12 @@ public class ImportedGermplasmListDataInitializer {
 		final Date date = new Date();
 
 		final ImportedGermplasmList importedGermplasmList = new ImportedGermplasmList(filename, name, title, type, date);
-		importedGermplasmList.setImportedGermplasms(createListOfImportedGermplasm(noOfEntries, withNameFactors));
-		importedGermplasmList.setImportedFactors(createImportedFactors(withNameFactors));
+		importedGermplasmList.setImportedGermplasms(this.createListOfImportedGermplasm(noOfEntries, withNameFactors));
+		importedGermplasmList.setImportedFactors(this.createImportedFactors(withNameFactors));
 		return importedGermplasmList;
 	}
 
-	public static List<ImportedFactor> createImportedFactors(final boolean withNameFactors) {
+	public List<ImportedFactor> createImportedFactors(final boolean withNameFactors) {
 		final List<ImportedFactor> importedFactors = new ArrayList<ImportedFactor>();
 
 		importedFactors.add(new ImportedFactor("ENTRY", "The germplasm entry number", "GERMPLASM ENTRY", "NUMBER", "ENUMERATED", "C", ""));
@@ -41,42 +45,42 @@ public class ImportedGermplasmListDataInitializer {
 		return importedFactors;
 	}
 
-	public static List<ImportedGermplasm> createListOfImportedGermplasm(final int noOfEntries, final boolean withNameFactors) {
+	public List<ImportedGermplasm> createListOfImportedGermplasm(final int noOfEntries, final boolean withNameFactors) {
 		final List<ImportedGermplasm> importedGermplasmList = new ArrayList<ImportedGermplasm>();
 
 		for (int i = 1; i <= noOfEntries; i++) {
 
-			importedGermplasmList.add(createImportedGermplasm(i, withNameFactors));
+			importedGermplasmList.add(this.createImportedGermplasm(i, withNameFactors));
 		}
 
 		return importedGermplasmList;
 	}
 
-	public static ImportedGermplasm createImportedGermplasm(final int id, final boolean withNameFactors) {
+	public ImportedGermplasm createImportedGermplasm(final int id, final boolean withNameFactors) {
 		final ImportedGermplasm importedGermplasm = new ImportedGermplasm();
 
 		if (withNameFactors) {
-			importedGermplasm.setNameFactors(createNameFactors(id, withNameFactors));
+			importedGermplasm.setNameFactors(this.createNameFactors(id, withNameFactors));
 		}
 
-		importedGermplasm.setAttributeVariates(createAttributeVariates(id));
+		importedGermplasm.setAttributeVariates(this.createAttributeVariates(id));
 
 		return importedGermplasm;
 	}
 
-	private static Map<String, String> createNameFactors(final int id, final boolean withNameFactors) {
+	private Map<String, String> createNameFactors(final int id, final boolean withNameFactors) {
 		final Map<String, String> nameFactors = new HashMap<String, String>();
 		nameFactors.put("DRVNM", "DRVNM " + id);
 		return nameFactors;
 	}
 
-	private static Map<String, String> createAttributeVariates(final int id) {
+	private Map<String, String> createAttributeVariates(final int id) {
 		final Map<String, String> attributeVariates = new HashMap<String, String>();
 		attributeVariates.put("NOTE", "note value" + id);
 		return attributeVariates;
 	}
 
-	public static List<GermplasmName> createGermplasmNameObjects(final int noOfEntries) {
+	public List<GermplasmName> createGermplasmNameObjects(final int noOfEntries) {
 		final List<GermplasmName> germplasmNameList = new ArrayList<GermplasmName>();
 
 		for (int i = 1; i <= noOfEntries; i++) {
@@ -90,7 +94,7 @@ public class ImportedGermplasmListDataInitializer {
 		return germplasmNameList;
 	}
 
-	public static List<Integer> createListOfGemplasmIds(final int noOfIds) {
+	public List<Integer> createListOfGemplasmIds(final int noOfIds) {
 		final List<Integer> ids = new ArrayList<Integer>();
 
 		for (int i = 1; i <= noOfIds; i++) {
@@ -100,7 +104,7 @@ public class ImportedGermplasmListDataInitializer {
 		return ids;
 	}
 
-	public static Map<ListEntryLotDetails, Double> createReservations(final int noOfEntries) {
+	public Map<ListEntryLotDetails, Double> createReservations(final int noOfEntries) {
 		final Map<ListEntryLotDetails, Double> reservations = new HashMap<>();
 		for (Integer i = 0; i < noOfEntries; i++) {
 			reservations.put(ListInventoryDataInitializer.createLotDetail(i, 1), i.doubleValue());
@@ -108,7 +112,7 @@ public class ImportedGermplasmListDataInitializer {
 		return reservations;
 	}
 
-	public static List<Map<Integer, String>> createFactorsRowValuesListParserData() {
+	public List<Map<Integer, String>> createFactorsRowValuesListParserData() {
 		final List<Map<Integer, String>> testData = new ArrayList<>();
 
 		final String[][] rawData =

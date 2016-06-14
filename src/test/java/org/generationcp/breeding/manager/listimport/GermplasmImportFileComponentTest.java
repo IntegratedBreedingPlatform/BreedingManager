@@ -44,6 +44,8 @@ public class GermplasmImportFileComponentTest {
 	@Mock
 	private ShowNameHandlingPopUpValidator showNameHandlingPopUpValidator;
 
+	private ImportedGermplasmListDataInitializer importedGermplasmListInitializer;
+
 	@Before
 	public void setUp() {
 
@@ -56,6 +58,9 @@ public class GermplasmImportFileComponentTest {
 
 		this.importWindow = new Window();
 		doReturn(this.importWindow).when(this.importMain).getWindow();
+
+		// initializer
+		this.importedGermplasmListInitializer = new ImportedGermplasmListDataInitializer();
 	}
 
 	@Test
@@ -119,7 +124,7 @@ public class GermplasmImportFileComponentTest {
 
 	private ImportedGermplasmList initImportedGermplasmList(final boolean withNameFactors) {
 		final ImportedGermplasmList importedGermplasmList =
-				ImportedGermplasmListDataInitializer.createImportedGermplasmList(10, withNameFactors);
+				this.importedGermplasmListInitializer.createImportedGermplasmList(10, withNameFactors);
 
 		doReturn(this.createUserDefinedFieldsForNameType()).when(this.germplasmDataManager).getUserDefinedFieldByFieldTableNameAndType(
 				RowColumnType.NAME_TYPES.getFtable(), RowColumnType.NAME_TYPES.getFtype());

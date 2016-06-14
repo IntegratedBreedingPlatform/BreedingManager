@@ -26,11 +26,16 @@ public class FactorDetailsConverterTest {
 
 	private FactorDetailsConverter factorDetailsConverter;
 
+	private ImportedGermplasmListDataInitializer importedGermplasmListInitializer;
+
 	@Before
 	public void setUp() throws Exception {
 		this.factorDetailsConverter =
 				new FactorDetailsConverter(this.workbook, 0, GermplasmListParser.DESCRIPTION_SHEET_NO,
 						GermplasmListParser.FactorHeaders.values().length, GermplasmListParser.FactorHeaders.names());
+
+		// initializer
+		this.importedGermplasmListInitializer = new ImportedGermplasmListDataInitializer();
 	}
 
 	@Test
@@ -64,7 +69,7 @@ public class FactorDetailsConverterTest {
 
 	@Test
 	public void testConvertToObject() throws Exception {
-		final List<Map<Integer, String>> testData = ImportedGermplasmListDataInitializer.createFactorsRowValuesListParserData();
+		final List<Map<Integer, String>> testData = this.importedGermplasmListInitializer.createFactorsRowValuesListParserData();
 
 		for (final Map<Integer, String> rowValues : testData) {
 			this.factorDetailsConverter.convertToObject(rowValues);

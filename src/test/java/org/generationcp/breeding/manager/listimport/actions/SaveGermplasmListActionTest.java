@@ -85,12 +85,17 @@ public class SaveGermplasmListActionTest {
 	private List<Integer> doNotCreateGermplasmsWithId;
 	private ImportedGermplasmList importedGermplasmList;
 
+	private ImportedGermplasmListDataInitializer importedGermplasmListInitializer;
+
 	@Before
 	public void setup() {
+		// initializer
+		this.importedGermplasmListInitializer = new ImportedGermplasmListDataInitializer();
+
 		this.germplasmList = GermplasmListTestDataInitializer.createGermplasmList(LIST_ID);
-		this.importedGermplasmList = ImportedGermplasmListDataInitializer.createImportedGermplasmList(NO_OF_ENTRIES, true);
-		this.germplasmNameObjects = ImportedGermplasmListDataInitializer.createGermplasmNameObjects(NO_OF_ENTRIES);
-		this.doNotCreateGermplasmsWithId = ImportedGermplasmListDataInitializer.createListOfGemplasmIds(2);
+		this.importedGermplasmList = this.importedGermplasmListInitializer.createImportedGermplasmList(NO_OF_ENTRIES, true);
+		this.germplasmNameObjects = this.importedGermplasmListInitializer.createGermplasmNameObjects(NO_OF_ENTRIES);
+		this.doNotCreateGermplasmsWithId = this.importedGermplasmListInitializer.createListOfGemplasmIds(2);
 		this.newNames = GermplasmTestDataInitializer.createNameList(NO_OF_ENTRIES);
 
 		Mockito.doReturn(PROGRAM_UUID).when(this.contextUtil).getCurrentProgramUUID();
@@ -201,7 +206,7 @@ public class SaveGermplasmListActionTest {
 		final String preferredNameCode = "DRVNM";
 		final int noOfEntries = 10;
 		final ImportedGermplasmList importedGermplasmList =
-				ImportedGermplasmListDataInitializer.createImportedGermplasmList(noOfEntries, true);
+				this.importedGermplasmListInitializer.createImportedGermplasmList(noOfEntries, true);
 		this.action.updateExportedGermplasmPreferredName(preferredNameCode, importedGermplasmList.getImportedGermplasms());
 
 		try {
@@ -217,7 +222,7 @@ public class SaveGermplasmListActionTest {
 		final String preferredNameCode = "DRVNM";
 		final int noOfEntries = 10;
 		final ImportedGermplasmList importedGermplasmList =
-				ImportedGermplasmListDataInitializer.createImportedGermplasmList(noOfEntries, false);
+				this.importedGermplasmListInitializer.createImportedGermplasmList(noOfEntries, false);
 		this.action.updateExportedGermplasmPreferredName(preferredNameCode, importedGermplasmList.getImportedGermplasms());
 
 		try {
