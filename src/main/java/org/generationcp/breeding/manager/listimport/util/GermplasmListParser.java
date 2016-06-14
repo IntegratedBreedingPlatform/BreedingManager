@@ -930,4 +930,23 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	Set<String> getDescriptionVariableNames() {
 		return this.descriptionVariableNames;
 	}
+
+	/**
+	 * For Test Only
+	 * 
+	 * @param seedAmountVariate
+	 */
+	void setSeedAmountVariate(final String seedAmountVariate) {
+		this.seedAmountVariate = seedAmountVariate;
+	}
+
+	/**
+	 * For Test Only
+	 * 
+	 * @param importedGermplasmList
+	 */
+	void setImportedGermplasmList(final ImportedGermplasmList importedGermplasmList) {
+		this.importedGermplasmList = importedGermplasmList;
+	}
+
 }
