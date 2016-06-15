@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.ActionButton;
@@ -19,6 +20,7 @@ import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.ContextHolder;
 import org.generationcp.middleware.domain.inventory.GermplasmInventory;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.LocationDataManager;
@@ -37,6 +39,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
+import com.hazelcast.util.StringUtil;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import com.vaadin.data.Item;
@@ -355,9 +358,16 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 			final Button namesButton = new Button(shortenedNames, listener);
 			namesButton.setStyleName(BaseTheme.BUTTON_LINK);
 			namesButton.setDescription(germplasmFullName);
+			final String crossExpansion;
+			if(germplasm.getPedigree() != null) {
+				crossExpansion = germplasm.getPedigree().getPedigreeString();
+			} else {
+				crossExpansion = this.pedigreeService.getCrossExpansion(germplasm.getGid(), this.crossExpansionProperties);
+				germplasmDataManager.addPedigreeString(germplasm, crossExpansion, crossExpansionProperties.getProfile(),
+						crossExpansionProperties.getCropGenerationLevel(ContextHolder.getCurrentCrop()));
 
-			final String crossExpansion = this.pedigreeService.getCrossExpansion(germplasm.getGid(), this.crossExpansionProperties);
-
+			}
+			
 			final CheckBox itemCheckBox = new CheckBox();
 			itemCheckBox.setData(germplasm.getGid());
 			itemCheckBox.setImmediate(true);
