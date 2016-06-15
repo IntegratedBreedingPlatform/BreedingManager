@@ -21,6 +21,7 @@ import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsCompo
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.ContextHolder;
 import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
 import org.generationcp.middleware.domain.inventory.GermplasmInventory;
 import org.generationcp.middleware.manager.Operation;
@@ -139,12 +140,24 @@ import com.vaadin.ui.themes.BaseTheme;
 		final Integer gid = germplasm.getGid();
 		final GermplasmInventory inventoryInfo = germplasm.getInventoryInfo();
 
+	  	final String crossExpansion;
+
+	  	if(germplasm.getPedigree() != null){
+			crossExpansion = germplasm.getPedigree().getPedigreeString();
+		}
+	  	else{
+			crossExpansion = this.pedigreeService.getCrossExpansion(germplasm.getGid(), this.crossExpansionProperties);
+		  	germplasmDataManager.addPedigreeString(germplasm, crossExpansion, crossExpansionProperties.getProfile(),
+					crossExpansionProperties.getCropGenerationLevel(ContextHolder.getCurrentCrop()));
+
+		}
+
 		final Item item = new PropertysetItem();
 
 		final Map<String, ObjectProperty> propertyMap = new HashMap<>();
 		propertyMap.put(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID, new ObjectProperty<>(this.getItemCheckBox(index)));
 		propertyMap.put(GermplasmSearchResultsComponent.NAMES, new ObjectProperty<>(this.getNamesButton(gid)));
-		propertyMap.put(ColumnLabels.PARENTAGE.getName(), new ObjectProperty<>(this.getCrossExpansion(gid)));
+		propertyMap.put(ColumnLabels.PARENTAGE.getName(), new ObjectProperty<>(crossExpansion));
 		propertyMap.put(ColumnLabels.AVAILABLE_INVENTORY.getName(), new ObjectProperty<>(this.getAvailableInventory(inventoryInfo)));
 		propertyMap.put(ColumnLabels.SEED_RESERVATION.getName(), new ObjectProperty<>(this.getSeedReserved(inventoryInfo)));
 		propertyMap.put(ColumnLabels.STOCKID.getName(), new ObjectProperty<>(this.getStockIDs(inventoryInfo)));

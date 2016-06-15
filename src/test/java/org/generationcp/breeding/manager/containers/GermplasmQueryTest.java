@@ -7,6 +7,7 @@ import java.util.List;
 import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.ContextHolder;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.data.initializer.GermplasmTestDataInitializer;
 import org.generationcp.middleware.data.initializer.MethodTestDataInitializer;
@@ -16,6 +17,7 @@ import org.generationcp.middleware.manager.GermplasmNameType;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.LocationDataManager;
+import org.generationcp.middleware.pedigree.Pedigree;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.service.api.PedigreeService;
@@ -105,6 +107,7 @@ public class GermplasmQueryTest {
 
 	@Test
 	public void testGetGermplasmItem() throws Exception {
+	  	ContextHolder.setCurrentCrop("maize");
 		Item item = this.query.getGermplasmItem(germplasms.get(0), 1);
 
 		final List<String> itemPropertyIDList = Arrays.asList(itemPropertyIds);
@@ -158,4 +161,30 @@ public class GermplasmQueryTest {
 		Assert.assertEquals(resultWithoutElipses, TEST_SHORT_STRING);
 
 	}
+
+  	@Test
+  	public void testGetGermplasmItemWithPedigreeString() throws Exception {
+	  	ContextHolder.setCurrentCrop("maize");
+
+	  	Germplasm germplasm = germplasms.get(0);
+	  	Pedigree pedigree = new Pedigree();
+	  	pedigree.setPedigreeString("pedigreeString");
+	  	germplasm.setPedigree(pedigree);
+
+	  	Item item = this.query.getGermplasmItem(germplasm, 1);
+
+		// The following asserts should jist verify the content / values of the item object given itemPropertyId
+	  	Assert.assertEquals("LocationName", item.getItemProperty(ColumnLabels.GERMPLASM_LOCATION.getName()).getValue());
+		Assert.assertEquals(TEST_DASH_STRING, item.getItemProperty(ColumnLabels.GROUP_ID.getName()).getValue());
+		Assert.assertEquals(TEST_GID, item.getItemProperty(ColumnLabels.GID.getName() + "_REF").getValue());
+		Assert.assertTrue(item.getItemProperty(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID).getValue() instanceof CheckBox);
+		Assert.assertEquals(TEST_SEED_RES_COUNT.toString(), item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue());
+		Assert.assertEquals(TEST_INVENTORY_COUNT.toString(), item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue());
+		Assert.assertEquals("pedigreeString", item.getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue());
+		Assert.assertEquals("MethodName", item.getItemProperty(ColumnLabels.BREEDING_METHOD_NAME.getName()).getValue());
+		Assert.assertEquals(TEST_STOCK_ID_STRING, ((Label) item.getItemProperty(ColumnLabels.STOCKID.getName()).getValue()).getValue());
+		Assert.assertTrue(item.getItemProperty(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID).getValue() instanceof Button);
+		Assert.assertTrue(item.getItemProperty(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID).getValue() instanceof Button);
+
+  }
 }
