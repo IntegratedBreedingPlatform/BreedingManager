@@ -57,7 +57,6 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.GermplasmDataManagerUtil;
-import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -434,6 +433,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.listDataTable.setData(ListComponent.LIST_DATA_COMPONENT_TABLE_DATA);
 		this.listDataTable.setColumnReorderingAllowed(false);
 		this.listDataTable.setDebugId("vaadin-listdata-tbl");
+		this.listDataTable.setImmediate(true);
 
 		this.listDataTable.addContainerProperty(ColumnLabels.TAG.getName(), CheckBox.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
@@ -2032,7 +2032,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			this.toolsMenuContainer.removeComponent(this.actionsButton);
 			this.toolsMenuContainer.addComponent(this.inventoryViewToolsButton);
 
-			this.topLabel.setValue(this.messageSource.getMessage(Message.LOTS));
+			this.topLabel.setValue(this.messageSource.getMessage(Message.INVENTORY));
 			this.updateNoOfEntries();
 			this.updateNoOfSelectedEntries();
 			this.setHasUnsavedChanges(false);
