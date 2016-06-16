@@ -112,4 +112,10 @@ public class PagedBreedingManagerTable extends PagedTable {
 
 		void dispatch();
 	}
+	
+	int getBatchSize() {
+		final Container.Indexed contanerSource = this.getContainerDataSource();
+		return ((LazyQueryContainer) ((PagedTableContainer) contanerSource).getContainer()).getQueryView().getQueryDefinition()
+				.getBatchSize();
+	}
 }
