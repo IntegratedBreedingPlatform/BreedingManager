@@ -18,7 +18,6 @@ import org.mockito.Captor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryDefinition;
@@ -47,8 +46,6 @@ public class PagedBreedingManagerTableTest {
 
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
-
 		this.pagedTable = new PagedBreedingManagerTable(PagedBreedingManagerTableTest.INIT_RECORD_COUNT,
 				PagedBreedingManagerTableTest.MAX_RECORD_COUNT);
 		// we need to be able to stub the handler call so we can use mockito's verify methods against it
