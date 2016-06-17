@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -1361,7 +1362,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		final Collection<Integer> selectedTableRows = (Collection<Integer>) this.listDataTable.getValue();
 
 		if (!selectedTableRows.isEmpty()) {
-			final Set<Integer> gidsToProcess = new HashSet<Integer>();
+			final Set<Integer> gidsToProcess = new LinkedHashSet<>();
 			for (final Integer selectedRowId : selectedTableRows) {
 				final Item selectedRowItem = this.listDataTable.getItem(selectedRowId);
 				final Button gidCell = (Button) selectedRowItem.getItemProperty(ColumnLabels.GID.getName()).getValue();
