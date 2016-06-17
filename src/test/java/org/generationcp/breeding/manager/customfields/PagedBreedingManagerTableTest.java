@@ -4,11 +4,7 @@ package org.generationcp.breeding.manager.customfields;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.Assert;
-
-import org.generationcp.breeding.manager.data.initializer.GermplasmQueryFactoryTestDataInitializer;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
-import org.generationcp.commons.constant.ColumnLabels;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +19,7 @@ import org.vaadin.addons.lazyquerycontainer.LazyQueryDefinition;
 import org.vaadin.addons.lazyquerycontainer.QueryDefinition;
 import org.vaadin.addons.lazyquerycontainer.QueryView;
 
-import com.vaadin.data.Item;
+import junit.framework.Assert;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PagedBreedingManagerTableTest {
@@ -41,9 +37,7 @@ public class PagedBreedingManagerTableTest {
 
 	@Mock
 	private ListManagerMain listManagerMain;
-
-	private GermplasmQueryFactoryTestDataInitializer germplasmQueryFactoryTDI;
-
+	
 	@Before
 	public void setUp() {
 		this.pagedTable =
@@ -52,16 +46,6 @@ public class PagedBreedingManagerTableTest {
 		// we need to be able to stub the handler call so we can use mockito's verify methods against it
 		this.tableHandler = Mockito.mock(TableMultipleSelectionHandler.class);
 		this.pagedTable.setTableHandler(this.tableHandler);
-	}
-
-	private void addItems() {
-		this.pagedTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
-		this.pagedTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), "#");
-
-		for (int i = 1; i < PagedBreedingManagerTableTest.NO_OF_ENTRIES; i++) {
-			final Item newItem = this.pagedTable.getContainerDataSource().addItem(i);
-			newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(i);
-		}
 	}
 
 	@Test
@@ -93,14 +77,14 @@ public class PagedBreedingManagerTableTest {
 
 	@Test
 	public void testHasItemsFalse() {
-		this.pagedTable.removeAllItems();
+		this.setupContainerDataSource(0);
 		final boolean hasItems = this.pagedTable.hasItems();
 		Assert.assertFalse("The table should be empty", hasItems);
 	}
 
 	@Test
 	public void testHasItemsTrue() {
-		this.addItems();
+		this.setupContainerDataSource(PagedBreedingManagerTableTest.NO_OF_ENTRIES);
 		final boolean hasItems = this.pagedTable.hasItems();
 		Assert.assertTrue("The table should not be empty", hasItems);
 	}
@@ -150,8 +134,7 @@ public class PagedBreedingManagerTableTest {
 				container.addItem();
 			}
 		}
-
+		
 		this.pagedTable.setContainerDataSource(container);
-
 	}
 }
