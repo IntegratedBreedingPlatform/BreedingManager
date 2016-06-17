@@ -1,15 +1,18 @@
 
 package org.generationcp.breeding.manager.customfields;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.generationcp.breeding.manager.containers.GermplasmQueryFactory;
+import javax.annotation.Resource;
+
+import junit.framework.Assert;
+
 import org.generationcp.breeding.manager.data.initializer.GermplasmQueryFactoryTestDataInitializer;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.commons.constant.ColumnLabels;
-import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
-import org.generationcp.middleware.manager.Operation;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,10 +24,10 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryDefinition;
+import org.vaadin.addons.lazyquerycontainer.QueryDefinition;
+import org.vaadin.addons.lazyquerycontainer.QueryView;
 
 import com.vaadin.data.Item;
-
-import junit.framework.Assert;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PagedBreedingManagerTableTest {
@@ -33,6 +36,7 @@ public class PagedBreedingManagerTableTest {
 	private static final int NO_OF_ENTRIES = 10;
 	private static final int INIT_RECORD_COUNT = 10;
 	private static final int MAX_RECORD_COUNT = 20;
+	private static final int BATCH_SIZE = 5;
 	private PagedBreedingManagerTable pagedTable;
 	private TableMultipleSelectionHandler tableHandler;
 
@@ -43,6 +47,9 @@ public class PagedBreedingManagerTableTest {
 	private ListManagerMain listManagerMain;
 
 	private GermplasmQueryFactoryTestDataInitializer germplasmQueryFactoryTDI;
+	
+	@Resource
+	private GermplasmDataManager germplasmDataManager;
 
 	@Before
 	public void setUp() {
@@ -106,50 +113,54 @@ public class PagedBreedingManagerTableTest {
 
 	@Test
 	public void testUpdateBatchSizeBatchSizeUpdated() {
-		final PagedBreedingManagerTable spyTable = this.setUpSpyTable();
+		this.setupContainerDataSource(PagedBreedingManagerTableTest.NO_OF_ENTRIES);
 
-		Mockito.doReturn(true).when(spyTable).hasItems();
-		final int batchSize = spyTable.getBatchSize();
-		final int newPageLength = spyTable.getPageLength() + 5;
-		spyTable.setPageLength(newPageLength);
-		spyTable.updateBatchsize();
-		final int updatedBatchSize = spyTable.getBatchSize();
+		final int batchSize = this.pagedTable.getBatchSize();
+		final int newPageLength = this.pagedTable.getPageLength() + 5;
+		this.pagedTable.setPageLength(newPageLength);
+		this.pagedTable.updateBatchsize();
+		final int updatedBatchSize = this.pagedTable.getBatchSize();
 		Assert.assertFalse("The batch size should not be equal to the updated batch size", batchSize == updatedBatchSize);
 		Assert.assertEquals("The new page length and the batchSize's value should be equal", newPageLength, updatedBatchSize);
 	}
 
 	@Test
 	public void testUpdateBatchSizeBatchSizeNotUpdated() {
-		final PagedBreedingManagerTable spyTable = this.setUpSpyTable();
+		this.setupContainerDataSource(0);
+		
+		final int batchSize = this.pagedTable.getBatchSize();
 
-		Mockito.doReturn(false).when(spyTable).hasItems();
-		final int batchSize = spyTable.getBatchSize();
+		final int newPageLength = this.pagedTable.getPageLength() + 5;
+		this.pagedTable.setPageLength(newPageLength);
 
-		final int newPageLength = spyTable.getPageLength() + 5;
-		spyTable.setPageLength(newPageLength);
-
-		spyTable.updateBatchsize();
-		final int updatedBatchSize = spyTable.getBatchSize();
+		this.pagedTable.updateBatchsize();
+		final int updatedBatchSize = this.pagedTable.getBatchSize();
 
 		Assert.assertEquals("The batch size should be equal to the updated batch size", batchSize, updatedBatchSize);
 		Assert.assertFalse("The new page length and the updated batch size should not be equal", newPageLength == updatedBatchSize);
 	}
 	
-	private PagedBreedingManagerTable setUpSpyTable() {
-		// We need to spy the table since we only need to know if the batch size is being updated if needed
-		final PagedBreedingManagerTable spyTable = Mockito.spy(this.pagedTable);
-
-		final GermplasmSearchParameter searchParameter = new GermplasmSearchParameter("", Operation.LIKE);
+	private void setupContainerDataSource(int numberOfItems) {
+		final QueryDefinition queryDefinition = new LazyQueryDefinition(false, BATCH_SIZE);
+		final QueryView queryView = Mockito.mock(QueryView.class);
+		Mockito.doReturn(numberOfItems).when(queryView).size();
+		Mockito.doReturn(queryDefinition).when(queryView).getQueryDefinition();
 		
-		this.germplasmQueryFactoryTDI = new GermplasmQueryFactoryTestDataInitializer();
-		final GermplasmQueryFactory factory =
-				this.germplasmQueryFactoryTDI.createGermplasmQueryFactory(this.listManagerMain, searchParameter, this.pagedTable);
+		final LazyQueryContainer container = new LazyQueryContainer(queryView);
+		if(numberOfItems > 0) {
+			for (int i = 0; i < numberOfItems ; i++) {
+				Mockito.doReturn(i).when(queryView).addItem();
+			}
+			
+			for (int i = 0; i < numberOfItems; i++) {
+				container.addItem();
+			}
+		}
 		
-		final LazyQueryDefinition definition = new LazyQueryDefinition(true, 10);
-		final LazyQueryContainer container = new LazyQueryContainer(definition, factory);
+		this.pagedTable.setContainerDataSource(container);
 		
-		spyTable.setContainerDataSource(container);
 		
-		return spyTable;
+		
+		
 	}
 }
