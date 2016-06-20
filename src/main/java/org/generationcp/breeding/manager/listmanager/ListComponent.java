@@ -538,7 +538,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	}
 
-	private void addListEntryToTable(final GermplasmListData entry) {
+	void addListEntryToTable(final GermplasmListData entry) {
 		final String gid = String.format("%s", entry.getGid().toString());
 		final Button gidButton = new Button(gid, new GidLinkButtonClickListener(this.source, gid, true, true));
 		gidButton.setStyleName(BaseTheme.BUTTON_LINK);
@@ -1262,8 +1262,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	// This is needed for storing back-references
 	class ItemPropertyId {
 
-		Object itemId;
-		Object propertyId;
+		final Object itemId;
+		final Object propertyId;
 
 		public ItemPropertyId(final Object itemId, final Object propertyId) {
 			this.itemId = itemId;
@@ -1337,18 +1337,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	public void markLinesAsFixedAction() {
 
-		@SuppressWarnings("unchecked")
-		final Collection<Integer> selectedTableRows = (Collection<Integer>) this.listDataTable.getValue();
+		final Set<Integer> gidsToProcess = this.extractGidListFromListDataTable(this.listDataTable);
 
-		if (!selectedTableRows.isEmpty()) {
-			final Set<Integer> gidsToProcess = new HashSet<Integer>();
-			for (final Integer selectedRowId : selectedTableRows) {
-				final Item selectedRowItem = this.listDataTable.getItem(selectedRowId);
-				final Button gidCell = (Button) selectedRowItem.getItemProperty(ColumnLabels.GID.getName()).getValue();
-				if (gidCell != null) {
-					gidsToProcess.add(Integer.valueOf(gidCell.getCaption()));
-				}
-			}
+		if (!gidsToProcess.isEmpty()) {
 			this.getWindow().addWindow(new GermplasmGroupingComponent(gidsToProcess));
 		} else {
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
@@ -1357,25 +1348,37 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}
 
 	public void assignCodesAction() {
-		//TODO extract common logic for gids to process
-		@SuppressWarnings("unchecked")
-		final Collection<Integer> selectedTableRows = (Collection<Integer>) this.listDataTable.getValue();
 
-		if (!selectedTableRows.isEmpty()) {
-			final Set<Integer> gidsToProcess = new LinkedHashSet<>();
-			for (final Integer selectedRowId : selectedTableRows) {
-				final Item selectedRowItem = this.listDataTable.getItem(selectedRowId);
-				final Button gidCell = (Button) selectedRowItem.getItemProperty(ColumnLabels.GID.getName()).getValue();
-				if (gidCell != null) {
-					gidsToProcess.add(Integer.valueOf(gidCell.getCaption()));
-				}
-			}
+		final Set<Integer> gidsToProcess = this.extractGidListFromListDataTable(this.listDataTable);
+
+		if (!gidsToProcess.isEmpty()) {
+
 			final boolean isCustomLayout = CrossingUtil.isCimmytMaize(crossExpansionProperties.getProfile(), contextUtil.getProjectInContext().getCropType().getCropName());
 			this.getWindow().addWindow(new AssignCodesDialog(gidsToProcess, isCustomLayout));
+
 		} else {
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ASSIGN_CODES),
 					this.messageSource.getMessage(Message.ERROR_ASSIGN_CODES_NOTHING_SELECTED));
 		}
+	}
+
+	Set<Integer> extractGidListFromListDataTable(final Table listDataTable) {
+
+		@SuppressWarnings("unchecked")
+		final Collection<Integer> selectedTableRows = (Collection<Integer>) listDataTable.getValue();
+
+		final Set<Integer> gidsToProcess = new LinkedHashSet<>();
+
+		for (final Integer selectedRowId : selectedTableRows) {
+			final Item selectedRowItem = this.listDataTable.getItem(selectedRowId);
+			final Button gidCell = (Button) selectedRowItem.getItemProperty(ColumnLabels.GID.getName()).getValue();
+			if (gidCell != null) {
+				gidsToProcess.add(Integer.valueOf(gidCell.getCaption()));
+			}
+		}
+
+		return gidsToProcess;
+
 	}
 
 	private void removeRowsInListDataTable(final Collection<?> selectedIds) {
@@ -2401,4 +2404,5 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	public Map<Object, String> getItemsToDelete() {
 		return this.itemsToDelete;
 	}
+
 }

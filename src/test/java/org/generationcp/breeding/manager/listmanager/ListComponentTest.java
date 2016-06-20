@@ -5,13 +5,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import com.google.common.collect.Ordering;
+import com.vaadin.ui.Component;
 import junit.framework.Assert;
 
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.data.initializer.ListInventoryDataInitializer;
+import org.generationcp.breeding.manager.listmanager.dialog.AssignCodesDialog;
+import org.generationcp.breeding.manager.listmanager.dialog.GermplasmGroupingComponent;
 import org.generationcp.breeding.manager.listmanager.util.ListDataPropertiesRenderer;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -28,11 +34,15 @@ import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.WorkbenchRuntimeData;
+import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -91,6 +101,9 @@ public class ListComponentTest {
 	private Window window;
 
 	@Mock
+	private Component parentComponent;
+
+	@Mock
 	private AddColumnContextMenu addColumnContextMenu;
 
 	@Mock
@@ -108,6 +121,9 @@ public class ListComponentTest {
 	@Mock
 	private ListDataPropertiesRenderer newColumnsRenderer;
 
+	@Mock
+	private CrossExpansionProperties crossExpansionProperties;
+
 	@InjectMocks
 	private final ListComponent listComponent = new ListComponent();
 
@@ -118,35 +134,12 @@ public class ListComponentTest {
 
 		this.setUpWorkbenchDataManager();
 		this.setUpOntologyManager();
-
-		Mockito.when(this.messageSource.getMessage(Mockito.any(Message.class))).thenReturn("");
-		Mockito.when(this.messageSource.getMessage(Message.CHECK_ICON)).thenReturn(ListComponentTest.CHECK);
-		Mockito.when(this.messageSource.getMessage(Message.HASHTAG)).thenReturn(ListComponentTest.HASH);
-
-		this.germplasmList =
-				GermplasmListTestDataInitializer.createGermplasmListWithListData(TEST_GERMPLASM_LIST_ID, TEST_GERMPLASM_NO_OF_ENTRIES);
-		this.germplasmList.setStatus(1);
-		this.listComponent.setListEntries(this.germplasmList.getListData());
-		this.listComponent.setGermplasmList(this.germplasmList);
-
-		Mockito.when(this.germplasmListManager.countGermplasmListDataByListId(TEST_GERMPLASM_LIST_ID)).thenReturn(
-				Long.valueOf(TEST_GERMPLASM_NO_OF_ENTRIES));
-
-		Mockito.when(this.germplasmListManager.getGermplasmListById(TEST_GERMPLASM_LIST_ID)).thenReturn(this.germplasmList);
-		Mockito.when(this.germplasmListManager.getAdditionalColumnsForList(TEST_GERMPLASM_LIST_ID)).thenReturn(
-				this.createGermplasmListNewColumnInfo(TEST_GERMPLASM_LIST_ID));
-
-		Mockito.doNothing().when(this.contextUtil).logProgramActivity(Mockito.anyString(), Mockito.anyString());
-
-		Mockito.when(this.source.getModeView()).thenReturn(ModeView.LIST_VIEW);
-		Mockito.when(this.source.getWindow()).thenReturn(this.window);
-		Mockito.when(this.source.getListSelectionComponent()).thenReturn(this.listSelectionComponent);
-		Mockito.when(this.listSelectionComponent.getListDetailsLayout()).thenReturn(this.listDetailsLayout);
+		this.setUpListComponent();
 
 	}
 
 	@Test
-	public void testSaveList_OverwriteExistingGermplasmList() {
+	public void testSaveListOverwriteExistingGermplasmList() {
 
 		final GermplasmList germplasmListToBeSaved = new GermplasmList();
 		germplasmListToBeSaved.setId(TEST_GERMPLASM_LIST_ID);
@@ -181,7 +174,7 @@ public class ListComponentTest {
 	}
 
 	@Test
-	public void testSaveList_OverwriteExistingGermplasmListWithDifferentID() {
+	public void testSaveListOverwriteExistingGermplasmListWithDifferentID() {
 
 		final GermplasmList germplasmListToBeSaved = new GermplasmList();
 		germplasmListToBeSaved.setId(1000);
@@ -218,7 +211,7 @@ public class ListComponentTest {
 	}
 
 	@Test
-	public void testSaveList_OverwriteNonExistingGermplasmList() {
+	public void testSaveListOverwriteNonExistingGermplasmList() {
 
 		final GermplasmList germplasmListToBeSaved = new GermplasmList();
 		germplasmListToBeSaved.setId(TEST_GERMPLASM_LIST_ID);
@@ -316,7 +309,7 @@ public class ListComponentTest {
 	}
 
 	@Test
-	public void testSaveChangesAction_verifyIfTheListTreeIsRefreshedAfterSavingList() {
+	public void testSaveChangesActionVerifyIfTheListTreeIsRefreshedAfterSavingList() {
 
 		Mockito.when(this.messageSource.getMessage(Mockito.any(Message.class))).thenReturn("");
 
@@ -359,17 +352,7 @@ public class ListComponentTest {
 	@Test
 	public void testDeleteRemovedGermplasmEntriesFromTableOnlySelectedEntries() {
 
-		final GermplasmList germplasmListWithInventoryInfo =
-				GermplasmListTestDataInitializer.createGermplasmListWithListDataAndInventoryInfo(TEST_GERMPLASM_LIST_ID,
-						TEST_GERMPLASM_NO_OF_ENTRIES);
-		Mockito.when(this.inventoryDataManager.getLotCountsForList(TEST_GERMPLASM_LIST_ID, 0, TEST_GERMPLASM_NO_OF_ENTRIES)).thenReturn(
-				germplasmListWithInventoryInfo.getListData());
-
-		final TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
-		tableWithSelectAll.instantiateComponents();
-		this.listComponent.instantiateComponents();
-		this.listComponent.initializeListDataTable(tableWithSelectAll);
-		this.listComponent.initializeValues();
+		this.initializeTableWithTestData();
 
 		// Add one item to delete from list data table
 		this.listComponent.getItemsToDelete().putAll(this.createItemsToDelete(this.listComponent.getListDataTable()));
@@ -383,6 +366,114 @@ public class ListComponentTest {
 		Assert.assertTrue(this.listComponent.getItemsToDelete().isEmpty());
 
 	}
+
+
+	@Test
+	public void testMarkLinesAsFixedActionWithSelectedEntries() {
+
+		this.initializeTableWithTestData();
+
+		// This selects all items in the table
+		final Table table = this.listComponent.getListDataTable();
+		table.setValue(table.getItemIds());
+
+		this.listComponent.markLinesAsFixedAction();
+
+		Mockito.verify(window).addWindow(Mockito.any(GermplasmGroupingComponent.class));
+
+	}
+
+	@Test
+	public void testMarkLinesAsFixedActionWithoutSelectedEntries() {
+
+		this.initializeTableWithTestData();
+
+		// This removes the selected items in the table
+		final Table table = this.listComponent.getListDataTable();
+		table.setValue(null);
+
+		this.listComponent.markLinesAsFixedAction();
+
+		Mockito.verify(messageSource).getMessage(Message.ERROR_MARK_LINES_AS_FIXED_NOTHING_SELECTED);
+		Mockito.verify(window).showNotification(Mockito.any(Window.Notification.class));
+
+	}
+
+	@Test
+	public void testAssignCodesActionWithSelectedEntries() {
+
+		this.initializeTableWithTestData();
+
+		final Table table = this.listComponent.getListDataTable();
+		table.setValue(table.getItemIds());
+
+		// This selects all items in the table
+		this.listComponent.assignCodesAction();
+
+		Mockito.verify(window).addWindow(Mockito.any(AssignCodesDialog.class));
+
+	}
+
+	@Test
+	public void testAssignCodesActionWithoutSelectedEntries() {
+
+		this.initializeTableWithTestData();
+
+		// This removes the selected items in the table
+		final Table table = this.listComponent.getListDataTable();
+		table.setValue(null);
+
+		this.listComponent.assignCodesAction();
+
+		Mockito.verify(messageSource).getMessage(Message.ERROR_ASSIGN_CODES_NOTHING_SELECTED);
+		Mockito.verify(window).showNotification(Mockito.any(Window.Notification.class));
+
+	}
+
+	@Test
+	public void testExtractGidListFromListDataTable(){
+
+		this.initializeTableWithTestData();
+
+		// This selects all items in the table
+		final Table table = this.listComponent.getListDataTable();
+		table.setValue(table.getItemIds());
+
+		final Set<Integer> result = this.listComponent.extractGidListFromListDataTable(this.listComponent.getListDataTable());
+
+		Assert.assertEquals(TEST_GERMPLASM_NO_OF_ENTRIES.intValue(), result.size());
+
+	}
+
+	@Test
+	public void testExtractGidListFromListDataTableWithoutSelectedEntries(){
+
+		this.initializeTableWithTestData();
+
+		// This selects all items in the table
+		final Table table = this.listComponent.getListDataTable();
+		table.setValue(null);
+
+		final Set<Integer> result = this.listComponent.extractGidListFromListDataTable(this.listComponent.getListDataTable());
+
+		Assert.assertEquals(0, result.size());
+
+	}
+
+	private void initializeTableWithTestData() {
+
+		Mockito.when(inventoryDataManager.getLotCountsForList(TEST_GERMPLASM_LIST_ID, 0, TEST_GERMPLASM_NO_OF_ENTRIES)).thenReturn(ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails());
+
+		final TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
+		tableWithSelectAll.instantiateComponents();
+
+		this.listComponent.instantiateComponents();
+		this.listComponent.initializeListDataTable(tableWithSelectAll);
+		this.listComponent.setListDataTable(tableWithSelectAll.getTable());
+		this.listComponent.initializeValues();
+
+	}
+
 
 	private void setUpOntologyManager() {
 
@@ -451,5 +542,46 @@ public class ListComponentTest {
 
 		return itemsToDelete;
 	}
+
+	private void setUpListComponent() {
+
+		this.germplasmList =
+				GermplasmListTestDataInitializer.createGermplasmListWithListData(TEST_GERMPLASM_LIST_ID, TEST_GERMPLASM_NO_OF_ENTRIES);
+		this.germplasmList.setStatus(1);
+		this.listComponent.setListEntries(this.germplasmList.getListData());
+		this.listComponent.setGermplasmList(this.germplasmList);
+		this.listComponent.setParent(parentComponent);
+
+		Mockito.when(this.germplasmListManager.countGermplasmListDataByListId(TEST_GERMPLASM_LIST_ID)).thenReturn(
+				Long.valueOf(TEST_GERMPLASM_NO_OF_ENTRIES));
+		Mockito.when(this.germplasmListManager.getGermplasmListById(TEST_GERMPLASM_LIST_ID)).thenReturn(this.germplasmList);
+		Mockito.when(this.germplasmListManager.getAdditionalColumnsForList(TEST_GERMPLASM_LIST_ID)).thenReturn(
+				this.createGermplasmListNewColumnInfo(TEST_GERMPLASM_LIST_ID));
+
+
+		Mockito.when(this.parentComponent.getWindow()).thenReturn(window);
+		Mockito.when(this.source.getModeView()).thenReturn(ModeView.LIST_VIEW);
+		Mockito.when(this.source.getListSelectionComponent()).thenReturn(this.listSelectionComponent);
+		Mockito.when(this.source.getWindow()).thenReturn(window);
+		Mockito.when(this.listSelectionComponent.getListDetailsLayout()).thenReturn(this.listDetailsLayout);
+		Mockito.when(this.crossExpansionProperties.getProfile()).thenReturn("");
+
+		Mockito.when(this.messageSource.getMessage(Mockito.any(Message.class))).thenReturn("");
+		Mockito.when(this.messageSource.getMessage(Message.CHECK_ICON)).thenReturn(ListComponentTest.CHECK);
+		Mockito.when(this.messageSource.getMessage(Message.HASHTAG)).thenReturn(ListComponentTest.HASH);
+		Mockito.when(this.contextUtil.getProjectInContext()).thenReturn(this.createProject());
+
+		Mockito.doNothing().when(this.contextUtil).logProgramActivity(Mockito.anyString(), Mockito.anyString());
+
+	}
+
+	private Project createProject() {
+
+		final Project project = new Project();
+		project.setCropType(new CropType(CropType.CropEnum.MAIZE.name()));
+		return project;
+
+	}
+
 
 }
