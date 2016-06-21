@@ -366,34 +366,39 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 	public void applyGermplasmResults(final GermplasmSearchParameter searchParameter) throws BreedingManagerSearchException {
 
-		final Monitor monitor = MonitorFactory.start("GermplasmSearchResultsComponent.applyGermplasmResults()");
-
-		final GermplasmQueryFactory factory = this.createGermplasmQueryFactory(searchParameter);
-		final LazyQueryContainer container = this.createContainer(factory);
-
-		// set the current page to first page before updating the entries with the new search results
-		this.matchingGermplasmsTable.setCurrentPage(1);
-
-		this.matchingGermplasmsTable.setContainerDataSource(container);
-		this.matchingGermplasmsTable.setImmediate(true);
-
-		// hide the internal GID reference ID
-		this.matchingGermplasmsTable.setVisibleColumns(new ArrayList<>(this.definition.getPropertyIds()).subList(0,this.definition.getPropertyIds().size()-1).toArray());
-
-		this.updateNoOfEntries(factory.getNumberOfItems());
-
-		if (!this.matchingGermplasmsTable.getItemIds().isEmpty()) {
-			this.updateActionMenuOptions(true);
+		final Monitor monitor = MonitorFactory.start("org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent.applyGermplasmResults(GermplasmSearchParameter)");
+		
+		try {
+			final GermplasmQueryFactory factory = this.createGermplasmQueryFactory(searchParameter);
+			final LazyQueryContainer container = this.createContainer(factory);
+	
+			// set the current page to first page before updating the entries with the new search results
+			this.matchingGermplasmsTable.setCurrentPage(1);
+	
+			this.matchingGermplasmsTable.setContainerDataSource(container);
+			this.matchingGermplasmsTable.setImmediate(true);
+	
+			// hide the internal GID reference ID
+			this.matchingGermplasmsTable.setVisibleColumns(new ArrayList<>(this.definition.getPropertyIds()).subList(0,this.definition.getPropertyIds().size()-1).toArray());
+	
+			this.updateNoOfEntries(factory.getNumberOfItems());
+	
+			if (!this.matchingGermplasmsTable.getItemIds().isEmpty()) {
+				this.updateActionMenuOptions(true);
+			}
+	
+			if (this.matchingGermplasmsTable.getContainerDataSource().getItemIds().isEmpty()) {
+				throw new BreedingManagerSearchException(Message.NO_SEARCH_RESULTS);
+			}
+	
+	
+			// update controls
+			this.matchingGermplasmsTableWithSelectAll.refreshTablePagingControls();
+		
+		} finally {
+			monitor.stop();
 		}
-
-		if (this.matchingGermplasmsTable.getContainerDataSource().getItemIds().isEmpty()) {
-			throw new BreedingManagerSearchException(Message.NO_SEARCH_RESULTS);
-		}
-
-		GermplasmSearchResultsComponent.LOG.debug("" + monitor.stop());
-
-		// update controls
-		this.matchingGermplasmsTableWithSelectAll.refreshTablePagingControls();
+	
 	}
 
 	String getShortenedNames(final String germplasmFullName) {

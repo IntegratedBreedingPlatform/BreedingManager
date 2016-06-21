@@ -36,6 +36,8 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.vaadin.addons.lazyquerycontainer.Query;
 import org.vaadin.addons.lazyquerycontainer.QueryDefinition;
 
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
@@ -104,14 +106,22 @@ import com.vaadin.ui.themes.BaseTheme;
 	@Override
 	public List<Item> loadItems(final int startIndex, final int count) {
 		LOG.info(String.format("LoadItems(%d,%d): %s", startIndex, count, this.searchParameter));
-		final List<Item> items = new ArrayList<>();
-		final List<Germplasm> list = this.getGermplasmSearchResults(startIndex, count);
+		
+		final Monitor monitor = MonitorFactory.start("org.generationcp.breeding.manager.containers.GermplasmQuery.loadItems(int, int)");
 
-		for (int i = 0; i < list.size(); i++) {
-			items.add(this.getGermplasmItem(list.get(i), i + startIndex));
+		try {
+
+			final List<Item> items = new ArrayList<>();
+			final List<Germplasm> list = this.getGermplasmSearchResults(startIndex, count);
+			for (int i = 0; i < list.size(); i++) {
+				items.add(this.getGermplasmItem(list.get(i), i + startIndex));
+			}
+			return items;
+
+		} finally {
+			monitor.stop();
 		}
 
-		return items;
 	}
 
 	@Override
@@ -166,9 +176,14 @@ import com.vaadin.ui.themes.BaseTheme;
 	}
 
 	protected List<Germplasm> getGermplasmSearchResults(final int startIndex, final int count) {
-		this.searchParameter.setStartingRow(startIndex);
-		this.searchParameter.setNumberOfEntries(count);
-		return this.germplasmDataManager.searchForGermplasm(this.searchParameter);
+		final Monitor monitor = MonitorFactory.start("org.generationcp.breeding.manager.containers.GermplasmQuery.getGermplasmSearchResults(int, int)");
+		try {
+			this.searchParameter.setStartingRow(startIndex);
+			this.searchParameter.setNumberOfEntries(count);
+			return this.germplasmDataManager.searchForGermplasm(this.searchParameter);
+		} finally {
+			monitor.stop();
+		}
 	}
 
 	private Button getGidButton(final Integer gid) {

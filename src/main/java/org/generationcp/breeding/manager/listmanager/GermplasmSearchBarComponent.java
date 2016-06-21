@@ -270,7 +270,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 
 			@Override
 			protected void doInTransactionWithoutResult(final TransactionStatus status) {
-				final Monitor monitor = MonitorFactory.start("GermplasmSearchBarComponent.doSearch()");
+				final Monitor monitor = MonitorFactory.start("org.generationcp.breeding.manager.listmanager.GermplasmSearchBarComponent.doSearch(String)");
 
 				try {
 					// validate first the keyword, if it is empty this will raise exception
@@ -305,7 +305,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 						}
 					}
 				} finally {
-					GermplasmSearchBarComponent.LOG.debug("" + monitor.stop());
+					monitor.stop();
 				}
 			}
 		});
