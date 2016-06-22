@@ -935,9 +935,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	@SuppressWarnings("unchecked")
 	@Override
 	public void updateListDataTable(Integer germplasmListId, List<GermplasmListData> savedListEntries) {
-		List<GermplasmListEntry> selectedItemIds = new ArrayList<GermplasmListEntry>();
-
-		selectedItemIds.addAll((Collection<GermplasmListEntry>) this.listDataTable.getValue());
+		final List<Integer> selectedEntryIds = this.getSelectedEntryIds((Collection<GermplasmListEntry>) this.listDataTable.getValue());
 		this.listDataTable.removeAllItems();
 
 		for (GermplasmListData entry : savedListEntries) {
@@ -953,7 +951,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			tag.addListener(new ParentsTableCheckboxListener(this.listDataTable, itemId, this.tableWithSelectAllLayout.getCheckBox()));
 			tag.setImmediate(true);
 
-			if (selectedItemIds.contains(itemId)) {
+			if (selectedEntryIds.contains(itemId.getEntryId())) {
 				this.listDataTable.select(itemId);
 			}
 
@@ -1002,6 +1000,16 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 		this.resetUnsavedChangesFlag();
 		this.listDataTable.requestRepaint();
+	}
+
+	private List<Integer> getSelectedEntryIds(final Collection<GermplasmListEntry> selectedGermplasmListEntries) {
+		final List<Integer> selectedEntryIds = new ArrayList<>();
+		if (selectedGermplasmListEntries != null) {
+			for (final GermplasmListEntry germplasmListEntry : selectedGermplasmListEntries) {
+				selectedEntryIds.add(germplasmListEntry.getEntryId());
+			}
+		}
+		return selectedEntryIds;
 	}
 
 	/*--------------------------------------INVENTORY RELATED FUNCTIONS---------------------------------------*/
