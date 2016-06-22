@@ -1,12 +1,16 @@
 package org.generationcp.breeding.manager.listmanager;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Ordering;
+import com.vaadin.data.Item;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import junit.framework.Assert;
 
@@ -403,10 +407,10 @@ public class ListComponentTest {
 
 		this.initializeTableWithTestData();
 
+		// This selects all items in the table
 		final Table table = this.listComponent.getListDataTable();
 		table.setValue(table.getItemIds());
 
-		// This selects all items in the table
 		this.listComponent.assignCodesAction();
 
 		Mockito.verify(window).addWindow(Mockito.any(AssignCodesDialog.class));
@@ -442,6 +446,14 @@ public class ListComponentTest {
 
 		Assert.assertEquals(TEST_GERMPLASM_NO_OF_ENTRIES.intValue(), result.size());
 
+		Collection<Integer> selectedRows = (Collection<Integer>) table.getValue();
+		Iterator<Integer> selectedRowsIterator = selectedRows.iterator();
+		for (Integer gid : result) {
+			final Item selectedRowItem = table.getItem(selectedRowsIterator.next());
+			final Button gidCell = (Button) selectedRowItem.getItemProperty(ColumnLabels.GID.getName()).getValue();
+			Assert.assertEquals("The order of extracted GIDs should be same order as the entries in the table.", Integer.valueOf(gidCell.getCaption()), gid);
+		}
+
 	}
 
 	@Test
@@ -449,7 +461,7 @@ public class ListComponentTest {
 
 		this.initializeTableWithTestData();
 
-		// This selects all items in the table
+		// This removes all items in the table
 		final Table table = this.listComponent.getListDataTable();
 		table.setValue(null);
 
