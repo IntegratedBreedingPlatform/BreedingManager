@@ -1,6 +1,8 @@
 
 package org.generationcp.breeding.manager.crossingmanager;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.generationcp.breeding.manager.action.SaveGermplasmListAction;
@@ -8,9 +10,11 @@ import org.generationcp.breeding.manager.action.SaveGermplasmListActionFactory;
 import org.generationcp.breeding.manager.action.SaveGermplasmListActionSource;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
+import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.listinventory.CrossingManagerInventoryTable;
+import org.generationcp.breeding.manager.data.initializer.GermplasmListDataTestDataInitializer;
 import org.generationcp.breeding.manager.data.initializer.GermplasmListEntryTestDataInitializer;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
@@ -29,6 +33,7 @@ import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Person;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.junit.Assert;
@@ -329,4 +334,46 @@ public class ParentTabComponentTest {
 
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testUpdateListDataTableWithPreservedSelectedEntries() {
+		//initialize components
+		final TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
+		tableWithSelectAll.instantiateComponents();
+		this.parentTabComponent.initializeMainComponents();
+		this.parentTabComponent.initializeParentTable(tableWithSelectAll);
+		final CrossingManagerInventoryTable inventoryTable = new CrossingManagerInventoryTable(null);
+		inventoryTable.setMessageSource(this.messageSource);
+		inventoryTable.setOntologyDataManager(this.ontologyDataManager);
+		inventoryTable.instantiateComponents();
+		this.parentTabComponent.initializeListInventoryTable(inventoryTable);
+		this.parentTabComponent.addListeners();
+		//setup data
+		final List<GermplasmListData> savedListEntries = GermplasmListDataTestDataInitializer.getGermplasmListDataList(GERMPLASM_LIST_ID);
+		final Collection<GermplasmListEntry> selectedListEntries = this.createSelectedListEntries(savedListEntries);
+		final Table table = tableWithSelectAll.getTable();
+		this.selectedListEntriesToTable(selectedListEntries, table);
+		//test
+		this.parentTabComponent.updateListDataTable(GERMPLASM_LIST_ID, savedListEntries);
+		
+		Collection<GermplasmListEntry> newSelectedListEntries = (Collection<GermplasmListEntry>) table.getValue();
+		Assert.assertTrue("The selected entries should be preserved",savedListEntries.containsAll(newSelectedListEntries));
+	}
+
+	private void selectedListEntriesToTable(final Collection<GermplasmListEntry> selectedListEntries, final Table table) {
+		for (final GermplasmListEntry germplasmListEntry : selectedListEntries) {
+			table.getContainerDataSource().addItem(germplasmListEntry);
+		}
+	}
+
+	private List<GermplasmListEntry> createSelectedListEntries(List<GermplasmListData> savedListEntries) {
+		final List<GermplasmListEntry> selectedListEntries = new ArrayList<>();
+		int listDataId = 100;
+		for (final GermplasmListData germplasmListData : savedListEntries) {
+			final GermplasmListEntry entry =
+					new GermplasmListEntry(listDataId++, germplasmListData.getGid(), germplasmListData.getEntryId(), germplasmListData.getDesignation(), germplasmListData.getSeedSource());
+			selectedListEntries.add(entry);
+		}
+		return selectedListEntries;
+	}
 }
