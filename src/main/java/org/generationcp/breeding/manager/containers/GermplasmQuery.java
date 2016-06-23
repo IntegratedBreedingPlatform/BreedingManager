@@ -27,6 +27,7 @@ import org.generationcp.middleware.domain.inventory.GermplasmInventory;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.LocationDataManager;
+import org.generationcp.middleware.pedigree.Pedigree;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.service.api.PedigreeService;
@@ -140,16 +141,24 @@ import com.vaadin.ui.themes.BaseTheme;
 		final Integer gid = germplasm.getGid();
 		final GermplasmInventory inventoryInfo = germplasm.getInventoryInfo();
 
+	  	final String currentProfile = crossExpansionProperties.getProfile();
+	  	final int cropGenerationLevel = crossExpansionProperties.getCropGenerationLevel(ContextHolder.getCurrentCrop());
+
 	  	final String crossExpansion;
 
-	  	if(germplasm.getPedigree() != null){
-			crossExpansion = germplasm.getPedigree().getPedigreeString();
+	  	final Pedigree pedigree = germplasm.getPedigree();
+
+	  	if(pedigree != null){
+		  	if(pedigree.getInvalidate() == 1 || !currentProfile.equals(pedigree.getAlgorithmUsed()) || pedigree.getLevels() != cropGenerationLevel){
+			  	crossExpansion = this.pedigreeService.getCrossExpansion(germplasm.getGid(), this.crossExpansionProperties);
+			  	germplasmDataManager.updatePedigreeString(pedigree, crossExpansion, currentProfile, cropGenerationLevel);
+			} else {
+			  	crossExpansion = germplasm.getPedigree().getPedigreeString();
+			}
 		}
 	  	else{
 			crossExpansion = this.pedigreeService.getCrossExpansion(germplasm.getGid(), this.crossExpansionProperties);
-		  	germplasmDataManager.addPedigreeString(germplasm, crossExpansion, crossExpansionProperties.getProfile(),
-					crossExpansionProperties.getCropGenerationLevel(ContextHolder.getCurrentCrop()));
-
+		  	germplasmDataManager.addPedigreeString(germplasm, crossExpansion, currentProfile, cropGenerationLevel);
 		}
 
 		final Item item = new PropertysetItem();

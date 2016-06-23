@@ -169,7 +169,13 @@ public class GermplasmQueryTest {
 	  	Germplasm germplasm = germplasms.get(0);
 	  	Pedigree pedigree = new Pedigree();
 	  	pedigree.setPedigreeString("pedigreeString");
+	  	pedigree.setAlgorithmUsed("default");
+	  	pedigree.setLevels(0);
+	  	pedigree.setInvalidate(0);
 	  	germplasm.setPedigree(pedigree);
+
+	  	Mockito.when(this.crossExpansionProperties.getProfile()).thenReturn("default");
+	  	Mockito.when(this.crossExpansionProperties.getCropGenerationLevel(Mockito.anyString())).thenReturn(0);
 
 	  	Item item = this.query.getGermplasmItem(germplasm, 1);
 
