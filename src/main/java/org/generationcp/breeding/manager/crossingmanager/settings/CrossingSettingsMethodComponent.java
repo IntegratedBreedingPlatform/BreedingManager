@@ -37,6 +37,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -46,6 +47,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.BaseTheme;
+
 
 @Configurable
 public class CrossingSettingsMethodComponent extends VerticalLayout implements InternationalizableComponent, InitializingBean,
@@ -72,6 +74,8 @@ BreedingManagerLayout {
 	private CheckBox selectMethod;
 
 	private ComboBox breedingMethods;
+
+	private OptionGroup filteredMethods;
 
 	private CheckBox favoriteMethodsCheckbox;
 	private Button manageFavoriteMethodsLink;
@@ -137,6 +141,10 @@ BreedingManagerLayout {
 
 		this.methodPopupView = new PopupView("?", this.breedingMethodsHelpPopup);
 		this.methodPopupView.addStyleName(AppConstants.CssStyles.POPUP_VIEW);
+
+		this.filteredMethods = new OptionGroup("Showing:");
+		this.filteredMethods.addItem(this.messageSource.getMessage("ALL_METHODS"));
+		this.setImmediate(true);
 
 		this.favoriteMethodsCheckbox = new CheckBox(this.messageSource.getMessage(Message.SHOW_ONLY_FAVORITE_METHODS));
 		this.favoriteMethodsCheckbox.setImmediate(true);
@@ -220,6 +228,14 @@ BreedingManagerLayout {
 
 		});
 
+		this.filteredMethods.addListener(new Property.ValueChangeListener() {
+
+			@Override
+			public void valueChange(final ValueChangeEvent event) {
+				//The onclick handler implementation goes here
+			}
+		});
+
 		this.manageFavoriteMethodsLink.addListener(new ClickListener() {
 
 			private static final long serialVersionUID = 1525347479193533974L;
@@ -262,6 +278,7 @@ BreedingManagerLayout {
 
         final VerticalLayout methodSelectLayout = new VerticalLayout();
         methodSelectLayout.addComponent(this.breedingMethods);
+		methodSelectLayout.addComponent(this.filteredMethods);
         methodSelectLayout.addComponent(this.favoriteMethodsCheckbox);
         methodSelectLayout.addComponent(this.manageFavoriteMethodsLink);
 
@@ -272,7 +289,7 @@ BreedingManagerLayout {
         final VerticalLayout internalPanelLayout = new VerticalLayout();
         internalPanelLayout.setSpacing(true);
         internalPanelLayout.setMargin(true);
-        internalPanelLayout.addComponent(breedingMethodDescLabel);
+        internalPanelLayout.addComponent(this.breedingMethodDescLabel);
         internalPanelLayout.addComponent(this.selectMethod);
         internalPanelLayout.addComponent(selectWithPopupLayout);
 
