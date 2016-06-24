@@ -378,6 +378,7 @@ BreedingManagerLayout {
 
 	private void showBreedingMethodSelection(final Boolean show) {
 		this.breedingMethods.setVisible(show);
+		this.filteredMethods.setVisible(show);
 		this.favoriteMethodsCheckbox.setVisible(show);
 		this.manageFavoriteMethodsLink.setVisible(show);
 		this.breedingMethodsHelpPopup.setVisible(show);
