@@ -1366,10 +1366,19 @@ public class ListComponent extends VerticalLayout
 		}
 	}
 
+	/**
+	 * Extracts the GIDs from the ListDataTable, the order of GIDs would follow the order of entries in the table.
+	 *
+	 * @param listDataTable
+	 * @return
+	 */
 	Set<Integer> extractGidListFromListDataTable(final Table listDataTable) {
 
 		@SuppressWarnings("unchecked") final Collection<Integer> selectedTableRows = (Collection<Integer>) listDataTable.getValue();
 
+		// We use linkedHashSet to preserve the insertion order of GIDs based on order of the entries in the list.
+		// It's possible that the entries don't have a sequential GIDs so we cannot base the sequence of coded name through a sorted GID list.
+		// The sequence number in the coded name should follow the same order as the entries in the list.
 		final Set<Integer> gidsToProcess = new LinkedHashSet<>();
 
 		for (final Integer selectedRowId : selectedTableRows) {
