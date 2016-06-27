@@ -1,8 +1,8 @@
-
 package org.generationcp.breeding.manager.listmanager.dialog;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -65,7 +65,6 @@ public class AssignCodesDialog extends BaseSubWindow
 
 	private AssignCodesDefaultLayout assignCodesDefaultLayout;
 	private AssignCodeCustomLayout assignCodesCustomLayout;
-
 	private HorizontalLayout codeControlsLayoutDefault;
 
 	private VerticalLayout codesLayout;
@@ -112,9 +111,9 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.assignCodesDefaultLayout.instantiateComponents();
 
 		if (this.isCustomLayout) {
-			this.assignCodesCustomLayout = new AssignCodeCustomLayout(this.germplasmNamingReferenceDataResolver, this.contextUtil,
-					this.messageSource,	this.assignCodesDefaultLayout, this.codingLevelOptions, this.codesLayout, this.exampleText, this
-					.exampleLayout);
+			this.assignCodesCustomLayout =
+					new AssignCodeCustomLayout(this.germplasmNamingReferenceDataResolver, this.contextUtil, this.messageSource,
+							this.assignCodesDefaultLayout, this.codingLevelOptions, this.codesLayout, this.exampleText, this.exampleLayout);
 			this.assignCodesCustomLayout.instantiateComponents();
 		}
 	}
@@ -145,6 +144,7 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.assignCodesDefaultLayout.addListeners();
 
 		this.cancelButton.addListener(new Button.ClickListener() {
+
 			@Override
 			public void buttonClick(final Button.ClickEvent event) {
 				AssignCodesDialog.super.close();
@@ -152,6 +152,7 @@ public class AssignCodesDialog extends BaseSubWindow
 		});
 
 		this.continueButton.addListener(new Button.ClickListener() {
+
 			@Override
 			public void buttonClick(final ClickEvent event) {
 				if (AssignCodesDialog.this.isCustomLayout) {
@@ -185,7 +186,7 @@ public class AssignCodesDialog extends BaseSubWindow
 		 */
 		synchronized (AssignCodesDialog.class) {
 			final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
-			final Map<Integer, GermplasmGroupNamingResult> assignCodesResultsMap = new HashMap<>();
+			final Map<Integer, GermplasmGroupNamingResult> assignCodesResultsMap = new LinkedHashMap<>();
 			transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
 				@Override
@@ -196,14 +197,9 @@ public class AssignCodesDialog extends BaseSubWindow
 					// TODO performance tuning when processing large number of list entries..
 					for (final Integer gid : AssignCodesDialog.this.gidsToProcess) {
 						// TODO pass user and location. Hardcoded to 0 = unknown for now.
-						final String groupNamePrefix;
-						if (AssignCodesDialog.this.isCustomLayout) {
-							groupNamePrefix = AssignCodesDialog.this.assignCodesCustomLayout.getGroupNamePrefix();
-						} else {
-							groupNamePrefix = AssignCodesDialog.this.assignCodesDefaultLayout.getGroupNamePrefix();
-						}
-						final GermplasmGroupNamingResult result = AssignCodesDialog.this.germplasmNamingService.applyGroupName(gid,
-								groupNamePrefix, nameType, 0, 0);
+						final String groupNamePrefix = AssignCodesDialog.this.getGroupNamePrefix(AssignCodesDialog.this.isCustomLayout);
+						final GermplasmGroupNamingResult result =
+								AssignCodesDialog.this.germplasmNamingService.applyGroupName(gid, groupNamePrefix, nameType, 0, 0);
 						assignCodesResultsMap.put(gid, result);
 					}
 				}
@@ -213,7 +209,7 @@ public class AssignCodesDialog extends BaseSubWindow
 		}
 	}
 
-	private int getLevel() {
+	int getLevel() {
 		int level = 1;
 		if (this.codingLevelOptions.getValue().equals(LEVEL1)) {
 			level = 1;
@@ -223,6 +219,16 @@ public class AssignCodesDialog extends BaseSubWindow
 			level = 3;
 		}
 		return level;
+	}
+
+	String getGroupNamePrefix(final boolean isCustomLayout) {
+
+		if (isCustomLayout) {
+			return AssignCodesDialog.this.assignCodesCustomLayout.getGroupNamePrefix();
+		} else {
+			return AssignCodesDialog.this.assignCodesDefaultLayout.getGroupNamePrefix();
+		}
+
 	}
 
 	@Override
@@ -311,5 +317,17 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.messageSource.setCaption(this.codingLevelOptions, Message.CODING_LEVEL);
 		this.messageSource.setCaption(this.continueButton, Message.APPLY_CODES);
 		this.messageSource.setCaption(this.cancelButton, Message.CANCEL);
+	}
+
+	void setGidsToProcess(final Set<Integer> gidsToProcess) {
+		this.gidsToProcess = gidsToProcess;
+	}
+
+	void setAssignCodesDefaultLayout(final AssignCodesDefaultLayout assignCodesDefaultLayout) {
+		this.assignCodesDefaultLayout = assignCodesDefaultLayout;
+	}
+
+	void setAssignCodesCustomLayout(final AssignCodeCustomLayout assignCodesCustomLayout) {
+		this.assignCodesCustomLayout = assignCodesCustomLayout;
 	}
 }
