@@ -150,15 +150,15 @@ public class SaveGermplasmListActionTest {
 
 	@Test
 	public void testBlankSourceSaving() throws BreedingManagerException {
-		final ArgumentCaptor<GermplasmListData> listData = ArgumentCaptor.forClass(GermplasmListData.class);
+		final ArgumentCaptor<GermplasmListData> listDataArgumentCaptor = ArgumentCaptor.forClass(GermplasmListData.class);
 
 		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, SOURCE_LIST_XLS,
 				this.doNotCreateGermplasmsWithId, this.importedGermplasmList, SEED_STORAGE_LOCATION);
 
 		try {
-			Mockito.verify(this.germplasmListManager, Mockito.atLeastOnce()).addGermplasmListData(listData.capture());
+			Mockito.verify(this.germplasmListManager, Mockito.atLeastOnce()).addGermplasmListData(listDataArgumentCaptor.capture());
 			Assert.assertEquals("Imported germplasm data with null or empty source must be saved as blank", "",
-					listData.getValue().getSeedSource());
+					listDataArgumentCaptor.getValue().getSeedSource());
 		} catch (final TooLittleActualInvocations e) {
 			Assert.fail(
 					"Expecting that the list entries of the existing list are marked deleted after trying to overwrite a list using germplasm import.");
@@ -167,7 +167,7 @@ public class SaveGermplasmListActionTest {
 
 	@Test
 	public void testNonBlankSourceSaving() throws BreedingManagerException {
-		final ArgumentCaptor<GermplasmListData> listData = ArgumentCaptor.forClass(GermplasmListData.class);
+		final ArgumentCaptor<GermplasmListData> listDataArgumentCaptor = ArgumentCaptor.forClass(GermplasmListData.class);
 
 		// provide a non null source value
 		for (final ImportedGermplasm importedGermplasm : this.importedGermplasmList.getImportedGermplasms()) {
@@ -178,9 +178,9 @@ public class SaveGermplasmListActionTest {
 				this.doNotCreateGermplasmsWithId, this.importedGermplasmList, SEED_STORAGE_LOCATION);
 
 		try {
-			Mockito.verify(this.germplasmListManager, Mockito.atLeastOnce()).addGermplasmListData(listData.capture());
+			Mockito.verify(this.germplasmListManager, Mockito.atLeastOnce()).addGermplasmListData(listDataArgumentCaptor.capture());
 			Assert.assertEquals("Imported germplasm data with non empty source must use that value", TEST_SOURCE,
-					listData.getValue().getSeedSource());
+					listDataArgumentCaptor.getValue().getSeedSource());
 		} catch (final TooLittleActualInvocations e) {
 			Assert.fail(
 					"Expecting that the list entries of the existing list are marked deleted after trying to overwrite a list using germplasm import.");
