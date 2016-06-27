@@ -2,6 +2,7 @@ package org.generationcp.breeding.manager.containers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
@@ -66,6 +67,7 @@ public class GermplasmQueryTest {
 	private CrossExpansionProperties crossExpansionProperties;
 	private GermplasmSearchParameter germplasmSearchParameter = new GermplasmSearchParameter(SEARCH_STRING, Operation.LIKE);
 	private List<Germplasm> germplasms = new ArrayList<>();
+  	private HashMap<Germplasm, String> germplasmPedigreeStringMap = new HashMap<>();
 	@InjectMocks
 	private GermplasmQuery query =
 			new GermplasmQuery(Mockito.mock(ListManagerMain.class), false, false, germplasmSearchParameter, Mockito.mock(Table.class),
@@ -83,6 +85,7 @@ public class GermplasmQueryTest {
 			inventoryInfo.setActualInventoryLotCount(TEST_INVENTORY_COUNT);
 			inventoryInfo.setReservedLotCount(TEST_SEED_RES_COUNT);
 			germplasm.setInventoryInfo(inventoryInfo);
+		  	germplasmPedigreeStringMap.put(germplasm, "pedigree"+i);
 			germplasms.add(germplasm);
 		}
 
@@ -108,7 +111,7 @@ public class GermplasmQueryTest {
 	@Test
 	public void testGetGermplasmItem() throws Exception {
 	  	ContextHolder.setCurrentCrop("maize");
-		Item item = this.query.getGermplasmItem(germplasms.get(0), 1);
+		Item item = this.query.buildGermplasmItem("default", 1, germplasmPedigreeStringMap, germplasms.get(0), 1);
 
 		final List<String> itemPropertyIDList = Arrays.asList(itemPropertyIds);
 
@@ -177,7 +180,7 @@ public class GermplasmQueryTest {
 	  	Mockito.when(this.crossExpansionProperties.getProfile()).thenReturn("default");
 	  	Mockito.when(this.crossExpansionProperties.getCropGenerationLevel(Mockito.anyString())).thenReturn(0);
 
-	  	Item item = this.query.getGermplasmItem(germplasm, 1);
+	  	Item item = this.query.buildGermplasmItem("default", 0, germplasmPedigreeStringMap,germplasm, 1);
 
 		// The following asserts should jist verify the content / values of the item object given itemPropertyId
 	  	Assert.assertEquals("LocationName", item.getItemProperty(ColumnLabels.GERMPLASM_LOCATION.getName()).getValue());

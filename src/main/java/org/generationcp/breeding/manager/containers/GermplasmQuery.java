@@ -109,10 +109,15 @@ import com.vaadin.ui.themes.BaseTheme;
 		final List<Item> items = new ArrayList<>();
 		final List<Germplasm> list = this.getGermplasmSearchResults(startIndex, count);
 
-		for (int i = 0; i < list.size(); i++) {
-			items.add(this.getGermplasmItem(list.get(i), i + startIndex));
+	  	final String currentProfile = crossExpansionProperties.getProfile();
+	  	final int cropGenerationLevel = crossExpansionProperties.getCropGenerationLevel(ContextHolder.getCurrentCrop());
+	  	HashMap<Germplasm, String> germplasmPedigreeStringMap = new HashMap<>();
+
+	  	for (int i = 0; i < list.size(); i++) {
+			items.add(this.buildGermplasmItem(currentProfile, cropGenerationLevel, germplasmPedigreeStringMap, list.get(i), i + startIndex));
 		}
 
+	  	this.germplasmDataManager.addPedigreeString(germplasmPedigreeStringMap, currentProfile, cropGenerationLevel);
 		return items;
 	}
 
@@ -136,13 +141,10 @@ import com.vaadin.ui.themes.BaseTheme;
 		return this.size;
 	}
 
-	Item getGermplasmItem(final Germplasm germplasm, final int index) {
+	Item buildGermplasmItem(String currentProfile, int cropGenerationLevel, HashMap<Germplasm, String> germplasmPedigreeStringMap, final Germplasm germplasm, final int index) {
 
 		final Integer gid = germplasm.getGid();
 		final GermplasmInventory inventoryInfo = germplasm.getInventoryInfo();
-
-	  	final String currentProfile = crossExpansionProperties.getProfile();
-	  	final int cropGenerationLevel = crossExpansionProperties.getCropGenerationLevel(ContextHolder.getCurrentCrop());
 
 	  	final String crossExpansion;
 
@@ -158,7 +160,7 @@ import com.vaadin.ui.themes.BaseTheme;
 		}
 	  	else{
 			crossExpansion = this.pedigreeService.getCrossExpansion(germplasm.getGid(), this.crossExpansionProperties);
-		  	germplasmDataManager.addPedigreeString(germplasm, crossExpansion, currentProfile, cropGenerationLevel);
+		  	germplasmPedigreeStringMap.put(germplasm, crossExpansion);
 		}
 
 		final Item item = new PropertysetItem();
