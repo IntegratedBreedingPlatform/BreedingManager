@@ -343,13 +343,13 @@ public class ParentTabComponentTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testUpdateListDataTableWithPreservedSelectedEntriesAndCheckedSelectAll() {
-		final TableWithSelectAllLayout tableWithSelectAll = initializeTable();
+		final TableWithSelectAllLayout tableWithSelectAll = this.initializeTable();
 		// setup data
 		final List<GermplasmListData> savedListEntries =
 				GermplasmListDataTestDataInitializer.getGermplasmListDataList(ParentTabComponentTest.GERMPLASM_LIST_ID);
 		final Collection<GermplasmListEntry> listEntries = this.createListEntries(savedListEntries);
-		final List<Integer> selectedEntryIds = this.selectEntryIdsFromListEntries(listEntries, 
-				GermplasmListDataTestDataInitializer.NUM_OF_ENTRIES);
+		final List<Integer> selectedEntryIds =
+				this.selectEntryIdsFromListEntries(listEntries, GermplasmListDataTestDataInitializer.NUM_OF_ENTRIES);
 		final Table table = tableWithSelectAll.getTable();
 		this.addEntriesToTable(listEntries, table, selectedEntryIds);
 		// test
@@ -359,10 +359,10 @@ public class ParentTabComponentTest {
 		Assert.assertEquals("The selected entries should be preserved", selectedEntryIds.size(), newSelectedListEntries.size());
 		Assert.assertTrue("The select all should be selected", tableWithSelectAll.getCheckBox().booleanValue());
 	}
-	
+
 	private TableWithSelectAllLayout initializeTable() {
-		final TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(
-				GermplasmListDataTestDataInitializer.NUM_OF_ENTRIES, ParentTabComponent.TAG_COLUMN_ID);
+		final TableWithSelectAllLayout tableWithSelectAll =
+				new TableWithSelectAllLayout(GermplasmListDataTestDataInitializer.NUM_OF_ENTRIES, ParentTabComponent.TAG_COLUMN_ID);
 		tableWithSelectAll.instantiateComponents();
 		tableWithSelectAll.addListeners();
 		this.parentTabComponent.initializeMainComponents();
@@ -379,7 +379,7 @@ public class ParentTabComponentTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testUpdateListDataTableWithPreservedSelectedEntriesAndUncheckedSelectAll() {
-		final TableWithSelectAllLayout tableWithSelectAll = initializeTable();
+		final TableWithSelectAllLayout tableWithSelectAll = this.initializeTable();
 		// setup data
 		final List<GermplasmListData> savedListEntries =
 				GermplasmListDataTestDataInitializer.getGermplasmListDataList(ParentTabComponentTest.GERMPLASM_LIST_ID);
@@ -399,7 +399,7 @@ public class ParentTabComponentTest {
 		final List<Integer> selectedEntryIds = new ArrayList<>();
 		int counterOfSelectedItems = 0;
 		for (final GermplasmListEntry germplasmListEntry : listEntries) {
-			if(counterOfSelectedItems < numberOfSelectedItems) {
+			if (counterOfSelectedItems < numberOfSelectedItems) {
 				selectedEntryIds.add(germplasmListEntry.getEntryId());
 			}
 			counterOfSelectedItems++;
@@ -407,14 +407,15 @@ public class ParentTabComponentTest {
 		return selectedEntryIds;
 	}
 
-	private void addEntriesToTable(final Collection<GermplasmListEntry> selectedListEntries, final Table table, List<Integer> selectedEntryIds) {
+	private void addEntriesToTable(final Collection<GermplasmListEntry> selectedListEntries, final Table table,
+			final List<Integer> selectedEntryIds) {
 		for (final GermplasmListEntry germplasmListEntry : selectedListEntries) {
 			final Item newItem = table.getContainerDataSource().addItem(germplasmListEntry);
-			
+
 			final CheckBox tag = new CheckBox();
 			newItem.getItemProperty(ParentTabComponent.TAG_COLUMN_ID).setValue(tag);
-			
-			if(selectedEntryIds.contains(germplasmListEntry.getEntryId())) {
+
+			if (selectedEntryIds.contains(germplasmListEntry.getEntryId())) {
 				table.select(germplasmListEntry);
 			}
 		}

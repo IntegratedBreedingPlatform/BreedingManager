@@ -1000,20 +1000,20 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(entry.getInventoryInfo().getStockIDs());
 
 		}
-		
-		//move selection of previously checked entries when all the items are already added
-		//as checkbox fires value change immediately
-		preserveSelectedEntriesBeforeSaving(selectedEntryIds);
-		
+
+		// move selection of previously checked entries when all the items are already added
+		// as checkbox fires value change immediately
+		this.preserveSelectedEntriesBeforeSaving(selectedEntryIds);
+
 		this.resetUnsavedChangesFlag();
 		this.listDataTable.requestRepaint();
 	}
 
 	@SuppressWarnings("unchecked")
 	private void preserveSelectedEntriesBeforeSaving(final List<Integer> selectedEntryIds) {
-		final Collection<GermplasmListEntry> entries = (Collection<GermplasmListEntry>) 
-				this.listDataTable.getContainerDataSource().getItemIds();
-		for (GermplasmListEntry entry : entries) {
+		final Collection<GermplasmListEntry> entries =
+				(Collection<GermplasmListEntry>) this.listDataTable.getContainerDataSource().getItemIds();
+		for (final GermplasmListEntry entry : entries) {
 			if (selectedEntryIds.contains(entry.getEntryId())) {
 				this.listDataTable.select(entry);
 			}
