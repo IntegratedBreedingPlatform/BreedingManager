@@ -10,10 +10,12 @@ import org.generationcp.middleware.pojos.GermplasmListData;
 
 public class GermplasmListDataTestDataInitializer {
 
+	public static int NUM_OF_ENTRIES = 10;
+	
 	public static List<GermplasmListData> getGermplasmListDataList(int listId) {
 		final GermplasmList list = new GermplasmList(listId);
 		final List<GermplasmListData> listDataList = new ArrayList<>();
-		for (int i = 1; i <= 10; i++) {
+		for (int i = 1; i <= NUM_OF_ENTRIES; i++) {
 			listDataList.add(getGermplasmListData(list, i + 10, i + 100, i));
 		}
 		return listDataList;

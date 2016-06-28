@@ -352,7 +352,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	private static final String NO_LOT_FOR_THIS_GERMPLASM = "No Lot for this Germplasm";
 	private static final String STRING_DASH = "-";
-	private static final String TAG_COLUMN_ID = "Tag";
+	static final String TAG_COLUMN_ID = "Tag";
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -958,10 +958,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			tag.addListener(new ParentsTableCheckboxListener(this.listDataTable, itemId, this.tableWithSelectAllLayout.getCheckBox()));
 			tag.setImmediate(true);
 
-			if (selectedEntryIds.contains(itemId.getEntryId())) {
-				this.listDataTable.select(itemId);
-			}
-
 			// #3
 			final String designationName = entry.getDesignation();
 
@@ -1004,9 +1000,24 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(entry.getInventoryInfo().getStockIDs());
 
 		}
-
+		
+		//move selection of previously checked entries when all the items are already added
+		//as checkbox fires value change immediately
+		preserveSelectedEntriesBeforeSaving(selectedEntryIds);
+		
 		this.resetUnsavedChangesFlag();
 		this.listDataTable.requestRepaint();
+	}
+
+	@SuppressWarnings("unchecked")
+	private void preserveSelectedEntriesBeforeSaving(final List<Integer> selectedEntryIds) {
+		final Collection<GermplasmListEntry> entries = (Collection<GermplasmListEntry>) 
+				this.listDataTable.getContainerDataSource().getItemIds();
+		for (GermplasmListEntry entry : entries) {
+			if (selectedEntryIds.contains(entry.getEntryId())) {
+				this.listDataTable.select(entry);
+			}
+		}
 	}
 
 	private List<Integer> getSelectedEntryIds(final Collection<GermplasmListEntry> selectedGermplasmListEntries) {

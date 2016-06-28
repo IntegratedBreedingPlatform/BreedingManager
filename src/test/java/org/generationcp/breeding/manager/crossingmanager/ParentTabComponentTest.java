@@ -47,6 +47,8 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
+import com.vaadin.data.Item;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
@@ -340,10 +342,29 @@ public class ParentTabComponentTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testUpdateListDataTableWithPreservedSelectedEntries() {
-		// initialize components
-		final TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
+	public void testUpdateListDataTableWithPreservedSelectedEntriesAndCheckedSelectAll() {
+		final TableWithSelectAllLayout tableWithSelectAll = initializeTable();
+		// setup data
+		final List<GermplasmListData> savedListEntries =
+				GermplasmListDataTestDataInitializer.getGermplasmListDataList(ParentTabComponentTest.GERMPLASM_LIST_ID);
+		final Collection<GermplasmListEntry> listEntries = this.createListEntries(savedListEntries);
+		final List<Integer> selectedEntryIds = this.selectEntryIdsFromListEntries(listEntries, 
+				GermplasmListDataTestDataInitializer.NUM_OF_ENTRIES);
+		final Table table = tableWithSelectAll.getTable();
+		this.addEntriesToTable(listEntries, table, selectedEntryIds);
+		// test
+		this.parentTabComponent.updateListDataTable(ParentTabComponentTest.GERMPLASM_LIST_ID, savedListEntries);
+
+		final Collection<GermplasmListEntry> newSelectedListEntries = (Collection<GermplasmListEntry>) table.getValue();
+		Assert.assertEquals("The selected entries should be preserved", selectedEntryIds.size(), newSelectedListEntries.size());
+		Assert.assertTrue("The select all should be selected", tableWithSelectAll.getCheckBox().booleanValue());
+	}
+	
+	private TableWithSelectAllLayout initializeTable() {
+		final TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(
+				GermplasmListDataTestDataInitializer.NUM_OF_ENTRIES, ParentTabComponent.TAG_COLUMN_ID);
 		tableWithSelectAll.instantiateComponents();
+		tableWithSelectAll.addListeners();
 		this.parentTabComponent.initializeMainComponents();
 		this.parentTabComponent.initializeParentTable(tableWithSelectAll);
 		final CrossingManagerInventoryTable inventoryTable = new CrossingManagerInventoryTable(null);
@@ -352,34 +373,62 @@ public class ParentTabComponentTest {
 		inventoryTable.instantiateComponents();
 		this.parentTabComponent.initializeListInventoryTable(inventoryTable);
 		this.parentTabComponent.addListeners();
+		return tableWithSelectAll;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testUpdateListDataTableWithPreservedSelectedEntriesAndUncheckedSelectAll() {
+		final TableWithSelectAllLayout tableWithSelectAll = initializeTable();
 		// setup data
 		final List<GermplasmListData> savedListEntries =
 				GermplasmListDataTestDataInitializer.getGermplasmListDataList(ParentTabComponentTest.GERMPLASM_LIST_ID);
-		final Collection<GermplasmListEntry> selectedListEntries = this.createSelectedListEntries(savedListEntries);
+		final Collection<GermplasmListEntry> listEntries = this.createListEntries(savedListEntries);
+		final List<Integer> selectedEntryIds = this.selectEntryIdsFromListEntries(listEntries, 1);
 		final Table table = tableWithSelectAll.getTable();
-		this.selectedListEntriesToTable(selectedListEntries, table);
+		this.addEntriesToTable(listEntries, table, selectedEntryIds);
 		// test
 		this.parentTabComponent.updateListDataTable(ParentTabComponentTest.GERMPLASM_LIST_ID, savedListEntries);
 
 		final Collection<GermplasmListEntry> newSelectedListEntries = (Collection<GermplasmListEntry>) table.getValue();
-		Assert.assertTrue("The selected entries should be preserved", savedListEntries.containsAll(newSelectedListEntries));
+		Assert.assertEquals("The selected entries should be preserved", selectedEntryIds.size(), newSelectedListEntries.size());
+		Assert.assertFalse("The select all should not be selected", tableWithSelectAll.getCheckBox().booleanValue());
 	}
 
-	private void selectedListEntriesToTable(final Collection<GermplasmListEntry> selectedListEntries, final Table table) {
+	private List<Integer> selectEntryIdsFromListEntries(final Collection<GermplasmListEntry> listEntries, final int numberOfSelectedItems) {
+		final List<Integer> selectedEntryIds = new ArrayList<>();
+		int counterOfSelectedItems = 0;
+		for (final GermplasmListEntry germplasmListEntry : listEntries) {
+			if(counterOfSelectedItems < numberOfSelectedItems) {
+				selectedEntryIds.add(germplasmListEntry.getEntryId());
+			}
+			counterOfSelectedItems++;
+		}
+		return selectedEntryIds;
+	}
+
+	private void addEntriesToTable(final Collection<GermplasmListEntry> selectedListEntries, final Table table, List<Integer> selectedEntryIds) {
 		for (final GermplasmListEntry germplasmListEntry : selectedListEntries) {
-			table.getContainerDataSource().addItem(germplasmListEntry);
+			final Item newItem = table.getContainerDataSource().addItem(germplasmListEntry);
+			
+			final CheckBox tag = new CheckBox();
+			newItem.getItemProperty(ParentTabComponent.TAG_COLUMN_ID).setValue(tag);
+			
+			if(selectedEntryIds.contains(germplasmListEntry.getEntryId())) {
+				table.select(germplasmListEntry);
+			}
 		}
 	}
 
-	private List<GermplasmListEntry> createSelectedListEntries(final List<GermplasmListData> savedListEntries) {
-		final List<GermplasmListEntry> selectedListEntries = new ArrayList<>();
+	private List<GermplasmListEntry> createListEntries(final List<GermplasmListData> savedListEntries) {
+		final List<GermplasmListEntry> listEntries = new ArrayList<>();
 		int listDataId = 100;
 		for (final GermplasmListData germplasmListData : savedListEntries) {
 			final GermplasmListEntry entry =
 					new GermplasmListEntry(listDataId++, germplasmListData.getGid(), germplasmListData.getEntryId(),
 							germplasmListData.getDesignation(), germplasmListData.getSeedSource());
-			selectedListEntries.add(entry);
+			listEntries.add(entry);
 		}
-		return selectedListEntries;
+		return listEntries;
 	}
 }
