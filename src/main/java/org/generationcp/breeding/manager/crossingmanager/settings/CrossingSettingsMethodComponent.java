@@ -30,7 +30,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.hazelcast.executor.client.IsShutdownRequest;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.Button;
@@ -38,10 +37,10 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -229,8 +228,9 @@ BreedingManagerLayout {
 			private static final long serialVersionUID = -4064520391948241747L;
 
 			@Override
-			public void valueChange(ValueChangeEvent event) {
-				CrossingSettingsMethodComponent.this.populateBreedingMethods((Boolean) CrossingSettingsMethodComponent.this.favoriteMethodsCheckbox.getValue(),
+			public void valueChange(final ValueChangeEvent event) {
+				CrossingSettingsMethodComponent.this.populateBreedingMethods(
+						(Boolean) CrossingSettingsMethodComponent.this.favoriteMethodsCheckbox.getValue(),
 						CrossingSettingsMethodComponent.this.programUniqueId);
 			}
 
@@ -279,33 +279,32 @@ BreedingManagerLayout {
 		this.breedingMethods.addStyleName("cs-form-input");
 		this.methodPopupView.addStyleName("cs-inline-icon");
 
-        final VerticalLayout methodSelectLayout = new VerticalLayout();
+		final VerticalLayout methodSelectLayout = new VerticalLayout();
 
-        final HorizontalLayout selectWithPopupLayout = new HorizontalLayout();
-        selectWithPopupLayout.addComponent(this.breedingMethods);
-        selectWithPopupLayout.addComponent(this.methodPopupView);
+		final HorizontalLayout selectWithPopupLayout = new HorizontalLayout();
+		selectWithPopupLayout.addComponent(this.breedingMethods);
+		selectWithPopupLayout.addComponent(this.methodPopupView);
 
-        methodSelectLayout.addComponent(selectWithPopupLayout);
-        methodSelectLayout.addComponent(this.breedingMethodsRadioBtn);
-        methodSelectLayout.addComponent(this.favoriteMethodsCheckbox);
-        methodSelectLayout.addComponent(this.manageFavoriteMethodsLink);
+		methodSelectLayout.addComponent(selectWithPopupLayout);
+		methodSelectLayout.addComponent(this.breedingMethodsRadioBtn);
+		methodSelectLayout.addComponent(this.favoriteMethodsCheckbox);
+		methodSelectLayout.addComponent(this.manageFavoriteMethodsLink);
 
-        final VerticalLayout internalPanelLayout = new VerticalLayout();
-        internalPanelLayout.setSpacing(true);
-        internalPanelLayout.setMargin(true);
-        internalPanelLayout.addComponent(breedingMethodDescLabel);
-        internalPanelLayout.addComponent(this.selectMethod);
-        internalPanelLayout.addComponent(methodSelectLayout);
+		final VerticalLayout internalPanelLayout = new VerticalLayout();
+		internalPanelLayout.setSpacing(true);
+		internalPanelLayout.setMargin(true);
+		internalPanelLayout.addComponent(this.breedingMethodDescLabel);
+		internalPanelLayout.addComponent(this.selectMethod);
+		internalPanelLayout.addComponent(methodSelectLayout);
 
+		final Panel breedingMethodPanel = new Panel();
+		breedingMethodPanel.setWidth("460px");
+		breedingMethodPanel.setLayout(internalPanelLayout);
+		breedingMethodPanel.addStyleName("section_panel_layout");
 
-        final Panel breedingMethodPanel = new Panel();
-        breedingMethodPanel.setWidth("460px");
-        breedingMethodPanel.setLayout(internalPanelLayout);
-        breedingMethodPanel.addStyleName("section_panel_layout");
-
-        final HeaderLabelLayout breedingMethodLayout = new HeaderLabelLayout(null, this.breedingMethodLabel);
-        this.addComponent(breedingMethodLayout);
-        this.addComponent(breedingMethodPanel);
+		final HeaderLabelLayout breedingMethodLayout = new HeaderLabelLayout(null, this.breedingMethodLabel);
+		this.addComponent(breedingMethodLayout);
+		this.addComponent(breedingMethodPanel);
 	}
 
 	public void setFields(BreedingMethodSetting breedingMethodSetting) {
@@ -397,8 +396,8 @@ BreedingManagerLayout {
 		if (showOnlyFavorites) {
 			try {
 				String mtype = null;
-				
-				if (!isSelectAllMethods()) {
+
+				if (!this.isSelectAllMethods()) {
 					mtype = "GEN";
 				}
 
@@ -418,7 +417,7 @@ BreedingManagerLayout {
 	private void populateBreedingMethod(final String programUUID) {
 
 		try {
-			if (isSelectAllMethods()) {
+			if (this.isSelectAllMethods()) {
 				this.methods = this.germplasmDataManager.getAllMethods();
 			} else {
 				this.methods = this.germplasmDataManager.getMethodsByType("GEN", programUUID);

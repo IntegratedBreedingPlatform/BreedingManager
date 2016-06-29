@@ -156,7 +156,7 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 		}
 
 		this.showFavoritesCheckBox = new CheckBox();
-		this.showFavoritesCheckBox.setCaption(this.messageSource.getMessage(Message.SHOW_ONLY_FAVORITE_METHODS) + " (org.generationcp.breeding.manager.customfields.BreedingMethodField.instantiateComponents())");
+		this.showFavoritesCheckBox.setCaption(this.messageSource.getMessage(Message.SHOW_ONLY_FAVORITE_METHODS));
 		this.showFavoritesCheckBox.setImmediate(true);
 
 		this.manageFavoritesLink = new Button();
