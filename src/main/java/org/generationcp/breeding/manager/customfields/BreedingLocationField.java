@@ -154,7 +154,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		this.breedingLocationComboBox.setNullSelectionAllowed(false);
 
 		this.showFavoritesCheckBox = new CheckBox();
-		this.showFavoritesCheckBox.setCaption(this.messageSource.getMessage(Message.SHOW_ONLY_FAVORITE_LOCATIONS));
+		this.showFavoritesCheckBox.setCaption(this.messageSource.getMessage(Message.SHOW_ONLY_FAVORITE_LOCATIONS) + " (BreedingLocationField");
 		this.showFavoritesCheckBox.setImmediate(true);
 
 		this.manageFavoritesLink = new Button();

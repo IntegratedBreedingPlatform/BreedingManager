@@ -30,6 +30,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.hazelcast.executor.client.IsShutdownRequest;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.Button;
@@ -40,6 +41,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -76,6 +78,8 @@ BreedingManagerLayout {
 	private CheckBox favoriteMethodsCheckbox;
 	private Button manageFavoriteMethodsLink;
 
+	private OptionGroup breedingMethodsRadioBtn;
+
 	private PopupView methodPopupView;
 	private Label breedingMethodsHelpPopup;
 
@@ -103,6 +107,10 @@ BreedingManagerLayout {
 			hasFavorite = true;
 		}
 		return hasFavorite;
+	}
+
+	private boolean isSelectAllMethods() {
+		return ((String) this.breedingMethodsRadioBtn.getValue()).equals(this.messageSource.getMessage(Message.SHOW_ALL_METHODS));
 	}
 
 	@Override
@@ -140,6 +148,14 @@ BreedingManagerLayout {
 
 		this.favoriteMethodsCheckbox = new CheckBox(this.messageSource.getMessage(Message.SHOW_ONLY_FAVORITE_METHODS));
 		this.favoriteMethodsCheckbox.setImmediate(true);
+		
+		this.breedingMethodsRadioBtn = new OptionGroup();
+		this.breedingMethodsRadioBtn.setMultiSelect(false);
+		this.breedingMethodsRadioBtn.setImmediate(true);
+		this.breedingMethodsRadioBtn.setStyleName("v-select-optiongroup-horizontal");
+		this.breedingMethodsRadioBtn.addItem(this.messageSource.getMessage(Message.SHOW_ALL_METHODS));
+		this.breedingMethodsRadioBtn.addItem(this.messageSource.getMessage(Message.SHOW_GENERATIVE_METHODS));
+		this.breedingMethodsRadioBtn.select(this.messageSource.getMessage(Message.SHOW_GENERATIVE_METHODS));
 
 		this.manageFavoriteMethodsLink = new Button();
 		this.manageFavoriteMethodsLink.setStyleName(BaseTheme.BUTTON_LINK);
@@ -208,17 +224,20 @@ BreedingManagerLayout {
 			}
 		});
 
-		this.favoriteMethodsCheckbox.addListener(new Property.ValueChangeListener() {
+		final Property.ValueChangeListener breedingMethodsListener = new Property.ValueChangeListener() {
 
 			private static final long serialVersionUID = -4064520391948241747L;
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				CrossingSettingsMethodComponent.this.populateBreedingMethods((Boolean) event.getProperty().getValue(),
+				CrossingSettingsMethodComponent.this.populateBreedingMethods((Boolean) CrossingSettingsMethodComponent.this.favoriteMethodsCheckbox.getValue(),
 						CrossingSettingsMethodComponent.this.programUniqueId);
 			}
 
-		});
+		};
+
+		this.favoriteMethodsCheckbox.addListener(breedingMethodsListener);
+		this.breedingMethodsRadioBtn.addListener(breedingMethodsListener);
 
 		this.manageFavoriteMethodsLink.addListener(new ClickListener() {
 
@@ -240,7 +259,7 @@ BreedingManagerLayout {
 						public void windowClose(CloseEvent e) {
 							Object lastValue = CrossingSettingsMethodComponent.this.breedingMethods.getValue();
 							CrossingSettingsMethodComponent.this.populateBreedingMethods(
-									((Boolean) CrossingSettingsMethodComponent.this.favoriteMethodsCheckbox.getValue()).equals(true),
+									((Boolean) CrossingSettingsMethodComponent.this.favoriteMethodsCheckbox.getValue()),
 									CrossingSettingsMethodComponent.this.programUniqueId);
 							CrossingSettingsMethodComponent.this.breedingMethods.setValue(lastValue);
 						}
@@ -262,6 +281,7 @@ BreedingManagerLayout {
 
         final VerticalLayout methodSelectLayout = new VerticalLayout();
         methodSelectLayout.addComponent(this.breedingMethods);
+        methodSelectLayout.addComponent(this.breedingMethodsRadioBtn);
         methodSelectLayout.addComponent(this.favoriteMethodsCheckbox);
         methodSelectLayout.addComponent(this.manageFavoriteMethodsLink);
 
@@ -362,6 +382,7 @@ BreedingManagerLayout {
 	private void showBreedingMethodSelection(final Boolean show) {
 		this.breedingMethods.setVisible(show);
 		this.favoriteMethodsCheckbox.setVisible(show);
+		this.breedingMethodsRadioBtn.setVisible(show);
 		this.manageFavoriteMethodsLink.setVisible(show);
 		this.breedingMethodsHelpPopup.setVisible(show);
 		this.methodPopupView.setVisible(show);
@@ -374,8 +395,14 @@ BreedingManagerLayout {
 
 		if (showOnlyFavorites) {
 			try {
+				String mtype = null;
+				
+				if (!isSelectAllMethods()) {
+					mtype = "GEN";
+				}
+
 				BreedingManagerUtil.populateWithFavoriteMethods(this.workbenchDataManager, this.germplasmDataManager, this.breedingMethods,
-						this.mapMethods, programUUID);
+						this.mapMethods, mtype, programUUID);
 			} catch (final MiddlewareQueryException e) {
 				LOG.error(e.getMessage(), e);
 				MessageNotifier
@@ -390,7 +417,11 @@ BreedingManagerLayout {
 	private void populateBreedingMethod(final String programUUID) {
 
 		try {
-			this.methods = this.germplasmDataManager.getMethodsByType("GEN", programUUID);
+			if (isSelectAllMethods()) {
+				this.methods = this.germplasmDataManager.getAllMethods();
+			} else {
+				this.methods = this.germplasmDataManager.getMethodsByType("GEN", programUUID);
+			}
 		} catch (final MiddlewareQueryException e) {
 			CrossingSettingsMethodComponent.LOG.error(e.getMessage());
 		}
