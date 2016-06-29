@@ -514,5 +514,40 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
 
 		return false;
 	}
-
+	
+	Button getOkButton() {
+		return this.okButton;
+	}
+	
+	void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+	
+	void setParent(Window parent) {
+		this.parentWindow = parent;
+	}
+	
+	void setPrefixTextFieldValue(String value) {
+		this.prefixTextField.setValue(value);
+	}
+	
+	void setSequenceNumCheckBoxValue(boolean value) {
+		this.sequenceNumCheckBox.setValue(value);
+	}
+	
+	void setLeadingZerosSelectValue(int value) {
+		this.leadingZerosSelect.setValue(value);
+	}
+	
+	void setStartingNumberTextFieldValue(String value) {
+		this.startNumberTextField.setValue(value);
+	}
+	
+	void setPropertyIdtoFillValue(String value) {
+		this.propertyIdToFill = value;
+	}
+	
+	void setFillWithSource(FillWith fillWith) {
+		this.fillWithSource = fillWith;
+	}
 }
