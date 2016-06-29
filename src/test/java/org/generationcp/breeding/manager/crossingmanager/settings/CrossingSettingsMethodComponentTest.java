@@ -37,6 +37,8 @@ public class CrossingSettingsMethodComponentTest {
 
 		Mockito.when(this.service.getCurrentProject()).thenReturn(this.getProject(1L));
 		Mockito.when(this.messageSource.getMessage(Message.BREEDING_METHOD)).thenReturn("Breeding Method");
+		Mockito.when(this.messageSource.getMessage(Message.SHOW_GENERATIVE_METHODS)).thenReturn("Gen Method");
+		Mockito.when(this.messageSource.getMessage(Message.SHOW_ALL_METHODS)).thenReturn("All Method");
 
 		this.csmc = Mockito.spy(new CrossingSettingsMethodComponent());
 
