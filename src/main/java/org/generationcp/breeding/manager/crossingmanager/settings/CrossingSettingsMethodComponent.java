@@ -280,21 +280,22 @@ BreedingManagerLayout {
 		this.methodPopupView.addStyleName("cs-inline-icon");
 
         final VerticalLayout methodSelectLayout = new VerticalLayout();
-        methodSelectLayout.addComponent(this.breedingMethods);
+
+        final HorizontalLayout selectWithPopupLayout = new HorizontalLayout();
+        selectWithPopupLayout.addComponent(this.breedingMethods);
+        selectWithPopupLayout.addComponent(this.methodPopupView);
+
+        methodSelectLayout.addComponent(selectWithPopupLayout);
         methodSelectLayout.addComponent(this.breedingMethodsRadioBtn);
         methodSelectLayout.addComponent(this.favoriteMethodsCheckbox);
         methodSelectLayout.addComponent(this.manageFavoriteMethodsLink);
-
-        final HorizontalLayout selectWithPopupLayout = new HorizontalLayout();
-        selectWithPopupLayout.addComponent(methodSelectLayout);
-        selectWithPopupLayout.addComponent(this.methodPopupView);
 
         final VerticalLayout internalPanelLayout = new VerticalLayout();
         internalPanelLayout.setSpacing(true);
         internalPanelLayout.setMargin(true);
         internalPanelLayout.addComponent(breedingMethodDescLabel);
         internalPanelLayout.addComponent(this.selectMethod);
-        internalPanelLayout.addComponent(selectWithPopupLayout);
+        internalPanelLayout.addComponent(methodSelectLayout);
 
 
         final Panel breedingMethodPanel = new Panel();
