@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
- * 
+ *
  * Generation Challenge Programme (GCP)
- * 
- * 
+ *
+ *
  * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
  * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
- * 
+ *
  *******************************************************************************/
 
 package org.generationcp.breeding.manager.crossingmanager;
@@ -51,13 +51,13 @@ import com.vaadin.ui.Window;
 /**
  * This class contains the absolute layout of UI elements in Cross Name section in "Enter Additional Details..." tab in Crossing Manager
  * application
- * 
+ *
  * @author Darla Ani
- * 
+ *
  */
 @Configurable
-public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent,
-		CrossesMadeContainerUpdateListener {
+public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
+		implements InitializingBean, InternationalizableComponent, CrossesMadeContainerUpdateListener {
 
 	private final class OKButtonClickListener implements Button.ClickListener {
 
@@ -112,6 +112,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
 					return;
 				}
 			}
+
 			final int startNumber = Integer.parseInt(startNumberObj.toString());
 
 			final int numberOfEntries = AdditionalDetailsCrossNameComponent.this.fillWithSource.getNumberOfEntries();
@@ -433,11 +434,8 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
 		} else {
 			final String currentPrefixString = this.buildPrefixString();
 			if (!currentPrefixString.equals(this.lastPrefixUsed)) {
-				MessageNotifier.showError(
-						this.getWindow(),
-						"Error with Cross Code",
-						MessageFormat.format(this.messageSource.getMessage(Message.ERROR_NEXT_NAME_MUST_BE_GENERATED_FIRST), " ("
-								+ currentPrefixString + ")"));
+				MessageNotifier.showError(this.getWindow(), "Error with Cross Code", MessageFormat.format(
+						this.messageSource.getMessage(Message.ERROR_NEXT_NAME_MUST_BE_GENERATED_FIRST), " (" + currentPrefixString + ")"));
 				return false;
 			}
 		}
@@ -504,7 +502,8 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
 				oldCrossNames.add(oldNameEntry);
 			}
 			// Only store the "original" cross names, would not store previous names on 2nd, 3rd, ... change
-			if (this.container.getCrossesMade().getOldCrossNames() == null || this.container.getCrossesMade().getOldCrossNames().isEmpty()) {
+			if (this.container.getCrossesMade().getOldCrossNames() == null
+					|| this.container.getCrossesMade().getOldCrossNames().isEmpty()) {
 				this.container.getCrossesMade().setOldCrossNames(oldCrossNames);
 			}
 
@@ -514,40 +513,40 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout implemen
 
 		return false;
 	}
-	
+
 	Button getOkButton() {
 		return this.okButton;
 	}
-	
-	void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+
+	void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
-	
-	void setParent(Window parent) {
+
+	void setParent(final Window parent) {
 		this.parentWindow = parent;
 	}
-	
-	void setPrefixTextFieldValue(String value) {
+
+	void setPrefixTextFieldValue(final String value) {
 		this.prefixTextField.setValue(value);
 	}
-	
-	void setSequenceNumCheckBoxValue(boolean value) {
+
+	void setSequenceNumCheckBoxValue(final boolean value) {
 		this.sequenceNumCheckBox.setValue(value);
 	}
-	
-	void setLeadingZerosSelectValue(int value) {
+
+	void setLeadingZerosSelectValue(final int value) {
 		this.leadingZerosSelect.setValue(value);
 	}
-	
-	void setStartingNumberTextFieldValue(String value) {
+
+	void setStartingNumberTextFieldValue(final String value) {
 		this.startNumberTextField.setValue(value);
 	}
-	
-	void setPropertyIdtoFillValue(String value) {
+
+	void setPropertyIdtoFillValue(final String value) {
 		this.propertyIdToFill = value;
 	}
-	
-	void setFillWithSource(FillWith fillWith) {
+
+	void setFillWithSource(final FillWith fillWith) {
 		this.fillWithSource = fillWith;
 	}
 }
