@@ -418,7 +418,7 @@ BreedingManagerLayout {
 
 		try {
 			if (this.isSelectAllMethods()) {
-				this.methods = this.germplasmDataManager.getAllMethods();
+				this.methods = this.germplasmDataManager.getAllMethodsOrderByMname();
 			} else {
 				this.methods = this.germplasmDataManager.getMethodsByType("GEN", programUUID);
 			}
