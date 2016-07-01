@@ -155,7 +155,6 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		this.breedingLocationComboBox.setImmediate(true);
 		this.breedingLocationComboBox.setNullSelectionAllowed(false);
 
-		this.breedingLocationsRadioBtn = new OptionGroup();
 		this.breedingLocationsRadioBtn.setMultiSelect(false);
 		this.breedingLocationsRadioBtn.setImmediate(true);
 		this.breedingLocationsRadioBtn.setStyleName("v-select-optiongroup-horizontal");
@@ -195,7 +194,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 	}
 
 	private boolean isSelectAllLocations() {
-		return ((String) this.breedingLocationsRadioBtn.getValue()).equals(this.messageSource.getMessage(Message.SHOW_ALL_LOCATIONS));
+		return ((String) this.getBreedingLocationsRadioBtn().getValue()).equals(this.messageSource.getMessage(Message.SHOW_ALL_LOCATIONS));
 	}
 
 	@Override
@@ -232,7 +231,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 			}
 		};
 		this.showFavoritesCheckBox.addListener(breedingLocationsListener);
-		this.breedingLocationsRadioBtn.addListener(breedingLocationsListener);
+		this.getBreedingLocationsRadioBtn().addListener(breedingLocationsListener);
 
 		this.manageFavoritesLink.addListener(new ClickListener() {
 
@@ -258,7 +257,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		this.addComponent(this.breedingLocationComboBox, "top:0; left:" + this.leftIndentPixels + "px");
 
 		if (this.displayFavoriteMethodsFilter) {
-			this.addComponent(this.breedingLocationsRadioBtn, "top:30px; left:" + this.leftIndentPixels + "px");
+			this.addComponent(this.getBreedingLocationsRadioBtn(), "top:30px; left:" + this.leftIndentPixels + "px");
 			this.addComponent(this.showFavoritesCheckBox, "top:52px; left:" + this.leftIndentPixels + "px");
 		}
 
@@ -275,6 +274,8 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		this.breedingLocationsRadioBtn = new OptionGroup();
+
 		this.instantiateComponents();
 		this.initializeValues();
 		this.addListeners();
@@ -440,5 +441,13 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 
 	public void setBreedingManagerService(BreedingManagerService breedingManagerService) {
 		this.breedingManagerService = breedingManagerService;
+	}
+
+	public OptionGroup getBreedingLocationsRadioBtn() {
+		return breedingLocationsRadioBtn;
+	}
+
+	public void setBreedingLocationsRadioBtn(OptionGroup breedingLocationsRadioBtn) {
+		this.breedingLocationsRadioBtn = breedingLocationsRadioBtn;
 	}
 }

@@ -16,6 +16,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.vaadin.ui.OptionGroup;
+
 public class BreedingLocationFieldTest {
 
 	private static final String DUMMY_UNIQUE_ID = "1234567890";
@@ -41,12 +43,14 @@ public class BreedingLocationFieldTest {
 		LocationDataManager ldm = Mockito.mock(LocationDataManager.class);
 		WorkbenchDataManager wdm = Mockito.mock(WorkbenchDataManager.class);
 		BreedingManagerServiceImpl service = Mockito.mock(BreedingManagerServiceImpl.class);
+		OptionGroup opg = Mockito.mock(OptionGroup.class);
 
 		ArrayList<ProgramFavorite> favouriteLocations = new ArrayList<ProgramFavorite>();
 		favouriteLocations.add(Mockito.mock(ProgramFavorite.class));
 		Mockito.when(gpdm.getProgramFavorites(FavoriteType.LOCATION, 1000, BreedingLocationFieldTest.DUMMY_UNIQUE_ID)).thenReturn(
 				favouriteLocations);
 		Mockito.when(service.getCurrentProject()).thenReturn(this.getProject(1L));
+		Mockito.when(opg.getValue()).thenReturn(Boolean.FALSE.toString());
 
 		BreedingLocationField blf = new BreedingLocationField();
 		blf.setGermplasmDataManager(gpdm);
@@ -54,6 +58,7 @@ public class BreedingLocationFieldTest {
 		blf.setWorkbenchDataManager(wdm);
 		blf.setMessageSource(Mockito.mock(SimpleResourceBundleMessageSource.class));
 		blf.setBreedingManagerService(service);
+		blf.setBreedingLocationsRadioBtn(opg);
 
 		blf.instantiateComponents();
 
