@@ -18,6 +18,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import com.vaadin.ui.OptionGroup;
+
 public class CrossingSettingsMethodComponentTest {
 
 	private static final String DUMMY_UNIQUE_ID = "1234567890";
@@ -52,6 +54,8 @@ public class CrossingSettingsMethodComponentTest {
 		Mockito.when(this.gpdm.getProgramFavorites(FavoriteType.METHOD, 1000, CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID))
 				.thenReturn(favouriteMethods);
 		Mockito.when(this.messageSource.getMessage(Message.BREEDING_METHOD)).thenReturn("Breeding Method");
+		Mockito.when(this.messageSource.getMessage("ALL_METHODS")).thenReturn("ALL_METHODS");
+		this.csmc.setFilteredMethods(Mockito.mock(OptionGroup.class));
 
 		this.csmc.instantiateComponents();
 
@@ -74,6 +78,8 @@ public class CrossingSettingsMethodComponentTest {
 
 		Mockito.when(this.gpdm.getProgramFavorites(FavoriteType.METHOD, 1000, CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID))
 				.thenReturn(favouriteMethods);
+		this.csmc.setFilteredMethods(Mockito.mock(OptionGroup.class));
+
 		this.csmc.instantiateComponents();
 
 		Assert.assertTrue("Expecting a true return value when there are favourite method.",

@@ -92,6 +92,8 @@ BreedingManagerLayout {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		this.setFilteredMethods(new OptionGroup("Showing:"));
+
 		this.instantiateComponents();
 		this.initializeValues();
 		this.addListeners();
@@ -142,8 +144,7 @@ BreedingManagerLayout {
 		this.methodPopupView = new PopupView("?", this.breedingMethodsHelpPopup);
 		this.methodPopupView.addStyleName(AppConstants.CssStyles.POPUP_VIEW);
 
-		this.filteredMethods = new OptionGroup("Showing:");
-		this.filteredMethods.addItem(this.messageSource.getMessage("ALL_METHODS"));
+		this.getFilteredMethods().addItem(this.messageSource.getMessage("ALL_METHODS"));
 		this.setImmediate(true);
 
 		this.favoriteMethodsCheckbox = new CheckBox(this.messageSource.getMessage(Message.SHOW_ONLY_FAVORITE_METHODS));
@@ -228,7 +229,7 @@ BreedingManagerLayout {
 
 		});
 
-		this.filteredMethods.addListener(new Property.ValueChangeListener() {
+		this.getFilteredMethods().addListener(new Property.ValueChangeListener() {
 
 			@Override
 			public void valueChange(final ValueChangeEvent event) {
@@ -278,7 +279,7 @@ BreedingManagerLayout {
 
         final VerticalLayout methodSelectLayout = new VerticalLayout();
         methodSelectLayout.addComponent(this.breedingMethods);
-		methodSelectLayout.addComponent(this.filteredMethods);
+		methodSelectLayout.addComponent(this.getFilteredMethods());
         methodSelectLayout.addComponent(this.favoriteMethodsCheckbox);
         methodSelectLayout.addComponent(this.manageFavoriteMethodsLink);
 
@@ -378,7 +379,7 @@ BreedingManagerLayout {
 
 	private void showBreedingMethodSelection(final Boolean show) {
 		this.breedingMethods.setVisible(show);
-		this.filteredMethods.setVisible(show);
+		this.getFilteredMethods().setVisible(show);
 		this.favoriteMethodsCheckbox.setVisible(show);
 		this.manageFavoriteMethodsLink.setVisible(show);
 		this.breedingMethodsHelpPopup.setVisible(show);
@@ -455,4 +456,12 @@ BreedingManagerLayout {
     public void registerBreedingMethodChangeListener(Property.ValueChangeListener changeListener) {
         this.breedingMethods.addListener(changeListener);
     }
+
+	public OptionGroup getFilteredMethods() {
+		return filteredMethods;
+	}
+
+	public void setFilteredMethods(OptionGroup filteredMethods) {
+		this.filteredMethods = filteredMethods;
+	}
 }
