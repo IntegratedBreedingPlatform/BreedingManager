@@ -175,7 +175,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 	@Override
 	public void layoutComponents() {
 		if (this.hasInventoryAmounts) {
-			this.setHeight("330px");
+			this.setHeight("340px");
 		} else {
 			this.setHeight("270px");
 		}
@@ -188,20 +188,20 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 		this.addComponent(this.locationComponent, "top:120px;left:0px");
 
 		if (this.hasInventoryAmounts) {
-			this.addComponent(this.seedLocationComponent, "top:180px;left:0px");
+			this.addComponent(this.seedLocationComponent, "top:195px;left:0px");
 
-			this.addComponent(this.germplasmDateLabel, "top:245px;left:0px");
-			this.addComponent(this.germplasmDateField, "top:240px;left:" + this.getLeftIndentPixels() + "px");
+			this.addComponent(this.germplasmDateLabel, "top:275px;left:0px");
+			this.addComponent(this.germplasmDateField, "top:275px;left:" + this.getLeftIndentPixels() + "px");
 
-			this.addComponent(this.nameTypeLabel, "top:280px;left:0px");
-			this.addComponent(this.nameTypeComboBox, "top:275px;left:" + this.getLeftIndentPixels() + "px");
+			this.addComponent(this.nameTypeLabel, "top:310px;left:0px");
+			this.addComponent(this.nameTypeComboBox, "top:305px;left:" + this.getLeftIndentPixels() + "px");
 
 		} else {
-			this.addComponent(this.germplasmDateLabel, "top:185px;left:0px");
-			this.addComponent(this.germplasmDateField, "top:180px;left:" + this.getLeftIndentPixels() + "px");
+			this.addComponent(this.germplasmDateLabel, "top:200px;left:0px");
+			this.addComponent(this.germplasmDateField, "top:200px;left:" + this.getLeftIndentPixels() + "px");
 
-			this.addComponent(this.nameTypeLabel, "top:220px;left:0px");
-			this.addComponent(this.nameTypeComboBox, "top:215px;left:" + this.getLeftIndentPixels() + "px");
+			this.addComponent(this.nameTypeLabel, "top:235px;left:0px");
+			this.addComponent(this.nameTypeComboBox, "top:230px;left:" + this.getLeftIndentPixels() + "px");
 		}
 	}
 

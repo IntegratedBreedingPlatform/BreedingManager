@@ -259,11 +259,11 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 
 		if (this.displayFavoriteMethodsFilter) {
 			this.addComponent(this.breedingLocationsRadioBtn, "top:30px; left:" + this.leftIndentPixels + "px");
-			this.addComponent(this.showFavoritesCheckBox, "top:47px; left:" + this.leftIndentPixels + "px");
+			this.addComponent(this.showFavoritesCheckBox, "top:52px; left:" + this.leftIndentPixels + "px");
 		}
 
 		if (this.displayManageMethodLink) {
-			int pixels = this.leftIndentPixels + 220;
+			int pixels = this.leftIndentPixels + 230;
 			this.addComponent(this.manageFavoritesLink, "top:33px; left:" + pixels + "px");
 		}
 	}
