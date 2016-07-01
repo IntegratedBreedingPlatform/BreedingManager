@@ -36,6 +36,7 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
@@ -56,6 +57,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 
 	private List<Location> locations;
 	private CheckBox showFavoritesCheckBox;
+	private OptionGroup breedingLocationsRadioBtn;
 	private Button manageFavoritesLink;
 
 	private Window attachToWindow;
@@ -153,6 +155,14 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		this.breedingLocationComboBox.setImmediate(true);
 		this.breedingLocationComboBox.setNullSelectionAllowed(false);
 
+		this.breedingLocationsRadioBtn = new OptionGroup();
+		this.breedingLocationsRadioBtn.setMultiSelect(false);
+		this.breedingLocationsRadioBtn.setImmediate(true);
+		this.breedingLocationsRadioBtn.setStyleName("v-select-optiongroup-horizontal");
+		this.breedingLocationsRadioBtn.addItem(this.messageSource.getMessage(Message.SHOW_ALL_LOCATIONS));
+		this.breedingLocationsRadioBtn.addItem(this.messageSource.getMessage(Message.SHOW_STORAGE_LOCATIONS));
+		this.breedingLocationsRadioBtn.select(this.messageSource.getMessage(Message.SHOW_STORAGE_LOCATIONS));
+
 		this.showFavoritesCheckBox = new CheckBox();
 		this.showFavoritesCheckBox.setCaption(this.messageSource.getMessage(Message.SHOW_ONLY_FAVORITE_LOCATIONS));
 		this.showFavoritesCheckBox.setImmediate(true);
@@ -184,6 +194,10 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		return hasFavorite;
 	}
 
+	private boolean isSelectAllLocations() {
+		return ((String) this.breedingLocationsRadioBtn.getValue()).equals(this.messageSource.getMessage(Message.SHOW_ALL_LOCATIONS));
+	}
+
 	@Override
 	public void addListeners() {
 
@@ -207,16 +221,18 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 			}
 		});
 
-		this.showFavoritesCheckBox.addListener(new Property.ValueChangeListener() {
+		Property.ValueChangeListener breedingLocationsListener = new Property.ValueChangeListener() {
 
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				BreedingLocationField.this.populateHarvestLocation(((Boolean) event.getProperty().getValue()).equals(true),
+				BreedingLocationField.this.populateHarvestLocation(((Boolean) BreedingLocationField.this.showFavoritesCheckBox.getValue()),
 						BreedingLocationField.this.programUniqueId);
 			}
-		});
+		};
+		this.showFavoritesCheckBox.addListener(breedingLocationsListener);
+		this.breedingLocationsRadioBtn.addListener(breedingLocationsListener);
 
 		this.manageFavoritesLink.addListener(new ClickListener() {
 
@@ -242,7 +258,8 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		this.addComponent(this.breedingLocationComboBox, "top:0; left:" + this.leftIndentPixels + "px");
 
 		if (this.displayFavoriteMethodsFilter) {
-			this.addComponent(this.showFavoritesCheckBox, "top:30px; left:" + this.leftIndentPixels + "px");
+			this.addComponent(this.breedingLocationsRadioBtn, "top:30px; left:" + this.leftIndentPixels + "px");
+			this.addComponent(this.showFavoritesCheckBox, "top:47px; left:" + this.leftIndentPixels + "px");
 		}
 
 		if (this.displayManageMethodLink) {
@@ -304,8 +321,15 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 
 		if (showOnlyFavorites) {
 			try {
+				int ltype = 0;
+
+				if (!isSelectAllLocations()) {
+					// get favorites + storage locations (ltype = 1500)
+					ltype = 1500;
+				}
+
 				BreedingManagerUtil.populateWithFavoriteLocations(this.workbenchDataManager, this.germplasmDataManager,
-						this.breedingLocationComboBox, null, programUUID);
+						this.breedingLocationComboBox, null, ltype, programUUID);
 
 			} catch (MiddlewareQueryException e) {
 				BreedingLocationField.LOG.error(e.getMessage(), e);
@@ -325,7 +349,11 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 	private void populateLocations(String programUUID) {
 
 		try {
-			this.locations = this.locationDataManager.getLocationsByUniqueID(programUUID);
+			if (isSelectAllLocations()) {
+				this.locations = this.locationDataManager.getLocationsByUniqueID(programUUID);
+			} else {
+				this.locations = this.locationDataManager.getAllSeedingLocations(programUUID);
+			}
 		} catch (MiddlewareQueryException e) {
 			BreedingLocationField.LOG.error(e.getMessage(), e);
 		}
