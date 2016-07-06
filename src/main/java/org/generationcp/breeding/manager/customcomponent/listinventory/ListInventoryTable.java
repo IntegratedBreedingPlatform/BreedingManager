@@ -177,8 +177,21 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 					newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(itemCheckBox);
 					newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entryId);
 					newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(desigButton);
-					newItem.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).setValue(lotDetail.getLocationOfLot().getLname());
-					newItem.getItemProperty(ColumnLabels.UNITS.getName()).setValue(lotDetail.getScaleOfLot().getName());
+
+					String lotLocation = "";
+					if (lotDetail.getLocationOfLot() != null && lotDetail.getLocationOfLot().getLname() != null) {
+						lotLocation = lotDetail.getLocationOfLot().getLname();
+					}
+
+					newItem.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).setValue(lotLocation);
+
+					String lotScale = "";
+					if (lotDetail.getScaleOfLot() != null && lotDetail.getScaleOfLot().getName() != null) {
+						lotScale = lotDetail.getScaleOfLot().getName();
+					}
+
+					newItem.getItemProperty(ColumnLabels.UNITS.getName()).setValue(lotScale);
+
 					newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(lotDetail.getActualLotBalance());
 					newItem.getItemProperty(ColumnLabels.RESERVED.getName()).setValue(lotDetail.getReservedTotalForEntry());
 					newItem.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(0);
