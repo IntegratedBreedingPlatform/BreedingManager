@@ -34,6 +34,9 @@ public class AdditionalDetailsCrossNameComponentTest {
 	@Mock
 	private Window parentWindow;
 
+	@Mock
+	private Window parentOfParentWindow;
+
 	@InjectMocks
 	private AdditionalDetailsCrossNameComponent additionalDetailCNComponent;
 
@@ -43,7 +46,7 @@ public class AdditionalDetailsCrossNameComponentTest {
 	public void setUp() throws Exception {
 		this.additionalDetailCNComponent.setMessageSource(this.messageSource);
 		this.additionalDetailCNComponent.setParent(this.parentWindow);
-		Mockito.when(this.parentWindow.getParent()).thenReturn(new Window());
+		Mockito.when(this.parentWindow.getParent()).thenReturn(this.parentOfParentWindow);
 
 		Mockito.when(this.messageSource.getMessage(Matchers.anyString())).thenReturn("Please specify a prefix");
 		this.additionalDetailCNComponent.afterPropertiesSet();
@@ -69,6 +72,7 @@ public class AdditionalDetailsCrossNameComponentTest {
 	}
 
 	@Test
+	public void testButtonClickWhereStartingNumberExceedsDigitsAllowed() {
 		this.additionalDetailCNComponent.setPrefixTextFieldValue(AdditionalDetailsCrossNameComponentTest.PREFIX_VALUE);
 		this.additionalDetailCNComponent.setSequenceNumCheckBoxValue(true);
 		this.additionalDetailCNComponent.setLeadingZerosSelectValue(1);
@@ -117,12 +121,15 @@ public class AdditionalDetailsCrossNameComponentTest {
 	}
 
 	@Test
-	public void testButtonClickSuccess() {
+	public void testButtonClickWithNoValidationErrors() {
 		this.additionalDetailCNComponent.setPrefixTextFieldValue(AdditionalDetailsCrossNameComponentTest.PREFIX_VALUE);
 		this.additionalDetailCNComponent.setStartingNumberTextFieldValue(AdditionalDetailsCrossNameComponentTest.STARTING_NUMBER_VALUE);
 		this.additionalDetailCNComponent.setPropertyIdtoFillValue(ColumnLabels.ENTRY_CODE.getName());
 		
 		this.okButton.click();
+		Mockito.verify(this.fillWithSource, Mockito.times(1)).fillWithSequence(ColumnLabels.ENTRY_CODE.getName(),
+				AdditionalDetailsCrossNameComponentTest.PREFIX_VALUE, "", 1, 0, false, false);
 		Mockito.verify(this.parentWindow, Mockito.times(1)).getParent();
+		Mockito.verify(this.parentOfParentWindow, Mockito.times(1)).removeWindow(this.parentWindow);
 	}
 }
