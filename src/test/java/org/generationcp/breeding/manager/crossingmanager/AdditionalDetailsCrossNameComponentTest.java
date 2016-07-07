@@ -75,7 +75,7 @@ public class AdditionalDetailsCrossNameComponentTest {
 	public void testButtonClickWhereStartingNumberExceedsDigitsAllowed() {
 		this.additionalDetailCNComponent.setPrefixTextFieldValue(AdditionalDetailsCrossNameComponentTest.PREFIX_VALUE);
 		this.additionalDetailCNComponent.setSequenceNumCheckBoxValue(true);
-		this.additionalDetailCNComponent.setLeadingZerosSelectValue(1);
+		this.additionalDetailCNComponent.setNumberOfAllowedDigitsSelectValue(1);
 		this.additionalDetailCNComponent.setStartingNumberTextFieldValue("10");
 
 		this.okButton.click();

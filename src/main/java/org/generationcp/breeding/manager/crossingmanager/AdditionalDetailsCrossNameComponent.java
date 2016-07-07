@@ -86,7 +86,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 			int numOfAllowedDigits = 0;
 			final boolean isNumOfZerosNeeded = AdditionalDetailsCrossNameComponent.this.sequenceNumCheckBox.booleanValue();
 			if (isNumOfZerosNeeded) {
-				numOfAllowedDigits = ((Integer) AdditionalDetailsCrossNameComponent.this.leadingZerosSelect.getValue()).intValue();
+				numOfAllowedDigits = ((Integer) AdditionalDetailsCrossNameComponent.this.numOfAllowedDigitsSelect.getValue()).intValue();
 			}
 
 			final Object startNumberObj = AdditionalDetailsCrossNameComponent.this.startNumberTextField.getValue();
@@ -162,7 +162,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 
 	private static final long serialVersionUID = -1197900610042529900L;
 	private static final Logger LOG = LoggerFactory.getLogger(AdditionalDetailsCrossNameComponent.class);
-	private static final Integer MAX_LEADING_ZEROS = 9;
+	private static final Integer MAX_NUM_OF_ALLOWED_DIGITS = 9;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -183,7 +183,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 	private CheckBox sequenceNumCheckBox;
 	private CheckBox addSpaceCheckBox;
 	private CheckBox addSpaceAfterSuffixCheckBox;
-	private Select leadingZerosSelect;
+	private Select numOfAllowedDigitsSelect;
 	private Button generateButton;
 	private Button okButton;
 	private Button cancelButton;
@@ -233,7 +233,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 			@Override
 			public void valueChange(final ValueChangeEvent event) {
 				AdditionalDetailsCrossNameComponent.this
-						.enableSpecifyLeadingZerosComponents(AdditionalDetailsCrossNameComponent.this.sequenceNumCheckBox.booleanValue());
+						.enableSpecifyNumOfAllowedDigitsComponents(AdditionalDetailsCrossNameComponent.this.sequenceNumCheckBox.booleanValue());
 			}
 		});
 
@@ -245,13 +245,13 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 		this.prefixTextField.setWidth("300px");
 
 		this.howManyDigitsLabel = new Label();
-		this.leadingZerosSelect = new Select();
-		for (int i = 1; i <= AdditionalDetailsCrossNameComponent.MAX_LEADING_ZEROS; i++) {
-			this.leadingZerosSelect.addItem(Integer.valueOf(i));
+		this.numOfAllowedDigitsSelect = new Select();
+		for (int i = 1; i <= AdditionalDetailsCrossNameComponent.MAX_NUM_OF_ALLOWED_DIGITS; i++) {
+			this.numOfAllowedDigitsSelect.addItem(Integer.valueOf(i));
 		}
-		this.leadingZerosSelect.setNullSelectionAllowed(false);
-		this.leadingZerosSelect.select(Integer.valueOf(1));
-		this.leadingZerosSelect.setWidth("50px");
+		this.numOfAllowedDigitsSelect.setNullSelectionAllowed(false);
+		this.numOfAllowedDigitsSelect.select(Integer.valueOf(1));
+		this.numOfAllowedDigitsSelect.setWidth("50px");
 
 		this.specifySuffixLabel = new Label();
 		this.suffixTextField = new TextField();
@@ -328,7 +328,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 			this.addComponent(this.prefixTextField, "top:6px;left:165px");
 			this.addComponent(this.sequenceNumCheckBox, "top:37px;left:0px");
 			this.addComponent(this.howManyDigitsLabel, "top:53px;left:289px");
-			this.addComponent(this.leadingZerosSelect, "top:35px;left:235px");
+			this.addComponent(this.numOfAllowedDigitsSelect, "top:35px;left:235px");
 			this.addComponent(this.addSpaceCheckBox, "top:65px;left:0px");
 			this.addComponent(this.specifySuffixLabel, "top:115px;left:0px");
 			this.addComponent(this.suffixTextField, "top:95px;left:165px");
@@ -342,7 +342,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 			this.addComponent(this.specifyStartNumberLabel, "top:87px;left:10px");
 			this.addComponent(this.startNumberTextField, "top:67px;left:175px");
 			this.addComponent(this.sequenceNumCheckBox, "top:100px;left:10px");
-			this.addComponent(this.leadingZerosSelect, "top:98px;left:335px");
+			this.addComponent(this.numOfAllowedDigitsSelect, "top:98px;left:335px");
 			this.addComponent(this.howManyDigitsLabel, "top:119px;left:389px");
 			this.addComponent(this.specifySuffixLabel, "top:150px;left:10px");
 			this.addComponent(this.suffixTextField, "top:130px;left:175px");
@@ -359,7 +359,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 
 	private void initializeToggableComponents() {
 		this.digitsToggableComponents[0] = this.howManyDigitsLabel;
-		this.digitsToggableComponents[1] = this.leadingZerosSelect;
+		this.digitsToggableComponents[1] = this.numOfAllowedDigitsSelect;
 
 		this.otherToggableComponents[0] = this.specifyPrefixLabel;
 		this.otherToggableComponents[1] = this.specifySuffixLabel;
@@ -379,10 +379,10 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 		for (final AbstractComponent component : this.otherToggableComponents) {
 			component.setEnabled(enabled);
 		}
-		this.enableSpecifyLeadingZerosComponents(enabled && this.sequenceNumCheckBox.booleanValue());
+		this.enableSpecifyNumOfAllowedDigitsComponents(enabled && this.sequenceNumCheckBox.booleanValue());
 	}
 
-	private void enableSpecifyLeadingZerosComponents(final boolean enabled) {
+	private void enableSpecifyNumOfAllowedDigitsComponents(final boolean enabled) {
 		for (final AbstractComponent component : this.digitsToggableComponents) {
 			component.setEnabled(enabled);
 		}
@@ -465,7 +465,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 		final StringBuilder sb = new StringBuilder();
 		final String numberString = number.toString();
 		if (this.sequenceNumCheckBox.booleanValue()) {
-			final Integer numOfZeros = (Integer) this.leadingZerosSelect.getValue();
+			final Integer numOfZeros = (Integer) this.numOfAllowedDigitsSelect.getValue();
 			final int numOfZerosNeeded = numOfZeros - numberString.length();
 			if (numOfZerosNeeded > 0) {
 				for (int i = 0; i < numOfZerosNeeded; i++) {
@@ -534,8 +534,8 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 		this.sequenceNumCheckBox.setValue(value);
 	}
 
-	void setLeadingZerosSelectValue(final int value) {
-		this.leadingZerosSelect.setValue(value);
+	void setNumberOfAllowedDigitsSelectValue(final int value) {
+		this.numOfAllowedDigitsSelect.setValue(value);
 	}
 
 	void setStartingNumberTextFieldValue(final String value) {
