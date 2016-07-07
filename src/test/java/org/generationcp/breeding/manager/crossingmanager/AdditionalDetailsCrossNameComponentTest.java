@@ -20,6 +20,11 @@ import com.vaadin.ui.Window;
 @RunWith(MockitoJUnitRunner.class)
 public class AdditionalDetailsCrossNameComponentTest {
 
+	private static final String STARTING_NUMBER_VALUE = "1";
+	private static final String PREFIX_VALUE = "Prefix";
+	private static final String LONG_ENTRY_CODE_SEQUENCE =
+			"SEQUENCETOLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOONG";
+
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
 
@@ -57,15 +62,14 @@ public class AdditionalDetailsCrossNameComponentTest {
 
 	@Test
 	public void testButtonClickWithoutStartingNumber() {
-		this.additionalDetailCNComponent.setPrefixTextFieldValue("Prefix");
+		this.additionalDetailCNComponent.setPrefixTextFieldValue(AdditionalDetailsCrossNameComponentTest.PREFIX_VALUE);
 
 		this.okButton.click();
 		Mockito.verify(this.messageSource, Mockito.times(1)).getMessage(Message.PLEASE_SPECIFY_A_STARTING_NUMBER);
 	}
 
 	@Test
-	public void testButtonClickWhereStartingNumberGreaterThanAllowed() {
-		this.additionalDetailCNComponent.setPrefixTextFieldValue("Prefix");
+		this.additionalDetailCNComponent.setPrefixTextFieldValue(AdditionalDetailsCrossNameComponentTest.PREFIX_VALUE);
 		this.additionalDetailCNComponent.setSequenceNumCheckBoxValue(true);
 		this.additionalDetailCNComponent.setLeadingZerosSelectValue(1);
 		this.additionalDetailCNComponent.setStartingNumberTextFieldValue("10");
@@ -76,7 +80,7 @@ public class AdditionalDetailsCrossNameComponentTest {
 
 	@Test
 	public void testButtonClickWhereStartingNumberHasTooManyDigits() {
-		this.additionalDetailCNComponent.setPrefixTextFieldValue("Prefix");
+		this.additionalDetailCNComponent.setPrefixTextFieldValue(AdditionalDetailsCrossNameComponentTest.PREFIX_VALUE);
 		this.additionalDetailCNComponent.setStartingNumberTextFieldValue("1111111111");
 
 		this.okButton.click();
@@ -85,7 +89,7 @@ public class AdditionalDetailsCrossNameComponentTest {
 
 	@Test
 	public void testButtonClickWhereStartingNumberInValid() {
-		this.additionalDetailCNComponent.setPrefixTextFieldValue("Prefix");
+		this.additionalDetailCNComponent.setPrefixTextFieldValue(AdditionalDetailsCrossNameComponentTest.PREFIX_VALUE);
 		this.additionalDetailCNComponent.setStartingNumberTextFieldValue("x");
 
 		this.okButton.click();
@@ -94,9 +98,8 @@ public class AdditionalDetailsCrossNameComponentTest {
 
 	@Test
 	public void testButtonClickWhereSequenceForSeedSourceTooLong() {
-		this.additionalDetailCNComponent.setPrefixTextFieldValue(
-				"SEQUENCETOLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOONG");
-		this.additionalDetailCNComponent.setStartingNumberTextFieldValue("1");
+		this.additionalDetailCNComponent.setPrefixTextFieldValue(AdditionalDetailsCrossNameComponentTest.LONG_ENTRY_CODE_SEQUENCE);
+		this.additionalDetailCNComponent.setStartingNumberTextFieldValue(AdditionalDetailsCrossNameComponentTest.STARTING_NUMBER_VALUE);
 		this.additionalDetailCNComponent.setPropertyIdtoFillValue(ColumnLabels.SEED_SOURCE.getName());
 
 		this.okButton.click();
@@ -105,9 +108,8 @@ public class AdditionalDetailsCrossNameComponentTest {
 
 	@Test
 	public void testButtonClickWhereSequenceForEntryCodeTooLong() {
-		this.additionalDetailCNComponent
-				.setPrefixTextFieldValue("SEQUENCETOLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOONG");
-		this.additionalDetailCNComponent.setStartingNumberTextFieldValue("1");
+		this.additionalDetailCNComponent.setPrefixTextFieldValue(AdditionalDetailsCrossNameComponentTest.LONG_ENTRY_CODE_SEQUENCE);
+		this.additionalDetailCNComponent.setStartingNumberTextFieldValue(AdditionalDetailsCrossNameComponentTest.STARTING_NUMBER_VALUE);
 		this.additionalDetailCNComponent.setPropertyIdtoFillValue(ColumnLabels.ENTRY_CODE.getName());
 
 		this.okButton.click();
@@ -116,10 +118,10 @@ public class AdditionalDetailsCrossNameComponentTest {
 
 	@Test
 	public void testButtonClickSuccess() {
-		this.additionalDetailCNComponent.setPrefixTextFieldValue("SEQUENCETOLOOOOOOOOOOOONG");
-		this.additionalDetailCNComponent.setStartingNumberTextFieldValue("1");
+		this.additionalDetailCNComponent.setPrefixTextFieldValue(AdditionalDetailsCrossNameComponentTest.PREFIX_VALUE);
+		this.additionalDetailCNComponent.setStartingNumberTextFieldValue(AdditionalDetailsCrossNameComponentTest.STARTING_NUMBER_VALUE);
 		this.additionalDetailCNComponent.setPropertyIdtoFillValue(ColumnLabels.ENTRY_CODE.getName());
-
+		
 		this.okButton.click();
 		Mockito.verify(this.parentWindow, Mockito.times(1)).getParent();
 	}
