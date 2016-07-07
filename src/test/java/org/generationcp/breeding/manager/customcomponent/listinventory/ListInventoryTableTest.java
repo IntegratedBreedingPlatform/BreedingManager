@@ -1,4 +1,3 @@
-
 package org.generationcp.breeding.manager.customcomponent.listinventory;
 
 import java.util.ArrayList;
@@ -163,14 +162,14 @@ public class ListInventoryTableTest {
 		Assert.assertEquals(row1InventoryDetails.getEntryId(), row1VaadinTable.getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue());
 		Assert.assertEquals(row1LotDetails.getLocationOfLot().getLname(),
 				row1VaadinTable.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).getValue());
-		Assert.assertEquals(row1LotDetails.getScaleOfLot().getName(), row1VaadinTable.getItemProperty(ColumnLabels.UNITS.getName())
-				.getValue());
+		Assert.assertEquals(row1LotDetails.getScaleOfLot().getName(),
+				row1VaadinTable.getItemProperty(ColumnLabels.UNITS.getName()).getValue());
 		Assert.assertEquals(row1LotDetails.getActualLotBalance(), row1VaadinTable.getItemProperty(ColumnLabels.TOTAL.getName()).getValue());
 		Assert.assertEquals(0.0, row1VaadinTable.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).getValue());
 		Assert.assertEquals(row1LotDetails.getCommentOfLot(), row1VaadinTable.getItemProperty(ColumnLabels.COMMENT.getName()).getValue());
 		Assert.assertEquals(row1LotDetails.getLotId(), row1VaadinTable.getItemProperty(ColumnLabels.LOT_ID.getName()).getValue());
-		Assert.assertEquals(row1InventoryDetails.getSeedSource(), row1VaadinTable.getItemProperty(ColumnLabels.SEED_SOURCE.getName())
-				.getValue());
+		Assert.assertEquals(row1InventoryDetails.getSeedSource(),
+				row1VaadinTable.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue());
 
 	}
 
@@ -195,16 +194,16 @@ public class ListInventoryTableTest {
 		Assert.assertNotNull(row1VaadinTable);
 
 		Assert.assertEquals(row1InventoryDetails.getEntryId(), row1VaadinTable.getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue());
-		Assert.assertEquals("The first list data contains an empty location, the location value displayed in table should be empty","",
+		Assert.assertEquals("The first list data contains an empty location, the location value displayed in table should be empty", "",
 				row1VaadinTable.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).getValue());
-		Assert.assertEquals("The first list data contains an empty scale, the scale value displayed in table should be empty", row1VaadinTable.getItemProperty(ColumnLabels.UNITS.getName())
-				.getValue());
+		Assert.assertEquals("The first list data contains an empty scale, the scale value displayed in table should be empty", "",
+				row1VaadinTable.getItemProperty(ColumnLabels.UNITS.getName()).getValue());
 		Assert.assertEquals(row1LotDetails.getActualLotBalance(), row1VaadinTable.getItemProperty(ColumnLabels.TOTAL.getName()).getValue());
 		Assert.assertEquals(0.0, row1VaadinTable.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).getValue());
 		Assert.assertEquals(row1LotDetails.getCommentOfLot(), row1VaadinTable.getItemProperty(ColumnLabels.COMMENT.getName()).getValue());
 		Assert.assertEquals(row1LotDetails.getLotId(), row1VaadinTable.getItemProperty(ColumnLabels.LOT_ID.getName()).getValue());
-		Assert.assertEquals(row1InventoryDetails.getSeedSource(), row1VaadinTable.getItemProperty(ColumnLabels.SEED_SOURCE.getName())
-				.getValue());
+		Assert.assertEquals(row1InventoryDetails.getSeedSource(),
+				row1VaadinTable.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue());
 
 	}
 
@@ -242,8 +241,7 @@ public class ListInventoryTableTest {
 		final Table table = this.listInventoryTable.getTable();
 
 		// retrieve a checkbox from one of the rows in inventory table
-		@SuppressWarnings("unchecked")
-		final Collection<ListEntryLotDetails> itemIds = (Collection<ListEntryLotDetails>) table.getItemIds();
+		@SuppressWarnings("unchecked") final Collection<ListEntryLotDetails> itemIds = (Collection<ListEntryLotDetails>) table.getItemIds();
 		final Iterator<ListEntryLotDetails> itr = itemIds.iterator();
 		final ListEntryLotDetails lotDetail = itr.next();
 		final Item item = table.getItem(lotDetail);
@@ -305,8 +303,7 @@ public class ListInventoryTableTest {
 	}
 
 	private void updateReservationForLotEntries(final List<ListEntryLotDetails> lotEntries, final Table table, final double reservedVal) {
-		@SuppressWarnings("unchecked")
-		final Collection<ListEntryLotDetails> itemIds = (Collection<ListEntryLotDetails>) table.getItemIds();
+		@SuppressWarnings("unchecked") final Collection<ListEntryLotDetails> itemIds = (Collection<ListEntryLotDetails>) table.getItemIds();
 		final Iterator<ListEntryLotDetails> itr = itemIds.iterator();
 		while (itr.hasNext()) {
 			final ListEntryLotDetails lotDetail = itr.next();
