@@ -37,14 +37,36 @@ public class ListInventoryDataInitializer {
 
 	public static ListDataInventory createInventoryInfo(int listDataId) {
 		ListDataInventory inventoryInfo = new ListDataInventory(listDataId, listDataId);
+
+		inventoryInfo.setLotRows(createLotDetails(listDataId));
+		inventoryInfo.setActualInventoryLotCount(1);
+		inventoryInfo.setReservedLotCount(2);
+		return inventoryInfo;
+	}
+
+	public static ListDataInventory createInventoryInfoWithEmptyLocationAndScale(int listDataId) {
+		ListDataInventory inventoryInfo = new ListDataInventory(listDataId, listDataId);
+
+		inventoryInfo.setLotRows(createLotDetailsWithEmptyLocationAndScale(listDataId));
+		inventoryInfo.setActualInventoryLotCount(1);
+		inventoryInfo.setReservedLotCount(2);
+		return inventoryInfo;
+	}
+
+	public static List<ListEntryLotDetails> createLotDetails(int listDataId) {
 		List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
 		for (int i = 0; i < NO_OF_LOTS_PER_LISTDATA; i++) {
 			lotDetails.add(createLotDetail(i, listDataId));
 		}
-		inventoryInfo.setLotRows(lotDetails);
-		inventoryInfo.setActualInventoryLotCount(1);
-		inventoryInfo.setReservedLotCount(2);
-		return inventoryInfo;
+		return lotDetails;
+	}
+
+	public static List<ListEntryLotDetails> createLotDetailsWithEmptyLocationAndScale(int listDataId) {
+		List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
+		for (int i = 0; i < NO_OF_LOTS_PER_LISTDATA; i++) {
+			lotDetails.add(createLotDetailWithEmptyLocationAndScale(i, listDataId));
+		}
+		return lotDetails;
 	}
 
 	public static ListEntryLotDetails createLotDetail(int i, int listDataId) {
@@ -61,6 +83,13 @@ public class ListInventoryDataInitializer {
 		lotDetail.setReservedTotalForEntry(100D);
 		lotDetail.setCommentOfLot("Lot Comment" + id);
 		lotDetail.setStockIds("STK1-1,STK2-2,STK-3");
+		return lotDetail;
+	}
+
+	public static ListEntryLotDetails createLotDetailWithEmptyLocationAndScale(int i, int listDataId) {
+		ListEntryLotDetails lotDetail =  createLotDetail(i, listDataId);
+		lotDetail.setLocationOfLot(null);
+		lotDetail.setScaleOfLot(null);
 		return lotDetail;
 	}
 
