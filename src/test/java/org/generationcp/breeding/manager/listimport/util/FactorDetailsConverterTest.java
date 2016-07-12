@@ -73,7 +73,8 @@ public class FactorDetailsConverterTest {
 		assertTrue("Has ENTRYCODE",specialFactors.containsKey(GermplasmListParser.FactorTypes.ENTRYCODE));
 		assertTrue("Has ENTRY",specialFactors.containsKey(GermplasmListParser.FactorTypes.ENTRY));
 		assertTrue("Has DESIG",specialFactors.containsKey(GermplasmListParser.FactorTypes.DESIG));
-
+		assertTrue("Has SOURCE",specialFactors.containsKey(GermplasmListParser.FactorTypes.SOURCE));
+		assertTrue("Has CROSS",specialFactors.containsKey(GermplasmListParser.FactorTypes.CROSS));
 	}
 
 }
