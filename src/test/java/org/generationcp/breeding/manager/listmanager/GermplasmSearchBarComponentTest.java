@@ -1,4 +1,3 @@
-
 package org.generationcp.breeding.manager.listmanager;
 
 import org.generationcp.breeding.manager.application.Message;
@@ -79,9 +78,9 @@ public class GermplasmSearchBarComponentTest {
 
 	@Test
 	public void testDoSearchWithDatabaseError() throws BreedingManagerSearchException {
-		Mockito.doThrow(new BreedingManagerSearchException(Message.ERROR_DATABASE)).when(this.breedingManagerService)
+		Mockito.doThrow(new BreedingManagerSearchException(Message.ERROR_IN_SEARCH)).when(this.breedingManagerService)
 				.validateEmptySearchString("");
 		this.germplasmSearchBarComponent.doSearch("");
-		Mockito.verify(this.messageSource).getMessage(Message.SEARCH_RESULTS);
+		Mockito.verify(this.messageSource).getMessage(Message.UNABLE_TO_SEARCH);
 	}
 }
