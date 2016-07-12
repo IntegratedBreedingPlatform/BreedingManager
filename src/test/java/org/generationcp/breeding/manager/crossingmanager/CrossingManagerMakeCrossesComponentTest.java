@@ -8,6 +8,8 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.customcomponent.LinkButton;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.domain.etl.Workbook;
+import org.generationcp.middleware.service.api.FieldbookService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,12 +29,18 @@ public class CrossingManagerMakeCrossesComponentTest {
 	public static final int PORT = 8080;
 	public static final String LIST_ID = "38";
 	public static final String HTTP = "http";
+
 	@Mock
 	private ManageCrossingSettingsMain manageCrossingSettingsMain;
+
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
+
 	@Mock
 	private Window window;
+
+	@Mock
+	private FieldbookService fieldbookMiddlewareService;
 
 	private CrossingManagerMakeCrossesComponent makeCrosses;
 	private HttpServletRequest mockRequest;
@@ -47,6 +55,7 @@ public class CrossingManagerMakeCrossesComponentTest {
 		Mockito.doReturn("Please save your Crosses List before returning to the Nursery").when(this.messageSource).getMessage(Message
 				.BACK_TO_NURSERY_DESCRIPTION);
 		this.makeCrosses.setMessageSource(this.messageSource);
+		this.makeCrosses.setFieldbookMiddlewareService(this.fieldbookMiddlewareService);
 		Mockito.doReturn(this.window).when(this.makeCrosses).getWindow();
 
 		this.mockRequest = Mockito.mock(HttpServletRequest.class);
@@ -80,8 +89,7 @@ public class CrossingManagerMakeCrossesComponentTest {
 
 	@Test
 	public void testConstructNurseryCancelButton_Edit() {
-		Mockito.doReturn(new String[]{NURSERY_ID}).when(this.mockRequest).getParameterValues(BreedingManagerApplication
-				.REQ_PARAM_NURSERY_ID);
+		this.makeCrosses.setNurseryId(NURSERY_ID);
 
 		final LinkButton buttonToEditNursery = this.makeCrosses.constructNurseryCancelButton(this.mockRequest);
 
@@ -107,5 +115,21 @@ public class CrossingManagerMakeCrossesComponentTest {
 		Assert.assertEquals("Please save your Crosses List before returning to the Nursery", testNurseryBackButton.getDescription());
 		Assert.assertNotNull(testNurseryBackButton.getListeners(Button.ClickEvent.class));
 		Assert.assertEquals(1, testNurseryBackButton.getListeners(Button.ClickEvent.class).size());
+	}
+
+	@Test
+	public void testInitializeNurseryContext() {
+		Mockito.doReturn(new String[] {NURSERY_ID}).when(this.mockRequest)
+				.getParameterValues(BreedingManagerApplication.REQ_PARAM_NURSERY_ID);
+		Mockito.when(this.mockRequest.getPathInfo()).thenReturn("/BreedingManager/createcrosses");
+
+		Workbook testWorkbook = new Workbook();
+		Mockito.when(this.fieldbookMiddlewareService.getNurseryDataSet(Integer.valueOf(NURSERY_ID))).thenReturn(testWorkbook);
+
+		this.makeCrosses.initializeNurseryContext(this.mockRequest);
+		Assert.assertNotNull("Expect nurseryId to be initialized.", makeCrosses.getNurseryId());
+		Assert.assertNotNull("Expect nurseryWorkbook to be initialized.", makeCrosses.getNurseryWorkbook());
+		Assert.assertTrue("Expected isNavigatedFromNursery flag to be set to true.", makeCrosses.isNavigatedFromNursery());
+		Mockito.verify(this.fieldbookMiddlewareService).getNurseryDataSet(Mockito.eq(Integer.valueOf(NURSERY_ID)));
 	}
 }
