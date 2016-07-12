@@ -110,11 +110,11 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		this.initializeNurseryContext(BreedingManagerUtil.getApplicationRequest());
 		this.instantiateComponents();
 		this.initializeValues();
 		this.addListeners();
 		this.layoutComponents();
-		this.initializeNurseryContext(BreedingManagerUtil.getApplicationRequest());
 	}
 
 	void initializeNurseryContext(HttpServletRequest currentRequest) {
