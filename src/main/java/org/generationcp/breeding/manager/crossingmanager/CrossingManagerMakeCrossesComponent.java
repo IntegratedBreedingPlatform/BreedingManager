@@ -359,7 +359,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		return nurseryBackButton;
 	}
 
-	protected LinkButton constructNurseryCancelButton(final HttpServletRequest currentRequest) {
+	LinkButton constructNurseryCancelButton(final HttpServletRequest currentRequest) {
 		final ExternalResource urlToNursery;
 		if (StringUtils.isBlank(this.nurseryId) || !NumberUtils.isDigits(this.nurseryId)) {
 			urlToNursery = new ExternalResource(currentRequest.getScheme() + "://" + currentRequest.getServerName() + ":" + currentRequest
@@ -652,4 +652,33 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
         final BreedingMethodSetting breedingMethodSetting = new BreedingMethodSetting(methodId, isBasedOnStatusOfParentalLines);
         return breedingMethodSetting;
     }
+
+	void setNavigatedFromNursery(boolean isNavigatedFromNursery) {
+		this.isNavigatedFromNursery = isNavigatedFromNursery;
+	}
+
+	Button getNurseryBackButton() {
+		return nurseryBackButton;
+	}
+
+	LinkButton getNurseryCancelButton() {
+		return this.nurseryCancelButton;
+	}
+
+	void setCrossingMethodComponent(CrossingMethodComponent crossingMethodComponent) {
+		this.crossingMethodComponent = crossingMethodComponent;
+	}
+
+	void setCrossingSettingsMethodComponent(CrossingSettingsMethodComponent crossingSettingsMethodComponent) {
+		this.crossingSettingsMethodComponent = crossingSettingsMethodComponent;
+	}
+
+	void setBackButton(Button backButton) {
+		this.backButton = backButton;
+	}
+
+	void setNextButton(Button nextButton) {
+		this.nextButton = nextButton;
+	}
+
 }
