@@ -182,7 +182,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		}
 	}
 
-	protected void saveInventory() {
+	void saveInventory() {
 		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
 		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
@@ -195,16 +195,9 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 						continue;
 					}
 					final Lot lot = item.getValue();
-					final Lot existingLot =
-							SaveGermplasmListAction.this.inventoryService.getLotByEntityTypeAndEntityIdAndLocationIdAndScaleId(
-									lot.getEntityType(), gid, lot.getLocationId(), lot.getScaleId());
-					if (existingLot == null) {
-						SaveGermplasmListAction.this.inventoryDataManager.addLot(lot);
-					} else {
-						for (final Transaction transaction : listOfTransactions) {
-							transaction.setLot(existingLot);
-						}
-					}
+
+					SaveGermplasmListAction.this.inventoryDataManager.addLot(lot);
+
 					SaveGermplasmListAction.this.inventoryDataManager.addTransactions(listOfTransactions);
 				}
 			}
@@ -590,6 +583,14 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		germplasmListData.setLocalRecordId(entryId);
 
 		return germplasmListData;
+	}
+
+	public Map<Integer, Lot> getGidLotMap() {
+		return gidLotMap;
+	}
+
+	public Map<Integer, List<Transaction>> getGidTransactionSetMap() {
+		return gidTransactionSetMap;
 	}
 
 }

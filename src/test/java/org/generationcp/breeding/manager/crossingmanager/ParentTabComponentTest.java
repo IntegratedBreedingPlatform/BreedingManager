@@ -1,6 +1,8 @@
 
 package org.generationcp.breeding.manager.crossingmanager;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.generationcp.breeding.manager.action.SaveGermplasmListAction;
@@ -8,9 +10,11 @@ import org.generationcp.breeding.manager.action.SaveGermplasmListActionFactory;
 import org.generationcp.breeding.manager.action.SaveGermplasmListActionSource;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
+import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.listinventory.CrossingManagerInventoryTable;
+import org.generationcp.breeding.manager.data.initializer.GermplasmListDataTestDataInitializer;
 import org.generationcp.breeding.manager.data.initializer.GermplasmListEntryTestDataInitializer;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
@@ -29,6 +33,7 @@ import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Person;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.junit.Assert;
@@ -43,6 +48,8 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import com.vaadin.data.Item;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
@@ -102,11 +109,9 @@ public class ParentTabComponentTest {
 
 	private ParentTabComponent parentTabComponent;
 	private CrossingManagerMakeCrossesComponent makeCrossesMain;
-	private GermplasmListTestDataInitializer germplasmListTestDataInitializer;
 
 	@Before
 	public void setUp() {
-		this.germplasmListTestDataInitializer = new GermplasmListTestDataInitializer();
 		ManagerFactory.getCurrentManagerFactoryThreadLocal().set(Mockito.mock(ManagerFactory.class));
 
 		final Term fromOntology = new Term();
@@ -146,17 +151,20 @@ public class ParentTabComponentTest {
 		Mockito.doReturn(this.window).when(this.parent).getWindow();
 		this.parentTabComponent.setParent(this.parent);
 
-		final SaveGermplasmListAction saveGermplasmListAction = new SaveGermplasmListAction(this.parentTabComponent,
-				this.germplasmListTestDataInitializer.createGermplasmList(ParentTabComponentTest.GERMPLASM_LIST_ID),
-				GermplasmListEntryTestDataInitializer.getGermplasmListEntries());
+		final SaveGermplasmListAction saveGermplasmListAction =
+				new SaveGermplasmListAction(this.parentTabComponent,
+						GermplasmListTestDataInitializer.createGermplasmList(ParentTabComponentTest.GERMPLASM_LIST_ID),
+						GermplasmListEntryTestDataInitializer.getGermplasmListEntries());
 		saveGermplasmListAction.setContextUtil(this.contextUtil);
 		saveGermplasmListAction.setGermplasmListManager(this.germplasmListManager);
 		saveGermplasmListAction.setPedigreeService(this.pedigreeService);
 		saveGermplasmListAction.setInventoryDataManager(this.inventoryDataManager);
-		Mockito.doReturn(this.germplasmListTestDataInitializer.createGermplasmList(ParentTabComponentTest.GERMPLASM_LIST_ID))
+		Mockito.doReturn(GermplasmListTestDataInitializer.createGermplasmList(ParentTabComponentTest.GERMPLASM_LIST_ID))
 				.when(this.germplasmListManager).getGermplasmListById(Matchers.anyInt());
-		Mockito.doReturn(saveGermplasmListAction).when(this.saveGermplasmListActionFactory).createInstance(
-				Matchers.any(SaveGermplasmListActionSource.class), Matchers.any(GermplasmList.class), Matchers.any(List.class));
+		Mockito.doReturn(saveGermplasmListAction)
+				.when(this.saveGermplasmListActionFactory)
+				.createInstance(Matchers.any(SaveGermplasmListActionSource.class), Matchers.any(GermplasmList.class),
+						Matchers.any(List.class));
 
 		final ReserveInventoryAction reserveInventoryAction = new ReserveInventoryAction(this.reserveInventorySource);
 		reserveInventoryAction.setContextUtil(this.contextUtil);
@@ -295,8 +303,8 @@ public class ParentTabComponentTest {
 		this.parentTabComponent.initializeListInventoryTable(inventoryTable);
 		this.parentTabComponent.addListeners();
 		this.parentTabComponent.setHasChanges(true);
-		this.parentTabComponent
-				.setGermplasmList(this.germplasmListTestDataInitializer.createGermplasmList(ParentTabComponentTest.GERMPLASM_LIST_ID));
+		this.parentTabComponent.setGermplasmList(GermplasmListTestDataInitializer
+				.createGermplasmList(ParentTabComponentTest.GERMPLASM_LIST_ID));
 
 		// function to test
 		this.parentTabComponent.doSaveAction();
@@ -320,8 +328,8 @@ public class ParentTabComponentTest {
 		this.parentTabComponent.initializeListInventoryTable(inventoryTable);
 		this.parentTabComponent.addListeners();
 		this.parentTabComponent.setHasChanges(true);
-		this.parentTabComponent
-				.setGermplasmList(this.germplasmListTestDataInitializer.createGermplasmList(ParentTabComponentTest.GERMPLASM_LIST_ID));
+		this.parentTabComponent.setGermplasmList(GermplasmListTestDataInitializer
+				.createGermplasmList(ParentTabComponentTest.GERMPLASM_LIST_ID));
 		this.parentTabComponent.setValidReservationsToSave(ImportedGermplasmListDataInitializer.createReservations(2));
 
 		// function to test
@@ -332,4 +340,96 @@ public class ParentTabComponentTest {
 
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testUpdateListDataTableWithPreservedSelectedEntriesAndCheckedSelectAll() {
+		final TableWithSelectAllLayout tableWithSelectAll = this.initializeTable();
+		// setup data
+		final List<GermplasmListData> savedListEntries =
+				GermplasmListDataTestDataInitializer.getGermplasmListDataList(ParentTabComponentTest.GERMPLASM_LIST_ID);
+		final Collection<GermplasmListEntry> listEntries = this.createListEntries(savedListEntries);
+		final List<Integer> selectedEntryIds =
+				this.selectEntryIdsFromListEntries(listEntries, GermplasmListDataTestDataInitializer.NUM_OF_ENTRIES);
+		final Table table = tableWithSelectAll.getTable();
+		this.addEntriesToTable(listEntries, table, selectedEntryIds);
+		// test
+		this.parentTabComponent.updateListDataTable(ParentTabComponentTest.GERMPLASM_LIST_ID, savedListEntries);
+
+		final Collection<GermplasmListEntry> newSelectedListEntries = (Collection<GermplasmListEntry>) table.getValue();
+		Assert.assertEquals("The selected entries should be preserved", selectedEntryIds.size(), newSelectedListEntries.size());
+		Assert.assertTrue("The select all should be selected", tableWithSelectAll.getCheckBox().booleanValue());
+	}
+
+	private TableWithSelectAllLayout initializeTable() {
+		final TableWithSelectAllLayout tableWithSelectAll =
+				new TableWithSelectAllLayout(GermplasmListDataTestDataInitializer.NUM_OF_ENTRIES, ParentTabComponent.TAG_COLUMN_ID);
+		tableWithSelectAll.instantiateComponents();
+		tableWithSelectAll.addListeners();
+		this.parentTabComponent.initializeMainComponents();
+		this.parentTabComponent.initializeParentTable(tableWithSelectAll);
+		final CrossingManagerInventoryTable inventoryTable = new CrossingManagerInventoryTable(null);
+		inventoryTable.setMessageSource(this.messageSource);
+		inventoryTable.setOntologyDataManager(this.ontologyDataManager);
+		inventoryTable.instantiateComponents();
+		this.parentTabComponent.initializeListInventoryTable(inventoryTable);
+		this.parentTabComponent.addListeners();
+		return tableWithSelectAll;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testUpdateListDataTableWithPreservedSelectedEntriesAndUncheckedSelectAll() {
+		final TableWithSelectAllLayout tableWithSelectAll = this.initializeTable();
+		// setup data
+		final List<GermplasmListData> savedListEntries =
+				GermplasmListDataTestDataInitializer.getGermplasmListDataList(ParentTabComponentTest.GERMPLASM_LIST_ID);
+		final Collection<GermplasmListEntry> listEntries = this.createListEntries(savedListEntries);
+		final List<Integer> selectedEntryIds = this.selectEntryIdsFromListEntries(listEntries, 1);
+		final Table table = tableWithSelectAll.getTable();
+		this.addEntriesToTable(listEntries, table, selectedEntryIds);
+		// test
+		this.parentTabComponent.updateListDataTable(ParentTabComponentTest.GERMPLASM_LIST_ID, savedListEntries);
+
+		final Collection<GermplasmListEntry> newSelectedListEntries = (Collection<GermplasmListEntry>) table.getValue();
+		Assert.assertEquals("The selected entries should be preserved", selectedEntryIds.size(), newSelectedListEntries.size());
+		Assert.assertFalse("The select all should not be selected", tableWithSelectAll.getCheckBox().booleanValue());
+	}
+
+	private List<Integer> selectEntryIdsFromListEntries(final Collection<GermplasmListEntry> listEntries, final int numberOfSelectedItems) {
+		final List<Integer> selectedEntryIds = new ArrayList<>();
+		int counterOfSelectedItems = 0;
+		for (final GermplasmListEntry germplasmListEntry : listEntries) {
+			if (counterOfSelectedItems < numberOfSelectedItems) {
+				selectedEntryIds.add(germplasmListEntry.getEntryId());
+			}
+			counterOfSelectedItems++;
+		}
+		return selectedEntryIds;
+	}
+
+	private void addEntriesToTable(final Collection<GermplasmListEntry> selectedListEntries, final Table table,
+			final List<Integer> selectedEntryIds) {
+		for (final GermplasmListEntry germplasmListEntry : selectedListEntries) {
+			final Item newItem = table.getContainerDataSource().addItem(germplasmListEntry);
+
+			final CheckBox tag = new CheckBox();
+			newItem.getItemProperty(ParentTabComponent.TAG_COLUMN_ID).setValue(tag);
+
+			if (selectedEntryIds.contains(germplasmListEntry.getEntryId())) {
+				table.select(germplasmListEntry);
+			}
+		}
+	}
+
+	private List<GermplasmListEntry> createListEntries(final List<GermplasmListData> savedListEntries) {
+		final List<GermplasmListEntry> listEntries = new ArrayList<>();
+		int listDataId = 100;
+		for (final GermplasmListData germplasmListData : savedListEntries) {
+			final GermplasmListEntry entry =
+					new GermplasmListEntry(listDataId++, germplasmListData.getGid(), germplasmListData.getEntryId(),
+							germplasmListData.getDesignation(), germplasmListData.getSeedSource());
+			listEntries.add(entry);
+		}
+		return listEntries;
+	}
 }

@@ -333,4 +333,55 @@ public class ExportListAsDialogTest {
 		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 	}
 
+	@Test
+	public void testFinishExportListenerLockedList() {
+
+		Integer lockedStatus = 100;
+
+		Window parentWindow = Mockito.mock(Window.class);
+		ExportListAsDialog exportListAsDialogMock = Mockito.mock(ExportListAsDialog.class);
+		GermplasmList germplasmList = new GermplasmList();
+		germplasmList.setStatus(lockedStatus);
+
+		Mockito.when(exportListAsDialogMock.getParent()).thenReturn(parentWindow);
+		Mockito.when(exportListAsDialogMock.getGermplasmList()).thenReturn(germplasmList);
+
+		ExportListAsDialog.FinishButtonListener finishButtonListener = new ExportListAsDialog.FinishButtonListener(exportListAsDialogMock);
+
+		finishButtonListener.buttonClick(null);
+
+		// ExportListAction should be called
+		Mockito.verify(exportListAsDialogMock, Mockito.times(1)).exportListAction(Mockito.any(Table.class));
+		// ExportListAsDialog window should be closed
+		Mockito.verify(parentWindow, Mockito.times(1)).removeWindow(exportListAsDialogMock);
+	}
+
+	@Test
+	public void testFinishExportListenerListIsNotLocked() {
+
+		Integer lockedStatus = 1;
+
+		Window parentWindow = Mockito.mock(Window.class);
+		ExportListAsDialog exportListAsDialogMock = Mockito.mock(ExportListAsDialog.class);
+		GermplasmList germplasmList = new GermplasmList();
+		germplasmList.setStatus(lockedStatus);
+
+		Mockito.when(exportListAsDialogMock.getParent()).thenReturn(parentWindow);
+		Mockito.when(exportListAsDialogMock.getWindow()).thenReturn(parentWindow);
+		Mockito.when(exportListAsDialogMock.getGermplasmList()).thenReturn(germplasmList);
+		Mockito.when(exportListAsDialogMock.getMessageSource()).thenReturn(messageSource);
+
+		ExportListAsDialog.FinishButtonListener finishButtonListener = new ExportListAsDialog.FinishButtonListener(exportListAsDialogMock);
+
+		finishButtonListener.buttonClick(null);
+
+		// ExportListAction should not be called
+		Mockito.verify(exportListAsDialogMock, Mockito.times(0)).exportListAction(Mockito.any(Table.class));
+		// Window should not be closed
+		Mockito.verify(parentWindow, Mockito.times(0)).removeWindow(exportListAsDialogMock);
+
+		// Error message should be displayed
+		Mockito.verify(messageSource).getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED);
+	}
+
 }

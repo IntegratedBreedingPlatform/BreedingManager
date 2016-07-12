@@ -1159,11 +1159,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 				try {
 					listExporter.exportKBioScienceGenotypingOrderXLS(this.currentlySavedGermplasmList.getId(), tempFileName, 96);
 
-					final String userAgent = BreedingManagerUtil.getApplicationRequest().getHeader("User-Agent");
-					final FileDownloadResource fileDownloadResource =
-							new FileDownloadResource(new File(tempFileName), this.source.getApplication(), userAgent);
 					final String listName = this.currentlySavedGermplasmList.getName();
-					fileDownloadResource.setFilename(FileUtils.encodeFilenameForDownload(listName).replace(" ", "_") + "ForGenotyping.xls");
+
+					final FileDownloadResource fileDownloadResource =
+							new FileDownloadResource(new File(tempFileName),listName.replace(" ","_") + "ForGenotyping.xls", this.source.getApplication());
 
 					this.source.getWindow().open(fileDownloadResource);
 
@@ -1355,7 +1354,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			this.toolsButtonContainer.removeComponent(this.toolsButton);
 			this.toolsButtonContainer.addComponent(this.inventoryViewToolsButton, "top:0; right:0;");
 
-			this.topLabel.setValue(this.messageSource.getMessage(Message.LOTS));
+			this.topLabel.setValue(this.messageSource.getMessage(Message.INVENTORY));
 			this.updateNoOfEntries();
 			this.updateNoOfSelectedEntries();
 			this.resetUnsavedChangesFlag();

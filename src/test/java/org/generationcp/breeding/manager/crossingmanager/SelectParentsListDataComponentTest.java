@@ -111,24 +111,23 @@ public class SelectParentsListDataComponentTest {
 		Mockito.doReturn(this.selectParentComponent).when(this.makeCrossesMain).getSelectParentsComponent();
 		Mockito.doReturn(ModeView.LIST_VIEW).when(this.makeCrossesMain).getModeView();
 
-		Mockito.doReturn(SelectParentsListDataComponentTest.DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.ADD_TO_MALE_LIST);
-		Mockito.doReturn(SelectParentsListDataComponentTest.DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.ADD_TO_FEMALE_LIST);
-		Mockito.doReturn(SelectParentsListDataComponentTest.DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.INVENTORY_VIEW);
-		Mockito.doReturn(SelectParentsListDataComponentTest.DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.SELECT_ALL);
-		Mockito.doReturn(SelectParentsListDataComponentTest.DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.SELECT_EVEN_ENTRIES);
-		Mockito.doReturn(SelectParentsListDataComponentTest.DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.SELECT_ODD_ENTRIES);
-		Mockito.doReturn(SelectParentsListDataComponentTest.DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.COPY_TO_LIST);
-		Mockito.doReturn(SelectParentsListDataComponentTest.DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.RESERVE_INVENTORY);
-		Mockito.doReturn(SelectParentsListDataComponentTest.DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.RETURN_TO_LIST_VIEW);
-		Mockito.doReturn(SelectParentsListDataComponentTest.DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.SAVE_CHANGES);
+		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.ADD_TO_MALE_LIST);
+		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.ADD_TO_FEMALE_LIST);
+		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.INVENTORY_VIEW);
+		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.SELECT_ALL);
+		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.SELECT_EVEN_ENTRIES);
+		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.SELECT_ODD_ENTRIES);
+		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.COPY_TO_LIST);
+		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.RESERVE_INVENTORY);
+		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.RETURN_TO_LIST_VIEW);
+		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Message.SAVE_CHANGES);
 
-		Mockito.doReturn(SelectParentsListDataComponentTest.TOTAL_ENTRIES).when(this.messageSource).getMessage(Message.TOTAL_LIST_ENTRIES);
-		Mockito.doReturn(SelectParentsListDataComponentTest.NO_LIST_DATA_RETURNED).when(this.messageSource)
-				.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL);
-		Mockito.doReturn(SelectParentsListDataComponentTest.TOTAL_LOTS).when(this.messageSource).getMessage(Message.TOTAL_LOTS);
-		Mockito.doReturn(SelectParentsListDataComponentTest.SELECTED).when(this.messageSource).getMessage(Message.SELECTED);
-		Mockito.doReturn(SelectParentsListDataComponentTest.WARNING).when(this.messageSource).getMessage(Message.WARNING);
-		Mockito.doReturn(SelectParentsListDataComponentTest.LOTS).when(this.messageSource).getMessage(Message.LOTS);
+		Mockito.doReturn(TOTAL_ENTRIES).when(this.messageSource).getMessage(Message.TOTAL_LIST_ENTRIES);
+		Mockito.doReturn(NO_LIST_DATA_RETURNED).when(this.messageSource).getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL);
+		Mockito.doReturn(TOTAL_LOTS).when(this.messageSource).getMessage(Message.TOTAL_LOTS);
+		Mockito.doReturn(SELECTED).when(this.messageSource).getMessage(Message.SELECTED);
+		Mockito.doReturn(WARNING).when(this.messageSource).getMessage(Message.WARNING);
+		Mockito.doReturn(LOTS).when(this.messageSource).getMessage(Message.INVENTORY);
 
 		this.selectParents.instantiateComponents();
 		this.listDataTable = this.initListDataTable();
@@ -470,7 +469,7 @@ public class SelectParentsListDataComponentTest {
 
 		this.selectParents.changeToInventoryView();
 		try {
-			Mockito.verify(this.messageSource, Mockito.times(0)).getMessage(Message.LOTS);
+			Mockito.verify(this.messageSource, Mockito.times(0)).getMessage(Message.INVENTORY);
 		} catch (final NeverWantedButInvoked e) {
 			Assert.fail("Expecting that the label is not set at all but didn't.");
 		}
