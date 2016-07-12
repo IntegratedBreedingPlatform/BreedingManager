@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.customfields;
 
 import java.util.HashMap;
@@ -5,14 +6,14 @@ import java.util.Map;
 
 import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 
+import com.jensjansson.pagedtable.PagedTable;
+import com.jensjansson.pagedtable.PagedTableContainer;
 import com.vaadin.data.Container;
 import com.vaadin.ui.HorizontalLayout;
 
-import com.jensjansson.pagedtable.PagedTable;
-import com.jensjansson.pagedtable.PagedTableContainer;
-
 public class PagedBreedingManagerTable extends PagedTable {
-
+	private static final long serialVersionUID = -7491014479295834712L;
+	
 	private EntrySelectSyncHandler entrySelectSyncHandler;
 	private TableMultipleSelectionHandler tableMultipleSelectionHandler;
 	private Integer pageLength;
@@ -20,12 +21,12 @@ public class PagedBreedingManagerTable extends PagedTable {
 	public PagedBreedingManagerTable(final int recordCount, final int maxRecords) {
 		super();
 
-		pageLength = Math.min(recordCount, maxRecords);
-		if (pageLength <= 0) {
-			pageLength = 20;
+		this.pageLength = Math.min(recordCount, maxRecords);
+		if (this.pageLength <= 0) {
+			this.pageLength = 20;
 		}
 
-		this.setPageLength(pageLength);
+		this.setPageLength(this.pageLength);
 
 		this.setTableHandler(new TableMultipleSelectionHandler(this));
 	}
@@ -53,6 +54,7 @@ public class PagedBreedingManagerTable extends PagedTable {
 
 	/**
 	 * Register a table select all handler
+	 * 
 	 * @param handler
 	 */
 	public void registerTableSelectHandler(final EntrySelectSyncHandler handler) {
@@ -84,16 +86,17 @@ public class PagedBreedingManagerTable extends PagedTable {
 	 */
 	void doChangeVariables(final Object source, final Map<String, Object> variablesCopy) {
 		super.changeVariables(source, variablesCopy);
-		tableMultipleSelectionHandler.setValueForSelectedItems();
+		this.tableMultipleSelectionHandler.setValueForSelectedItems();
 	}
 
 	boolean hasItems() {
-		return this.getContainerDataSource().getContainerPropertyIds().isEmpty();
+		return !this.getItemIds().isEmpty();
 	}
 
-	void setBatchSize(int batchSize) {
+	void setBatchSize(final int batchSize) {
 		final Container.Indexed contanerSource = this.getContainerDataSource();
-		((LazyQueryContainer)((PagedTableContainer) contanerSource).getContainer()).getQueryView().getQueryDefinition().setBatchSize(batchSize);
+		((LazyQueryContainer) ((PagedTableContainer) contanerSource).getContainer()).getQueryView().getQueryDefinition()
+				.setBatchSize(batchSize);
 	}
 
 	void updateBatchsize() {
@@ -108,5 +111,11 @@ public class PagedBreedingManagerTable extends PagedTable {
 	public interface EntrySelectSyncHandler {
 
 		void dispatch();
+	}
+	
+	int getBatchSize() {
+		final Container.Indexed contanerSource = this.getContainerDataSource();
+		return ((LazyQueryContainer) ((PagedTableContainer) contanerSource).getContainer()).getQueryView().getQueryDefinition()
+				.getBatchSize();
 	}
 }
