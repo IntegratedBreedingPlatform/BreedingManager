@@ -50,7 +50,7 @@ public class GermplasmListTemplateDownloaderTest {
 		doReturn(this.application).when(this.exportDialog).getCurrentApplication();
 		doReturn(this.request).when(this.exportDialog).getCurrentRequest();
 		doReturn(mock(FileDownloadResource.class)).when(this.exportDialog)
-				.getTemplateAsDownloadResource(any(File.class), any(String.class));
+				.getTemplateAsDownloadResource(any(File.class));
 
 		when(this.application.getMainWindow()).thenReturn(this.window);
 	}
