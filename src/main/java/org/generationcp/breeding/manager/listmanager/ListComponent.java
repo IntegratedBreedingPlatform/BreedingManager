@@ -955,7 +955,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			// 1. If it is loaded directly from the url
 			// 2. If the list in Build New List section is locked or not
 			// 3. If the list manager main source is existing (I think 'source' will be null only for test purposes)
-			ListComponent.this.menu.updateListViewActionMenu(ListComponent.this.fromUrl, !ListComponent.this.source.listBuilderIsLocked(),
+			ListComponent.this.menu.updateListViewActionMenu(ListComponent.this.fromUrl, ListComponent.this.source.listBuilderIsLocked(),
 					ListComponent.this.source != null);
 
 			// when the Germplasm List is not locked, and when not accessed
