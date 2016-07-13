@@ -35,6 +35,9 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
+/**
+ * This class is a dialog displayed after clicking the "Marked Line as Fixed." This class is used for applying MGID to selected GID entries.
+ */
 @Configurable
 public class GermplasmGroupingComponent extends BaseSubWindow implements InitializingBean, InternationalizableComponent,
 		BreedingManagerLayout, Window.CloseListener {
@@ -62,11 +65,17 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 
 	private Set<Integer> gidsToProcess = new HashSet<>();
 
-	public GermplasmGroupingComponent() {
+	/**
+	 * This is the source component that implements "Marked Line as Fixed"
+	 */
+	private final GermplasmGroupingComponentSource source;
 
+	public GermplasmGroupingComponent(final GermplasmGroupingComponentSource source) {
+		this.source = source;
 	}
 
-	public GermplasmGroupingComponent(final Set<Integer> gidsToProcess) {
+	public GermplasmGroupingComponent(final GermplasmGroupingComponentSource source, final Set<Integer> gidsToProcess) {
+		this.source = source;
 		this.gidsToProcess = gidsToProcess;
 	}
 
@@ -138,20 +147,25 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 	}
 
 	void reportSuccessAndClose(final Map<Integer, GermplasmGroup> groupingResults) {
+		final Window parentComponent = this.getParent();
+		if (parentComponent != null) {
+			if (this.verifyMGIDApplicationForSelected(groupingResults).equals(MgidApplicationStatus.ALL_ENTRIES)) {
+				MessageNotifier.showMessage(parentComponent, this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
+						this.messageSource.getMessage(Message.SUCCESS_MARK_LINES_AS_FIXED));
+			} else if (this.verifyMGIDApplicationForSelected(groupingResults).equals(MgidApplicationStatus.SOME_ENTRIES)) {
+				MessageNotifier.showWarning(parentComponent, this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
+						this.messageSource.getMessage(Message.WARNING_MARK_LINES_AS_FIXED_SOME_ENTRIES));
+			} else if (this.verifyMGIDApplicationForSelected(groupingResults).equals(MgidApplicationStatus.NO_ENTRIES)) {
+				MessageNotifier.showWarning(parentComponent, this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
+						this.messageSource.getMessage(Message.WARNING_MARK_LINES_AS_FIXED_NO_ENTRIES));
+			}
 
-		if (this.verifyMGIDApplicationForSelected(groupingResults).equals(MgidApplicationStatus.ALL_ENTRIES)) {
-			MessageNotifier.showMessage(this.getParent(), this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
-					this.messageSource.getMessage(Message.SUCCESS_MARK_LINES_AS_FIXED));
-		} else if (this.verifyMGIDApplicationForSelected(groupingResults).equals(MgidApplicationStatus.SOME_ENTRIES)) {
-			MessageNotifier.showWarning(this.getParent(), this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
-					this.messageSource.getMessage(Message.WARNING_MARK_LINES_AS_FIXED_SOME_ENTRIES));
-		} else if (this.verifyMGIDApplicationForSelected(groupingResults).equals(MgidApplicationStatus.NO_ENTRIES)) {
-			MessageNotifier.showWarning(this.getParent(), this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
-					this.messageSource.getMessage(Message.WARNING_MARK_LINES_AS_FIXED_NO_ENTRIES));
+			this.getParent().addWindow(new GermplasmGroupingResultsComponent(groupingResults));
+			this.closeWindow();
+
+			// refresh list data table after applying the MGID to selected entries
+			this.source.updateGermplasmListTable(groupingResults.keySet());
 		}
-
-		this.getParent().addWindow(new GermplasmGroupingResultsComponent(groupingResults));
-		this.closeWindow();
 	}
 
 	/**
@@ -164,7 +178,7 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 	 */
 	MgidApplicationStatus verifyMGIDApplicationForSelected(final Map<Integer, GermplasmGroup> groupingResults) {
 		int noOfGermplasmGroupWithAppliedMGID = 0;
-		for (GermplasmGroup groupingResult : groupingResults.values()) {
+		for (final GermplasmGroup groupingResult : groupingResults.values()) {
 			// you can't assign mgid or group id for germplasm with generative method
 			if (!groupingResult.getFounder().getMethod().isGenerative()) {
 				noOfGermplasmGroupWithAppliedMGID++;
