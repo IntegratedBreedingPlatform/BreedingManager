@@ -306,7 +306,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 
 		this.inventoryViewActionMenu = new ContextMenu();
 		this.inventoryViewActionMenu.setWidth("295px");
-		this.menuCopyToListFromInventory = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
+		this.menuCopyToListFromInventory = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.COPY_TO_NEW_LIST));
 		this.menuReserveInventory = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
 		this.menuListView = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
 		this.menuInventorySaveChanges = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SAVE_CHANGES));
@@ -563,7 +563,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 								SelectParentsListDataComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
 							SelectParentsListDataComponent.this.viewListAction();
 						} else if (clickedItem.getName().equals(
-								SelectParentsListDataComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {
+								SelectParentsListDataComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
 							// no implementation yet for this method
 						} else if (clickedItem.getName().equals(
 								SelectParentsListDataComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
