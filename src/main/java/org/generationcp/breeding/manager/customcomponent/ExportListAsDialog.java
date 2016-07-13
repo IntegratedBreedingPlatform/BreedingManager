@@ -289,11 +289,8 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 			try {
 				this.germplasmListExporter.exportKBioScienceGenotypingOrderXLS(this.germplasmList.getId(), tempFileName, 96);
 
-				final String userAgent = BreedingManagerUtil.getApplicationRequest().getHeader("User-Agent");
 				final FileDownloadResource fileDownloadResource =
-						new FileDownloadResource(new File(tempFileName), this.source.getApplication(), userAgent);
-				final String listName = this.germplasmList.getName();
-				fileDownloadResource.setFilename(FileUtils.encodeFilenameForDownload(listName).replace(" ", "_") + "ForGenotyping.xls");
+						new FileDownloadResource(new File(tempFileName),this.germplasmList.getName().replace(" ", "_") + "ForGenotyping.xls", this.source.getApplication());
 
 				this.source.getWindow().open(fileDownloadResource);
 
@@ -306,13 +303,6 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST),
 					this.messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED));
 		}
-	}
-
-	protected FileDownloadResource createFileDownloadResource() {
-		final String userAgent = BreedingManagerUtil.getApplicationRequest().getHeader("User-Agent");
-		final FileDownloadResource fileDownloadResource =
-				new FileDownloadResource(new File(ExportListAsDialog.TEMP_FILENAME), this.source.getApplication(), userAgent);
-		return fileDownloadResource;
 	}
 
 	protected void showWarningMessage(final Table table) {
