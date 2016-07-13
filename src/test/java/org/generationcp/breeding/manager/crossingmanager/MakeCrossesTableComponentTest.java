@@ -8,6 +8,7 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntr
 import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.service.impl.SeedSourceGenerator;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.Workbook;
 import org.generationcp.middleware.domain.oms.Term;
@@ -15,7 +16,6 @@ import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
-import org.generationcp.middleware.service.api.FieldbookService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,10 +39,10 @@ public class MakeCrossesTableComponentTest {
 	private BreedingManagerTable tableCrossesMade;
 
 	@Mock
-	private FieldbookService fieldbookMiddlewareService;
+	private SeedSourceGenerator seedSourceGenerator;
 
 	@Mock
-	private SeedSourceGenerator seedSourceGenerator;
+	private SimpleResourceBundleMessageSource messageSource;
 
 	private GermplasmListEntry femaleParent;
 	private GermplasmListEntry maleParent;
@@ -61,8 +61,8 @@ public class MakeCrossesTableComponentTest {
 		this.makeCrossesTableComponent = Mockito.spy(new MakeCrossesTableComponent(this.makeCrossesMain));
 		this.makeCrossesTableComponent.setOntologyDataManager(this.ontologyDataManager);
 		this.makeCrossesTableComponent.setTableCrossesMade(this.tableCrossesMade);
-		this.makeCrossesTableComponent.setFieldbookMiddlewareService(this.fieldbookMiddlewareService);
 		this.makeCrossesTableComponent.setSeedSourceGenerator(this.seedSourceGenerator);
+		this.makeCrossesTableComponent.setMessageSource(this.messageSource);
 		this.makeCrossesTableComponent.setSeparator("/");
 
 		this.femaleParent = new GermplasmListEntry(1, 1, 1);
@@ -224,17 +224,16 @@ public class MakeCrossesTableComponentTest {
 	}
 
 	@Test
-	public void testGenerateSeedSourceCrossingWithNurseryInContext() {
-		String nurseryId = "1";
-		Mockito.when(this.makeCrossesMain.getNurseryId()).thenReturn(nurseryId);
-
+	public void testGenerateSeedSourceCrossingWithNurseryInContext() throws Exception {
 		Workbook testWorkbook = new Workbook();
 		testWorkbook.setObservations(new ArrayList<MeasurementRow>());
-
-		Mockito.when(this.fieldbookMiddlewareService.getNurseryDataSet(Integer.valueOf(nurseryId))).thenReturn(testWorkbook);
+		Mockito.when(this.makeCrossesMain.getNurseryWorkbook()).thenReturn(testWorkbook);
 		Mockito.when(
 				this.seedSourceGenerator.generateSeedSourceForCross(Mockito.any(Workbook.class), Mockito.anyString(), Mockito.anyString(),
 						Mockito.anyString(), Mockito.anyString())).thenReturn("MEX-DrySeason-N1-1-2");
+
+		// Run init sequence
+		this.makeCrossesTableComponent.afterPropertiesSet();
 
 		String seedSource = this.makeCrossesTableComponent.generateSeedSource(1, "WhateverF", 2, "WhateverM");
 		Assert.assertEquals("When crossing in context of a Nursery, seed source should be generated using SeedSourceGenerator service.",
