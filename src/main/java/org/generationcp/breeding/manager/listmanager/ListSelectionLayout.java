@@ -363,6 +363,7 @@ public class ListSelectionLayout extends VerticalLayout implements International
 	public void hideDetailsTabsheet() {
 		this.btnCloseAllTabs.setVisible(false);
 		this.detailsTabSheet.addStyleName(AppConstants.CssStyles.NO_TAB);
+		this.source.setModeView(ModeView.LIST_VIEW);
 	}
 
 	public void repaintTabsheet() {
