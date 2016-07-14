@@ -110,6 +110,8 @@ public class ParentTabComponentTest {
 	private ParentTabComponent parentTabComponent;
 	private CrossingManagerMakeCrossesComponent makeCrossesMain;
 
+	private ImportedGermplasmListDataInitializer importedGermplasmListInitializer;
+
 	@Before
 	public void setUp() {
 		ManagerFactory.getCurrentManagerFactoryThreadLocal().set(Mockito.mock(ManagerFactory.class));
@@ -175,6 +177,9 @@ public class ParentTabComponentTest {
 		final Person person = new Person();
 		person.setId(123);
 		Mockito.doReturn(person).when(this.userDataManager).getPersonById(Matchers.anyInt());
+
+		// initializer
+		this.importedGermplasmListInitializer = new ImportedGermplasmListDataInitializer();
 	}
 
 	@Test
@@ -330,7 +335,7 @@ public class ParentTabComponentTest {
 		this.parentTabComponent.setHasChanges(true);
 		this.parentTabComponent.setGermplasmList(GermplasmListTestDataInitializer
 				.createGermplasmList(ParentTabComponentTest.GERMPLASM_LIST_ID));
-		this.parentTabComponent.setValidReservationsToSave(ImportedGermplasmListDataInitializer.createReservations(2));
+		this.parentTabComponent.setValidReservationsToSave(this.importedGermplasmListInitializer.createReservations(2));
 
 		// function to test
 		this.parentTabComponent.doSaveAction();

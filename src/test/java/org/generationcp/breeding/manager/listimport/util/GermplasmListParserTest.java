@@ -3,10 +3,12 @@ package org.generationcp.breeding.manager.listimport.util;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
 import org.generationcp.breeding.manager.listimport.validator.StockIDValidator;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
@@ -37,6 +39,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class GermplasmListParserTest {
 
+	private static final int NO_OF_ENTRIES = 5;
+	private static final String SEED_AMOUNT_G = "SEED_AMOUNT_G";
 	private static final String INVENTORY_AMOUNT = "INVENTORY AMOUNT";
 	public static final String TEST_FILE_NAME = "GermplasmImportTemplate-StockIDs-only.xls";
 	public static final String OBSERVATION_NO_STOCK_ID_FILE = "GermplasmImportTemplate-StockIDs-missing-stock-id-column.xls";
@@ -64,20 +68,20 @@ public class GermplasmListParserTest {
 	private final GermplasmListParser parser = new GermplasmListParser();
 
 	private ImportedGermplasmList importedGermplasmList;
-
-	private UserDefinedFieldTestDataInitializer userDefinedFieldTestDataInitializer;
+	private final UserDefinedFieldTestDataInitializer userDefinedFieldTestDataInitializer = new UserDefinedFieldTestDataInitializer();
+	private final ImportedGermplasmListDataInitializer importedGermplasmListInitializer = new ImportedGermplasmListDataInitializer();
 
 	@Before
 	public void setUp() throws Exception {
-		this.userDefinedFieldTestDataInitializer = new UserDefinedFieldTestDataInitializer();
-		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(Matchers.eq(GermplasmListParserTest.INVENTORY_AMOUNT))).thenReturn(true);
-		Mockito.when(this.ontologyDataManager
-				.isSeedAmountVariable(AdditionalMatchers.not(Matchers.eq(GermplasmListParserTest.INVENTORY_AMOUNT)))).thenReturn(false);
-		Mockito.when(this.germplasmDataManager.getGermplasmByGID(Matchers.anyInt()))
-				.thenReturn(GermplasmTestDataInitializer.createGermplasm(1));
+
+		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(Matchers.eq(INVENTORY_AMOUNT))).thenReturn(true);
+		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(AdditionalMatchers.not(Matchers.eq(INVENTORY_AMOUNT))))
+				.thenReturn(false);
+		Mockito.when(this.germplasmDataManager.getGermplasmByGID(Matchers.anyInt())).thenReturn(
+				GermplasmTestDataInitializer.createGermplasm(1));
 		Mockito.when(this.inventoryDataManager.getSimilarStockIds(Matchers.anyList())).thenReturn(new ArrayList<String>());
-		Mockito.when(this.germplasmListManager.getGermplasmListTypes())
-				.thenReturn(this.userDefinedFieldTestDataInitializer.getValidListType());
+		Mockito.when(this.germplasmListManager.getGermplasmListTypes()).thenReturn(
+				this.userDefinedFieldTestDataInitializer.getValidListType());
 
 	}
 
@@ -115,7 +119,7 @@ public class GermplasmListParserTest {
 
 		Assert.assertEquals(
 				"Header validation setup does not properly recognize the right amount of expected headers for the observation sheet",
-				GermplasmListParserTest.EXPECTED_DESCRIPTION_SHEET_VARIABLE_COUNT, this.parser.getDescriptionVariableNames().size());
+				EXPECTED_DESCRIPTION_SHEET_VARIABLE_COUNT, this.parser.getDescriptionVariableNames().size());
 
 	}
 
@@ -169,8 +173,9 @@ public class GermplasmListParserTest {
 	@Test
 	public void testTemplateWithMissingStockIdValuesInObservation() throws Exception {
 		try {
-			final File workbookFile = new File(
-					ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.OBSERVATION_NO_STOCK_ID_VALUES_FILE).toURI());
+			final File workbookFile =
+					new File(ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.OBSERVATION_NO_STOCK_ID_VALUES_FILE)
+							.toURI());
 			final Workbook missingStockIDValuesWorkbook = WorkbookFactory.create(workbookFile);
 			this.importedGermplasmList = this.parser.parseWorkbook(missingStockIDValuesWorkbook, null);
 			Assert.fail("Unable to properly recognize error condition regarding missing stock ID values in observation sheet");
@@ -209,14 +214,14 @@ public class GermplasmListParserTest {
 
 		this.importedGermplasmList = this.parser.parseWorkbook(workbook, null);
 		final ImportedGermplasm germplasm = this.importedGermplasmList.getImportedGermplasms().get(0);
-		Assert.assertEquals("Unable to properly recognize additional name factors associated with germplasm", 2,
-				germplasm.getNameFactors().size());
+		Assert.assertEquals("Unable to properly recognize additional name factors associated with germplasm", 2, germplasm.getNameFactors()
+				.size());
 
 	}
 
 	@Test
 	public void testValidateListTypeFound() {
-		for (final Map.Entry<String, String> item : UserDefinedFieldTestDataInitializer.validListTypeMap.entrySet()) {
+		for (final Map.Entry<String, String> item : this.userDefinedFieldTestDataInitializer.validListTypeMap.entrySet()) {
 			Assert.assertTrue("The listType should be accepted", this.parser.validateListType(item.getKey()));
 		}
 	}
@@ -224,6 +229,80 @@ public class GermplasmListParserTest {
 	@Test
 	public void testValidateListTypeNotFound() {
 		Assert.assertFalse("The return value should be false.", this.parser.validateListType("LIST"));
+	}
+
+	@Test
+	public void testHasInventoryVariableIfTheVariableIsNotSet() {
+		this.parser.setSeedAmountVariate("");
+		Assert.assertFalse("Returns false when the inventory variable is not set.", this.parser.hasInventoryVariable());
+	}
+
+	@Test
+	public void testHasInventoryVariableIfTheVariableIsSet() {
+		this.parser.setSeedAmountVariate(SEED_AMOUNT_G);
+		Assert.assertTrue("Returns true when the inventory variable is set.", this.parser.hasInventoryVariable());
+	}
+
+	@Test
+	public void testHasInventoryAmountIfThereIsNoInventoryVariableSet() {
+		this.parser.setSeedAmountVariate("");
+		Assert.assertFalse("Returns false when there is no inventory variable set.", this.parser.hasInventoryAmount());
+	}
+
+	@Test
+	public void testHasInventoryAmount() {
+
+		this.parser.setSeedAmountVariate(SEED_AMOUNT_G);
+
+		final ImportedGermplasmList importedGermplasmList = this.createImportedGermplasmListWithSeedAmount();
+		this.parser.setImportedGermplasmList(importedGermplasmList);
+
+		Assert.assertTrue("Returns true when there is at least one imported germplasm row with seed inventory value.",
+				this.parser.hasInventoryAmount());
+	}
+
+	private ImportedGermplasmList createImportedGermplasmListWithSeedAmount() {
+		final ImportedGermplasmList importedGermplasmList =
+				this.importedGermplasmListInitializer.createImportedGermplasmList(NO_OF_ENTRIES, true);
+		final List<ImportedGermplasm> importedGermplasms = importedGermplasmList.getImportedGermplasms();
+		// initialize seed amount from imported germplasm
+		Double seedAmount = 1.0D;
+		for (final ImportedGermplasm importedGermplasm : importedGermplasms) {
+			importedGermplasm.setSeedAmount(seedAmount);
+			seedAmount++;
+		}
+		return importedGermplasmList;
+	}
+
+	@Test
+	public void hasAtLeastOneRowWithInventoryAmountButNoDefinedStockID() {
+		this.parser.setSeedAmountVariate(SEED_AMOUNT_G);
+
+		final ImportedGermplasmList importedGermplasmList = this.createImportedGermplasmListWithSeedAmount();
+		this.parser.setImportedGermplasmList(importedGermplasmList);
+
+		Assert.assertTrue("Returns true when there is at least one row with seed amount but no defined stock id value.",
+				this.parser.hasAtLeastOneRowWithInventoryAmountButNoDefinedStockID());
+	}
+
+	@Test
+	public void hasAtLeastOneRowWithInventoryAmountButNoDefinedStockIDReturnsFalseWhenStockIdsHasValuesForAllRows() {
+		this.parser.setSeedAmountVariate(SEED_AMOUNT_G);
+
+		final ImportedGermplasmList importedGermplasmList = this.createImportedGermplasmListWithSeedAmount();
+
+		final String inventoryID = "INV-";
+		int count = 1;
+		final List<ImportedGermplasm> importedGermplasms = importedGermplasmList.getImportedGermplasms();
+		for (final ImportedGermplasm importedGermplasm : importedGermplasms) {
+			importedGermplasm.setInventoryId(inventoryID + count);
+			count++;
+		}
+
+		this.parser.setImportedGermplasmList(importedGermplasmList);
+
+		Assert.assertFalse("Returns false when all rows in stockID columns have values.",
+				this.parser.hasAtLeastOneRowWithInventoryAmountButNoDefinedStockID());
 	}
 
 }

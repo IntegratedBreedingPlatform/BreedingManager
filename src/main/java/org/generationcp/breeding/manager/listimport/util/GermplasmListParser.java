@@ -86,14 +86,51 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		this.originalFilename = originalFilename;
 	}
 
+	/**
+	 * @return true if the inventory variable (i.e. SEED_AMOUNT_G) is included in the Description Sheet of the imported file
+	 */
+	public boolean hasInventoryVariable() {
+		return !this.seedAmountVariate.isEmpty();
+	}
+
+	/**
+	 * NOTE: The imported file contains 2 sheet: Description Sheet and Observation Sheet.
+	 * 
+	 * @return true if there is an Inventory Variable in the Description Sheet (i.e SEED_AMOUNT_G) and either STOCKID is not included in the
+	 *         Description Sheet or there is no values under STOCKID column in Observation Sheet
+	 */
 	public boolean hasInventoryAmountOnly() {
-		return !this.seedAmountVariate.isEmpty()
+		return this.hasInventoryVariable()
 				&& (!this.specialFactors.containsKey(FactorTypes.STOCK) || !this.importedGermplasmList.isHasStockIDValues());
 	}
 
+	/**
+	 * NOTE: The imported file contains 2 sheet: Description Sheet and Observation Sheet.
+	 * 
+	 * @return true if there is an Inventory Variable in the Description Sheet (i.e SEED_AMOUNT_G) and there is at least one value under the
+	 *         Inventory Variable column in Observation Sheet
+	 */
 	public boolean hasInventoryAmount() {
 
-		if (this.seedAmountVariate.isEmpty()) {
+		if (!this.hasInventoryVariable()) {
+			return false;
+		}
+
+		for (final ImportedGermplasm germplasm : this.importedGermplasmList.getImportedGermplasms()) {
+			final Double seedAmount = germplasm.getSeedAmount();
+
+			// make sure that there is at least one row with inventory amount
+			if (seedAmount > 0.0) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public boolean hasAtLeastOneRowWithInventoryAmountButNoDefinedStockID() {
+
+		if (!this.hasInventoryVariable()) {
 			return false;
 		}
 
@@ -101,12 +138,18 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 			final Double seedAmount = germplasm.getSeedAmount();
 			final String stockId = germplasm.getInventoryId();
 
+			// make sure that there is at least one row with inventory amount
+			// and stock Id is blank
 			if (seedAmount > 0.0 && Strings.isNullOrEmpty(stockId)) {
 				return true;
 			}
 		}
 
 		return false;
+	}
+
+	public boolean hasStockIdValues() {
+		return this.importedGermplasmList.isHasStockIDValues();
 	}
 
 	public boolean hasStockIdFactor() {
@@ -375,7 +418,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 	/**
 	 * This validator might be too strict for germplasm list parser
-	 *
+	 * 
 	 * @return ParseValidationMap
 	 */
 	protected ParseValidationMap parseObservationHeaders() throws FileParsingException {
@@ -879,4 +922,23 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	Set<String> getDescriptionVariableNames() {
 		return this.descriptionVariableNames;
 	}
+
+	/**
+	 * For Test Only
+	 * 
+	 * @param seedAmountVariate
+	 */
+	void setSeedAmountVariate(final String seedAmountVariate) {
+		this.seedAmountVariate = seedAmountVariate;
+	}
+
+	/**
+	 * For Test Only
+	 * 
+	 * @param importedGermplasmList
+	 */
+	void setImportedGermplasmList(final ImportedGermplasmList importedGermplasmList) {
+		this.importedGermplasmList = importedGermplasmList;
+	}
+
 }
