@@ -27,7 +27,6 @@ import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -193,18 +192,6 @@ public class DropHandlerMethodsTest {
 		this.prepareGermplasmPerGid(this.GID);
 		this.dropHandlerMethods.addGermplasm(this.GID);
 		this.verifyEachPropertyIsProperlyFilledUp();
-	}
-
-	@Test
-	public void testAddGermplasmWithGIDKey() {
-		final int gid = 512;
-
-		final ArgumentCaptor<Integer> captor = ArgumentCaptor.forClass(Integer.class);
-
-		this.prepareGermplasmPerGid(gid);
-		this.dropHandlerMethods.addGermplasm(gid);
-		Mockito.verify(this.mockContainer).addItem(captor.capture());
-		Assert.assertEquals("List Builder uses gid as itemId", captor.getValue(), Integer.valueOf(gid));
 	}
 
 	private void prepareGermplasmPerGid(final Integer gid) {

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.inventory.InventoryDropTargetContainer;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
@@ -19,8 +18,6 @@ import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.ListSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
-import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -62,7 +59,6 @@ public class DropHandlerMethods {
 	protected GermplasmListManager germplasmListManager;
 	protected InventoryDataManager inventoryDataManager;
 	protected PedigreeService pedigreeService;
-    protected SimpleResourceBundleMessageSource messageSource;
 
 	private static final Logger LOG = LoggerFactory.getLogger(DropHandlerMethods.class);
 
@@ -162,13 +158,8 @@ public class DropHandlerMethods {
 
 			final Germplasm germplasm = this.germplasmDataManager.getGermplasmByGID(gid);
 
-			final Item newItem = this.targetTable.getContainerDataSource().addItem(gid);
-			
-			if (newItem == null) {
-				MessageNotifier.showError(this.listManagerMain.getWindow(), this.messageSource.getMessage(Message.ERROR),
-						this.messageSource.getMessage(Message.ERROR_NEW_LIST_DUPLICATE_GID, gid));
-				return null;
-			}
+			final Integer newItemId = this.getNextListEntryId();
+			final Item newItem = this.targetTable.getContainerDataSource().addItem(newItemId);
 
 			final Button gidButton =
 					new Button(String.format("%s", gid), new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true, true));
@@ -198,9 +189,9 @@ public class DropHandlerMethods {
 				public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
 					final CheckBox itemCheckBox = (CheckBox) event.getButton();
 					if (((Boolean) itemCheckBox.getValue()).equals(true)) {
-						DropHandlerMethods.this.targetTable.select(gid);
+						DropHandlerMethods.this.targetTable.select(newItemId);
 					} else {
-						DropHandlerMethods.this.targetTable.unselect(gid);
+						DropHandlerMethods.this.targetTable.unselect(newItemId);
 					}
 				}
 
@@ -255,7 +246,7 @@ public class DropHandlerMethods {
 
 			this.setHasUnsavedChanges(true);
 
-			return gid;
+			return newItemId;
 
 		} catch (final MiddlewareQueryException e) {
 			DropHandlerMethods.LOG.error("Error in adding germplasm to germplasm table.", e);

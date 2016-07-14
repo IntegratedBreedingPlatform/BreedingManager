@@ -485,7 +485,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.dropHandler =
 				new BuildNewListDropHandler(this.source, this.germplasmDataManager, this.germplasmListManager, this.inventoryDataManager,
 						this.pedigreeService, this.crossExpansionProperties, this.tableWithSelectAllLayout.getTable(),
-						this.transactionManager, this.messageSource);
+						this.transactionManager);
 
 		this.saveButton = new Button();
 		this.saveButton.setCaption(this.messageSource.getMessage(Message.SAVE_LABEL));
@@ -1034,7 +1034,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.dropHandler =
 				new BuildNewListDropHandler(this.source, this.germplasmDataManager, this.germplasmListManager, this.inventoryDataManager,
 						this.pedigreeService, this.crossExpansionProperties, this.tableWithSelectAllLayout.getTable(),
-						this.transactionManager, this.messageSource);
+						this.transactionManager);
 		this.initializeHandlers();
 
 		// Reset Save Listener
