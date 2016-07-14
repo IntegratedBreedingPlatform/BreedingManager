@@ -289,6 +289,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	@Override
 	public void instantiateComponents() {
+		this.inventoryViewMenu = new InventoryViewActionMenu();
+
 		this.topLabel = new Label(this.messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
 		this.topLabel.setWidth("120px");
 		this.topLabel.setStyleName(Bootstrap.Typography.H4.styleName());
