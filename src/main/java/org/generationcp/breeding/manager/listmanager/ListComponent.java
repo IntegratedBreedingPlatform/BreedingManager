@@ -39,7 +39,11 @@ import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource;
 import org.generationcp.breeding.manager.listmanager.dialog.AssignCodesDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.GermplasmGroupingComponent;
+import org.generationcp.breeding.manager.listmanager.dialog.GermplasmGroupingComponentSource;
 import org.generationcp.breeding.manager.listmanager.dialog.ListManagerCopyToNewListDialog;
+import org.generationcp.breeding.manager.listmanager.listcomponent.GermplasmListTableContextMenu;
+import org.generationcp.breeding.manager.listmanager.listcomponent.InventoryViewActionMenu;
+import org.generationcp.breeding.manager.listmanager.listcomponent.ListViewActionMenu;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
@@ -112,13 +116,11 @@ import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class ListComponent extends VerticalLayout
-		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, AddEntryDialogSource, SaveListAsDialogSource,
-		ReserveInventorySource {
+public class ListComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout,
+		AddEntryDialogSource, SaveListAsDialogSource, ReserveInventorySource, GermplasmGroupingComponentSource {
+
 
 	private static final String ERROR_WITH_DELETING_LIST_ENTRIES = "Error with deleting list entries.";
-
-	private static final String CONTEXT_MENU_WIDTH = "295px";
 
 	private static final long serialVersionUID = -3367108805414232721L;
 
@@ -150,30 +152,16 @@ public class ListComponent extends VerticalLayout
 	private HorizontalLayout headerLayout;
 	private HorizontalLayout subHeaderLayout;
 
-	// Menu for tools button
-	private ContextMenu menu;
-	private ContextMenuItem menuExportList;
-	private ContextMenuItem menuCopyToList;
-	private ContextMenuItem menuAddEntry;
-	private ContextMenuItem menuSaveChanges;
-	private ContextMenuItem menuDeleteEntries;
-	private ContextMenuItem menuMarkLinesAsFixed;
-	private ContextMenuItem menuAssignCodes;
-	private ContextMenuItem menuEditList;
-	private ContextMenuItem menuDeleteList;
-	@SuppressWarnings("unused")
-	private ContextMenuItem menuInventoryView;
-	private AddColumnContextMenu addColumnContextMenu;
+	// Menu for Actions button in List View
+	private ListViewActionMenu menu;
 
-	private ContextMenu inventoryViewMenu;
-	private ContextMenuItem menuCopyToNewListFromInventory;
-	private ContextMenuItem menuInventorySaveChanges;
-	@SuppressWarnings("unused")
-	private ContextMenuItem menuListView;
-	@SuppressWarnings("unused")
-	private ContextMenuItem menuReserveInventory;
-	@SuppressWarnings("unused")
-	private ContextMenuItem menuCancelReservation;
+	// Menu for Actions button in Inventory View
+	private InventoryViewActionMenu inventoryViewMenu;
+
+	// Menu shown when the user right-click on the germplasm list table
+	private GermplasmListTableContextMenu tableContextMenu;
+
+	private AddColumnContextMenu addColumnContextMenu;
 
 	// Tooltips
 	public static final String TOOLS_BUTTON_ID = "Actions";
@@ -204,15 +192,6 @@ public class ListComponent extends VerticalLayout
 	public static final String UNLOCK_BUTTON_ID = "Unlock Germplasm List";
 
 	private static final String LOCK_TOOLTIP = "Click to lock or unlock this germplasm list.";
-
-	private ContextMenu tableContextMenu;
-
-	@SuppressWarnings("unused")
-	private ContextMenuItem tableContextMenuSelectAll;
-
-	private ContextMenuItem tableContextMenuCopyToNewList;
-	private ContextMenuItem tableContextMenuDeleteEntries;
-	private ContextMenuItem tableContextMenuEditCell;
 
 	// Value change event is fired when table is populated, so we need a flag
 	private Boolean doneInitializing = false;
@@ -352,45 +331,16 @@ public class ListComponent extends VerticalLayout
 				ListComponent.LOCK_TOOLTIP);
 		this.lockButton.setData(ListComponent.LOCK_BUTTON_ID);
 
-		this.menu = new ContextMenu();
-		this.menu.setWidth(ListComponent.CONTEXT_MENU_WIDTH);
+		this.menu = new ListViewActionMenu();
 
 		// Add Column menu will be initialized after list data table is created
 		this.initializeListDataTable(new TableWithSelectAllLayout(Long.valueOf(this.listEntriesCount).intValue(), this.getNoOfEntries(),
 				ColumnLabels.TAG.getName())); // listDataTable
 		this.initializeListInventoryTable(); // listInventoryTable
 
-		// Generate main level items
-		this.menuAddEntry = this.menu.addItem(this.messageSource.getMessage(Message.ADD_ENTRIES));
-		this.menuCopyToList = this.menu.addItem(this.messageSource.getMessage(Message.COPY_TO_NEW_LIST));
-		this.menuDeleteList = this.menu.addItem(this.messageSource.getMessage(Message.DELETE_LIST));
-		this.menuDeleteEntries = this.menu.addItem(this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
-		this.menuMarkLinesAsFixed = this.menu.addItem(this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED));
-		this.menuAssignCodes = this.menu.addItem(this.messageSource.getMessage(Message.ASSIGN_CODES));
-		this.menuEditList = this.menu.addItem(this.messageSource.getMessage(Message.EDIT_LIST));
-		this.menuExportList = this.menu.addItem(this.messageSource.getMessage(Message.EXPORT_LIST));
-		this.menuInventoryView = this.menu.addItem(this.messageSource.getMessage(Message.INVENTORY_VIEW));
-		this.menuSaveChanges = this.menu.addItem(this.messageSource.getMessage(Message.SAVE_CHANGES));
-		this.menu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
+		this.inventoryViewMenu = new InventoryViewActionMenu();
 
-		this.inventoryViewMenu = new ContextMenu();
-		this.inventoryViewMenu.setWidth(ListComponent.CONTEXT_MENU_WIDTH);
-		this.menuCancelReservation = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.CANCEL_RESERVATIONS));
-		this.menuCopyToNewListFromInventory = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.COPY_TO_NEW_LIST));
-		this.menuReserveInventory = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
-		this.menuListView = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
-		this.menuInventorySaveChanges = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.SAVE_RESERVATIONS));
-		this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
-
-		this.resetInventoryMenuOptions();
-
-		this.tableContextMenu = new ContextMenu();
-		this.tableContextMenu.setWidth(ListComponent.CONTEXT_MENU_WIDTH);
-		this.tableContextMenuSelectAll = this.tableContextMenu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
-		this.tableContextMenuDeleteEntries = this.tableContextMenu.addItem(this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
-		this.tableContextMenuEditCell = this.tableContextMenu.addItem(this.messageSource.getMessage(Message.EDIT_VALUE));
-		this.tableContextMenuCopyToNewList =
-				this.tableContextMenu.addItem(this.messageSource.getMessage(Message.ADD_SELECTED_ENTRIES_TO_NEW_LIST));
+		this.tableContextMenu = new GermplasmListTableContextMenu();
 
 		// Inventory Related Variables
 		this.validReservationsToSave = new HashMap<>();
@@ -404,15 +354,6 @@ public class ListComponent extends VerticalLayout
 			final ListSelectionLayout listSelection = this.source.getListSelectionComponent().getListDetailsLayout();
 			listSelection.addUpdateListStatusForChanges(this, this.hasChanges);
 		}
-	}
-
-	private void resetInventoryMenuOptions() {
-		// disable the save button at first since there are no reservations yet
-		this.menuInventorySaveChanges.setEnabled(false);
-
-		// Temporarily disable to Copy to New List in InventoryView
-		// implement the function
-		this.menuCopyToNewListFromInventory.setEnabled(false);
 	}
 
 	protected void initializeListDataTable(final TableWithSelectAllLayout tableWithSelectAllLayout) {
@@ -976,7 +917,6 @@ public class ListComponent extends VerticalLayout
 						ListComponent.this.listDataTable.setValue(ListComponent.this.listDataTable.getItemIds());
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.EXPORT_LIST))) {
 						ListComponent.this.exportListAction();
-
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
 						ListComponent.this.copyToNewListAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.ADD_ENTRIES))) {
@@ -1011,38 +951,22 @@ public class ListComponent extends VerticalLayout
 			ListComponent.this.addColumnContextMenu.refreshAddColumnMenu();
 			ListComponent.this.menu.show(event.getClientX(), event.getClientY());
 
-			if (ListComponent.this.fromUrl) {
-				ListComponent.this.menuExportList.setVisible(false);
-				ListComponent.this.menuCopyToList.setVisible(false);
-			}
-
-			if (ListComponent.this.source != null) {
-				ListComponent.this.menuCopyToList.setVisible(!ListComponent.this.source.listBuilderIsLocked());
-			}
+			// update list view action menu based on the following criteria:
+			// 1. If it is loaded directly from the url
+			// 2. If the list in Build New List section is locked or not
+			// 3. If the list manager main source is existing (I think 'source' will be null only for test purposes)
+			ListComponent.this.menu.updateListViewActionMenu(ListComponent.this.fromUrl, ListComponent.this.source.listBuilderIsLocked(),
+					ListComponent.this.source != null);
 
 			// when the Germplasm List is not locked, and when not accessed
 			// directly from URL or popup window
 			if (!ListComponent.this.germplasmList.isLockedList() && !ListComponent.this.fromUrl) {
-				ListComponent.this.menuEditList.setVisible(true);
-				// show only Delete List when user is owner
-				ListComponent.this.menuDeleteList.setVisible(ListComponent.this.localUserIsListOwner());
-				ListComponent.this.menuDeleteEntries.setVisible(true);
-				ListComponent.this.menuMarkLinesAsFixed.setVisible(true);
-				ListComponent.this.menuAssignCodes.setVisible(true);
-				ListComponent.this.menuSaveChanges.setVisible(true);
-				ListComponent.this.menuAddEntry.setVisible(true);
+				ListComponent.this.menu.setActionMenuWhenListIsLocked(ListComponent.this.localUserIsListOwner());
 				ListComponent.this.addColumnContextMenu.showHideAddColumnMenu(true);
 			} else {
-				ListComponent.this.menuEditList.setVisible(false);
-				ListComponent.this.menuDeleteList.setVisible(false);
-				ListComponent.this.menuDeleteEntries.setVisible(false);
-				ListComponent.this.menuMarkLinesAsFixed.setVisible(false);
-				ListComponent.this.menuAssignCodes.setVisible(false);
-				ListComponent.this.menuSaveChanges.setVisible(false);
-				ListComponent.this.menuAddEntry.setVisible(false);
+				ListComponent.this.menu.setActionMenuWhenListIsUnlocked();
 				ListComponent.this.addColumnContextMenu.showHideAddColumnMenu(false);
 			}
-
 		}
 	}
 
@@ -1077,17 +1001,11 @@ public class ListComponent extends VerticalLayout
 			final boolean isListBuilderLocked = ListComponent.this.source.listBuilderIsLocked();
 			final boolean isListComponentSourceAvailable = ListComponent.this.source != null;
 
-			// make the edit cell context menu available when selected column is editable and list is not locked
-			ListComponent.this.tableContextMenuEditCell.setVisible(!isNonEditableColumn && !isLockedList);
-
-			// delete entries context menu will be available when current germplasm list is not locked
-			ListComponent.this.tableContextMenuDeleteEntries.setVisible(!isLockedList);
+			ListComponent.this.tableContextMenu.updateGermplasmListTableContextMenu(isNonEditableColumn, isLockedList, isListBuilderLocked,
+					isListComponentSourceAvailable);
 
 			// set doneInitializing to true if germplasm list is locked, else do not update doneInitializing
 			ListComponent.this.doneInitializing = isLockedList ? true : ListComponent.this.doneInitializing;
-
-			// copy to new list context menu will be available if list builder is un-locked
-			ListComponent.this.tableContextMenuCopyToNewList.setVisible(!isListBuilderLocked && isListComponentSourceAvailable);
 
 		}
 	}
@@ -1343,7 +1261,7 @@ public class ListComponent extends VerticalLayout
 		final Set<Integer> gidsToProcess = this.extractGidListFromListDataTable(this.listDataTable);
 
 		if (!gidsToProcess.isEmpty()) {
-			this.getWindow().addWindow(new GermplasmGroupingComponent(gidsToProcess));
+			this.getWindow().addWindow(new GermplasmGroupingComponent(this, gidsToProcess));
 		} else {
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED),
 					this.messageSource.getMessage(Message.ERROR_MARK_LINES_AS_FIXED_NOTHING_SELECTED));
@@ -2249,11 +2167,11 @@ public class ListComponent extends VerticalLayout
 
 		this.removeReserveInventoryWindow(this.reserveInventory);
 
-		// update lot reservatios to save
+		// update lot reservations to save
 		this.updateLotReservationsToSave(validReservations);
 
 		// enable now the Save Changes option
-		this.menuInventorySaveChanges.setEnabled(true);
+		this.inventoryViewMenu.setMenuInventorySaveChanges();
 
 		// if there are no valid reservations
 		if (validReservations.isEmpty()) {
@@ -2319,7 +2237,7 @@ public class ListComponent extends VerticalLayout
 	public void resetListInventoryTableValues() {
 		this.listInventoryTable.updateListInventoryTableAfterSave();
 
-		this.resetInventoryMenuOptions();
+		this.inventoryViewMenu.resetInventoryMenuOptions();
 
 		// reset the reservations to save.
 		this.validReservationsToSave.clear();
@@ -2413,6 +2331,26 @@ public class ListComponent extends VerticalLayout
 
 	public Map<Object, String> getItemsToDelete() {
 		return this.itemsToDelete;
+	}
+
+	@Override
+	public void updateGermplasmListTable(final Set<Integer> gidsProcessed) {
+		// created map of gid and germplasm as a preparation for the retrieval for mgid
+		final List<Germplasm> germplasms = this.germplasmDataManager.getGermplasms(new ArrayList<Integer>(gidsProcessed));
+		final Map<Integer, Germplasm> germplasmMap = new HashMap<Integer, Germplasm>();
+		for (final Germplasm germplasm : germplasms) {
+			germplasmMap.put(germplasm.getGid(), germplasm);
+		}
+
+		// update the MGID(Group Id) of the specific rows marked as fixed lines
+		for (final GermplasmListData listEntry : this.listEntries) {
+			final Integer gid = listEntry.getGid();
+			final Germplasm germplasm = germplasmMap.get(gid);
+			if (gidsProcessed.contains(gid)) {
+				final Item selectedRowItem = this.listDataTable.getItem(listEntry.getId());
+				selectedRowItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(germplasm.getMgid());
+			}
+		}
 	}
 
 }

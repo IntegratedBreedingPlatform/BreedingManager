@@ -5,9 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.MgidApplicationStatus;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.GermplasmGroupTestDataInitializer;
+import org.generationcp.middleware.data.initializer.GermplasmTestDataInitializer;
 import org.generationcp.middleware.data.initializer.MethodTestDataInitializer;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
@@ -19,13 +21,13 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.google.common.collect.Sets;
 
 public class GermplasmGroupingComponentTest {
 
+	private static final String DUMMY_MESSAGE = "DUMMY MESSAGE";
 	private static final int METHOD_ID = 1;
 	private static final String GEN_METHOD_TYPE = "GEN";
 	private static final String DER_METHOD_TYPE = "DER";
@@ -44,16 +46,20 @@ public class GermplasmGroupingComponentTest {
 
 	private final Set<Integer> gidsToProcess = Sets.newHashSet(1, 2, 3);
 
-	// Spying to mock away methods of class under test that interacts with Vaadin Window infrastructure.
-	@Spy
-	private final GermplasmGroupingComponent germplasmGroupingComponent = new GermplasmGroupingComponent();
+	@Mock
+	private GermplasmGroupingComponentSource source;
 
+	private GermplasmGroupingComponent germplasmGroupingComponent;
 	private GermplasmGroupTestDataInitializer germplasmGroupTestDataInitializer;
 	private MethodTestDataInitializer methodTestDataInitializer;
+	private GermplasmTestDataInitializer germplasmTestDataInitializer;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
+
+		this.germplasmGroupingComponent = new GermplasmGroupingComponent(this.source);
+
 		this.germplasmGroupingComponent.setGidsToProcess(this.gidsToProcess);
 
 		// Component init sequence
@@ -64,16 +70,28 @@ public class GermplasmGroupingComponentTest {
 		this.germplasmGroupingComponent.setGermplasmGroupingService(this.germplasmGroupingService);
 		this.germplasmGroupingComponent.setMessageSource(this.messageSource);
 
-		// This is what spying is used for.
-		Mockito.doNothing().when(this.germplasmGroupingComponent).reportSuccessAndClose(Mockito.anyMap());
+		Mockito.doReturn(DUMMY_MESSAGE).when(this.messageSource).getMessage(Mockito.any(Message.class));
 
 		// init test data initializers
 		this.germplasmGroupTestDataInitializer = new GermplasmGroupTestDataInitializer();
 		this.methodTestDataInitializer = new MethodTestDataInitializer();
+		this.germplasmTestDataInitializer = new GermplasmTestDataInitializer();
 	}
 
 	@Test
 	public void testGroupGermplasm() {
+
+		// init test data
+		for (final Integer id : this.gidsToProcess) {
+			final Germplasm germplasm = this.germplasmTestDataInitializer.createGermplasm(id);
+			germplasm.setMethod(this.methodTestDataInitializer.createMethod(METHOD_ID, DER_METHOD_TYPE));
+			Mockito.doReturn(germplasm).when(this.germplasmDataManager).getGermplasmByGID(id);
+
+			final GermplasmGroup report = this.germplasmGroupTestDataInitializer.createGermplasmGroup(id, id);
+			report.setFounder(germplasm);
+			Mockito.doReturn(report).when(this.germplasmGroupingService).markFixed(germplasm, false, false);
+		}
+
 		this.germplasmGroupingComponent.groupGermplasm();
 
 		// Just basic assertion that the specified number of germplasm were loaded and processed via the grouping service.

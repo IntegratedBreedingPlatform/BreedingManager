@@ -47,26 +47,29 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 	private static final long serialVersionUID = 4506866031376540836L;
 	private static final Logger LOG = LoggerFactory.getLogger(BreedingLocationField.class);
 
-	private Label captionLabel;
-	private String caption;
-	private ComboBox breedingLocationComboBox;
-	private static final String DEFAULT_LOCATION = "Unknown";
-	private boolean changed;
-	private int leftIndentPixels = 130;
+	static final String DEFAULT_LOCATION = "Unknown";
 
+	/**
+	 * CONSTRUCTOR VARIABLES
+	 */
+	private BreedingLocationFieldSource source;
+	private String caption;
+	private boolean changed;
+	// The parent window where the germplasm import dialog is attached to
+	private Window attachToWindow;
+	// The no of pixel indentation for breeding location combobox
+	private int leftIndentPixels = 130;
+	private Integer locationType = 0;
+	// flags
+	private boolean displayFavoriteLocationsFilter = true;
+	private boolean displayManageLocationLink = true;
+	private boolean isDefaultValueSelected = false;
+
+	private Label captionLabel;
+	private ComboBox breedingLocationComboBox;
 	private List<Location> locations;
 	private CheckBox showFavoritesCheckBox;
 	private Button manageFavoritesLink;
-
-	private Window attachToWindow;
-
-	private Integer locationType = 0;
-
-	// flags
-	private boolean displayFavoriteMethodsFilter = true;
-	private boolean displayManageMethodLink = true;
-
-	private BreedingLocationFieldSource source;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -89,58 +92,40 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 	private String programUniqueId;
 
 	public BreedingLocationField() {
-
+		// do nothing
 	}
 
-	public BreedingLocationField(BreedingLocationFieldSource source) {
+	public BreedingLocationField(final BreedingLocationFieldSource source) {
 		this.source = source;
 		this.caption = "Location: ";
 		this.changed = false;
 	}
 
-	public BreedingLocationField(BreedingLocationFieldSource source, Window attachToWindow) {
+	public BreedingLocationField(final BreedingLocationFieldSource source, final Window attachToWindow, final boolean isDefaultValueSelected) {
 		this(source);
 		this.attachToWindow = attachToWindow;
+		this.isDefaultValueSelected = isDefaultValueSelected;
 	}
 
-	public BreedingLocationField(BreedingLocationFieldSource source, Window attachToWindow, int pixels) {
-		this(source, attachToWindow);
+	public BreedingLocationField(final BreedingLocationFieldSource source, final Window attachToWindow, final int pixels,
+			final boolean isDefaultValueSelected) {
+		this(source, attachToWindow, isDefaultValueSelected);
 		this.leftIndentPixels = pixels;
 	}
 
-	public BreedingLocationField(BreedingLocationFieldSource source, int pixels) {
-		this.source = source;
-		this.leftIndentPixels = pixels;
+	public BreedingLocationField(final BreedingLocationFieldSource source, final int pixels, final boolean isDefaultValueSelected) {
+		this(source, null, pixels, isDefaultValueSelected);
 	}
 
-	public BreedingLocationField(BreedingLocationFieldSource source, Window attachToWindow, int pixels, Integer locationType) {
-		this(source, attachToWindow);
-		this.leftIndentPixels = pixels;
+	public BreedingLocationField(final BreedingLocationFieldSource source, final Window attachToWindow, final int pixels,
+			final Integer locationType, final boolean isDefaultValueSelected) {
+		this(source, attachToWindow, pixels, isDefaultValueSelected);
 		this.locationType = locationType;
 	}
 
-	public BreedingLocationField(BreedingLocationFieldSource source, int pixels, Integer locationType) {
-		this.source = source;
-		this.leftIndentPixels = pixels;
-		this.locationType = locationType;
-	}
-
-	public BreedingLocationField(BreedingLocationFieldSource source, Window attachToWindow, int pixels,
-			boolean displayFavoriteMethodsFilter, boolean displayManageMethodLink, Integer locationType) {
-		this(source, attachToWindow);
-		this.leftIndentPixels = pixels;
-		this.displayFavoriteMethodsFilter = displayFavoriteMethodsFilter;
-		this.displayManageMethodLink = displayManageMethodLink;
-		this.locationType = locationType;
-	}
-
-	public BreedingLocationField(BreedingLocationFieldSource source, int pixels, boolean displayFavoriteMethodsFilter,
-			boolean displayManageMethodLink, Integer locationType) {
-		this.source = source;
-		this.leftIndentPixels = pixels;
-		this.displayFavoriteMethodsFilter = displayFavoriteMethodsFilter;
-		this.displayManageMethodLink = displayManageMethodLink;
-		this.locationType = locationType;
+	public BreedingLocationField(final BreedingLocationFieldSource source, final int pixels, final Integer locationType,
+			final boolean isDefaultValueSelected) {
+		this(source, null, pixels, locationType, isDefaultValueSelected);
 	}
 
 	@Override
@@ -151,7 +136,8 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		this.breedingLocationComboBox = new ComboBox();
 		this.breedingLocationComboBox.setWidth("320px");
 		this.breedingLocationComboBox.setImmediate(true);
-		this.breedingLocationComboBox.setNullSelectionAllowed(false);
+		this.breedingLocationComboBox.setNullSelectionAllowed(true);
+		this.breedingLocationComboBox.setInputPrompt("Please Choose");
 
 		this.showFavoritesCheckBox = new CheckBox();
 		this.showFavoritesCheckBox.setCaption(this.messageSource.getMessage(Message.SHOW_ONLY_FAVORITE_LOCATIONS));
@@ -163,7 +149,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 
 		try {
 			this.programUniqueId = this.breedingManagerService.getCurrentProject().getUniqueID();
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			BreedingLocationField.LOG.error(e.getMessage(), e);
 		}
 	}
@@ -174,7 +160,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		this.initPopulateFavLocations(this.programUniqueId);
 	}
 
-	public boolean initPopulateFavLocations(String programUUID) {
+	public boolean initPopulateFavLocations(final String programUUID) {
 		boolean hasFavorite = false;
 		if (BreedingManagerUtil.hasFavoriteLocation(this.germplasmDataManager, 0, programUUID)) {
 			this.showFavoritesCheckBox.setValue(true);
@@ -192,7 +178,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void valueChange(ValueChangeEvent event) {
+			public void valueChange(final ValueChangeEvent event) {
 				BreedingLocationField.this.changed = true;
 			}
 		});
@@ -202,7 +188,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void containerItemSetChange(ItemSetChangeEvent event) {
+			public void containerItemSetChange(final ItemSetChangeEvent event) {
 				BreedingLocationField.this.changed = true;
 			}
 		});
@@ -212,7 +198,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void valueChange(ValueChangeEvent event) {
+			public void valueChange(final ValueChangeEvent event) {
 				BreedingLocationField.this.populateHarvestLocation(((Boolean) event.getProperty().getValue()).equals(true),
 						BreedingLocationField.this.programUniqueId);
 			}
@@ -223,7 +209,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				BreedingLocationField.this.launchManageWindow();
 			}
 		});
@@ -232,7 +218,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 
 	@Override
 	public void layoutComponents() {
-		if (this.displayManageMethodLink || this.displayFavoriteMethodsFilter) {
+		if (this.displayManageLocationLink || this.displayFavoriteLocationsFilter) {
 			this.setHeight("250px");
 		} else {
 			this.setHeight("190px");
@@ -241,12 +227,12 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		this.addComponent(this.captionLabel, "top:3px; left:0;");
 		this.addComponent(this.breedingLocationComboBox, "top:0; left:" + this.leftIndentPixels + "px");
 
-		if (this.displayFavoriteMethodsFilter) {
+		if (this.displayFavoriteLocationsFilter) {
 			this.addComponent(this.showFavoritesCheckBox, "top:30px; left:" + this.leftIndentPixels + "px");
 		}
 
-		if (this.displayManageMethodLink) {
-			int pixels = this.leftIndentPixels + 220;
+		if (this.displayManageLocationLink) {
+			final int pixels = this.leftIndentPixels + 220;
 			this.addComponent(this.manageFavoritesLink, "top:33px; left:" + pixels + "px");
 		}
 	}
@@ -268,11 +254,11 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		return this.breedingLocationComboBox;
 	}
 
-	public void setBreedingLocationComboBox(ComboBox breedingLocationComboBox) {
+	public void setBreedingLocationComboBox(final ComboBox breedingLocationComboBox) {
 		this.breedingLocationComboBox = breedingLocationComboBox;
 	}
 
-	public void setValue(String value) {
+	public void setValue(final String value) {
 		this.breedingLocationComboBox.select(value);
 	}
 
@@ -288,18 +274,18 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		return this.changed;
 	}
 
-	public void setChanged(boolean changed) {
+	public void setChanged(final boolean changed) {
 		this.changed = changed;
 	}
 
-	public void populateHarvestLocation(Integer selectedLocation, String programUUID) {
+	public void populateHarvestLocation(final Integer selectedLocation, final String programUUID) {
 		this.populateHarvestLocation(this.showFavoritesCheckBox.getValue().equals(true), programUUID);
 		if (selectedLocation != null) {
 			this.breedingLocationComboBox.setValue(selectedLocation);
 		}
 	}
 
-	private void populateHarvestLocation(boolean showOnlyFavorites, String programUUID) {
+	private void populateHarvestLocation(final boolean showOnlyFavorites, final String programUUID) {
 		this.breedingLocationComboBox.removeAllItems();
 
 		if (showOnlyFavorites) {
@@ -307,7 +293,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 				BreedingManagerUtil.populateWithFavoriteLocations(this.workbenchDataManager, this.germplasmDataManager,
 						this.breedingLocationComboBox, null, programUUID);
 
-			} catch (MiddlewareQueryException e) {
+			} catch (final MiddlewareQueryException e) {
 				BreedingLocationField.LOG.error(e.getMessage(), e);
 				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
 						"Error getting favorite locations!");
@@ -322,38 +308,61 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 	/*
 	 * Fill with all locations
 	 */
-	private void populateLocations(String programUUID) {
+	private void populateLocations(final String programUUID) {
 
 		try {
-			this.locations = this.locationDataManager.getLocationsByUniqueID(programUUID);
-		} catch (MiddlewareQueryException e) {
+			if (this.locationType > 0) {
+				this.locations = this.locationDataManager.getLocationsByType(this.locationType, programUUID);
+			} else {
+				this.locations = this.locationDataManager.getLocationsByUniqueID(programUUID);
+			}
+		} catch (final MiddlewareQueryException e) {
 			BreedingLocationField.LOG.error(e.getMessage(), e);
 		}
 
-		Integer firstId = null;
-		boolean hasDefault = false;
-		for (Location location : this.locations) {
-			if (firstId == null) {
-				firstId = location.getLocid();
+		this.initLocationItems(this.locations, this.isDefaultValueSelected);
+
+	}
+
+	/**
+	 * NOTE: If the breeding location has the default location item , "UNKNOWN", this will be preselected. Else, will use the first entry
+	 * from the list of available items from the location
+	 * 
+	 * @param locations
+	 * 
+	 * @param isDefaultValueSelected
+	 */
+	void initLocationItems(final List<Location> locations, final boolean isDefaultValueSelected) {
+		Integer selectedItemLocId = null;
+
+		// add items to the breeding location combobox
+		for (final Location location : locations) {
+
+			// retrieve the first item from the list of locations
+			if (selectedItemLocId == null) {
+				selectedItemLocId = location.getLocid();
 			}
+
+			// override the selected item if the default item is found from the list of locations
+			if (BreedingLocationField.DEFAULT_LOCATION.equalsIgnoreCase(location.getLname())) {
+				selectedItemLocId = location.getLocid();
+			}
+
 			this.breedingLocationComboBox.addItem(location.getLocid());
 			this.breedingLocationComboBox.setItemCaption(location.getLocid(), BreedingManagerUtil.getLocationNameDisplay(location));
-			if (BreedingLocationField.DEFAULT_LOCATION.equalsIgnoreCase(location.getLname())) {
-				this.breedingLocationComboBox.setValue(location.getLocid());
-				hasDefault = true;
-			}
 		}
-		if (!hasDefault && firstId != null) {
-			this.breedingLocationComboBox.setValue(firstId);
+
+		if (isDefaultValueSelected && selectedItemLocId != null) {
+			this.breedingLocationComboBox.setValue(selectedItemLocId);
 		}
 	}
 
 	private void launchManageWindow() {
 		try {
-			Project project = this.contextUtil.getProjectInContext();
+			final Project project = this.contextUtil.getProjectInContext();
 
-			Window window = this.attachToWindow != null ? this.attachToWindow : this.getWindow();
-			Window manageFavoriteLocationsWindow =
+			final Window window = this.attachToWindow != null ? this.attachToWindow : this.getWindow();
+			final Window manageFavoriteLocationsWindow =
 					Util.launchLocationManager(this.workbenchDataManager, project.getProjectId(), window,
 							this.messageSource.getMessage(Message.MANAGE_LOCATIONS));
 			manageFavoriteLocationsWindow.addListener(new CloseListener() {
@@ -361,21 +370,37 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 				private static final long serialVersionUID = 1L;
 
 				@Override
-				public void windowClose(CloseEvent e) {
+				public void windowClose(final CloseEvent e) {
 					BreedingLocationField.this.source.updateAllLocationFields();
 				}
 			});
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			BreedingLocationField.LOG.error("Error on manageFavoriteLocations click", e);
 		}
 	}
 
 	@Override
-	public void setCaption(String caption) {
+	public void setCaption(final String caption) {
 		this.caption = caption;
 		if (this.captionLabel != null) {
 			this.captionLabel.setValue(this.caption);
 		}
+	}
+
+	public boolean isDisplayFavoriteLocationsFilter() {
+		return this.displayFavoriteLocationsFilter;
+	}
+
+	public void setDisplayFavoriteLocationsFilter(final boolean displayFavoriteLocationsFilter) {
+		this.displayFavoriteLocationsFilter = displayFavoriteLocationsFilter;
+	}
+
+	public boolean isDisplayManageLocationLink() {
+		return this.displayManageLocationLink;
+	}
+
+	public void setDisplayManageLocationLink(final boolean displayManageLocationLink) {
+		this.displayManageLocationLink = displayManageLocationLink;
 	}
 
 	protected int getLeftIndentPixels() {
@@ -386,11 +411,11 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		return this.messageSource;
 	}
 
-	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 
-	public void setWorkbenchDataManager(WorkbenchDataManager workbenchDataManager) {
+	public void setWorkbenchDataManager(final WorkbenchDataManager workbenchDataManager) {
 		this.workbenchDataManager = workbenchDataManager;
 	}
 
@@ -398,7 +423,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		return this.germplasmDataManager;
 	}
 
-	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+	public void setGermplasmDataManager(final GermplasmDataManager germplasmDataManager) {
 		this.germplasmDataManager = germplasmDataManager;
 	}
 
@@ -406,11 +431,11 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		return this.locationDataManager;
 	}
 
-	public void setLocationDataManager(LocationDataManager locationDataManager) {
+	public void setLocationDataManager(final LocationDataManager locationDataManager) {
 		this.locationDataManager = locationDataManager;
 	}
 
-	public void setBreedingManagerService(BreedingManagerService breedingManagerService) {
+	public void setBreedingManagerService(final BreedingManagerService breedingManagerService) {
 		this.breedingManagerService = breedingManagerService;
 	}
 }
