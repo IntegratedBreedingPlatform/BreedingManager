@@ -20,19 +20,27 @@ public class ListInventoryDataInitializer {
 		List<GermplasmListData> inventoryDetails = new ArrayList<GermplasmListData>();
 
 		for (int i = 0; i < NO_OF_LISTDATA; i++) {
-			GermplasmListData listData = new GermplasmListData();
 			int id = i + 1;
-			listData.setId(id);
-			listData.setEntryId(id);
-			listData.setDesignation("Germplasm" + id);
-			listData.setGid(id);
-			listData.setInventoryInfo(createInventoryInfo(id));
-			listData.setStatus(0);
-			listData.setSeedSource("Seed Source for gid " + id);
-			inventoryDetails.add(listData);
+			inventoryDetails.add(createGermplasmListData(id));
 		}
 
 		return inventoryDetails;
+	}
+
+	public static GermplasmListData createGermplasmListData(int id) {
+
+		GermplasmListData listData = new GermplasmListData();
+
+		listData.setId(id);
+		listData.setEntryId(id);
+		listData.setDesignation("Germplasm" + id);
+		listData.setGid(id);
+		listData.setInventoryInfo(createInventoryInfo(id));
+		listData.setStatus(0);
+		listData.setSeedSource("Seed Source for gid " + id);
+
+		return listData;
+
 	}
 
 	public static ListDataInventory createInventoryInfo(int listDataId) {

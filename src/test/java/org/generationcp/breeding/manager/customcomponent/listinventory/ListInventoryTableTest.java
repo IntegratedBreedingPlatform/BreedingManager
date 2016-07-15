@@ -145,6 +145,31 @@ public class ListInventoryTableTest {
 	}
 
 	@Test
+	public void testDisplayInventoryDetailsWithEmptyInventoryDetails() {
+
+		this.listInventoryTable.displayInventoryDetails(new ArrayList<GermplasmListData>());
+
+		Assert.assertTrue("The table should be empty because there inventory detail list is empty.",this.listInventoryTable.getTable().size() == 0);
+
+	}
+
+	@Test
+	public void testDisplayInventoryDetailsInventoryDetailHasNoLotsAssociated() {
+
+		// Create an inventory detail with no associated lot
+		GermplasmListData inventoryDetail = ListInventoryDataInitializer.createGermplasmListData(1);
+		inventoryDetail.getInventoryInfo().setLotRows(new ArrayList<ListEntryLotDetails>());
+
+		List<GermplasmListData> inventoryDetails = new ArrayList<>();
+		inventoryDetails.add(inventoryDetail);
+
+		this.listInventoryTable.displayInventoryDetails(inventoryDetails);
+
+		Assert.assertTrue("The table should be empty because the inventory detail has no lots.",this.listInventoryTable.getTable().size() == 0);
+
+	}
+
+	@Test
 	public void testDisplayInventoryDetails() {
 		final List<GermplasmListData> inventoryDetails = ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails();
 		this.listInventoryTable.displayInventoryDetails(inventoryDetails);
