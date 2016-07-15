@@ -64,6 +64,8 @@ public class ProcessImportedGermplasmActionTest {
 	final static Integer IBDB_USER_ID = 1;
 	final static Integer DATE_INT_VALUE = 20151105;
 
+	private ImportedGermplasmListDataInitializer importedGermplasmListInitializer;
+
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
@@ -80,6 +82,9 @@ public class ProcessImportedGermplasmActionTest {
 		final ComboBox methodComboBox = new ComboBox();
 		methodComboBox.addItem("1");
 		Mockito.doReturn(methodComboBox).when(this.germplasmFieldsComponent).getBreedingMethodComboBox();
+
+		// initializer
+		this.importedGermplasmListInitializer = new ImportedGermplasmListDataInitializer();
 	}
 
 	/**
@@ -274,7 +279,7 @@ public class ProcessImportedGermplasmActionTest {
 	@Test
 	public void testUpdateGidWhenGermplasmIdIsExisting() {
 		final int gid = 100;
-		final ImportedGermplasm importedGermplasm = ImportedGermplasmListDataInitializer.createImportedGermplasm(gid, true);
+		final ImportedGermplasm importedGermplasm = this.importedGermplasmListInitializer.createImportedGermplasm(gid, true);
 		importedGermplasm.setDesig("Name" + gid);
 
 		final int germplasmMatchesCount = 1;
@@ -300,7 +305,7 @@ public class ProcessImportedGermplasmActionTest {
 	@Test
 	public void testUpdateGidWhenNoGermplasmIdIsExisting() {
 		final int gid = 0;
-		final ImportedGermplasm importedGermplasm = ImportedGermplasmListDataInitializer.createImportedGermplasm(gid, true);
+		final ImportedGermplasm importedGermplasm = this.importedGermplasmListInitializer.createImportedGermplasm(gid, true);
 		importedGermplasm.setDesig("Name" + gid);
 
 		final int germplasmMatchesCount = 0;

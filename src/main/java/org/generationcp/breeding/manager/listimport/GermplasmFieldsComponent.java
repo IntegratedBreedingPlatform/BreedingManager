@@ -125,17 +125,17 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 		this.methodComponent.setCaption(this.messageSource.getMessage(Message.GERMPLASM_BREEDING_METHOD_LABEL) + ":");
 
 		if (this.parentWindow != null) {
-			this.locationComponent = new BreedingLocationField(this, this.parentWindow, 200);
+			this.locationComponent = new BreedingLocationField(this, this.parentWindow, 200, true);
 		} else {
-			this.locationComponent = new BreedingLocationField(this, 200);
+			this.locationComponent = new BreedingLocationField(this, 200, true);
 		}
 		this.locationComponent.setCaption(this.messageSource.getMessage(Message.GERMPLASM_LOCATION_LABEL) + ":");
 
 		if (this.parentWindow != null) {
 			this.seedLocationComponent =
-					new BreedingLocationField(this, this.parentWindow, 200, GermplasmFieldsComponent.STORAGE_LOCATION_TYPEID);
+					new BreedingLocationField(this, this.parentWindow, 200, GermplasmFieldsComponent.STORAGE_LOCATION_TYPEID, false);
 		} else {
-			this.seedLocationComponent = new BreedingLocationField(this, 200, GermplasmFieldsComponent.STORAGE_LOCATION_TYPEID);
+			this.seedLocationComponent = new BreedingLocationField(this, 200, GermplasmFieldsComponent.STORAGE_LOCATION_TYPEID, false);
 		}
 		this.seedLocationComponent.setCaption(this.messageSource.getMessage(Message.SEED_STORAGE_LOCATION_LABEL) + ":");
 

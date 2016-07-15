@@ -95,7 +95,9 @@ public class DropHandlerMethodsTest {
 	private ListComponent listComponent;
 
 	private final GermplasmListNewColumnsInfo germplasmListNewColumnsInfo = new GermplasmListNewColumnsInfo(1);
-
+	
+	private GermplasmListTestDataInitializer germplasmListTestDataInitializer;
+	
 	@InjectMocks
 	private DropHandlerMethods dropHandlerMethods;
 
@@ -106,6 +108,7 @@ public class DropHandlerMethodsTest {
 	@Before
 	public void beforeEachTest() {
 		MockitoAnnotations.initMocks(this);
+		germplasmListTestDataInitializer = new GermplasmListTestDataInitializer();
 
 		this.mockContainer = Mockito.mock(Container.class);
 		Mockito.when(this.targetTable.getContainerDataSource()).thenReturn(this.mockContainer);
@@ -237,7 +240,7 @@ public class DropHandlerMethodsTest {
 		this.dropHandlerMethods.setCurrentColumnsInfo(this.germplasmListNewColumnsInfo);
 
 		final GermplasmList testList =
-				GermplasmListTestDataInitializer.createGermplasmListWithListDataAndInventoryInfo(GERMPLASM_LIST_ID, NO_OF_ENTRIES);
+				this.germplasmListTestDataInitializer.createGermplasmListWithListDataAndInventoryInfo(GERMPLASM_LIST_ID, NO_OF_ENTRIES);
 
 		// retrieve the first list entry from list data with inventory information
 		final GermplasmListData listData = testList.getListData().get(0);

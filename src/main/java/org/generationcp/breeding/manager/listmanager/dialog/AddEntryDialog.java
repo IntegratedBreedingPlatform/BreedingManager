@@ -355,7 +355,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		this.germplasmDateField = new ListDateField("", false);
 		this.germplasmDateField.getListDtDateField().setValue(DateUtil.getCurrentDate());
 
-		this.breedingLocationField = new BreedingLocationField(this, this.parentWindow);
+		this.breedingLocationField = new BreedingLocationField(this, this.parentWindow, true);
 
 		this.nameTypeLabel = new Label("Name Type: ");
 		this.nameTypeLabel.addStyleName("bold");
