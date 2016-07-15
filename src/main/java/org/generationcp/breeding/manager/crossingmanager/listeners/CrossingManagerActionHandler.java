@@ -34,13 +34,13 @@ public class CrossingManagerActionHandler implements Handler {
 
 	private final Object source;
 
-	public CrossingManagerActionHandler(Object source) {
+	public CrossingManagerActionHandler(final Object source) {
 		super();
 		this.source = source;
 	}
 
 	@Override
-	public Action[] getActions(Object target, Object sender) {
+	public Action[] getActions(final Object target, final Object sender) {
 		if (this.source instanceof MakeCrossesParentsComponent) {
 			return CrossingManagerActionHandler.SELECT_LIST_ENTRIES;
 
@@ -74,26 +74,26 @@ public class CrossingManagerActionHandler implements Handler {
 	}
 
 	// Select All rows in the table
-	private void selectAllAction(Table table) {
-		Collection<?> itemIds = table.getItemIds();
+	private void selectAllAction(final Table table) {
+		final Collection<?> itemIds = table.getItemIds();
 		if (itemIds != null && !itemIds.isEmpty()) {
 			table.setValue(itemIds);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public void removeSelectedEntriesAction(Table table) {
+	public void removeSelectedEntriesAction(final Table table) {
 
-		List<Object> itemsBeforeDelete = new ArrayList<Object>();
+		final List<Object> itemsBeforeDelete = new ArrayList<Object>();
 		itemsBeforeDelete.addAll(table.getItemIds());
 
-		List<Object> selectedItemIds = new ArrayList<Object>();
+		final List<Object> selectedItemIds = new ArrayList<Object>();
 		selectedItemIds.addAll((Collection<? extends Integer>) table.getValue());
 
 		if (table.getItemIds().size() == selectedItemIds.size()) {
 			table.getContainerDataSource().removeAllItems();
 		} else {
-			for (Object selectedItemId : selectedItemIds) {
+			for (final Object selectedItemId : selectedItemIds) {
 				table.getContainerDataSource().removeItem(selectedItemId);
 			}
 		}
@@ -101,7 +101,7 @@ public class CrossingManagerActionHandler implements Handler {
 		// reset selection
 		table.setValue(null);
 
-		List<Object> itemsLeftAfterDelete = new ArrayList<Object>();
+		final List<Object> itemsLeftAfterDelete = new ArrayList<Object>();
 		itemsLeftAfterDelete.addAll(table.getItemIds());
 
 		// If an item has been deleted, enable save option from action buttons

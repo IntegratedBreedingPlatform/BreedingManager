@@ -22,6 +22,7 @@ import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
@@ -31,9 +32,9 @@ import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.VaadinComponentsUtil;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
@@ -54,6 +55,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.PopupView;
 import com.vaadin.ui.Select;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
@@ -61,19 +63,21 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 @Configurable
-public class ListManagerCopyToNewListDialog extends VerticalLayout implements InitializingBean, InternationalizableComponent,
+public class ListManagerCopyToListDialog extends VerticalLayout implements InitializingBean, InternationalizableComponent,
 		Property.ValueChangeListener, AbstractSelect.NewItemHandler, BreedingManagerLayout {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ListManagerCopyToNewListDialog.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ListManagerCopyToListDialog.class);
 	private static final long serialVersionUID = 1L;
 
-	private static final String FOLDER_TYPE = "FOLDER";
+	static final String FOLDER_TYPE = "FOLDER";
 
 	public static final Object SAVE_BUTTON_ID = "Save New List Entries";
 	public static final String CANCEL_BUTTON_ID = "Cancel Copying New List Entries";
 	public static final String DATE_AS_NUMBER_FORMAT = "yyyyMMdd";
 
 	private Label labelListName;
+	private Label labelListNameDescription;
+	private PopupView labelListNameDescriptionPopUpView;
 	private Label labelDescription;
 	private ComboBox comboBoxListName;
 	private TextField txtDescription;
@@ -84,9 +88,8 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 	private Button btnSave;
 	private Button btnCancel;
 	private Select selectType;
-	private final Table listEntriesTable;
+	private Table listEntriesTable;
 	private final String listName;
-	private String designationOfListEntriesCopied;
 	private int newListid;
 	private String listNameValue;
 	private final int ibdbUserId;
@@ -95,7 +98,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 	private boolean lastAdded = false;
 	private boolean existingListSelected = false;
 
-	private final Set<String> localFolderNames = new HashSet<String>();
+	private Set<String> localFolderNames = new HashSet<String>();
 
 	@Autowired
 	private GermplasmListManager germplasmListManager;
@@ -106,10 +109,10 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 	@Resource
 	private ContextUtil contextUtil;
 
-	private final ListManagerMain listManagerMain;
+	private ListManagerMain listManagerMain;
 
-	public ListManagerCopyToNewListDialog(Window mainWindow, Window dialogWindow, String listName, Table listEntriesTable, int ibdbUserId,
-			ListManagerMain listManagerMain) {
+	public ListManagerCopyToListDialog(final Window mainWindow, final Window dialogWindow, final String listName,
+			final Table listEntriesTable, final int ibdbUserId, final ListManagerMain listManagerMain) {
 		this.dialogWindow = dialogWindow;
 		this.mainWindow = mainWindow;
 		this.listEntriesTable = listEntriesTable;
@@ -130,7 +133,13 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 	public void instantiateComponents() {
 		this.labelListName = new Label(this.messageSource.getMessage(Message.LIST_NAME_LABEL));
 		this.labelListName.addStyleName("bold");
-
+		
+		this.labelListNameDescription = new Label(this.messageSource.getMessage(Message.LIST_NAME_LABEL_DESCRIPTION));
+		this.labelListNameDescription.setWidth("250px");
+		
+		this.labelListNameDescriptionPopUpView = new PopupView("?", this.labelListNameDescription);
+		this.labelListNameDescriptionPopUpView.addStyleName(AppConstants.CssStyles.POPUP_VIEW);
+		
 		this.labelDescription = new Label(this.messageSource.getMessage(Message.DESCRIPTION_LABEL));
 		this.labelDescription.addStyleName("bold");
 
@@ -155,13 +164,13 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 
 		this.btnSave = new Button(this.messageSource.getMessage(Message.SAVE_LABEL));
 		this.btnSave.setWidth("80px");
-		this.btnSave.setData(ListManagerCopyToNewListDialog.SAVE_BUTTON_ID);
+		this.btnSave.setData(ListManagerCopyToListDialog.SAVE_BUTTON_ID);
 		this.btnSave.setDescription("Save New Germplasm List ");
 		this.btnSave.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 
 		this.btnCancel = new Button(this.messageSource.getMessage(Message.CANCEL));
 		this.btnCancel.setWidth("80px");
-		this.btnCancel.setData(ListManagerCopyToNewListDialog.CANCEL_BUTTON_ID);
+		this.btnCancel.setData(ListManagerCopyToListDialog.CANCEL_BUTTON_ID);
 		this.btnCancel.setDescription("Cancel Saving New Germplasm List");
 		this.btnCancel.setClickShortcut(ShortcutAction.KeyCode.ESCAPE);
 	}
@@ -183,17 +192,22 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 	public void layoutComponents() {
 		this.setSpacing(true);
 
-		HorizontalLayout hButton = new HorizontalLayout();
+		final HorizontalLayout hButton = new HorizontalLayout();
 		hButton.setSpacing(true);
 		hButton.addComponent(this.btnCancel);
 		hButton.addComponent(this.btnSave);
 
-		GridLayout gridLayout = new GridLayout();
+		final GridLayout gridLayout = new GridLayout();
 		gridLayout.setRows(3);
 		gridLayout.setColumns(2);
 		gridLayout.setSpacing(true);
 		gridLayout.addComponent(this.labelListName, 0, 0);
-		gridLayout.addComponent(this.comboBoxListName, 1, 0);
+		
+		HorizontalLayout comboBoxVerticalLayout = new HorizontalLayout();
+		comboBoxVerticalLayout.addComponent(this.comboBoxListName);
+		comboBoxVerticalLayout.addComponent(this.labelListNameDescriptionPopUpView);
+		gridLayout.addComponent(comboBoxVerticalLayout, 1, 0);
+		
 		gridLayout.addComponent(this.labelDescription, 0, 1);
 		gridLayout.addComponent(this.txtDescription, 1, 1);
 		gridLayout.addComponent(this.labelType, 0, 2);
@@ -204,24 +218,9 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 		this.setComponentAlignment(hButton, Alignment.MIDDLE_CENTER);
 	}
 
-	private void populateSelectType(Select selectType) {
-		List<UserDefinedField> listTypes;
-		try {
-			listTypes = this.germplasmListManager.getGermplasmListTypes();
-
-			for (UserDefinedField listType : listTypes) {
-				String typeCode = listType.getFcode();
-				selectType.addItem(typeCode);
-				selectType.setItemCaption(typeCode, listType.getFname());
-				// set "GERMPLASMLISTS" as the default value
-				if ("LST".equals(typeCode)) {
-					selectType.setValue(typeCode);
-				}
-			}
-
-		} catch (MiddlewareQueryException e) {
-			ListManagerCopyToNewListDialog.LOG.error(e.getMessage(), e);
-		}
+	void populateSelectType(final Select selectType) {
+		final List<UserDefinedField> listTypes = this.germplasmListManager.getGermplasmListTypes();
+		VaadinComponentsUtil.populateSelectType(selectType, listTypes);
 	}
 
 	@Override
@@ -229,74 +228,47 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 		// not needed to override for now
 	}
 
-	private void populateComboBoxListName() {
-		try {
-			this.germplasmList =
-					this.germplasmListManager.getAllGermplasmLists(0, (int) this.germplasmListManager.countAllGermplasmLists());
-			this.mapExistingList = new HashMap<String, Integer>();
-			this.comboBoxListName.addItem("");
-			for (GermplasmList gList : this.germplasmList) {
-				if (!gList.getName().equals(this.listName)) {
-					if (!gList.getType().equals(ListManagerCopyToNewListDialog.FOLDER_TYPE)) {
-						this.comboBoxListName.addItem(gList.getName());
-						this.mapExistingList.put(gList.getName(), new Integer(gList.getId()));
-					} else {
-						this.localFolderNames.add(gList.getName());
-					}
-				}
+	void populateComboBoxListName() {
+		this.germplasmList = this.germplasmListManager.getAllGermplasmListsByProgramUUID(this.contextUtil.getCurrentProgramUUID());
+		this.mapExistingList = new HashMap<String, Integer>();
+		this.comboBoxListName.addItem("");
+		for (final GermplasmList gList : this.germplasmList) {
+			if (!gList.getType().equals(ListManagerCopyToListDialog.FOLDER_TYPE)) {
+				this.comboBoxListName.addItem(gList.getName());
+				this.mapExistingList.put(gList.getName(), new Integer(gList.getId()));
+			} else {
+				this.localFolderNames.add(gList.getName());
 			}
-			this.comboBoxListName.select("");
-
-		} catch (MiddlewareQueryException e) {
-			ListManagerCopyToNewListDialog.LOG.error(e.getMessage(), e);
 		}
+		this.comboBoxListName.select("");
+
 	}
 
 	public void saveGermplasmListButtonClickAction() {
-
 		this.listNameValue = this.comboBoxListName.getValue().toString();
-		String description = this.txtDescription.getValue().toString();
+		final String description = this.txtDescription.getValue().toString();
 
 		Boolean proceedWithSave = true;
 
-		try {
-			Long matchingNamesCount = this.germplasmListManager.countGermplasmListByName(this.listNameValue, Operation.EQUAL);
-			String existingListMsg = "There is already an existing germplasm list with that name";
-			if (matchingNamesCount > 0) {
-				MessageNotifier.showRequiredFieldError(this.getWindow(), existingListMsg);
-				proceedWithSave = false;
-			}
-
-			// if list name from copy source is equal to specified value in combo box
-			if (!"".equals(this.listNameValue) && this.listName.equals(this.listNameValue)) {
-				MessageNotifier.showRequiredFieldError(this.getWindow(), existingListMsg);
-				proceedWithSave = false;
-			}
-
-			if (this.localFolderNames.contains(this.listNameValue)) {
-				MessageNotifier.showRequiredFieldError(this.getWindow(),
-						"There is already an existing germplasm list folder with that name");
-				proceedWithSave = false;
-			}
-		} catch (MiddlewareQueryException e) {
-			ListManagerCopyToNewListDialog.LOG.error("Error in counting germplasm list by name.", e);
-			ListManagerCopyToNewListDialog.LOG.error("\n" + e.getStackTrace());
+		if (this.localFolderNames.contains(this.listNameValue)) {
+			MessageNotifier.showRequiredFieldError(this.getWindow(),
+					this.messageSource.getMessage(Message.ERROR_EXISTING_GERMPLASM_LIST_FOLDER_NAME));
+			proceedWithSave = false;
 		}
 
 		if (proceedWithSave) {
 
 			if (this.listNameValue.trim().length() == 0) {
-				MessageNotifier.showRequiredFieldError(this.getWindow(), "Please specify a List Name before saving");
+				MessageNotifier.showRequiredFieldError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_SPECIFY_LIST_NAME));
 			} else if (this.listNameValue.trim().length() > 50) {
-				MessageNotifier.showRequiredFieldError(this.getWindow(),
-						"Listname input is too large limit the name only up to 50 characters");
+				MessageNotifier.showRequiredFieldError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_LIST_NAME_TOO_LONG));
 				this.comboBoxListName.setValue("");
 			} else {
 
 				if (!this.existingListSelected) {
-					GermplasmList parent = null;
-					int statusListName = 1;
-					GermplasmList listNameData = new GermplasmList(null, this.listNameValue, DateUtil.getCurrentDateAsLongValue(),
+					final GermplasmList parent = null;
+					final int statusListName = 1;
+					final GermplasmList listNameData = new GermplasmList(null, this.listNameValue, DateUtil.getCurrentDateAsLongValue(),
 							this.selectType.getValue().toString(), this.ibdbUserId, description, parent, statusListName);
 
 					try {
@@ -305,8 +277,8 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 						this.addGermplasm();
 						this.mainWindow.removeWindow(this.dialogWindow);
 
-					} catch (MiddlewareQueryException e) {
-						ListManagerCopyToNewListDialog.LOG.error(e.getMessage(), e);
+					} catch (final MiddlewareQueryException e) {
+						ListManagerCopyToListDialog.LOG.error(e.getMessage(), e);
 						MessageNotifier.showError(this.getWindow().getParent().getWindow(),
 								this.messageSource.getMessage(Message.UNSUCCESSFUL),
 								this.messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_NEW_LIST_FAILED));
@@ -314,9 +286,10 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 				} else {
 
 					try {
-						String listId = String.valueOf(this.mapExistingList.get(this.comboBoxListName.getValue()));
-						GermplasmList germList = this.germplasmListManager.getGermplasmListById(Integer.valueOf(listId));
-						int countOfExistingList = (int) this.germplasmListManager.countGermplasmListDataByListId(Integer.valueOf(listId));
+						final String listId = String.valueOf(this.mapExistingList.get(this.comboBoxListName.getValue()));
+						final GermplasmList germList = this.germplasmListManager.getGermplasmListById(Integer.valueOf(listId));
+						final int countOfExistingList =
+								(int) this.germplasmListManager.countGermplasmListDataByListId(Integer.valueOf(listId));
 						this.addGermplasmListData(germList, countOfExistingList + 1);
 						this.mainWindow.removeWindow(this.dialogWindow);
 
@@ -326,8 +299,8 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 						this.listManagerMain.getListSelectionComponent().getListTreeComponent()
 								.treeItemClickAction(Integer.valueOf(listId));
 
-					} catch (MiddlewareQueryException e) {
-						ListManagerCopyToNewListDialog.LOG.error(e.getMessage(), e);
+					} catch (final MiddlewareQueryException e) {
+						ListManagerCopyToListDialog.LOG.error(e.getMessage(), e);
 						MessageNotifier.showError(this.getWindow().getParent().getWindow(),
 								this.messageSource.getMessage(Message.UNSUCCESSFUL),
 								this.messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_EXISTING_LIST_FAILED));
@@ -339,54 +312,52 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 
 	private void addGermplasm() {
 		try {
-			GermplasmList germList = this.germplasmListManager.getGermplasmListById(this.newListid);
+			final GermplasmList germList = this.germplasmListManager.getGermplasmListById(this.newListid);
 			this.addGermplasmListData(germList, 1);
 			this.listManagerMain.getListSelectionComponent().getListTreeComponent().createTree();
 			this.listManagerMain.getListSelectionComponent().getListTreeComponent().expandNode(ListSelectorComponent.LISTS);
 			this.listManagerMain.getListSelectionComponent().getListTreeComponent().treeItemClickAction(this.newListid);
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			this.germplasmListManager.deleteGermplasmListByListId(this.newListid);
-			ListManagerCopyToNewListDialog.LOG.error(e.getMessage(), e);
+			ListManagerCopyToListDialog.LOG.error(e.getMessage(), e);
 			MessageNotifier.showError(this.getWindow().getParent().getWindow(), "Error with copying list entries.",
 					"Copying of entries to a new list failed. " + this.messageSource.getMessage(Message.ERROR_REPORT_TO));
 		}
 	}
 
-	private void addGermplasmListData(GermplasmList germList, int entryid) {
-		int status = 0;
-		int localRecordId = 0;
+	private void addGermplasmListData(final GermplasmList germList, final int entryid) {
+		final int status = 0;
+		final int localRecordId = 0;
 		int germplasmListDataEntryId = entryid;
-		this.designationOfListEntriesCopied = "";
-		Collection<?> selectedIds = (Collection<?>) this.listEntriesTable.getValue();
+		final Collection<?> selectedIds = (Collection<?>) this.listEntriesTable.getValue();
 		for (final Object itemId : selectedIds) {
-			Property parentageProperty = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.PARENTAGE.getName());
-			Property entryIdProperty = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.ENTRY_ID.getName());
-			Property gidProperty = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.GID.getName());
-			Property designationProperty = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.DESIGNATION.getName());
-			Property seedSourceProperty = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.SEED_SOURCE.getName());
+			final Property parentageProperty = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.PARENTAGE.getName());
+			final Property entryIdProperty = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.ENTRY_ID.getName());
+			final Property gidProperty = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.GID.getName());
+			final Property designationProperty = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.DESIGNATION.getName());
+			final Property seedSourceProperty = this.listEntriesTable.getItem(itemId).getItemProperty(ColumnLabels.SEED_SOURCE.getName());
 
-			Button gidLinkButton = (Button) gidProperty.getValue();
-			int gid = Integer.valueOf(gidLinkButton.getCaption().toString());
-			String entryIdOfList = String.valueOf(entryIdProperty.getValue().toString());
-			String seedSource = String.valueOf(seedSourceProperty.getValue().toString());
-			Button designationLinkButton = (Button) designationProperty.getValue();
-			String designation = String.valueOf(designationLinkButton.getCaption().toString());
-			this.designationOfListEntriesCopied += designation + ",";
-			String groupName = String.valueOf(parentageProperty.getValue().toString());
+			final Button gidLinkButton = (Button) gidProperty.getValue();
+			final int gid = Integer.valueOf(gidLinkButton.getCaption().toString());
+			final String entryIdOfList = String.valueOf(entryIdProperty.getValue().toString());
+			final String seedSource = String.valueOf(seedSourceProperty.getValue().toString());
+			final Button designationLinkButton = (Button) designationProperty.getValue();
+			final String designation = String.valueOf(designationLinkButton.getCaption().toString());
+			final String groupName = String.valueOf(parentageProperty.getValue().toString());
 
-			GermplasmListData germplasmListData = new GermplasmListData(null, germList, gid, germplasmListDataEntryId, entryIdOfList,
+			final GermplasmListData germplasmListData = new GermplasmListData(null, germList, gid, germplasmListDataEntryId, entryIdOfList,
 					seedSource, designation, groupName, status, localRecordId);
 			this.germplasmListManager.addGermplasmListData(germplasmListData);
 
 			germplasmListDataEntryId++;
 		}
-
-		this.designationOfListEntriesCopied =
-				this.designationOfListEntriesCopied.substring(0, this.designationOfListEntriesCopied.length() - 1);
-
-		MessageNotifier.showMessage(this.getWindow().getParent().getWindow(), this.messageSource.getMessage(Message.SUCCESS),
-				this.messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_NEW_LIST_SUCCESS), 3000);
-
+		if(!this.existingListSelected) {
+			MessageNotifier.showMessage(this.getWindow().getParent().getWindow(), this.messageSource.getMessage(Message.SUCCESS),
+					this.messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_NEW_LIST_SUCCESS), 3000);
+		} else {
+			MessageNotifier.showMessage(this.getWindow().getParent().getWindow(), this.messageSource.getMessage(Message.SUCCESS),
+					this.messageSource.getMessage(Message.SAVE_GERMPLASMLIST_DATA_COPY_TO_EXISTING_LIST_SUCCESS, this.listNameValue), 3000);
+		}
 		this.logCopyToNewListEntriesToWorkbenchProjectActivity();
 	}
 
@@ -394,8 +365,8 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 		try {
 			this.contextUtil.logProgramActivity("Copied entries into a new list.",
 					"Copied entries to list " + this.newListid + " - " + this.listNameValue);
-		} catch (MiddlewareQueryException e) {
-			ListManagerCopyToNewListDialog.LOG.error("Error with logging workbench activity.", e);
+		} catch (final MiddlewareQueryException e) {
+			ListManagerCopyToListDialog.LOG.error("Error with logging workbench activity.", e);
 		}
 	}
 
@@ -404,7 +375,7 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 	}
 
 	@Override
-	public void addNewItem(String newItemCaption) {
+	public void addNewItem(final String newItemCaption) {
 		if (!this.comboBoxListName.containsId(newItemCaption)) {
 			if (this.comboBoxListName.containsId("")) {
 				this.comboBoxListName.removeItem("");
@@ -416,12 +387,12 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 	}
 
 	@Override
-	public void valueChange(ValueChangeEvent event) {
+	public void valueChange(final ValueChangeEvent event) {
 		if (!this.lastAdded) {
 			try {
-				String listNameId = String.valueOf(this.mapExistingList.get(this.comboBoxListName.getValue()));
+				final String listNameId = String.valueOf(this.mapExistingList.get(this.comboBoxListName.getValue()));
 				if (!"null".equals(listNameId)) {
-					GermplasmList gList = this.germplasmListManager.getGermplasmListById(Integer.valueOf(listNameId));
+					final GermplasmList gList = this.germplasmListManager.getGermplasmListById(Integer.valueOf(listNameId));
 					this.txtDescription.setValue(gList.getDescription());
 					this.txtDescription.setEnabled(false);
 					this.selectType.select(gList.getType());
@@ -433,9 +404,8 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 					this.selectType.select("LST");
 					this.selectType.setEnabled(true);
 				}
-			} catch (MiddlewareQueryException e) {
-				ListManagerCopyToNewListDialog.LOG.error("Error in retrieving germplasm list.", e);
-				ListManagerCopyToNewListDialog.LOG.error("\n" + e.getStackTrace());
+			} catch (final MiddlewareQueryException e) {
+				ListManagerCopyToListDialog.LOG.error("Error in retrieving germplasm list.", e);
 				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
 						this.messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LIST_BY_ID));
 			}
@@ -449,5 +419,54 @@ public class ListManagerCopyToNewListDialog extends VerticalLayout implements In
 			this.selectType.setEnabled(true);
 		}
 		this.lastAdded = false;
+	}
+
+	/* For Test purposes */
+	void setGermplasmListManager(final GermplasmListManager germplasmListManager) {
+		this.germplasmListManager = germplasmListManager;
+	}
+
+	void setContextUtil(final ContextUtil contextUtil) {
+		this.contextUtil = contextUtil;
+	}
+
+	void setComboListName(final ComboBox comboBox) {
+		this.comboBoxListName = comboBox;
+	}
+
+	void setTxtDescription(final TextField txtDescription) {
+		this.txtDescription = txtDescription;
+	}
+
+	void setLocalFolderNames(final Set<String> localFolderNames) {
+		this.localFolderNames = localFolderNames;
+	}
+
+	void setSelectType(final Select selectType) {
+		this.selectType = selectType;
+	}
+
+	Set<String> getLocalFolderNames() {
+		return this.localFolderNames;
+	}
+
+	void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	void setExistingListSelected(final boolean existingListSelected) {
+		this.existingListSelected = existingListSelected;
+	}
+
+	void setListEntriesTable(final Table table) {
+		this.listEntriesTable = table;
+	}
+
+	void setListManagerMain(final ListManagerMain listManagerMain) {
+		this.listManagerMain = listManagerMain;
+	}
+
+	void setMapExistingList(final Map<String, Integer> mapExistingList) {
+		this.mapExistingList = mapExistingList;
 	}
 }
