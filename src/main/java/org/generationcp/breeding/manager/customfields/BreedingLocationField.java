@@ -330,16 +330,13 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 
 	}
 
-	/*
-	 * Fill with all locations
-	 */
 	private void populateLocations(final String programUUID) {
 
 		try {
-			if (this.locationType > 0) {
-				this.locations = this.locationDataManager.getLocationsByType(this.locationType, programUUID);
-			} else if (isSelectAllLocations()) {
+			if (isSelectAllLocations()) {
 				this.locations = this.locationDataManager.getLocationsByUniqueID(programUUID);
+			} else if (this.locationType > 0) {
+				this.locations = this.locationDataManager.getLocationsByType(this.locationType, programUUID);
 			} else {
 				this.locations = this.locationDataManager.getAllSeedingLocations(programUUID);
 			}
