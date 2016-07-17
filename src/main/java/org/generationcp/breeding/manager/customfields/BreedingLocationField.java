@@ -49,6 +49,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 	private static final Logger LOG = LoggerFactory.getLogger(BreedingLocationField.class);
 
 	static final String DEFAULT_LOCATION = "Unknown";
+	private static final int STORAGE_LOCATION_TYPEID = 1500;
 
 	/**
 	 * CONSTRUCTOR VARIABLES
@@ -171,7 +172,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 
 	public boolean initPopulateFavLocations(final String programUUID) {
 		boolean hasFavorite = false;
-		if (BreedingManagerUtil.hasFavoriteLocation(this.germplasmDataManager, 0, programUUID)) {
+		if (BreedingManagerUtil.hasFavoriteLocation(this.germplasmDataManager, this.locationDataManager, STORAGE_LOCATION_TYPEID, programUUID)) {
 			this.showFavoritesCheckBox.setValue(true);
 			this.populateHarvestLocation(true, this.programUniqueId);
 			hasFavorite = true;
@@ -311,8 +312,8 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 				int ltype = 0;
 
 				if (!isSelectAllLocations()) {
-					// get favorites + storage locations (ltype = 1500)
-					ltype = 1500;
+					// get storage locations that are also favorites
+					ltype = STORAGE_LOCATION_TYPEID;
 				}
 
 				BreedingManagerUtil.populateWithFavoriteLocations(this.workbenchDataManager, this.germplasmDataManager,

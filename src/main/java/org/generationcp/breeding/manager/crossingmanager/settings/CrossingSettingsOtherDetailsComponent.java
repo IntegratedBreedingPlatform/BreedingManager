@@ -170,7 +170,7 @@ InitializingBean {
 
 	public boolean initPopulateFavLocation(String programUUID) {
 		boolean hasFavorite = false;
-		if (BreedingManagerUtil.hasFavoriteLocation(this.germplasmDataManager, 0, programUUID)) {
+		if (BreedingManagerUtil.hasFavoriteLocation(this.germplasmDataManager, this.locationDataManager, 0, programUUID)) {
 			this.showFavouriteLocations.setValue(true);
 			this.populateHarvestLocation(true, programUUID);
 			hasFavorite = true;
