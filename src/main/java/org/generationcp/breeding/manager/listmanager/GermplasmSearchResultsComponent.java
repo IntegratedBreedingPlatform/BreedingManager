@@ -5,6 +5,26 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
+import com.vaadin.data.Container;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.event.Action;
+import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.TableDragMode;
+import com.vaadin.ui.VerticalLayout;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.containers.GermplasmQueryFactory;
@@ -29,28 +49,6 @@ import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryDefinition;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
-
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
-
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.util.IndexedContainer;
-import com.vaadin.event.Action;
-import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.TableDragMode;
-import com.vaadin.ui.VerticalLayout;
 
 @Configurable
 public class GermplasmSearchResultsComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
@@ -109,13 +107,13 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		this.definition.addProperty(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID, CheckBox.class, null, false, false);
 		this.definition.addProperty(GermplasmSearchResultsComponent.NAMES, Button.class, null, false, false);
 		this.definition.addProperty(ColumnLabels.PARENTAGE.getName(), String.class, null, false, false);
-		this.definition.addProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), String.class, null, false, false);
+		this.definition.addProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), String.class, null, false, true);
 		this.definition.addProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null, false, true);
 		this.definition.addProperty(ColumnLabels.STOCKID.getName(), Label.class, null, false, true);
-		this.definition.addProperty(ColumnLabels.GID.getName(), Button.class, null, false, false);
+		this.definition.addProperty(ColumnLabels.GID.getName(), Button.class, null, false, true);
 		this.definition.addProperty(ColumnLabels.GROUP_ID.getName(), String.class, null, false, true);
-		this.definition.addProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class, null, false, false);
-		this.definition.addProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, null, false, false);
+		this.definition.addProperty(ColumnLabels.GERMPLASM_LOCATION.getName(), String.class, null, false, true);
+		this.definition.addProperty(ColumnLabels.BREEDING_METHOD_NAME.getName(), String.class, null, false, true);
 		this.definition.addProperty(ColumnLabels.GID.getName() + "_REF", Integer.class, null, false, false);
 
 	}
