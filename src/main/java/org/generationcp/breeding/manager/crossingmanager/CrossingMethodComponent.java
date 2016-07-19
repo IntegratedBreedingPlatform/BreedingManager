@@ -2,7 +2,6 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +42,7 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
-	
+
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
 
@@ -59,7 +58,7 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 	private final CrossingManagerMakeCrossesComponent makeCrossesMain;
 	private MakeCrossesParentsComponent parentsComponent;
 
-	public CrossingMethodComponent(CrossingManagerMakeCrossesComponent makeCrossesMain) {
+	public CrossingMethodComponent(final CrossingManagerMakeCrossesComponent makeCrossesMain) {
 		super();
 		this.makeCrossesMain = makeCrossesMain;
 	}
@@ -121,7 +120,7 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 	public void layoutComponents() {
 		this.setSpacing(true);
 
-		VerticalLayout layoutCrossOption = new VerticalLayout();
+		final VerticalLayout layoutCrossOption = new VerticalLayout();
 		layoutCrossOption.setWidth("460px");
 		layoutCrossOption.setSpacing(true);
 		layoutCrossOption.setMargin(true);
@@ -136,7 +135,7 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 		this.crossingMethodPanel.addStyleName("section_panel_layout");
 
 		// provides this slot for an icon
-		HeaderLabelLayout crossingMethodLayout = new HeaderLabelLayout(null, this.crossingMethodLabel);
+		final HeaderLabelLayout crossingMethodLayout = new HeaderLabelLayout(null, this.crossingMethodLabel);
 		this.addComponent(crossingMethodLayout);
 		this.addComponent(this.crossingMethodPanel);
 	}
@@ -144,21 +143,21 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 	public void makeCrossButtonAction() {
 		// TODO temporary fix, will have a new fix approach soon
 		if (this.makeCrossesMain.getModeView().equals(ModeView.INVENTORY_VIEW)) {
-			String message = "Please switch to list view first before making crosses.";
+			final String message = "Please switch to list view first before making crosses.";
 			MessageNotifier.showError(this.getWindow(), "Warning!", message);
 		} else {
-			CrossType type = (CrossType) this.crossingMethodComboBox.getValue();
+			final CrossType type = (CrossType) this.crossingMethodComboBox.getValue();
 			if (CrossType.PLEASE_CHOOSE.equals(type)) {
 				MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
 						this.messageSource.getMessage(Message.PLEASE_CHOOSE_CROSSING_METHOD));
 			} else {
 				this.parentsComponent = this.makeCrossesMain.getParentsComponent();
 
-				Table femaleParents = this.parentsComponent.getFemaleTable();
-				Table maleParents = this.parentsComponent.getMaleTable();
+				final Table femaleParents = this.parentsComponent.getFemaleTable();
+				final Table maleParents = this.parentsComponent.getMaleTable();
 
-				List<GermplasmListEntry> femaleList = this.parentsComponent.getCorrectSortedValue(femaleParents);
-				List<GermplasmListEntry> maleList = this.parentsComponent.getCorrectSortedValue(maleParents);
+				final List<GermplasmListEntry> femaleList = this.parentsComponent.getCorrectSortedValue(femaleParents);
+				final List<GermplasmListEntry> maleList = this.parentsComponent.getCorrectSortedValue(maleParents);
 				this.updateParentsDesignationToPreferredName(femaleList, maleList);
 				this.parentsComponent.updateFemaleListNameForCrosses();
 				this.parentsComponent.updateMaleListNameForCrosses();
@@ -176,23 +175,23 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 		this.updateDesignationToPreferredName(femaleList, gidToPreferredNameMap);
 		this.updateDesignationToPreferredName(maleList, gidToPreferredNameMap);
 	}
-	
-	private void updateDesignationToPreferredName(final List<GermplasmListEntry> listEntries, final Map<Integer, String> gidToPreferredNameMap) {
+
+	private void updateDesignationToPreferredName(final List<GermplasmListEntry> listEntries,
+			final Map<Integer, String> gidToPreferredNameMap) {
 		for (final GermplasmListEntry germplasmListEntry : listEntries) {
-			Integer gid = germplasmListEntry.getGid();
-			String preferredName = gidToPreferredNameMap.get(gid);
+			final Integer gid = germplasmListEntry.getGid();
+			final String preferredName = gidToPreferredNameMap.get(gid);
 			germplasmListEntry.setDesignation(preferredName);
 		}
 	}
 
-	private List<Integer> getGidsOfParents(
-			final List<GermplasmListEntry> femaleList, final List<GermplasmListEntry> maleList) {
+	private List<Integer> getGidsOfParents(final List<GermplasmListEntry> femaleList, final List<GermplasmListEntry> maleList) {
 		final Set<Integer> uniqueGids = new HashSet<>();
 		final Set<Integer> femaleGids = this.getGids(femaleList);
 		final Set<Integer> maleGids = this.getGids(maleList);
 		uniqueGids.addAll(femaleGids);
 		uniqueGids.addAll(maleGids);
-		
+
 		final List<Integer> gidList = new ArrayList<>();
 		gidList.addAll(uniqueGids);
 		return gidList;
@@ -207,10 +206,8 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 		return gids;
 	}
 
-	
-	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+	public void setGermplasmDataManager(final GermplasmDataManager germplasmDataManager) {
 		this.germplasmDataManager = germplasmDataManager;
 	}
-	
-	
+
 }

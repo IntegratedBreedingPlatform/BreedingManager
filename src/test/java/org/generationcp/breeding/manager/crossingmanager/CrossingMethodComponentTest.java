@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.crossingmanager;
 
 import java.util.ArrayList;
@@ -21,18 +22,18 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CrossingMethodComponentTest {
-	
+
 	@Mock
 	private GermplasmDataManager germplasmDataManager;
-	
+
 	@InjectMocks
 	private CrossingMethodComponent crossingMethodComponent;
-	
+
 	@Before
 	public void setUp() {
-		crossingMethodComponent.setGermplasmDataManager(germplasmDataManager);
+		this.crossingMethodComponent.setGermplasmDataManager(this.germplasmDataManager);
 	}
-	
+
 	@Test
 	public void testUpdateParentsDesignationToPreferredName() {
 		final List<GermplasmListEntry> femaleList = GermplasmListEntryTestDataInitializer.getGermplasmListEntries();
@@ -40,8 +41,8 @@ public class CrossingMethodComponentTest {
 		final List<Integer> gids = this.getAllGids(femaleList, maleList);
 		final Map<Integer, String> gidToPreferredNameMap = this.createGidToPreferredNameMap(gids);
 		Mockito.doReturn(gidToPreferredNameMap).when(this.germplasmDataManager).getPreferredNamesByGids(gids);
-		crossingMethodComponent.updateParentsDesignationToPreferredName(femaleList,maleList);
-		//Test that the designation of the list entries is the preferred name of the germplasm
+		this.crossingMethodComponent.updateParentsDesignationToPreferredName(femaleList, maleList);
+		// Test that the designation of the list entries is the preferred name of the germplasm
 		final List<GermplasmListEntry> parentsListEntries = new ArrayList<>();
 		parentsListEntries.addAll(femaleList);
 		parentsListEntries.addAll(maleList);
@@ -49,8 +50,8 @@ public class CrossingMethodComponentTest {
 			final Integer gid = germplasmListEntry.getGid();
 			final String designation = germplasmListEntry.getDesignation();
 			final String preferredName = gidToPreferredNameMap.get(gid);
-			Assert.assertEquals("The designation of the list entry should be the preferred name of the germplasm",
-					preferredName,designation);
+			Assert.assertEquals("The designation of the list entry should be the preferred name of the germplasm", preferredName,
+					designation);
 		}
 	}
 
@@ -72,10 +73,9 @@ public class CrossingMethodComponentTest {
 	private Map<Integer, String> createGidToPreferredNameMap(final List<Integer> gids) {
 		final Map<Integer, String> gidToPreferredNameMap = new HashMap<>();
 		for (final Integer gid : gids) {
-			gidToPreferredNameMap.put(gid, "PREFERRED-"+gid);
+			gidToPreferredNameMap.put(gid, "PREFERRED-" + gid);
 		}
 		return gidToPreferredNameMap;
 	}
-	
-	
+
 }
