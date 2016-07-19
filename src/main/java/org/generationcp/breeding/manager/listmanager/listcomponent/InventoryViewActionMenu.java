@@ -40,7 +40,7 @@ public class InventoryViewActionMenu extends ContextMenu implements Initializing
 		this.setWidth(CONTEXT_MENU_WIDTH);
 
 		this.menuCancelReservation = this.addItem(this.messageSource.getMessage(Message.CANCEL_RESERVATIONS));
-		this.menuCopyToNewListFromInventory = this.addItem(this.messageSource.getMessage(Message.COPY_TO_NEW_LIST));
+		this.menuCopyToNewListFromInventory = this.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
 		this.menuReserveInventory = this.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
 		this.menuListView = this.addItem(this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
 		this.menuInventorySaveChanges = this.addItem(this.messageSource.getMessage(Message.SAVE_RESERVATIONS));

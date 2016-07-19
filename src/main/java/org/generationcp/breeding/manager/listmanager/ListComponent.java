@@ -40,7 +40,7 @@ import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource
 import org.generationcp.breeding.manager.listmanager.dialog.AssignCodesDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.GermplasmGroupingComponent;
 import org.generationcp.breeding.manager.listmanager.dialog.GermplasmGroupingComponentSource;
-import org.generationcp.breeding.manager.listmanager.dialog.ListManagerCopyToNewListDialog;
+import org.generationcp.breeding.manager.listmanager.dialog.ListManagerCopyToListDialog;
 import org.generationcp.breeding.manager.listmanager.listcomponent.GermplasmListTableContextMenu;
 import org.generationcp.breeding.manager.listmanager.listcomponent.InventoryViewActionMenu;
 import org.generationcp.breeding.manager.listmanager.listcomponent.ListViewActionMenu;
@@ -158,10 +158,20 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	// Menu for Actions button in Inventory View
 	private InventoryViewActionMenu inventoryViewMenu;
 
+	private ContextMenuItem menuCopyToListFromInventory;
+	private ContextMenuItem menuInventorySaveChanges;
+	@SuppressWarnings("unused")
+	private ContextMenuItem menuListView;
+	@SuppressWarnings("unused")
+	private ContextMenuItem menuReserveInventory;
+	@SuppressWarnings("unused")
+	private ContextMenuItem menuCancelReservation;
+
 	// Menu shown when the user right-click on the germplasm list table
 	private GermplasmListTableContextMenu tableContextMenu;
 
 	private AddColumnContextMenu addColumnContextMenu;
+
 
 	// Tooltips
 	public static final String TOOLS_BUTTON_ID = "Actions";
@@ -172,7 +182,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private boolean fromUrl;
 
 	// Theme Resource
-	private BaseSubWindow listManagerCopyToNewListDialog;
+	private BaseSubWindow listManagerCopyToListDialog;
 	private Object selectedColumn = "";
 	private Object selectedItemId;
 	private String lastCellvalue = "";
@@ -279,6 +289,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	@Override
 	public void instantiateComponents() {
+		this.inventoryViewMenu = new InventoryViewActionMenu();
+
 		this.topLabel = new Label(this.messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
 		this.topLabel.setWidth("120px");
 		this.topLabel.setStyleName(Bootstrap.Typography.H4.styleName());
@@ -337,6 +349,14 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.initializeListDataTable(new TableWithSelectAllLayout(Long.valueOf(this.listEntriesCount).intValue(), this.getNoOfEntries(),
 				ColumnLabels.TAG.getName())); // listDataTable
 		this.initializeListInventoryTable(); // listInventoryTable
+
+		this.menuCancelReservation = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.CANCEL_RESERVATIONS));
+		this.menuCopyToListFromInventory = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
+
+		this.menuReserveInventory = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
+		this.menuListView = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
+		this.menuInventorySaveChanges = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.SAVE_RESERVATIONS));
+		this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
 
 		this.inventoryViewMenu = new InventoryViewActionMenu();
 
@@ -882,7 +902,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						ListComponent.this.saveReservationChangesAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
 						ListComponent.this.viewListAction();
-					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {
 						ListComponent.this.copyToNewListFromInventoryViewAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
 						ListComponent.this.reserveInventoryAction();
@@ -917,7 +937,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						ListComponent.this.listDataTable.setValue(ListComponent.this.listDataTable.getItemIds());
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.EXPORT_LIST))) {
 						ListComponent.this.exportListAction();
-					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {
 						ListComponent.this.copyToNewListAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.ADD_ENTRIES))) {
 						ListComponent.this.addEntryButtonClickAction();
@@ -1403,20 +1423,20 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 					.showRequiredFieldError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
 
 		} else {
-			this.listManagerCopyToNewListDialog = new BaseSubWindow(this.messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
-			this.listManagerCopyToNewListDialog.setOverrideFocus(true);
-			this.listManagerCopyToNewListDialog.setModal(true);
-			this.listManagerCopyToNewListDialog.setWidth("617px");
-			this.listManagerCopyToNewListDialog.setHeight("230px");
-			this.listManagerCopyToNewListDialog.setResizable(false);
-			this.listManagerCopyToNewListDialog.addStyleName(Reindeer.WINDOW_LIGHT);
+			this.listManagerCopyToListDialog = new BaseSubWindow(this.messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
+			this.listManagerCopyToListDialog.setOverrideFocus(true);
+			this.listManagerCopyToListDialog.setModal(true);
+			this.listManagerCopyToListDialog.setWidth("617px");
+			this.listManagerCopyToListDialog.setHeight("230px");
+			this.listManagerCopyToListDialog.setResizable(false);
+			this.listManagerCopyToListDialog.addStyleName(Reindeer.WINDOW_LIGHT);
 
 			try {
-				this.listManagerCopyToNewListDialog.addComponent(
-						new ListManagerCopyToNewListDialog(this.parentListDetailsComponent.getWindow(), this.listManagerCopyToNewListDialog,
-								this.germplasmList.getName(), this.listDataTable, this.contextUtil.getCurrentUserLocalId(), this.source));
-				this.parentListDetailsComponent.getWindow().addWindow(this.listManagerCopyToNewListDialog);
-				this.listManagerCopyToNewListDialog.center();
+				this.listManagerCopyToListDialog.addComponent(new ListManagerCopyToListDialog(this.parentListDetailsComponent
+						.getWindow(), this.listManagerCopyToListDialog, this.germplasmList.getName(), this.listDataTable,
+						this.contextUtil.getCurrentUserLocalId(), this.source));
+				this.parentListDetailsComponent.getWindow().addWindow(this.listManagerCopyToListDialog);
+				this.listManagerCopyToListDialog.center();
 			} catch (final MiddlewareQueryException e) {
 				ListComponent.LOG.error("Error copying list entries.", e);
 				ListComponent.LOG.error("\n" + e.getStackTrace());

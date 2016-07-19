@@ -38,8 +38,8 @@ public class ListCommonActionsUtil {
 
 		germplasmListManager.deleteGermplasmList(germplasmList);
 
-		contextUtil.logProgramActivity("Deleted a germplasm list.", "Deleted germplasm list with id = " + germplasmList.getId()
-				+ " and name = " + germplasmList.getName() + ".");
+		contextUtil.logProgramActivity("Deleted a germplasm list.",
+				"Deleted germplasm list with id = " + germplasmList.getId() + " and name = " + germplasmList.getName() + ".");
 
 		MessageNotifier.showMessage(window, messageSource.getMessage(Message.SUCCESS),
 				messageSource.getMessage(Message.SUCCESSFULLY_DELETED_ITEM, item));
@@ -137,8 +137,8 @@ public class ListCommonActionsUtil {
 		ListCommonActionsUtil.getNewEntriesToSaveUpdateDelete(listToSave, listEntries, forceHasChanges, newEntries, entriesToUpdate,
 				entriesToDelete, germplasmListManager, source, messageSource);
 
-		return ListCommonActionsUtil.saveListEntries(listToSave, newEntries, entriesToUpdate, entriesToDelete, germplasmListManager,
-				source, messageSource, showMessages);
+		return ListCommonActionsUtil.saveListEntries(listToSave, newEntries, entriesToUpdate, entriesToDelete, germplasmListManager, source,
+				messageSource, showMessages);
 	}
 
 	protected static void getNewEntriesToSaveUpdateDelete(final GermplasmList listToSave, final List<GermplasmListData> listEntries,
@@ -146,12 +146,11 @@ public class ListCommonActionsUtil {
 			final List<GermplasmListData> entriesToDelete, final GermplasmListManager dataManager, final Component source,
 			final SimpleResourceBundleMessageSource messageSource) {
 
-		final Map<Integer, GermplasmListData> savedListEntriesMap =
-				ListCommonActionsUtil.getSavedListEntriesMap(listToSave, listEntries, forceHasChanges, entriesToDelete, dataManager,
-						source, messageSource);
+		final Map<Integer, GermplasmListData> savedListEntriesMap = ListCommonActionsUtil.getSavedListEntriesMap(listToSave, listEntries,
+				forceHasChanges, entriesToDelete, dataManager, source, messageSource);
 
 		for (final GermplasmListData entry : listEntries) {
-			if ((entry.getId() != null && entry.getId() > 0) && !savedListEntriesMap.isEmpty()
+			if (entry.getId() != null && entry.getId() > 0 && !savedListEntriesMap.isEmpty()
 					&& savedListEntriesMap.get(entry.getId()) != null) {
 
 				final GermplasmListData matchingSavedEntry = savedListEntriesMap.get(entry.getId());

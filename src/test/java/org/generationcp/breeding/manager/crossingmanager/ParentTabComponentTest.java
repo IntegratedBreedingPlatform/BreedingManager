@@ -39,13 +39,14 @@ import org.generationcp.middleware.service.api.PedigreeService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import com.vaadin.data.Item;
 import com.vaadin.ui.CheckBox;
@@ -53,6 +54,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ParentTabComponentTest {
 
 	private static final int GERMPLASM_LIST_ID = 1;
@@ -112,7 +114,6 @@ public class ParentTabComponentTest {
 
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
 		ManagerFactory.getCurrentManagerFactoryThreadLocal().set(Mockito.mock(ManagerFactory.class));
 
 		final Term fromOntology = new Term();
@@ -131,9 +132,8 @@ public class ParentTabComponentTest {
 		final MakeCrossesParentsComponent source = Mockito.spy(new MakeCrossesParentsComponent(this.makeCrossesMain));
 		final String parentLabel = "Female Parents";
 		final Integer rowCount = 10;
-		this.parentTabComponent =
-				new ParentTabComponent(this.makeCrossesMain, source, parentLabel, rowCount, this.saveGermplasmListActionFactory,
-						this.reserveInventoryActionFactory);
+		this.parentTabComponent = new ParentTabComponent(this.makeCrossesMain, source, parentLabel, rowCount,
+				this.saveGermplasmListActionFactory, this.reserveInventoryActionFactory);
 		source.setMaleParentTab(this.parentTabComponent);
 		source.setFemaleParentTab(this.parentTabComponent);
 		Mockito.doReturn(this.window).when(source).getWindow();

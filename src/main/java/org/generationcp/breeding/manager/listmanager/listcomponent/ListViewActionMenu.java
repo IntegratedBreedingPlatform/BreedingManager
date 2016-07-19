@@ -45,7 +45,7 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		// Generate main level items
 		this.menuAddEntry = this.addItem(this.messageSource.getMessage(Message.ADD_ENTRIES));
 		this.menuAssignCodes = this.addItem(this.messageSource.getMessage(Message.ASSIGN_CODES));
-		this.menuCopyToList = this.addItem(this.messageSource.getMessage(Message.COPY_TO_NEW_LIST));
+		this.menuCopyToList = this.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
 		this.menuDeleteList = this.addItem(this.messageSource.getMessage(Message.DELETE_LIST));
 		this.menuDeleteEntries = this.addItem(this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
 		this.menuMarkLinesAsFixed = this.addItem(this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED));

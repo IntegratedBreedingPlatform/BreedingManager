@@ -187,8 +187,8 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 												listData.getDesignation(), draggedListFromTree.getName() + ":" + listData.getEntryId());
 
 								if (targetTable.equals(ParentTabComponent.this.listDataTable)) {
-									tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject, ParentTabComponent.this
-											.getSelectAllCheckBox()));
+									tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject,
+											ParentTabComponent.this.getSelectAllCheckBox()));
 									ParentTabComponent.this.listNameForCrosses = draggedListFromTree.getName();
 									ParentTabComponent.this.updateCrossesSeedSource(draggedListFromTree);
 								}
@@ -254,21 +254,23 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 					final ContextMenuItem clickedItem = event.getClickedItem();
 					if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.SAVE_CHANGES))) {
 						ParentTabComponent.this.doSaveAction();
-					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
+					} else
+						if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
 						ParentTabComponent.this.viewListAction();
-					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
+					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {
 						// no implementation yet for this condition
 					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
 						ParentTabComponent.this.reserveInventoryAction();
 					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
-						ParentTabComponent.this.listInventoryTable.getTable().setValue(
-								ParentTabComponent.this.listInventoryTable.getTable().getItemIds());
-					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES))) {
-						ParentTabComponent.this.listInventoryTable.getTable().setValue(
-								CrossingManagerUtil.getEvenEntries(ParentTabComponent.this.listInventoryTable.getTable()));
+						ParentTabComponent.this.listInventoryTable.getTable()
+								.setValue(ParentTabComponent.this.listInventoryTable.getTable().getItemIds());
+					} else
+						if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES))) {
+						ParentTabComponent.this.listInventoryTable.getTable()
+								.setValue(CrossingManagerUtil.getEvenEntries(ParentTabComponent.this.listInventoryTable.getTable()));
 					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES))) {
-						ParentTabComponent.this.listInventoryTable.getTable().setValue(
-								CrossingManagerUtil.getOddEntries(ParentTabComponent.this.listInventoryTable.getTable()));
+						ParentTabComponent.this.listInventoryTable.getTable()
+								.setValue(CrossingManagerUtil.getOddEntries(ParentTabComponent.this.listInventoryTable.getTable()));
 					}
 				}
 			});
@@ -290,6 +292,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 					final ContextMenuItem clickedItem = event.getClickedItem();
 					if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.INVENTORY_VIEW))) {
 						ParentTabComponent.this.viewInventoryAction();
+
 					} else if (clickedItem.getName().equals(
 							ParentTabComponent.this.messageSource.getMessage(Message.REMOVE_SELECTED_ENTRIES))) {
 						ParentTabComponent.this.parentActionListener.removeSelectedEntriesAction(ParentTabComponent.this.listDataTable);
@@ -344,7 +347,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	private ContextMenuItem saveActionMenu;
 
 	private ContextMenu inventoryViewActionMenu;
-	private ContextMenuItem menuCopyToNewListFromInventory;
+	private ContextMenuItem menuCopyToListFromInventory;
 	private ContextMenuItem menuInventorySaveChanges;
 	@SuppressWarnings("unused")
 	private ContextMenuItem menuListView;
@@ -428,7 +431,8 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		this.resetInventoryMenuOptions();
 
 		this.initializeParentTable(new TableWithSelectAllLayout(this.rowCount, ParentTabComponent.TAG_COLUMN_ID));
-		this.initializeListInventoryTable(new CrossingManagerInventoryTable(this.germplasmList != null ? this.germplasmList.getId() : null));
+		this.initializeListInventoryTable(
+				new CrossingManagerInventoryTable(this.germplasmList != null ? this.germplasmList.getId() : null));
 
 		// Inventory Related Variables
 		this.validReservationsToSave = new HashMap<ListEntryLotDetails, Double>();
@@ -472,7 +476,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 		this.inventoryViewActionMenu = new ContextMenu();
 		this.inventoryViewActionMenu.setWidth("295px");
-		this.menuCopyToNewListFromInventory = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.COPY_TO_NEW_LIST));
+		this.menuCopyToListFromInventory = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
 		this.menuReserveInventory = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
 		this.menuListView = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
 		this.menuInventorySaveChanges = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SAVE_CHANGES));
@@ -485,8 +489,8 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		// disable the save button at first since there are no reservations yet
 		this.menuInventorySaveChanges.setEnabled(false);
 
-		// Temporarily disable to Copy to New List in InventoryView
-		this.menuCopyToNewListFromInventory.setEnabled(false);
+		// Temporarily disable to Copy to List in InventoryView
+		this.menuCopyToListFromInventory.setEnabled(false);
 
 		// disable the reserve inventory at first if the list is not yet saved.
 		if (this.germplasmList == null) {
@@ -556,7 +560,11 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	/**
 	 * Exposed for testing purposed
+<<<<<<< HEAD
+	 * 
+=======
 	 *
+>>>>>>> master
 	 * @param listInventoryTable
 	 */
 	public void initializeListInventoryTable(final CrossingManagerInventoryTable listInventoryTable) {
@@ -788,9 +796,8 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	private void setupDropHandler() {
 		this.listDataTable.setDropHandler(new ListDataTableDropHandler());
 
-		this.inventoryTableDropHandler =
-				new InventoryTableDropHandler(this, this.germplasmDataManager, this.germplasmListManager, this.inventoryDataManager,
-						this.pedigreeService, this.crossExpansionProperties, this.listInventoryTable.getTable());
+		this.inventoryTableDropHandler = new InventoryTableDropHandler(this, this.germplasmDataManager, this.germplasmListManager,
+				this.inventoryDataManager, this.pedigreeService, this.crossExpansionProperties, this.listInventoryTable.getTable());
 		this.listInventoryTable.getTable().setDropHandler(this.inventoryTableDropHandler);
 	}
 
@@ -874,9 +881,8 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		if (this.germplasmList != null) {
 			List<GermplasmListData> entries = null;
 			try {
-				entries =
-						this.inventoryDataManager.getLotCountsForList(this.germplasmList.getId(), 0, Long.valueOf(this.listEntriesCount)
-								.intValue());
+				entries = this.inventoryDataManager.getLotCountsForList(this.germplasmList.getId(), 0,
+						Long.valueOf(this.listEntriesCount).intValue());
 
 				this.listEntries.addAll(entries);
 			} catch (final MiddlewareQueryException ex) {
@@ -1269,8 +1275,8 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			}
 		} catch (final MiddlewareQueryException e) {
 			ParentTabComponent.LOG.error(e.getMessage(), e);
-			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR), "The reservations were not saved "
-					+ "due to and error in the system.");
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
+					"The reservations were not saved " + "due to and error in the system.");
 			success = false;
 		}
 		return success;
