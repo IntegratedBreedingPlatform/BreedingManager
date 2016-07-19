@@ -1,7 +1,12 @@
 
 package org.generationcp.breeding.manager.crossingmanager;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
@@ -15,6 +20,7 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -37,6 +43,9 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
+	
+	@Autowired
+	private GermplasmDataManager germplasmDataManager;
 
 	private Panel crossingMethodPanel;
 	private Label crossingMethodLabel;
@@ -150,6 +159,7 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 
 				List<GermplasmListEntry> femaleList = this.parentsComponent.getCorrectSortedValue(femaleParents);
 				List<GermplasmListEntry> maleList = this.parentsComponent.getCorrectSortedValue(maleParents);
+				this.updateParentsDesignationToPreferredName(femaleList, maleList);
 				this.parentsComponent.updateFemaleListNameForCrosses();
 				this.parentsComponent.updateMaleListNameForCrosses();
 
@@ -159,4 +169,48 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 			}
 		}
 	}
+
+	void updateParentsDesignationToPreferredName(final List<GermplasmListEntry> femaleList, final List<GermplasmListEntry> maleList) {
+		final List<Integer> gids = this.getGidsOfParents(femaleList, maleList);
+		final Map<Integer, String> gidToPreferredNameMap = this.germplasmDataManager.getPreferredNamesByGids(gids);
+		this.updateDesignationToPreferredName(femaleList, gidToPreferredNameMap);
+		this.updateDesignationToPreferredName(maleList, gidToPreferredNameMap);
+	}
+	
+	private void updateDesignationToPreferredName(final List<GermplasmListEntry> listEntries, final Map<Integer, String> gidToPreferredNameMap) {
+		for (final GermplasmListEntry germplasmListEntry : listEntries) {
+			Integer gid = germplasmListEntry.getGid();
+			String preferredName = gidToPreferredNameMap.get(gid);
+			germplasmListEntry.setDesignation(preferredName);
+		}
+	}
+
+	private List<Integer> getGidsOfParents(
+			final List<GermplasmListEntry> femaleList, final List<GermplasmListEntry> maleList) {
+		final Set<Integer> uniqueGids = new HashSet<>();
+		final Set<Integer> femaleGids = this.getGids(femaleList);
+		final Set<Integer> maleGids = this.getGids(maleList);
+		uniqueGids.addAll(femaleGids);
+		uniqueGids.addAll(maleGids);
+		
+		final List<Integer> gidList = new ArrayList<>();
+		gidList.addAll(uniqueGids);
+		return gidList;
+	}
+
+	private Set<Integer> getGids(final List<GermplasmListEntry> listEntries) {
+		final Set<Integer> gids = new HashSet<>();
+		for (final GermplasmListEntry germplasmListEntry : listEntries) {
+			final Integer gid = germplasmListEntry.getGid();
+			gids.add(gid);
+		}
+		return gids;
+	}
+
+	
+	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
+	}
+	
+	
 }

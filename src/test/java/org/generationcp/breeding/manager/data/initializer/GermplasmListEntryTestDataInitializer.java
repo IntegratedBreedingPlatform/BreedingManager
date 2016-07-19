@@ -11,8 +11,8 @@ public class GermplasmListEntryTestDataInitializer {
 	public static List<GermplasmListEntry> getGermplasmListEntries() {
 		final List<GermplasmListEntry> listEntries = new ArrayList<>();
 
-		listEntries.add(new GermplasmListEntry(1, 1, 1));
-		listEntries.add(new GermplasmListEntry(2, 2, 2));
+		listEntries.add(new GermplasmListEntry(1, 1, 1, "DESIG-1"));
+		listEntries.add(new GermplasmListEntry(2, 2, 2, "DESIG-2"));
 
 		return listEntries;
 	}
