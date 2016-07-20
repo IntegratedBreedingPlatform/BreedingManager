@@ -622,6 +622,10 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		this.getWindow().removeWindow(this.unsavedChangesDialog);
 		// end of cancelAllListChangesAction()
 	}
+	
+	public boolean isValidationsPassed(){
+		return this.crossingSettingsMethodComponent.validateInputFields();
+	}
 
 	public void setHasUnsavedChangesMain(final boolean hasChanges) {
 		this.hasChanges = hasChanges;

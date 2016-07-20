@@ -535,19 +535,17 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		this.generateTotalSelectedCrossesLabel(0);
 	}
 
-	@SuppressWarnings("serial")
 	@Override
 	public void addListeners() {
 		this.saveButton.addListener(new Button.ClickListener() {
 
-			/**
-			 *
-			 */
 			private static final long serialVersionUID = 5123058086826023128L;
 
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				MakeCrossesTableComponent.this.launchSaveListAsWindow();
+				if (makeCrossesMain.isValidationsPassed()){
+					MakeCrossesTableComponent.this.launchSaveListAsWindow();
+				}
 			}
 		});
 
