@@ -167,12 +167,12 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 	@Override
 	public void initializeValues() {
 		this.populateLocations(this.programUniqueId);
-		this.initPopulateFavLocations(this.programUniqueId);
+		this.initPopulateFavLocations(this.programUniqueId, STORAGE_LOCATION_TYPEID);
 	}
 
-	public boolean initPopulateFavLocations(final String programUUID) {
+	public boolean initPopulateFavLocations(final String programUUID, int locationType) {
 		boolean hasFavorite = false;
-		if (BreedingManagerUtil.hasFavoriteLocation(this.germplasmDataManager, this.locationDataManager, STORAGE_LOCATION_TYPEID, programUUID)) {
+		if (BreedingManagerUtil.hasFavoriteLocation(this.germplasmDataManager, this.locationDataManager, locationType, programUUID)) {
 			this.showFavoritesCheckBox.setValue(true);
 			this.populateHarvestLocation(true, this.programUniqueId);
 			hasFavorite = true;

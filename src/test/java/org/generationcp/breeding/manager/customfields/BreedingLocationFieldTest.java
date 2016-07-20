@@ -63,7 +63,7 @@ public class BreedingLocationFieldTest {
 				.thenReturn(favouriteLocations);
 
 		Assert.assertFalse("Expecting a false return value when there are no favourite locations.",
-				this.breedingLocationField.initPopulateFavLocations(BreedingLocationFieldTest.DUMMY_UNIQUE_ID));
+				this.breedingLocationField.initPopulateFavLocations(BreedingLocationFieldTest.DUMMY_UNIQUE_ID, 0));
 	}
 
 	@Test
@@ -77,7 +77,7 @@ public class BreedingLocationFieldTest {
 				.thenReturn(favouriteLocations);
 
 		Assert.assertTrue("Expecting a true return value when there are favourite locations.",
-				this.breedingLocationField.initPopulateFavLocations(BreedingLocationFieldTest.DUMMY_UNIQUE_ID));
+				this.breedingLocationField.initPopulateFavLocations(BreedingLocationFieldTest.DUMMY_UNIQUE_ID, 0));
 	}
 
 	@Test
