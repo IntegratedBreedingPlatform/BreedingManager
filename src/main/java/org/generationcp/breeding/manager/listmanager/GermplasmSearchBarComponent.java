@@ -89,6 +89,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 	public GermplasmSearchBarComponent(final GermplasmSearchResultsComponent searchResultsComponent, final AddEntryDialogSource source) {
 		super();
 		this.searchResultsComponent = searchResultsComponent;
+		this.searchResultsComponent.setDebugId("searchResultsComponent");
 		this.source = source;
 	}
 
@@ -110,27 +111,36 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		this.setWidth("100%");
 
 		this.searchField = new TextField();
+		this.searchField.setDebugId("searchId");
 		this.searchField.setImmediate(true);
-
+		
 		this.searchButton = new Button(this.messageSource.getMessage(Message.SEARCH));
+		this.searchButton.setDebugId("searchButton");
 		this.searchButton.setHeight("24px");
 		this.searchButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 		this.searchButton.setData(GermplasmSearchBarComponent.SEARCH_BUTTON);
 
 		final Label descLbl = new Label(GermplasmSearchBarComponent.GUIDE, Label.CONTENT_XHTML);
+		descLbl.setDebugId("descLbl");
 		descLbl.setWidth("300px");
 		this.popup = new PopupView(" ? ", descLbl);
 		this.popup.setStyleName("gcp-popup-view");
 
 		this.withInventoryOnlyCheckBox = new CheckBox();
+		this.withInventoryOnlyCheckBox.setDebugId("withInventoryOnlyCheckBox");
+
 		this.withInventoryOnlyCheckBox.setValue(false);
 		this.withInventoryOnlyCheckBox.setCaption(this.messageSource.getMessage(Message.WITH_INVENTORY_ONLY));
 
 		this.includeParentsCheckBox = new CheckBox();
+		this.includeParentsCheckBox.setDebugId("includeParentsCheckBox");
+
 		this.includeParentsCheckBox.setValue(false);
 		this.includeParentsCheckBox.setCaption(this.messageSource.getMessage(Message.INCLUDE_PARENTS));
 
 		this.includeMGMembersCheckbox = new CheckBox();
+		this.includeMGMembersCheckbox.setDebugId("includeMGMembersCheckbox");
+
 		this.includeMGMembersCheckbox.setValue(false);
 		this.includeMGMembersCheckbox.setCaption(this.messageSource.getMessage(Message.INCLUDE_GROUP_MEMBERS));
 
@@ -140,6 +150,8 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 
 		final List<String> searchTypes = Arrays.asList(new String[] {this.matchesStartingWith, this.exactMatches, this.matchesContaining});
 		this.searchTypeOptions = new OptionGroup(null, searchTypes);
+		this.searchTypeOptions.setDebugId("searchTypeOptions");
+		
 		this.searchTypeOptions.setValue(this.matchesStartingWith);
 		this.searchTypeOptions.setStyleName("v-select-optiongroup-horizontal");
 	}
@@ -183,6 +195,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		this.setWidth("100%");
 
 		final CssLayout mainLayout = new CssLayout();
+		mainLayout.setDebugId("mainLayout");
 		mainLayout.addComponent(this.getFirstRow());
 		mainLayout.addComponent(this.getSecondRow());
 
@@ -195,12 +208,16 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		this.searchField.setWidth("120px");
 
 		this.searchBarLayoutLeft = new HorizontalLayout();
+		this.searchBarLayoutLeft.setDebugId("searchBarLayoutLeft");
+		
 		this.searchBarLayoutLeft.setSpacing(true);
 		this.searchBarLayoutLeft.addComponent(this.searchField);
 		this.searchBarLayoutLeft.addComponent(this.searchButton);
 		this.searchBarLayoutLeft.addComponent(this.popup);
 
 		this.searchBarLayoutRight = new CssLayout();
+		this.searchBarLayoutLeft.setDebugId("searchBarLayoutRight");
+		
 		this.searchBarLayoutRight.addComponent(this.withInventoryOnlyCheckBox);
 		this.searchBarLayoutRight.addComponent(this.includeParentsCheckBox);
 		this.searchBarLayoutRight.addComponent(this.includeMGMembersCheckbox);
@@ -211,6 +228,8 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		this.includeMGMembersCheckbox.addStyleName(GermplasmSearchBarComponent.LM_COMPONENT_WRAP);
 
 		final CssLayout firstRow = new CssLayout();
+		firstRow.setDebugId("firstRow");
+		
 		firstRow.addComponent(this.searchBarLayoutLeft);
 		firstRow.addComponent(this.searchBarLayoutRight);
 		return firstRow;
