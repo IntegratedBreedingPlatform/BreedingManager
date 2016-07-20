@@ -18,7 +18,7 @@
     		/WEB-INF/spring-security.xml
     	</param-value>
     </context-param>
-
+    
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
@@ -27,7 +27,7 @@
 	</listener>
 
 	<session-config>
-		<session-timeout>-1</session-timeout>
+		<session-timeout>60</session-timeout>
 	</session-config>
 
 	<servlet>
@@ -41,6 +41,14 @@
 			<description>Application widgetset</description>
 			<param-name>widgetset</param-name>
 			<param-value>org.generationcp.breeding.manager.application.widgetset.BreedingmanagerWidgetset</param-value>
+		</init-param>
+		<init-param>
+	      <param-name>disable-xsrf-protection</param-name>
+	      <param-value>true</param-value>
+	    </init-param>
+		<init-param>
+		    <param-name>syncIdCheck</param-name>
+		    <param-value>false</param-value>
 		</init-param>
 	</servlet>
 
