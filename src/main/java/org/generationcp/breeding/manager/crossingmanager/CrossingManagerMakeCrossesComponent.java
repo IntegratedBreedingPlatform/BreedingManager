@@ -623,7 +623,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		// end of cancelAllListChangesAction()
 	}
 	
-	public boolean isValidationsPassed(){
+	public boolean isValidationsBeforeSavePassed(){
 		return this.crossingSettingsMethodComponent.validateInputFields();
 	}
 

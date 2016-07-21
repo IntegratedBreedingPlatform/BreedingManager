@@ -543,12 +543,12 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				if (makeCrossesMain.isValidationsPassed()){
+				if (makeCrossesMain.isValidationsBeforeSavePassed()){
 					MakeCrossesTableComponent.this.launchSaveListAsWindow();
 				}
 			}
 		});
-
+		
 		this.tableCrossesMade.addListener(new Property.ValueChangeListener() {
 
 			private static final long serialVersionUID = 1L;
@@ -618,7 +618,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		}
 	}
 
-	private void launchSaveListAsWindow() {
+	void launchSaveListAsWindow() {
 		this.saveListAsWindow = null;
 		if (this.crossList != null) {
 			this.saveListAsWindow = new SaveCrossListAsDialog(this, this.crossList);
@@ -774,6 +774,10 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 	@Override
 	public Component getParentComponent() {
 		return this.makeCrossesMain.getSource();
+	}
+	
+	public Button getSaveButton(){
+		return this.saveButton;
 	}
 
 	public BreedingManagerTable getTableCrossesMade() {
