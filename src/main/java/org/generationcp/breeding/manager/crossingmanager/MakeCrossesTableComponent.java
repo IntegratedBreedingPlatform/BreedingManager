@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
- * 
+ *
  * Generation Challenge Programme (GCP)
- * 
- * 
+ *
+ *
  * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
  * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
- * 
+ *
  *******************************************************************************/
 
 package org.generationcp.breeding.manager.crossingmanager;
@@ -78,13 +78,13 @@ import com.vaadin.ui.themes.Reindeer;
 
 /**
  * This class contains UI components and functions related to Crosses Made table in Make Crosses screen in Crossing Manager
- * 
+ *
  * @author Darla Ani
- * 
+ *
  */
 @Configurable
-public class MakeCrossesTableComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
-		BreedingManagerLayout, SaveListAsDialogSource {
+public class MakeCrossesTableComponent extends VerticalLayout
+		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, SaveListAsDialogSource {
 
 	private static final int PAGE_LENGTH = 12;
 	public static final String PARENTS_DELIMITER = ",";
@@ -137,8 +137,8 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 			this.currentCropName = managerFactory.getCropName();
 			this.pedigreeProfile = managerFactory.getPedigreeProfile();
 		} else {
-			throw new IllegalStateException("Must have access to the Manager Factory thread local valiable. "
-					+ "Please contact support for further help.");
+			throw new IllegalStateException(
+					"Must have access to the Manager Factory thread local valiable. " + "Please contact support for further help.");
 		}
 	}
 
@@ -164,7 +164,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 	/**
 	 * Crosses each item on first list with its counterpart (same index or position) on second list. Assumes that checking if list sizes are
 	 * equal was done beforehand. The generated crossings are then added to Crossings Table.
-	 * 
+	 *
 	 * @param parents1 - list of GermplasmList entries as first parents
 	 * @param parents2 - list of GermplasmList entries as second parents
 	 * @param listnameMaleParent
@@ -216,7 +216,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		final String cross = this.getCross(germplasm, femaleDesig, maleDesig);
 		final String seedSource = this.generateSeedSource(femaleParent.getGid(), femaleSeedSource, maleParent.getGid(), maleSeedSource);
 
-		if (!this.crossAlreadyExists(parents) && ((excludeSelf && !this.hasSameParent(femaleParent, maleParent)) || !excludeSelf)) {
+		if (!this.crossAlreadyExists(parents) && (excludeSelf && !this.hasSameParent(femaleParent, maleParent) || !excludeSelf)) {
 			this.tableCrossesMade.addItem(new Object[] {1, cross, femaleDesig, maleDesig, seedSource}, parents);
 		}
 
@@ -248,7 +248,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 
 	/**
 	 * Multiplies each item on first list with each item on second list. The generated crossings are then added to Crossings Table.
-	 * 
+	 *
 	 * @param parents1 - list of GermplasmList entries as first parents
 	 * @param parents2 - list of GermplasmList entries as second parents
 	 * @param listnameMaleParent
@@ -302,13 +302,14 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 			germplasm.setGpid2(maleParent.getGid());
 
 			final String cross = this.getCross(germplasm, femaleDesig, maleDesig);
-			if ((excludeSelf && !this.hasSameParent(femaleParent, maleParent)) || !excludeSelf) {
+			if (excludeSelf && !this.hasSameParent(femaleParent, maleParent) || !excludeSelf) {
 				this.tableCrossesMade.addItem(new Object[] {1, cross, femaleDesig, maleDesig, seedSource}, parents);
 			}
 		}
 	}
 
-	String generateSeedSource(final Integer femaleParentGid, final String femaleSource, final Integer maleParentGid, final String maleSource) {
+	String generateSeedSource(final Integer femaleParentGid, final String femaleSource, final Integer maleParentGid,
+			final String maleSource) {
 
 		// Default as before
 		String seedSource = this.appendWithSeparator(femaleSource, maleSource);
@@ -320,9 +321,9 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 			String femalePlotNo = "";
 
 			// Look at the observation rows of Nursery to find plot number assigned to the male/female parent germplasm of the cross.
-			for (MeasurementRow row : nurseryWorkbook.getObservations()) {
-				MeasurementData gidData = row.getMeasurementData(TermId.GID.getId());
-				MeasurementData plotNumberData = row.getMeasurementData(TermId.PLOT_NO.getId());
+			for (final MeasurementRow row : nurseryWorkbook.getObservations()) {
+				final MeasurementData gidData = row.getMeasurementData(TermId.GID.getId());
+				final MeasurementData plotNumberData = row.getMeasurementData(TermId.PLOT_NO.getId());
 
 				if (gidData != null && gidData.getValue().equals(femaleParentGid.toString())) {
 					if (plotNumberData != null) {
@@ -480,7 +481,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 	}
 
 	protected void initializeCrossesMadeTable() {
-		this.setTableCrossesMade(new BreedingManagerTable(PAGE_LENGTH, PAGE_LENGTH));
+		this.setTableCrossesMade(new BreedingManagerTable(MakeCrossesTableComponent.PAGE_LENGTH, MakeCrossesTableComponent.PAGE_LENGTH));
 		this.tableCrossesMade = this.getTableCrossesMade();
 		this.tableCrossesMade.setWidth("100%");
 		this.tableCrossesMade.setHeight("407px");
@@ -543,12 +544,12 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				if (makeCrossesMain.isValidationsBeforeSavePassed()){
+				if (MakeCrossesTableComponent.this.makeCrossesMain.isValidationsBeforeSavePassed()) {
 					MakeCrossesTableComponent.this.launchSaveListAsWindow();
 				}
 			}
 		});
-		
+
 		this.tableCrossesMade.addListener(new Property.ValueChangeListener() {
 
 			private static final long serialVersionUID = 1L;
@@ -658,9 +659,8 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 		try {
 			final boolean applyNewGroupToCurrentCrossOnly = this.applyGroupingToNewCrossesOnly.booleanValue();
 
-			this.crossList =
-					saveAction
-							.saveRecords(this.makeCrossesMain.getCrossesMadeContainer().getCrossesMade(), applyNewGroupToCurrentCrossOnly);
+			this.crossList = saveAction.saveRecords(this.makeCrossesMain.getCrossesMadeContainer().getCrossesMade(),
+					applyNewGroupToCurrentCrossOnly);
 			MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
 					this.messageSource.getMessage(Message.CROSSES_SAVED_SUCCESSFULLY), 3000);
 
@@ -678,7 +678,7 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 
 	/**
 	 * Update seed source of existing listdata records with new list names
-	 * 
+	 *
 	 * @param femaleListName
 	 * @param maleListName
 	 */
@@ -775,8 +775,8 @@ public class MakeCrossesTableComponent extends VerticalLayout implements Initial
 	public Component getParentComponent() {
 		return this.makeCrossesMain.getSource();
 	}
-	
-	public Button getSaveButton(){
+
+	public Button getSaveButton() {
 		return this.saveButton;
 	}
 
