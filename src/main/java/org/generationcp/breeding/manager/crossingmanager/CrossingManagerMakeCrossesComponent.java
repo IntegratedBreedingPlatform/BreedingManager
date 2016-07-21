@@ -7,8 +7,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.vaadin.data.Property;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
@@ -30,6 +30,8 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.etl.Workbook;
+import org.generationcp.middleware.service.api.FieldbookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -40,6 +42,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.vaadin.data.Property;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -82,7 +85,13 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	private boolean hasChanges;
 	private UnsavedChangesConfirmDialog unsavedChangesDialog;
 	private LinkButton nurseryCancelButton;
+
+	@Autowired
+	private FieldbookService fieldbookMiddlewareService;
+
+	private boolean isNavigatedFromNursery;
 	private String nurseryId;
+	private Workbook nurseryWorkbook = null;
 
 	private Button nurseryBackButton;
 	private final Button.ClickListener nurseryBackButtonDefaultClickListener = new Button.ClickListener() {
@@ -101,10 +110,25 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		this.initializeNurseryContext(BreedingManagerUtil.getApplicationRequest());
 		this.instantiateComponents();
 		this.initializeValues();
 		this.addListeners();
 		this.layoutComponents();
+	}
+
+	void initializeNurseryContext(HttpServletRequest currentRequest) {
+		this.isNavigatedFromNursery = currentRequest.getPathInfo()
+				.contains(BreedingManagerApplication.NAVIGATION_FROM_NURSERY_PREFIX);
+		if (this.isNavigatedFromNursery) {
+			final String[] parameterValues = currentRequest.getParameterValues(BreedingManagerApplication.REQ_PARAM_NURSERY_ID);
+			final String nurseryId = parameterValues != null && parameterValues.length > 0 ? parameterValues[0] : "";
+			this.nurseryId = nurseryId;
+			// Initialize the workbook.. this will be required later for seed source generation.
+			if (!StringUtils.isBlank(this.nurseryId)) {
+				this.nurseryWorkbook = this.fieldbookMiddlewareService.getNurseryDataSet(Integer.valueOf(this.nurseryId));
+			}
+		}
 	}
 
 	@Override
@@ -309,9 +333,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		layoutButtonArea.setSpacing(true);
 
 		// show the link to navigate back to the Crossing Manager only if we came from the Nursery Manager previously
-		final boolean isNavigatedFromNursery = BreedingManagerUtil.getApplicationRequest().getPathInfo().contains(BreedingManagerApplication
-				.NAVIGATION_FROM_NURSERY_PREFIX);
-		if (isNavigatedFromNursery) {
+		if (this.isNavigatedFromNursery) {
 			this.nurseryCancelButton = this.constructNurseryCancelButton(BreedingManagerUtil.getApplicationRequest());
 			this.nurseryBackButton = this.constructNurseryBackButton();
 			this.nurseryBackButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
@@ -338,28 +360,37 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		return nurseryBackButton;
 	}
 
-	protected LinkButton constructNurseryCancelButton(final HttpServletRequest currentRequest) {
-		final String[] parameterValues = currentRequest.getParameterValues(BreedingManagerApplication.REQ_PARAM_NURSERY_ID);
-		final String nurseryId = parameterValues != null && parameterValues.length > 0 ? parameterValues[0] : "";
-		this.nurseryId = nurseryId;
-
+	LinkButton constructNurseryCancelButton(final HttpServletRequest currentRequest) {
 		final ExternalResource urlToNursery;
-		if (nurseryId.isEmpty() || !NumberUtils.isDigits(nurseryId)) {
+		if (StringUtils.isBlank(this.nurseryId) || !NumberUtils.isDigits(this.nurseryId)) {
 			urlToNursery = new ExternalResource(currentRequest.getScheme() + "://" + currentRequest.getServerName() + ":" + currentRequest
 					.getServerPort()
 					+ BreedingManagerApplication.PATH_TO_NURSERY);
 		} else {
 			urlToNursery = new ExternalResource(currentRequest.getScheme() + "://" + currentRequest.getServerName() + ":" + currentRequest
 					.getServerPort()
-					+ BreedingManagerApplication.PATH_TO_EDIT_NURSERY + nurseryId);
+					+ BreedingManagerApplication.PATH_TO_EDIT_NURSERY + this.nurseryId);
 		}
 		final LinkButton nurseryCancelButton = new LinkButton(urlToNursery, "");
 		this.messageSource.setCaption(nurseryCancelButton, Message.CANCEL);
 		return nurseryCancelButton;
 	}
 
+	boolean isNavigatedFromNursery() {
+		return isNavigatedFromNursery;
+	}
+
 	public String getNurseryId() {
 		return this.nurseryId;
+	}
+
+	// For test only
+	void setNurseryId(final String nurseryId) {
+		this.nurseryId = nurseryId;
+	}
+
+	public Workbook getNurseryWorkbook() {
+		return this.nurseryWorkbook;
 	}
 
 	public void updateCrossesSeedSource(final String femaleListName, final String maleListName) {
@@ -611,11 +642,44 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		this.messageSource = messageSource;
 	}
 
-    public BreedingMethodSetting getCurrentBreedingMethodSetting() {
+	void setFieldbookMiddlewareService(final FieldbookService fieldbookMiddlewareService) {
+		this.fieldbookMiddlewareService = fieldbookMiddlewareService;
+	}
+
+	public BreedingMethodSetting getCurrentBreedingMethodSetting() {
         final Integer methodId = this.crossingSettingsMethodComponent.getSelectedBreedingMethodId();
         final boolean isBasedOnStatusOfParentalLines = this.crossingSettingsMethodComponent.isBasedOnStatusOfParentalLines();
 
         final BreedingMethodSetting breedingMethodSetting = new BreedingMethodSetting(methodId, isBasedOnStatusOfParentalLines);
         return breedingMethodSetting;
     }
+
+	void setNavigatedFromNursery(boolean isNavigatedFromNursery) {
+		this.isNavigatedFromNursery = isNavigatedFromNursery;
+	}
+
+	Button getNurseryBackButton() {
+		return nurseryBackButton;
+	}
+
+	LinkButton getNurseryCancelButton() {
+		return this.nurseryCancelButton;
+	}
+
+	void setCrossingMethodComponent(CrossingMethodComponent crossingMethodComponent) {
+		this.crossingMethodComponent = crossingMethodComponent;
+	}
+
+	void setCrossingSettingsMethodComponent(CrossingSettingsMethodComponent crossingSettingsMethodComponent) {
+		this.crossingSettingsMethodComponent = crossingSettingsMethodComponent;
+	}
+
+	void setBackButton(Button backButton) {
+		this.backButton = backButton;
+	}
+
+	void setNextButton(Button nextButton) {
+		this.nextButton = nextButton;
+	}
+
 }

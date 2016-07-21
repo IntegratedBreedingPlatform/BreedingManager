@@ -122,9 +122,9 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	 * @return id of new Germplasm List created @
 	 * @throws BreedingManagerException
 	 */
-	public Integer saveRecords(final GermplasmList germplasmList, final List<GermplasmName> germplasmNameObjects,
-			final List<Name> newNames, final String filename, final List<Integer> doNotCreateGermplasmsWithId,
-			final ImportedGermplasmList importedGermplasmList, final Integer seedStorageLocation) throws BreedingManagerException {
+	public Integer saveRecords(final GermplasmList germplasmList, final List<GermplasmName> germplasmNameObjects, final List<Name> newNames,
+			final String filename, final List<Integer> doNotCreateGermplasmsWithId, final ImportedGermplasmList importedGermplasmList,
+			final Integer seedStorageLocation) throws BreedingManagerException {
 
 		germplasmList.setUserId(this.contextUtil.getCurrentUserLocalId());
 		germplasmList.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
@@ -161,8 +161,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		this.saveInventory();
 
 		// log project activity in Workbench
-		this.contextUtil.logProgramActivity(SaveGermplasmListAction.WB_ACTIVITY_NAME, SaveGermplasmListAction.WB_ACTIVITY_DESCRIPTION
-				+ filename);
+		this.contextUtil.logProgramActivity(SaveGermplasmListAction.WB_ACTIVITY_NAME,
+				SaveGermplasmListAction.WB_ACTIVITY_DESCRIPTION + filename);
 
 		return list.getId();
 	}
@@ -182,7 +182,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		}
 	}
 
-	protected void saveInventory() {
+	void saveInventory() {
 		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
 		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
@@ -195,16 +195,9 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 						continue;
 					}
 					final Lot lot = item.getValue();
-					final Lot existingLot =
-							SaveGermplasmListAction.this.inventoryService.getLotByEntityTypeAndEntityIdAndLocationIdAndScaleId(
-									lot.getEntityType(), gid, lot.getLocationId(), lot.getScaleId());
-					if (existingLot == null) {
-						SaveGermplasmListAction.this.inventoryDataManager.addLot(lot);
-					} else {
-						for (final Transaction transaction : listOfTransactions) {
-							transaction.setLot(existingLot);
-						}
-					}
+
+					SaveGermplasmListAction.this.inventoryDataManager.addLot(lot);
+
 					SaveGermplasmListAction.this.inventoryDataManager.addTransactions(listOfTransactions);
 				}
 			}
@@ -253,9 +246,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 			}
 
 			if (this.seedAmountScaleId != null) {
-				final Lot lot =
-						new Lot(null, this.contextUtil.getCurrentUserLocalId(), EntityType.GERMPLSM.name(), gid, seedStorageLocation,
-								this.seedAmountScaleId, 0, 0, SaveGermplasmListAction.INVENTORY_COMMENT);
+				final Lot lot = new Lot(null, this.contextUtil.getCurrentUserLocalId(), EntityType.GERMPLSM.name(), gid,
+						seedStorageLocation, this.seedAmountScaleId, 0, 0, SaveGermplasmListAction.INVENTORY_COMMENT);
 				this.gidLotMap.put(gid, lot);
 			}
 		}
@@ -338,9 +330,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	protected void processSeedStockVariate(final ImportedVariate importedVariate) throws BreedingManagerException {
 
 		// find stick variable via name at top of column in the sheet - should be one
-		final Set<StandardVariable> terms =
-				this.ontologyDataManager.findStandardVariablesByNameOrSynonym(importedVariate.getVariate(),
-						this.contextUtil.getCurrentProgramUUID());
+		final Set<StandardVariable> terms = this.ontologyDataManager.findStandardVariablesByNameOrSynonym(importedVariate.getVariate(),
+				this.contextUtil.getCurrentProgramUUID());
 		if (terms.size() == 1) {
 			// ok to get only record with the size check
 			final StandardVariable stdVariable = new ArrayList<>(terms).get(0);
@@ -401,12 +392,10 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	private List<UserDefinedField> getUserDefinedFields(final int fcodeType) {
 		List<UserDefinedField> udFields = new ArrayList<UserDefinedField>();
 		if (SaveGermplasmListAction.FCODE_TYPE_ATTRIBUTE == fcodeType) {
-			final List<UserDefinedField> list =
-					this.germplasmManager.getUserDefinedFieldByFieldTableNameAndType(SaveGermplasmListAction.FTABLE_ATTRIBUTE,
-							SaveGermplasmListAction.FTYPE_ATTRIBUTE);
-			final List<UserDefinedField> list2 =
-					this.germplasmManager.getUserDefinedFieldByFieldTableNameAndType(SaveGermplasmListAction.FTABLE_ATTRIBUTE,
-							SaveGermplasmListAction.FTYPE_PASSPORT);
+			final List<UserDefinedField> list = this.germplasmManager.getUserDefinedFieldByFieldTableNameAndType(
+					SaveGermplasmListAction.FTABLE_ATTRIBUTE, SaveGermplasmListAction.FTYPE_ATTRIBUTE);
+			final List<UserDefinedField> list2 = this.germplasmManager.getUserDefinedFieldByFieldTableNameAndType(
+					SaveGermplasmListAction.FTABLE_ATTRIBUTE, SaveGermplasmListAction.FTYPE_PASSPORT);
 			if (list != null && !list.isEmpty()) {
 				udFields.addAll(list);
 			}
@@ -414,9 +403,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 				udFields.addAll(list2);
 			}
 		} else if (SaveGermplasmListAction.FCODE_TYPE_NAME == fcodeType) {
-			udFields =
-					this.germplasmManager.getUserDefinedFieldByFieldTableNameAndType(SaveGermplasmListAction.FTABLE_NAME,
-							SaveGermplasmListAction.FTYPE_NAME);
+			udFields = this.germplasmManager.getUserDefinedFieldByFieldTableNameAndType(SaveGermplasmListAction.FTABLE_NAME,
+					SaveGermplasmListAction.FTYPE_NAME);
 		}
 		return udFields;
 	}
@@ -485,8 +473,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		}
 	}
 
-	protected void createDepositInventoryTransaction(final GermplasmList list, final ImportedGermplasm importedGermplasm,
-			final Integer gid, final Integer lrecId) {
+	protected void createDepositInventoryTransaction(final GermplasmList list, final ImportedGermplasm importedGermplasm, final Integer gid,
+			final Integer lrecId) {
 		if (importedGermplasm != null && importedGermplasm.getSeedAmount() != null && importedGermplasm.getSeedAmount() > 0) {
 
 			if (this.gidTransactionSetMap.get(gid) == null) {
@@ -595,6 +583,14 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		germplasmListData.setLocalRecordId(entryId);
 
 		return germplasmListData;
+	}
+
+	public Map<Integer, Lot> getGidLotMap() {
+		return gidLotMap;
+	}
+
+	public Map<Integer, List<Transaction>> getGidTransactionSetMap() {
+		return gidTransactionSetMap;
 	}
 
 }

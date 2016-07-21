@@ -1,4 +1,3 @@
-
 package org.generationcp.breeding.manager.customcomponent;
 
 import java.io.File;
@@ -72,6 +71,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	private Button cancelButton;
 
 	private final Component source;
+
 	private final GermplasmList germplasmList;
 
 	private final Table listDataTable;
@@ -145,9 +145,8 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 
 	private void addCustomReports(final ComboBox formatOptions) {
 
-		final List<CustomReportType> customReports =
-				this.jasperReportService.getCustomReportTypes(ToolSection.BM_LIST_MGR_CUSTOM_REPORT.name(),
-						ToolEnum.LIST_MANAGER.getToolName());
+		final List<CustomReportType> customReports = this.jasperReportService
+				.getCustomReportTypes(ToolSection.BM_LIST_MGR_CUSTOM_REPORT.name(), ToolEnum.LIST_MANAGER.getToolName());
 		for (final CustomReportType customReport : customReports) {
 			formatOptions.addItem(customReport.getCode().concat(" - ").concat(customReport.getName()));
 		}
@@ -158,15 +157,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	public void addListeners() {
 		this.cancelButton.addListener(new CloseWindowAction());
 
-		this.finishButton.addListener(new Button.ClickListener() {
-
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void buttonClick(final ClickEvent event) {
-				ExportListAsDialog.this.exportListAction(ExportListAsDialog.this.listDataTable);
-			}
-		});
+		this.finishButton.addListener(new FinishButtonListener(this));
 	}
 
 	protected void exportListAction(final Table table) {
@@ -176,28 +167,23 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 
 			@Override
 			protected void doInTransactionWithoutResult(final TransactionStatus status) {
-				if (ExportListAsDialog.this.germplasmList.isLockedList()) {
-					ExportListAsDialog.this.showWarningMessage(table);
-					// do the export
-					final String exportType = ExportListAsDialog.this.formatOptionsCbx.getValue().toString();
-					if (ExportListAsDialog.XLS_FORMAT.equalsIgnoreCase(ExportListAsDialog.this.formatOptionsCbx.getValue().toString())) {
-						ExportListAsDialog.this.exportListAsXLS(table);
-					} else if (ExportListAsDialog.CSV_FORMAT.equalsIgnoreCase(ExportListAsDialog.this.formatOptionsCbx.getValue()
-							.toString())) {
-						ExportListAsDialog.this.exportListAsCSV(table);
-					} else if (exportType.equalsIgnoreCase(ExportListAsDialog.this.messageSource
-							.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER))) {
-						ExportListAsDialog.this.exportListForGenotypingOrderAction();
-					} else {
-						final String userSelection = ExportListAsDialog.this.formatOptionsCbx.getValue().toString();
-						final String reportCode = userSelection.substring(0, userSelection.indexOf("-")).trim();
-						ExportListAsDialog.this.exportCustomReport(reportCode);
-					}
+
+				ExportListAsDialog.this.showWarningMessage(table);
+				// do the export
+				final String exportType = ExportListAsDialog.this.formatOptionsCbx.getValue().toString();
+				if (ExportListAsDialog.XLS_FORMAT.equalsIgnoreCase(ExportListAsDialog.this.formatOptionsCbx.getValue().toString())) {
+					ExportListAsDialog.this.exportListAsXLS(table);
+				} else if (ExportListAsDialog.CSV_FORMAT.equalsIgnoreCase(ExportListAsDialog.this.formatOptionsCbx.getValue().toString())) {
+					ExportListAsDialog.this.exportListAsCSV(table);
+				} else if (exportType
+						.equalsIgnoreCase(ExportListAsDialog.this.messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER))) {
+					ExportListAsDialog.this.exportListForGenotypingOrderAction();
 				} else {
-					MessageNotifier.showError(ExportListAsDialog.this.getWindow(),
-							ExportListAsDialog.this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST),
-							ExportListAsDialog.this.messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED));
+					final String userSelection = ExportListAsDialog.this.formatOptionsCbx.getValue().toString();
+					final String reportCode = userSelection.substring(0, userSelection.indexOf("-")).trim();
+					ExportListAsDialog.this.exportCustomReport(reportCode);
 				}
+
 			}
 		});
 
@@ -251,24 +237,23 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 
 		} catch (final GermplasmListExporterException e) {
 			ExportListAsDialog.LOG.error(this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
-			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e.getMessage() + ". "
-					+ this.messageSource.getMessage(Message.ERROR_REPORT_TO));
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST),
+					e.getMessage() + ". " + this.messageSource.getMessage(Message.ERROR_REPORT_TO));
 		}
 
 	}
 
 	protected void exportCustomReport(final String reportCode) {
 		try {
-			final Reporter customReport =
-					this.germplasmListExporter.exportGermplasmListCustomReport(this.germplasmList.getId(),
-							ExportListAsDialog.TEMP_FILENAME, reportCode);
+			final Reporter customReport = this.germplasmListExporter
+					.exportGermplasmListCustomReport(this.germplasmList.getId(), ExportListAsDialog.TEMP_FILENAME, reportCode);
 
 			this.fileDownloaderUtility.initiateFileDownload(TEMP_FILENAME, customReport.getFileName(), this.source);
 
 		} catch (final GermplasmListExporterException e) {
 			ExportListAsDialog.LOG.error(this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
-			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e.getMessage() + ". "
-					+ this.messageSource.getMessage(Message.ERROR_REPORT_TO));
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST),
+					e.getMessage() + ". " + this.messageSource.getMessage(Message.ERROR_REPORT_TO));
 		}
 	}
 
@@ -281,8 +266,8 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 			// must figure out other way to clean-up file because deleting it here makes it unavailable for download
 		} catch (final GermplasmListExporterException e) {
 			ExportListAsDialog.LOG.error(this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e);
-			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e.getMessage() + ". "
-					+ this.messageSource.getMessage(Message.ERROR_REPORT_TO));
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST),
+					e.getMessage() + ". " + this.messageSource.getMessage(Message.ERROR_REPORT_TO));
 		}
 	}
 
@@ -290,7 +275,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 	 * This method makes an assumption that, prior to this method call, the list has been exported and the contents stored inside the
 	 * temporary file. The contents of this file is then made available as a download for the user, with a visible filename equal to the
 	 * parameter provided for this method
-	 * 
+	 *
 	 * @param visibleFileName
 	 */
 	protected void makeExportDownloadable(final String visibleFileName) {
@@ -304,30 +289,20 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 			try {
 				this.germplasmListExporter.exportKBioScienceGenotypingOrderXLS(this.germplasmList.getId(), tempFileName, 96);
 
-				final String userAgent = BreedingManagerUtil.getApplicationRequest().getHeader("User-Agent");
 				final FileDownloadResource fileDownloadResource =
-						new FileDownloadResource(new File(tempFileName), this.source.getApplication(), userAgent);
-				final String listName = this.germplasmList.getName();
-				fileDownloadResource.setFilename(FileUtils.encodeFilenameForDownload(listName).replace(" ", "_") + "ForGenotyping.xls");
+						new FileDownloadResource(new File(tempFileName),this.germplasmList.getName().replace(" ", "_") + "ForGenotyping.xls", this.source.getApplication());
 
 				this.source.getWindow().open(fileDownloadResource);
 
 			} catch (final GermplasmListExporterException e) {
 				ExportListAsDialog.LOG.error(e.getMessage(), e);
-				MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST),
-						e.getMessage());
+				MessageNotifier
+						.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST), e.getMessage());
 			}
 		} else {
 			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_EXPORTING_LIST),
 					this.messageSource.getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED));
 		}
-	}
-
-	protected FileDownloadResource createFileDownloadResource() {
-		final String userAgent = BreedingManagerUtil.getApplicationRequest().getHeader("User-Agent");
-		final FileDownloadResource fileDownloadResource =
-				new FileDownloadResource(new File(ExportListAsDialog.TEMP_FILENAME), this.source.getApplication(), userAgent);
-		return fileDownloadResource;
 	}
 
 	protected void showWarningMessage(final Table table) {
@@ -384,5 +359,43 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 
 	protected String formatCustomReportString(CustomReportType type) {
 		return type.getCode() + " - " + type.getName();
+	}
+
+	protected GermplasmList getGermplasmList() {
+		return germplasmList;
+	}
+
+	protected Table getListDataTable() {
+		return listDataTable;
+	}
+
+	protected SimpleResourceBundleMessageSource getMessageSource() {
+		return messageSource;
+	}
+
+	static class FinishButtonListener implements Button.ClickListener {
+
+		ExportListAsDialog exportListAsDialog;
+
+		FinishButtonListener(ExportListAsDialog exportListAsDialog) {
+			this.exportListAsDialog = exportListAsDialog;
+		}
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void buttonClick(final ClickEvent event) {
+
+			if (exportListAsDialog.getGermplasmList().isLockedList()) {
+				exportListAsDialog.exportListAction(exportListAsDialog.getListDataTable());
+				exportListAsDialog.getParent().removeWindow(exportListAsDialog);
+			} else {
+				MessageNotifier.showError(exportListAsDialog.getWindow(),
+						exportListAsDialog.getMessageSource().getMessage(Message.ERROR_EXPORTING_LIST),
+						exportListAsDialog.getMessageSource().getMessage(Message.ERROR_EXPORT_LIST_MUST_BE_LOCKED));
+			}
+
+		}
+
 	}
 }

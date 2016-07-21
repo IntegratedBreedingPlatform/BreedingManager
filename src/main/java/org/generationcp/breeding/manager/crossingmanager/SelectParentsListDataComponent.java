@@ -200,7 +200,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 
 	private Button inventoryViewActionButton;
 	private ContextMenu inventoryViewActionMenu;
-	private ContextMenuItem menuCopyToNewListFromInventory;
+	private ContextMenuItem menuCopyToListFromInventory;
 	private ContextMenuItem menuInventorySaveChanges;
 	@SuppressWarnings("unused")
 	private ContextMenuItem menuListView;
@@ -306,7 +306,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 
 		this.inventoryViewActionMenu = new ContextMenu();
 		this.inventoryViewActionMenu.setWidth("295px");
-		this.menuCopyToNewListFromInventory = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.COPY_TO_NEW_LIST));
+		this.menuCopyToListFromInventory = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
 		this.menuReserveInventory = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
 		this.menuListView = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
 		this.menuInventorySaveChanges = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SAVE_CHANGES));
@@ -344,8 +344,8 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 		// disable the save button at first since there are no reservations yet
 		this.menuInventorySaveChanges.setEnabled(false);
 
-		// Temporarily disable to Copy to New List in InventoryView
-		this.menuCopyToNewListFromInventory.setEnabled(false);
+		// Temporarily disable to Copy to List in InventoryView
+		this.menuCopyToListFromInventory.setEnabled(false);
 	}
 
 	void initializeListDataTable() {
@@ -563,7 +563,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 								SelectParentsListDataComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
 							SelectParentsListDataComponent.this.viewListAction();
 						} else if (clickedItem.getName().equals(
-								SelectParentsListDataComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST))) {
+								SelectParentsListDataComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {
 							// no implementation yet for this method
 						} else if (clickedItem.getName().equals(
 								SelectParentsListDataComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
@@ -761,7 +761,7 @@ public class SelectParentsListDataComponent extends VerticalLayout implements In
 			this.subHeaderLayout.addComponent(this.inventoryViewActionButton);
 			this.subHeaderLayout.setComponentAlignment(this.inventoryViewActionButton, Alignment.MIDDLE_RIGHT);
 
-			this.listEntriesLabel.setValue(this.messageSource.getMessage(Message.LOTS));
+			this.listEntriesLabel.setValue(this.messageSource.getMessage(Message.INVENTORY));
 			this.updateNoOfEntries();
 			this.updateNoOfSelectedEntries();
 
