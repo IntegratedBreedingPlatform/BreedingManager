@@ -1,6 +1,7 @@
 
 package org.generationcp.breeding.manager.crossingmanager.settings;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +52,7 @@ import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
 public class CrossingSettingsOtherDetailsComponent extends CssLayout implements BreedingManagerLayout, InternationalizableComponent,
-InitializingBean {
+		InitializingBean {
 
 	public enum SaveSettingOption {
 		YES, NO
@@ -125,7 +126,7 @@ InitializingBean {
 	public void instantiateComponents() {
 		try {
 			this.programUniqueId = this.breedingManagerService.getCurrentProject().getUniqueID();
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			CrossingSettingsOtherDetailsComponent.LOG.error(e.getMessage(), e);
 		}
 		this.initializeHarvestDetailsSection();
@@ -146,7 +147,9 @@ InitializingBean {
 		this.harvestLocations = new ComboBox(this.messageSource.getMessage(Message.HARVEST_LOCATION) + ":");
 		this.harvestLocations.setNullSelectionAllowed(true);
 
-		this.harvestDateField = new HarvestDateField(2014, this.messageSource.getMessage(Message.ESTIMATED_HARVEST_DATE) + ":");
+		this.harvestDateField =
+				new HarvestDateField(Calendar.getInstance().get(Calendar.YEAR),
+						this.messageSource.getMessage(Message.ESTIMATED_HARVEST_DATE) + ":");
 
 		this.showFavouriteLocations = new CheckBox();
 		this.showFavouriteLocations.setImmediate(true);
@@ -159,7 +162,7 @@ InitializingBean {
 	public void initializeValues() {
 		try {
 			this.locations = this.locationDataManager.getLocationsByUniqueID(this.programUniqueId);
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			CrossingSettingsOtherDetailsComponent.LOG.error(e.getMessage(), e);
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR), "Error getting breeding locations!");
 		}
@@ -168,7 +171,7 @@ InitializingBean {
 		this.initPopulateFavLocation(this.programUniqueId);
 	}
 
-	public boolean initPopulateFavLocation(String programUUID) {
+	public boolean initPopulateFavLocation(final String programUUID) {
 		boolean hasFavorite = false;
 		if (BreedingManagerUtil.hasFavoriteLocation(this.germplasmDataManager, 0, programUUID)) {
 			this.showFavouriteLocations.setValue(true);
@@ -185,7 +188,7 @@ InitializingBean {
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void valueChange(ValueChangeEvent event) {
+			public void valueChange(final ValueChangeEvent event) {
 				CrossingSettingsOtherDetailsComponent.this.populateHarvestLocation(((Boolean) event.getProperty().getValue()).equals(true),
 						CrossingSettingsOtherDetailsComponent.this.programUniqueId);
 			}
@@ -197,10 +200,10 @@ InitializingBean {
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				try {
-					Project project = CrossingSettingsOtherDetailsComponent.this.contextUtil.getProjectInContext();
-					Window manageFavoriteLocationsWindow =
+					final Project project = CrossingSettingsOtherDetailsComponent.this.contextUtil.getProjectInContext();
+					final Window manageFavoriteLocationsWindow =
 							Util.launchLocationManager(CrossingSettingsOtherDetailsComponent.this.workbenchDataManager,
 									project.getProjectId(), CrossingSettingsOtherDetailsComponent.this.getWindow(),
 									CrossingSettingsOtherDetailsComponent.this.messageSource.getMessage(Message.MANAGE_LOCATIONS));
@@ -209,15 +212,15 @@ InitializingBean {
 						private static final long serialVersionUID = 1L;
 
 						@Override
-						public void windowClose(CloseEvent e) {
-							Object lastValue = CrossingSettingsOtherDetailsComponent.this.harvestLocations.getValue();
+						public void windowClose(final CloseEvent e) {
+							final Object lastValue = CrossingSettingsOtherDetailsComponent.this.harvestLocations.getValue();
 							CrossingSettingsOtherDetailsComponent.this.populateHarvestLocation(
 									((Boolean) CrossingSettingsOtherDetailsComponent.this.showFavouriteLocations.getValue()).equals(true),
 									CrossingSettingsOtherDetailsComponent.this.programUniqueId);
 							CrossingSettingsOtherDetailsComponent.this.harvestLocations.setValue(lastValue);
 						}
 					});
-				} catch (MiddlewareQueryException e) {
+				} catch (final MiddlewareQueryException e) {
 					CrossingSettingsOtherDetailsComponent.LOG.error("Error on manageFavoriteLocations click", e);
 				}
 			}
@@ -246,11 +249,11 @@ InitializingBean {
 		this.addComponent(settingsFormFields);
 	}
 
-	private void populateHarvestLocation(String programUUID) {
+	private void populateHarvestLocation(final String programUUID) {
 		this.populateHarvestLocation(((Boolean) this.showFavouriteLocations.getValue()).equals(true), programUUID);
 	}
 
-	private void populateHarvestLocation(boolean showOnlyFavorites, String programUUID) {
+	private void populateHarvestLocation(final boolean showOnlyFavorites, final String programUUID) {
 		this.harvestLocations.removeAllItems();
 		this.mapLocation = new HashMap<String, Integer>();
 
@@ -258,7 +261,7 @@ InitializingBean {
 			try {
 				BreedingManagerUtil.populateWithFavoriteLocations(this.workbenchDataManager, this.germplasmDataManager,
 						this.harvestLocations, this.mapLocation, programUUID);
-			} catch (MiddlewareQueryException e) {
+			} catch (final MiddlewareQueryException e) {
 				CrossingSettingsOtherDetailsComponent.LOG.error(e.getMessage(), e);
 				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
 						"Error getting favorite locations!");
@@ -268,18 +271,18 @@ InitializingBean {
 		}
 	}
 
-	private void populateWithLocations(String programUUID) {
+	private void populateWithLocations(final String programUUID) {
 
 		try {
 			this.locations = this.locationDataManager.getLocationsByUniqueID(programUUID);
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			CrossingSettingsOtherDetailsComponent.LOG.error(e.getMessage(), e);
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR), "Error getting breeding locations!");
 		}
 
 		this.harvestLocations.removeAllItems();
 
-		for (Location loc : this.locations) {
+		for (final Location loc : this.locations) {
 			this.harvestLocations.addItem(loc.getLocid());
 			this.harvestLocations.setItemCaption(loc.getLocid(), BreedingManagerUtil.getLocationNameDisplay(loc));
 			this.mapLocation.put(loc.getLname(), new Integer(loc.getLocid()));
@@ -294,7 +297,7 @@ InitializingBean {
 		return this.setAsDefaultSettingCheckbox;
 	}
 
-	public void setSetAsDefaultSettingCheckbox(Boolean value) {
+	public void setSetAsDefaultSettingCheckbox(final Boolean value) {
 		this.setAsDefaultSettingCheckbox.setValue(value);
 	}
 
@@ -310,7 +313,7 @@ InitializingBean {
 
 		try {
 			this.harvestDateField.validate();
-		} catch (InvalidValueException e) {
+		} catch (final InvalidValueException e) {
 			MessageNotifier.showRequiredFieldError(this.getWindow(), e.getMessage());
 			return false;
 		}
@@ -325,7 +328,7 @@ InitializingBean {
 		return true;
 	}
 
-	public void setFields(AdditionalDetailsSetting additionalDetailsSetting, String name, Boolean isDefault) {
+	public void setFields(final AdditionalDetailsSetting additionalDetailsSetting, final String name, final Boolean isDefault) {
 		this.showFavouriteLocations.setValue(false);
 		this.populateHarvestLocation(this.programUniqueId);
 		this.harvestLocations.select(additionalDetailsSetting.getHarvestLocationId());
@@ -350,7 +353,7 @@ InitializingBean {
 		return this.messageSource;
 	}
 
-	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 
@@ -358,11 +361,11 @@ InitializingBean {
 		return this.germplasmDataManager;
 	}
 
-	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+	public void setGermplasmDataManager(final GermplasmDataManager germplasmDataManager) {
 		this.germplasmDataManager = germplasmDataManager;
 	}
 
-	public void setBreedingManagerService(BreedingManagerService breedingManagerService) {
+	public void setBreedingManagerService(final BreedingManagerService breedingManagerService) {
 		this.breedingManagerService = breedingManagerService;
 	}
 }
