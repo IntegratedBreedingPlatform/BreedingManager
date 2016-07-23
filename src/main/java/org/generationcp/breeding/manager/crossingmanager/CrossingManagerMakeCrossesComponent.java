@@ -195,14 +195,15 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 						CrossingManagerMakeCrossesComponent.this.messageSource.getMessage(Message.ERROR_WITH_CROSSES_RETRIEVAL));
 			}
 
+			CrossingManagerMakeCrossesComponent.this
+					.showNotificationAfterCrossing(CrossingManagerMakeCrossesComponent.this.crossesTableComponent.getTableCrossesMade()
+							.size());
+
 		} else {
 			MessageNotifier.showError(CrossingManagerMakeCrossesComponent.this.getWindow(), "Error with selecting parents.",
 					CrossingManagerMakeCrossesComponent.this.messageSource
 							.getMessage(Message.AT_LEAST_ONE_FEMALE_AND_ONE_MALE_PARENT_MUST_BE_SELECTED));
 		}
-
-		CrossingManagerMakeCrossesComponent.this
-				.showNotificationAfterCrossing(CrossingManagerMakeCrossesComponent.this.crossesTableComponent.getTableCrossesMade().size());
 
 	}
 

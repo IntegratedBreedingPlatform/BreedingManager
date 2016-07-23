@@ -2,6 +2,7 @@
 package org.generationcp.breeding.manager.customcomponent;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -10,6 +11,8 @@ import junit.framework.Assert;
 import org.generationcp.breeding.manager.customfields.PagedBreedingManagerTable;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
@@ -149,6 +152,28 @@ public class PagedTableWithSelectAllLayoutTest {
 	}
 
 	@Test
+	public void testUpdatePagedTableSelectedEntries() {
+		final List<Object> entriesList = this.createEntriesList();
+		final ArgumentCaptor<List<Object>> captor = ArgumentCaptor.forClass((Class) List.class);
+		final PagedBreedingManagerTable table = Mockito.mock(PagedBreedingManagerTable.class);
+		Mockito.when(table.getValue()).thenReturn(entriesList);
+
+		this.pagedTableWithSelectAllLayout.setTable(table);
+
+		this.pagedTableWithSelectAllLayout.updatePagedTableSelectedEntries(true);
+
+		Mockito.verify(table, Mockito.atLeast(1)).setValue(captor.capture());
+		Assert.assertTrue("updatePagedTableSelectedEntries(true) should select all entries",
+				entriesList.equals(new ArrayList<Object>(captor.getValue())));
+
+		this.pagedTableWithSelectAllLayout.updatePagedTableSelectedEntries(false);
+
+		Mockito.verify(table, Mockito.atLeast(1)).setValue(captor.capture());
+		Assert.assertTrue("updatePagedTableSelectedEntries(false) should deselect all entries",
+				new ArrayList<Object>(captor.getValue()).isEmpty());
+	}
+
+    @Test
 	public void testUpdateLoadedPageCurrentPageDoesntExistAfterUpdate() {
 
 		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
