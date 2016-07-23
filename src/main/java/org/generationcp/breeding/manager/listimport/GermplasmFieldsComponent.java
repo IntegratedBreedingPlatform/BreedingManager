@@ -67,7 +67,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 
 	private int leftIndentPixels = 130;
 
-	private boolean hasInventoryAmounts = false;
+	private boolean hasInventoryVariable = false;
 
 	private static final Integer STORAGE_LOCATION_TYPEID = 1500;
 
@@ -174,7 +174,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 
 	@Override
 	public void layoutComponents() {
-		if (this.hasInventoryAmounts) {
+		if (this.hasInventoryVariable) {
 			this.setHeight("330px");
 		} else {
 			this.setHeight("270px");
@@ -187,7 +187,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 
 		this.addComponent(this.locationComponent, "top:120px;left:0px");
 
-		if (this.hasInventoryAmounts) {
+		if (this.hasInventoryVariable) {
 			this.addComponent(this.seedLocationComponent, "top:180px;left:0px");
 
 			this.addComponent(this.germplasmDateLabel, "top:245px;left:0px");
@@ -279,8 +279,8 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 		return this.leftIndentPixels;
 	}
 
-	public void refreshLayout(boolean hasInventoryAmount) {
-		this.hasInventoryAmounts = hasInventoryAmount;
+	public void refreshLayout(boolean hasInventoryVariable) {
+		this.hasInventoryVariable = hasInventoryVariable;
 
 		this.removeAllComponents();
 		this.layoutComponents();
