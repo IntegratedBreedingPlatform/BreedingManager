@@ -12,6 +12,8 @@ import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialog;
 import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialogSource;
+import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
+import org.generationcp.breeding.manager.listmanager.util.DropHandlerMethods.ListUpdatedEvent;
 import org.generationcp.commons.help.document.HelpButton;
 import org.generationcp.commons.help.document.HelpModule;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -194,6 +196,14 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 			@Override
 			public void buttonClick(final ClickEvent event) {
 				ListManagerMain.this.toggleListBuilder();
+			}
+		});
+		this.listBuilderComponent.getBuildNewListDropHandler().addListener(new BuildNewListDropHandler.ListUpdatedListener() {
+
+			@Override
+			public void listUpdated(final ListUpdatedEvent event) {
+				ListManagerMain.this.getPlantSelectionComponent().getSearchResultsComponent().getMatchingGermplasmsTableWithSelectAll()
+						.updatePagedTableSelectedEntries(false);
 			}
 		});
 	}
