@@ -192,6 +192,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 		this.germplasmList.setType(this.germplasmListUploader.getImportedGermplasmList().getType());
 		this.germplasmList.setDescription(this.germplasmListUploader.getImportedGermplasmList().getTitle());
 		this.germplasmList.setStatus(1);
+		this.germplasmList.setUserId(this.germplasmListUploader.getImportedGermplasmList().getUserId());
 		try {
 			this.germplasmList.setUserId(this.contextUtil.getCurrentUserLocalId());
 			this.germplasmList.setProgramUUID(this.contextUtil.getCurrentProgramUUID());
