@@ -332,4 +332,8 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 	public void setLocationComponent(BreedingLocationField locationComponent){
 		this.locationComponent = locationComponent;
 	}
+	
+	public void setSeedLocationComponent(BreedingLocationField seedLocationComponent){
+		this.seedLocationComponent = seedLocationComponent;
+	}
 }
