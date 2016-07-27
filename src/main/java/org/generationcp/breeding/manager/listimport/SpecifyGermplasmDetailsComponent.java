@@ -514,11 +514,12 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 	public void initializeFromImportFile(final ImportedGermplasmList importedGermplasmList) {
 
 		this.importedGermplasmList = importedGermplasmList;
-		/**
-		 * Seed Storage Location will be shown whenever there is an Inventory Variable (i.e SEED_AMOUNT_G) in the Description that's why we
-		 * used hasInventoryVariable instead of hasInventoryAmountOnly here
+		/*
+		 * Seed Storage Location will be shown whenever there is an Inventory Variable (i.e SEED_AMOUNT_G) in the Description 
+		 * The second parameter is for toggling the instructions shown when inventory amount is present
 		 */
-		this.getGermplasmFieldsComponent().refreshLayout(this.germplasmListUploader.hasInventoryVariable());
+		this.getGermplasmFieldsComponent().refreshLayout(this.germplasmListUploader.hasInventoryVariable(), 
+				this.germplasmListUploader.hasInventoryAmount());
 
 		// Clear table contents first (possible that it has some rows in it from previous uploads, and then user went back to upload screen)
 		this.getGermplasmDetailsTable().removeAllItems();

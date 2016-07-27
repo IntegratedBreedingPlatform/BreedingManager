@@ -150,7 +150,7 @@ public class SpecifyGermplasmDetailsComponentTest {
 		this.specifyGermplasmDetailsComponent.setGermplasmListUploader(uploader);
 
 		final GermplasmFieldsComponent fieldsComponent = Mockito.mock(GermplasmFieldsComponent.class);
-		Mockito.doNothing().when(fieldsComponent).refreshLayout(Matchers.anyBoolean());
+		Mockito.doNothing().when(fieldsComponent).refreshLayout(Matchers.anyBoolean(), Matchers.anyBoolean());
 
 		final ImportedGermplasmList importedList =
 				new ImportedGermplasmList(SpecifyGermplasmDetailsComponentTest.COMPLETE_FILE_NAME, "", "", "", null);

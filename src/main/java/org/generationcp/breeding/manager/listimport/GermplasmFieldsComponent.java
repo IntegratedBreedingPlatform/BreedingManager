@@ -1,6 +1,7 @@
 
 package org.generationcp.breeding.manager.listimport;
 
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
@@ -114,8 +115,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 		this.addGermplasmDetailsLabel.addStyleName(Bootstrap.Typography.H4.styleName());
 
 		this.addGermplasmDetailsMessage = new Label();
-		this.addGermplasmDetailsMessage
-				.setValue("You can specify following details to apply to the imported germplasm. These details are optional.");
+		this.addGermplasmDetailsMessage.setValue(this.getGermplasmDetailsInstructions(false));
 
 		if (this.parentWindow != null) {
 			this.methodComponent = new BreedingMethodField(this.parentWindow, 200, false, false);
@@ -154,6 +154,19 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 
 		this.programUniqueId = this.contextUtil.getCurrentProgramUUID();
 
+	}
+
+	String getGermplasmDetailsInstructions(final boolean hasInventoryAmount) {
+		final StringBuilder sb = new StringBuilder(this.messageSource.getMessage(Message.SPECIFY_DETAILS_FOR_IMPORTED_GERMPLASM));
+		if (hasInventoryAmount) {
+			final String seedStorageRequiredMsg =
+					MessageFormat.format(this.messageSource.getMessage(Message.SEED_STORAGE_REQUIRED_WHEN_INVENTORY_IS_PRESENT),
+							this.messageSource.getMessage(Message.SEED_STORAGE_LOCATION_LABEL));
+			sb.append(seedStorageRequiredMsg);
+		} else {
+			sb.append(this.messageSource.getMessage(Message.DETAILS_ARE_OPTIONAL));
+		}
+		return sb.toString();
 	}
 
 	@Override
@@ -279,9 +292,10 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 		return this.leftIndentPixels;
 	}
 
-	public void refreshLayout(boolean hasInventoryVariable) {
+	public void refreshLayout(boolean hasInventoryVariable, boolean hasInventoryAmount) {
 		this.hasInventoryVariable = hasInventoryVariable;
 
+		this.addGermplasmDetailsMessage.setValue(this.getGermplasmDetailsInstructions(hasInventoryAmount));
 		this.removeAllComponents();
 		this.layoutComponents();
 		this.requestRepaint();

@@ -53,6 +53,10 @@ public class GermplasmFieldsComponentTest {
 		Mockito.when(this.messageSource.getMessage(Message.GERMPLASM_DATE_LABEL)).thenReturn(GermplasmFieldsComponentTest.DUMMY_STRING);
 		Mockito.when(this.messageSource.getMessage(Message.GERMPLASM_NAME_TYPE_LABEL))
 				.thenReturn(GermplasmFieldsComponentTest.DUMMY_STRING);
+		Mockito.when(this.messageSource.getMessage(Message.SPECIFY_DETAILS_FOR_IMPORTED_GERMPLASM))
+				.thenReturn(GermplasmFieldsComponentTest.DUMMY_STRING);
+		Mockito.when(this.messageSource.getMessage(Message.DETAILS_ARE_OPTIONAL))
+				.thenReturn(GermplasmFieldsComponentTest.DUMMY_STRING);
 
 		this.germplasmFieldsComponent.instantiateComponents();
 	}
