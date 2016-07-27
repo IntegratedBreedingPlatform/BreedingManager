@@ -91,5 +91,43 @@ public class GermplasmFieldsComponentTest {
 		Mockito.verify(this.seedLocationComponent, Mockito.times(1)).populateHarvestLocation(Matchers.eq(2),
 				Matchers.eq(GermplasmFieldsComponentTest.TEST_PROGRAMUUID));
 	}
+	
+	@Test
+	public void testGetGermplasmDetailsInstructionsDefaultView(){
+		// GetGermplasmDetailsInstructionsDefaultView method was already called in instantiateComponents method
+		Mockito.verify(this.messageSource).getMessage(Message.SPECIFY_DETAILS_FOR_IMPORTED_GERMPLASM);
+		Mockito.verify(this.messageSource).getMessage(Message.DETAILS_ARE_OPTIONAL);
+	}
+	
+	@Test
+	public void testGetGermplasmDetailsInstructionsWhenInventoryAmountIsPresent(){
+		this.germplasmFieldsComponent.setHasInventoryAmount(true);
+		this.germplasmFieldsComponent.getGermplasmDetailsInstructions();
+		
+		/* SPECIFY_DETAILS_FOR_IMPORTED_GERMPLASM message was already called in instantiateComponents method,
+		 * hence making total call after refreshLayout equals two since it's a fixed sub-string of instruction
+		*/
+		Mockito.verify(this.messageSource, Mockito.times(2)).getMessage(Message.SPECIFY_DETAILS_FOR_IMPORTED_GERMPLASM);
+		Mockito.verify(this.messageSource).getMessage(Message.SEED_STORAGE_REQUIRED_WHEN_INVENTORY_IS_PRESENT);
+	}
+	
+	@Test
+	public void testRefreshLayoutWhenInventoryAmountIsPresent(){
+		Mockito.doReturn("Seed storage required.").when(this.messageSource).getMessage(Message.SEED_STORAGE_REQUIRED_WHEN_INVENTORY_IS_PRESENT);
+		String oldDisplayMessage = (String) this.germplasmFieldsComponent.getGermplasmDetailsMessage().getValue();
+		
+		this.germplasmFieldsComponent.refreshLayout(true, true);
+		
+		/* SPECIFY_DETAILS_FOR_IMPORTED_GERMPLASM message was already called in instantiateComponents method,
+		 * hence making total call after refreshLayout equals two since it's a fixed sub-string of instruction
+		*/
+		Mockito.verify(this.messageSource, Mockito.times(2)).getMessage(Message.SPECIFY_DETAILS_FOR_IMPORTED_GERMPLASM);
+		Mockito.verify(this.messageSource).getMessage(Message.SEED_STORAGE_REQUIRED_WHEN_INVENTORY_IS_PRESENT);
+		
+		// Check that instructions text changed after refresh layout
+		String newDisplayMessage = (String) this.germplasmFieldsComponent.getGermplasmDetailsMessage().getValue();
+		Assert.assertFalse("Instructions text should have changed upon refresh when invetory is present", 
+				oldDisplayMessage.equals(newDisplayMessage));
+	}
 
 }

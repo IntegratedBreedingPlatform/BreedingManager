@@ -251,6 +251,10 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 	public BreedingLocationField getSeedLocationComponent() {
 		return this.seedLocationComponent;
 	}
+	
+	public Label getGermplasmDetailsMessage(){
+		return this.addGermplasmDetailsMessage;
+	}
 
 	protected void populateNameTypes() {
 		List<UserDefinedField> userDefinedFieldList = this.germplasmListManager.getGermplasmNameTypes();
@@ -335,5 +339,9 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 	
 	public void setSeedLocationComponent(BreedingLocationField seedLocationComponent){
 		this.seedLocationComponent = seedLocationComponent;
+	}
+	
+	public void setHasInventoryAmount(boolean hasInventoryAmount){
+		this.hasInventoryAmount = hasInventoryAmount;
 	}
 }
