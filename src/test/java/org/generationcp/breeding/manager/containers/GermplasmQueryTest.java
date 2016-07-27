@@ -2,7 +2,13 @@ package org.generationcp.breeding.manager.containers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.print.attribute.HashAttributeSet;
 
 import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
@@ -72,6 +78,7 @@ public class GermplasmQueryTest {
 	@Before
 	public void setUp() throws Exception {
 		// create a test list of germplasms with inventory information
+		final Map<Integer, String> pedigreeString = new HashMap<>();
 		for (int i = 0; i < 20; i++) {
 			GermplasmListTestDataInitializer.createGermplasmListWithListDataAndInventoryInfo(1, 10);
 
@@ -81,12 +88,13 @@ public class GermplasmQueryTest {
 			inventoryInfo.setActualInventoryLotCount(TEST_INVENTORY_COUNT);
 			inventoryInfo.setReservedLotCount(TEST_SEED_RES_COUNT);
 			germplasm.setInventoryInfo(inventoryInfo);
+			pedigreeString.put(germplasm.getGid(), TEST_CROSS_EXPANSION_STRING);
 			germplasms.add(germplasm);
 		}
 
 		// initialize middleware service calls
-		Mockito.when(this.pedigreeService.getCrossExpansion(Mockito.anyInt(), Mockito.eq(this.crossExpansionProperties)))
-				.thenReturn(TEST_CROSS_EXPANSION_STRING);
+		Mockito.when(this.pedigreeService.getCrossExpansions(Mockito.anySet(), Mockito.anyInt(), Mockito.eq(this.crossExpansionProperties)))
+		.thenReturn(pedigreeString);
 		Mockito.when(this.germplasmDataManager.searchForGermplasm(germplasmSearchParameter)).thenReturn(germplasms);
 		Mockito.when(this.germplasmDataManager.countSearchForGermplasm(Mockito.eq(SEARCH_STRING), Mockito.eq(Operation.LIKE),
 				Mockito.eq(germplasmSearchParameter.isIncludeParents()), Mockito.eq(germplasmSearchParameter.isWithInventoryOnly()),
@@ -105,7 +113,8 @@ public class GermplasmQueryTest {
 
 	@Test
 	public void testGetGermplasmItem() throws Exception {
-		Item item = this.query.getGermplasmItem(germplasms.get(0), 1);
+		Germplasm germplasm = germplasms.get(0);
+		Item item = this.query.getGermplasmItem(germplasms.get(0), 1, Collections.<Integer, String>singletonMap(germplasm.getGid(), TEST_CROSS_EXPANSION_STRING));
 
 		final List<String> itemPropertyIDList = Arrays.asList(itemPropertyIds);
 
