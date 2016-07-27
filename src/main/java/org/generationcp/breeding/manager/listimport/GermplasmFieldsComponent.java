@@ -32,8 +32,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
 
 @Configurable
-public class GermplasmFieldsComponent extends AbsoluteLayout implements InternationalizableComponent, InitializingBean,
-		BreedingManagerLayout, BreedingLocationFieldSource {
+public class GermplasmFieldsComponent extends AbsoluteLayout
+		implements InternationalizableComponent, InitializingBean, BreedingManagerLayout, BreedingLocationFieldSource {
 
 	private static final long serialVersionUID = -1180999883774074687L;
 
@@ -69,25 +69,25 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 	private int leftIndentPixels = 130;
 
 	private boolean hasInventoryVariable = false;
-	
+
 	private boolean hasInventoryAmount = false;
 
 	private static final Integer STORAGE_LOCATION_TYPEID = 1500;
 
 	private String programUniqueId;
 
-	public GermplasmFieldsComponent(Window parentWindow) {
+	public GermplasmFieldsComponent(final Window parentWindow) {
 		super();
 		this.parentWindow = parentWindow;
 	}
 
-	public GermplasmFieldsComponent(Window parentWindow, int pixels) {
+	public GermplasmFieldsComponent(final Window parentWindow, final int pixels) {
 		super();
 		this.parentWindow = parentWindow;
 		this.leftIndentPixels = pixels;
 	}
 
-	public GermplasmFieldsComponent(int pixels) {
+	public GermplasmFieldsComponent(final int pixels) {
 		super();
 		this.leftIndentPixels = pixels;
 	}
@@ -176,7 +176,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 
 		try {
 			this.populateNameTypes();
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			GermplasmFieldsComponent.LOG.error(e.getMessage(), e);
 		}
 
@@ -195,7 +195,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 			this.setHeight("300px");
 		}
 
-		if (this.hasInventoryAmount){			
+		if (this.hasInventoryAmount) {
 			this.addComponent(this.addGermplasmDetailsLabel, "top:0px;left:0px");
 			this.addComponent(this.addGermplasmDetailsMessage, "top:32px;left:0px");
 		} else {
@@ -251,16 +251,16 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 	public BreedingLocationField getSeedLocationComponent() {
 		return this.seedLocationComponent;
 	}
-	
-	public Label getGermplasmDetailsMessage(){
+
+	public Label getGermplasmDetailsMessage() {
 		return this.addGermplasmDetailsMessage;
 	}
 
 	protected void populateNameTypes() {
-		List<UserDefinedField> userDefinedFieldList = this.germplasmListManager.getGermplasmNameTypes();
+		final List<UserDefinedField> userDefinedFieldList = this.germplasmListManager.getGermplasmNameTypes();
 		Integer firstId = null;
 		boolean hasDefault = false;
-		for (UserDefinedField userDefinedField : userDefinedFieldList) {
+		for (final UserDefinedField userDefinedField : userDefinedFieldList) {
 			if (firstId == null) {
 				firstId = userDefinedField.getFldno();
 			}
@@ -276,23 +276,23 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 		}
 	}
 
-	public void setGermplasmBreedingMethod(String breedingMethod) {
+	public void setGermplasmBreedingMethod(final String breedingMethod) {
 		this.getBreedingMethodComboBox().setNullSelectionAllowed(false);
 		this.getBreedingMethodComboBox().addItem(breedingMethod);
 		this.getBreedingMethodComboBox().setValue(breedingMethod);
 	}
 
-	public void setGermplasmDate(Date germplasmDate) throws ParseException {
+	public void setGermplasmDate(final Date germplasmDate) throws ParseException {
 		this.germplasmDateField.setValue(germplasmDate);
 	}
 
-	public void setGermplasmLocation(String germplasmLocation) {
+	public void setGermplasmLocation(final String germplasmLocation) {
 		this.getLocationComboBox().setNullSelectionAllowed(false);
 		this.getLocationComboBox().addItem(germplasmLocation);
 		this.getLocationComboBox().setValue(germplasmLocation);
 	}
 
-	public void setGermplasmListType(String germplasmListType) {
+	public void setGermplasmListType(final String germplasmListType) {
 		this.nameTypeComboBox.setNullSelectionAllowed(false);
 		this.nameTypeComboBox.addItem(germplasmListType);
 		this.nameTypeComboBox.setValue(germplasmListType);
@@ -302,7 +302,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 		return this.leftIndentPixels;
 	}
 
-	public void refreshLayout(boolean hasInventoryVariable, boolean hasInventoryAmount) {
+	public void refreshLayout(final boolean hasInventoryVariable, final boolean hasInventoryAmount) {
 		this.hasInventoryVariable = hasInventoryVariable;
 		this.hasInventoryAmount = hasInventoryAmount;
 
@@ -329,19 +329,19 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 		}
 	}
 
-	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
-	
-	public void setLocationComponent(BreedingLocationField locationComponent){
+
+	public void setLocationComponent(final BreedingLocationField locationComponent) {
 		this.locationComponent = locationComponent;
 	}
-	
-	public void setSeedLocationComponent(BreedingLocationField seedLocationComponent){
+
+	public void setSeedLocationComponent(final BreedingLocationField seedLocationComponent) {
 		this.seedLocationComponent = seedLocationComponent;
 	}
-	
-	public void setHasInventoryAmount(boolean hasInventoryAmount){
+
+	public void setHasInventoryAmount(final boolean hasInventoryAmount) {
 		this.hasInventoryAmount = hasInventoryAmount;
 	}
 }

@@ -32,8 +32,8 @@ public class SpecifyGermplasmDetailsComponentTest {
 
 	private static final String FILE_NAME = "Maize Basic-Template.2015.01.01";
 	private static final String EXTENSION = "xls";
-	private static final String COMPLETE_FILE_NAME = SpecifyGermplasmDetailsComponentTest.FILE_NAME + "."
-			+ SpecifyGermplasmDetailsComponentTest.EXTENSION;
+	private static final String COMPLETE_FILE_NAME =
+			SpecifyGermplasmDetailsComponentTest.FILE_NAME + "." + SpecifyGermplasmDetailsComponentTest.EXTENSION;
 	private static final String TEST_SOURCE_VALUE = "ListABC";
 
 	@Mock
@@ -49,12 +49,12 @@ public class SpecifyGermplasmDetailsComponentTest {
 	private GermplasmFieldsComponent germplasmFieldsComponent;
 
 	@InjectMocks
-	private final SpecifyGermplasmDetailsComponent specifyGermplasmDetailsComponent = new SpecifyGermplasmDetailsComponent(
-			Mockito.mock(GermplasmImportMain.class), false);
+	private final SpecifyGermplasmDetailsComponent specifyGermplasmDetailsComponent =
+			new SpecifyGermplasmDetailsComponent(Mockito.mock(GermplasmImportMain.class), false);
 
 	@Before
 	public void setUp() throws Exception {
-		Mockito.doReturn("").when(this.messageSource).getMessage(Mockito.any(Message.class));
+		Mockito.doReturn("").when(this.messageSource).getMessage(Matchers.any(Message.class));
 		this.specifyGermplasmDetailsComponent.instantiateComponents();
 		this.specifyGermplasmDetailsComponent.setGermplasmListUploader(this.germplasmListUploader);
 		this.specifyGermplasmDetailsComponent.setGermplasmFieldsComponent(this.germplasmFieldsComponent);
@@ -103,7 +103,8 @@ public class SpecifyGermplasmDetailsComponentTest {
 	public void testInitializeFromImportFile_BasicTemplateSourceAvailable() {
 		final Table table = new Table();
 
-		final List<ImportedGermplasm> importedGermplasms = this.createImportedGermplasmFromBasicTemplate(TEST_SOURCE_VALUE);
+		final List<ImportedGermplasm> importedGermplasms =
+				this.createImportedGermplasmFromBasicTemplate(SpecifyGermplasmDetailsComponentTest.TEST_SOURCE_VALUE);
 
 		this.setupInitializeFromImportedFileTest(table, importedGermplasms);
 		Assert.assertTrue(table.getItemIds().size() == 5);
@@ -111,7 +112,8 @@ public class SpecifyGermplasmDetailsComponentTest {
 			final Integer id = new Integer(i);
 			Assert.assertEquals(id, table.getItem(id).getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue());
 
-			Assert.assertEquals(TEST_SOURCE_VALUE, table.getItem(id).getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue());
+			Assert.assertEquals(SpecifyGermplasmDetailsComponentTest.TEST_SOURCE_VALUE,
+					table.getItem(id).getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue());
 			Assert.assertEquals("LEAFNODE00" + i, table.getItem(id).getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue());
 			Assert.assertNull(table.getItem(id).getItemProperty(ColumnLabels.ENTRY_CODE.getName()).getValue());
 			Assert.assertNull(table.getItem(id).getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue());

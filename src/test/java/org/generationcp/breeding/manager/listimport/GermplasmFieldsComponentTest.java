@@ -44,7 +44,7 @@ public class GermplasmFieldsComponentTest {
 	public void setUp() {
 		Mockito.when(this.contextUtil.getCurrentProgramUUID()).thenReturn(GermplasmFieldsComponentTest.TEST_PROGRAMUUID);
 		Mockito.when(this.messageSource.getMessage(Matchers.any(Message.class))).thenReturn(GermplasmFieldsComponentTest.DUMMY_STRING);
-		
+
 		this.germplasmFieldsComponent.instantiateComponents();
 
 		this.germplasmFieldsComponent.setLocationComponent(this.locationComponent);
@@ -53,14 +53,14 @@ public class GermplasmFieldsComponentTest {
 
 	@Test
 	public void testUpdateAllLocationFieldsWhenLocationComboBoxValueIsNull() {
-		ComboBox comboBox = new ComboBox();
+		final ComboBox comboBox = new ComboBox();
 		Mockito.doReturn(comboBox).when(this.locationComponent).getBreedingLocationComboBox();
 		Mockito.doReturn(comboBox).when(this.seedLocationComponent).getBreedingLocationComboBox();
 
 		this.germplasmFieldsComponent.updateAllLocationFields();
 
-		ArgumentCaptor<Integer> selectedLocation = ArgumentCaptor.forClass(Integer.class);
-		ArgumentCaptor<Integer> selectedSeedLocation = ArgumentCaptor.forClass(Integer.class);
+		final ArgumentCaptor<Integer> selectedLocation = ArgumentCaptor.forClass(Integer.class);
+		final ArgumentCaptor<Integer> selectedSeedLocation = ArgumentCaptor.forClass(Integer.class);
 
 		Mockito.verify(this.locationComponent, Mockito.times(1)).populateHarvestLocation(selectedLocation.capture(),
 				Matchers.eq(GermplasmFieldsComponentTest.TEST_PROGRAMUUID));
@@ -74,12 +74,12 @@ public class GermplasmFieldsComponentTest {
 
 	@Test
 	public void testUpdateAllLocationFieldsWhenLocationComboBoxValueIsNotNull() {
-		ComboBox comboBox = new ComboBox();
+		final ComboBox comboBox = new ComboBox();
 		comboBox.addItem(1);
 		comboBox.setValue(1);
 		Mockito.doReturn(comboBox).when(this.locationComponent).getBreedingLocationComboBox();
 
-		ComboBox comboBox2 = new ComboBox();
+		final ComboBox comboBox2 = new ComboBox();
 		comboBox2.addItem(2);
 		comboBox2.setValue(2);
 		Mockito.doReturn(comboBox2).when(this.seedLocationComponent).getBreedingLocationComboBox();
@@ -91,42 +91,45 @@ public class GermplasmFieldsComponentTest {
 		Mockito.verify(this.seedLocationComponent, Mockito.times(1)).populateHarvestLocation(Matchers.eq(2),
 				Matchers.eq(GermplasmFieldsComponentTest.TEST_PROGRAMUUID));
 	}
-	
+
 	@Test
-	public void testGetGermplasmDetailsInstructionsDefaultView(){
+	public void testGetGermplasmDetailsInstructionsDefaultView() {
 		// GetGermplasmDetailsInstructionsDefaultView method was already called in instantiateComponents method
 		Mockito.verify(this.messageSource).getMessage(Message.SPECIFY_DETAILS_FOR_IMPORTED_GERMPLASM);
 		Mockito.verify(this.messageSource).getMessage(Message.DETAILS_ARE_OPTIONAL);
 	}
-	
+
 	@Test
-	public void testGetGermplasmDetailsInstructionsWhenInventoryAmountIsPresent(){
+	public void testGetGermplasmDetailsInstructionsWhenInventoryAmountIsPresent() {
 		this.germplasmFieldsComponent.setHasInventoryAmount(true);
 		this.germplasmFieldsComponent.getGermplasmDetailsInstructions();
-		
-		/* SPECIFY_DETAILS_FOR_IMPORTED_GERMPLASM message was already called in instantiateComponents method,
-		 * hence making total call after refreshLayout equals two since it's a fixed sub-string of instruction
-		*/
+
+		/*
+		 * SPECIFY_DETAILS_FOR_IMPORTED_GERMPLASM message was already called in instantiateComponents method, hence making total call after
+		 * refreshLayout equals two since it's a fixed sub-string of instruction
+		 */
 		Mockito.verify(this.messageSource, Mockito.times(2)).getMessage(Message.SPECIFY_DETAILS_FOR_IMPORTED_GERMPLASM);
 		Mockito.verify(this.messageSource).getMessage(Message.SEED_STORAGE_REQUIRED_WHEN_INVENTORY_IS_PRESENT);
 	}
-	
+
 	@Test
-	public void testRefreshLayoutWhenInventoryAmountIsPresent(){
-		Mockito.doReturn("Seed storage required.").when(this.messageSource).getMessage(Message.SEED_STORAGE_REQUIRED_WHEN_INVENTORY_IS_PRESENT);
-		String oldDisplayMessage = (String) this.germplasmFieldsComponent.getGermplasmDetailsMessage().getValue();
-		
+	public void testRefreshLayoutWhenInventoryAmountIsPresent() {
+		Mockito.doReturn("Seed storage required.").when(this.messageSource)
+				.getMessage(Message.SEED_STORAGE_REQUIRED_WHEN_INVENTORY_IS_PRESENT);
+		final String oldDisplayMessage = (String) this.germplasmFieldsComponent.getGermplasmDetailsMessage().getValue();
+
 		this.germplasmFieldsComponent.refreshLayout(true, true);
-		
-		/* SPECIFY_DETAILS_FOR_IMPORTED_GERMPLASM message was already called in instantiateComponents method,
-		 * hence making total call after refreshLayout equals two since it's a fixed sub-string of instruction
-		*/
+
+		/*
+		 * SPECIFY_DETAILS_FOR_IMPORTED_GERMPLASM message was already called in instantiateComponents method, hence making total call after
+		 * refreshLayout equals two since it's a fixed sub-string of instruction
+		 */
 		Mockito.verify(this.messageSource, Mockito.times(2)).getMessage(Message.SPECIFY_DETAILS_FOR_IMPORTED_GERMPLASM);
 		Mockito.verify(this.messageSource).getMessage(Message.SEED_STORAGE_REQUIRED_WHEN_INVENTORY_IS_PRESENT);
-		
+
 		// Check that instructions text changed after refresh layout
-		String newDisplayMessage = (String) this.germplasmFieldsComponent.getGermplasmDetailsMessage().getValue();
-		Assert.assertFalse("Instructions text should have changed upon refresh when invetory is present", 
+		final String newDisplayMessage = (String) this.germplasmFieldsComponent.getGermplasmDetailsMessage().getValue();
+		Assert.assertFalse("Instructions text should have changed upon refresh when invetory is present",
 				oldDisplayMessage.equals(newDisplayMessage));
 	}
 
