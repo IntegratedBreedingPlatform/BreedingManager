@@ -40,12 +40,16 @@ public class CrossingMethodComponentTest {
 		final List<GermplasmListEntry> maleList = GermplasmListEntryTestDataInitializer.getGermplasmListEntries();
 		final List<Integer> gids = this.getAllGids(femaleList, maleList);
 		final Map<Integer, String> gidToPreferredNameMap = this.createGidToPreferredNameMap(gids);
+		
 		Mockito.doReturn(gidToPreferredNameMap).when(this.germplasmDataManager).getPreferredNamesByGids(gids);
+		
 		this.crossingMethodComponent.updateParentsDesignationToPreferredName(femaleList, maleList);
+		
 		// Test that the designation of the list entries is the preferred name of the germplasm
 		final List<GermplasmListEntry> parentsListEntries = new ArrayList<>();
 		parentsListEntries.addAll(femaleList);
 		parentsListEntries.addAll(maleList);
+		
 		for (final GermplasmListEntry germplasmListEntry : parentsListEntries) {
 			final Integer gid = germplasmListEntry.getGid();
 			final String designation = germplasmListEntry.getDesignation();
