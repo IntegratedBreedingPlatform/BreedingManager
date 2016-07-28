@@ -19,11 +19,14 @@ import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.exceptions.verification.NeverWantedButInvoked;
 import org.mockito.exceptions.verification.TooLittleActualInvocations;
+
+import com.vaadin.ui.Button;
 
 public class MakeCrossesTableComponentTest {
 
@@ -46,11 +49,11 @@ public class MakeCrossesTableComponentTest {
 
 	private GermplasmListEntry femaleParent;
 	private GermplasmListEntry maleParent;
-	private String femaleSource = "female source";
-	private String maleSource = "male source";
+	private final String femaleSource = "female source";
+	private final String maleSource = "male source";
 	private CrossParents parents;
-	private String listnameFemaleParent = "Female Parent";
-	private String listnameMaleParent = "Male Parent";
+	private final String listnameFemaleParent = "Female Parent";
+	private final String listnameMaleParent = "Male Parent";
 
 	@Before
 	public void setUp() {
@@ -76,7 +79,7 @@ public class MakeCrossesTableComponentTest {
 	@Test
 	public void testInitializeCrossesMadeTable_returnsTheValueFromColumLabelDefaultName() {
 
-		BreedingManagerTable table = new BreedingManagerTable(10, 10);
+		final BreedingManagerTable table = new BreedingManagerTable(10, 10);
 
 		Mockito.when(this.makeCrossesTableComponent.getTableCrossesMade()).thenReturn(table);
 
@@ -91,11 +94,11 @@ public class MakeCrossesTableComponentTest {
 
 	@Test
 	public void testInitializeCrossesMadeTable_returnsTheValueFromOntologyManager() throws MiddlewareQueryException {
-		BreedingManagerTable table = new BreedingManagerTable(10, 10);
+		final BreedingManagerTable table = new BreedingManagerTable(10, 10);
 
 		Mockito.when(this.makeCrossesTableComponent.getTableCrossesMade()).thenReturn(table);
 
-		Term fromOntology = new Term();
+		final Term fromOntology = new Term();
 		fromOntology.setName("Ontology Name");
 
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.CROSS.getId())).thenReturn(fromOntology);
@@ -134,10 +137,9 @@ public class MakeCrossesTableComponentTest {
 				this.maleSource, this.parents);
 
 		try {
-			Mockito.verify(this.tableCrossesMade, Mockito.times(1)).addItem(
-					new Object[] {1, Mockito.anyString(), this.femaleParent.getDesignation(), this.maleParent.getDesignation(),
-							Mockito.anyString()}, this.parents);
-		} catch (TooLittleActualInvocations e) {
+			Mockito.verify(this.tableCrossesMade, Mockito.times(1)).addItem(new Object[] {1, Matchers.anyString(),
+					this.femaleParent.getDesignation(), this.maleParent.getDesignation(), Matchers.anyString()}, this.parents);
+		} catch (final TooLittleActualInvocations e) {
 			Assert.fail("Expecting table crosses will have an added entry but didn't.");
 		}
 	}
@@ -149,10 +151,9 @@ public class MakeCrossesTableComponentTest {
 				this.maleSource, this.parents);
 
 		try {
-			Mockito.verify(this.tableCrossesMade, Mockito.times(0)).addItem(
-					new Object[] {1, Mockito.anyString(), this.femaleParent.getDesignation(), this.maleParent.getDesignation(),
-							Mockito.anyString()}, this.parents);
-		} catch (NeverWantedButInvoked e) {
+			Mockito.verify(this.tableCrossesMade, Mockito.times(0)).addItem(new Object[] {1, Matchers.anyString(),
+					this.femaleParent.getDesignation(), this.maleParent.getDesignation(), Matchers.anyString()}, this.parents);
+		} catch (final NeverWantedButInvoked e) {
 			Assert.fail("Expecting table crosses will not have an added entry but didn't.");
 		}
 	}
@@ -165,10 +166,9 @@ public class MakeCrossesTableComponentTest {
 				this.maleSource, this.parents);
 
 		try {
-			Mockito.verify(this.tableCrossesMade, Mockito.times(1)).addItem(
-					new Object[] {1, Mockito.anyString(), this.femaleParent.getDesignation(), this.maleParent.getDesignation(),
-							Mockito.anyString()}, this.parents);
-		} catch (TooLittleActualInvocations e) {
+			Mockito.verify(this.tableCrossesMade, Mockito.times(1)).addItem(new Object[] {1, Matchers.anyString(),
+					this.femaleParent.getDesignation(), this.maleParent.getDesignation(), Matchers.anyString()}, this.parents);
+		} catch (final TooLittleActualInvocations e) {
 			Assert.fail("Expecting table crosses will have an added entry but didn't.");
 		}
 	}
@@ -180,10 +180,9 @@ public class MakeCrossesTableComponentTest {
 		this.makeCrossesTableComponent.addItemToMakeCrossesTable(this.listnameFemaleParent, this.listnameMaleParent, true,
 				this.femaleParent, this.maleParent);
 		try {
-			Mockito.verify(this.tableCrossesMade, Mockito.times(1)).addItem(
-					new Object[] {1, Mockito.anyString(), this.femaleParent.getDesignation(), this.maleParent.getDesignation(),
-							Mockito.anyString()}, this.parents);
-		} catch (TooLittleActualInvocations e) {
+			Mockito.verify(this.tableCrossesMade, Mockito.times(1)).addItem(new Object[] {1, Matchers.anyString(),
+					this.femaleParent.getDesignation(), this.maleParent.getDesignation(), Matchers.anyString()}, this.parents);
+		} catch (final TooLittleActualInvocations e) {
 			Assert.fail("Expecting table crosses will have an added entry but didn't.");
 		}
 	}
@@ -193,10 +192,9 @@ public class MakeCrossesTableComponentTest {
 		this.makeCrossesTableComponent.addItemToMakeCrossesTable(this.listnameFemaleParent, this.listnameMaleParent, true,
 				this.femaleParent, this.maleParent);
 		try {
-			Mockito.verify(this.tableCrossesMade, Mockito.times(0)).addItem(
-					new Object[] {1, Mockito.anyString(), this.femaleParent.getDesignation(), this.maleParent.getDesignation(),
-							Mockito.anyString()}, this.parents);
-		} catch (NeverWantedButInvoked e) {
+			Mockito.verify(this.tableCrossesMade, Mockito.times(0)).addItem(new Object[] {1, Matchers.anyString(),
+					this.femaleParent.getDesignation(), this.maleParent.getDesignation(), Matchers.anyString()}, this.parents);
+		} catch (final NeverWantedButInvoked e) {
 			Assert.fail("Expecting table crosses will not have an added entry but didn't.");
 		}
 	}
@@ -208,35 +206,64 @@ public class MakeCrossesTableComponentTest {
 		this.makeCrossesTableComponent.addItemToMakeCrossesTable(this.listnameFemaleParent, this.listnameMaleParent, false,
 				this.femaleParent, this.maleParent);
 		try {
-			Mockito.verify(this.tableCrossesMade, Mockito.times(1)).addItem(
-					new Object[] {1, Mockito.anyString(), this.femaleParent.getDesignation(), this.maleParent.getDesignation(),
-							Mockito.anyString()}, this.parents);
-		} catch (TooLittleActualInvocations e) {
+			Mockito.verify(this.tableCrossesMade, Mockito.times(1)).addItem(new Object[] {1, Matchers.anyString(),
+					this.femaleParent.getDesignation(), this.maleParent.getDesignation(), Matchers.anyString()}, this.parents);
+		} catch (final TooLittleActualInvocations e) {
 			Assert.fail("Expecting table crosses will have an added entry but didn't.");
 		}
 	}
 
 	@Test
 	public void testGenerateSeedSourceStandaloneCrossing() {
-		String seedSource = this.makeCrossesTableComponent.generateSeedSource(1, "F:1", 2, "M:2");
+		final String seedSource = this.makeCrossesTableComponent.generateSeedSource(1, "F:1", 2, "M:2");
 		Assert.assertEquals("When crossing standalone (not in context of a Nursery), default seed source format is expected.", "F:1/M:2",
 				seedSource);
 	}
 
 	@Test
 	public void testGenerateSeedSourceCrossingWithNurseryInContext() throws Exception {
-		Workbook testWorkbook = new Workbook();
+		final Workbook testWorkbook = new Workbook();
 		testWorkbook.setObservations(new ArrayList<MeasurementRow>());
 		Mockito.when(this.makeCrossesMain.getNurseryWorkbook()).thenReturn(testWorkbook);
-		Mockito.when(
-				this.seedSourceGenerator.generateSeedSourceForCross(Mockito.any(Workbook.class), Mockito.anyString(), Mockito.anyString(),
-						Mockito.anyString(), Mockito.anyString())).thenReturn("MEX-DrySeason-N1-1-2");
+		Mockito.when(this.seedSourceGenerator.generateSeedSourceForCross(Matchers.any(Workbook.class), Matchers.anyString(),
+				Matchers.anyString(), Matchers.anyString(), Matchers.anyString())).thenReturn("MEX-DrySeason-N1-1-2");
 
 		// Run init sequence
 		this.makeCrossesTableComponent.afterPropertiesSet();
 
-		String seedSource = this.makeCrossesTableComponent.generateSeedSource(1, "WhateverF", 2, "WhateverM");
+		final String seedSource = this.makeCrossesTableComponent.generateSeedSource(1, "WhateverF", 2, "WhateverM");
 		Assert.assertEquals("When crossing in context of a Nursery, seed source should be generated using SeedSourceGenerator service.",
 				"MEX-DrySeason-N1-1-2", seedSource);
+	}
+
+	@Test
+	public void testSaveCrossListWithAllValidationsPassed() throws Exception {
+		// Setup mock and run init sequence
+		Mockito.when(this.makeCrossesMain.isValidationsBeforeSavePassed()).thenReturn(true);
+		Mockito.doNothing().when(this.makeCrossesTableComponent).launchSaveListAsWindow();
+		this.makeCrossesTableComponent.afterPropertiesSet();
+
+		// Enable save button manually so that click listener will be called
+		final Button saveButton = this.makeCrossesTableComponent.getSaveButton();
+		saveButton.setEnabled(true);
+		saveButton.click();
+
+		// Check that Save List As pop-up window was launched
+		Mockito.verify(this.makeCrossesTableComponent, Mockito.times(1)).launchSaveListAsWindow();
+	}
+
+	@Test
+	public void testSaveCrossListWithValidationError() throws Exception {
+		// Setup mock and run init sequence
+		Mockito.when(this.makeCrossesMain.isValidationsBeforeSavePassed()).thenReturn(false);
+		this.makeCrossesTableComponent.afterPropertiesSet();
+
+		// Enable save button manually so that click listener will be called
+		final Button saveButton = this.makeCrossesTableComponent.getSaveButton();
+		saveButton.setEnabled(true);
+		saveButton.click();
+
+		// Check that Save List As pop-up window was not launched
+		Mockito.verify(this.makeCrossesTableComponent, Mockito.times(0)).launchSaveListAsWindow();
 	}
 }

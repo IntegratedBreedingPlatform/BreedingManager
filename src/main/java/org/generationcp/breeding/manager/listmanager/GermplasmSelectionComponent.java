@@ -42,6 +42,7 @@ public class GermplasmSelectionComponent extends VerticalLayout implements Initi
 	public GermplasmSelectionComponent(final ListManagerMain source) {
 		super();
 		this.source = source;
+		this.setDebugId("GermplasmSelectionComponent");
 	}
 
 	@Override
@@ -59,21 +60,29 @@ public class GermplasmSelectionComponent extends VerticalLayout implements Initi
 		this.setHeight("800px");
 
 		this.headerLayout = new HorizontalLayout();
+		this.headerLayout.setDebugId("headerLayout");
+
 		this.instructionLayout = new HorizontalLayout();
+		this.headerLayout.setDebugId("instructionLayout");
+
 		this.instructionLayout.setWidth("100%");
 
 		this.headingLabel = new Label();
+		this.headingLabel.setDebugId("headingLabel");
 		this.headingLabel.setImmediate(true);
 		this.headingLabel.setWidth("200px");
 		this.headingLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		this.headingLabel.addStyleName(AppConstants.CssStyles.BOLD);
 
 		this.searchDescription = new Label();
+		this.searchDescription.setDebugId("searchDescription");
 		this.searchDescription.addStyleName("lm-word-wrap");
 		this.searchDescription.setHeight("55px");
 
 		this.searchResultsComponent = new GermplasmSearchResultsComponent(this.source);
+		this.searchResultsComponent.setDebugId("searchResultsComponent");
 		this.searchBarComponent = new GermplasmSearchBarComponent(this.searchResultsComponent);
+		this.searchBarComponent.setDebugId("searchBarComponent");
 
 	}
 
