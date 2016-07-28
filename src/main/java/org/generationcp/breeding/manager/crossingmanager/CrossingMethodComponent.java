@@ -81,7 +81,8 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 		this.crossingMethodComboBox.setWidth("400px");
 
 		this.chkBoxMakeReciprocalCrosses = new CheckBox(this.messageSource.getMessage(Message.MAKE_CROSSES_CHECKBOX_LABEL));
-		this.chkBoxExcludeSelf = new CheckBox(this.messageSource.getMessage(Message.EXCLUDE_SELF_LABEL));
+		//By default set "Exclude self" checkbox as selected
+		this.chkBoxExcludeSelf = new CheckBox(this.messageSource.getMessage(Message.EXCLUDE_SELF_LABEL), true);
 
 		this.btnMakeCross = new Button(this.messageSource.getMessage(Message.MAKE_CROSSES_BUTTON_LABEL));
 		this.btnMakeCross.setData(CrossingMethodComponent.MAKE_CROSS_BUTTON_ID);
