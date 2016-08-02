@@ -137,7 +137,6 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 	@Override
 	public void initializeValues() {
 		if (this.germplasmList != null) {
-			this.germplasmListTree.createTree();
 			this.listDetailsComponent.setGermplasmListDetails(this.germplasmList);
 		} else {
 			this.listDetailsComponent.setGermplasmListDetails(null);

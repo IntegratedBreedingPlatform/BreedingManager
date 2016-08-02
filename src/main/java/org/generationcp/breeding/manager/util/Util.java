@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 import org.dellroad.stuff.vaadin.ContextApplication;
 import org.generationcp.breeding.manager.exception.BreedingManagerException;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
@@ -42,6 +44,8 @@ import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
+
+import javax.annotation.Nullable;
 
 public class Util {
 
@@ -412,11 +416,12 @@ public class Util {
 		 List<GermplasmList> lists = new ArrayList<GermplasmList>();
 
 		try {
-			 lists = germplasmListManager.getAllGermplasmLists(0, Integer.MAX_VALUE);
-			 for (GermplasmList list : lists) {
-				 Integer listId = list.getId();
-				 germplasmListsMap.put(listId, list);
-			 }
+			lists = germplasmListManager.getAllGermplasmLists(0, Integer.MAX_VALUE);
+			germplasmListsMap = Maps.uniqueIndex(lists, new Function<GermplasmList, Integer>() {
+				@Nullable @Override public Integer apply(final GermplasmList germplasmList) {
+					return germplasmList.getId();
+				}
+			});
 		 } catch (MiddlewareQueryException e) {
 			 Util.LOG.error("Error retrieving all germplasm lists.", e);
 		 }
