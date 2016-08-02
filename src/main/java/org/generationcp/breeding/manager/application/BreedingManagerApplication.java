@@ -24,7 +24,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 
-import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.Terminal;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
@@ -60,11 +59,10 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 	@Autowired
 	private GermplasmListManager germplasmListManager;
 
-	private UpdateComponentLabelsAction messageSourceListener;
-
 	private ApplicationContext applicationContext;
 
 	private ListManagerMain listManagerMain;
+	
 	private ManageCrossingSettingsMain manageCrossingSettingsMain;
 
 	@Override
@@ -78,9 +76,6 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 
 	@Override
 	public void initSpringApplication(final ConfigurableWebApplicationContext arg0) {
-
-		this.messageSourceListener = new UpdateComponentLabelsAction(this);
-		this.messageSource.addListener(this.messageSourceListener);
 
 		this.window = this.instantiateListManagerWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME);
 		this.setMainWindow(this.window);
@@ -98,6 +93,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 		if (super.getWindow(name) == null) {
 			if (name.equals(BreedingManagerApplication.GERMPLASM_IMPORT_WINDOW_NAME)) {
 				final Window germplasmImportWindow = new Window(this.messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
+				germplasmImportWindow.setDebugId("germplasmImportWindow");
 				germplasmImportWindow.setName(BreedingManagerApplication.GERMPLASM_IMPORT_WINDOW_NAME);
 				germplasmImportWindow.setSizeUndefined();
 				germplasmImportWindow.setContent(new GermplasmImportMain(germplasmImportWindow, false));
@@ -106,6 +102,8 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 
 			} else if (name.equals(BreedingManagerApplication.GERMPLASM_IMPORT_WINDOW_NAME_POPUP)) {
 				final Window germplasmImportWindow = new Window(this.messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
+				germplasmImportWindow.setDebugId("germplasmImportWindow");
+
 				germplasmImportWindow.setName(BreedingManagerApplication.GERMPLASM_IMPORT_WINDOW_NAME_POPUP);
 				germplasmImportWindow.setSizeUndefined();
 				germplasmImportWindow.setContent(new GermplasmImportMain(germplasmImportWindow, false, true));
@@ -114,6 +112,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 
 			} else if (name.equals(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)) {
 				final Window listManagerWindow = this.instantiateListManagerWindow(name);
+				listManagerWindow.setDebugId("listManagerWindow");
 				this.addWindow(listManagerWindow);
 
 				return listManagerWindow;
@@ -228,8 +227,10 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 		listManagerWindow.setSizeFull();
 
 		this.listManagerMain = new org.generationcp.breeding.manager.listmanager.ListManagerMain();
-
+		listManagerMain.setDebugId("listManagerMain");
 		listManagerWindow.setContent(this.listManagerMain);
+		listManagerWindow.setDebugId("listManagerWindow");
+
 		return listManagerWindow;
 	}
 
@@ -252,8 +253,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 	@Override
 	public void close() {
 		super.close();
-		// implement this when we need to do something on session timeout
-		this.messageSource.removeListener(this.messageSourceListener);
+
 		BreedingManagerApplication.LOG.debug("Application closed");
 	}
 
@@ -316,4 +316,5 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 	public void setGermplasmListManager(final GermplasmListManager germplasmListManager) {
 		this.germplasmListManager = germplasmListManager;
 	}
+
 }

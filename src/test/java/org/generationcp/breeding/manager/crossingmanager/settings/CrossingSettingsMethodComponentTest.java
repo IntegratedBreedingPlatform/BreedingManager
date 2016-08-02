@@ -18,6 +18,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Window;
+
 public class CrossingSettingsMethodComponentTest {
 
 	private static final String DUMMY_UNIQUE_ID = "1234567890";
@@ -49,7 +54,7 @@ public class CrossingSettingsMethodComponentTest {
 
 	@Test
 	public void testinitPopulateFavMethodReturnsFalseWhenThereAreNoFavouriteMethod() throws MiddlewareQueryException {
-		ArrayList<ProgramFavorite> favouriteMethods = new ArrayList<ProgramFavorite>();
+		final ArrayList<ProgramFavorite> favouriteMethods = new ArrayList<ProgramFavorite>();
 
 		Mockito.when(this.gpdm.getProgramFavorites(FavoriteType.METHOD, 1000, CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID))
 				.thenReturn(favouriteMethods);
@@ -61,8 +66,8 @@ public class CrossingSettingsMethodComponentTest {
 				this.csmc.initPopulateFavMethod(CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID));
 	}
 
-	private Project getProject(long id) {
-		Project project = new Project();
+	private Project getProject(final long id) {
+		final Project project = new Project();
 		project.setProjectId(id);
 		project.setUniqueID(CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID);
 		return project;
@@ -71,7 +76,7 @@ public class CrossingSettingsMethodComponentTest {
 	@Test
 	public void testinitPopulateFavMethodReturnsTrueWhenThereAreFavouriteMethod() throws MiddlewareQueryException {
 
-		ArrayList<ProgramFavorite> favouriteMethods = new ArrayList<ProgramFavorite>();
+		final ArrayList<ProgramFavorite> favouriteMethods = new ArrayList<ProgramFavorite>();
 		favouriteMethods.add(Mockito.mock(ProgramFavorite.class));
 
 		Mockito.when(this.gpdm.getProgramFavorites(FavoriteType.METHOD, 1000, CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID))
@@ -81,4 +86,59 @@ public class CrossingSettingsMethodComponentTest {
 		Assert.assertTrue("Expecting a true return value when there are favourite method.",
 				this.csmc.initPopulateFavMethod(CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID));
 	}
+
+	@Test
+	public void testValidationPassedWhenMethodIsFromParentalLines() {
+		// Unselected checkbox means method will be based on parental lines
+		final CrossingSettingsMethodComponent breedingMethodComponent = new CrossingSettingsMethodComponent();
+		final CheckBox selectMethodForAllCheckbox = new CheckBox();
+		selectMethodForAllCheckbox.setValue(false);
+
+		breedingMethodComponent.setSelectMethod(selectMethodForAllCheckbox);
+		final boolean isValidationsPassed = breedingMethodComponent.validateInputFields();
+
+		Assert.assertTrue("Expecting validation to pass when method is based on parental lines", isValidationsPassed);
+	}
+
+	@Test
+	public void testValidationPassedWhenBreedingMethodChosenForAllCrosses() {
+		final CrossingSettingsMethodComponent breedingMethodComponent = new CrossingSettingsMethodComponent();
+
+		// "Select method to use for all crosses" option was ticked off
+		final CheckBox selectMethodForAllCheckbox = new CheckBox();
+		selectMethodForAllCheckbox.setValue(true);
+		breedingMethodComponent.setSelectMethod(selectMethodForAllCheckbox);
+
+		// Breeding method chosen for all crosses
+		final ComboBox breedingMethodsSelection = new ComboBox();
+		breedingMethodsSelection.addItem(1);
+		breedingMethodsSelection.setValue(1);
+		breedingMethodComponent.setBreedingMethods(breedingMethodsSelection);
+
+		final boolean isValidationsPassed = breedingMethodComponent.validateInputFields();
+		Assert.assertTrue("Expecting validation to pass when breeding method was chosen for all crosses", isValidationsPassed);
+	}
+
+	@Test
+	public void testValidationFailedWhenNoBreedingMethodChosenForAllCrosses() {
+		// Initialise and set mocks
+		final CrossingSettingsMethodComponent breedingMethodComponent = new CrossingSettingsMethodComponent();
+		final Component parent = Mockito.mock(Component.class);
+		Mockito.when(parent.getWindow()).thenReturn(new Window());
+		breedingMethodComponent.setParent(parent);
+		breedingMethodComponent.setMessageSource(this.messageSource);
+
+		// "Select method to use for all crosses" option was ticked off
+		final CheckBox selectMethodForAllCheckbox = new CheckBox();
+		selectMethodForAllCheckbox.setValue(true);
+		breedingMethodComponent.setSelectMethod(selectMethodForAllCheckbox);
+
+		// No value chosen for breeding method
+		final ComboBox breedingMethodsSelection = new ComboBox();
+		breedingMethodComponent.setBreedingMethods(breedingMethodsSelection);
+
+		final boolean isValidationsPassed = breedingMethodComponent.validateInputFields();
+		Assert.assertFalse("Expecting validation to fail when there's no breeding method chosen for all crosses", isValidationsPassed);
+	}
+
 }

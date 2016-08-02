@@ -18,7 +18,7 @@
     		/WEB-INF/spring-security.xml
     	</param-value>
     </context-param>
-
+    
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
@@ -27,7 +27,7 @@
 	</listener>
 
 	<session-config>
-		<session-timeout>-1</session-timeout>
+		<session-timeout>60</session-timeout>
 	</session-config>
 
 	<servlet>
