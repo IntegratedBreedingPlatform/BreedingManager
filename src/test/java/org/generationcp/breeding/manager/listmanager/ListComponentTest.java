@@ -29,6 +29,7 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
+import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.workbench.CropType;
@@ -124,6 +125,9 @@ public class ListComponentTest {
 	@Mock
 	private CrossExpansionProperties crossExpansionProperties;
 
+	@Mock
+	private UserDataManager userDataManager;
+	
 	@InjectMocks
 	private final ListComponent listComponent = new ListComponent();
 

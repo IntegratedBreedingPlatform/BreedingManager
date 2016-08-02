@@ -959,4 +959,15 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	public void setUtil(final ContextUtil util) {
 		this.util = util;
 	}
+
+	
+	/**
+	 * Only for testing.
+	 * @param userDataManager mock userdata manager
+	 */
+	public void setUserDataManager(UserDataManager userDataManager) {
+		this.userDataManager = userDataManager;
+	}
+	
+	
 }

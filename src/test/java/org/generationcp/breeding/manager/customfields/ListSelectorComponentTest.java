@@ -57,6 +57,9 @@ public class ListSelectorComponentTest {
 	@Mock
 	private ContextUtil contextUtil;
 
+	@Mock
+	private UserDataManager userDataManager;
+	
 	@InjectMocks
 	private final ListSelectorComponent listSelectorComponent = new ListManagerTreeComponent();
 
@@ -126,6 +129,7 @@ public class ListSelectorComponentTest {
 
 		listManagerTreeComponent.instantiateGermplasmListSourceComponent();
 		listManagerTreeComponent.setGermplasmListManager(this.germplasmListManager);
+		listManagerTreeComponent.setUserDataManager(this.userDataManager);
 		listManagerTreeComponent.addGermplasmListNode(parentGermplasmListId);
 
 		Assert.assertNotNull("Returns same child germplasm list for the germplasm list that was added in the list source",
@@ -159,6 +163,7 @@ public class ListSelectorComponentTest {
 
 		listManagerTreeComponent.instantiateGermplasmListSourceComponent();
 		listManagerTreeComponent.setGermplasmListManager(this.germplasmListManager);
+		listManagerTreeComponent.setUserDataManager(this.userDataManager);
 		listManagerTreeComponent.addGermplasmListNode(parentGermplasmListId);
 		final Item item = listManagerTreeComponent.getGermplasmListSource().getItem(childGermplasmListId);
 		final Integer actualNoOfEntries =
