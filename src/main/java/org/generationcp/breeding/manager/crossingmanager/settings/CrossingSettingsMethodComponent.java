@@ -37,9 +37,9 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -408,7 +408,7 @@ BreedingManagerLayout {
 
 	public boolean validateInputFields() {
 		if ((Boolean) this.selectMethod.getValue() && this.breedingMethods.getValue() == null) {
-			MessageNotifier.showRequiredFieldError(this.getWindow(), this.messageSource.getMessage(Message.PLEASE_CHOOSE_CROSSING_METHOD));
+			MessageNotifier.showRequiredFieldError(this.getWindow(), this.getMessageSource().getMessage(Message.PLEASE_CHOOSE_CROSSING_METHOD));
 			return false;
 		}
 		return true;
@@ -436,5 +436,13 @@ BreedingManagerLayout {
 
     public void registerBreedingMethodChangeListener(Property.ValueChangeListener changeListener) {
         this.breedingMethods.addListener(changeListener);
+    }
+    
+    public void setSelectMethod(CheckBox selectMethodForAllCheckbox){
+    	this.selectMethod = selectMethodForAllCheckbox;
+    }
+    
+    public void setBreedingMethods(ComboBox breedingMethodSelection){
+    	this.breedingMethods = breedingMethodSelection;
     }
 }

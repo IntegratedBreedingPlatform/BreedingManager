@@ -58,8 +58,8 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 @Configurable
-public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
-		BreedingManagerLayout, SaveListAsDialogSource {
+public class SpecifyGermplasmDetailsComponent extends VerticalLayout
+		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, SaveListAsDialogSource {
 
 	private static final long serialVersionUID = 2762965368037453497L;
 	private static final Logger LOG = LoggerFactory.getLogger(SpecifyGermplasmDetailsComponent.class);
@@ -165,29 +165,27 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 	}
 
 	public void nextButtonClickAction() {
-		if (this.validateLocation() && this.validatePedigreeOption()) {
+		if (this.validateLocation() && this.validateSeedLocation() && this.validatePedigreeOption()) {
 			this.processGermplasmAction.processGermplasm();
 		}
-
 	}
 
 	public void saveTheList() {
-		// TODO: add condition if doesnt have stock id
-		if (this.germplasmListUploader.hasInventoryAmount()) {
+		// Only require the user to create stock id if there is at least one row with inventory amount but STOCKID column is blank
+		// from the imported file
+		if (this.germplasmListUploader.hasAtLeastOneRowWithInventoryAmountButNoDefinedStockID()) {
 			this.popupGenerateStockIdsDialog();
 		} else {
 			this.popupSaveAsDialog();
 		}
-
 	}
 
 	public void popupSaveAsDialog() {
 
 		this.germplasmList = new GermplasmList();
 
-		final String sDate =
-				DateUtil.formatDateAsStringValue(this.germplasmListUploader.getImportedGermplasmList().getDate(),
-						DateUtil.DATE_AS_NUMBER_FORMAT);
+		final String sDate = DateUtil.formatDateAsStringValue(this.germplasmListUploader.getImportedGermplasmList().getDate(),
+				DateUtil.DATE_AS_NUMBER_FORMAT);
 		this.germplasmList.setName(this.germplasmListUploader.getImportedGermplasmList().getName());
 		this.germplasmList.setDate(Long.parseLong(sDate));
 		this.germplasmList.setType(this.germplasmListUploader.getImportedGermplasmList().getType());
@@ -215,8 +213,8 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 					SpecifyGermplasmDetailsComponent.LOG.error(e.getMessage(), e);
 				}
 			} else {
-				germplasmNameObjectsToBeSaved.add(new GermplasmName(germplasmNameObjects.get(i).getGermplasm(), germplasmNameObjects.get(i)
-						.getName()));
+				germplasmNameObjectsToBeSaved
+						.add(new GermplasmName(germplasmNameObjects.get(i).getGermplasm(), germplasmNameObjects.get(i).getName()));
 			}
 		}
 
@@ -258,6 +256,17 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 		}
 		return BreedingManagerUtil.validateRequiredField(this.getWindow(), this.germplasmFieldsComponent.getLocationComboBox(),
 				this.messageSource, this.messageSource.getMessage(Message.GERMPLASM_LOCATION_LABEL));
+	}
+
+	boolean validateSeedLocation() {
+		// BMS-2645 : If the germplasm import file contains inventory, the system must require a location to be specified whether or not
+		// StockID column is populated.
+		if (this.germplasmListUploader.hasInventoryAmount()
+				&& this.getGermplasmFieldsComponent().getSeedLocationComboBox().getValue() == null) {
+			return BreedingManagerUtil.validateRequiredField(this.getWindow(), this.germplasmFieldsComponent.getSeedLocationComboBox(),
+					this.messageSource, this.messageSource.getMessage(Message.SEED_STORAGE_LOCATION_LABEL));
+		}
+		return true;
 	}
 
 	protected void updateTotalEntriesLabel() {
@@ -362,15 +371,11 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 				new CheckBox(this.messageSource.getMessage(Message.AUTOMATICALLY_ACCEPT_SINGLE_MATCHES_WHENEVER_FOUND));
 		this.automaticallyAcceptSingleMatchesCheckbox.setVisible(false);
 
-		final GermplasmImportButtonClickListener clickListener = new GermplasmImportButtonClickListener(this);
-
 		this.backButton = new Button();
 		this.backButton.setData(SpecifyGermplasmDetailsComponent.BACK_BUTTON_ID);
-		this.backButton.addListener(clickListener);
 
 		this.nextButton = new Button();
 		this.nextButton.setData(SpecifyGermplasmDetailsComponent.NEXT_BUTTON_ID);
-		this.nextButton.addListener(clickListener);
 		this.nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 	}
 
@@ -394,8 +399,8 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 		this.germplasmDetailsTable.setColumnCollapsingAllowed(true);
 
 		this.germplasmDetailsTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), this.getTermNameFromOntology(ColumnLabels.ENTRY_ID));
-		this.germplasmDetailsTable
-				.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(), this.getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
+		this.germplasmDetailsTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(),
+				this.getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
 		this.germplasmDetailsTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(),
 				this.getTermNameFromOntology(ColumnLabels.DESIGNATION));
 		this.germplasmDetailsTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(), this.getTermNameFromOntology(ColumnLabels.PARENTAGE));
@@ -423,16 +428,16 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 		this.initializePedigreeOptions();
 	}
 
-	@SuppressWarnings("serial")
 	@Override
 	public void addListeners() {
+		final GermplasmImportButtonClickListener clickListener = new GermplasmImportButtonClickListener(this);
+		this.backButton.addListener(clickListener);
+		this.nextButton.addListener(clickListener);
+
 		this.processGermplasmAction = new ProcessImportedGermplasmAction(this);
 
 		this.pedigreeOptionComboBox.addListener(new Property.ValueChangeListener() {
 
-			/**
-			 *
-			 */
 			private static final long serialVersionUID = -1796753441697604604L;
 
 			@Override
@@ -508,7 +513,12 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 	public void initializeFromImportFile(final ImportedGermplasmList importedGermplasmList) {
 
 		this.importedGermplasmList = importedGermplasmList;
-		this.getGermplasmFieldsComponent().refreshLayout(this.germplasmListUploader.hasInventoryAmountOnly());
+		/*
+		 * Seed Storage Location will be shown whenever there is an Inventory Variable (i.e SEED_AMOUNT_G) in the Description The second
+		 * parameter is for toggling the instructions shown when inventory amount is present
+		 */
+		this.getGermplasmFieldsComponent().refreshLayout(this.germplasmListUploader.hasInventoryVariable(),
+				this.germplasmListUploader.hasInventoryAmount());
 
 		// Clear table contents first (possible that it has some rows in it from previous uploads, and then user went back to upload screen)
 		this.getGermplasmDetailsTable().removeAllItems();
@@ -529,8 +539,8 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 			final ImportedGermplasm importedGermplasm = this.getImportedGermplasms().get(i);
 			germplasmSource = importedGermplasm.getSource() == null ? "" : importedGermplasm.getSource();
 
-			this.getGermplasmDetailsTable().addItem(
-					new Object[] {importedGermplasm.getEntryId(), importedGermplasm.getEntryCode(), importedGermplasm.getDesig(),
+			this.getGermplasmDetailsTable()
+					.addItem(new Object[] {importedGermplasm.getEntryId(), importedGermplasm.getEntryCode(), importedGermplasm.getDesig(),
 							importedGermplasm.getCross(), importedGermplasm.getGid(), importedGermplasm.getInventoryId(),
 							importedGermplasm.getSeedAmount(), germplasmSource}, new Integer(i + 1));
 		}
@@ -552,10 +562,9 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 		final Window window = this.source.getWindow();
 
 		try {
-			final Integer listId =
-					saveGermplasmListAction.saveRecords(list, this.getGermplasmNameObjects(), this.getNewNames(),
-							this.germplasmListUploader.getOriginalFilename(), this.processGermplasmAction.getMatchedGermplasmIds(),
-							this.importedGermplasmList, this.getSeedStorageLocation());
+			final Integer listId = saveGermplasmListAction.saveRecords(list, this.getGermplasmNameObjects(), this.getNewNames(),
+					this.germplasmListUploader.getOriginalFilename(), this.processGermplasmAction.getMatchedGermplasmIds(),
+					this.importedGermplasmList, this.getSeedStorageLocation());
 
 			if (listId != null) {
 				MessageNotifier.showMessage(window, this.messageSource.getMessage(Message.SUCCESS),
@@ -581,9 +590,10 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout implements 
 		} catch (final MiddlewareException e) {
 			MessageNotifier.showError(window, "ERROR", "Error with saving germplasm list. Please see log for details.");
 			SpecifyGermplasmDetailsComponent.LOG.error(e.getMessage(), e);
-		} catch (BreedingManagerException e) {
+		} catch (final BreedingManagerException e) {
 			MessageNotifier.showError(window, "ERROR", e.getMessage());
-			SpecifyGermplasmDetailsComponent.LOG.error(e.getMessage(), e);		}
+			SpecifyGermplasmDetailsComponent.LOG.error(e.getMessage(), e);
+		}
 	}
 
 	private Integer getSeedStorageLocation() {

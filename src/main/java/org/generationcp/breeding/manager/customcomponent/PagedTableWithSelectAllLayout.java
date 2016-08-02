@@ -1,7 +1,13 @@
 
 package org.generationcp.breeding.manager.customcomponent;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.customfields.PagedBreedingManagerTable;
@@ -73,6 +79,7 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 		});
 
 		this.table.registerTableSelectHandler(new PagedBreedingManagerTable.EntrySelectSyncHandler() {
+
 			@Override
 			public void dispatch() {
 				PagedTableWithSelectAllLayout.this.syncItemCheckBoxes();
@@ -145,7 +152,7 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 
 	/***
 	 * Retrieves all items per page
-	 * 
+	 *
 	 * @param entriesList - list of all entries of the entire table
 	 * @param pageNo - current page
 	 * @return
@@ -154,18 +161,18 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 		final Integer noOfEntriesPerPage = this.table.getPageLength();
 		final Integer startIdx = pageNo * noOfEntriesPerPage - noOfEntriesPerPage;
 		Integer endIdx = startIdx + noOfEntriesPerPage;
-		endIdx = (endIdx > entriesList.size()) ? entriesList.size() : endIdx;
+		endIdx = endIdx > entriesList.size() ? entriesList.size() : endIdx;
 
 		return entriesList.subList(startIdx, endIdx);
 	}
 
 	/***
 	 * Make sure to update the current status of selection per page
-	 * 
+	 *
 	 * @param selectedEntries - list of items currently selected on the table
 	 * @param loadedItems - the list of items loaded on the paged table (could be multiple entries across pages)
 	 */
-	 void updateTagPerRowItem(final Collection<Object> selectedEntries, final List<Object> loadedItems) {
+	void updateTagPerRowItem(final Collection<Object> selectedEntries, final List<Object> loadedItems) {
 		for (final Object entry : loadedItems) {
 			final Property itemProperty = this.table.getItem(entry).getItemProperty(this.checkboxColumnId);
 			if (itemProperty != null) {
@@ -181,10 +188,10 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 
 	/**
 	 * Update "Select All" based on the number of selected entries from the table trigger through user selection of entries
-	 * 
+	 *
 	 * @param entriesList - collection of all entries within the table
 	 */
-	 void updateSelectAllCheckBoxStatus(final List<Object> entriesList) {
+	void updateSelectAllCheckBoxStatus(final List<Object> entriesList) {
 
 		final List<Object> entriesPerPage = this.getAllEntriesPerPage(entriesList, this.table.getCurrentPage());
 		int noOfSelectedEntriesPerPage = 0;
@@ -228,7 +235,7 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 
 	/**
 	 * Update the selected entries from paged table
-	 * 
+	 *
 	 * @param entriesPerPage - to add or remove from the existing list of entries
 	 * @param addEntry - if true, add the entries, otherwise, removed the entire list from selected entries
 	 */
@@ -247,6 +254,17 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 		this.table.setValue(selectedEntriesSet);
 	}
 
+	/**
+	 * Update selected status for all entries
+	 *
+	 * @param addEntry - if true, add the entries, otherwise, removed the entire list from selected entries
+	 */
+	public void updatePagedTableSelectedEntries(final boolean addEntry) {
+		@SuppressWarnings("unchecked")
+		final ArrayList<Object> entries = new ArrayList<Object>((Collection<Object>) this.table.getValue());
+		this.updatePagedTableSelectedEntries(entries, addEntry);
+	}
+
 	public PagedBreedingManagerTable getTable() {
 		return this.table;
 	}
@@ -256,7 +274,12 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 	}
 
 	public void refreshTablePagingControls() {
-		this.replaceComponent(this.getComponent(1), ((PagedTable) this.table).createControls());
+		this.replaceComponent(this.getComponent(1), this.table.createControls());
+		/*
+		 * Since the controls will only be disabled/enabled if a page change occurs, we need to call firePagedChangedEvent but since it is a
+		 * private method we need to have a hack where we simulate clicking the previous page.
+		 */
+		this.table.previousPage();
 		this.resetLoadedPage();
 	}
 
@@ -269,14 +292,14 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 		final Integer totalNoOfTableEntries = this.table.getItemIds().size();
 		final Integer noOfEntriesPerPage = this.table.getPageLength();
 
-		Iterator<Integer> loadedPagedIterator = this.loadedPaged.iterator();
+		final Iterator<Integer> loadedPagedIterator = this.loadedPaged.iterator();
 		while (loadedPagedIterator.hasNext()) {
 
-			Integer pageNo = loadedPagedIterator.next();
+			final Integer pageNo = loadedPagedIterator.next();
 
 			final Integer startIdx = pageNo * noOfEntriesPerPage - noOfEntriesPerPage;
 			Integer endIdx = startIdx + noOfEntriesPerPage;
-			endIdx = (endIdx > totalNoOfTableEntries) ? totalNoOfTableEntries : endIdx;
+			endIdx = endIdx > totalNoOfTableEntries ? totalNoOfTableEntries : endIdx;
 			if (startIdx > endIdx) {
 				loadedPagedIterator.remove();
 			}
@@ -289,11 +312,11 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 	}
 
 	public CheckBox getSelectAllCheckBox() {
-		return selectAllCheckBox;
+		return this.selectAllCheckBox;
 	}
 
 	public Set<Integer> getLoadedPaged() {
-		return loadedPaged;
+		return this.loadedPaged;
 	}
 
 }

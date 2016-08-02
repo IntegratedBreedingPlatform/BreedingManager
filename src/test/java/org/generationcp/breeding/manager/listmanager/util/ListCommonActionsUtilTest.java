@@ -11,14 +11,15 @@ import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import com.vaadin.ui.Component;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ListCommonActionsUtilTest {
 
 	private GermplasmList listToSave;
@@ -34,12 +35,6 @@ public class ListCommonActionsUtilTest {
 	private Component source;
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
-
-	@Before
-	public void setUp() {
-		MockitoAnnotations.initMocks(this);
-
-	}
 
 	@Test
 	public void testGetNewEntriesToSaveUpdateDelete_ForNewEntries() throws MiddlewareQueryException {
@@ -92,8 +87,8 @@ public class ListCommonActionsUtilTest {
 
 		ListCommonActionsUtil.setEntryCodeOfMatchingSavedEntry(entry, matchingSavedEntry);
 
-		Assert.assertEquals("Expecting that the entry code value is " + entry.getEntryId() + " when the source entry is null.", entry
-				.getEntryId().toString(), matchingSavedEntry.getEntryCode());
+		Assert.assertEquals("Expecting that the entry code value is " + entry.getEntryId() + " when the source entry is null.",
+				entry.getEntryId().toString(), matchingSavedEntry.getEntryCode());
 	}
 
 	@Test

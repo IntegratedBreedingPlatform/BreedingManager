@@ -24,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Table;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -31,10 +32,9 @@ public class SpecifyGermplasmDetailsComponentTest {
 
 	private static final String FILE_NAME = "Maize Basic-Template.2015.01.01";
 	private static final String EXTENSION = "xls";
-	private static final String COMPLETE_FILE_NAME = SpecifyGermplasmDetailsComponentTest.FILE_NAME + "."
-			+ SpecifyGermplasmDetailsComponentTest.EXTENSION;
+	private static final String COMPLETE_FILE_NAME =
+			SpecifyGermplasmDetailsComponentTest.FILE_NAME + "." + SpecifyGermplasmDetailsComponentTest.EXTENSION;
 	private static final String TEST_SOURCE_VALUE = "ListABC";
-
 
 	@Mock
 	private OntologyDataManager ontologyDataManager;
@@ -42,15 +42,22 @@ public class SpecifyGermplasmDetailsComponentTest {
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
 
+	@Mock
+	private GermplasmListUploader germplasmListUploader;
+
+	@Mock
+	private GermplasmFieldsComponent germplasmFieldsComponent;
+
 	@InjectMocks
-	private SpecifyGermplasmDetailsComponent specifyGermplasmDetailsComponent = new SpecifyGermplasmDetailsComponent(
-			Mockito.mock(GermplasmImportMain.class), false);
+	private final SpecifyGermplasmDetailsComponent specifyGermplasmDetailsComponent =
+			new SpecifyGermplasmDetailsComponent(Mockito.mock(GermplasmImportMain.class), false);
 
 	@Before
 	public void setUp() throws Exception {
-		Mockito.doReturn("").when(this.messageSource).getMessage(Mockito.any(Message.class));
+		Mockito.doReturn("").when(this.messageSource).getMessage(Matchers.any(Message.class));
 		this.specifyGermplasmDetailsComponent.instantiateComponents();
-
+		this.specifyGermplasmDetailsComponent.setGermplasmListUploader(this.germplasmListUploader);
+		this.specifyGermplasmDetailsComponent.setGermplasmFieldsComponent(this.germplasmFieldsComponent);
 	}
 
 	@Test
@@ -96,15 +103,17 @@ public class SpecifyGermplasmDetailsComponentTest {
 	public void testInitializeFromImportFile_BasicTemplateSourceAvailable() {
 		final Table table = new Table();
 
-		final List<ImportedGermplasm> importedGermplasms = createImportedGermplasmFromBasicTemplate(TEST_SOURCE_VALUE);
+		final List<ImportedGermplasm> importedGermplasms =
+				this.createImportedGermplasmFromBasicTemplate(SpecifyGermplasmDetailsComponentTest.TEST_SOURCE_VALUE);
 
-		setupInitializeFromImportedFileTest(table, importedGermplasms);
+		this.setupInitializeFromImportedFileTest(table, importedGermplasms);
 		Assert.assertTrue(table.getItemIds().size() == 5);
 		for (int i = 1; i <= 5; i++) {
 			final Integer id = new Integer(i);
 			Assert.assertEquals(id, table.getItem(id).getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue());
 
-			Assert.assertEquals(TEST_SOURCE_VALUE, table.getItem(id).getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue());
+			Assert.assertEquals(SpecifyGermplasmDetailsComponentTest.TEST_SOURCE_VALUE,
+					table.getItem(id).getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue());
 			Assert.assertEquals("LEAFNODE00" + i, table.getItem(id).getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue());
 			Assert.assertNull(table.getItem(id).getItemProperty(ColumnLabels.ENTRY_CODE.getName()).getValue());
 			Assert.assertNull(table.getItem(id).getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue());
@@ -117,9 +126,9 @@ public class SpecifyGermplasmDetailsComponentTest {
 		final Table table = new Table();
 
 		// we want to test the result of importing a germplasm list with a null / empty source value from the file
-		final List<ImportedGermplasm> importedGermplasms = createImportedGermplasmFromBasicTemplate(null);
+		final List<ImportedGermplasm> importedGermplasms = this.createImportedGermplasmFromBasicTemplate(null);
 
-		setupInitializeFromImportedFileTest(table, importedGermplasms);
+		this.setupInitializeFromImportedFileTest(table, importedGermplasms);
 		Assert.assertTrue(table.getItemIds().size() == 5);
 		for (int i = 1; i <= 5; i++) {
 			final Integer id = new Integer(i);
@@ -135,7 +144,6 @@ public class SpecifyGermplasmDetailsComponentTest {
 
 		this.specifyGermplasmDetailsComponent.setImportedGermplasms(germplasmList);
 
-
 		final GermplasmListUploader uploader = Mockito.mock(GermplasmListUploader.class);
 		Mockito.doReturn(false).when(uploader).hasStockIdFactor();
 		Mockito.doReturn(false).when(uploader).hasInventoryAmount();
@@ -144,12 +152,33 @@ public class SpecifyGermplasmDetailsComponentTest {
 		this.specifyGermplasmDetailsComponent.setGermplasmListUploader(uploader);
 
 		final GermplasmFieldsComponent fieldsComponent = Mockito.mock(GermplasmFieldsComponent.class);
-		Mockito.doNothing().when(fieldsComponent).refreshLayout(Matchers.anyBoolean());
+		Mockito.doNothing().when(fieldsComponent).refreshLayout(Matchers.anyBoolean(), Matchers.anyBoolean());
 
 		final ImportedGermplasmList importedList =
 				new ImportedGermplasmList(SpecifyGermplasmDetailsComponentTest.COMPLETE_FILE_NAME, "", "", "", null);
 		this.specifyGermplasmDetailsComponent.initGermplasmDetailsTable();
 		this.specifyGermplasmDetailsComponent.initializeFromImportFile(importedList);
+
+	}
+
+	@Test
+	public void testvalidateSeedLocationWithoutInventoryValue() {
+		Mockito.doReturn(false).when(this.germplasmListUploader).hasInventoryAmount();
+		Assert.assertTrue("Returns true when there is no inventory value from the germplasm import file.",
+				this.specifyGermplasmDetailsComponent.validateSeedLocation());
+	}
+
+	@Test
+	public void testvalidateSeedLocationWithInventoryValue() {
+		Mockito.doReturn(true).when(this.germplasmListUploader).hasInventoryAmount();
+		final ComboBox seedLocationComboBox = Mockito.mock(ComboBox.class);
+		Mockito.doReturn(seedLocationComboBox).when(this.germplasmFieldsComponent).getSeedLocationComboBox();
+		Mockito.doReturn(null).when(seedLocationComboBox).getValue();
+
+		this.specifyGermplasmDetailsComponent.validateSeedLocation();
+
+		// expecting to show an error message since seed location is required when there is an inventory value
+		Mockito.verify(this.messageSource, Mockito.times(1)).getMessage(Message.SEED_STORAGE_LOCATION_LABEL);
 
 	}
 

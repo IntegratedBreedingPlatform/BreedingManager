@@ -3,8 +3,6 @@ package org.generationcp.breeding.manager.crossingmanager.listeners;
 
 import java.util.ArrayList;
 
-import junit.framework.Assert;
-
 import org.generationcp.breeding.manager.action.SaveGermplasmListActionFactory;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
@@ -21,13 +19,18 @@ import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import com.vaadin.data.Container;
 import com.vaadin.ui.Table;
 
+import junit.framework.Assert;
+
+@RunWith(MockitoJUnitRunner.class)
 public class CrossingManagerActionHandlerTest {
 
 	@Mock
@@ -41,14 +44,16 @@ public class CrossingManagerActionHandlerTest {
 
 	private CrossingManagerActionHandler crossingManagerActionHandler;
 
+	private GermplasmListTestDataInitializer germplasmListTestDataInitializer;
+
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
+		this.germplasmListTestDataInitializer = new GermplasmListTestDataInitializer();
 
-		Mockito.doReturn("TestString").when(this.messageSource).getMessage(Mockito.any(Message.class));
+		Mockito.doReturn("TestString").when(this.messageSource).getMessage(Matchers.any(Message.class));
 		final Term fromOntology = new Term();
 		fromOntology.setName("Ontology Name");
-		Mockito.doReturn(fromOntology).when(this.ontologyDataManager).getTermById(Mockito.anyInt());
+		Mockito.doReturn(fromOntology).when(this.ontologyDataManager).getTermById(Matchers.anyInt());
 
 		Mockito.doReturn(new ArrayList<Integer>()).when(this.table).getValue();
 		Mockito.doReturn(Mockito.mock(Container.class)).when(this.table).getContainerDataSource();
@@ -58,9 +63,8 @@ public class CrossingManagerActionHandlerTest {
 
 		final MakeCrossesParentsComponent makeCrossesParentsComponent =
 				new MakeCrossesParentsComponent(Mockito.mock(CrossingManagerMakeCrossesComponent.class));
-		final ParentTabComponent parentTabComponent =
-				new ParentTabComponent(Mockito.mock(CrossingManagerMakeCrossesComponent.class), makeCrossesParentsComponent, "test", 10,
-						new SaveGermplasmListActionFactory(), new ReserveInventoryActionFactory());
+		final ParentTabComponent parentTabComponent = new ParentTabComponent(Mockito.mock(CrossingManagerMakeCrossesComponent.class),
+				makeCrossesParentsComponent, "test", 10, new SaveGermplasmListActionFactory(), new ReserveInventoryActionFactory());
 		parentTabComponent.setMessageSource(this.messageSource);
 		parentTabComponent.setOntologyDataManager(this.ontologyDataManager);
 		parentTabComponent.initializeMainComponents();
@@ -71,11 +75,11 @@ public class CrossingManagerActionHandlerTest {
 		inventoryTable.instantiateComponents();
 		parentTabComponent.initializeListInventoryTable(inventoryTable);
 		parentTabComponent.addListeners();
-		parentTabComponent.setGermplasmList(GermplasmListTestDataInitializer.createGermplasmList(10));
+		parentTabComponent.setGermplasmList(this.germplasmListTestDataInitializer.createGermplasmList(10));
 		makeCrossesParentsComponent.setFemaleParentTab(parentTabComponent);
 		makeCrossesParentsComponent.setMaleParentTab(parentTabComponent);
-		makeCrossesParentsComponent.setMakeCrossesMain(new CrossingManagerMakeCrossesComponent(Mockito
-				.mock(ManageCrossingSettingsMain.class)));
+		makeCrossesParentsComponent
+				.setMakeCrossesMain(new CrossingManagerMakeCrossesComponent(Mockito.mock(ManageCrossingSettingsMain.class)));
 		this.crossingManagerActionHandler = new CrossingManagerActionHandler(makeCrossesParentsComponent);
 	}
 

@@ -606,7 +606,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 	@Override
 	public void instantiateComponents() {
-		this.setHeight("580px");
+		this.setHeight("450px");
 		this.setWidth("880px");
 
 		this.heading = new Label();

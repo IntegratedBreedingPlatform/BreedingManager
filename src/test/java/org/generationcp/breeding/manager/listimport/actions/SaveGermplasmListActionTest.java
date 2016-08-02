@@ -1,4 +1,3 @@
-
 package org.generationcp.breeding.manager.listimport.actions;
 
 import java.util.ArrayList;
@@ -25,6 +24,8 @@ import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.UserDefinedField;
+import org.generationcp.middleware.pojos.ims.Lot;
+import org.generationcp.middleware.pojos.ims.Transaction;
 import org.generationcp.middleware.service.api.InventoryService;
 import org.junit.Assert;
 import org.junit.Before;
@@ -42,6 +43,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @RunWith(MockitoJUnitRunner.class)
 public class SaveGermplasmListActionTest {
 
+	private static final int TEST_GID = 1;
 	private static final int SAVED_GERMPLASM_LIST_ID = 1;
 	private static final int NO_OF_ENTRIES = 5;
 	private static final int CURRENT_LOCAL_ID = 1;
@@ -87,12 +89,17 @@ public class SaveGermplasmListActionTest {
 	private List<Integer> doNotCreateGermplasmsWithId;
 	private ImportedGermplasmList importedGermplasmList;
 
+	private ImportedGermplasmListDataInitializer importedGermplasmListInitializer;
+
 	@Before
 	public void setup() {
+		// initializer
+		this.importedGermplasmListInitializer = new ImportedGermplasmListDataInitializer();
+
 		this.germplasmList = GermplasmListTestDataInitializer.createGermplasmList(LIST_ID);
-		this.importedGermplasmList = ImportedGermplasmListDataInitializer.createImportedGermplasmList(NO_OF_ENTRIES, true);
-		this.germplasmNameObjects = ImportedGermplasmListDataInitializer.createGermplasmNameObjects(NO_OF_ENTRIES);
-		this.doNotCreateGermplasmsWithId = ImportedGermplasmListDataInitializer.createListOfGemplasmIds(2);
+		this.importedGermplasmList = this.importedGermplasmListInitializer.createImportedGermplasmList(NO_OF_ENTRIES, true);
+		this.germplasmNameObjects = this.importedGermplasmListInitializer.createGermplasmNameObjects(NO_OF_ENTRIES);
+		this.doNotCreateGermplasmsWithId = this.importedGermplasmListInitializer.createListOfGemplasmIds(2);
 		this.newNames = GermplasmTestDataInitializer.createNameList(NO_OF_ENTRIES);
 
 		Mockito.doReturn(PROGRAM_UUID).when(this.contextUtil).getCurrentProgramUUID();
@@ -142,30 +149,32 @@ public class SaveGermplasmListActionTest {
 		try {
 			Mockito.verify(this.germplasmListManager, Mockito.times(1)).deleteGermplasmListDataByListId(SAVED_GERMPLASM_LIST_ID);
 		} catch (final TooLittleActualInvocations e) {
-			Assert.fail("Expecting that the list entries of the existing list are marked deleted after trying to overwrite a list using germplasm import.");
+			Assert.fail(
+					"Expecting that the list entries of the existing list are marked deleted after trying to overwrite a list using germplasm import.");
 		}
 
 	}
 
 	@Test
 	public void testBlankSourceSaving() throws BreedingManagerException {
-		final ArgumentCaptor<GermplasmListData> listData = ArgumentCaptor.forClass(GermplasmListData.class);
+		final ArgumentCaptor<GermplasmListData> listDataArgumentCaptor = ArgumentCaptor.forClass(GermplasmListData.class);
 
 		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, SOURCE_LIST_XLS,
 				this.doNotCreateGermplasmsWithId, this.importedGermplasmList, SEED_STORAGE_LOCATION);
 
 		try {
-			Mockito.verify(this.germplasmListManager, Mockito.atLeastOnce()).addGermplasmListData(listData.capture());
-			Assert.assertEquals("Imported germplasm data with null or empty source must be saved as blank", "", listData.getValue()
-					.getSeedSource());
+			Mockito.verify(this.germplasmListManager, Mockito.atLeastOnce()).addGermplasmListData(listDataArgumentCaptor.capture());
+			Assert.assertEquals("Imported germplasm data with null or empty source must be saved as blank", "",
+					listDataArgumentCaptor.getValue().getSeedSource());
 		} catch (final TooLittleActualInvocations e) {
-			Assert.fail("Expecting that the list entries of the existing list are marked deleted after trying to overwrite a list using germplasm import.");
+			Assert.fail(
+					"Expecting that the list entries of the existing list are marked deleted after trying to overwrite a list using germplasm import.");
 		}
 	}
 
 	@Test
 	public void testNonBlankSourceSaving() throws BreedingManagerException {
-		final ArgumentCaptor<GermplasmListData> listData = ArgumentCaptor.forClass(GermplasmListData.class);
+		final ArgumentCaptor<GermplasmListData> listDataArgumentCaptor = ArgumentCaptor.forClass(GermplasmListData.class);
 
 		// provide a non null source value
 		for (final ImportedGermplasm importedGermplasm : this.importedGermplasmList.getImportedGermplasms()) {
@@ -176,11 +185,12 @@ public class SaveGermplasmListActionTest {
 				this.doNotCreateGermplasmsWithId, this.importedGermplasmList, SEED_STORAGE_LOCATION);
 
 		try {
-			Mockito.verify(this.germplasmListManager, Mockito.atLeastOnce()).addGermplasmListData(listData.capture());
-			Assert.assertEquals("Imported germplasm data with non empty source must use that value", TEST_SOURCE, listData.getValue()
-					.getSeedSource());
+			Mockito.verify(this.germplasmListManager, Mockito.atLeastOnce()).addGermplasmListData(listDataArgumentCaptor.capture());
+			Assert.assertEquals("Imported germplasm data with non empty source must use that value", TEST_SOURCE,
+					listDataArgumentCaptor.getValue().getSeedSource());
 		} catch (final TooLittleActualInvocations e) {
-			Assert.fail("Expecting that the list entries of the existing list are marked deleted after trying to overwrite a list using germplasm import.");
+			Assert.fail(
+					"Expecting that the list entries of the existing list are marked deleted after trying to overwrite a list using germplasm import.");
 		}
 	}
 
@@ -203,7 +213,7 @@ public class SaveGermplasmListActionTest {
 		final String preferredNameCode = "DRVNM";
 		final int noOfEntries = 10;
 		final ImportedGermplasmList importedGermplasmList =
-				ImportedGermplasmListDataInitializer.createImportedGermplasmList(noOfEntries, true);
+				this.importedGermplasmListInitializer.createImportedGermplasmList(noOfEntries, true);
 		this.action.updateExportedGermplasmPreferredName(preferredNameCode, importedGermplasmList.getImportedGermplasms());
 
 		try {
@@ -219,7 +229,7 @@ public class SaveGermplasmListActionTest {
 		final String preferredNameCode = "DRVNM";
 		final int noOfEntries = 10;
 		final ImportedGermplasmList importedGermplasmList =
-				ImportedGermplasmListDataInitializer.createImportedGermplasmList(noOfEntries, false);
+				this.importedGermplasmListInitializer.createImportedGermplasmList(noOfEntries, false);
 		this.action.updateExportedGermplasmPreferredName(preferredNameCode, importedGermplasmList.getImportedGermplasms());
 
 		try {
@@ -244,4 +254,42 @@ public class SaveGermplasmListActionTest {
 			Assert.assertEquals("Make sure that the attribute's location is set to 0.", attr.getLocationId().intValue(), 0);
 		}
 	}
+
+	@Test
+	public void testSaveInventory() {
+
+		final Lot testLot = new Lot();
+		this.action.getGidLotMap().put(TEST_GID, testLot);
+
+		final List<Transaction> testGidTransactions = new ArrayList();
+		testGidTransactions.add(new Transaction());
+		this.action.getGidTransactionSetMap().put(TEST_GID, testGidTransactions);
+
+		this.action.saveInventory();
+
+		// The following methods should be called.
+		Mockito.verify(this.inventoryDataManager, Mockito.times(1)).addLot(testLot);
+		Mockito.verify(this.inventoryDataManager, Mockito.times(1)).addTransactions(testGidTransactions);
+
+	}
+
+	@Test
+	public void testSaveInventoryWithEmptyTransaction() {
+
+		final Lot testLot = new Lot();
+		this.action.getGidLotMap().put(TEST_GID, testLot);
+
+		// Create an empty Transaction list
+		final List<Transaction> testGidTransactions = new ArrayList();
+		this.action.getGidTransactionSetMap().put(TEST_GID, testGidTransactions);
+
+		this.action.saveInventory();
+
+		// The following methods should not be called because there are no items in Transaction list.
+		Mockito.verify(this.inventoryDataManager, Mockito.times(0)).addLot(testLot);
+		Mockito.verify(this.inventoryDataManager, Mockito.times(0)).addTransactions(testGidTransactions);
+
+	}
+
+
 }

@@ -1,6 +1,7 @@
 
 package org.generationcp.breeding.manager.listimport;
 
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
@@ -31,8 +32,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
 
 @Configurable
-public class GermplasmFieldsComponent extends AbsoluteLayout implements InternationalizableComponent, InitializingBean,
-		BreedingManagerLayout, BreedingLocationFieldSource {
+public class GermplasmFieldsComponent extends AbsoluteLayout
+		implements InternationalizableComponent, InitializingBean, BreedingManagerLayout, BreedingLocationFieldSource {
 
 	private static final long serialVersionUID = -1180999883774074687L;
 
@@ -67,24 +68,26 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 
 	private int leftIndentPixels = 130;
 
-	private boolean hasInventoryAmounts = false;
+	private boolean hasInventoryVariable = false;
+
+	private boolean hasInventoryAmount = false;
 
 	private static final Integer STORAGE_LOCATION_TYPEID = 1500;
 
 	private String programUniqueId;
 
-	public GermplasmFieldsComponent(Window parentWindow) {
+	public GermplasmFieldsComponent(final Window parentWindow) {
 		super();
 		this.parentWindow = parentWindow;
 	}
 
-	public GermplasmFieldsComponent(Window parentWindow, int pixels) {
+	public GermplasmFieldsComponent(final Window parentWindow, final int pixels) {
 		super();
 		this.parentWindow = parentWindow;
 		this.leftIndentPixels = pixels;
 	}
 
-	public GermplasmFieldsComponent(int pixels) {
+	public GermplasmFieldsComponent(final int pixels) {
 		super();
 		this.leftIndentPixels = pixels;
 	}
@@ -114,8 +117,7 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 		this.addGermplasmDetailsLabel.addStyleName(Bootstrap.Typography.H4.styleName());
 
 		this.addGermplasmDetailsMessage = new Label();
-		this.addGermplasmDetailsMessage
-				.setValue("You can specify following details to apply to the imported germplasm. These details are optional.");
+		this.addGermplasmDetailsMessage.setValue(this.getGermplasmDetailsInstructions());
 
 		if (this.parentWindow != null) {
 			this.methodComponent = new BreedingMethodField(this.parentWindow, 200, false, false);
@@ -125,17 +127,17 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 		this.methodComponent.setCaption(this.messageSource.getMessage(Message.GERMPLASM_BREEDING_METHOD_LABEL) + ":");
 
 		if (this.parentWindow != null) {
-			this.locationComponent = new BreedingLocationField(this, this.parentWindow, 200);
+			this.locationComponent = new BreedingLocationField(this, this.parentWindow, 200, true);
 		} else {
-			this.locationComponent = new BreedingLocationField(this, 200);
+			this.locationComponent = new BreedingLocationField(this, 200, true);
 		}
 		this.locationComponent.setCaption(this.messageSource.getMessage(Message.GERMPLASM_LOCATION_LABEL) + ":");
 
 		if (this.parentWindow != null) {
 			this.seedLocationComponent =
-					new BreedingLocationField(this, this.parentWindow, 200, GermplasmFieldsComponent.STORAGE_LOCATION_TYPEID);
+					new BreedingLocationField(this, this.parentWindow, 200, GermplasmFieldsComponent.STORAGE_LOCATION_TYPEID, false);
 		} else {
-			this.seedLocationComponent = new BreedingLocationField(this, 200, GermplasmFieldsComponent.STORAGE_LOCATION_TYPEID);
+			this.seedLocationComponent = new BreedingLocationField(this, 200, GermplasmFieldsComponent.STORAGE_LOCATION_TYPEID, false);
 		}
 		this.seedLocationComponent.setCaption(this.messageSource.getMessage(Message.SEED_STORAGE_LOCATION_LABEL) + ":");
 
@@ -156,12 +158,25 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 
 	}
 
+	String getGermplasmDetailsInstructions() {
+		final StringBuilder sb = new StringBuilder(this.messageSource.getMessage(Message.SPECIFY_DETAILS_FOR_IMPORTED_GERMPLASM));
+		if (this.hasInventoryAmount) {
+			final String seedStorageRequiredMsg =
+					MessageFormat.format(this.messageSource.getMessage(Message.SEED_STORAGE_REQUIRED_WHEN_INVENTORY_IS_PRESENT),
+							this.messageSource.getMessage(Message.SEED_STORAGE_LOCATION_LABEL));
+			sb.append(seedStorageRequiredMsg);
+		} else {
+			sb.append(this.messageSource.getMessage(Message.DETAILS_ARE_OPTIONAL));
+		}
+		return sb.toString();
+	}
+
 	@Override
 	public void initializeValues() {
 
 		try {
 			this.populateNameTypes();
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			GermplasmFieldsComponent.LOG.error(e.getMessage(), e);
 		}
 
@@ -174,34 +189,38 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 
 	@Override
 	public void layoutComponents() {
-		if (this.hasInventoryAmounts) {
-			this.setHeight("330px");
+		if (this.hasInventoryVariable) {
+			this.setHeight("350px");
 		} else {
-			this.setHeight("270px");
+			this.setHeight("300px");
 		}
 
-		this.addComponent(this.addGermplasmDetailsLabel, "top:0px;left:0px");
-		this.addComponent(this.addGermplasmDetailsMessage, "top:32px;left:0px");
+		if (this.hasInventoryAmount) {
+			this.addComponent(this.addGermplasmDetailsLabel, "top:0px;left:0px");
+			this.addComponent(this.addGermplasmDetailsMessage, "top:32px;left:0px");
+		} else {
+			this.addComponent(this.addGermplasmDetailsLabel, "top:10px;left:0px");
+			this.addComponent(this.addGermplasmDetailsMessage, "top:45px;left:0px");
+		}
 
-		this.addComponent(this.methodComponent, "top:60px;left:0px");
+		this.addComponent(this.methodComponent, "top:85px;left:0px");
+		this.addComponent(this.locationComponent, "top:145px;left:0px");
 
-		this.addComponent(this.locationComponent, "top:120px;left:0px");
+		if (this.hasInventoryVariable) {
+			this.addComponent(this.seedLocationComponent, "top:205px;left:0px");
 
-		if (this.hasInventoryAmounts) {
-			this.addComponent(this.seedLocationComponent, "top:180px;left:0px");
+			this.addComponent(this.germplasmDateLabel, "top:270px;left:0px");
+			this.addComponent(this.germplasmDateField, "top:265px;left:" + this.getLeftIndentPixels() + "px");
 
-			this.addComponent(this.germplasmDateLabel, "top:245px;left:0px");
-			this.addComponent(this.germplasmDateField, "top:240px;left:" + this.getLeftIndentPixels() + "px");
-
-			this.addComponent(this.nameTypeLabel, "top:280px;left:0px");
-			this.addComponent(this.nameTypeComboBox, "top:275px;left:" + this.getLeftIndentPixels() + "px");
+			this.addComponent(this.nameTypeLabel, "top:305px;left:0px");
+			this.addComponent(this.nameTypeComboBox, "top:300px;left:" + this.getLeftIndentPixels() + "px");
 
 		} else {
-			this.addComponent(this.germplasmDateLabel, "top:185px;left:0px");
-			this.addComponent(this.germplasmDateField, "top:180px;left:" + this.getLeftIndentPixels() + "px");
+			this.addComponent(this.germplasmDateLabel, "top:210px;left:0px");
+			this.addComponent(this.germplasmDateField, "top:205px;left:" + this.getLeftIndentPixels() + "px");
 
-			this.addComponent(this.nameTypeLabel, "top:220px;left:0px");
-			this.addComponent(this.nameTypeComboBox, "top:215px;left:" + this.getLeftIndentPixels() + "px");
+			this.addComponent(this.nameTypeLabel, "top:245px;left:0px");
+			this.addComponent(this.nameTypeComboBox, "top:240px;left:" + this.getLeftIndentPixels() + "px");
 		}
 	}
 
@@ -233,11 +252,15 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 		return this.seedLocationComponent;
 	}
 
+	public Label getGermplasmDetailsMessage() {
+		return this.addGermplasmDetailsMessage;
+	}
+
 	protected void populateNameTypes() {
-		List<UserDefinedField> userDefinedFieldList = this.germplasmListManager.getGermplasmNameTypes();
+		final List<UserDefinedField> userDefinedFieldList = this.germplasmListManager.getGermplasmNameTypes();
 		Integer firstId = null;
 		boolean hasDefault = false;
-		for (UserDefinedField userDefinedField : userDefinedFieldList) {
+		for (final UserDefinedField userDefinedField : userDefinedFieldList) {
 			if (firstId == null) {
 				firstId = userDefinedField.getFldno();
 			}
@@ -253,23 +276,23 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 		}
 	}
 
-	public void setGermplasmBreedingMethod(String breedingMethod) {
+	public void setGermplasmBreedingMethod(final String breedingMethod) {
 		this.getBreedingMethodComboBox().setNullSelectionAllowed(false);
 		this.getBreedingMethodComboBox().addItem(breedingMethod);
 		this.getBreedingMethodComboBox().setValue(breedingMethod);
 	}
 
-	public void setGermplasmDate(Date germplasmDate) throws ParseException {
+	public void setGermplasmDate(final Date germplasmDate) throws ParseException {
 		this.germplasmDateField.setValue(germplasmDate);
 	}
 
-	public void setGermplasmLocation(String germplasmLocation) {
+	public void setGermplasmLocation(final String germplasmLocation) {
 		this.getLocationComboBox().setNullSelectionAllowed(false);
 		this.getLocationComboBox().addItem(germplasmLocation);
 		this.getLocationComboBox().setValue(germplasmLocation);
 	}
 
-	public void setGermplasmListType(String germplasmListType) {
+	public void setGermplasmListType(final String germplasmListType) {
 		this.nameTypeComboBox.setNullSelectionAllowed(false);
 		this.nameTypeComboBox.addItem(germplasmListType);
 		this.nameTypeComboBox.setValue(germplasmListType);
@@ -279,9 +302,11 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 		return this.leftIndentPixels;
 	}
 
-	public void refreshLayout(boolean hasInventoryAmount) {
-		this.hasInventoryAmounts = hasInventoryAmount;
+	public void refreshLayout(final boolean hasInventoryVariable, final boolean hasInventoryAmount) {
+		this.hasInventoryVariable = hasInventoryVariable;
+		this.hasInventoryAmount = hasInventoryAmount;
 
+		this.addGermplasmDetailsMessage.setValue(this.getGermplasmDetailsInstructions());
 		this.removeAllComponents();
 		this.layoutComponents();
 		this.requestRepaint();
@@ -304,7 +329,19 @@ public class GermplasmFieldsComponent extends AbsoluteLayout implements Internat
 		}
 	}
 
-	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
+	}
+
+	public void setLocationComponent(final BreedingLocationField locationComponent) {
+		this.locationComponent = locationComponent;
+	}
+
+	public void setSeedLocationComponent(final BreedingLocationField seedLocationComponent) {
+		this.seedLocationComponent = seedLocationComponent;
+	}
+
+	public void setHasInventoryAmount(final boolean hasInventoryAmount) {
+		this.hasInventoryAmount = hasInventoryAmount;
 	}
 }
