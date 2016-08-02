@@ -45,7 +45,6 @@ public class ToolTipGenerator {
 
 			@Override
 			public String generateDescription(final Component source, final Object itemId, final Object propertyId) {
-				System.out.println(source.getCaption() + "-" + itemId.toString());
 				try {
 					final String itemValue = itemId.toString();
 					if (StringUtils.isNumeric(itemValue)) {
