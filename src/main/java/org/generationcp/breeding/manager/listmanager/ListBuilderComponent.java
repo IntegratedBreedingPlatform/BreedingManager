@@ -367,6 +367,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.source = source;
 		this.currentlySavedGermplasmList = null;
 		this.currentlySetGermplasmInfo = null;
+		this.setDebugId("ListBuilderComponent");
 	}
 
 	@Override

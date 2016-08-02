@@ -104,6 +104,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	public ListManagerMain(final Integer selectedListId) {
 		super();
 		this.selectedListId = selectedListId;
+		this.setDebugId("ListManagerMain");
 	}
 
 	@Override
@@ -124,12 +125,16 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		this.listBuilderToggleBtn1 =
 				new Button("<span class='bms-fa-chevron-left'" + "style='" + "position: relative;" + " bottom: 3px;" + "'></span>"
 						+ "Show List Builder");
+		this.listBuilderToggleBtn1.setDebugId("listBuilderToggleBtn1");
+		
 		this.listBuilderToggleBtn1.setHtmlContentAllowed(true);
 		this.listBuilderToggleBtn1.setStyleName(Bootstrap.Buttons.BORDERED.styleName() + " lm-toggle");
 
 		this.listBuilderToggleBtn2 =
 				new Button("<span class='bms-fa-chevron-left'" + "style='" + "position: relative;" + " bottom: 3px;" + "'></span>"
 						+ "Show List Builder");
+		this.listBuilderToggleBtn2.setDebugId("listBuilderToggleBtn2");
+
 		this.listBuilderToggleBtn2.setHtmlContentAllowed(true);
 		this.listBuilderToggleBtn2.setStyleName(Bootstrap.Buttons.BORDERED.styleName() + " lm-toggle");
 
@@ -307,10 +312,13 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
 	private void setTitleContent() {
 		this.titleLayout = new HorizontalLayout();
+		this.titleLayout.setDebugId("titleLayout");
 		this.titleLayout.setSpacing(true);
 		this.titleLayout.setHeight("40px");
 
 		this.toolTitle = new Label(this.messageSource.getMessage(Message.LIST_MANAGER_SCREEN_LABEL));
+		this.toolTitle.setDebugId("toolTitle");
+
 		this.toolTitle.setStyleName(Bootstrap.Typography.H1.styleName());
 		this.toolTitle.setContentMode(Label.CONTENT_XHTML);
 		this.toolTitle.setWidth("185px");
@@ -320,8 +328,13 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	}
 
 	private void setTabHeader() {
+		
 		this.listSelectionTabButton = new Button(this.messageSource.getMessage(Message.VIEW_LISTS));
+		this.listSelectionTabButton.setDebugId("listSelectionTabButton");
+		
 		this.plantSelectionTabButton = new Button(this.messageSource.getMessage(Message.VIEW_GERMPLASM));
+		this.plantSelectionTabButton.setDebugId("plantSelectionTabButton");
+
 		this.listSelectionTabButton.addStyleName("tabHeaderSelectedStyle");
 		this.listSelectionTabButton.addStyleName("tabStyleButton");
 		this.plantSelectionTabButton.addStyleName("tabStyleButton");
@@ -329,6 +342,8 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		this.plantSelectionTabButton.setImmediate(true);
 
 		this.tabHeaderLayout = new HorizontalLayout();
+		this.tabHeaderLayout.setDebugId("tabHeaderLayout");
+		
 		this.tabHeaderLayout.addStyleName("tabHeaderStyle");
 		this.tabHeaderLayout.setSpacing(true);
 		this.tabHeaderLayout.addComponent(this.listSelectionTabButton);
@@ -337,6 +352,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
 	private void setTabContent() {
 		this.splitPanel = new HorizontalSplitPanel();
+		this.splitPanel.setDebugId("splitPanel");
 		this.splitPanel.setMargin(false);
 		this.splitPanel.setMaxSplitPosition(46.5f, Sizeable.UNITS_PERCENTAGE);
 		this.splitPanel.setSplitPosition(0, Sizeable.UNITS_PERCENTAGE, true);
@@ -346,14 +362,18 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		this.splitPanel.addStyleName("tabContainerStyle");
 
 		this.listSelectionComponent = new ListSelectionComponent(this, this.selectedListId);
+		this.listSelectionComponent.setDebugId("listSelectionComponent");
 		this.plantSelectionComponent = new GermplasmSelectionComponent(this);
+		this.plantSelectionComponent.setDebugId("plantSelectionComponent");
 
 		this.plantFinderContent = new AbsoluteLayout();
+		this.plantFinderContent.setDebugId("plantFinderContent");
 		this.plantFinderContent.addComponent(this.listSelectionComponent, "top:0px;left:0px");
 		this.plantFinderContent.addComponent(this.plantSelectionComponent, "top:0px;left:0px");
-
+		
 		this.listBuilderComponent = new ListBuilderComponent(this);
-
+		this.listBuilderComponent.setDebugId("listBuilderComponent");
+		
 		this.splitPanel.setFirstComponent(this.plantFinderContent);
 		this.splitPanel.setSecondComponent(this.listBuilderComponent);
 
