@@ -3,7 +3,6 @@ package org.generationcp.breeding.manager.customfields;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Deque;
 import java.util.List;
 import java.util.Map;
@@ -18,14 +17,13 @@ import org.generationcp.breeding.manager.customcomponent.GermplasmListTree;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.IconButton;
 import org.generationcp.breeding.manager.customcomponent.ToggleButton;
-import org.generationcp.breeding.manager.customcomponent.generator.GermplasmListSourceItemDescriptionGenerator;
 import org.generationcp.breeding.manager.customcomponent.generator.GermplasmListSourceItemStyleGenerator;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
+import org.generationcp.breeding.manager.listimport.util.ToolTipGenerator;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItemClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListTreeCollapseListener;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
-import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.breeding.manager.validator.ListNameValidator;
 import org.generationcp.commons.constant.ListTreeState;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -78,8 +76,6 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 	@Autowired
 	protected GermplasmListManager germplasmListManager;
-	@Autowired
-	private UserDataManager userDataManager;
 
 	@Autowired
 	private ContextUtil util;
@@ -89,6 +85,9 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 	@Autowired
 	protected SimpleResourceBundleMessageSource messageSource;
+	
+	@Autowired
+	private UserDataManager userDataManager;
 
 	protected HorizontalLayout controlButtonsLayout;
 	protected HorizontalLayout ctrlBtnsLeftSubLayout;
@@ -97,6 +96,8 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 	protected Integer listId;
 	protected GermplasmListTreeUtil germplasmListTreeUtil;
+	
+	protected ToolTipGenerator tooltipGenerator;
 
 	protected Button addFolderBtn;
 	protected Button deleteFolderBtn;
@@ -118,8 +119,6 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	protected GermplasmList germplasmList;
 
 	protected ToggleButton toggleListTreeButton;
-
-	protected Map<Integer, GermplasmList> germplasmListsMap;
 
 	protected FolderSaveMode folderSaveMode;
 
@@ -425,13 +424,6 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		this.listId = listId;
 	}
 
-	public void assignNewNameToGermplasmListMap(final String key, final String newName) {
-		final GermplasmList germplasmListFromMap = this.germplasmListsMap.get(Integer.valueOf(key.toString()));
-		if (germplasmListFromMap != null) {
-			germplasmListFromMap.setName(newName);
-		}
-	}
-
 	@Override
 	public void addListeners() {
 		if (this.doIncludeRefreshButton()) {
@@ -653,9 +645,6 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 		this.getGermplasmListSource().setItemStyleGenerator(new GermplasmListSourceItemStyleGenerator());
 
-		this.germplasmListsMap = Util.getAllGermplasmLists(this.germplasmListManager);
-		this.addListTreeItemDescription();
-
 		this.getGermplasmListSource().setImmediate(true);
 		if (this.doIncludeActionsButtons()) {
 			this.germplasmListTreeUtil = new GermplasmListTreeUtil(this, this.getGermplasmListSource());
@@ -663,10 +652,6 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		this.treeContainerLayout.addComponent(this.getGermplasmListSource().getUIComponent());
 		this.getGermplasmListSource().requestRepaint();
 
-	}
-
-	public void addListTreeItemDescription() {
-		this.getGermplasmListSource().setItemDescriptionGenerator(new GermplasmListSourceItemDescriptionGenerator(this));
 	}
 
 	public void setSelectedListId(final Object listId) {
@@ -749,7 +734,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 	public void addGermplasmListNodeToComponent(final List<GermplasmList> germplasmListChildren, final int parentGermplasmListId) {
 		List<UserDefinedField> listTypes = germplasmListManager.getGermplasmListTypes();
-		Map<Integer, GermplasmListMetadata> allListMetaData = germplasmListManager.getAllGermplasmListMetadata();
+		final Map<Integer, GermplasmListMetadata> allListMetaData = germplasmListManager.getGermplasmListMetadata(germplasmListChildren);
 
 		for (final GermplasmList listChild : germplasmListChildren) {
 			if (this.doAddItem(listChild)) {
@@ -769,6 +754,13 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 				this.getGermplasmListSource().setChildrenAllowed(listChild.getId(), listChild.isFolder());
 			}
 		}
+		
+		if(this.tooltipGenerator == null) {
+			this.tooltipGenerator = new ToolTipGenerator(BreedingManagerUtil.getAllNamesAsMap(userDataManager), germplasmListManager.getGermplasmListTypes());
+		}
+		
+		this.getGermplasmListSource().setItemDescriptionGenerator(tooltipGenerator.getItemDescriptionGenerator(germplasmListChildren));
+
 		this.selectListSourceDetails(parentGermplasmListId, false);
 	}
 
@@ -800,15 +792,6 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		this.setGermplasmListSource(new GermplasmListTree());
 		this.createTree();
 		this.germplasmListTreeUtil = new GermplasmListTreeUtil(this, this.getGermplasmListSource());
-	}
-
-	public void reloadTreeItemDescription() {
-		this.germplasmListsMap = Util.getAllGermplasmLists(this.germplasmListManager);
-		this.addListTreeItemDescription();
-	}
-
-	public Map<Integer, GermplasmList> getGermplasmListsMap() {
-		return this.germplasmListsMap;
 	}
 
 	@Override
@@ -892,8 +875,9 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		this.setNodeItemIcon(ListSelectorComponent.LISTS, true);
 		this.getGermplasmListSource().setItemCaption(ListSelectorComponent.LISTS, ListSelectorComponent.LISTS);
 		List<UserDefinedField> listTypes = germplasmListManager.getGermplasmListTypes();
-
-		Map<Integer, GermplasmListMetadata> allListMetaData = germplasmListManager.getAllGermplasmListMetadata();
+		
+		
+		final Map<Integer, GermplasmListMetadata> allListMetaData = germplasmListManager.getGermplasmListMetadata(germplasmListParent);
 
 		for (final GermplasmList parentList : germplasmListParent) {
 			if (this.doAddItem(parentList)) {
@@ -938,10 +922,6 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 	public void setGermplasmListManager(final GermplasmListManager germplasmListManager) {
 		this.germplasmListManager = germplasmListManager;
-	}
-
-	public void setUserDataManager(final UserDataManager userDataManager) {
-		this.userDataManager = userDataManager;
 	}
 
 	public void setFolderTextField(final TextField folderTextField) {

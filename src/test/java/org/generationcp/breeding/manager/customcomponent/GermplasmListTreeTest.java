@@ -25,7 +25,6 @@ public class GermplasmListTreeTest {
 
 	@Test
 	public void testLocalTreeItemDescription() {
-		this.listTreeComponent.addListTreeItemDescription();
 
 		Mockito.verify(this.listTree).setItemDescriptionGenerator(Matchers.any(AbstractSelect.ItemDescriptionGenerator.class));
 	}

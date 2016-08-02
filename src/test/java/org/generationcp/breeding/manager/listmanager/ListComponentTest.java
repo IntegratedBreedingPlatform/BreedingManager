@@ -554,7 +554,6 @@ public class ListComponentTest {
 		this.germplasmList =
 				GermplasmListTestDataInitializer.createGermplasmListWithListData(TEST_GERMPLASM_LIST_ID, TEST_GERMPLASM_NO_OF_ENTRIES);
 		this.germplasmList.setStatus(1);
-		this.listComponent.setListEntries(this.germplasmList.getListData());
 		this.listComponent.setGermplasmList(this.germplasmList);
 		this.listComponent.setParent(parentComponent);
 

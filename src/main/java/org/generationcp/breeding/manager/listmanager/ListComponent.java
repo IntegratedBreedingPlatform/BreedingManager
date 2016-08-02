@@ -48,6 +48,7 @@ import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClic
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.breeding.manager.listmanager.util.ListDataPropertiesRenderer;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -65,6 +66,7 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
+import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
@@ -137,7 +139,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private ListTabComponent parentListDetailsComponent;
 	private GermplasmList germplasmList;
 
-	private List<GermplasmListData> listEntries;
 	private long listEntriesCount;
 	private String designationOfListEntriesDeleted = "";
 
@@ -158,8 +159,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	// Menu for Actions button in Inventory View
 	private InventoryViewActionMenu inventoryViewMenu;
 
-	private ContextMenuItem menuCopyToListFromInventory;
-	private ContextMenuItem menuInventorySaveChanges;
 	@SuppressWarnings("unused")
 	private ContextMenuItem menuListView;
 	@SuppressWarnings("unused")
@@ -252,6 +251,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	@Resource
 	private CrossExpansionProperties crossExpansionProperties;
 
+	@Autowired
+	private UserDataManager userDataManager;
+
 	public ListComponent() {
 		super();
 	}
@@ -295,7 +297,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.topLabel.setWidth("120px");
 		this.topLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 
-		this.viewListHeaderWindow = new ViewListHeaderWindow(this.germplasmList);
+		this.viewListHeaderWindow = new ViewListHeaderWindow(this.germplasmList, BreedingManagerUtil.getAllNamesAsMap(userDataManager),
+				germplasmListManager.getGermplasmListTypes());
 
 		this.viewHeaderButton = new Button(this.messageSource.getMessage(Message.VIEW_HEADER));
 		this.viewHeaderButton.addStyleName(BaseTheme.BUTTON_LINK);
@@ -351,11 +354,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.initializeListInventoryTable(); // listInventoryTable
 
 		this.menuCancelReservation = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.CANCEL_RESERVATIONS));
-		this.menuCopyToListFromInventory = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
 
 		this.menuReserveInventory = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
 		this.menuListView = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
-		this.menuInventorySaveChanges = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.SAVE_RESERVATIONS));
 		this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
 
 		this.inventoryViewMenu = new InventoryViewActionMenu();
@@ -473,11 +474,11 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	public void loadEntriesToListDataTable() {
 		if (this.listEntriesCount > 0) {
-			this.listEntries = new ArrayList<>();
+			final List<GermplasmListData> listEntries = new ArrayList<>();
 
-			this.getAllListEntries();
+			this.getAllListEntries(listEntries);
 
-			for (final GermplasmListData entry : this.listEntries) {
+			for (final GermplasmListData entry : listEntries) {
 				this.addListEntryToTable(entry);
 			}
 
@@ -575,16 +576,16 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	}
 
-	private void getAllListEntries() {
+	private void getAllListEntries(final List<GermplasmListData> listEntries) {
 		final List<GermplasmListData> entries;
 		try {
 			entries = this.inventoryDataManager
 					.getLotCountsForList(this.germplasmList.getId(), 0, Long.valueOf(this.listEntriesCount).intValue());
 
-			this.listEntries.addAll(entries);
+			listEntries.addAll(entries);
 		} catch (final MiddlewareQueryException ex) {
 			ListComponent.LOG.error("Error with retrieving list entries for list: " + this.germplasmList.getId(), ex);
-			this.listEntries = new ArrayList<>();
+			throw ex;
 		}
 	}
 
@@ -1617,9 +1618,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	public Boolean saveChangesAction(final Window window, final Boolean showSuccessMessage) {
 
 		this.deleteRemovedGermplasmEntriesFromTable();
-
+		final List<GermplasmListData> listEntries;
 		try {
-			this.listEntries = this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId());
+			listEntries = this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId());
 		} catch (final MiddlewareQueryException e) {
 			throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_SAVING_GERMPLASMLIST_DATA_CHANGES);
 		}
@@ -1636,7 +1637,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 			// then find the corresponding ListData and assign a new entryId to
 			// it
-			for (final GermplasmListData listData : this.listEntries) {
+			for (final GermplasmListData listData : listEntries) {
 				if (listData.getId().equals(listDataId)) {
 					listData.setEntryId(entryId);
 
@@ -1680,7 +1681,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		// save the list of Germplasm List Data to the database
 		try {
 
-			this.germplasmListManager.updateGermplasmListData(this.listEntries);
+			this.germplasmListManager.updateGermplasmListData(listEntries);
 			this.germplasmListManager.saveListDataColumns(this.addColumnContextMenu.getListDataCollectionFromTable(this.listDataTable));
 
 			this.listDataTable.requestRepaint();
@@ -1860,13 +1861,14 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				ListCommonActionsUtil.overwriteList(list, this.germplasmListManager, this.source, this.messageSource, true);
 		if (savedList != null) {
 			if (!savedList.getId().equals(this.germplasmList.getId())) {
-				ListCommonActionsUtil.overwriteListEntries(savedList, this.listEntries,
+				ListCommonActionsUtil.overwriteListEntries(savedList, this.germplasmList.getListData(),
 						this.germplasmList.getId().intValue() != savedList.getId().intValue(), this.germplasmListManager, this.source,
 						this.messageSource, true);
 				this.source.closeList(savedList);
 			} else {
 				this.germplasmList = savedList;
-				this.viewListHeaderWindow = new ViewListHeaderWindow(savedList);
+				this.viewListHeaderWindow = new ViewListHeaderWindow(savedList, BreedingManagerUtil.getAllNamesAsMap(userDataManager),
+						germplasmListManager.getGermplasmListTypes());
 				if (this.viewHeaderButton != null) {
 					this.viewHeaderButton.setDescription(this.viewListHeaderWindow.getListHeaderComponent().toString());
 				}
@@ -2316,10 +2318,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.germplasmListManager = germplasmListManager;
 	}
 
-	public void setListEntries(final List<GermplasmListData> listEntries) {
-		this.listEntries = listEntries;
-	}
-
 	public Table getListDataTable() {
 		return this.listDataTable;
 	}
@@ -2363,7 +2361,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		}
 
 		// update the MGID(Group Id) of the specific rows marked as fixed lines
-		for (final GermplasmListData listEntry : this.listEntries) {
+		for (final GermplasmListData listEntry : this.germplasmList.getListData()) {
 			final Integer gid = listEntry.getGid();
 			final Germplasm germplasm = germplasmMap.get(gid);
 			if (gidsProcessed.contains(gid)) {

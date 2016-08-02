@@ -86,8 +86,4 @@ public abstract class ListTreeTableComponent extends ListSelectorComponent {
 		}
 	}
 
-	@Override
-	public void addListTreeItemDescription() {
-		// override so that list details is not shown upon hover on tree table
-	}
 }

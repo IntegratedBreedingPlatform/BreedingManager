@@ -215,8 +215,6 @@ public class GermplasmListTreeUtil implements Serializable {
 			}
 
 			this.source.showAddRenameFolderSection(false);
-			// dennis
-			this.source.assignNewNameToGermplasmListMap(listId.toString(), newName);
 			this.source.refreshRemoteTree();
 			if (this.source.getWindow() != null) {
 				MessageNotifier.showMessage(this.source.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
