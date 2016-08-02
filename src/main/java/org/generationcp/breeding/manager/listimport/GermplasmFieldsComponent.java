@@ -207,13 +207,13 @@ public class GermplasmFieldsComponent extends AbsoluteLayout
 		this.addComponent(this.locationComponent, "top:145px;left:0px");
 
 		if (this.hasInventoryVariable) {
-			this.addComponent(this.seedLocationComponent, "top:205px;left:0px");
+			this.addComponent(this.seedLocationComponent, "top:225px;left:0px");
 
-			this.addComponent(this.germplasmDateLabel, "top:270px;left:0px");
-			this.addComponent(this.germplasmDateField, "top:265px;left:" + this.getLeftIndentPixels() + "px");
+			this.addComponent(this.germplasmDateLabel, "top:300px;left:0px");
+			this.addComponent(this.germplasmDateField, "top:300px;left:" + this.getLeftIndentPixels() + "px");
 
-			this.addComponent(this.nameTypeLabel, "top:305px;left:0px");
-			this.addComponent(this.nameTypeComboBox, "top:300px;left:" + this.getLeftIndentPixels() + "px");
+			this.addComponent(this.nameTypeLabel, "top:330px;left:0px");
+			this.addComponent(this.nameTypeComboBox, "top:330px;left:" + this.getLeftIndentPixels() + "px");
 
 		} else {
 			this.addComponent(this.germplasmDateLabel, "top:210px;left:0px");
