@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.util;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -389,17 +390,46 @@ public class BreedingManagerUtil {
 				int personId = user.getPersonid();
 				Person p = userDataManager.getPersonById(personId);
 
-				if (p != null) {
-					return p.getFirstName() + " " + p.getMiddleName() + " " + p.getLastName();
-				} else {
-					return user.getName();
-				}
+				return getNameFromDao(user, p);
 			} else {
 				return "";
 			}
 		} catch (MiddlewareQueryException ex) {
 			BreedingManagerUtil.LOG.error("Error with getting list owner name of user with id: " + userId, ex);
 			return "";
+		}
+	}
+	
+	public static Map<Integer, String> getAllNamesAsMap(final UserDataManager userDataManager) {
+		final Map<Integer, String> userIdUsernameMap = new HashMap<Integer, String>();
+
+		try {
+			final List<User> users = userDataManager.getAllUsers();
+			for (User user : users) {
+				String userName  = "";
+				if (user != null) {
+					int personId = user.getPersonid();
+					Person p = userDataManager.getPersonById(personId);
+					userName = getNameFromDao(user, p);
+				}
+				userIdUsernameMap.put(user.getUserid(), userName);
+			}
+
+		} catch (MiddlewareQueryException ex) {
+			BreedingManagerUtil.LOG.error("Error with getting list all owners and associated names. "
+					+ "Please contact administrators for further assistance.", ex);
+			throw ex;
+		}
+		
+		return userIdUsernameMap;
+
+	}
+
+	private static String getNameFromDao(User user, Person p) {
+		if (p != null) {
+			return p.getFirstName() + " " + p.getMiddleName() + " " + p.getLastName();
+		} else {
+			return user.getName();
 		}
 	}
 
