@@ -17,7 +17,6 @@ import org.generationcp.breeding.manager.customcomponent.GermplasmListTree;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.IconButton;
 import org.generationcp.breeding.manager.customcomponent.ToggleButton;
-import org.generationcp.breeding.manager.customcomponent.generator.GermplasmListSourceItemStyleGenerator;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.generationcp.breeding.manager.listimport.util.ToolTipGenerator;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItemClickListener;
@@ -315,7 +314,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		List<GermplasmList> listChildren = new ArrayList<GermplasmList>();
 
 		try {
-			listChildren = this.germplasmListManager.getGermplasmListByParentFolderId(listId, this.getCurrentProgramUUID(), 0, 1);
+			listChildren = this.germplasmListManager.getGermplasmListByParentFolderId(listId, this.getCurrentProgramUUID());
 		} catch (final MiddlewareQueryException e) {
 			ListSelectorComponent.LOG.error("Error in getting germplasm lists by parent id.", e);
 			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
@@ -642,9 +641,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		this.createGermplasmList();
 		this.getGermplasmListSource().setStyleName(this.getMainTreeStyleName());
 		this.getGermplasmListSource().addStyleName(this.getTreeStyleName());
-
-		this.getGermplasmListSource().setItemStyleGenerator(new GermplasmListSourceItemStyleGenerator());
-
+		
 		this.getGermplasmListSource().setImmediate(true);
 		if (this.doIncludeActionsButtons()) {
 			this.germplasmListTreeUtil = new GermplasmListTreeUtil(this, this.getGermplasmListSource());
@@ -755,6 +752,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 			}
 		}
 		
+		// This needs to be improved
 		if(this.tooltipGenerator == null) {
 			this.tooltipGenerator = new ToolTipGenerator(BreedingManagerUtil.getAllNamesAsMap(userDataManager), germplasmListManager.getGermplasmListTypes());
 		}
@@ -860,7 +858,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		List<GermplasmList> germplasmListParent = new ArrayList<GermplasmList>();
 		try {
 			germplasmListParent =
-					this.germplasmListManager.getAllTopLevelListsBatched(this.getCurrentProgramUUID(), ListSelectorComponent.BATCH_SIZE);
+					this.germplasmListManager.getAllTopLevelLists(this.getCurrentProgramUUID());
 		} catch (final MiddlewareQueryException e) {
 			ListSelectorComponent.LOG.error("Error in getting top level lists.", e);
 			if (this.getWindow() != null) {
