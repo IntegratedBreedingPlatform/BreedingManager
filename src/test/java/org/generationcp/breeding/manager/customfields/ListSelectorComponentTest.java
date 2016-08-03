@@ -257,7 +257,7 @@ public class ListSelectorComponentTest {
 	@Test
 	public void testUpdateButtonsWhenTheSelectedItemisAListOrFolder() throws MiddlewareQueryException {
 		Mockito.when(this.messageSource.getMessage(Message.ALL_LISTS)).thenReturn("All Lists");
-		Mockito.when(this.germplasmListManager.getAllTopLevelListsBatched(ListSelectorComponentTest.PROGRAM_UUID, 10))
+		Mockito.when(this.germplasmListManager.getAllTopLevelLists(ListSelectorComponentTest.PROGRAM_UUID))
 				.thenReturn(new ArrayList<GermplasmList>());
 
 		final ListManagerTreeComponent listManagerTreeComponent = Mockito.spy(new ListManagerTreeComponent());
@@ -278,7 +278,7 @@ public class ListSelectorComponentTest {
 	@Test
 	public void testUpdateButtonsWhenTheSelectedItemisARootFolder() throws MiddlewareQueryException {
 		Mockito.when(this.messageSource.getMessage(Message.ALL_LISTS)).thenReturn("All Lists");
-		Mockito.when(this.germplasmListManager.getAllTopLevelListsBatched(ListSelectorComponentTest.PROGRAM_UUID, 10))
+		Mockito.when(this.germplasmListManager.getAllTopLevelLists(ListSelectorComponentTest.PROGRAM_UUID))
 				.thenReturn(new ArrayList<GermplasmList>());
 
 		final ListManagerTreeComponent listManagerTreeComponent = Mockito.spy(new ListManagerTreeComponent());
@@ -312,8 +312,7 @@ public class ListSelectorComponentTest {
 		final List<GermplasmList> germplasmListChildren = new ArrayList<>();
 		germplasmListChildren.add(germplasmList);
 
-		Mockito.when(this.germplasmListManager.getAllTopLevelListsBatched(ListSelectorComponentTest.PROGRAM_UUID,
-				ListSelectorComponent.BATCH_SIZE)).thenReturn(germplasmListChildren);
+		Mockito.when(this.germplasmListManager.getAllTopLevelLists(ListSelectorComponentTest.PROGRAM_UUID)).thenReturn(germplasmListChildren);
 		final Integer expectedNoOfEntries = 10;
 		final Map<Integer, GermplasmListMetadata> allListMetaData = new HashMap<>();
 		allListMetaData.put(childGermplasmListId, new GermplasmListMetadata(childGermplasmListId,
