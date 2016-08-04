@@ -262,10 +262,12 @@ public class SaveGermplasmListActionTest {
 		for (final Attribute attr : attributes) {
 			Assert.assertEquals("The attribute's germplasm id should be " + germplasm.getGid(), germplasm.getGid(), attr.getGermplasmId());
 			Assert.assertEquals("The attribute's type id should be 0.", 0, attr.getTypeId().intValue());
-			Assert.assertEquals("The attribute's user id should be " + SaveGermplasmListActionTest.CURRENT_LOCAL_ID, SaveGermplasmListActionTest.CURRENT_LOCAL_ID, attr.getUserId().intValue());
+			Assert.assertEquals("The attribute's user id should be " + SaveGermplasmListActionTest.CURRENT_LOCAL_ID,
+					SaveGermplasmListActionTest.CURRENT_LOCAL_ID, attr.getUserId().intValue());
 			Assert.assertEquals("The attribute's location id should be 0.", attr.getLocationId().intValue(), 0);
 			Assert.assertEquals("The attribute's reference id should be 0.", attr.getReferenceId().intValue(), 0);
-			Assert.assertEquals("The attribute's a date should be " + Util.getCurrentDateAsIntegerValue(), Util.getCurrentDateAsIntegerValue(), attr.getAdate());
+			Assert.assertEquals("The attribute's a date should be " + Util.getCurrentDateAsIntegerValue(),
+					Util.getCurrentDateAsIntegerValue(), attr.getAdate());
 		}
 	}
 
