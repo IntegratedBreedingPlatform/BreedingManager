@@ -1,15 +1,11 @@
 
 package org.generationcp.breeding.manager.customfields;
 
-import org.generationcp.breeding.manager.customcomponent.GermplasmListSource;
 import org.generationcp.breeding.manager.customcomponent.GermplasmListTree;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.Tree;
 
 @Configurable
 public abstract class ListTreeComponent extends ListSelectorComponent {
