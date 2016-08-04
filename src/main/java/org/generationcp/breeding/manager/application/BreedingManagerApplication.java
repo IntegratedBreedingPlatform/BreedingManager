@@ -77,6 +77,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 	public void initSpringApplication(final ConfigurableWebApplicationContext arg0) {
 
 		this.window = this.instantiateListManagerWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME);
+		this.window.setDebugId("window");
 		this.setMainWindow(this.window);
 		this.setTheme("gcp-default");
 		this.window.setSizeUndefined();
