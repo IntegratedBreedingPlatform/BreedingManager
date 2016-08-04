@@ -12,8 +12,10 @@ package org.generationcp.breeding.manager.containers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -106,9 +108,14 @@ import com.vaadin.ui.themes.BaseTheme;
 		LOG.info(String.format("LoadItems(%d,%d): %s", startIndex, count, this.searchParameter));
 		final List<Item> items = new ArrayList<>();
 		final List<Germplasm> list = this.getGermplasmSearchResults(startIndex, count);
-
+		final Set<Integer> gids = new HashSet<>();
+		for (Germplasm germplasmToGeneratePedigreeStringsFor : list) {
+			gids.add(germplasmToGeneratePedigreeStringsFor.getGid());
+		}
+		
+		final Map<Integer, String> pedigreeStringMap = pedigreeService.getCrossExpansions(gids, null, crossExpansionProperties);
 		for (int i = 0; i < list.size(); i++) {
-			items.add(this.getGermplasmItem(list.get(i), i + startIndex));
+			items.add(this.getGermplasmItem(list.get(i), i + startIndex, pedigreeStringMap));
 		}
 
 		return items;
@@ -134,7 +141,7 @@ import com.vaadin.ui.themes.BaseTheme;
 		return this.size;
 	}
 
-	Item getGermplasmItem(final Germplasm germplasm, final int index) {
+	Item getGermplasmItem(final Germplasm germplasm, final int index, final Map<Integer, String> pedigreeStringMap) {
 
 		final Integer gid = germplasm.getGid();
 		final GermplasmInventory inventoryInfo = germplasm.getInventoryInfo();
@@ -144,7 +151,7 @@ import com.vaadin.ui.themes.BaseTheme;
 		final Map<String, ObjectProperty> propertyMap = new HashMap<>();
 		propertyMap.put(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID, new ObjectProperty<>(this.getItemCheckBox(index)));
 		propertyMap.put(GermplasmSearchResultsComponent.NAMES, new ObjectProperty<>(this.getNamesButton(gid)));
-		propertyMap.put(ColumnLabels.PARENTAGE.getName(), new ObjectProperty<>(this.getCrossExpansion(gid)));
+		propertyMap.put(ColumnLabels.PARENTAGE.getName(), new ObjectProperty<>(pedigreeStringMap.get(gid)));
 		propertyMap.put(ColumnLabels.AVAILABLE_INVENTORY.getName(), new ObjectProperty<>(this.getAvailableInventory(inventoryInfo)));
 		propertyMap.put(ColumnLabels.SEED_RESERVATION.getName(), new ObjectProperty<>(this.getSeedReserved(inventoryInfo)));
 		propertyMap.put(ColumnLabels.STOCKID.getName(), new ObjectProperty<>(this.getStockIDs(inventoryInfo)));
@@ -177,10 +184,6 @@ import com.vaadin.ui.themes.BaseTheme;
 		return gidButton;
 	}
 
-	private String getCrossExpansion(final Integer gid) {
-		return this.pedigreeService.getCrossExpansion(gid, this.crossExpansionProperties);
-
-	}
 
 	private GidLinkButtonClickListener createGermplasmListener(final Integer gid) {
 		return new GidLinkButtonClickListener(this.listManagerMain, String.valueOf(gid), this.viaToolUrl, this.showAddToList);

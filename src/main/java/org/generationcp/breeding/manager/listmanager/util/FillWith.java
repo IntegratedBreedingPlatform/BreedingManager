@@ -3,9 +3,12 @@ package org.generationcp.breeding.manager.listmanager.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -35,6 +38,7 @@ import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
+import com.google.common.collect.Iterables;
 import com.vaadin.data.Item;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.AbstractLayout;
@@ -644,9 +648,7 @@ public class FillWith implements InternationalizableComponent {
 				// iterate through the table elements' IDs
 
 				Item item = table.getItem(listDataId);
-				Object gidObject = item.getItemProperty(this.gidPropertyId).getValue();
-				Button b = (Button) gidObject;
-				String gid = b.getCaption();
+				String gid = getGidFromButton(item);
 				GermplasmDetailModel gModel = this.getGermplasmDetails(Integer.valueOf(gid));
 				item.getItemProperty(propertyId).setValue(gModel.getGermplasmPreferredName());
 			}
@@ -668,9 +670,7 @@ public class FillWith implements InternationalizableComponent {
 			if (!onlyFillWithThoseHavingEmptyValues || table.getItem(listDataId).getItemProperty(propertyId).getValue() == null
 					|| table.getItem(listDataId).getItemProperty(propertyId).getValue().equals(FillWith.EMPTY_STRING)) {
 				Item item = table.getItem(listDataId);
-				Object gidObject = item.getItemProperty(this.gidPropertyId).getValue();
-				Button b = (Button) gidObject;
-				String gid = b.getCaption();
+				String gid = getGidFromButton(item);
 				GermplasmDetailModel gModel = this.getGermplasmDetails(Integer.valueOf(gid));
 				item.getItemProperty(propertyId).setValue(gModel.getPrefID());
 			}
@@ -690,9 +690,7 @@ public class FillWith implements InternationalizableComponent {
 			List<Integer> itemIds = this.getItemIds(targetTable);
 			for (Integer itemId : itemIds) {
 				Item item = targetTable.getItem(itemId);
-				Object gidObject = item.getItemProperty(this.gidPropertyId).getValue();
-				Button b = (Button) gidObject;
-				String gid = b.getCaption();
+				String gid = getGidFromButton(item);
 				item.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(gidLocations.get(new Integer(gid)));
 			}
 
@@ -715,9 +713,7 @@ public class FillWith implements InternationalizableComponent {
 				if (!onlyFillWithThoseHavingEmptyValues || table.getItem(itemId).getItemProperty(propertyId).getValue() == null
 						|| table.getItem(itemId).getItemProperty(propertyId).getValue().equals(FillWith.EMPTY_STRING)) {
 					Item item = table.getItem(itemId);
-					Object gidObject = item.getItemProperty(this.gidPropertyId).getValue();
-					Button b = (Button) gidObject;
-					String gid = b.getCaption();
+					String gid = getGidFromButton(item);
 					item.getItemProperty(propertyId).setValue(gidLocations.get(new Integer(gid)));
 				}
 			}
@@ -832,17 +828,16 @@ public class FillWith implements InternationalizableComponent {
 
 	private void fillWithCrossExpansion(String propertyId) {
 		if (this.crossExpansionLevel != null) {
+			
+			final Map<Integer, String> crossExpansions = bulkGeneratePedigreeString();
+
 			for (Iterator<?> i = this.targetTable.getItemIds().iterator(); i.hasNext();) {
 				// iterate through the table elements' IDs
 				int listDataId = (Integer) i.next();
 				Item item = this.targetTable.getItem(listDataId);
-				Object gidObject = item.getItemProperty(this.gidPropertyId).getValue();
-				Button b = (Button) gidObject;
-				String gid = b.getCaption();
+				String gid = getGidFromButton(item);
 				try {
-					String crossExpansion =
-							this.pedigreeService.getCrossExpansion(Integer.parseInt(gid), this.crossExpansionLevel.intValue(),
-									this.crossExpansionProperties);
+					String crossExpansion = crossExpansions.get(Integer.parseInt(gid));
 					item.getItemProperty(propertyId).setValue(crossExpansion);
 				} catch (MiddlewareQueryException ex) {
 					FillWith.LOG.error("Error with getting cross expansion: gid=" + gid + " level=" + this.crossExpansionLevel, ex);
@@ -855,6 +850,36 @@ public class FillWith implements InternationalizableComponent {
 			this.markHasChangesFlagsAndToggleTableEditable(this.targetTable);
 
 		}
+	}
+
+	private Map<Integer, String> bulkGeneratePedigreeString() {
+		
+		final Set<Integer> gidIdList = new HashSet<>();
+
+		for (final Iterator<?> i = this.targetTable.getItemIds().iterator(); i.hasNext();) {
+			final int listDataId = (Integer) i.next();
+			final Item item = this.targetTable.getItem(listDataId);
+			final String gidFromButton = getGidFromButton(item);
+			gidIdList.add(Integer.parseInt(gidFromButton));
+		}
+
+		final Iterable<List<Integer>> partition = Iterables.partition(gidIdList, 5000);
+
+		final Map<Integer, String> crossExpansions = new HashMap<>();
+
+		for (List<Integer> partitionedGidList : partition) {
+			final Set<Integer> partitionedGidSet = new HashSet<Integer>(partitionedGidList);
+			crossExpansions.putAll(this.pedigreeService.getCrossExpansions(partitionedGidSet, this.crossExpansionLevel.intValue(),
+					this.crossExpansionProperties));
+		}
+		return crossExpansions;
+	}
+
+	private String getGidFromButton(Item item) {
+		Object gidObject = item.getItemProperty(this.gidPropertyId).getValue();
+		Button b = (Button) gidObject;
+		String gid = b.getCaption();
+		return gid;
 	}
 
 	private void displaySequenceNumberPopupWindow(String propertyId) {
