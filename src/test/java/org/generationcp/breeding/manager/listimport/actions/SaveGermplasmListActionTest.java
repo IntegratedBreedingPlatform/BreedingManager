@@ -28,6 +28,7 @@ import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.Transaction;
 import org.generationcp.middleware.service.api.InventoryService;
+import org.generationcp.middleware.util.Util;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -255,11 +256,16 @@ public class SaveGermplasmListActionTest {
 		udfld.setFcode("Fcode");
 		existingUdflds.add(udfld);
 
-		final Germplasm germplasm = new Germplasm();
+		final Germplasm germplasm = GermplasmTestDataInitializer.createGermplasm(1);
 		final List<Attribute> attributes = this.action.prepareAllAttributesToAdd(importedGermplasm, existingUdflds, germplasm);
 
 		for (final Attribute attr : attributes) {
-			Assert.assertEquals("Make sure that the attribute's location is set to 0.", attr.getLocationId().intValue(), 0);
+			Assert.assertEquals("The attribute's germplasm id should be " + germplasm.getGid(), germplasm.getGid(), attr.getGermplasmId());
+			Assert.assertEquals("The attribute's type id should be 0.", 0, attr.getTypeId().intValue());
+			Assert.assertEquals("The attribute's user id should be " + SaveGermplasmListActionTest.CURRENT_LOCAL_ID, SaveGermplasmListActionTest.CURRENT_LOCAL_ID, attr.getUserId().intValue());
+			Assert.assertEquals("The attribute's location id should be 0.", attr.getLocationId().intValue(), 0);
+			Assert.assertEquals("The attribute's reference id should be 0.", attr.getReferenceId().intValue(), 0);
+			Assert.assertEquals("The attribute's a date should be " + Util.getCurrentDateAsIntegerValue(), Util.getCurrentDateAsIntegerValue(), attr.getAdate());
 		}
 	}
 
