@@ -1,6 +1,8 @@
 
 package org.generationcp.breeding.manager.customcomponent;
 
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Tree;
@@ -20,7 +22,13 @@ public class GermplasmListTree extends Tree implements GermplasmListSource {
 
 	@Override
 	public Object addItem(Object[] cells, Object itemId) {
-		return super.addItem(itemId);
+		final Monitor monitor = MonitorFactory.start("org.generationcp.breeding.manager."
+				+ "customcomponent.GermplasmListTree.addItem(Object[], Object)");
+		try {
+			return super.addItem(itemId);
+		} finally {
+			monitor.stop();
+		}
 	}
 
 	@Override

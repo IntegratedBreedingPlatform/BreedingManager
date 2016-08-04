@@ -43,6 +43,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import com.vaadin.data.Item;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
@@ -371,18 +373,22 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 	public void addGermplasmListNode(final int parentGermplasmListId) {
 		List<GermplasmList> germplasmListChildren;
+		final Monitor monitor = MonitorFactory.start("org.generationcp.breeding.manager.customfields.ListSelectorComponent.addGermplasmListNode(int)");
 
 		try {
 			germplasmListChildren =
 					this.germplasmListManager.getGermplasmListByParentFolderIdBatched(parentGermplasmListId, this.getCurrentProgramUUID(),
 							ListSelectorComponent.BATCH_SIZE);
+			this.addGermplasmListNodeToComponent(germplasmListChildren, parentGermplasmListId);
+
 		} catch (final MiddlewareQueryException e) {
 			ListSelectorComponent.LOG.error("Error in getting germplasm lists by parent id.", e);
 			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
 					this.messageSource.getMessage(Message.ERROR_IN_GETTING_GERMPLASM_LISTS_BY_PARENT_FOLDER_ID));
-			germplasmListChildren = new ArrayList<>();
+		} finally {
+			monitor.stop();
 		}
-		this.addGermplasmListNodeToComponent(germplasmListChildren, parentGermplasmListId);
+			
 
 	}
 
@@ -730,36 +736,43 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	}
 
 	public void addGermplasmListNodeToComponent(final List<GermplasmList> germplasmListChildren, final int parentGermplasmListId) {
-		List<UserDefinedField> listTypes = germplasmListManager.getGermplasmListTypes();
-		final Map<Integer, GermplasmListMetadata> allListMetaData = germplasmListManager.getGermplasmListMetadata(germplasmListChildren);
+		final Monitor monitor = MonitorFactory.start("org.generationcp.breeding.manager.customfields.ListSelectorComponent.addGermplasmListNodeToComponent(List<GermplasmList>, int)");
 
-		for (final GermplasmList listChild : germplasmListChildren) {
-			if (this.doAddItem(listChild)) {
-				GermplasmListMetadata listMetadata = allListMetaData.get(listChild.getId());
-				final String listSize = listMetadata != null ? String.valueOf(listMetadata.getNumberOfEntries()) : "";
-				final String listOwner = listMetadata != null ? listMetadata.getOwnerName() : "";
-
-				this.getGermplasmListSource()
-						.addItem(this.generateCellInfo(listChild.getName(), listOwner,
-								BreedingManagerUtil.getDescriptionForDisplay(listChild),
-								BreedingManagerUtil.getTypeString(listChild.getType(), listTypes), listSize),
-								listChild.getId());
-				this.setNodeItemIcon(listChild.getId(), listChild.isFolder());
-				this.getGermplasmListSource().setItemCaption(listChild.getId(), listChild.getName());
-				this.getGermplasmListSource().setParent(listChild.getId(), parentGermplasmListId);
-				// allow children if list has sub-lists
-				this.getGermplasmListSource().setChildrenAllowed(listChild.getId(), listChild.isFolder());
+		try {
+			final List<UserDefinedField> listTypes = germplasmListManager.getGermplasmListTypes();
+			final Map<Integer, GermplasmListMetadata> allListMetaData = germplasmListManager.getGermplasmListMetadata(germplasmListChildren);
+	
+			for (final GermplasmList listChild : germplasmListChildren) {
+				if (this.doAddItem(listChild)) {
+					GermplasmListMetadata listMetadata = allListMetaData.get(listChild.getId());
+					final String listSize = listMetadata != null ? String.valueOf(listMetadata.getNumberOfEntries()) : "";
+					final String listOwner = listMetadata != null ? listMetadata.getOwnerName() : "";
+	
+					final Object[] generateCellInfo = this.generateCellInfo(listChild.getName(), listOwner,
+							BreedingManagerUtil.getDescriptionForDisplay(listChild),
+							BreedingManagerUtil.getTypeString(listChild.getType(), listTypes), listSize);
+							
+					this.getGermplasmListSource()
+							.addItem(generateCellInfo,listChild.getId());
+					this.setNodeItemIcon(listChild.getId(), listChild.isFolder());
+					this.getGermplasmListSource().setItemCaption(listChild.getId(), listChild.getName());
+					this.getGermplasmListSource().setParent(listChild.getId(), parentGermplasmListId);
+					// allow children if list has sub-lists
+					this.getGermplasmListSource().setChildrenAllowed(listChild.getId(), listChild.isFolder());
+				}
 			}
+			
+			// This needs to be improved
+			if(this.tooltipGenerator == null) {
+				this.tooltipGenerator = new ToolTipGenerator(BreedingManagerUtil.getAllNamesAsMap(userDataManager), germplasmListManager.getGermplasmListTypes());
+			}
+			
+			this.getGermplasmListSource().setItemDescriptionGenerator(tooltipGenerator.getItemDescriptionGenerator(germplasmListChildren));
+	
+			this.selectListSourceDetails(parentGermplasmListId, false);
+		} finally {
+			monitor.stop();
 		}
-		
-		// This needs to be improved
-		if(this.tooltipGenerator == null) {
-			this.tooltipGenerator = new ToolTipGenerator(BreedingManagerUtil.getAllNamesAsMap(userDataManager), germplasmListManager.getGermplasmListTypes());
-		}
-		
-		this.getGermplasmListSource().setItemDescriptionGenerator(tooltipGenerator.getItemDescriptionGenerator(germplasmListChildren));
-
-		this.selectListSourceDetails(parentGermplasmListId, false);
 	}
 
 	private void selectListSourceDetails(final Object itemId, final boolean nullSelectAllowed) {
@@ -898,18 +911,24 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	// logic used when expanding nodes
 	@Override
 	public void nodeExpand(final Tree.ExpandEvent event) {
-		if (!event.getItemId().toString().equals(ListSelectorComponent.LISTS)) {
-			try {
-				this.addGermplasmListNode(Integer.valueOf(event.getItemId().toString()));
-			} catch (final InternationalizableException e) {
-				ListSelectorComponent.LOG.error(e.getMessage(), e);
-				MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
-			}
-		}
+		final Monitor monitor = MonitorFactory.start("org.generationcp.breeding.manager.customfields.ListSelectorComponent.nodeExpand(ExpandEvent)");
 
-		this.setSelectedListId(event.getItemId());
-		this.updateButtons(event.getItemId());
-		this.toggleFolderSectionForItemSelected();
+		try {
+			if (!event.getItemId().toString().equals(ListSelectorComponent.LISTS)) {
+				try {
+					this.addGermplasmListNode(Integer.valueOf(event.getItemId().toString()));
+				} catch (final InternationalizableException e) {
+					ListSelectorComponent.LOG.error(e.getMessage(), e);
+					MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
+				}
+			}
+	
+			this.setSelectedListId(event.getItemId());
+			this.updateButtons(event.getItemId());
+			this.toggleFolderSectionForItemSelected();
+		} finally {
+			monitor.stop();
+		}
 	}
 
 	private void addGermplasmListSourceListeners() {
