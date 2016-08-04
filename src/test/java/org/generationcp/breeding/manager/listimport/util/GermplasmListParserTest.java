@@ -12,6 +12,7 @@ import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListD
 import org.generationcp.breeding.manager.listimport.validator.StockIDValidator;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
+import org.generationcp.commons.parsing.CrossesListDescriptionSheetParser;
 import org.generationcp.commons.parsing.FileParsingException;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.data.initializer.GermplasmTestDataInitializer;
@@ -33,7 +34,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 /**
  * Created by cyrus on 5/7/15. Unit test will only cover the observation sheet parsing as we will have a separate unit test for parsing
- * Description Sheet (see the equivalent unit test for {@link org.generationcp.commons.parsing.DescriptionSheetParser}) But test still
+ * Description Sheet (see the equivalent unit test for {@link CrossesListDescriptionSheetParser}) But test still
  * promises at least 50% coverage for {@link GermplasmListParser}
  */
 @RunWith(MockitoJUnitRunner.class)
