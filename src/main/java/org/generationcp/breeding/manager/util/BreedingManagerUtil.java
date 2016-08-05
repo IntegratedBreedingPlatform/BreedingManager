@@ -17,6 +17,7 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.LocationDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -293,16 +294,35 @@ public class BreedingManagerUtil {
 		return hasFavMethod;
 	}
 
-	public static boolean hasFavoriteLocation(GermplasmDataManager germplasmDataManager, Integer locationType, String programUUID) {
-
+	public static boolean hasFavoriteLocation(final GermplasmDataManager germplasmDataManager,
+			final LocationDataManager locationDataManager, final int locationType, final String programUUID) {
 		boolean hasFavLocation = false;
 		try {
 			// Get location Id's
-			List<ProgramFavorite> list = germplasmDataManager.getProgramFavorites(FavoriteType.LOCATION, 1000, programUUID);
+			final List<ProgramFavorite> list = germplasmDataManager.getProgramFavorites(FavoriteType.LOCATION, 1000, programUUID);
 			if (list != null && !list.isEmpty()) {
-				hasFavLocation = true;
+
+				// Has favorites of specified location type
+				if (locationType > 0) {
+					final List<Integer> ids = new ArrayList<>();
+					for (final ProgramFavorite programFavorite : list) {
+						ids.add(programFavorite.getEntityId());
+					}
+
+					final List<Location> locations = locationDataManager.getLocationsByIDs(ids);
+
+					for (final Location location : locations) {
+						if (location.getLtype().equals(locationType)) {
+							hasFavLocation = true;
+							break;
+						}
+					}
+				} else {
+					hasFavLocation = true;
+				}
+
 			}
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			BreedingManagerUtil.LOG.error(e.getMessage(), e);
 		}
 

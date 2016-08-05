@@ -36,6 +36,7 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
@@ -48,6 +49,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 	private static final Logger LOG = LoggerFactory.getLogger(BreedingLocationField.class);
 
 	static final String DEFAULT_LOCATION = "Unknown";
+	private static final int STORAGE_LOCATION_TYPEID = 1500;
 
 	/**
 	 * CONSTRUCTOR VARIABLES
@@ -69,6 +71,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 	private ComboBox breedingLocationComboBox;
 	private List<Location> locations;
 	private CheckBox showFavoritesCheckBox;
+	private OptionGroup breedingLocationsRadioBtn;
 	private Button manageFavoritesLink;
 
 	@Autowired
@@ -139,6 +142,13 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		this.breedingLocationComboBox.setNullSelectionAllowed(true);
 		this.breedingLocationComboBox.setInputPrompt("Please Choose");
 
+		this.breedingLocationsRadioBtn.setMultiSelect(false);
+		this.breedingLocationsRadioBtn.setImmediate(true);
+		this.breedingLocationsRadioBtn.setStyleName("v-select-optiongroup-horizontal");
+		this.breedingLocationsRadioBtn.addItem(this.messageSource.getMessage(Message.SHOW_ALL_LOCATIONS));
+		this.breedingLocationsRadioBtn.addItem(this.messageSource.getMessage(Message.SHOW_STORAGE_LOCATIONS));
+		this.breedingLocationsRadioBtn.select(this.messageSource.getMessage(Message.SHOW_STORAGE_LOCATIONS));
+
 		this.showFavoritesCheckBox = new CheckBox();
 		this.showFavoritesCheckBox.setCaption(this.messageSource.getMessage(Message.SHOW_ONLY_FAVORITE_LOCATIONS));
 		this.showFavoritesCheckBox.setImmediate(true);
@@ -157,17 +167,21 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 	@Override
 	public void initializeValues() {
 		this.populateLocations(this.programUniqueId);
-		this.initPopulateFavLocations(this.programUniqueId);
+		this.initPopulateFavLocations(this.programUniqueId, STORAGE_LOCATION_TYPEID);
 	}
 
-	public boolean initPopulateFavLocations(final String programUUID) {
+	public boolean initPopulateFavLocations(final String programUUID, int locationType) {
 		boolean hasFavorite = false;
-		if (BreedingManagerUtil.hasFavoriteLocation(this.germplasmDataManager, 0, programUUID)) {
+		if (BreedingManagerUtil.hasFavoriteLocation(this.germplasmDataManager, this.locationDataManager, locationType, programUUID)) {
 			this.showFavoritesCheckBox.setValue(true);
 			this.populateHarvestLocation(true, this.programUniqueId);
 			hasFavorite = true;
 		}
 		return hasFavorite;
+	}
+
+	private boolean isSelectAllLocations() {
+		return ((String) this.getBreedingLocationsRadioBtn().getValue()).equals(this.messageSource.getMessage(Message.SHOW_ALL_LOCATIONS));
 	}
 
 	@Override
@@ -193,16 +207,18 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 			}
 		});
 
-		this.showFavoritesCheckBox.addListener(new Property.ValueChangeListener() {
+		Property.ValueChangeListener breedingLocationsListener = new Property.ValueChangeListener() {
 
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void valueChange(final ValueChangeEvent event) {
-				BreedingLocationField.this.populateHarvestLocation(((Boolean) event.getProperty().getValue()).equals(true),
+				BreedingLocationField.this.populateHarvestLocation(((Boolean) BreedingLocationField.this.showFavoritesCheckBox.getValue()),
 						BreedingLocationField.this.programUniqueId);
 			}
-		});
+		};
+		this.showFavoritesCheckBox.addListener(breedingLocationsListener);
+		this.getBreedingLocationsRadioBtn().addListener(breedingLocationsListener);
 
 		this.manageFavoritesLink.addListener(new ClickListener() {
 
@@ -228,11 +244,12 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		this.addComponent(this.breedingLocationComboBox, "top:0; left:" + this.leftIndentPixels + "px");
 
 		if (this.displayFavoriteLocationsFilter) {
-			this.addComponent(this.showFavoritesCheckBox, "top:30px; left:" + this.leftIndentPixels + "px");
+			this.addComponent(this.getBreedingLocationsRadioBtn(), "top:30px; left:" + this.leftIndentPixels + "px");
+			this.addComponent(this.showFavoritesCheckBox, "top:52px; left:" + this.leftIndentPixels + "px");
 		}
 
 		if (this.displayManageLocationLink) {
-			final int pixels = this.leftIndentPixels + 220;
+			final int pixels = this.leftIndentPixels + 230;
 			this.addComponent(this.manageFavoritesLink, "top:33px; left:" + pixels + "px");
 		}
 	}
@@ -244,6 +261,8 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		this.breedingLocationsRadioBtn = new OptionGroup();
+
 		this.instantiateComponents();
 		this.initializeValues();
 		this.addListeners();
@@ -290,8 +309,15 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 
 		if (showOnlyFavorites) {
 			try {
+				int ltype = 0;
+
+				if (!isSelectAllLocations()) {
+					// get storage locations that are also favorites
+					ltype = STORAGE_LOCATION_TYPEID;
+				}
+
 				BreedingManagerUtil.populateWithFavoriteLocations(this.workbenchDataManager, this.germplasmDataManager,
-						this.breedingLocationComboBox, null, programUUID);
+						this.breedingLocationComboBox, null, ltype, programUUID);
 
 			} catch (final MiddlewareQueryException e) {
 				BreedingLocationField.LOG.error(e.getMessage(), e);
@@ -305,16 +331,15 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 
 	}
 
-	/*
-	 * Fill with all locations
-	 */
 	private void populateLocations(final String programUUID) {
 
 		try {
-			if (this.locationType > 0) {
+			if (isSelectAllLocations()) {
+				this.locations = this.locationDataManager.getLocationsByUniqueID(programUUID);
+			} else if (this.locationType > 0) {
 				this.locations = this.locationDataManager.getLocationsByType(this.locationType, programUUID);
 			} else {
-				this.locations = this.locationDataManager.getLocationsByUniqueID(programUUID);
+				this.locations = this.locationDataManager.getAllSeedingLocations(programUUID);
 			}
 		} catch (final MiddlewareQueryException e) {
 			BreedingLocationField.LOG.error(e.getMessage(), e);
@@ -437,5 +462,13 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 
 	public void setBreedingManagerService(final BreedingManagerService breedingManagerService) {
 		this.breedingManagerService = breedingManagerService;
+	}
+
+	public OptionGroup getBreedingLocationsRadioBtn() {
+		return breedingLocationsRadioBtn;
+	}
+
+	public void setBreedingLocationsRadioBtn(OptionGroup breedingLocationsRadioBtn) {
+		this.breedingLocationsRadioBtn = breedingLocationsRadioBtn;
 	}
 }
