@@ -2,6 +2,7 @@
 package org.generationcp.breeding.manager.listmanager;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -336,7 +337,7 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 		
 		this.matchingListsTable.setItemDescriptionGenerator(
 				new ToolTipGenerator(BreedingManagerUtil.getAllNamesAsMap(userDataManager), germplasmListManager.getGermplasmListTypes())
-						.getItemDescriptionGenerator(germplasmLists));
+						.getItemDescriptionGenerator(new HashSet<GermplasmList>(germplasmLists)));
 	
 		if (!this.matchingListsTable.getItemIds().isEmpty()) {
 			this.updateActionMenuOptions(true);

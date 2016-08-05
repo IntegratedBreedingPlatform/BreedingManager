@@ -3,12 +3,15 @@ package org.generationcp.breeding.manager.customfields;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -98,8 +101,6 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	protected Integer listId;
 	protected GermplasmListTreeUtil germplasmListTreeUtil;
 	
-	protected ToolTipGenerator tooltipGenerator;
-
 	protected Button addFolderBtn;
 	protected Button deleteFolderBtn;
 	protected Button renameFolderBtn;
@@ -737,11 +738,11 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 	public void addGermplasmListNodeToComponent(final List<GermplasmList> germplasmListChildren, final int parentGermplasmListId) {
 		final Monitor monitor = MonitorFactory.start("org.generationcp.breeding.manager.customfields.ListSelectorComponent.addGermplasmListNodeToComponent(List<GermplasmList>, int)");
-
 		try {
 			final List<UserDefinedField> listTypes = germplasmListManager.getGermplasmListTypes();
 			final Map<Integer, GermplasmListMetadata> allListMetaData = germplasmListManager.getGermplasmListMetadata(germplasmListChildren);
-	
+			final Collection<?> existingItems = this.germplasmListSource.getItemIds();
+
 			for (final GermplasmList listChild : germplasmListChildren) {
 				if (this.doAddItem(listChild)) {
 					GermplasmListMetadata listMetadata = allListMetaData.get(listChild.getId());
@@ -753,7 +754,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 							BreedingManagerUtil.getTypeString(listChild.getType(), listTypes), listSize);
 							
 					this.getGermplasmListSource()
-							.addItem(generateCellInfo,listChild.getId());
+							.addItem(generateCellInfo, listChild.getId());
 					this.setNodeItemIcon(listChild.getId(), listChild.isFolder());
 					this.getGermplasmListSource().setItemCaption(listChild.getId(), listChild.getName());
 					this.getGermplasmListSource().setParent(listChild.getId(), parentGermplasmListId);
@@ -762,17 +763,44 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 				}
 			}
 			
-			// This needs to be improved
-			if(this.tooltipGenerator == null) {
-				this.tooltipGenerator = new ToolTipGenerator(BreedingManagerUtil.getAllNamesAsMap(userDataManager), germplasmListManager.getGermplasmListTypes());
-			}
-			
-			this.getGermplasmListSource().setItemDescriptionGenerator(tooltipGenerator.getItemDescriptionGenerator(germplasmListChildren));
+			// Add in tools tips for all leaf items
+			addToolTipHook(germplasmListChildren, existingItems);
 	
 			this.selectListSourceDetails(parentGermplasmListId, false);
 		} finally {
 			monitor.stop();
 		}
+	}
+
+	/**
+	 * Add the tool tip for every leaf item in the tree
+	 * @param germplasmListChildren list of child germplasm for the expanded node.
+	 * @param existingItems existing list of germplasm items. Existing items are required because we want to make sure tool tip is generated for all open items
+	 */
+	private void addToolTipHook(final List<GermplasmList> germplasmListChildren, final Collection<?> existingItems) {
+		final Set<GermplasmList> existingGermplasmList = getCompleteListOfOpenItems(germplasmListChildren, existingItems);
+		final ToolTipGenerator tooltipGenerator = new ToolTipGenerator(BreedingManagerUtil.getAllNamesAsMap(userDataManager), germplasmListManager.getGermplasmListTypes());
+		this.getGermplasmListSource().setItemDescriptionGenerator(tooltipGenerator.getItemDescriptionGenerator(existingGermplasmList));
+	}
+
+	/**
+	 * @param germplasmListChildren new children as a result of the open item
+	 * @param existingItems existing open items
+	 * @return a consolidated set of times.
+	 */
+	private Set<GermplasmList> getCompleteListOfOpenItems(final List<GermplasmList> germplasmListChildren,
+			final Collection<?> existingItems) {
+		final List<Object> existingItemsList = new ArrayList<>(existingItems);
+		final List<Integer> listMetaDataItems = new ArrayList<>();
+		for (Object exitingItem : existingItemsList) {
+			if(exitingItem instanceof Integer) {
+				listMetaDataItems.add((Integer)exitingItem);
+			}
+		}
+		
+		final Set<GermplasmList> existingGermplasmList = new HashSet<>(germplasmListManager.getAllGermplasmListsById(listMetaDataItems));
+		existingGermplasmList.addAll(germplasmListChildren);
+		return existingGermplasmList;
 	}
 
 	private void selectListSourceDetails(final Object itemId, final boolean nullSelectAllowed) {
@@ -985,6 +1013,5 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 	public void setUserDataManager(UserDataManager userDataManager) {
 		this.userDataManager = userDataManager;
 	}
-	
 	
 }

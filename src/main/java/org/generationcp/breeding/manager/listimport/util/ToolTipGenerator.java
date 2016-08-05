@@ -4,6 +4,7 @@ package org.generationcp.breeding.manager.listimport.util;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
@@ -46,9 +47,9 @@ public class ToolTipGenerator {
 
 	}
 
-	public ItemDescriptionGenerator getItemDescriptionGenerator(final List<GermplasmList> germplasmLists) {
+	public ItemDescriptionGenerator getItemDescriptionGenerator(final Set<GermplasmList> existingGermplasmList) {
 
-		this.resultMap.putAll(this.convertListToMap(germplasmLists));
+		this.resultMap.putAll(this.convertListToMap(existingGermplasmList));
 
 		return new AbstractSelect.ItemDescriptionGenerator() {
 
@@ -71,8 +72,8 @@ public class ToolTipGenerator {
 		};
 	}
 
-	private ImmutableMap<Integer, GermplasmList> convertListToMap(final List<GermplasmList> germplasmLists) {
-		return Maps.uniqueIndex(germplasmLists, new Function<GermplasmList, Integer>() {
+	private ImmutableMap<Integer, GermplasmList> convertListToMap(final Set<GermplasmList> existingGermplasmList) {
+		return Maps.uniqueIndex(existingGermplasmList, new Function<GermplasmList, Integer>() {
 
 			@Override
 			public Integer apply(GermplasmList from) {
