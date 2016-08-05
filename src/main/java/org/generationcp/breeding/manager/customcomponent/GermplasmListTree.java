@@ -1,6 +1,8 @@
 
 package org.generationcp.breeding.manager.customcomponent;
 
+import java.util.Collection;
+
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import com.vaadin.ui.Component;
@@ -49,5 +51,13 @@ public class GermplasmListTree extends Tree implements GermplasmListSource {
 	@Override
 	public void clearSelection() {
 		super.select(null);
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.vaadin.ui.AbstractSelect#getItemIds()
+	 */
+	@Override
+	public Collection<?> getItemIds() {
+		return super.getItemIds();
 	}
 }
