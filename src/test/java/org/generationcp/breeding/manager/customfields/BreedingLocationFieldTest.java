@@ -23,6 +23,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import com.vaadin.ui.OptionGroup;
+
 public class BreedingLocationFieldTest {
 
 	private static final String DUMMY_UNIQUE_ID = "1234567890";
@@ -36,6 +38,8 @@ public class BreedingLocationFieldTest {
 	@Mock
 	private WorkbenchDataManager workbenchDataManager;
 	@Mock
+	private OptionGroup breedingLocationsRadioBtn;
+	@Mock
 	private BreedingManagerServiceImpl breedingManagerService;
 	@InjectMocks
 	private BreedingLocationField breedingLocationField;
@@ -46,6 +50,8 @@ public class BreedingLocationFieldTest {
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 		Mockito.doReturn(this.getProject(1L)).when(this.breedingManagerService).getCurrentProject();
+		Mockito.when(breedingLocationsRadioBtn.getValue()).thenReturn(Boolean.FALSE.toString());
+		this.breedingLocationField.setBreedingLocationsRadioBtn(breedingLocationsRadioBtn);
 		this.breedingLocationField.instantiateComponents();
 		this.locationTestDataInitializer = new LocationTestDataInitializer();
 	}
@@ -57,19 +63,21 @@ public class BreedingLocationFieldTest {
 				.thenReturn(favouriteLocations);
 
 		Assert.assertFalse("Expecting a false return value when there are no favourite locations.",
-				this.breedingLocationField.initPopulateFavLocations(BreedingLocationFieldTest.DUMMY_UNIQUE_ID));
+				this.breedingLocationField.initPopulateFavLocations(BreedingLocationFieldTest.DUMMY_UNIQUE_ID, 0));
 	}
 
 	@Test
 	public void testinitPopulateFavLocationsReturnsTrueWhenThereAreFavouriteLocation() throws MiddlewareQueryException {
 		final ArrayList<ProgramFavorite> favouriteLocations = new ArrayList<ProgramFavorite>();
+		OptionGroup opg = Mockito.mock(OptionGroup.class);
 		favouriteLocations.add(Mockito.mock(ProgramFavorite.class));
+		Mockito.when(opg.getValue()).thenReturn(Boolean.FALSE.toString());
 
 		Mockito.when(this.germplasmDataManager.getProgramFavorites(FavoriteType.LOCATION, 1000, BreedingLocationFieldTest.DUMMY_UNIQUE_ID))
 				.thenReturn(favouriteLocations);
 
 		Assert.assertTrue("Expecting a true return value when there are favourite locations.",
-				this.breedingLocationField.initPopulateFavLocations(BreedingLocationFieldTest.DUMMY_UNIQUE_ID));
+				this.breedingLocationField.initPopulateFavLocations(BreedingLocationFieldTest.DUMMY_UNIQUE_ID, 0));
 	}
 
 	@Test
