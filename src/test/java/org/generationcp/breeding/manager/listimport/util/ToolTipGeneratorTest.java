@@ -8,11 +8,10 @@ import java.util.List;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.UserDefinedField;
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.vaadin.ui.AbstractSelect.ItemDescriptionGenerator;
-
-import org.junit.Assert;
 
 public class ToolTipGeneratorTest {
 
@@ -22,12 +21,13 @@ public class ToolTipGeneratorTest {
 	@Test
 	public void testGetItemDescriptionGenerator() {
 
-		final List<UserDefinedField> createTestGermplasmListType = createTestGermplasmListType();
+		final List<UserDefinedField> createTestGermplasmListType = this.createTestGermplasmListType();
 		final ToolTipGenerator toolTipGenerator =
 				new ToolTipGenerator(Collections.singletonMap(1, "Test Name"), createTestGermplasmListType);
 		final GermplasmList createGermplasmList = GermplasmListTestDataInitializer.createGermplasmList(1);
-		ItemDescriptionGenerator itemDescriptionGenerator = toolTipGenerator.getItemDescriptionGenerator(Collections.singletonList(createGermplasmList));
-		String generateDescription = itemDescriptionGenerator.generateDescription(null, createGermplasmList.getId(), null);
+		final ItemDescriptionGenerator itemDescriptionGenerator =
+				toolTipGenerator.getItemDescriptionGenerator(Collections.singleton(createGermplasmList));
+		final String generateDescription = itemDescriptionGenerator.generateDescription(null, createGermplasmList.getId(), null);
 		Assert.assertEquals("<table border=\"0\">\n<tr>\n<td><b>List Name:</b></td>\n<td>List 1</td>\n</tr>\n"
 				+ "<tr>\n<td><b>List Owner:</b></td>\n<td>Test Name</td>\n</tr>\n"
 				+ "<tr>\n<td><b>Status:</b></td>\n<td>Unlocked List</td>\n</tr>\n"
