@@ -798,7 +798,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 			}
 		}
 		
-		final Set<GermplasmList> existingGermplasmList = new HashSet<>(germplasmListManager.getAllGermplasmListsById(listMetaDataItems));
+		final Set<GermplasmList> existingGermplasmList = new HashSet<>(germplasmListManager.getAllGermplasmListsByIds(listMetaDataItems));
 		existingGermplasmList.addAll(germplasmListChildren);
 		return existingGermplasmList;
 	}
