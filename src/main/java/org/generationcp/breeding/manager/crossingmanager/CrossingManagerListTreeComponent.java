@@ -178,6 +178,9 @@ public class CrossingManagerListTreeComponent extends ListTreeTableComponent {
 
 		super.instantiateComponents();
 
+		// Override the height for this component to add space for the buttons below.
+		this.setHeight("580px");
+
 		this.addToFemaleListButton = new Button();
 		this.addToFemaleListButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 		this.addToFemaleListButton.setCaption(this.messageSource.getMessage(Message.DIALOG_ADD_TO_FEMALE_LABEL));
