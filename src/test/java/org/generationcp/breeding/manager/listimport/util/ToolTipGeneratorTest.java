@@ -4,7 +4,9 @@ package org.generationcp.breeding.manager.listimport.util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
+import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.UserDefinedField;
@@ -22,8 +24,18 @@ public class ToolTipGeneratorTest {
 	public void testGetItemDescriptionGenerator() {
 
 		final List<UserDefinedField> createTestGermplasmListType = this.createTestGermplasmListType();
+		final Map<Integer, String> singletonMap = Collections.singletonMap(1, "Test Name");
 		final ToolTipGenerator toolTipGenerator =
-				new ToolTipGenerator(Collections.singletonMap(1, "Test Name"), createTestGermplasmListType);
+				new ToolTipGenerator(singletonMap, createTestGermplasmListType, new ToolTipGenerator.ViewListHeader() {
+
+					@Override
+					public ViewListHeaderWindow createViewListHeaderWindow(GermplasmList germplasmList) {
+						ViewListHeaderWindow viewListHeaderWindow =
+								new ViewListHeaderWindow(germplasmList, singletonMap, createTestGermplasmListType);
+						viewListHeaderWindow.instantiateComponents();
+						return viewListHeaderWindow;
+					}
+				});
 		final GermplasmList createGermplasmList = GermplasmListTestDataInitializer.createGermplasmList(1);
 		final ItemDescriptionGenerator itemDescriptionGenerator =
 				toolTipGenerator.getItemDescriptionGenerator(Collections.singleton(createGermplasmList));

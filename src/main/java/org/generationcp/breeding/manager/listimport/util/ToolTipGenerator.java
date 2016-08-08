@@ -41,10 +41,39 @@ public class ToolTipGenerator {
 	 */
 	final private List<UserDefinedField> listTypes;
 
+	private ViewListHeader viewHeaderCreator;
+
+	/**
+	 * @param userNameMap map of user ids to user map
+	 * @param germplasmListTypes list of all germplasm types
+	 */
 	public ToolTipGenerator(final Map<Integer, String> userNameMap, final List<UserDefinedField> germplasmListTypes) {
 		this.userNameMap = userNameMap;
 		this.listTypes = germplasmListTypes;
+		this.viewHeaderCreator = new ViewListHeader() {
 
+			@Override
+			public ViewListHeaderWindow createViewListHeaderWindow(GermplasmList germplasmList) {
+				return new ViewListHeaderWindow(germplasmList, ToolTipGenerator.this.userNameMap, ToolTipGenerator.this.listTypes);
+			}
+		};
+	}
+
+	/**
+	 * Constructor only for testing
+	 * 
+	 * @param userNameMap map of user ids to user map
+	 * @param germplasmListTypes list of all germplasm types
+	 * @param viewHeaderCreator inteface that creates the {@link ViewListHeaderWindow} window. This is passed in so that we can call the
+	 *        {@link ViewListHeaderWindow}.instantiateComponents. This prevents null pointers in the test. Note the instantiateComponents is
+	 *        called by our dynamic class loader.
+	 * 
+	 */
+	public ToolTipGenerator(final Map<Integer, String> userNameMap, final List<UserDefinedField> germplasmListTypes,
+			final ViewListHeader viewHeaderCreator) {
+		this.userNameMap = userNameMap;
+		this.listTypes = germplasmListTypes;
+		this.viewHeaderCreator = viewHeaderCreator;
 	}
 
 	public ItemDescriptionGenerator getItemDescriptionGenerator(final Set<GermplasmList> existingGermplasmList) {
@@ -61,15 +90,23 @@ public class ToolTipGenerator {
 				if (StringUtils.isNumeric(itemValue)) {
 					final GermplasmList germplasmList = ToolTipGenerator.this.resultMap.get(Integer.valueOf(itemValue));
 					if (germplasmList != null) {
-						final ViewListHeaderWindow viewListHeaderWindow =
-								new ViewListHeaderWindow(germplasmList, ToolTipGenerator.this.userNameMap, ToolTipGenerator.this.listTypes);
-						viewListHeaderWindow.instantiateComponents();
+						final ViewListHeaderWindow viewListHeaderWindow = viewHeaderCreator.createViewListHeaderWindow(germplasmList);
 						return viewListHeaderWindow.getListHeaderComponent().toString();
 					}
 				}
 				return "";
 			}
+
 		};
+	}
+
+	/**
+	 * Interface to enable testing. This is only there because of ones love for testing.
+	 *
+	 */
+	interface ViewListHeader {
+
+		ViewListHeaderWindow createViewListHeaderWindow(final GermplasmList germplasmList);
 	}
 
 	private ImmutableMap<Integer, GermplasmList> convertListToMap(final Set<GermplasmList> existingGermplasmList) {
