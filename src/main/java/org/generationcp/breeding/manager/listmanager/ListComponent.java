@@ -2361,7 +2361,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		}
 
 		// update the MGID(Group Id) of the specific rows marked as fixed lines
-		for (final GermplasmListData listEntry : this.germplasmList.getListData()) {
+		// Note we are refetching the list data as we cannot lazy load the list data in the germplasm list
+		// This is because the lazy load might be across transactions.
+		// This is not ideal but something we must do for an interim solution
+		final List<GermplasmListData> germplasmListData 
+				= this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId());
+		for (final GermplasmListData listEntry : germplasmListData) {
 			final Integer gid = listEntry.getGid();
 			final Germplasm germplasm = germplasmMap.get(gid);
 			if (gidsProcessed.contains(gid)) {
