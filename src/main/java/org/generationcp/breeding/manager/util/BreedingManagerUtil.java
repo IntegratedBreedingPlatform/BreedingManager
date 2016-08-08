@@ -31,6 +31,9 @@ import org.generationcp.middleware.pojos.dms.ProgramFavorite.FavoriteType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Window;
@@ -425,11 +428,12 @@ public class BreedingManagerUtil {
 
 		try {
 			final List<User> users = userDataManager.getAllUsers();
+			final ImmutableMap<Integer, Person> personIndex = getPersonsAsMap(userDataManager);
 			for (User user : users) {
 				String userName  = "";
 				if (user != null) {
 					int personId = user.getPersonid();
-					Person p = userDataManager.getPersonById(personId);
+					Person p = personIndex.get(personId);
 					userName = getNameFromDao(user, p);
 				}
 				userIdUsernameMap.put(user.getUserid(), userName);
@@ -443,6 +447,17 @@ public class BreedingManagerUtil {
 		
 		return userIdUsernameMap;
 
+	}
+
+	private static ImmutableMap<Integer, Person> getPersonsAsMap(final UserDataManager userDataManager) {
+		ImmutableMap<Integer, Person> personIndex = Maps.uniqueIndex(userDataManager.getAllPersons(), new Function<Person, Integer>() {
+
+			@Override
+			public Integer apply(Person from) {
+				return from.getId();
+			}
+		});
+		return personIndex;
 	}
 
 	private static String getNameFromDao(User user, Person p) {
