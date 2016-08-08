@@ -12,14 +12,12 @@ import javax.annotation.Resource;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
+import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.ReservedInventoryKey;
 import org.generationcp.middleware.pojos.ims.Transaction;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -27,7 +25,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 public class ReserveInventoryAction implements Serializable {
 
 	private static final long serialVersionUID = -6868930047867345575L;
-	private static final Logger LOG = LoggerFactory.getLogger(ReserveInventoryAction.class);
 
 	@Autowired
 	private InventoryDataManager inventoryDataManager;
@@ -152,8 +149,9 @@ public class ReserveInventoryAction implements Serializable {
 			Integer lrecId = lotDetail.getId();
 
 			Double prevAmount = 0D;
-			Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
-			Integer personId = this.userDataManager.getPersonById(ibdbUserId).getId();
+			final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
+			final User userById = this.userDataManager.getUserById(ibdbUserId);
+			final Integer personId = this.userDataManager.getPersonById(userById.getPersonid()).getId();
 
 			Transaction reserveTransaction = new Transaction();
 
