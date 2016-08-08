@@ -269,6 +269,14 @@
 			<artifactId>jamon</artifactId>
 			<version>2.80</version>
 		</dependency>
+		
+		<!-- Getter and setter test -->
+		<dependency>
+			<groupId>uk.co.jemos.podam</groupId>
+			<artifactId>podam</artifactId>
+			<version>5.4.1.RELEASE</version>
+			<scope>test</scope>
+		</dependency>
 
 	</dependencies>
 
