@@ -151,7 +151,7 @@ public class ReserveInventoryAction implements Serializable {
 			Double prevAmount = 0D;
 			final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
 			final User userById = this.userDataManager.getUserById(ibdbUserId);
-			final Integer personId = this.userDataManager.getPersonById(userById.getPersonid()).getId();
+
 
 			Transaction reserveTransaction = new Transaction();
 
@@ -169,7 +169,7 @@ public class ReserveInventoryAction implements Serializable {
 			reserveTransaction.setSourceId(listId);
 			reserveTransaction.setSourceRecordId(lrecId);
 			reserveTransaction.setPreviousAmount(prevAmount);
-			reserveTransaction.setPersonId(personId);
+			reserveTransaction.setPersonId(userById.getPersonid());
 
 			reserveTransactionList.add(reserveTransaction);
 		}
