@@ -35,6 +35,7 @@ import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Person;
+import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.junit.Assert;
 import org.junit.Before;
@@ -174,9 +175,11 @@ public class ParentTabComponentTest {
 		reserveInventoryAction.setUserDataManager(this.userDataManager);
 		Mockito.doReturn(reserveInventoryAction).when(this.reserveInventoryActionFactory)
 				.createInstance(Matchers.any(ReserveInventorySource.class));
-		final Person person = new Person();
-		person.setId(123);
-		Mockito.doReturn(person).when(this.userDataManager).getPersonById(Matchers.anyInt());
+
+		final User user = new User();
+		user.setUserid(12);
+		user.setPersonid(123);
+		Mockito.doReturn(user).when(this.userDataManager).getUserById(Matchers.anyInt());
 
 		// initializer
 		this.importedGermplasmListInitializer = new ImportedGermplasmListDataInitializer();
