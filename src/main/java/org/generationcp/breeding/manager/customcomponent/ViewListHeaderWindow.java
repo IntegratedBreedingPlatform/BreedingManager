@@ -1,10 +1,14 @@
 
 package org.generationcp.breeding.manager.customcomponent;
 
+import java.util.List;
+import java.util.Map;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.UserDefinedField;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -18,9 +22,16 @@ public class ViewListHeaderWindow extends BaseSubWindow implements BreedingManag
 	private final GermplasmList germplasmList;
 	private ViewListHeaderComponent listHeaderComponent;
 
-	public ViewListHeaderWindow(final GermplasmList germplasmList) {
+	private Map<Integer, String> userNameMap;
+
+	private List<UserDefinedField> listTypes;
+
+	public ViewListHeaderWindow(final GermplasmList germplasmList, final Map<Integer, String> userNameMap,
+			final List<UserDefinedField> listTypes) {
 		super();
 		this.germplasmList = germplasmList;
+		this.userNameMap = userNameMap;
+		this.listTypes = listTypes;
 	}
 
 	@Override
@@ -44,7 +55,7 @@ public class ViewListHeaderWindow extends BaseSubWindow implements BreedingManag
 		this.setHeight("340px");
 		this.setWidth("350px");
 
-		this.listHeaderComponent = new ViewListHeaderComponent(this.germplasmList);
+		this.listHeaderComponent = new ViewListHeaderComponent(this.germplasmList, userNameMap, listTypes);
 	}
 
 	public GermplasmList getGermplasmList() {

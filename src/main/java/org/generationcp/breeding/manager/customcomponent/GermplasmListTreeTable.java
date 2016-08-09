@@ -1,6 +1,8 @@
 
 package org.generationcp.breeding.manager.customcomponent;
 
+import java.util.Collection;
+
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Tree;
@@ -72,5 +74,13 @@ public class GermplasmListTreeTable extends TreeTable implements GermplasmListSo
 	@Override
 	public void clearSelection() {
 		super.select(null);
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.vaadin.ui.TreeTable#getItemIds()
+	 */
+	@Override
+	public Collection<?> getItemIds() {
+		return super.getItemIds();
 	}
 }
