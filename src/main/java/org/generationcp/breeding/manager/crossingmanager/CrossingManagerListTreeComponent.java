@@ -20,6 +20,7 @@ import com.vaadin.ui.Window;
 public class CrossingManagerListTreeComponent extends ListTreeTableComponent {
 
 	private static final long serialVersionUID = 8112173851252075693L;
+	public static final String DEFAULT_HEIGHT = "580px";
 
 	private Button addToFemaleListButton;
 	private Button cancelButton;
@@ -179,7 +180,7 @@ public class CrossingManagerListTreeComponent extends ListTreeTableComponent {
 		super.instantiateComponents();
 
 		// Override the height for this component to add space for the buttons below.
-		this.setHeight("580px");
+		this.setHeight(DEFAULT_HEIGHT);
 
 		this.addToFemaleListButton = new Button();
 		this.addToFemaleListButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
@@ -246,6 +247,22 @@ public class CrossingManagerListTreeComponent extends ListTreeTableComponent {
 		this.addToFemaleListButton.setEnabled(enabled);
 		this.addToMaleListButton.setEnabled(enabled);
 		this.openForReviewButton.setEnabled(enabled);
+	}
+
+	Button getAddToFemaleListButton() {
+		return addToFemaleListButton;
+	}
+
+	Button getCancelButton() {
+		return cancelButton;
+	}
+
+	Button getAddToMaleListButton() {
+		return addToMaleListButton;
+	}
+
+	Button getOpenForReviewButton() {
+		return openForReviewButton;
 	}
 
 }
