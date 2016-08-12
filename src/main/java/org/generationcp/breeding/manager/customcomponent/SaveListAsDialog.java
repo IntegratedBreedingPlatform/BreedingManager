@@ -33,9 +33,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
@@ -431,5 +436,13 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 		}
 		final String dateAsString = DateUtil.formatDateAsStringValue(date, DateUtil.DATE_AS_NUMBER_FORMAT);
 		return Long.parseLong(dateAsString);
+	}
+	
+	public void setListDetailsComponent(BreedingManagerListDetailsComponent listDetailsComponent) {
+		this.listDetailsComponent = listDetailsComponent;
+	}
+	
+	public void setGermplasmListTree(LocalListFoldersTreeComponent germplasmListTree) {
+		this.germplasmListTree = germplasmListTree;
 	}
 }
