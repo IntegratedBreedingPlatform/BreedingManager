@@ -40,7 +40,7 @@ public class GermplasmImportMainTest {
 
 		// check that state is coming from 1st step - File Upload page
 		Component selectedTab = tabSheet.getSelectedTab();
-		Assert.assertTrue("Germplasm Import File Upload screen is displayed",
+		Assert.assertTrue("Germplasm Import File Upload screen should be displayed",
 				this.germplasmImportMain.getWizardScreenOne().equals(selectedTab));
 		Assert.assertEquals("Page height is 300px", 300.0f, tabSheet.getHeight());
 		Assert.assertEquals(0, tabSheet.getHeightUnits());
@@ -49,7 +49,7 @@ public class GermplasmImportMainTest {
 
 		// Check that 2ns step - Specify Germplasm Details page is displayed and tab sheet height changed
 		selectedTab = tabSheet.getSelectedTab();
-		Assert.assertTrue("Germplasm Import File Upload screen is displayed",
+		Assert.assertTrue("Specify Germplasm Details screen should be displayed",
 				this.germplasmImportMain.getWizardScreenTwo().equals(selectedTab));
 		Assert.assertEquals("Page height is 850px", 850.0f, tabSheet.getHeight());
 		Assert.assertEquals(0, tabSheet.getHeightUnits());
@@ -61,7 +61,7 @@ public class GermplasmImportMainTest {
 
 		// check that state is coming from 1st step - File Upload page
 		Component selectedTab = tabSheet.getSelectedTab();
-		Assert.assertTrue("Germplasm Import File Upload screen is displayed",
+		Assert.assertTrue("Germplasm Import File Upload screen should be displayed",
 				this.germplasmImportMain.getWizardScreenOne().equals(selectedTab));
 
 		// Go to 2nd step then go back to 1st step
@@ -70,7 +70,7 @@ public class GermplasmImportMainTest {
 
 		// check 1st step is displayed again
 		selectedTab = tabSheet.getSelectedTab();
-		Assert.assertTrue("Germplasm Import File Upload screen is displayed",
+		Assert.assertTrue("Germplasm Import File Upload screen should be displayed",
 				this.germplasmImportMain.getWizardScreenOne().equals(selectedTab));
 		Assert.assertEquals("Page height is 300px", 300.0f, tabSheet.getHeight());
 		Assert.assertEquals(0, tabSheet.getHeightUnits());
