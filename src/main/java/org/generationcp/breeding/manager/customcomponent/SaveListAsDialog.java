@@ -33,9 +33,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
@@ -113,11 +118,8 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 							this.isShowFoldersOnlyInListTree(), true);
 		}
 
-		this.guideMessage =
-				new Label(
-						this.messageSource
-								.getMessage(Message.SELECT_A_FOLDER_TO_CREATE_A_LIST_OR_SELECT_AN_EXISTING_LIST_TO_EDIT_AND_OVERWRITE_ITS_ENTRIES)
-								+ ".");
+		this.guideMessage = new Label(this.messageSource
+				.getMessage(Message.SELECT_A_FOLDER_TO_CREATE_A_LIST_OR_SELECT_AN_EXISTING_LIST_TO_EDIT_AND_OVERWRITE_ITS_ENTRIES) + ".");
 
 		this.listDetailsComponent = new BreedingManagerListDetailsComponent(this.defaultListType(), this.germplasmList);
 
@@ -142,7 +144,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 			this.listDetailsComponent.setGermplasmListDetails(null);
 		}
 
-		germplasmListTree.reinitializeTree(true);
+		this.germplasmListTree.reinitializeTree(true);
 	}
 
 	@Override
@@ -318,26 +320,25 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 				final GermplasmList gl = this.getGermplasmListToSave();
 				this.setGermplasmListDetails(gl);
 
-				ConfirmDialog
-						.show(this.getWindow().getParent().getWindow(),
-								this.messageSource.getMessage(Message.DO_YOU_WANT_TO_OVERWRITE_THIS_LIST) + "?",
-								this.messageSource
-										.getMessage(Message.LIST_DATA_WILL_BE_DELETED_AND_WILL_BE_REPLACED_WITH_THE_DATA_FROM_THE_LIST_THAT_YOU_JUST_CREATED),
-								this.messageSource.getMessage(Message.OK), this.messageSource.getMessage(Message.CANCEL),
-								new ConfirmDialog.Listener() {
+				ConfirmDialog.show(this.getWindow().getParent().getWindow(),
+						this.messageSource.getMessage(Message.DO_YOU_WANT_TO_OVERWRITE_THIS_LIST) + "?",
+						this.messageSource.getMessage(
+								Message.LIST_DATA_WILL_BE_DELETED_AND_WILL_BE_REPLACED_WITH_THE_DATA_FROM_THE_LIST_THAT_YOU_JUST_CREATED),
+						this.messageSource.getMessage(Message.OK), this.messageSource.getMessage(Message.CANCEL),
+						new ConfirmDialog.Listener() {
 
-									private static final long serialVersionUID = 1L;
+							private static final long serialVersionUID = 1L;
 
-									@Override
-									public void onClose(final ConfirmDialog dialog) {
-										if (dialog.isConfirmed()) {
-											SaveListAsDialog.this.source.saveList(gl);
-											SaveListAsDialog.this.saveReservationChanges();
-											final Window window = event.getButton().getWindow();
-											window.getParent().removeWindow(window);
-										}
-									}
-								});
+							@Override
+							public void onClose(final ConfirmDialog dialog) {
+								if (dialog.isConfirmed()) {
+									SaveListAsDialog.this.source.saveList(gl);
+									SaveListAsDialog.this.saveReservationChanges();
+									final Window window = event.getButton().getWindow();
+									window.getParent().removeWindow(window);
+								}
+							}
+						});
 
 				// If target list to be overwritten is itself
 			} else {
@@ -362,12 +363,11 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 		if (this.source instanceof ReserveInventorySource) {
 			final ReserveInventoryAction reserveInventoryAction = new ReserveInventoryAction((ReserveInventorySource) this.source);
 			if (this.source instanceof ParentTabComponent) {
-				final boolean success =
-						reserveInventoryAction.saveReserveTransactions(((ParentTabComponent) this.source).getValidReservationsToSave(),
-								this.germplasmList.getId());
+				final boolean success = reserveInventoryAction.saveReserveTransactions(
+						((ParentTabComponent) this.source).getValidReservationsToSave(), this.germplasmList.getId());
 				if (success) {
-					((ParentTabComponent) this.source).refreshInventoryColumns(((ParentTabComponent) this.source)
-							.getValidReservationsToSave());
+					((ParentTabComponent) this.source)
+							.refreshInventoryColumns(((ParentTabComponent) this.source).getValidReservationsToSave());
 					((ParentTabComponent) this.source).resetListInventoryTableValues();
 				}
 			}
@@ -431,5 +431,13 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 		}
 		final String dateAsString = DateUtil.formatDateAsStringValue(date, DateUtil.DATE_AS_NUMBER_FORMAT);
 		return Long.parseLong(dateAsString);
+	}
+
+	public void setListDetailsComponent(final BreedingManagerListDetailsComponent listDetailsComponent) {
+		this.listDetailsComponent = listDetailsComponent;
+	}
+
+	public void setGermplasmListTree(final LocalListFoldersTreeComponent germplasmListTree) {
+		this.germplasmListTree = germplasmListTree;
 	}
 }
