@@ -229,5 +229,9 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 	public ComponentContainer getComponentContainer() {
 		return this.parent;
 	}
+	
+	public TabSheet getTabSheet(){
+		return this.tabSheet;
+	}
 
 }
