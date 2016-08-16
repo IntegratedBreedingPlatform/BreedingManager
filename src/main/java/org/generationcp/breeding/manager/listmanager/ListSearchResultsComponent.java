@@ -2,8 +2,8 @@
 package org.generationcp.breeding.manager.listmanager;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -11,12 +11,13 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
-import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
+import org.generationcp.breeding.manager.listimport.util.ToolTipGenerator;
 import org.generationcp.breeding.manager.listmanager.listeners.ListSearchResultsItemClickListener;
-import org.generationcp.breeding.manager.util.Util;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,12 +35,10 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.event.Action;
-import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
@@ -93,8 +92,9 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 
 	@Autowired
 	private PlatformTransactionManager transactionManager;
-
-	private Map<Integer, GermplasmList> germplasmListsMap;
+	
+	@Autowired
+	private UserDataManager userDataManager;
 
 	public ListSearchResultsComponent(ListManagerMain source, final ListSelectionLayout displayDetailsLayout) {
 		this.source = source;
@@ -153,9 +153,6 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 		this.matchingListsTable.addListener(new ListSearchResultsItemClickListener(this.displayDetailsLayout));
 		this.messageSource.setColumnHeader(this.matchingListsTable, ListSearchResultsComponent.CHECKBOX_COLUMN_ID, Message.CHECK_ICON);
 
-		this.updateGermplasmListsMap();
-		this.addSearchListResultsItemDescription();
-
 		this.lockedRightClickActionHandler = new Action.Handler() {
 
 			private static final long serialVersionUID = 1L;
@@ -211,33 +208,6 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 	private void updateActionMenuOptions(boolean status) {
 		this.menuAddToNewList.setEnabled(status);
 		this.menuSelectAll.setEnabled(status);
-	}
-
-	public void updateGermplasmListsMap() {
-		this.germplasmListsMap = Util.getAllGermplasmLists(this.germplasmListManager);
-	}
-
-	private void addSearchListResultsItemDescription() {
-		this.matchingListsTable.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
-
-			private static final long serialVersionUID = -2669417630841097077L;
-
-			@Override
-			public String generateDescription(Component source, Object itemId, Object propertyId) {
-				GermplasmList germplasmList;
-
-				try {
-					germplasmList = ListSearchResultsComponent.this.germplasmListsMap.get(Integer.valueOf(itemId.toString()));
-					if (germplasmList != null) {
-						ViewListHeaderWindow viewListHeaderWindow = new ViewListHeaderWindow(germplasmList);
-						return viewListHeaderWindow.getListHeaderComponent().toString();
-					}
-				} catch (NumberFormatException e) {
-					LOG.error(e.getMessage(), e);
-				}
-				return "";
-			}
-		});
 	}
 
 	private void addActionHandler() {
@@ -334,7 +304,7 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 		this.addComponent(this.menu);
 	}
 
-	public void applyGermplasmListResults(List<GermplasmList> germplasmLists) {
+	public void applyGermplasmListResults(final List<GermplasmList> germplasmLists) {
 		this.totalMatchingListsLabel.setValue(new Label(this.messageSource.getMessage(Message.TOTAL_RESULTS) + ": " + "  <b>"
 				+ String.valueOf(germplasmLists.size()) + "</b>", Label.CONTENT_XHTML));
 		this.matchingListsTable.removeAllItems();
@@ -360,12 +330,15 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 			});
 
 			Item newItem = this.matchingListsTable.getContainerDataSource().addItem(germplasmList.getId());
-
 			newItem.getItemProperty(ListSearchResultsComponent.CHECKBOX_COLUMN_ID).setValue(itemCheckBox);
 			newItem.getItemProperty(ListSearchResultsComponent.NAME_ID).setValue(germplasmList.getName());
 			newItem.getItemProperty(ListSearchResultsComponent.DESCRIPTION_ID).setValue(germplasmList.getDescription());
 		}
-
+		
+		this.matchingListsTable.setItemDescriptionGenerator(
+				new ToolTipGenerator(BreedingManagerUtil.getAllNamesAsMap(userDataManager), germplasmListManager.getGermplasmListTypes())
+						.getItemDescriptionGenerator(new HashSet<GermplasmList>(germplasmLists)));
+	
 		if (!this.matchingListsTable.getItemIds().isEmpty()) {
 			this.updateActionMenuOptions(true);
 		}

@@ -29,6 +29,7 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
+import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
@@ -97,6 +98,10 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
+	
+	@Autowired
+	private UserDataManager userDataManager;
+
 
 	private final GermplasmList list;
 
@@ -130,7 +135,8 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 		this.listEntriesLabel.addStyleName(AppConstants.CssStyles.BOLD);
 		this.listEntriesLabel.setWidth("180px");
 
-		this.viewListHeaderWindow = new ViewListHeaderWindow(this.list);
+		this.viewListHeaderWindow = new ViewListHeaderWindow(this.list, BreedingManagerUtil.getAllNamesAsMap(userDataManager),
+				germplasmListManager.getGermplasmListTypes());
 
 		this.viewHeaderButton = new Button(this.messageSource.getMessage(Message.VIEW_HEADER));
 		this.viewHeaderButton.addStyleName(BaseTheme.BUTTON_LINK);

@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.crossingmanager;
 
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
+import org.generationcp.middleware.domain.gms.GermplasmListType;
 import org.generationcp.middleware.pojos.GermplasmList;
 
 public class SaveCrossListAsDialog extends SaveListAsDialog {
@@ -16,12 +17,12 @@ public class SaveCrossListAsDialog extends SaveListAsDialog {
 	@Override
 	public void initializeValues() {
 		super.initializeValues();
-		this.getDetailsComponent().getListTypeField().setValue("F1");
+		this.getDetailsComponent().getListTypeField().setValue(GermplasmListType.F1.name());
 	}
 
 	@Override
 	public String defaultListType() {
-		return "F1";
+		return GermplasmListType.F1.name();
 	}
 
 }

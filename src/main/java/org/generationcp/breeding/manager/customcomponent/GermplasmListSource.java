@@ -1,6 +1,8 @@
 
 package org.generationcp.breeding.manager.customcomponent;
 
+import java.util.Collection;
+
 import com.vaadin.data.Item;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.dd.DropHandler;
@@ -84,4 +86,10 @@ public interface GermplasmListSource {
 	void setColumnWidth(Object propertyId, int width);
 
 	void clearSelection();
+	
+	/**
+	 * Added so that we get the items in a tree 
+	 * @return a list of current items in the tree
+	 */
+	Collection<?> getItemIds();
 }

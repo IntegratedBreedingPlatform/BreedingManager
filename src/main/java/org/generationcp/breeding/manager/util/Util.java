@@ -407,22 +407,6 @@ public class Util {
 		 return germplasmListsMap;
 	 }
 
-	public static Map<Integer, GermplasmList> getAllGermplasmLists(GermplasmListManager germplasmListManager) {
-		 Map<Integer, GermplasmList> germplasmListsMap = new HashMap<Integer, GermplasmList>();
-		 List<GermplasmList> lists = new ArrayList<GermplasmList>();
-
-		try {
-			 lists = germplasmListManager.getAllGermplasmLists(0, Integer.MAX_VALUE);
-			 for (GermplasmList list : lists) {
-				 Integer listId = list.getId();
-				 germplasmListsMap.put(listId, list);
-			 }
-		 } catch (MiddlewareQueryException e) {
-			 Util.LOG.error("Error retrieving all germplasm lists.", e);
-		 }
-		 return germplasmListsMap;
-	 }
-
 	public static String getAdditionalParams(WorkbenchDataManager workbenchDataManager) {
 		String addtlParams = "";
 

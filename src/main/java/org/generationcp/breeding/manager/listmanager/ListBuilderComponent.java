@@ -42,14 +42,13 @@ import org.generationcp.breeding.manager.listmanager.listeners.ResetListButtonCl
 import org.generationcp.breeding.manager.listmanager.listeners.SaveListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
 import org.generationcp.breeding.manager.listmanager.util.DropHandlerMethods.ListUpdatedEvent;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
-import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.FileDownloadResource;
-import org.generationcp.commons.util.FileUtils;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
@@ -61,6 +60,7 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
+import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.service.api.PedigreeService;
@@ -279,6 +279,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	@Resource
 	private PlatformTransactionManager transactionManager;
+	
+	@Autowired
+	private UserDataManager userDataManager;
+
 
 	public static final String GERMPLASMS_TABLE_DATA = "Germplasms Table Data";
 	static final Action ACTION_SELECT_ALL = new Action("Select All");
@@ -423,9 +427,11 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.viewHeaderButton = new Button(this.messageSource.getMessage(Message.VIEW_HEADER));
 		this.viewHeaderButton.addStyleName(BaseTheme.BUTTON_LINK);
 		this.viewHeaderButton.setVisible(false);
-
+		
+		
 		if (this.currentlySavedGermplasmList != null) {
-			this.viewListHeaderWindow = new ViewListHeaderWindow(this.currentlySavedGermplasmList);
+			this.viewListHeaderWindow = new ViewListHeaderWindow(this.currentlySavedGermplasmList,
+					BreedingManagerUtil.getAllNamesAsMap(userDataManager), germplasmListManager.getGermplasmListTypes());
 			this.viewHeaderButton.setDescription(this.viewListHeaderWindow.getListHeaderComponent().toString());
 		}
 
@@ -565,7 +571,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			@Override
 			public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
 				ListBuilderComponent.this.viewListHeaderWindow =
-						new ViewListHeaderWindow(ListBuilderComponent.this.currentlySavedGermplasmList);
+						new ViewListHeaderWindow(ListBuilderComponent.this.currentlySavedGermplasmList,
+								BreedingManagerUtil.getAllNamesAsMap(userDataManager), germplasmListManager.getGermplasmListTypes());
 				ListBuilderComponent.this.getWindow().addWindow(ListBuilderComponent.this.viewListHeaderWindow);
 			}
 		});
@@ -663,7 +670,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.editHeaderButton.setVisible(false);
 		this.viewHeaderButton.setVisible(true);
 
-		this.viewListHeaderWindow = new ViewListHeaderWindow(this.currentlySavedGermplasmList);
+		this.viewListHeaderWindow = new ViewListHeaderWindow(this.currentlySavedGermplasmList,
+				BreedingManagerUtil.getAllNamesAsMap(userDataManager), germplasmListManager.getGermplasmListTypes());
 		this.viewHeaderButton.setDescription(this.viewListHeaderWindow.getListHeaderComponent().toString());
 
 		this.saveButton.setEnabled(false);

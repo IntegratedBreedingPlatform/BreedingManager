@@ -39,6 +39,7 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.VerticalLayout;
@@ -76,6 +77,8 @@ BreedingManagerLayout {
 	private CheckBox favoriteMethodsCheckbox;
 	private Button manageFavoriteMethodsLink;
 
+	private OptionGroup breedingMethodsRadioBtn;
+
 	private PopupView methodPopupView;
 	private Label breedingMethodsHelpPopup;
 
@@ -103,6 +106,10 @@ BreedingManagerLayout {
 			hasFavorite = true;
 		}
 		return hasFavorite;
+	}
+
+	private boolean isSelectAllMethods() {
+		return ((String) this.breedingMethodsRadioBtn.getValue()).equals(this.messageSource.getMessage(Message.SHOW_ALL_METHODS));
 	}
 
 	@Override
@@ -140,6 +147,14 @@ BreedingManagerLayout {
 
 		this.favoriteMethodsCheckbox = new CheckBox(this.messageSource.getMessage(Message.SHOW_ONLY_FAVORITE_METHODS));
 		this.favoriteMethodsCheckbox.setImmediate(true);
+		
+		this.breedingMethodsRadioBtn = new OptionGroup();
+		this.breedingMethodsRadioBtn.setMultiSelect(false);
+		this.breedingMethodsRadioBtn.setImmediate(true);
+		this.breedingMethodsRadioBtn.setStyleName("v-select-optiongroup-horizontal");
+		this.breedingMethodsRadioBtn.addItem(this.messageSource.getMessage(Message.SHOW_ALL_METHODS));
+		this.breedingMethodsRadioBtn.addItem(this.messageSource.getMessage(Message.SHOW_GENERATIVE_METHODS));
+		this.breedingMethodsRadioBtn.select(this.messageSource.getMessage(Message.SHOW_GENERATIVE_METHODS));
 
 		this.manageFavoriteMethodsLink = new Button();
 		this.manageFavoriteMethodsLink.setStyleName(BaseTheme.BUTTON_LINK);
@@ -208,17 +223,21 @@ BreedingManagerLayout {
 			}
 		});
 
-		this.favoriteMethodsCheckbox.addListener(new Property.ValueChangeListener() {
+		final Property.ValueChangeListener breedingMethodsListener = new Property.ValueChangeListener() {
 
 			private static final long serialVersionUID = -4064520391948241747L;
 
 			@Override
-			public void valueChange(ValueChangeEvent event) {
-				CrossingSettingsMethodComponent.this.populateBreedingMethods((Boolean) event.getProperty().getValue(),
+			public void valueChange(final ValueChangeEvent event) {
+				CrossingSettingsMethodComponent.this.populateBreedingMethods(
+						(Boolean) CrossingSettingsMethodComponent.this.favoriteMethodsCheckbox.getValue(),
 						CrossingSettingsMethodComponent.this.programUniqueId);
 			}
 
-		});
+		};
+
+		this.favoriteMethodsCheckbox.addListener(breedingMethodsListener);
+		this.breedingMethodsRadioBtn.addListener(breedingMethodsListener);
 
 		this.manageFavoriteMethodsLink.addListener(new ClickListener() {
 
@@ -240,7 +259,7 @@ BreedingManagerLayout {
 						public void windowClose(CloseEvent e) {
 							Object lastValue = CrossingSettingsMethodComponent.this.breedingMethods.getValue();
 							CrossingSettingsMethodComponent.this.populateBreedingMethods(
-									((Boolean) CrossingSettingsMethodComponent.this.favoriteMethodsCheckbox.getValue()).equals(true),
+									((Boolean) CrossingSettingsMethodComponent.this.favoriteMethodsCheckbox.getValue()),
 									CrossingSettingsMethodComponent.this.programUniqueId);
 							CrossingSettingsMethodComponent.this.breedingMethods.setValue(lastValue);
 						}
@@ -260,31 +279,32 @@ BreedingManagerLayout {
 		this.breedingMethods.addStyleName("cs-form-input");
 		this.methodPopupView.addStyleName("cs-inline-icon");
 
-        final VerticalLayout methodSelectLayout = new VerticalLayout();
-        methodSelectLayout.addComponent(this.breedingMethods);
-        methodSelectLayout.addComponent(this.favoriteMethodsCheckbox);
-        methodSelectLayout.addComponent(this.manageFavoriteMethodsLink);
+		final VerticalLayout methodSelectLayout = new VerticalLayout();
 
-        final HorizontalLayout selectWithPopupLayout = new HorizontalLayout();
-        selectWithPopupLayout.addComponent(methodSelectLayout);
-        selectWithPopupLayout.addComponent(this.methodPopupView);
+		final HorizontalLayout selectWithPopupLayout = new HorizontalLayout();
+		selectWithPopupLayout.addComponent(this.breedingMethods);
+		selectWithPopupLayout.addComponent(this.methodPopupView);
 
-        final VerticalLayout internalPanelLayout = new VerticalLayout();
-        internalPanelLayout.setSpacing(true);
-        internalPanelLayout.setMargin(true);
-        internalPanelLayout.addComponent(breedingMethodDescLabel);
-        internalPanelLayout.addComponent(this.selectMethod);
-        internalPanelLayout.addComponent(selectWithPopupLayout);
+		methodSelectLayout.addComponent(selectWithPopupLayout);
+		methodSelectLayout.addComponent(this.breedingMethodsRadioBtn);
+		methodSelectLayout.addComponent(this.favoriteMethodsCheckbox);
+		methodSelectLayout.addComponent(this.manageFavoriteMethodsLink);
 
+		final VerticalLayout internalPanelLayout = new VerticalLayout();
+		internalPanelLayout.setSpacing(true);
+		internalPanelLayout.setMargin(true);
+		internalPanelLayout.addComponent(this.breedingMethodDescLabel);
+		internalPanelLayout.addComponent(this.selectMethod);
+		internalPanelLayout.addComponent(methodSelectLayout);
 
-        final Panel breedingMethodPanel = new Panel();
-        breedingMethodPanel.setWidth("460px");
-        breedingMethodPanel.setLayout(internalPanelLayout);
-        breedingMethodPanel.addStyleName("section_panel_layout");
+		final Panel breedingMethodPanel = new Panel();
+		breedingMethodPanel.setWidth("460px");
+		breedingMethodPanel.setLayout(internalPanelLayout);
+		breedingMethodPanel.addStyleName("section_panel_layout");
 
-        final HeaderLabelLayout breedingMethodLayout = new HeaderLabelLayout(null, this.breedingMethodLabel);
-        this.addComponent(breedingMethodLayout);
-        this.addComponent(breedingMethodPanel);
+		final HeaderLabelLayout breedingMethodLayout = new HeaderLabelLayout(null, this.breedingMethodLabel);
+		this.addComponent(breedingMethodLayout);
+		this.addComponent(breedingMethodPanel);
 	}
 
 	public void setFields(BreedingMethodSetting breedingMethodSetting) {
@@ -362,6 +382,7 @@ BreedingManagerLayout {
 	private void showBreedingMethodSelection(final Boolean show) {
 		this.breedingMethods.setVisible(show);
 		this.favoriteMethodsCheckbox.setVisible(show);
+		this.breedingMethodsRadioBtn.setVisible(show);
 		this.manageFavoriteMethodsLink.setVisible(show);
 		this.breedingMethodsHelpPopup.setVisible(show);
 		this.methodPopupView.setVisible(show);
@@ -374,8 +395,14 @@ BreedingManagerLayout {
 
 		if (showOnlyFavorites) {
 			try {
+				String mtype = null;
+
+				if (!this.isSelectAllMethods()) {
+					mtype = "GEN";
+				}
+
 				BreedingManagerUtil.populateWithFavoriteMethods(this.workbenchDataManager, this.germplasmDataManager, this.breedingMethods,
-						this.mapMethods, programUUID);
+						this.mapMethods, mtype, programUUID);
 			} catch (final MiddlewareQueryException e) {
 				LOG.error(e.getMessage(), e);
 				MessageNotifier
@@ -390,7 +417,11 @@ BreedingManagerLayout {
 	private void populateBreedingMethod(final String programUUID) {
 
 		try {
-			this.methods = this.germplasmDataManager.getMethodsByType("GEN", programUUID);
+			if (this.isSelectAllMethods()) {
+				this.methods = this.germplasmDataManager.getAllMethodsOrderByMname();
+			} else {
+				this.methods = this.germplasmDataManager.getMethodsByType("GEN", programUUID);
+			}
 		} catch (final MiddlewareQueryException e) {
 			CrossingSettingsMethodComponent.LOG.error(e.getMessage());
 		}

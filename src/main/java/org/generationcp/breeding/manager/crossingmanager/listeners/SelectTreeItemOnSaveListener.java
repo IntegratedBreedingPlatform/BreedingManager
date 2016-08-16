@@ -45,7 +45,6 @@ public class SelectTreeItemOnSaveListener extends AbsoluteLayout implements Init
 		listNameField.setValue(newName);
 		listNameField.setListNameValidator(listNameField.getListNameValidator());
 
-		this.saveListAsDialog.getGermplasmListTree().reloadTreeItemDescription();
 	}
 
 	@Override
