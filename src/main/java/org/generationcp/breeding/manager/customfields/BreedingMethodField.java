@@ -91,14 +91,14 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 		this.changed = false;
 	}
 
-	public BreedingMethodField(Window attachToWindow) {
+	public BreedingMethodField(final Window attachToWindow) {
 		this();
 		this.attachToWindow = attachToWindow;
 		this.isMandatory = true;
 		this.hasDefaultValue = true;
 	}
 
-	public BreedingMethodField(Window attachToWindow, int pixels) {
+	public BreedingMethodField(final Window attachToWindow, final int pixels) {
 		this();
 		this.attachToWindow = attachToWindow;
 		this.leftIndentPixels = pixels;
@@ -106,21 +106,21 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 		this.hasDefaultValue = true;
 	}
 
-	public BreedingMethodField(int pixels) {
+	public BreedingMethodField(final int pixels) {
 		this();
 		this.leftIndentPixels = pixels;
 		this.isMandatory = true;
 		this.hasDefaultValue = true;
 	}
 
-	public BreedingMethodField(Window attachToWindow, boolean isMandatory, boolean hasDefaultValue) {
+	public BreedingMethodField(final Window attachToWindow, final boolean isMandatory, final boolean hasDefaultValue) {
 		this();
 		this.attachToWindow = attachToWindow;
 		this.isMandatory = isMandatory;
 		this.hasDefaultValue = hasDefaultValue;
 	}
 
-	public BreedingMethodField(Window attachToWindow, int pixels, boolean isMandatory, boolean hasDefaultValue) {
+	public BreedingMethodField(final Window attachToWindow, final int pixels, final boolean isMandatory, final boolean hasDefaultValue) {
 		this();
 		this.attachToWindow = attachToWindow;
 		this.leftIndentPixels = pixels;
@@ -128,7 +128,7 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 		this.hasDefaultValue = hasDefaultValue;
 	}
 
-	public BreedingMethodField(int pixels, boolean isMandatory, boolean hasDefaultValue) {
+	public BreedingMethodField(final int pixels, final boolean isMandatory, final boolean hasDefaultValue) {
 		this();
 		this.leftIndentPixels = pixels;
 		this.isMandatory = isMandatory;
@@ -170,7 +170,7 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 
 		try {
 			this.programUniqueId = this.breedingManagerService.getCurrentProject().getUniqueID();
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			BreedingMethodField.LOG.error(e.getMessage(), e);
 		}
 	}
@@ -182,7 +182,7 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 		this.initPopulateFavMethod(this.programUniqueId);
 	}
 
-	public boolean initPopulateFavMethod(String programUUID) {
+	public boolean initPopulateFavMethod(final String programUUID) {
 		boolean hasFavorite = false;
 		if (!this.hasDefaultValue && BreedingManagerUtil.hasFavoriteMethods(this.germplasmDataManager, programUUID)) {
 			this.showFavoritesCheckBox.setValue(true);
@@ -200,7 +200,7 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void valueChange(ValueChangeEvent event) {
+			public void valueChange(final ValueChangeEvent event) {
 				BreedingMethodField.this.updateComboBoxDescription();
 				BreedingMethodField.this.changed = true;
 			}
@@ -211,7 +211,7 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void containerItemSetChange(ItemSetChangeEvent event) {
+			public void containerItemSetChange(final ItemSetChangeEvent event) {
 				BreedingMethodField.this.updateComboBoxDescription();
 				BreedingMethodField.this.changed = true;
 			}
@@ -222,7 +222,7 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void valueChange(ValueChangeEvent event) {
+			public void valueChange(final ValueChangeEvent event) {
 				BreedingMethodField.this.populateMethods(((Boolean) event.getProperty().getValue()).equals(true),
 						BreedingMethodField.this.programUniqueId);
 				BreedingMethodField.this.updateComboBoxDescription();
@@ -234,7 +234,7 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				BreedingMethodField.this.launchManageWindow();
 			}
 		});
@@ -272,11 +272,11 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 		return this.breedingMethodComboBox;
 	}
 
-	public void setBreedingMethodComboBox(ComboBox breedingMethodComboBox) {
+	public void setBreedingMethodComboBox(final ComboBox breedingMethodComboBox) {
 		this.breedingMethodComboBox = breedingMethodComboBox;
 	}
 
-	public void setValue(String value) {
+	public void setValue(final String value) {
 		this.breedingMethodComboBox.select(value);
 	}
 
@@ -292,12 +292,12 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 		return this.changed;
 	}
 
-	public void setChanged(boolean changed) {
+	public void setChanged(final boolean changed) {
 		this.changed = changed;
 	}
 
 	private void updateComboBoxDescription() {
-		Object breedingMethodComboBoxValue = this.breedingMethodComboBox.getValue();
+		final Object breedingMethodComboBoxValue = this.breedingMethodComboBox.getValue();
 
 		final Boolean methodSelected = breedingMethodComboBoxValue != null;
 		this.enableMethodHelp(methodSelected);
@@ -312,10 +312,10 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 		this.popup.setEnabled(enable);
 	}
 
-	private Map<String, String> populateMethods(String programUUID) {
+	private Map<String, String> populateMethods(final String programUUID) {
 		try {
 			this.methods = this.germplasmDataManager.getMethodsByUniqueID(programUUID);
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			BreedingMethodField.LOG.error(e.getMessage(), e);
 		}
 
@@ -326,7 +326,7 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 		this.methodMap = new HashMap<String, String>();
 
 		Method defaultMethod = null;
-		for (Method method : this.methods) {
+		for (final Method method : this.methods) {
 			this.breedingMethodComboBox.addItem(method.getMid());
 			this.breedingMethodComboBox.setItemCaption(method.getMid(), method.getMname());
 
@@ -353,16 +353,16 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 		return this.methodMap;
 	}
 
-	private void populateMethods(boolean showOnlyFavorites, String programUUID) {
+	private void populateMethods(final boolean showOnlyFavorites, final String programUUID) {
 		this.breedingMethodComboBox.removeAllItems();
 		if (showOnlyFavorites) {
 			try {
 				BreedingManagerUtil.populateWithFavoriteMethods(this.workbenchDataManager, this.germplasmDataManager,
 						this.breedingMethodComboBox, null, programUUID);
-			} catch (MiddlewareQueryException e) {
+			} catch (final MiddlewareQueryException e) {
 				BreedingMethodField.LOG.error(e.getMessage(), e);
-				MessageNotifier
-						.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR), "Error getting favorite methods!");
+				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
+						"Error getting favorite methods!");
 			}
 		} else {
 			this.populateMethods(programUUID);
@@ -372,31 +372,30 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 
 	private void launchManageWindow() {
 		try {
-			Project project = this.contextUtil.getProjectInContext();
-			Window window = this.attachToWindow != null ? this.attachToWindow : this.getWindow();
-			Window manageFavoriteMethodsWindow =
-					Util.launchMethodManager(this.workbenchDataManager, project.getProjectId(), window,
-							this.messageSource.getMessage(Message.MANAGE_METHODS));
+			final Project project = this.contextUtil.getProjectInContext();
+			final Window window = this.attachToWindow != null ? this.attachToWindow : this.getWindow();
+			final Window manageFavoriteMethodsWindow = Util.launchMethodManager(this.workbenchDataManager, project.getProjectId(), window,
+					this.messageSource.getMessage(Message.MANAGE_METHODS));
 			manageFavoriteMethodsWindow.addListener(new CloseListener() {
 
 				private static final long serialVersionUID = 1L;
 
 				@Override
-				public void windowClose(CloseEvent e) {
-					Object lastValue = BreedingMethodField.this.breedingMethodComboBox.getValue();
+				public void windowClose(final CloseEvent e) {
+					final Object lastValue = BreedingMethodField.this.breedingMethodComboBox.getValue();
 					BreedingMethodField.this.populateMethods(
 							((Boolean) BreedingMethodField.this.showFavoritesCheckBox.getValue()).equals(true),
 							BreedingMethodField.this.programUniqueId);
 					BreedingMethodField.this.breedingMethodComboBox.setValue(lastValue);
 				}
 			});
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			BreedingMethodField.LOG.error("Error on manageFavoriteMethods click", e);
 		}
 	}
 
 	@Override
-	public void setCaption(String caption) {
+	public void setCaption(final String caption) {
 		this.caption = caption;
 		if (this.captionLabel != null) {
 			this.captionLabel.setValue(this.caption);
@@ -411,11 +410,11 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 		return this.messageSource;
 	}
 
-	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 
-	public void setWorkbenchDataManager(WorkbenchDataManager workbenchDataManager) {
+	public void setWorkbenchDataManager(final WorkbenchDataManager workbenchDataManager) {
 		this.workbenchDataManager = workbenchDataManager;
 	}
 
@@ -423,7 +422,7 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 		return this.germplasmDataManager;
 	}
 
-	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+	public void setGermplasmDataManager(final GermplasmDataManager germplasmDataManager) {
 		this.germplasmDataManager = germplasmDataManager;
 	}
 
@@ -431,11 +430,11 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 		return this.hasDefaultValue;
 	}
 
-	public void setHasDefaultValue(boolean hasDefaultValue) {
+	public void setHasDefaultValue(final boolean hasDefaultValue) {
 		this.hasDefaultValue = hasDefaultValue;
 	}
 
-	public void setBreedingManagerService(BreedingManagerService breedingManagerService) {
+	public void setBreedingManagerService(final BreedingManagerService breedingManagerService) {
 		this.breedingManagerService = breedingManagerService;
 	}
 }
