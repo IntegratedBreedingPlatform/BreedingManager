@@ -49,7 +49,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 	private static final Logger LOG = LoggerFactory.getLogger(BreedingLocationField.class);
 
 	static final String DEFAULT_LOCATION = "Unknown";
-	private static final int STORAGE_LOCATION_TYPEID = 1500;
+	static final int STORAGE_LOCATION_TYPEID = 1500;
 
 	/**
 	 * CONSTRUCTOR VARIABLES
@@ -307,7 +307,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		}
 	}
 
-	private void populateHarvestLocation(final boolean showOnlyFavorites, final String programUUID) {
+	void populateHarvestLocation(final boolean showOnlyFavorites, final String programUUID) {
 		this.breedingLocationComboBox.removeAllItems();
 
 		if (showOnlyFavorites) {
@@ -473,5 +473,9 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 
 	public void setBreedingLocationsRadioBtn(OptionGroup breedingLocationsRadioBtn) {
 		this.breedingLocationsRadioBtn = breedingLocationsRadioBtn;
+	}
+	
+	public void setLocationType(Integer locationType){
+		this.locationType = locationType;
 	}
 }
