@@ -147,8 +147,11 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		this.breedingLocationsRadioBtn.setImmediate(true);
 		this.breedingLocationsRadioBtn.setStyleName("v-select-optiongroup-horizontal");
 		this.breedingLocationsRadioBtn.addItem(this.messageSource.getMessage(Message.SHOW_ALL_LOCATIONS));
-		this.breedingLocationsRadioBtn.addItem(this.messageSource.getMessage(Message.SHOW_STORAGE_LOCATIONS));
-		this.breedingLocationsRadioBtn.select(this.messageSource.getMessage(Message.SHOW_STORAGE_LOCATIONS));
+		
+		// toggle radio button display to either "Breeding Locations" (default) or "Storage Locations"
+		final Message displayMessage = this.locationType > 0? Message.SHOW_STORAGE_LOCATIONS : Message.SHOW_BREEDING_LOCATIONS;
+		this.breedingLocationsRadioBtn.addItem(this.messageSource.getMessage(displayMessage));
+		this.breedingLocationsRadioBtn.select(this.messageSource.getMessage(displayMessage));
 
 		this.showFavoritesCheckBox = new CheckBox();
 		this.showFavoritesCheckBox.setCaption(this.messageSource.getMessage(Message.SHOW_ONLY_FAVORITE_LOCATIONS));
