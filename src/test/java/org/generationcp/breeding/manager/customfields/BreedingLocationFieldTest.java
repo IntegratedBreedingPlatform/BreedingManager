@@ -91,21 +91,6 @@ public class BreedingLocationFieldTest {
 	}
 
 	@Test
-	public void testInitLocationItemsWithPreSelectedItem() {
-		final List<Location> locations = this.locationTestDataInitializer.createLocationList(5);
-		
-		//add UNKNOWN location
-		Location unknownLocation = new Location(100, 0, 0, "UNKNOWN", "UNK", 0, 0, 0, 0, 0);
-		locations.add(unknownLocation);
-		
-		// has pre-selected item after loading
-		this.breedingLocationField.initLocationItems(locations, true);
-
-		Assert.assertEquals("Expecting that 'UNKNOWN' location entry will be the selected location item.", unknownLocation.getLocid(),
-				Integer.valueOf(this.breedingLocationField.getBreedingLocationComboBox().getValue().toString()));
-	}
-
-	@Test
 	public void testInitLocationItemsWithPreSelectedItemSetToDefaultLocation() {
 		final List<Location> locations = this.locationTestDataInitializer.createLocationList(5);
 		locations.add(this.locationTestDataInitializer.createLocation(6, this.breedingLocationField.DEFAULT_LOCATION));
