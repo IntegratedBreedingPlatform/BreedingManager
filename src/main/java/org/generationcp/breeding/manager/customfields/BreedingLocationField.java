@@ -61,6 +61,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 	private Window attachToWindow;
 	// The no of pixel indentation for breeding location combobox
 	private int leftIndentPixels = 130;
+	// By default, locationType = 0 means show breeding locations
 	private Integer locationType = 0;
 	// flags
 	private boolean displayFavoriteLocationsFilter = true;
@@ -309,16 +310,21 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 
 		if (showOnlyFavorites) {
 			try {
-				int ltype = 0;
-
-				if (!isSelectAllLocations()) {
-					// get storage locations that are also favorites
-					ltype = STORAGE_LOCATION_TYPEID;
+				// show all favorite locations
+				if (isSelectAllLocations()){
+					BreedingManagerUtil.populateWithFavoriteLocations(this.workbenchDataManager, this.germplasmDataManager,
+							this.breedingLocationComboBox, null, 0, programUUID);
+					
+				// show all favorite locations of given locationType		
+				} else if (locationType > 0){
+					BreedingManagerUtil.populateWithFavoriteLocations(this.workbenchDataManager, this.germplasmDataManager,
+							this.breedingLocationComboBox, null, this.locationType, programUUID);
+					
+				// show all favorite breeding locations	(default location type)	
+				} else {
+					BreedingManagerUtil.populateWithFavoriteBreedingLocations(this.workbenchDataManager, this.germplasmDataManager, 
+							this.breedingLocationComboBox, null, programUUID);
 				}
-
-				BreedingManagerUtil.populateWithFavoriteLocations(this.workbenchDataManager, this.germplasmDataManager,
-						this.breedingLocationComboBox, null, ltype, programUUID);
-
 			} catch (final MiddlewareQueryException e) {
 				BreedingLocationField.LOG.error(e.getMessage(), e);
 				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
@@ -339,7 +345,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 			} else if (this.locationType > 0) {
 				this.locations = this.locationDataManager.getLocationsByType(this.locationType, programUUID);
 			} else {
-				this.locations = this.locationDataManager.getAllSeedingLocations(programUUID);
+				this.locations = this.locationDataManager.getAllBreedingLocationsByUniqueID(programUUID);
 			}
 		} catch (final MiddlewareQueryException e) {
 			BreedingLocationField.LOG.error(e.getMessage(), e);
