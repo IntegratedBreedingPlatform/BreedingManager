@@ -359,11 +359,11 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 	}
 
 	/**
-	 * NOTE: If the breeding location has the default location item , "UNKNOWN", this will be preselected. Else, will use the first entry
-	 * from the list of available items from the location
+	 * Populate the location combobox.
+	 * If the breeding location has the default location item , "UNKNOWN", this will be preselected
+	 * if isDefaultValueSelected is true.
 	 * 
 	 * @param locations
-	 * 
 	 * @param isDefaultValueSelected
 	 */
 	void initLocationItems(final List<Location> locations, final boolean isDefaultValueSelected) {
@@ -372,12 +372,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		// add items to the breeding location combobox
 		for (final Location location : locations) {
 
-			// retrieve the first item from the list of locations
-			if (selectedItemLocId == null) {
-				selectedItemLocId = location.getLocid();
-			}
-
-			// override the selected item if the default item is found from the list of locations
+			// select the default item if found from the list of locations
 			if (BreedingLocationField.DEFAULT_LOCATION.equalsIgnoreCase(location.getLname())) {
 				selectedItemLocId = location.getLocid();
 			}
