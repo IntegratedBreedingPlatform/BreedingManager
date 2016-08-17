@@ -253,7 +253,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		}
 
 		if (this.displayManageLocationLink) {
-			final int pixels = this.leftIndentPixels + 230;
+			final int pixels = this.leftIndentPixels + 240;
 			this.addComponent(this.manageFavoritesLink, "top:33px; left:" + pixels + "px");
 		}
 	}

@@ -251,7 +251,7 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 
 		this.addComponent(this.showFavoritesCheckBox, "top:30px; left:" + this.leftIndentPixels + "px");
 
-		pixels = this.leftIndentPixels + 230;
+		pixels = this.leftIndentPixels + 240;
 		this.addComponent(this.manageFavoritesLink, "top:33px; left:" + pixels + "px");
 	}
 
