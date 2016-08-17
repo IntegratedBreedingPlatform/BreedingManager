@@ -274,16 +274,16 @@ public class BreedingLocationFieldTest {
 		final List<Location> locationList = new ArrayList<>();
 		locationList.add(this.locationTestDataInitializer.createLocation(BreedingLocationFieldTest.NON_BREEDING_NON_STORAGE_LOCATION_ID,
 				"LOCATION" + BreedingLocationFieldTest.NON_BREEDING_NON_STORAGE_LOCATION_ID, 1,
-				"ABBR" + BreedingLocationFieldTest.NON_BREEDING_NON_STORAGE_LOCATION_ID));
+				"ABBR" + BreedingLocationFieldTest.NON_BREEDING_NON_STORAGE_LOCATION_ID, DUMMY_UNIQUE_ID));
 		locationList.add(this.locationTestDataInitializer.createLocation(BreedingLocationFieldTest.BREEDING_LOCATION_ID1,
 				"LOCATION" + BreedingLocationFieldTest.BREEDING_LOCATION_ID1, Location.BREEDING_LOCATION_TYPE_IDS[0],
-				"ABBR" + BreedingLocationFieldTest.BREEDING_LOCATION_ID1));
+				"ABBR" + BreedingLocationFieldTest.BREEDING_LOCATION_ID1, DUMMY_UNIQUE_ID));
 		locationList.add(this.locationTestDataInitializer.createLocation(BreedingLocationFieldTest.BREEDING_LOCATION_ID2,
 				"LOCATION" + BreedingLocationFieldTest.BREEDING_LOCATION_ID1, Location.BREEDING_LOCATION_TYPE_IDS[1],
-				"ABBR" + BreedingLocationFieldTest.BREEDING_LOCATION_ID2));
+				"ABBR" + BreedingLocationFieldTest.BREEDING_LOCATION_ID2, DUMMY_UNIQUE_ID));
 		locationList.add(this.locationTestDataInitializer.createLocation(BreedingLocationFieldTest.STORAGE_LOCATION_ID,
 				"LOCATION" + BreedingLocationFieldTest.STORAGE_LOCATION_ID, BreedingLocationField.STORAGE_LOCATION_TYPEID,
-				"ABBR" + BreedingLocationFieldTest.STORAGE_LOCATION_ID));
+				"ABBR" + BreedingLocationFieldTest.STORAGE_LOCATION_ID, DUMMY_UNIQUE_ID));
 		return locationList;
 	}
 
