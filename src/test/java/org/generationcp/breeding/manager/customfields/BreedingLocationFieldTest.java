@@ -4,6 +4,7 @@ package org.generationcp.breeding.manager.customfields;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.service.BreedingManagerServiceImpl;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.LocationTestDataInitializer;
@@ -27,6 +28,12 @@ import com.vaadin.ui.OptionGroup;
 
 public class BreedingLocationFieldTest {
 
+	private static final String STORAGE_LOCATIONS = "Storage Locations";
+
+	private static final String BREEDING_LOCATIONS = "Breeding locations";
+
+	private static final String ALL_LOCATIONS = "All locations";
+
 	private static final String DUMMY_UNIQUE_ID = "1234567890";
 
 	@Mock
@@ -38,8 +45,6 @@ public class BreedingLocationFieldTest {
 	@Mock
 	private WorkbenchDataManager workbenchDataManager;
 	@Mock
-	private OptionGroup breedingLocationsRadioBtn;
-	@Mock
 	private BreedingManagerServiceImpl breedingManagerService;
 	@InjectMocks
 	private BreedingLocationField breedingLocationField;
@@ -50,12 +55,15 @@ public class BreedingLocationFieldTest {
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 		Mockito.doReturn(this.getProject(1L)).when(this.breedingManagerService).getCurrentProject();
-		Mockito.when(breedingLocationsRadioBtn.getValue()).thenReturn(Boolean.FALSE.toString());
-		this.breedingLocationField.setBreedingLocationsRadioBtn(breedingLocationsRadioBtn);
+		
+		Mockito.when(messageSource.getMessage(Message.SHOW_ALL_LOCATIONS)).thenReturn(ALL_LOCATIONS);
+		Mockito.when(messageSource.getMessage(Message.SHOW_BREEDING_LOCATIONS)).thenReturn(BREEDING_LOCATIONS);
+		Mockito.when(messageSource.getMessage(Message.SHOW_STORAGE_LOCATIONS)).thenReturn(STORAGE_LOCATIONS);
+		
 		this.breedingLocationField.instantiateComponents();
 		this.locationTestDataInitializer = new LocationTestDataInitializer();
 	}
-
+	
 	@Test
 	public void testinitPopulateFavLocationsReturnsFalseWhenThereAreNoFavouriteLocation() throws MiddlewareQueryException {
 		final ArrayList<ProgramFavorite> favouriteLocations = new ArrayList<ProgramFavorite>();

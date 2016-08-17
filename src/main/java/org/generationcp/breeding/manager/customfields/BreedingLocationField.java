@@ -143,6 +143,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		this.breedingLocationComboBox.setNullSelectionAllowed(true);
 		this.breedingLocationComboBox.setInputPrompt("Please Choose");
 
+		this.breedingLocationsRadioBtn = new OptionGroup();
 		this.breedingLocationsRadioBtn.setMultiSelect(false);
 		this.breedingLocationsRadioBtn.setImmediate(true);
 		this.breedingLocationsRadioBtn.setStyleName("v-select-optiongroup-horizontal");
@@ -265,8 +266,6 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.breedingLocationsRadioBtn = new OptionGroup();
-
 		this.instantiateComponents();
 		this.initializeValues();
 		this.addListeners();
