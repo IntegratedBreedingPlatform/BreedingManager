@@ -1,11 +1,12 @@
 
 package org.generationcp.breeding.manager.listimport;
 
+import java.util.Iterator;
+
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.BreedingLocationField;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +18,10 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
+
+import junit.framework.Assert;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GermplasmFieldsComponentTest {
@@ -129,8 +133,54 @@ public class GermplasmFieldsComponentTest {
 
 		// Check that instructions text changed after refresh layout
 		final String newDisplayMessage = (String) this.germplasmFieldsComponent.getGermplasmDetailsMessage().getValue();
-		Assert.assertFalse("Instructions text should have changed upon refresh when invetory is present",
+		Assert.assertFalse("Instructions text should have changed upon refresh when inventory is present",
 				oldDisplayMessage.equals(newDisplayMessage));
 	}
+	
+	@Test
+	public void testRefreshLayoutWhenNoInventoryVariableInImportFile(){
+		boolean hasInventoryVariable = true;
+		this.germplasmFieldsComponent.refreshLayout(hasInventoryVariable, false);
+		
+		// Check the height of the layout. Layout is longer when inventory variable is present
+		Assert.assertEquals("Layout height is 360px", 360.0f, this.germplasmFieldsComponent.getHeight());
+		Assert.assertEquals(0, this.germplasmFieldsComponent.getHeightUnits());
 
+		// Check the # of components added in the layout
+		Assert.assertEquals("Expecting 9 UI components in the layout", 9, this.germplasmFieldsComponent.getComponentCount());
+		Iterator<Component> componentIterator = this.germplasmFieldsComponent.getComponentIterator();
+		boolean seedStorageLocationAdded = false;
+		while (componentIterator.hasNext()){
+			Component component = componentIterator.next();
+			if (this.germplasmFieldsComponent.getSeedLocationComponent().equals(component)){
+				seedStorageLocationAdded = true;
+			}
+		}
+		// Expecting Seed Storage Location to be displayed
+		Assert.assertTrue("Expecting Seed Storage location field to be displayed", seedStorageLocationAdded);
+	
+	}
+
+	@Test
+	public void testRefreshLayoutWhenInventoryVariablePresentInImportFile(){
+		boolean hasInventoryVariable = false;
+		this.germplasmFieldsComponent.refreshLayout(hasInventoryVariable, false);
+		
+		// Check the height of the layout. Layout is longer when inventory variable is present
+		Assert.assertEquals("Layout height is 300px", 300.0f, this.germplasmFieldsComponent.getHeight());
+		Assert.assertEquals(0, this.germplasmFieldsComponent.getHeightUnits());
+
+		// Check the # of components added in the layout
+		Assert.assertEquals("Expecting 8 UI components in the layout", 8, this.germplasmFieldsComponent.getComponentCount());
+		Iterator<Component> componentIterator = this.germplasmFieldsComponent.getComponentIterator();
+		
+		// Expecting Seed Storage Location not included in layout
+		while (componentIterator.hasNext()){
+			Component component = componentIterator.next();
+			if (this.germplasmFieldsComponent.getSeedLocationComponent().equals(component)){
+				Assert.fail("Expecting Seed Storage location to not be included in layout but was present.");
+			}
+		}
+	
+	}
 }
