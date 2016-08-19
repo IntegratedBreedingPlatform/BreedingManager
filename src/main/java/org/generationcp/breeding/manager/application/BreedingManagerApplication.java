@@ -12,7 +12,6 @@ import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
-import org.generationcp.commons.vaadin.actions.UpdateComponentLabelsAction;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -78,6 +77,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 	public void initSpringApplication(final ConfigurableWebApplicationContext arg0) {
 
 		this.window = this.instantiateListManagerWindow(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME);
+		this.window.setDebugId("window");
 		this.setMainWindow(this.window);
 		this.setTheme("gcp-default");
 		this.window.setSizeUndefined();

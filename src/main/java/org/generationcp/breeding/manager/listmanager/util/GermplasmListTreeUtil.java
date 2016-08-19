@@ -133,7 +133,7 @@ public class GermplasmListTreeUtil implements Serializable {
 
 		try {
 			listChildren = this.germplasmListManager.getGermplasmListByParentFolderId(Integer.valueOf(sourceItemId.toString()),
-					this.getCurrentProgramUUID(), 0, 1);
+					this.getCurrentProgramUUID());
 		} catch (MiddlewareQueryException e) {
 			GermplasmListTreeUtil.LOG.error("Error in getting germplasm lists by parent id.", e);
 			listChildren = new ArrayList<GermplasmList>();
@@ -215,8 +215,6 @@ public class GermplasmListTreeUtil implements Serializable {
 			}
 
 			this.source.showAddRenameFolderSection(false);
-			// dennis
-			this.source.assignNewNameToGermplasmListMap(listId.toString(), newName);
 			this.source.refreshRemoteTree();
 			if (this.source.getWindow() != null) {
 				MessageNotifier.showMessage(this.source.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
@@ -346,7 +344,7 @@ public class GermplasmListTreeUtil implements Serializable {
 	}
 
 	public boolean hasChildren(Integer id) {
-		return !this.germplasmListManager.getGermplasmListByParentFolderId(id, this.getCurrentProgramUUID(), 0, Integer.MAX_VALUE)
+		return !this.germplasmListManager.getGermplasmListByParentFolderId(id, this.getCurrentProgramUUID())
 				.isEmpty();
 	}
 

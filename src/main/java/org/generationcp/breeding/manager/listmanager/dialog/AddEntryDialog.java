@@ -224,8 +224,8 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		this.bottomPart.addComponent(this.germplasmDateLabel, "top:107px;left:0px");
 		this.bottomPart.addComponent(this.germplasmDateField, "top:102px;left:124px");
 		this.bottomPart.addComponent(this.breedingLocationField, "top:133px;left:0px");
-		this.bottomPart.addComponent(this.nameTypeLabel, "top:185px;left:0px");
-		this.bottomPart.addComponent(this.nameTypeComboBox, "top:185px;left:130px");
+		this.bottomPart.addComponent(this.nameTypeLabel, "top:206px;left:0px");
+		this.bottomPart.addComponent(this.nameTypeComboBox, "top:206px;left:130px");
 
 		final HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setWidth("100%");

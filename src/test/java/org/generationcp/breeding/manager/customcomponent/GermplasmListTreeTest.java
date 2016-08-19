@@ -1,8 +1,12 @@
 
 package org.generationcp.breeding.manager.customcomponent;
 
+import java.util.Collections;
+
 import org.generationcp.breeding.manager.customfields.ListTreeComponent;
 import org.generationcp.breeding.manager.customfields.LocalListFoldersTreeComponent;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.UserDataManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -25,8 +29,9 @@ public class GermplasmListTreeTest {
 
 	@Test
 	public void testLocalTreeItemDescription() {
-		this.listTreeComponent.addListTreeItemDescription();
-
+		listTreeComponent.setGermplasmListManager(Mockito.mock(GermplasmListManager.class));
+		listTreeComponent.setUserDataManager(Mockito.mock(UserDataManager.class));
+		listTreeComponent.addGermplasmListNodeToComponent(Collections.EMPTY_LIST, 1);
 		Mockito.verify(this.listTree).setItemDescriptionGenerator(Matchers.any(AbstractSelect.ItemDescriptionGenerator.class));
 	}
 

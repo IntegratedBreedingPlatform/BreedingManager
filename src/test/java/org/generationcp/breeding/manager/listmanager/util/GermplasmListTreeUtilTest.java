@@ -125,7 +125,7 @@ public class GermplasmListTreeUtilTest {
 		try {
 			Mockito.when(
 					this.germplasmListManager.getGermplasmListByParentFolderId(GermplasmListTreeUtilTest.GERMPLASM_LIST_ID_WITH_CHILDREN,
-							GermplasmListTreeUtilTest.PROGRAM_UUID, 0, Integer.MAX_VALUE))
+							GermplasmListTreeUtilTest.PROGRAM_UUID))
 					.thenReturn(dummyListOfGermplasmListWithEntries);
 		} catch (MiddlewareQueryException e) {
 			Assert.fail("Expecting no exception is returned for determining if the item is a folder and has content.");
@@ -228,7 +228,7 @@ public class GermplasmListTreeUtilTest {
 		List<GermplasmList> items = new ArrayList<GermplasmList>();
 		items.add(child1);
 
-		Mockito.when(this.germplasmListManager.getGermplasmListByParentFolderId(sourceId, GermplasmListTreeUtilTest.PROGRAM_UUID, 0, 1))
+		Mockito.when(this.germplasmListManager.getGermplasmListByParentFolderId(sourceId, GermplasmListTreeUtilTest.PROGRAM_UUID))
 				.thenReturn(items);
 
 		Assert.assertTrue("Expecting true is returned when checking an item with children but didn't.",
@@ -240,7 +240,7 @@ public class GermplasmListTreeUtilTest {
 		Integer sourceId = GermplasmListTreeUtilTest.GERMPLASM_LIST_ID;
 		this.setUpGermplasmListDataManager(sourceId, true);
 
-		Mockito.when(this.germplasmListManager.getGermplasmListByParentFolderId(sourceId, GermplasmListTreeUtilTest.PROGRAM_UUID, 0, 1))
+		Mockito.when(this.germplasmListManager.getGermplasmListByParentFolderId(sourceId, GermplasmListTreeUtilTest.PROGRAM_UUID))
 				.thenReturn(new ArrayList<GermplasmList>());
 
 		Assert.assertFalse("Expecting false is returned when checking an item with no children but didn't.",

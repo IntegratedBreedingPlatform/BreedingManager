@@ -139,7 +139,6 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 		if (caption.equals(messageSource.getMessage(Message.SEARCH_FOR_LISTS))) {
 			popupWindow.setOverrideFocus(true);
 			listSearchComponent.focusOnSearchField();
-			listSearchComponent.getSearchResultsComponent().updateGermplasmListsMap();
 		}
 
 		window.addWindow(popupWindow);

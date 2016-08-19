@@ -28,8 +28,6 @@ public class GermplasmListTreeTableTest {
 		this.listManagerTreeComponent = new ListManagerTreeComponent();
 		this.listManagerTreeComponent.setGermplasmListSource(this.listTreeTable);
 
-		this.listManagerTreeComponent.addListTreeItemDescription();
-
 		Mockito.verify(this.listTreeTable, Mockito.never()).setItemDescriptionGenerator(
 				Matchers.any(AbstractSelect.ItemDescriptionGenerator.class));
 	}
@@ -41,8 +39,6 @@ public class GermplasmListTreeTableTest {
 
 		this.crossManagerTreeComponent = new CrossingManagerListTreeComponent(listener, crossesComponent);
 		this.crossManagerTreeComponent.setGermplasmListSource(this.listTreeTable);
-
-		this.crossManagerTreeComponent.addListTreeItemDescription();
 
 		Mockito.verify(this.listTreeTable, Mockito.never()).setItemDescriptionGenerator(
 				Matchers.any(AbstractSelect.ItemDescriptionGenerator.class));
