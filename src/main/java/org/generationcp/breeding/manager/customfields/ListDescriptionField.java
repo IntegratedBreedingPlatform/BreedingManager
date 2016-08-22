@@ -35,9 +35,11 @@ public class ListDescriptionField extends HorizontalLayout implements Initializi
 	public void instantiateComponents() {
 
 		this.captionLabel = new Label(this.caption);
+		this.captionLabel.setDebugId("captionLabel");
 		this.captionLabel.addStyleName("bold");
 
 		this.descriptionTextArea = new TextArea();
+		this.descriptionTextArea.setDebugId("descriptionTextArea");
 		this.descriptionTextArea.setWidth("200px");
 		this.descriptionTextArea.setHeight("65px");
 		this.descriptionTextArea.setImmediate(true);
@@ -45,11 +47,11 @@ public class ListDescriptionField extends HorizontalLayout implements Initializi
 
 		if (this.isMandatory) {
 			this.mandatoryMark = new MandatoryMarkLabel();
+			this.mandatoryMark.setDebugId("mandatoryMark");
 
 			this.descriptionTextArea.setRequired(true);
 			this.descriptionTextArea.setRequiredError("Please specify the description of the list.");
 		}
-		this.descriptionTextArea.setDebugId("vaadin-listdescrip-txtarea");
 	}
 
 	@Override

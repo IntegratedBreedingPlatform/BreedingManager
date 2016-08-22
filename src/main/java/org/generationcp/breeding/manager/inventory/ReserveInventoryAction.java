@@ -87,6 +87,7 @@ public class ReserveInventoryAction implements Serializable {
 		if (!this.validLotReservations.isEmpty() && !this.invalidLotReservations.isEmpty()) {
 			// if there is an invalid reservation
 			this.reservationStatus = new ReservationStatusWindow(this.invalidLotReservations);
+			this.reservationStatus.setDebugId("reservationStatus");
 			this.source.addReservationStatusWindow(this.reservationStatus);
 			withInvalidReservations = true;
 		}

@@ -75,32 +75,42 @@ public class SummaryListHeaderComponent extends VerticalLayout implements Breedi
 	@Override
 	public void instantiateComponents() {
 		this.sectionTitleLabel = new Label(this.sectionTitle.toUpperCase());
+		this.sectionTitleLabel.setDebugId("sectionTitleLabel");
 		this.sectionTitleLabel.addStyleName(Bootstrap.Typography.H4.styleName());
 		this.sectionTitleLabel.addStyleName(AppConstants.CssStyles.BOLD);
 
 		this.savedAsLabel = new Label(this.messageSource.getMessage(Message.SAVED_AS) + ":");
+		this.savedAsLabel.setDebugId("savedAsLabel");
 		this.savedAsLabel.addStyleName(AppConstants.CssStyles.BOLD);
 
 		this.descriptionLabel = new Label(this.messageSource.getMessage(Message.DESCRIPTION_LABEL) + ":");
+		this.descriptionLabel.setDebugId("descriptionLabel");
 		this.descriptionLabel.addStyleName(AppConstants.CssStyles.BOLD);
 
 		this.listTypeLabel = new Label(this.messageSource.getMessage(Message.LIST_TYPE) + ":");
+		this.listTypeLabel.setDebugId("listTypeLabel");
 		this.listTypeLabel.addStyleName(AppConstants.CssStyles.BOLD);
 
 		this.listDateLabel = new Label(this.messageSource.getMessage(Message.DATE_LABEL) + ":");
+		this.listDateLabel.setDebugId("listDateLabel");
 		this.listDateLabel.addStyleName(AppConstants.CssStyles.BOLD);
 
 		this.folderPathValue = new Label();
+		this.folderPathValue.setDebugId("folderPathValue");
 
 		this.listNameValue = new Label();
+		this.listNameValue.setDebugId("listNameValue");
 		this.listNameValue.addStyleName(AppConstants.CssStyles.BOLD);
 
 		this.descriptionValue = new Label();
+		this.descriptionValue.setDebugId("descriptionValue");
 
 		this.listTypeValue = new Label();
+		this.listTypeValue.setDebugId("listTypeValue");
 		this.listTypeValue.setWidth("150px");
 
 		this.listDateValue = new Label();
+		this.listDateValue.setDebugId("listDateValue");
 	}
 
 	private void retrieveListDetails() {
@@ -161,17 +171,20 @@ public class SummaryListHeaderComponent extends VerticalLayout implements Breedi
 		this.setSpacing(true);
 
 		HorizontalLayout row1 = new HorizontalLayout();
+		row1.setDebugId("row1");
 		row1.setSpacing(true);
 		row1.addComponent(this.savedAsLabel);
 		row1.addComponent(this.folderPathValue);
 		row1.addComponent(this.listNameValue);
 
 		HorizontalLayout row2 = new HorizontalLayout();
+		row2.setDebugId("row2");
 		row2.setSpacing(true);
 		row2.addComponent(this.descriptionLabel);
 		row2.addComponent(this.descriptionValue);
 
 		HorizontalLayout row3 = new HorizontalLayout();
+		row3.setDebugId("row3");
 		row3.setSpacing(true);
 		row3.addComponent(this.listTypeLabel);
 		row3.addComponent(this.listTypeValue);

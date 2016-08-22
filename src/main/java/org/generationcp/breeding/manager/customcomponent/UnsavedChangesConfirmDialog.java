@@ -68,11 +68,15 @@ public class UnsavedChangesConfirmDialog extends BaseSubWindow implements Initia
 
 		// content variables
 		this.descriptionLabel = new Label("<center>" + this.description + "</center>", Label.CONTENT_XHTML);
+		this.descriptionLabel.setDebugId("descriptionLabel");
 
 		this.cancelButton = new Button(this.messageSource.getMessage(Message.CANCEL));
+		this.cancelButton.setDebugId("cancelButton");
 		this.discardButton = new Button(this.messageSource.getMessage(Message.DISCARD_CHANGES));
+		this.discardButton.setDebugId("discardButton");
 
 		this.saveButton = new Button(this.messageSource.getMessage(Message.SAVE_CHANGES));
+		this.saveButton.setDebugId("saveButton");
 		this.saveButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 	}
 
@@ -130,14 +134,17 @@ public class UnsavedChangesConfirmDialog extends BaseSubWindow implements Initia
 	@Override
 	public void layoutComponents() {
 		this.mainLayout = new VerticalLayout();
+		this.mainLayout.setDebugId("mainLayout");
 		this.mainLayout.setSpacing(true);
 
 		this.mainLayout.addComponent(this.descriptionLabel);
 
 		Label forSpaceLabel = new Label();
+		forSpaceLabel.setDebugId("forSpaceLabel");
 		this.mainLayout.addComponent(forSpaceLabel);
 
 		HorizontalLayout buttonLayout = new HorizontalLayout();
+		buttonLayout.setDebugId("buttonLayout");
 		buttonLayout.setSpacing(true);
 		buttonLayout.addComponent(this.cancelButton);
 		buttonLayout.addComponent(this.discardButton);

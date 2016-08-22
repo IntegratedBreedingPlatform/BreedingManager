@@ -53,6 +53,7 @@ public class UploadField extends org.vaadin.easyuploads.UploadField {
 		super.buildDefaulLayout();
 		this.upload.addStyleName(Bootstrap.Buttons.INFO.styleName() + " restoreUploadButton");
 		this.noFileLabel = new Label(this.noFileSelectedText);
+		this.noFileLabel.setDebugId("noFileLabel");
 		this.getRootLayout().addComponent(this.noFileLabel);
 	}
 

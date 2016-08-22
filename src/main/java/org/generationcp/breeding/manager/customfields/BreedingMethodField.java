@@ -140,9 +140,11 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 		this.setHeight("250px");
 
 		this.captionLabel = new Label(this.caption);
+		this.captionLabel.setDebugId("captionLabel");
 		this.captionLabel.addStyleName("bold");
 
 		this.breedingMethodComboBox = new ComboBox();
+		this.breedingMethodComboBox.setDebugId("breedingMethodComboBox");
 		this.breedingMethodComboBox.setWidth("320px");
 		this.breedingMethodComboBox.setImmediate(true);
 
@@ -156,16 +158,20 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 		}
 
 		this.showFavoritesCheckBox = new CheckBox();
+		this.showFavoritesCheckBox.setDebugId("showFavoritesCheckBox");
 		this.showFavoritesCheckBox.setCaption(this.messageSource.getMessage(Message.SHOW_ONLY_FAVORITE_METHODS));
 		this.showFavoritesCheckBox.setImmediate(true);
 
 		this.manageFavoritesLink = new Button();
+		this.manageFavoritesLink.setDebugId("manageFavoritesLink");
 		this.manageFavoritesLink.setStyleName(BaseTheme.BUTTON_LINK);
 		this.manageFavoritesLink.setCaption(this.messageSource.getMessage(Message.MANAGE_METHODS));
 
 		this.methodDescription = new Label();
+		this.methodDescription.setDebugId("methodDescription");
 		this.methodDescription.setWidth("300px");
 		this.popup = new PopupView(" ? ", this.methodDescription);
+		this.popup.setDebugId("popup");
 		this.popup.setStyleName("gcp-popup-view");
 
 		try {

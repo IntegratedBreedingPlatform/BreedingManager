@@ -98,34 +98,43 @@ public class GenerateStockIDsDialog extends BaseSubWindow implements Initializin
 	public void instantiateComponents() {
 
 		this.lblSpecifyPrefix = new Label(this.messageSource.getMessage(Message.SPECIFY_STOCKID_PREFIX_LABEL));
+		this.lblSpecifyPrefix.setDebugId("lblSpecifyPrefix");
 		this.lblSpecifyPrefix.addStyleName("bold");
 		this.lblSpecifyPrefix.setImmediate(true);
 
 		this.txtSpecifyPrefix = new TextField();
+		this.txtSpecifyPrefix.setDebugId("txtSpecifyPrefix");
 		this.txtSpecifyPrefix.setImmediate(true);
 		this.txtSpecifyPrefix.setMaxLength(15);
 		this.txtSpecifyPrefix.focus();
 
 		this.lblDefaultPrefixDescription = new Label(this.messageSource.getMessage(Message.DEFAULT_PREFIX_DESCRIPTION_LABEL));
+		this.lblDefaultPrefixDescription.setDebugId("lblDefaultPrefixDescription");
 		this.lblDefaultPrefixDescription.addStyleName("italic");
 
 		this.lblNextPrefixInSequence = new Label(this.messageSource.getMessage(Message.NEXT_PREFIX_IN_SEQUENCE_LABEL));
+		this.lblNextPrefixInSequence.setDebugId("lblNextPrefixInSequence");
 		this.lblNextPrefixInSequence.addStyleName("bold");
 		this.lblNextPrefixInSequence.setImmediate(true);
 
 		this.lblExampleNextPrefixInSequence = new Label();
+		this.lblExampleNextPrefixInSequence.setDebugId("lblExampleNextPrefixInSequence");
 
 		this.lblStockIdForThisList = new Label(this.messageSource.getMessage(Message.EXAMPLE_STOCKID_LABEL));
+		this.lblStockIdForThisList.setDebugId("lblStockIdForThisList");
 		this.lblStockIdForThisList.addStyleName("bold");
 		this.lblStockIdForThisList.setImmediate(true);
 
 		this.lblExampleStockIdForThisList = new Label();
+		this.lblExampleStockIdForThisList.setDebugId("lblExampleStockIdForThisList");
 
 		this.btnContinue = new Button(this.messageSource.getMessage(Message.CONTINUE));
+		this.btnContinue.setDebugId("btnContinue");
 		this.btnContinue.setWidth("80px");
 		this.btnContinue.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 
 		this.btnCancel = new Button(this.messageSource.getMessage(Message.CANCEL));
+		this.btnCancel.setDebugId("btnCancel");
 		this.btnCancel.setWidth("80px");
 		this.btnCancel.setDescription("Cancel");
 		this.btnCancel.setClickShortcut(ShortcutAction.KeyCode.ESCAPE);
@@ -192,6 +201,7 @@ public class GenerateStockIDsDialog extends BaseSubWindow implements Initializin
 	public void layoutComponents() {
 
 		VerticalLayout rootLayout = new VerticalLayout();
+		rootLayout.setDebugId("rootLayout");
 		rootLayout.setWidth("100%");
 		rootLayout.setSpacing(true);
 		rootLayout.setMargin(true);
@@ -203,6 +213,7 @@ public class GenerateStockIDsDialog extends BaseSubWindow implements Initializin
 		rootLayout.addComponent(new OneLineLayout(this.lblStockIdForThisList, this.lblExampleStockIdForThisList));
 
 		HorizontalLayout hButton = new HorizontalLayout();
+		hButton.setDebugId("hButton");
 		hButton.setSpacing(true);
 		hButton.setMargin(true);
 		hButton.addComponent(this.btnCancel);

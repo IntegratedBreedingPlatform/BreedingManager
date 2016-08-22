@@ -208,6 +208,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		this.center();
 
 		this.topPart = new VerticalLayout();
+		this.topPart.setDebugId("topPart");
 		this.topPart.setSpacing(true);
 		this.topPart.setMargin(false);
 		this.topPart.addComponent(this.topPartHeader);
@@ -217,6 +218,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		this.topPart.addComponent(this.optionGroup);
 
 		this.bottomPart = new AbsoluteLayout();
+		this.bottomPart.setDebugId("bottomPart");
 		this.bottomPart.setWidth("600px");
 		this.bottomPart.setHeight("230px");
 		this.bottomPart.addComponent(this.bottomPartHeader, "top:15px;left:0px");
@@ -228,6 +230,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		this.bottomPart.addComponent(this.nameTypeComboBox, "top:206px;left:130px");
 
 		final HorizontalLayout buttonLayout = new HorizontalLayout();
+		buttonLayout.setDebugId("buttonLayout");
 		buttonLayout.setWidth("100%");
 		buttonLayout.setHeight("50px");
 		buttonLayout.setSpacing(true);
@@ -285,11 +288,13 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		final Window germplasmWindow = new BaseSubWindow(this.messageSource.getMessage(Message.GERMPLASM_INFORMATION) + " - " + gid);
 
 		final VerticalLayout layoutForGermplasm = new VerticalLayout();
+		layoutForGermplasm.setDebugId("layoutForGermplasm");
 		layoutForGermplasm.setMargin(false);
 		layoutForGermplasm.setWidth("98%");
 		layoutForGermplasm.setHeight("98%");
 
 		final Embedded germplasmInfo = new Embedded("", germplasmBrowserLink);
+		germplasmInfo.setDebugId("germplasmInfo");
 		germplasmInfo.setType(Embedded.TYPE_BROWSER);
 		germplasmInfo.setSizeFull();
 		layoutForGermplasm.addComponent(germplasmInfo);
@@ -307,24 +312,30 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 
 	protected void initializeTopPart() {
 		this.topPart = new VerticalLayout();
+		this.topPart.setDebugId("topPart");
 		this.topPart.setSpacing(true);
 		this.topPart.setMargin(false);
 
 		this.topPartHeader = new Label(this.messageSource.getMessage(Message.SELECT_A_GERMPLASM));
+		this.topPartHeader.setDebugId("topPartHeader");
 		this.topPartHeader.addStyleName("bold");
 		this.topPartHeader.addStyleName("h3");
 
 		this.searchResultsComponent = new GermplasmSearchResultsComponent(this.source.getListManagerMain(), false, false);
+		this.searchResultsComponent.setDebugId("searchResultsComponent");
 		this.searchResultsComponent.getMatchingGermplasmsTable().setHeight("150px");
 		this.searchResultsComponent.getMatchingGermplasmsTableWithSelectAll().setHeight("220px");
 		this.searchResultsComponent.setRightClickActionHandlerEnabled(false);
 
 		this.searchBarComponent = new GermplasmSearchBarComponent(this.searchResultsComponent, this.source);
+		this.searchBarComponent.setDebugId("searchBarComponent");
 
 		this.step2Label = new Label(this.messageSource.getMessage(Message.HOW_DO_YOU_WANT_TO_ADD_THE_GERMPLASM_TO_THE_LIST));
+		this.step2Label.setDebugId("step2Label");
 		this.step2Label.addStyleName("bold");
 
 		this.optionGroup = new OptionGroup();
+		this.optionGroup.setDebugId("optionGroup");
 		this.optionGroup.addItem(AddEntryDialog.OPTION_1_ID);
 		this.optionGroup.setItemCaption(AddEntryDialog.OPTION_1_ID,
 				this.messageSource.getMessage(Message.USE_SELECTED_GERMPLASM_FOR_THE_LIST_ENTRY));
@@ -340,35 +351,45 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 
 	protected void initializeBottomPart() {
 		this.bottomPart = new AbsoluteLayout();
+		this.bottomPart.setDebugId("bottomPart");
 		this.bottomPart.setWidth("600px");
 		this.bottomPart.setHeight("230px");
 
 		this.bottomPartHeader = new Label(this.messageSource.getMessage(Message.SPECIFY_ADDITIONAL_DETAILS));
+		this.bottomPartHeader.setDebugId("bottomPartHeader");
 		this.bottomPartHeader.addStyleName("bold");
 		this.bottomPartHeader.addStyleName("h3");
 
 		this.breedingMethodField = new BreedingMethodField(this.parentWindow);
+		this.breedingMethodField.setDebugId("breedingMethodField");
 
 		this.germplasmDateLabel = new Label("Creation Date: ");
+		this.germplasmDateLabel.setDebugId("germplasmDateLabel");
 		this.germplasmDateLabel.addStyleName("bold");
 
 		this.germplasmDateField = new ListDateField("", false);
+		this.germplasmDateField.setDebugId("germplasmDateField");
 		this.germplasmDateField.getListDtDateField().setValue(DateUtil.getCurrentDate());
 
 		this.breedingLocationField = new BreedingLocationField(this, this.parentWindow, true);
+		this.breedingLocationField.setDebugId("breedingLocationField");
 
 		this.nameTypeLabel = new Label("Name Type: ");
+		this.nameTypeLabel.setDebugId("nameTypeLabel");
 		this.nameTypeLabel.addStyleName("bold");
 
 		this.nameTypeComboBox = new ComboBox();
+		this.nameTypeComboBox.setDebugId("nameTypeComboBox");
 		this.nameTypeComboBox.setWidth("400px");
 	}
 
 	public void initializeButtonLayout() {
 		this.cancelButton = new Button(this.messageSource.getMessage(Message.CANCEL));
+		this.cancelButton.setDebugId("cancelButton");
 		this.cancelButton.setData(AddEntryDialog.CANCEL_BUTTON_ID);
 
 		this.doneButton = new Button(this.messageSource.getMessage(Message.DONE));
+		this.doneButton.setDebugId("doneButton");
 		this.doneButton.setData(AddEntryDialog.DONE_BUTTON_ID);
 		this.doneButton.setEnabled(false);
 		this.doneButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());

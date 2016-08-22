@@ -180,6 +180,7 @@ public class DropHandlerMethods {
 			designationButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_GERMPLASM_INFORMATION);
 
 			final CheckBox tagCheckBox = new CheckBox();
+			tagCheckBox.setDebugId("tagCheckBox");
 			tagCheckBox.setImmediate(true);
 			tagCheckBox.addListener(new ClickListener() {
 
@@ -210,6 +211,7 @@ public class DropHandlerMethods {
 			}
 
 			final Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(this.listManagerMain, gid));
+			inventoryButton.setDebugId("inventoryButton");
 			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 			inventoryButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
 			newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
@@ -330,6 +332,7 @@ public class DropHandlerMethods {
 				gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 
 				final CheckBox tagCheckBox = new CheckBox();
+				tagCheckBox.setDebugId("tagCheckBox");
 				tagCheckBox.setImmediate(true);
 				tagCheckBox.addListener(new ClickListener() {
 
@@ -490,6 +493,7 @@ public class DropHandlerMethods {
 			gidButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_GERMPLASM_INFORMATION);
 
 			final CheckBox itemCheckBox = new CheckBox();
+			itemCheckBox.setDebugId("itemCheckBox");
 			itemCheckBox.setData(newItemId);
 			itemCheckBox.setImmediate(true);
 			itemCheckBox.addListener(new ClickListener() {
@@ -519,6 +523,7 @@ public class DropHandlerMethods {
 			// #1 Available Inventory
 			final String availInv = this.getAvailInvFromButtonCaption(sourceTable, itemId);
 			final Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(this.listManagerMain, gid));
+			inventoryButton.setDebugId("inventoryButton");
 			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 			inventoryButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
 

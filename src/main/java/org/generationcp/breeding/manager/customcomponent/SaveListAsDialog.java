@@ -122,14 +122,16 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 				.getMessage(Message.SELECT_A_FOLDER_TO_CREATE_A_LIST_OR_SELECT_AN_EXISTING_LIST_TO_EDIT_AND_OVERWRITE_ITS_ENTRIES) + ".");
 
 		this.listDetailsComponent = new BreedingManagerListDetailsComponent(this.defaultListType(), this.germplasmList);
+		this.listDetailsComponent.setDebugId("listDetailsComponent");
 
 		this.cancelButton = new Button(this.messageSource.getMessage(Message.CANCEL));
+		this.cancelButton.setDebugId("cancelButton");
 		this.cancelButton.setWidth("80px");
 
 		this.saveButton = new Button(this.messageSource.getMessage(Message.SAVE_LABEL));
+		this.saveButton.setDebugId("saveButton");
 		this.saveButton.setWidth("80px");
 		this.saveButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
-		this.saveButton.setDebugId("vaadin-save-btn");
 	}
 
 	public String defaultListType() {
@@ -167,6 +169,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 		this.setHeight("510px");
 
 		this.contentLayout = new HorizontalLayout();
+		this.contentLayout.setDebugId("contentLayout");
 		this.contentLayout.setSpacing(true);
 		this.contentLayout.addComponent(this.germplasmListTree);
 		this.contentLayout.addComponent(this.listDetailsComponent);
@@ -178,6 +181,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 		this.listDetailsComponent.addStyleName("listDetailsComponent");
 
 		this.buttonLayout = new HorizontalLayout();
+		this.buttonLayout.setDebugId("buttonLayout");
 		this.buttonLayout.setSpacing(true);
 		this.buttonLayout.setMargin(true);
 		this.buttonLayout.addComponent(this.cancelButton);
@@ -185,6 +189,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 		this.buttonLayout.addStyleName("buttonLayout");
 
 		final HorizontalLayout buttonLayoutMain = new HorizontalLayout();
+		buttonLayoutMain.setDebugId("buttonLayoutMain");
 		buttonLayoutMain.addComponent(this.buttonLayout);
 		buttonLayoutMain.setComponentAlignment(this.buttonLayout, Alignment.MIDDLE_CENTER);
 		buttonLayoutMain.setWidth("100%");
@@ -192,6 +197,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 		buttonLayoutMain.addStyleName("buttonLayoutMain");
 
 		this.mainLayout = new CssLayout();
+		this.mainLayout.setDebugId("mainLayout");
 		this.mainLayout.setWidth("741px");
 		this.mainLayout.setHeight("420px");
 		this.mainLayout.addComponent(this.guideMessage);

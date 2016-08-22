@@ -111,10 +111,12 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		this.setWidth("100%");
 
 		this.searchField = new TextField();
+		this.searchField.setDebugId("searchField");
 		this.searchField.setDebugId("searchId");
 		this.searchField.setImmediate(true);
 		
 		this.searchButton = new Button(this.messageSource.getMessage(Message.SEARCH));
+		this.searchButton.setDebugId("searchButton");
 		this.searchButton.setDebugId("searchButton");
 		this.searchButton.setHeight("24px");
 		this.searchButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
@@ -122,11 +124,14 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 
 		final Label descLbl = new Label(GermplasmSearchBarComponent.GUIDE, Label.CONTENT_XHTML);
 		descLbl.setDebugId("descLbl");
+		descLbl.setDebugId("descLbl");
 		descLbl.setWidth("300px");
 		this.popup = new PopupView(" ? ", descLbl);
+		this.popup.setDebugId("popup");
 		this.popup.setStyleName("gcp-popup-view");
 
 		this.withInventoryOnlyCheckBox = new CheckBox();
+		this.withInventoryOnlyCheckBox.setDebugId("withInventoryOnlyCheckBox");
 		this.withInventoryOnlyCheckBox.setDebugId("withInventoryOnlyCheckBox");
 
 		this.withInventoryOnlyCheckBox.setValue(false);
@@ -134,11 +139,13 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 
 		this.includeParentsCheckBox = new CheckBox();
 		this.includeParentsCheckBox.setDebugId("includeParentsCheckBox");
+		this.includeParentsCheckBox.setDebugId("includeParentsCheckBox");
 
 		this.includeParentsCheckBox.setValue(false);
 		this.includeParentsCheckBox.setCaption(this.messageSource.getMessage(Message.INCLUDE_PARENTS));
 
 		this.includeMGMembersCheckbox = new CheckBox();
+		this.includeMGMembersCheckbox.setDebugId("includeMGMembersCheckbox");
 		this.includeMGMembersCheckbox.setDebugId("includeMGMembersCheckbox");
 
 		this.includeMGMembersCheckbox.setValue(false);
@@ -150,6 +157,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 
 		final List<String> searchTypes = Arrays.asList(new String[] {this.matchesStartingWith, this.exactMatches, this.matchesContaining});
 		this.searchTypeOptions = new OptionGroup(null, searchTypes);
+		this.searchTypeOptions.setDebugId("searchTypeOptions");
 		this.searchTypeOptions.setDebugId("searchTypeOptions");
 		
 		this.searchTypeOptions.setValue(this.matchesStartingWith);
@@ -196,6 +204,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 
 		final CssLayout mainLayout = new CssLayout();
 		mainLayout.setDebugId("mainLayout");
+		mainLayout.setDebugId("mainLayout");
 		mainLayout.addComponent(this.getFirstRow());
 		mainLayout.addComponent(this.getSecondRow());
 
@@ -209,6 +218,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 
 		this.searchBarLayoutLeft = new HorizontalLayout();
 		this.searchBarLayoutLeft.setDebugId("searchBarLayoutLeft");
+		this.searchBarLayoutLeft.setDebugId("searchBarLayoutLeft");
 		
 		this.searchBarLayoutLeft.setSpacing(true);
 		this.searchBarLayoutLeft.addComponent(this.searchField);
@@ -216,6 +226,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		this.searchBarLayoutLeft.addComponent(this.popup);
 
 		this.searchBarLayoutRight = new CssLayout();
+		this.searchBarLayoutRight.setDebugId("searchBarLayoutRight");
 		this.searchBarLayoutLeft.setDebugId("searchBarLayoutRight");
 		
 		this.searchBarLayoutRight.addComponent(this.withInventoryOnlyCheckBox);
@@ -228,6 +239,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		this.includeMGMembersCheckbox.addStyleName(GermplasmSearchBarComponent.LM_COMPONENT_WRAP);
 
 		final CssLayout firstRow = new CssLayout();
+		firstRow.setDebugId("firstRow");
 		firstRow.setDebugId("firstRow");
 		
 		firstRow.addComponent(this.searchBarLayoutLeft);

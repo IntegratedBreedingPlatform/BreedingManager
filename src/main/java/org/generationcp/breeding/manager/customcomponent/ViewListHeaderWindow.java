@@ -56,6 +56,7 @@ public class ViewListHeaderWindow extends BaseSubWindow implements BreedingManag
 		this.setWidth("350px");
 
 		this.listHeaderComponent = new ViewListHeaderComponent(this.germplasmList, userNameMap, listTypes);
+		this.listHeaderComponent.setDebugId("listHeaderComponent");
 	}
 
 	public GermplasmList getGermplasmList() {

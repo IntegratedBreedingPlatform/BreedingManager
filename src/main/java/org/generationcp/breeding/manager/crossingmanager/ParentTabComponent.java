@@ -181,6 +181,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 								gidButton.setDescription(ListDataTableDropHandler.CLICK_TO_VIEW_GERMPLASM_INFORMATION);
 
 								final CheckBox tag = new CheckBox();
+								tag.setDebugId("tag");
 
 								final GermplasmListEntry entryObject =
 										new GermplasmListEntry(listData.getId(), listData.getGid(), listData.getEntryId(),
@@ -443,10 +444,12 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	 */
 	public void initializeMainComponents() {
 		this.listEntriesLabel = new Label(this.messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
+		this.listEntriesLabel.setDebugId("listEntriesLabel");
 		this.listEntriesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		this.listEntriesLabel.setWidth("160px");
 
 		this.editHeaderButton = new Button(this.messageSource.getMessage(Message.EDIT_HEADER));
+		this.editHeaderButton.setDebugId("editHeaderButton");
 		this.editHeaderButton.setImmediate(true);
 		this.editHeaderButton.setStyleName(BaseTheme.BUTTON_LINK);
 		this.editHeaderButton.setVisible(false);
@@ -456,12 +459,15 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		this.totalListEntriesLabel.setWidth("120px");
 
 		this.totalSelectedListEntriesLabel = new Label("", Label.CONTENT_XHTML);
+		this.totalSelectedListEntriesLabel.setDebugId("totalSelectedListEntriesLabel");
 		this.totalSelectedListEntriesLabel.setWidth("95px");
 		this.updateNoOfSelectedEntries(0);
 
 		this.actionButton = new ActionButton();
+		this.actionButton.setDebugId("actionButton");
 
 		this.actionMenu = new ContextMenu();
+		this.actionMenu.setDebugId("actionMenu");
 		this.actionMenu.setWidth("250px");
 		this.actionMenu.addItem(this.messageSource.getMessage(Message.CLEAR_ALL));
 		this.actionMenu.addItem(this.messageSource.getMessage(Message.INVENTORY_VIEW));
@@ -473,8 +479,10 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		this.actionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES));
 
 		this.inventoryViewActionButton = new ActionButton();
+		this.inventoryViewActionButton.setDebugId("inventoryViewActionButton");
 
 		this.inventoryViewActionMenu = new ContextMenu();
+		this.inventoryViewActionMenu.setDebugId("inventoryViewActionMenu");
 		this.inventoryViewActionMenu.setWidth("295px");
 		this.menuCopyToListFromInventory = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
 		this.menuReserveInventory = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
@@ -703,6 +711,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 						if (newItem != null) {
 							final CheckBox tag = new CheckBox();
+							tag.setDebugId("tag");
 							tag.addListener(new ParentsTableCheckboxListener(this.listDataTable, entryObject, this.getSelectAllCheckBox()));
 							tag.setImmediate(true);
 
@@ -730,6 +739,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	protected void openSaveListAsDialog() {
 		this.saveListAsWindow = new SaveListAsDialog(this, this.germplasmList);
+		this.saveListAsWindow.setDebugId("saveListAsWindow");
 		this.saveListAsWindow.addStyleName(Reindeer.WINDOW_LIGHT);
 		this.saveListAsWindow.setData(this);
 		this.getWindow().addWindow(this.saveListAsWindow);
@@ -901,8 +911,10 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		this.addComponent(this.inventoryViewActionMenu);
 
 		final HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, this.listEntriesLabel);
+		headingLayout.setDebugId("headingLayout");
 
 		this.headerLayout = new HorizontalLayout();
+		this.headerLayout.setDebugId("headerLayout");
 		this.headerLayout.setWidth("100%");
 		this.headerLayout.addComponent(headingLayout);
 		this.headerLayout.addComponent(this.editHeaderButton);
@@ -910,6 +922,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		this.headerLayout.setComponentAlignment(this.editHeaderButton, Alignment.BOTTOM_RIGHT);
 
 		final HorizontalLayout leftSubHeaderLayout = new HorizontalLayout();
+		leftSubHeaderLayout.setDebugId("leftSubHeaderLayout");
 		leftSubHeaderLayout.setSpacing(true);
 		leftSubHeaderLayout.addComponent(this.totalListEntriesLabel);
 		leftSubHeaderLayout.addComponent(this.totalSelectedListEntriesLabel);
@@ -917,6 +930,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		leftSubHeaderLayout.setComponentAlignment(this.totalSelectedListEntriesLabel, Alignment.MIDDLE_LEFT);
 
 		this.subHeaderLayout = new HorizontalLayout();
+		this.subHeaderLayout.setDebugId("subHeaderLayout");
 		this.subHeaderLayout.setWidth("100%");
 		this.subHeaderLayout.addComponent(leftSubHeaderLayout);
 		this.subHeaderLayout.addComponent(this.actionButton);
@@ -959,6 +973,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 			// #1
 			final CheckBox tag = new CheckBox();
+			tag.setDebugId("tag");
 			newItem.getItemProperty(ParentTabComponent.TAG_COLUMN_ID).setValue(tag);
 
 			tag.addListener(new ParentsTableCheckboxListener(this.listDataTable, itemId, this.tableWithSelectAllLayout.getCheckBox()));
@@ -968,6 +983,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			final String designationName = entry.getDesignation();
 
 			final Button designationButton = new Button(designationName, new GidLinkClickListener(entry.getGid().toString(), true));
+			designationButton.setDebugId("designationButton");
 			designationButton.setStyleName(BaseTheme.BUTTON_LINK);
 			designationButton.setDescription(ParentTabComponent.CLICK_TO_VIEW_GERMPLASM_INFORMATION);
 
@@ -981,6 +997,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			final InventoryLinkButtonClickListener inventoryClickListener =
 					new InventoryLinkButtonClickListener(this, germplasmListId, entry.getId(), entry.getGid());
 			final Button inventoryButton = new Button(availInv, inventoryClickListener);
+			inventoryButton.setDebugId("inventoryButton");
 			inventoryButton.setData(inventoryClickListener);
 			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 			inventoryButton.setDescription(ParentTabComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
