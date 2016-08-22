@@ -1,7 +1,11 @@
 
 package org.generationcp.breeding.manager.crossingmanager;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
@@ -15,6 +19,7 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -38,6 +43,9 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
+	@Autowired
+	private GermplasmDataManager germplasmDataManager;
+
 	private Panel crossingMethodPanel;
 	private Label crossingMethodLabel;
 
@@ -50,7 +58,7 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 	private final CrossingManagerMakeCrossesComponent makeCrossesMain;
 	private MakeCrossesParentsComponent parentsComponent;
 
-	public CrossingMethodComponent(CrossingManagerMakeCrossesComponent makeCrossesMain) {
+	public CrossingMethodComponent(final CrossingManagerMakeCrossesComponent makeCrossesMain) {
 		super();
 		this.makeCrossesMain = makeCrossesMain;
 	}
@@ -113,7 +121,7 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 	public void layoutComponents() {
 		this.setSpacing(true);
 
-		VerticalLayout layoutCrossOption = new VerticalLayout();
+		final VerticalLayout layoutCrossOption = new VerticalLayout();
 		layoutCrossOption.setWidth("460px");
 		layoutCrossOption.setSpacing(true);
 		layoutCrossOption.setMargin(true);
@@ -128,7 +136,7 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 		this.crossingMethodPanel.addStyleName("section_panel_layout");
 
 		// provides this slot for an icon
-		HeaderLabelLayout crossingMethodLayout = new HeaderLabelLayout(null, this.crossingMethodLabel);
+		final HeaderLabelLayout crossingMethodLayout = new HeaderLabelLayout(null, this.crossingMethodLabel);
 		this.addComponent(crossingMethodLayout);
 		this.addComponent(this.crossingMethodPanel);
 	}
@@ -136,21 +144,22 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 	public void makeCrossButtonAction() {
 		// TODO temporary fix, will have a new fix approach soon
 		if (this.makeCrossesMain.getModeView().equals(ModeView.INVENTORY_VIEW)) {
-			String message = "Please switch to list view first before making crosses.";
+			final String message = "Please switch to list view first before making crosses.";
 			MessageNotifier.showError(this.getWindow(), "Warning!", message);
 		} else {
-			CrossType type = (CrossType) this.crossingMethodComboBox.getValue();
+			final CrossType type = (CrossType) this.crossingMethodComboBox.getValue();
 			if (CrossType.PLEASE_CHOOSE.equals(type)) {
 				MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
 						this.messageSource.getMessage(Message.PLEASE_CHOOSE_CROSSING_METHOD));
 			} else {
 				this.parentsComponent = this.makeCrossesMain.getParentsComponent();
 
-				Table femaleParents = this.parentsComponent.getFemaleTable();
-				Table maleParents = this.parentsComponent.getMaleTable();
+				final Table femaleParents = this.parentsComponent.getFemaleTable();
+				final Table maleParents = this.parentsComponent.getMaleTable();
 
-				List<GermplasmListEntry> femaleList = this.parentsComponent.getCorrectSortedValue(femaleParents);
-				List<GermplasmListEntry> maleList = this.parentsComponent.getCorrectSortedValue(maleParents);
+				final List<GermplasmListEntry> femaleList = this.parentsComponent.getCorrectSortedValue(femaleParents);
+				final List<GermplasmListEntry> maleList = this.parentsComponent.getCorrectSortedValue(maleParents);
+				this.updateParentsDesignationToPreferredName(femaleList, maleList);
 				this.parentsComponent.updateFemaleListNameForCrosses();
 				this.parentsComponent.updateMaleListNameForCrosses();
 
@@ -160,4 +169,46 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 			}
 		}
 	}
+
+	void updateParentsDesignationToPreferredName(final List<GermplasmListEntry> femaleList, final List<GermplasmListEntry> maleList) {
+		final List<Integer> gids = this.getGidsOfParents(femaleList, maleList);
+		final Map<Integer, String> gidToPreferredNameMap = this.germplasmDataManager.getPreferredNamesByGids(gids);
+		this.updateDesignationToPreferredName(femaleList, gidToPreferredNameMap);
+		this.updateDesignationToPreferredName(maleList, gidToPreferredNameMap);
+	}
+
+	private void updateDesignationToPreferredName(final List<GermplasmListEntry> listEntries,
+			final Map<Integer, String> gidToPreferredNameMap) {
+		for (final GermplasmListEntry germplasmListEntry : listEntries) {
+			final Integer gid = germplasmListEntry.getGid();
+			final String preferredName = gidToPreferredNameMap.get(gid);
+			germplasmListEntry.setDesignation(preferredName);
+		}
+	}
+
+	private List<Integer> getGidsOfParents(final List<GermplasmListEntry> femaleList, final List<GermplasmListEntry> maleList) {
+		final Set<Integer> uniqueGids = new HashSet<>();
+		final Set<Integer> femaleGids = this.getGids(femaleList);
+		final Set<Integer> maleGids = this.getGids(maleList);
+		uniqueGids.addAll(femaleGids);
+		uniqueGids.addAll(maleGids);
+
+		final List<Integer> gidList = new ArrayList<>();
+		gidList.addAll(uniqueGids);
+		return gidList;
+	}
+
+	private Set<Integer> getGids(final List<GermplasmListEntry> listEntries) {
+		final Set<Integer> gids = new HashSet<>();
+		for (final GermplasmListEntry germplasmListEntry : listEntries) {
+			final Integer gid = germplasmListEntry.getGid();
+			gids.add(gid);
+		}
+		return gids;
+	}
+
+	public void setGermplasmDataManager(final GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
+	}
+
 }
