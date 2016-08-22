@@ -90,7 +90,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 	@Autowired
 	private UserDataManager userDataManager;
-	
+
 	@Autowired
 	private FieldbookService fieldbookService;
 
@@ -413,7 +413,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	}
 
 	private void saveGermplasmListDataRecords(final List<GermplasmName> germplasmNameObjects, final GermplasmList list,
-			final List<ImportedGermplasm> importedGermplasms, List<Integer> doNotCreateGermplasmsWithId) {
+			final List<ImportedGermplasm> importedGermplasms, final List<Integer> doNotCreateGermplasmsWithId) {
 
 		final List<GermplasmListData> listToSave = new ArrayList<GermplasmListData>();
 		final List<UserDefinedField> existingAttrUdflds = this.getUserDefinedFields(SaveGermplasmListAction.FCODE_TYPE_ATTRIBUTE);
@@ -532,7 +532,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 					newAttr.setLocationId(germplasm.getLocationId());
 					newAttr.setReferenceId(0);
 					newAttr.setAdate(Util.getCurrentDateAsIntegerValue());
-					
+
 					attrs.add(newAttr);
 				}
 			}
@@ -542,15 +542,15 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	}
 
 	public List<Name> prepareAllNamesToAdd(final ImportedGermplasm importedGermplasm, final List<UserDefinedField> existingUdflds,
-			final Germplasm germplasm, List<Name> existingNames) {
+			final Germplasm germplasm, final List<Name> existingNames) {
 		final List<Name> names = new ArrayList<Name>();
 		final Map<String, String> otherNames = importedGermplasm.getNameFactors();
-		
+
 		if (otherNames != null) {
 			for (final Map.Entry<String, String> entry : otherNames.entrySet()) {
 				final String code = entry.getKey();
 				final String value = entry.getValue();
-				
+
 				if (value != null && !"".equals(value.trim())) {
 					// Create New Name Object
 					final Name newName = new Name();
@@ -572,9 +572,11 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	}
 
 	private void addName(final List<Name> names, final Name newName, final List<Name> existingNames) {
-		if(existingNames != null && !existingNames.isEmpty()){
-			for(Name name: existingNames){
-				if(name.getTypeId().intValue() == newName.getTypeId().intValue() && name.getNval().equalsIgnoreCase(newName.getNval())) return;
+		if (existingNames != null && !existingNames.isEmpty()) {
+			for (final Name name : existingNames) {
+				if (name.getTypeId().intValue() == newName.getTypeId().intValue() && name.getNval().equalsIgnoreCase(newName.getNval())) {
+					return;
+				}
 			}
 		}
 		names.add(newName);
@@ -597,11 +599,11 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	}
 
 	public Map<Integer, Lot> getGidLotMap() {
-		return gidLotMap;
+		return this.gidLotMap;
 	}
 
 	public Map<Integer, List<Transaction>> getGidTransactionSetMap() {
-		return gidTransactionSetMap;
+		return this.gidTransactionSetMap;
 	}
 
 }
