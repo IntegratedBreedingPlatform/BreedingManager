@@ -59,7 +59,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	public static final Integer LIST_DATA_STATUS = 0;
 	public static final Integer LIST_DATA_LRECID = 0;
 
-	private static final int FCODE_TYPE_NAME = 0;
+	public static final int FCODE_TYPE_NAME = 0;
 	private static final int FCODE_TYPE_ATTRIBUTE = 1;
 
 	private static final String FTABLE_NAME = "NAMES";
@@ -392,7 +392,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		return this.germplasmListManager.getGermplasmListById(newListId);
 	}
 
-	private List<UserDefinedField> getUserDefinedFields(final int fcodeType) {
+	public List<UserDefinedField> getUserDefinedFields(final int fcodeType) {
 		List<UserDefinedField> udFields = new ArrayList<UserDefinedField>();
 		if (SaveGermplasmListAction.FCODE_TYPE_ATTRIBUTE == fcodeType) {
 			final List<UserDefinedField> list = this.germplasmManager.getUserDefinedFieldByFieldTableNameAndType(
@@ -412,7 +412,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		return udFields;
 	}
 
-	public void saveGermplasmListDataRecords(final List<GermplasmName> germplasmNameObjects, final GermplasmList list,
+	private void saveGermplasmListDataRecords(final List<GermplasmName> germplasmNameObjects, final GermplasmList list,
 			final List<ImportedGermplasm> importedGermplasms, List<Integer> doNotCreateGermplasmsWithId) {
 
 		final List<GermplasmListData> listToSave = new ArrayList<GermplasmListData>();
@@ -541,7 +541,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		return attrs;
 	}
 
-	private List<Name> prepareAllNamesToAdd(final ImportedGermplasm importedGermplasm, final List<UserDefinedField> existingUdflds,
+	public List<Name> prepareAllNamesToAdd(final ImportedGermplasm importedGermplasm, final List<UserDefinedField> existingUdflds,
 			final Germplasm germplasm, List<Name> existingNames) {
 		final List<Name> names = new ArrayList<Name>();
 		final Map<String, String> otherNames = importedGermplasm.getNameFactors();
