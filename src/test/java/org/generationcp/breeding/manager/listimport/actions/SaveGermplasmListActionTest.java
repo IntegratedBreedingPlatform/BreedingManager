@@ -11,12 +11,14 @@ import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.data.initializer.GermplasmTestDataInitializer;
+import org.generationcp.middleware.data.initializer.NameTestDataInitializer;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
+import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
@@ -24,7 +26,9 @@ import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.Transaction;
+import org.generationcp.middleware.service.api.FieldbookService;
 import org.generationcp.middleware.service.api.InventoryService;
+import org.generationcp.middleware.util.Util;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -77,6 +81,9 @@ public class SaveGermplasmListActionTest {
 
 	@Mock
 	private ContextUtil contextUtil;
+	
+	@Mock
+	private FieldbookService fieldbookService;
 
 	@InjectMocks
 	private SaveGermplasmListAction action;
@@ -88,12 +95,14 @@ public class SaveGermplasmListActionTest {
 	private ImportedGermplasmList importedGermplasmList;
 
 	private ImportedGermplasmListDataInitializer importedGermplasmListInitializer;
+	private NameTestDataInitializer nameTDI;
 
 	@Before
 	public void setup() {
 		// initializer
 		this.importedGermplasmListInitializer = new ImportedGermplasmListDataInitializer();
-
+		this.nameTDI = new NameTestDataInitializer();
+		
 		this.germplasmList = GermplasmListTestDataInitializer.createGermplasmList(LIST_ID);
 		this.importedGermplasmList = this.importedGermplasmListInitializer.createImportedGermplasmList(NO_OF_ENTRIES, true);
 		this.germplasmNameObjects = this.importedGermplasmListInitializer.createGermplasmNameObjects(NO_OF_ENTRIES);
@@ -108,7 +117,6 @@ public class SaveGermplasmListActionTest {
 				.getUserDefinedFieldByFieldTableNameAndType(FTABLE_ATTRIBUTE, FTYPE_PASSPORT);
 		Mockito.doReturn(SAVED_GERMPLASM_LIST_ID).when(this.germplasmListManager).addGermplasmList(Mockito.any(GermplasmList.class));
 		Mockito.doReturn(this.germplasmList).when(this.germplasmListManager).getGermplasmListById(SAVED_GERMPLASM_LIST_ID);
-
 		for (int i = 1; i <= NO_OF_ENTRIES; i++) {
 			Mockito.doReturn(GermplasmTestDataInitializer.createGermplasm(i)).when(this.germplasmManager).getGermplasmByGID(i);
 		}
@@ -272,5 +280,34 @@ public class SaveGermplasmListActionTest {
 		Mockito.verify(this.inventoryDataManager, Mockito.times(0)).addTransactions(testGidTransactions);
 
 	}
-
+	
+	@Test
+	public void prepareAllNamesToAddWithNoExistingName() {
+		final ImportedGermplasm importedGermplasm = this.importedGermplasmList.getImportedGermplasms().get(0);
+		final List<UserDefinedField> existingNameUdflds = this.action.getUserDefinedFields(SaveGermplasmListAction.FCODE_TYPE_NAME);
+		final Germplasm germplasm = this.germplasmNameObjects.get(0).getGermplasm();
+		List<Name> names = this.action.prepareAllNamesToAdd(importedGermplasm, existingNameUdflds, germplasm, null);
+		
+		Assert.assertTrue("The names should not be empty", !names.isEmpty());
+		Name resultName = names.get(0);
+		Assert.assertEquals("The gid should be " + germplasm.getGid(), germplasm.getGid(), resultName.getGermplasmId());
+		Assert.assertEquals("The typeid should be 0", 0, resultName.getTypeId().intValue());
+		Assert.assertEquals("The nstat should be 0", 0, resultName.getNstat().intValue());
+		Assert.assertEquals("The user id should be 1", 1, resultName.getUserId().intValue());
+		Assert.assertEquals("The nval should be 'DRVNM 1'", "DRVNM 1", resultName.getNval());
+		Assert.assertEquals("The ndate should be " + Util.getCurrentDateAsIntegerValue(), Util.getCurrentDateAsIntegerValue(), resultName.getNdate());
+		Assert.assertEquals("The reference id should be 0", 0, resultName.getReferenceId().intValue());
+	}
+	
+	@Test
+	public void prepareAllNamesToAddWithExistingName() {
+		final ImportedGermplasm importedGermplasm = this.importedGermplasmList.getImportedGermplasms().get(0);
+		final List<UserDefinedField> existingNameUdflds = this.action.getUserDefinedFields(SaveGermplasmListAction.FCODE_TYPE_NAME);
+		final Germplasm germplasm = this.germplasmNameObjects.get(0).getGermplasm();
+		final List<Name> existingNames = this.nameTDI.createNameList(1);
+		final List<Name> names = this.action.prepareAllNamesToAdd(importedGermplasm, existingNameUdflds, germplasm, existingNames);
+		
+		Assert.assertTrue("The names should be empty", names.isEmpty());	
+	}
+	
 }
