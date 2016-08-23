@@ -52,6 +52,7 @@ import com.vaadin.ui.themes.BaseTheme;
 public class CrossingSettingsMethodComponent extends VerticalLayout implements InternationalizableComponent, InitializingBean,
 BreedingManagerLayout {
 
+	private static final String GENERATIVE_METHOD_TYPE = "GEN";
 	private static final long serialVersionUID = 8287596386088188565L;
 	private static final Logger LOG = LoggerFactory.getLogger(CrossingSettingsMethodComponent.class);
 
@@ -175,7 +176,7 @@ BreedingManagerLayout {
 
 		// Retrieve breeding methods
 		try {
-			this.methods = this.germplasmDataManager.getMethodsByType("GEN", this.programUniqueId);
+			this.methods = this.germplasmDataManager.getMethodsByType(GENERATIVE_METHOD_TYPE, this.programUniqueId);
 		} catch (MiddlewareQueryException e) {
 			CrossingSettingsMethodComponent.LOG.error(e.getMessage());
 		}
@@ -398,7 +399,7 @@ BreedingManagerLayout {
 				String mtype = null;
 
 				if (!this.isSelectAllMethods()) {
-					mtype = "GEN";
+					mtype = GENERATIVE_METHOD_TYPE;
 				}
 
 				BreedingManagerUtil.populateWithFavoriteMethods(this.workbenchDataManager, this.germplasmDataManager, this.breedingMethods,
@@ -420,7 +421,7 @@ BreedingManagerLayout {
 			if (this.isSelectAllMethods()) {
 				this.methods = this.germplasmDataManager.getAllMethodsOrderByMname();
 			} else {
-				this.methods = this.germplasmDataManager.getMethodsByType("GEN", programUUID);
+				this.methods = this.germplasmDataManager.getMethodsByType(GENERATIVE_METHOD_TYPE, programUUID);
 			}
 		} catch (final MiddlewareQueryException e) {
 			CrossingSettingsMethodComponent.LOG.error(e.getMessage());
@@ -428,7 +429,7 @@ BreedingManagerLayout {
 
 		this.breedingMethods.removeAllItems();
 		this.mapMethods = new HashMap<String, Integer>();
-
+		
 		for (final Method m : this.methods) {
 			final Integer methodId = m.getMid();
 			this.breedingMethods.addItem(methodId);
