@@ -101,9 +101,13 @@ BreedingManagerLayout {
 
 	public boolean initPopulateFavMethod(String programUUID) {
 		boolean hasFavorite = false;
-		if (BreedingManagerUtil.hasFavoriteMethods(this.germplasmDataManager, programUUID)) {
+		List<Method> favoriteGenerativeMethods = germplasmDataManager.getFavoriteMethodsByMType(GENERATIVE_METHOD_TYPE, programUUID);
+		if(favoriteGenerativeMethods == null || favoriteGenerativeMethods.isEmpty()){
+			this.favoriteMethodsCheckbox.setValue(false);
+			this.populateBreedingMethods(false, this.programUniqueId);
+		} else {
 			this.favoriteMethodsCheckbox.setValue(true);
-			this.populateBreedingMethods(true, this.programUniqueId);
+			BreedingManagerUtil.populateMethodsComboBox(breedingMethods, mapMethods, GENERATIVE_METHOD_TYPE, favoriteGenerativeMethods);
 			hasFavorite = true;
 		}
 		return hasFavorite;
