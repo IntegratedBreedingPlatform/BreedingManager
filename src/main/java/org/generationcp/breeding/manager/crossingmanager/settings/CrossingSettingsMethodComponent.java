@@ -52,7 +52,7 @@ import com.vaadin.ui.themes.BaseTheme;
 public class CrossingSettingsMethodComponent extends VerticalLayout implements InternationalizableComponent, InitializingBean,
 BreedingManagerLayout {
 
-	private static final String GENERATIVE_METHOD_TYPE = "GEN";
+	public static final String GENERATIVE_METHOD_TYPE = "GEN";
 	private static final long serialVersionUID = 8287596386088188565L;
 	private static final Logger LOG = LoggerFactory.getLogger(CrossingSettingsMethodComponent.class);
 
