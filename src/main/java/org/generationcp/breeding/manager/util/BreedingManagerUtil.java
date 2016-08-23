@@ -365,18 +365,23 @@ public class BreedingManagerUtil {
 			BreedingManagerUtil.LOG.error(e.getMessage(), e);
 		}
 
-		for (Method favoriteMethod : favoriteMethods) {
-			if (mType != null && mType.length() > 0 && favoriteMethod.getMtype() != null && favoriteMethod.getMtype().equals(mType)
+		populateMethodsComboBox(methodComboBox, mapMethods, mType, favoriteMethods);
+
+	}
+	
+	public static void populateMethodsComboBox(ComboBox methodComboBox, Map<String, Integer> mapMethods, String mType,
+				List<Method> methods) {
+		for (Method method : methods) {
+			if (mType != null && mType.length() > 0 && method.getMtype() != null && method.getMtype().equals(mType)
 					|| mType == null || mType.length() == 0) {
-				Integer methodId = favoriteMethod.getMid();
+				Integer methodId = method.getMid();
 				methodComboBox.addItem(methodId);
-				methodComboBox.setItemCaption(methodId, favoriteMethod.getMname());
+				methodComboBox.setItemCaption(methodId, method.getMname());
 				if (mapMethods != null) {
-					mapMethods.put(favoriteMethod.getMname(), methodId);
+					mapMethods.put(method.getMname(), methodId);
 				}
 			}
 		}
-
 	}
 
 	public static String getTypeString(String typeCode, List<UserDefinedField> listTypes) {
