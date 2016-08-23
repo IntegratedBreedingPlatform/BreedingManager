@@ -14,15 +14,17 @@ import org.generationcp.middleware.pojos.workbench.Project;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
 
+@RunWith(value = MockitoJUnitRunner.class)
 public class CrossingSettingsMethodComponentTest {
 
 	private static final String DUMMY_UNIQUE_ID = "1234567890";
@@ -38,8 +40,6 @@ public class CrossingSettingsMethodComponentTest {
 
 	@Before
 	public void setUp() throws MiddlewareQueryException {
-		MockitoAnnotations.initMocks(this);
-
 		Mockito.when(this.service.getCurrentProject()).thenReturn(this.getProject(1L));
 		Mockito.when(this.messageSource.getMessage(Message.BREEDING_METHOD)).thenReturn("Breeding Method");
 		Mockito.when(this.messageSource.getMessage(Message.SHOW_GENERATIVE_METHODS)).thenReturn("Gen Method");
