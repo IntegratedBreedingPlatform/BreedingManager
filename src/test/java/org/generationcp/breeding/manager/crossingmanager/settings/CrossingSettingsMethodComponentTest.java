@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.service.BreedingManagerServiceImpl;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.data.initializer.MethodTestDataInitializer;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.dms.ProgramFavorite;
@@ -38,8 +39,11 @@ public class CrossingSettingsMethodComponentTest {
 	@Mock
 	private GermplasmDataManager gpdm;
 
+	private MethodTestDataInitializer methodTDI;
 	@Before
 	public void setUp() throws MiddlewareQueryException {
+		this.methodTDI = new MethodTestDataInitializer();
+		
 		Mockito.when(this.service.getCurrentProject()).thenReturn(this.getProject(1L));
 		Mockito.when(this.messageSource.getMessage(Message.BREEDING_METHOD)).thenReturn("Breeding Method");
 		Mockito.when(this.messageSource.getMessage(Message.SHOW_GENERATIVE_METHODS)).thenReturn("Gen Method");
