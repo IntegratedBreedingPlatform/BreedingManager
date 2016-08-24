@@ -346,6 +346,7 @@
 					<exclude>**/*.properties</exclude>
 				</excludes>
 			</resource>
+		
 		</resources>
 		<testResources>
 			<testResource>
@@ -428,6 +429,15 @@
 							<git-SHA-1>${buildNumber}</git-SHA-1>
 						</manifestEntries>
 					</archive>
+					<webResources>
+						<resource>
+							<filtering>true</filtering>
+							<directory>src/main/webapp</directory>
+							<includes>
+								<include>**/web.xml</include>
+							</includes>
+						</resource>
+					</webResources>
 				</configuration>
 			</plugin>
 			<!--
