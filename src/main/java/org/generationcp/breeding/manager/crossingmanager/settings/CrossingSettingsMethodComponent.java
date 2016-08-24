@@ -49,8 +49,8 @@ import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
-public class CrossingSettingsMethodComponent extends VerticalLayout implements InternationalizableComponent, InitializingBean,
-BreedingManagerLayout {
+public class CrossingSettingsMethodComponent extends VerticalLayout
+		implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
 
 	public static final String GENERATIVE_METHOD_TYPE = "GEN";
 	private static final long serialVersionUID = 8287596386088188565L;
@@ -99,15 +99,17 @@ BreedingManagerLayout {
 		this.initPopulateFavMethod(this.programUniqueId);
 	}
 
-	public boolean initPopulateFavMethod(String programUUID) {
+	public boolean initPopulateFavMethod(final String programUUID) {
 		boolean hasFavorite = false;
-		List<Method> favoriteGenerativeMethods = germplasmDataManager.getFavoriteMethodsByMType(GENERATIVE_METHOD_TYPE, programUUID);
-		if(favoriteGenerativeMethods == null || favoriteGenerativeMethods.isEmpty()){
+		final List<Method> favoriteGenerativeMethods =
+				this.germplasmDataManager.getFavoriteMethodsByMType(CrossingSettingsMethodComponent.GENERATIVE_METHOD_TYPE, programUUID);
+		if (favoriteGenerativeMethods == null || favoriteGenerativeMethods.isEmpty()) {
 			this.favoriteMethodsCheckbox.setValue(false);
 			this.populateBreedingMethods(false, this.programUniqueId);
 		} else {
 			this.favoriteMethodsCheckbox.setValue(true);
-			BreedingManagerUtil.populateMethodsComboBox(breedingMethods, mapMethods, GENERATIVE_METHOD_TYPE, favoriteGenerativeMethods);
+			BreedingManagerUtil.populateMethodsComboBox(this.breedingMethods, this.mapMethods,
+					CrossingSettingsMethodComponent.GENERATIVE_METHOD_TYPE, favoriteGenerativeMethods);
 			hasFavorite = true;
 		}
 		return hasFavorite;
@@ -127,17 +129,16 @@ BreedingManagerLayout {
 	public void instantiateComponents() {
 
 		this.breedingMethodLabel = new Label(this.messageSource.getMessage(Message.BREEDING_METHOD));
-        this.breedingMethodLabel.setWidth("200px");
-        this.breedingMethodLabel.setStyleName(Bootstrap.Typography.H4.styleName());
-        this.breedingMethodLabel.addStyleName(AppConstants.CssStyles.BOLD);
-
+		this.breedingMethodLabel.setWidth("200px");
+		this.breedingMethodLabel.setStyleName(Bootstrap.Typography.H4.styleName());
+		this.breedingMethodLabel.addStyleName(AppConstants.CssStyles.BOLD);
 
 		this.breedingMethodDescLabel = new Label(this.messageSource.getMessage(Message.BREEDING_METHOD_DESC));
 		this.breedingMethodDescLabel.addStyleName("gcp-content-help-text");
 
 		this.selectMethod = new CheckBox(this.messageSource.getMessage(Message.SELECT_A_METHOD_TO_USE_FOR_ALL_CROSSES) + ":");
 		this.selectMethod.setImmediate(true);
-        this.selectMethod.addStyleName(AppConstants.CssStyles.BOLD);
+		this.selectMethod.addStyleName(AppConstants.CssStyles.BOLD);
 
 		this.breedingMethods = new ComboBox();
 		this.breedingMethods.setImmediate(true);
@@ -152,7 +153,7 @@ BreedingManagerLayout {
 
 		this.favoriteMethodsCheckbox = new CheckBox(this.messageSource.getMessage(Message.SHOW_ONLY_FAVORITE_METHODS));
 		this.favoriteMethodsCheckbox.setImmediate(true);
-		
+
 		this.breedingMethodsRadioBtn = new OptionGroup();
 		this.breedingMethodsRadioBtn.setMultiSelect(false);
 		this.breedingMethodsRadioBtn.setImmediate(true);
@@ -167,7 +168,7 @@ BreedingManagerLayout {
 
 		try {
 			this.programUniqueId = this.breedingManagerService.getCurrentProject().getUniqueID();
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			CrossingSettingsMethodComponent.LOG.error(e.getMessage(), e);
 		}
 	}
@@ -180,8 +181,9 @@ BreedingManagerLayout {
 
 		// Retrieve breeding methods
 		try {
-			this.methods = this.germplasmDataManager.getMethodsByType(GENERATIVE_METHOD_TYPE, this.programUniqueId);
-		} catch (MiddlewareQueryException e) {
+			this.methods = this.germplasmDataManager.getMethodsByType(CrossingSettingsMethodComponent.GENERATIVE_METHOD_TYPE,
+					this.programUniqueId);
+		} catch (final MiddlewareQueryException e) {
 			CrossingSettingsMethodComponent.LOG.error(e.getMessage());
 		}
 	}
@@ -194,7 +196,7 @@ BreedingManagerLayout {
 			private static final long serialVersionUID = -1282191407425721085L;
 
 			@Override
-			public void valueChange(ValueChangeEvent event) {
+			public void valueChange(final ValueChangeEvent event) {
 
 				final Boolean selectMethod = (Boolean) event.getProperty().getValue();
 
@@ -217,8 +219,8 @@ BreedingManagerLayout {
 			private static final long serialVersionUID = 6294894800193942274L;
 
 			@Override
-			public void valueChange(ValueChangeEvent event) {
-				int size = CrossingSettingsMethodComponent.this.breedingMethods.size();
+			public void valueChange(final ValueChangeEvent event) {
+				final int size = CrossingSettingsMethodComponent.this.breedingMethods.size();
 				if (size > 0) {
 					CrossingSettingsMethodComponent.this.showMethodDescription((Integer) event.getProperty().getValue());
 				}
@@ -249,10 +251,10 @@ BreedingManagerLayout {
 			private static final long serialVersionUID = 1525347479193533974L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				try {
-					Project project = CrossingSettingsMethodComponent.this.contextUtil.getProjectInContext();
-					Window manageFavoriteMethodsWindow =
+					final Project project = CrossingSettingsMethodComponent.this.contextUtil.getProjectInContext();
+					final Window manageFavoriteMethodsWindow =
 							Util.launchMethodManager(CrossingSettingsMethodComponent.this.workbenchDataManager, project.getProjectId(),
 									CrossingSettingsMethodComponent.this.getWindow(),
 									CrossingSettingsMethodComponent.this.messageSource.getMessage(Message.MANAGE_METHODS));
@@ -261,15 +263,15 @@ BreedingManagerLayout {
 						private static final long serialVersionUID = 1L;
 
 						@Override
-						public void windowClose(CloseEvent e) {
-							Object lastValue = CrossingSettingsMethodComponent.this.breedingMethods.getValue();
+						public void windowClose(final CloseEvent e) {
+							final Object lastValue = CrossingSettingsMethodComponent.this.breedingMethods.getValue();
 							CrossingSettingsMethodComponent.this.populateBreedingMethods(
-									((Boolean) CrossingSettingsMethodComponent.this.favoriteMethodsCheckbox.getValue()),
+									(Boolean) CrossingSettingsMethodComponent.this.favoriteMethodsCheckbox.getValue(),
 									CrossingSettingsMethodComponent.this.programUniqueId);
 							CrossingSettingsMethodComponent.this.breedingMethods.setValue(lastValue);
 						}
 					});
-				} catch (MiddlewareQueryException e) {
+				} catch (final MiddlewareQueryException e) {
 					CrossingSettingsMethodComponent.LOG.error(e.getMessage(), e);
 				}
 			}
@@ -279,7 +281,7 @@ BreedingManagerLayout {
 	@Override
 	public void layoutComponents() {
 
-        this.setSpacing(true);
+		this.setSpacing(true);
 
 		this.breedingMethods.addStyleName("cs-form-input");
 		this.methodPopupView.addStyleName("cs-inline-icon");
@@ -312,7 +314,7 @@ BreedingManagerLayout {
 		this.addComponent(breedingMethodPanel);
 	}
 
-	public void setFields(BreedingMethodSetting breedingMethodSetting) {
+	public void setFields(final BreedingMethodSetting breedingMethodSetting) {
 		if (breedingMethodSetting.isBasedOnStatusOfParentalLines()) {
 			this.selectMethod.setValue(false);
 		} else {
@@ -331,8 +333,8 @@ BreedingManagerLayout {
 		}
 	}
 
-	private boolean isMethodGen(Integer methodId) {
-		for (Method method : this.methods) {
+	private boolean isMethodGen(final Integer methodId) {
+		for (final Method method : this.methods) {
 			if (method.getMid().equals(methodId)) {
 				return true;
 			}
@@ -403,15 +405,15 @@ BreedingManagerLayout {
 				String mtype = null;
 
 				if (!this.isSelectAllMethods()) {
-					mtype = GENERATIVE_METHOD_TYPE;
+					mtype = CrossingSettingsMethodComponent.GENERATIVE_METHOD_TYPE;
 				}
 
 				BreedingManagerUtil.populateWithFavoriteMethods(this.workbenchDataManager, this.germplasmDataManager, this.breedingMethods,
 						this.mapMethods, mtype, programUUID);
 			} catch (final MiddlewareQueryException e) {
-				LOG.error(e.getMessage(), e);
-				MessageNotifier
-						.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR), "Error getting favorite methods!");
+				CrossingSettingsMethodComponent.LOG.error(e.getMessage(), e);
+				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
+						"Error getting favorite methods!");
 			}
 
 		} else {
@@ -425,7 +427,8 @@ BreedingManagerLayout {
 			if (this.isSelectAllMethods()) {
 				this.methods = this.germplasmDataManager.getAllMethodsOrderByMname();
 			} else {
-				this.methods = this.germplasmDataManager.getMethodsByType(GENERATIVE_METHOD_TYPE, programUUID);
+				this.methods =
+						this.germplasmDataManager.getMethodsByType(CrossingSettingsMethodComponent.GENERATIVE_METHOD_TYPE, programUUID);
 			}
 		} catch (final MiddlewareQueryException e) {
 			CrossingSettingsMethodComponent.LOG.error(e.getMessage());
@@ -433,7 +436,7 @@ BreedingManagerLayout {
 
 		this.breedingMethods.removeAllItems();
 		this.mapMethods = new HashMap<String, Integer>();
-		
+
 		for (final Method m : this.methods) {
 			final Integer methodId = m.getMid();
 			this.breedingMethods.addItem(methodId);
@@ -444,7 +447,8 @@ BreedingManagerLayout {
 
 	public boolean validateInputFields() {
 		if ((Boolean) this.selectMethod.getValue() && this.breedingMethods.getValue() == null) {
-			MessageNotifier.showRequiredFieldError(this.getWindow(), this.getMessageSource().getMessage(Message.PLEASE_CHOOSE_CROSSING_METHOD));
+			MessageNotifier.showRequiredFieldError(this.getWindow(),
+					this.getMessageSource().getMessage(Message.PLEASE_CHOOSE_CROSSING_METHOD));
 			return false;
 		}
 		return true;
@@ -470,15 +474,15 @@ BreedingManagerLayout {
 		this.breedingManagerService = breedingManagerService;
 	}
 
-    public void registerBreedingMethodChangeListener(Property.ValueChangeListener changeListener) {
-        this.breedingMethods.addListener(changeListener);
-    }
-    
-    public void setSelectMethod(CheckBox selectMethodForAllCheckbox){
-    	this.selectMethod = selectMethodForAllCheckbox;
-    }
-    
-    public void setBreedingMethods(ComboBox breedingMethodSelection){
-    	this.breedingMethods = breedingMethodSelection;
-    }
+	public void registerBreedingMethodChangeListener(final Property.ValueChangeListener changeListener) {
+		this.breedingMethods.addListener(changeListener);
+	}
+
+	public void setSelectMethod(final CheckBox selectMethodForAllCheckbox) {
+		this.selectMethod = selectMethodForAllCheckbox;
+	}
+
+	public void setBreedingMethods(final ComboBox breedingMethodSelection) {
+		this.breedingMethods = breedingMethodSelection;
+	}
 }

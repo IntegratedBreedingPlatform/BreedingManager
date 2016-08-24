@@ -40,10 +40,11 @@ public class CrossingSettingsMethodComponentTest {
 	private GermplasmDataManager gpdm;
 
 	private MethodTestDataInitializer methodTDI;
+
 	@Before
 	public void setUp() throws MiddlewareQueryException {
 		this.methodTDI = new MethodTestDataInitializer();
-		
+
 		Mockito.when(this.service.getCurrentProject()).thenReturn(this.getProject(1L));
 		Mockito.when(this.messageSource.getMessage(Message.BREEDING_METHOD)).thenReturn("Breeding Method");
 		Mockito.when(this.messageSource.getMessage(Message.SHOW_GENERATIVE_METHODS)).thenReturn("Gen Method");
@@ -83,8 +84,8 @@ public class CrossingSettingsMethodComponentTest {
 		final ArrayList<ProgramFavorite> favouriteMethods = new ArrayList<ProgramFavorite>();
 		favouriteMethods.add(Mockito.mock(ProgramFavorite.class));
 
-		Mockito.when(this.gpdm.getFavoriteMethodsByMType(CrossingSettingsMethodComponent.GENERATIVE_METHOD_TYPE, CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID))
-				.thenReturn(this.methodTDI.createMethodList());
+		Mockito.when(this.gpdm.getFavoriteMethodsByMType(CrossingSettingsMethodComponent.GENERATIVE_METHOD_TYPE,
+				CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID)).thenReturn(this.methodTDI.createMethodList());
 		this.csmc.instantiateComponents();
 
 		Assert.assertTrue("Expecting a true return value when there are favourite method.",
