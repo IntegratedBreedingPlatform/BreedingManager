@@ -2,7 +2,9 @@
 package org.generationcp.breeding.manager.listimport.actions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
@@ -318,5 +320,28 @@ public class SaveGermplasmListActionTest {
 
 		Assert.assertTrue("The names should be empty", names.isEmpty());
 	}
+		
+	@Test
+	public void testSaveGermplasmListDataRecords() {
+		final List<ImportedGermplasm> importedGermplasms = this.importedGermplasmList.getImportedGermplasms();
+		this.action.saveGermplasmListDataRecords(germplasmNameObjects, germplasmList, importedGermplasms, doNotCreateGermplasmsWithId);
+		Mockito.verify(this.germplasmManager, Mockito.times(1)).addGermplasmName(Matchers.anyList());
+	}
+	
+	@Test
+	public void testSaveGermplasmListDataRecordsWithNoNewNames() {
+		final List<ImportedGermplasm> importedGermplasms = this.importedGermplasmList.getImportedGermplasms();
+		Mockito.doReturn(this.createNamesMap(importedGermplasms.size())).when(this.germplasmManager).getNamesByGidsAndNTypeIdsInMap(Matchers.anyList(), Matchers.anyList());
+		this.action.saveGermplasmListDataRecords(germplasmNameObjects, germplasmList, importedGermplasms, doNotCreateGermplasmsWithId);
+		Mockito.verify(this.germplasmManager, Mockito.times(0)).addGermplasmName(Matchers.anyList());
+	}
 
+	private Map<Integer, List<Name>> createNamesMap(int size) {
+		final Map<Integer, List<Name>> namesMap = new HashMap<Integer, List<Name>>();
+		final List<Name> existingNames = this.nameTDI.createNameList(size);
+		for(int i = 0; i<size; i++){
+			namesMap.put(i+1, existingNames);
+		}
+		return namesMap;
+	}
 }
