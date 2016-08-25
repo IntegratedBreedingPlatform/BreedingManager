@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -410,8 +411,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		final List<UserDefinedField> existingNameUdflds = this.getUserDefinedFields(SaveGermplasmListAction.FCODE_TYPE_NAME);
 		final List<Attribute> attrs = new ArrayList<Attribute>();
 		final List<Name> names = new ArrayList<Name>();
-		final Map<Integer, List<Name>> namesMap = this.fieldbookService.getNamesByGids(doNotCreateGermplasmsWithId);
-
+		final Map<Integer, List<Name>> namesMap = this.getNamesMap(importedGermplasms, doNotCreateGermplasmsWithId, existingNameUdflds);
+		
 		int ctr = 1;
 		for (final GermplasmName germplasmName : germplasmNameObjects) {
 			final Integer gid = germplasmName.getGermplasm().getGid();
@@ -463,6 +464,21 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 			// Add All Names to database
 			this.germplasmManager.addGermplasmName(names);
 		}
+	}
+
+	private Map<Integer, List<Name>> getNamesMap(List<ImportedGermplasm> importedGermplasms, List<Integer> doNotCreateGermplasmsWithId, List<UserDefinedField> existingUdflds) {
+		Map<Integer, List<Name>> namesMap = new HashMap<Integer, List<Name>>();
+		if(!importedGermplasms.isEmpty() && !doNotCreateGermplasmsWithId.isEmpty()){
+			Map<String, String> nameFactors = importedGermplasms.get(0).getNameFactors();
+			List<Integer> nameTypeIds = new ArrayList<Integer>();
+			for(Entry<String, String> factor: nameFactors.entrySet()){
+				nameTypeIds.add(this.getUdfldID(existingUdflds, factor.getKey()));
+			}
+			if(!nameTypeIds.isEmpty()){
+				return this.germplasmManager.getNamesByGidsAndNTypeIdsInMap(doNotCreateGermplasmsWithId, nameTypeIds);
+			}
+		}
+		return namesMap;
 	}
 
 	protected void createDepositInventoryTransaction(final GermplasmList list, final ImportedGermplasm importedGermplasm, final Integer gid,
