@@ -146,7 +146,11 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		}
 
 		this.saveGermplasmListDataRecords(germplasmNameObjects, list, importedGermplasms, doNotCreateGermplasmsWithId);
-		this.addNewNamesToExistingGermplasm(newNames);
+		
+		if(!newNames.isEmpty()){
+			//save the names under the designation column.
+			this.germplasmManager.addGermplasmName(newNames);
+		}
 
 		if (importedGermplasmList.isSetImportedNameAsPreferredName()) {
 			this.updateExportedGermplasmPreferredName(importedGermplasmList.getPreferredNameCode(),
@@ -359,12 +363,6 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 			}
 		}
 		return 0;
-	}
-
-	protected void addNewNamesToExistingGermplasm(final List<Name> newNames) {
-		for (final Name name : newNames) {
-			this.germplasmManager.addGermplasmName(name);
-		}
 	}
 
 	private Germplasm getAlreadyAddedGermplasm(final GermplasmName germplasmName, final Map<Integer, GermplasmName> addedGermplasmNameMap) {
