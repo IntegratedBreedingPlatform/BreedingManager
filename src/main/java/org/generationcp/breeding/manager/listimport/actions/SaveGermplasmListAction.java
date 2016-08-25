@@ -39,8 +39,6 @@ import org.generationcp.middleware.pojos.ims.EntityType;
 import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.Transaction;
 import org.generationcp.middleware.pojos.ims.TransactionStatus;
-import org.generationcp.middleware.service.api.FieldbookService;
-import org.generationcp.middleware.service.api.InventoryService;
 import org.generationcp.middleware.util.Util;
 import org.jfree.util.Log;
 import org.springframework.beans.factory.InitializingBean;
@@ -80,9 +78,6 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	private InventoryDataManager inventoryDataManager;
 
 	@Autowired
-	private InventoryService inventoryService;
-
-	@Autowired
 	private PlatformTransactionManager transactionManager;
 
 	@Autowired
@@ -90,9 +85,6 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 	@Autowired
 	private UserDataManager userDataManager;
-
-	@Autowired
-	private FieldbookService fieldbookService;
 
 	@Resource
 	private ContextUtil contextUtil;
