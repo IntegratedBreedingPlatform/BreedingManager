@@ -366,4 +366,51 @@ public class ListSelectorComponentTest {
         Mockito.verify(source).select(saveHierarchy.get(2));
 	}
 
+	@Test
+	public void testTreeInitializationTreeStateListIsNotEmpty() {
+
+		final List<String> treeState = Arrays.asList(ListSelectorComponent.LISTS, "1", "2");
+
+		Mockito.when(
+				userTreeStateService.getUserProgramTreeStateByUserIdProgramUuidAndType(TEST_USER_ID, PROGRAM_UUID,
+						ListTreeState.GERMPLASM_LIST.name())).thenReturn(treeState);
+		Mockito.when(this.contextUtil.getCurrentUserLocalId()).thenReturn(TEST_USER_ID);
+
+		final GermplasmListSource source = Mockito.mock(GermplasmListSource.class);
+		listSelectorComponent.setGermplasmListSource(source);
+
+		listSelectorComponent.reinitializeTree(false);
+
+		Mockito.verify(userTreeStateService).getUserProgramTreeStateByUserIdProgramUuidAndType(TEST_USER_ID, PROGRAM_UUID,
+				ListTreeState.GERMPLASM_LIST.name());
+
+		// If the tree state is not empty and has state values are not blank, make sure that the LISTS item is not collapsed.
+		Mockito.verify(source, Mockito.times(0)).collapseItem(ListSelectorComponent.LISTS);
+
+	}
+
+	@Test
+	public void testTreeInitializationTreeStateListHasOnlyOneItemAndIsBlank() {
+
+		final List<String> treeState = Arrays.asList("");
+		Mockito.when(
+				userTreeStateService.getUserProgramTreeStateByUserIdProgramUuidAndType(TEST_USER_ID, PROGRAM_UUID,
+						ListTreeState.GERMPLASM_LIST.name())).thenReturn(treeState);
+		Mockito.when(this.contextUtil.getCurrentUserLocalId()).thenReturn(TEST_USER_ID);
+
+		final GermplasmListSource source = Mockito.mock(GermplasmListSource.class);
+		listSelectorComponent.setGermplasmListSource(source);
+
+		listSelectorComponent.reinitializeTree(false);
+
+		Mockito.verify(userTreeStateService).getUserProgramTreeStateByUserIdProgramUuidAndType(TEST_USER_ID, PROGRAM_UUID,
+				ListTreeState.GERMPLASM_LIST.name());
+
+		// If the tree state is not empty with a blank state, make sure that the LISTS item is collapse.
+		Mockito.verify(source).collapseItem(ListSelectorComponent.LISTS);
+
+	}
+
+
+
 }

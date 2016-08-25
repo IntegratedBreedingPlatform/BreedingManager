@@ -343,7 +343,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 								ListTreeState.GERMPLASM_LIST.name());
 			}
 
-			if (parsedState.isEmpty()) {
+			if (!parsedState.isEmpty() && parsedState.size() == 1 && StringUtils.isBlank(parsedState.get(0))) {
 				this.getGermplasmListSource().collapseItem(ListSelectorComponent.LISTS);
 				return;
 			}
