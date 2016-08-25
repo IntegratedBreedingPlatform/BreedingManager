@@ -403,7 +403,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		return udFields;
 	}
 
-	private void saveGermplasmListDataRecords(final List<GermplasmName> germplasmNameObjects, final GermplasmList list,
+	public void saveGermplasmListDataRecords(final List<GermplasmName> germplasmNameObjects, final GermplasmList list,
 			final List<ImportedGermplasm> importedGermplasms, final List<Integer> doNotCreateGermplasmsWithId) {
 
 		final List<GermplasmListData> listToSave = new ArrayList<GermplasmListData>();
