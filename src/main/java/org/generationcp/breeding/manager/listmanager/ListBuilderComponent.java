@@ -399,32 +399,39 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.lockButton.setVisible(false);
 
 		this.buildNewListTitle = new Label(this.messageSource.getMessage(Message.BUILD_A_NEW_LIST));
+		this.buildNewListTitle.setDebugId("buildNewListTitle");
 		this.buildNewListTitle.setWidth("200px");
 		this.buildNewListTitle.setStyleName(Bootstrap.Typography.H4.styleName());
 		this.buildNewListTitle.addStyleName(AppConstants.CssStyles.BOLD);
 
 		this.buildNewListDesc = new Label();
+		this.buildNewListDesc.setDebugId("buildNewListDesc");
 		this.buildNewListDesc.setValue("Build or revise your list by dragging in entries from the left.");
 		this.buildNewListDesc.addStyleName("lm-word-wrap");
 		this.buildNewListDesc.setWidth("100%");
 		this.buildNewListDesc.setHeight("55px");
 
 		this.topLabel = new Label(this.messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
+		this.topLabel.setDebugId("topLabel");
 		this.topLabel.setWidth("130px");
 		this.topLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 
 		this.totalListEntriesLabel = new Label("", Label.CONTENT_XHTML);
+		this.totalListEntriesLabel.setDebugId("totalListEntriesLabel");
 		this.totalListEntriesLabel.setWidth("110px");
 		this.updateNoOfEntries(0);
 
 		this.totalSelectedListEntriesLabel = new Label("", Label.CONTENT_XHTML);
+		this.totalSelectedListEntriesLabel.setDebugId("totalSelectedListEntriesLabel");
 		this.updateNoOfSelectedEntries(0);
 
 		this.editHeaderButton = new Button(this.messageSource.getMessage(Message.EDIT_HEADER));
+		this.editHeaderButton.setDebugId("editHeaderButton");
 		this.editHeaderButton.setImmediate(true);
 		this.editHeaderButton.setStyleName(BaseTheme.BUTTON_LINK);
 
 		this.viewHeaderButton = new Button(this.messageSource.getMessage(Message.VIEW_HEADER));
+		this.viewHeaderButton.setDebugId("viewHeaderButton");
 		this.viewHeaderButton.addStyleName(BaseTheme.BUTTON_LINK);
 		this.viewHeaderButton.setVisible(false);
 		
@@ -436,13 +443,17 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		}
 
 		this.breedingManagerListDetailsComponent = new BreedingManagerListDetailsComponent();
+		this.breedingManagerListDetailsComponent.setDebugId("breedingManagerListDetailsComponent");
 
 		this.tableWithSelectAllLayout = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
+		this.tableWithSelectAllLayout.setDebugId("tableWithSelectAllLayout");
 
 		if (this.currentlySavedGermplasmList != null) {
 			this.listInventoryTable = new ListManagerInventoryTable(this.source, this.currentlySavedGermplasmList.getId(), false, true);
+			this.listInventoryTable.setDebugId("listInventoryTable");
 		} else {
 			this.listInventoryTable = new ListManagerInventoryTable(this.source, null, false, true);
+			this.listInventoryTable.setDebugId("listInventoryTable");
 		}
 		this.listInventoryTable.setVisible(false);
 
@@ -453,6 +464,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.listDataTable.setHeight("480px");
 
 		this.menu = new ContextMenu();
+		this.menu.setDebugId("menu");
 		this.menu.setWidth("300px");
 
 		this.addColumnContextMenu =
@@ -467,6 +479,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.menu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
 
 		this.inventoryViewMenu = new ContextMenu();
+		this.inventoryViewMenu.setDebugId("inventoryViewMenu");
 		this.inventoryViewMenu.setWidth("300px");
 		this.menuCancelReservation = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.CANCEL_RESERVATIONS));
 		this.menuCopyToListFromInventory = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
@@ -483,9 +496,11 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.resetInventoryMenuOptions();
 
 		this.toolsButton = new ActionButton();
+		this.toolsButton.setDebugId("toolsButton");
 		this.toolsButton.setData(ListBuilderComponent.TOOLS_BUTTON_ID);
 
 		this.inventoryViewToolsButton = new ActionButton();
+		this.inventoryViewToolsButton.setDebugId("inventoryViewToolsButton");
 		this.inventoryViewToolsButton.setData(ListBuilderComponent.TOOLS_BUTTON_ID);
 
 		this.dropHandler = new BuildNewListDropHandler(this.source, this.germplasmDataManager, this.germplasmListManager,
@@ -493,11 +508,13 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 				this.transactionManager);
 
 		this.saveButton = new Button();
+		this.saveButton.setDebugId("saveButton");
 		this.saveButton.setCaption(this.messageSource.getMessage(Message.SAVE_LABEL));
 		this.saveButton.setWidth("80px");
 		this.saveButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 
 		this.resetButton = new Button();
+		this.resetButton.setDebugId("resetButton");
 		this.resetButton.setCaption(this.messageSource.getMessage(Message.RESET));
 		this.resetButton.setWidth("80px");
 		this.resetButton.addStyleName(Bootstrap.Buttons.DEFAULT.styleName());
@@ -716,8 +733,11 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.setSpacing(false);
 
 		final HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_BUILD_NEW_LIST, this.buildNewListTitle);
+		headingLayout.setDebugId("headingLayout");
+		headingLayout.setDebugId("headingLayout");
 
 		final VerticalLayout listBuilderHeadingContainer = new VerticalLayout();
+		listBuilderHeadingContainer.setDebugId("listBuilderHeadingContainer");
 
 		listBuilderHeadingContainer.addComponent(headingLayout);
 		listBuilderHeadingContainer.addComponent(this.buildNewListDesc);
@@ -725,11 +745,13 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.addComponent(listBuilderHeadingContainer);
 
 		final Panel listBuilderPanel = new Panel();
+		listBuilderPanel.setDebugId("listBuilderPanel");
 		listBuilderPanel.setStyleName(Reindeer.PANEL_LIGHT + " " + AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
 		listBuilderPanel.setCaption(null);
 		listBuilderPanel.setWidth("100%");
 
 		final VerticalLayout listDataTableLayout = new VerticalLayout();
+		listDataTableLayout.setDebugId("listDataTableLayout");
 		listDataTableLayout.setMargin(true);
 		listDataTableLayout.setSpacing(true);
 		listDataTableLayout.addStyleName("listDataTableLayout");
@@ -737,10 +759,13 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		listBuilderPanel.setContent(listDataTableLayout);
 
 		final HorizontalLayout listBuilderPanelTitleContainer = new HorizontalLayout();
+		listBuilderPanelTitleContainer.setDebugId("listBuilderPanelTitleContainer");
 		listBuilderPanelTitleContainer.setWidth("100%");
 		listBuilderPanelTitleContainer.setSpacing(true);
 
 		final HeaderLabelLayout listEntriesTitle = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, this.topLabel);
+		listEntriesTitle.setDebugId("listEntriesTitle");
+		listEntriesTitle.setDebugId("listEntriesTitle");
 		listBuilderPanelTitleContainer.addComponent(listEntriesTitle);
 
 		listBuilderPanelTitleContainer.addComponent(this.viewHeaderButton);
@@ -756,6 +781,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		listBuilderPanelTitleContainer.setComponentAlignment(this.unlockButton, Alignment.BOTTOM_RIGHT);
 
 		final HorizontalLayout leftSubHeaderLayout = new HorizontalLayout();
+		leftSubHeaderLayout.setDebugId("leftSubHeaderLayout");
 		leftSubHeaderLayout.setSpacing(true);
 		leftSubHeaderLayout.addComponent(this.totalListEntriesLabel);
 		leftSubHeaderLayout.addComponent(this.totalSelectedListEntriesLabel);
@@ -763,11 +789,13 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		leftSubHeaderLayout.setComponentAlignment(this.totalSelectedListEntriesLabel, Alignment.MIDDLE_LEFT);
 
 		this.toolsButtonContainer = new AbsoluteLayout();
+		this.toolsButtonContainer.setDebugId("toolsButtonContainer");
 		this.toolsButtonContainer.setHeight("27px");
 		this.toolsButtonContainer.setWidth("90px");
 		this.toolsButtonContainer.addComponent(this.toolsButton, "top:0; right:0");
 
 		final HorizontalLayout subHeaderLayout = new HorizontalLayout();
+		subHeaderLayout.setDebugId("subHeaderLayout");
 		subHeaderLayout.setWidth("100%");
 		subHeaderLayout.addComponent(leftSubHeaderLayout);
 		subHeaderLayout.addComponent(this.toolsButtonContainer);
@@ -782,6 +810,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.addComponent(listBuilderPanel);
 
 		final HorizontalLayout buttons = new HorizontalLayout();
+		buttons.setDebugId("buttons");
 		buttons.setMargin(new MarginInfo(false, false, true, false));
 		buttons.setWidth("170px");
 		buttons.addComponent(this.saveButton);
@@ -1198,6 +1227,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 						this.messageSource.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
 			} else {
 				this.listManagerCopyToListDialog = new BaseSubWindow(this.messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
+				this.listManagerCopyToListDialog.setDebugId("listManagerCopyToListDialog");
 				this.listManagerCopyToListDialog.setModal(true);
 				this.listManagerCopyToListDialog.setWidth("617px");
 				this.listManagerCopyToListDialog.setHeight("230px");
@@ -1283,6 +1313,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	public void openSaveListAsDialog() {
 		this.dialog = new SaveListAsDialog(this, this.currentlySavedGermplasmList, this.messageSource.getMessage(Message.EDIT_LIST_HEADER));
+		this.dialog.setDebugId("dialog");
 		this.getWindow().addWindow(this.dialog);
 	}
 

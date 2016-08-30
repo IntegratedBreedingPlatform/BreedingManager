@@ -99,10 +99,12 @@ public class MakeCrossesParentsComponent extends VerticalLayout
 	@Override
 	public void instantiateComponents() {
 		this.parentListsLabel = new Label(this.messageSource.getMessage(Message.PARENTS_LISTS));
+		this.parentListsLabel.setDebugId("parentListsLabel");
 		this.parentListsLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		this.parentListsLabel.addStyleName(AppConstants.CssStyles.BOLD);
 
 		this.instructionForParentLists = new Label(this.messageSource.getMessage(Message.INSTRUCTION_FOR_PARENT_LISTS));
+		this.instructionForParentLists.setDebugId("instructionForParentLists");
 
 		this.femaleParentTab = new ParentTabComponent(this.makeCrossesMain, this,
 				this.messageSource.getMessage(Message.LABEL_FEMALE_PARENTS), MakeCrossesParentsComponent.PARENTS_TABLE_ROW_COUNT,
@@ -130,12 +132,14 @@ public class MakeCrossesParentsComponent extends VerticalLayout
 		this.setWidth("450px");
 
 		this.parentTabSheet = new TabSheet();
+		this.parentTabSheet.setDebugId("parentTabSheet");
 		this.parentTabSheet.addTab(this.femaleParentTab, this.messageSource.getMessage(Message.LABEL_FEMALE_PARENTS));
 		this.parentTabSheet.addTab(this.maleParentTab, this.messageSource.getMessage(Message.LABEL_MALE_PARENTS));
 		this.parentTabSheet.setWidth("420px");
 		this.parentTabSheet.setHeight("465px");
 
 		final HeaderLabelLayout parentLabelLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, this.parentListsLabel);
+		parentLabelLayout.setDebugId("parentLabelLayout");
 		this.addComponent(parentLabelLayout);
 		this.addComponent(this.instructionForParentLists);
 		this.addComponent(this.parentTabSheet);
@@ -179,6 +183,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout
 
 				if (item != null) {
 					final Button newGidButton = new Button(designation, new GidLinkClickListener(gid.toString(), true));
+					newGidButton.setDebugId("newGidButton");
 					newGidButton.setStyleName(BaseTheme.BUTTON_LINK);
 					newGidButton.setDescription(MakeCrossesParentsComponent.CLICK_TO_VIEW_GERMPLASM_INFORMATION);
 
@@ -196,6 +201,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout
 					}
 
 					final CheckBox tag = new CheckBox();
+					tag.setDebugId("tag");
 					if (targetTable.equals(this.femaleParentTab.getListDataTable())) {
 						tag.addListener(
 								new ParentsTableCheckboxListener(targetTable, entryObject, this.femaleParentTab.getSelectAllCheckBox()));
@@ -209,6 +215,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout
 					final Button sourceAvailInvButton =
 							(Button) sourceTable.getItem(itemId).getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue();
 					final Button newAvailInvButton = new Button();
+					newAvailInvButton.setDebugId("newAvailInvButton");
 
 					newAvailInvButton.setCaption(sourceAvailInvButton.getCaption());
 					newAvailInvButton.addListener((InventoryLinkButtonClickListener) sourceAvailInvButton.getData());
@@ -229,6 +236,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout
 						final Object columnValue = sourceTable.getItem(itemId).getItemProperty(ColumnLabels.STOCKID.getName()).getValue();
 						final Label stockIdLabel = (Label) columnValue;
 						final Label newStockIdLabel = new Label(stockIdLabel.getValue().toString());
+						newStockIdLabel.setDebugId("newStockIdLabel");
 						newStockIdLabel.setDescription(stockIdLabel.getValue().toString());
 						item.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(newStockIdLabel);
 
@@ -423,10 +431,12 @@ public class MakeCrossesParentsComponent extends VerticalLayout
 						final String maleParentValue = listData.getDesignation();
 
 						final Button gidButton = new Button(maleParentValue, new GidLinkClickListener(listData.getGid().toString(), true));
+						gidButton.setDebugId("gidButton");
 						gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 						gidButton.setDescription(MakeCrossesParentsComponent.CLICK_TO_VIEW_GERMPLASM_INFORMATION);
 
 						final CheckBox tag = new CheckBox();
+						tag.setDebugId("tag");
 
 						final GermplasmListEntry entryObject = new GermplasmListEntry(listData.getId(), listData.getGid(),
 								listData.getEntryId(), listData.getDesignation(), listFromTree.getName() + ":" + listData.getEntryId());
@@ -448,6 +458,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout
 						final InventoryLinkButtonClickListener inventoryClickListener =
 								new InventoryLinkButtonClickListener(this, germplasmListId, listData.getId(), listData.getGid());
 						final Button inventoryButton = new Button(availInv, inventoryClickListener);
+						inventoryButton.setDebugId("inventoryButton");
 						inventoryButton.setData(inventoryClickListener);
 						inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 						inventoryButton.setDescription(MakeCrossesParentsComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
@@ -474,6 +485,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout
 						item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 
 						final Label stockIdLabel = new Label(listData.getInventoryInfo().getStockIDs());
+						stockIdLabel.setDebugId("stockIdLabel");
 						stockIdLabel.setDescription(listData.getInventoryInfo().getStockIDs());
 						item.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdLabel);
 
@@ -533,10 +545,12 @@ public class MakeCrossesParentsComponent extends VerticalLayout
 						final String maleParentValue = listData.getDesignation();
 
 						final Button gidButton = new Button(maleParentValue, new GidLinkClickListener(listData.getGid().toString(), true));
+						gidButton.setDebugId("gidButton");
 						gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 						gidButton.setDescription(MakeCrossesParentsComponent.CLICK_TO_VIEW_GERMPLASM_INFORMATION);
 
 						final CheckBox tag = new CheckBox();
+						tag.setDebugId("tag");
 
 						final GermplasmListEntry entryObject = new GermplasmListEntry(listData.getId(), listData.getGid(),
 								listData.getEntryId(), listData.getDesignation(), listFromTree.getName() + ":" + listData.getEntryId());
@@ -558,6 +572,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout
 						final InventoryLinkButtonClickListener inventoryClickListener =
 								new InventoryLinkButtonClickListener(this, germplasmListId, listData.getId(), listData.getGid());
 						final Button inventoryButton = new Button(availInv, inventoryClickListener);
+						inventoryButton.setDebugId("inventoryButton");
 						inventoryButton.setData(inventoryClickListener);
 						inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 						inventoryButton.setDescription(MakeCrossesParentsComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
@@ -584,6 +599,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout
 						item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 
 						final Label stockIdLabel = new Label(listData.getInventoryInfo().getStockIDs());
+						stockIdLabel.setDebugId("stockIdLabel");
 						stockIdLabel.setDescription(listData.getInventoryInfo().getStockIDs());
 						item.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdLabel);
 

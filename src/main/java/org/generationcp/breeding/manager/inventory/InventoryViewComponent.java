@@ -82,8 +82,10 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 	@Override
 	public void instantiateComponents() {
 		this.description = new Label(this.messageSource.getMessage(Message.LOT_DETAILS_FOR_SELECTED_ENTRIES));
+		this.description.setDebugId("description");
 
 		this.lotEntriesLayout = new TableLayout(Integer.MAX_VALUE, 8);
+		this.lotEntriesLayout.setDebugId("lotEntriesLayout");
 
 		this.lotEntriesTable = this.lotEntriesLayout.getTable();
 		this.lotEntriesTable.setWidth("100%");

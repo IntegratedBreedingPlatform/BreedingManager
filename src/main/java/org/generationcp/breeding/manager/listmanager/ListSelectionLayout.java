@@ -124,48 +124,60 @@ public class ListSelectionLayout extends VerticalLayout implements International
 	public void instantiateComponents() {
 
 		this.noListLabel = new Label();
+		this.noListLabel.setDebugId("noListLabel");
 		this.noListLabel.setImmediate(true);
 
 		this.headingLabel = new Label();
+		this.headingLabel.setDebugId("headingLabel");
 		this.headingLabel.setImmediate(true);
 		this.headingLabel.setWidth("300px");
 		this.headingLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		this.headingLabel.addStyleName(AppConstants.CssStyles.BOLD);
 
 		this.headerLayout = new HorizontalLayout();
+		this.headerLayout.setDebugId("headerLayout");
 
 		this.detailsTabSheet = new TabSheet();
+		this.detailsTabSheet.setDebugId("detailsTabSheet");
 		this.detailsTabSheet.setWidth("100%");
 		this.detailsTabSheet.addStyleName("listDetails");
 		this.setDetailsTabSheetHeight();
 
 		this.btnCloseAllTabs = new Button(this.messageSource.getMessage(Message.CLOSE_ALL_TABS));
+		this.btnCloseAllTabs.setDebugId("btnCloseAllTabs");
 		this.btnCloseAllTabs.setData(ListSelectionLayout.CLOSE_ALL_TABS_ID);
 		this.btnCloseAllTabs.setImmediate(true);
 		this.btnCloseAllTabs.setStyleName(BaseTheme.BUTTON_LINK);
 
 		this.browseForLists = new Button();
+		this.browseForLists.setDebugId("browseForLists");
 		this.browseForLists.setImmediate(true);
 		this.browseForLists.setStyleName(BaseTheme.BUTTON_LINK);
 
 		this.searchForLists = new Button();
+		this.searchForLists.setDebugId("searchForLists");
 		this.searchForLists.setImmediate(true);
 		this.searchForLists.setStyleName(BaseTheme.BUTTON_LINK);
 
 		this.importList = new Button();
+		this.importList.setDebugId("importList");
 		this.importList.setImmediate(true);
 		this.importList.setStyleName(BaseTheme.BUTTON_LINK);
 
 		this.or = new Label();
+		this.or.setDebugId("or");
 		this.or.setImmediate(true);
 
 		this.or2 = new Label();
+		this.or2.setDebugId("or2");
 		this.or2.setImmediate(true);
 
 		this.toWorkWith = new Label();
+		this.toWorkWith.setDebugId("toWorkWith");
 		this.toWorkWith.setImmediate(true);
 
 		this.aNewListLabel = new Label();
+		this.aNewListLabel.setDebugId("aNewListLabel");
 		this.aNewListLabel.setImmediate(true);
 
 		this.listStatusForChanges = new HashMap<ListComponent, Boolean>();
@@ -189,14 +201,19 @@ public class ListSelectionLayout extends VerticalLayout implements International
 		this.setWidth("100%");
 
 		this.listSelectionHeaderContainer = new HorizontalLayout();
+		this.listSelectionHeaderContainer.setDebugId("listSelectionHeaderContainer");
 		this.listSelectionHeaderContainer.setHeight("26px");
 		this.listSelectionHeaderContainer.setWidth("100%");
 
 		final HeaderLabelLayout headerLbl = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS, this.headingLabel);
+		headerLbl.setDebugId("headerLbl");
+		headerLbl.setDebugId("headerLbl");
 
 		final HorizontalLayout searchOrBrowseLayout = new HorizontalLayout();
+		searchOrBrowseLayout.setDebugId("searchOrBrowseLayout");
 
 		this.searchOrBrowseContainer = new HorizontalLayout();
+		this.searchOrBrowseContainer.setDebugId("searchOrBrowseContainer");
 		this.searchOrBrowseContainer.setHeight("19px");
 		this.searchOrBrowseContainer.setWidth("100%");
 
@@ -223,11 +240,13 @@ public class ListSelectionLayout extends VerticalLayout implements International
 		this.searchOrBrowseContainer.setComponentAlignment(this.btnCloseAllTabs, Alignment.TOP_RIGHT);
 
 		final VerticalLayout header = new VerticalLayout();
+		header.setDebugId("header");
 		header.setWidth("100%");
 		header.addComponent(this.noListLabel);
 		header.addComponent(headerLbl);
 
 		final VerticalLayout headerBtnContainer = new VerticalLayout();
+		headerBtnContainer.setDebugId("headerBtnContainer");
 		headerBtnContainer.setSizeUndefined();
 		headerBtnContainer.setSpacing(true);
 		headerBtnContainer.addComponent(this.source.listBuilderToggleBtn1);

@@ -122,6 +122,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 				try {
 					final Integer listId = Integer.parseInt(listIdPart);
 					final Window listManagerWindow = new Window(this.messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
+					listManagerWindow.setDebugId("listManagerWindow");
 					listManagerWindow.setName(name);
 					listManagerWindow.setSizeFull();
 
@@ -137,16 +138,19 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 
 			} else if (name.equals(BreedingManagerApplication.CROSSING_MANAGER_WINDOW_NAME)) {
 				final Window manageCrossingSettings = new Window(this.messageSource.getMessage(Message.MANAGE_CROSSES));
+				manageCrossingSettings.setDebugId("manageCrossingSettings");
 				manageCrossingSettings.setName(BreedingManagerApplication.CROSSING_MANAGER_WINDOW_NAME);
 				manageCrossingSettings.setSizeUndefined();
 
 				this.manageCrossingSettingsMain = new ManageCrossingSettingsMain(manageCrossingSettings);
+				this.manageCrossingSettingsMain.setDebugId("manageCrossingSettingsMain");
 
 				manageCrossingSettings.setContent(this.manageCrossingSettingsMain);
 				this.addWindow(manageCrossingSettings);
 				return manageCrossingSettings;
 			} else if (name.startsWith(NAVIGATION_FROM_NURSERY_PREFIX)) {
 				final Window manageCrossingSettings = new Window(this.messageSource.getMessage(Message.MANAGE_CROSSES));
+				manageCrossingSettings.setDebugId("manageCrossingSettings");
 				try {
 					final String[] listIdParameterValues =
 							BreedingManagerUtil.getApplicationRequest().getParameterValues(BreedingManagerApplication.REQ_PARAM_LIST_ID);
@@ -197,6 +201,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 	private void constructCreateCrossesWindow(final Window manageCrossingSettings, final Integer listId) {
 		final GermplasmList germplasmList = germplasmListManager.getGermplasmListById(listId);
 		this.manageCrossingSettingsMain = new ManageCrossingSettingsMain(manageCrossingSettings, germplasmList);
+		this.manageCrossingSettingsMain.setDebugId("manageCrossingSettingsMain");
 		manageCrossingSettings.setContent(this.manageCrossingSettingsMain);
 		this.addWindow(manageCrossingSettings);
 		this.manageCrossingSettingsMain.nextStep();
@@ -204,6 +209,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 
 	private Window getWindowWithErrorMessage(final Window manageCrossingSettings, final String description) {
 		this.manageCrossingSettingsMain = new ManageCrossingSettingsMain(manageCrossingSettings);
+		this.manageCrossingSettingsMain.setDebugId("manageCrossingSettingsMain");
 		manageCrossingSettings.setContent(this.manageCrossingSettingsMain);
 		this.addWindow(manageCrossingSettings);
 		this.manageCrossingSettingsMain.nextStep();
@@ -215,6 +221,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 
 	protected Window getEmptyWindowWithErrorMessage() {
 		final Window emptyGermplasmListDetailsWindow = new Window(this.messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
+		emptyGermplasmListDetailsWindow.setDebugId("emptyGermplasmListDetailsWindow");
 		emptyGermplasmListDetailsWindow.setSizeUndefined();
 		emptyGermplasmListDetailsWindow.addComponent(new Label(this.messageSource.getMessage(Message.INVALID_LIST_ID)));
 		this.addWindow(emptyGermplasmListDetailsWindow);
@@ -223,6 +230,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 
 	private Window instantiateListManagerWindow(final String name) {
 		final Window listManagerWindow = new Window(this.messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
+		listManagerWindow.setDebugId("listManagerWindow");
 		listManagerWindow.setName(name);
 		listManagerWindow.setSizeFull();
 

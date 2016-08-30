@@ -222,6 +222,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 		this.setWidth("700px");
 
 		this.sequenceNumCheckBox = new CheckBox();
+		this.sequenceNumCheckBox.setDebugId("sequenceNumCheckBox");
 		this.sequenceNumCheckBox.setImmediate(true);
 		this.sequenceNumCheckBox.addListener(new Property.ValueChangeListener() {
 
@@ -238,14 +239,19 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 		});
 
 		this.addSpaceCheckBox = new CheckBox();
+		this.addSpaceCheckBox.setDebugId("addSpaceCheckBox");
 		this.addSpaceCheckBox.setImmediate(true);
 
 		this.specifyPrefixLabel = new Label();
+		this.specifyPrefixLabel.setDebugId("specifyPrefixLabel");
 		this.prefixTextField = new TextField();
+		this.prefixTextField.setDebugId("prefixTextField");
 		this.prefixTextField.setWidth("300px");
 
 		this.howManyDigitsLabel = new Label();
+		this.howManyDigitsLabel.setDebugId("howManyDigitsLabel");
 		this.numOfAllowedDigitsSelect = new Select();
+		this.numOfAllowedDigitsSelect.setDebugId("numOfAllowedDigitsSelect");
 		for (int i = 1; i <= AdditionalDetailsCrossNameComponent.MAX_NUM_OF_ALLOWED_DIGITS; i++) {
 			this.numOfAllowedDigitsSelect.addItem(Integer.valueOf(i));
 		}
@@ -254,13 +260,18 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 		this.numOfAllowedDigitsSelect.setWidth("50px");
 
 		this.specifySuffixLabel = new Label();
+		this.specifySuffixLabel.setDebugId("specifySuffixLabel");
 		this.suffixTextField = new TextField();
+		this.suffixTextField.setDebugId("suffixTextField");
 		this.suffixTextField.setWidth("300px");
 
 		this.nextNameInSequenceLabel = new Label();
+		this.nextNameInSequenceLabel.setDebugId("nextNameInSequenceLabel");
 		this.generatedNameLabel = new Label();
+		this.generatedNameLabel.setDebugId("generatedNameLabel");
 
 		this.generateButton = new Button();
+		this.generateButton.setDebugId("generateButton");
 		this.generateButton.setData(AdditionalDetailsCrossNameComponent.GENERATE_BUTTON_ID);
 		this.generateButton.addListener(new CrossingManagerImportButtonClickListener(this));
 
@@ -268,14 +279,18 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 			this.setHeight("250px");
 			this.setWidth("490px");
 			this.specifyStartNumberLabel = new Label();
+			this.specifyStartNumberLabel.setDebugId("specifyStartNumberLabel");
 
 			this.startNumberTextField = new TextField();
+			this.startNumberTextField.setDebugId("startNumberTextField");
 			this.startNumberTextField.setWidth("90px");
 
 			this.addSpaceAfterSuffixCheckBox = new CheckBox();
+			this.addSpaceAfterSuffixCheckBox.setDebugId("addSpaceAfterSuffixCheckBox");
 			this.addSpaceAfterSuffixCheckBox.setImmediate(true);
 
 			this.cancelButton = new Button();
+			this.cancelButton.setDebugId("cancelButton");
 			this.cancelButton.addListener(new Button.ClickListener() {
 
 				private static final long serialVersionUID = -3519880320817778816L;
@@ -288,6 +303,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 			});
 
 			this.okButton = new Button();
+			this.okButton.setDebugId("okButton");
 			this.okButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 			this.okButton.addListener(new OKButtonClickListener());
 
@@ -349,6 +365,7 @@ public class AdditionalDetailsCrossNameComponent extends AbsoluteLayout
 			this.addComponent(this.addSpaceAfterSuffixCheckBox, "top:162px;left:10px");
 
 			final HorizontalLayout layoutButtonArea = new HorizontalLayout();
+			layoutButtonArea.setDebugId("layoutButtonArea");
 			layoutButtonArea.setSpacing(true);
 			layoutButtonArea.addComponent(this.cancelButton);
 			layoutButtonArea.addComponent(this.okButton);

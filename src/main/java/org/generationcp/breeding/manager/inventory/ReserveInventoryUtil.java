@@ -29,6 +29,7 @@ public class ReserveInventoryUtil implements Serializable {
 		Map<String, List<ListEntryLotDetails>> scaleGrouping = this.getScaleGrouping();
 
 		this.reserveInventory = new ReserveInventoryWindow(this.source, scaleGrouping, isSingleScaled);
+		this.reserveInventory.setDebugId("reserveInventory");
 		this.source.addReserveInventoryWindow(this.reserveInventory);
 	}
 

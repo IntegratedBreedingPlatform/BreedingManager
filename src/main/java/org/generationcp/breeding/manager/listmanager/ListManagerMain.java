@@ -217,6 +217,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	public void layoutComponents() {
 
 		final VerticalLayout titleAndTabContainer = new VerticalLayout();
+		titleAndTabContainer.setDebugId("titleAndTabContainer");
 		titleAndTabContainer.setMargin(new MarginInfo(false, false, false, true));
 		titleAndTabContainer.setSpacing(true);
 
@@ -226,6 +227,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		this.addComponent(titleAndTabContainer);
 
 		final Panel splitPanelContainer = new Panel();
+		splitPanelContainer.setDebugId("splitPanelContainer");
 		splitPanelContainer.setScrollable(true);
 		splitPanelContainer.setStyleName(Reindeer.PANEL_LIGHT + " lm-panel");
 
@@ -313,10 +315,12 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	private void setTitleContent() {
 		this.titleLayout = new HorizontalLayout();
 		this.titleLayout.setDebugId("titleLayout");
+		this.titleLayout.setDebugId("titleLayout");
 		this.titleLayout.setSpacing(true);
 		this.titleLayout.setHeight("40px");
 
 		this.toolTitle = new Label(this.messageSource.getMessage(Message.LIST_MANAGER_SCREEN_LABEL));
+		this.toolTitle.setDebugId("toolTitle");
 		this.toolTitle.setDebugId("toolTitle");
 
 		this.toolTitle.setStyleName(Bootstrap.Typography.H1.styleName());
@@ -331,8 +335,10 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		
 		this.listSelectionTabButton = new Button(this.messageSource.getMessage(Message.VIEW_LISTS));
 		this.listSelectionTabButton.setDebugId("listSelectionTabButton");
+		this.listSelectionTabButton.setDebugId("listSelectionTabButton");
 		
 		this.plantSelectionTabButton = new Button(this.messageSource.getMessage(Message.VIEW_GERMPLASM));
+		this.plantSelectionTabButton.setDebugId("plantSelectionTabButton");
 		this.plantSelectionTabButton.setDebugId("plantSelectionTabButton");
 
 		this.listSelectionTabButton.addStyleName("tabHeaderSelectedStyle");
@@ -342,6 +348,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 		this.plantSelectionTabButton.setImmediate(true);
 
 		this.tabHeaderLayout = new HorizontalLayout();
+		this.tabHeaderLayout.setDebugId("tabHeaderLayout");
 		this.tabHeaderLayout.setDebugId("tabHeaderLayout");
 		
 		this.tabHeaderLayout.addStyleName("tabHeaderStyle");
@@ -353,6 +360,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	private void setTabContent() {
 		this.splitPanel = new HorizontalSplitPanel();
 		this.splitPanel.setDebugId("splitPanel");
+		this.splitPanel.setDebugId("splitPanel");
 		this.splitPanel.setMargin(false);
 		this.splitPanel.setMaxSplitPosition(46.5f, Sizeable.UNITS_PERCENTAGE);
 		this.splitPanel.setSplitPosition(0, Sizeable.UNITS_PERCENTAGE, true);
@@ -363,15 +371,19 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
 		this.listSelectionComponent = new ListSelectionComponent(this, this.selectedListId);
 		this.listSelectionComponent.setDebugId("listSelectionComponent");
+		this.listSelectionComponent.setDebugId("listSelectionComponent");
 		this.plantSelectionComponent = new GermplasmSelectionComponent(this);
+		this.plantSelectionComponent.setDebugId("plantSelectionComponent");
 		this.plantSelectionComponent.setDebugId("plantSelectionComponent");
 
 		this.plantFinderContent = new AbsoluteLayout();
+		this.plantFinderContent.setDebugId("plantFinderContent");
 		this.plantFinderContent.setDebugId("plantFinderContent");
 		this.plantFinderContent.addComponent(this.listSelectionComponent, "top:0px;left:0px");
 		this.plantFinderContent.addComponent(this.plantSelectionComponent, "top:0px;left:0px");
 		
 		this.listBuilderComponent = new ListBuilderComponent(this);
+		this.listBuilderComponent.setDebugId("listBuilderComponent");
 		this.listBuilderComponent.setDebugId("listBuilderComponent");
 		
 		this.splitPanel.setFirstComponent(this.plantFinderContent);
@@ -537,6 +549,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	public void showUnsavedChangesConfirmDialog(final String message, final ModeView newModeView) {
 		this.modeView = newModeView;
 		this.unsavedChangesDialog = new UnsavedChangesConfirmDialog(this, message);
+		this.unsavedChangesDialog.setDebugId("unsavedChangesDialog");
 		this.getWindow().addWindow(this.unsavedChangesDialog);
 	}
 

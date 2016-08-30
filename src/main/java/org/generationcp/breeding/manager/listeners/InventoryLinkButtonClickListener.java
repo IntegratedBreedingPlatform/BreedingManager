@@ -36,6 +36,7 @@ public class InventoryLinkButtonClickListener implements Button.ClickListener {
 	@Override
 	public void buttonClick(ClickEvent event) {
 		InventoryViewComponent listInventoryComponent = new InventoryViewComponent(this.listId, this.recordId, this.gid);
+		listInventoryComponent.setDebugId("listInventoryComponent");
 
 		Window inventoryWindow = new BaseSubWindow("Inventory Details");
 		inventoryWindow.setModal(true);

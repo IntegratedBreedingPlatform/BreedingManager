@@ -131,6 +131,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 	@Override
 	public void instantiateComponents() {
 		this.listEntriesLabel = new Label(this.messageSource.getMessage(Message.CROSS_LIST_ENTRIES).toUpperCase());
+		this.listEntriesLabel.setDebugId("listEntriesLabel");
 		this.listEntriesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		this.listEntriesLabel.addStyleName(AppConstants.CssStyles.BOLD);
 		this.listEntriesLabel.setWidth("180px");
@@ -139,6 +140,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 				germplasmListManager.getGermplasmListTypes());
 
 		this.viewHeaderButton = new Button(this.messageSource.getMessage(Message.VIEW_HEADER));
+		this.viewHeaderButton.setDebugId("viewHeaderButton");
 		this.viewHeaderButton.addStyleName(BaseTheme.BUTTON_LINK);
 		this.viewHeaderButton.setDescription(this.viewListHeaderWindow.getListHeaderComponent().toString());
 		this.viewHeaderButton.setHeight("14px");
@@ -146,8 +148,10 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 		this.initializeListEntriesTable();
 
 		this.toolsButton = new ActionButton();
+		this.toolsButton.setDebugId("toolsButton");
 
 		this.menu = new ContextMenu();
+		this.menu.setDebugId("menu");
 		this.menu.setWidth("200px");
 		this.menu.setVisible(true);
 
@@ -221,6 +225,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 
 	private Button generateLaunchGermplasmDetailsButton(final String caption, final String gid, final String description) {
 		final Button gidButton = new Button(caption, new GidLinkClickListener(gid, true));
+		gidButton.setDebugId("gidButton");
 		gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 		gidButton.setDescription(description);
 		return gidButton;
@@ -276,10 +281,12 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 		this.setSpacing(true);
 
 		final HorizontalLayout tableHeaderLayout = new HorizontalLayout();
+		tableHeaderLayout.setDebugId("tableHeaderLayout");
 		tableHeaderLayout.setHeight("27px");
 		tableHeaderLayout.setWidth("100%");
 
 		final HorizontalLayout leftHeaderLayout = new HorizontalLayout();
+		leftHeaderLayout.setDebugId("leftHeaderLayout");
 		leftHeaderLayout.setSpacing(true);
 		leftHeaderLayout.setHeight("100%");
 		leftHeaderLayout.addComponent(this.listEntriesLabel);
@@ -292,6 +299,7 @@ public class CrossesSummaryListDataComponent extends VerticalLayout implements B
 		tableHeaderLayout.setComponentAlignment(this.toolsButton, Alignment.MIDDLE_RIGHT);
 
 		final VerticalLayout tableLayout = new VerticalLayout();
+		tableLayout.setDebugId("tableLayout");
 		this.listDataTable.setWidth("100%");
 		tableLayout.addComponent(this.listDataTable);
 		tableLayout.setComponentAlignment(this.listDataTable, Alignment.TOP_LEFT);

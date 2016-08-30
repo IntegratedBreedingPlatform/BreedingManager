@@ -80,20 +80,25 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 		this.setWidth("100%");
 
 		this.searchField = new TextField();
+		this.searchField.setDebugId("searchField");
 		this.searchField.setImmediate(true);
 
 		this.searchButton = new Button(this.messageSource.getMessage(Message.SEARCH));
+		this.searchButton.setDebugId("searchButton");
 		this.searchButton.setHeight("24px");
 		this.searchButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 		this.searchButton.setData(ListSearchBarComponent.SEARCH_BUTTON);
 		this.searchButton.setClickShortcut(KeyCode.ENTER);
 
 		final Label descLbl = new Label(ListSearchBarComponent.GUIDE, Label.CONTENT_XHTML);
+		descLbl.setDebugId("descLbl");
 		descLbl.setWidth("300px");
 		this.popup = new PopupView(" ? ", descLbl);
+		this.popup.setDebugId("popup");
 		this.popup.setStyleName("gcp-popup-view");
 
 		this.exactMatchesOnlyCheckBox = new CheckBox();
+		this.exactMatchesOnlyCheckBox.setDebugId("exactMatchesOnlyCheckBox");
 		this.exactMatchesOnlyCheckBox.setValue(false);
 		this.exactMatchesOnlyCheckBox.setCaption(this.messageSource.getMessage(Message.EXACT_MATCHES_ONLY));
 	}
@@ -131,10 +136,12 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 	@Override
 	public void layoutComponents() {
 		final CssLayout panelLayout = new CssLayout();
+		panelLayout.setDebugId("panelLayout");
 		panelLayout.setMargin(true);
 		panelLayout.addStyleName("lm-search-bar");
 
 		this.searchBarLayout = new HorizontalLayout();
+		this.searchBarLayout.setDebugId("searchBarLayout");
 		this.searchBarLayout.setHeight("24px");
 		this.searchBarLayout.setSpacing(true);
 

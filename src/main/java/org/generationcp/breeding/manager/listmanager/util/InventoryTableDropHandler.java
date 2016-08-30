@@ -286,6 +286,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 							Item newItem = this.targetTable.addItem(lotDetail);
 
 							CheckBox itemCheckBox = new CheckBox();
+							itemCheckBox.setDebugId("itemCheckBox");
 							itemCheckBox.setData(lotDetail);
 							itemCheckBox.setImmediate(true);
 							itemCheckBox.addListener(new ClickListener() {
@@ -349,6 +350,7 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		newLotDetail.setId(0);
 
 		CheckBox itemCheckBox = new CheckBox();
+		itemCheckBox.setDebugId("itemCheckBox");
 		itemCheckBox.setData(newLotDetail);
 		itemCheckBox.setImmediate(true);
 		itemCheckBox.addListener(new ClickListener() {
@@ -368,7 +370,9 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		});
 
 		Button sourceDesignationButton = new Button();
+		sourceDesignationButton.setDebugId("sourceDesignationButton");
 		Button targetDesignationButton = new Button();
+		targetDesignationButton.setDebugId("targetDesignationButton");
 
 		Item itemFromSourceTable = sourceTable.getItem(lotDetail);
 		String seedSource = "";

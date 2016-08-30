@@ -48,9 +48,11 @@ public class ReserveInventoryRowComponent extends HorizontalLayout implements In
 	@Override
 	public void instantiateComponents() {
 		this.amountToReserveLbl = new Label(this.messageSource.getMessage(Message.AMOUNT_TO_RESERVE) + ":");
+		this.amountToReserveLbl.setDebugId("amountToReserveLbl");
 		this.amountToReserveLbl.addStyleName(AppConstants.CssStyles.BOLD);
 
 		this.reservedAmtTxtField = new TextField();
+		this.reservedAmtTxtField.setDebugId("reservedAmtTxtField");
 		this.reservedAmtTxtField.setWidth("45px");
 		this.reservedAmtTxtField.setRequired(true);
 
@@ -59,6 +61,7 @@ public class ReserveInventoryRowComponent extends HorizontalLayout implements In
 
 		String scaleFullText = this.scale + " (" + this.selectedLotPerScale + " selected)";
 		this.scaleLabel = new Label(scaleFullText);
+		this.scaleLabel.setDebugId("scaleLabel");
 	}
 
 	@Override

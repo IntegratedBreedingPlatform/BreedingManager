@@ -132,21 +132,27 @@ public class ListManagerCopyToListDialog extends VerticalLayout implements Initi
 	@Override
 	public void instantiateComponents() {
 		this.labelListName = new Label(this.messageSource.getMessage(Message.LIST_NAME_LABEL));
+		this.labelListName.setDebugId("labelListName");
 		this.labelListName.addStyleName("bold");
 		
 		this.labelListNameDescription = new Label(this.messageSource.getMessage(Message.LIST_NAME_LABEL_DESCRIPTION));
+		this.labelListNameDescription.setDebugId("labelListNameDescription");
 		this.labelListNameDescription.setWidth("250px");
 		
 		this.labelListNameDescriptionPopUpView = new PopupView("?", this.labelListNameDescription);
+		this.labelListNameDescriptionPopUpView.setDebugId("labelListNameDescriptionPopUpView");
 		this.labelListNameDescriptionPopUpView.addStyleName(AppConstants.CssStyles.POPUP_VIEW);
 		
 		this.labelDescription = new Label(this.messageSource.getMessage(Message.DESCRIPTION_LABEL));
+		this.labelDescription.setDebugId("labelDescription");
 		this.labelDescription.addStyleName("bold");
 
 		this.labelType = new Label(this.messageSource.getMessage(Message.TYPE_LABEL));
+		this.labelType.setDebugId("labelType");
 		this.labelType.addStyleName("bold");
 
 		this.comboBoxListName = new ComboBox();
+		this.comboBoxListName.setDebugId("comboBoxListName");
 		this.comboBoxListName.setNewItemsAllowed(true);
 		this.comboBoxListName.setNewItemHandler(this);
 		this.comboBoxListName.setNullSelectionAllowed(false);
@@ -154,21 +160,26 @@ public class ListManagerCopyToListDialog extends VerticalLayout implements Initi
 		this.comboBoxListName.focus();
 
 		this.txtDescription = new TextField();
+		this.txtDescription.setDebugId("txtDescription");
 		this.txtDescription.setWidth("400px");
 
 		this.txtType = new TextField();
+		this.txtType.setDebugId("txtType");
 		this.txtType.setWidth("200px");
 
 		this.selectType = new Select();
+		this.selectType.setDebugId("selectType");
 		this.selectType.setNullSelectionAllowed(false);
 
 		this.btnSave = new Button(this.messageSource.getMessage(Message.SAVE_LABEL));
+		this.btnSave.setDebugId("btnSave");
 		this.btnSave.setWidth("80px");
 		this.btnSave.setData(ListManagerCopyToListDialog.SAVE_BUTTON_ID);
 		this.btnSave.setDescription("Save New Germplasm List ");
 		this.btnSave.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 
 		this.btnCancel = new Button(this.messageSource.getMessage(Message.CANCEL));
+		this.btnCancel.setDebugId("btnCancel");
 		this.btnCancel.setWidth("80px");
 		this.btnCancel.setData(ListManagerCopyToListDialog.CANCEL_BUTTON_ID);
 		this.btnCancel.setDescription("Cancel Saving New Germplasm List");
@@ -193,17 +204,20 @@ public class ListManagerCopyToListDialog extends VerticalLayout implements Initi
 		this.setSpacing(true);
 
 		final HorizontalLayout hButton = new HorizontalLayout();
+		hButton.setDebugId("hButton");
 		hButton.setSpacing(true);
 		hButton.addComponent(this.btnCancel);
 		hButton.addComponent(this.btnSave);
 
 		final GridLayout gridLayout = new GridLayout();
+		gridLayout.setDebugId("gridLayout");
 		gridLayout.setRows(3);
 		gridLayout.setColumns(2);
 		gridLayout.setSpacing(true);
 		gridLayout.addComponent(this.labelListName, 0, 0);
 		
 		HorizontalLayout comboBoxVerticalLayout = new HorizontalLayout();
+		comboBoxVerticalLayout.setDebugId("comboBoxVerticalLayout");
 		comboBoxVerticalLayout.addComponent(this.comboBoxListName);
 		comboBoxVerticalLayout.addComponent(this.labelListNameDescriptionPopUpView);
 		gridLayout.addComponent(comboBoxVerticalLayout, 1, 0);
