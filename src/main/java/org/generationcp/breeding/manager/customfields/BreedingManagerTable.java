@@ -46,5 +46,14 @@ public class BreedingManagerTable extends Table {
 		// add the new handler as this table's listener
 		this.addListener(this.tableMultipleSelectionHandler);
 		this.addShortcutListener(this.tableMultipleSelectionHandler);
+	}  
+	
+	
+	public boolean disableContentRefreshing() {
+		return super.disableContentRefreshing();
+	}
+
+	public void enableContentRefreshing(final boolean enableContent) {
+		super.enableContentRefreshing(enableContent);
 	}
 }
