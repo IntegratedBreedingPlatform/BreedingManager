@@ -1,7 +1,6 @@
 
 package org.generationcp.breeding.manager.crossingmanager.settings;
 
-import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -83,7 +82,6 @@ public class CrossingSettingsMethodComponent extends VerticalLayout
 	private PopupView methodPopupView;
 	private Label breedingMethodsHelpPopup;
 
-	private HashMap<String, Integer> mapMethods;
 	private List<Method> methods;
 
 	@Autowired
@@ -108,7 +106,7 @@ public class CrossingSettingsMethodComponent extends VerticalLayout
 			this.populateBreedingMethods(false, this.programUniqueId);
 		} else {
 			this.favoriteMethodsCheckbox.setValue(true);
-			BreedingManagerUtil.populateMethodsComboBox(this.breedingMethods, this.mapMethods,
+			BreedingManagerUtil.populateMethodsComboBox(this.breedingMethods,
 					CrossingSettingsMethodComponent.GENERATIVE_METHOD_TYPE, favoriteGenerativeMethods);
 			hasFavorite = true;
 		}
@@ -414,8 +412,6 @@ public class CrossingSettingsMethodComponent extends VerticalLayout
 	private void populateBreedingMethods(final boolean showOnlyFavorites, final String programUUID) {
 		this.breedingMethods.removeAllItems();
 
-		this.mapMethods = new HashMap<String, Integer>();
-
 		if (showOnlyFavorites) {
 			try {
 				String mtype = null;
@@ -424,8 +420,7 @@ public class CrossingSettingsMethodComponent extends VerticalLayout
 					mtype = CrossingSettingsMethodComponent.GENERATIVE_METHOD_TYPE;
 				}
 
-				BreedingManagerUtil.populateWithFavoriteMethods(this.workbenchDataManager, this.germplasmDataManager, this.breedingMethods,
-						this.mapMethods, mtype, programUUID);
+				BreedingManagerUtil.populateWithFavoriteMethods(this.workbenchDataManager, this.germplasmDataManager, this.breedingMethods, mtype, programUUID);
 			} catch (final MiddlewareQueryException e) {
 				CrossingSettingsMethodComponent.LOG.error(e.getMessage(), e);
 				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
@@ -451,13 +446,11 @@ public class CrossingSettingsMethodComponent extends VerticalLayout
 		}
 
 		this.breedingMethods.removeAllItems();
-		this.mapMethods = new HashMap<String, Integer>();
 
 		for (final Method m : this.methods) {
 			final Integer methodId = m.getMid();
 			this.breedingMethods.addItem(methodId);
 			this.breedingMethods.setItemCaption(methodId, m.getMname());
-			this.mapMethods.put(m.getMname(), new Integer(methodId));
 		}
 	}
 
