@@ -292,7 +292,7 @@ public class SaveGermplasmListActionTest {
 	}
 
 	@Test
-	public void prepareAllNamesToAddWithNoExistingName() {
+	public void prepareAllNamesToAddWhereImportedNameNotExistingInTheDB() {
 		final ImportedGermplasm importedGermplasm = this.importedGermplasmList.getImportedGermplasms().get(0);
 		final List<UserDefinedField> existingNameUdflds = this.action.getUserDefinedFields(SaveGermplasmListAction.FCODE_TYPE_NAME);
 		final Germplasm germplasm = this.germplasmNameObjects.get(0).getGermplasm();
@@ -311,7 +311,7 @@ public class SaveGermplasmListActionTest {
 	}
 
 	@Test
-	public void prepareAllNamesToAddWithExistingName() {
+	public void prepareAllNamesToAddWhereImportedNameExistingInTheDB() {
 		final ImportedGermplasm importedGermplasm = this.importedGermplasmList.getImportedGermplasms().get(0);
 		final List<UserDefinedField> existingNameUdflds = this.action.getUserDefinedFields(SaveGermplasmListAction.FCODE_TYPE_NAME);
 		final Germplasm germplasm = this.germplasmNameObjects.get(0).getGermplasm();
@@ -322,14 +322,14 @@ public class SaveGermplasmListActionTest {
 	}
 		
 	@Test
-	public void testSaveGermplasmListDataRecords() {
+	public void testSaveGermplasmListDataRecordsWhereImportedNamesNotExistingInTheDB() {
 		final List<ImportedGermplasm> importedGermplasms = this.importedGermplasmList.getImportedGermplasms();
 		this.action.saveGermplasmListDataRecords(germplasmNameObjects, germplasmList, importedGermplasms, doNotCreateGermplasmsWithId);
 		Mockito.verify(this.germplasmManager, Mockito.times(1)).addGermplasmName(Matchers.anyList());
 	}
 	
 	@Test
-	public void testSaveGermplasmListDataRecordsWithNoNewNames() {
+	public void testSaveGermplasmListDataRecordsWhereImportedNamesExistingInTheDB() {
 		final List<ImportedGermplasm> importedGermplasms = this.importedGermplasmList.getImportedGermplasms();
 		Mockito.doReturn(this.createNamesMap(importedGermplasms.size())).when(this.germplasmManager).getNamesByGidsAndNTypeIdsInMap(Matchers.anyList(), Matchers.anyList());
 		this.action.saveGermplasmListDataRecords(germplasmNameObjects, germplasmList, importedGermplasms, doNotCreateGermplasmsWithId);
