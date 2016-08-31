@@ -49,6 +49,7 @@ public class HeaderLabelLayout extends HorizontalLayout implements InitializingB
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		Embedded icon = new Embedded("", this.ICON);
+		icon.setDebugId("icon");
 
 		this.setHeight("25px");
 		this.setSpacing(false);

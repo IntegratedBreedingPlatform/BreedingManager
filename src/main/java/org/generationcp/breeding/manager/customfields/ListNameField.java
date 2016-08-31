@@ -36,9 +36,11 @@ public class ListNameField extends HorizontalLayout implements InitializingBean,
 	@Override
 	public void instantiateComponents() {
 		this.captionLabel = new Label(this.caption);
+		this.captionLabel.setDebugId("captionLabel");
 		this.captionLabel.addStyleName("bold");
 
 		this.listNameTextField = new TextField();
+		this.listNameTextField.setDebugId("listNameTextField");
 		this.listNameTextField.setWidth("180px");
 		this.listNameTextField.setImmediate(true);
 		this.listNameTextField.addValidator(new StringLengthValidator("List Name must not exceed 50 characters.", 1, 50, false));
@@ -48,11 +50,11 @@ public class ListNameField extends HorizontalLayout implements InitializingBean,
 
 		if (this.isMandatory) {
 			this.mandatoryMark = new MandatoryMarkLabel();
+			this.mandatoryMark.setDebugId("mandatoryMark");
 
 			this.listNameTextField.setRequired(true);
 			this.listNameTextField.setRequiredError("Please specify the name of the list.");
 		}
-		this.listNameTextField.setDebugId("vaadin-listname-txt");
 	}
 
 	@Override

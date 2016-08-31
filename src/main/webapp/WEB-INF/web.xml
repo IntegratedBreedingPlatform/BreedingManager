@@ -42,6 +42,7 @@
 			<param-name>widgetset</param-name>
 			<param-value>org.generationcp.breeding.manager.application.widgetset.BreedingmanagerWidgetset</param-value>
 		</init-param>
+		${vaadin.enable.pref.testing}
 	</servlet>
 
 	<servlet-mapping>

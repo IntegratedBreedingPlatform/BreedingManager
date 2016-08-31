@@ -216,12 +216,15 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 	@Override
 	public void instantiateComponents() {
 		this.selectGermplasmLabel = new Label("", Label.CONTENT_XHTML);
+		this.selectGermplasmLabel.setDebugId("selectGermplasmLabel");
 		this.selectGermplasmLabel.setWidth("100%");
 
 		this.cancelButton = new Button();
+		this.cancelButton.setDebugId("cancelButton");
 		this.cancelButton.setData(SelectGermplasmWindow.CANCEL_BUTTON_ID);
 
 		this.doneButton = new Button();
+		this.doneButton.setDebugId("doneButton");
 		this.doneButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 		this.doneButton.setEnabled(false);
 		this.doneButton.setData(SelectGermplasmWindow.DONE_BUTTON_ID);
@@ -229,10 +232,13 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 		this.initGermplasmTable();
 
 		this.useSameGidCheckbox = new CheckBox("Use this match for other instances of this name in the import list");
+		this.useSameGidCheckbox.setDebugId("useSameGidCheckbox");
 		this.useSameGidCheckbox.setImmediate(true);
 		this.ignoreMatchesCheckbox = new CheckBox("Ignore matches and add a new entry");
+		this.ignoreMatchesCheckbox.setDebugId("ignoreMatchesCheckbox");
 		this.ignoreMatchesCheckbox.setImmediate(true);
 		this.ignoreRemainingMatchesCheckbox = new CheckBox("Ignore remaining matches and add new entries for all");
+		this.ignoreRemainingMatchesCheckbox.setDebugId("ignoreRemainingMatchesCheckbox");
 		this.ignoreRemainingMatchesCheckbox.setImmediate(true);
 		this.ignoreRemainingMatchesCheckbox.setEnabled(false);
 	}
@@ -366,6 +372,7 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 		// center window within the browser
 		this.center();
 		this.mainLayout = new VerticalLayout();
+		this.mainLayout.setDebugId("mainLayout");
 		this.mainLayout.setMargin(true);
 		this.mainLayout.setSpacing(true);
 		this.mainLayout.addComponent(this.selectGermplasmLabel);
@@ -373,6 +380,7 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 
 		// Buttons Layout
 		HorizontalLayout buttonLayout = new HorizontalLayout();
+		buttonLayout.setDebugId("buttonLayout");
 		buttonLayout.setWidth("100%");
 		buttonLayout.setHeight("40px");
 		buttonLayout.setSpacing(true);
@@ -387,7 +395,9 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 
 		// Display 3rd check box i.e. ignoreRemainingMatchesCheckBox as sub step of 2nd Check box i.e. ignoreMatchesCheckBox so small gap is inserted using label.
 		HorizontalLayout horizontalLayout = new HorizontalLayout();
+		horizontalLayout.setDebugId("horizontalLayout");
 		Label gap = new Label();
+		gap.setDebugId("gap");
 		gap.setWidth("2em");
 		horizontalLayout.addComponent(gap);
 		horizontalLayout.addComponent(this.ignoreRemainingMatchesCheckbox);

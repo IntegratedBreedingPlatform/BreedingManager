@@ -86,6 +86,7 @@ public class BreedingManagerWizardDisplay extends HorizontalLayout implements In
 		for (int i = 1; i <= this.wizardSteps.size(); i++) {
 
 			Label label = new Label();
+			label.setDebugId("label");
 			if (this.displayStepNumber()) {
 				label.setValue(i + "." + this.wizardSteps.get(i - 1));
 			} else {

@@ -82,10 +82,12 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 	@Override
 	public void instantiateComponents() {
 		this.toolTitle = new Label(this.messageSource.getMessage(Message.MANAGE_CROSSES));
+		this.toolTitle.setDebugId("toolTitle");
 		this.toolTitle.setStyleName(Bootstrap.Typography.H1.styleName());
 		this.toolTitle.setWidth("230px");
 
 		this.makeCrossesLabel = new Label(this.messageSource.getMessage(Message.MAKE_CROSSES));
+		this.makeCrossesLabel.setDebugId("makeCrossesLabel");
 		this.makeCrossesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		this.makeCrossesLabel.addStyleName(AppConstants.CssStyles.BOLD);
 
@@ -93,6 +95,7 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 
 		// use tab approach to display which step to display
 		this.tabSheet = new TabSheet();
+		this.tabSheet.setDebugId("tabSheet");
 
 		// tab names are not actually shown
 		this.tabSheet.hideTabs(true);
@@ -103,7 +106,9 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 		this.tabSheet.addStyleName(AppConstants.CssStyles.TABSHEET_WHITE);
 
 		this.detailComponent = new CrossingSettingsDetailComponent(this);
+		this.detailComponent.setDebugId("detailComponent");
 		this.makeCrossesComponent = new CrossingManagerMakeCrossesComponent(this);
+		this.makeCrossesComponent.setDebugId("makeCrossesComponent");
 		if (this.germplasmList != null) {
 			this.makeCrossesComponent.getSelectParentsComponent().createListDetailsTab(this.germplasmList.getId(),
 					this.germplasmList.getName());
@@ -117,6 +122,7 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 		this.wizardStepNames[0] = this.messageSource.getMessage(Message.CHOOSE_SETTING);
 		this.wizardStepNames[1] = this.messageSource.getMessage(Message.CREATE_CROSSES);
 		this.wizardDisplay = new BreedingManagerWizardDisplay(this.wizardStepNames);
+		this.wizardDisplay.setDebugId("wizardDisplay");
 	}
 
 	@Override
@@ -135,14 +141,18 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 		this.setMargin(false, false, false, true);
 
 		HorizontalLayout headingLayout = new HorizontalLayout();
+		headingLayout.setDebugId("headingLayout");
 		headingLayout.setSpacing(true);
 		headingLayout.setHeight("40px");
 		headingLayout.addComponent(this.toolTitle);
 		headingLayout.addComponent(new HelpButton(HelpModule.MAKE_CROSSES, "View Make Crosses tutorial"));
 
 		HeaderLabelLayout subHeaderLabel = new HeaderLabelLayout(AppConstants.Icons.ICON_MANAGE_SETTINGS, this.makeCrossesLabel);
+		subHeaderLabel.setDebugId("subHeaderLabel");
+		subHeaderLabel.setDebugId("subHeaderLabel");
 
 		HorizontalLayout subHeadingLayout = new HorizontalLayout();
+		subHeadingLayout.setDebugId("subHeadingLayout");
 		subHeadingLayout.setSpacing(true);
 		subHeadingLayout.setWidth("600px");
 		subHeadingLayout.addComponent(subHeaderLabel);
@@ -207,6 +217,7 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 		this.parent.removeAllComponents();
 
 		ManageCrossingSettingsMain crossingManagerMain = new ManageCrossingSettingsMain(this.parent);
+		crossingManagerMain.setDebugId("crossingManagerMain");
 
 		// remove the redundant left margin after reloading the choose setting page
 		crossingManagerMain.setMargin(false);

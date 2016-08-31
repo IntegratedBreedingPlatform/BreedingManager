@@ -26,9 +26,13 @@ public class PagedBreedingManagerTableControls extends HorizontalLayout {
 
 		// Create label controls
 		final Label itemsPerPageLabel = new Label("Items per page:");
+		itemsPerPageLabel.setDebugId("itemsPerPageLabel");
 		final Label pageLabel = new Label("Page:&nbsp;", 3);
+		pageLabel.setDebugId("pageLabel");
 		final Label separatorLabel = new Label("&nbsp;/&nbsp;", 3);
+		separatorLabel.setDebugId("separatorLabel");
 		final Label totalPagesLabel = new Label(String.valueOf(pagedBreedingManagerTable.getTotalAmountOfPages()), 3);
+		totalPagesLabel.setDebugId("totalPagesLabel");
 
 		pageLabel.setWidth(null);
 		separatorLabel.setWidth(null);
@@ -69,7 +73,9 @@ public class PagedBreedingManagerTableControls extends HorizontalLayout {
 			final TextField currentPageTextField, final Label separatorLabel, final Label totalPagesLabel,
 			final PagingButtons pagingButtons) {
 		final HorizontalLayout pageSize = new HorizontalLayout();
+		pageSize.setDebugId("pageSize");
 		final HorizontalLayout pageManagement = new HorizontalLayout();
+		pageManagement.setDebugId("pageManagement");
 
 		pageSize.addComponent(itemsPerPageLabel);
 		pageSize.addComponent(itemsPerPageSelect);
@@ -122,6 +128,7 @@ public class PagedBreedingManagerTableControls extends HorizontalLayout {
 
 	TextField initCurrentPageTextField() {
 		final TextField currentPageTextField = new TextField();
+		currentPageTextField.setDebugId("currentPageTextField");
 		currentPageTextField.setValue(String.valueOf(pagedBreedingManagerTable.getCurrentPage()));
 		currentPageTextField.setStyleName("small");
 		currentPageTextField.setImmediate(true);
@@ -151,6 +158,8 @@ public class PagedBreedingManagerTableControls extends HorizontalLayout {
 
 	ComboBox initItemsPerPageSelect() {
 		final ComboBox itemsPerPageSelect = new ComboBox();
+		itemsPerPageSelect.setDebugId("itemsPerPageSelect");
+		itemsPerPageSelect.setDebugId("itemsPerPageSelect");
 
 		for (final String item : new String[] {"5", "10", "15", "20", "25"}) {
 			itemsPerPageSelect.addItem(item);

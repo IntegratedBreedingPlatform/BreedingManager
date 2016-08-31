@@ -277,6 +277,7 @@ public class FillWith implements InternationalizableComponent {
 		this.headerClickListener = new TableHeaderClickListener();
 
 		this.fillWithMenu = new ContextMenu();
+		this.fillWithMenu.setDebugId("fillWithMenu");
 		this.fillWithMenu.setWidth("310px");
 
 		this.menuFillWithEmpty = this.fillWithMenu.addItem(this.messageSource.getMessage(Message.FILL_WITH_EMPTY));
@@ -784,7 +785,10 @@ public class FillWith implements InternationalizableComponent {
 		specifyCrossExpansionLevelWindow.setStyleName(Reindeer.WINDOW_LIGHT);
 
 		AbsoluteLayout layout = new AbsoluteLayout();
+		layout.setDebugId("layout");
 		final ComboBox levelComboBox = new ComboBox();
+		levelComboBox.setDebugId("levelComboBox");
+		levelComboBox.setDebugId("levelComboBox");
 		for (int ctr = 1; ctr <= 5; ctr++) {
 			levelComboBox.addItem(Integer.valueOf(ctr));
 		}
@@ -793,6 +797,7 @@ public class FillWith implements InternationalizableComponent {
 		layout.addComponent(levelComboBox, "top:10px;left:10px");
 
 		Button okButton = new Button(this.messageSource.getMessage(Message.OK));
+		okButton.setDebugId("okButton");
 		okButton.addListener(new Button.ClickListener() {
 
 			private static final long serialVersionUID = -3519880320817778816L;
@@ -808,6 +813,7 @@ public class FillWith implements InternationalizableComponent {
 		layout.addComponent(okButton, "top:50px;left:10px");
 
 		Button cancelButton = new Button(this.messageSource.getMessage(Message.CANCEL));
+		cancelButton.setDebugId("cancelButton");
 		cancelButton.setStyleName(Bootstrap.Buttons.DEFAULT.styleName());
 		cancelButton.addListener(new Button.ClickListener() {
 

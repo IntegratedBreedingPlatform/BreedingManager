@@ -136,9 +136,11 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 	@Override
 	public void instantiateComponents() {
 		this.captionLabel = new Label(this.caption);
+		this.captionLabel.setDebugId("captionLabel");
 		this.captionLabel.addStyleName("bold");
 
 		this.breedingLocationComboBox = new ComboBox();
+		this.breedingLocationComboBox.setDebugId("breedingLocationComboBox");
 		this.breedingLocationComboBox.setWidth("320px");
 		this.breedingLocationComboBox.setImmediate(true);
 		this.breedingLocationComboBox.setNullSelectionAllowed(true);
@@ -156,10 +158,12 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 		this.breedingLocationsRadioBtn.select(this.messageSource.getMessage(displayMessage));
 
 		this.showFavoritesCheckBox = new CheckBox();
+		this.showFavoritesCheckBox.setDebugId("showFavoritesCheckBox");
 		this.showFavoritesCheckBox.setCaption(this.messageSource.getMessage(Message.SHOW_ONLY_FAVORITE_LOCATIONS));
 		this.showFavoritesCheckBox.setImmediate(true);
 
 		this.manageFavoritesLink = new Button();
+		this.manageFavoritesLink.setDebugId("manageFavoritesLink");
 		this.manageFavoritesLink.setStyleName(BaseTheme.BUTTON_LINK);
 		this.manageFavoritesLink.setCaption(this.messageSource.getMessage(Message.MANAGE_LOCATIONS));
 
@@ -267,6 +271,9 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		this.breedingLocationsRadioBtn = new OptionGroup();
+		this.breedingLocationsRadioBtn.setDebugId("breedingLocationsRadioBtn");
+
 		this.instantiateComponents();
 		this.initializeValues();
 		this.addListeners();

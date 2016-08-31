@@ -180,6 +180,7 @@ import com.vaadin.ui.themes.BaseTheme;
 
 	private Button getGidButton(final Integer gid) {
 		final Button gidButton = new Button(String.format("%s", gid.toString()), this.createGermplasmListener(gid));
+		gidButton.setDebugId("gidButton");
 		gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 		return gidButton;
 	}
@@ -194,6 +195,7 @@ import com.vaadin.ui.themes.BaseTheme;
 		final String shortenedNames = this.getShortenedNames(germplasmFullName);
 
 		final Button namesButton = new Button(shortenedNames, this.createGermplasmListener(gid));
+		namesButton.setDebugId("namesButton");
 		namesButton.setStyleName(BaseTheme.BUTTON_LINK);
 		namesButton.setDescription(germplasmFullName);
 
@@ -202,6 +204,7 @@ import com.vaadin.ui.themes.BaseTheme;
 
 	private CheckBox getItemCheckBox(final Integer itemIndex) {
 		final CheckBox itemCheckBox = new CheckBox();
+		itemCheckBox.setDebugId("itemCheckBox");
 		itemCheckBox.setData(itemIndex);
 		itemCheckBox.setImmediate(true);
 
@@ -263,6 +266,7 @@ import com.vaadin.ui.themes.BaseTheme;
 	private Label getStockIDs(final GermplasmInventory inventoryInfo) {
 		final String stockIDs = inventoryInfo.getStockIDs();
 		final Label stockLabel = new Label(stockIDs);
+		stockLabel.setDebugId("stockLabel");
 		stockLabel.setDescription(stockIDs);
 		return stockLabel;
 	}

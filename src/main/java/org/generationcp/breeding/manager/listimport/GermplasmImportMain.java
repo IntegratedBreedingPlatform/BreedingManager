@@ -96,9 +96,11 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 
 	private void setTitleContent() {
 		this.titleLayout = new HorizontalLayout();
+		this.titleLayout.setDebugId("titleLayout");
 		this.titleLayout.setSpacing(true);
 
 		this.toolTitle = new Label(this.messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
+		this.toolTitle.setDebugId("toolTitle");
 		this.toolTitle.setStyleName(Bootstrap.Typography.H1.styleName());
 		this.toolTitle.setContentMode(Label.CONTENT_XHTML);
 		this.toolTitle.setWidth("268px");
@@ -123,6 +125,7 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 
 	protected void initializeWizardSteps() {
 		this.tabSheet = new TabSheet();
+		this.tabSheet.setDebugId("tabSheet");
 
 		// tab names are not actually shown
 		this.tabSheet.hideTabs(true);
@@ -133,7 +136,9 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 		this.tabSheet.addStyleName(AppConstants.CssStyles.TABSHEET_WHITE);
 
 		this.importFileComponent = new GermplasmImportFileComponent(this);
+		this.importFileComponent.setDebugId("importFileComponent");
 		this.germplasmDetailsComponent = new SpecifyGermplasmDetailsComponent(this, this.viaToolURL);
+		this.germplasmDetailsComponent.setDebugId("germplasmDetailsComponent");
 
 		this.tabSheet.addTab(this.importFileComponent, this.wizardStepNames[0]);
 		this.tabSheet.addTab(this.germplasmDetailsComponent, this.wizardStepNames[1]);
@@ -165,6 +170,7 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 		this.tabHeights[1] = "850px";
 
 		this.wizardDisplay = new GermplasmListImportWizardDisplay(this.wizardStepNames);
+		this.wizardDisplay.setDebugId("wizardDisplay");
 	}
 
 	private void showWizardStep(final int step) {

@@ -79,10 +79,12 @@ public class TableWithSelectAllLayout extends TableLayout implements BreedingMan
 		super.instantiateComponents();
 
 		this.selectAllCheckBox = new CheckBox("Select All");
+		this.selectAllCheckBox.setDebugId("selectAllCheckBox");
 		this.selectAllCheckBox.setImmediate(true);
 
 		// label is just for indenting the Select All checkbox to align with table checkboxes
 		this.dummyLabel = new Label();
+		this.dummyLabel.setDebugId("dummyLabel");
 		this.dummyLabel.setWidth("7px");
 	}
 
@@ -135,6 +137,7 @@ public class TableWithSelectAllLayout extends TableLayout implements BreedingMan
 		super.layoutComponents();
 
 		HorizontalLayout layout = new HorizontalLayout();
+		layout.setDebugId("layout");
 		layout.addComponent(this.dummyLabel);
 		layout.addComponent(this.selectAllCheckBox);
 

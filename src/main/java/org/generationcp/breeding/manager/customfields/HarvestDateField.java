@@ -23,9 +23,11 @@ public class HarvestDateField extends HorizontalLayout {
 
 	private void initializeValues(Integer year) {
 		this.harvestYear = new BreedingManagerYearField(year);
+		this.harvestYear.setDebugId("harvestYear");
 		this.harvestYear.setWidth("90px");
 
 		this.harvestMonth = new BreedingManagerMonthField();
+		this.harvestMonth.setDebugId("harvestMonth");
 		this.harvestMonth.setWidth("120px");
 	}
 
