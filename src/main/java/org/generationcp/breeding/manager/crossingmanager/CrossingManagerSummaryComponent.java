@@ -70,22 +70,28 @@ public class CrossingManagerSummaryComponent extends VerticalLayout implements B
 	@Override
 	public void instantiateComponents() {
 		this.summaryLabel = new Label(this.messageSource.getMessage(Message.SUMMARY));
+		this.summaryLabel.setDebugId("summaryLabel");
 		this.summaryLabel.addStyleName(Bootstrap.Typography.H4.styleName());
 		this.summaryLabel.addStyleName(AppConstants.CssStyles.BOLD);
 
 		// use tabsheet for styling purposes only
 		this.tabSheet = new TabSheet();
+		this.tabSheet.setDebugId("tabSheet");
 		this.tabSheet.hideTabs(true);
 		this.tabContentLayout = new VerticalLayout();
+		this.tabContentLayout.setDebugId("tabContentLayout");
 
 		this.crossListComponent = new CrossesSummaryListDataComponent(this.crossList);
+		this.crossListComponent.setDebugId("crossListComponent");
 		this.femaleDetailsComponent =
 				new SummaryListHeaderComponent(this.femaleList, this.messageSource.getMessage(Message.FEMALE_PARENT_LIST_DETAILS));
 		this.maleDetailsComponent =
 				new SummaryListHeaderComponent(this.maleList, this.messageSource.getMessage(Message.MALE_PARENT_LIST_DETAILS));
 		this.settingsComponent = new CrossesSummarySettingsComponent(this.setting);
+		this.settingsComponent.setDebugId("settingsComponent");
 
 		this.doneButton = new Button(this.messageSource.getMessage(Message.DONE));
+		this.doneButton.setDebugId("doneButton");
 		this.doneButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 
 	}
@@ -121,6 +127,7 @@ public class CrossingManagerSummaryComponent extends VerticalLayout implements B
 
 	private void layoutSummaryPageContent() {
 		HorizontalLayout parentsLayout = new HorizontalLayout();
+		parentsLayout.setDebugId("parentsLayout");
 		parentsLayout.setSpacing(true);
 		parentsLayout.setHeight("130px");
 		parentsLayout.setWidth("100%");
@@ -128,11 +135,13 @@ public class CrossingManagerSummaryComponent extends VerticalLayout implements B
 		parentsLayout.addComponent(this.maleDetailsComponent);
 
 		HorizontalLayout buttonLayout = new HorizontalLayout();
+		buttonLayout.setDebugId("buttonLayout");
 		buttonLayout.setWidth("100%");
 		buttonLayout.addComponent(this.doneButton);
 		buttonLayout.setComponentAlignment(this.doneButton, Alignment.MIDDLE_CENTER);
 
 		VerticalLayout spacingLayout = new VerticalLayout();
+		spacingLayout.setDebugId("spacingLayout");
 		spacingLayout.setHeight("5px");
 
 		this.tabContentLayout.setSpacing(true);

@@ -37,18 +37,20 @@ public class ListDateField extends HorizontalLayout implements InitializingBean,
 	@Override
 	public void instantiateComponents() {
 		this.captionLabel = new Label(this.caption);
+		this.captionLabel.setDebugId("captionLabel");
 		this.captionLabel.addStyleName("bold");
 
 		this.listDtDateField = new BmsDateField();
+		this.listDtDateField.setDebugId("listDtDateField");
 		this.listDtDateField.setImmediate(true);
 
 		if (this.isMandatory) {
 			this.mandatoryMark = new MandatoryMarkLabel();
+			this.mandatoryMark.setDebugId("mandatoryMark");
 
 			this.listDtDateField.setRequired(true);
 			this.listDtDateField.setRequiredError("Date must be specified in the YYYY-MM-DD format");
 		}
-		this.listDtDateField.setDebugId("vaadin-listdate-date");
 	}
 
 	@Override

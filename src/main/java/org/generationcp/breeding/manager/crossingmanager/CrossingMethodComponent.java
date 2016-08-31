@@ -71,20 +71,25 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 	@Override
 	public void instantiateComponents() {
 		this.crossingMethodLabel = new Label(this.messageSource.getMessage(Message.CROSSING_METHOD));
+		this.crossingMethodLabel.setDebugId("crossingMethodLabel");
 		this.crossingMethodLabel.setWidth("200px");
 		this.crossingMethodLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		this.crossingMethodLabel.addStyleName(AppConstants.CssStyles.BOLD);
 
 		this.crossingMethodComboBox = new ComboBox();
+		this.crossingMethodComboBox.setDebugId("crossingMethodComboBox");
 		this.crossingMethodComboBox.setNewItemsAllowed(false);
 		this.crossingMethodComboBox.setNullSelectionAllowed(false);
 		this.crossingMethodComboBox.setWidth("400px");
 
 		this.chkBoxMakeReciprocalCrosses = new CheckBox(this.messageSource.getMessage(Message.MAKE_CROSSES_CHECKBOX_LABEL));
+		this.chkBoxMakeReciprocalCrosses.setDebugId("chkBoxMakeReciprocalCrosses");
 		//By default set "Exclude self" checkbox as selected
 		this.chkBoxExcludeSelf = new CheckBox(this.messageSource.getMessage(Message.EXCLUDE_SELF_LABEL), true);
+		this.chkBoxExcludeSelf.setDebugId("chkBoxExcludeSelf");
 
 		this.btnMakeCross = new Button(this.messageSource.getMessage(Message.MAKE_CROSSES_BUTTON_LABEL));
+		this.btnMakeCross.setDebugId("btnMakeCross");
 		this.btnMakeCross.setData(CrossingMethodComponent.MAKE_CROSS_BUTTON_ID);
 		this.btnMakeCross.addStyleName(Bootstrap.Buttons.INFO.styleName());
 	}
@@ -114,6 +119,7 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 		this.setSpacing(true);
 
 		VerticalLayout layoutCrossOption = new VerticalLayout();
+		layoutCrossOption.setDebugId("layoutCrossOption");
 		layoutCrossOption.setWidth("460px");
 		layoutCrossOption.setSpacing(true);
 		layoutCrossOption.setMargin(true);
@@ -123,12 +129,14 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 		layoutCrossOption.addComponent(this.btnMakeCross);
 
 		this.crossingMethodPanel = new Panel();
+		this.crossingMethodPanel.setDebugId("crossingMethodPanel");
 		this.crossingMethodPanel.setWidth("460px");
 		this.crossingMethodPanel.setLayout(layoutCrossOption);
 		this.crossingMethodPanel.addStyleName("section_panel_layout");
 
 		// provides this slot for an icon
 		HeaderLabelLayout crossingMethodLayout = new HeaderLabelLayout(null, this.crossingMethodLabel);
+		crossingMethodLayout.setDebugId("crossingMethodLayout");
 		this.addComponent(crossingMethodLayout);
 		this.addComponent(this.crossingMethodPanel);
 	}

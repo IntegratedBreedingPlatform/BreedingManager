@@ -361,6 +361,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 
 	private CheckBox initializeTagCheckBox(final GermplasmListData entry) {
 		final CheckBox tagCheckBox = new CheckBox();
+		tagCheckBox.setDebugId("tagCheckBox");
 		tagCheckBox.setImmediate(true);
 		tagCheckBox.addListener(new ClickListener() {
 
@@ -382,6 +383,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 
 	private Table cloneAddedColumnsToTemp(final Table sourceTable) {
 		final Table newTable = new Table();
+		newTable.setDebugId("newTable");
 
 		// copy added column values from source table
 		for (final Object sourceItemId : sourceTable.getItemIds()) {

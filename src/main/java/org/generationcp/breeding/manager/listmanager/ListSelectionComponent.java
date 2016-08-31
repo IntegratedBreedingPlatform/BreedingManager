@@ -119,6 +119,7 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 	private Window launchListSelectionWindow(final Window window, final Component content, final String caption) {
 
 		final CssLayout layout = new CssLayout();
+		layout.setDebugId("layout");
 		layout.setMargin(true);
 		layout.setWidth("100%");
 		layout.setHeight("490px");
@@ -126,6 +127,7 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 		layout.addComponent(content);
 
 		final BaseSubWindow popupWindow = new BaseSubWindow();
+		popupWindow.setDebugId("popupWindow");
 		popupWindow.setWidth("900px");
 		popupWindow.setHeight("550px");
 		popupWindow.setModal(true);
@@ -181,8 +183,10 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 		final Window popupWindow = new BaseSubWindow();
 
 		final GermplasmImportMain germplasmImportMain = new GermplasmImportMain(popupWindow, false, this);
+		germplasmImportMain.setDebugId("germplasmImportMain");
 
 		final VerticalLayout content = new VerticalLayout();
+		content.setDebugId("content");
 		content.addComponent(germplasmImportMain);
 		content.setComponentAlignment(germplasmImportMain, Alignment.TOP_CENTER);
 

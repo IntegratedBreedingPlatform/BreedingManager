@@ -90,9 +90,13 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 	@Override
 	public void instantiateComponents() {
 		this.preserveExistingGroupId = new CheckBox();
+		this.preserveExistingGroupId.setDebugId("preserveExistingGroupId");
 		this.includeDescendants = new CheckBox();
+		this.includeDescendants.setDebugId("includeDescendants");
 		this.cancelButton = new Button();
+		this.cancelButton.setDebugId("cancelButton");
 		this.continueButton = new Button();
+		this.continueButton.setDebugId("continueButton");
 		this.continueButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 	}
 
@@ -210,10 +214,12 @@ public class GermplasmGroupingComponent extends BaseSubWindow implements Initial
 
 		this.center();
 		this.dialogLayout = new VerticalLayout();
+		this.dialogLayout.setDebugId("dialogLayout");
 		this.dialogLayout.setMargin(true);
 		this.dialogLayout.setSpacing(true);
 
 		final HorizontalLayout buttonLayout = new HorizontalLayout();
+		buttonLayout.setDebugId("buttonLayout");
 		buttonLayout.setWidth("100%");
 		buttonLayout.setHeight("40px");
 		buttonLayout.setSpacing(true);

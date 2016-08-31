@@ -87,23 +87,29 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	@Override
 	public void instantiateComponents() {
 		this.selectParentsLabel = new Label(this.messageSource.getMessage(Message.SELECT_PARENTS));
+		this.selectParentsLabel.setDebugId("selectParentsLabel");
 		this.selectParentsLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		this.selectParentsLabel.addStyleName(AppConstants.CssStyles.BOLD);
 
 		this.browseForListsButton = new Button(this.messageSource.getMessage(Message.BROWSE));
+		this.browseForListsButton.setDebugId("browseForListsButton");
 		this.browseForListsButton.setImmediate(true);
 		this.browseForListsButton.setStyleName(Reindeer.BUTTON_LINK);
 
 		this.listTreeComponent = new CrossingManagerListTreeComponent(this, this.source);
+		this.listTreeComponent.setDebugId("listTreeComponent");
 
 		this.instructionForSelectParents = new Label("for a list to work with.");
+		this.instructionForSelectParents.setDebugId("instructionForSelectParents");
 
 		this.listDetailsTabSheet = new TabSheet();
+		this.listDetailsTabSheet.setDebugId("listDetailsTabSheet");
 		this.listDetailsTabSheet.setWidth("460px");
 		this.listDetailsTabSheet.setHeight("465px");
 		hideListDetailsTabSheet();
 
 		this.closeAllTabsButton = new Button(this.messageSource.getMessage(Message.CLOSE_ALL_TABS));
+		this.closeAllTabsButton.setDebugId("closeAllTabsButton");
 		this.closeAllTabsButton.setStyleName(BaseTheme.BUTTON_LINK);
 		this.closeAllTabsButton.setVisible(false);
 
@@ -179,13 +185,16 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 		setWidth("460px");
 
 		final HeaderLabelLayout selectParentsHeaderLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_SELECT_PARENTS, selectParentsLabel);
+		selectParentsHeaderLayout.setDebugId("selectParentsHeaderLayout");
 
 		final HorizontalLayout leftLayout = new HorizontalLayout();
+		leftLayout.setDebugId("leftLayout");
 		leftLayout.setSpacing(true);
 		leftLayout.addComponent(browseForListsButton);
 		leftLayout.addComponent(instructionForSelectParents);
 
 		final HorizontalLayout instructionForSelectParentsLayout = new HorizontalLayout();
+		instructionForSelectParentsLayout.setDebugId("instructionForSelectParentsLayout");
 		instructionForSelectParentsLayout.setWidth("100%");
 		instructionForSelectParentsLayout.addComponent(leftLayout);
 		instructionForSelectParentsLayout.addComponent(closeAllTabsButton);
@@ -221,6 +230,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	private Window launchListSelectionWindow(final Window window, final Component content, final String caption) {
 
 		final CssLayout layout = new CssLayout();
+		layout.setDebugId("layout");
 		layout.setMargin(true);
 		layout.setWidth("100%");
 		layout.setHeight("515px");

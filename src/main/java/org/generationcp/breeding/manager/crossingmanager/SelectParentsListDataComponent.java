@@ -278,14 +278,17 @@ public class SelectParentsListDataComponent extends VerticalLayout
 		this.retrieveListDetails();
 
 		this.listEntriesLabel = new Label(this.messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
+		this.listEntriesLabel.setDebugId("listEntriesLabel");
 		this.listEntriesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		this.listEntriesLabel.setWidth("160px");
 
 		this.totalListEntriesLabel = new Label("", Label.CONTENT_XHTML);
+		this.totalListEntriesLabel.setDebugId("totalListEntriesLabel");
 		this.totalListEntriesLabel.setWidth("120px");
 		this.updateNoOfEntries(this.count);
 
 		this.totalSelectedListEntriesLabel = new Label("", Label.CONTENT_XHTML);
+		this.totalSelectedListEntriesLabel.setDebugId("totalSelectedListEntriesLabel");
 		this.totalSelectedListEntriesLabel.setWidth("95px");
 		this.updateNoOfSelectedEntries(0);
 
@@ -293,16 +296,20 @@ public class SelectParentsListDataComponent extends VerticalLayout
 				BreedingManagerUtil.getAllNamesAsMap(userDataManager), germplasmListManager.getGermplasmListTypes());
 
 		this.viewListHeaderButton = new Button(this.messageSource.getMessage(Message.VIEW_HEADER));
+		this.viewListHeaderButton.setDebugId("viewListHeaderButton");
 		this.viewListHeaderButton.addStyleName(BaseTheme.BUTTON_LINK);
 		this.viewListHeaderButton.setDescription(this.retrieveViewListHeaderButtonDescription());
 
 		this.actionButton = new ActionButton();
+		this.actionButton.setDebugId("actionButton");
 		this.actionButton.setData(SelectParentsListDataComponent.ACTIONS_BUTTON_ID);
 
 		this.inventoryViewActionButton = new ActionButton();
+		this.inventoryViewActionButton.setDebugId("inventoryViewActionButton");
 		this.inventoryViewActionButton.setData(SelectParentsListDataComponent.ACTIONS_BUTTON_ID);
 
 		this.actionMenu = new ContextMenu();
+		this.actionMenu.setDebugId("actionMenu");
 		this.actionMenu.setWidth("250px");
 		this.actionMenu.addItem(this.messageSource.getMessage(Message.ADD_TO_MALE_LIST));
 		this.actionMenu.addItem(this.messageSource.getMessage(Message.ADD_TO_FEMALE_LIST));
@@ -312,6 +319,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 		this.actionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES));
 
 		this.inventoryViewActionMenu = new ContextMenu();
+		this.inventoryViewActionMenu.setDebugId("inventoryViewActionMenu");
 		this.inventoryViewActionMenu.setWidth("295px");
 		this.menuCopyToListFromInventory = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
 		this.menuReserveInventory = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
@@ -326,6 +334,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 		this.initializeListInventoryTable();
 
 		this.viewListHeaderButton = new Button(this.messageSource.getMessage(Message.VIEW_LIST_HEADERS));
+		this.viewListHeaderButton.setDebugId("viewListHeaderButton");
 		this.viewListHeaderButton.setStyleName(BaseTheme.BUTTON_LINK);
 
 		// Inventory Related Variables
@@ -420,6 +429,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 
 	private void initializeListInventoryTable() {
 		this.listInventoryTable = new CrossingManagerInventoryTable(this.germplasmList.getId());
+		this.listInventoryTable.setDebugId("listInventoryTable");
 		this.listInventoryTable.setVisible(false);
 		if (this.listInventoryTable.getTable() != null) {
 			this.listInventoryTable.setMaxRows(9);
@@ -446,14 +456,17 @@ public class SelectParentsListDataComponent extends VerticalLayout
 			for (GermplasmListData entry : listEntries) {
 				String gid = String.format("%s", entry.getGid().toString());
 				Button gidButton = new Button(gid, new GidLinkClickListener(gid, true));
+				gidButton.setDebugId("gidButton");
 				gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 				gidButton.setDescription("Click to view Germplasm information");
 
 				Button desigButton = new Button(entry.getDesignation(), new GidLinkClickListener(gid, true));
+				desigButton.setDebugId("desigButton");
 				desigButton.setStyleName(BaseTheme.BUTTON_LINK);
 				desigButton.setDescription("Click to view Germplasm information");
 
 				CheckBox itemCheckBox = new CheckBox();
+				itemCheckBox.setDebugId("itemCheckBox");
 				itemCheckBox.setData(entry.getId());
 				itemCheckBox.setImmediate(true);
 				itemCheckBox.addListener(new ClickListener() {
@@ -481,6 +494,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 				InventoryLinkButtonClickListener inventoryLinkButtonClickListener =
 						new InventoryLinkButtonClickListener(this, this.germplasmList.getId(), entry.getId(), entry.getGid());
 				Button inventoryButton = new Button(availInv, inventoryLinkButtonClickListener);
+				inventoryButton.setDebugId("inventoryButton");
 				inventoryButton.setData(inventoryLinkButtonClickListener);
 				inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 				inventoryButton.setDescription(SelectParentsListDataComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
@@ -512,6 +526,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 
 				if (entry.getInventoryInfo().getStockIDs() != null) {
 					Label stockIdsLabel = new Label(entry.getInventoryInfo().getStockIDs());
+					stockIdsLabel.setDebugId("stockIdsLabel");
 					stockIdsLabel.setDescription(entry.getInventoryInfo().getStockIDs());
 					newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdsLabel);
 				}
@@ -636,14 +651,17 @@ public class SelectParentsListDataComponent extends VerticalLayout
 		this.addComponent(this.inventoryViewActionMenu);
 
 		this.headerLayout = new HorizontalLayout();
+		this.headerLayout.setDebugId("headerLayout");
 		this.headerLayout.setWidth("100%");
 		HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, this.listEntriesLabel);
+		headingLayout.setDebugId("headingLayout");
 		this.headerLayout.addComponent(headingLayout);
 		this.headerLayout.addComponent(this.viewListHeaderButton);
 		this.headerLayout.setComponentAlignment(headingLayout, Alignment.MIDDLE_LEFT);
 		this.headerLayout.setComponentAlignment(this.viewListHeaderButton, Alignment.MIDDLE_RIGHT);
 
 		HorizontalLayout leftSubHeaderLayout = new HorizontalLayout();
+		leftSubHeaderLayout.setDebugId("leftSubHeaderLayout");
 		leftSubHeaderLayout.setSpacing(true);
 		leftSubHeaderLayout.addComponent(this.totalListEntriesLabel);
 		leftSubHeaderLayout.addComponent(this.totalSelectedListEntriesLabel);
@@ -651,6 +669,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 		leftSubHeaderLayout.setComponentAlignment(this.totalSelectedListEntriesLabel, Alignment.MIDDLE_LEFT);
 
 		this.subHeaderLayout = new HorizontalLayout();
+		this.subHeaderLayout.setDebugId("subHeaderLayout");
 		this.subHeaderLayout.setWidth("100%");
 		this.subHeaderLayout.addComponent(leftSubHeaderLayout);
 		this.subHeaderLayout.addComponent(this.actionButton);

@@ -33,6 +33,7 @@ public class AssignCodesDefaultLayout {
 
 	public void instantiateComponents() {
 		this.prefixDefault = new TextField();
+		this.prefixDefault.setDebugId("prefixDefault");
 		this.prefixDefault.setImmediate(true);
 		this.prefixDefault.addValidator(
 				new StringLengthValidator(this.messageSource.getMessage(Message.ERROR_PREFIX_TOO_LONG), 0, 50, false));
@@ -44,6 +45,7 @@ public class AssignCodesDefaultLayout {
 
 	public HorizontalLayout constructDefaultCodeControlsLayout() {
 		final HorizontalLayout codeControlsLayout = new HorizontalLayout();
+		codeControlsLayout.setDebugId("codeControlsLayout");
 		codeControlsLayout.setWidth("40%");
 		codeControlsLayout.setHeight("60px");
 		//TODO do we still need this?
@@ -55,6 +57,7 @@ public class AssignCodesDefaultLayout {
 		codeControlsLayout.setComponentAlignment(this.prefixDefault, Alignment.MIDDLE_LEFT);
 
 		final Label sequenceLabel3 = new Label(SEQUENCE_LABEL);
+		sequenceLabel3.setDebugId("sequenceLabel3");
 		sequenceLabel3.setStyleName(LST_SEQUENCE_LABEL_CLASS);
 		codeControlsLayout.addComponent(sequenceLabel3);
 		codeControlsLayout.setComponentAlignment(sequenceLabel3, Alignment.MIDDLE_LEFT);

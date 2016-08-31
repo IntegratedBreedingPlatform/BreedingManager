@@ -76,19 +76,25 @@ public class NameHandlingDialog extends BaseSubWindow implements BreedingManager
 		this.center();
 
 		this.setAsPreferredNameLbl = new Label(this.messageSource.getMessage(Message.SET_IMPORTED_NAME_AS_PREFERRED_NAME));
+		this.setAsPreferredNameLbl.setDebugId("setAsPreferredNameLbl");
 
 		this.setAsPreferredNameOption = new OptionGroup();
+		this.setAsPreferredNameOption.setDebugId("setAsPreferredNameOption");
 		this.setAsPreferredNameOption.setImmediate(true);
 		this.setAsPreferredNameOption.setStyleName("v-select-optiongroup-horizontal");
 
 		this.useAsPreferredLbl = new Label(this.messageSource.getMessage(Message.USE_AS_PREFERRED));
+		this.useAsPreferredLbl.setDebugId("useAsPreferredLbl");
 
 		this.nameTypesComboBox = new ComboBox();
+		this.nameTypesComboBox.setDebugId("nameTypesComboBox");
 		this.nameTypesComboBox.setStyleName("v-select-optiongroup-horizontal");
 
 		this.cancelBtn = new Button(this.messageSource.getMessage(Message.CANCEL));
+		this.cancelBtn.setDebugId("cancelBtn");
 
 		this.continueBtn = new Button(this.messageSource.getMessage(Message.CONTINUE));
+		this.continueBtn.setDebugId("continueBtn");
 		this.continueBtn.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 
 	}
@@ -132,9 +138,11 @@ public class NameHandlingDialog extends BaseSubWindow implements BreedingManager
 	@Override
 	public void layoutComponents() {
 		this.mainLayout = new VerticalLayout();
+		this.mainLayout.setDebugId("mainLayout");
 		this.mainLayout.setSpacing(true);
 
 		final HorizontalLayout setAsPreferredNameLayout = new HorizontalLayout();
+		setAsPreferredNameLayout.setDebugId("setAsPreferredNameLayout");
 		setAsPreferredNameLayout.setSpacing(true);
 		setAsPreferredNameLayout.addComponent(this.setAsPreferredNameLbl);
 		setAsPreferredNameLayout.addComponent(this.setAsPreferredNameOption);
@@ -142,6 +150,7 @@ public class NameHandlingDialog extends BaseSubWindow implements BreedingManager
 		this.mainLayout.addComponent(setAsPreferredNameLayout);
 
 		final HorizontalLayout useAsPreferredLayout = new HorizontalLayout();
+		useAsPreferredLayout.setDebugId("useAsPreferredLayout");
 		useAsPreferredLayout.setSpacing(true);
 		useAsPreferredLayout.addComponent(this.useAsPreferredLbl);
 		useAsPreferredLayout.addComponent(this.nameTypesComboBox);
@@ -149,6 +158,7 @@ public class NameHandlingDialog extends BaseSubWindow implements BreedingManager
 		this.mainLayout.addComponent(useAsPreferredLayout);
 
 		final HorizontalLayout buttonLayout = new HorizontalLayout();
+		buttonLayout.setDebugId("buttonLayout");
 		buttonLayout.setSpacing(true);
 		buttonLayout.setWidth("100%");
 		buttonLayout.addComponent(this.cancelBtn);

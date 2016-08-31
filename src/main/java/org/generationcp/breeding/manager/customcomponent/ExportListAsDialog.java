@@ -114,20 +114,25 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 		this.exportWarningMessage = this.messageSource.getMessage(Message.EXPORT_WARNING_MESSAGE);
 
 		this.exportFormalLbl = new Label(this.messageSource.getMessage(Message.EXPORT_FORMAT).toUpperCase());
+		this.exportFormalLbl.setDebugId("exportFormalLbl");
 		this.exportFormalLbl.setStyleName(Bootstrap.Typography.H2.styleName());
 
 		this.chooseAnExportLbl = new Label(this.messageSource.getMessage(Message.CHOOSE_AN_EXPORT_FORMAT) + ":");
+		this.chooseAnExportLbl.setDebugId("chooseAnExportLbl");
 
 		this.formatOptionsCbx = new ComboBox();
+		this.formatOptionsCbx.setDebugId("formatOptionsCbx");
 		this.formatOptionsCbx.setImmediate(true);
 		this.formatOptionsCbx.setNullSelectionAllowed(false);
 		this.formatOptionsCbx.setTextInputAllowed(false);
 		this.formatOptionsCbx.setWidth("250px");
 
 		this.cancelButton = new Button(this.messageSource.getMessage(Message.CANCEL));
+		this.cancelButton.setDebugId("cancelButton");
 		this.cancelButton.setWidth("80px");
 
 		this.finishButton = new Button(this.messageSource.getMessage(Message.FINISH));
+		this.finishButton.setDebugId("finishButton");
 		this.finishButton.setWidth("80px");
 		this.finishButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 	}
@@ -200,11 +205,13 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 		this.setWidth("450px");
 
 		final HorizontalLayout fieldLayout = new HorizontalLayout();
+		fieldLayout.setDebugId("fieldLayout");
 		fieldLayout.setSpacing(true);
 		fieldLayout.addComponent(this.chooseAnExportLbl);
 		fieldLayout.addComponent(this.formatOptionsCbx);
 
 		final HorizontalLayout buttonLayout = new HorizontalLayout();
+		buttonLayout.setDebugId("buttonLayout");
 		buttonLayout.setHeight("50px");
 		buttonLayout.setWidth("100%");
 		buttonLayout.setSpacing(true);
@@ -214,6 +221,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 		buttonLayout.setComponentAlignment(this.finishButton, Alignment.BOTTOM_LEFT);
 
 		this.mainLayout = new VerticalLayout();
+		this.mainLayout.setDebugId("mainLayout");
 		this.mainLayout.setSpacing(true);
 		this.mainLayout.addComponent(this.exportFormalLbl);
 		this.mainLayout.addComponent(fieldLayout);

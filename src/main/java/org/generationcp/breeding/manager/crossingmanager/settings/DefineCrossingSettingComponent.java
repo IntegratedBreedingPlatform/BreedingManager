@@ -88,15 +88,19 @@ public class DefineCrossingSettingComponent extends CssLayout implements Breedin
 	public void instantiateComponents() {
 
 		this.defineCrossingSettingsLabel = new Label(this.messageSource.getMessage(Message.DEFINE_CROSSING_SETTINGS).toUpperCase());
+		this.defineCrossingSettingsLabel.setDebugId("defineCrossingSettingsLabel");
 		this.defineCrossingSettingsLabel.setStyleName(Bootstrap.Typography.H2.styleName());
 
 		this.crossingSettingsHelp = new Label(this.messageSource.getMessage(Message.CROSSING_SETTINGS_HELP), Label.CONTENT_XHTML);
+		this.crossingSettingsHelp.setDebugId("crossingSettingsHelp");
 		this.crossingSettingsHelp.addStyleName("gcp-content-help-text");
 
 		this.selectSetting = new CheckBox(this.messageSource.getMessage(Message.LOAD_PREVIOUSLY_SAVED_SETTING) + ":");
+		this.selectSetting.setDebugId("selectSetting");
 		this.selectSetting.setImmediate(true);
 
 		this.settingsComboBox = new ComboBox();
+		this.settingsComboBox.setDebugId("settingsComboBox");
 		this.settingsComboBox.setImmediate(true);
 		this.settingsComboBox.setNullSelectionAllowed(true);
 		this.settingsComboBox.setTextInputAllowed(false);
@@ -175,6 +179,7 @@ public class DefineCrossingSettingComponent extends CssLayout implements Breedin
 	public void layoutComponents() {
 
 		final HorizontalLayout crossingForm = new HorizontalLayout();
+		crossingForm.setDebugId("crossingForm");
 
 		crossingForm.addComponent(this.selectSetting);
 		crossingForm.addComponent(this.settingsComboBox);
