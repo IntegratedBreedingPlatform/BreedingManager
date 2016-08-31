@@ -298,7 +298,7 @@ public class SaveGermplasmListActionTest {
 		final Germplasm germplasm = this.germplasmNameObjects.get(0).getGermplasm();
 		final List<Name> names = this.action.prepareAllNamesToAdd(importedGermplasm, existingNameUdflds, germplasm, null);
 
-		Assert.assertTrue("The names should not be empty", !names.isEmpty());
+		Assert.assertTrue("The imported name is not existing in the database so the names list should not be empty", !names.isEmpty());
 		final Name resultName = names.get(0);
 		Assert.assertEquals("The gid should be " + germplasm.getGid(), germplasm.getGid(), resultName.getGermplasmId());
 		Assert.assertEquals("The typeid should be 0", 0, resultName.getTypeId().intValue());
@@ -318,7 +318,7 @@ public class SaveGermplasmListActionTest {
 		final List<Name> existingNames = this.nameTDI.createNameList(1);
 		final List<Name> names = this.action.prepareAllNamesToAdd(importedGermplasm, existingNameUdflds, germplasm, existingNames);
 
-		Assert.assertTrue("The names should be empty", names.isEmpty());
+		Assert.assertTrue("The imported name is already existing in the database so the names list should be empty", names.isEmpty());
 	}
 		
 	@Test
