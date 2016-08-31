@@ -325,15 +325,15 @@ public class SaveGermplasmListActionTest {
 	public void testSaveGermplasmListDataRecordsWhereImportedNamesNotExistingInTheDB() {
 		final List<ImportedGermplasm> importedGermplasms = this.importedGermplasmList.getImportedGermplasms();
 		this.action.saveGermplasmListDataRecords(germplasmNameObjects, germplasmList, importedGermplasms, doNotCreateGermplasmsWithId);
-		Mockito.verify(this.germplasmManager, Mockito.times(1)).addGermplasmName(Matchers.anyList());
+		Mockito.verify(this.germplasmManager, Mockito.times(1)).addGermplasmName(Matchers.anyListOf(Name.class));
 	}
 	
 	@Test
 	public void testSaveGermplasmListDataRecordsWhereImportedNamesExistingInTheDB() {
 		final List<ImportedGermplasm> importedGermplasms = this.importedGermplasmList.getImportedGermplasms();
-		Mockito.doReturn(this.createNamesMap(importedGermplasms.size())).when(this.germplasmManager).getNamesByGidsAndNTypeIdsInMap(Matchers.anyList(), Matchers.anyList());
+		Mockito.doReturn(this.createNamesMap(importedGermplasms.size())).when(this.germplasmManager).getNamesByGidsAndNTypeIdsInMap(Matchers.anyListOf(Integer.class), Matchers.anyListOf(Integer.class));
 		this.action.saveGermplasmListDataRecords(germplasmNameObjects, germplasmList, importedGermplasms, doNotCreateGermplasmsWithId);
-		Mockito.verify(this.germplasmManager, Mockito.times(0)).addGermplasmName(Matchers.anyList());
+		Mockito.verify(this.germplasmManager, Mockito.times(0)).addGermplasmName(Matchers.anyListOf(Name.class));
 	}
 
 	private Map<Integer, List<Name>> createNamesMap(int size) {
