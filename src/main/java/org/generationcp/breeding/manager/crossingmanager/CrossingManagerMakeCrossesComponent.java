@@ -161,6 +161,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 					@Override
 					protected void doInTransactionWithoutResult(final TransactionStatus status) {
+						CrossingManagerMakeCrossesComponent.this.crossesTableComponent.clearCrossesTable();
 						// Female - Male Multiplication
 						if (CrossType.MULTIPLY.equals(type)) {
 							CrossingManagerMakeCrossesComponent.this.crossesTableComponent.multiplyParents(femaleList, maleList,
