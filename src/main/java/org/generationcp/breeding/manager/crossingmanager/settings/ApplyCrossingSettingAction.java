@@ -4,6 +4,7 @@ package org.generationcp.breeding.manager.crossingmanager.settings;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -16,8 +17,10 @@ import org.generationcp.breeding.manager.crossingmanager.xml.AdditionalDetailsSe
 import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
+import org.generationcp.breeding.manager.util.BreedingManagerTransformationUtil;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.util.CrossingUtil;
+import org.generationcp.commons.util.TransformationUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -27,6 +30,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 
 @Configurable
 public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateListener {
@@ -63,34 +70,36 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 		if (this.container != null && this.container.getCrossesMade() != null && this.container.getCrossesMade().getCrossesMap() != null) {
 
 			// Use same breeding method for all crosses
+			final Set<Germplasm> germplasms = this.container.getCrossesMade().getCrossesMap().keySet();
 			if (!methodSetting.isBasedOnStatusOfParentalLines()) {
 				Integer breedingMethodSelected = methodSetting.getMethodId();
-				for (Germplasm germplasm : this.container.getCrossesMade().getCrossesMap().keySet()) {
+				for (Germplasm germplasm : germplasms) {
 					germplasm.setMethodId(breedingMethodSelected);
 				}
 
 				// Use CrossingManagerUtil to set breeding method based on parents
 			} else {
-				for (Germplasm germplasm : this.container.getCrossesMade().getCrossesMap().keySet()) {
+				final ImmutableMap<Integer, Germplasm> gidAncestry = getGermplasmAncestryAsMap(germplasms);
+				for (Germplasm germplasm : germplasms) {
 					Integer femaleGid = germplasm.getGpid1();
 					Integer maleGid = germplasm.getGpid2();
 
 					try {
-						Germplasm female = this.germplasmDataManager.getGermplasmByGID(femaleGid);
-						Germplasm male = this.germplasmDataManager.getGermplasmByGID(maleGid);
+						Germplasm female = gidAncestry.get(femaleGid);
+						Germplasm male = gidAncestry.get(maleGid);
 
 						Germplasm motherOfFemale = null;
 						Germplasm fatherOfFemale = null;
 						if (female != null) {
-							motherOfFemale = this.germplasmDataManager.getGermplasmByGID(female.getGpid1());
-							fatherOfFemale = this.germplasmDataManager.getGermplasmByGID(female.getGpid2());
+							motherOfFemale = gidAncestry.get(female.getGpid1());
+							fatherOfFemale = gidAncestry.get(female.getGpid2());
 						}
 
 						Germplasm motherOfMale = null;
 						Germplasm fatherOfMale = null;
 						if (male != null) {
-							motherOfMale = this.germplasmDataManager.getGermplasmByGID(male.getGpid1());
-							fatherOfMale = this.germplasmDataManager.getGermplasmByGID(male.getGpid2());
+							motherOfMale = gidAncestry.get(male.getGpid1());
+							fatherOfMale = gidAncestry.get(male.getGpid2());
 						}
 						CrossingManagerUtil.setCrossingBreedingMethod(germplasm, female, male, motherOfFemale, fatherOfFemale,
 								motherOfMale, fatherOfMale);
@@ -117,6 +126,17 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 		}
 
 		return false;
+	}
+
+	private ImmutableMap<Integer, Germplasm> getGermplasmAncestryAsMap(final Set<Germplasm> germplasms) {
+		final ImmutableSet<Integer> allFemaleParentGidsFromGermplasmList = TransformationUtil.getAllFemaleParentGidsFromGermplasmList(germplasms);
+		final ImmutableSet<Integer> allMaleParentGidsFromGermplasmList = TransformationUtil.getAllMaleParentGidsFromGermplasmList(germplasms);
+		final ImmutableSet<Integer> femaleAndMaleParentGids =
+				new ImmutableSet.Builder<Integer>().addAll(allFemaleParentGidsFromGermplasmList)
+						.addAll(allMaleParentGidsFromGermplasmList).build();
+		final List<Germplasm> germplasmWithAllNamesAndAncestry =
+				this.germplasmDataManager.getGermplasmWithAllNamesAndAncestry(femaleAndMaleParentGids, 1);
+		return TransformationUtil.getGermplasmMap(germplasmWithAllNamesAndAncestry);
 	}
 
 	protected List<Pair<Germplasm, Name>> extractGermplasmPairList(Map<Germplasm, Name> germplasmNameMap) {

@@ -14,16 +14,21 @@ package org.generationcp.breeding.manager.crossingmanager.actions;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.commons.util.TransformationUtil;
+import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
@@ -31,6 +36,7 @@ import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.service.api.GermplasmGroupingService;
+import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.generationcp.middleware.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +45,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
+
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 
 /**
  * Creates Germplasm, GermplasmList, GermplasmListData records for crosses defined. Adds a ProjectActivity (Workbench) record for the save
@@ -89,7 +98,9 @@ public class SaveCrossesMadeAction implements Serializable {
 
 	@Autowired
 	private CrossExpansionProperties crossExpansionProperties;
-
+	
+	private PedigreeService pedigreeService;
+	
 	private GermplasmList germplasmList;
 	private List<GermplasmListData> existingListEntries = new ArrayList<GermplasmListData>();
 	private List<Germplasm> existingGermplasms = new ArrayList<Germplasm>();
@@ -100,10 +111,18 @@ public class SaveCrossesMadeAction implements Serializable {
 
 	public SaveCrossesMadeAction(final GermplasmList germplasmList) {
 		this.germplasmList = germplasmList;
+		final ManagerFactory managerFactory = ManagerFactory.getCurrentManagerFactoryThreadLocal().get();
+		if (managerFactory != null) {
+			this.pedigreeService = managerFactory.getPedigreeService();
+		} else {
+			throw new IllegalStateException(
+					"Must have access to the Manager Factory thread local valiable. " + "Please contact support for further help.");
+		}
 	}
 
 	public SaveCrossesMadeAction() {
 		super();
+
 	}
 
 	/**
@@ -298,19 +317,35 @@ public class SaveCrossesMadeAction implements Serializable {
 		this.germplasmListManager.updateGermplasmListData(this.existingListEntries);
 	}
 
+	private Map<Integer, String> updateWithActualPedigree(final Set<Germplasm> gids) {
+		final ImmutableSet<Integer> allGidsFromGermplasmListDataList = TransformationUtil.getAllGidsFromGermplasmList(gids);
+
+		final Iterable<List<Integer>> partition = Iterables.partition(allGidsFromGermplasmListDataList, 5000);
+		final Map<Integer, String> resultMap = new HashMap<>();
+		for (final List<Integer> partitionedList : partition) {
+			resultMap.putAll( this.pedigreeService.getCrossExpansions(new HashSet<Integer>(partitionedList), null, this.crossExpansionProperties));
+		}
+		return resultMap;
+	}
+
 	private void addNewGermplasmListData(final CrossesMade crossesMade, final List<Integer> germplasmIDs, final GermplasmList list) {
 		final Iterator<Integer> germplasmIdIterator = germplasmIDs.iterator();
 		final List<GermplasmListData> listToSave = new ArrayList<GermplasmListData>();
+		
 		int ctr = 0;
-
 		int entryId = this.existingListEntries.size() + 1;
+
+		final Map<Germplasm, Name> crossesMap = crossesMade.getCrossesMap();
+		final Set<Germplasm> keySet = crossesMap.keySet();
+		final Map<Integer, String> pedigreeMap = updateWithActualPedigree(keySet);
+
 		for (final Map.Entry<Germplasm, Name> entry : crossesMade.getCrossesMap().entrySet()) {
 			if (this.germplasmList == null || this.indicesOfAddedCrosses.contains(ctr)) {
 				final Integer gid = germplasmIdIterator.next();
 				final String designation = entry.getValue().getNval();
 				final String groupName = this.getFemaleMaleCrossName(crossesMade, designation, ctr);
 
-				final GermplasmListData germplasmListData = this.buildGermplasmListData(list, gid, entryId, designation, groupName);
+				final GermplasmListData germplasmListData = this.buildGermplasmListData(list, gid, entryId, designation, groupName, pedigreeMap);
 
 				listToSave.add(germplasmListData);
 				entryId++;
@@ -375,10 +410,9 @@ public class SaveCrossesMadeAction implements Serializable {
 	}
 
 	private GermplasmListData buildGermplasmListData(final GermplasmList list, final Integer gid, final int entryId,
-			final String designation, final String groupName) {
+			final String designation, final String groupName, Map<Integer, String> pedigreeMap) {
 
 		final String groupNameSplit[] = groupName.split(",");
-		final String grpName = groupNameSplit[0];
 		final String seedSource = groupNameSplit[1];
 
 		final GermplasmListData germplasmListData = new GermplasmListData();
@@ -389,7 +423,7 @@ public class SaveCrossesMadeAction implements Serializable {
 		germplasmListData.setSeedSource(seedSource);
 		germplasmListData.setDesignation(designation);
 		germplasmListData.setStatus(SaveCrossesMadeAction.LIST_DATA_STATUS);
-		germplasmListData.setGroupName(grpName);
+		germplasmListData.setGroupName(pedigreeMap.get(gid));
 		germplasmListData.setLocalRecordId(SaveCrossesMadeAction.LIST_DATA_LRECID);
 
 		return germplasmListData;
