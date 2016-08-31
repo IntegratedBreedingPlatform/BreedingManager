@@ -2,6 +2,10 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
@@ -16,6 +20,7 @@ import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
+import org.generationcp.middleware.pojos.Germplasm;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -132,9 +137,10 @@ public class MakeCrossesTableComponentTest {
 	@Test
 	public void testAddItemToMakeCrossesTable_MultiplyParents_WhenTheExcludeSelfIsTrueAndParentsAreDifferent() {
 		this.maleParent = new GermplasmListEntry(2, 2, 2);
-
+		final Set<CrossParents> existingCrosses = new HashSet<>();
+		final Map<Integer, Germplasm> germplasmWithPreferredName = new HashMap<>();
 		this.makeCrossesTableComponent.addItemToMakeCrossesTable(true, this.femaleParent, this.femaleSource, this.maleParent,
-				this.maleSource, this.parents);
+				this.maleSource, this.parents, existingCrosses, germplasmWithPreferredName);
 
 		try {
 			Mockito.verify(this.tableCrossesMade, Mockito.times(1)).addItem(new Object[] {1, Matchers.anyString(),
@@ -146,9 +152,11 @@ public class MakeCrossesTableComponentTest {
 
 	@Test
 	public void testAddItemToMakeCrossesTable_MultiplyParents_WhenTheExcludeSelfIsTrueAndParentsAreTheSame() {
+		final Set<CrossParents> existingCrosses = new HashSet<>();
+		final Map<Integer, Germplasm> germplasmWithPreferredName = new HashMap<>();
 
 		this.makeCrossesTableComponent.addItemToMakeCrossesTable(true, this.femaleParent, this.femaleSource, this.maleParent,
-				this.maleSource, this.parents);
+				this.maleSource, this.parents, existingCrosses, germplasmWithPreferredName);
 
 		try {
 			Mockito.verify(this.tableCrossesMade, Mockito.times(0)).addItem(new Object[] {1, Matchers.anyString(),
@@ -161,9 +169,11 @@ public class MakeCrossesTableComponentTest {
 	@Test
 	public void testAddItemToMakeCrossesTable_MultiplyParents_WhenTheExcludeSelfIsFalse() {
 		this.maleParent = new GermplasmListEntry(2, 2, 2);
+		final Set<CrossParents> existingCrosses = new HashSet<>();
+		final Map<Integer, Germplasm> germplasmWithPreferredName = new HashMap<>();
 
 		this.makeCrossesTableComponent.addItemToMakeCrossesTable(false, this.femaleParent, this.femaleSource, this.maleParent,
-				this.maleSource, this.parents);
+				this.maleSource, this.parents, existingCrosses, germplasmWithPreferredName);
 
 		try {
 			Mockito.verify(this.tableCrossesMade, Mockito.times(1)).addItem(new Object[] {1, Matchers.anyString(),
@@ -176,9 +186,11 @@ public class MakeCrossesTableComponentTest {
 	@Test
 	public void testAddItemToMakeCrossesTable_TopToBottomCrosses_WhenTheExcludeSelfIsTrueAndParentsAreDifferent() {
 		this.maleParent = new GermplasmListEntry(2, 2, 2);
+		final Set<CrossParents> existingCrosses = new HashSet<>();
+		final Map<Integer, Germplasm> germplasmWithPreferredName = new HashMap<>();
 
 		this.makeCrossesTableComponent.addItemToMakeCrossesTable(this.listnameFemaleParent, this.listnameMaleParent, true,
-				this.femaleParent, this.maleParent);
+				this.femaleParent, this.maleParent, existingCrosses, germplasmWithPreferredName);
 		try {
 			Mockito.verify(this.tableCrossesMade, Mockito.times(1)).addItem(new Object[] {1, Matchers.anyString(),
 					this.femaleParent.getDesignation(), this.maleParent.getDesignation(), Matchers.anyString()}, this.parents);
@@ -189,8 +201,11 @@ public class MakeCrossesTableComponentTest {
 
 	@Test
 	public void testAddItemToMakeCrossesTable_TopToBottomCrosses_WhenTheExcludeSelfIsTrueAndParentsAreTheSame() {
+		final Set<CrossParents> existingCrosses = new HashSet<>();
+		final Map<Integer, Germplasm> germplasmWithPreferredName = new HashMap<>();
+
 		this.makeCrossesTableComponent.addItemToMakeCrossesTable(this.listnameFemaleParent, this.listnameMaleParent, true,
-				this.femaleParent, this.maleParent);
+				this.femaleParent, this.maleParent, existingCrosses, germplasmWithPreferredName);
 		try {
 			Mockito.verify(this.tableCrossesMade, Mockito.times(0)).addItem(new Object[] {1, Matchers.anyString(),
 					this.femaleParent.getDesignation(), this.maleParent.getDesignation(), Matchers.anyString()}, this.parents);
@@ -202,9 +217,11 @@ public class MakeCrossesTableComponentTest {
 	@Test
 	public void testAddItemToMakeCrossesTable_TopToBottomCrosses_WhenTheExcludeSelfIsFalse() {
 		this.maleParent = new GermplasmListEntry(2, 2, 2);
+		final Set<CrossParents> existingCrosses = new HashSet<>();
+		final Map<Integer, Germplasm> germplasmWithPreferredName = new HashMap<>();
 
 		this.makeCrossesTableComponent.addItemToMakeCrossesTable(this.listnameFemaleParent, this.listnameMaleParent, false,
-				this.femaleParent, this.maleParent);
+				this.femaleParent, this.maleParent, existingCrosses, germplasmWithPreferredName);
 		try {
 			Mockito.verify(this.tableCrossesMade, Mockito.times(1)).addItem(new Object[] {1, Matchers.anyString(),
 					this.femaleParent.getDesignation(), this.maleParent.getDesignation(), Matchers.anyString()}, this.parents);
