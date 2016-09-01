@@ -62,11 +62,11 @@ public class TableWithSelectAllLayout extends TableLayout implements BreedingMan
 	}
 
 	@Override
-	public Table getTable() {
+	public ControllableRefreshTable getTable() {
 		return this.table;
 	}
 	
-	public void setTable(Table table){
+	public void setTable(ControllableRefreshTable table){
 		this.table = table;
 	}
 

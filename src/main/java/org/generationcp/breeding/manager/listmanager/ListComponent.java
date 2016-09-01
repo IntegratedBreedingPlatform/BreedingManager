@@ -86,6 +86,8 @@ import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -2018,9 +2020,20 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}
 
 	public void viewInventoryActionConfirmed() {
-		this.listInventoryTable.loadInventoryData();
-
-		this.changeToInventoryView();
+		// loading the Inventory View page : fetch data from the DB
+		Monitor monitor = MonitorFactory.start("org.generationcp.breeding.manager.listmanager.ListComponent.viewInventoryActionConfirmed:loadInventoryData");
+		try {
+			this.listInventoryTable.loadInventoryData();
+		} finally {
+			monitor.stop();			
+		}
+		// add inventory values to the existing table
+		Monitor monitor2 = MonitorFactory.start("org.generationcp.breeding.manager.listmanager.ListComponent.viewInventoryActionConfirmed:changeToInventoryView");		
+		try {
+			this.changeToInventoryView();
+		} finally {
+			monitor2.stop();			
+		}
 	}
 
 	public void reserveInventoryAction() {
