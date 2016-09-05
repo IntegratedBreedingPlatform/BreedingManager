@@ -163,6 +163,7 @@ public class DropHandlerMethods {
 		
 		final Map<Integer, String> crossExpansions = this.getCrossExpansions(gids);
 		final Map<Integer, Germplasm> gidGermplasmMap = generateGidGermplasmMap(gids);
+		final Map<Integer, String> preferredNames = this.germplasmDataManager.getPreferredNamesByGids(gids);
 		
 		try {
 			for (Integer gid : gids){
@@ -174,10 +175,6 @@ public class DropHandlerMethods {
 				gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 
 				String crossExpansion = crossExpansions.get(gid);
-
-				final List<Integer> importedGermplasmGids = new ArrayList<Integer>();
-				importedGermplasmGids.add(gid);
-				final Map<Integer, String> preferredNames = this.germplasmDataManager.getPreferredNamesByGids(importedGermplasmGids);
 				final String preferredName = preferredNames.get(gid);
 				final Button designationButton =
 						new Button(preferredName, new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true, true));
@@ -238,6 +235,7 @@ public class DropHandlerMethods {
 					newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
 				}
 
+				//TODO get plot code values in bulk for all GIDS to improve performance
 				newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(this.germplasmDataManager.getPlotCodeValue(gid));
 				newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
 				newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(crossExpansion);
