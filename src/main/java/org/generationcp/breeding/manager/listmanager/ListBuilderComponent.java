@@ -42,9 +42,9 @@ import org.generationcp.breeding.manager.listmanager.listeners.ResetListButtonCl
 import org.generationcp.breeding.manager.listmanager.listeners.SaveListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
 import org.generationcp.breeding.manager.listmanager.util.DropHandlerMethods.ListUpdatedEvent;
-import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -1123,8 +1123,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		return this.currentlySetGermplasmInfo;
 	}
 
-	public void addGermplasm(final Integer gid) {
-		this.dropHandler.addGermplasm(gid);
+	public void addGermplasm(final List<Integer> gids) {
+		this.dropHandler.addGermplasm(gids);
 		this.setHasUnsavedChanges(true);
 	}
 
