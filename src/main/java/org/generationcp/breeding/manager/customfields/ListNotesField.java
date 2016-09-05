@@ -33,20 +33,22 @@ public class ListNotesField extends HorizontalLayout implements InitializingBean
 	@Override
 	public void instantiateComponents() {
 		this.captionLabel = new Label(this.caption);
+		this.captionLabel.setDebugId("captionLabel");
 		this.captionLabel.addStyleName("bold");
 
 		this.listNotesTextArea = new TextArea();
+		this.listNotesTextArea.setDebugId("listNotesTextArea");
 		this.listNotesTextArea.setWidth("250px");
 		this.listNotesTextArea.setHeight("65px");
 		this.listNotesTextArea.setImmediate(true);
 
 		if (this.isMandatory) {
 			this.mandatoryMark = new MandatoryMarkLabel();
+			this.mandatoryMark.setDebugId("mandatoryMark");
 
 			this.listNotesTextArea.setRequired(true);
 			this.listNotesTextArea.setRequiredError("Please specify the notes of the list.");
 		}
-		this.listNotesTextArea.setDebugId("vaadin-notes-txtarea");
 	}
 
 	@Override

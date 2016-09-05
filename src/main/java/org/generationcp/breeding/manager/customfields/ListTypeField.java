@@ -47,20 +47,22 @@ public class ListTypeField extends HorizontalLayout implements InitializingBean,
 	@Override
 	public void instantiateComponents() {
 		this.captionLabel = new Label(this.caption);
+		this.captionLabel.setDebugId("captionLabel");
 		this.captionLabel.addStyleName("bold");
 
 		this.listTypeComboBox = new ComboBox();
+		this.listTypeComboBox.setDebugId("listTypeComboBox");
 		this.listTypeComboBox.setWidth("180px");
 		this.listTypeComboBox.setImmediate(true);
 
 		if (this.isMandatory) {
 			this.mandatoryMark = new MandatoryMarkLabel();
+			this.mandatoryMark.setDebugId("mandatoryMark");
 
 			this.listTypeComboBox.setNullSelectionAllowed(false);
 			this.listTypeComboBox.setRequired(true);
 			this.listTypeComboBox.setRequiredError("Please specify the type of the list.");
 		}
-		this.listTypeComboBox.setDebugId("vaadin-listtype-select");
 	}
 
 	@Override

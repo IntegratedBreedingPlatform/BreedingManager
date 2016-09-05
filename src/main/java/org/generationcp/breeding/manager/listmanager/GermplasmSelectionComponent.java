@@ -61,13 +61,16 @@ public class GermplasmSelectionComponent extends VerticalLayout implements Initi
 
 		this.headerLayout = new HorizontalLayout();
 		this.headerLayout.setDebugId("headerLayout");
+		this.headerLayout.setDebugId("headerLayout");
 
 		this.instructionLayout = new HorizontalLayout();
+		this.instructionLayout.setDebugId("instructionLayout");
 		this.headerLayout.setDebugId("instructionLayout");
 
 		this.instructionLayout.setWidth("100%");
 
 		this.headingLabel = new Label();
+		this.headingLabel.setDebugId("headingLabel");
 		this.headingLabel.setDebugId("headingLabel");
 		this.headingLabel.setImmediate(true);
 		this.headingLabel.setWidth("200px");
@@ -76,12 +79,15 @@ public class GermplasmSelectionComponent extends VerticalLayout implements Initi
 
 		this.searchDescription = new Label();
 		this.searchDescription.setDebugId("searchDescription");
+		this.searchDescription.setDebugId("searchDescription");
 		this.searchDescription.addStyleName("lm-word-wrap");
 		this.searchDescription.setHeight("55px");
 
 		this.searchResultsComponent = new GermplasmSearchResultsComponent(this.source);
 		this.searchResultsComponent.setDebugId("searchResultsComponent");
+		this.searchResultsComponent.setDebugId("searchResultsComponent");
 		this.searchBarComponent = new GermplasmSearchBarComponent(this.searchResultsComponent);
+		this.searchBarComponent.setDebugId("searchBarComponent");
 		this.searchBarComponent.setDebugId("searchBarComponent");
 
 	}
@@ -102,16 +108,21 @@ public class GermplasmSelectionComponent extends VerticalLayout implements Initi
 		this.setMargin(new MarginInfo(true, false, true, true));
 
 		final HorizontalLayout selectionHeaderContainer = new HorizontalLayout();
+		selectionHeaderContainer.setDebugId("selectionHeaderContainer");
 		selectionHeaderContainer.setWidth("100%");
 
 		final HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_LIST_DETAILS, this.headingLabel);
+		headingLayout.setDebugId("headingLayout");
+		headingLayout.setDebugId("headingLayout");
 		this.headerLayout.addComponent(headingLayout);
 		this.instructionLayout.addComponent(this.searchDescription);
 
 		final Panel listDataTablePanel = new Panel();
+		listDataTablePanel.setDebugId("listDataTablePanel");
 		listDataTablePanel.setStyleName(Reindeer.PANEL_LIGHT + " " + AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
 
 		final VerticalLayout listDataTableLayout = new VerticalLayout();
+		listDataTableLayout.setDebugId("listDataTableLayout");
 		listDataTableLayout.setMargin(true);
 		listDataTableLayout.addStyleName("listDataTableLayout");
 

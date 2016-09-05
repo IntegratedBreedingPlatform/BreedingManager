@@ -80,10 +80,13 @@ public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow imple
 		// center window within the browser
 		this.center();
 		this.confirmLabel = new Label("<center>" + this.getConfirmationMessage() + "</center>", Label.CONTENT_XHTML);
+		this.confirmLabel.setDebugId("confirmLabel");
 
 		this.searchCreateButton = new Button(NewDesignationForGermplasmConfirmDialog.SEARCH_OR_CREATE_NEW);
+		this.searchCreateButton.setDebugId("searchCreateButton");
 
 		this.addNameButton = new Button(NewDesignationForGermplasmConfirmDialog.ADD_NAME_TO_GID);
+		this.addNameButton.setDebugId("addNameButton");
 		this.addNameButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 	}
 
@@ -131,14 +134,17 @@ public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow imple
 	@Override
 	public void layoutComponents() {
 		this.mainLayout = new VerticalLayout();
+		this.mainLayout.setDebugId("mainLayout");
 		this.mainLayout.setSpacing(true);
 
 		this.mainLayout.addComponent(this.confirmLabel);
 
 		Label forSpaceLabel = new Label();
+		forSpaceLabel.setDebugId("forSpaceLabel");
 		this.mainLayout.addComponent(forSpaceLabel);
 
 		HorizontalLayout buttonLayout = new HorizontalLayout();
+		buttonLayout.setDebugId("buttonLayout");
 		buttonLayout.setSpacing(true);
 		buttonLayout.addComponent(this.searchCreateButton);
 		buttonLayout.addComponent(this.addNameButton);

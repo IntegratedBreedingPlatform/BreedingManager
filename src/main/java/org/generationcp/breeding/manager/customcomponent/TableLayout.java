@@ -26,15 +26,20 @@ public class TableLayout extends CssLayout implements BreedingManagerLayout, Ini
 		super();
 		this.recordCount = recordCount;
 		this.maxRecords = maxRecords;
+		emptyTableLabel.setDebugId("emptyTableLabel");
+
 	}
 
 	public TableLayout(int recordCount) {
 		super();
 		this.recordCount = recordCount;
 		this.maxRecords = recordCount;
+		emptyTableLabel.setDebugId("emptyTableLabel");
+
 	}
 
 	public TableLayout() {
+		emptyTableLabel.setDebugId("emptyTableLabel");
 	}
 
 	private void setup() {
@@ -46,6 +51,7 @@ public class TableLayout extends CssLayout implements BreedingManagerLayout, Ini
 	@Override
 	public void instantiateComponents() {
 		this.table = new BreedingManagerTable(this.recordCount, this.maxRecords);
+		this.table.setDebugId("table");
 		this.table.setImmediate(true);
 	}
 

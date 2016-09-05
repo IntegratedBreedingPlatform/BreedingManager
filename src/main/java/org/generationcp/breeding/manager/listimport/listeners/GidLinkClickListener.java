@@ -127,12 +127,14 @@ public class GidLinkClickListener implements Button.ClickListener, ItemClickList
 		Window germplasmWindow = new BaseSubWindow(windowTitle);
 
 		VerticalLayout layoutForGermplasm = new VerticalLayout();
+		layoutForGermplasm.setDebugId("layoutForGermplasm");
 		layoutForGermplasm.setMargin(false);
 		layoutForGermplasm.setWidth("100%");
 		layoutForGermplasm.setHeight("100%");
 		layoutForGermplasm.addStyleName("no-caption");
 
 		Embedded germplasmInfo = new Embedded("", germplasmBrowserLink);
+		germplasmInfo.setDebugId("germplasmInfo");
 		germplasmInfo.setType(Embedded.TYPE_BROWSER);
 		germplasmInfo.setSizeFull();
 

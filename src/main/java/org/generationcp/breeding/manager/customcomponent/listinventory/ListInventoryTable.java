@@ -150,6 +150,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		Container listInventoryContainer = this.listInventoryTable.getContainerDataSource();
 		
 		for (final GermplasmListData inventoryDetail : inventoryDetails) {
+
 			Monitor monitor = MonitorFactory.start("org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable.displayInventoryDetails:processInventoryRow");
 			try {
   			final Integer entryId = inventoryDetail.getEntryId();
@@ -218,11 +219,11 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
   					
   					
   				}
-  				((ControllableRefreshTable) listInventoryTable).enableContentRefreshing(true);
   			}
 			} finally {
 				monitor.stop();				
 			} 
+
 		}
 		// we disabled this at the beginning of the method so re-enable and refresh render the table
 		listInventoryTable.enableContentRefreshing(true);

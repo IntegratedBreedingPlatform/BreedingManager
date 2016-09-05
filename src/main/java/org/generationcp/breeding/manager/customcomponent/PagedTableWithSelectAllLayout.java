@@ -55,9 +55,11 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 	@Override
 	public void instantiateComponents() {
 		this.table = new PagedBreedingManagerTable(this.recordCount, this.maxRecords);
+		this.table.setDebugId("table");
 		this.table.setImmediate(true);
 
 		this.selectAllCheckBox = new CheckBox("Select All");
+		this.selectAllCheckBox.setDebugId("selectAllCheckBox");
 		this.selectAllCheckBox.setImmediate(true);
 	}
 

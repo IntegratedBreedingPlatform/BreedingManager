@@ -146,16 +146,20 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		this.setWidth("100%");
 
 		this.totalMatchingGermplasmsLabel = new Label("", Label.CONTENT_XHTML);
+		this.totalMatchingGermplasmsLabel.setDebugId("totalMatchingGermplasmsLabel");
 		this.totalMatchingGermplasmsLabel.setWidth("120px");
 		this.updateNoOfEntries(0);
 
 		this.totalSelectedMatchingGermplasmsLabel = new Label("", Label.CONTENT_XHTML);
+		this.totalSelectedMatchingGermplasmsLabel.setDebugId("totalSelectedMatchingGermplasmsLabel");
 		this.totalSelectedMatchingGermplasmsLabel.setWidth("95px");
 		this.updateNoOfSelectedEntries(0);
 
 		this.actionButton = new ActionButton();
+		this.actionButton.setDebugId("actionButton");
 
 		this.menu = new ContextMenu();
+		this.menu.setDebugId("menu");
 		this.menu.setWidth("250px");
 		this.menuAddNewEntry = this.menu.addItem(this.messageSource.getMessage(Message.ADD_SELECTED_ENTRIES_TO_NEW_LIST));
 		this.menuSelectAll = this.menu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
@@ -345,6 +349,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		this.setSpacing(true);
 
 		final HorizontalLayout leftHeaderLayout = new HorizontalLayout();
+		leftHeaderLayout.setDebugId("leftHeaderLayout");
 		leftHeaderLayout.setSpacing(true);
 		leftHeaderLayout.addComponent(this.totalMatchingGermplasmsLabel);
 		leftHeaderLayout.addComponent(this.totalSelectedMatchingGermplasmsLabel);
@@ -352,6 +357,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		leftHeaderLayout.setComponentAlignment(this.totalSelectedMatchingGermplasmsLabel, Alignment.MIDDLE_LEFT);
 
 		final HorizontalLayout headerLayout = new HorizontalLayout();
+		headerLayout.setDebugId("headerLayout");
 		headerLayout.setWidth("100%");
 		headerLayout.setSpacing(true);
 		headerLayout.addComponent(leftHeaderLayout);

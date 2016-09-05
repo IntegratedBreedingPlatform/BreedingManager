@@ -34,13 +34,16 @@ public class ListOwnerField extends HorizontalLayout implements InitializingBean
 	@Override
 	public void instantiateComponents() {
 		this.captionLabel = new Label(this.caption);
+		this.captionLabel.setDebugId("captionLabel");
 		this.captionLabel.addStyleName("bold");
 
 		this.listOwnerLabel = new Label();
+		this.listOwnerLabel.setDebugId("listOwnerLabel");
 		this.listOwnerLabel.setWidth("180px");
 
 		if (this.isMandatory) {
 			this.mandatoryMark = new MandatoryMarkLabel();
+			this.mandatoryMark.setDebugId("mandatoryMark");
 		}
 	}
 

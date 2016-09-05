@@ -270,11 +270,13 @@ public class Util {
 		}
 
 		VerticalLayout layout = new VerticalLayout();
+		layout.setDebugId("layout");
 		layout.setMargin(false);
 		layout.setSpacing(false);
 		layout.setHeight("500px");
 
 		Embedded listInfoPage = new Embedded("", listBrowserLink);
+		listInfoPage.setDebugId("listInfoPage");
 		listInfoPage.setType(Embedded.TYPE_BROWSER);
 		listInfoPage.setSizeFull();
 
@@ -320,11 +322,13 @@ public class Util {
 		}
 
 		VerticalLayout layout = new VerticalLayout();
+		layout.setDebugId("layout");
 		layout.setMargin(false);
 		layout.setSpacing(false);
 		layout.setHeight("500px");
 
 		Embedded listInfoPage = new Embedded("", listBrowserLink);
+		listInfoPage.setDebugId("listInfoPage");
 		listInfoPage.setType(Embedded.TYPE_BROWSER);
 		listInfoPage.setSizeFull();
 

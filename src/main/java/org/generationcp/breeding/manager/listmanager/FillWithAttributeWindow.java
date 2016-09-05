@@ -95,8 +95,10 @@ public class FillWithAttributeWindow extends BaseSubWindow implements Internatio
 	@Override
 	public void instantiateComponents() {
 		this.attributeBox = new ComboBox();
+		this.attributeBox.setDebugId("attributeBox");
 		this.attributeBox.setNullSelectionAllowed(false);
 		this.okButton = new Button();
+		this.okButton.setDebugId("okButton");
 	}
 
 	@Override
@@ -135,6 +137,7 @@ public class FillWithAttributeWindow extends BaseSubWindow implements Internatio
 		this.attributeBox.setWidth("300px");
 
 		this.attributeLayout = new HorizontalLayout();
+		this.attributeLayout.setDebugId("attributeLayout");
 		this.attributeLayout.setMargin(true);
 		this.attributeLayout.setSpacing(true);
 

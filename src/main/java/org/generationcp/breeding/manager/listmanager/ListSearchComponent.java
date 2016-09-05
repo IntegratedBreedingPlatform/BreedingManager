@@ -41,10 +41,13 @@ public class ListSearchComponent extends VerticalLayout implements International
 	@Override
 	public void instantiateComponents() {
 		this.searchDescription = new Label();
+		this.searchDescription.setDebugId("searchDescription");
 		this.searchDescription.setValue(this.messageSource.getMessage(Message.SELECT_A_MATCHING_LIST_TO_VIEW_THE_DETAILS));
 		this.searchDescription.setWidth("375px");
 		this.searchResultsComponent = new ListSearchResultsComponent(this.source, this.listSelectionLayout);
+		this.searchResultsComponent.setDebugId("searchResultsComponent");
 		this.searchBar = new ListSearchBarComponent(this.searchResultsComponent);
+		this.searchBar.setDebugId("searchBar");
 	}
 
 	@Override
@@ -65,6 +68,7 @@ public class ListSearchComponent extends VerticalLayout implements International
 		this.setSizeFull();
 
 		final HorizontalLayout instructionLayout = new HorizontalLayout();
+		instructionLayout.setDebugId("instructionLayout");
 
 		instructionLayout.setWidth("100%");
 
@@ -72,10 +76,12 @@ public class ListSearchComponent extends VerticalLayout implements International
 		instructionLayout.addStyleName("lm-subtitle");
 
 		final Panel listDataTablePanel = new Panel();
+		listDataTablePanel.setDebugId("listDataTablePanel");
 		listDataTablePanel.setSizeFull();
 		listDataTablePanel.addStyleName(AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
 
 		final VerticalLayout listDataTableLayout = new VerticalLayout();
+		listDataTableLayout.setDebugId("listDataTableLayout");
 		listDataTableLayout.setMargin(true);
 		listDataTableLayout.setSizeFull();
 

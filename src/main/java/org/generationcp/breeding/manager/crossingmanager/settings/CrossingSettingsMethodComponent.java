@@ -122,33 +122,41 @@ BreedingManagerLayout {
 	public void instantiateComponents() {
 
 		this.breedingMethodLabel = new Label(this.messageSource.getMessage(Message.BREEDING_METHOD));
+		this.breedingMethodLabel.setDebugId("breedingMethodLabel");
         this.breedingMethodLabel.setWidth("200px");
         this.breedingMethodLabel.setStyleName(Bootstrap.Typography.H4.styleName());
         this.breedingMethodLabel.addStyleName(AppConstants.CssStyles.BOLD);
 
 
 		this.breedingMethodDescLabel = new Label(this.messageSource.getMessage(Message.BREEDING_METHOD_DESC));
+		this.breedingMethodDescLabel.setDebugId("breedingMethodDescLabel");
 		this.breedingMethodDescLabel.addStyleName("gcp-content-help-text");
 
 		this.selectMethod = new CheckBox(this.messageSource.getMessage(Message.SELECT_A_METHOD_TO_USE_FOR_ALL_CROSSES) + ":");
+		this.selectMethod.setDebugId("selectMethod");
 		this.selectMethod.setImmediate(true);
         this.selectMethod.addStyleName(AppConstants.CssStyles.BOLD);
 
 		this.breedingMethods = new ComboBox();
+		this.breedingMethods.setDebugId("breedingMethods");
 		this.breedingMethods.setImmediate(true);
 		this.breedingMethods.setNullSelectionAllowed(false);
 
 		this.breedingMethodsHelpPopup = new Label();
+		this.breedingMethodsHelpPopup.setDebugId("breedingMethodsHelpPopup");
 		this.breedingMethodsHelpPopup.setEnabled(false);
 		this.breedingMethodsHelpPopup.setWidth("500px");
 
 		this.methodPopupView = new PopupView("?", this.breedingMethodsHelpPopup);
+		this.methodPopupView.setDebugId("methodPopupView");
 		this.methodPopupView.addStyleName(AppConstants.CssStyles.POPUP_VIEW);
 
 		this.favoriteMethodsCheckbox = new CheckBox(this.messageSource.getMessage(Message.SHOW_ONLY_FAVORITE_METHODS));
+		this.favoriteMethodsCheckbox.setDebugId("favoriteMethodsCheckbox");
 		this.favoriteMethodsCheckbox.setImmediate(true);
 		
 		this.breedingMethodsRadioBtn = new OptionGroup();
+		this.breedingMethodsRadioBtn.setDebugId("breedingMethodsRadioBtn");
 		this.breedingMethodsRadioBtn.setMultiSelect(false);
 		this.breedingMethodsRadioBtn.setImmediate(true);
 		this.breedingMethodsRadioBtn.setStyleName("v-select-optiongroup-horizontal");
@@ -157,6 +165,7 @@ BreedingManagerLayout {
 		this.breedingMethodsRadioBtn.select(this.messageSource.getMessage(Message.SHOW_GENERATIVE_METHODS));
 
 		this.manageFavoriteMethodsLink = new Button();
+		this.manageFavoriteMethodsLink.setDebugId("manageFavoriteMethodsLink");
 		this.manageFavoriteMethodsLink.setStyleName(BaseTheme.BUTTON_LINK);
 		this.manageFavoriteMethodsLink.setCaption(this.messageSource.getMessage(Message.MANAGE_METHODS));
 
@@ -280,8 +289,10 @@ BreedingManagerLayout {
 		this.methodPopupView.addStyleName("cs-inline-icon");
 
 		final VerticalLayout methodSelectLayout = new VerticalLayout();
+		methodSelectLayout.setDebugId("methodSelectLayout");
 
 		final HorizontalLayout selectWithPopupLayout = new HorizontalLayout();
+		selectWithPopupLayout.setDebugId("selectWithPopupLayout");
 		selectWithPopupLayout.addComponent(this.breedingMethods);
 		selectWithPopupLayout.addComponent(this.methodPopupView);
 
@@ -291,6 +302,7 @@ BreedingManagerLayout {
 		methodSelectLayout.addComponent(this.manageFavoriteMethodsLink);
 
 		final VerticalLayout internalPanelLayout = new VerticalLayout();
+		internalPanelLayout.setDebugId("internalPanelLayout");
 		internalPanelLayout.setSpacing(true);
 		internalPanelLayout.setMargin(true);
 		internalPanelLayout.addComponent(this.breedingMethodDescLabel);
@@ -298,11 +310,14 @@ BreedingManagerLayout {
 		internalPanelLayout.addComponent(methodSelectLayout);
 
 		final Panel breedingMethodPanel = new Panel();
+		breedingMethodPanel.setDebugId("breedingMethodPanel");
 		breedingMethodPanel.setWidth("460px");
 		breedingMethodPanel.setLayout(internalPanelLayout);
 		breedingMethodPanel.addStyleName("section_panel_layout");
 
 		final HeaderLabelLayout breedingMethodLayout = new HeaderLabelLayout(null, this.breedingMethodLabel);
+		breedingMethodLayout.setDebugId("breedingMethodLayout");
+		breedingMethodLayout.setDebugId("breedingMethodLayout");
 		this.addComponent(breedingMethodLayout);
 		this.addComponent(breedingMethodPanel);
 	}

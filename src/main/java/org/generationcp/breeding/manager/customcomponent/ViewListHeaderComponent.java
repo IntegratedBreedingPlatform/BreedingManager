@@ -66,49 +66,62 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 	@Override
 	public void instantiateComponents() {
 		this.nameLabel = new Label(this.messageSource.getMessage(Message.LIST_NAME) + ":");
+		this.nameLabel.setDebugId("nameLabel");
 		this.nameLabel.addStyleName("bold");
 
 		this.nameValueLabel = new Label(this.germplasmList.getName());
+		this.nameValueLabel.setDebugId("nameValueLabel");
 		this.nameValueLabel.setDescription(this.germplasmList.getName());
 		this.nameValueLabel.setWidth("200px");
 
 		this.ownerLabel = new Label(this.messageSource.getMessage(Message.LIST_OWNER_LABEL) + ":");
+		this.ownerLabel.setDebugId("ownerLabel");
 		this.ownerLabel.addStyleName("bold");
 		
 		final String ownerName = userNameMap.get(this.germplasmList.getUserId());
 		this.ownerValueLabel = new Label(ownerName);
+		this.ownerValueLabel.setDebugId("ownerValueLabel");
 		this.ownerValueLabel.setDescription(ownerName);
 		this.ownerValueLabel.setWidth("200px");
 
 		this.statusLabel = new Label(this.messageSource.getMessage(Message.STATUS_LABEL) + ":");
+		this.statusLabel.setDebugId("statusLabel");
 		this.statusLabel.addStyleName("bold");
 
 		this.statusValueLabel = new Label(this.getStatusValue(this.germplasmList.getStatus()));
+		this.statusValueLabel.setDebugId("statusValueLabel");
 		this.statusValueLabel.setWidth("200px");
 
 		this.descriptionLabel = new Label(this.messageSource.getMessage(Message.DESCRIPTION_LABEL) + ":");
+		this.descriptionLabel.setDebugId("descriptionLabel");
 		this.descriptionLabel.addStyleName("bold");
 
 		final String description = BreedingManagerUtil.getDescriptionForDisplay(this.germplasmList);
 		this.descriptionValueLabel = new Label(description);
+		this.descriptionValueLabel.setDebugId("descriptionValueLabel");
 		this.descriptionValueLabel.setDescription(this.germplasmList.getDescription());
 		this.descriptionValueLabel.setWidth("200px");
 
 		this.typeLabel = new Label(this.messageSource.getMessage(Message.TYPE_LABEL) + ":");
+		this.typeLabel.setDebugId("typeLabel");
 		this.typeLabel.addStyleName("bold");
 
 		final String typeValue = BreedingManagerUtil.getTypeString(this.germplasmList.getType(), listTypes);
 		this.typeValueLabel = new Label(typeValue);
+		this.typeValueLabel.setDebugId("typeValueLabel");
 		this.typeValueLabel.setDescription(typeValue);
 		this.typeValueLabel.setWidth("200px");
 
 		this.dateLabel = new Label(this.messageSource.getMessage(Message.DATE_LABEL) + ":");
+		this.dateLabel.setDebugId("dateLabel");
 		this.dateLabel.addStyleName("bold");
 
 		this.dateValueLabel = new Label(this.germplasmList.getDate().toString());
+		this.dateValueLabel.setDebugId("dateValueLabel");
 		this.dateValueLabel.setWidth("200px");
 
 		this.notesLabel = new Label(this.messageSource.getMessage(Message.NOTES) + ":");
+		this.notesLabel.setDebugId("notesLabel");
 		this.notesLabel.addStyleName("bold");
 
 		String notes = "-";
@@ -119,6 +132,7 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 			}
 		}
 		this.notesValueLabel = new Label(notes);
+		this.notesValueLabel.setDebugId("notesValueLabel");
 		this.notesValueLabel.setDescription(this.germplasmList.getNotes());
 	}
 
@@ -129,6 +143,7 @@ public class ViewListHeaderComponent extends GridLayout implements BreedingManag
 	public void setStatus(final int status) {
 		if (this.statusValueLabel == null) {
 			this.statusValueLabel = new Label();
+			this.statusValueLabel.setDebugId("statusValueLabel");
 		}
 		this.statusValueLabel.setValue(this.getStatusValue(status));
 		this.getGermplasmList().setStatus(status);

@@ -62,9 +62,11 @@ public class AssignCodesResultsDialog extends BaseSubWindow implements Initializ
 	@Override
 	public void instantiateComponents() {
 		this.okButton = new Button();
+		this.okButton.setDebugId("okButton");
 		this.okButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 
 		this.assignCodesResultsTable = new Table();
+		this.assignCodesResultsTable.setDebugId("assignCodesResultsTable");
 		this.assignCodesResultsTable.setWidth("100%");
 		this.assignCodesResultsTable.addContainerProperty("GID", Integer.class, null);
 		this.assignCodesResultsTable.addContainerProperty("Results", Label.class, null);
@@ -79,6 +81,7 @@ public class AssignCodesResultsDialog extends BaseSubWindow implements Initializ
 
 			final StringBuffer messageString = new StringBuffer();
 			final Label resultsList = new Label();
+			resultsList.setDebugId("resultsList");
 			resultsList.setContentMode(Label.CONTENT_XHTML);
 			resultsList.setStyleName("lst-assign-codes-results-message");
 
@@ -123,6 +126,7 @@ public class AssignCodesResultsDialog extends BaseSubWindow implements Initializ
 		this.center();
 
 		final VerticalLayout verticalLayout = new VerticalLayout();
+		verticalLayout.setDebugId("verticalLayout");
 		verticalLayout.setMargin(true);
 		verticalLayout.setSpacing(true);
 

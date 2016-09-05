@@ -68,11 +68,17 @@ public class AssignCodeCustomLayout {
 
 	public void instantiateComponents() {
 		this.programIdentifiersComboBox = new ComboBox();
+		this.programIdentifiersComboBox.setDebugId("programIdentifiersComboBox");
 		this.germplasmTypeComboBoxLevel1 = new ComboBox();
+		this.germplasmTypeComboBoxLevel1.setDebugId("germplasmTypeComboBoxLevel1");
 		this.germplasmTypeComboBoxLevel2 = new ComboBox();
+		this.germplasmTypeComboBoxLevel2.setDebugId("germplasmTypeComboBoxLevel2");
 		this.yearSuffixLevel1 = new TextField();
+		this.yearSuffixLevel1.setDebugId("yearSuffixLevel1");
 		this.yearSuffixLevel2 = new TextField();
+		this.yearSuffixLevel2.setDebugId("yearSuffixLevel2");
 		this.locationIdentifierCombobox = new ComboBox();
+		this.locationIdentifierCombobox.setDebugId("locationIdentifierCombobox");
 
 		// set immediate to true for those fields we will listen to for the changes on the screen
 		this.programIdentifiersComboBox.setImmediate(true);
@@ -222,6 +228,7 @@ public class AssignCodeCustomLayout {
 		//codes controls area
 		//Level 1
 		this.codeControlsLayoutLevel1 = new HorizontalLayout();
+		this.codeControlsLayoutLevel1.setDebugId("codeControlsLayoutLevel1");
 		this.codeControlsLayoutLevel1.setWidth("85%");
 		this.codeControlsLayoutLevel1.setHeight("60px");
 		this.codeControlsLayoutLevel1.setSpacing(false);
@@ -242,12 +249,14 @@ public class AssignCodeCustomLayout {
 		this.codeControlsLayoutLevel1.setComponentAlignment(this.yearSuffixLevel1, Alignment.MIDDLE_LEFT);
 
 		final Label sequenceLabel1 = new Label(SEQUENCE_LABEL);
+		sequenceLabel1.setDebugId("sequenceLabel1");
 		sequenceLabel1.addStyleName(LST_SEQUENCE_LABEL_CLASS);
 		this.codeControlsLayoutLevel1.addComponent(sequenceLabel1);
 		this.codeControlsLayoutLevel1.setComponentAlignment(sequenceLabel1, Alignment.MIDDLE_LEFT);
 
 		//Level 2
 		this.codeControlsLayoutLevel2 = new HorizontalLayout();
+		this.codeControlsLayoutLevel2.setDebugId("codeControlsLayoutLevel2");
 		this.codeControlsLayoutLevel2.setWidth("85%");
 		this.codeControlsLayoutLevel2.setHeight("60px");
 		this.codeControlsLayoutLevel2.setSpacing(false);
@@ -268,6 +277,7 @@ public class AssignCodeCustomLayout {
 		this.codeControlsLayoutLevel2.setComponentAlignment(this.yearSuffixLevel2, Alignment.MIDDLE_LEFT);
 
 		final Label sequenceLabel2 = new Label(SEQUENCE_LABEL);
+		sequenceLabel2.setDebugId("sequenceLabel2");
 		sequenceLabel2.addStyleName(LST_SEQUENCE_LABEL_CLASS);
 		this.codeControlsLayoutLevel2.addComponent(sequenceLabel2);
 		this.codeControlsLayoutLevel2.setComponentAlignment(sequenceLabel2, Alignment.MIDDLE_LEFT);

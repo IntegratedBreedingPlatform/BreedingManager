@@ -65,9 +65,11 @@ public class GermplasmGroupingResultsComponent extends BaseSubWindow implements 
 	@Override
 	public void instantiateComponents() {
 		this.okButton = new Button();
+		this.okButton.setDebugId("okButton");
 		this.okButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 
 		this.groupingResultsTable = new Table();
+		this.groupingResultsTable.setDebugId("groupingResultsTable");
 		this.groupingResultsTable.setWidth("100%");
 		this.groupingResultsTable.addContainerProperty("GID", Integer.class, null);
 		this.groupingResultsTable.addContainerProperty("Group Id (MGID)", Integer.class, null);
@@ -140,6 +142,7 @@ public class GermplasmGroupingResultsComponent extends BaseSubWindow implements 
 		this.center();
 
 		final VerticalLayout verticleLayout = new VerticalLayout();
+		verticleLayout.setDebugId("verticleLayout");
 		verticleLayout.setMargin(true);
 		verticleLayout.setSpacing(true);
 

@@ -220,6 +220,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 		}
 
 		this.saveListAsDialog = new SaveListAsDialog(this, this.germplasmList);
+		this.saveListAsDialog.setDebugId("saveListAsDialog");
 		// If not from popup
 		if (this.source.getGermplasmImportPopupSource() == null) {
 			this.getWindow().addWindow(this.saveListAsDialog);
@@ -232,6 +233,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 	public void popupGenerateStockIdsDialog() {
 
 		this.generateStockIdsDialog = new GenerateStockIDsDialog(this, this.germplasmList);
+		this.generateStockIdsDialog.setDebugId("generateStockIdsDialog");
 		// If not from popup
 		if (this.source.getGermplasmImportPopupSource() == null) {
 			this.getWindow().addWindow(this.generateStockIdsDialog);
@@ -343,26 +345,32 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 
 		if (this.source.getGermplasmImportPopupSource() == null) {
 			this.germplasmFieldsComponent = new GermplasmFieldsComponent(this.getWindow(), 200);
+			this.germplasmFieldsComponent.setDebugId("germplasmFieldsComponent");
 		} else {
 			this.germplasmFieldsComponent =
 					new GermplasmFieldsComponent(this.source.getGermplasmImportPopupSource().getParentWindow(), 200);
 		}
 
 		this.reviewImportDetailsLabel = new Label(this.messageSource.getMessage(Message.GERMPLASM_DETAILS_LABEL).toUpperCase());
+		this.reviewImportDetailsLabel.setDebugId("reviewImportDetailsLabel");
 		this.reviewImportDetailsLabel.addStyleName(Bootstrap.Typography.H4.styleName());
 
 		this.totalEntriesLabel = new Label("Total Entries: 0", Label.CONTENT_XHTML);
+		this.totalEntriesLabel.setDebugId("totalEntriesLabel");
 
 		this.initGermplasmDetailsTable();
 
 		this.selectPedigreeOptionsLabel = new Label(this.messageSource.getMessage(Message.SELECT_GID_ASSIGNMENT_OPTIONS).toUpperCase());
+		this.selectPedigreeOptionsLabel.setDebugId("selectPedigreeOptionsLabel");
 		this.selectPedigreeOptionsLabel.addStyleName(Bootstrap.Typography.H4.styleName());
 
 		this.pedigreeOptionsLabel = new Label(this.messageSource.getMessage(Message.PEDIGREE_OPTIONS_LABEL) + ":");
+		this.pedigreeOptionsLabel.setDebugId("pedigreeOptionsLabel");
 		this.pedigreeOptionsLabel.addStyleName(AppConstants.CssStyles.BOLD);
 		this.pedigreeOptionsLabel.setWidth("250px");
 
 		this.pedigreeOptionComboBox = new ComboBox();
+		this.pedigreeOptionComboBox.setDebugId("pedigreeOptionComboBox");
 		this.pedigreeOptionComboBox.setImmediate(true);
 		this.pedigreeOptionComboBox.setRequired(true);
 		this.pedigreeOptionComboBox.setWidth("450px");
@@ -373,9 +381,11 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 		this.automaticallyAcceptSingleMatchesCheckbox.setVisible(false);
 
 		this.backButton = new Button();
+		this.backButton.setDebugId("backButton");
 		this.backButton.setData(SpecifyGermplasmDetailsComponent.BACK_BUTTON_ID);
 
 		this.nextButton = new Button();
+		this.nextButton.setDebugId("nextButton");
 		this.nextButton.setData(SpecifyGermplasmDetailsComponent.NEXT_BUTTON_ID);
 		this.nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 	}
@@ -455,6 +465,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 
 		// Review Import Details Layout
 		final VerticalLayout importDetailsLayout = new VerticalLayout();
+		importDetailsLayout.setDebugId("importDetailsLayout");
 		importDetailsLayout.setSpacing(true);
 		importDetailsLayout.addComponent(this.reviewImportDetailsLabel);
 		importDetailsLayout.addComponent(this.totalEntriesLabel);
@@ -462,14 +473,17 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 
 		// Pedigree Options Layout
 		final VerticalLayout pedigreeOptionsLayout = new VerticalLayout();
+		pedigreeOptionsLayout.setDebugId("pedigreeOptionsLayout");
 		pedigreeOptionsLayout.setSpacing(true);
 
 		final VerticalLayout pedigreeControlsLayoutVL = new VerticalLayout();
+		pedigreeControlsLayoutVL.setDebugId("pedigreeControlsLayoutVL");
 		pedigreeControlsLayoutVL.setSpacing(true);
 		pedigreeControlsLayoutVL.addComponent(this.pedigreeOptionComboBox);
 		pedigreeControlsLayoutVL.addComponent(this.automaticallyAcceptSingleMatchesCheckbox);
 
 		final HorizontalLayout pedigreeControlsLayout = new HorizontalLayout();
+		pedigreeControlsLayout.setDebugId("pedigreeControlsLayout");
 		pedigreeControlsLayout.addComponent(this.pedigreeOptionsLabel);
 		pedigreeControlsLayout.addComponent(pedigreeControlsLayoutVL);
 
@@ -478,6 +492,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 
 		// Buttons Layout
 		final HorizontalLayout buttonLayout = new HorizontalLayout();
+		buttonLayout.setDebugId("buttonLayout");
 		buttonLayout.setWidth("100%");
 		buttonLayout.setHeight("40px");
 		buttonLayout.setSpacing(true);
@@ -488,8 +503,10 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 		buttonLayout.setComponentAlignment(this.nextButton, Alignment.BOTTOM_LEFT);
 
 		final VerticalLayout spacerLayout = new VerticalLayout();
+		spacerLayout.setDebugId("spacerLayout");
 		spacerLayout.setHeight("30px");
 		final VerticalLayout spacerLayout2 = new VerticalLayout();
+		spacerLayout2.setDebugId("spacerLayout2");
 		spacerLayout2.setHeight("30px");
 
 		this.addComponent(this.germplasmFieldsComponent);

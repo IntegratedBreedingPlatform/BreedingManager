@@ -97,12 +97,18 @@ public class AssignCodesDialog extends BaseSubWindow
 	@Override
 	public void instantiateComponents() {
 		this.codingLevelOptions = new OptionGroup();
+		this.codingLevelOptions.setDebugId("codingLevelOptions");
 		this.exampleText = new Label();
+		this.exampleText.setDebugId("exampleText");
 		this.cancelButton = new Button();
+		this.cancelButton.setDebugId("cancelButton");
 		this.continueButton = new Button();
+		this.continueButton.setDebugId("continueButton");
 		this.continueButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 		this.codesLayout = new VerticalLayout();
+		this.codesLayout.setDebugId("codesLayout");
 		this.exampleLayout = new VerticalLayout();
+		this.exampleLayout.setDebugId("exampleLayout");
 
 		// set immediate to true for those fields we will listen to for the changes on the screen
 		this.codingLevelOptions.setImmediate(true);
@@ -253,10 +259,12 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.center();
 
 		final VerticalLayout dialogLayout = new VerticalLayout();
+		dialogLayout.setDebugId("dialogLayout");
 		dialogLayout.setMargin(true);
 		dialogLayout.setSpacing(true);
 
 		final HorizontalLayout buttonLayout = new HorizontalLayout();
+		buttonLayout.setDebugId("buttonLayout");
 		buttonLayout.setWidth("100%");
 		buttonLayout.setHeight("40px");
 		buttonLayout.setSpacing(true);
@@ -268,6 +276,7 @@ public class AssignCodesDialog extends BaseSubWindow
 
 		// area with level options
 		final HorizontalLayout optionsLayout = new HorizontalLayout();
+		optionsLayout.setDebugId("optionsLayout");
 		optionsLayout.setWidth("100%");
 		optionsLayout.setHeight("60px");
 		optionsLayout.setSpacing(true);
@@ -282,6 +291,7 @@ public class AssignCodesDialog extends BaseSubWindow
 		this.exampleLayout.setSpacing(false);
 		this.exampleLayout.setStyleName("lst-example-layout");
 		final Label exampleLabel = new Label(this.messageSource.getMessage(Message.ASSIGN_CODES_EXAMPLE));
+		exampleLabel.setDebugId("exampleLabel");
 		exampleLabel.setStyleName("lst-margin-left");
 		exampleLabel.setSizeUndefined();
 		this.exampleLayout.addComponent(exampleLabel);
