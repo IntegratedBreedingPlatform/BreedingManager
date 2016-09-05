@@ -4,9 +4,12 @@ package org.generationcp.breeding.manager.listmanager.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.inventory.InventoryDropTargetContainer;
@@ -32,6 +35,7 @@ import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Iterables;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
@@ -139,136 +143,149 @@ public class DropHandlerMethods {
 
 	protected void addSelectedGermplasmsFromTable(final Table sourceTable) {
 		final List<Integer> selectedGermplasmIds = this.getSelectedItemIds(sourceTable);
+		final List<Integer> gidList = new ArrayList<>();
 		for (final Integer itemId : selectedGermplasmIds) {
 			// note, for paged table, the itemId !== GID, but there is a hidden reference GID there so we can retrive actual GID
 			// todo: lets cleanup that "_REF" string later
 			final Property internalGIDReference = sourceTable.getItem(itemId).getItemProperty(ColumnLabels.GID.getName() + "_REF");
 
 			if (internalGIDReference != null && internalGIDReference.getValue() != null) {
-				this.addGermplasm((Integer) internalGIDReference.getValue());
+				gidList.add((Integer) internalGIDReference.getValue());
 			} else {
-				this.addGermplasm(itemId);
+				gidList.add(itemId);
 			}
-
 		}
+		
+		this.addGermplasm(gidList);
 	}
 
-	public Integer addGermplasm(final Integer gid) {
+	public void addGermplasm(final List<Integer> gids) {
+		
+		final Map<Integer, String> crossExpansions = this.getCrossExpansions(gids);
+		final Map<Integer, Germplasm> gidGermplasmMap = generateGidGermplasmMap(gids);
+		
 		try {
+			for (Integer gid : gids){
+				final Integer newItemId = this.getNextListEntryId();
+				final Item newItem = this.targetTable.getContainerDataSource().addItem(newItemId);
 
-			final Germplasm germplasm = this.germplasmDataManager.getGermplasmByGID(gid);
+				final Button gidButton =
+						new Button(String.format("%s", gid), new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true, true));
+				gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 
-			final Integer newItemId = this.getNextListEntryId();
-			final Item newItem = this.targetTable.getContainerDataSource().addItem(newItemId);
+				String crossExpansion = crossExpansions.get(gid);
 
-			final Button gidButton =
-					new Button(String.format("%s", gid), new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true, true));
-			gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+				final List<Integer> importedGermplasmGids = new ArrayList<Integer>();
+				importedGermplasmGids.add(gid);
+				final Map<Integer, String> preferredNames = this.germplasmDataManager.getPreferredNamesByGids(importedGermplasmGids);
+				final String preferredName = preferredNames.get(gid);
+				final Button designationButton =
+						new Button(preferredName, new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true, true));
+				designationButton.setStyleName(BaseTheme.BUTTON_LINK);
+				designationButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_GERMPLASM_INFORMATION);
 
-			String crossExpansion = DropHandlerMethods.STRING_EMPTY;
-			if (germplasm != null) {
-				crossExpansion = this.getCrossExpansion(germplasm);
-			}
+				final CheckBox tagCheckBox = new CheckBox();
+				tagCheckBox.setDebugId("tagCheckBox");
+				tagCheckBox.setImmediate(true);
+				tagCheckBox.addListener(new ClickListener() {
 
-			final List<Integer> importedGermplasmGids = new ArrayList<Integer>();
-			importedGermplasmGids.add(gid);
-			final Map<Integer, String> preferredNames = this.germplasmDataManager.getPreferredNamesByGids(importedGermplasmGids);
-			final String preferredName = preferredNames.get(gid);
-			final Button designationButton =
-					new Button(preferredName, new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true, true));
-			designationButton.setStyleName(BaseTheme.BUTTON_LINK);
-			designationButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_GERMPLASM_INFORMATION);
+					protected static final long serialVersionUID = 1L;
 
-			final CheckBox tagCheckBox = new CheckBox();
-			tagCheckBox.setDebugId("tagCheckBox");
-			tagCheckBox.setImmediate(true);
-			tagCheckBox.addListener(new ClickListener() {
-
-				protected static final long serialVersionUID = 1L;
-
-				@Override
-				public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
-					final CheckBox itemCheckBox = (CheckBox) event.getButton();
-					if (((Boolean) itemCheckBox.getValue()).equals(true)) {
-						DropHandlerMethods.this.targetTable.select(newItemId);
-					} else {
-						DropHandlerMethods.this.targetTable.unselect(newItemId);
+					@Override
+					public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
+						final CheckBox itemCheckBox = (CheckBox) event.getButton();
+						if (((Boolean) itemCheckBox.getValue()).equals(true)) {
+							DropHandlerMethods.this.targetTable.select(newItemId);
+						} else {
+							DropHandlerMethods.this.targetTable.unselect(newItemId);
+						}
 					}
+
+				});
+
+				final Germplasm germplasm = gidGermplasmMap.get(gid);
+				final String groupIdDisplayValue = germplasm.getMgid() == 0 ? "-" : germplasm.getMgid().toString();
+				newItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(groupIdDisplayValue);
+
+				// Inventory Related Columns
+
+				// #1 Available Inventory
+				String availInv = DropHandlerMethods.STRING_EMPTY;
+				final Integer availInvGid = this.getAvailInvForGID(gid);
+				if (availInvGid != null) {
+					availInv = availInvGid.toString();
 				}
 
-			});
-
-			final String groupIdDisplayValue = germplasm.getMgid() == 0 ? "-" : germplasm.getMgid().toString();
-			newItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(groupIdDisplayValue);
-
-			// Inventory Related Columns
-
-			// #1 Available Inventory
-			String availInv = DropHandlerMethods.STRING_EMPTY;
-			final Integer availInvGid = this.getAvailInvForGID(gid);
-			if (availInvGid != null) {
-				availInv = availInvGid.toString();
-			}
-
-			final Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(this.listManagerMain, gid));
-			inventoryButton.setDebugId("inventoryButton");
-			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-			inventoryButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
-			newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-
-			if (availInv.equals(DropHandlerMethods.STRING_DASH)) {
-				inventoryButton.setEnabled(false);
-				inventoryButton.setDescription(DropHandlerMethods.NO_LOT_FOR_THIS_GERMPLASM);
-			} else {
+				final Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(this.listManagerMain, gid));
+				inventoryButton.setDebugId("inventoryButton");
+				inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 				inventoryButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
+				newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
+
+				if (availInv.equals(DropHandlerMethods.STRING_DASH)) {
+					inventoryButton.setEnabled(false);
+					inventoryButton.setDescription(DropHandlerMethods.NO_LOT_FOR_THIS_GERMPLASM);
+				} else {
+					inventoryButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
+				}
+
+				// #2 Seed Reserved
+				final String seedRes = DropHandlerMethods.STRING_DASH;
+				newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
+
+				newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(tagCheckBox);
+				if (newItem != null && gidButton != null) {
+					newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
+				}
+
+				newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(this.germplasmDataManager.getPlotCodeValue(gid));
+				newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
+				newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(crossExpansion);
+
+				this.assignSerializedEntryNumber();
+
+				final FillWith fillWith = new FillWith(ColumnLabels.GID.getName(), this.targetTable);
+
+				for (final String column : AddColumnContextMenu.getTablePropertyIds(this.targetTable)) {
+					fillWith.fillWith(this.targetTable, column, true);
+				}
+
 			}
-
-			// #2 Seed Reserved
-			final String seedRes = DropHandlerMethods.STRING_DASH;
-			newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
-
-			newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(tagCheckBox);
-			if (newItem != null && gidButton != null) {
-				newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
-			}
-
-			newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(this.germplasmDataManager.getPlotCodeValue(gid));
-			newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
-			newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(crossExpansion);
-
-			this.assignSerializedEntryNumber();
-
-			final FillWith fillWith = new FillWith(ColumnLabels.GID.getName(), this.targetTable);
-
-			for (final String column : AddColumnContextMenu.getTablePropertyIds(this.targetTable)) {
-				fillWith.fillWith(this.targetTable, column, true);
-			}
-
+		
 			this.fireListUpdatedEvent();
 
 			this.setHasUnsavedChanges(true);
 
-			return newItemId;
-
 		} catch (final MiddlewareQueryException e) {
 			DropHandlerMethods.LOG.error("Error in adding germplasm to germplasm table.", e);
-			return null;
 		}
 
 	}
 
-	private String getCrossExpansion(final Germplasm germplasm) {
-		String crossExpansion = DropHandlerMethods.STRING_EMPTY;
-		try {
-			if (this.germplasmDataManager != null) {
-				crossExpansion = this.pedigreeService.getCrossExpansion(germplasm.getGid(), this.crossExpansionProperties);
+	private Map<Integer, Germplasm> generateGidGermplasmMap(final List<Integer> gids) {
+		final List<Germplasm> germplasms = germplasmDataManager.getGermplasms(gids);
+		final Map<Integer, Germplasm> gidGermplasmMap = new HashMap<>();
+		for (Germplasm germplasm : germplasms){
+			final Integer gid = germplasm.getGid();
+			if (!gidGermplasmMap.containsKey(gid)){
+				gidGermplasmMap.put(gid, germplasm);
 			}
-		} catch (final MiddlewareQueryException ex) {
-			DropHandlerMethods.LOG.error("Error in retrieving cross expansion data for GID: " + germplasm.getGid() + ".", ex);
-			crossExpansion = DropHandlerMethods.STRING_DASH;
 		}
+		return gidGermplasmMap;
+	}
 
-		return crossExpansion;
+	private Map<Integer, String> getCrossExpansions(final List<Integer> gids) {
+		final Iterable<List<Integer>> partition = Iterables.partition(gids, 5000);
+
+		final Map<Integer, String> crossExpansions = new HashMap<>();
+
+		for (List<Integer> partitionedGidList : partition) {
+			final Set<Integer> partitionedGidSet = new HashSet<Integer>(partitionedGidList);
+			crossExpansions.putAll(this.pedigreeService.getCrossExpansions(partitionedGidSet, null,
+					this.crossExpansionProperties));
+		}
+		
+		return crossExpansions;
 	}
 
 	protected Integer getAvailInvForGID(final Integer gid) {

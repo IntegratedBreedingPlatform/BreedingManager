@@ -11,6 +11,8 @@
 
 package org.generationcp.breeding.manager.listmanager.listeners;
 
+import java.util.Arrays;
+
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.constants.ModeView;
@@ -150,7 +152,7 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
 				@Override
 				public void buttonClick(ClickEvent event) {
 					GidLinkButtonClickListener.this.listManagerMain.getListBuilderComponent().getBuildNewListDropHandler()
-							.addGermplasm(Integer.valueOf(GidLinkButtonClickListener.this.gid));
+							.addGermplasm(Arrays.asList(Integer.valueOf(GidLinkButtonClickListener.this.gid)));
 					mainWindow.removeWindow(germplasmWindow);
 				}
 
