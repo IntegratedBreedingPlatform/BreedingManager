@@ -120,6 +120,7 @@ public class BuildNewListDropHandlerTest {
 		Mockito.doReturn(itemIds).when(this.sourceTable).getValue();
 		Mockito.doReturn(itemIds).when(this.sourceTable).getItemIds();
 
+		final List<Germplasm> germplasms = new ArrayList<>();
 		for (final Integer itemId : itemIds) {
 			final Item item = Mockito.mock(Item.class);
 			Mockito.doReturn(item).when(this.sourceTable).getItem(itemId);
@@ -160,6 +161,7 @@ public class BuildNewListDropHandlerTest {
 
 			final Germplasm germplasm = this.germplasmInitializer.createGermplasm(itemId);
 			Mockito.doReturn(germplasm).when(this.germplasmDataManager).getGermplasmByGID(itemId);
+			germplasms.add(germplasm);
 
 			final GermplasmList germplasmList =
 					this.germplasmListInitializer.createGermplasmListWithListDataAndInventoryInfo(itemId, NO_OF_ENTRIES);
@@ -169,6 +171,7 @@ public class BuildNewListDropHandlerTest {
 			Mockito.doReturn(this.currentColumnsInfo).when(this.germplasmListManager).getAdditionalColumnsForList(itemId);
 
 		}
+		Mockito.doReturn(germplasms).when(this.germplasmDataManager).getGermplasms(Matchers.anyListOf(Integer.class));
 
 		this.dropHandler = new BuildNewListDropHandler(listManagerMain, germplasmDataManager, germplasmListManager, inventoryDataManager,
 				pedigreeService, crossExpansionProperties, targetTable, transactionManager);
@@ -192,7 +195,6 @@ public class BuildNewListDropHandlerTest {
 
 	@Test
 	public void testDropWhenTheEventIsATableTransferableAndComesFromGermplasmSearchTable() {
-
 		Mockito.doReturn(DropHandlerMethods.MATCHING_GERMPLASMS_TABLE_DATA).when(this.sourceTable).getData();
 
 		this.dropHandler.drop(this.event);

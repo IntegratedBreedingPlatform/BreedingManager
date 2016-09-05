@@ -2,6 +2,7 @@
 package org.generationcp.breeding.manager.listmanager.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -192,15 +193,19 @@ public class DropHandlerMethodsTest {
 
 	@Test
 	public void testAddGermplasm() {
-		this.prepareGermplasmPerGid(this.GID);
-		this.dropHandlerMethods.addGermplasm(this.GID);
+		final List<Germplasm> germplasmList = new ArrayList<>();
+		this.prepareGermplasmPerGid(this.GID, germplasmList);
+		Mockito.doReturn(germplasmList).when(this.germplasmDataManager).getGermplasms(Matchers.anyListOf(Integer.class));
+		
+		this.dropHandlerMethods.addGermplasm(Arrays.asList(this.GID));
+		
 		this.verifyEachPropertyIsProperlyFilledUp();
 	}
 
-	private void prepareGermplasmPerGid(final Integer gid) {
+	private void prepareGermplasmPerGid(final Integer gid, final List<Germplasm> germplasmList) {
 		final Germplasm germplasm = this.germplasmInitializer.createGermplasm(gid);
-		germplasm.setMgid(1);
-		Mockito.doReturn(germplasm).when(this.germplasmDataManager).getGermplasmByGID(gid);
+		germplasm.setMgid(gid);
+		germplasmList.add(germplasm);
 	}
 
 	@Test
@@ -209,12 +214,14 @@ public class DropHandlerMethodsTest {
 		final List<Integer> itemIds = this.prepareItemIds();
 		Mockito.doReturn(itemIds).when(this.targetTable).getValue();
 		Mockito.doReturn(itemIds).when(this.targetTable).getItemIds();
-
+		
+		final List<Germplasm> germplasmList = new ArrayList<>();
 		for (final Integer itemId : itemIds) {
 			Mockito.doReturn(this.mockTableItem).when(this.targetTable).getItem(itemId);
-			this.prepareGermplasmPerGid(itemId);
+			this.prepareGermplasmPerGid(itemId, germplasmList);
 		}
-
+		Mockito.doReturn(germplasmList).when(this.germplasmDataManager).getGermplasms(Matchers.anyListOf(Integer.class));
+		
 		this.dropHandlerMethods.addSelectedGermplasmsFromTable(this.targetTable);
 
 		this.verifyEachPropertyIsProperlyFilledUp();
