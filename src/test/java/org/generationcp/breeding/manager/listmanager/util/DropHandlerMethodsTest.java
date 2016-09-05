@@ -60,7 +60,7 @@ public class DropHandlerMethodsTest {
 	private GermplasmListManager germplasmListManager;
 
 	@Mock
-	private Table targetTable;
+	private Table sourceTable;
 
 	@Mock
 	private Container mockContainer;
@@ -112,7 +112,7 @@ public class DropHandlerMethodsTest {
 		germplasmListTestDataInitializer = new GermplasmListTestDataInitializer();
 
 		this.mockContainer = Mockito.mock(Container.class);
-		Mockito.when(this.targetTable.getContainerDataSource()).thenReturn(this.mockContainer);
+		Mockito.when(this.sourceTable.getContainerDataSource()).thenReturn(this.mockContainer);
 
 		this.mockTableItem = Mockito.mock(Item.class);
 		Mockito.when(this.mockContainer.addItem(Matchers.any())).thenReturn(this.mockTableItem);
@@ -212,17 +212,17 @@ public class DropHandlerMethodsTest {
 	public void testAddSelectedGermplasmsFromTable() {
 
 		final List<Integer> itemIds = this.prepareItemIds();
-		Mockito.doReturn(itemIds).when(this.targetTable).getValue();
-		Mockito.doReturn(itemIds).when(this.targetTable).getItemIds();
+		Mockito.doReturn(itemIds).when(this.sourceTable).getValue();
+		Mockito.doReturn(itemIds).when(this.sourceTable).getItemIds();
 		
 		final List<Germplasm> germplasmList = new ArrayList<>();
 		for (final Integer itemId : itemIds) {
-			Mockito.doReturn(this.mockTableItem).when(this.targetTable).getItem(itemId);
+			Mockito.doReturn(this.mockTableItem).when(this.sourceTable).getItem(itemId);
 			this.prepareGermplasmPerGid(itemId, germplasmList);
 		}
 		Mockito.doReturn(germplasmList).when(this.germplasmDataManager).getGermplasms(Matchers.anyListOf(Integer.class));
 		
-		this.dropHandlerMethods.addSelectedGermplasmsFromTable(this.targetTable);
+		this.dropHandlerMethods.addSelectedGermplasmsFromTable(this.sourceTable);
 
 		this.verifyEachPropertyIsProperlyFilledUp();
 	}
@@ -279,18 +279,18 @@ public class DropHandlerMethodsTest {
 
 	@Test
 	public void testAddFromListDataTable() {
-		Mockito.doReturn(this.tableWithSelectAllLayout).when(this.targetTable).getParent();
+		Mockito.doReturn(this.tableWithSelectAllLayout).when(this.sourceTable).getParent();
 		Mockito.doReturn(this.listComponent).when(this.tableWithSelectAllLayout).getParent();
 		Mockito.doReturn(GERMPLASM_LIST_ID).when(this.listComponent).getGermplasmListId();
 		Mockito.doReturn(GERMPLASM_LIST_ID).when(this.currentColumnsInfo).getListId();
 		Mockito.doReturn(new HashMap<>()).when(this.currentColumnsInfo).getColumnValuesMap();
 
 		final List<Integer> itemIds = this.prepareItemIds();
-		Mockito.doReturn(itemIds).when(this.targetTable).getValue();
-		Mockito.doReturn(itemIds).when(this.targetTable).getItemIds();
+		Mockito.doReturn(itemIds).when(this.sourceTable).getValue();
+		Mockito.doReturn(itemIds).when(this.sourceTable).getItemIds();
 
 		for (final Integer itemId : itemIds) {
-			Mockito.doReturn(this.mockTableItem).when(this.targetTable).getItem(itemId);
+			Mockito.doReturn(this.mockTableItem).when(this.sourceTable).getItem(itemId);
 			Mockito.doReturn(this.currentColumnsInfo).when(this.germplasmListManager).getAdditionalColumnsForList(itemId);
 		}
 
@@ -311,7 +311,7 @@ public class DropHandlerMethodsTest {
 		Mockito.doReturn(availInvProp).when(this.mockTableItem).getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName());
 		Mockito.doReturn(new Button("1")).when(availInvProp).getValue();
 
-		this.dropHandlerMethods.addFromListDataTable(this.targetTable);
+		this.dropHandlerMethods.addFromListDataTable(this.sourceTable);
 
 		this.verifyEachPropertyIsProperlyFilledUp();
 
