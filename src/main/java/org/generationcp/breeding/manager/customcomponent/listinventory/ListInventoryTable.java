@@ -147,7 +147,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		
 		// disable the Vaadin table from listening to update events until the whole table is filled
 		listInventoryTable.disableContentRefreshing();
-		Container listInventoryContainer = this.listInventoryTable.getContainerDataSource();
+		final Container listInventoryContainer = this.listInventoryTable.getContainerDataSource();
 		
 		for (final GermplasmListData inventoryDetail : inventoryDetails) {
 
@@ -159,9 +159,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
   			final ListDataInventory listDataInventory = inventoryDetail.getInventoryInfo();
   			@SuppressWarnings("unchecked")
   			final List<ListEntryLotDetails> lotDetails = (List<ListEntryLotDetails>) listDataInventory.getLotRows();
-  			
-  			
-  
+  			 
   			if (lotDetails != null) {
   				for (final ListEntryLotDetails lotDetail : lotDetails) {
   					
