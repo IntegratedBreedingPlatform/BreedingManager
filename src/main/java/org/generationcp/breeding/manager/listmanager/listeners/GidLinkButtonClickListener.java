@@ -59,13 +59,14 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
 	private final Boolean viaToolURL;
 	private final Boolean showAddToList;
 
-	public GidLinkButtonClickListener(String gid, Boolean viaToolURL) {
+	public GidLinkButtonClickListener(final String gid, final Boolean viaToolURL) {
 		this.gid = gid;
 		this.viaToolURL = viaToolURL;
 		this.showAddToList = false;
 	}
 
-	public GidLinkButtonClickListener(ListManagerMain listManagerMain, String gid, Boolean viaToolURL, Boolean showAddToList) {
+	public GidLinkButtonClickListener(final ListManagerMain listManagerMain, final String gid, final Boolean viaToolURL,
+			final Boolean showAddToList) {
 		this.listManagerMain = listManagerMain;
 		this.gid = gid;
 		this.viaToolURL = viaToolURL;
@@ -73,7 +74,7 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
 	}
 
 	@Override
-	public void buttonClick(ClickEvent event) {
+	public void buttonClick(final ClickEvent event) {
 
 		final Window mainWindow;
 		if (this.viaToolURL) {
@@ -84,26 +85,24 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
 		Tool tool = null;
 		try {
 			tool = this.workbenchDataManager.getToolWithName(ToolName.GERMPLASM_BROWSER.toString());
-		} catch (MiddlewareQueryException qe) {
+		} catch (final MiddlewareQueryException qe) {
 			GidLinkButtonClickListener.LOG.error("QueryException", qe);
 		}
 
-		String addtlParams = Util.getAdditionalParams(this.workbenchDataManager);
+		final String addtlParams = Util.getAdditionalParams(this.workbenchDataManager);
 		ExternalResource germplasmBrowserLink;
 		if (tool == null) {
-			germplasmBrowserLink =
-					new ExternalResource(WorkbenchAppPathResolver.getFullWebAddress(DefaultGermplasmStudyBrowserPath.GERMPLASM_BROWSER_LINK
-							+ this.gid, "?restartApplication" + addtlParams));
+			germplasmBrowserLink = new ExternalResource(WorkbenchAppPathResolver.getFullWebAddress(
+					DefaultGermplasmStudyBrowserPath.GERMPLASM_BROWSER_LINK + this.gid, "?restartApplication" + addtlParams));
 		} else {
-			germplasmBrowserLink =
-					new ExternalResource(WorkbenchAppPathResolver.getWorkbenchAppPath(tool, String.valueOf(this.gid), "?restartApplication"
-							+ addtlParams));
+			germplasmBrowserLink = new ExternalResource(
+					WorkbenchAppPathResolver.getWorkbenchAppPath(tool, String.valueOf(this.gid), "?restartApplication" + addtlParams));
 		}
 
 		String preferredName = null;
 		try {
 			preferredName = this.germplasmDataManager.getPreferredNameValueByGID(Integer.valueOf(this.gid));
-		} catch (MiddlewareQueryException ex) {
+		} catch (final MiddlewareQueryException ex) {
 			GidLinkButtonClickListener.LOG.error("Error with getting preferred name of " + this.gid, ex);
 		}
 
@@ -113,7 +112,7 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
 		}
 		final Window germplasmWindow = new BaseSubWindow(windowTitle);
 
-		AbsoluteLayout layoutForGermplasm = new AbsoluteLayout();
+		final AbsoluteLayout layoutForGermplasm = new AbsoluteLayout();
 		layoutForGermplasm.setDebugId("layoutForGermplasm");
 		layoutForGermplasm.setMargin(false);
 		layoutForGermplasm.setWidth("100%");
@@ -127,7 +126,7 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
 		germplasmInfo.setSizeFull();
 
 		if (this.showAddToList) {
-			Button addToListLink = new Button("Add to list");
+			final Button addToListLink = new Button("Add to list");
 			addToListLink.setDebugId("addToListLink");
 			if (this.listManagerMain.listBuilderIsLocked()) {
 				addToListLink.setEnabled(false);
@@ -150,7 +149,7 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
 				private static final long serialVersionUID = 1L;
 
 				@Override
-				public void buttonClick(ClickEvent event) {
+				public void buttonClick(final ClickEvent event) {
 					GidLinkButtonClickListener.this.listManagerMain.getListBuilderComponent().getBuildNewListDropHandler()
 							.addGermplasm(Arrays.asList(Integer.valueOf(GidLinkButtonClickListener.this.gid)));
 					mainWindow.removeWindow(germplasmWindow);
