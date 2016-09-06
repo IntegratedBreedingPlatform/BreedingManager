@@ -249,7 +249,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 		this.tableCrossesMade.setPageLength(0);
 		this.tableCrossesMade.requestRepaint();
-		// this.addTableCrossesMadeCounter();
 	}
 
 	public void updateCrossesMadeSaveButton() {
