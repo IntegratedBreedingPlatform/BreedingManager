@@ -27,7 +27,7 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.commons.spring.util.ContextUtil;
-import org.generationcp.commons.util.TransformationUtil;
+import org.generationcp.commons.util.CollectionTransformationUtil;
 import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -318,7 +318,7 @@ public class SaveCrossesMadeAction implements Serializable {
 	}
 
 	private Map<Integer, String> updateWithActualPedigree(final Set<Germplasm> gids) {
-		final ImmutableSet<Integer> allGidsFromGermplasmListDataList = TransformationUtil.getAllGidsFromGermplasmList(gids);
+		final ImmutableSet<Integer> allGidsFromGermplasmListDataList = CollectionTransformationUtil.getAllGidsFromGermplasmList(gids);
 
 		final Iterable<List<Integer>> partition = Iterables.partition(allGidsFromGermplasmListDataList, 5000);
 		final Map<Integer, String> resultMap = new HashMap<>();

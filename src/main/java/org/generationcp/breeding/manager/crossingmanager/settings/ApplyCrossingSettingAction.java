@@ -20,7 +20,7 @@ import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSett
 import org.generationcp.breeding.manager.util.BreedingManagerTransformationUtil;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.util.CrossingUtil;
-import org.generationcp.commons.util.TransformationUtil;
+import org.generationcp.commons.util.CollectionTransformationUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -129,14 +129,14 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 	}
 
 	private ImmutableMap<Integer, Germplasm> getGermplasmAncestryAsMap(final Set<Germplasm> germplasms) {
-		final ImmutableSet<Integer> allFemaleParentGidsFromGermplasmList = TransformationUtil.getAllFemaleParentGidsFromGermplasmList(germplasms);
-		final ImmutableSet<Integer> allMaleParentGidsFromGermplasmList = TransformationUtil.getAllMaleParentGidsFromGermplasmList(germplasms);
+		final ImmutableSet<Integer> allFemaleParentGidsFromGermplasmList = CollectionTransformationUtil.getAllFemaleParentGidsFromGermplasmList(germplasms);
+		final ImmutableSet<Integer> allMaleParentGidsFromGermplasmList = CollectionTransformationUtil.getAllMaleParentGidsFromGermplasmList(germplasms);
 		final ImmutableSet<Integer> femaleAndMaleParentGids =
 				new ImmutableSet.Builder<Integer>().addAll(allFemaleParentGidsFromGermplasmList)
 						.addAll(allMaleParentGidsFromGermplasmList).build();
 		final List<Germplasm> germplasmWithAllNamesAndAncestry =
 				this.germplasmDataManager.getGermplasmWithAllNamesAndAncestry(femaleAndMaleParentGids, 1);
-		return TransformationUtil.getGermplasmMap(germplasmWithAllNamesAndAncestry);
+		return CollectionTransformationUtil.getGermplasmMap(germplasmWithAllNamesAndAncestry);
 	}
 
 	protected List<Pair<Germplasm, Name>> extractGermplasmPairList(Map<Germplasm, Name> germplasmNameMap) {

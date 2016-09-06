@@ -42,7 +42,7 @@ import org.generationcp.breeding.manager.util.BreedingManagerTransformationUtil;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.service.impl.SeedSourceGenerator;
-import org.generationcp.commons.util.TransformationUtil;
+import org.generationcp.commons.util.CollectionTransformationUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -199,7 +199,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		final Set<Integer> germplasmListEntries = getAllGidsFromParents(femaleParents, maleParents);
 		final List<Germplasm> germplasmWithAllNamesAndAncestry =
 				germplasmDataManager.getGermplasmWithAllNamesAndAncestry(germplasmListEntries, 0);
-		return TransformationUtil.getGermplasmMap(germplasmWithAllNamesAndAncestry);
+		return CollectionTransformationUtil.getGermplasmMap(germplasmWithAllNamesAndAncestry);
 	}
 
 	private Set<Integer> getAllGidsFromParents(final List<GermplasmListEntry> femaleParents, final List<GermplasmListEntry> maleParents) {
