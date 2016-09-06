@@ -413,11 +413,10 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		final List<Name> names = new ArrayList<Name>();
 		final Map<Integer, List<Name>> namesMap = this.getNamesMap(importedGermplasmList, doNotCreateGermplasmWithId, existingNameUdflds);
 		
-		int ctr = 1;
-		for (final GermplasmName germplasmName : germplasmNameObjects) {
+		for (int ctr = 1; ctr <= germplasmNameObjects.size(); ctr++) {
+			final GermplasmName germplasmName = germplasmNameObjects.get(ctr - 1);
 			final Integer gid = germplasmName.getGermplasm().getGid();
-			final int entryId = ctr++;
-			final ImportedGermplasm importedGermplasm = importedGermplasmList.get(entryId - 1);
+			final ImportedGermplasm importedGermplasm = importedGermplasmList.get(ctr - 1);
 			importedGermplasm.setGid(gid);
 
 			final String designation = germplasmName.getName().getNval();
@@ -429,11 +428,11 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 				groupName = importedGermplasm.getCross();
 			}
 
-			String entryCode = String.valueOf(entryId);
+			String entryCode = String.valueOf(ctr);
 			if (importedGermplasm.getEntryCode() != null && importedGermplasm.getEntryCode().length() > 0) {
 				entryCode = importedGermplasm.getEntryCode();
 			}
-			int curEntryId = entryId;
+			int curEntryId = ctr;
 			if (importedGermplasm.getEntryId() != null) {
 				curEntryId = importedGermplasm.getEntryId();
 			}
