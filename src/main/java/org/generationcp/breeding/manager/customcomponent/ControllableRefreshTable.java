@@ -6,11 +6,11 @@ import com.vaadin.ui.Table;
  * This class subclasses the Vaadin Table class, in order to expose the ability 
  * to control when the Table is notified by changes to the table contents.
  * 
- * All BMS classes that subclass the Vaading Table class should subclass this class 
- * instead and be disable/enable the HTML rendering until all changes to the table contents are made.
+ * All BMS classes that subclass the Vaadin Table class should subclass this class 
+ * instead and thereby can disable/enable the HTML rendering until all changes to the table contents are made.
  * 
  * This reduces significantly the time spent refreshing the entire table each time a new row is 
- * added (non-linear scaling).
+ * added (due to non-linear scaling).
  * 
  */
 
