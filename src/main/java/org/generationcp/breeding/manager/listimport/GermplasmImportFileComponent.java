@@ -145,7 +145,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 	 * Will display a pop up for Name Handling Dialog, if the imported germplasm list has name types, if not proceed to the next screen
 	 */
 	void nextStep() {
-		List<ImportedGermplasm> importedGermplasms = getGermplasmListUploader().getImportedGermplasmList().getImportedGermplasms();
+		List<ImportedGermplasm> importedGermplasms = getGermplasmListUploader().getImportedGermplasmList().getImportedGermplasm();
 		ErrorCollection validationErrorMessages = showNameHandlingPopUpValidator.validate(importedGermplasms);
 		if (validationErrorMessages.isEmpty()) {
 			List<ImportedFactor> importedNameFactors = this.extractListOfImportedNames();

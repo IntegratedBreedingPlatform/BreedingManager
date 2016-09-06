@@ -88,7 +88,7 @@ public class GermplasmListUploader implements FileFactory {
 	void updateImportGermplasmList() throws FileParsingException, InvalidFileDataException {
 		this.importedGermplasmList = this.germplasmListParser.parseWorkbook(this.createWorkbook(this.tempFileName), null);
 
-		if (this.importedGermplasmList.getImportedGermplasms().isEmpty()) {
+		if (this.importedGermplasmList.getImportedGermplasm().isEmpty()) {
 			throw new InvalidFileDataException("GERMPLSM_EMPTY_FILE_PARSE_ERROR");
 		}
 	}

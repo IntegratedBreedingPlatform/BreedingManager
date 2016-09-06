@@ -214,7 +214,7 @@ public class GermplasmListParserTest {
 		final Workbook workbook = WorkbookFactory.create(workbookFile);
 
 		this.importedGermplasmList = this.parser.parseWorkbook(workbook, null);
-		final ImportedGermplasm germplasm = this.importedGermplasmList.getImportedGermplasms().get(0);
+		final ImportedGermplasm germplasm = this.importedGermplasmList.getImportedGermplasm().get(0);
 		Assert.assertEquals("Unable to properly recognize additional name factors associated with germplasm", 2, germplasm.getNameFactors()
 				.size());
 
@@ -265,7 +265,7 @@ public class GermplasmListParserTest {
 	private ImportedGermplasmList createImportedGermplasmListWithSeedAmount() {
 		final ImportedGermplasmList importedGermplasmList =
 				this.importedGermplasmListInitializer.createImportedGermplasmList(NO_OF_ENTRIES, true);
-		final List<ImportedGermplasm> importedGermplasms = importedGermplasmList.getImportedGermplasms();
+		final List<ImportedGermplasm> importedGermplasms = importedGermplasmList.getImportedGermplasm();
 		// initialize seed amount from imported germplasm
 		Double seedAmount = 1.0D;
 		for (final ImportedGermplasm importedGermplasm : importedGermplasms) {
@@ -294,7 +294,7 @@ public class GermplasmListParserTest {
 
 		final String inventoryID = "INV-";
 		int count = 1;
-		final List<ImportedGermplasm> importedGermplasms = importedGermplasmList.getImportedGermplasms();
+		final List<ImportedGermplasm> importedGermplasms = importedGermplasmList.getImportedGermplasm();
 		for (final ImportedGermplasm importedGermplasm : importedGermplasms) {
 			importedGermplasm.setInventoryId(inventoryID + count);
 			count++;

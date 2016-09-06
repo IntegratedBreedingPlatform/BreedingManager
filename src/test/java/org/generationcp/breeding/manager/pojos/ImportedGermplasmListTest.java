@@ -27,7 +27,7 @@ public class ImportedGermplasmListTest {
 	@Test
 	public void testMissingInventoryVariable() {
 
-		this.list.setImportedGermplasms(this.generateImportGermplasmListDataWithSeedAmountOrNot(3, false));
+		this.list.setImportedGermplasm(this.generateImportGermplasmListDataWithSeedAmountOrNot(3, false));
 
 		Assert.assertEquals(this.list.hasMissingInventoryVariable(), true);
 	}
@@ -39,7 +39,7 @@ public class ImportedGermplasmListTest {
 	@Test
 	public void testNotMissingInventoryVariable() {
 
-		this.list.setImportedGermplasms(this.generateImportGermplasmListDataWithSeedAmountOrNot(3, true));
+		this.list.setImportedGermplasm(this.generateImportGermplasmListDataWithSeedAmountOrNot(3, true));
 
 		Assert.assertEquals(this.list.hasMissingInventoryVariable(), false);
 	}
