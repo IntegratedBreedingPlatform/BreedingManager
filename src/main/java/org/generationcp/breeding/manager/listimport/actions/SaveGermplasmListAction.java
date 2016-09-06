@@ -465,15 +465,25 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 			this.germplasmManager.addGermplasmName(names);
 		}
 	}
-
+	
+	/**
+	 * Retrieves the map of names of germplasm using germplasm ids and name type ids.
+	 * 
+	 * @param importedGermplasmList
+	 * @param doNotCreateGermplasmWithId
+	 * @param existingUdflds
+	 * @return
+	 */
 	private Map<Integer, List<Name>> getNamesMap(List<ImportedGermplasm> importedGermplasmList, List<Integer> doNotCreateGermplasmWithId, List<UserDefinedField> existingUdflds) {
 		Map<Integer, List<Name>> namesMap = new HashMap<Integer, List<Name>>();
 		if(!importedGermplasmList.isEmpty() && !doNotCreateGermplasmWithId.isEmpty()){
+			//get all the name type ids present in the imported germplasm list
 			Map<String, String> nameFactors = importedGermplasmList.get(0).getNameFactors();
 			List<Integer> nameTypeIds = new ArrayList<Integer>();
 			for(Entry<String, String> factor: nameFactors.entrySet()){
 				nameTypeIds.add(this.getUdfldID(existingUdflds, factor.getKey()));
 			}
+			
 			if(!nameTypeIds.isEmpty()){
 				return this.germplasmManager.getNamesByGidsAndNTypeIdsInMap(doNotCreateGermplasmWithId, nameTypeIds);
 			}
@@ -546,7 +556,15 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 		return attrs;
 	}
-
+	
+	/**
+	 * Creates new name objects and filters the names that are already in the database
+	 * @param importedGermplasm
+	 * @param existingUdflds
+	 * @param germplasm
+	 * @param existingNames
+	 * @return
+	 */
 	public List<Name> prepareAllNamesToAdd(final ImportedGermplasm importedGermplasm, final List<UserDefinedField> existingUdflds,
 			final Germplasm germplasm, final List<Name> existingNames) {
 		final List<Name> names = new ArrayList<Name>();
@@ -576,7 +594,13 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 		return names;
 	}
-
+	
+	/**
+	 * Filters the names that are already in the database
+	 * @param names
+	 * @param newName
+	 * @param existingNames
+	 */
 	private void addName(final List<Name> names, final Name newName, final List<Name> existingNames) {
 		if (existingNames != null && !existingNames.isEmpty()) {
 			for (final Name name : existingNames) {
