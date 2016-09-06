@@ -135,16 +135,21 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout implements 
 
 	private void initializeSaveSettingsSection() {
 		this.saveSettingsLabel = new Label(this.messageSource.getMessage(Message.SAVE_SETTINGS));
+		this.saveSettingsLabel.setDebugId("saveSettingsLabel");
 		this.saveSettingsLabel.setStyleName(Bootstrap.Typography.H2.styleName());
 		this.settingsNameTextfield = new TextField(this.messageSource.getMessage(Message.SAVE_AS_DESC) + ":");
+		this.settingsNameTextfield.setDebugId("settingsNameTextfield");
 		this.setAsDefaultSettingCheckbox = new CheckBox();
+		this.setAsDefaultSettingCheckbox.setDebugId("setAsDefaultSettingCheckbox");
 	}
 
 	private void initializeHarvestDetailsSection() {
 		this.harvestDetailsLabel = new Label(this.messageSource.getMessage(Message.HARVEST_DETAILS).toUpperCase());
+		this.harvestDetailsLabel.setDebugId("harvestDetailsLabel");
 		this.harvestDetailsLabel.setStyleName(Bootstrap.Typography.H2.styleName());
 
 		this.harvestLocations = new ComboBox(this.messageSource.getMessage(Message.HARVEST_LOCATION) + ":");
+		this.harvestLocations.setDebugId("harvestLocations");
 		this.harvestLocations.setNullSelectionAllowed(true);
 
 		this.harvestDateField =
@@ -152,9 +157,11 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout implements 
 						this.messageSource.getMessage(Message.ESTIMATED_HARVEST_DATE) + ":");
 
 		this.showFavouriteLocations = new CheckBox();
+		this.showFavouriteLocations.setDebugId("showFavouriteLocations");
 		this.showFavouriteLocations.setImmediate(true);
 
 		this.manageFavoriteLocations = new Button();
+		this.manageFavoriteLocations.setDebugId("manageFavoriteLocations");
 		this.manageFavoriteLocations.setStyleName(BaseTheme.BUTTON_LINK);
 	}
 
@@ -231,15 +238,18 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout implements 
 	public void layoutComponents() {
 
 		final CssLayout favMethodsLayout = new CssLayout();
+		favMethodsLayout.setDebugId("favMethodsLayout");
 		favMethodsLayout.addComponent(this.showFavouriteLocations);
 		favMethodsLayout.addComponent(this.manageFavoriteLocations);
 
 		final FormLayout harvestFormFields = new FormLayout();
+		harvestFormFields.setDebugId("harvestFormFields");
 		harvestFormFields.addComponent(this.harvestDateField);
 		harvestFormFields.addComponent(this.harvestLocations);
 		harvestFormFields.addComponent(favMethodsLayout);
 
 		final FormLayout settingsFormFields = new FormLayout();
+		settingsFormFields.setDebugId("settingsFormFields");
 		settingsFormFields.addComponent(this.settingsNameTextfield);
 		settingsFormFields.addComponent(this.setAsDefaultSettingCheckbox);
 

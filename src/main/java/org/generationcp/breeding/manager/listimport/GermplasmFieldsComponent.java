@@ -114,22 +114,28 @@ public class GermplasmFieldsComponent extends AbsoluteLayout
 	@Override
 	public void instantiateComponents() {
 		this.addGermplasmDetailsLabel = new Label(this.messageSource.getMessage(Message.ADD_GERMPLASM_DETAILS).toUpperCase());
+		this.addGermplasmDetailsLabel.setDebugId("addGermplasmDetailsLabel");
 		this.addGermplasmDetailsLabel.addStyleName(Bootstrap.Typography.H4.styleName());
 
 		this.addGermplasmDetailsMessage = new Label();
+		this.addGermplasmDetailsMessage.setDebugId("addGermplasmDetailsMessage");
 		this.addGermplasmDetailsMessage.setValue(this.getGermplasmDetailsInstructions());
 
 		if (this.parentWindow != null) {
 			this.methodComponent = new BreedingMethodField(this.parentWindow, 200, false, false);
+			this.methodComponent.setDebugId("methodComponent");
 		} else {
 			this.methodComponent = new BreedingMethodField(200, false, false);
+			this.methodComponent.setDebugId("methodComponent");
 		}
 		this.methodComponent.setCaption(this.messageSource.getMessage(Message.GERMPLASM_BREEDING_METHOD_LABEL) + ":");
 
 		if (this.parentWindow != null) {
 			this.locationComponent = new BreedingLocationField(this, this.parentWindow, 200, true);
+			this.locationComponent.setDebugId("locationComponent");
 		} else {
 			this.locationComponent = new BreedingLocationField(this, 200, true);
+			this.locationComponent.setDebugId("locationComponent");
 		}
 		this.locationComponent.setCaption(this.messageSource.getMessage(Message.GERMPLASM_LOCATION_LABEL) + ":");
 
@@ -138,18 +144,23 @@ public class GermplasmFieldsComponent extends AbsoluteLayout
 					new BreedingLocationField(this, this.parentWindow, 200, GermplasmFieldsComponent.STORAGE_LOCATION_TYPEID, false);
 		} else {
 			this.seedLocationComponent = new BreedingLocationField(this, 200, GermplasmFieldsComponent.STORAGE_LOCATION_TYPEID, false);
+			this.seedLocationComponent.setDebugId("seedLocationComponent");
 		}
 		this.seedLocationComponent.setCaption(this.messageSource.getMessage(Message.SEED_STORAGE_LOCATION_LABEL) + ":");
 
 		this.germplasmDateLabel = new Label(this.messageSource.getMessage(Message.GERMPLASM_DATE_LABEL) + ":");
+		this.germplasmDateLabel.setDebugId("germplasmDateLabel");
 		this.germplasmDateLabel.addStyleName(CssStyles.BOLD);
 
 		this.germplasmDateField = new BmsDateField();
+		this.germplasmDateField.setDebugId("germplasmDateField");
 		this.germplasmDateField.setValue(new Date());
 
 		this.nameTypeLabel = new Label(this.messageSource.getMessage(Message.GERMPLASM_NAME_TYPE_LABEL) + ":");
+		this.nameTypeLabel.setDebugId("nameTypeLabel");
 		this.nameTypeLabel.addStyleName(CssStyles.BOLD);
 		this.nameTypeComboBox = new ComboBox();
+		this.nameTypeComboBox.setDebugId("nameTypeComboBox");
 		this.nameTypeComboBox.setWidth("400px");
 		this.nameTypeComboBox.setNullSelectionAllowed(false);
 		this.nameTypeComboBox.setImmediate(true);

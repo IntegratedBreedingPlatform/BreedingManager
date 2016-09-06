@@ -72,6 +72,7 @@ public class ReservationStatusWindow extends BaseSubWindow implements Initializi
 				new Label("All selected entries will be reserved except for the following because of insufficient balance:");
 
 		this.statusTable = new Table();
+		this.statusTable.setDebugId("statusTable");
 		this.statusTable.setWidth("100%");
 		this.statusTable.setHeight("150px");
 		this.statusTable.setImmediate(true);
@@ -95,6 +96,7 @@ public class ReservationStatusWindow extends BaseSubWindow implements Initializi
 				Message.AMOUNT_TO_RESERVE);
 
 		this.okButton = new Button(this.messageSource.getMessage(Message.OK));
+		this.okButton.setDebugId("okButton");
 		this.okButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 	}
 
@@ -128,6 +130,7 @@ public class ReservationStatusWindow extends BaseSubWindow implements Initializi
 		this.setWidth("780px");
 
 		this.mainLayout = new VerticalLayout();
+		this.mainLayout.setDebugId("mainLayout");
 		this.mainLayout.setSpacing(true);
 
 		this.mainLayout.addComponent(this.statusDescriptionLabel);

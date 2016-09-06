@@ -155,6 +155,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 					final Item newItem = listInventoryContainer.addItem(lotDetail);
 
 					final CheckBox itemCheckBox = new CheckBox();
+					itemCheckBox.setDebugId("itemCheckBox");
 					itemCheckBox.setData(lotDetail);
 					itemCheckBox.setImmediate(true);
 					itemCheckBox.addListener(new ClickListener() {
@@ -199,6 +200,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 
 					final String stockIds = lotDetail.getStockIds();
 					final Label stockIdsLbl = new Label(stockIds);
+					stockIdsLbl.setDebugId("stockIdsLbl");
 					stockIdsLbl.setDescription(stockIds);
 					newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdsLbl);
 					newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotDetail.getLotId());

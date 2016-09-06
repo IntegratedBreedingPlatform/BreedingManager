@@ -118,18 +118,22 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 	public void instantiateComponents() {
 
 		this.totalMatchingListsLabel = new Label("", Label.CONTENT_XHTML);
+		this.totalMatchingListsLabel.setDebugId("totalMatchingListsLabel");
 		this.totalMatchingListsLabel.setWidth("120px");
 		this.updateNoOfEntries(0);
 
 		this.totalSelectedMatchingListsLabel = new Label("", Label.CONTENT_XHTML);
+		this.totalSelectedMatchingListsLabel.setDebugId("totalSelectedMatchingListsLabel");
 		this.totalSelectedMatchingListsLabel.setWidth("95px");
 		this.updateNoOfSelectedEntries(0);
 
 		this.actionButton = new ActionButton();
+		this.actionButton.setDebugId("actionButton");
 		this.actionButton.setData(ListSearchResultsComponent.TOOLS_BUTTON_ID);
 
 		// Action Button ContextMenu
 		this.menu = new ContextMenu();
+		this.menu.setDebugId("menu");
 		this.menu.setWidth("300px");
 
 		this.menuAddToNewList = this.menu.addItem(this.messageSource.getMessage(Message.ADD_SELECTED_LIST_TO_NEW_LIST));
@@ -138,6 +142,7 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 		this.updateActionMenuOptions(false);
 
 		this.matchingListsTableWithSelectAll = new TableWithSelectAllLayout(5, ListSearchResultsComponent.CHECKBOX_COLUMN_ID);
+		this.matchingListsTableWithSelectAll.setDebugId("matchingListsTableWithSelectAll");
 		this.matchingListsTableWithSelectAll.setHeight("100%");
 		this.matchingListsTable = this.matchingListsTableWithSelectAll.getTable();
 		this.matchingListsTable.setData(ListSearchResultsComponent.MATCHING_LISTS_TABLE_DATA);
@@ -286,6 +291,7 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 		this.setSpacing(true);
 
 		HorizontalLayout leftHeaderLayout = new HorizontalLayout();
+		leftHeaderLayout.setDebugId("leftHeaderLayout");
 		leftHeaderLayout.setSpacing(true);
 		leftHeaderLayout.addComponent(this.totalMatchingListsLabel);
 		leftHeaderLayout.addComponent(this.totalSelectedMatchingListsLabel);
@@ -293,6 +299,7 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 		leftHeaderLayout.setComponentAlignment(this.totalSelectedMatchingListsLabel, Alignment.MIDDLE_LEFT);
 
 		HorizontalLayout headerLayout = new HorizontalLayout();
+		headerLayout.setDebugId("headerLayout");
 		headerLayout.setWidth("100%");
 		headerLayout.addComponent(leftHeaderLayout);
 		headerLayout.addComponent(this.actionButton);
@@ -311,6 +318,7 @@ public class ListSearchResultsComponent extends VerticalLayout implements Initia
 		for (GermplasmList germplasmList : germplasmLists) {
 
 			CheckBox itemCheckBox = new CheckBox();
+			itemCheckBox.setDebugId("itemCheckBox");
 			itemCheckBox.setData(germplasmList.getId());
 			itemCheckBox.setImmediate(true);
 			itemCheckBox.addListener(new ClickListener() {

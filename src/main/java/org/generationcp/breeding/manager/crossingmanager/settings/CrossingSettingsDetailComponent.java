@@ -99,16 +99,21 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 	public void instantiateComponents() {
 
 		this.defineSettingComponent = new DefineCrossingSettingComponent(this);
+		this.defineSettingComponent.setDebugId("defineSettingComponent");
 
 		this.nameComponent = new CrossingSettingsNameComponent();
+		this.nameComponent.setDebugId("nameComponent");
 		this.additionalDetailsComponent = new CrossingSettingsOtherDetailsComponent();
+		this.additionalDetailsComponent.setDebugId("additionalDetailsComponent");
 
 		this.nextButton = new Button();
+		this.nextButton.setDebugId("nextButton");
 		this.nextButton.setData(Actions.SAVE);
 		this.nextButton.setWidth("80px");
 		this.nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 
 		this.cancelButton = new Button();
+		this.cancelButton.setDebugId("cancelButton");
 		this.cancelButton.setData(Actions.CANCEL);
 		this.cancelButton.setWidth("80px");
 		this.cancelButton.addStyleName(Bootstrap.Buttons.DEFAULT.styleName());
@@ -157,11 +162,13 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 		this.setHeight("900px");
 
 		this.sectionPanel = new Panel();
+		this.sectionPanel.setDebugId("sectionPanel");
 		this.sectionPanel.setWidth("100%");
 		this.sectionPanel.setHeight("850px");
 		this.sectionPanel.addStyleName(AppConstants.CssStyles.PANEL_GRAY_BACKGROUND);
 
 		final CssLayout sectionLayout = new CssLayout();
+		sectionLayout.setDebugId("sectionLayout");
 		sectionLayout.setMargin(false, true, true, true);
 
 		// cs is our crossing settings namespace
@@ -177,12 +184,14 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 
 		// 3
 		final HorizontalLayout buttonBar = new HorizontalLayout();
+		buttonBar.setDebugId("buttonBar");
 		buttonBar.setSpacing(true);
 		buttonBar.setMargin(true);
 		buttonBar.addComponent(this.cancelButton);
 		buttonBar.addComponent(this.nextButton);
 
 		final HorizontalLayout buttonLayout = new HorizontalLayout();
+		buttonLayout.setDebugId("buttonLayout");
 		buttonLayout.setWidth("100%");
 		buttonLayout.addComponent(buttonBar);
 		buttonLayout.setComponentAlignment(buttonBar, Alignment.MIDDLE_CENTER);

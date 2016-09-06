@@ -86,9 +86,11 @@ public class CrossingSettingsNameComponent extends CssLayout implements Breeding
 	public void instantiateComponents() {
 
 		this.namingLabel = new Label(this.messageSource.getMessage(Message.NAMING).toUpperCase());
+		this.namingLabel.setDebugId("namingLabel");
 		this.namingLabel.setStyleName(Bootstrap.Typography.H2.styleName());
 
 		this.namingDescLabel = new Label(this.messageSource.getMessage(Message.SPECIFY_NAMING_CONVENTION_FOR_CROSSES));
+		this.namingDescLabel.setDebugId("namingDescLabel");
 		this.namingDescLabel.addStyleName("gcp-content-help-text");
 
 		this.addSpaceBetPrefixAndCodeOptionGroup =
@@ -100,31 +102,38 @@ public class CrossingSettingsNameComponent extends CssLayout implements Breeding
 		this.addSpaceBetSuffixAndCodeOptionGroup.setImmediate(true);
 
 		this.crossNamePrefix = new TextField(this.messageSource.getMessage(Message.CROSS_NAME_PREFIX) + ":");
+		this.crossNamePrefix.setDebugId("crossNamePrefix");
 		this.crossNamePrefix.setImmediate(true);
 		this.crossNamePrefix.setMaxLength(CrossingSettingsNameComponent.MAX_PREFIX_SUFFIX_LENGTH);
 		this.crossNamePrefix.addStyleName("mandatory-field");
 
 		this.crossNameSuffix = new TextField(this.messageSource.getMessage(Message.SUFFIX_OPTIONAL) + ":");
+		this.crossNameSuffix.setDebugId("crossNameSuffix");
 		this.crossNameSuffix.setImmediate(true);
 		this.crossNameSuffix.setMaxLength(CrossingSettingsNameComponent.MAX_PREFIX_SUFFIX_LENGTH);
 
 		this.leadingZerosSelect = new Select(this.messageSource.getMessage(Message.SEQUENCE_NUMBER_SHOULD_HAVE) + ":");
+		this.leadingZerosSelect.setDebugId("leadingZerosSelect");
 		this.leadingZerosSelect.setImmediate(true);
 		this.leadingZerosSelect.setNullSelectionAllowed(true);
 
 		this.startNumberTextField = new TextField(this.messageSource.getMessage(Message.SPECIFY_DIFFERENT_STARTING_SEQUENCE_NUMBER) + ":");
+		this.startNumberTextField.setDebugId("startNumberTextField");
 		this.startNumberTextField.setImmediate(true);
 		this.startNumberTextField.setMaxLength(CrossingSettingsNameComponent.STARTING_NUM_MAX_CHARS_LENGTH);
 
 		this.separatorTextField = new TextField(this.messageSource.getMessage(Message.SEPARATOR_FOR_PARENTAGE_DESIGNATION) + ":");
+		this.separatorTextField.setDebugId("separatorTextField");
 		this.separatorTextField.setImmediate(true);
 		this.separatorTextField.setMaxLength(CrossingSettingsNameComponent.SEPARATOR_MAX_CHARS_LENGTH);
 		this.separatorTextField.addStyleName("mandatory-field");
 
 		this.generatedNextName = new TextField(this.messageSource.getMessage(Message.THE_NEXT_NAME_IN_THE_SEQUENCE_WILL_BE) + ":");
+		this.generatedNextName.setDebugId("generatedNextName");
 		this.generatedNextName.setReadOnly(true);
 
 		this.generatedExampleParentage = new TextField(this.messageSource.getMessage(Message.GENERATED_PARENT_DESIGNATION) + ":");
+		this.generatedExampleParentage.setDebugId("generatedExampleParentage");
 		this.generatedExampleParentage.setReadOnly(true);
 
 		this.saveParentageDesignationAsAStringGroup =
@@ -187,6 +196,7 @@ public class CrossingSettingsNameComponent extends CssLayout implements Breeding
 	public void layoutComponents() {
 
 		final FormLayout formFields = new FormLayout();
+		formFields.setDebugId("formFields");
 
 		formFields.addComponent(this.crossNamePrefix);
 		formFields.addComponent(this.leadingZerosSelect);

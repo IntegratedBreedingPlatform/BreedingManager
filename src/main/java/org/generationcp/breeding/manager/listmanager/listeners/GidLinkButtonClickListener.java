@@ -112,18 +112,21 @@ public class GidLinkButtonClickListener implements Button.ClickListener {
 		final Window germplasmWindow = new BaseSubWindow(windowTitle);
 
 		AbsoluteLayout layoutForGermplasm = new AbsoluteLayout();
+		layoutForGermplasm.setDebugId("layoutForGermplasm");
 		layoutForGermplasm.setMargin(false);
 		layoutForGermplasm.setWidth("100%");
 		layoutForGermplasm.setHeight("100%");
 		layoutForGermplasm.addStyleName("no-caption");
 
 		final Embedded germplasmInfo = new Embedded(null, germplasmBrowserLink);
+		germplasmInfo.setDebugId("germplasmInfo");
 
 		germplasmInfo.setType(Embedded.TYPE_BROWSER);
 		germplasmInfo.setSizeFull();
 
 		if (this.showAddToList) {
 			Button addToListLink = new Button("Add to list");
+			addToListLink.setDebugId("addToListLink");
 			if (this.listManagerMain.listBuilderIsLocked()) {
 				addToListLink.setEnabled(false);
 				addToListLink.setDescription("Cannot add entry to locked list in List Builder section.");

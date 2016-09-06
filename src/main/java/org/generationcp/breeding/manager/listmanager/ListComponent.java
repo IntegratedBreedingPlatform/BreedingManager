@@ -292,8 +292,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	@Override
 	public void instantiateComponents() {
 		this.inventoryViewMenu = new InventoryViewActionMenu();
+		this.inventoryViewMenu.setDebugId("inventoryViewMenu");
 
 		this.topLabel = new Label(this.messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
+		this.topLabel.setDebugId("topLabel");
 		this.topLabel.setWidth("120px");
 		this.topLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 
@@ -301,6 +303,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				germplasmListManager.getGermplasmListTypes());
 
 		this.viewHeaderButton = new Button(this.messageSource.getMessage(Message.VIEW_HEADER));
+		this.viewHeaderButton.setDebugId("viewHeaderButton");
 		this.viewHeaderButton.addStyleName(BaseTheme.BUTTON_LINK);
 		if (this.viewListHeaderWindow.getListHeaderComponent() != null) {
 			this.viewHeaderButton.setDescription(this.viewListHeaderWindow.getListHeaderComponent().toString());
@@ -311,9 +314,11 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				"Edit List Header");
 
 		this.actionsButton = new ActionButton();
+		this.actionsButton.setDebugId("actionsButton");
 		this.actionsButton.setData(ListComponent.TOOLS_BUTTON_ID);
 
 		this.inventoryViewToolsButton = new ActionButton();
+		this.inventoryViewToolsButton.setDebugId("inventoryViewToolsButton");
 		this.inventoryViewToolsButton.setData(ListComponent.TOOLS_BUTTON_ID);
 
 		try {
@@ -324,6 +329,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		}
 
 		this.totalListEntriesLabel = new Label("", Label.CONTENT_XHTML);
+		this.totalListEntriesLabel.setDebugId("totalListEntriesLabel");
 		this.totalListEntriesLabel.setWidth("120px");
 
 		if (this.listEntriesCount == 0) {
@@ -333,6 +339,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		}
 
 		this.totalSelectedListEntriesLabel = new Label("", Label.CONTENT_XHTML);
+		this.totalSelectedListEntriesLabel.setDebugId("totalSelectedListEntriesLabel");
 		this.totalSelectedListEntriesLabel.setWidth("95px");
 		this.updateNoOfSelectedEntries(0);
 
@@ -347,6 +354,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.lockButton.setData(ListComponent.LOCK_BUTTON_ID);
 
 		this.menu = new ListViewActionMenu();
+		this.menu.setDebugId("menu");
 
 		// Add Column menu will be initialized after list data table is created
 		this.initializeListDataTable(new TableWithSelectAllLayout(Long.valueOf(this.listEntriesCount).intValue(), this.getNoOfEntries(),
@@ -360,8 +368,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
 
 		this.inventoryViewMenu = new InventoryViewActionMenu();
+		this.inventoryViewMenu.setDebugId("inventoryViewMenu");
 
 		this.tableContextMenu = new GermplasmListTableContextMenu();
+		this.tableContextMenu.setDebugId("tableContextMenu");
 
 		// Inventory Related Variables
 		this.validReservationsToSave = new HashMap<>();
@@ -393,7 +403,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.listDataTable.setDragMode(TableDragMode.ROW);
 		this.listDataTable.setData(ListComponent.LIST_DATA_COMPONENT_TABLE_DATA);
 		this.listDataTable.setColumnReorderingAllowed(false);
-		this.listDataTable.setDebugId("vaadin-listdata-tbl");
 		this.listDataTable.setImmediate(true);
 
 		this.listDataTable.addContainerProperty(ColumnLabels.TAG.getName(), CheckBox.class, null);
@@ -433,6 +442,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	public void initializeListInventoryTable() {
 		this.listInventoryTable = new ListManagerInventoryTable(this.source, this.germplasmList.getId(), true, false);
+		this.listInventoryTable.setDebugId("listInventoryTable");
 		this.listInventoryTable.setVisible(false);
 	}
 
@@ -501,14 +511,17 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	void addListEntryToTable(final GermplasmListData entry) {
 		final String gid = String.format("%s", entry.getGid().toString());
 		final Button gidButton = new Button(gid, new GidLinkButtonClickListener(this.source, gid, true, true));
+		gidButton.setDebugId("gidButton");
 		gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 		gidButton.setDescription("Click to view Germplasm information");
 
 		final Button desigButton = new Button(entry.getDesignation(), new GidLinkButtonClickListener(this.source, gid, true, true));
+		desigButton.setDebugId("desigButton");
 		desigButton.setStyleName(BaseTheme.BUTTON_LINK);
 		desigButton.setDescription("Click to view Germplasm information");
 
 		final CheckBox itemCheckBox = new CheckBox();
+		itemCheckBox.setDebugId("itemCheckBox");
 		itemCheckBox.setData(entry.getId());
 		itemCheckBox.setImmediate(true);
 		itemCheckBox.addListener(new ClickListener() {
@@ -571,6 +584,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		final String stockIds = entry.getInventoryInfo().getStockIDs();
 		final Label stockIdsLbl = new Label(stockIds);
+		stockIdsLbl.setDebugId("stockIdsLbl");
 		stockIdsLbl.setDescription(stockIds);
 		newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdsLbl);
 
@@ -700,10 +714,13 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	@Override
 	public void layoutComponents() {
 		this.headerLayout = new HorizontalLayout();
+		this.headerLayout.setDebugId("headerLayout");
 		this.headerLayout.setWidth("100%");
 		this.headerLayout.setSpacing(true);
 
 		final HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, this.topLabel);
+		headingLayout.setDebugId("headingLayout");
+		headingLayout.setDebugId("headingLayout");
 		this.headerLayout.addComponent(headingLayout);
 		this.headerLayout.addComponent(this.viewHeaderButton);
 		this.headerLayout.setComponentAlignment(this.viewHeaderButton, Alignment.BOTTOM_RIGHT);
@@ -724,11 +741,13 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.headerLayout.setExpandRatio(headingLayout, 1.0f);
 
 		this.toolsMenuContainer = new HorizontalLayout();
+		this.toolsMenuContainer.setDebugId("toolsMenuContainer");
 		this.toolsMenuContainer.setWidth("90px");
 		this.toolsMenuContainer.setHeight("27px");
 		this.toolsMenuContainer.addComponent(this.actionsButton);
 
 		final HorizontalLayout leftSubHeaderLayout = new HorizontalLayout();
+		leftSubHeaderLayout.setDebugId("leftSubHeaderLayout");
 		leftSubHeaderLayout.setSpacing(true);
 		leftSubHeaderLayout.addComponent(this.totalListEntriesLabel);
 		leftSubHeaderLayout.addComponent(this.totalSelectedListEntriesLabel);
@@ -736,6 +755,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		leftSubHeaderLayout.setComponentAlignment(this.totalSelectedListEntriesLabel, Alignment.MIDDLE_LEFT);
 
 		this.subHeaderLayout = new HorizontalLayout();
+		this.subHeaderLayout.setDebugId("subHeaderLayout");
 		this.subHeaderLayout.setWidth("100%");
 		this.subHeaderLayout.setSpacing(true);
 		this.subHeaderLayout.addStyleName("lm-list-desc");
@@ -787,6 +807,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			}
 
 			final TextField tf = new TextField();
+			tf.setDebugId("tf");
 			tf.setData(new ItemPropertyId(itemId, propertyId));
 
 			// set the size of textfield based on text of cell
@@ -1403,6 +1424,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	private void exportListAction() {
 		final ExportListAsDialog exportListAsDialog = new ExportListAsDialog(this.source, this.germplasmList, this.listDataTable);
+		exportListAsDialog.setDebugId("exportListAsDialog");
 		this.getWindow().addWindow(exportListAsDialog);
 	}
 
@@ -1425,6 +1447,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		} else {
 			this.listManagerCopyToListDialog = new BaseSubWindow(this.messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
+			this.listManagerCopyToListDialog.setDebugId("listManagerCopyToListDialog");
 			this.listManagerCopyToListDialog.setOverrideFocus(true);
 			this.listManagerCopyToListDialog.setModal(true);
 			this.listManagerCopyToListDialog.setWidth("617px");
@@ -1452,6 +1475,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private void addEntryButtonClickAction() {
 		final Window parentWindow = this.getWindow();
 		final AddEntryDialog addEntriesDialog = new AddEntryDialog(this, parentWindow);
+		addEntriesDialog.setDebugId("addEntriesDialog");
 		addEntriesDialog.addStyleName(Reindeer.WINDOW_LIGHT);
 		addEntriesDialog.focusOnSearchField();
 		parentWindow.addWindow(addEntriesDialog);
@@ -1843,6 +1867,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	public void openSaveListAsDialog() {
 		this.dialog = new SaveListAsDialog(this, this.germplasmList, this.messageSource.getMessage(Message.EDIT_LIST_HEADER));
+		this.dialog.setDebugId("dialog");
 		this.getWindow().addWindow(this.dialog);
 	}
 

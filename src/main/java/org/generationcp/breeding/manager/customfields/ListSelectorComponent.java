@@ -172,6 +172,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 	public void initializeRefreshButton() {
 		this.refreshButton = new Button();
+		this.refreshButton.setDebugId("refreshButton");
 		this.refreshButton.setData(ListSelectorComponent.REFRESH_BUTTON_ID);
 		this.refreshButton.setCaption(this.messageSource.getMessage(Message.REFRESH_LABEL));
 		this.refreshButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
@@ -195,6 +196,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		this.deleteFolderBtn.setData(this);
 
 		this.ctrlBtnsRightSubLayout = new HorizontalLayout();
+		this.ctrlBtnsRightSubLayout.setDebugId("ctrlBtnsRightSubLayout");
 		this.ctrlBtnsRightSubLayout.setHeight("30px");
 		this.ctrlBtnsRightSubLayout.addComponent(this.addFolderBtn);
 		this.ctrlBtnsRightSubLayout.addComponent(this.renameFolderBtn);
@@ -204,6 +206,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		this.ctrlBtnsRightSubLayout.setComponentAlignment(this.deleteFolderBtn, Alignment.BOTTOM_RIGHT);
 
 		this.ctrlBtnsLeftSubLayout = new HorizontalLayout();
+		this.ctrlBtnsLeftSubLayout.setDebugId("ctrlBtnsLeftSubLayout");
 		this.ctrlBtnsLeftSubLayout.setHeight("30px");
 
 		if (this.doIncludeToggleButton()) {
@@ -220,6 +223,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		}
 
 		this.controlButtonsLayout = new HorizontalLayout();
+		this.controlButtonsLayout.setDebugId("controlButtonsLayout");
 		this.controlButtonsLayout.setWidth("100%");
 		this.controlButtonsLayout.setHeight("30px");
 		this.controlButtonsLayout.setSpacing(true);
@@ -233,10 +237,12 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 	protected void initializeAddRenameFolderPanel() {
 		this.folderLabel = new Label("Folder");
+		this.folderLabel.setDebugId("folderLabel");
 		this.folderLabel.addStyleName(AppConstants.CssStyles.BOLD);
 		final Label mandatoryMarkLabel = new MandatoryMarkLabel();
 
 		this.folderTextField = new TextField();
+		this.folderTextField.setDebugId("folderTextField");
 		this.folderTextField.setMaxLength(50);
 		this.folderTextField.setValidationVisible(false);
 
@@ -246,19 +252,23 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		this.folderTextField.addValidator(this.listNameValidator);
 
 		this.saveFolderButton = new Button("<span class='glyphicon glyphicon-ok' style='right: 2px;'></span>");
+		this.saveFolderButton.setDebugId("saveFolderButton");
 		this.saveFolderButton.setHtmlContentAllowed(true);
 		this.saveFolderButton.setDescription(this.messageSource.getMessage(Message.SAVE_LABEL));
 		this.saveFolderButton.setStyleName(Bootstrap.Buttons.SUCCESS.styleName());
 
 		this.cancelFolderButton = new Button("<span class='glyphicon glyphicon-remove' style='right: 2px;'></span>");
+		this.cancelFolderButton.setDebugId("cancelFolderButton");
 		this.cancelFolderButton.setHtmlContentAllowed(true);
 		this.cancelFolderButton.setDescription(this.messageSource.getMessage(Message.CANCEL));
 		this.cancelFolderButton.setStyleName(Bootstrap.Buttons.DANGER.styleName());
 
 		this.addRenameFolderLayout = new HorizontalLayout();
+		this.addRenameFolderLayout.setDebugId("addRenameFolderLayout");
 		this.addRenameFolderLayout.setSpacing(true);
 
 		final HorizontalLayout rightPanelLayout = new HorizontalLayout();
+		rightPanelLayout.setDebugId("rightPanelLayout");
 		rightPanelLayout.addComponent(this.folderTextField);
 		rightPanelLayout.addComponent(this.saveFolderButton);
 		rightPanelLayout.addComponent(this.cancelFolderButton);
@@ -576,6 +586,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		this.setWidth("100%");
 
 		final VerticalLayout layout = new VerticalLayout();
+		layout.setDebugId("layout");
 		layout.setSpacing(true);
 		layout.setWidth("100%");
 
@@ -608,15 +619,19 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		this.setWidth("880px");
 
 		this.heading = new Label();
+		this.heading.setDebugId("heading");
 		this.heading.setValue(this.getTreeHeading());
 		this.heading.addStyleName(this.getTreeHeadingStyleName());
 		this.heading.addStyleName(AppConstants.CssStyles.BOLD);
 
 		this.treeHeadingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_BUILD_NEW_LIST, this.heading);
+		this.treeHeadingLayout.setDebugId("treeHeadingLayout");
+		this.treeHeadingLayout.setDebugId("treeHeadingLayout");
 
 		// if tree will include the toggle button to hide itself
 		if (this.doIncludeToggleButton()) {
 			this.toggleListTreeButton = new ToggleButton("Toggle Build New List Pane");
+			this.toggleListTreeButton.setDebugId("toggleListTreeButton");
 		}
 
 		// assumes that all tree will display control buttons
@@ -626,6 +641,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		}
 
 		this.treeContainerLayout = new CssLayout();
+		this.treeContainerLayout.setDebugId("treeContainerLayout");
 		this.treeContainerLayout.setWidth("100%");
 
 		if (this.doIncludeRefreshButton()) {

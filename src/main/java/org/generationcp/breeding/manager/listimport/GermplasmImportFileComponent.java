@@ -151,6 +151,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 			List<ImportedFactor> importedNameFactors = this.extractListOfImportedNames();
 			//if there were no namefactors then the showNameHandlingPopUpValidationRule would have failed already.
 			NameHandlingDialog nameHandlingDialog = new NameHandlingDialog(this, importedNameFactors);
+			nameHandlingDialog.setDebugId("nameHandlingDialog");
 			// If not from popup
 			if (this.getWindow() != null && this.source.getGermplasmImportPopupSource() == null) {
 				this.getWindow().addWindow(nameHandlingDialog);
@@ -222,6 +223,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 	public void instantiateComponents() {
 		// the &nbsp is neaded to add a whitespace between the text and following button-link
 		this.selectFileLabel = new Label(this.messageSource.getMessage(Message.SELECT_GERMPLASM_LIST_FILE) + "&nbsp");
+		this.selectFileLabel.setDebugId("selectFileLabel");
 		this.selectFileLabel.setContentMode(Label.CONTENT_XHTML);
 
 		this.initializeUploadField();
@@ -229,13 +231,16 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 		this.germplasmListUploader = new GermplasmListUploader();
 
 		this.cancelButton = new Button(this.messageSource.getMessage(Message.CANCEL));
+		this.cancelButton.setDebugId("cancelButton");
 
 		this.nextButton = new Button();
+		this.nextButton.setDebugId("nextButton");
 		this.nextButton.setData(GermplasmImportFileComponent.NEXT_BUTTON_ID);
 		this.nextButton.setEnabled(false);
 		this.nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 
 		this.openTemplateButton = new Button();
+		this.openTemplateButton.setDebugId("openTemplateButton");
 		this.openTemplateButton.setImmediate(true);
 		this.openTemplateButton.setStyleName(BaseTheme.BUTTON_LINK);
 
@@ -299,6 +304,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 	public void layoutComponents() {
 		// align the message consisting of the text, the link to the template and the end sentence period into one line
 		final HorizontalLayout downloadMessageLayout = new HorizontalLayout();
+		downloadMessageLayout.setDebugId("downloadMessageLayout");
 		downloadMessageLayout.addComponent(this.selectFileLabel);
 		downloadMessageLayout.addComponent(this.openTemplateButton);
 		downloadMessageLayout.addComponent(new Label(this.messageSource.getMessage(Message.PERIOD)));
@@ -307,6 +313,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 		this.addComponent(this.uploadComponents, "top:50px");
 
 		final HorizontalLayout buttonLayout = new HorizontalLayout();
+		buttonLayout.setDebugId("buttonLayout");
 		buttonLayout.setWidth("100%");
 		buttonLayout.setHeight("40px");
 		buttonLayout.setSpacing(true);

@@ -82,20 +82,24 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 
 		// components formatting
 		this.singleScaleDescriptionLabel = new Label("Specify the amount of inventory to reserve from each selected lot.");
+		this.singleScaleDescriptionLabel.setDebugId("singleScaleDescriptionLabel");
 
 		this.multiScaleDescriptionLabel =
 				new Label("The lots you have selected are in different units. "
 						+ "Please specify the amount of inventory to reserve for each unit type.");
 
 		this.contentPanel = new Panel();
+		this.contentPanel.setDebugId("contentPanel");
 		this.contentPanel.addStyleName("section_panel_layout");
 
 		this.scaleRows = new ArrayList<ReserveInventoryRowComponent>();
 
 		this.cancelButton = new Button(this.messageSource.getMessage(Message.CANCEL));
+		this.cancelButton.setDebugId("cancelButton");
 		this.cancelButton.setWidth("80px");
 
 		this.finishButton = new Button(this.messageSource.getMessage(Message.FINISH));
+		this.finishButton.setDebugId("finishButton");
 		this.finishButton.setWidth("80px");
 		this.finishButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 	}
@@ -153,9 +157,11 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 	public void layoutComponents() {
 
 		this.mainLayout = new VerticalLayout();
+		this.mainLayout.setDebugId("mainLayout");
 		this.mainLayout.setSpacing(true);
 
 		this.panelContentLayout = new VerticalLayout();
+		this.panelContentLayout.setDebugId("panelContentLayout");
 		this.panelContentLayout.setMargin(true);
 		this.panelContentLayout.setSpacing(true);
 
@@ -179,6 +185,7 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 			this.panelContentLayout.addComponent(this.multiScaleDescriptionLabel);
 
 			VerticalLayout scaleLayout = new VerticalLayout();
+			scaleLayout.setDebugId("scaleLayout");
 			scaleLayout.setSpacing(true);
 			scaleLayout.setHeight("90px");
 
@@ -197,6 +204,7 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 		this.contentPanel.setLayout(this.panelContentLayout);
 
 		HorizontalLayout buttonLayout = new HorizontalLayout();
+		buttonLayout.setDebugId("buttonLayout");
 		buttonLayout.setWidth("100%");
 		buttonLayout.setSpacing(true);
 		buttonLayout.addComponent(this.cancelButton);

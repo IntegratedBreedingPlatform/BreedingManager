@@ -161,6 +161,7 @@ public class CrossingManagerListTreeComponent extends ListTreeTableComponent {
 		super.layoutComponents();
 
 		final HorizontalLayout actionButtonsLayout = new HorizontalLayout();
+		actionButtonsLayout.setDebugId("actionButtonsLayout");
 		actionButtonsLayout.setSpacing(true);
 		actionButtonsLayout.setStyleName("align-center");
 		actionButtonsLayout.setMargin(true, false, false, false);
@@ -183,21 +184,25 @@ public class CrossingManagerListTreeComponent extends ListTreeTableComponent {
 		this.setHeight(DEFAULT_HEIGHT);
 
 		this.addToFemaleListButton = new Button();
+		this.addToFemaleListButton.setDebugId("addToFemaleListButton");
 		this.addToFemaleListButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 		this.addToFemaleListButton.setCaption(this.messageSource.getMessage(Message.DIALOG_ADD_TO_FEMALE_LABEL));
 		this.addToFemaleListButton.setEnabled(false);
 
 		this.addToMaleListButton = new Button();
+		this.addToMaleListButton.setDebugId("addToMaleListButton");
 		this.addToMaleListButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 		this.addToMaleListButton.setCaption(this.messageSource.getMessage(Message.DIALOG_ADD_TO_MALE_LABEL));
 		this.addToMaleListButton.setEnabled(false);
 
 		this.openForReviewButton = new Button();
+		this.openForReviewButton.setDebugId("openForReviewButton");
 		this.openForReviewButton.setStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 		this.openForReviewButton.setCaption(this.messageSource.getMessage(Message.DIALOG_OPEN_FOR_REVIEW_LABEL));
 		this.openForReviewButton.setEnabled(false);
 
 		this.cancelButton = new Button();
+		this.cancelButton.setDebugId("cancelButton");
 		this.cancelButton.setStyleName(Bootstrap.Buttons.DEFAULT.styleName());
 		this.cancelButton.setCaption(this.messageSource.getMessage(Message.CANCEL));
 

@@ -89,18 +89,26 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout implemen
 	@Override
 	public void instantiateComponents() {
 		this.headerListLabel = new Label();
+		this.headerListLabel.setDebugId("headerListLabel");
 		this.headerListLabel.setValue(this.messageSource.getMessage(Message.LIST_DETAILS));
 		this.headerListLabel.addStyleName(Bootstrap.Typography.H4.styleName());
 		this.headerListLabel.addStyleName(AppConstants.CssStyles.BOLD);
 
 		this.indicatesMandatoryLabel = new Label(this.messageSource.getMessage(Message.INDICATES_A_MANDATORY_FIELD));
+		this.indicatesMandatoryLabel.setDebugId("indicatesMandatoryLabel");
 		this.indicatesMandatoryLabel.addStyleName("italic");
 		this.listNameField = new ListNameField(this.messageSource.getMessage(Message.LIST_NAME), true);
+		this.listNameField.setDebugId("listNameField");
 		this.listDescriptionField = new ListDescriptionField(this.messageSource.getMessage(Message.DESCRIPTION_LABEL), false);
+		this.listDescriptionField.setDebugId("listDescriptionField");
 		this.listTypeField = new ListTypeField(this.messageSource.getMessage(Message.LIST_TYPE), true);
+		this.listTypeField.setDebugId("listTypeField");
 		this.listDateField = new ListDateField(this.messageSource.getMessage(Message.LIST_DATE), true);
+		this.listDateField.setDebugId("listDateField");
 		this.listNotesField = new ListNotesField(this.messageSource.getMessage(Message.NOTES), false);
+		this.listNotesField.setDebugId("listNotesField");
 		this.listOwnerField = new ListOwnerField(this.messageSource.getMessage(Message.LIST_OWNER_LABEL), false);
+		this.listOwnerField.setDebugId("listOwnerField");
 	}
 
 	@Override
@@ -117,6 +125,7 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout implemen
 	@Override
 	public void layoutComponents() {
 		this.containerLayout = new VerticalLayout();
+		this.containerLayout.setDebugId("containerLayout");
 		this.containerLayout.setSpacing(true);
 		this.containerLayout.setMargin(true);
 		this.containerLayout.addComponent(this.indicatesMandatoryLabel);
@@ -128,6 +137,7 @@ public class BreedingManagerListDetailsComponent extends VerticalLayout implemen
 		this.containerLayout.addComponent(this.listNotesField);
 
 		this.containerPanel = new Panel();
+		this.containerPanel.setDebugId("containerPanel");
 		this.containerPanel.setWidth("340px");
 		this.containerPanel.setHeight("320px");
 		this.containerPanel.setContent(this.containerLayout);
