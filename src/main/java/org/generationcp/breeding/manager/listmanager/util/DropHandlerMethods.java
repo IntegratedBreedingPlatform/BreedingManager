@@ -155,26 +155,26 @@ public class DropHandlerMethods {
 				gidList.add(itemId);
 			}
 		}
-		
+
 		this.addGermplasm(gidList);
 	}
 
 	public void addGermplasm(final List<Integer> gids) {
-		
+
 		final Map<Integer, String> crossExpansions = this.getCrossExpansions(gids);
-		final Map<Integer, Germplasm> gidGermplasmMap = generateGidGermplasmMap(gids);
+		final Map<Integer, Germplasm> gidGermplasmMap = this.generateGidGermplasmMap(gids);
 		final Map<Integer, String> preferredNames = this.germplasmDataManager.getPreferredNamesByGids(gids);
-		
+
 		try {
-			for (Integer gid : gids){
+			for (final Integer gid : gids) {
 				final Integer newItemId = this.getNextListEntryId();
 				final Item newItem = this.targetTable.getContainerDataSource().addItem(newItemId);
 
-				final Button gidButton =
-						new Button(String.format("%s", gid), new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true, true));
+				final Button gidButton = new Button(String.format("%s", gid),
+						new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true, true));
 				gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 
-				String crossExpansion = crossExpansions.get(gid);
+				final String crossExpansion = crossExpansions.get(gid);
 				final String preferredName = preferredNames.get(gid);
 				final Button designationButton =
 						new Button(preferredName, new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true, true));
@@ -235,7 +235,7 @@ public class DropHandlerMethods {
 					newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
 				}
 
-				//TODO get plot code values in bulk for all GIDS to improve performance
+				// TODO get plot code values in bulk for all GIDS to improve performance
 				newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(this.germplasmDataManager.getPlotCodeValue(gid));
 				newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
 				newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(crossExpansion);
@@ -249,7 +249,7 @@ public class DropHandlerMethods {
 				}
 
 			}
-		
+
 			this.fireListUpdatedEvent();
 
 			this.setHasUnsavedChanges(true);
@@ -261,11 +261,11 @@ public class DropHandlerMethods {
 	}
 
 	private Map<Integer, Germplasm> generateGidGermplasmMap(final List<Integer> gids) {
-		final List<Germplasm> germplasms = germplasmDataManager.getGermplasms(gids);
+		final List<Germplasm> germplasms = this.germplasmDataManager.getGermplasms(gids);
 		final Map<Integer, Germplasm> gidGermplasmMap = new HashMap<>();
-		for (Germplasm germplasm : germplasms){
+		for (final Germplasm germplasm : germplasms) {
 			final Integer gid = germplasm.getGid();
-			if (!gidGermplasmMap.containsKey(gid)){
+			if (!gidGermplasmMap.containsKey(gid)) {
 				gidGermplasmMap.put(gid, germplasm);
 			}
 		}
@@ -277,12 +277,11 @@ public class DropHandlerMethods {
 
 		final Map<Integer, String> crossExpansions = new HashMap<>();
 
-		for (List<Integer> partitionedGidList : partition) {
+		for (final List<Integer> partitionedGidList : partition) {
 			final Set<Integer> partitionedGidSet = new HashSet<Integer>(partitionedGidList);
-			crossExpansions.putAll(this.pedigreeService.getCrossExpansions(partitionedGidSet, null,
-					this.crossExpansionProperties));
+			crossExpansions.putAll(this.pedigreeService.getCrossExpansions(partitionedGidSet, null, this.crossExpansionProperties));
 		}
-		
+
 		return crossExpansions;
 	}
 
@@ -341,9 +340,8 @@ public class DropHandlerMethods {
 
 				final Item newItem = this.targetTable.getContainerDataSource().addItem(newItemId);
 
-				final Button gidButton =
-						new Button(String.format("%s", gid), new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true,
-								true));
+				final Button gidButton = new Button(String.format("%s", gid),
+						new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true, true));
 				gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 
 				final CheckBox tagCheckBox = new CheckBox();
@@ -365,9 +363,8 @@ public class DropHandlerMethods {
 
 				});
 
-				final Button designationButton =
-						new Button(germplasmListData.getDesignation(), new GidLinkButtonClickListener(this.listManagerMain, gid.toString(),
-								true, true));
+				final Button designationButton = new Button(germplasmListData.getDesignation(),
+						new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true, true));
 				designationButton.setStyleName(BaseTheme.BUTTON_LINK);
 				designationButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_GERMPLASM_INFORMATION);
 
@@ -381,7 +378,7 @@ public class DropHandlerMethods {
 				newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(germplasmListData.getGroupName());
 
 				final Integer groupId = germplasmListData.getGroupId();
-				final String groupIdDisplayValue = (groupId == null || groupId == 0) ? "-" : groupId.toString();
+				final String groupIdDisplayValue = groupId == null || groupId == 0 ? "-" : groupId.toString();
 				newItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(groupIdDisplayValue);
 
 				// Inventory Related Columns
@@ -418,7 +415,8 @@ public class DropHandlerMethods {
 					newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(DropHandlerMethods.STRING_EMPTY);
 				}
 
-				for (final Entry<String, List<ListDataColumnValues>> columnEntry : this.currentColumnsInfo.getColumnValuesMap().entrySet()) {
+				for (final Entry<String, List<ListDataColumnValues>> columnEntry : this.currentColumnsInfo.getColumnValuesMap()
+						.entrySet()) {
 					final String column = columnEntry.getKey();
 					for (final ListDataColumnValues columnValue : columnEntry.getValue()) {
 						if (columnValue.getListDataId().equals(germplasmListData.getId())) {
@@ -613,7 +611,7 @@ public class DropHandlerMethods {
 
 	/**
 	 * Get item id's of a table, and return it as a list
-	 * 
+	 *
 	 * @param table
 	 * @return
 	 */
