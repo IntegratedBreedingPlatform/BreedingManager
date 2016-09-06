@@ -113,14 +113,14 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	 * @param germplasmNameObjects
 	 * @param newNames
 	 * @param filename
-	 * @param doNotCreateGermplasmsWithId
+	 * @param doNotCreateGermplasmWithId
 	 * @param importedGermplasmList
 	 * @param seedStorageLocation
 	 * @return id of new Germplasm List created @
 	 * @throws BreedingManagerException
 	 */
 	public Integer saveRecords(final GermplasmList germplasmList, final List<GermplasmName> germplasmNameObjects, final List<Name> newNames,
-			final String filename, final List<Integer> doNotCreateGermplasmsWithId, final ImportedGermplasmList importedGermplasmList,
+			final String filename, final List<Integer> doNotCreateGermplasmWithId, final ImportedGermplasmList importedGermplasmList,
 			final Integer seedStorageLocation) throws BreedingManagerException {
 
 		germplasmList.setUserId(this.contextUtil.getCurrentUserLocalId());
@@ -134,9 +134,9 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 		this.gidLotMap.clear();
 		this.gidTransactionSetMap.clear();
-		this.processGermplasmNamesAndLots(germplasmNameObjects, doNotCreateGermplasmsWithId, seedStorageLocation);
+		this.processGermplasmNamesAndLots(germplasmNameObjects, doNotCreateGermplasmWithId, seedStorageLocation);
 
-		final List<ImportedGermplasm> importedGermplasms = importedGermplasmList.getImportedGermplasms();
+		final List<ImportedGermplasm> importedGermplasm = importedGermplasmList.getImportedGermplasms();
 
 		final GermplasmList list = this.saveGermplasmListRecord(germplasmList);
 
@@ -146,7 +146,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 			ListCommonActionsUtil.deleteExistingListEntries(existingListId, this.germplasmListManager);
 		}
 
-		this.saveGermplasmListDataRecords(germplasmNameObjects, list, importedGermplasms, doNotCreateGermplasmsWithId);
+		this.saveGermplasmListDataRecords(germplasmNameObjects, list, importedGermplasm, doNotCreateGermplasmWithId);
 		
 		if(!newNames.isEmpty()){
 			//save the names under the designation column.
@@ -171,10 +171,10 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	 * Update the preferred name of the imported germplasm using the selected name type from the Name Handling Dialog
 	 * 
 	 * @param preferredNameCode
-	 * @param importedGermplasms
+	 * @param importedGermplasmList
 	 */
-	void updateExportedGermplasmPreferredName(final String preferredNameCode, final List<ImportedGermplasm> importedGermplasms) {
-		for (final ImportedGermplasm importedGermplasm : importedGermplasms) {
+	void updateExportedGermplasmPreferredName(final String preferredNameCode, final List<ImportedGermplasm> importedGermplasmList) {
+		for (final ImportedGermplasm importedGermplasm : importedGermplasmList) {
 			final String newPreferredName = importedGermplasm.getNameFactors().get(preferredNameCode);
 			if (newPreferredName != null && newPreferredName.trim().length() > 0) {
 				this.germplasmManager.updateGermplasmPrefName(importedGermplasm.getGid(), newPreferredName);
@@ -205,7 +205,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	}
 
 	protected void processGermplasmNamesAndLots(final List<GermplasmName> germplasmNameObjects,
-			final List<Integer> doNotCreateGermplasmsWithId, final Integer seedStorageLocation) {
+			final List<Integer> doNotCreateGermplasmWithId, final Integer seedStorageLocation) {
 
 		final Map<Integer, GermplasmName> addedGermplasmNameMap = new HashMap<Integer, GermplasmName>();
 
@@ -217,7 +217,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 			Integer gid = null;
 			final Germplasm germplasm;
 
-			if (doNotCreateGermplasmsWithId.contains(germplasmName.getGermplasm().getGid())) {
+			if (doNotCreateGermplasmWithId.contains(germplasmName.getGermplasm().getGid())) {
 				// If do not create new germplasm
 				gid = germplasmName.getGermplasm().getGid();
 				germplasm = this.germplasmManager.getGermplasmByGID(gid);
@@ -404,20 +404,20 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	}
 
 	public void saveGermplasmListDataRecords(final List<GermplasmName> germplasmNameObjects, final GermplasmList list,
-			final List<ImportedGermplasm> importedGermplasms, final List<Integer> doNotCreateGermplasmsWithId) {
+			final List<ImportedGermplasm> importedGermplasmList, final List<Integer> doNotCreateGermplasmWithId) {
 
 		final List<GermplasmListData> listToSave = new ArrayList<GermplasmListData>();
 		final List<UserDefinedField> existingAttrUdflds = this.getUserDefinedFields(SaveGermplasmListAction.FCODE_TYPE_ATTRIBUTE);
 		final List<UserDefinedField> existingNameUdflds = this.getUserDefinedFields(SaveGermplasmListAction.FCODE_TYPE_NAME);
 		final List<Attribute> attrs = new ArrayList<Attribute>();
 		final List<Name> names = new ArrayList<Name>();
-		final Map<Integer, List<Name>> namesMap = this.getNamesMap(importedGermplasms, doNotCreateGermplasmsWithId, existingNameUdflds);
+		final Map<Integer, List<Name>> namesMap = this.getNamesMap(importedGermplasmList, doNotCreateGermplasmWithId, existingNameUdflds);
 		
 		int ctr = 1;
 		for (final GermplasmName germplasmName : germplasmNameObjects) {
 			final Integer gid = germplasmName.getGermplasm().getGid();
 			final int entryId = ctr++;
-			final ImportedGermplasm importedGermplasm = importedGermplasms.get(entryId - 1);
+			final ImportedGermplasm importedGermplasm = importedGermplasmList.get(entryId - 1);
 			importedGermplasm.setGid(gid);
 
 			final String designation = germplasmName.getName().getNval();
@@ -466,16 +466,16 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		}
 	}
 
-	private Map<Integer, List<Name>> getNamesMap(List<ImportedGermplasm> importedGermplasms, List<Integer> doNotCreateGermplasmsWithId, List<UserDefinedField> existingUdflds) {
+	private Map<Integer, List<Name>> getNamesMap(List<ImportedGermplasm> importedGermplasmList, List<Integer> doNotCreateGermplasmWithId, List<UserDefinedField> existingUdflds) {
 		Map<Integer, List<Name>> namesMap = new HashMap<Integer, List<Name>>();
-		if(!importedGermplasms.isEmpty() && !doNotCreateGermplasmsWithId.isEmpty()){
-			Map<String, String> nameFactors = importedGermplasms.get(0).getNameFactors();
+		if(!importedGermplasmList.isEmpty() && !doNotCreateGermplasmWithId.isEmpty()){
+			Map<String, String> nameFactors = importedGermplasmList.get(0).getNameFactors();
 			List<Integer> nameTypeIds = new ArrayList<Integer>();
 			for(Entry<String, String> factor: nameFactors.entrySet()){
 				nameTypeIds.add(this.getUdfldID(existingUdflds, factor.getKey()));
 			}
 			if(!nameTypeIds.isEmpty()){
-				return this.germplasmManager.getNamesByGidsAndNTypeIdsInMap(doNotCreateGermplasmsWithId, nameTypeIds);
+				return this.germplasmManager.getNamesByGidsAndNTypeIdsInMap(doNotCreateGermplasmWithId, nameTypeIds);
 			}
 		}
 		return namesMap;
