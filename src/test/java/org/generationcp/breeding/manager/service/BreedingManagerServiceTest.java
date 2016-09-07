@@ -16,7 +16,6 @@ import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.Person;
 import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.Project;
-import org.generationcp.middleware.pojos.workbench.WorkbenchRuntimeData;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -141,10 +140,6 @@ public class BreedingManagerServiceTest {
 	protected void setUpGetCurrentUserLocalId() throws MiddlewareQueryException {
 		final Long dummyProjectId = (long) 1;
 		final Project project = Mockito.mock(Project.class);
-		final WorkbenchRuntimeData runtimeData = Mockito.mock(WorkbenchRuntimeData.class);
-
-		Mockito.when(this.workbenchDataManager.getWorkbenchRuntimeData()).thenReturn(runtimeData);
-		Mockito.when(runtimeData.getUserId()).thenReturn(BreedingManagerServiceTest.DUMMY_USER_ID);
 
 		Mockito.when(this.workbenchDataManager.getLastOpenedProject(BreedingManagerServiceTest.DUMMY_USER_ID)).thenReturn(project);
 		Mockito.when(project.getProjectId()).thenReturn(dummyProjectId);

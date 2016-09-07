@@ -34,7 +34,6 @@ import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
-import org.generationcp.middleware.pojos.workbench.WorkbenchRuntimeData;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.junit.Before;
 import org.junit.Test;
@@ -515,16 +514,12 @@ public class ListComponentTest {
 
 	private void setUpWorkbenchDataManager() {
 
-		final WorkbenchRuntimeData runtimeDate = new WorkbenchRuntimeData();
-		runtimeDate.setUserId(5);
-
 		final Project dummyProject = new Project();
 		dummyProject.setProjectId((long) 5);
 
 		try {
-			Mockito.when(this.workbenchDataManager.getWorkbenchRuntimeData()).thenReturn(runtimeDate);
-			Mockito.when(this.workbenchDataManager.getLastOpenedProject(runtimeDate.getUserId())).thenReturn(dummyProject);
-			Mockito.when(this.workbenchDataManager.getLocalIbdbUserId(runtimeDate.getUserId(), dummyProject.getProjectId()))
+			Mockito.when(this.workbenchDataManager.getLastOpenedProject(5)).thenReturn(dummyProject);
+			Mockito.when(this.workbenchDataManager.getLocalIbdbUserId(5, dummyProject.getProjectId()))
 					.thenReturn(EXPECTED_USER_ID);
 
 		} catch (final MiddlewareQueryException e) {
