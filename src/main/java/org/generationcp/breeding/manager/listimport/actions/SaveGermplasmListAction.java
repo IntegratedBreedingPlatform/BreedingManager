@@ -606,7 +606,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 					newName.setReferenceId(0);
 					newName.setNdate(Util.getCurrentDateAsIntegerValue());
 
-					this.addName(names, newName, existingNames);
+					this.filterDuplicateName(names, newName, existingNames);
 				}
 			}
 		}
@@ -615,12 +615,12 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	}
 	
 	/**
-	 * Filters the names that are already in the database
+	 * Filters new name if it's already in the database by comparing the name values and typeids
 	 * @param names
 	 * @param newName
 	 * @param existingNames
 	 */
-	private void addName(final List<Name> names, final Name newName, final List<Name> existingNames) {
+	private void filterDuplicateName(final List<Name> names, final Name newName, final List<Name> existingNames) {
 		if (existingNames != null && !existingNames.isEmpty()) {
 			for (final Name name : existingNames) {
 				if (name.getTypeId().intValue() == newName.getTypeId().intValue() && name.getNval().equalsIgnoreCase(newName.getNval())) {
