@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
+import org.generationcp.breeding.manager.customcomponent.ControllableRefreshTable;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.CrossingManagerInventoryTable;
@@ -92,7 +93,7 @@ public class SelectParentsListDataComponentTest {
 
 	private GermplasmList germplasmList;
 	private Table listDataTable;
-	private Table inventoryTable;
+	private ControllableRefreshTable inventoryTable;
 	private List<GermplasmListData> listEntries;
 	private final List<ListEntryLotDetails> selectedLotEntries = new ArrayList<ListEntryLotDetails>();
 	private GermplasmListTestDataInitializer germplasmListTestDataInitializer;
@@ -150,9 +151,9 @@ public class SelectParentsListDataComponentTest {
 		Mockito.doReturn(window).when(this.makeCrossesParentsComponent).getWindow();
 	}
 
-	private Table prepareInventoryTable() {
+	private ControllableRefreshTable prepareInventoryTable() {
 		final List<ListEntryLotDetails> lotDetails = this.createLotDetails(SelectParentsListDataComponentTest.NO_OF_ENTRIES);
-		final Table table = this.createListInventoryTable(lotDetails);
+		final ControllableRefreshTable table = this.createListInventoryTable(lotDetails);
 
 		// init selected entries
 		for (int i = 0; i < SelectParentsListDataComponentTest.NO_OF_SELECTED; i++) {
@@ -173,8 +174,8 @@ public class SelectParentsListDataComponentTest {
 		return lotDetails;
 	}
 
-	private Table createListInventoryTable(final List<ListEntryLotDetails> lotDetails) {
-		final Table table = new Table();
+	private ControllableRefreshTable createListInventoryTable(final List<ListEntryLotDetails> lotDetails) {
+		final ControllableRefreshTable table = new ControllableRefreshTable();
 		table.setMultiSelect(true);
 		table.addContainerProperty(ColumnLabels.NEWLY_RESERVED.getName(), Double.class, null);
 
@@ -193,7 +194,7 @@ public class SelectParentsListDataComponentTest {
 
 		final TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
 		tableWithSelectAll.instantiateComponents();
-		final Table table = tableWithSelectAll.getTable();
+		final ControllableRefreshTable table = tableWithSelectAll.getTable();
 
 		this.selectParents.initializeListDataTable(table);
 
@@ -326,7 +327,7 @@ public class SelectParentsListDataComponentTest {
 	@Test
 	public void testUpdateNoOfEntries_InInventoryView() {
 		Mockito.doReturn(ModeView.INVENTORY_VIEW).when(this.makeCrossesMain).getModeView();
-		final Table table = new Table();
+		final ControllableRefreshTable table = new ControllableRefreshTable();
 		table.addItem(ListInventoryDataInitializer.createLotDetail(1, 1));
 		Mockito.doReturn(table).when(this.listInventoryTable).getTable();
 
@@ -451,7 +452,7 @@ public class SelectParentsListDataComponentTest {
 	public void testChangeToInventoryView_WhenTableWithSelectAllLayoutIsVisible() {
 		final TableWithSelectAllLayout tableWithSelectAllLayout = Mockito.mock(TableWithSelectAllLayout.class);
 		Mockito.doReturn(true).when(tableWithSelectAllLayout).isVisible();
-		final Table table = new Table();
+		final ControllableRefreshTable table = new ControllableRefreshTable();
 		table.setMultiSelect(true);
 		table.addItem(1);
 		table.addItem(2);
