@@ -265,9 +265,7 @@ public class DropHandlerMethods {
 		final Map<Integer, Germplasm> gidGermplasmMap = new HashMap<>();
 		for (final Germplasm germplasm : germplasms) {
 			final Integer gid = germplasm.getGid();
-			if (!gidGermplasmMap.containsKey(gid)) {
-				gidGermplasmMap.put(gid, germplasm);
-			}
+			gidGermplasmMap.put(gid, germplasm);
 		}
 		return gidGermplasmMap;
 	}
