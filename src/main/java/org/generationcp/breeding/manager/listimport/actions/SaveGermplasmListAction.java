@@ -423,9 +423,10 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		final List<UserDefinedField> existingNameUdflds = this.getUserDefinedFields(SaveGermplasmListAction.FCODE_TYPE_NAME);
 		final Map<Integer, List<Name>> namesMap = this.getNamesMap(importedGermplasmList, excludeGermplasmCreateIds, existingNameUdflds);
 		
-		// set up names and attributes collections to collect from the imported data rows and then persist
+		// set up names, attributes, and germplasmlistdata collections to collect from the imported data rows and then persist
 		final List<Name> names = new ArrayList<Name>();
 		final List<Attribute> attrs = new ArrayList<Attribute>();
+		final List<GermplasmListData> germplasmListDataList = new ArrayList<GermplasmListData>();
 		
 		// iterate through the imported names to process
 		for (int ctr = 0; ctr < germplasmNameObjects.size(); ctr++) {
@@ -451,13 +452,10 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 				curEntryId = importedGermplasm.getEntryId();
 			}
 			
-			// construct the list to be saved and save (we are saving a record inside a loop?)
+			// construct the list to be saved
 			final GermplasmListData germplasmListData =
 					this.buildGermplasmListData(list, gid, curEntryId, germplasmName.getName().getNval(), cross, importedGermplasm.getSource(), entryCode);
-			final Integer lrecId = this.germplasmListManager.addGermplasmListData(germplasmListData);
-			
-			// process inventory for this imported  germplasm record
-			this.createDepositInventoryTransaction(list, importedGermplasm, gid, lrecId);
+			germplasmListDataList.add(germplasmListData);
 			
 			// collect new attributes to add to the system
 			if (!importedGermplasm.getAttributeVariates().isEmpty()) {
@@ -473,6 +471,16 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 		}
 
+		if(!germplasmListDataList.isEmpty()){
+			//Save all list data
+			final List<Integer> lrecIds = this.germplasmListManager.addGermplasmListData(germplasmListDataList);
+			
+			//loop through the lrecids and create deposit inventory transactions
+			for(int i=0; i<lrecIds.size(); i++){
+				this.createDepositInventoryTransaction(list, importedGermplasmList.get(i), importedGermplasmList.get(i).getGid(), lrecIds.get(i));
+			}
+		}
+		
 		if (!attrs.isEmpty()) {
 			// Add All Attributes to database
 			this.germplasmManager.addAttributes(attrs);
