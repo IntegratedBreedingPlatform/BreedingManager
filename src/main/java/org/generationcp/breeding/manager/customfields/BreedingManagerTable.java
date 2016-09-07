@@ -3,9 +3,9 @@ package org.generationcp.breeding.manager.customfields;
 
 import java.util.Map;
 
-import com.vaadin.ui.Table;
+import org.generationcp.breeding.manager.customcomponent.ControllableRefreshTable;
 
-public class BreedingManagerTable extends Table {
+public class BreedingManagerTable extends ControllableRefreshTable {
 
 	private static final long serialVersionUID = 745102380412622592L;
 

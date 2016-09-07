@@ -8,6 +8,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.customcomponent.ControllableRefreshTable;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
@@ -27,13 +28,14 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.BaseTheme;
 
 /**
@@ -46,7 +48,8 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 
 	private static final long serialVersionUID = 1L;
 
-	protected Table listInventoryTable;
+	protected ControllableRefreshTable listInventoryTable;
+	
 	protected Integer listId;
 
 	@Autowired
@@ -83,6 +86,7 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		this.listInventoryTable = this.getTable();
 		this.listInventoryTable.setMultiSelect(true);
 		this.listInventoryTable.setImmediate(true);
+		this.listInventoryTable.setPageLength(100);
 
 		this.listInventoryTable.setHeight("480px");
 		this.listInventoryTable.setWidth("100%");
@@ -140,75 +144,88 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 	public void displayInventoryDetails(final List<GermplasmListData> inventoryDetails) {
 
 		this.listInventoryTable.removeAllItems();
+		
+		// disable the Vaadin table from listening to update events until the whole table is filled
+		listInventoryTable.disableContentRefreshing();
 		final Container listInventoryContainer = this.listInventoryTable.getContainerDataSource();
+		
 		for (final GermplasmListData inventoryDetail : inventoryDetails) {
 
-			final Integer entryId = inventoryDetail.getEntryId();
-			final String designation = inventoryDetail.getDesignation();
+			Monitor monitor = MonitorFactory.start("org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable.displayInventoryDetails:processInventoryRow");
+			try {
+  			final Integer entryId = inventoryDetail.getEntryId();
+  			final String designation = inventoryDetail.getDesignation();
+  
+  			final ListDataInventory listDataInventory = inventoryDetail.getInventoryInfo();
+  			@SuppressWarnings("unchecked")
+  			final List<ListEntryLotDetails> lotDetails = (List<ListEntryLotDetails>) listDataInventory.getLotRows();
+  			 
+  			if (lotDetails != null) {
+  				for (final ListEntryLotDetails lotDetail : lotDetails) {
+  					
+  					final Item newItem = listInventoryContainer.addItem(lotDetail);
+  
+  					final CheckBox itemCheckBox = new CheckBox();
+  					itemCheckBox.setData(lotDetail);
+  					itemCheckBox.setImmediate(true);
+  					itemCheckBox.addListener(new ClickListener() {
+  
+  						private static final long serialVersionUID = 1L;
+  
+  						@Override
+  						public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
+  							final CheckBox itemCheckBox = (CheckBox) event.getButton();
+  							ListInventoryTable.this.toggleSelectOnLotEntries(itemCheckBox);
+  						}
+  
+  					});
+  
+  					final Button desigButton =
+  							new Button(String.format("%s", designation), new GidLinkButtonClickListener(
+  									inventoryDetail.getGid().toString(), true));
+  					desigButton.setStyleName(BaseTheme.BUTTON_LINK);
+  
+  					newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(itemCheckBox);
+  					newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entryId);
+  					newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(desigButton);
+  
+  					String lotLocation = "";
+  					if (lotDetail.getLocationOfLot() != null && lotDetail.getLocationOfLot().getLname() != null) {
+  						lotLocation = lotDetail.getLocationOfLot().getLname();
+  					}
+  
+  					newItem.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).setValue(lotLocation);
+  
+  					String lotScale = "";
+  					if (lotDetail.getScaleOfLot() != null && lotDetail.getScaleOfLot().getName() != null) {
+  						lotScale = lotDetail.getScaleOfLot().getName();
+  					}
+  
+  					newItem.getItemProperty(ColumnLabels.UNITS.getName()).setValue(lotScale);
+  
+  					newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(lotDetail.getActualLotBalance());
+  					newItem.getItemProperty(ColumnLabels.RESERVED.getName()).setValue(lotDetail.getReservedTotalForEntry());
+  					newItem.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(0);
+  					newItem.getItemProperty(ColumnLabels.COMMENT.getName()).setValue(lotDetail.getCommentOfLot());
+  
+  					final String stockIds = lotDetail.getStockIds();
+  					final Label stockIdsLbl = new Label(stockIds);
+  					stockIdsLbl.setDescription(stockIds);
+  					newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdsLbl);
+  					newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotDetail.getLotId());
+  					newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(inventoryDetail.getSeedSource());
+  					
+  					
+  				}
+  			}
+			} finally {
+				monitor.stop();				
+			} 
 
-			final ListDataInventory listDataInventory = inventoryDetail.getInventoryInfo();
-			@SuppressWarnings("unchecked")
-			final List<ListEntryLotDetails> lotDetails = (List<ListEntryLotDetails>) listDataInventory.getLotRows();
-
-			if (lotDetails != null) {
-				for (final ListEntryLotDetails lotDetail : lotDetails) {
-					final Item newItem = listInventoryContainer.addItem(lotDetail);
-
-					final CheckBox itemCheckBox = new CheckBox();
-					itemCheckBox.setDebugId("itemCheckBox");
-					itemCheckBox.setData(lotDetail);
-					itemCheckBox.setImmediate(true);
-					itemCheckBox.addListener(new ClickListener() {
-
-						private static final long serialVersionUID = 1L;
-
-						@Override
-						public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
-							final CheckBox itemCheckBox = (CheckBox) event.getButton();
-							ListInventoryTable.this.toggleSelectOnLotEntries(itemCheckBox);
-						}
-
-					});
-
-					final Button desigButton =
-							new Button(String.format("%s", designation), new GidLinkButtonClickListener(
-									inventoryDetail.getGid().toString(), true));
-					desigButton.setStyleName(BaseTheme.BUTTON_LINK);
-
-					newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(itemCheckBox);
-					newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entryId);
-					newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(desigButton);
-
-					String lotLocation = "";
-					if (lotDetail.getLocationOfLot() != null && lotDetail.getLocationOfLot().getLname() != null) {
-						lotLocation = lotDetail.getLocationOfLot().getLname();
-					}
-
-					newItem.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).setValue(lotLocation);
-
-					String lotScale = "";
-					if (lotDetail.getScaleOfLot() != null && lotDetail.getScaleOfLot().getName() != null) {
-						lotScale = lotDetail.getScaleOfLot().getName();
-					}
-
-					newItem.getItemProperty(ColumnLabels.UNITS.getName()).setValue(lotScale);
-
-					newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(lotDetail.getActualLotBalance());
-					newItem.getItemProperty(ColumnLabels.RESERVED.getName()).setValue(lotDetail.getReservedTotalForEntry());
-					newItem.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(0);
-					newItem.getItemProperty(ColumnLabels.COMMENT.getName()).setValue(lotDetail.getCommentOfLot());
-
-					final String stockIds = lotDetail.getStockIds();
-					final Label stockIdsLbl = new Label(stockIds);
-					stockIdsLbl.setDebugId("stockIdsLbl");
-					stockIdsLbl.setDescription(stockIds);
-					newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdsLbl);
-					newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotDetail.getLotId());
-					newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(inventoryDetail.getSeedSource());
-				}
-			}
 		}
-
+		// we disabled this at the beginning of the method so re-enable and refresh render the table
+		listInventoryTable.enableContentRefreshing(true);
+		
 	}
 
 	protected void toggleSelectOnLotEntries(final CheckBox itemCheckBox) {
