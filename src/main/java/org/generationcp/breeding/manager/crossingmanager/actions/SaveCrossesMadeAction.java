@@ -99,6 +99,7 @@ public class SaveCrossesMadeAction implements Serializable {
 	@Autowired
 	private CrossExpansionProperties crossExpansionProperties;
 	
+	@Autowired
 	private PedigreeService pedigreeService;
 	
 	private GermplasmList germplasmList;
@@ -111,13 +112,6 @@ public class SaveCrossesMadeAction implements Serializable {
 
 	public SaveCrossesMadeAction(final GermplasmList germplasmList) {
 		this.germplasmList = germplasmList;
-		final ManagerFactory managerFactory = ManagerFactory.getCurrentManagerFactoryThreadLocal().get();
-		if (managerFactory != null) {
-			this.pedigreeService = managerFactory.getPedigreeService();
-		} else {
-			throw new IllegalStateException(
-					"Must have access to the Manager Factory thread local valiable. " + "Please contact support for further help.");
-		}
 	}
 
 	public SaveCrossesMadeAction() {
