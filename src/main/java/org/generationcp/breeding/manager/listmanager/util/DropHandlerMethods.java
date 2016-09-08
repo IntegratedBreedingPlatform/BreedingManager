@@ -40,6 +40,10 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.BaseTheme;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public class DropHandlerMethods {
 
@@ -59,6 +63,7 @@ public class DropHandlerMethods {
 	protected GermplasmListManager germplasmListManager;
 	protected InventoryDataManager inventoryDataManager;
 	protected PedigreeService pedigreeService;
+	protected PlatformTransactionManager transactionManager;
 
 	private static final Logger LOG = LoggerFactory.getLogger(DropHandlerMethods.class);
 
@@ -105,35 +110,39 @@ public class DropHandlerMethods {
 
 		this.currentListId = listId;
 
-		try {
-			// Load currentColumnsInfo if cached list info is null or not matching the needed list id
-			if (this.currentColumnsInfo == null || !this.currentColumnsInfo.getListId().equals(listId)) {
-				this.currentColumnsInfo = this.germplasmListManager.getAdditionalColumnsForList(listId);
+		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
+		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+			@Override
+			protected void doInTransactionWithoutResult(final TransactionStatus transactionStatus) {
+
+				// Load currentColumnsInfo if cached list info is null or not matching the needed list id
+				if (DropHandlerMethods.this.currentColumnsInfo == null || !DropHandlerMethods.this.currentColumnsInfo.getListId().equals(listId)) {
+					DropHandlerMethods.this.currentColumnsInfo = DropHandlerMethods.this.germplasmListManager.getAdditionalColumnsForList(listId);
+				}
+
+				final GermplasmList germplasmList = DropHandlerMethods.this.getGermplasmList(listId);
+				final List<GermplasmListData> germplasmListData = germplasmList.getListData();
+
+				// Fix for adding entries in reverse
+				if (germplasmListData.size() > 1 && germplasmListData.get(0).getEntryId() > germplasmListData.get(1).getEntryId()) {
+					Collections.reverse(germplasmListData);
+				}
+
+				for (final GermplasmListData listData : germplasmListData) {
+					DropHandlerMethods.this.addGermplasmFromList(listId, listData.getId(), germplasmList, fromEditList);
+				}
+
+				// mark that there is changes in a list that is currently building
+				DropHandlerMethods.this.changed = true;
+
+				DropHandlerMethods.this.currentColumnsInfo = null;
+				DropHandlerMethods.this.currentListId = null;
+
+				DropHandlerMethods.this.fireListUpdatedEvent();
+
 			}
-
-			final GermplasmList germplasmList = this.getGermplasmList(listId);
-			final List<GermplasmListData> germplasmListData = germplasmList.getListData();
-
-			// Fix for adding entries in reverse
-			if (germplasmListData.size() > 1 && germplasmListData.get(0).getEntryId() > germplasmListData.get(1).getEntryId()) {
-				Collections.reverse(germplasmListData);
-			}
-
-			for (final GermplasmListData listData : germplasmListData) {
-				this.addGermplasmFromList(listId, listData.getId(), germplasmList, fromEditList);
-			}
-
-			// mark that there is changes in a list that is currently building
-			this.changed = true;
-
-		} catch (final MiddlewareQueryException e) {
-			DropHandlerMethods.LOG.error("Error in getting germplasm list.", e);
-		}
-
-		this.currentColumnsInfo = null;
-		this.currentListId = null;
-
-		this.fireListUpdatedEvent();
+		});
 
 	}
 
