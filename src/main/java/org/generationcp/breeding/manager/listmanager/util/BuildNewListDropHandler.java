@@ -1,6 +1,8 @@
 
 package org.generationcp.breeding.manager.listmanager.util;
 
+import java.util.Arrays;
+
 import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.ListComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
@@ -75,7 +77,7 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 							final Item item = transferable.getSourceComponent().getItem(transferable.getItemId());
 							final Integer selectedGid =
 									Integer.valueOf(item.getItemProperty(ColumnLabels.GID.getName() + "_REF").getValue().toString());
-							BuildNewListDropHandler.this.addGermplasm(selectedGid);
+							BuildNewListDropHandler.this.addGermplasm(Arrays.asList(selectedGid));
 						}
 
 					} else if (sourceTableData.equals(DropHandlerMethods.MATCHING_LISTS_TABLE_DATA)) {
