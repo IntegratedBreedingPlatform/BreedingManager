@@ -70,7 +70,8 @@ public class ImportedGermplasm {
 	}
 
 	public String getSource() {
-		return this.source;
+		if(source == null) return "";
+		else return this.source;
 	}
 
 	public void setEntryCode(String entryCode) {

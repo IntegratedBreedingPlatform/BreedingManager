@@ -17,7 +17,7 @@ import com.google.common.base.Strings;
 public class ImportedGermplasmList extends ImportedDescriptionDetails {
 
 	private static final long serialVersionUID = -7039616815348588609L;
-	private List<ImportedGermplasm> importedGermplasms = new ArrayList<>();
+	private List<ImportedGermplasm> importedGermplasm = new ArrayList<>();
 	private boolean hasStockIDValues = false;
 	private boolean setImportedNameAsPreferredName = false;
 	private String preferredNameCode = "";
@@ -38,7 +38,7 @@ public class ImportedGermplasmList extends ImportedDescriptionDetails {
 	}
 
 	public boolean isUniqueStockId(final String stockId) {
-		for (final ImportedGermplasm germplasm : this.getImportedGermplasms()) {
+		for (final ImportedGermplasm germplasm : this.getImportedGermplasm()) {
 			if (stockId.equals(germplasm.getInventoryId())) {
 				// oops we have retrieved an existing stockId in the list
 				return false;
@@ -51,28 +51,28 @@ public class ImportedGermplasmList extends ImportedDescriptionDetails {
 	public List<String> getStockIdsAsList() {
 		final List<String> stockIDList = new ArrayList<>();
 
-		for (final ImportedGermplasm germplasm : this.getImportedGermplasms()) {
+		for (final ImportedGermplasm germplasm : this.getImportedGermplasm()) {
 			stockIDList.add(germplasm.getInventoryId());
 		}
 
 		return stockIDList;
 	}
 
-	public List<ImportedGermplasm> getImportedGermplasms() {
-		return this.importedGermplasms;
+	public List<ImportedGermplasm> getImportedGermplasm() {
+		return this.importedGermplasm;
 	}
 
-	public void setImportedGermplasms(final List<ImportedGermplasm> importedGermplasms) {
-		this.importedGermplasms = importedGermplasms;
+	public void setImportedGermplasm(final List<ImportedGermplasm> importedGermplasm) {
+		this.importedGermplasm = importedGermplasm;
 	}
 
 	public void addImportedGermplasm(final ImportedGermplasm importedGermplasm) {
-		this.importedGermplasms.add(importedGermplasm);
+		this.importedGermplasm.add(importedGermplasm);
 	}
 
 	public void normalizeGermplasmList() {
-		if (this.importedGermplasms != null) {
-			Collections.sort(this.importedGermplasms, new ImportedGermplasmSorter());
+		if (this.importedGermplasm != null) {
+			Collections.sort(this.importedGermplasm, new ImportedGermplasmSorter());
 		}
 	}
 
@@ -128,7 +128,7 @@ public class ImportedGermplasmList extends ImportedDescriptionDetails {
 	 * This will check if stockId exist in germplasm and inventory variable/seed amount is empty then return true.
 	 */
 	public boolean hasMissingInventoryVariable() {
-		for (final ImportedGermplasm importedGermplasm : this.getImportedGermplasms()) {
+		for (final ImportedGermplasm importedGermplasm : this.getImportedGermplasm()) {
 			if (this.hasStockIDValues && importedGermplasm.getSeedAmount() == 0
 					&& !Strings.isNullOrEmpty(importedGermplasm.getInventoryId())) {
 				return true;

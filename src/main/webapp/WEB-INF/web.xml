@@ -45,6 +45,16 @@
 		${vaadin.enable.pref.testing}
 	</servlet>
 
+	<servlet>
+		<servlet-name>LogoutServlet</servlet-name>
+		<servlet-class>org.generationcp.breeding.manager.application.LogoutServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>LogoutServlet</servlet-name>
+		<url-pattern>/logout/*</url-pattern>
+	</servlet-mapping>
+
 	<servlet-mapping>
 		<servlet-name>MainApplication</servlet-name>
 		<url-pattern>/main/*</url-pattern>

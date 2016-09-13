@@ -555,7 +555,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 		String germplasmSource;
 		for (int i = 0; i < this.getImportedGermplasms().size(); i++) {
 			final ImportedGermplasm importedGermplasm = this.getImportedGermplasms().get(i);
-			germplasmSource = importedGermplasm.getSource() == null ? "" : importedGermplasm.getSource();
+			germplasmSource = importedGermplasm.getSource();
 
 			this.getGermplasmDetailsTable()
 					.addItem(new Object[] {importedGermplasm.getEntryId(), importedGermplasm.getEntryCode(), importedGermplasm.getDesig(),

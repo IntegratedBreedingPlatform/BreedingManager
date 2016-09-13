@@ -215,7 +215,7 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 				&& germplasmListUploader.getImportedGermplasmList() != null) {
 
 			final ImportedGermplasmList importedGermplasmList = germplasmListUploader.getImportedGermplasmList();
-			final List<ImportedGermplasm> importedGermplasms = importedGermplasmList.getImportedGermplasms();
+			final List<ImportedGermplasm> importedGermplasms = importedGermplasmList.getImportedGermplasm();
 
 			this.germplasmDetailsComponent.setImportedGermplasms(importedGermplasms);
 			this.germplasmDetailsComponent.setGermplasmListUploader(germplasmListUploader);

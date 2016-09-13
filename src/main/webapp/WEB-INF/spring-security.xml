@@ -42,7 +42,9 @@
 	
 	<authentication-manager alias="bmsAuthenticationManager">
 		<authentication-provider ref="preAuthenticatedAuthenticationProvider" />
-		<authentication-provider user-service-ref="workbenchUserDetailsService"/>
+		<authentication-provider user-service-ref="workbenchUserDetailsService">
+			<password-encoder hash="bcrypt" />
+		</authentication-provider>
 	</authentication-manager>
 
 </bean:beans>

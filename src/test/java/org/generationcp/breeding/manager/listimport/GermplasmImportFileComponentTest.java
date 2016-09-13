@@ -139,7 +139,7 @@ public class GermplasmImportFileComponentTest {
 		final GermplasmImportPopupSource importPopupSource = Mockito.mock(GermplasmImportPopupSource.class);
 		doReturn(importPopupSource).when(this.importMain).getGermplasmImportPopupSource();
 		doReturn(new Window()).when(importPopupSource).getParentWindow();
-		final List<ImportedGermplasm> list = importedGermplasmList.getImportedGermplasms();
+		final List<ImportedGermplasm> list = importedGermplasmList.getImportedGermplasm();
 		final ErrorCollection success = new ErrorCollection();
 		when(this.showNameHandlingPopUpValidator.validate(list)).thenReturn(success);
 
@@ -151,7 +151,7 @@ public class GermplasmImportFileComponentTest {
 	@Test
 	public void testNextStepGoesDirectlyToNextScreenWhenThereIsNoImportedNameFactor() {
 		final ImportedGermplasmList importedGermplasmList = this.initImportedGermplasmList(false);
-		final List<ImportedGermplasm> list = importedGermplasmList.getImportedGermplasms();
+		final List<ImportedGermplasm> list = importedGermplasmList.getImportedGermplasm();
 		final ErrorCollection error = new ErrorCollection();
 		error.add(DUMMY_MESSAGE);
 		when(this.showNameHandlingPopUpValidator.validate(list)).thenReturn(error);
