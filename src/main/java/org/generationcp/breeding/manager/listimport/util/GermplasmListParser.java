@@ -116,7 +116,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 			return false;
 		}
 
-		for (final ImportedGermplasm germplasm : this.importedGermplasmList.getImportedGermplasms()) {
+		for (final ImportedGermplasm germplasm : this.importedGermplasmList.getImportedGermplasm()) {
 			final Double seedAmount = germplasm.getSeedAmount();
 
 			// make sure that there is at least one row with inventory amount
@@ -134,7 +134,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 			return false;
 		}
 
-		for (final ImportedGermplasm germplasm : this.importedGermplasmList.getImportedGermplasms()) {
+		for (final ImportedGermplasm germplasm : this.importedGermplasmList.getImportedGermplasm()) {
 			final Double seedAmount = germplasm.getSeedAmount();
 			final String stockId = germplasm.getInventoryId();
 
@@ -485,7 +485,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		final List<ImportedGermplasm> importedGermplasms =
 				observationRowConverter.convertWorkbookRowsToObject(new WorkbookRowConverter.ContinueTillBlank());
 
-		this.importedGermplasmList.setImportedGermplasms(importedGermplasms);
+		this.importedGermplasmList.setImportedGermplasm(importedGermplasms);
 
 		if (this.specialFactors.containsKey(FactorTypes.STOCK)) {
 			this.stockIDValidator.validate(this.specialFactors.get(FactorTypes.STOCK), this.importedGermplasmList);

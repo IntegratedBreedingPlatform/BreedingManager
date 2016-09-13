@@ -28,7 +28,7 @@ public class ImportedGermplasmListDataInitializer {
 		final Date date = new Date();
 
 		final ImportedGermplasmList importedGermplasmList = new ImportedGermplasmList(filename, name, title, type, date);
-		importedGermplasmList.setImportedGermplasms(this.createListOfImportedGermplasm(noOfEntries, withNameFactors));
+		importedGermplasmList.setImportedGermplasm(this.createListOfImportedGermplasm(noOfEntries, withNameFactors));
 		importedGermplasmList.setImportedFactors(this.createImportedFactors(withNameFactors));
 		return importedGermplasmList;
 	}
