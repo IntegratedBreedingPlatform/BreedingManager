@@ -421,7 +421,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 
 	/**
 	 * Parse the date value return from a DateField object to this format yyyymmdd
-	 * 
+	 *
 	 * @param listDate string with format: E MMM dd HH:mm:ss Z yyyy If doesn't follow the format, will return the current date
 	 * @return
 	 */
