@@ -145,6 +145,7 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 
 	public void doneAction() {
 		try {
+			
 			if (this.useSameGidCheckbox.booleanValue()) {
 				if (this.source.getNameGermplasmMap() == null) {
 					this.source.setNameGermplasmMap(new HashMap<String, Germplasm>());
@@ -161,6 +162,7 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 			} else {
 				this.source.processNextItems();
 			}
+			
 			this.removeWindow(this);
 		} catch (MiddlewareQueryException e) {
 			SelectGermplasmWindow.LOG.error(e.getMessage(), e);
@@ -372,7 +374,7 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 		// center window within the browser
 		this.center();
 		this.mainLayout = new VerticalLayout();
-		this.mainLayout.setDebugId("mainLayout");
+		this.mainLayout.setDebugId("selectGermplasmMainLayout");
 		this.mainLayout.setMargin(true);
 		this.mainLayout.setSpacing(true);
 		this.mainLayout.addComponent(this.selectGermplasmLabel);

@@ -197,7 +197,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 		buttonLayoutMain.addStyleName("buttonLayoutMain");
 
 		this.mainLayout = new CssLayout();
-		this.mainLayout.setDebugId("mainLayout");
+		this.mainLayout.setDebugId("saveListDialogMainLayout");
 		this.mainLayout.setWidth("741px");
 		this.mainLayout.setHeight("420px");
 		this.mainLayout.addComponent(this.guideMessage);
