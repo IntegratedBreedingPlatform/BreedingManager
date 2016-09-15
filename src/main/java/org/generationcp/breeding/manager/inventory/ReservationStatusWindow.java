@@ -130,7 +130,7 @@ public class ReservationStatusWindow extends BaseSubWindow implements Initializi
 		this.setWidth("780px");
 
 		this.mainLayout = new VerticalLayout();
-		this.mainLayout.setDebugId("mainLayout");
+		this.mainLayout.setDebugId("reservationStatMainLayout");
 		this.mainLayout.setSpacing(true);
 
 		this.mainLayout.addComponent(this.statusDescriptionLabel);

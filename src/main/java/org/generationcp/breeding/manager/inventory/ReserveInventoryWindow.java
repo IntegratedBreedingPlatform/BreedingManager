@@ -157,7 +157,7 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 	public void layoutComponents() {
 
 		this.mainLayout = new VerticalLayout();
-		this.mainLayout.setDebugId("mainLayout");
+		this.mainLayout.setDebugId("reserveInventoryMainLayout");
 		this.mainLayout.setSpacing(true);
 
 		this.panelContentLayout = new VerticalLayout();

@@ -134,7 +134,7 @@ public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow imple
 	@Override
 	public void layoutComponents() {
 		this.mainLayout = new VerticalLayout();
-		this.mainLayout.setDebugId("mainLayout");
+		this.mainLayout.setDebugId("newDesigDialogMainLayout");
 		this.mainLayout.setSpacing(true);
 
 		this.mainLayout.addComponent(this.confirmLabel);

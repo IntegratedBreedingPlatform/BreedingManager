@@ -221,7 +221,7 @@ public class ExportListAsDialog extends BaseSubWindow implements InitializingBea
 		buttonLayout.setComponentAlignment(this.finishButton, Alignment.BOTTOM_LEFT);
 
 		this.mainLayout = new VerticalLayout();
-		this.mainLayout.setDebugId("mainLayout");
+		this.mainLayout.setDebugId("exportListMainLayout");
 		this.mainLayout.setSpacing(true);
 		this.mainLayout.addComponent(this.exportFormalLbl);
 		this.mainLayout.addComponent(fieldLayout);

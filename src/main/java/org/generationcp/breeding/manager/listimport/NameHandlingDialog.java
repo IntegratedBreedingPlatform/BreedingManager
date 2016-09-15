@@ -138,7 +138,7 @@ public class NameHandlingDialog extends BaseSubWindow implements BreedingManager
 	@Override
 	public void layoutComponents() {
 		this.mainLayout = new VerticalLayout();
-		this.mainLayout.setDebugId("mainLayout");
+		this.mainLayout.setDebugId("nameHandlingMainLayout");
 		this.mainLayout.setSpacing(true);
 
 		final HorizontalLayout setAsPreferredNameLayout = new HorizontalLayout();

@@ -203,8 +203,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		this.setWidth("100%");
 
 		final CssLayout mainLayout = new CssLayout();
-		mainLayout.setDebugId("mainLayout");
-		mainLayout.setDebugId("mainLayout");
+		mainLayout.setDebugId("searchBarmainLayout");
 		mainLayout.addComponent(this.getFirstRow());
 		mainLayout.addComponent(this.getSecondRow());
 
