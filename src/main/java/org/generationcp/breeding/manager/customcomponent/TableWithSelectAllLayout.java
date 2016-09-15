@@ -137,7 +137,7 @@ public class TableWithSelectAllLayout extends TableLayout implements BreedingMan
 		super.layoutComponents();
 
 		HorizontalLayout layout = new HorizontalLayout();
-		layout.setDebugId("layout");
+		layout.setDebugId("tableWithSelectAllLayout");
 		layout.addComponent(this.dummyLabel);
 		layout.addComponent(this.selectAllCheckBox);
 
