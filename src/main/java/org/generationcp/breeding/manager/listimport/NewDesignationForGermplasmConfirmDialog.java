@@ -20,8 +20,8 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow implements BreedingManagerLayout, InitializingBean,
-		ImportGermplasmEntryActionListener, Window.CloseListener {
+public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow
+		implements BreedingManagerLayout, InitializingBean, ImportGermplasmEntryActionListener, Window.CloseListener {
 
 	/**
 	 *
@@ -45,8 +45,9 @@ public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow imple
 
 	private final ProcessImportedGermplasmAction source;
 
-	public NewDesignationForGermplasmConfirmDialog(ProcessImportedGermplasmAction source, String germplasmName, int germplasmIndex,
-			Integer gid, Integer ibdbUserId, Integer dateIntValue, Integer nameMatchesCount) {
+	public NewDesignationForGermplasmConfirmDialog(final ProcessImportedGermplasmAction source, final String germplasmName,
+			final int germplasmIndex, final Integer gid, final Integer ibdbUserId, final Integer dateIntValue,
+			final Integer nameMatchesCount) {
 		super();
 		this.germplasmName = germplasmName;
 		this.germplasmIndex = germplasmIndex;
@@ -95,7 +96,6 @@ public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow imple
 		// not implemented
 	}
 
-	@SuppressWarnings("serial")
 	@Override
 	public void addListeners() {
 		this.searchCreateButton.addListener(new Button.ClickListener() {
@@ -106,7 +106,7 @@ public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow imple
 			private static final long serialVersionUID = -373965708464005849L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				NewDesignationForGermplasmConfirmDialog.this.searchOrAddANewGermplasm();
 			}
 		});
@@ -119,7 +119,7 @@ public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow imple
 			private static final long serialVersionUID = -8698652015248607854L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				NewDesignationForGermplasmConfirmDialog.this.addGermplasmName();
 			}
 		});
@@ -139,11 +139,11 @@ public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow imple
 
 		this.mainLayout.addComponent(this.confirmLabel);
 
-		Label forSpaceLabel = new Label();
+		final Label forSpaceLabel = new Label();
 		forSpaceLabel.setDebugId("forSpaceLabel");
 		this.mainLayout.addComponent(forSpaceLabel);
 
-		HorizontalLayout buttonLayout = new HorizontalLayout();
+		final HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setDebugId("buttonLayout");
 		buttonLayout.setSpacing(true);
 		buttonLayout.addComponent(this.searchCreateButton);
@@ -182,32 +182,32 @@ public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow imple
 		return this.nameMatchesCount;
 	}
 
-	public void setNameMatchesCount(Integer nameMatchesCount) {
+	public void setNameMatchesCount(final Integer nameMatchesCount) {
 		this.nameMatchesCount = nameMatchesCount;
 	}
 
-	public void setGermplasmName(String germplasmName) {
+	public void setGermplasmName(final String germplasmName) {
 		this.germplasmName = germplasmName;
 	}
 
-	public void setGermplasmIndex(int germplasmIndex) {
+	public void setGermplasmIndex(final int germplasmIndex) {
 		this.germplasmIndex = germplasmIndex;
 	}
 
-	public void setIbdbUserId(Integer ibdbUserId) {
+	public void setIbdbUserId(final Integer ibdbUserId) {
 		this.ibdbUserId = ibdbUserId;
 	}
 
-	public void setDateIntValue(Integer dateIntValue) {
+	public void setDateIntValue(final Integer dateIntValue) {
 		this.dateIntValue = dateIntValue;
 	}
 
-	public void setGid(Integer gid) {
+	public void setGid(final Integer gid) {
 		this.gid = gid;
 	}
 
 	private void addGermplasmName() {
-		Name name = this.source.createNameObject(this.ibdbUserId, this.dateIntValue, this.germplasmName);
+		final Name name = this.source.createNameObject(this.ibdbUserId, this.dateIntValue, this.germplasmName);
 
 		name.setNid(null);
 		name.setNstat(Integer.valueOf(0));
@@ -225,7 +225,7 @@ public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow imple
 	}
 
 	@Override
-	public void windowClose(CloseEvent e) {
+	public void windowClose(final CloseEvent e) {
 		super.close();
 		this.source.closeAllImportEntryListeners();
 	}

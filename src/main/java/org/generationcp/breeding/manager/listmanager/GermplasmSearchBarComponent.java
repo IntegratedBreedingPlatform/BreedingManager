@@ -43,7 +43,8 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
 
 @Configurable
-public class GermplasmSearchBarComponent extends CssLayout implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
+public class GermplasmSearchBarComponent extends CssLayout
+		implements InternationalizableComponent, InitializingBean, BreedingManagerLayout {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmSearchBarComponent.class);
 	private static final long serialVersionUID = 1L;
@@ -114,7 +115,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		this.searchField.setDebugId("searchField");
 		this.searchField.setDebugId("searchId");
 		this.searchField.setImmediate(true);
-		
+
 		this.searchButton = new Button(this.messageSource.getMessage(Message.SEARCH));
 		this.searchButton.setDebugId("searchButton");
 		this.searchButton.setDebugId("searchButton");
@@ -159,7 +160,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		this.searchTypeOptions = new OptionGroup(null, searchTypes);
 		this.searchTypeOptions.setDebugId("searchTypeOptions");
 		this.searchTypeOptions.setDebugId("searchTypeOptions");
-		
+
 		this.searchTypeOptions.setValue(this.matchesStartingWith);
 		this.searchTypeOptions.setStyleName("v-select-optiongroup-horizontal");
 	}
@@ -182,6 +183,11 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		});
 
 		this.searchField.addShortcutListener(new ShortcutListener("SearchFieldEnterShortcut", ShortcutAction.KeyCode.ENTER, null) {
+
+			/**
+			 *
+			 */
+			private static final long serialVersionUID = -8089466610968396841L;
 
 			@Override
 			public void handleAction(final Object sender, final Object target) {
@@ -218,7 +224,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		this.searchBarLayoutLeft = new HorizontalLayout();
 		this.searchBarLayoutLeft.setDebugId("searchBarLayoutLeft");
 		this.searchBarLayoutLeft.setDebugId("searchBarLayoutLeft");
-		
+
 		this.searchBarLayoutLeft.setSpacing(true);
 		this.searchBarLayoutLeft.addComponent(this.searchField);
 		this.searchBarLayoutLeft.addComponent(this.searchButton);
@@ -227,7 +233,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		this.searchBarLayoutRight = new CssLayout();
 		this.searchBarLayoutRight.setDebugId("searchBarLayoutRight");
 		this.searchBarLayoutLeft.setDebugId("searchBarLayoutRight");
-		
+
 		this.searchBarLayoutRight.addComponent(this.withInventoryOnlyCheckBox);
 		this.searchBarLayoutRight.addComponent(this.includeParentsCheckBox);
 		this.searchBarLayoutRight.addComponent(this.includeMGMembersCheckbox);
@@ -240,7 +246,7 @@ public class GermplasmSearchBarComponent extends CssLayout implements Internatio
 		final CssLayout firstRow = new CssLayout();
 		firstRow.setDebugId("firstRow");
 		firstRow.setDebugId("firstRow");
-		
+
 		firstRow.addComponent(this.searchBarLayoutLeft);
 		firstRow.addComponent(this.searchBarLayoutRight);
 		return firstRow;
