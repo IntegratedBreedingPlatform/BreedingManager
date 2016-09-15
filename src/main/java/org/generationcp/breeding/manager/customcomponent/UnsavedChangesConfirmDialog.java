@@ -134,7 +134,7 @@ public class UnsavedChangesConfirmDialog extends BaseSubWindow implements Initia
 	@Override
 	public void layoutComponents() {
 		this.mainLayout = new VerticalLayout();
-		this.mainLayout.setDebugId("mainLayout");
+		this.mainLayout.setDebugId("unsavedChangesMainLayout");
 		this.mainLayout.setSpacing(true);
 
 		this.mainLayout.addComponent(this.descriptionLabel);
