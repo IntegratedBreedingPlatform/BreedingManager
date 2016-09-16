@@ -12,6 +12,7 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntr
 import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.service.impl.SeedSourceGenerator;
+import org.generationcp.commons.util.ObjectUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.Workbook;
@@ -24,6 +25,7 @@ import org.generationcp.middleware.pojos.Germplasm;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -292,4 +294,113 @@ public class MakeCrossesTableComponentTest {
 		// Check that Save List As pop-up window was not launched
 		Mockito.verify(this.makeCrossesTableComponent, Mockito.times(0)).launchSaveListAsWindow();
 	}
+
+	@Test
+	public void testAddItemToMakeCrossesTableParentsAreNotYetInExistingCrosses() {
+
+		final String listnameFemaleParent = "FemaleList1";
+		final String listnameMaleParent = "MaleList1";
+		final Boolean excludeSelf = true;
+		final Map<Integer, Germplasm> germplasmWithPreferredName = new HashMap<>();
+		final Map<Integer, String> pedigreeString = this.createPedigreeString();
+
+		final Set<CrossParents> existingCrosses = this.createCrossParentsList();
+
+		// Create female and male germplasm which are not yet in existing crosses
+		final GermplasmListEntry femaleParent = new GermplasmListEntry(104, 5, 54);
+		final GermplasmListEntry maleParent = new GermplasmListEntry(105, 6, 55);
+
+		ArgumentCaptor<Object[]> argumentCaptor = ArgumentCaptor.forClass(Object[].class);
+		ArgumentCaptor<Object> itemIdCaptor = ArgumentCaptor.forClass(Object.class);
+
+		this.makeCrossesTableComponent
+				.addItemToMakeCrossesTable(listnameFemaleParent, listnameMaleParent, excludeSelf, femaleParent, maleParent, existingCrosses,
+						germplasmWithPreferredName, pedigreeString);
+
+		// Make sure the parent crossed is added to the table
+		Mockito.verify(tableCrossesMade, Mockito.times(1)).addItem(argumentCaptor.capture(), itemIdCaptor.capture());
+		Object[] newItemData = argumentCaptor.getValue();
+		CrossParents itemId = (CrossParents) itemIdCaptor.getValue();
+
+		// Verify the create cross parents
+		Assert.assertEquals(maleParent.getGid(), itemId.getMaleParent().getGid());
+		Assert.assertEquals(femaleParent.getGid(), itemId.getFemaleParent().getGid());
+		Assert.assertEquals("MaleList1:55", itemId.getMaleParent().getSeedSource());
+		Assert.assertEquals("FemaleList1:54", itemId.getFemaleParent().getSeedSource());
+
+		// Verify the visible column data
+		Assert.assertEquals(3, newItemData[0]);
+		Assert.assertEquals("pedigree 5", newItemData[1]);
+		Assert.assertEquals(null, newItemData[2]);
+		Assert.assertEquals("Unknown", newItemData[3]);
+		Assert.assertEquals("Unknown", newItemData[4]);
+		Assert.assertEquals("FemaleList1:54/MaleList1:55", newItemData[5]);
+
+		Assert.assertEquals("The female and male parent cross should be added to the existing crosses", 3, existingCrosses.size());
+
+	}
+
+	@Test
+	public void testAddItemToMakeCrossesTableParentsAreAlreadyInExistingCrosses() {
+
+		final String listnameFemaleParent = "FemaleList1";
+		final String listnameMaleParent = "MaleList1";
+		final Boolean excludeSelf = true;
+		final Map<Integer, Germplasm> germplasmWithPreferredName = new HashMap<>();
+		final Map<Integer, String> pedigreeString = this.createPedigreeString();
+
+		final Set<CrossParents> existingCrosses = this.createCrossParentsList();
+
+		// Create female and male germplasm which are already in existing crosses
+		final GermplasmListEntry femaleParent = new GermplasmListEntry(10001, 1, 50);
+		final GermplasmListEntry maleParent = new GermplasmListEntry(10002, 2, 51);
+
+		this.makeCrossesTableComponent
+				.addItemToMakeCrossesTable(listnameFemaleParent, listnameMaleParent, excludeSelf, femaleParent, maleParent, existingCrosses,
+						germplasmWithPreferredName, pedigreeString);
+
+		Assert.assertEquals("The female and male parent cross should not be added to the existing crosses", 2, existingCrosses.size());
+
+	}
+
+	private Map<Integer, String> createPedigreeString() {
+
+		Map<Integer, String> pedigreeString = new HashMap<>();
+		pedigreeString.put(1, "pedigree 1");
+		pedigreeString.put(2, "pedigree 2");
+		pedigreeString.put(3, "pedigree 3");
+		pedigreeString.put(4, "pedigree 4");
+		pedigreeString.put(5, "pedigree 5");
+
+		return pedigreeString;
+
+	}
+
+	private Set<CrossParents> createCrossParentsList() {
+
+		HashSet<CrossParents> crossParentsList = new HashSet<>();
+
+		// Create cross parents with objects that contain unique combination of male and female germplasm entry
+		crossParentsList.add(createCrossParent(100, 1, 50, 101, 2, 51));
+		crossParentsList.add(createCrossParent(102, 3, 52, 103, 4, 53));
+
+		return crossParentsList;
+
+	}
+
+	private CrossParents createCrossParent(Integer femaleListDataId, Integer femaleGid, Integer femaleEntryId, Integer maleListDataId,
+			Integer maleGid, Integer maleEntryId) {
+
+		GermplasmListEntry femaleParent = new GermplasmListEntry(femaleListDataId, femaleGid, femaleEntryId);
+		GermplasmListEntry maleParent = new GermplasmListEntry(maleListDataId, maleGid, maleEntryId);
+
+		CrossParents crossParents = new CrossParents(femaleParent, maleParent);
+		return crossParents;
+
+	}
+
+
+
+
+
 }
