@@ -1,17 +1,11 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
+import com.vaadin.ui.Button;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.service.impl.SeedSourceGenerator;
-import org.generationcp.commons.util.ObjectUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.Workbook;
@@ -32,7 +26,11 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.exceptions.verification.NeverWantedButInvoked;
 import org.mockito.exceptions.verification.TooLittleActualInvocations;
 
-import com.vaadin.ui.Button;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class MakeCrossesTableComponentTest {
 
@@ -124,13 +122,13 @@ public class MakeCrossesTableComponentTest {
 	}
 
 	@Test
-	public void testHasSameParent_ForEqualGID() {
+	public void testHasSameParentForEqualGID() {
 		Assert.assertTrue("Expecting to have the same parent (with same gid) but didn't.",
 				this.makeCrossesTableComponent.hasSameParent(this.femaleParent, this.maleParent));
 	}
 
 	@Test
-	public void testHasSameParent_ForNonEqualGID() {
+	public void testHasSameParentForNonEqualGID() {
 		// change the value of male parent
 		this.maleParent = new GermplasmListEntry(2, 2, 2);
 
@@ -308,7 +306,7 @@ public class MakeCrossesTableComponentTest {
 	}
 
 	@Test
-	public void testAddItemToMakeCrossesTableParentsAreNotYetInExistingCrosses() {
+	public void testAddItemToMakeCrossesTableTopToBottomCrossesParentsAreNotYetInExistingCrosses() {
 
 		final String listnameFemaleParent = "FemaleList1";
 		final String listnameMaleParent = "MaleList1";
@@ -353,7 +351,7 @@ public class MakeCrossesTableComponentTest {
 	}
 
 	@Test
-	public void testAddItemToMakeCrossesTableParentsAreAlreadyInExistingCrosses() {
+	public void testAddItemToMakeCrossesTableTopToBottomCrossesParentsAreAlreadyInExistingCrosses() {
 
 		final String listnameFemaleParent = "FemaleList1";
 		final String listnameMaleParent = "MaleList1";
