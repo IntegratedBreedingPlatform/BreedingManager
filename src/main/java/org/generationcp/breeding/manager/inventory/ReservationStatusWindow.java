@@ -29,7 +29,8 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class ReservationStatusWindow extends BaseSubWindow implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+public class ReservationStatusWindow extends BaseSubWindow
+		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = -8587129181683284005L;
 	private static final Logger LOG = LoggerFactory.getLogger(ReservationStatusWindow.class);
@@ -48,7 +49,7 @@ public class ReservationStatusWindow extends BaseSubWindow implements Initializi
 
 	private final Map<ListEntryLotDetails, Double> invalidLotReservations;
 
-	public ReservationStatusWindow(Map<ListEntryLotDetails, Double> invalidLotReservations) {
+	public ReservationStatusWindow(final Map<ListEntryLotDetails, Double> invalidLotReservations) {
 		super();
 		this.invalidLotReservations = invalidLotReservations;
 	}
@@ -103,12 +104,12 @@ public class ReservationStatusWindow extends BaseSubWindow implements Initializi
 	@Override
 	public void initializeValues() {
 
-		for (Map.Entry<ListEntryLotDetails, Double> entry : this.invalidLotReservations.entrySet()) {
-			ListEntryLotDetails lot = entry.getKey();
-			Double amountToReserve = entry.getValue();
+		for (final Map.Entry<ListEntryLotDetails, Double> entry : this.invalidLotReservations.entrySet()) {
+			final ListEntryLotDetails lot = entry.getKey();
+			final Double amountToReserve = entry.getValue();
 
-			Item newItem = this.statusTable.addItem(lot);
-			String designation = this.getDesignation(lot.getEntityIdOfLot());
+			final Item newItem = this.statusTable.addItem(lot);
+			final String designation = this.getDesignation(lot.getEntityIdOfLot());
 			newItem.getItemProperty(this.messageSource.getMessage(Message.LOT_ID)).setValue(lot.getLotId());
 			newItem.getItemProperty(this.messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER)).setValue(designation);
 			newItem.getItemProperty(this.messageSource.getMessage(Message.LOCATION_HEADER)).setValue(lot.getLocationOfLot().getLname());
@@ -130,7 +131,7 @@ public class ReservationStatusWindow extends BaseSubWindow implements Initializi
 		this.setWidth("780px");
 
 		this.mainLayout = new VerticalLayout();
-		this.mainLayout.setDebugId("mainLayout");
+		this.mainLayout.setDebugId("reservationStatMainLayout");
 		this.mainLayout.setSpacing(true);
 
 		this.mainLayout.addComponent(this.statusDescriptionLabel);
@@ -148,13 +149,13 @@ public class ReservationStatusWindow extends BaseSubWindow implements Initializi
 
 	}
 
-	private String getDesignation(Integer entityIdOfLot) {
+	private String getDesignation(final Integer entityIdOfLot) {
 		Name designation = null;
 
 		try {
 			designation = this.germplasmDataManager.getPreferredNameByGID(entityIdOfLot);
-		} catch (MiddlewareQueryException e) {
-			LOG.error(e.getMessage(), e);
+		} catch (final MiddlewareQueryException e) {
+			ReservationStatusWindow.LOG.error(e.getMessage(), e);
 		}
 
 		return designation.getNval();

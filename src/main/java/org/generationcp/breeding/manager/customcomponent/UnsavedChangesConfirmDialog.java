@@ -21,8 +21,8 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class UnsavedChangesConfirmDialog extends BaseSubWindow implements InitializingBean, InternationalizableComponent,
-		BreedingManagerLayout {
+public class UnsavedChangesConfirmDialog extends BaseSubWindow
+		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final long serialVersionUID = -7800270790767272974L;
 
@@ -39,7 +39,7 @@ public class UnsavedChangesConfirmDialog extends BaseSubWindow implements Initia
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
-	public UnsavedChangesConfirmDialog(UnsavedChangesConfirmDialogSource source, String description) {
+	public UnsavedChangesConfirmDialog(final UnsavedChangesConfirmDialogSource source, final String description) {
 		super();
 		this.source = source;
 		this.description = description;
@@ -93,7 +93,7 @@ public class UnsavedChangesConfirmDialog extends BaseSubWindow implements Initia
 			private static final long serialVersionUID = 2688256898854358066L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				UnsavedChangesConfirmDialog.this.cancelAction();
 			}
 		});
@@ -103,7 +103,7 @@ public class UnsavedChangesConfirmDialog extends BaseSubWindow implements Initia
 			private static final long serialVersionUID = -941792327552845606L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				UnsavedChangesConfirmDialog.this.saveAction();
 			}
 		});
@@ -113,7 +113,7 @@ public class UnsavedChangesConfirmDialog extends BaseSubWindow implements Initia
 			private static final long serialVersionUID = -5985668025701325303L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				UnsavedChangesConfirmDialog.this.discardAction();
 			}
 		});
@@ -134,16 +134,16 @@ public class UnsavedChangesConfirmDialog extends BaseSubWindow implements Initia
 	@Override
 	public void layoutComponents() {
 		this.mainLayout = new VerticalLayout();
-		this.mainLayout.setDebugId("mainLayout");
+		this.mainLayout.setDebugId("unsavedChangesMainLayout");
 		this.mainLayout.setSpacing(true);
 
 		this.mainLayout.addComponent(this.descriptionLabel);
 
-		Label forSpaceLabel = new Label();
+		final Label forSpaceLabel = new Label();
 		forSpaceLabel.setDebugId("forSpaceLabel");
 		this.mainLayout.addComponent(forSpaceLabel);
 
-		HorizontalLayout buttonLayout = new HorizontalLayout();
+		final HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setDebugId("buttonLayout");
 		buttonLayout.setSpacing(true);
 		buttonLayout.addComponent(this.cancelButton);

@@ -57,8 +57,8 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 
 	private ReserveInventoryAction reserveInventoryAction;
 
-	public ReserveInventoryWindow(ReserveInventorySource source, Map<String, List<ListEntryLotDetails>> scaleGrouping,
-			Boolean isSingleScaled) {
+	public ReserveInventoryWindow(final ReserveInventorySource source, final Map<String, List<ListEntryLotDetails>> scaleGrouping,
+			final Boolean isSingleScaled) {
 		super();
 		this.source = source;
 		this.isSingleScaled = isSingleScaled;
@@ -84,9 +84,8 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 		this.singleScaleDescriptionLabel = new Label("Specify the amount of inventory to reserve from each selected lot.");
 		this.singleScaleDescriptionLabel.setDebugId("singleScaleDescriptionLabel");
 
-		this.multiScaleDescriptionLabel =
-				new Label("The lots you have selected are in different units. "
-						+ "Please specify the amount of inventory to reserve for each unit type.");
+		this.multiScaleDescriptionLabel = new Label("The lots you have selected are in different units. "
+				+ "Please specify the amount of inventory to reserve for each unit type.");
 
 		this.contentPanel = new Panel();
 		this.contentPanel.setDebugId("contentPanel");
@@ -111,9 +110,9 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 
 	private void initializeScaleRows() {
 
-		for (Map.Entry<String, List<ListEntryLotDetails>> entry : this.scaleGrouping.entrySet()) {
-			String scale = entry.getKey();
-			List<ListEntryLotDetails> lotDetailList = entry.getValue();
+		for (final Map.Entry<String, List<ListEntryLotDetails>> entry : this.scaleGrouping.entrySet()) {
+			final String scale = entry.getKey();
+			final List<ListEntryLotDetails> lotDetailList = entry.getValue();
 			this.scaleRows.add(new ReserveInventoryRowComponent(scale, lotDetailList.size()));
 		}
 	}
@@ -129,7 +128,7 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void buttonClick(ClickEvent event) {
+			public void buttonClick(final ClickEvent event) {
 				if (ReserveInventoryWindow.this.validateReserveAmount()) {
 					ReserveInventoryWindow.this.reserveInventoryAction.validateReservations(ReserveInventoryWindow.this.getReservations());
 				}
@@ -140,13 +139,13 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 	protected boolean validateReserveAmount() {
 		try {
 
-			for (ReserveInventoryRowComponent row : this.scaleRows) {
+			for (final ReserveInventoryRowComponent row : this.scaleRows) {
 				row.validate();
 			}
 
 			return true;
 
-		} catch (InvalidValueException e) {
+		} catch (final InvalidValueException e) {
 			MessageNotifier.showRequiredFieldError(this.getWindow(), e.getMessage());
 			return false;
 		}
@@ -157,7 +156,7 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 	public void layoutComponents() {
 
 		this.mainLayout = new VerticalLayout();
-		this.mainLayout.setDebugId("mainLayout");
+		this.mainLayout.setDebugId("reserveInventoryMainLayout");
 		this.mainLayout.setSpacing(true);
 
 		this.panelContentLayout = new VerticalLayout();
@@ -184,7 +183,7 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 
 			this.panelContentLayout.addComponent(this.multiScaleDescriptionLabel);
 
-			VerticalLayout scaleLayout = new VerticalLayout();
+			final VerticalLayout scaleLayout = new VerticalLayout();
 			scaleLayout.setDebugId("scaleLayout");
 			scaleLayout.setSpacing(true);
 			scaleLayout.setHeight("90px");
@@ -193,7 +192,7 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 				scaleLayout.addStyleName(AppConstants.CssStyles.SCALE_ROW);
 			}
 
-			for (ReserveInventoryRowComponent row : this.scaleRows) {
+			for (final ReserveInventoryRowComponent row : this.scaleRows) {
 				scaleLayout.addComponent(row);
 			}
 
@@ -203,7 +202,7 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 
 		this.contentPanel.setLayout(this.panelContentLayout);
 
-		HorizontalLayout buttonLayout = new HorizontalLayout();
+		final HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setDebugId("buttonLayout");
 		buttonLayout.setWidth("100%");
 		buttonLayout.setSpacing(true);
@@ -225,9 +224,9 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 	}
 
 	protected Map<ReservationRowKey, List<ListEntryLotDetails>> getReservations() {
-		Map<ReservationRowKey, List<ListEntryLotDetails>> reservations = new HashMap<ReservationRowKey, List<ListEntryLotDetails>>();
+		final Map<ReservationRowKey, List<ListEntryLotDetails>> reservations = new HashMap<ReservationRowKey, List<ListEntryLotDetails>>();
 
-		for (ReserveInventoryRowComponent row : this.scaleRows) {
+		for (final ReserveInventoryRowComponent row : this.scaleRows) {
 			reservations.put(new ReservationRowKey(row.getScale(), row.getReservationAmount()), this.scaleGrouping.get(row.getScale()));
 		}
 
@@ -239,7 +238,7 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 		return this.isSingleScaled;
 	}
 
-	public void setIsSingleScaled(Boolean isSingleScaled) {
+	public void setIsSingleScaled(final Boolean isSingleScaled) {
 		this.isSingleScaled = isSingleScaled;
 	}
 
@@ -247,7 +246,7 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 		return this.scaleRows;
 	}
 
-	public void setScaleRows(List<ReserveInventoryRowComponent> scaleRows) {
+	public void setScaleRows(final List<ReserveInventoryRowComponent> scaleRows) {
 		this.scaleRows = scaleRows;
 	}
 
