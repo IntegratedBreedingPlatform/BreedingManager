@@ -67,7 +67,7 @@ import com.vaadin.ui.themes.Reindeer;
  */
 @Configurable
 public class SelectGermplasmWindow extends BaseSubWindow implements InitializingBean, InternationalizableComponent, BreedingManagerLayout,
-Window.CloseListener, ImportGermplasmEntryActionListener {
+		Window.CloseListener, ImportGermplasmEntryActionListener {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SelectGermplasmWindow.class);
 
@@ -116,8 +116,8 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 	@Resource
 	private CrossExpansionProperties crossExpansionProperties;
 
-	public SelectGermplasmWindow(ProcessImportedGermplasmAction source, String germplasmName, int index, Germplasm germplasm,
-			Window parentWindow) {
+	public SelectGermplasmWindow(final ProcessImportedGermplasmAction source, final String germplasmName, final int index,
+			final Germplasm germplasm, final Window parentWindow) {
 		this.germplasmName = germplasmName;
 		this.germplasmIndex = index;
 		this.germplasm = germplasm;
@@ -125,8 +125,8 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 		this.parentWindow = parentWindow;
 	}
 
-	public SelectGermplasmWindow(ProcessImportedGermplasmAction source, String germplasmName, int index, Germplasm germplasm,
-			Window parentWindow, Integer currentMatch, Integer totalMatches) {
+	public SelectGermplasmWindow(final ProcessImportedGermplasmAction source, final String germplasmName, final int index,
+			final Germplasm germplasm, final Window parentWindow, final Integer currentMatch, final Integer totalMatches) {
 		this.germplasmName = germplasmName;
 		this.germplasmIndex = index;
 		this.germplasm = germplasm;
@@ -145,6 +145,7 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 
 	public void doneAction() {
 		try {
+
 			if (this.useSameGidCheckbox.booleanValue()) {
 				if (this.source.getNameGermplasmMap() == null) {
 					this.source.setNameGermplasmMap(new HashMap<String, Germplasm>());
@@ -152,7 +153,7 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 				this.source.mapGermplasmNamesToGermplasm(this.germplasmName, this.germplasm);
 			}
 			if (!this.ignoreMatchesCheckbox.booleanValue()) {
-				Germplasm selectedGermplasm = this.germplasmDataManager.getGermplasmByGID((Integer) this.germplasmTable.getValue());
+				final Germplasm selectedGermplasm = this.germplasmDataManager.getGermplasmByGID((Integer) this.germplasmTable.getValue());
 				this.source.receiveGermplasmFromWindowAndUpdateGermplasmData(this.germplasmIndex, this.germplasm, selectedGermplasm);
 			}
 			this.source.removeListener(this);
@@ -161,8 +162,9 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 			} else {
 				this.source.processNextItems();
 			}
+
 			this.removeWindow(this);
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			SelectGermplasmWindow.LOG.error(e.getMessage(), e);
 		}
 	}
@@ -185,13 +187,13 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 		this.messageSource.setCaption(this.cancelButton, Message.CANCEL);
 	}
 
-	private String getGermplasmNames(int gid) {
+	private String getGermplasmNames(final int gid) {
 
 		try {
-			List<Name> names = this.germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
-			StringBuilder germplasmNames = new StringBuilder("");
+			final List<Name> names = this.germplasmDataManager.getNamesByGID(new Integer(gid), null, null);
+			final StringBuilder germplasmNames = new StringBuilder("");
 			int i = 0;
-			for (Name n : names) {
+			for (final Name n : names) {
 				if (i < names.size() - 1) {
 					germplasmNames.append(n.getNval() + ", ");
 				} else {
@@ -201,7 +203,7 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 			}
 
 			return germplasmNames.toString();
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			SelectGermplasmWindow.LOG.error(e.getMessage(), e);
 			return null;
 		}
@@ -270,7 +272,7 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 
 	}
 
-	protected String getTermNameFromOntology(ColumnLabels columnLabels) {
+	protected String getTermNameFromOntology(final ColumnLabels columnLabels) {
 		return columnLabels.getTermNameFromOntology(this.ontologyDataManager);
 	}
 
@@ -281,7 +283,7 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void valueChange(ValueChangeEvent event) {
+			public void valueChange(final ValueChangeEvent event) {
 				SelectGermplasmWindow.this.toggleContinueButton();
 			}
 		});
@@ -291,7 +293,7 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void valueChange(ValueChangeEvent event) {
+			public void valueChange(final ValueChangeEvent event) {
 				SelectGermplasmWindow.this.toggleGermplasmTable();
 			}
 		});
@@ -301,7 +303,7 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void valueChange(ValueChangeEvent event) {
+			public void valueChange(final ValueChangeEvent event) {
 				SelectGermplasmWindow.this.toggleContinueButton();
 				SelectGermplasmWindow.this.toggleGermplasmTable();
 				SelectGermplasmWindow.this.toggleIgnoreRemainingCheckBox();
@@ -315,7 +317,7 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 	}
 
 	protected void toggleGermplasmTable() {
-		boolean disableSelection = this.ignoreMatchesCheckbox.booleanValue() && !this.useSameGidCheckbox.booleanValue();
+		final boolean disableSelection = this.ignoreMatchesCheckbox.booleanValue() && !this.useSameGidCheckbox.booleanValue();
 		if (disableSelection) {
 			this.germplasmTable.setSelectable(false);
 			this.germplasmTable.setNullSelectionAllowed(true);
@@ -335,7 +337,7 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 	}
 
 	protected void toggleContinueButton() {
-		boolean enableButton = this.germplasmTable.getValue() != null || this.ignoreMatchesCheckbox.booleanValue();
+		final boolean enableButton = this.germplasmTable.getValue() != null || this.ignoreMatchesCheckbox.booleanValue();
 		if (enableButton) {
 			this.doneButton.setEnabled(true);
 		} else {
@@ -344,12 +346,12 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 	}
 
 	public void toggleIgnoreRemainingCheckBox() {
-		boolean enableCheckBox = ignoreMatchesCheckbox.booleanValue();
-		if(enableCheckBox) {
-			ignoreRemainingMatchesCheckbox.setEnabled(true);
+		final boolean enableCheckBox = this.ignoreMatchesCheckbox.booleanValue();
+		if (enableCheckBox) {
+			this.ignoreRemainingMatchesCheckbox.setEnabled(true);
 		} else {
-			ignoreRemainingMatchesCheckbox.setEnabled(false);
-			ignoreRemainingMatchesCheckbox.setValue(false);
+			this.ignoreRemainingMatchesCheckbox.setEnabled(false);
+			this.ignoreRemainingMatchesCheckbox.setValue(false);
 		}
 	}
 
@@ -372,14 +374,14 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 		// center window within the browser
 		this.center();
 		this.mainLayout = new VerticalLayout();
-		this.mainLayout.setDebugId("mainLayout");
+		this.mainLayout.setDebugId("selectGermplasmMainLayout");
 		this.mainLayout.setMargin(true);
 		this.mainLayout.setSpacing(true);
 		this.mainLayout.addComponent(this.selectGermplasmLabel);
 		this.mainLayout.addComponent(this.germplasmTable);
 
 		// Buttons Layout
-		HorizontalLayout buttonLayout = new HorizontalLayout();
+		final HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setDebugId("buttonLayout");
 		buttonLayout.setWidth("100%");
 		buttonLayout.setHeight("40px");
@@ -393,10 +395,11 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 		this.mainLayout.addComponent(this.useSameGidCheckbox);
 		this.mainLayout.addComponent(this.ignoreMatchesCheckbox);
 
-		// Display 3rd check box i.e. ignoreRemainingMatchesCheckBox as sub step of 2nd Check box i.e. ignoreMatchesCheckBox so small gap is inserted using label.
-		HorizontalLayout horizontalLayout = new HorizontalLayout();
+		// Display 3rd check box i.e. ignoreRemainingMatchesCheckBox as sub step of 2nd Check box i.e. ignoreMatchesCheckBox so small gap is
+		// inserted using label.
+		final HorizontalLayout horizontalLayout = new HorizontalLayout();
 		horizontalLayout.setDebugId("horizontalLayout");
-		Label gap = new Label();
+		final Label gap = new Label();
 		gap.setDebugId("gap");
 		gap.setWidth("2em");
 		horizontalLayout.addComponent(gap);
@@ -410,9 +413,10 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 
 	private void initializeGuideMessage() {
 		// Initialize label with Current Match, Total Match & Germplasm Name
-		this.selectGermplasmLabel.setValue(String.format("Match <b> %s of %s </b>were found with the name <b> %s </b>. "
-				+ "Click on an entry below to choose it as a match. "
-				+ "You can also choose to ignore the match and add a new entry.", currentMatch, totalMatches, this.germplasmName));
+		this.selectGermplasmLabel.setValue(String.format(
+				"Match <b> %s of %s </b>were found with the name <b> %s </b>. " + "Click on an entry below to choose it as a match. "
+						+ "You can also choose to ignore the match and add a new entry.",
+				this.currentMatch, this.totalMatches, this.germplasmName));
 	}
 
 	protected void initializeTableValues() {
@@ -421,19 +425,17 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 			this.germplasms = this.germplasmDataManager.getGermplasmByName(this.germplasmName, 0, this.germplasmCount, Operation.EQUAL);
 			for (int i = 0; i < this.germplasms.size(); i++) {
 
-				Germplasm currentGermplasm = this.germplasms.get(i);
-				Location location = this.locationDataManager.getLocationByID(currentGermplasm.getLocationId());
-				Method method = this.germplasmDataManager.getMethodByID(currentGermplasm.getMethodId());
-				Name preferredName = this.germplasmDataManager.getPreferredNameByGID(currentGermplasm.getGid());
+				final Germplasm currentGermplasm = this.germplasms.get(i);
+				final Location location = this.locationDataManager.getLocationByID(currentGermplasm.getLocationId());
+				final Method method = this.germplasmDataManager.getMethodByID(currentGermplasm.getMethodId());
+				final Name preferredName = this.germplasmDataManager.getPreferredNameByGID(currentGermplasm.getGid());
 
-				Button gidButton =
-						new Button(String.format("%s", currentGermplasm.getGid().toString()), new GidLinkClickListener(currentGermplasm
-								.getGid().toString(), this.parentWindow));
+				final Button gidButton = new Button(String.format("%s", currentGermplasm.getGid().toString()),
+						new GidLinkClickListener(currentGermplasm.getGid().toString(), this.parentWindow));
 				gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 
-				Button desigButton =
-						new Button(preferredName.getNval(), new GidLinkClickListener(currentGermplasm.getGid().toString(),
-								this.parentWindow));
+				final Button desigButton = new Button(preferredName.getNval(),
+						new GidLinkClickListener(currentGermplasm.getGid().toString(), this.parentWindow));
 				desigButton.setStyleName(BaseTheme.BUTTON_LINK);
 
 				String crossExpansion = "";
@@ -443,7 +445,7 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 							crossExpansion =
 									this.pedigreeService.getCrossExpansion(currentGermplasm.getGid(), this.crossExpansionProperties);
 						}
-					} catch (MiddlewareQueryException ex) {
+					} catch (final MiddlewareQueryException ex) {
 						crossExpansion = "-";
 					}
 				}
@@ -467,10 +469,11 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 				private static final long serialVersionUID = 1L;
 
 				@Override
-				public String generateDescription(Component source, Object itemId, Object propertyId) {
+				public String generateDescription(final Component source, final Object itemId, final Object propertyId) {
 					if (propertyId == ColumnLabels.DESIGNATION.getName()) {
-						Item item = SelectGermplasmWindow.this.germplasmTable.getItem(itemId);
-						Integer gid = Integer.valueOf(((Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue()).getCaption());
+						final Item item = SelectGermplasmWindow.this.germplasmTable.getItem(itemId);
+						final Integer gid =
+								Integer.valueOf(((Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue()).getCaption());
 						return SelectGermplasmWindow.this.getGermplasmNames(gid);
 					} else {
 						return null;
@@ -478,7 +481,7 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 				}
 			});
 
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			SelectGermplasmWindow.LOG.error(e.getMessage(), e);
 		}
 	}
@@ -488,7 +491,7 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 		return this.germplasmName;
 	}
 
-	public void setGermplasmName(String germplasmName) {
+	public void setGermplasmName(final String germplasmName) {
 		this.germplasmName = germplasmName;
 	}
 
@@ -496,7 +499,7 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 		return this.germplasm;
 	}
 
-	public void setGermplasm(Germplasm germplasm) {
+	public void setGermplasm(final Germplasm germplasm) {
 		this.germplasm = germplasm;
 	}
 
@@ -505,7 +508,7 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 		return this.germplasmIndex;
 	}
 
-	public void setGermplasmIndex(int germplasmIndex) {
+	public void setGermplasmIndex(final int germplasmIndex) {
 		this.germplasmIndex = germplasmIndex;
 	}
 
@@ -513,16 +516,16 @@ Window.CloseListener, ImportGermplasmEntryActionListener {
 		return this.germplasmTable;
 	}
 
-	public void setGermplasmTable(Table germplasmTable) {
+	public void setGermplasmTable(final Table germplasmTable) {
 		this.germplasmTable = germplasmTable;
 	}
 
-	public void setOntologyDataManager(OntologyDataManager ontologyDataManager) {
+	public void setOntologyDataManager(final OntologyDataManager ontologyDataManager) {
 		this.ontologyDataManager = ontologyDataManager;
 	}
 
 	@Override
-	public void windowClose(CloseEvent e) {
+	public void windowClose(final CloseEvent e) {
 		super.close();
 		this.source.closeAllImportEntryListeners();
 	}

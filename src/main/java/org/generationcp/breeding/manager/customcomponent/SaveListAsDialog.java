@@ -197,7 +197,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 		buttonLayoutMain.addStyleName("buttonLayoutMain");
 
 		this.mainLayout = new CssLayout();
-		this.mainLayout.setDebugId("mainLayout");
+		this.mainLayout.setDebugId("saveListDialogMainLayout");
 		this.mainLayout.setWidth("741px");
 		this.mainLayout.setHeight("420px");
 		this.mainLayout.addComponent(this.guideMessage);
@@ -421,7 +421,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 
 	/**
 	 * Parse the date value return from a DateField object to this format yyyymmdd
-	 * 
+	 *
 	 * @param listDate string with format: E MMM dd HH:mm:ss Z yyyy If doesn't follow the format, will return the current date
 	 * @return
 	 */

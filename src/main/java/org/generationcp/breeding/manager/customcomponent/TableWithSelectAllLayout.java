@@ -23,35 +23,35 @@ public class TableWithSelectAllLayout extends TableLayout implements BreedingMan
 	protected final Object checkboxColumnId;
 	protected Label dummyLabel;
 
-	public TableWithSelectAllLayout(int recordCount, int maxRecords, Object checkboxColumnId) {
+	public TableWithSelectAllLayout(final int recordCount, final int maxRecords, final Object checkboxColumnId) {
 		super(recordCount, maxRecords);
 		this.checkboxColumnId = checkboxColumnId;
 	}
 
-	public TableWithSelectAllLayout(Object checkboxColumnId) {
+	public TableWithSelectAllLayout(final Object checkboxColumnId) {
 		super();
 		this.checkboxColumnId = checkboxColumnId;
 	}
 
-	public TableWithSelectAllLayout(int recordCount, Object checkboxColumnId) {
+	public TableWithSelectAllLayout(final int recordCount, final Object checkboxColumnId) {
 		super(recordCount);
 		this.checkboxColumnId = checkboxColumnId;
 	}
 
 	@SuppressWarnings("unchecked")
 	public void syncItemCheckBoxes() {
-		Collection<Object> entries = (Collection<Object>) this.table.getItemIds();
-		Collection<Object> selectedEntries = (Collection<Object>) this.table.getValue();
+		final Collection<Object> entries = (Collection<Object>) this.table.getItemIds();
+		final Collection<Object> selectedEntries = (Collection<Object>) this.table.getValue();
 		if (selectedEntries.size() == entries.size() && !selectedEntries.isEmpty()) {
 			this.selectAllCheckBox.setValue(true);
 		} else {
 			this.selectAllCheckBox.setValue(false);
 		}
 
-		for (Object entry : entries) {
-			Property itemProperty = this.table.getItem(entry).getItemProperty(this.checkboxColumnId);
+		for (final Object entry : entries) {
+			final Property itemProperty = this.table.getItem(entry).getItemProperty(this.checkboxColumnId);
 			if (itemProperty != null) {
-				CheckBox tag = (CheckBox) itemProperty.getValue();
+				final CheckBox tag = (CheckBox) itemProperty.getValue();
 				if (selectedEntries.contains(entry)) {
 					tag.setValue(true);
 				} else {
@@ -65,8 +65,8 @@ public class TableWithSelectAllLayout extends TableLayout implements BreedingMan
 	public ControllableRefreshTable getTable() {
 		return this.table;
 	}
-	
-	public void setTable(ControllableRefreshTable table){
+
+	public void setTable(final ControllableRefreshTable table) {
 		this.table = table;
 	}
 
@@ -113,13 +113,12 @@ public class TableWithSelectAllLayout extends TableLayout implements BreedingMan
 
 			@SuppressWarnings("unchecked")
 			@Override
-			public void buttonClick(ClickEvent event) {
-				boolean checkBoxValue = event.getButton().booleanValue();
-				Collection<Object> entries = (Collection<Object>) TableWithSelectAllLayout.this.table.getItemIds();
-				for (Object entry : entries) {
-					CheckBox tag =
-							(CheckBox) TableWithSelectAllLayout.this.table.getItem(entry)
-									.getItemProperty(TableWithSelectAllLayout.this.checkboxColumnId).getValue();
+			public void buttonClick(final ClickEvent event) {
+				final boolean checkBoxValue = event.getButton().booleanValue();
+				final Collection<Object> entries = (Collection<Object>) TableWithSelectAllLayout.this.table.getItemIds();
+				for (final Object entry : entries) {
+					final CheckBox tag = (CheckBox) TableWithSelectAllLayout.this.table.getItem(entry)
+							.getItemProperty(TableWithSelectAllLayout.this.checkboxColumnId).getValue();
 					tag.setValue(checkBoxValue);
 				}
 				if (checkBoxValue) {
@@ -136,8 +135,8 @@ public class TableWithSelectAllLayout extends TableLayout implements BreedingMan
 	public void layoutComponents() {
 		super.layoutComponents();
 
-		HorizontalLayout layout = new HorizontalLayout();
-		layout.setDebugId("layout");
+		final HorizontalLayout layout = new HorizontalLayout();
+		layout.setDebugId("tableWithSelectAllLayout");
 		layout.addComponent(this.dummyLabel);
 		layout.addComponent(this.selectAllCheckBox);
 
