@@ -11,17 +11,21 @@
 
 package org.generationcp.breeding.manager.crossingmanager;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Resource;
-
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.PopupView;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Reindeer;
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
@@ -66,21 +70,15 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.PopupView;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.Reindeer;
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class contains UI components and functions related to Crosses Made table in Make Crosses screen in Crossing Manager
@@ -373,14 +371,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	boolean hasSameParent(final GermplasmListEntry femaleParent, final GermplasmListEntry maleParent) {
 		return femaleParent.getGid().intValue() == maleParent.getGid().intValue();
-	}
-
-	private String getCross(final Germplasm germplasm, final Map<Integer, Germplasm> germplasmWithPreferredName) {
-		final Germplasm femaleParent = germplasmWithPreferredName.get(germplasm.getGpid1());
-		final Germplasm maleParent = germplasmWithPreferredName.get(germplasm.getGpid2());
-		final String femalePreferredName = getGermplasmPreferredName(femaleParent);
-		final String malePreferredName = getGermplasmPreferredName(maleParent);
-		return this.appendWithSeparator(femalePreferredName, malePreferredName);
 	}
 
 	private String getGermplasmPreferredName(Germplasm germplasm) {

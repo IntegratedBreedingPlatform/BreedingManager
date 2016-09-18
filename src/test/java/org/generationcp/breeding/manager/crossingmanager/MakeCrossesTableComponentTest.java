@@ -1,12 +1,6 @@
-
 package org.generationcp.breeding.manager.crossingmanager;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
+import com.vaadin.ui.Button;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
@@ -24,6 +18,7 @@ import org.generationcp.middleware.pojos.Germplasm;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -31,7 +26,11 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.exceptions.verification.NeverWantedButInvoked;
 import org.mockito.exceptions.verification.TooLittleActualInvocations;
 
-import com.vaadin.ui.Button;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class MakeCrossesTableComponentTest {
 
@@ -82,7 +81,7 @@ public class MakeCrossesTableComponentTest {
 	}
 
 	@Test
-	public void testInitializeCrossesMadeTable_returnsTheValueFromColumLabelDefaultName() {
+	public void testInitializeCrossesMadeTableReturnsTheValueFromColumLabelDefaultName() {
 
 		final BreedingManagerTable table = new BreedingManagerTable(10, 10);
 
@@ -98,7 +97,7 @@ public class MakeCrossesTableComponentTest {
 	}
 
 	@Test
-	public void testInitializeCrossesMadeTable_returnsTheValueFromOntologyManager() throws MiddlewareQueryException {
+	public void testInitializeCrossesMadeTableReturnsTheValueFromOntologyManager() throws MiddlewareQueryException {
 		final BreedingManagerTable table = new BreedingManagerTable(10, 10);
 
 		Mockito.when(this.makeCrossesTableComponent.getTableCrossesMade()).thenReturn(table);
@@ -123,13 +122,13 @@ public class MakeCrossesTableComponentTest {
 	}
 
 	@Test
-	public void testHasSameParent_ForEqualGID() {
+	public void testHasSameParentForEqualGID() {
 		Assert.assertTrue("Expecting to have the same parent (with same gid) but didn't.",
 				this.makeCrossesTableComponent.hasSameParent(this.femaleParent, this.maleParent));
 	}
 
 	@Test
-	public void testHasSameParent_ForNonEqualGID() {
+	public void testHasSameParentForNonEqualGID() {
 		// change the value of male parent
 		this.maleParent = new GermplasmListEntry(2, 2, 2);
 
@@ -138,102 +137,114 @@ public class MakeCrossesTableComponentTest {
 	}
 
 	@Test
-	public void testAddItemToMakeCrossesTable_MultiplyParents_WhenTheExcludeSelfIsTrueAndParentsAreDifferent() {
+	public void testAddItemToMakeCrossesTableMultiplyParentsWhenTheExcludeSelfIsTrueAndParentsAreDifferent() {
 		this.maleParent = new GermplasmListEntry(2, 2, 2);
 		final Set<CrossParents> existingCrosses = new HashSet<>();
 		final Map<Integer, Germplasm> germplasmWithPreferredName = new HashMap<>();
 		final Map<Integer, String> parentsPedigreeString = new HashMap<>();
-		this.makeCrossesTableComponent.addItemToMakeCrossesTable(true, this.femaleParent, this.femaleSource, this.maleParent,
-				this.maleSource, this.parents, existingCrosses, germplasmWithPreferredName, parentsPedigreeString);
+		this.makeCrossesTableComponent
+				.addItemToMakeCrossesTable(true, this.femaleParent, this.femaleSource, this.maleParent, this.maleSource, this.parents,
+						existingCrosses, germplasmWithPreferredName, parentsPedigreeString);
 
 		try {
-			Mockito.verify(this.tableCrossesMade, Mockito.times(1)).addItem(new Object[] {1, Matchers.anyString(),
-					this.femaleParent.getDesignation(), this.maleParent.getDesignation(), Matchers.anyString()}, this.parents);
+			Mockito.verify(this.tableCrossesMade, Mockito.times(1)).addItem(
+					new Object[] {1, Matchers.anyString(), this.femaleParent.getDesignation(), this.maleParent.getDesignation(),
+							Matchers.anyString()}, this.parents);
 		} catch (final TooLittleActualInvocations e) {
 			Assert.fail("Expecting table crosses will have an added entry but didn't.");
 		}
 	}
 
 	@Test
-	public void testAddItemToMakeCrossesTable_MultiplyParents_WhenTheExcludeSelfIsTrueAndParentsAreTheSame() {
+	public void testAddItemToMakeCrossesTableMultiplyParentsWhenTheExcludeSelfIsTrueAndParentsAreTheSame() {
 		final Set<CrossParents> existingCrosses = new HashSet<>();
 		final Map<Integer, Germplasm> germplasmWithPreferredName = new HashMap<>();
 		final Map<Integer, String> parentsPedigreeString = new HashMap<>();
 
-		this.makeCrossesTableComponent.addItemToMakeCrossesTable(true, this.femaleParent, this.femaleSource, this.maleParent,
-				this.maleSource, this.parents, existingCrosses, germplasmWithPreferredName, parentsPedigreeString);
+		this.makeCrossesTableComponent
+				.addItemToMakeCrossesTable(true, this.femaleParent, this.femaleSource, this.maleParent, this.maleSource, this.parents,
+						existingCrosses, germplasmWithPreferredName, parentsPedigreeString);
 
 		try {
-			Mockito.verify(this.tableCrossesMade, Mockito.times(0)).addItem(new Object[] {1, Matchers.anyString(),
-					this.femaleParent.getDesignation(), this.maleParent.getDesignation(), Matchers.anyString()}, this.parents);
+			Mockito.verify(this.tableCrossesMade, Mockito.times(0)).addItem(
+					new Object[] {1, Matchers.anyString(), this.femaleParent.getDesignation(), this.maleParent.getDesignation(),
+							Matchers.anyString()}, this.parents);
 		} catch (final NeverWantedButInvoked e) {
 			Assert.fail("Expecting table crosses will not have an added entry but didn't.");
 		}
 	}
 
 	@Test
-	public void testAddItemToMakeCrossesTable_MultiplyParents_WhenTheExcludeSelfIsFalse() {
+	public void testAddItemToMakeCrossesTableMultiplyParentsWhenTheExcludeSelfIsFalse() {
 		this.maleParent = new GermplasmListEntry(2, 2, 2);
 		final Set<CrossParents> existingCrosses = new HashSet<>();
 		final Map<Integer, Germplasm> germplasmWithPreferredName = new HashMap<>();
 		final Map<Integer, String> parentsPedigreeString = new HashMap<>();
 
-		this.makeCrossesTableComponent.addItemToMakeCrossesTable(false, this.femaleParent, this.femaleSource, this.maleParent,
-				this.maleSource, this.parents, existingCrosses, germplasmWithPreferredName, parentsPedigreeString);
+		this.makeCrossesTableComponent
+				.addItemToMakeCrossesTable(false, this.femaleParent, this.femaleSource, this.maleParent, this.maleSource, this.parents,
+						existingCrosses, germplasmWithPreferredName, parentsPedigreeString);
 
 		try {
-			Mockito.verify(this.tableCrossesMade, Mockito.times(1)).addItem(new Object[] {1, Matchers.anyString(),
-					this.femaleParent.getDesignation(), this.maleParent.getDesignation(), Matchers.anyString()}, this.parents);
+			Mockito.verify(this.tableCrossesMade, Mockito.times(1)).addItem(
+					new Object[] {1, Matchers.anyString(), this.femaleParent.getDesignation(), this.maleParent.getDesignation(),
+							Matchers.anyString()}, this.parents);
 		} catch (final TooLittleActualInvocations e) {
 			Assert.fail("Expecting table crosses will have an added entry but didn't.");
 		}
 	}
 
 	@Test
-	public void testAddItemToMakeCrossesTable_TopToBottomCrosses_WhenTheExcludeSelfIsTrueAndParentsAreDifferent() {
+	public void testAddItemToMakeCrossesTableTopToBottomCrossesWhenTheExcludeSelfIsTrueAndParentsAreDifferent() {
 		this.maleParent = new GermplasmListEntry(2, 2, 2);
 		final Set<CrossParents> existingCrosses = new HashSet<>();
 		final Map<Integer, Germplasm> germplasmWithPreferredName = new HashMap<>();
 		final Map<Integer, String> parentsPedigreeString = new HashMap<>();
 
-		this.makeCrossesTableComponent.addItemToMakeCrossesTable(this.listnameFemaleParent, this.listnameMaleParent, true,
-				this.femaleParent, this.maleParent, existingCrosses, germplasmWithPreferredName, parentsPedigreeString);
+		this.makeCrossesTableComponent
+				.addItemToMakeCrossesTable(this.listnameFemaleParent, this.listnameMaleParent, true, this.femaleParent, this.maleParent,
+						existingCrosses, germplasmWithPreferredName, parentsPedigreeString);
 		try {
-			Mockito.verify(this.tableCrossesMade, Mockito.times(1)).addItem(new Object[] {1, Matchers.anyString(),
-					this.femaleParent.getDesignation(), this.maleParent.getDesignation(), Matchers.anyString()}, this.parents);
+			Mockito.verify(this.tableCrossesMade, Mockito.times(1)).addItem(
+					new Object[] {1, Matchers.anyString(), this.femaleParent.getDesignation(), this.maleParent.getDesignation(),
+							Matchers.anyString()}, this.parents);
 		} catch (final TooLittleActualInvocations e) {
 			Assert.fail("Expecting table crosses will have an added entry but didn't.");
 		}
 	}
 
 	@Test
-	public void testAddItemToMakeCrossesTable_TopToBottomCrosses_WhenTheExcludeSelfIsTrueAndParentsAreTheSame() {
+	public void testAddItemToMakeCrossesTableTopToBottomCrossesWhenTheExcludeSelfIsTrueAndParentsAreTheSame() {
 		final Set<CrossParents> existingCrosses = new HashSet<>();
 		final Map<Integer, Germplasm> germplasmWithPreferredName = new HashMap<>();
 		final Map<Integer, String> parentsPedigreeString = new HashMap<>();
 
-		this.makeCrossesTableComponent.addItemToMakeCrossesTable(this.listnameFemaleParent, this.listnameMaleParent, true,
-				this.femaleParent, this.maleParent, existingCrosses, germplasmWithPreferredName, parentsPedigreeString);
+		this.makeCrossesTableComponent
+				.addItemToMakeCrossesTable(this.listnameFemaleParent, this.listnameMaleParent, true, this.femaleParent, this.maleParent,
+						existingCrosses, germplasmWithPreferredName, parentsPedigreeString);
 		try {
-			Mockito.verify(this.tableCrossesMade, Mockito.times(0)).addItem(new Object[] {1, Matchers.anyString(),
-					this.femaleParent.getDesignation(), this.maleParent.getDesignation(), Matchers.anyString()}, this.parents);
+			Mockito.verify(this.tableCrossesMade, Mockito.times(0)).addItem(
+					new Object[] {1, Matchers.anyString(), this.femaleParent.getDesignation(), this.maleParent.getDesignation(),
+							Matchers.anyString()}, this.parents);
 		} catch (final NeverWantedButInvoked e) {
 			Assert.fail("Expecting table crosses will not have an added entry but didn't.");
 		}
 	}
 
 	@Test
-	public void testAddItemToMakeCrossesTable_TopToBottomCrosses_WhenTheExcludeSelfIsFalse() {
+	public void testAddItemToMakeCrossesTableTopToBottomCrossesWhenTheExcludeSelfIsFalse() {
 		this.maleParent = new GermplasmListEntry(2, 2, 2);
 		final Set<CrossParents> existingCrosses = new HashSet<>();
 		final Map<Integer, Germplasm> germplasmWithPreferredName = new HashMap<>();
 		final Map<Integer, String> parentsPedigreeString = new HashMap<>();
 
-		this.makeCrossesTableComponent.addItemToMakeCrossesTable(this.listnameFemaleParent, this.listnameMaleParent, false,
-				this.femaleParent, this.maleParent, existingCrosses, germplasmWithPreferredName, parentsPedigreeString);
+		this.makeCrossesTableComponent
+				.addItemToMakeCrossesTable(this.listnameFemaleParent, this.listnameMaleParent, false, this.femaleParent, this.maleParent,
+						existingCrosses, germplasmWithPreferredName, parentsPedigreeString);
 		try {
-			Mockito.verify(this.tableCrossesMade, Mockito.times(1)).addItem(new Object[] {1, Matchers.anyString(),
-					this.femaleParent.getDesignation(), this.maleParent.getDesignation(), Matchers.anyString()}, this.parents);
+			Mockito.verify(this.tableCrossesMade, Mockito.times(1)).addItem(
+					new Object[] {1, Matchers.anyString(), this.femaleParent.getDesignation(), this.maleParent.getDesignation(),
+							Matchers.anyString()}, this.parents);
 		} catch (final TooLittleActualInvocations e) {
 			Assert.fail("Expecting table crosses will have an added entry but didn't.");
 		}
@@ -251,8 +262,9 @@ public class MakeCrossesTableComponentTest {
 		final Workbook testWorkbook = new Workbook();
 		testWorkbook.setObservations(new ArrayList<MeasurementRow>());
 		Mockito.when(this.makeCrossesMain.getNurseryWorkbook()).thenReturn(testWorkbook);
-		Mockito.when(this.seedSourceGenerator.generateSeedSourceForCross(Matchers.any(Workbook.class), Matchers.anyString(),
-				Matchers.anyString(), Matchers.anyString(), Matchers.anyString())).thenReturn("MEX-DrySeason-N1-1-2");
+		Mockito.when(this.seedSourceGenerator
+				.generateSeedSourceForCross(Matchers.any(Workbook.class), Matchers.anyString(), Matchers.anyString(), Matchers.anyString(),
+						Matchers.anyString())).thenReturn("MEX-DrySeason-N1-1-2");
 
 		// Run init sequence
 		this.makeCrossesTableComponent.afterPropertiesSet();
@@ -292,4 +304,109 @@ public class MakeCrossesTableComponentTest {
 		// Check that Save List As pop-up window was not launched
 		Mockito.verify(this.makeCrossesTableComponent, Mockito.times(0)).launchSaveListAsWindow();
 	}
+
+	@Test
+	public void testAddItemToMakeCrossesTableTopToBottomCrossesParentsAreNotYetInExistingCrosses() {
+
+		final String listnameFemaleParent = "FemaleList1";
+		final String listnameMaleParent = "MaleList1";
+		final Boolean excludeSelf = true;
+		final Map<Integer, Germplasm> germplasmWithPreferredName = new HashMap<>();
+		final Map<Integer, String> pedigreeString = this.createPedigreeString();
+
+		final Set<CrossParents> existingCrosses = this.createCrossParentsList();
+
+		// Create female and male germplasm which are not yet in existing crosses
+		final GermplasmListEntry femaleParent = new GermplasmListEntry(104, 5, 54);
+		final GermplasmListEntry maleParent = new GermplasmListEntry(105, 6, 55);
+
+		final ArgumentCaptor<Object[]> argumentCaptor = ArgumentCaptor.forClass(Object[].class);
+		final ArgumentCaptor<Object> itemIdCaptor = ArgumentCaptor.forClass(Object.class);
+
+		this.makeCrossesTableComponent
+				.addItemToMakeCrossesTable(listnameFemaleParent, listnameMaleParent, excludeSelf, femaleParent, maleParent, existingCrosses,
+						germplasmWithPreferredName, pedigreeString);
+
+		// Make sure the parent crossed is added to the table
+		Mockito.verify(tableCrossesMade, Mockito.times(1)).addItem(argumentCaptor.capture(), itemIdCaptor.capture());
+		final Object[] newItemData = argumentCaptor.getValue();
+		final CrossParents itemId = (CrossParents) itemIdCaptor.getValue();
+
+		// Verify the create cross parents
+		Assert.assertEquals(maleParent.getGid(), itemId.getMaleParent().getGid());
+		Assert.assertEquals(femaleParent.getGid(), itemId.getFemaleParent().getGid());
+		Assert.assertEquals("MaleList1:55", itemId.getMaleParent().getSeedSource());
+		Assert.assertEquals("FemaleList1:54", itemId.getFemaleParent().getSeedSource());
+
+		// Verify the visible column data
+		Assert.assertEquals(3, newItemData[0]);
+		Assert.assertEquals("pedigree 5", newItemData[1]);
+		Assert.assertEquals(null, newItemData[2]);
+		Assert.assertEquals("Unknown", newItemData[3]);
+		Assert.assertEquals("Unknown", newItemData[4]);
+		Assert.assertEquals("FemaleList1:54/MaleList1:55", newItemData[5]);
+
+		Assert.assertEquals("The female and male parent cross should be added to the existing crosses", 3, existingCrosses.size());
+
+	}
+
+	@Test
+	public void testAddItemToMakeCrossesTableTopToBottomCrossesParentsAreAlreadyInExistingCrosses() {
+
+		final String listnameFemaleParent = "FemaleList1";
+		final String listnameMaleParent = "MaleList1";
+		final Boolean excludeSelf = true;
+		final Map<Integer, Germplasm> germplasmWithPreferredName = new HashMap<>();
+		final Map<Integer, String> pedigreeString = this.createPedigreeString();
+
+		final Set<CrossParents> existingCrosses = this.createCrossParentsList();
+
+		// Create female and male germplasm which are already in existing crosses
+		final GermplasmListEntry femaleParent = new GermplasmListEntry(10001, 1, 50);
+		final GermplasmListEntry maleParent = new GermplasmListEntry(10002, 2, 51);
+
+		this.makeCrossesTableComponent
+				.addItemToMakeCrossesTable(listnameFemaleParent, listnameMaleParent, excludeSelf, femaleParent, maleParent, existingCrosses,
+						germplasmWithPreferredName, pedigreeString);
+
+		Assert.assertEquals("The female and male parent cross should not be added to the existing crosses", 2, existingCrosses.size());
+
+	}
+
+	private Map<Integer, String> createPedigreeString() {
+
+		final Map<Integer, String> pedigreeString = new HashMap<>();
+		pedigreeString.put(1, "pedigree 1");
+		pedigreeString.put(2, "pedigree 2");
+		pedigreeString.put(3, "pedigree 3");
+		pedigreeString.put(4, "pedigree 4");
+		pedigreeString.put(5, "pedigree 5");
+
+		return pedigreeString;
+
+	}
+
+	private Set<CrossParents> createCrossParentsList() {
+
+		final HashSet<CrossParents> crossParentsList = new HashSet<>();
+
+		// Create cross parents with objects that contain unique combination of male and female germplasm entry
+		crossParentsList.add(createCrossParent(100, 1, 50, 101, 2, 51));
+		crossParentsList.add(createCrossParent(102, 3, 52, 103, 4, 53));
+
+		return crossParentsList;
+
+	}
+
+	private CrossParents createCrossParent(final Integer femaleListDataId, final Integer femaleGid, final Integer femaleEntryId, final Integer maleListDataId,
+			final Integer maleGid, final Integer maleEntryId) {
+
+		final GermplasmListEntry femaleParent = new GermplasmListEntry(femaleListDataId, femaleGid, femaleEntryId);
+		final GermplasmListEntry maleParent = new GermplasmListEntry(maleListDataId, maleGid, maleEntryId);
+
+		final CrossParents crossParents = new CrossParents(femaleParent, maleParent);
+		return crossParents;
+
+	}
+
 }

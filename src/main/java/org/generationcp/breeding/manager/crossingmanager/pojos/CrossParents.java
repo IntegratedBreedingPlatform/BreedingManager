@@ -34,8 +34,8 @@ public class CrossParents {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (this.femaleParent == null ? 0 : this.femaleParent.hashCode());
-		result = prime * result + (this.maleParent == null ? 0 : this.maleParent.hashCode());
+		result = prime * result + (this.femaleParent != null && this.femaleParent.getGid() != null ? this.femaleParent.getGid().hashCode() : 0);
+		result = prime * result + (this.maleParent != null && this.maleParent.getGid() != null ? this.maleParent.getGid().hashCode() : 0);
 		return result;
 	}
 
