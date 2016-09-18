@@ -31,7 +31,6 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 
 	private static final Logger LOG = LoggerFactory.getLogger(BuildNewListDropHandler.class);
 	private static final long serialVersionUID = 1L;
-	private final PlatformTransactionManager transactionManager;
 
 	public BuildNewListDropHandler(final ListManagerMain listManagerMain, final GermplasmDataManager germplasmDataManager,
 			final GermplasmListManager germplasmListManager, final InventoryDataManager inventoryDataManager,

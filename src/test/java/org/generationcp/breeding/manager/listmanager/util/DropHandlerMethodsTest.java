@@ -39,6 +39,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
+import org.springframework.transaction.PlatformTransactionManager;
 
 public class DropHandlerMethodsTest {
 
@@ -69,6 +70,9 @@ public class DropHandlerMethodsTest {
 
 	@Mock
 	private Property mockProperty;
+
+	@Mock
+	private PlatformTransactionManager transactionManager;
 
 	@Mock
 	private ListManagerMain listManagerMain;
