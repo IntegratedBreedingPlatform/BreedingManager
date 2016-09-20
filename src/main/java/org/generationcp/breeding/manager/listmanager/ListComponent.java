@@ -722,7 +722,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		final HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, this.topLabel);
 		headingLayout.setDebugId("headingLayout");
-		headingLayout.setDebugId("headingLayout");
 		this.headerLayout.addComponent(headingLayout);
 		this.headerLayout.addComponent(this.viewHeaderButton);
 		this.headerLayout.setComponentAlignment(this.viewHeaderButton, Alignment.BOTTOM_RIGHT);
