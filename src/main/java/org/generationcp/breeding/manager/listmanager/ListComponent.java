@@ -304,9 +304,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.viewListHeaderWindow = new ViewListHeaderWindow(this.germplasmList, BreedingManagerUtil.getAllNamesAsMap(userDataManager),
 				germplasmListManager.getGermplasmListTypes());
 
-		this.viewHeaderButton = new Button(this.messageSource.getMessage(Message.VIEW_HEADER));
+		this.viewHeaderButton = new IconButton("<span class='glyphicon glyphicon-info-sign' style='left: 2px; top:10px; color: #7c7c7c;font-size: 16px; font-weight: bold;'></span>",
+				this.messageSource.getMessage(Message.VIEW_HEADER));
 		this.viewHeaderButton.setDebugId("viewHeaderButton");
-		this.viewHeaderButton.addStyleName(BaseTheme.BUTTON_LINK);
+
 		if (this.viewListHeaderWindow.getListHeaderComponent() != null) {
 			this.viewHeaderButton.setDescription(this.viewListHeaderWindow.getListHeaderComponent().toString());
 		}
@@ -723,29 +724,18 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		final HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, this.topLabel);
 		headingLayout.setDebugId("headingLayout");
 		this.headerLayout.addComponent(headingLayout);
-		this.headerLayout.addComponent(this.viewHeaderButton);
-		this.headerLayout.setComponentAlignment(this.viewHeaderButton, Alignment.BOTTOM_RIGHT);
-
-		this.headerLayout.addComponent(this.editHeaderButton);
-		this.headerLayout.setComponentAlignment(this.editHeaderButton, Alignment.BOTTOM_LEFT);
-
-		if (this.localUserIsListOwner()) {
-			this.headerLayout.addComponent(this.lockButton);
-			this.headerLayout.setComponentAlignment(this.lockButton, Alignment.BOTTOM_LEFT);
-
-			this.headerLayout.addComponent(this.unlockButton);
-			this.headerLayout.setComponentAlignment(this.unlockButton, Alignment.BOTTOM_LEFT);
-		}
-
-		this.setLockedState(this.germplasmList.isLockedList());
-
-		this.headerLayout.setExpandRatio(headingLayout, 1.0f);
 
 		this.toolsMenuContainer = new HorizontalLayout();
 		this.toolsMenuContainer.setDebugId("toolsMenuContainer");
 		this.toolsMenuContainer.setWidth("90px");
 		this.toolsMenuContainer.setHeight("27px");
 		this.toolsMenuContainer.addComponent(this.actionsButton);
+
+		this.headerLayout.addComponent(toolsMenuContainer);
+		this.headerLayout.setComponentAlignment(this.toolsMenuContainer, Alignment.BOTTOM_LEFT);
+
+		this.headerLayout.setExpandRatio(headingLayout, 1.0f);
+
 
 		final HorizontalLayout leftSubHeaderLayout = new HorizontalLayout();
 		leftSubHeaderLayout.setDebugId("leftSubHeaderLayout");
@@ -755,15 +745,34 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		leftSubHeaderLayout.setComponentAlignment(this.totalListEntriesLabel, Alignment.MIDDLE_LEFT);
 		leftSubHeaderLayout.setComponentAlignment(this.totalSelectedListEntriesLabel, Alignment.MIDDLE_LEFT);
 
+		final HorizontalLayout rightSubHeaderLayout = new HorizontalLayout();
+		leftSubHeaderLayout.setDebugId("rightSubHeaderLayout");
+		leftSubHeaderLayout.setSpacing(true);
+		rightSubHeaderLayout.addComponent(this.viewHeaderButton);
+		rightSubHeaderLayout.setComponentAlignment(this.viewHeaderButton, Alignment.MIDDLE_RIGHT);
+		rightSubHeaderLayout.addComponent(this.editHeaderButton);
+		rightSubHeaderLayout.setComponentAlignment(this.editHeaderButton, Alignment.MIDDLE_RIGHT);
+
+		if (this.localUserIsListOwner()) {
+			rightSubHeaderLayout.addComponent(this.lockButton);
+			rightSubHeaderLayout.setComponentAlignment(this.lockButton, Alignment.MIDDLE_RIGHT);
+
+			rightSubHeaderLayout.addComponent(this.unlockButton);
+			rightSubHeaderLayout.setComponentAlignment(this.unlockButton, Alignment.MIDDLE_RIGHT);
+		}
+		this.setLockedState(this.germplasmList.isLockedList());
+
 		this.subHeaderLayout = new HorizontalLayout();
 		this.subHeaderLayout.setDebugId("subHeaderLayout");
 		this.subHeaderLayout.setWidth("100%");
 		this.subHeaderLayout.setSpacing(true);
 		this.subHeaderLayout.addStyleName("lm-list-desc");
 		this.subHeaderLayout.addComponent(leftSubHeaderLayout);
-		this.subHeaderLayout.addComponent(this.toolsMenuContainer);
+		this.subHeaderLayout.addComponent(rightSubHeaderLayout);
+
 		this.subHeaderLayout.setComponentAlignment(leftSubHeaderLayout, Alignment.MIDDLE_LEFT);
-		this.subHeaderLayout.setComponentAlignment(this.toolsMenuContainer, Alignment.MIDDLE_RIGHT);
+		this.subHeaderLayout.setComponentAlignment(rightSubHeaderLayout, Alignment.MIDDLE_RIGHT);
+
 
 		this.addComponent(this.headerLayout);
 		this.addComponent(this.subHeaderLayout);
