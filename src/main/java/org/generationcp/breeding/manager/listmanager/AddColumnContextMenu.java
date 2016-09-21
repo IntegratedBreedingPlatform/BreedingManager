@@ -102,7 +102,7 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 	private ContextMenuItem menuFillWithCrossMaleInfo;
 	private ContextMenuItem menuFillWithCrossMaleGID;
 	private ContextMenuItem menuFillWithCrossMalePrefName;
-
+	private ContextMenuItem listEditingOptions;
 	private static final String ADD_COLUMN_MENU = "Add Column";
 	private static final String FILL_WITH_PREFERRED_ID = "Fill with Preferred ID";
 	private static final String FILL_WITH_PREFERRED_NAME = "Fill with Preferred Name";
@@ -134,12 +134,12 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 	 * @param targetTable - table where data will be manipulated
 	 * @param gid - property of GID (button with GID as caption) on that table
 	 */
-	public AddColumnContextMenu(ListTabComponent listDetailsComponent, ContextMenu sourceContextMenu, Table targetTable, String gid) {
+	public AddColumnContextMenu(ListTabComponent listDetailsComponent, ContextMenu sourceContextMenu, Table targetTable, String gid , ContextMenuItem listEditingOption) {
 		this.listDetailsComponent = listDetailsComponent;
 		this.gidPropertyId = gid;
 		this.targetTable = targetTable;
 		this.sourceContextMenu = sourceContextMenu;
-
+		this.listEditingOptions = listEditingOption;//Adding new ContextMenuItem As ListEditingOption In which Add Column Will be Sub Menu
 		this.setupContextMenu();
 	}
 
@@ -185,7 +185,8 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 
 		this.initializeAddableProperties();
 
-		this.addColumnItem = this.sourceContextMenu.addItem(AddColumnContextMenu.ADD_COLUMN_MENU);
+		//Adding it to List Editing Option instead of main menu
+		this.addColumnItem = this.listEditingOptions.addItem(AddColumnContextMenu.ADD_COLUMN_MENU);
 		this.menuFillWithPreferredId = this.addColumnItem.addItem(AddColumnContextMenu.FILL_WITH_PREFERRED_ID);
 		this.menuFillWithPreferredName = this.addColumnItem.addItem(AddColumnContextMenu.FILL_WITH_PREFERRED_NAME);
 		this.menuFillWithGermplasmDate = this.addColumnItem.addItem(AddColumnContextMenu.FILL_WITH_GERMPLASM_DATE);
