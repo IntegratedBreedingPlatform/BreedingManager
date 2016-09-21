@@ -152,13 +152,13 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 	 * @param gid - property of GID (button with GID as caption) on that table
 	 */
 	public AddColumnContextMenu(ComponentContainer cssLayoutSource, ContextMenu sourceContextMenu, Table targetTable, String gid,
-			boolean fromBuildNewList) {
+			boolean fromBuildNewList, ContextMenuItem listEditingOptions) {
 		this.gidPropertyId = gid;
 		this.targetTable = targetTable;
 		this.sourceContextMenu = sourceContextMenu;
 		this.cssLayoutSource = cssLayoutSource;
 		this.fromBuildNewList = fromBuildNewList;
-
+		this.listEditingOptions = listEditingOptions;//Adding new ContextMenuItem As ListEditingOption In which Add Column Will be Sub Menu
 		if (fromBuildNewList) {
 			this.buildNewListComponent = (ListBuilderComponent) cssLayoutSource;
 		}
@@ -186,7 +186,12 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 		this.initializeAddableProperties();
 
 		//Adding it to List Editing Option instead of main menu
-		this.addColumnItem = this.listEditingOptions.addItem(AddColumnContextMenu.ADD_COLUMN_MENU);
+		if(this.listEditingOptions != null){
+			this.addColumnItem = this.listEditingOptions.addItem(AddColumnContextMenu.ADD_COLUMN_MENU);
+		}
+		else {
+			this.addColumnItem = this.sourceContextMenu.addItem(AddColumnContextMenu.ADD_COLUMN_MENU);
+		}
 		this.menuFillWithPreferredId = this.addColumnItem.addItem(AddColumnContextMenu.FILL_WITH_PREFERRED_ID);
 		this.menuFillWithPreferredName = this.addColumnItem.addItem(AddColumnContextMenu.FILL_WITH_PREFERRED_NAME);
 		this.menuFillWithGermplasmDate = this.addColumnItem.addItem(AddColumnContextMenu.FILL_WITH_GERMPLASM_DATE);

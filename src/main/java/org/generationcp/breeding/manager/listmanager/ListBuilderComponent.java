@@ -234,9 +234,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 							.equals(ListBuilderComponent.this.messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER))) {
 						ListBuilderComponent.this.exportListForGenotypingOrderAction();
 					} else if (clickedItem.getName()
-							.equals(ListBuilderComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL))) {
+							.equals(ListBuilderComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {//changed label
 						ListBuilderComponent.this.copyToNewListAction();
-					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.INVENTORY_VIEW))) {
+					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.PREPARE_SEED))) {//changed label
 						ListBuilderComponent.this.viewInventoryAction();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESET_LIST))) {
 						ListBuilderComponent.this.resetButton.click();
@@ -341,7 +341,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	private ContextMenuItem menuCopyToListFromInventory;
 	private ContextMenuItem menuReserveInventory;
 	private ContextMenuItem menuCancelReservation;
-
+	private  ContextMenuItem listEditingOptions;
 	private SaveListAsDialog dialog;
 
 	// For Saving
@@ -467,16 +467,17 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.menu.setDebugId("menu");
 		this.menu.setWidth("300px");
 
+		//re-arranging Action menu items
+		this.menu.addItem(this.messageSource.getMessage(Message.PREPARE_SEED));//changed label
+		this.listEditingOptions=this.menu.addItem(this.messageSource.getMessage(Message.LIST_EDITING_OPTIONS));
+		this.listEditingOptions.addItem(this.messageSource.getMessage(Message.SAVE_LIST));
+		this.listEditingOptions.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
+		this.menuDeleteSelectedEntries = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
+		this.menuCopyToList = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));//changed label
+		this.listEditingOptions.addItem(this.messageSource.getMessage(Message.RESET_LIST));
 		this.addColumnContextMenu =
-				new AddColumnContextMenu(this, this.menu, this.tableWithSelectAllLayout.getTable(), ColumnLabels.GID.getName(), true);
-		this.menuCopyToList = this.menu.addItem(this.messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
-		this.menuDeleteSelectedEntries = this.menu.addItem(this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
+				new AddColumnContextMenu(this, this.menu, this.tableWithSelectAllLayout.getTable(), ColumnLabels.GID.getName(), true, this.listEditingOptions);//Passing new ContextMenuItem As ListEditingOption In which Add Column Will be Sub Menu
 		this.menuExportList = this.menu.addItem(this.messageSource.getMessage(Message.EXPORT_LIST));
-
-		this.menu.addItem(this.messageSource.getMessage(Message.INVENTORY_VIEW));
-		this.menu.addItem(this.messageSource.getMessage(Message.RESET_LIST));
-		this.menu.addItem(this.messageSource.getMessage(Message.SAVE_LIST));
-		this.menu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
 
 		this.inventoryViewMenu = new ContextMenu();
 		this.inventoryViewMenu.setDebugId("inventoryViewMenu");
