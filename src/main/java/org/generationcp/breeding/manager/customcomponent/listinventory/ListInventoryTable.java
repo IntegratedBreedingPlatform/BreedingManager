@@ -99,10 +99,9 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		this.listInventoryTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.LOT_LOCATION.getName(), String.class, null);
-		this.listInventoryTable.addContainerProperty(ColumnLabels.UNITS.getName(), String.class, null);
-		this.listInventoryTable.addContainerProperty(ColumnLabels.TOTAL.getName(), Double.class, null);
-		this.listInventoryTable.addContainerProperty(ColumnLabels.RESERVED.getName(), Double.class, null);
-		this.listInventoryTable.addContainerProperty(ColumnLabels.NEWLY_RESERVED.getName(), Double.class, null);
+		this.listInventoryTable.addContainerProperty(ColumnLabels.TOTAL.getName(), String.class, null);
+		this.listInventoryTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
+		this.listInventoryTable.addContainerProperty(ColumnLabels.STATUS.getName(), String.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.COMMENT.getName(), String.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
@@ -114,14 +113,12 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 				ColumnLabels.DESIGNATION.getTermNameFromOntology(this.ontologyDataManager));
 		this.listInventoryTable.setColumnHeader(ColumnLabels.LOT_LOCATION.getName(),
 				ColumnLabels.LOT_LOCATION.getTermNameFromOntology(this.ontologyDataManager));
-		this.listInventoryTable.setColumnHeader(ColumnLabels.UNITS.getName(),
-				ColumnLabels.UNITS.getTermNameFromOntology(this.ontologyDataManager));
 		this.listInventoryTable.setColumnHeader(ColumnLabels.TOTAL.getName(),
 				ColumnLabels.TOTAL.getTermNameFromOntology(this.ontologyDataManager));
-		this.listInventoryTable.setColumnHeader(ColumnLabels.RESERVED.getName(),
-				ColumnLabels.RESERVED.getTermNameFromOntology(this.ontologyDataManager));
-		this.listInventoryTable.setColumnHeader(ColumnLabels.NEWLY_RESERVED.getName(),
-				ColumnLabels.NEWLY_RESERVED.getTermNameFromOntology(this.ontologyDataManager));
+		this.listInventoryTable.setColumnHeader(ColumnLabels.SEED_RESERVATION.getName(),
+				ColumnLabels.SEED_RESERVATION.getTermNameFromOntology(this.ontologyDataManager));
+		this.listInventoryTable.setColumnHeader(ColumnLabels.STATUS.getName(),
+				ColumnLabels.STATUS.getTermNameFromOntology(this.ontologyDataManager));
 		this.listInventoryTable.setColumnHeader(ColumnLabels.COMMENT.getName(),
 				ColumnLabels.COMMENT.getTermNameFromOntology(this.ontologyDataManager));
 		this.listInventoryTable.setColumnHeader(ColumnLabels.STOCKID.getName(),
@@ -201,11 +198,17 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
   						lotScale = lotDetail.getScaleOfLot().getName();
   					}
   
-  					newItem.getItemProperty(ColumnLabels.UNITS.getName()).setValue(lotScale);
-  
-  					newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(lotDetail.getActualLotBalance());
-  					newItem.getItemProperty(ColumnLabels.RESERVED.getName()).setValue(lotDetail.getReservedTotalForEntry());
-  					newItem.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(0);
+  					//TODO : BMS-3347
+  					String total = String.valueOf(lotDetail.getActualLotBalance());
+  					newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(total);
+
+					//TODO : BMS-3347
+					String withdrawal = "withdrawal";
+  					newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(withdrawal);
+
+					//TODO : BMS-3347
+					String status = "STATUS";
+					newItem.getItemProperty(ColumnLabels.STATUS.getName()).setValue(status);
   					newItem.getItemProperty(ColumnLabels.COMMENT.getName()).setValue(lotDetail.getCommentOfLot());
   
   					final String stockIds = lotDetail.getStockIds();
