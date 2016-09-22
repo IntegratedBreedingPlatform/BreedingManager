@@ -342,6 +342,11 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	private ContextMenuItem menuReserveInventory;
 	private ContextMenuItem menuCancelReservation;
 	private  ContextMenuItem listEditingOptions;
+	private ContextMenuItem listEditingOptionsForLots;
+	private ContextMenuItem inventoryManagementOptions;
+	private ContextMenuItem importList;
+	private ContextMenuItem exportList;
+	private ContextMenuItem printLabels;
 	private SaveListAsDialog dialog;
 
 	// For Saving
@@ -482,13 +487,26 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.inventoryViewMenu = new ContextMenu();
 		this.inventoryViewMenu.setDebugId("inventoryViewMenu");
 		this.inventoryViewMenu.setWidth("300px");
-		this.menuCancelReservation = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.CANCEL_RESERVATIONS));
-		this.menuCopyToListFromInventory = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
-		this.menuReserveInventory = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
-		this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.RESET_LIST));
+
+		////Re-arranging Menu Items for Lots view
 		this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
-		this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.SAVE_LIST));
-		this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
+		this.listEditingOptionsForLots=this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.LIST_EDITING_OPTIONS));
+		this.listEditingOptionsForLots.addItem(this.messageSource.getMessage(Message.SAVE_LIST));
+		this.listEditingOptionsForLots.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
+		this.menuCopyToListFromInventory = this.listEditingOptionsForLots.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
+		this.listEditingOptionsForLots.addItem(this.messageSource.getMessage(Message.RESET_LIST));
+
+		this.inventoryManagementOptions=this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.INVENTORY_MANAGEMENT_OPTIONS));
+		this.menuReserveInventory = this.inventoryManagementOptions.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
+		this.menuCancelReservation = this.inventoryManagementOptions.addItem(this.messageSource.getMessage(Message.CANCEL_RESERVATIONS));
+
+
+		this.exportList=this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.EXPORT_SEED_LIST));
+		this.importList=this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.IMPORT_SEED_LIST));
+		this.printLabels=this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.PRINT_LABELS));
+
+
+
 
 		// Temporarily disable to Copy to List in InventoryView
 		this.menuCopyToListFromInventory.setEnabled(false);
