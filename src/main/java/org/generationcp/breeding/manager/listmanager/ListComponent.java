@@ -304,9 +304,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.viewListHeaderWindow = new ViewListHeaderWindow(this.germplasmList, BreedingManagerUtil.getAllNamesAsMap(userDataManager),
 				germplasmListManager.getGermplasmListTypes());
 
-		this.viewHeaderButton = new Button(this.messageSource.getMessage(Message.VIEW_HEADER));
+		this.viewHeaderButton = new IconButton("<span class='glyphicon glyphicon-info-sign' style='left: 2px; top:10px; color: #7c7c7c;font-size: 16px; font-weight: bold;'></span>",
+				this.messageSource.getMessage(Message.VIEW_HEADER));
 		this.viewHeaderButton.setDebugId("viewHeaderButton");
-		this.viewHeaderButton.addStyleName(BaseTheme.BUTTON_LINK);
+
 		if (this.viewListHeaderWindow.getListHeaderComponent() != null) {
 			this.viewHeaderButton.setDescription(this.viewListHeaderWindow.getListHeaderComponent().toString());
 		}
@@ -412,7 +413,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.listDataTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Button.class, null);
+		this.listDataTable.addContainerProperty(ColumnLabels.TOTAL.getName(), Button.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
+		this.listDataTable.addContainerProperty(ColumnLabels.STATUS.getName(), String.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.GROUP_ID.getName(), String.class, null);
@@ -425,8 +428,11 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.listDataTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(), this.getTermNameFromOntology(ColumnLabels.PARENTAGE));
 		this.listDataTable.setColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName(),
 				this.getTermNameFromOntology(ColumnLabels.AVAILABLE_INVENTORY));
+		this.listDataTable.setColumnHeader(ColumnLabels.TOTAL.getName(),
+				this.getTermNameFromOntology(ColumnLabels.TOTAL));
 		this.listDataTable
 				.setColumnHeader(ColumnLabels.SEED_RESERVATION.getName(), this.getTermNameFromOntology(ColumnLabels.SEED_RESERVATION));
+		this.listDataTable.setColumnHeader(ColumnLabels.STATUS.getName(), this.getTermNameFromOntology(ColumnLabels.STATUS));
 		this.listDataTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(), this.getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
 		this.listDataTable.setColumnHeader(ColumnLabels.GID.getName(), this.getTermNameFromOntology(ColumnLabels.GID));
 		this.listDataTable.setColumnHeader(ColumnLabels.GROUP_ID.getName(), this.getTermNameFromOntology(ColumnLabels.GROUP_ID));
@@ -576,13 +582,27 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			inventoryButton.setDescription(ListComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
 		}
 
-		// #2 Seed Reserved
-		// default value
+		//TODO BMS-3347 : need to work to get available
+		// LOTS
+		String available = "Available LOTS";
+		final Button availableButton = new Button(available, new InventoryLinkButtonClickListener(this.parentListDetailsComponent, this.germplasmList.getId(), entry.getId(),
+				entry.getGid()));
+		availableButton.setStyleName(BaseTheme.BUTTON_LINK);
+		availableButton.setDescription(ListComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
+		newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(availableButton);
+
+		//TODO BMS-3347 : need to work to get available
+		// WITHDRAWAL
 		String seedRes = "-";
 		if (entry.getInventoryInfo().getReservedLotCount() != 0) {
 			seedRes = entry.getInventoryInfo().getReservedLotCount().toString().trim();
 		}
 		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
+
+		//TODO BMS-3347 : need to work to get available
+		// STATUS
+		String status = "STATUS(COM/RES)";
+		newItem.getItemProperty(ColumnLabels.STATUS.getName()).setValue(status);
 
 		final String stockIds = entry.getInventoryInfo().getStockIDs();
 		final Label stockIdsLbl = new Label(stockIds);
@@ -722,31 +742,19 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		final HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, this.topLabel);
 		headingLayout.setDebugId("headingLayout");
-		headingLayout.setDebugId("headingLayout");
 		this.headerLayout.addComponent(headingLayout);
-		this.headerLayout.addComponent(this.viewHeaderButton);
-		this.headerLayout.setComponentAlignment(this.viewHeaderButton, Alignment.BOTTOM_RIGHT);
-
-		this.headerLayout.addComponent(this.editHeaderButton);
-		this.headerLayout.setComponentAlignment(this.editHeaderButton, Alignment.BOTTOM_LEFT);
-
-		if (this.localUserIsListOwner()) {
-			this.headerLayout.addComponent(this.lockButton);
-			this.headerLayout.setComponentAlignment(this.lockButton, Alignment.BOTTOM_LEFT);
-
-			this.headerLayout.addComponent(this.unlockButton);
-			this.headerLayout.setComponentAlignment(this.unlockButton, Alignment.BOTTOM_LEFT);
-		}
-
-		this.setLockedState(this.germplasmList.isLockedList());
-
-		this.headerLayout.setExpandRatio(headingLayout, 1.0f);
 
 		this.toolsMenuContainer = new HorizontalLayout();
 		this.toolsMenuContainer.setDebugId("toolsMenuContainer");
 		this.toolsMenuContainer.setWidth("90px");
 		this.toolsMenuContainer.setHeight("27px");
 		this.toolsMenuContainer.addComponent(this.actionsButton);
+
+		this.headerLayout.addComponent(toolsMenuContainer);
+		this.headerLayout.setComponentAlignment(this.toolsMenuContainer, Alignment.BOTTOM_LEFT);
+
+		this.headerLayout.setExpandRatio(headingLayout, 1.0f);
+
 
 		final HorizontalLayout leftSubHeaderLayout = new HorizontalLayout();
 		leftSubHeaderLayout.setDebugId("leftSubHeaderLayout");
@@ -756,15 +764,34 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		leftSubHeaderLayout.setComponentAlignment(this.totalListEntriesLabel, Alignment.MIDDLE_LEFT);
 		leftSubHeaderLayout.setComponentAlignment(this.totalSelectedListEntriesLabel, Alignment.MIDDLE_LEFT);
 
+		final HorizontalLayout rightSubHeaderLayout = new HorizontalLayout();
+		leftSubHeaderLayout.setDebugId("rightSubHeaderLayout");
+		leftSubHeaderLayout.setSpacing(true);
+		rightSubHeaderLayout.addComponent(this.viewHeaderButton);
+		rightSubHeaderLayout.setComponentAlignment(this.viewHeaderButton, Alignment.MIDDLE_RIGHT);
+		rightSubHeaderLayout.addComponent(this.editHeaderButton);
+		rightSubHeaderLayout.setComponentAlignment(this.editHeaderButton, Alignment.MIDDLE_RIGHT);
+
+		if (this.localUserIsListOwner()) {
+			rightSubHeaderLayout.addComponent(this.lockButton);
+			rightSubHeaderLayout.setComponentAlignment(this.lockButton, Alignment.MIDDLE_RIGHT);
+
+			rightSubHeaderLayout.addComponent(this.unlockButton);
+			rightSubHeaderLayout.setComponentAlignment(this.unlockButton, Alignment.MIDDLE_RIGHT);
+		}
+		this.setLockedState(this.germplasmList.isLockedList());
+
 		this.subHeaderLayout = new HorizontalLayout();
 		this.subHeaderLayout.setDebugId("subHeaderLayout");
 		this.subHeaderLayout.setWidth("100%");
 		this.subHeaderLayout.setSpacing(true);
 		this.subHeaderLayout.addStyleName("lm-list-desc");
 		this.subHeaderLayout.addComponent(leftSubHeaderLayout);
-		this.subHeaderLayout.addComponent(this.toolsMenuContainer);
+		this.subHeaderLayout.addComponent(rightSubHeaderLayout);
+
 		this.subHeaderLayout.setComponentAlignment(leftSubHeaderLayout, Alignment.MIDDLE_LEFT);
-		this.subHeaderLayout.setComponentAlignment(this.toolsMenuContainer, Alignment.MIDDLE_RIGHT);
+		this.subHeaderLayout.setComponentAlignment(rightSubHeaderLayout, Alignment.MIDDLE_RIGHT);
+
 
 		this.addComponent(this.headerLayout);
 		this.addComponent(this.subHeaderLayout);
