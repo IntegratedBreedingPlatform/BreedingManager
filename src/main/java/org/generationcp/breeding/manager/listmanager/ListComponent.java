@@ -59,6 +59,7 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.GermplasmDataManagerUtil;
@@ -585,35 +586,49 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		// LOTS
 		StringBuilder available = new StringBuilder();
 
-		if(entry.getInventoryInfo().getDistinctScaleCountForGermplsm() == null || entry.getInventoryInfo().getDistinctScaleCountForGermplsm() == 0){
+		if(entry.getInventoryInfo().getDistinctScaleCountForGermplsm() == 0){
 			available.append("-");
 		}
 		else if(entry.getInventoryInfo().getDistinctScaleCountForGermplsm() == 1){
 			available.append(entry.getInventoryInfo().getTotalAvailableBalance());
 			available.append(" ");
-			available.append(entry.getInventoryInfo().getScaleForGermplsm().getName());
+			available.append(entry.getInventoryInfo().getScaleForGermplsm());
 		}
 		else{
-			available.append("mixed");
+			available.append(ListDataInventory.MIXED);
 		}
+
 		final Button availableButton = new Button(available.toString(), new InventoryLinkButtonClickListener(this.parentListDetailsComponent, this.germplasmList.getId(), entry.getId(),
 				entry.getGid()));
 		availableButton.setStyleName(BaseTheme.BUTTON_LINK);
 		availableButton.setDescription(ListComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
 		newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(availableButton);
 
-		//TODO BMS-3347 : need to work to get available
-		// WITHDRAWAL
-		String seedRes = "-";
-		if (entry.getInventoryInfo().getReservedLotCount() != 0) {
-			seedRes = entry.getInventoryInfo().getReservedLotCount().toString().trim();
-		}
-		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 
-		//TODO BMS-3347 : need to work to get available
+		// WITHDRAWAL
+		StringBuilder withdrawal = new StringBuilder();
+		if(entry.getInventoryInfo().getDistinctCountWithdrawalScale() == 0){
+			withdrawal.append("");
+		}
+		else if(entry.getInventoryInfo().getDistinctCountWithdrawalScale() == 1){
+			withdrawal.append(entry.getInventoryInfo().getWithdrawalBalance());
+			withdrawal.append(" ");
+			withdrawal.append(entry.getInventoryInfo().getWithdrawalScale());
+		}
+		else{
+			withdrawal.append(ListDataInventory.MIXED);
+		}
+
+		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(withdrawal.toString());
+
 		// STATUS
-		String status = "STATUS(COM/RES)";
-		newItem.getItemProperty(ColumnLabels.STATUS.getName()).setValue(status);
+		if(entry.getInventoryInfo().getTransactionStatus() != null){
+			newItem.getItemProperty(ColumnLabels.STATUS.getName()).setValue(entry.getInventoryInfo().getTransactionStatus());
+		}
+		else{
+			newItem.getItemProperty(ColumnLabels.STATUS.getName()).setValue("");
+		}
+
 
 		final String stockIds = entry.getInventoryInfo().getStockIDs();
 		final Label stockIdsLbl = new Label(stockIds);
