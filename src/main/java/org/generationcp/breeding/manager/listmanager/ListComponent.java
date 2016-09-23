@@ -582,10 +582,21 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			inventoryButton.setDescription(ListComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
 		}
 
-		//TODO BMS-3347 : need to work to get available
 		// LOTS
-		String available = "Available LOTS";
-		final Button availableButton = new Button(available, new InventoryLinkButtonClickListener(this.parentListDetailsComponent, this.germplasmList.getId(), entry.getId(),
+		StringBuilder available = new StringBuilder();
+
+		if(entry.getInventoryInfo().getDistinctScaleCountForGermplsm() == null || entry.getInventoryInfo().getDistinctScaleCountForGermplsm() == 0){
+			available.append("-");
+		}
+		else if(entry.getInventoryInfo().getDistinctScaleCountForGermplsm() == 1){
+			available.append(entry.getInventoryInfo().getTotalAvailableBalance());
+			available.append(" ");
+			available.append(entry.getInventoryInfo().getScaleForGermplsm().getName());
+		}
+		else{
+			available.append("mixed");
+		}
+		final Button availableButton = new Button(available.toString(), new InventoryLinkButtonClickListener(this.parentListDetailsComponent, this.germplasmList.getId(), entry.getId(),
 				entry.getGid()));
 		availableButton.setStyleName(BaseTheme.BUTTON_LINK);
 		availableButton.setDescription(ListComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
