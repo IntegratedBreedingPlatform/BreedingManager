@@ -30,6 +30,7 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 	private ContextMenuItem menuDeleteList;
 	private ContextMenuItem menuInventoryView;
 	private ContextMenuItem menuSelectAll;
+	private ContextMenuItem menuCreateLabels;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -52,6 +53,7 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		this.menuEditList = this.addItem(this.messageSource.getMessage(Message.EDIT_LIST));
 		this.menuExportList = this.addItem(this.messageSource.getMessage(Message.EXPORT_LIST));
 		this.menuInventoryView = this.addItem(this.messageSource.getMessage(Message.INVENTORY_VIEW));
+		this.menuCreateLabels = this.addItem(this.messageSource.getMessage(Message.CREATE_LABELS));
 		this.menuSaveChanges = this.addItem(this.messageSource.getMessage(Message.SAVE_CHANGES));
 		this.menuSelectAll = this.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
 	}

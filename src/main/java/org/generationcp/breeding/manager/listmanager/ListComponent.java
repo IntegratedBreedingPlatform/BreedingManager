@@ -100,6 +100,7 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
+import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -109,6 +110,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.TableFieldFactory;
@@ -971,6 +973,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						ListComponent.this.deleteEntriesButtonClickAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED))) {
 						ListComponent.this.markLinesAsFixedAction();
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.CREATE_LABELS))) {
+						ListComponent.this.createLabelsAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.ASSIGN_CODES))) {
 						ListComponent.this.assignCodesAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.EDIT_LIST))) {
@@ -985,6 +989,20 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		}
 	}
 
+	private void createLabelsAction() {
+		final Integer listId = this.germplasmList.getId();
+
+		if (listId != null) {
+			// Navigate to labels printing
+			getApplication().getMainWindow().executeJavaScript("window.location = '" + getApplication().getURL().getProtocol() +
+					"://" + getApplication().getURL().getHost() + ":" + getApplication().getURL().getPort() +
+					"/Fieldbook/LabelPrinting/specifyLabelDetails/inventory/" + listId + "';");
+
+		} else {
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.CREATE_LABELS),
+					this.messageSource.getMessage(Message.ERROR_COULD_NOT_CREATE_LABELS));
+		}
+	}
 
 	private final class ToolsButtonClickListener implements ClickListener {
 
