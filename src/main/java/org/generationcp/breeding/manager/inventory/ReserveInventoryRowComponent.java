@@ -1,6 +1,8 @@
 
 package org.generationcp.breeding.manager.inventory;
 
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.OptionGroup;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -22,6 +24,7 @@ public class ReserveInventoryRowComponent extends HorizontalLayout implements In
 	private static final long serialVersionUID = -3514286698020753573L;
 
 	private Label amountToReserveLbl;
+	private OptionGroup reserveOption;
 	private TextField reservedAmtTxtField;
 	private Label scaleLabel;
 	private final int selectedLotPerScale;
@@ -47,9 +50,15 @@ public class ReserveInventoryRowComponent extends HorizontalLayout implements In
 
 	@Override
 	public void instantiateComponents() {
-		this.amountToReserveLbl = new Label(this.messageSource.getMessage(Message.AMOUNT_TO_RESERVE) + ":");
+		this.amountToReserveLbl = new Label(this.messageSource.getMessage(Message.AMOUNT_TO_RESERVE));
 		this.amountToReserveLbl.setDebugId("amountToReserveLbl");
 		this.amountToReserveLbl.addStyleName(AppConstants.CssStyles.BOLD);
+
+		this.reserveOption = new OptionGroup();
+		this.reserveOption.setDebugId("reserveOption");
+		this.reserveOption.setWidth("180px");
+		this.reserveOption.addItem(this.messageSource.getMessage(Message.SEED_MANUAL_AMOUNT));
+		this.reserveOption.addItem(this.messageSource.getMessage(Message.SEED_ALL_AMOUNT));
 
 		this.reservedAmtTxtField = new TextField();
 		this.reservedAmtTxtField.setDebugId("reservedAmtTxtField");
@@ -58,8 +67,7 @@ public class ReserveInventoryRowComponent extends HorizontalLayout implements In
 
 		this.reservedAmtTxtField.setRequiredError(this.DEFAULT_ERROR);
 		this.reservedAmtTxtField.addValidator(new DoubleRangeValidator(this.DEFAULT_ERROR));
-
-		String scaleFullText = this.scale + " (" + this.selectedLotPerScale + " selected)";
+		String scaleFullText = this.scale;
 		this.scaleLabel = new Label(scaleFullText);
 		this.scaleLabel.setDebugId("scaleLabel");
 	}
@@ -80,9 +88,19 @@ public class ReserveInventoryRowComponent extends HorizontalLayout implements In
 	public void layoutComponents() {
 		this.setSpacing(true);
 
-		this.addComponent(this.amountToReserveLbl);
-		this.addComponent(this.reservedAmtTxtField);
-		this.addComponent(this.scaleLabel);
+		final HorizontalLayout amount = new HorizontalLayout();
+		amount.setDebugId("amount");
+		amount.setWidth("100%");
+		amount.setSpacing(true);
+		amount.addComponent(this.amountToReserveLbl);
+		amount.addComponent(this.reserveOption);
+		amount.addComponent(this.scaleLabel);
+		amount.addComponent(this.reservedAmtTxtField);
+		amount.setComponentAlignment(this.amountToReserveLbl, Alignment.TOP_LEFT);
+		amount.setComponentAlignment(this.reserveOption,Alignment.TOP_LEFT);
+		amount.setComponentAlignment(this.scaleLabel,Alignment.TOP_LEFT);
+		amount.setComponentAlignment(this.reservedAmtTxtField,Alignment.TOP_LEFT);
+		this.addComponent(amount);
 	}
 
 	@Override

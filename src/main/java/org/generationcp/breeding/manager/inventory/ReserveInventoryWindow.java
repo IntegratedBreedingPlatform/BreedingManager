@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.TextField;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -40,9 +42,14 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 	private VerticalLayout panelContentLayout;
 	private Label singleScaleDescriptionLabel;
 	private Label multiScaleDescriptionLabel;
+	private Label differentUnits;
+	private Label selectedCountLabel;
+	private OptionGroup commitOption;
 	private Button cancelButton;
 	private Button finishButton;
-
+	public int selectdCounts;
+	private Label notesLabel;
+	private TextField notes;
 	private List<ReserveInventoryRowComponent> scaleRows;
 
 	private Boolean isSingleScaled;
@@ -76,22 +83,43 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 	@Override
 	public void instantiateComponents() {
 		// window formatting
-		this.setCaption(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
+		this.setCaption(this.messageSource.getMessage(Message.SEED_PREPARATION));
 		this.addStyleName(Reindeer.WINDOW_LIGHT);
 		this.setModal(true);
 
 		// components formatting
-		this.singleScaleDescriptionLabel = new Label("Specify the amount of inventory to reserve from each selected lot.");
+		this.singleScaleDescriptionLabel = new Label("Specify the amount of seed you would like to prepare for each selected lot.");
 		this.singleScaleDescriptionLabel.setDebugId("singleScaleDescriptionLabel");
 
-		this.multiScaleDescriptionLabel = new Label("The lots you have selected are in different units. "
-				+ "Please specify the amount of inventory to reserve for each unit type.");
+		this.multiScaleDescriptionLabel = new Label("Specify the amount of seed you would like to prepare for each selected lot.");
+		this.multiScaleDescriptionLabel.setDebugId("multiScaleDescriptionLabel");
+
+		this.differentUnits = new Label("The lots you have selected are in different units."
+				+ "Please specify the amount to reserve for each unit type.");
+		this.differentUnits.setDebugId("differentUnits");
 
 		this.contentPanel = new Panel();
 		this.contentPanel.setDebugId("contentPanel");
 		this.contentPanel.addStyleName("section_panel_layout");
 
 		this.scaleRows = new ArrayList<ReserveInventoryRowComponent>();
+
+
+		this.notesLabel = new Label(this.messageSource.getMessage(Message.NOTES));
+		this.notesLabel.setDebugId("notesLabel");
+		this.notesLabel.addStyleName(AppConstants.CssStyles.BOLD);
+
+		this.notes = new TextField();
+		this.notes.setDebugId("notes");
+		this.notes.setWidth("400px");
+		this.notes.setHeight("60px");
+
+
+		this.commitOption = new OptionGroup();
+		this.commitOption.setDebugId("commitOption");
+		this.commitOption.setMultiSelect(true);
+		this.commitOption.setWidth("300px");
+		this.commitOption.addItem(this.messageSource.getMessage(Message.COMMIT_SEEDS));
 
 		this.cancelButton = new Button(this.messageSource.getMessage(Message.CANCEL));
 		this.cancelButton.setDebugId("cancelButton");
@@ -113,6 +141,7 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 		for (final Map.Entry<String, List<ListEntryLotDetails>> entry : this.scaleGrouping.entrySet()) {
 			final String scale = entry.getKey();
 			final List<ListEntryLotDetails> lotDetailList = entry.getValue();
+			this.selectdCounts=lotDetailList.size();
 			this.scaleRows.add(new ReserveInventoryRowComponent(scale, lotDetailList.size()));
 		}
 	}
@@ -164,25 +193,35 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 		this.panelContentLayout.setMargin(true);
 		this.panelContentLayout.setSpacing(true);
 
+		String selectedCountsText = " (" + this.selectdCounts + " selected)";
+		this.selectedCountLabel = new Label(selectedCountsText);
+		this.selectedCountLabel.setDebugId("selectedCountLabel");
+
 		if (this.isSingleScaled) {
-			this.setHeight("225px");
-			this.setWidth("550px");
+			this.setHeight("370px");
+			this.setWidth("600px");
 
-			this.contentPanel.setWidth("510px");
-			this.contentPanel.setHeight("90px");
+			this.contentPanel.setWidth("540px");
+			this.contentPanel.setHeight("230px");
 
-			this.panelContentLayout.addComponent(this.singleScaleDescriptionLabel);
+			String scaleFullText = this.singleScaleDescriptionLabel.toString() + this.selectedCountLabel.toString();
+			Label scaleLabel = new Label(scaleFullText);
+			scaleLabel.setDebugId("scaleLabel");
+			this.panelContentLayout.addComponent(scaleLabel);
 			this.panelContentLayout.addComponent(this.scaleRows.get(0));
 
 		} else {
-			this.setHeight("310px");
-			this.setWidth("550px");
+			this.setHeight("470px");
+			this.setWidth("700px");
 
-			this.contentPanel.setWidth("510px");
-			this.contentPanel.setHeight("175px");
+			this.contentPanel.setWidth("640px");
+			this.contentPanel.setHeight("330px");
 
-			this.panelContentLayout.addComponent(this.multiScaleDescriptionLabel);
-
+			String scaleFullTextForMultipleUnits = this.multiScaleDescriptionLabel.toString() + this.selectedCountLabel.toString();
+			Label scaleLabelForMultipleUnits = new Label(scaleFullTextForMultipleUnits);
+			scaleLabelForMultipleUnits.setDebugId("scaleLabelForMultipleUnits");
+			this.panelContentLayout.addComponent(scaleLabelForMultipleUnits);
+			this.panelContentLayout.addComponent(this.differentUnits);
 			final VerticalLayout scaleLayout = new VerticalLayout();
 			scaleLayout.setDebugId("scaleLayout");
 			scaleLayout.setSpacing(true);
@@ -200,6 +239,24 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 
 		}
 
+		this.panelContentLayout.addComponent(this.notesLabel);
+		final HorizontalLayout notesTextArea = new HorizontalLayout();
+		notesTextArea.setDebugId("notesTextArea");
+		notesTextArea.setWidth("100%");
+		notesTextArea.setSpacing(true);
+		notesTextArea.addComponent(this.notesLabel);
+		notesTextArea.addComponent(this.notes);
+		notesTextArea.setComponentAlignment(this.notesLabel,Alignment.TOP_LEFT);
+		notesTextArea.setComponentAlignment(this.notes,Alignment.TOP_CENTER);
+		this.panelContentLayout.addComponent(notesTextArea);
+
+		final HorizontalLayout commitCheck = new HorizontalLayout();
+		commitCheck.setDebugId("commitCheck");
+		commitCheck.setWidth("90%");
+		commitCheck.setSpacing(true);
+		commitCheck.addComponent(this.commitOption);
+		commitCheck.setComponentAlignment(this.commitOption,Alignment.TOP_CENTER);
+		this.panelContentLayout.addComponent(commitCheck);
 		this.contentPanel.setLayout(this.panelContentLayout);
 
 		final HorizontalLayout buttonLayout = new HorizontalLayout();
