@@ -56,7 +56,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmListParser.class);
 	private static final int OBSERVATION_SHEET_NO = 1;
 
-	private final Map<Integer, String> observationColumnMap = new HashMap<>();
+	private Map<Integer, String> observationColumnMap = new HashMap<>();
 
 	@Resource
 	private GermplasmListManager germplasmListManager;
@@ -76,7 +76,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	private String seedAmountVariate = "";
 	private Set<String> nameFactors;
 	private Set<String> attributeVariates;
-	private final Set<String> descriptionVariableNames = new HashSet<>();
+	private Set<String> descriptionVariableNames = new HashSet<>();
 
 	public String getNoInventoryWarning() {
 		return this.noInventoryWarning;
@@ -951,6 +951,24 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	 */
 	void setImportedGermplasmList(final ImportedGermplasmList importedGermplasmList) {
 		this.importedGermplasmList = importedGermplasmList;
+	}
+	
+	/**
+	 * For Test Only
+	 * 
+	 * @param observationColumnMap
+	 */
+	void setObservationColumnMap(Map<Integer, String> observationColumnMap) {
+		this.observationColumnMap = observationColumnMap;
+	}
+
+	/**
+	 * For Test Only
+	 * 
+	 * @param descriptionVariableNames
+	 */
+	void setDescriptionVariableNames(Set<String> descriptionVariableNames) {
+		this.descriptionVariableNames = descriptionVariableNames;
 	}
 
 }
