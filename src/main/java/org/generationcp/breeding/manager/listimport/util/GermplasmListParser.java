@@ -475,6 +475,16 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 				throw new FileParsingException("GERMPLASM_PARSE_HEADER_ERROR", 1, "", headerName);
 			}
 		}
+		
+		// Checks if there are duplicate headers in the observation sheet
+		final List<String> headersList = new ArrayList<String>();
+		for(String observationHeader : observationHeaders){
+			if(headersList.contains(observationHeader)){
+				throw new FileParsingException("GERMPLASM_DUPLICATE_HEADER_ERROR", 1, "", observationHeader);
+			} else {
+				headersList.add(observationHeader);
+			}
+		}
 	}
 
 	protected void parseObservationRows() throws FileParsingException {
