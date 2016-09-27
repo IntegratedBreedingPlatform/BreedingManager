@@ -434,20 +434,21 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		for (int i = 0; i < headerSize + 2; i++) {
 			// search the current header
 			final String obsHeader = this.getCellStringValue(GermplasmListParser.OBSERVATION_SHEET_NO, 0, i);
-
-			if (this.specialFactors.get(FactorTypes.ENTRY).equals(obsHeader)) {
-				validationMap.addValidation(i, new ValueTypeValidator(Integer.class));
-				validationMap.addValidation(i, new NonEmptyValidator());
-			} else if (this.specialFactors.get(FactorTypes.DESIG).equals(obsHeader)) {
-				hasDesigColumn = true;
-			} else if (this.importFileIsAdvanced && this.specialFactors.get(FactorTypes.GID).equals(obsHeader)) {
-				hasGidColumn = true;
-			} else if (!this.seedAmountVariate.isEmpty() && this.seedAmountVariate.equalsIgnoreCase(obsHeader)) {
-				validationMap.addValidation(i, new ValueTypeValidator(Double.class));
-				hasInventoryVariate = true;
+			if(StringUtils.isNotBlank(obsHeader)){
+				if (this.specialFactors.get(FactorTypes.ENTRY).equals(obsHeader)) {
+					validationMap.addValidation(i, new ValueTypeValidator(Integer.class));
+					validationMap.addValidation(i, new NonEmptyValidator());
+				} else if (this.specialFactors.get(FactorTypes.DESIG).equals(obsHeader)) {
+					hasDesigColumn = true;
+				} else if (this.importFileIsAdvanced && this.specialFactors.get(FactorTypes.GID).equals(obsHeader)) {
+					hasGidColumn = true;
+				} else if (!this.seedAmountVariate.isEmpty() && this.seedAmountVariate.equalsIgnoreCase(obsHeader)) {
+					validationMap.addValidation(i, new ValueTypeValidator(Double.class));
+					hasInventoryVariate = true;
+				}
+	
+				this.observationColumnMap.put(i, obsHeader);
 			}
-
-			this.observationColumnMap.put(i, obsHeader);
 		}
 
 		this.validateObservationHeaders();
