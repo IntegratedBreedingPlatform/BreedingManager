@@ -193,22 +193,20 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
   
   					newItem.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).setValue(lotLocation);
   
-  					String lotScale = "";
-  					if (lotDetail.getScaleOfLot() != null && lotDetail.getScaleOfLot().getName() != null) {
-  						lotScale = lotDetail.getScaleOfLot().getName();
-  					}
-  
-  					//TODO : BMS-3347
-  					String total = String.valueOf(lotDetail.getActualLotBalance());
-  					newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(total);
 
-					//TODO : BMS-3347
-					String withdrawal = "withdrawal";
-  					newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(withdrawal);
+  					String available = "";
+					if(lotDetail.getAvailableLotBalance() > 0){
+						available = lotDetail.getAvailableLotBalance() + lotDetail.getLotScaleNameAbbr();
+					}
+  					newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(available);
 
-					//TODO : BMS-3347
-					String status = "STATUS";
-					newItem.getItemProperty(ColumnLabels.STATUS.getName()).setValue(status);
+					String withdrawalBalance = "";
+					if(lotDetail.getWithdrawalBalance() > 0){
+						withdrawalBalance = lotDetail.getWithdrawalBalance() + lotDetail.getLotScaleNameAbbr();
+					}
+  					newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(withdrawalBalance);
+
+					newItem.getItemProperty(ColumnLabels.STATUS.getName()).setValue(lotDetail.getWithdrawalStatus());
   					newItem.getItemProperty(ColumnLabels.COMMENT.getName()).setValue(lotDetail.getCommentOfLot());
   
   					final String stockIds = lotDetail.getStockIds();
