@@ -469,6 +469,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	}
 
 	protected void validateObservationHeaders() throws FileParsingException {
+		// Checks if all description variable names are existing in the description sheet.
 		final Collection<String> observationHeaders = this.observationColumnMap.values();
 		for (final String headerName : this.descriptionVariableNames) {
 			if (!observationHeaders.contains(headerName)) {
