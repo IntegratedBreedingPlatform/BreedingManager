@@ -195,18 +195,22 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
   
 
   					String available = "";
-					if(lotDetail.getAvailableLotBalance() > 0){
+					if(lotDetail.getAvailableLotBalance() != null && lotDetail.getAvailableLotBalance() > 0){
 						available = lotDetail.getAvailableLotBalance() + lotDetail.getLotScaleNameAbbr();
 					}
   					newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(available);
 
 					String withdrawalBalance = "";
-					if(lotDetail.getWithdrawalBalance() > 0){
+					if(lotDetail.getWithdrawalBalance() != null && lotDetail.getWithdrawalBalance() > 0){
 						withdrawalBalance = lotDetail.getWithdrawalBalance() + lotDetail.getLotScaleNameAbbr();
 					}
   					newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(withdrawalBalance);
 
-					newItem.getItemProperty(ColumnLabels.STATUS.getName()).setValue(lotDetail.getWithdrawalStatus());
+					String status = "";
+					if(lotDetail.getWithdrawalStatus() != null){
+						status = lotDetail.getWithdrawalStatus();
+					}
+					newItem.getItemProperty(ColumnLabels.STATUS.getName()).setValue(status);
   					newItem.getItemProperty(ColumnLabels.COMMENT.getName()).setValue(lotDetail.getCommentOfLot());
   
   					final String stockIds = lotDetail.getStockIds();
