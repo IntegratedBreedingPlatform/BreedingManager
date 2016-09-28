@@ -178,17 +178,23 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 				}
 				newItem.getItemProperty(InventoryViewComponent.AVAILABLE_BALANCE).setValue(availableBalance);
 
-				String withdrawalBalance = "";
-				if(lotEntry.getWithdrawalBalance() != null && lotEntry.getWithdrawalBalance() > 0){
-					withdrawalBalance = lotEntry.getWithdrawalBalance() + lotEntry.getLotScaleNameAbbr();
-				}
-				newItem.getItemProperty(InventoryViewComponent.WITHDRAWAL).setValue(withdrawalBalance);
+				if(this.listId != null && this.recordId != null) {
+					String withdrawalBalance = "";
+					if(lotEntry.getWithdrawalBalance() != null && lotEntry.getWithdrawalBalance() > 0){
+						withdrawalBalance = lotEntry.getWithdrawalBalance() + lotEntry.getLotScaleNameAbbr();
+					}
+					newItem.getItemProperty(InventoryViewComponent.WITHDRAWAL).setValue(withdrawalBalance);
 
-				String withdrawalStatus = "";
-				if(lotEntry.getWithdrawalStatus() != null){
-					withdrawalStatus = lotEntry.getWithdrawalStatus();
+					String withdrawalStatus = "";
+					if(lotEntry.getWithdrawalStatus() != null){
+						withdrawalStatus = lotEntry.getWithdrawalStatus();
+					}
+					newItem.getItemProperty(InventoryViewComponent.STATUS).setValue(withdrawalStatus);
+				}else{
+					newItem.getItemProperty(InventoryViewComponent.WITHDRAWAL).setValue("-");
+					newItem.getItemProperty(InventoryViewComponent.STATUS).setValue("-");
 				}
-				newItem.getItemProperty(InventoryViewComponent.STATUS).setValue(withdrawalStatus);
+
 
 
 				newItem.getItemProperty(InventoryViewComponent.COMMENTS).setValue(lotEntry.getCommentOfLot());
