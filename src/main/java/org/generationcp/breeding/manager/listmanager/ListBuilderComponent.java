@@ -29,6 +29,7 @@ import org.generationcp.breeding.manager.customcomponent.UnsavedChangesSource;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
+import org.generationcp.breeding.manager.inventory.SeedPreparationListExporter;
 import org.generationcp.breeding.manager.inventory.InventoryDropTargetContainer;
 import org.generationcp.breeding.manager.inventory.ListDataAndLotDetails;
 import org.generationcp.breeding.manager.inventory.ReservationStatusWindow;
@@ -36,6 +37,7 @@ import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
 import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryUtil;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
+import org.generationcp.breeding.manager.inventory.exception.SeedPreparationExportException;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.dialog.ListManagerCopyToListDialog;
 import org.generationcp.breeding.manager.listmanager.listeners.ResetListButtonClickListener;
@@ -203,7 +205,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 						ListBuilderComponent.this.resetButton.click();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SAVE_LIST))) {
 						ListBuilderComponent.this.saveButton.click();
-					}
+					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.EXPORT_SEED_LIST))){
+							ListBuilderComponent.this.exportSeedPreparationList();
+						}
 				}
 			});
 
@@ -1205,6 +1209,19 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		final ExportListAsDialog exportListAsDialog =
 				new ExportListAsDialog(this.source, this.currentlySavedGermplasmList, this.listDataTable);
 		this.getWindow().addWindow(exportListAsDialog);
+	}
+
+	public void exportSeedPreparationList(){
+		try{
+			SeedPreparationListExporter seedPreparationListExporter = new SeedPreparationListExporter(this.source,
+					this.currentlySavedGermplasmList);
+			seedPreparationListExporter.exportSeedPreparationList();
+		}
+		catch (SeedPreparationExportException ex){
+			ListBuilderComponent.LOG.debug(ex.getMessage(), ex);
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
+					"Cannot Export Seed Preparation List :"+ex.getMessage());
+		}
 	}
 
 	private void exportListForGenotypingOrderAction() {

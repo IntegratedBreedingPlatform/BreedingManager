@@ -29,11 +29,13 @@ import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
+import org.generationcp.breeding.manager.inventory.SeedPreparationListExporter;
 import org.generationcp.breeding.manager.inventory.ReservationStatusWindow;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
 import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryUtil;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
+import org.generationcp.breeding.manager.inventory.exception.SeedPreparationExportException;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource;
@@ -989,6 +991,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.CANCEL_RESERVATIONS))) {
 						ListComponent.this.cancelReservationsAction();
 					}
+					else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.EXPORT_SEED_LIST))){
+						ListComponent.this.exportSeedPreparationList();
+					}
 				}
 			});
 
@@ -1482,6 +1487,21 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		exportListAsDialog.setDebugId("exportListAsDialog");
 		this.getWindow().addWindow(exportListAsDialog);
 	}
+
+	public void exportSeedPreparationList()  {
+		try{
+			SeedPreparationListExporter seedPreparationListExporter = new SeedPreparationListExporter(this.source,
+					this.germplasmList);
+			seedPreparationListExporter.exportSeedPreparationList();
+		}
+		catch (SeedPreparationExportException ex){
+			ListComponent.LOG.debug(ex.getMessage(), ex);
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
+					"Cannot Export Seed Preparation List :"+ex.getMessage());
+		}
+
+	}
+
 
 	protected void setLockedState(final boolean locked) {
 		this.lockButton.setVisible(!locked);
