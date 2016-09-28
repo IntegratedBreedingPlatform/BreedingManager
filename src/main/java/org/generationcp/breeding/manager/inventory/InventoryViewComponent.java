@@ -68,6 +68,8 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 
 	private boolean isThereNoInventoryInfo;
 
+	private GermplasmListData germplasmListData = null;
+
 	public InventoryViewComponent(Integer listId) {
 		this.listId = listId;
 	}
@@ -94,13 +96,9 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 
 	@Override
 	public void instantiateComponents() {
-		GermplasmListData germplasmListData = null;
 		if(this.listId != null && this.recordId != null){
 			germplasmListData =
 					this.germplasmListManager.getGermplasmListDataByListIdAndLrecId(this.listId, this.recordId);
-		}
-		else if(this.gid != null){
-			// BMS-3347 retrieve designation if only gid is passed.
 		}
 
 		String descriptionMessage = "";
@@ -108,7 +106,6 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 		if(germplasmListData != null){
 			String designation = germplasmListData.getDesignation();
 			descriptionMessage = this.messageSource.getMessage(Message.LOT_DETAILS_FOR_SELECTED_ENTRIES, designation);
-
 		}
 
 		this.description = new Label(descriptionMessage);
@@ -201,8 +198,10 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 				newItem.getItemProperty(InventoryViewComponent.STOCKID).setValue(lotEntry.getStockIds());
 				newItem.getItemProperty(InventoryViewComponent.LOT_ID).setValue(lotEntry.getLotId());
 
-				// TODO : BMS-3347
-				String seedSource = "SEED SOURCE";
+				String seedSource = "";
+				if(germplasmListData != null){
+					seedSource = germplasmListData.getSeedSource();
+				}
 				newItem.getItemProperty(InventoryViewComponent.SEED_SOURCE).setValue(seedSource);
 			}
 		} catch (MiddlewareQueryException e) {
