@@ -24,6 +24,7 @@ import org.generationcp.middleware.pojos.Name;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -36,6 +37,7 @@ import com.vaadin.ui.Window;
 /**
  * Unit Test to verify Process Imported Germplasm Action file
  */
+@RunWith(MockitoJUnitRunner.class)
 public class ProcessImportedGermplasmActionTest {
 
 	@Mock
@@ -68,7 +70,6 @@ public class ProcessImportedGermplasmActionTest {
 
 	@Before
 	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
 
 		this.processImportedGermplasmAction = new ProcessImportedGermplasmAction(this.germplasmDetailsComponent);
 		this.processImportedGermplasmAction.setContextUtil(this.contextUtil);
