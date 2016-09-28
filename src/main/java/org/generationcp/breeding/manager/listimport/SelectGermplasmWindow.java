@@ -108,7 +108,7 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 	private CheckBox ignoreRemainingMatchesCheckbox;
 	private final Window parentWindow;
 	private Integer currentMatch;
-	private Integer totalMatches;
+	private Integer noOfImportedGemplasm;
 
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
@@ -126,14 +126,14 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 	}
 
 	public SelectGermplasmWindow(final ProcessImportedGermplasmAction source, final String germplasmName, final int index,
-			final Germplasm germplasm, final Window parentWindow, final Integer currentMatch, final Integer totalMatches) {
+			final Germplasm germplasm, final Window parentWindow, final Integer currentMatch, final Integer noOfImportedGemplasm) {
 		this.germplasmName = germplasmName;
 		this.germplasmIndex = index;
 		this.germplasm = germplasm;
 		this.source = source;
 		this.parentWindow = parentWindow;
 		this.currentMatch = currentMatch;
-		this.totalMatches = totalMatches;
+		this.noOfImportedGemplasm = noOfImportedGemplasm;
 	}
 
 	protected void assemble() {
