@@ -153,7 +153,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 			}
 
 			if (germplasmMatchesCount > 1) {
-				this.displaySelectGermplasmWindowIfNecessary(importedGermplasm.getDesig(), i, germplasm, currentMatch, totalMatches);
+				this.displaySelectGermplasmWindowIfNecessary(importedGermplasm.getDesig(), i, germplasm, currentMatch, noOfImportedGemplasm);
 				// increment current match for referring to current iteration
 				currentMatch++;
 			}
@@ -249,7 +249,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 			}
 
 			if (this.isNeedToDisplayGermplasmSelectionWindow(germplasmMatchesCount) && searchByNameOrNewGermplasmIsNeeded) {
-				this.displaySelectGermplasmWindowIfNecessary(importedGermplasm.getDesig(), i, germplasm, currentMatch, totalMatches);
+				this.displaySelectGermplasmWindowIfNecessary(importedGermplasm.getDesig(), i, germplasm, currentMatch, noOfImportedGermplasm);
 				currentMatch++;
 			}
 		}
@@ -387,15 +387,15 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	}
 
 	private void displaySelectGermplasmWindowIfNecessary(final String germplasmName, final int rowNumber, final Germplasm germplasm,
-			final Integer currentMatch, final Integer totalMatches) {
+			final Integer currentMatch, final Integer noOfImportedGermplasm) {
 		final SelectGermplasmWindow selectGermplasmWindow =
-				this.createSelectGermplasmWindow(germplasmName, rowNumber, germplasm, currentMatch, totalMatches);
+				this.createSelectGermplasmWindow(germplasmName, rowNumber, germplasm, currentMatch, noOfImportedGermplasm);
 		this.addImportEntryListener(selectGermplasmWindow);
 	}
 
 	private SelectGermplasmWindow createSelectGermplasmWindow(final String germplasmName, final int rowNumber, final Germplasm germplasm,
-			final Integer currentMatch, final Integer totalMatches) {
-		return new SelectGermplasmWindow(this, germplasmName, rowNumber, germplasm, this.getWindow(), currentMatch, totalMatches);
+			final Integer currentMatch, final Integer noOfImportedGermplasm) {
+		return new SelectGermplasmWindow(this, germplasmName, rowNumber, germplasm, this.getWindow(), currentMatch, noOfImportedGermplasm);
 	}
 
 	protected void addImportEntryListener(final ImportGermplasmEntryActionListener listener) {
