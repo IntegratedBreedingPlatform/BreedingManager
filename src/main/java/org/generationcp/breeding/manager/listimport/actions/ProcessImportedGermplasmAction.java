@@ -153,7 +153,8 @@ public class ProcessImportedGermplasmAction implements Serializable {
 			}
 
 			if (germplasmMatchesCount > 1) {
-				this.displaySelectGermplasmWindowIfNecessary(importedGermplasm.getDesig(), i, germplasm, currentMatch, noOfImportedGemplasm);
+				this.displaySelectGermplasmWindowIfNecessary(importedGermplasm.getDesig(), i, germplasm, currentMatch,
+						noOfImportedGemplasm);
 				// increment current match for referring to current iteration
 				currentMatch++;
 			}
@@ -234,9 +235,8 @@ public class ProcessImportedGermplasmAction implements Serializable {
 				germplasm = new Germplasm();
 			}
 
-			germplasm =
-					this.updateGidForSingleMatch(ibdbUserId, dateIntValue, importedGermplasm, germplasmMatchesCount, germplasm,
-							searchByNameOrNewGermplasmIsNeeded);
+			germplasm = this.updateGidForSingleMatch(ibdbUserId, dateIntValue, importedGermplasm, germplasmMatchesCount, germplasm,
+					searchByNameOrNewGermplasmIsNeeded);
 
 			final Name name = this.createNameObject(ibdbUserId, dateIntValue, importedGermplasm.getDesig());
 
@@ -249,7 +249,8 @@ public class ProcessImportedGermplasmAction implements Serializable {
 			}
 
 			if (this.isNeedToDisplayGermplasmSelectionWindow(germplasmMatchesCount) && searchByNameOrNewGermplasmIsNeeded) {
-				this.displaySelectGermplasmWindowIfNecessary(importedGermplasm.getDesig(), i, germplasm, currentMatch, noOfImportedGermplasm);
+				this.displaySelectGermplasmWindowIfNecessary(importedGermplasm.getDesig(), i, germplasm, currentMatch,
+						noOfImportedGermplasm);
 				currentMatch++;
 			}
 		}
@@ -299,8 +300,8 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	}
 
 	protected boolean isNeedToDisplayGermplasmSelectionWindow(final int germplasmMatchesCount) {
-		if (germplasmMatchesCount > 1 || germplasmMatchesCount == 1
-				&& !this.germplasmDetailsComponent.automaticallyAcceptSingleMatchesCheckbox()) {
+		if (germplasmMatchesCount > 1
+				|| germplasmMatchesCount == 1 && !this.germplasmDetailsComponent.automaticallyAcceptSingleMatchesCheckbox()) {
 			return true;
 		}
 		return false;
