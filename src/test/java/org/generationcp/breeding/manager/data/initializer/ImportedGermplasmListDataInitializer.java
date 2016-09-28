@@ -15,6 +15,8 @@ import org.generationcp.middleware.data.initializer.GermplasmTestDataInitializer
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 
 public class ImportedGermplasmListDataInitializer {
+	
+	private static final String DESIGNATION = "(CML454 X CML451)-B-4-1-112";
 
 	public ImportedGermplasmListDataInitializer() {
 		// do nothing
@@ -62,7 +64,8 @@ public class ImportedGermplasmListDataInitializer {
 		if (withNameFactors) {
 			importedGermplasm.setNameFactors(this.createNameFactors(id, withNameFactors));
 		}
-
+		importedGermplasm.setDesig(DESIGNATION);
+		importedGermplasm.setGid(1);
 		importedGermplasm.setAttributeVariates(this.createAttributeVariates(id));
 
 		return importedGermplasm;
