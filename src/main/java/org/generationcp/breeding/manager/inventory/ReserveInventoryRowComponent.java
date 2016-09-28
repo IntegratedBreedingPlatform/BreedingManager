@@ -24,6 +24,11 @@ public class ReserveInventoryRowComponent extends HorizontalLayout implements In
 	private static final long serialVersionUID = -3514286698020753573L;
 
 	private Label amountToReserveLbl;
+
+	public OptionGroup getReserveOption() {
+		return reserveOption;
+	}
+
 	private OptionGroup reserveOption;
 	private TextField reservedAmtTxtField;
 	private Label scaleLabel;

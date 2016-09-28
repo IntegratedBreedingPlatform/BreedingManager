@@ -59,11 +59,13 @@ public class ReserveInventoryAction implements Serializable {
 		for (Map.Entry<ReservationRowKey, List<ListEntryLotDetails>> entry : reservations.entrySet()) {
 			List<ListEntryLotDetails> lotList = entry.getValue();
 			ReservationRowKey key = entry.getKey();
-			Double amountReserved = key.getAmountToReserve();
-
+			Boolean isPreapareAllSeeds =key.getIsPreapareAllSeeds();
 			for (ListEntryLotDetails lot : lotList) {
+				Double amountReserved = key.getAmountToReserve();
 				Double availBalance = lot.getAvailableLotBalance();
-
+				if(isPreapareAllSeeds){
+					amountReserved = availBalance;
+				}
 				if (checkedLots.contains(lot.getLotId())) {
 					// duplicated lots mapped to GID that has multiple entries in list entries
 					Double totalAmountReserved = duplicatedLots.get(lot.getLotId());

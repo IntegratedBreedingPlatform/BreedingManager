@@ -169,7 +169,10 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 		try {
 
 			for (final ReserveInventoryRowComponent row : this.scaleRows) {
-				row.validate();
+				String selectedOptionForReserve = (String) row.getReserveOption().getValue();
+				if(!this.messageSource.getMessage(Message.SEED_ALL_AMOUNT).equals(selectedOptionForReserve)){
+					row.validate();
+				}
 			}
 
 			return true;
@@ -284,7 +287,12 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 		final Map<ReservationRowKey, List<ListEntryLotDetails>> reservations = new HashMap<ReservationRowKey, List<ListEntryLotDetails>>();
 
 		for (final ReserveInventoryRowComponent row : this.scaleRows) {
-			reservations.put(new ReservationRowKey(row.getScale(), row.getReservationAmount()), this.scaleGrouping.get(row.getScale()));
+			String selectedOptionForReserve = (String) row.getReserveOption().getValue();
+			if(this.messageSource.getMessage(Message.SEED_ALL_AMOUNT).equals(selectedOptionForReserve)){
+				reservations.put(new ReservationRowKey(row.getScale(), row.getReservationAmount(),true), this.scaleGrouping.get(row.getScale()));
+			}else{
+				reservations.put(new ReservationRowKey(row.getScale(), row.getReservationAmount(),false), this.scaleGrouping.get(row.getScale()));
+			}
 		}
 
 		return reservations;
