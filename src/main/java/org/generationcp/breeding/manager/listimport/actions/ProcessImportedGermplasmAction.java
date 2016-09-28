@@ -114,7 +114,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 
 		final Map<String, Germplasm> createdGermplasms = new HashMap<>();
 		final Map<String, Integer> germplasmMatchesMap = this.mapImportedGermplasmsForDuplication(this.getImportedGermplasms());
-		final Integer totalMatches = this.getTotalFromGermplasmMatches(germplasmMatchesMap);
+		final Integer noOfImportedGemplasm = this.getImportedGermplasms().size();
 
 		Integer currentMatch = 1;
 
@@ -181,7 +181,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 
 		final Map<String, Germplasm> createdGermplasms = new HashMap<>();
 		final Map<String, Integer> germplasmMatchesMap = this.mapImportedGermplasmsForDuplication(this.getImportedGermplasms());
-		final Integer totalMatches = this.getTotalFromGermplasmMatches(germplasmMatchesMap);
+		final Integer noOfImportedGermplasm = this.getImportedGermplasms().size();
 
 		Integer currentMatch = 1;
 
@@ -296,17 +296,6 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		}
 
 		return germplasmMatchesMap;
-	}
-
-	private Integer getTotalFromGermplasmMatches(final Map<String, Integer> germplasmMatchesMap) {
-		Integer totalMatches = 0;
-		for (final Integer count : germplasmMatchesMap.values()) {
-			if (count > 0) {
-				totalMatches++;
-			}
-
-		}
-		return totalMatches;
 	}
 
 	protected boolean isNeedToDisplayGermplasmSelectionWindow(final int germplasmMatchesCount) {
