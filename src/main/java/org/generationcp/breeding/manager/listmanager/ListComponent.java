@@ -2270,29 +2270,22 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	@Override
 	public void updateListInventoryTable(final Map<ListEntryLotDetails, Double> validReservations, final boolean withInvalidReservations) {
-		for (final Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()) {
-			final ListEntryLotDetails lot = entry.getKey();
-			final Double newRes = entry.getValue();
-
-			final Item itemToUpdate = this.listInventoryTable.getTable().getItem(lot);
-			itemToUpdate.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(newRes);
-		}
 
 		this.removeReserveInventoryWindow(this.reserveInventory);
 
-		// update lot reservations to save
-		this.updateLotReservationsToSave(validReservations);
-
-		// enable now the Save Changes option
-		this.inventoryViewMenu.setMenuInventorySaveChanges();
-
 		// if there are no valid reservations
-		if (validReservations.isEmpty()) {
+		if (withInvalidReservations) {
 			MessageNotifier.showRequiredFieldError(this.getWindow(),
 					this.messageSource.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES)
 							+ ".");
 
-		} else if (!withInvalidReservations) {
+		} else {
+			// update lot reservations to save
+			this.updateLotReservationsToSave(validReservations);
+
+			// enable now the Save Changes option
+			this.inventoryViewMenu.setMenuInventorySaveChanges();
+
 			MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
 					"All selected entries will be reserved in their respective lots.", 3000);
 		}

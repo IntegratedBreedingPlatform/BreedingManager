@@ -284,7 +284,7 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 	}
 
 	protected Map<ReservationRowKey, List<ListEntryLotDetails>> getReservations() {
-		final Map<ReservationRowKey, List<ListEntryLotDetails>> reservations = new HashMap<ReservationRowKey, List<ListEntryLotDetails>>();
+		final Map<ReservationRowKey, List<ListEntryLotDetails>> reservations = new HashMap<>();
 
 		for (final ReserveInventoryRowComponent row : this.scaleRows) {
 			String selectedOptionForReserve = (String) row.getReserveOption().getValue();
