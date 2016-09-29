@@ -30,7 +30,7 @@ public class SeedInventoryListUploader implements FileFactory {
 	private String originalFilename;
 	private String tempFileName;
 
-	SeedInventoryListParser seedInventoryListParser;
+	SeedInventoryImportListParser seedInventoryImportListParser;
 
 	ImportedSeedInventoryList importedSeedInventoryList;
 
@@ -48,18 +48,15 @@ public class SeedInventoryListUploader implements FileFactory {
 	}
 
 	public void doParseWorkbook() throws FileParsingException, InvalidFileDataException, SeedInventoryImportException {
-		this.seedInventoryListParser = new SeedInventoryListParser();
-		this.seedInventoryListParser.setOriginalFilename(this.originalFilename);
+		this.seedInventoryImportListParser = new SeedInventoryImportListParser();
+		this.seedInventoryImportListParser.setOriginalFilename(this.originalFilename);
 
 		this.updateImportedSeedInventoryList();
 	}
 
 	void updateImportedSeedInventoryList() throws FileParsingException, InvalidFileDataException {
-		this.importedSeedInventoryList = this.seedInventoryListParser.parseWorkbook(this.createWorkbook(this.tempFileName), null);
+		this.importedSeedInventoryList = this.seedInventoryImportListParser.parseWorkbook(this.createWorkbook(this.tempFileName), null);
 
-		/*if (this.importedSeedInventoryList.getImportedGermplasm().isEmpty()) {
-			throw new InvalidFileDataException("GERMPLSM_EMPTY_FILE_PARSE_ERROR");
-		}*/
 	}
 
 	public Workbook createWorkbook(final String tempFileName) {
