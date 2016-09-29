@@ -29,7 +29,7 @@ import org.generationcp.breeding.manager.customcomponent.UnsavedChangesSource;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
-import org.generationcp.breeding.manager.inventory.SeedPreparationListExporter;
+import org.generationcp.breeding.manager.inventory.SeedInventoryListExporter;
 import org.generationcp.breeding.manager.inventory.InventoryDropTargetContainer;
 import org.generationcp.breeding.manager.inventory.ListDataAndLotDetails;
 import org.generationcp.breeding.manager.inventory.ReservationStatusWindow;
@@ -37,7 +37,7 @@ import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
 import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryUtil;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
-import org.generationcp.breeding.manager.inventory.exception.SeedPreparationExportException;
+import org.generationcp.breeding.manager.inventory.exception.SeedInventoryExportException;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.dialog.ListManagerCopyToListDialog;
 import org.generationcp.breeding.manager.listmanager.listeners.ResetListButtonClickListener;
@@ -1213,11 +1213,11 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	public void exportSeedPreparationList(){
 		try{
-			SeedPreparationListExporter seedPreparationListExporter = new SeedPreparationListExporter(this.source,
+			SeedInventoryListExporter seedInventoryListExporter = new SeedInventoryListExporter(this.source,
 					this.currentlySavedGermplasmList);
-			seedPreparationListExporter.exportSeedPreparationList();
+			seedInventoryListExporter.exportSeedPreparationList();
 		}
-		catch (SeedPreparationExportException ex){
+		catch (SeedInventoryExportException ex){
 			ListBuilderComponent.LOG.debug(ex.getMessage(), ex);
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
 					"Cannot Export Seed Preparation List :"+ex.getMessage());
