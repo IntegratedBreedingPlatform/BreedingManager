@@ -11,9 +11,9 @@ import org.springframework.beans.factory.annotation.Configurable;
 import java.util.Map;
 
 @Configurable
-public class SeedInventoryListParser extends AbstractExcelFileParser<ImportedSeedInventoryList> {
+public class SeedInventoryImportListParser extends AbstractExcelFileParser<ImportedSeedInventoryList> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(SeedInventoryListParser.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SeedInventoryImportListParser.class);
 
 	ImportedSeedInventoryList importedSeedInventoryList;
 	public static final int DESCRIPTION_SHEET_NO = 0;
@@ -24,16 +24,23 @@ public class SeedInventoryListParser extends AbstractExcelFileParser<ImportedSee
 			throws FileParsingException {
 
 		this.workbook = workbook;
-		parseListDetails();
+		parseDescriptionSheet();
+		parseObservationSheet();
 		return this.importedSeedInventoryList;
 	}
 
-	protected void parseListDetails() throws FileParsingException {
-		final String listName = this.getCellStringValue(SeedInventoryListParser.DESCRIPTION_SHEET_NO, 0, 1);
-
-
+	protected void parseDescriptionSheet() throws FileParsingException {
 		this.importedSeedInventoryList = new ImportedSeedInventoryList(this.originalFilename);
+
+		final String listName = this.getCellStringValue(SeedInventoryImportListParser.DESCRIPTION_SHEET_NO, 0, 1);
+
+		this.importedSeedInventoryList.setListName(listName);
 	}
+
+	protected void parseObservationSheet() throws FileParsingException {
+
+	}
+
 
 	public void setOriginalFilename(final String originalFilename) {
 		this.originalFilename = originalFilename;
