@@ -44,7 +44,7 @@ public class ReserveInventoryAction implements Serializable {
 		this.source = source;
 	}
 
-	public void validateReservations(Map<ReservationRowKey, List<ListEntryLotDetails>> reservations) {
+	public void validateReservations(Map<ReservationRowKey, List<ListEntryLotDetails>> reservations,String notes, Boolean commitStatus) {
 
 		// reset allocation
 		Map<ListEntryLotDetails, Double> validLotReservations = new HashMap<>();
@@ -64,7 +64,8 @@ public class ReserveInventoryAction implements Serializable {
 
 				Double availBalance = lot.getAvailableLotBalance();
 				Double amountReserved = isPrepareAllSeeds ? availBalance : key.getAmountToReserve();
-
+				lot.setCommentOfLot(notes);
+				lot.setTransactionStatus(commitStatus);
 				if(GermplasmInventory.RESERVED.equals(lot.getWithdrawalStatus())){
 					invalidLotReservations.put(lot, amountReserved);
 				} else if (checkedLots.contains(lot.getLotId())) {
@@ -144,10 +145,13 @@ public class ReserveInventoryAction implements Serializable {
 			Integer lotId = lotDetail.getLotId();
 			Integer transactionDate = DateUtil.getCurrentDateAsIntegerValue();
 			Integer transacStatus = 0;
+			if(lotDetail.getTransactionStatus()){
+				transacStatus = 1;
+			}
 
 			// since this is a reserve transaction
 			Double amountToReserve = -1 * entry.getValue();
-			String comments = "";
+			String comments = lotDetail.getCommentOfLot();
 			String sourceType = "LIST";
 			Integer lrecId = lotDetail.getId();
 

@@ -159,7 +159,14 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 			@Override
 			public void buttonClick(final ClickEvent event) {
 				if (ReserveInventoryWindow.this.validateReserveAmount()) {
-					ReserveInventoryWindow.this.reserveInventoryAction.validateReservations(ReserveInventoryWindow.this.getReservations());
+					String commitCheck = ReserveInventoryWindow.this.commitOption.getValue().toString();
+					String notes = (String) ReserveInventoryWindow.this.getNotes().getValue();
+					if(commitCheck.contains( ReserveInventoryWindow.this.messageSource.getMessage(Message.COMMIT_SEEDS))){
+						ReserveInventoryWindow.this.reserveInventoryAction.validateReservations(ReserveInventoryWindow.this.getReservations(),notes,true);
+					}else {
+						ReserveInventoryWindow.this.reserveInventoryAction.validateReservations(ReserveInventoryWindow.this.getReservations(),notes,false);
+					}
+
 				}
 			}
 		});
@@ -313,6 +320,9 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 
 	public void setScaleRows(final List<ReserveInventoryRowComponent> scaleRows) {
 		this.scaleRows = scaleRows;
+	}
+	public TextField getNotes() {
+		return notes;
 	}
 
 }
