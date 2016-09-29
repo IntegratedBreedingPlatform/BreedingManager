@@ -6,6 +6,7 @@ import org.generationcp.breeding.manager.pojos.ImportedSeedInventory;
 import org.generationcp.breeding.manager.pojos.ImportedSeedInventoryList;
 import org.generationcp.commons.parsing.AbstractExcelFileParser;
 import org.generationcp.commons.parsing.FileParsingException;
+import org.generationcp.commons.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -76,10 +77,28 @@ public class SeedInventoryImportListParser extends AbstractExcelFileParser<Impor
 			String designation = this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, DESIGNATION_INDEX);
 			Integer gid = Integer.valueOf(this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, GID_INDEX));
 			Integer lotID = Integer.valueOf(this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, LOT_ID_INDEX));
-			Integer transactionId = Integer.valueOf(this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, TRN_INDEX));
-			Double reservationAmount = this.getCellNumericValue(OBSERVATION_SHEET_NO, rowIndex, RESERVATION_INDEX);
-			Double withdrawalAmount = this.getCellNumericValue(OBSERVATION_SHEET_NO, rowIndex, WITHDRAWAL_INDEX);
-			Double balanceAmount = this.getCellNumericValue(OBSERVATION_SHEET_NO, rowIndex, BALANCE_INDEX);
+
+			String transactionString = this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, TRN_INDEX);
+			Integer transactionId = null;
+
+			if(!StringUtil.isEmpty(transactionString)){
+				transactionId = Integer.valueOf(this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, TRN_INDEX));
+			}
+
+			Double reservationAmount = Double.valueOf(this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, RESERVATION_INDEX));
+
+			String withdrawalString = this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, WITHDRAWAL_INDEX);
+			Double withdrawalAmount = null;
+			if(!StringUtil.isEmpty(withdrawalString)){
+				withdrawalAmount = Double.valueOf(this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, WITHDRAWAL_INDEX));
+			}
+
+			String balanceAmountString = this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, BALANCE_INDEX);
+			Double balanceAmount = null;
+			if(!StringUtil.isEmpty(balanceAmountString)){
+				balanceAmount = Double.valueOf(this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, BALANCE_INDEX));
+			}
+
 			String comments = this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, NOTES_INDEX);
 
 			ImportedSeedInventory importedSeedInventory = new ImportedSeedInventory(entry, designation, gid, lotID, transactionId,
