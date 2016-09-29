@@ -29,6 +29,7 @@ import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
+import org.generationcp.breeding.manager.inventory.SeedInventoryImportFileComponent;
 import org.generationcp.breeding.manager.inventory.SeedPreparationListExporter;
 import org.generationcp.breeding.manager.inventory.ReservationStatusWindow;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
@@ -990,10 +991,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 								.setValue(ListComponent.this.listInventoryTable.getTable().getItemIds());
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.CANCEL_RESERVATIONS))) {
 						ListComponent.this.cancelReservationsAction();
-					}
-					else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.EXPORT_SEED_LIST))){
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.EXPORT_SEED_LIST))){
 						ListComponent.this.exportSeedPreparationList();
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.IMPORT_SEED_LIST))){
+						ListComponent.this.openImportSeedPreparationDialog();
 					}
+
 				}
 			});
 
@@ -1499,6 +1502,14 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
 					"Cannot Export Seed Preparation List :"+ex.getMessage());
 		}
+
+	}
+
+	private void openImportSeedPreparationDialog()  {
+		final Window window = getWindow();
+		final SeedInventoryImportFileComponent seedInventoryImportFileComponent = new SeedInventoryImportFileComponent(this.source, this.germplasmList);
+		seedInventoryImportFileComponent.setDebugId("seedInventoryImportFileComponent");
+		window.addWindow(seedInventoryImportFileComponent);
 
 	}
 
