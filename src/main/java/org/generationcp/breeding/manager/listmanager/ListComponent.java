@@ -100,7 +100,6 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -110,7 +109,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.TableFieldFactory;
@@ -994,6 +992,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		if (listId != null) {
 			// Navigate to labels printing
+			// we use this workaround using javascript for navigation, because Vaadin 6 doesn't have good ways
+			// of navigating in and out of the Vaadin application
 			getApplication().getMainWindow().executeJavaScript("window.location = '" + getApplication().getURL().getProtocol() +
 					"://" + getApplication().getURL().getHost() + ":" + getApplication().getURL().getPort() +
 					"/Fieldbook/LabelPrinting/specifyLabelDetails/inventory/" + listId + "';");
