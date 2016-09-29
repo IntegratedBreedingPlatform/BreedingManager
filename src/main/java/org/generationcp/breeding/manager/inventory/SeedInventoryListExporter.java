@@ -158,7 +158,7 @@ public class SeedInventoryListExporter {
 
 							PoiUtil.setCellValue(observationSheet,  TRN_INDEX , rowIndex, lotDetail.getTransactionId().toString());
 
-							String reservation = lotDetail.getReservedTotalForEntry() + lotDetail.getLotScaleNameAbbr();
+							String reservation = lotDetail.getReservedTotalForEntry().toString();
 							PoiUtil.setCellValue(observationSheet,  RESERVATION_INDEX , rowIndex, reservation);
 							PoiUtil.setCellValue(observationSheet,  NOTES_INDEX , rowIndex, lotDetail.getCommentOfLot());
 
