@@ -58,7 +58,6 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 
 	private final ReserveInventorySource source;
 
-	private static final String HELP_TOOLTIP = "Withdrawals are recorded as reservations until they are removed from storage. This option will commit the reservations now.";
 	// Inputs
 	private final Map<String, List<ListEntryLotDetails>> scaleGrouping;
 
@@ -265,7 +264,7 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 
 		this.helpButton = new IconButton(
 				"<span class='glyphicon glyphicon-question-sign' style='position: static; top:5px; left: 0px; color: #666666;font-size: 16px; font-weight: bold;'></span>",
-				ReserveInventoryWindow.HELP_TOOLTIP);
+				ReserveInventoryWindow.this.messageSource.getMessage(Message.HELP_TOOLTIP));
 		this.helpButton.setDebugId("helpButton");
 
 		final HorizontalLayout commitCheck = new HorizontalLayout();
