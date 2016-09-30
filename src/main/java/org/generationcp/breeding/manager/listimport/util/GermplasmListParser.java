@@ -449,13 +449,9 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 			}
 		}
 
-		this.validateObservationSheetHeaders();
+		this.validateObservationSheetHeaders(hasInventoryVariate, hasInventoryVariate);
 
-		if (!hasGidColumn && !hasDesigColumn) {
-			throw new FileParsingException("GERMPLASM_PARSE_DESIG_COLUMN_MISSING");
-		} else if (this.importFileIsAdvanced && !hasGidColumn) {
-			throw new FileParsingException("GERMPLASM_PARSE_GID_COLUMN_MISSING");
-		} else if (this.seedAmountVariate.isEmpty() && this.specialFactors.containsKey(FactorTypes.STOCK)
+		if (this.seedAmountVariate.isEmpty() && this.specialFactors.containsKey(FactorTypes.STOCK)
 				|| !this.seedAmountVariate.isEmpty() && !hasInventoryVariate && this.specialFactors.containsKey(FactorTypes.STOCK)) {
 			this.importedGermplasmList.removeImportedFactor(this.specialFactors.get(FactorTypes.STOCK));
 			this.specialFactors.remove(FactorTypes.STOCK);
@@ -466,7 +462,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		return validationMap;
 	}
 
-	protected void validateObservationSheetHeaders() throws FileParsingException {
+	protected void validateObservationSheetHeaders(boolean hasGidColumn, boolean hasDesigColumn) throws FileParsingException {
 		// Checks if all variable names in Description Sheet are existing in the Observation sheet
 		for (final String headerName : this.descriptionVariableNames) {
 			if (!this.observationHeaderList.contains(headerName)) {
@@ -482,6 +478,12 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 			} else {
 				headersList.add(observationHeader);
 			}
+		}
+		
+		if (!hasGidColumn && !hasDesigColumn) {
+			throw new FileParsingException("GERMPLASM_PARSE_DESIG_COLUMN_MISSING");
+		} else if (this.importFileIsAdvanced && !hasGidColumn) {
+			throw new FileParsingException("GERMPLASM_PARSE_GID_COLUMN_MISSING");
 		}
 	}
 
