@@ -73,29 +73,34 @@ public class SeedInventoryImportListParser extends AbstractExcelFileParser<Impor
 				break;
 			}
 
-			String entry = this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, ENTRY_INDEX);
+			String entryCellValue = this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, ENTRY_INDEX);
+			Integer entry = null;
+			if(!StringUtil.isEmpty(entryCellValue)){
+				entry = Integer.valueOf(entryCellValue);
+			}
+
 			String designation = this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, DESIGNATION_INDEX);
 			Integer gid = Integer.valueOf(this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, GID_INDEX));
 			Integer lotID = Integer.valueOf(this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, LOT_ID_INDEX));
 
-			String transactionString = this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, TRN_INDEX);
+			String transactionCellValue = this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, TRN_INDEX);
 			Integer transactionId = null;
 
-			if(!StringUtil.isEmpty(transactionString)){
+			if(!StringUtil.isEmpty(transactionCellValue)){
 				transactionId = Integer.valueOf(this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, TRN_INDEX));
 			}
 
 			Double reservationAmount = Double.valueOf(this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, RESERVATION_INDEX));
 
-			String withdrawalString = this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, WITHDRAWAL_INDEX);
+			String withdrawalCellValue = this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, WITHDRAWAL_INDEX);
 			Double withdrawalAmount = null;
-			if(!StringUtil.isEmpty(withdrawalString)){
+			if(!StringUtil.isEmpty(withdrawalCellValue)){
 				withdrawalAmount = Double.valueOf(this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, WITHDRAWAL_INDEX));
 			}
 
-			String balanceAmountString = this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, BALANCE_INDEX);
+			String balanceAmountCellValue = this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, BALANCE_INDEX);
 			Double balanceAmount = null;
-			if(!StringUtil.isEmpty(balanceAmountString)){
+			if(!StringUtil.isEmpty(balanceAmountCellValue)){
 				balanceAmount = Double.valueOf(this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, BALANCE_INDEX));
 			}
 

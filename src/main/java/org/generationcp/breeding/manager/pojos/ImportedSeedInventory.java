@@ -3,7 +3,7 @@ package org.generationcp.breeding.manager.pojos;
 
 public class ImportedSeedInventory {
 
-	private String entry;
+	private Integer entry;
 	private String designation;
 	private Integer gid;
 	private Integer lotID;
@@ -13,7 +13,7 @@ public class ImportedSeedInventory {
 	private Double balanceAmount;
 	private String comments;
 
-	public ImportedSeedInventory(String entry, String designation, Integer gid, Integer lotID, Integer transactionId,
+	public ImportedSeedInventory(Integer entry, String designation, Integer gid, Integer lotID, Integer transactionId,
 			Double reservationAmount, Double withdrawalAmount, Double balanceAmount, String comments) {
 		this.entry = entry;
 		this.designation = designation;
@@ -26,11 +26,11 @@ public class ImportedSeedInventory {
 		this.comments = comments;
 	}
 
-	public String getEntry() {
+	public Integer getEntry() {
 		return entry;
 	}
 
-	public void setEntry(String entry) {
+	public void setEntry(Integer entry) {
 		this.entry = entry;
 	}
 
