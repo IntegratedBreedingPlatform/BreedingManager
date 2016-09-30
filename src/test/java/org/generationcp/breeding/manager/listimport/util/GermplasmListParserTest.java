@@ -42,6 +42,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class GermplasmListParserTest {
 
+	private static final String GERMPLASM_PARSE_GID_COLUMN_MISSING = "GERMPLASM_PARSE_GID_COLUMN_MISSING";
+	private static final String GERMPLASM_PARSE_DESIG_COLUMN_MISSING = "GERMPLASM_PARSE_DESIG_COLUMN_MISSING";
 	private static final String ENTRY_NO = "ENTRY_NO";
 	private static final String GERMPLASM_DUPLICATE_HEADER_ERROR = "GERMPLASM_DUPLICATE_HEADER_ERROR";
 	private static final String GERMPLASM_PARSE_HEADER_ERROR = "GERMPLASM_PARSE_HEADER_ERROR";
@@ -368,6 +370,39 @@ public class GermplasmListParserTest {
 			Assert.assertEquals(
 					"Different exception was thrown. The error should be " + GermplasmListParserTest.GERMPLASM_DUPLICATE_HEADER_ERROR,
 					GermplasmListParserTest.GERMPLASM_DUPLICATE_HEADER_ERROR, e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testValidateObservationHeadersWithMissingDesigColumnError() throws FileParsingException {
+		try {
+			this.parser.setDescriptionVariableNames(this.descriptionVariableNames);
+			this.parser.setObservationColumnMap(this.observationColumnMap);
+
+			this.parser.validateObservationSheetHeaders(false, false);
+
+			Assert.fail("A file parsing exception should be thrown");
+		} catch (final FileParsingException e) {
+			Assert.assertEquals(
+					"Different exception was thrown. The error should be " + GermplasmListParserTest.GERMPLASM_PARSE_DESIG_COLUMN_MISSING,
+					GermplasmListParserTest.GERMPLASM_PARSE_DESIG_COLUMN_MISSING, e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testValidateObservationHeadersWithMissingGIDColumnError() throws FileParsingException {
+		try {
+			this.parser.setDescriptionVariableNames(this.descriptionVariableNames);
+			this.parser.setObservationColumnMap(this.observationColumnMap);
+			this.parser.setImportFileIsAdvanced(true);
+			
+			this.parser.validateObservationSheetHeaders(false, true);
+
+			Assert.fail("A file parsing exception should be thrown");
+		} catch (final FileParsingException e) {
+			Assert.assertEquals(
+					"Different exception was thrown. The error should be " + GermplasmListParserTest.GERMPLASM_PARSE_GID_COLUMN_MISSING,
+					GermplasmListParserTest.GERMPLASM_PARSE_GID_COLUMN_MISSING, e.getMessage());
 		}
 	}
 
