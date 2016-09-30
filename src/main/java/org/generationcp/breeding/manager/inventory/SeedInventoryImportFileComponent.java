@@ -3,7 +3,6 @@ package org.generationcp.breeding.manager.inventory;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Upload;
@@ -14,6 +13,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.UploadField;
 import org.generationcp.breeding.manager.inventory.exception.SeedInventoryImportException;
+import org.generationcp.breeding.manager.pojos.ImportedSeedInventory;
 import org.generationcp.breeding.manager.pojos.ImportedSeedInventoryList;
 import org.generationcp.commons.parsing.FileParsingException;
 import org.generationcp.commons.parsing.InvalidFileDataException;
@@ -22,7 +22,9 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.GermplasmListData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -30,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -42,10 +45,12 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
+	@Autowired
+	protected InventoryDataManager inventoryDataManager;
+
 	private VerticalLayout mainLayout;
 
 	private HorizontalLayout importSeedTitleLayout;
-	private ComponentContainer parent;
 	private Button cancelButton;
 	private Button finishButton;
 
@@ -61,6 +66,9 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 
 	private static final String ERROR_IMPORTING = "Error importing ";
 	private static final String ERROR = "Error";
+
+	private List<GermplasmListData> selectedListReservedInventoryDetails;
+	ImportedSeedInventoryList importedSeedInventoryList;
 
 	public SeedInventoryImportFileComponent(final Component source,GermplasmList selectedGermplsmList){
 		this.source = source;
@@ -121,6 +129,12 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 	public void initializeValues() {
 		this.extensionSet.add("xls");
 		this.extensionSet.add("xlsx");
+
+		final List<GermplasmListData> inventoryDetails =
+				this.inventoryDataManager.getReservedLotDetailsForExportList(this.selectedGermplsmList.getId(), 0, Integer.MAX_VALUE);
+
+		selectedListReservedInventoryDetails = inventoryDetails;
+
 	}
 
 	@Override
@@ -221,8 +235,10 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 
 		try {
 			this.seedInventoryListUploader.doParseWorkbook();
-			ImportedSeedInventoryList importedSeedInventoryList = this.seedInventoryListUploader.getImportedSeedInventoryList();
-			//TODO BMS-3347 start validation of input file and importing inventory
+			importedSeedInventoryList = this.seedInventoryListUploader.getImportedSeedInventoryList();
+
+
+			validateImportedSeedInventoryList();
 
 		} catch (final SeedInventoryImportException e) {
 			SeedInventoryImportFileComponent.LOG.debug(ERROR_IMPORTING + e.getMessage(), e);
@@ -239,6 +255,82 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 		}
 	}
 
+	protected void validateImportedSeedInventoryList() throws InvalidFileDataException, SeedInventoryImportException {
 
+		if(this.selectedGermplsmList == null){
+			final String currentListEmptyError = this.messageSource.getMessage(Message.SEED_IMPORT_SELECTED_LIST_EMPTY_ERROR);
+			throw new SeedInventoryImportException(currentListEmptyError);
+		}
+
+		if(this.selectedListReservedInventoryDetails.isEmpty()){
+			final String currentListNoReservationsError = this.messageSource.getMessage(Message.SEED_IMPORT_SELECTED_LIST_NO_RESERVATIONS);
+			throw new SeedInventoryImportException(currentListNoReservationsError);
+		}
+
+		if(this.importedSeedInventoryList.getImportedSeedInventoryList() != null || !this.importedSeedInventoryList.getImportedSeedInventoryList().isEmpty()){
+			// List name validation
+			if(!this.importedSeedInventoryList.getListName().equals(this.selectedGermplsmList.getName())){
+				throw new InvalidFileDataException(Message.SEED_IMPORT_LIST_NAME_MISMATCH_ERROR.toString());
+			}
+
+			for(ImportedSeedInventory importedSeedInventory : this.importedSeedInventoryList.getImportedSeedInventoryList()){
+				Integer importEntryNo = importedSeedInventory.getEntry();
+				String importedDesignation = importedSeedInventory.getDesignation();
+				Integer importedGid = importedSeedInventory.getGid();
+				Double importedWithdrawalAmount = importedSeedInventory.getWithdrawalAmount();
+				Double importedBalanceAmount = importedSeedInventory.getBalanceAmount();
+				Integer transactionID = importedSeedInventory.getTransactionId();
+
+				boolean entryNoMatch = false;
+				GermplasmListData matchedGermplsmListData = null;
+
+				for(GermplasmListData germplasmListData : selectedListReservedInventoryDetails){
+					if(germplasmListData.getEntryId().equals(importEntryNo)){
+						entryNoMatch = true;
+						matchedGermplsmListData = germplasmListData;
+						break;
+					}
+				}
+
+				if(entryNoMatch){
+					// designation match validation
+					if(!matchedGermplsmListData.getDesignation().equals(importedDesignation)){
+						throw new InvalidFileDataException(Message.SEED_IMPORT_DESIGNATION_MATCH_ERROR.toString());
+					}
+
+					// gid match validation
+					if(!matchedGermplsmListData.getGid().equals(importedGid)){
+						throw new InvalidFileDataException(Message.SEED_IMPORT_GID_MATCH_ERROR.toString());
+					}
+
+				}
+				else{
+					throw new InvalidFileDataException(Message.SEED_IMPORT_ENTRY_MATCH_ERROR.toString());
+				}
+
+				// validation of Either withdrawal or balance amount should be present
+				if(importedWithdrawalAmount != null && importedBalanceAmount != null){
+					throw new InvalidFileDataException(Message.SEED_IMPORT_WITHDRAWAL_BALANCE_BOTH_ERROR.toString());
+				}
+
+				if(importedWithdrawalAmount == null && importedBalanceAmount == null){
+					throw new InvalidFileDataException(Message.SEED_IMPORT_WITHDRAWAL_BALANCE_BOTH_NOT_PRESENT_ERROR.toString());
+				}
+
+				if(transactionID == null){
+					throw new InvalidFileDataException(Message.SEED_IMPORT_TRANSACTION_ID_ERROR.toString());
+				}
+
+			}
+
+		}
+		else{
+			final String importedListNoEmptyReservationRows = this.messageSource.getMessage(Message.SEED_IMPORT_NO_IMPORTED_RESERVATION_ERROR);
+			throw new SeedInventoryImportException(importedListNoEmptyReservationRows);
+		}
+
+
+
+	}
 
 }
