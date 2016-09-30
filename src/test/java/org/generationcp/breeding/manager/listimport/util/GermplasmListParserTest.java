@@ -3,7 +3,6 @@ package org.generationcp.breeding.manager.listimport.util;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +55,7 @@ public class GermplasmListParserTest {
 	public static final String ADDITIONAL_NAME_FILE = "GermplasmImportTemplate-additional-name.xls";
 	private static final int EXPECTED_DESCRIPTION_SHEET_VARIABLE_COUNT = 12;
 
-	private Map<Integer, String> observationColumnMap;
+	private List<String> observationColumnMap;
 	private Set<String> descriptionVariableNames;
 
 	@Mock
@@ -83,7 +82,7 @@ public class GermplasmListParserTest {
 	@Before
 	public void setUp() throws Exception {
 		this.initializeDescriptionVariableNames();
-		this.initializeObservationColumnMap();
+		this.observationColumnMap = new ArrayList<>(this.descriptionVariableNames);
 
 		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(Matchers.eq(GermplasmListParserTest.INVENTORY_AMOUNT))).thenReturn(true);
 		Mockito.when(this.ontologyDataManager
@@ -107,14 +106,6 @@ public class GermplasmListParserTest {
 		this.descriptionVariableNames.add("STOCK_ID");
 		this.descriptionVariableNames.add("SEED_AMOUNT_G");
 		this.descriptionVariableNames.add("NOTES");
-	}
-
-	private void initializeObservationColumnMap() {
-		this.observationColumnMap = new HashMap<>();
-		final List<String> descriptionVariableNamesList = new ArrayList<>(this.descriptionVariableNames);
-		for (int i = 0; i < descriptionVariableNamesList.size(); i++) {
-			this.observationColumnMap.put(i, descriptionVariableNamesList.get(i));
-		}
 	}
 
 	/**
@@ -340,7 +331,7 @@ public class GermplasmListParserTest {
 	public void testValidateObservationHeadersWithNoErrors() throws FileParsingException {
 		this.parser.setDescriptionVariableNames(this.descriptionVariableNames);
 		this.parser.setObservationColumnMap(this.observationColumnMap);
-		this.parser.validateObservationHeaders();
+		this.parser.validateObservationSheetHeaders();
 	}
 
 	@Test
@@ -351,7 +342,7 @@ public class GermplasmListParserTest {
 			this.observationColumnMap.remove(1);
 			this.parser.setObservationColumnMap(this.observationColumnMap);
 
-			this.parser.validateObservationHeaders();
+			this.parser.validateObservationSheetHeaders();
 
 			Assert.fail("A file parsing exception should be thrown");
 		} catch (final FileParsingException e) {
@@ -366,11 +357,10 @@ public class GermplasmListParserTest {
 		try {
 			this.parser.setDescriptionVariableNames(this.descriptionVariableNames);
 
-			this.observationColumnMap.put(this.observationColumnMap.size(),
-					this.observationColumnMap.get(this.observationColumnMap.size() - 1));
+			this.observationColumnMap.add(this.observationColumnMap.get(this.observationColumnMap.size() - 1));
 			this.parser.setObservationColumnMap(this.observationColumnMap);
 
-			this.parser.validateObservationHeaders();
+			this.parser.validateObservationSheetHeaders();
 
 			Assert.fail("A file parsing exception should be thrown");
 		} catch (final FileParsingException e) {

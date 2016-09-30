@@ -3,7 +3,6 @@ package org.generationcp.breeding.manager.listimport.util;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -56,7 +55,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmListParser.class);
 	private static final int OBSERVATION_SHEET_NO = 1;
 
-	private Map<Integer, String> observationColumnMap = new HashMap<>();
+	private List<String> observationHeaderList = new ArrayList<String>();
 
 	@Resource
 	private GermplasmListManager germplasmListManager;
@@ -447,7 +446,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 					hasInventoryVariate = true;
 				}
 
-				this.observationColumnMap.put(i, obsHeader);
+				this.observationHeaderList.add(obsHeader);
 			}
 		}
 
@@ -470,16 +469,15 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 	protected void validateObservationHeaders() throws FileParsingException {
 		// Checks if all description variable names are existing in the description sheet.
-		final Collection<String> observationHeaders = this.observationColumnMap.values();
 		for (final String headerName : this.descriptionVariableNames) {
-			if (!observationHeaders.contains(headerName)) {
+			if (!this.observationHeaderList.contains(headerName)) {
 				throw new FileParsingException("GERMPLASM_PARSE_HEADER_ERROR", 1, "", headerName);
 			}
 		}
 
 		// Checks if there are duplicate headers in the observation sheet
 		final List<String> headersList = new ArrayList<String>();
-		for (final String observationHeader : observationHeaders) {
+		for (final String observationHeader : this.observationHeaderList) {
 			if (headersList.contains(observationHeader)) {
 				throw new FileParsingException("GERMPLASM_DUPLICATE_HEADER_ERROR", 1, "", observationHeader);
 			} else {
@@ -491,7 +489,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	protected void parseObservationRows() throws FileParsingException {
 		final ParseValidationMap validationMap = this.parseObservationSheetHeaders();
 		final ObservationRowConverter observationRowConverter = new ObservationRowConverter(this.workbook, 1, 1,
-				this.observationColumnMap.size(), this.observationColumnMap.values().toArray(new String[this.observationColumnMap.size()]));
+				this.observationHeaderList.size(), this.observationHeaderList.toArray(new String[this.observationHeaderList.size()]));
 		observationRowConverter.setValidationMap(validationMap);
 
 		final List<ImportedGermplasm> importedGermplasms =
@@ -714,7 +712,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		public ImportedGermplasm convertToObject(final Map<Integer, String> rowValues) throws FileParsingException {
 			final ImportedGermplasm importedGermplasm = new ImportedGermplasm();
 			for (final int colIndex : rowValues.keySet()) {
-				final String colHeader = GermplasmListParser.this.observationColumnMap.get(colIndex);
+				final String colHeader = GermplasmListParser.this.observationHeaderList.get(colIndex);
 				// Map cell (given a column label) with a pojo setter
 
 				final Map<FactorTypes, Command> factorBehaviors = new HashMap<>();
@@ -958,8 +956,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	 *
 	 * @param observationColumnMap
 	 */
-	void setObservationColumnMap(final Map<Integer, String> observationColumnMap) {
-		this.observationColumnMap = observationColumnMap;
+	void setObservationColumnMap(final List<String> observationHeaderList) {
+		this.observationHeaderList = observationHeaderList;
 	}
 
 	/**
