@@ -449,7 +449,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 			}
 		}
 
-		this.validateObservationHeaders();
+		this.validateObservationSheetHeaders();
 
 		if (!hasGidColumn && !hasDesigColumn) {
 			throw new FileParsingException("GERMPLASM_PARSE_DESIG_COLUMN_MISSING");
@@ -466,7 +466,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		return validationMap;
 	}
 
-	protected void validateObservationHeaders() throws FileParsingException {
+	protected void validateObservationSheetHeaders() throws FileParsingException {
 		// Checks if all description variable names are existing in the description sheet.
 		for (final String headerName : this.descriptionVariableNames) {
 			if (!this.observationHeaderList.contains(headerName)) {
