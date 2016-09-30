@@ -42,6 +42,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class GermplasmListParserTest {
 
+	private static final String ENTRY_NO = "ENTRY_NO";
 	private static final String GERMPLASM_DUPLICATE_HEADER_ERROR = "GERMPLASM_DUPLICATE_HEADER_ERROR";
 	private static final String GERMPLASM_PARSE_HEADER_ERROR = "GERMPLASM_PARSE_HEADER_ERROR";
 	private static final int NO_OF_ENTRIES = 5;
@@ -97,7 +98,7 @@ public class GermplasmListParserTest {
 
 	private void initializeDescriptionVariableNames() {
 		this.descriptionVariableNames = new HashSet<>();
-		this.descriptionVariableNames.add("ENTRY_NO");
+		this.descriptionVariableNames.add(ENTRY_NO);
 		this.descriptionVariableNames.add("GID");
 		this.descriptionVariableNames.add("ENTRY_CODE");
 		this.descriptionVariableNames.add("DESIGNATION");
@@ -357,7 +358,7 @@ public class GermplasmListParserTest {
 		try {
 			this.parser.setDescriptionVariableNames(this.descriptionVariableNames);
 
-			this.observationColumnMap.add(this.observationColumnMap.get(this.observationColumnMap.size() - 1));
+			this.observationColumnMap.add(ENTRY_NO);
 			this.parser.setObservationColumnMap(this.observationColumnMap);
 
 			this.parser.validateObservationSheetHeaders();
