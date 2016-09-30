@@ -417,11 +417,11 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	}
 
 	/**
-	 * This validator might be too strict for germplasm list parser
+	 * This method parses the Observation sheet headers and adds validator for each header 
 	 *
 	 * @return ParseValidationMap
 	 */
-	protected ParseValidationMap parseObservationHeaders() throws FileParsingException {
+	protected ParseValidationMap parseObservationSheetHeaders() throws FileParsingException {
 		final ParseValidationMap validationMap = new ParseValidationMap();
 
 		final int headerSize = this.importedGermplasmList.sizeOfObservationHeader();
@@ -489,7 +489,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	}
 
 	protected void parseObservationRows() throws FileParsingException {
-		final ParseValidationMap validationMap = this.parseObservationHeaders();
+		final ParseValidationMap validationMap = this.parseObservationSheetHeaders();
 		final ObservationRowConverter observationRowConverter = new ObservationRowConverter(this.workbook, 1, 1,
 				this.observationColumnMap.size(), this.observationColumnMap.values().toArray(new String[this.observationColumnMap.size()]));
 		observationRowConverter.setValidationMap(validationMap);
