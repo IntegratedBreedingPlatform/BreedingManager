@@ -418,18 +418,17 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	/**
 	 * This method parses the Observation sheet headers and adds validator for each header 
 	 *
-	 * @return ParseValidationMap
+	 * @return ParseValidationMap	
 	 */
 	protected ParseValidationMap parseObservationSheetHeaders() throws FileParsingException {
 		final ParseValidationMap validationMap = new ParseValidationMap();
-
-		final int headerSize = this.importedGermplasmList.sizeOfObservationHeader();
 
 		boolean hasDesigColumn = false;
 		boolean hasGidColumn = false;
 		boolean hasInventoryVariate = false;
 		// were accounting for two additional unknown columns inserted between the headers, then we'll
 		// just ignore it
+		final int headerSize = this.importedGermplasmList.sizeOfObservationHeader();
 		for (int i = 0; i < headerSize + 2; i++) {
 			// search the current header
 			final String obsHeader = this.getCellStringValue(GermplasmListParser.OBSERVATION_SHEET_NO, 0, i);
