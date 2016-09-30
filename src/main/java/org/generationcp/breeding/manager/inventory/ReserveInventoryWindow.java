@@ -11,6 +11,7 @@ import com.vaadin.ui.TextField;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
+import org.generationcp.breeding.manager.customcomponent.IconButton;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -47,6 +48,7 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 	private OptionGroup commitOption;
 	private Button cancelButton;
 	private Button finishButton;
+	private Button helpButton;
 	public int selectdCounts;
 	private Label notesLabel;
 	private TextField notes;
@@ -56,6 +58,7 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 
 	private final ReserveInventorySource source;
 
+	private static final String HELP_TOOLTIP = "Withdrawals are recorded as reservations until they are removed from storage. This option will commit the reservations now.";
 	// Inputs
 	private final Map<String, List<ListEntryLotDetails>> scaleGrouping;
 
@@ -208,11 +211,11 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 		this.selectedCountLabel.setDebugId("selectedCountLabel");
 
 		if (this.isSingleScaled) {
-			this.setHeight("370px");
-			this.setWidth("600px");
+			this.setHeight("390px");
+			this.setWidth("630px");
 
-			this.contentPanel.setWidth("540px");
-			this.contentPanel.setHeight("230px");
+			this.contentPanel.setWidth("570px");
+			this.contentPanel.setHeight("255px");
 
 			String scaleFullText = this.singleScaleDescriptionLabel.toString() + this.selectedCountLabel.toString();
 			Label scaleLabel = new Label(scaleFullText);
@@ -260,12 +263,19 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 		notesTextArea.setComponentAlignment(this.notes,Alignment.TOP_CENTER);
 		this.panelContentLayout.addComponent(notesTextArea);
 
+		this.helpButton = new IconButton(
+				"<span class='glyphicon glyphicon-question-sign' style='position: static; top:5px; left: 0px; color: #666666;font-size: 16px; font-weight: bold;'></span>",
+				ReserveInventoryWindow.HELP_TOOLTIP);
+		this.helpButton.setDebugId("helpButton");
+
 		final HorizontalLayout commitCheck = new HorizontalLayout();
 		commitCheck.setDebugId("commitCheck");
-		commitCheck.setWidth("90%");
-		commitCheck.setSpacing(true);
+		commitCheck.setWidth("100%");
+		commitCheck.setSpacing(false);
 		commitCheck.addComponent(this.commitOption);
-		commitCheck.setComponentAlignment(this.commitOption,Alignment.TOP_CENTER);
+		commitCheck.addComponent(this.helpButton);
+		commitCheck.setComponentAlignment(this.commitOption,Alignment.TOP_RIGHT);
+		commitCheck.setComponentAlignment(this.helpButton,Alignment.BOTTOM_LEFT);
 		this.panelContentLayout.addComponent(commitCheck);
 		this.contentPanel.setLayout(this.panelContentLayout);
 
