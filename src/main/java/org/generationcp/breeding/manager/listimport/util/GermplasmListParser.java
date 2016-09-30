@@ -416,9 +416,9 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	}
 
 	/**
-	 * This method parses the Observation sheet headers and adds validator for each header 
+	 * This method parses the Observation sheet headers and adds validator for each header
 	 *
-	 * @return ParseValidationMap	
+	 * @return ParseValidationMap
 	 */
 	protected ParseValidationMap parseObservationSheetHeaders() throws FileParsingException {
 		final ParseValidationMap validationMap = new ParseValidationMap();
@@ -462,7 +462,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		return validationMap;
 	}
 
-	protected void validateObservationSheetHeaders(boolean hasGidColumn, boolean hasDesigColumn) throws FileParsingException {
+	protected void validateObservationSheetHeaders(final boolean hasGidColumn, final boolean hasDesigColumn) throws FileParsingException {
 		// Checks if all variable names in Description Sheet are existing in the Observation sheet
 		for (final String headerName : this.descriptionVariableNames) {
 			if (!this.observationHeaderList.contains(headerName)) {
@@ -479,7 +479,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 				headersList.add(observationHeader);
 			}
 		}
-		
+
 		if (!hasGidColumn && !hasDesigColumn) {
 			throw new FileParsingException("GERMPLASM_PARSE_DESIG_COLUMN_MISSING");
 		} else if (this.importFileIsAdvanced && !hasGidColumn) {
@@ -969,13 +969,13 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	void setDescriptionVariableNames(final Set<String> descriptionVariableNames) {
 		this.descriptionVariableNames = descriptionVariableNames;
 	}
-	
+
 	/**
 	 * For Test Only
 	 *
 	 * @param importFileIsAdvanced
 	 */
-	void setImportFileIsAdvanced(final boolean importFileIsAdvanced){
+	void setImportFileIsAdvanced(final boolean importFileIsAdvanced) {
 		this.importFileIsAdvanced = importFileIsAdvanced;
 	}
 

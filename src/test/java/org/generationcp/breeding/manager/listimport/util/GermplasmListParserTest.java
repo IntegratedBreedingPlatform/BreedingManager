@@ -100,7 +100,7 @@ public class GermplasmListParserTest {
 
 	private void initializeDescriptionVariableNames() {
 		this.descriptionVariableNames = new HashSet<>();
-		this.descriptionVariableNames.add(ENTRY_NO);
+		this.descriptionVariableNames.add(GermplasmListParserTest.ENTRY_NO);
 		this.descriptionVariableNames.add("GID");
 		this.descriptionVariableNames.add("ENTRY_CODE");
 		this.descriptionVariableNames.add("DESIGNATION");
@@ -360,7 +360,7 @@ public class GermplasmListParserTest {
 		try {
 			this.parser.setDescriptionVariableNames(this.descriptionVariableNames);
 
-			this.observationColumnMap.add(ENTRY_NO);
+			this.observationColumnMap.add(GermplasmListParserTest.ENTRY_NO);
 			this.parser.setObservationColumnMap(this.observationColumnMap);
 
 			this.parser.validateObservationSheetHeaders(true, true);
@@ -372,7 +372,7 @@ public class GermplasmListParserTest {
 					GermplasmListParserTest.GERMPLASM_DUPLICATE_HEADER_ERROR, e.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void testValidateObservationHeadersWithMissingDesigColumnError() throws FileParsingException {
 		try {
@@ -388,14 +388,14 @@ public class GermplasmListParserTest {
 					GermplasmListParserTest.GERMPLASM_PARSE_DESIG_COLUMN_MISSING, e.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void testValidateObservationHeadersWithMissingGIDColumnError() throws FileParsingException {
 		try {
 			this.parser.setDescriptionVariableNames(this.descriptionVariableNames);
 			this.parser.setObservationColumnMap(this.observationColumnMap);
 			this.parser.setImportFileIsAdvanced(true);
-			
+
 			this.parser.validateObservationSheetHeaders(false, true);
 
 			Assert.fail("A file parsing exception should be thrown");
