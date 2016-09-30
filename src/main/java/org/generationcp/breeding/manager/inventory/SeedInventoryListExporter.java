@@ -1,5 +1,6 @@
 package org.generationcp.breeding.manager.inventory;
 
+import com.google.common.collect.Lists;
 import com.vaadin.ui.Component;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -15,6 +16,7 @@ import org.generationcp.middleware.exceptions.MiddlewareException;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.pojos.ims.Transaction;
 import org.generationcp.middleware.util.PoiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +28,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 @Configurable
 public class SeedInventoryListExporter {
@@ -122,6 +126,8 @@ public class SeedInventoryListExporter {
 	private void writeObservationSheet(){
 		final List<GermplasmListData> inventoryDetails =
 				this.inventoryDataManager.getReservedLotDetailsForExportList(this.germplasmList.getId(), 0, Integer.MAX_VALUE);
+
+		final Map<Integer, Transaction> transactionMap = createReservedTransactionMap(inventoryDetails);
 		Sheet observationSheet = excelWorkbook.getSheetAt(1);
 		HashSet<String> reservedLotScaleSet = new HashSet<>();
 		HashSet<String> reservedLotMethodSet = new HashSet<>();
@@ -160,7 +166,9 @@ public class SeedInventoryListExporter {
 
 							String reservation = lotDetail.getReservedTotalForEntry().toString();
 							PoiUtil.setCellValue(observationSheet,  RESERVATION_INDEX , rowIndex, reservation);
-							PoiUtil.setCellValue(observationSheet,  NOTES_INDEX , rowIndex, lotDetail.getCommentOfLot());
+
+							Transaction transaction = transactionMap.get(lotDetail.getTransactionId());
+							PoiUtil.setCellValue(observationSheet,  NOTES_INDEX , rowIndex, transaction.getComments());
 
 							rowIndex++;
 						}
@@ -218,6 +226,32 @@ public class SeedInventoryListExporter {
 		return new File(outputFileName);
 	}
 
+	private Map<Integer, Transaction> createReservedTransactionMap(final List<GermplasmListData> inventoryDetails){
+		final List<Integer> reservedTransactionIdList = Lists.newArrayList();
+		final Map<Integer, Transaction> reservedTransactionMap = new HashMap<>();
+
+		for (final GermplasmListData inventoryDetail : inventoryDetails) {
+
+			final ListDataInventory listDataInventory = inventoryDetail.getInventoryInfo();
+
+			final List<ListEntryLotDetails> lotDetails = (List<ListEntryLotDetails>) listDataInventory.getLotRows();
+
+			if (lotDetails != null) {
+				for (final ListEntryLotDetails lotDetail : lotDetails) {
+					if (lotDetail.getReservedTotalForEntry() != null && lotDetail.getReservedTotalForEntry() > 0) {
+						reservedTransactionIdList.add(lotDetail.getTransactionId());
+					}
+				}
+			}
+		}
+
+		List<Transaction> listTransactions = this.inventoryDataManager.getTransactionsByIdList(reservedTransactionIdList);
+
+		for(Transaction transaction : listTransactions){
+			reservedTransactionMap.put(transaction.getId(), transaction);
+		}
+		return reservedTransactionMap;
+	}
 }
 
 
