@@ -332,7 +332,7 @@ public class GermplasmListParserTest {
 	public void testValidateObservationHeadersWithNoErrors() throws FileParsingException {
 		this.parser.setDescriptionVariableNames(this.descriptionVariableNames);
 		this.parser.setObservationColumnMap(this.observationColumnMap);
-		this.parser.validateObservationSheetHeaders();
+		this.parser.validateObservationSheetHeaders(true, true);
 	}
 
 	@Test
@@ -343,7 +343,7 @@ public class GermplasmListParserTest {
 			this.observationColumnMap.remove(1);
 			this.parser.setObservationColumnMap(this.observationColumnMap);
 
-			this.parser.validateObservationSheetHeaders();
+			this.parser.validateObservationSheetHeaders(true, true);
 
 			Assert.fail("A file parsing exception should be thrown");
 		} catch (final FileParsingException e) {
@@ -361,7 +361,7 @@ public class GermplasmListParserTest {
 			this.observationColumnMap.add(ENTRY_NO);
 			this.parser.setObservationColumnMap(this.observationColumnMap);
 
-			this.parser.validateObservationSheetHeaders();
+			this.parser.validateObservationSheetHeaders(true, true);
 
 			Assert.fail("A file parsing exception should be thrown");
 		} catch (final FileParsingException e) {
