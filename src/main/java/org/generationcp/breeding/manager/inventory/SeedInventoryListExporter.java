@@ -4,7 +4,7 @@ import com.vaadin.ui.Component;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.generationcp.breeding.manager.inventory.exception.SeedPreparationExportException;
+import org.generationcp.breeding.manager.inventory.exception.SeedInventoryExportException;
 import org.generationcp.breeding.manager.util.FileDownloaderUtility;
 import org.generationcp.commons.service.FileService;
 import org.generationcp.commons.util.FileUtils;
@@ -30,9 +30,9 @@ import java.util.HashSet;
 import java.util.List;
 
 @Configurable
-public class SeedPreparationListExporter {
+public class SeedInventoryListExporter {
 
-	private static Logger LOG = LoggerFactory.getLogger(SeedPreparationListExporter.class);
+	private static Logger LOG = LoggerFactory.getLogger(SeedInventoryListExporter.class);
 
 	public static final String SEED_EXPORT_FILE_NAME_FORMAT = "%s-Seed Prep.xls";
 
@@ -72,16 +72,16 @@ public class SeedPreparationListExporter {
 
 	private Workbook excelWorkbook;
 
-	public SeedPreparationListExporter(){
+	public SeedInventoryListExporter(){
 
 	}
 
-	public SeedPreparationListExporter(final Component source, final GermplasmList germplasmList) {
+	public SeedInventoryListExporter(final Component source, final GermplasmList germplasmList) {
 		this.source = source;
 		this.germplasmList = germplasmList;
 	}
 
-	public void exportSeedPreparationList() throws SeedPreparationExportException {
+	public void exportSeedPreparationList() throws SeedInventoryExportException {
 		try{
 			excelWorkbook = this.fileService.retrieveWorkbookTemplate(seedTemplateFile);
 			this.fillSeedPreparationExcel();
@@ -89,7 +89,7 @@ public class SeedPreparationListExporter {
 
 			this.fileDownloaderUtility.initiateFileDownload(excelOutputFile.getAbsolutePath(), excelOutputFile.getName(), this.source);
 		}catch(MiddlewareException | IOException | InvalidFormatException e){
-			throw new SeedPreparationExportException(e.getMessage(), e);
+			throw new SeedInventoryExportException(e.getMessage(), e);
 		}
 
 	}
@@ -158,7 +158,7 @@ public class SeedPreparationListExporter {
 
 							PoiUtil.setCellValue(observationSheet,  TRN_INDEX , rowIndex, lotDetail.getTransactionId().toString());
 
-							String reservation = lotDetail.getReservedTotalForEntry() + lotDetail.getLotScaleNameAbbr();
+							String reservation = lotDetail.getReservedTotalForEntry().toString();
 							PoiUtil.setCellValue(observationSheet,  RESERVATION_INDEX , rowIndex, reservation);
 							PoiUtil.setCellValue(observationSheet,  NOTES_INDEX , rowIndex, lotDetail.getCommentOfLot());
 
@@ -176,34 +176,37 @@ public class SeedPreparationListExporter {
 		Sheet descriptionSheet = excelWorkbook.getSheetAt(0);
 		String scaleName = "";
 		String methodName = "";
-		if(reservedLotScaleSet.size() == 1){
-			scaleName = reservedLotScaleSet.iterator().next();
-		}
-		else if(reservedLotScaleSet.size() > 1){
-			scaleName = "Mixed";
+
+		if(reservedLotMethodSet.size() >= 1){
+			if(reservedLotMethodSet.size() == 1){
+				methodName = reservedLotMethodSet.iterator().next();
+			}
+			else{
+				methodName = ListDataInventory.MIXED;
+			}
+
+			descriptionSheet.getRow(20).getCell(4).setCellValue(methodName); //E21 cell with withdrawal amount method
+			descriptionSheet.getRow(21).getCell(4).setCellValue(methodName); //E22 cell with withdrawal amount method
+			descriptionSheet.getRow(22).getCell(4).setCellValue(methodName); //E23 cell with withdrawal amount method
 		}
 
-		if(reservedLotMethodSet.size() == 1){
-			methodName = reservedLotMethodSet.iterator().next();
+		if(reservedLotScaleSet.size() >= 1){
+			if(reservedLotScaleSet.size() == 1){
+				scaleName = reservedLotScaleSet.iterator().next();
+			}
+			else{
+				scaleName = ListDataInventory.MIXED;
+			}
+			descriptionSheet.getRow(20).getCell(3).setCellValue(scaleName); //D21 cell with withdrawal amount scale
+			descriptionSheet.getRow(21).getCell(3).setCellValue(scaleName); //D22 cell with withdrawal amount scale
+			descriptionSheet.getRow(22).getCell(3).setCellValue(scaleName); //D23 cell with withdrawal amount scale
 		}
-		else if(reservedLotMethodSet.size() == 1){
-			methodName = "Mixed";
-		}
-
-		descriptionSheet.getRow(20).getCell(3).setCellValue(scaleName); //D21 cell with withdrawal amount scale
-		descriptionSheet.getRow(20).getCell(4).setCellValue(methodName); //E21 cell with withdrawal amount method
-
-		descriptionSheet.getRow(21).getCell(3).setCellValue(scaleName); //D22 cell with withdrawal amount scale
-		descriptionSheet.getRow(21).getCell(4).setCellValue(methodName); //E22 cell with withdrawal amount method
-
-		descriptionSheet.getRow(22).getCell(3).setCellValue(scaleName); //D23 cell with withdrawal amount scale
-		descriptionSheet.getRow(22).getCell(4).setCellValue(methodName); //E23 cell with withdrawal amount method
 
 	}
 
 	private File createExcelOutputFile(final String listName, final Workbook excelWorkbook) throws IOException {
 		String outputFileName =
-				String.format(SeedPreparationListExporter.SEED_EXPORT_FILE_NAME_FORMAT, StringUtil
+				String.format(SeedInventoryListExporter.SEED_EXPORT_FILE_NAME_FORMAT, StringUtil
 						.replaceInvalidChacaracterFileName(listName,"_"));
 
 		outputFileName = FileUtils.sanitizeFileName(outputFileName);
