@@ -449,7 +449,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 			}
 		}
 
-		this.validateObservationSheetHeaders(hasInventoryVariate, hasInventoryVariate);
+		this.validateObservationSheetHeaders(hasGidColumn, hasDesigColumn);
 
 		if (this.seedAmountVariate.isEmpty() && this.specialFactors.containsKey(FactorTypes.STOCK)
 				|| !this.seedAmountVariate.isEmpty() && !hasInventoryVariate && this.specialFactors.containsKey(FactorTypes.STOCK)) {
