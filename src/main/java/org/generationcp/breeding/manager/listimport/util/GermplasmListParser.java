@@ -969,5 +969,14 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	void setDescriptionVariableNames(final Set<String> descriptionVariableNames) {
 		this.descriptionVariableNames = descriptionVariableNames;
 	}
+	
+	/**
+	 * For Test Only
+	 *
+	 * @param importFileIsAdvanced
+	 */
+	void setImportFileIsAdvanced(final boolean importFileIsAdvanced){
+		this.importFileIsAdvanced = importFileIsAdvanced;
+	}
 
 }
