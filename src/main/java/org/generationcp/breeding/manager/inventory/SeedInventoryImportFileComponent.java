@@ -1,5 +1,6 @@
 package org.generationcp.breeding.manager.inventory;
 
+import com.google.common.collect.Lists;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -25,15 +26,19 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.pojos.ims.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 @Configurable
@@ -59,6 +64,9 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 	private UploadField uploadSeedPreparationComponent;
 	private SeedInventoryListUploader seedInventoryListUploader;
 
+	List<Integer> importerTransactionsIdList = Lists.newArrayList();
+	List<Transaction> importedTransactions = Lists.newArrayList();
+
 	final GermplasmList selectedGermplsmList;
 	final Component source;
 
@@ -66,6 +74,8 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 
 	private static final String ERROR_IMPORTING = "Error importing ";
 	private static final String ERROR = "Error";
+
+	private static final String WARNING = "Warning";
 
 	private List<GermplasmListData> selectedListReservedInventoryDetails;
 	ImportedSeedInventoryList importedSeedInventoryList;
@@ -266,6 +276,7 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 			final String currentListNoReservationsError = this.messageSource.getMessage(Message.SEED_IMPORT_SELECTED_LIST_NO_RESERVATIONS);
 			throw new SeedInventoryImportException(currentListNoReservationsError);
 		}
+		Map<Integer, String> mapTransactionComment = new HashMap<>();
 
 		if(this.importedSeedInventoryList.getImportedSeedInventoryList() != null || !this.importedSeedInventoryList.getImportedSeedInventoryList().isEmpty()){
 			// List name validation
@@ -280,6 +291,7 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 				Double importedWithdrawalAmount = importedSeedInventory.getWithdrawalAmount();
 				Double importedBalanceAmount = importedSeedInventory.getBalanceAmount();
 				Integer transactionID = importedSeedInventory.getTransactionId();
+				String transactionComment = importedSeedInventory.getComments();
 
 				boolean entryNoMatch = false;
 				GermplasmListData matchedGermplsmListData = null;
@@ -320,7 +332,24 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 				if(transactionID == null){
 					throw new InvalidFileDataException(Message.SEED_IMPORT_TRANSACTION_ID_ERROR.toString());
 				}
+				importerTransactionsIdList.add(transactionID);
+				mapTransactionComment.put(transactionID, transactionComment);
+			}
 
+			importedTransactions = inventoryDataManager.getTransactionsByIdList(importerTransactionsIdList);
+			Map<Integer, Transaction> transactionMap = createTransactionIdWiseMap(importedTransactions);
+
+			for(Map.Entry<Integer, String> entry : mapTransactionComment.entrySet()){
+				Integer transactionId = entry.getKey();
+				String comment = entry.getValue();
+
+				Transaction transaction = transactionMap.get(transactionId);
+
+				if(!Objects.equals(comment, transaction.getComments())){
+					String changeCommentsWarningMsg = this.messageSource.getMessage(Message.SEED_IMPORT_COMMENT_WARNING);
+					MessageNotifier.showWarning(this.getWindow(), WARNING, changeCommentsWarningMsg);
+					break;
+				}
 			}
 
 		}
@@ -329,8 +358,18 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 			throw new SeedInventoryImportException(importedListNoEmptyReservationRows);
 		}
 
+	}
 
+	private Map<Integer, Transaction> createTransactionIdWiseMap(List<Transaction> importedTransactions){
+		Map<Integer, Transaction> mapTransaction = new HashMap<>();
 
+		if(importedTransactions != null && !importedTransactions.isEmpty()){
+			for(Transaction transaction : importedTransactions){
+				mapTransaction.put(transaction.getId(), transaction);
+			}
+		}
+
+		return  mapTransaction;
 	}
 
 }
