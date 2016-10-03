@@ -203,6 +203,7 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow
 	}
 
 	public void cancelAction() {
+		MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR), messageSource.getMessage(Message.SEED_IMPORT_CANCEL));
 		this.close();
 	}
 
