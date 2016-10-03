@@ -13,6 +13,8 @@ public class ImportedSeedInventory {
 	private Double balanceAmount;
 	private String comments;
 
+	private String transactionProcessingStatus;
+
 	public ImportedSeedInventory(Integer entry, String designation, Integer gid, Integer lotID, Integer transactionId,
 			Double reservationAmount, Double withdrawalAmount, Double balanceAmount, String comments) {
 		this.entry = entry;
@@ -96,5 +98,13 @@ public class ImportedSeedInventory {
 
 	public void setComments(String comments) {
 		this.comments = comments;
+	}
+
+	public String getTransactionProcessingStatus() {
+		return transactionProcessingStatus;
+	}
+
+	public void setTransactionProcessingStatus(String transactionProcessingStatus) {
+		this.transactionProcessingStatus = transactionProcessingStatus;
 	}
 }
