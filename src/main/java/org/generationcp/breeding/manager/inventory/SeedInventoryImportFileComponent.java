@@ -479,6 +479,7 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 							transaction.setComments(lotDiscardComment);
 							transaction.getLot().setStatus(1);
 							closedLots.add(transaction.getLot());
+							processedTransactions.add(transaction);
 						}
 					}
 				}
