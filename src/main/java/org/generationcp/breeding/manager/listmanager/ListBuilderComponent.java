@@ -29,6 +29,7 @@ import org.generationcp.breeding.manager.customcomponent.UnsavedChangesSource;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
+import org.generationcp.breeding.manager.inventory.SeedInventoryImportFileComponent;
 import org.generationcp.breeding.manager.inventory.SeedInventoryListExporter;
 import org.generationcp.breeding.manager.inventory.InventoryDropTargetContainer;
 import org.generationcp.breeding.manager.inventory.ListDataAndLotDetails;
@@ -207,6 +208,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 						ListBuilderComponent.this.saveButton.click();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.EXPORT_SEED_LIST))){
 							ListBuilderComponent.this.exportSeedPreparationList();
+						} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.IMPORT_SEED_LIST))){
+							ListBuilderComponent.this.openImportSeedPreparationDialog();
 						}
 				}
 			});
@@ -1223,6 +1226,16 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 					"Cannot Export Seed Preparation List :"+ex.getMessage());
 		}
 	}
+
+	private void openImportSeedPreparationDialog()  {
+		final Window window = getWindow();
+		final SeedInventoryImportFileComponent
+				seedInventoryImportFileComponent = new SeedInventoryImportFileComponent(this.source, this, this.currentlySavedGermplasmList);
+		seedInventoryImportFileComponent.setDebugId("seedInventoryImportFileComponent");
+		window.addWindow(seedInventoryImportFileComponent);
+
+	}
+
 
 	private void exportListForGenotypingOrderAction() {
 		if (this.isCurrentListSaved()) {
