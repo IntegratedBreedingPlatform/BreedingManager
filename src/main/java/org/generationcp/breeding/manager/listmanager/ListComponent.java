@@ -1507,7 +1507,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	private void openImportSeedPreparationDialog()  {
 		final Window window = getWindow();
-		final SeedInventoryImportFileComponent seedInventoryImportFileComponent = new SeedInventoryImportFileComponent(this.source, this.germplasmList);
+		final SeedInventoryImportFileComponent seedInventoryImportFileComponent = new SeedInventoryImportFileComponent(this.source, this, this.germplasmList);
 		seedInventoryImportFileComponent.setDebugId("seedInventoryImportFileComponent");
 		window.addWindow(seedInventoryImportFileComponent);
 
@@ -2178,6 +2178,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS), "All reservations were saved.");
 			}
 		}
+	}
+
+	public void refreshInventoryListDataTabel(){
+		this.listInventoryTable.loadInventoryData();
 	}
 
 	public void cancelReservationsAction() {
