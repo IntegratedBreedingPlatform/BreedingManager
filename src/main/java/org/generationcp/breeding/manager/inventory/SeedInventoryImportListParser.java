@@ -20,7 +20,7 @@ public class SeedInventoryImportListParser extends AbstractExcelFileParser<Impor
 
 	private static final Logger LOG = LoggerFactory.getLogger(SeedInventoryImportListParser.class);
 
-	ImportedSeedInventoryList importedSeedInventoryList;
+	protected ImportedSeedInventoryList importedSeedInventoryList;
 	public static final int DESCRIPTION_SHEET_NO = 0;
 	public static final int OBSERVATION_SHEET_NO = 1;
 
