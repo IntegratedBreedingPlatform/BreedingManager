@@ -96,7 +96,7 @@ public class ListInventoryDataInitializer {
 		lotDetail.setLotScaleNameAbbr("g");
 		lotDetail.setWithdrawalBalance(12.0);
 		lotDetail.setWithdrawalStatus("1");
-
+		lotDetail.setTransactionStatus(false);
 		return lotDetail;
 	}
 
