@@ -91,6 +91,10 @@ public class ListInventoryDataInitializer {
 		lotDetail.setReservedTotalForEntry(100D);
 		lotDetail.setCommentOfLot("Lot Comment" + id);
 		lotDetail.setStockIds("STK1-1,STK2-2,STK-3");
+		lotDetail.setLotScaleNameAbbr("g");
+		lotDetail.setWithdrawalBalance(12.0);
+		lotDetail.setWithdrawalStatus("1");
+
 		return lotDetail;
 	}
 
