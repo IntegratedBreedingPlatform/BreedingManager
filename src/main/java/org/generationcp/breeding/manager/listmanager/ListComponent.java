@@ -62,6 +62,7 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.inventory.GermplasmInventory;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -2306,7 +2307,18 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	@Override
 	public void updateListInventoryTable(final Map<ListEntryLotDetails, Double> validReservations, final boolean withInvalidReservations) {
-
+		for (final Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()) {
+			final ListEntryLotDetails lot = entry.getKey();
+			final Double newRes = entry.getValue();
+			final Double withdrawalbalance = lot.getWithdrawalBalance() + newRes;
+			final Double available = lot.getAvailableLotBalance() - newRes;
+			final Item itemToUpdate = this.listInventoryTable.getTable().getItem(lot);
+			if(newRes > 0){
+				itemToUpdate.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(withdrawalbalance + lot.getLotScaleNameAbbr());
+				itemToUpdate.getItemProperty(ColumnLabels.STATUS.getName()).setValue(GermplasmInventory.RESERVED);
+				itemToUpdate.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(available + lot.getLotScaleNameAbbr());
+			}
+		}
 		this.removeReserveInventoryWindow(this.reserveInventory);
 
 		// update lot reservations to save

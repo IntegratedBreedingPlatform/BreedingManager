@@ -13,6 +13,7 @@ import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayou
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.domain.inventory.GermplasmInventory;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -249,25 +250,17 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 
 		for (final ListEntryLotDetails lotDetail : lotDetailsToCancel) {
 			final Item item = this.listInventoryTable.getItem(lotDetail);
-
-			final Double totalColumn = (Double) item.getItemProperty(ColumnLabels.TOTAL.getName()).getValue();
-			final Double reservedColumn = (Double) item.getItemProperty(ColumnLabels.RESERVED.getName()).getValue();
-			final Double newTotalVal = totalColumn + reservedColumn;
-
-			lotDetail.setAvailableLotBalance(newTotalVal);
-			item.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(newTotalVal);
-			item.getItemProperty(ColumnLabels.RESERVED.getName()).setValue(0);
-			item.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(0);
+			item.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(lotDetail.getAvailableLotBalance() + lotDetail.getLotScaleNameAbbr());
+			item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(lotDetail.getWithdrawalBalance() + lotDetail.getLotScaleNameAbbr());
+			item.getItemProperty(ColumnLabels.STATUS.getName()).setValue(lotDetail.getWithdrawalStatus());
 		}
 	}
 
 	public boolean isSelectedEntriesHasReservation(final List<ListEntryLotDetails> lotDetailsGid) {
 		for (final ListEntryLotDetails lotDetails : lotDetailsGid) {
 			final Item item = this.listInventoryTable.getItem(lotDetails);
-			final Double resColumn = (Double) item.getItemProperty(ColumnLabels.RESERVED.getName()).getValue();
-			final Double newResColumn = (Double) item.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).getValue();
-
-			if (resColumn > 0 || newResColumn > 0) {
+			final String newResColumn = (String) item.getItemProperty(ColumnLabels.STATUS.getName()).getValue();
+			if (GermplasmInventory.RESERVED.equals(newResColumn)) {
 				return true;
 			}
 		}
