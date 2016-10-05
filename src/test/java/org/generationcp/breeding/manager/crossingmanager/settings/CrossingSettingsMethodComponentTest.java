@@ -66,9 +66,9 @@ public class CrossingSettingsMethodComponentTest {
 		Mockito.when(this.messageSource.getMessage(Message.BREEDING_METHOD)).thenReturn("Breeding Method");
 
 		this.csmc.instantiateComponents();
-
-		Assert.assertFalse("Expecting a false return value when there are no favourite method.",
-				this.csmc.initPopulateFavMethod(CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID));
+		
+		this.csmc.initializePopulateFavoriteMethod(CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID);
+		Assert.assertFalse("The checkbox should be unchecked since there is no favorite generative method.", this.csmc.getFavoriteMethodsCheckbox().booleanValue());
 	}
 
 	private Project getProject(final long id) {
@@ -87,9 +87,10 @@ public class CrossingSettingsMethodComponentTest {
 		Mockito.when(this.gpdm.getFavoriteMethodsByMethodType(CrossingSettingsMethodComponent.GENERATIVE_METHOD_TYPE,
 				CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID)).thenReturn(this.methodTDI.createMethodList());
 		this.csmc.instantiateComponents();
-
-		Assert.assertTrue("Expecting a true return value when there are favourite method.",
-				this.csmc.initPopulateFavMethod(CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID));
+		
+		this.csmc.initializePopulateFavoriteMethod(CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID);
+		Assert.assertTrue("The checkbox should be checked since there is a favorite generative method.",
+				this.csmc.getFavoriteMethodsCheckbox().booleanValue());
 	}
 
 	@Test

@@ -492,4 +492,8 @@ public class CrossingSettingsMethodComponent extends VerticalLayout
 	public void setBreedingMethods(final ComboBox breedingMethodSelection) {
 		this.breedingMethods = breedingMethodSelection;
 	}
+	
+	public CheckBox getFavoriteMethodsCheckbox() {
+		return favoriteMethodsCheckbox;
+	}
 }
