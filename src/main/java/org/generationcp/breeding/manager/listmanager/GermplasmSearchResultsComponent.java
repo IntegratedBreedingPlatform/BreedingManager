@@ -32,7 +32,6 @@ import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -452,7 +451,8 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 	@SuppressWarnings("unchecked")
 	public void addSelectedEntriesToNewList() {
-		final List<Integer> itemIds = new ArrayList<Integer>();
+		final List<Integer> gids = new ArrayList<>();
+		final List<Integer> itemIds = new ArrayList<>();
 		itemIds.addAll((Collection<? extends Integer>) this.matchingGermplasmsTable.getValue());
 
 		if (itemIds.isEmpty()) {
@@ -463,8 +463,9 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 				// retrieve the actual GID from the itemId
 				final Integer gid =
 						(Integer) this.matchingGermplasmsTable.getItem(id).getItemProperty(ColumnLabels.GID + "_REF").getValue();
-				this.listManagerMain.addPlantToList(gid);
+				gids.add(gid);
 			}
+			this.listManagerMain.addPlantsToList(gids);
 		}
 	}
 
