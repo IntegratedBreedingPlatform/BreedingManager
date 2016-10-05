@@ -39,11 +39,11 @@ public class CrossingSettingsMethodComponentTest {
 	@Mock
 	private GermplasmDataManager gpdm;
 
-	private MethodTestDataInitializer methodTDI;
+	private MethodTestDataInitializer methodTestDataInitializer;
 
 	@Before
 	public void setUp() throws MiddlewareQueryException {
-		this.methodTDI = new MethodTestDataInitializer();
+		this.methodTestDataInitializer = new MethodTestDataInitializer();
 
 		Mockito.when(this.service.getCurrentProject()).thenReturn(this.getProject(1L));
 		Mockito.when(this.messageSource.getMessage(Message.BREEDING_METHOD)).thenReturn("Breeding Method");
@@ -85,7 +85,7 @@ public class CrossingSettingsMethodComponentTest {
 		favouriteMethods.add(Mockito.mock(ProgramFavorite.class));
 
 		Mockito.when(this.gpdm.getFavoriteMethodsByMethodType(CrossingSettingsMethodComponent.GENERATIVE_METHOD_TYPE,
-				CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID)).thenReturn(this.methodTDI.createMethodList());
+				CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID)).thenReturn(this.methodTestDataInitializer.createMethodList());
 		this.csmc.instantiateComponents();
 		
 		this.csmc.initializePopulateFavoriteMethod(CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID);
