@@ -381,7 +381,7 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 
 				if(!Objects.equals(comment, transaction.getComments())){
 					String changeCommentsWarningMsg = this.messageSource.getMessage(Message.SEED_IMPORT_COMMENT_WARNING);
-					MessageNotifier.showWarning(this.getWindow(), WARNING, changeCommentsWarningMsg);
+					MessageNotifier.showWarning(this.source.getWindow(), WARNING, changeCommentsWarningMsg);
 					break;
 				}
 			}
