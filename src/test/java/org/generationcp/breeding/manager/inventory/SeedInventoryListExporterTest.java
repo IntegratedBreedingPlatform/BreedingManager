@@ -15,6 +15,7 @@ import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.pojos.ims.Transaction;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,6 +31,8 @@ import java.util.List;
 public class SeedInventoryListExporterTest {
 
 	private Component source;
+
+	private final String LIST_NAME = "ListName";
 
 	private GermplasmList germplasmList;
 
@@ -62,6 +65,12 @@ public class SeedInventoryListExporterTest {
 		this.seedInventoryListExporter.setFieldbookMiddlewareService(this.fieldbookMiddlewareService);
 	}
 
+	@After
+	public void tearDown() {
+		final File file = new File(LIST_NAME+"-Seed Prep.xls");
+		file.deleteOnExit();
+	}
+
 	@Test
 	public void testExportSeedPreparationListSuccess() throws Exception{
 
@@ -70,7 +79,7 @@ public class SeedInventoryListExporterTest {
 		Workbook workbook =  WorkbookFactory.create(workbookFile);
 		Mockito.when(this.fileService.retrieveWorkbookTemplate(Mockito.anyString())).thenReturn(workbook);
 
-		Mockito.when(this.germplasmList.getName()).thenReturn("ListName");
+		Mockito.when(this.germplasmList.getName()).thenReturn(LIST_NAME);
 		Mockito.when(this.germplasmList.getDescription()).thenReturn("ListNameDescription");
 		Mockito.when(this.germplasmList.getType()).thenReturn("ListType");
 		Mockito.when(this.germplasmList.getDate()).thenReturn(new Long(20161005));
