@@ -17,6 +17,7 @@ import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.ims.Transaction;
+import org.generationcp.middleware.service.api.FieldbookService;
 import org.generationcp.middleware.util.PoiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,20 +62,20 @@ public class SeedInventoryListExporter {
 	private final int NOTES_INDEX = 12;
 
 
-	@Resource
+	@Autowired
 	private FileService fileService;
 
-	@Resource
+	@Autowired
 	private FileDownloaderUtility fileDownloaderUtility;
 
 	@Autowired
 	protected InventoryDataManager inventoryDataManager;
 
-	@Resource
+	@Autowired
 	private org.generationcp.middleware.service.api.FieldbookService fieldbookMiddlewareService;
 
 
-	private Workbook excelWorkbook;
+	protected Workbook excelWorkbook;
 
 	public SeedInventoryListExporter(){
 
@@ -251,6 +252,38 @@ public class SeedInventoryListExporter {
 			reservedTransactionMap.put(transaction.getId(), transaction);
 		}
 		return reservedTransactionMap;
+	}
+
+	public void setSource(Component source) {
+		this.source = source;
+	}
+
+	public void setGermplasmList(GermplasmList germplasmList) {
+		this.germplasmList = germplasmList;
+	}
+
+	public void setFileService(FileService fileService) {
+		this.fileService = fileService;
+	}
+
+	public void setFileDownloaderUtility(FileDownloaderUtility fileDownloaderUtility) {
+		this.fileDownloaderUtility = fileDownloaderUtility;
+	}
+
+	public void setInventoryDataManager(InventoryDataManager inventoryDataManager) {
+		this.inventoryDataManager = inventoryDataManager;
+	}
+
+	public void setFieldbookMiddlewareService(FieldbookService fieldbookMiddlewareService) {
+		this.fieldbookMiddlewareService = fieldbookMiddlewareService;
+	}
+
+	public String getSeedTemplateFile() {
+		return seedTemplateFile;
+	}
+
+	public Workbook getExcelWorkbook() {
+		return excelWorkbook;
 	}
 }
 
