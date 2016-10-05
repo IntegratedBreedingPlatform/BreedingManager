@@ -279,8 +279,8 @@ public class BreedingManagerUtil {
 	 * @param mapLocation @
 	 */
 	public static void populateWithFavoriteMethods(WorkbenchDataManager workbenchDataManager, GermplasmDataManager germplasmDataManager,
-			ComboBox methodComboBox, Map<String, Integer> mapMethods, String programUUID) {
-		BreedingManagerUtil.populateWithFavoriteMethods(workbenchDataManager, germplasmDataManager, methodComboBox, mapMethods, null,
+			ComboBox methodComboBox, String programUUID) {
+		BreedingManagerUtil.populateWithFavoriteMethods(workbenchDataManager, germplasmDataManager, methodComboBox, null,
 				programUUID);
 	}
 
@@ -342,7 +342,7 @@ public class BreedingManagerUtil {
 	 * @param mType @
 	 */
 	public static void populateWithFavoriteMethods(WorkbenchDataManager workbenchDataManager, GermplasmDataManager germplasmDataManager,
-			ComboBox methodComboBox, Map<String, Integer> mapMethods, String mType, String programUUID) {
+			ComboBox methodComboBox, String mType, String programUUID) {
 
 		methodComboBox.removeAllItems();
 
@@ -365,18 +365,20 @@ public class BreedingManagerUtil {
 			BreedingManagerUtil.LOG.error(e.getMessage(), e);
 		}
 
-		for (Method favoriteMethod : favoriteMethods) {
-			if (mType != null && mType.length() > 0 && favoriteMethod.getMtype() != null && favoriteMethod.getMtype().equals(mType)
+		populateMethodsComboBox(methodComboBox, mType, favoriteMethods);
+
+	}
+	
+	public static void populateMethodsComboBox(ComboBox methodComboBox, String mType,
+				List<Method> methods) {
+		for (Method method : methods) {
+			if (mType != null && mType.length() > 0 && method.getMtype() != null && method.getMtype().equals(mType)
 					|| mType == null || mType.length() == 0) {
-				Integer methodId = favoriteMethod.getMid();
+				Integer methodId = method.getMid();
 				methodComboBox.addItem(methodId);
-				methodComboBox.setItemCaption(methodId, favoriteMethod.getMname());
-				if (mapMethods != null) {
-					mapMethods.put(favoriteMethod.getMname(), methodId);
-				}
+				methodComboBox.setItemCaption(methodId, method.getMname());
 			}
 		}
-
 	}
 
 	public static String getTypeString(String typeCode, List<UserDefinedField> listTypes) {
