@@ -994,9 +994,14 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			// Navigate to labels printing
 			// we use this workaround using javascript for navigation, because Vaadin 6 doesn't have good ways
 			// of navigating in and out of the Vaadin application
-			getApplication().getMainWindow().executeJavaScript("window.location = '" + getApplication().getURL().getProtocol() +
-					"://" + getApplication().getURL().getHost() + ":" + getApplication().getURL().getPort() +
-					"/Fieldbook/LabelPrinting/specifyLabelDetails/inventory/" + listId + "';");
+			final String urlRedirectionScript = "window.location = '" + getApplication().getURL().getProtocol() + "://" + getApplication().getURL().getHost() + ":"
+					+ getApplication().getURL().getPort() + "/Fieldbook/LabelPrinting/specifyLabelDetails/inventory/" + listId
+					+ "?restartApplication&loggedInUserId="
+					+ this.contextUtil.getContextInfoFromSession().getLoggedInUserId() + "&selectedProjectId="
+					+ this.contextUtil.getContextInfoFromSession().getSelectedProjectId()
+					+ "&authToken=" + this.contextUtil.getContextInfoFromSession().getAuthToken() + "';";
+
+			getApplication().getMainWindow().executeJavaScript(urlRedirectionScript);
 
 		} else {
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.CREATE_LABELS),
