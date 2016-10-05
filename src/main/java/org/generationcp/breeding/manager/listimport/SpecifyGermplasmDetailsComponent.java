@@ -73,6 +73,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 	private Table germplasmDetailsTable;
 
 	private Label reviewImportDetailsLabel;
+	private Label reviewImportDetailsMessage;
 	private Label totalEntriesLabel;
 	private Label selectPedigreeOptionsLabel;
 	private Label pedigreeOptionsLabel;
@@ -354,6 +355,9 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 		this.reviewImportDetailsLabel = new Label(this.messageSource.getMessage(Message.GERMPLASM_DETAILS_LABEL).toUpperCase());
 		this.reviewImportDetailsLabel.setDebugId("reviewImportDetailsLabel");
 		this.reviewImportDetailsLabel.addStyleName(Bootstrap.Typography.H4.styleName());
+		
+		this.reviewImportDetailsMessage = new Label(this.messageSource.getMessage(Message.REVIEW_IMPORT_DETAILS_MESSAGE));
+		this.reviewImportDetailsMessage.setDebugId("reviewImportDetailsMessage");
 
 		this.totalEntriesLabel = new Label("Total Entries: 0", Label.CONTENT_XHTML);
 		this.totalEntriesLabel.setDebugId("totalEntriesLabel");
@@ -467,7 +471,9 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 		final VerticalLayout importDetailsLayout = new VerticalLayout();
 		importDetailsLayout.setDebugId("importDetailsLayout");
 		importDetailsLayout.setSpacing(true);
+		importDetailsLayout.setHeight("280px");
 		importDetailsLayout.addComponent(this.reviewImportDetailsLabel);
+		importDetailsLayout.addComponent(this.reviewImportDetailsMessage);
 		importDetailsLayout.addComponent(this.totalEntriesLabel);
 		importDetailsLayout.addComponent(this.germplasmDetailsTable);
 
@@ -504,14 +510,18 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 
 		final VerticalLayout spacerLayout = new VerticalLayout();
 		spacerLayout.setDebugId("spacerLayout");
-		spacerLayout.setHeight("30px");
+		spacerLayout.setHeight("20px");
+		final VerticalLayout spacerLayout1 = new VerticalLayout();
+		spacerLayout1.setDebugId("spacerLayout1");
+		spacerLayout1.setHeight("20px");
 		final VerticalLayout spacerLayout2 = new VerticalLayout();
 		spacerLayout2.setDebugId("spacerLayout2");
-		spacerLayout2.setHeight("30px");
+		spacerLayout2.setHeight("20px");
 
 		this.addComponent(this.germplasmFieldsComponent);
-		this.addComponent(importDetailsLayout);
 		this.addComponent(spacerLayout);
+		this.addComponent(importDetailsLayout);
+		this.addComponent(spacerLayout1);
 		this.addComponent(pedigreeOptionsLayout);
 		this.addComponent(spacerLayout2);
 		this.addComponent(buttonLayout);

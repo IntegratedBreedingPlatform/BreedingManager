@@ -45,9 +45,9 @@ import org.generationcp.breeding.manager.listmanager.listeners.ResetListButtonCl
 import org.generationcp.breeding.manager.listmanager.listeners.SaveListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
 import org.generationcp.breeding.manager.listmanager.util.DropHandlerMethods.ListUpdatedEvent;
-import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -193,14 +193,14 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 						ListBuilderComponent.this.viewListAction();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {
 						ListBuilderComponent.this.copyToNewListFromInventoryViewAction();
-					} else
-						if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
+					} else if (clickedItem.getName()
+							.equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
 						ListBuilderComponent.this.reserveInventoryAction();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
 						ListBuilderComponent.this.listInventoryTable.getTable()
 								.setValue(ListBuilderComponent.this.listInventoryTable.getTable().getItemIds());
-					} else
-						if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.CANCEL_RESERVATIONS))) {
+					} else if (clickedItem.getName()
+							.equals(ListBuilderComponent.this.messageSource.getMessage(Message.CANCEL_RESERVATIONS))) {
 						ListBuilderComponent.this.cancelReservationsAction();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESET_LIST))) {
 						ListBuilderComponent.this.resetButton.click();
@@ -286,10 +286,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	@Resource
 	private PlatformTransactionManager transactionManager;
-	
+
 	@Autowired
 	private UserDataManager userDataManager;
-
 
 	public static final String GERMPLASMS_TABLE_DATA = "Germplasms Table Data";
 	static final Action ACTION_SELECT_ALL = new Action("Select All");
@@ -446,11 +445,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.viewHeaderButton.setDebugId("viewHeaderButton");
 		this.viewHeaderButton.addStyleName(BaseTheme.BUTTON_LINK);
 		this.viewHeaderButton.setVisible(false);
-		
-		
+
 		if (this.currentlySavedGermplasmList != null) {
 			this.viewListHeaderWindow = new ViewListHeaderWindow(this.currentlySavedGermplasmList,
-					BreedingManagerUtil.getAllNamesAsMap(userDataManager), germplasmListManager.getGermplasmListTypes());
+					BreedingManagerUtil.getAllNamesAsMap(this.userDataManager), this.germplasmListManager.getGermplasmListTypes());
 			this.viewHeaderButton.setDescription(this.viewListHeaderWindow.getListHeaderComponent().toString());
 		}
 
@@ -613,7 +611,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
 				ListBuilderComponent.this.viewListHeaderWindow =
 						new ViewListHeaderWindow(ListBuilderComponent.this.currentlySavedGermplasmList,
-								BreedingManagerUtil.getAllNamesAsMap(userDataManager), germplasmListManager.getGermplasmListTypes());
+								BreedingManagerUtil.getAllNamesAsMap(ListBuilderComponent.this.userDataManager),
+								ListBuilderComponent.this.germplasmListManager.getGermplasmListTypes());
 				ListBuilderComponent.this.getWindow().addWindow(ListBuilderComponent.this.viewListHeaderWindow);
 			}
 		});
@@ -712,7 +711,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.viewHeaderButton.setVisible(true);
 
 		this.viewListHeaderWindow = new ViewListHeaderWindow(this.currentlySavedGermplasmList,
-				BreedingManagerUtil.getAllNamesAsMap(userDataManager), germplasmListManager.getGermplasmListTypes());
+				BreedingManagerUtil.getAllNamesAsMap(this.userDataManager), this.germplasmListManager.getGermplasmListTypes());
 		this.viewHeaderButton.setDescription(this.viewListHeaderWindow.getListHeaderComponent().toString());
 
 		this.saveButton.setEnabled(false);
@@ -931,6 +930,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	void doDeleteSelectedEntries() {
 		final Collection<? extends Integer> selectedIdsToDelete =
 				(Collection<? extends Integer>) this.tableWithSelectAllLayout.getTable().getValue();
@@ -1005,7 +1005,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	/**
 	 * Get item id's of a table, and return it as a list
-	 * 
+	 *
 	 * @param table
 	 * @return
 	 */
@@ -1149,8 +1149,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		return this.currentlySetGermplasmInfo;
 	}
 
-	public void addGermplasm(final Integer gid) {
-		this.dropHandler.addGermplasm(gid);
+	public void addGermplasm(final List<Integer> gids) {
+		this.dropHandler.addGermplasm(gids);
 		this.setHasUnsavedChanges(true);
 	}
 
@@ -1248,8 +1248,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 					final String listName = this.currentlySavedGermplasmList.getName();
 
-					final FileDownloadResource fileDownloadResource =
-							new FileDownloadResource(new File(tempFileName),listName.replace(" ","_") + "ForGenotyping.xls", this.source.getApplication());
+					final FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName),
+							listName.replace(" ", "_") + "ForGenotyping.xls", this.source.getApplication());
 
 					this.source.getWindow().open(fileDownloadResource);
 
