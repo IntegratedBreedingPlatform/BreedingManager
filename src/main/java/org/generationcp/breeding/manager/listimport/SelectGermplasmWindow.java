@@ -525,5 +525,9 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 		super.close();
 		this.source.closeAllImportEntryListeners();
 	}
+	
+	public Integer getNoOfImportedGermplasm(){
+		return this.noOfImportedGemplasm;
+	}
 
 }

@@ -614,4 +614,8 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	void setContextUtil(final ContextUtil contextUtil) {
 		this.contextUtil = contextUtil;
 	}
+	
+	List<ImportGermplasmEntryActionListener> getImportEntryListeners(){
+		return this.importEntryListeners;
+	}
 }
