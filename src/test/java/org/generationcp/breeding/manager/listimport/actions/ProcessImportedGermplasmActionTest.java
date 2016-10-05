@@ -134,7 +134,7 @@ public class ProcessImportedGermplasmActionTest {
 		Mockito.verify(this.contextUtil).getCurrentUserLocalId();
 		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(5)).getGermplasmFieldsComponent();
 		Mockito.verify(this.germplasmFieldsComponent).getGermplasmDateField();
-		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(5)).getImportedGermplasm();
+		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(3)).getImportedGermplasm();
 		Mockito.verify(this.germplasmFieldsComponent, Mockito.times(2)).getLocationComboBox();
 		Mockito.verify(this.germplasmFieldsComponent).getBreedingMethodComboBox();
 		Mockito.verify(this.germplasmDataManager).getGermplasmByGID(Matchers.isA(Integer.class));
@@ -157,7 +157,7 @@ public class ProcessImportedGermplasmActionTest {
 		Mockito.verify(this.contextUtil).getCurrentUserLocalId();
 		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(5)).getGermplasmFieldsComponent();
 		Mockito.verify(this.germplasmFieldsComponent).getGermplasmDateField();
-		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(5)).getImportedGermplasm();
+		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(3)).getImportedGermplasm();
 		Mockito.verify(this.germplasmFieldsComponent, Mockito.times(2)).getLocationComboBox();
 		Mockito.verify(this.germplasmFieldsComponent).getBreedingMethodComboBox();
 		Mockito.verify(this.germplasmFieldsComponent).getNameTypeComboBox();
@@ -182,7 +182,7 @@ public class ProcessImportedGermplasmActionTest {
 		Mockito.verify(this.contextUtil).getCurrentUserLocalId();
 		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(3)).getGermplasmFieldsComponent();
 		Mockito.verify(this.germplasmFieldsComponent).getGermplasmDateField();
-		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(5)).getImportedGermplasm();
+		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(3)).getImportedGermplasm();
 		Mockito.verify(this.germplasmDataManager).getGermplasmByGID(Matchers.isA(Integer.class));
 		Mockito.verify(this.germplasmDataManager).getNamesByGID(Matchers.isA(Integer.class), Matchers.anyInt(),
 				(GermplasmNameType) Matchers.isNull());
