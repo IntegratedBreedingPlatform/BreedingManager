@@ -193,8 +193,10 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow
 			inventoryDataManager.addTransactions(this.processedTransactions);
 			inventoryDataManager.updateLots(closedLots);
 
-			((ListComponent)this.listComponent).refreshInventoryListDataTabel();
-			((ListComponent)this.listComponent).resetListDataTableValues();
+			if(this.listComponent instanceof  ListComponent){
+				((ListComponent)this.listComponent).refreshInventoryListDataTabel();
+				((ListComponent)this.listComponent).resetListDataTableValues();
+			}
 
 		}
 		MessageNotifier.showMessage(this.source.getWindow(), messageSource.getMessage(Message.SUCCESS), messageSource.getMessage(Message.SEED_IMPORT_SUCCESS));
