@@ -142,19 +142,19 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow
 			final String processingStatus = importedSeedInventory.getTransactionProcessingStatus();
 
 			if(processingStatus == null){
-				processingStatusLabel = new Label("PROCESSING");
+				processingStatusLabel = new Label(messageSource.getMessage(Message.SEED_IMPORT_PROCESSING_STATUS));
 				processingStatusLabel.setDebugId("label");
 			}
 			else if(importedSeedInventory.getTransactionProcessingStatus().equals(Message.SEED_IMPORT_TRANSACTION_ALREADY_COMMITTED_WARNING.toString()) ||
 					importedSeedInventory.getTransactionProcessingStatus().equals(Message.SEED_IMPORT_WITHDRAWAL_GREATER_THAN_AVAILABLE_WARNING.toString())
 					|| importedSeedInventory.getTransactionProcessingStatus().equals(Message.SEED_IMPORT_BALANCE_WARNING.toString())){
-				processingStatusLabel = new Label("SKIPPING");
+				processingStatusLabel = new Label(messageSource.getMessage(Message.SEED_IMPORT_SKIPPING_STATUS));
 				processingStatusLabel.setDescription(importStatusMessages.get(processingStatus));
 				processingStatusLabel.setDebugId("label");
 
 			}
 			else if(importedSeedInventory.getTransactionProcessingStatus().equals(Message.SEED_IMPORT_WITHDRAWAL_GREATER_THAN_RESERVATION_WARNING.toString())){
-				processingStatusLabel = new Label("CONTINUING");
+				processingStatusLabel = new Label(messageSource.getMessage(Message.SEED_IMPORT_CONTINUING_STATUS));
 				processingStatusLabel.setDescription(importStatusMessages.get(processingStatus));
 				processingStatusLabel.setDebugId("label");
 			}
