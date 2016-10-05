@@ -116,8 +116,6 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		final Map<String, Integer> germplasmMatchesMap = this.mapGermplasmNameCount(this.getImportedGermplasm());
 		final Integer noOfImportedGemplasm = this.getImportedGermplasm().size();
 
-		Integer currentMatch = 1;
-
 		for (int i = 0; i < noOfImportedGemplasm; i++) {
 
 			final ImportedGermplasm importedGermplasm = this.getImportedGermplasm().get(i);
@@ -153,10 +151,8 @@ public class ProcessImportedGermplasmAction implements Serializable {
 			}
 
 			if (germplasmMatchesCount > 1) {
-				this.displaySelectGermplasmWindowIfNecessary(importedGermplasm.getDesig(), i, germplasm, currentMatch,
-						noOfImportedGemplasm);
+				this.displaySelectGermplasmWindowIfNecessary(importedGermplasm.getDesig(), i + 1, germplasm, noOfImportedGemplasm);
 				// increment current match for referring to current iteration
-				currentMatch++;
 			}
 		}
 	}
@@ -183,8 +179,6 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		final Map<String, Germplasm> createdGermplasm = new HashMap<>();
 		final Map<String, Integer> germplasmMatchesMap = this.mapGermplasmNameCount(this.getImportedGermplasm());
 		final Integer noOfImportedGermplasm = this.getImportedGermplasm().size();
-
-		Integer currentMatch = 1;
 
 		for (int i = 0; i < noOfImportedGermplasm; i++) {
 
@@ -249,9 +243,8 @@ public class ProcessImportedGermplasmAction implements Serializable {
 			}
 			
 			if (this.isNeedToDisplayGermplasmSelectionWindow(germplasmMatchesCount) && searchByNameOrNewGermplasmIsNeeded) {
-				this.displaySelectGermplasmWindowIfNecessary(importedGermplasm.getDesig(), i, germplasm, currentMatch,
+				this.displaySelectGermplasmWindowIfNecessary(importedGermplasm.getDesig(), i + 1, germplasm,
 						noOfImportedGermplasm);
-				currentMatch++;
 			}
 		}
 	}
@@ -393,16 +386,15 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		return new SelectGermplasmWindow(this, germplasmName, i, germplasm, this.getWindow());
 	}
 
-	void displaySelectGermplasmWindowIfNecessary(final String germplasmName, final int rowNumber, final Germplasm germplasm,
-			final Integer currentMatch, final Integer noOfImportedGermplasm) {
+	void displaySelectGermplasmWindowIfNecessary(final String germplasmName, final int rowNumber, final Germplasm germplasm, final Integer noOfImportedGermplasm) {
 		final SelectGermplasmWindow selectGermplasmWindow =
-				this.createSelectGermplasmWindow(germplasmName, rowNumber, germplasm, currentMatch, noOfImportedGermplasm);
+				this.createSelectGermplasmWindow(germplasmName, rowNumber, germplasm, noOfImportedGermplasm);
 		this.addImportEntryListener(selectGermplasmWindow);
 	}
 
 	private SelectGermplasmWindow createSelectGermplasmWindow(final String germplasmName, final int rowNumber, final Germplasm germplasm,
-			final Integer currentMatch, final Integer noOfImportedGermplasm) {
-		return new SelectGermplasmWindow(this, germplasmName, rowNumber, germplasm, this.getWindow(), currentMatch, noOfImportedGermplasm);
+			final Integer noOfImportedGermplasm) {
+		return new SelectGermplasmWindow(this, germplasmName, rowNumber, germplasm, this.getWindow(), noOfImportedGermplasm);
 	}
 
 	protected void addImportEntryListener(final ImportGermplasmEntryActionListener listener) {

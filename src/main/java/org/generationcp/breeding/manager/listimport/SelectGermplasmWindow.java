@@ -107,7 +107,6 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 	private CheckBox ignoreMatchesCheckbox;
 	private CheckBox ignoreRemainingMatchesCheckbox;
 	private final Window parentWindow;
-	private Integer currentMatch;
 	private Integer noOfImportedGemplasm;
 
 	@Autowired
@@ -126,13 +125,12 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 	}
 
 	public SelectGermplasmWindow(final ProcessImportedGermplasmAction source, final String germplasmName, final int index,
-			final Germplasm germplasm, final Window parentWindow, final Integer currentMatch, final Integer noOfImportedGemplasm) {
+			final Germplasm germplasm, final Window parentWindow, final Integer noOfImportedGemplasm) {
 		this.germplasmName = germplasmName;
 		this.germplasmIndex = index;
 		this.germplasm = germplasm;
 		this.source = source;
 		this.parentWindow = parentWindow;
-		this.currentMatch = currentMatch;
 		this.noOfImportedGemplasm = noOfImportedGemplasm;
 	}
 
@@ -414,7 +412,7 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 	private void initializeGuideMessage() {
 		// Initialize label with Current Match, Total Match & Germplasm Name
 		this.selectGermplasmLabel.setValue(String.format(this.messageSource.getMessage("GERMPLASM_MATCHES_LABEL",
-				new String[] {this.currentMatch.toString(), this.noOfImportedGemplasm.toString(), this.germplasmName})));
+				new String[] {String.valueOf(this.germplasmIndex), this.noOfImportedGemplasm.toString(), this.germplasmName})));
 	}
 
 	protected void initializeTableValues() {
