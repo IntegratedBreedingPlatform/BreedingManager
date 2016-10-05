@@ -321,7 +321,7 @@ public class GenerateStockIDsDialog extends BaseSubWindow implements Initializin
 				GenerateStockIDsDialog.this.showMessageValidationForPrefix();
 			} else {
 				GenerateStockIDsDialog.this.applyStockIdToImportedGermplasm(prefix,
-						((SpecifyGermplasmDetailsComponent) GenerateStockIDsDialog.this.source).getImportedGermplasms());
+						((SpecifyGermplasmDetailsComponent) GenerateStockIDsDialog.this.source).getImportedGermplasm());
 
 				((SpecifyGermplasmDetailsComponent) GenerateStockIDsDialog.this.source).popupSaveAsDialog();
 				Window win = event.getButton().getWindow();
