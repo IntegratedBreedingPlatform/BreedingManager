@@ -84,7 +84,7 @@ public class CrossingSettingsMethodComponentTest {
 		final ArrayList<ProgramFavorite> favouriteMethods = new ArrayList<ProgramFavorite>();
 		favouriteMethods.add(Mockito.mock(ProgramFavorite.class));
 
-		Mockito.when(this.gpdm.getFavoriteMethodsByMType(CrossingSettingsMethodComponent.GENERATIVE_METHOD_TYPE,
+		Mockito.when(this.gpdm.getFavoriteMethodsByMethodType(CrossingSettingsMethodComponent.GENERATIVE_METHOD_TYPE,
 				CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID)).thenReturn(this.methodTDI.createMethodList());
 		this.csmc.instantiateComponents();
 

@@ -75,6 +75,7 @@ public class CrossingSettingsMethodComponent extends VerticalLayout
 	private ComboBox breedingMethods;
 
 	private CheckBox favoriteMethodsCheckbox;
+	
 	private Button manageFavoriteMethodsLink;
 
 	private OptionGroup breedingMethodsRadioBtn;
@@ -99,7 +100,7 @@ public class CrossingSettingsMethodComponent extends VerticalLayout
 
 	public void initializePopulateFavoriteMethod(final String programUUID) {
 		final List<Method> favoriteGenerativeMethods =
-				this.germplasmDataManager.getFavoriteMethodsByMType(CrossingSettingsMethodComponent.GENERATIVE_METHOD_TYPE, programUUID);
+				this.germplasmDataManager.getFavoriteMethodsByMethodType(CrossingSettingsMethodComponent.GENERATIVE_METHOD_TYPE, programUUID);
 		if (favoriteGenerativeMethods == null || favoriteGenerativeMethods.isEmpty()) {
 			this.favoriteMethodsCheckbox.setValue(false);
 			this.populateBreedingMethods(false, this.programUniqueId);
@@ -332,7 +333,7 @@ public class CrossingSettingsMethodComponent extends VerticalLayout
 			this.selectMethod.setValue(true);
 			final Integer methodId = breedingMethodSetting.getMethodId();
 
-			if (!this.isMethodGen(methodId)) {
+			if (!this.isMethodGenerative(methodId)) {
 				this.favoriteMethodsCheckbox.setValue(true);
 				this.populateBreedingMethods(true, this.programUniqueId);
 			} else {
@@ -344,7 +345,7 @@ public class CrossingSettingsMethodComponent extends VerticalLayout
 		}
 	}
 
-	private boolean isMethodGen(final Integer methodId) {
+	private boolean isMethodGenerative(final Integer methodId) {
 		for (final Method method : this.methods) {
 			if (method.getMid().equals(methodId)) {
 				return true;
