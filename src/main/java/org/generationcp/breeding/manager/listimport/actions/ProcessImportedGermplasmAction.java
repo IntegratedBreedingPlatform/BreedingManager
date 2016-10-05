@@ -152,7 +152,6 @@ public class ProcessImportedGermplasmAction implements Serializable {
 
 			if (germplasmMatchesCount > 1) {
 				this.displaySelectGermplasmWindowIfNecessary(importedGermplasm.getDesig(), i + 1, germplasm, noOfImportedGemplasm);
-				// increment current match for referring to current iteration
 			}
 		}
 	}
@@ -241,10 +240,9 @@ public class ProcessImportedGermplasmAction implements Serializable {
 			} else {
 				this.germplasmNameObjects.add(new GermplasmName(createdGermplasm.get(name.getNval()), name));
 			}
-			
+
 			if (this.isNeedToDisplayGermplasmSelectionWindow(germplasmMatchesCount) && searchByNameOrNewGermplasmIsNeeded) {
-				this.displaySelectGermplasmWindowIfNecessary(importedGermplasm.getDesig(), i + 1, germplasm,
-						noOfImportedGermplasm);
+				this.displaySelectGermplasmWindowIfNecessary(importedGermplasm.getDesig(), i + 1, germplasm, noOfImportedGermplasm);
 			}
 		}
 	}
@@ -278,12 +276,12 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		}
 		return germplasm;
 	}
-	
+
 	/**
 	 * Creates map of germplasm name count with the germplasm designation as the key.
-	 * 
+	 *
 	 * @param importedGermplasm
-	 * 
+	 *
 	 * @return germplasmMatchesMap
 	 */
 	private Map<String, Integer> mapGermplasmNameCount(final List<ImportedGermplasm> importedGermplasm) {
@@ -386,7 +384,8 @@ public class ProcessImportedGermplasmAction implements Serializable {
 		return new SelectGermplasmWindow(this, germplasmName, i, germplasm, this.getWindow());
 	}
 
-	void displaySelectGermplasmWindowIfNecessary(final String germplasmName, final int rowNumber, final Germplasm germplasm, final Integer noOfImportedGermplasm) {
+	void displaySelectGermplasmWindowIfNecessary(final String germplasmName, final int rowNumber, final Germplasm germplasm,
+			final Integer noOfImportedGermplasm) {
 		final SelectGermplasmWindow selectGermplasmWindow =
 				this.createSelectGermplasmWindow(germplasmName, rowNumber, germplasm, noOfImportedGermplasm);
 		this.addImportEntryListener(selectGermplasmWindow);
@@ -614,8 +613,8 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	void setContextUtil(final ContextUtil contextUtil) {
 		this.contextUtil = contextUtil;
 	}
-	
-	List<ImportGermplasmEntryActionListener> getImportEntryListeners(){
+
+	List<ImportGermplasmEntryActionListener> getImportEntryListeners() {
 		return this.importEntryListeners;
 	}
 }
