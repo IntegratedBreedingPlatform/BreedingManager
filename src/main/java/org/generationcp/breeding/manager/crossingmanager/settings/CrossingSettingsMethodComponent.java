@@ -94,11 +94,10 @@ public class CrossingSettingsMethodComponent extends VerticalLayout
 		this.initializeValues();
 		this.addListeners();
 		this.layoutComponents();
-		this.initPopulateFavMethod(this.programUniqueId);
+		this.initializePopulateFavoriteMethod(this.programUniqueId);
 	}
 
-	public boolean initPopulateFavMethod(final String programUUID) {
-		boolean hasFavorite = false;
+	public void initializePopulateFavoriteMethod(final String programUUID) {
 		final List<Method> favoriteGenerativeMethods =
 				this.germplasmDataManager.getFavoriteMethodsByMType(CrossingSettingsMethodComponent.GENERATIVE_METHOD_TYPE, programUUID);
 		if (favoriteGenerativeMethods == null || favoriteGenerativeMethods.isEmpty()) {
@@ -108,9 +107,7 @@ public class CrossingSettingsMethodComponent extends VerticalLayout
 			this.favoriteMethodsCheckbox.setValue(true);
 			BreedingManagerUtil.populateMethodsComboBox(this.breedingMethods,
 					CrossingSettingsMethodComponent.GENERATIVE_METHOD_TYPE, favoriteGenerativeMethods);
-			hasFavorite = true;
 		}
-		return hasFavorite;
 	}
 
 	private boolean isSelectAllMethods() {
