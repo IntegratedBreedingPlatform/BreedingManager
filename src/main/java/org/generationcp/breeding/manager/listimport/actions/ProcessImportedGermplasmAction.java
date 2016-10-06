@@ -151,7 +151,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 			}
 
 			if (germplasmMatchesCount > 1) {
-				this.displaySelectGermplasmWindowIfNecessary(importedGermplasm.getDesig(), i + 1, germplasm, noOfImportedGemplasm);
+				this.displaySelectGermplasmWindowIfNecessary(importedGermplasm.getDesig(), i, germplasm, noOfImportedGemplasm);
 			}
 		}
 	}
@@ -242,7 +242,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 			}
 
 			if (this.isNeedToDisplayGermplasmSelectionWindow(germplasmMatchesCount) && searchByNameOrNewGermplasmIsNeeded) {
-				this.displaySelectGermplasmWindowIfNecessary(importedGermplasm.getDesig(), i + 1, germplasm, noOfImportedGermplasm);
+				this.displaySelectGermplasmWindowIfNecessary(importedGermplasm.getDesig(), i, germplasm, noOfImportedGermplasm);
 			}
 		}
 	}

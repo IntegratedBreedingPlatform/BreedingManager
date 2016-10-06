@@ -201,7 +201,7 @@ public class ProcessImportedGermplasmActionTest {
 		final SelectGermplasmWindow selectGermplasmWindow = (SelectGermplasmWindow) importEntryListeners.get(0);
 
 		// Check that the window was created for 2nd entry and that total # of entries displayed equals # of imported germplasm
-		Assert.assertTrue(selectGermplasmWindow.getGermplasmIndex() == 2);
+		Assert.assertTrue(selectGermplasmWindow.getGermplasmIndex() == 1);
 		Assert.assertTrue(selectGermplasmWindow.getNoOfImportedGermplasm() == 3);
 	}
 
@@ -270,7 +270,7 @@ public class ProcessImportedGermplasmActionTest {
 
 		final SelectGermplasmWindow selectGermplasmWindow = (SelectGermplasmWindow) importEntryListeners.get(0);
 		// Check that the window was created for 2nd entry and that total # of entries displayed equals # of imported germplasm
-		Assert.assertTrue(selectGermplasmWindow.getGermplasmIndex() == 2);
+		Assert.assertTrue(selectGermplasmWindow.getGermplasmIndex() == 1);
 		Assert.assertTrue(selectGermplasmWindow.getNoOfImportedGermplasm() == 3);
 	}
 

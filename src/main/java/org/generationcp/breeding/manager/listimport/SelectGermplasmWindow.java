@@ -412,7 +412,7 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 	private void initializeGuideMessage() {
 		// Initialize label with Current Match, Total Match & Germplasm Name
 		this.selectGermplasmLabel.setValue(String.format(this.messageSource.getMessage("GERMPLASM_MATCHES_LABEL",
-				new String[] {String.valueOf(this.germplasmIndex), this.noOfImportedGemplasm.toString(), this.germplasmName})));
+				new String[] {String.valueOf(this.germplasmIndex + 1), this.noOfImportedGemplasm.toString(), this.germplasmName})));
 	}
 
 	protected void initializeTableValues() {
