@@ -11,13 +11,15 @@ import org.generationcp.middleware.pojos.Germplasm;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
 
+@RunWith(MockitoJUnitRunner.class)
 public class SelectGermplasmWindowTest {
 
 	@Mock
@@ -35,8 +37,6 @@ public class SelectGermplasmWindowTest {
 
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
-
 		this.germplasm = new Germplasm();
 		this.germplasm.setGid(1);
 
