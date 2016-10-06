@@ -405,13 +405,19 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 				String comments = importedSeedInventory.getComments();
 				LotDetails lotDetails = mapLotDetails.get(importedSeedInventory.getLotID());
 
-				Double availableBalance = lotDetails.getAvailableLotBalance();
+				if(lotDetails == null){
+					//Skip and process next or Cancel import
+					importedSeedInventory.setTransactionProcessingStatus(Message.SEED_IMPORT_LOT_CLOSED.toString());
+					continue;
+				}
 
 				if(transaction.getStatus() == 1){
 					//Skip and process next or Cancel import
 					importedSeedInventory.setTransactionProcessingStatus(Message.SEED_IMPORT_TRANSACTION_ALREADY_COMMITTED_WARNING.toString());
-
+					continue;
 				}
+
+				Double availableBalance = lotDetails.getAvailableLotBalance();
 
 				if(amountWithdrawn != null && amountWithdrawn > 0){
 					Double transactionQty = transaction.getQuantity() * -1;
@@ -450,6 +456,7 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 						else{
 							//Skip and process next or Cancel import
 							importedSeedInventory.setTransactionProcessingStatus(Message.SEED_IMPORT_WITHDRAWAL_GREATER_THAN_AVAILABLE_WARNING.toString());
+							continue;
 
 						}
 					}
@@ -476,6 +483,7 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 							else{
 								//Skip and process next or Cancel import
 								importedSeedInventory.setTransactionProcessingStatus(Message.SEED_IMPORT_BALANCE_WARNING.toString());
+								continue;
 
 							}
 
