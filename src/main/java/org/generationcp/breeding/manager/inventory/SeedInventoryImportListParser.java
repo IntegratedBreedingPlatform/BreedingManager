@@ -90,7 +90,11 @@ public class SeedInventoryImportListParser extends AbstractExcelFileParser<Impor
 				transactionId = Integer.valueOf(this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, TRN_INDEX));
 			}
 
-			Double reservationAmount = Double.valueOf(this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, RESERVATION_INDEX));
+			String reservationCellValue = this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, RESERVATION_INDEX);
+			Double reservationAmount = null;
+			if(!StringUtil.isEmpty(reservationCellValue)){
+				reservationAmount = Double.valueOf(this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, RESERVATION_INDEX));
+			}
 
 			String withdrawalCellValue = this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, WITHDRAWAL_INDEX);
 			Double withdrawalAmount = null;
