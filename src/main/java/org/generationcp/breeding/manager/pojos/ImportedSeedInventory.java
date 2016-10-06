@@ -15,6 +15,10 @@ public class ImportedSeedInventory {
 
 	private String transactionProcessingStatus;
 
+	public ImportedSeedInventory(){
+
+	}
+
 	public ImportedSeedInventory(Integer entry, String designation, Integer gid, Integer lotID, Integer transactionId,
 			Double reservationAmount, Double withdrawalAmount, Double balanceAmount, String comments) {
 		this.entry = entry;

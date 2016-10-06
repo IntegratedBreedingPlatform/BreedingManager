@@ -72,15 +72,16 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 	private SeedInventoryImportStatusWindow seedInventoryImportStatusWindow;
 
 
-	List<Transaction> importedTransactions = Lists.newArrayList();
+	private List<Transaction> importedTransactions = Lists.newArrayList();
 
-	List<Transaction> processedTransactions = Lists.newArrayList();
-	List<Lot> closedLots = Lists.newArrayList();
+	private List<Transaction> processedTransactions = Lists.newArrayList();
+	private List<Lot> closedLots = Lists.newArrayList();
 
-	Map<Integer, LotDetails> mapLotDetails = new HashMap<>();
-	final GermplasmList selectedGermplsmList;
-	final Component source;
-	Component listComponent;
+	private Map<Integer, LotDetails> mapLotDetails = new HashMap<>();
+	protected GermplasmList selectedGermplsmList;
+	private Component source;
+	private Component listComponent;
+
 
 	private final Set<String> extensionSet = new HashSet<>();
 
@@ -90,9 +91,14 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 	private static final String WARNING = "Warning";
 
 	private List<GermplasmListData> selectedListReservedInventoryDetails;
-	ImportedSeedInventoryList importedSeedInventoryList;
+	private ImportedSeedInventoryList importedSeedInventoryList;
+
+	public SeedInventoryImportFileComponent(){
+		super();
+	}
 
 	public SeedInventoryImportFileComponent(final Component source, Component listComponent, GermplasmList selectedGermplsmList){
+		this();
 		this.listComponent = listComponent;
 		this.source = source;
 		this.selectedGermplsmList = selectedGermplsmList;
@@ -375,7 +381,7 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 
 				if(!Objects.equals(comment, transaction.getComments())){
 					String changeCommentsWarningMsg = this.messageSource.getMessage(Message.SEED_IMPORT_COMMENT_WARNING);
-					MessageNotifier.showWarning(this.getWindow(), WARNING, changeCommentsWarningMsg);
+					MessageNotifier.showWarning(this.source.getWindow(), WARNING, changeCommentsWarningMsg);
 					break;
 				}
 			}
@@ -501,5 +507,30 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 
 		return  mapTransaction;
 	}
+
+	public Set<String> getExtensionSet() {
+		return extensionSet;
+	}
+
+	public List<GermplasmListData> getSelectedListReservedInventoryDetails() {
+		return selectedListReservedInventoryDetails;
+	}
+
+	public void setSelectedListReservedInventoryDetails(List<GermplasmListData> selectedListReservedInventoryDetails) {
+		this.selectedListReservedInventoryDetails = selectedListReservedInventoryDetails;
+	}
+
+	public void setImportedSeedInventoryList(ImportedSeedInventoryList importedSeedInventoryList) {
+		this.importedSeedInventoryList = importedSeedInventoryList;
+	}
+
+	public void setSelectedGermplsmList(GermplasmList selectedGermplsmList) {
+		this.selectedGermplsmList = selectedGermplsmList;
+	}
+
+	public List<Transaction> getProcessedTransactions() {
+		return processedTransactions;
+	}
+
 
 }
