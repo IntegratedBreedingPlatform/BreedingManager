@@ -124,6 +124,9 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow
 				messageSource.getMessage(Message.SEED_IMPORT_WITHDRAWAL_GREATER_THAN_AVAILABLE_WARNING));
 		importStatusMessages.put(Message.SEED_IMPORT_BALANCE_WARNING.toString(),
 				messageSource.getMessage(Message.SEED_IMPORT_BALANCE_WARNING));
+		importStatusMessages.put(Message.SEED_IMPORT_LOT_CLOSED.toString(),
+				messageSource.getMessage(Message.SEED_IMPORT_LOT_CLOSED));
+
 
 
 		for (ImportedSeedInventory importedSeedInventory : this.importedSeedInventories) {
@@ -147,7 +150,8 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow
 			}
 			else if(importedSeedInventory.getTransactionProcessingStatus().equals(Message.SEED_IMPORT_TRANSACTION_ALREADY_COMMITTED_WARNING.toString()) ||
 					importedSeedInventory.getTransactionProcessingStatus().equals(Message.SEED_IMPORT_WITHDRAWAL_GREATER_THAN_AVAILABLE_WARNING.toString())
-					|| importedSeedInventory.getTransactionProcessingStatus().equals(Message.SEED_IMPORT_BALANCE_WARNING.toString())){
+					|| importedSeedInventory.getTransactionProcessingStatus().equals(Message.SEED_IMPORT_BALANCE_WARNING.toString())
+					|| importedSeedInventory.getTransactionProcessingStatus().equals(Message.SEED_IMPORT_LOT_CLOSED.toString())){
 				processingStatusLabel = new Label(messageSource.getMessage(Message.SEED_IMPORT_SKIPPING_STATUS));
 				processingStatusLabel.setDescription(importStatusMessages.get(processingStatus));
 				processingStatusLabel.setDebugId("label");
