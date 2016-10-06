@@ -409,10 +409,10 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 		this.setContent(this.mainLayout);
 	}
 
-	private void initializeGuideMessage() {
-		// Initialize label with Current Match, Total Match & Germplasm Name
-		this.selectGermplasmLabel.setValue(String.format(this.messageSource.getMessage("GERMPLASM_MATCHES_LABEL",
-				new String[] {String.valueOf(this.germplasmIndex + 1), this.noOfImportedGemplasm.toString(), this.germplasmName})));
+	void initializeGuideMessage() {
+		// Initialize label with germplasm index + 1, total number of imported germplasm & Germplasm Name
+		this.selectGermplasmLabel.setValue(this.messageSource.getMessage(Message.GERMPLASM_MATCHES_LABEL,
+				new Object[] {this.germplasmIndex + 1, this.noOfImportedGemplasm, this.germplasmName}));
 	}
 
 	protected void initializeTableValues() {
