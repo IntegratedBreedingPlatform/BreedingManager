@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
+import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -58,6 +59,7 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 
 	private final ReserveInventorySource source;
 
+	private static final Integer notesLimit = 255;
 	// Inputs
 	private final Map<String, List<ListEntryLotDetails>> scaleGrouping;
 
@@ -178,8 +180,14 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 		try {
 
 			for (final ReserveInventoryRowComponent row : this.scaleRows) {
+				String notes = (String) ReserveInventoryWindow.this.getNotes().getValue();
 				String selectedOptionForReserve = (String) row.getReserveOption().getValue();
-				if(!this.messageSource.getMessage(Message.SEED_ALL_AMOUNT).equals(selectedOptionForReserve)){
+				if(!StringUtils.isEmpty(notes) && notes.length() > notesLimit )
+				{
+					MessageNotifier.showRequiredFieldError(this,this.messageSource.getMessage(Message.NOTES_LIMIT_WARNING));
+					return false;
+				}
+			    if(!this.messageSource.getMessage(Message.SEED_ALL_AMOUNT).equals(selectedOptionForReserve)){
 					row.validate();
 				}
 			}
@@ -305,7 +313,7 @@ public class ReserveInventoryWindow extends BaseSubWindow implements Initializin
 		for (final ReserveInventoryRowComponent row : this.scaleRows) {
 			String selectedOptionForReserve = (String) row.getReserveOption().getValue();
 			if(this.messageSource.getMessage(Message.SEED_ALL_AMOUNT).equals(selectedOptionForReserve)){
-				reservations.put(new ReservationRowKey(row.getScale(), row.getReservationAmount(),true), this.scaleGrouping.get(row.getScale()));
+				reservations.put(new ReservationRowKey(row.getScale(),null,true), this.scaleGrouping.get(row.getScale()));
 			}else{
 				reservations.put(new ReservationRowKey(row.getScale(), row.getReservationAmount(),false), this.scaleGrouping.get(row.getScale()));
 			}
