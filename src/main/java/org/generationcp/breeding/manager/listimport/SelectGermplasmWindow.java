@@ -529,12 +529,12 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 	public Integer getNoOfImportedGermplasm() {
 		return this.noOfImportedGemplasm;
 	}
-	
+
 	public void setSelectGermplasmLabel(final Label selectGermplasmLabel) {
 		this.selectGermplasmLabel = selectGermplasmLabel;
 	}
-	
-	public void setMessageSource(SimpleResourceBundleMessageSource messageSource){
+
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 }
