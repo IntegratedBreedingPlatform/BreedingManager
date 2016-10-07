@@ -14,6 +14,7 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -596,7 +597,11 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		else if(entry.getInventoryInfo().getDistinctScaleCountForGermplsm() == 1){
 			available.append(entry.getInventoryInfo().getTotalAvailableBalance());
 			available.append(" ");
-			available.append(entry.getInventoryInfo().getScaleForGermplsm());
+
+			if(!StringUtils.isEmpty(entry.getInventoryInfo().getScaleForGermplsm())){
+				available.append(entry.getInventoryInfo().getScaleForGermplsm());
+			}
+
 		}
 		else{
 			available.append(ListDataInventory.MIXED);
@@ -611,13 +616,17 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		// WITHDRAWAL
 		StringBuilder withdrawal = new StringBuilder();
-		if(entry.getInventoryInfo().getDistinctCountWithdrawalScale() == 0){
+		if(entry.getInventoryInfo().getDistinctCountWithdrawalScale() == null || entry.getInventoryInfo().getDistinctCountWithdrawalScale() == 0){
 			withdrawal.append("");
 		}
 		else if(entry.getInventoryInfo().getDistinctCountWithdrawalScale() == 1){
 			withdrawal.append(entry.getInventoryInfo().getWithdrawalBalance());
 			withdrawal.append(" ");
-			withdrawal.append(entry.getInventoryInfo().getWithdrawalScale());
+
+			if(!StringUtils.isEmpty(entry.getInventoryInfo().getWithdrawalScale())){
+				withdrawal.append(entry.getInventoryInfo().getWithdrawalScale());
+			}
+
 		}
 		else{
 			withdrawal.append(ListDataInventory.MIXED);
