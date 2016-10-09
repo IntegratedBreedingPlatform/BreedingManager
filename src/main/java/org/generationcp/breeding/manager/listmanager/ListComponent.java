@@ -971,6 +971,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						ListComponent.this.deleteEntriesButtonClickAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED))) {
 						ListComponent.this.markLinesAsFixedAction();
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.CREATE_LABELS))) {
+						ListComponent.this.createLabelsAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.ASSIGN_CODES))) {
 						ListComponent.this.assignCodesAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.EDIT_LIST))) {
@@ -985,6 +987,27 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		}
 	}
 
+	private void createLabelsAction() {
+		final Integer listId = this.germplasmList.getId();
+
+		if (listId != null) {
+			// Navigate to labels printing
+			// we use this workaround using javascript for navigation, because Vaadin 6 doesn't have good ways
+			// of navigating in and out of the Vaadin application
+			final String urlRedirectionScript = "window.location = '" + getApplication().getURL().getProtocol() + "://" + getApplication().getURL().getHost() + ":"
+					+ getApplication().getURL().getPort() + "/Fieldbook/LabelPrinting/specifyLabelDetails/inventory/" + listId
+					+ "?restartApplication&loggedInUserId="
+					+ this.contextUtil.getContextInfoFromSession().getLoggedInUserId() + "&selectedProjectId="
+					+ this.contextUtil.getContextInfoFromSession().getSelectedProjectId()
+					+ "&authToken=" + this.contextUtil.getContextInfoFromSession().getAuthToken() + "';";
+
+			getApplication().getMainWindow().executeJavaScript(urlRedirectionScript);
+
+		} else {
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.CREATE_LABELS),
+					this.messageSource.getMessage(Message.ERROR_COULD_NOT_CREATE_LABELS));
+		}
+	}
 
 	private final class ToolsButtonClickListener implements ClickListener {
 
