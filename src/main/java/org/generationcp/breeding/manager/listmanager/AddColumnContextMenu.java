@@ -103,7 +103,7 @@ public class AddColumnContextMenu implements InternationalizableComponent {
 	private ContextMenuItem menuFillWithCrossMaleGID;
 	private ContextMenuItem menuFillWithCrossMalePrefName;
 	private ContextMenuItem listEditingOptions;
-	private static final String ADD_COLUMN_MENU = "Add Column";
+	private static final String ADD_COLUMN_MENU = "Add column";
 	private static final String FILL_WITH_PREFERRED_ID = "Fill with Preferred ID";
 	private static final String FILL_WITH_PREFERRED_NAME = "Fill with Preferred Name";
 	private static final String FILL_WITH_GERMPLASM_DATE = "Fill with Germplasm Dates";
