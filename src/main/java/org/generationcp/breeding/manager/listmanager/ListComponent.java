@@ -1005,6 +1005,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						ListComponent.this.exportSeedPreparationList();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.IMPORT_SEED_LIST))){
 						ListComponent.this.openImportSeedPreparationDialog();
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.PRINT_LABELS))) {
+						ListComponent.this.createLabelsAction();
 					}
 
 				}
@@ -1042,8 +1044,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						ListComponent.this.deleteEntriesButtonClickAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED))) {
 						ListComponent.this.markLinesAsFixedAction();
-					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.PRINT_LABELS))) {
-						ListComponent.this.createLabelsAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.ASSIGN_CODES))) {
 						ListComponent.this.assignCodesAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.EDIT_LIST))) {
