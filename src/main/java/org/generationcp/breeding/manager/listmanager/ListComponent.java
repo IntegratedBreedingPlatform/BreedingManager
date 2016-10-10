@@ -1042,7 +1042,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						ListComponent.this.deleteEntriesButtonClickAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED))) {
 						ListComponent.this.markLinesAsFixedAction();
-					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.CREATE_LABELS))) {
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.PRINT_LABELS))) {
 						ListComponent.this.createLabelsAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.ASSIGN_CODES))) {
 						ListComponent.this.assignCodesAction();
@@ -1075,7 +1075,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			getApplication().getMainWindow().executeJavaScript(urlRedirectionScript);
 
 		} else {
-			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.CREATE_LABELS),
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.PRINT_LABELS),
 					this.messageSource.getMessage(Message.ERROR_COULD_NOT_CREATE_LABELS));
 		}
 	}

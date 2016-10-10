@@ -32,7 +32,7 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 	private ContextMenuItem menuSelectAll;
 	private  ContextMenuItem listEditingOptions;
 	private ContextMenuItem codingAndFixingOptions;
-	private ContextMenuItem menuCreateLabels;
+	private ContextMenuItem menuPrintLabels;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -61,7 +61,7 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		this.menuAssignCodes = this.codingAndFixingOptions.addItem(this.messageSource.getMessage(Message.ASSIGN_CODES));
 		this.menuMarkLinesAsFixed = this.codingAndFixingOptions.addItem(this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED));
 
-		this.menuCreateLabels = this.addItem(this.messageSource.getMessage(Message.CREATE_LABELS));
+		this.menuPrintLabels = this.addItem(this.messageSource.getMessage(Message.PRINT_LABELS));
 
 	}
 
