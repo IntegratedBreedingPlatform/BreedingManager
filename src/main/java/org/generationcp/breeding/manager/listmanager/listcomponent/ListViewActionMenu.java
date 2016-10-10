@@ -62,8 +62,7 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		this.menuMarkLinesAsFixed = this.codingAndFixingOptions.addItem(this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED));
 
 		this.menuCreateLabels = this.addItem(this.messageSource.getMessage(Message.CREATE_LABELS));
-		this.menuSaveChanges = this.addItem(this.messageSource.getMessage(Message.SAVE_CHANGES));
-		this.menuSelectAll = this.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
+
 	}
 
 	@Override
