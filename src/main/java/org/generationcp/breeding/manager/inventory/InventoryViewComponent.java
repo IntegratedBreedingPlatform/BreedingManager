@@ -137,72 +137,61 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 
 	@Override
 	public void initializeValues() {
-		try {
-			List<? extends LotDetails> lotDetailEntries =
-					this.listId != null && this.recordId != null ? this.inventoryDataManager.getLotDetailsForListEntry(this.listId,
-							this.recordId, this.gid) : this.inventoryDataManager.getLotDetailsForGermplasm(this.gid);
+		List<? extends LotDetails> lotDetailEntries =
+				this.listId != null && this.recordId != null ? this.inventoryDataManager.getLotDetailsForListEntry(this.listId,
+						this.recordId, this.gid) : this.inventoryDataManager.getLotDetailsForGermplasm(this.gid);
 
-			for (LotDetails lotEntry : lotDetailEntries) {
-						Item newItem = this.lotEntriesTable.addItem(lotEntry.getLotId());
+		for (LotDetails lotEntry : lotDetailEntries) {
+			Item newItem = this.lotEntriesTable.addItem(lotEntry.getLotId());
 
-				String lotLocation = "";
-						if (lotEntry.getLocationOfLot() != null) {
-							if (lotEntry.getLocationOfLot().getLname() != null) {
-								lotLocation = lotEntry.getLocationOfLot().getLname();
-							}
-						}
-				newItem.getItemProperty(InventoryViewComponent.LOT_LOCATION).setValue(lotLocation);
-
-				String scale = "";
-				if (lotEntry.getScaleOfLot() != null) {
-					if (lotEntry.getScaleOfLot().getName() != null) {
-						scale = lotEntry.getScaleOfLot().getName();
-					}
+			String lotLocation = "";
+			if (lotEntry.getLocationOfLot() != null) {
+				if (lotEntry.getLocationOfLot().getLname() != null) {
+					lotLocation = lotEntry.getLocationOfLot().getLname();
 				}
-
-				String actualBalance = "";
-				if(lotEntry.getActualLotBalance() > 0){
-					actualBalance = lotEntry.getActualLotBalance() + lotEntry.getLotScaleNameAbbr();
-				}
-				newItem.getItemProperty(InventoryViewComponent.ACTUAL_BALANCE).setValue(actualBalance);
-
-				String availableBalance = "";
-				if(lotEntry.getAvailableLotBalance() != null && lotEntry.getAvailableLotBalance() > 0){
-					availableBalance = lotEntry.getAvailableLotBalance() + lotEntry.getLotScaleNameAbbr();
-				}
-				newItem.getItemProperty(InventoryViewComponent.AVAILABLE_BALANCE).setValue(availableBalance);
-
-				if(this.listId != null && this.recordId != null) {
-					String withdrawalBalance = "";
-					if(lotEntry.getWithdrawalBalance() != null && lotEntry.getWithdrawalBalance() > 0){
-						withdrawalBalance = lotEntry.getWithdrawalBalance() + lotEntry.getLotScaleNameAbbr();
-					}
-					newItem.getItemProperty(InventoryViewComponent.WITHDRAWAL).setValue(withdrawalBalance);
-
-					String withdrawalStatus = "";
-					if(lotEntry.getWithdrawalStatus() != null){
-						withdrawalStatus = lotEntry.getWithdrawalStatus();
-					}
-					newItem.getItemProperty(InventoryViewComponent.STATUS).setValue(withdrawalStatus);
-				}else{
-					newItem.getItemProperty(InventoryViewComponent.WITHDRAWAL).setValue("-");
-					newItem.getItemProperty(InventoryViewComponent.STATUS).setValue("-");
-				}
-
-
-
-				newItem.getItemProperty(InventoryViewComponent.COMMENTS).setValue(lotEntry.getCommentOfLot());
-				newItem.getItemProperty(InventoryViewComponent.STOCKID).setValue(lotEntry.getStockIds());
-				newItem.getItemProperty(InventoryViewComponent.LOT_ID).setValue(lotEntry.getLotId());
-
-				String seedSource = "";
-				if(germplasmListData != null){
-					seedSource = germplasmListData.getSeedSource();
-				}
-				newItem.getItemProperty(InventoryViewComponent.SEED_SOURCE).setValue(seedSource);
 			}
-		} catch (MiddlewareQueryException e) {
-			LOG.error(e.getMessage(), e);
+			newItem.getItemProperty(InventoryViewComponent.LOT_LOCATION).setValue(lotLocation);
+
+			String actualBalance = "";
+			if(lotEntry.getActualLotBalance() > 0){
+				actualBalance = lotEntry.getActualLotBalance() + lotEntry.getLotScaleNameAbbr();
+			}
+			newItem.getItemProperty(InventoryViewComponent.ACTUAL_BALANCE).setValue(actualBalance);
+
+			String availableBalance = "";
+			if(lotEntry.getAvailableLotBalance() != null && lotEntry.getAvailableLotBalance() > 0){
+				availableBalance = lotEntry.getAvailableLotBalance() + lotEntry.getLotScaleNameAbbr();
+			}
+			newItem.getItemProperty(InventoryViewComponent.AVAILABLE_BALANCE).setValue(availableBalance);
+
+			if(this.listId != null && this.recordId != null) {
+				String withdrawalBalance = "";
+				if(lotEntry.getWithdrawalBalance() != null && lotEntry.getWithdrawalBalance() > 0){
+					withdrawalBalance = lotEntry.getWithdrawalBalance() + lotEntry.getLotScaleNameAbbr();
+				}
+				newItem.getItemProperty(InventoryViewComponent.WITHDRAWAL).setValue(withdrawalBalance);
+
+				String withdrawalStatus = "";
+				if(lotEntry.getWithdrawalStatus() != null){
+					withdrawalStatus = lotEntry.getWithdrawalStatus();
+				}
+				newItem.getItemProperty(InventoryViewComponent.STATUS).setValue(withdrawalStatus);
+			}else{
+				newItem.getItemProperty(InventoryViewComponent.WITHDRAWAL).setValue("-");
+				newItem.getItemProperty(InventoryViewComponent.STATUS).setValue("-");
+			}
+
+
+
+			newItem.getItemProperty(InventoryViewComponent.COMMENTS).setValue(lotEntry.getCommentOfLot());
+			newItem.getItemProperty(InventoryViewComponent.STOCKID).setValue(lotEntry.getStockIds());
+			newItem.getItemProperty(InventoryViewComponent.LOT_ID).setValue(lotEntry.getLotId());
+
+			String seedSource = "";
+			if(germplasmListData != null){
+				seedSource = germplasmListData.getSeedSource();
+			}
+			newItem.getItemProperty(InventoryViewComponent.SEED_SOURCE).setValue(seedSource);
 		}
 	}
 
