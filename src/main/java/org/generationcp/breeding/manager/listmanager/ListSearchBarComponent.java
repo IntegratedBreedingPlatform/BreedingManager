@@ -45,10 +45,7 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 			+ " <br/><br/><b>The search results will show lists in which: </b>" + " <ul>"
 			+ "  <li>The list name contains the search term </li>"
 			+ "  <li>The list contains germplasm with names that contain the search term </li>"
-			+ "  <li>The list contains germplasm with GIDs that contain the search term </li>" + " </ul>"
-			+ " The <b>Exact matches only</b> checkbox shows results that match the search "
-			+ " term exactly when checked. If you uncheck this option, the search  "
-			+ " will show results that contain the search term you enter.";
+			+ "  <li>The list contains germplasm with GIDs that contain the search term </li>" + " </ul>";
 	
 	private HorizontalLayout searchBarLayoutLeft;
 	private CssLayout searchBarLayoutRight;
@@ -177,7 +174,7 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 		final SearchType searchType = this.getSelectedSearchType();
 		// Show a warning message that search could be slow if search type = "Contains keyword"
 		if (SearchType.CONTAINS_KEYWORD.equals(searchType)) {
-			ConfirmDialog.show(this.getWindow(), ListSearchBarComponent.this.messageSource.getMessage(Message.WARNING),
+			ConfirmDialog.show(this.getWindow().getParent(), ListSearchBarComponent.this.messageSource.getMessage(Message.WARNING),
 					ListSearchBarComponent.this.messageSource.getMessage(Message.SEARCH_TAKE_TOO_LONG_WARNING),
 					ListSearchBarComponent.this.messageSource.getMessage(Message.OK),
 					ListSearchBarComponent.this.messageSource.getMessage(Message.CANCEL), new ConfirmDialog.Listener() {
@@ -223,12 +220,10 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 			ListSearchBarComponent.LOG.info(e.getMessage(), e);
 		}
 	}
-
+	
 	private SearchType getSelectedSearchType() {
 		return (SearchType) ListSearchBarComponent.this.searchTypeOptions.getValue();
 	}
-	
-	
 	
 
 	public TextField getSearchField() {

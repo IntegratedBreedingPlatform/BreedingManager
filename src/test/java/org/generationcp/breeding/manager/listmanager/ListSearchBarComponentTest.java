@@ -42,6 +42,9 @@ public class ListSearchBarComponentTest {
 
 	@Mock
 	private Component parent;
+	
+	@Mock
+	private Window parentWindow;
 
 	@InjectMocks
 	private ListSearchBarComponent listSearchBarComponent;
@@ -51,7 +54,9 @@ public class ListSearchBarComponentTest {
 		this.listSearchBarComponent.setBreedingManagerService(this.breedingManagerService);
 		this.listSearchBarComponent.setMessageSource(this.messageSource);
 		this.listSearchBarComponent.setParent(this.parent);
-		Mockito.doReturn(new Window()).when(this.parent).getWindow();
+		
+		Mockito.doReturn(parentWindow).when(this.parent).getWindow();
+		Mockito.doReturn(new Window()).when(this.parentWindow).getParent();
 
 		this.listSearchBarComponent.instantiateComponents();
 	}
