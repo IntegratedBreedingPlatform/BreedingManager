@@ -54,11 +54,8 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 	private Table lotEntriesTable;
 
 	private static final String LOT_LOCATION = "lotLocation";
-	private static final String LOT_UNITS = "lotUnits";
 	private static final String ACTUAL_BALANCE = "actualBalance";
 	private static final String AVAILABLE_BALANCE = "availableBalance";
-	private static final String RES_THIS_ENTRY = "res-this-entry";
-	private static final String RES_OTHER_ENTRY = "res-other-entry";
 	private static final String WITHDRAWAL = "withdrawal";
 	private static final String STATUS = "status";
 	private static final String COMMENTS = "comments";
