@@ -46,7 +46,7 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 			+ "  <li>The list name contains the search term </li>"
 			+ "  <li>The list contains germplasm with names that contain the search term </li>"
 			+ "  <li>The list contains germplasm with GIDs that contain the search term </li>" + " </ul>";
-	
+
 	private HorizontalLayout searchBarLayoutLeft;
 	private CssLayout searchBarLayoutRight;
 	private TextField searchField;
@@ -61,7 +61,6 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 	@Autowired
 	private BreedingManagerService breedingManagerService;
 
-	
 	public ListSearchBarComponent(final ListSearchResultsComponent searchResultsComponent) {
 		super();
 		this.searchResultsComponent = searchResultsComponent;
@@ -97,12 +96,12 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 		this.popup = new PopupView(" ? ", descLbl);
 		this.popup.setDebugId("popup");
 		this.popup.setStyleName("gcp-popup-view");
-		
+
 		this.searchTypeOptions = new OptionGroup();
 		this.searchTypeOptions.setDebugId("searchTypeOptions");
-		for (final SearchType searchType : SearchType.values()){
-			searchTypeOptions.addItem(searchType);
-			searchTypeOptions.setItemCaption(searchType, this.messageSource.getMessage(searchType.getLabel()));
+		for (final SearchType searchType : SearchType.values()) {
+			this.searchTypeOptions.addItem(searchType);
+			this.searchTypeOptions.setItemCaption(searchType, this.messageSource.getMessage(searchType.getLabel()));
 		}
 
 		this.searchTypeOptions.setValue(SearchType.STARTS_WITH_KEYWORD);
@@ -143,10 +142,10 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 	public void layoutComponents() {
 		final CssLayout panelLayout = new CssLayout();
 		panelLayout.setDebugId("panelLayout");
-		
+
 		panelLayout.setMargin(true);
 		panelLayout.addStyleName("lm-search-bar");
-		
+
 		this.searchBarLayoutLeft = new HorizontalLayout();
 		this.searchBarLayoutLeft.setDebugId("searchBarLayoutLeft");
 		this.searchBarLayoutLeft.setSpacing(true);
@@ -160,7 +159,7 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 
 		panelLayout.addComponent(this.searchBarLayoutLeft);
 		panelLayout.addComponent(this.searchBarLayoutRight);
-		
+
 		this.setContent(panelLayout);
 	}
 
@@ -200,11 +199,10 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 			final SearchType searchType = this.getSelectedSearchType();
 			final Operation operation = searchType.getOperation();
 			final String searchKeyword = SearchType.getSearchKeyword(query, searchType);
-			
-			List<GermplasmList> matchingLists = this.breedingManagerService.doGermplasmListSearch(searchKeyword,
-					operation);
+
+			final List<GermplasmList> matchingLists = this.breedingManagerService.doGermplasmListSearch(searchKeyword, operation);
 			this.searchResultsComponent.applyGermplasmListResults(matchingLists);
-			
+
 		} catch (final BreedingManagerSearchException e) {
 			if (Message.NO_SEARCH_RESULTS.equals(e.getErrorMessage())) {
 				this.searchResultsComponent.applyGermplasmListResults(new ArrayList<GermplasmList>());
@@ -220,16 +218,14 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 			ListSearchBarComponent.LOG.info(e.getMessage(), e);
 		}
 	}
-	
+
 	private SearchType getSelectedSearchType() {
 		return (SearchType) ListSearchBarComponent.this.searchTypeOptions.getValue();
 	}
-	
 
 	public TextField getSearchField() {
 		return this.searchField;
 	}
-
 
 	public void setBreedingManagerService(final BreedingManagerService breedingManagerService) {
 		this.breedingManagerService = breedingManagerService;
@@ -238,8 +234,8 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
-	
-	public void setSearchType(final SearchType searchType){
+
+	public void setSearchType(final SearchType searchType) {
 		this.searchTypeOptions.setValue(searchType);
 	}
 

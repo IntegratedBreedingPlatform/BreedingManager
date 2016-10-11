@@ -142,9 +142,9 @@ public class GermplasmSearchBarComponent extends CssLayout
 
 		this.searchTypeOptions = new OptionGroup();
 		this.searchTypeOptions.setDebugId("searchTypeOptions");
-		for (final SearchType searchType : SearchType.values()){
-			searchTypeOptions.addItem(searchType);
-			searchTypeOptions.setItemCaption(searchType, this.messageSource.getMessage(searchType.getLabel()));
+		for (final SearchType searchType : SearchType.values()) {
+			this.searchTypeOptions.addItem(searchType);
+			this.searchTypeOptions.setItemCaption(searchType, this.messageSource.getMessage(searchType.getLabel()));
 		}
 
 		this.searchTypeOptions.setValue(SearchType.STARTS_WITH_KEYWORD);
@@ -295,10 +295,10 @@ public class GermplasmSearchBarComponent extends CssLayout
 					// validate first the keyword, if it is empty this will raise exception
 					GermplasmSearchBarComponent.this.breedingManagerService.validateEmptySearchString(q);
 
-					final SearchType searchType = getSelectedSearchType();
+					final SearchType searchType = GermplasmSearchBarComponent.this.getSelectedSearchType();
 					final Operation operation = searchType.getOperation();
 					final String searchKeyword = SearchType.getSearchKeyword(q, searchType);
-					
+
 					final boolean includeParents = (boolean) GermplasmSearchBarComponent.this.includeParentsCheckBox.getValue();
 					final boolean withInventoryOnly = (boolean) GermplasmSearchBarComponent.this.withInventoryOnlyCheckBox.getValue();
 					final boolean includeMGMembers = (boolean) GermplasmSearchBarComponent.this.includeMGMembersCheckbox.getValue();
@@ -328,14 +328,12 @@ public class GermplasmSearchBarComponent extends CssLayout
 				}
 			}
 
-			
 		});
 	}
 
 	private SearchType getSelectedSearchType() {
 		return (SearchType) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
 	}
-	
 
 	public SimpleResourceBundleMessageSource getMessageSource() {
 		return this.messageSource;
@@ -352,8 +350,8 @@ public class GermplasmSearchBarComponent extends CssLayout
 	protected void setTransactionManager(final PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
-	
-	public void setSearchType(final SearchType searchType){
+
+	public void setSearchType(final SearchType searchType) {
 		this.searchTypeOptions.setValue(searchType);
 	}
 }
