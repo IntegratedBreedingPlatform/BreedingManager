@@ -217,5 +217,9 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
+	
+	public void setSearchType(final SearchType searchType){
+		this.searchTypeOptions.setValue(searchType);
+	}
 
 }
