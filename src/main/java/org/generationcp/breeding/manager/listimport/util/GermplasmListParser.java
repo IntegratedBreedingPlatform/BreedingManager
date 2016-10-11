@@ -3,7 +3,6 @@ package org.generationcp.breeding.manager.listimport.util;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.annotation.Resource;
 
@@ -469,7 +469,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 	protected void validateObservationHeaders() throws FileParsingException {
 		for (final String headerName : this.descriptionVariableNames) {
-			final Collection<String> obsHeaders = this.observationColumnMap.values();
+			final Set<String> obsHeaders = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+			obsHeaders.addAll(this.observationColumnMap.values());
 			if (!obsHeaders.contains(headerName)) {
 				throw new FileParsingException("GERMPLASM_PARSE_HEADER_ERROR", 1, "", headerName);
 			}
