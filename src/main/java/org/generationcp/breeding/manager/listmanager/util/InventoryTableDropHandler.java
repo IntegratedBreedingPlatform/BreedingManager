@@ -398,13 +398,11 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entryId);
 		newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(targetDesignationButton);
 		newItem.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).setValue(lotDetail.getLocationOfLot().getLname());
-		newItem.getItemProperty(ColumnLabels.UNITS.getName()).setValue(lotDetail.getScaleOfLot().getName());
-		newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(lotDetail.getAvailableLotBalance());
 		newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(lotDetail.getActualLotBalance());
-		newItem.getItemProperty(ColumnLabels.RESERVED.getName()).setValue(0);
-		newItem.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(0);
+		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(lotDetail.getWithdrawalBalance());
+		newItem.getItemProperty(ColumnLabels.STATUS.getName()).setValue(lotDetail.getWithdrawalStatus());
 		newItem.getItemProperty(ColumnLabels.COMMENT.getName()).setValue(lotDetail.getCommentOfLot());
-		newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(new Label(""));
+		newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(lotDetail.getStockIds());
 		newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotDetail.getLotId());
 		newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(seedSource);
 		
