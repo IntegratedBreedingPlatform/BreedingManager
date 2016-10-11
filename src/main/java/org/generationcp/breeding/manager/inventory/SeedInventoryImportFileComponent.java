@@ -160,7 +160,7 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 		this.extensionSet.add("xlsx");
 
 		final List<GermplasmListData> inventoryDetails =
-				this.inventoryDataManager.getReservedLotDetailsForExportList(this.selectedGermplsmList.getId(), 0, Integer.MAX_VALUE);
+				this.inventoryDataManager.getReservedLotDetailsForExportList(this.selectedGermplsmList.getId());
 
 		selectedListReservedInventoryDetails = inventoryDetails;
 

@@ -48,8 +48,7 @@ public class SeedInventoryImportFileComponentTest {
 				GermplasmListTestDataInitializer.createGermplasmListWithListData(1, 1);
 
 		this.seedInventoryImportFileComponent.setSelectedGermplsmList(this.germplasmList);
-		Mockito.when(this.inventoryDataManager.getReservedLotDetailsForExportList(Mockito.anyInt(),Mockito.anyInt(),
-				Mockito.anyInt())).thenReturn(InventoryDetailsTestDataInitializer.createGermplasmListDataForReservedEntries());
+		Mockito.when(this.inventoryDataManager.getReservedLotDetailsForExportList(Mockito.anyInt())).thenReturn(InventoryDetailsTestDataInitializer.createGermplasmListDataForReservedEntries());
 
 	}
 

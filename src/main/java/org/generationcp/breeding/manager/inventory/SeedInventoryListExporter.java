@@ -120,7 +120,7 @@ public class SeedInventoryListExporter {
 
 	private void writeObservationSheet(){
 		final List<GermplasmListData> inventoryDetails =
-				this.inventoryDataManager.getReservedLotDetailsForExportList(this.germplasmList.getId(), 0, Integer.MAX_VALUE);
+				this.inventoryDataManager.getReservedLotDetailsForExportList(this.germplasmList.getId());
 
 		final Map<Integer, Transaction> transactionMap = createReservedTransactionMap(inventoryDetails);
 		Sheet observationSheet = excelWorkbook.getSheetAt(1);
