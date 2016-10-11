@@ -1,7 +1,14 @@
 package org.generationcp.breeding.manager.inventory;
 
-import com.google.common.collect.Lists;
-import com.vaadin.ui.Component;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -19,25 +26,14 @@ import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.ims.Transaction;
 import org.generationcp.middleware.service.api.FieldbookService;
 import org.generationcp.middleware.util.PoiUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import javax.annotation.Resource;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import com.google.common.collect.Lists;
+import com.vaadin.ui.Component;
 
 @Configurable
 public class SeedInventoryListExporter {
-
-	private static Logger LOG = LoggerFactory.getLogger(SeedInventoryListExporter.class);
 
 	public static final String SEED_EXPORT_FILE_NAME_FORMAT = "%s-Seed Prep.xls";
 
@@ -57,8 +53,6 @@ public class SeedInventoryListExporter {
 	private final int STOCK_ID_INDEX = 7;
 	private final int TRN_INDEX = 8;
 	private final int RESERVATION_INDEX = 9;
-	private final int WITHDRAWAL_INDEX = 10;
-	private final int BALANCE_INDEX = 11;
 	private final int NOTES_INDEX = 12;
 
 
