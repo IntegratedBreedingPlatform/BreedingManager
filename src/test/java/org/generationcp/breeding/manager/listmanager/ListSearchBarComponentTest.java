@@ -175,4 +175,27 @@ public class ListSearchBarComponentTest {
 		// Verify that applyGermplasmListResults was never called
 		Mockito.verify(this.searchResultsComponent, Mockito.times(0)).applyGermplasmListResults(germplasmLists);
 	}
+	
+	
+	@Test
+	public void testSearchButtonClickActionUsingDefaultSearchType() throws BreedingManagerSearchException {
+		this.listSearchBarComponent.searchButtonClickAction();
+		
+		// Verify that germplasm list search was called directly (ie. no confirm dialog shown)
+		Mockito.verify(this.breedingManagerService, Mockito.times(1)).doGermplasmListSearch(Matchers.anyString(), Matchers.any(Operation.class));
+	}
+	
+	
+	@Test
+	public void testSearchButtonClickActionUsingContainsKeywordSearchType() throws BreedingManagerSearchException {
+		this.listSearchBarComponent.setSearchType(SearchType.CONTAINS_KEYWORD);
+		Mockito.doReturn("Some String").when(this.messageSource).getMessage(Matchers.any(Message.class));
+		
+		this.listSearchBarComponent.searchButtonClickAction();
+		
+		// Verify that germplasm list search was not called since Confirm Dialog is shown first
+		Mockito.verify(this.breedingManagerService, Mockito.times(0)).doGermplasmListSearch(Matchers.anyString(), Matchers.any(Operation.class));
+	}
+	
+	
 }

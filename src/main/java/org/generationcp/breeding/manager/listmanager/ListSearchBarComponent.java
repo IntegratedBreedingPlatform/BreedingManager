@@ -12,6 +12,7 @@ import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -171,16 +172,35 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 		// Auto-generated method stub
 	}
 
-	public void searchButtonClickAction() {
-		final String q = this.searchField.getValue().toString();
-		this.doSearch(q);
+	void searchButtonClickAction() {
+		final String queryString = ListSearchBarComponent.this.searchField.getValue().toString();
+		final SearchType searchType = this.getSelectedSearchType();
+		// Show a warning message that search could be slow if search type = "Contains keyword"
+		if (SearchType.CONTAINS_KEYWORD.equals(searchType)) {
+			ConfirmDialog.show(this.getWindow(), ListSearchBarComponent.this.messageSource.getMessage(Message.WARNING),
+					ListSearchBarComponent.this.messageSource.getMessage(Message.SEARCH_TAKE_TOO_LONG_WARNING),
+					ListSearchBarComponent.this.messageSource.getMessage(Message.OK),
+					ListSearchBarComponent.this.messageSource.getMessage(Message.CANCEL), new ConfirmDialog.Listener() {
+
+						private static final long serialVersionUID = 1L;
+
+						@Override
+						public void onClose(final ConfirmDialog dialog) {
+							if (dialog.isConfirmed()) {
+								ListSearchBarComponent.this.doSearch(queryString);
+							}
+						}
+					});
+		} else {
+			ListSearchBarComponent.this.doSearch(queryString);
+		}
 	}
 
 	public void doSearch(final String query) {
 
 		try {
 
-			final SearchType searchType = (SearchType) ListSearchBarComponent.this.searchTypeOptions.getValue();
+			final SearchType searchType = this.getSelectedSearchType();
 			final Operation operation = searchType.getOperation();
 			final String searchKeyword = SearchType.getSearchKeyword(query, searchType);
 			
@@ -203,6 +223,12 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 			ListSearchBarComponent.LOG.info(e.getMessage(), e);
 		}
 	}
+
+	private SearchType getSelectedSearchType() {
+		return (SearchType) ListSearchBarComponent.this.searchTypeOptions.getValue();
+	}
+	
+	
 	
 
 	public TextField getSearchField() {
