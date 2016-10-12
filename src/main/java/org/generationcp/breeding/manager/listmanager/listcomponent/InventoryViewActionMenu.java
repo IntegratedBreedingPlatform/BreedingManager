@@ -26,6 +26,11 @@ public class InventoryViewActionMenu extends ContextMenu implements Initializing
 	private ContextMenuItem menuReserveInventory;
 	private ContextMenuItem menuCancelReservation;
 	private ContextMenuItem menuSelectAll;
+	private ContextMenuItem listEditingOptions;
+	private ContextMenuItem inventoryManagementOptions;
+	private ContextMenuItem importList;
+	private ContextMenuItem exportList;
+	private ContextMenuItem printLabels;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -38,13 +43,20 @@ public class InventoryViewActionMenu extends ContextMenu implements Initializing
 	public void afterPropertiesSet() throws Exception {
 
 		this.setWidth(CONTEXT_MENU_WIDTH);
-
-		this.menuCancelReservation = this.addItem(this.messageSource.getMessage(Message.CANCEL_RESERVATIONS));
-		this.menuCopyToNewListFromInventory = this.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
-		this.menuReserveInventory = this.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
+		//Re-arranging Menu Items
 		this.menuListView = this.addItem(this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
-		this.menuInventorySaveChanges = this.addItem(this.messageSource.getMessage(Message.SAVE_RESERVATIONS));
-		this.menuSelectAll = this.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
+		this.listEditingOptions=this.addItem(this.messageSource.getMessage(Message.LIST_EDITING_OPTIONS));
+		this.menuSelectAll = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
+		this.menuCopyToNewListFromInventory = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
+		this.inventoryManagementOptions=this.addItem(this.messageSource.getMessage(Message.INVENTORY_MANAGEMENT_OPTIONS));
+		this.menuReserveInventory = this.inventoryManagementOptions.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
+		this.menuInventorySaveChanges = this.inventoryManagementOptions.addItem(this.messageSource.getMessage(Message.SAVE_RESERVATIONS));
+		this.menuCancelReservation = this.inventoryManagementOptions.addItem(this.messageSource.getMessage(Message.CANCEL_RESERVATIONS));
+
+		this.exportList=this.addItem(this.messageSource.getMessage(Message.EXPORT_SEED_LIST));
+		this.importList=this.addItem(this.messageSource.getMessage(Message.IMPORT_SEED_LIST));
+		this.printLabels=this.addItem(this.messageSource.getMessage(Message.PRINT_LABELS));
+
 
 		this.resetInventoryMenuOptions();
 	}

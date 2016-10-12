@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.service.BreedingManagerServiceImpl;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.data.initializer.MethodTestDataInitializer;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.dms.ProgramFavorite;
@@ -14,15 +15,17 @@ import org.generationcp.middleware.pojos.workbench.Project;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
 
+@RunWith(value = MockitoJUnitRunner.class)
 public class CrossingSettingsMethodComponentTest {
 
 	private static final String DUMMY_UNIQUE_ID = "1234567890";
@@ -36,9 +39,11 @@ public class CrossingSettingsMethodComponentTest {
 	@Mock
 	private GermplasmDataManager gpdm;
 
+	private MethodTestDataInitializer methodTestDataInitializer;
+
 	@Before
 	public void setUp() throws MiddlewareQueryException {
-		MockitoAnnotations.initMocks(this);
+		this.methodTestDataInitializer = new MethodTestDataInitializer();
 
 		Mockito.when(this.service.getCurrentProject()).thenReturn(this.getProject(1L));
 		Mockito.when(this.messageSource.getMessage(Message.BREEDING_METHOD)).thenReturn("Breeding Method");
@@ -61,9 +66,9 @@ public class CrossingSettingsMethodComponentTest {
 		Mockito.when(this.messageSource.getMessage(Message.BREEDING_METHOD)).thenReturn("Breeding Method");
 
 		this.csmc.instantiateComponents();
-
-		Assert.assertFalse("Expecting a false return value when there are no favourite method.",
-				this.csmc.initPopulateFavMethod(CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID));
+		
+		this.csmc.initializePopulateFavoriteMethod(CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID);
+		Assert.assertFalse("The checkbox should be unchecked since there is no favorite generative method.", this.csmc.getFavoriteMethodsCheckbox().booleanValue());
 	}
 
 	private Project getProject(final long id) {
@@ -79,12 +84,13 @@ public class CrossingSettingsMethodComponentTest {
 		final ArrayList<ProgramFavorite> favouriteMethods = new ArrayList<ProgramFavorite>();
 		favouriteMethods.add(Mockito.mock(ProgramFavorite.class));
 
-		Mockito.when(this.gpdm.getProgramFavorites(FavoriteType.METHOD, 1000, CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID))
-				.thenReturn(favouriteMethods);
+		Mockito.when(this.gpdm.getFavoriteMethodsByMethodType(CrossingSettingsMethodComponent.GENERATIVE_METHOD_TYPE,
+				CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID)).thenReturn(this.methodTestDataInitializer.createMethodList());
 		this.csmc.instantiateComponents();
-
-		Assert.assertTrue("Expecting a true return value when there are favourite method.",
-				this.csmc.initPopulateFavMethod(CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID));
+		
+		this.csmc.initializePopulateFavoriteMethod(CrossingSettingsMethodComponentTest.DUMMY_UNIQUE_ID);
+		Assert.assertTrue("The checkbox should be checked since there is a favorite generative method.",
+				this.csmc.getFavoriteMethodsCheckbox().booleanValue());
 	}
 
 	@Test

@@ -30,6 +30,8 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 	private ContextMenuItem menuDeleteList;
 	private ContextMenuItem menuInventoryView;
 	private ContextMenuItem menuSelectAll;
+	private  ContextMenuItem listEditingOptions;
+	private ContextMenuItem codingAndFixingOptions;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -43,17 +45,22 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		this.setWidth(CONTEXT_MENU_WIDTH);
 
 		// Generate main level items
-		this.menuAddEntry = this.addItem(this.messageSource.getMessage(Message.ADD_ENTRIES));
-		this.menuAssignCodes = this.addItem(this.messageSource.getMessage(Message.ASSIGN_CODES));
-		this.menuCopyToList = this.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
-		this.menuDeleteList = this.addItem(this.messageSource.getMessage(Message.DELETE_LIST));
-		this.menuDeleteEntries = this.addItem(this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
-		this.menuMarkLinesAsFixed = this.addItem(this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED));
-		this.menuEditList = this.addItem(this.messageSource.getMessage(Message.EDIT_LIST));
-		this.menuExportList = this.addItem(this.messageSource.getMessage(Message.EXPORT_LIST));
+		//Re-arranging Menu Items
 		this.menuInventoryView = this.addItem(this.messageSource.getMessage(Message.INVENTORY_VIEW));
-		this.menuSaveChanges = this.addItem(this.messageSource.getMessage(Message.SAVE_CHANGES));
-		this.menuSelectAll = this.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
+		this.listEditingOptions=this.addItem(this.messageSource.getMessage(Message.LIST_EDITING_OPTIONS));
+		this.menuSaveChanges = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.SAVE_CHANGES));
+		this.menuSelectAll = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
+		this.menuAddEntry = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.ADD_ENTRIES));
+		this.menuDeleteEntries = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
+		this.menuEditList = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.EDIT_LIST));
+		this.menuDeleteList = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.DELETE_LIST));
+		this.menuCopyToList = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
+		this.menuExportList = this.addItem(this.messageSource.getMessage(Message.EXPORT_LIST));
+		this.codingAndFixingOptions=this.addItem(this.messageSource.getMessage(Message.CODING_AND_FIXING_OPTIONS));
+		this.menuAssignCodes = this.codingAndFixingOptions.addItem(this.messageSource.getMessage(Message.ASSIGN_CODES));
+		this.menuMarkLinesAsFixed = this.codingAndFixingOptions.addItem(this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED));
+
+
 	}
 
 	@Override
@@ -105,6 +112,9 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		return this.menuSelectAll;
 	}
 
+	public ContextMenuItem getListEditingOptions() {return listEditingOptions;}
+
+
 	/**
 	 * When the Germplasm List is not locked, and when not accessed directly from URL or popup window
 	 */
@@ -117,6 +127,7 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		this.menuSaveChanges.setVisible(true);
 		this.menuAddEntry.setVisible(true);
 		this.menuAssignCodes.setVisible(true);
+		this.codingAndFixingOptions.setVisible(true);//need to show when List is unlocked
 	}
 
 	public void setActionMenuWhenListIsUnlocked() {
@@ -127,6 +138,7 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		this.menuSaveChanges.setVisible(false);
 		this.menuAddEntry.setVisible(false);
 		this.menuAssignCodes.setVisible(false);
+		this.codingAndFixingOptions.setVisible(false);//need to hide when List is locked
 	}
 
 	/**

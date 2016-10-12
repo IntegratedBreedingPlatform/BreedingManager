@@ -69,8 +69,7 @@ public class ReservationStatusWindow extends BaseSubWindow
 		this.addStyleName(Reindeer.WINDOW_LIGHT);
 		this.setModal(true);
 
-		this.statusDescriptionLabel =
-				new Label("All selected entries will be reserved except for the following because of insufficient balance:");
+		this.statusDescriptionLabel = new Label("Following entries have current reservation or insufficient balance");
 
 		this.statusTable = new Table();
 		this.statusTable.setDebugId("statusTable");
@@ -84,6 +83,7 @@ public class ReservationStatusWindow extends BaseSubWindow
 		this.statusTable.addContainerProperty(this.messageSource.getMessage(Message.UNITS), String.class, null);
 		this.statusTable.addContainerProperty(this.messageSource.getMessage(Message.AVAILABLE_BALANCE), Double.class, null);
 		this.statusTable.addContainerProperty(this.messageSource.getMessage(Message.AMOUNT_TO_RESERVE), Double.class, null);
+		this.statusTable.addContainerProperty(this.messageSource.getMessage(Message.RESERVATION_STATUS), String.class, null);
 
 		this.messageSource.setColumnHeader(this.statusTable, this.messageSource.getMessage(Message.LOT_ID), Message.LOT_ID);
 		this.messageSource.setColumnHeader(this.statusTable, this.messageSource.getMessage(Message.LISTDATA_DESIGNATION_HEADER),
@@ -95,6 +95,9 @@ public class ReservationStatusWindow extends BaseSubWindow
 				Message.AVAILABLE_BALANCE);
 		this.messageSource.setColumnHeader(this.statusTable, this.messageSource.getMessage(Message.AMOUNT_TO_RESERVE),
 				Message.AMOUNT_TO_RESERVE);
+		this.messageSource.setColumnHeader(this.statusTable, this.messageSource.getMessage(Message.RESERVATION_STATUS),
+				Message.RESERVATION_STATUS);
+
 
 		this.okButton = new Button(this.messageSource.getMessage(Message.OK));
 		this.okButton.setDebugId("okButton");
@@ -116,6 +119,7 @@ public class ReservationStatusWindow extends BaseSubWindow
 			newItem.getItemProperty(this.messageSource.getMessage(Message.UNITS)).setValue(lot.getScaleOfLot().getName());
 			newItem.getItemProperty(this.messageSource.getMessage(Message.AVAILABLE_BALANCE)).setValue(lot.getAvailableLotBalance());
 			newItem.getItemProperty(this.messageSource.getMessage(Message.AMOUNT_TO_RESERVE)).setValue(amountToReserve);
+			newItem.getItemProperty(this.messageSource.getMessage(Message.RESERVATION_STATUS)).setValue(lot.getWithdrawalStatus());
 		}
 	}
 

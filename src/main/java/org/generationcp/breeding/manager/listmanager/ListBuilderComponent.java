@@ -29,6 +29,8 @@ import org.generationcp.breeding.manager.customcomponent.UnsavedChangesSource;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
+import org.generationcp.breeding.manager.inventory.SeedInventoryImportFileComponent;
+import org.generationcp.breeding.manager.inventory.SeedInventoryListExporter;
 import org.generationcp.breeding.manager.inventory.InventoryDropTargetContainer;
 import org.generationcp.breeding.manager.inventory.ListDataAndLotDetails;
 import org.generationcp.breeding.manager.inventory.ReservationStatusWindow;
@@ -36,15 +38,16 @@ import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
 import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryUtil;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
+import org.generationcp.breeding.manager.inventory.exception.SeedInventoryExportException;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.dialog.ListManagerCopyToListDialog;
 import org.generationcp.breeding.manager.listmanager.listeners.ResetListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.SaveListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
 import org.generationcp.breeding.manager.listmanager.util.DropHandlerMethods.ListUpdatedEvent;
-import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
+import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -54,6 +57,7 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.inventory.GermplasmInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -190,20 +194,24 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 						ListBuilderComponent.this.viewListAction();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {
 						ListBuilderComponent.this.copyToNewListFromInventoryViewAction();
-					} else
-						if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
+					} else if (clickedItem.getName()
+							.equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
 						ListBuilderComponent.this.reserveInventoryAction();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
 						ListBuilderComponent.this.listInventoryTable.getTable()
 								.setValue(ListBuilderComponent.this.listInventoryTable.getTable().getItemIds());
-					} else
-						if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.CANCEL_RESERVATIONS))) {
+					} else if (clickedItem.getName()
+							.equals(ListBuilderComponent.this.messageSource.getMessage(Message.CANCEL_RESERVATIONS))) {
 						ListBuilderComponent.this.cancelReservationsAction();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESET_LIST))) {
 						ListBuilderComponent.this.resetButton.click();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SAVE_LIST))) {
 						ListBuilderComponent.this.saveButton.click();
-					}
+					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.EXPORT_SEED_LIST))){
+							ListBuilderComponent.this.exportSeedPreparationList();
+						} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.IMPORT_SEED_LIST))){
+							ListBuilderComponent.this.openImportSeedPreparationDialog();
+						}
 				}
 			});
 
@@ -234,9 +242,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 							.equals(ListBuilderComponent.this.messageSource.getMessage(Message.EXPORT_LIST_FOR_GENOTYPING_ORDER))) {
 						ListBuilderComponent.this.exportListForGenotypingOrderAction();
 					} else if (clickedItem.getName()
-							.equals(ListBuilderComponent.this.messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL))) {
+							.equals(ListBuilderComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {//changed label
 						ListBuilderComponent.this.copyToNewListAction();
-					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.INVENTORY_VIEW))) {
+					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.PREPARE_SEED))) {//changed label
 						ListBuilderComponent.this.viewInventoryAction();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESET_LIST))) {
 						ListBuilderComponent.this.resetButton.click();
@@ -279,10 +287,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	@Resource
 	private PlatformTransactionManager transactionManager;
-	
+
 	@Autowired
 	private UserDataManager userDataManager;
-
 
 	public static final String GERMPLASMS_TABLE_DATA = "Germplasms Table Data";
 	static final Action ACTION_SELECT_ALL = new Action("Select All");
@@ -341,7 +348,12 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	private ContextMenuItem menuCopyToListFromInventory;
 	private ContextMenuItem menuReserveInventory;
 	private ContextMenuItem menuCancelReservation;
-
+	private  ContextMenuItem listEditingOptions;
+	private ContextMenuItem listEditingOptionsForLots;
+	private ContextMenuItem inventoryManagementOptions;
+	private ContextMenuItem importList;
+	private ContextMenuItem exportList;
+	private ContextMenuItem printLabels;
 	private SaveListAsDialog dialog;
 
 	// For Saving
@@ -434,11 +446,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.viewHeaderButton.setDebugId("viewHeaderButton");
 		this.viewHeaderButton.addStyleName(BaseTheme.BUTTON_LINK);
 		this.viewHeaderButton.setVisible(false);
-		
-		
+
 		if (this.currentlySavedGermplasmList != null) {
 			this.viewListHeaderWindow = new ViewListHeaderWindow(this.currentlySavedGermplasmList,
-					BreedingManagerUtil.getAllNamesAsMap(userDataManager), germplasmListManager.getGermplasmListTypes());
+					BreedingManagerUtil.getAllNamesAsMap(this.userDataManager), this.germplasmListManager.getGermplasmListTypes());
 			this.viewHeaderButton.setDescription(this.viewListHeaderWindow.getListHeaderComponent().toString());
 		}
 
@@ -467,27 +478,41 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.menu.setDebugId("menu");
 		this.menu.setWidth("300px");
 
+		//re-arranging Action menu items
+		this.menu.addItem(this.messageSource.getMessage(Message.PREPARE_SEED));//changed label
+		this.listEditingOptions=this.menu.addItem(this.messageSource.getMessage(Message.LIST_EDITING_OPTIONS));
+		this.listEditingOptions.addItem(this.messageSource.getMessage(Message.SAVE_LIST));
+		this.listEditingOptions.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
+		this.menuDeleteSelectedEntries = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
+		this.menuCopyToList = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));//changed label
+		this.listEditingOptions.addItem(this.messageSource.getMessage(Message.RESET_LIST));
 		this.addColumnContextMenu =
-				new AddColumnContextMenu(this, this.menu, this.tableWithSelectAllLayout.getTable(), ColumnLabels.GID.getName(), true);
-		this.menuCopyToList = this.menu.addItem(this.messageSource.getMessage(Message.COPY_TO_NEW_LIST_WINDOW_LABEL));
-		this.menuDeleteSelectedEntries = this.menu.addItem(this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
+				new AddColumnContextMenu(this, this.menu, this.tableWithSelectAllLayout.getTable(), ColumnLabels.GID.getName(), true, this.listEditingOptions);//Passing new ContextMenuItem As ListEditingOption In which Add Column Will be Sub Menu
 		this.menuExportList = this.menu.addItem(this.messageSource.getMessage(Message.EXPORT_LIST));
-
-		this.menu.addItem(this.messageSource.getMessage(Message.INVENTORY_VIEW));
-		this.menu.addItem(this.messageSource.getMessage(Message.RESET_LIST));
-		this.menu.addItem(this.messageSource.getMessage(Message.SAVE_LIST));
-		this.menu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
 
 		this.inventoryViewMenu = new ContextMenu();
 		this.inventoryViewMenu.setDebugId("inventoryViewMenu");
 		this.inventoryViewMenu.setWidth("300px");
-		this.menuCancelReservation = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.CANCEL_RESERVATIONS));
-		this.menuCopyToListFromInventory = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
-		this.menuReserveInventory = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
-		this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.RESET_LIST));
+
+		////Re-arranging Menu Items for Lots view
 		this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
-		this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.SAVE_LIST));
-		this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
+		this.listEditingOptionsForLots=this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.LIST_EDITING_OPTIONS));
+		this.listEditingOptionsForLots.addItem(this.messageSource.getMessage(Message.SAVE_LIST));
+		this.listEditingOptionsForLots.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
+		this.menuCopyToListFromInventory = this.listEditingOptionsForLots.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
+		this.listEditingOptionsForLots.addItem(this.messageSource.getMessage(Message.RESET_LIST));
+
+		this.inventoryManagementOptions=this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.INVENTORY_MANAGEMENT_OPTIONS));
+		this.menuReserveInventory = this.inventoryManagementOptions.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
+		this.menuCancelReservation = this.inventoryManagementOptions.addItem(this.messageSource.getMessage(Message.CANCEL_RESERVATIONS));
+
+
+		this.exportList=this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.EXPORT_SEED_LIST));
+		this.importList=this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.IMPORT_SEED_LIST));
+		this.printLabels=this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.PRINT_LABELS));
+
+
+
 
 		// Temporarily disable to Copy to List in InventoryView
 		this.menuCopyToListFromInventory.setEnabled(false);
@@ -587,7 +612,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
 				ListBuilderComponent.this.viewListHeaderWindow =
 						new ViewListHeaderWindow(ListBuilderComponent.this.currentlySavedGermplasmList,
-								BreedingManagerUtil.getAllNamesAsMap(userDataManager), germplasmListManager.getGermplasmListTypes());
+								BreedingManagerUtil.getAllNamesAsMap(ListBuilderComponent.this.userDataManager),
+								ListBuilderComponent.this.germplasmListManager.getGermplasmListTypes());
 				ListBuilderComponent.this.getWindow().addWindow(ListBuilderComponent.this.viewListHeaderWindow);
 			}
 		});
@@ -686,7 +712,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.viewHeaderButton.setVisible(true);
 
 		this.viewListHeaderWindow = new ViewListHeaderWindow(this.currentlySavedGermplasmList,
-				BreedingManagerUtil.getAllNamesAsMap(userDataManager), germplasmListManager.getGermplasmListTypes());
+				BreedingManagerUtil.getAllNamesAsMap(this.userDataManager), this.germplasmListManager.getGermplasmListTypes());
 		this.viewHeaderButton.setDescription(this.viewListHeaderWindow.getListHeaderComponent().toString());
 
 		this.saveButton.setEnabled(false);
@@ -905,6 +931,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	void doDeleteSelectedEntries() {
 		final Collection<? extends Integer> selectedIdsToDelete =
 				(Collection<? extends Integer>) this.tableWithSelectAllLayout.getTable().getValue();
@@ -979,7 +1006,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	/**
 	 * Get item id's of a table, and return it as a list
-	 * 
+	 *
 	 * @param table
 	 * @return
 	 */
@@ -1123,8 +1150,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		return this.currentlySetGermplasmInfo;
 	}
 
-	public void addGermplasm(final Integer gid) {
-		this.dropHandler.addGermplasm(gid);
+	public void addGermplasm(final List<Integer> gids) {
+		this.dropHandler.addGermplasm(gids);
 		this.setHasUnsavedChanges(true);
 	}
 
@@ -1188,6 +1215,29 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.getWindow().addWindow(exportListAsDialog);
 	}
 
+	public void exportSeedPreparationList(){
+		try{
+			SeedInventoryListExporter seedInventoryListExporter = new SeedInventoryListExporter(this.source,
+					this.currentlySavedGermplasmList);
+			seedInventoryListExporter.exportSeedPreparationList();
+		}
+		catch (SeedInventoryExportException ex){
+			ListBuilderComponent.LOG.debug(ex.getMessage(), ex);
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
+					"Cannot Export Seed Preparation List :"+ex.getMessage());
+		}
+	}
+
+	private void openImportSeedPreparationDialog()  {
+		final Window window = getWindow();
+		final SeedInventoryImportFileComponent
+				seedInventoryImportFileComponent = new SeedInventoryImportFileComponent(this.source, this, this.currentlySavedGermplasmList);
+		seedInventoryImportFileComponent.setDebugId("seedInventoryImportFileComponent");
+		window.addWindow(seedInventoryImportFileComponent);
+
+	}
+
+
 	private void exportListForGenotypingOrderAction() {
 		if (this.isCurrentListSaved()) {
 			if (this.currentlySavedGermplasmList.isLockedList()) {
@@ -1199,8 +1249,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 					final String listName = this.currentlySavedGermplasmList.getName();
 
-					final FileDownloadResource fileDownloadResource =
-							new FileDownloadResource(new File(tempFileName),listName.replace(" ","_") + "ForGenotyping.xls", this.source.getApplication());
+					final FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName),
+							listName.replace(" ", "_") + "ForGenotyping.xls", this.source.getApplication());
 
 					this.source.getWindow().open(fileDownloadResource);
 
@@ -1613,9 +1663,14 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		for (final Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()) {
 			final ListEntryLotDetails lot = entry.getKey();
 			final Double newRes = entry.getValue();
-
+			final Double withdrawalbalance = lot.getWithdrawalBalance() + newRes;
+			final Double available = lot.getAvailableLotBalance() - newRes;
 			final Item itemToUpdate = this.listInventoryTable.getTable().getItem(lot);
-			itemToUpdate.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(newRes);
+			if(newRes > 0){
+				itemToUpdate.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(withdrawalbalance + lot.getLotScaleNameAbbr());
+				itemToUpdate.getItemProperty(ColumnLabels.STATUS.getName()).setValue(GermplasmInventory.RESERVED);
+				itemToUpdate.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(available + lot.getLotScaleNameAbbr());
+			}
 		}
 
 		this.removeReserveInventoryWindow(this.reserveInventory);
