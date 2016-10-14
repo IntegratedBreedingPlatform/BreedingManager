@@ -419,10 +419,9 @@ public class DropHandlerMethods {
 				}
 				newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 
-				if (forEditList) {
-					newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(germplasmListData.getInventoryInfo().getStockIDs());
-				} else {
-					newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(DropHandlerMethods.STRING_EMPTY);
+				String stockIDs = DropHandlerMethods.STRING_EMPTY;
+				if (germplasmListData.getInventoryInfo() != null && germplasmListData.getInventoryInfo().getStockIDs() != null) {
+					newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIDs);
 				}
 
 				for (final Entry<String, List<ListDataColumnValues>> columnEntry : this.currentColumnsInfo.getColumnValuesMap()
