@@ -152,9 +152,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		final List<Integer> selectedListEntries = new ArrayList<Integer>();
 		selectedListEntries.addAll((Collection<Integer>) sourceTable.getValue());
 
-		final Boolean isCopyAllEntries =
-				selectedListEntries.size() == sourceTable.getItemIds().size() && targetTable.getItemIds().isEmpty();
-
 		if (selectedListEntries.isEmpty() && transferrableItemId != null) {
 			selectedListEntries.add(transferrableItemId);
 		}
@@ -231,18 +228,12 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 					item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(newAvailInvButton);
 					item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 
-					if (isCopyAllEntries) {
-
-						final Object columnValue = sourceTable.getItem(itemId).getItemProperty(ColumnLabels.STOCKID.getName()).getValue();
-						final Label stockIdLabel = (Label) columnValue;
-						final Label newStockIdLabel = new Label(stockIdLabel.getValue().toString());
-						newStockIdLabel.setDebugId("newStockIdLabel");
-						newStockIdLabel.setDescription(stockIdLabel.getValue().toString());
-						item.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(newStockIdLabel);
-
-					} else {
-						item.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(new Label(""));
-					}
+					final Object columnValue = sourceTable.getItem(itemId).getItemProperty(ColumnLabels.STOCKID.getName()).getValue();
+					final Label stockIdLabel = (Label) columnValue;
+					final Label newStockIdLabel = new Label(stockIdLabel.getValue().toString());
+					newStockIdLabel.setDebugId("newStockIdLabel");
+					newStockIdLabel.setDescription(stockIdLabel.getValue().toString());
+					item.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(newStockIdLabel);
 
 				}
 			}
