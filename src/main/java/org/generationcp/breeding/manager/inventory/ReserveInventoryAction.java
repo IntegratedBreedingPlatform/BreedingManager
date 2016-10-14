@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.inventory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,9 +14,11 @@ import javax.annotation.Resource;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.domain.inventory.GermplasmInventory;
+import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
+import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.ReservedInventoryKey;
@@ -140,6 +143,10 @@ public class ReserveInventoryAction implements Serializable {
 	public boolean saveReserveTransactions(Map<ListEntryLotDetails, Double> validReservationsToSave, Integer listId) {
 		List<Transaction> reserveTransactionList = new ArrayList<Transaction>();
 		for (Map.Entry<ListEntryLotDetails, Double> entry : validReservationsToSave.entrySet()) {
+			if(!checkAvailableBalance(entry,listId))
+			{
+				return  false;
+			}
 			ListEntryLotDetails lotDetail = entry.getKey();
 
 			Integer lotId = lotDetail.getLotId();
@@ -182,6 +189,24 @@ public class ReserveInventoryAction implements Serializable {
 		}
 
 		this.inventoryDataManager.addTransactions(reserveTransactionList);
+		return true;
+
+	}
+
+	public boolean checkAvailableBalance(Map.Entry<ListEntryLotDetails, Double> entry ,Integer listId){
+		ListEntryLotDetails lotDetail = entry.getKey();
+		Integer lrecId = lotDetail.getId();
+		final List<GermplasmListData> inventoryData = this.inventoryDataManager
+				.getLotCountsForListEntries(listId, new ArrayList<>(Collections.singleton(lrecId)));
+		for(GermplasmListData germplasmListData : inventoryData){
+			ListDataInventory listDataInventory = germplasmListData.getInventoryInfo();
+			Double availableBalance = listDataInventory.getTotalAvailableBalance();
+			Double amountToReserve = entry.getValue();
+			if(amountToReserve > availableBalance){
+				return false;
+			}
+		}
+
 		return true;
 	}
 
