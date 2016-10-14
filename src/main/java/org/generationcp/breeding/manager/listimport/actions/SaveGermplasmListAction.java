@@ -265,7 +265,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 		for (final ImportedVariate importedVariate : importedGermplasmList.getImportedVariates()) {
 			// GCP-10077: use variate name, instead of the property
-			final String variate = importedVariate.getVariate();
+			final String variate = importedVariate.getName();
 			if (importedVariate.isSeedStockVariable()) {
 				this.processSeedStockVariate(importedVariate);
 			} else {
@@ -302,7 +302,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		newUdfld.setFtable(SaveGermplasmListAction.FTABLE_ATTRIBUTE);
 		newUdfld.setFtype(importedVariate.getProperty().toUpperCase());
 		// GCP-10077 - use name instead of property
-		newUdfld.setFcode(importedVariate.getVariate());
+		newUdfld.setFcode(importedVariate.getName());
 		newUdfld.setFname(importedVariate.getDescription());
 		final String fmt = importedVariate.getScale() + "," + importedVariate.getMethod() + "," + importedVariate.getDataType();
 		newUdfld.setFfmt(fmt);
@@ -335,7 +335,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	protected void processSeedStockVariate(final ImportedVariate importedVariate) throws BreedingManagerException {
 
 		// find stock variable via name at top of column in the sheet - should be one
-		final Set<StandardVariable> terms = this.ontologyDataManager.findStandardVariablesByNameOrSynonym(importedVariate.getVariate(),
+		final Set<StandardVariable> terms = this.ontologyDataManager.findStandardVariablesByNameOrSynonym(importedVariate.getName(),
 				this.contextUtil.getCurrentProgramUUID());
 		if (terms.size() == 1) {
 			// ok to get only record with the size check
@@ -345,7 +345,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		} else {
 			// TODO
 			// sorry non-i18N message
-			throw new BreedingManagerException("The BMS does not contain a Variable called " + importedVariate.getVariate()
+			throw new BreedingManagerException("The BMS does not contain a Variable called " + importedVariate.getName()
 					+ ". Please create it in the Ontology Manager or change your import sheet.");
 		}
 
