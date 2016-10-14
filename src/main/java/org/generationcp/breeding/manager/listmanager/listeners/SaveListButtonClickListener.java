@@ -1,4 +1,3 @@
-
 package org.generationcp.breeding.manager.listmanager.listeners;
 
 import java.util.ArrayList;
@@ -155,21 +154,18 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 
 					if (SaveListButtonClickListener.this.areThereChangesToList(currentlySavedList, listToSave)
 							|| SaveListButtonClickListener.this.forceHasChanges) {
-						if (!currentlySavedList.getName().equals(listToSave.getName())
-								&& !SaveListButtonClickListener.this.validateListName(listToSave)) {
+						if (!currentlySavedList.getName().equals(listToSave.getName()) && !SaveListButtonClickListener.this
+								.validateListName(listToSave)) {
 							return;
 						}
 
-						listToSave =
-								ListCommonActionsUtil.overwriteList(listToSave, SaveListButtonClickListener.this.germplasmListManager,
-										SaveListButtonClickListener.this.source, SaveListButtonClickListener.this.messageSource,
-										showMessages);
+						listToSave = ListCommonActionsUtil.overwriteList(listToSave, SaveListButtonClickListener.this.germplasmListManager,
+								SaveListButtonClickListener.this.source, SaveListButtonClickListener.this.messageSource, showMessages);
 					}
 
 					if (listToSave != null) {
-						final boolean thereAreChangesInListEntries =
-								ListCommonActionsUtil.overwriteListEntries(listToSave, listEntries,
-										SaveListButtonClickListener.this.forceHasChanges,
+						final boolean thereAreChangesInListEntries = ListCommonActionsUtil
+								.overwriteListEntries(listToSave, listEntries, SaveListButtonClickListener.this.forceHasChanges,
 										SaveListButtonClickListener.this.germplasmListManager, SaveListButtonClickListener.this.source,
 										SaveListButtonClickListener.this.messageSource, showMessages);
 
@@ -184,10 +180,9 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 				}
 
 				try {
-					SaveListButtonClickListener.this.contextUtil.logProgramActivity(
-							"List Manager Save List",
-							"Successfully saved list and list entries for: " + currentlySavedList.getId() + " - "
-									+ currentlySavedList.getName());
+					SaveListButtonClickListener.this.contextUtil.logProgramActivity("List Manager Save List",
+							"Successfully saved list and list entries for: " + currentlySavedList.getId() + " - " + currentlySavedList
+									.getName());
 
 					SaveListButtonClickListener.this.source.getBuildNewListDropHandler().setChanged(false);
 
@@ -225,8 +220,8 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 
 	private void saveListDataColumns(final GermplasmList listToSave) {
 		try {
-			this.germplasmListManager.saveListDataColumns(this.source.getAddColumnContextMenu().getListDataCollectionFromTable(
-					this.listDataTable));
+			this.germplasmListManager
+					.saveListDataColumns(this.source.getAddColumnContextMenu().getListDataCollectionFromTable(this.listDataTable));
 		} catch (final MiddlewareQueryException e) {
 			SaveListButtonClickListener.LOG.error("Error in saving added germplasm list columns: " + listToSave, e);
 			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
@@ -243,8 +238,8 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 			MessageNotifier.showRequiredFieldError(this.source.getWindow(), this.messageSource.getMessage(Message.NAME_CAN_NOT_BE_LONG));
 			isValid = false;
 		} else if (list.getDescription() != null && list.getDescription().length() > 255) {
-			MessageNotifier.showRequiredFieldError(this.source.getWindow(),
-					this.messageSource.getMessage(Message.DESCRIPTION_CAN_NOT_BE_LONG));
+			MessageNotifier
+					.showRequiredFieldError(this.source.getWindow(), this.messageSource.getMessage(Message.DESCRIPTION_CAN_NOT_BE_LONG));
 			isValid = false;
 		} else if (list.getDate() == null) {
 			MessageNotifier.showRequiredFieldError(this.source.getWindow(), "Please select a date.");
@@ -278,7 +273,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 
 	/**
 	 * This method is used for refreshing entries from list data table in List Builder Component after saving
-	 * 
+	 *
 	 * @param currentlySavedList - the germplasm list currently saved in Build New List section
 	 */
 	private void updateListDataTableContent(final GermplasmList currentlySavedList) {
@@ -314,9 +309,8 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 						&& entry.getInventoryInfo().getActualInventoryLotCount() != 0) {
 					availInv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
 				}
-				final Button inventoryButton =
-						new Button(availInv, new InventoryLinkButtonClickListener(this.source, currentlySavedList.getId(), entry.getId(),
-								entry.getGid()));
+				final Button inventoryButton = new Button(availInv,
+						new InventoryLinkButtonClickListener(this.source, currentlySavedList.getId(), entry.getId(), entry.getGid()));
 				inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 				inventoryButton.setDescription("Click to view Inventory Details");
 
