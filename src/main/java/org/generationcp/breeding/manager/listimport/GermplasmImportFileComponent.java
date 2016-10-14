@@ -179,7 +179,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 
 		final List<ImportedFactor> importedNameFactors = new ArrayList<ImportedFactor>();
 		for (final ImportedFactor factor : importedFactors) {
-			if (validNameTypes.contains(factor.getFactor())) {
+			if (validNameTypes.contains(factor.getName())) {
 				importedNameFactors.add(factor);
 			}
 		}

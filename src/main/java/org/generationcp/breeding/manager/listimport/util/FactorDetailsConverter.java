@@ -82,22 +82,22 @@ class FactorDetailsConverter extends WorkbookRowConverter<ImportedFactor> {
 		final String method = importedFactor.getMethod() == null ? "" : importedFactor.getMethod().toUpperCase();
 
 		if (FactorDetailsConverter.GERMPLASM_ENTRY_PROPERTY.equals(property) && FactorDetailsConverter.NUMBER_SCALE.equals(scale)) {
-			this.specialFactors.put(GermplasmListParser.FactorTypes.ENTRY, importedFactor.getFactor());
+			this.specialFactors.put(GermplasmListParser.FactorTypes.ENTRY, importedFactor.getName());
 		} else if (FactorDetailsConverter.GERMPLASM_ID_PROPERTY.equals(property) && FactorDetailsConverter.isGermplasmNameScale(scale)) {
-			this.specialFactors.put(GermplasmListParser.FactorTypes.DESIG, importedFactor.getFactor());
+			this.specialFactors.put(GermplasmListParser.FactorTypes.DESIG, importedFactor.getName());
 		} else if (FactorDetailsConverter.GERMPLASM_ID_PROPERTY.equals(property) && FactorDetailsConverter.isGermplasmIdScale(scale)) {
-			this.specialFactors.put(GermplasmListParser.FactorTypes.GID, importedFactor.getFactor());
+			this.specialFactors.put(GermplasmListParser.FactorTypes.GID, importedFactor.getName());
 			this.importFileIsAdvanced = true;
 		} else if (FactorDetailsConverter.GERMPLASM_ENTRY_PROPERTY.equals(property) && FactorDetailsConverter.isCodeScale(scale)) {
-			this.specialFactors.put(GermplasmListParser.FactorTypes.ENTRYCODE, importedFactor.getFactor());
+			this.specialFactors.put(GermplasmListParser.FactorTypes.ENTRYCODE, importedFactor.getName());
 		} else if (FactorDetailsConverter.SEED_SOURCE_PROPERTY.equals(property) && FactorDetailsConverter.isSeedSourceScale(scale)) {
-			this.specialFactors.put(GermplasmListParser.FactorTypes.SOURCE, importedFactor.getFactor());
+			this.specialFactors.put(GermplasmListParser.FactorTypes.SOURCE, importedFactor.getName());
 		} else if (FactorDetailsConverter.isCrossNameProperty(property) && FactorDetailsConverter.isCrossScale(scale)) {
-			this.specialFactors.put(GermplasmListParser.FactorTypes.CROSS, importedFactor.getFactor());
+			this.specialFactors.put(GermplasmListParser.FactorTypes.CROSS, importedFactor.getName());
 		} else if (FactorDetailsConverter.GERMPLASM_STOCK_ID_PROPERTY.equals(property) && FactorDetailsConverter.isStockIdScale(scale)) {
-			this.specialFactors.put(GermplasmListParser.FactorTypes.STOCK, importedFactor.getFactor());
+			this.specialFactors.put(GermplasmListParser.FactorTypes.STOCK, importedFactor.getName());
 		} else if (FactorDetailsConverter.NAME_SCALE.equals(scale) && FactorDetailsConverter.ASSIGNED_METHOD.equals(method)) {
-			this.nameFactors.add(importedFactor.getFactor());
+			this.nameFactors.add(importedFactor.getName());
 		}
 
 		return importedFactor;

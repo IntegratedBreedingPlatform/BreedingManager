@@ -30,7 +30,7 @@ public class ImportedGermplasmList extends ImportedDescriptionDetails {
 
 	public void removeImportedFactor(final String factorName) {
 		for (final ImportedFactor factor : this.getImportedFactors()) {
-			if (factor.getFactor().equalsIgnoreCase(factorName)) {
+			if (factor.getName().equalsIgnoreCase(factorName)) {
 				this.importedFactors.remove(factor);
 				break;
 			}

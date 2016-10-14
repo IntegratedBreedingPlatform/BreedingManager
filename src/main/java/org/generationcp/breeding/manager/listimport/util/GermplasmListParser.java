@@ -157,7 +157,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	}
 
 	public boolean isSeedAmountVariable(final ImportedVariate variate) {
-		return !this.seedAmountVariate.isEmpty() && this.seedAmountVariate.equals(variate.getVariate());
+		return !this.seedAmountVariate.isEmpty() && this.seedAmountVariate.equals(variate.getName());
 	}
 
 	public boolean importFileIsAdvanced() {
@@ -205,18 +205,18 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 					// lets remove if exists just in case
 					GermplasmListParser.this.specialFactors.remove(FactorTypes.STOCK);
-					GermplasmListParser.this.specialFactors.put(FactorTypes.STOCK, importedFactor.getFactor());
+					GermplasmListParser.this.specialFactors.put(FactorTypes.STOCK, importedFactor.getName());
 
 					// add to importedGermplasmList
 					for (final Iterator<ImportedFactor> iter =
 							GermplasmListParser.this.importedGermplasmList.getImportedFactors().listIterator(); iter.hasNext();) {
 						final ImportedFactor factor = iter.next();
-						if (factor.getFactor().equals(importedFactor.getFactor())) {
+						if (factor.getName().equals(importedFactor.getName())) {
 							iter.remove();
 						}
 					}
 					GermplasmListParser.this.importedGermplasmList.addImportedFactor(importedFactor);
-					GermplasmListParser.this.descriptionVariableNames.add(importedFactor.getFactor());
+					GermplasmListParser.this.descriptionVariableNames.add(importedFactor.getName());
 
 					return true;
 				}
@@ -228,9 +228,9 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 								rowValues.get(3), rowValues.get(4), rowValues.get(5));
 
 						seedAmountVariate.setSeedStockVariable(true);
-						GermplasmListParser.this.seedAmountVariate = seedAmountVariate.getVariate();
+						GermplasmListParser.this.seedAmountVariate = seedAmountVariate.getName();
 						GermplasmListParser.this.importedGermplasmList.addImportedVariate(seedAmountVariate);
-						GermplasmListParser.this.descriptionVariableNames.add(seedAmountVariate.getVariate());
+						GermplasmListParser.this.descriptionVariableNames.add(seedAmountVariate.getName());
 						GermplasmListParser.LOG.debug("SEED STOCK :" + seedAmountVariate.getProperty());
 
 						return true;
@@ -289,7 +289,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 		for (final ImportedVariate variate : variateList) {
 			this.importedGermplasmList.addImportedVariate(variate);
-			this.descriptionVariableNames.add(variate.getVariate().toUpperCase());
+			this.descriptionVariableNames.add(variate.getName().toUpperCase());
 		}
 	}
 
@@ -320,7 +320,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 		for (final ImportedConstant constant : constantList) {
 			this.importedGermplasmList.addImportedConstant(constant);
-			this.descriptionVariableNames.add(constant.getConstant());
+			this.descriptionVariableNames.add(constant.getName());
 		}
 
 		// update current row index
@@ -353,7 +353,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		this.nameFactors = factorDetailsConverter.getNameFactors();
 		for (final ImportedFactor factor : factorList) {
 			this.importedGermplasmList.addImportedFactor(factor);
-			this.descriptionVariableNames.add(factor.getFactor());
+			this.descriptionVariableNames.add(factor.getName());
 		}
 
 		// update current row index
@@ -668,10 +668,10 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 			try {
 				if (GermplasmListParser.this.ontologyDataManager.isSeedAmountVariable(property)) {
 					importedVariate.setSeedStockVariable(true);
-					this.seedAmountVariate = importedVariate.getVariate();
+					this.seedAmountVariate = importedVariate.getName();
 					GermplasmListParser.LOG.debug("SEED STOCK :" + importedVariate.getProperty());
 				} else if ("ATTRIBUTE".equals(property) || "PASSPORT".equals(property)) {
-					this.attributeVariates.add(importedVariate.getVariate());
+					this.attributeVariates.add(importedVariate.getName());
 				}
 			} catch (final MiddlewareQueryException e) {
 				GermplasmListParser.LOG.error("SEED STOCK " + importedVariate.getProperty(), e);

@@ -286,7 +286,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		final Map<String, String> nameFactors = importedGermplasmList.getImportedGermplasm().get(0).getNameFactors();
 
 		for (final ImportedFactor importedFactor : importedGermplasmList.getImportedFactors()) {
-			final String factor = importedFactor.getFactor();
+			final String factor = importedFactor.getName();
 			if (nameFactors.containsKey(factor) && !this.isUdfldsExist(existingUdflds, factor)) {
 				final UserDefinedField newUdfld = this.createNewUserDefinedField(importedFactor);
 				newUdflds.add(newUdfld);
@@ -319,7 +319,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		final UserDefinedField newUdfld = new UserDefinedField();
 		newUdfld.setFtable(SaveGermplasmListAction.FTABLE_NAME);
 		newUdfld.setFtype(SaveGermplasmListAction.FTYPE_NAME);
-		newUdfld.setFcode(importedFactor.getFactor());
+		newUdfld.setFcode(importedFactor.getName());
 		newUdfld.setFname(importedFactor.getDescription());
 		final String fmt = importedFactor.getScale() + "," + importedFactor.getMethod() + "," + importedFactor.getDataType();
 		newUdfld.setFfmt(fmt);

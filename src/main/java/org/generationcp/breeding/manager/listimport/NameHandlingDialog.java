@@ -108,10 +108,10 @@ public class NameHandlingDialog extends BaseSubWindow implements BreedingManager
 		this.setAsPreferredNameOption.select(ConfirmOption.NO);
 
 		for (final ImportedFactor nameFactor : this.importedNameFactors) {
-			this.nameTypesComboBox.addItem(nameFactor.getFactor());
+			this.nameTypesComboBox.addItem(nameFactor.getName());
 		}
 
-		this.nameTypesComboBox.setValue(this.importedNameFactors.get(0).getFactor());
+		this.nameTypesComboBox.setValue(this.importedNameFactors.get(0).getName());
 
 	}
 
