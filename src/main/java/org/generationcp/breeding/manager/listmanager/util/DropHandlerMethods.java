@@ -421,8 +421,9 @@ public class DropHandlerMethods {
 
 				String stockIDs = DropHandlerMethods.STRING_EMPTY;
 				if (germplasmListData.getInventoryInfo() != null && germplasmListData.getInventoryInfo().getStockIDs() != null) {
-					newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIDs);
+					stockIDs = germplasmListData.getInventoryInfo().getStockIDs();
 				}
+				newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIDs);
 
 				for (final Entry<String, List<ListDataColumnValues>> columnEntry : this.currentColumnsInfo.getColumnValuesMap()
 						.entrySet()) {
