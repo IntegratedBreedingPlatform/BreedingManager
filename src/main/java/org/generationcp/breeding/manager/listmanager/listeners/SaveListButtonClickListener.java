@@ -330,6 +330,11 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 				// GROUP ID - the maintenance group id(gid) of a germplasm
 				final String groupId = entry.getGroupId() == 0 ? "-" : entry.getGroupId().toString();
 
+				String stockIDs = SaveListButtonClickListener.STRING_DASH;
+				if (entry.getInventoryInfo() != null && entry.getInventoryInfo().getStockIDs() != null) {
+					stockIDs = entry.getInventoryInfo().getStockIDs();
+				}
+				
 				item.getItemProperty(ColumnLabels.TAG.getName()).setValue(tagCheckBox);
 				item.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
 				item.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(groupId);
@@ -340,7 +345,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 				item.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
 				item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
 				item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
-
+				item.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIDs);
 			}
 
 			this.copyAddedColumnsFromTemp(tempTable);
