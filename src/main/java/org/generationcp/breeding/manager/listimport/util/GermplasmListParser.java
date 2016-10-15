@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.annotation.Resource;
 
@@ -200,7 +199,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 				if (FactorDetailsConverter.GERMPLASM_STOCK_ID_PROPERTY.equalsIgnoreCase(property)
 						&& FactorDetailsConverter.isStockIdScale(scale)) {
 
-					final ImportedFactor importedFactor = new ImportedFactor(rowValues.get(0), rowValues.get(1), rowValues.get(2),
+					final ImportedFactor importedFactor = new ImportedFactor(rowValues.get(0).toUpperCase(), rowValues.get(1), rowValues.get(2),
 							rowValues.get(3), rowValues.get(4), rowValues.get(5), rowValues.get(6), rowValues.get(7));
 
 					// lets remove if exists just in case
@@ -224,7 +223,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 				// seed amount variate parse
 				try {
 					if (GermplasmListParser.this.ontologyDataManager.isSeedAmountVariable(property)) {
-						final ImportedVariate seedAmountVariate = new ImportedVariate(rowValues.get(0), rowValues.get(1), rowValues.get(2),
+						final ImportedVariate seedAmountVariate = new ImportedVariate(rowValues.get(0).toUpperCase(), rowValues.get(1), rowValues.get(2),
 								rowValues.get(3), rowValues.get(4), rowValues.get(5));
 
 						seedAmountVariate.setSeedStockVariable(true);
@@ -289,7 +288,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 		for (final ImportedVariate variate : variateList) {
 			this.importedGermplasmList.addImportedVariate(variate);
-			this.descriptionVariableNames.add(variate.getName().toUpperCase());
+			this.descriptionVariableNames.add(variate.getName());
 		}
 	}
 
@@ -433,7 +432,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		// just ignore it
 		for (int i = 0; i < headerSize + 2; i++) {
 			// search the current header
-			final String obsHeader = this.getCellStringValue(GermplasmListParser.OBSERVATION_SHEET_NO, 0, i);
+			final String obsHeader = this.getCellStringValue(GermplasmListParser.OBSERVATION_SHEET_NO, 0, i).toUpperCase();
 
 			if (this.specialFactors.get(FactorTypes.ENTRY).equals(obsHeader)) {
 				validationMap.addValidation(i, new ValueTypeValidator(Integer.class));
@@ -468,9 +467,9 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	}
 
 	protected void validateObservationHeaders() throws FileParsingException {
+		final Set<String> obsHeaders = new HashSet<>();
+		obsHeaders.addAll(this.observationColumnMap.values());
 		for (final String headerName : this.descriptionVariableNames) {
-			final Set<String> obsHeaders = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-			obsHeaders.addAll(this.observationColumnMap.values());
 			if (!obsHeaders.contains(headerName)) {
 				throw new FileParsingException("GERMPLASM_PARSE_HEADER_ERROR", 1, "", headerName);
 			}
@@ -627,7 +626,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 		@Override
 		public ImportedCondition convertToObject(final Map<Integer, String> rowValues) throws FileParsingException {
-			return new ImportedCondition(rowValues.get(0), rowValues.get(1), rowValues.get(2), rowValues.get(3), rowValues.get(4),
+			return new ImportedCondition(rowValues.get(0).toUpperCase(), rowValues.get(1), rowValues.get(2), rowValues.get(3), rowValues.get(4),
 					rowValues.get(5), rowValues.get(6), rowValues.get(7));
 
 		}
@@ -642,7 +641,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 		@Override
 		public ImportedConstant convertToObject(final Map<Integer, String> rowValues) throws FileParsingException {
-			return new ImportedConstant(rowValues.get(0), rowValues.get(1), rowValues.get(2), rowValues.get(3), rowValues.get(4),
+			return new ImportedConstant(rowValues.get(0).toUpperCase(), rowValues.get(1), rowValues.get(2), rowValues.get(3), rowValues.get(4),
 					rowValues.get(5), rowValues.get(6), rowValues.get(7));
 		}
 	}
@@ -660,7 +659,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		@Override
 		public ImportedVariate convertToObject(final Map<Integer, String> rowValues) throws FileParsingException {
 
-			final ImportedVariate importedVariate = new ImportedVariate(rowValues.get(0), rowValues.get(1), rowValues.get(2),
+			final ImportedVariate importedVariate = new ImportedVariate(rowValues.get(0).toUpperCase(), rowValues.get(1), rowValues.get(2),
 					rowValues.get(3), rowValues.get(4), rowValues.get(5));
 
 			final String property = importedVariate.getProperty() == null ? "" : importedVariate.getProperty().toUpperCase();
