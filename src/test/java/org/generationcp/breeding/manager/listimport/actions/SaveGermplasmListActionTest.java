@@ -36,6 +36,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -87,6 +89,9 @@ public class SaveGermplasmListActionTest {
 
 	@Mock
 	private FieldbookService fieldbookService;
+	
+	@Captor
+	private ArgumentCaptor<List<UserDefinedField>> userDefinedFieldsCaptor;
 
 	@InjectMocks
 	private SaveGermplasmListAction action;
@@ -228,7 +233,7 @@ public class SaveGermplasmListActionTest {
 		final Lot testLot = new Lot();
 		this.action.getGidLotMap().put(SaveGermplasmListActionTest.TEST_GID, testLot);
 
-		final List<Transaction> testGidTransactions = new ArrayList();
+		final List<Transaction> testGidTransactions = new ArrayList<>();
 		testGidTransactions.add(new Transaction());
 		this.action.getGidTransactionSetMap().put(SaveGermplasmListActionTest.TEST_GID, testGidTransactions);
 
@@ -247,7 +252,7 @@ public class SaveGermplasmListActionTest {
 		this.action.getGidLotMap().put(SaveGermplasmListActionTest.TEST_GID, testLot);
 
 		// Create an empty Transaction list
-		final List<Transaction> testGidTransactions = new ArrayList();
+		final List<Transaction> testGidTransactions = new ArrayList<>();
 		this.action.getGidTransactionSetMap().put(SaveGermplasmListActionTest.TEST_GID, testGidTransactions);
 
 		this.action.saveInventory();
@@ -303,6 +308,85 @@ public class SaveGermplasmListActionTest {
 		Mockito.verify(this.germplasmManager, Mockito.times(0)).addGermplasmName(Matchers.anyListOf(Name.class));
 	}
 
+	@Test
+	public void testGetUserDefinedFieldsForAttributeTypes(){
+		this.action.getUserDefinedFields(SaveGermplasmListAction.FCODE_TYPE_ATTRIBUTE);
+		
+		// Verify that "Attribute" and "Passport" attribute types were retrieved from UDFLDS table
+		Mockito.verify(this.germplasmManager, Mockito.times(1)).getUserDefinedFieldByFieldTableNameAndType(
+				SaveGermplasmListAction.FTABLE_ATTRIBUTE, SaveGermplasmListAction.FTYPE_ATTRIBUTE);
+		Mockito.verify(this.germplasmManager, Mockito.times(1)).getUserDefinedFieldByFieldTableNameAndType(
+				SaveGermplasmListAction.FTABLE_ATTRIBUTE, SaveGermplasmListAction.FTYPE_PASSPORT);
+		Mockito.verifyNoMoreInteractions(this.germplasmManager);
+	}
+	
+	@Test
+	public void testGetUserDefinedFieldsForNameTypes(){
+		this.action.getUserDefinedFields(SaveGermplasmListAction.FCODE_TYPE_NAME);
+		
+		// Verify that name types were retrieved from UDFLDS table
+		Mockito.verify(this.germplasmManager, Mockito.times(1)).getUserDefinedFieldByFieldTableNameAndType(
+				SaveGermplasmListAction.FTABLE_NAME, SaveGermplasmListAction.FTYPE_NAME);
+		Mockito.verifyNoMoreInteractions(this.germplasmManager);
+	}
+	
+	@Test
+	public void testProcessVariatesWhenAllAttributeTypesExistInDB() throws BreedingManagerException{
+		// Setup variates that are attributes types for imported list
+		final Map<String, String> attributeTypesMap = new HashMap<>();
+		attributeTypesMap.put("NOTES", "note for germplasm 1");
+		attributeTypesMap.put("MATURITY", "immature");
+		attributeTypesMap.put("ANCEST", "long lineage");
+		this.importedGermplasmList.getImportedGermplasm().get(0).setAttributeVariates(attributeTypesMap);
+		importedGermplasmListInitializer.addImportedVariates(importedGermplasmList, "NOTES", "MATURITY", "ANCEST");
+
+		// Mock UserDefinedFields of attribute types from DB. Matching should be case insensitive
+		setUpExistingUserDefinedFieldsMocks();
+		
+		// Call method to test
+		this.action.processVariates(this.importedGermplasmList);
+		
+		
+		// Verify that new new attribute types were added to UDFLDS table
+		Mockito.verify(this.germplasmManager, Mockito.times(0)).addUserDefinedFields(Matchers.anyListOf(UserDefinedField.class));
+	}
+
+	
+	@Test
+	public void testProcessVariatesWhenNewAttributeTypesNotInDB() throws BreedingManagerException{
+		// Setup variates that are attributes types for imported list. "TESTATTR" does not exist in DB yet as attribute type
+		final String newAttributeType = "TESTATTR";
+		final Map<String, String> attributeTypesMap = new HashMap<>();
+		attributeTypesMap.put("NOTES", "note for germplasm 1");
+		attributeTypesMap.put(newAttributeType, "sample value for test attribute");
+		this.importedGermplasmList.getImportedGermplasm().get(0).setAttributeVariates(attributeTypesMap);
+		importedGermplasmListInitializer.addImportedVariates(importedGermplasmList, "NOTES", newAttributeType);
+		
+		// Mock UserDefinedFields of attribute types from DB. Matching should be case insensitive
+		setUpExistingUserDefinedFieldsMocks();
+		
+		
+		// Call method to test
+		this.action.processVariates(this.importedGermplasmList);
+		
+		
+		// Verify that new attribute type TESTATTR was added to UDFLDS table
+		Mockito.verify(this.germplasmManager, Mockito.times(1)).addUserDefinedFields(this.userDefinedFieldsCaptor.capture());
+		final List<UserDefinedField> newUserDefinedFields = this.userDefinedFieldsCaptor.getValue();
+		Assert.assertEquals(1, newUserDefinedFields.size());
+		Assert.assertEquals(newAttributeType, newUserDefinedFields.get(0).getFcode());
+	}
+
+	private void setUpExistingUserDefinedFieldsMocks() {
+		final List<UserDefinedField> attributeTypeFields = new ArrayList<>();
+		attributeTypeFields.add(new UserDefinedField(1, SaveGermplasmListAction.FTABLE_ATTRIBUTE, SaveGermplasmListAction.FTYPE_ATTRIBUTE, "Notes", "Notes Name", "", "", 1, 1, 1, 1));
+		attributeTypeFields.add(new UserDefinedField(2, SaveGermplasmListAction.FTABLE_ATTRIBUTE, SaveGermplasmListAction.FTYPE_ATTRIBUTE, "Maturity", "Maturity Name", "", "", 1, 1, 1, 1));
+		attributeTypeFields.add(new UserDefinedField(3, SaveGermplasmListAction.FTABLE_ATTRIBUTE, SaveGermplasmListAction.FTYPE_ATTRIBUTE, "IPSTAT", "IP Status", "", "", 1, 1, 1, 1));
+		attributeTypeFields.add(new UserDefinedField(4, SaveGermplasmListAction.FTABLE_ATTRIBUTE, SaveGermplasmListAction.FTYPE_PASSPORT, "Ancest", "Ancestry Name", "", "", 1, 1, 1, 1));
+		attributeTypeFields.add(new UserDefinedField(5, SaveGermplasmListAction.FTABLE_ATTRIBUTE, SaveGermplasmListAction.FTYPE_PASSPORT, "GROWER", "Grower's name", "", "", 1, 1, 1, 1));
+		Mockito.doReturn(attributeTypeFields).when(this.germplasmManager).getUserDefinedFieldByFieldTableNameAndType(Matchers.anyString(), Matchers.anyString());
+	}
+	
 	private Map<Integer, List<Name>> createNamesMap(int size) {
 		final Map<Integer, List<Name>> namesMap = new HashMap<Integer, List<Name>>();
 		final List<Name> existingNames = this.nameTDI.createNameList(size);

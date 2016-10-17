@@ -62,9 +62,10 @@ public class GermplasmListParserTest {
 
 	@Mock
 	private GermplasmListManager germplasmListManager;
+	
 	@Mock
 	private StockIDValidator stockIdValidator;
-
+	
 	@InjectMocks
 	private final GermplasmListParser parser = new GermplasmListParser();
 
@@ -121,6 +122,16 @@ public class GermplasmListParserTest {
 		Assert.assertEquals(
 				"Header validation setup does not properly recognize the right amount of expected headers for the observation sheet",
 				EXPECTED_DESCRIPTION_SHEET_VARIABLE_COUNT, this.parser.getDescriptionVariableNames().size());
+		
+		// Check that the Description sheet variables are in ALL CAPS after parsing
+		for (final String variableName : this.parser.getDescriptionVariableNames()){
+			Assert.assertEquals(variableName, variableName.toUpperCase());
+		}
+		
+		// Check that the Observation sheet column headers are in ALL CAPS after parsing
+		for (final String columnHeader : this.parser.getObservationSheetHeaders()){
+			Assert.assertEquals(columnHeader, columnHeader.toUpperCase());
+		}
 
 	}
 

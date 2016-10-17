@@ -922,6 +922,10 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	Set<String> getDescriptionVariableNames() {
 		return this.descriptionVariableNames;
 	}
+	
+	List<String> getObservationSheetHeaders(){
+		return this.observationSheetHeaders;
+	}
 
 	/**
 	 * For Test Only
