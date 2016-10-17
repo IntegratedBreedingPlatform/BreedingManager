@@ -94,7 +94,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 	/**
 	 * NOTE: The imported file contains 2 sheet: Description Sheet and Observation Sheet.
-	 * 
+	 *
 	 * @return true if there is an Inventory Variable in the Description Sheet (i.e SEED_AMOUNT_G) and either STOCKID is not included in the
 	 *         Description Sheet or there is no values under STOCKID column in Observation Sheet
 	 */
@@ -105,7 +105,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 	/**
 	 * NOTE: The imported file contains 2 sheet: Description Sheet and Observation Sheet.
-	 * 
+	 *
 	 * @return true if there is an Inventory Variable in the Description Sheet (i.e SEED_AMOUNT_G) and there is at least one value under the
 	 *         Inventory Variable column in Observation Sheet
 	 */
@@ -199,8 +199,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 				if (FactorDetailsConverter.GERMPLASM_STOCK_ID_PROPERTY.equalsIgnoreCase(property)
 						&& FactorDetailsConverter.isStockIdScale(scale)) {
 
-					final ImportedFactor importedFactor = new ImportedFactor(rowValues.get(0).toUpperCase(), rowValues.get(1), rowValues.get(2),
-							rowValues.get(3), rowValues.get(4), rowValues.get(5), rowValues.get(6), rowValues.get(7));
+					final ImportedFactor importedFactor = new ImportedFactor(rowValues.get(0).toUpperCase(), rowValues.get(1),
+							rowValues.get(2), rowValues.get(3), rowValues.get(4), rowValues.get(5), rowValues.get(6), rowValues.get(7));
 
 					// lets remove if exists just in case
 					GermplasmListParser.this.specialFactors.remove(FactorTypes.STOCK);
@@ -223,8 +223,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 				// seed amount variate parse
 				try {
 					if (GermplasmListParser.this.ontologyDataManager.isSeedAmountVariable(property)) {
-						final ImportedVariate seedAmountVariate = new ImportedVariate(rowValues.get(0).toUpperCase(), rowValues.get(1), rowValues.get(2),
-								rowValues.get(3), rowValues.get(4), rowValues.get(5));
+						final ImportedVariate seedAmountVariate = new ImportedVariate(rowValues.get(0).toUpperCase(), rowValues.get(1),
+								rowValues.get(2), rowValues.get(3), rowValues.get(4), rowValues.get(5));
 
 						seedAmountVariate.setSeedStockVariable(true);
 						GermplasmListParser.this.seedAmountVariate = seedAmountVariate.getVariate();
@@ -417,7 +417,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 	/**
 	 * This validator might be too strict for germplasm list parser
-	 * 
+	 *
 	 * @return ParseValidationMap
 	 */
 	protected ParseValidationMap parseObservationHeaders() throws FileParsingException {
@@ -626,8 +626,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 		@Override
 		public ImportedCondition convertToObject(final Map<Integer, String> rowValues) throws FileParsingException {
-			return new ImportedCondition(rowValues.get(0).toUpperCase(), rowValues.get(1), rowValues.get(2), rowValues.get(3), rowValues.get(4),
-					rowValues.get(5), rowValues.get(6), rowValues.get(7));
+			return new ImportedCondition(rowValues.get(0).toUpperCase(), rowValues.get(1), rowValues.get(2), rowValues.get(3),
+					rowValues.get(4), rowValues.get(5), rowValues.get(6), rowValues.get(7));
 
 		}
 	}
@@ -641,8 +641,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 		@Override
 		public ImportedConstant convertToObject(final Map<Integer, String> rowValues) throws FileParsingException {
-			return new ImportedConstant(rowValues.get(0).toUpperCase(), rowValues.get(1), rowValues.get(2), rowValues.get(3), rowValues.get(4),
-					rowValues.get(5), rowValues.get(6), rowValues.get(7));
+			return new ImportedConstant(rowValues.get(0).toUpperCase(), rowValues.get(1), rowValues.get(2), rowValues.get(3),
+					rowValues.get(4), rowValues.get(5), rowValues.get(6), rowValues.get(7));
 		}
 	}
 
@@ -773,7 +773,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 					@Override
 					public void run() throws FileParsingException {
-						if (!StringUtils.isBlank(rowValues.get(colIndex)) && !GermplasmListParser.this.importedGermplasmList.isHasStockIDValues()) {
+						if (!StringUtils.isBlank(rowValues.get(colIndex))
+								&& !GermplasmListParser.this.importedGermplasmList.isHasStockIDValues()) {
 							GermplasmListParser.this.importedGermplasmList.setHasStockIDValues(true);
 						}
 						importedGermplasm.setInventoryId(rowValues.get(colIndex));
@@ -810,7 +811,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 			// row based validation here
 			// GID is given, but no DESIG, get value of DESIG given GID
-			if (importedGermplasm.getGid() != null && (importedGermplasm.getDesig() == null || StringUtils.isBlank(importedGermplasm.getDesig()))) {
+			if (importedGermplasm.getGid() != null
+					&& (importedGermplasm.getDesig() == null || StringUtils.isBlank(importedGermplasm.getDesig()))) {
 				try {
 
 					// Check if germplasm exists
@@ -922,14 +924,14 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	Set<String> getDescriptionVariableNames() {
 		return this.descriptionVariableNames;
 	}
-	
-	List<String> getObservationSheetHeaders(){
+
+	List<String> getObservationSheetHeaders() {
 		return this.observationSheetHeaders;
 	}
 
 	/**
 	 * For Test Only
-	 * 
+	 *
 	 * @param seedAmountVariate
 	 */
 	void setSeedAmountVariate(final String seedAmountVariate) {
@@ -938,7 +940,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 	/**
 	 * For Test Only
-	 * 
+	 *
 	 * @param importedGermplasmList
 	 */
 	void setImportedGermplasmList(final ImportedGermplasmList importedGermplasmList) {

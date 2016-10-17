@@ -116,13 +116,12 @@ public class ImportedGermplasmListDataInitializer {
 	public List<Map<Integer, String>> createFactorsRowValuesListParserData() {
 		final List<Map<Integer, String>> testData = new ArrayList<>();
 
-		final String[][] rawData =
-				{ {"ENTRY_NO", "Germplasm entry - enumerated (number)", "GERMPLASM ENTRY", "NUMBER", "ENUMERATED"},
-						{"GID", "Germplasm identifier - assigned (DBID)", "GERMPLASM ID", "GERMPLASM ID", "ASSIGNED"},
-						{"ENTRY_CODE", "Germplasm ID - Assigned (Code)", "GERMPLASM ENTRY", "CODE OF ENTRY_CODE", "ASSIGNED"},
-						{"DESIGNATION", "Germplasm identifier - assigned (DBCV)", "GERMPLASM ID", "GERMPLASM NAME", "ASSIGNED"},
-						{"CROSS", "The pedigree string of the germplasm", "CROSS HISTORY", "TEXT", "ASSIGNED"},
-						{"SEED_SOURCE", "Seed source - Selected (Code)", "SEED SOURCE", "CODE OF SEED_SOURCE", "SELECTED"}};
+		final String[][] rawData = {{"ENTRY_NO", "Germplasm entry - enumerated (number)", "GERMPLASM ENTRY", "NUMBER", "ENUMERATED"},
+				{"GID", "Germplasm identifier - assigned (DBID)", "GERMPLASM ID", "GERMPLASM ID", "ASSIGNED"},
+				{"ENTRY_CODE", "Germplasm ID - Assigned (Code)", "GERMPLASM ENTRY", "CODE OF ENTRY_CODE", "ASSIGNED"},
+				{"DESIGNATION", "Germplasm identifier - assigned (DBCV)", "GERMPLASM ID", "GERMPLASM NAME", "ASSIGNED"},
+				{"CROSS", "The pedigree string of the germplasm", "CROSS HISTORY", "TEXT", "ASSIGNED"},
+				{"SEED_SOURCE", "Seed source - Selected (Code)", "SEED SOURCE", "CODE OF SEED_SOURCE", "SELECTED"}};
 
 		for (final String[] rowValue : rawData) {
 			final Map<Integer, String> map = new HashMap<>();
@@ -135,11 +134,11 @@ public class ImportedGermplasmListDataInitializer {
 
 		return testData;
 	}
-	
-	
-	public void addImportedVariates(final ImportedGermplasmList importedGermplasmList, final String... variates){
-		for (final String variateName: variates){
-			importedGermplasmList.addImportedVariate(new ImportedVariate(variateName, "Test Description", "ATTRIBUTE", "Scale 1", "Method 1", "C"));
+
+	public void addImportedVariates(final ImportedGermplasmList importedGermplasmList, final String... variates) {
+		for (final String variateName : variates) {
+			importedGermplasmList
+					.addImportedVariate(new ImportedVariate(variateName, "Test Description", "ATTRIBUTE", "Scale 1", "Method 1", "C"));
 		}
 	}
 }
