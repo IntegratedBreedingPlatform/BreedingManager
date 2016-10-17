@@ -69,20 +69,20 @@ public class GermplasmListParserTest {
 	@Before
 	public void setUp() throws Exception {
 
-		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(Matchers.eq(INVENTORY_AMOUNT))).thenReturn(true);
-		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(AdditionalMatchers.not(Matchers.eq(INVENTORY_AMOUNT))))
-				.thenReturn(false);
-		Mockito.when(this.germplasmDataManager.getGermplasmByGID(Matchers.anyInt())).thenReturn(
-				GermplasmTestDataInitializer.createGermplasm(1));
+		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(Matchers.eq(GermplasmListParserTest.INVENTORY_AMOUNT))).thenReturn(true);
+		Mockito.when(this.ontologyDataManager
+				.isSeedAmountVariable(AdditionalMatchers.not(Matchers.eq(GermplasmListParserTest.INVENTORY_AMOUNT)))).thenReturn(false);
+		Mockito.when(this.germplasmDataManager.getGermplasmByGID(Matchers.anyInt()))
+				.thenReturn(GermplasmTestDataInitializer.createGermplasm(1));
 		Mockito.when(this.inventoryDataManager.getSimilarStockIds(Matchers.anyListOf(String.class))).thenReturn(new ArrayList<String>());
-		Mockito.when(this.germplasmListManager.getGermplasmListTypes()).thenReturn(
-				this.userDefinedFieldTestDataInitializer.getValidListType());
+		Mockito.when(this.germplasmListManager.getGermplasmListTypes())
+				.thenReturn(this.userDefinedFieldTestDataInitializer.getValidListType());
 
 	}
 
 	/**
 	 * This is the default case, the template has a stock id factor
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -114,15 +114,15 @@ public class GermplasmListParserTest {
 
 		Assert.assertEquals(
 				"Header validation setup does not properly recognize the right amount of expected headers for the observation sheet",
-				EXPECTED_DESCRIPTION_SHEET_VARIABLE_COUNT, this.parser.getDescriptionVariableNames().size());
-		
+				GermplasmListParserTest.EXPECTED_DESCRIPTION_SHEET_VARIABLE_COUNT, this.parser.getDescriptionVariableNames().size());
+
 		// Check that the Description sheet variables are in ALL CAPS after parsing
-		for (final String variableName : this.parser.getDescriptionVariableNames()){
+		for (final String variableName : this.parser.getDescriptionVariableNames()) {
 			Assert.assertEquals(variableName, variableName.toUpperCase());
 		}
-		
+
 		// Check that the Observation sheet column headers are in ALL CAPS after parsing
-		for (final String columnHeader : this.parser.getObservationSheetHeaders()){
+		for (final String columnHeader : this.parser.getObservationSheetHeaders()) {
 			Assert.assertEquals(columnHeader, columnHeader.toUpperCase());
 		}
 
@@ -130,7 +130,7 @@ public class GermplasmListParserTest {
 
 	/**
 	 * Test when we have no stock id column in observation
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -153,7 +153,7 @@ public class GermplasmListParserTest {
 
 	/**
 	 * Test when we have no stock id column in observation
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -172,15 +172,14 @@ public class GermplasmListParserTest {
 
 	/**
 	 * Test when we have stock id column but contain missing values
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
 	public void testTemplateWithMissingStockIdValuesInObservation() throws Exception {
 		try {
-			final File workbookFile =
-					new File(ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.OBSERVATION_NO_STOCK_ID_VALUES_FILE)
-							.toURI());
+			final File workbookFile = new File(
+					ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.OBSERVATION_NO_STOCK_ID_VALUES_FILE).toURI());
 			final Workbook missingStockIDValuesWorkbook = WorkbookFactory.create(workbookFile);
 			this.importedGermplasmList = this.parser.parseWorkbook(missingStockIDValuesWorkbook, null);
 			Assert.fail("Unable to properly recognize error condition regarding missing stock ID values in observation sheet");
@@ -192,7 +191,7 @@ public class GermplasmListParserTest {
 
 	/**
 	 * Test when we have stock id column but contain duplicate values
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -219,14 +218,14 @@ public class GermplasmListParserTest {
 
 		this.importedGermplasmList = this.parser.parseWorkbook(workbook, null);
 		final ImportedGermplasm germplasm = this.importedGermplasmList.getImportedGermplasm().get(0);
-		Assert.assertEquals("Unable to properly recognize additional name factors associated with germplasm", 2, germplasm.getNameFactors()
-				.size());
+		Assert.assertEquals("Unable to properly recognize additional name factors associated with germplasm", 2,
+				germplasm.getNameFactors().size());
 
 	}
 
 	@Test
 	public void testValidateListTypeFound() {
-		for (final Map.Entry<String, String> item : this.userDefinedFieldTestDataInitializer.validListTypeMap.entrySet()) {
+		for (final Map.Entry<String, String> item : UserDefinedFieldTestDataInitializer.validListTypeMap.entrySet()) {
 			Assert.assertTrue("The listType should be accepted", this.parser.validateListType(item.getKey()));
 		}
 	}
@@ -244,7 +243,7 @@ public class GermplasmListParserTest {
 
 	@Test
 	public void testHasInventoryVariableIfTheVariableIsSet() {
-		this.parser.setSeedAmountVariate(SEED_AMOUNT_G);
+		this.parser.setSeedAmountVariate(GermplasmListParserTest.SEED_AMOUNT_G);
 		Assert.assertTrue("Returns true when the inventory variable is set.", this.parser.hasInventoryVariable());
 	}
 
@@ -257,7 +256,7 @@ public class GermplasmListParserTest {
 	@Test
 	public void testHasInventoryAmount() {
 
-		this.parser.setSeedAmountVariate(SEED_AMOUNT_G);
+		this.parser.setSeedAmountVariate(GermplasmListParserTest.SEED_AMOUNT_G);
 
 		final ImportedGermplasmList importedGermplasmList = this.createImportedGermplasmListWithSeedAmount();
 		this.parser.setImportedGermplasmList(importedGermplasmList);
@@ -268,7 +267,7 @@ public class GermplasmListParserTest {
 
 	private ImportedGermplasmList createImportedGermplasmListWithSeedAmount() {
 		final ImportedGermplasmList importedGermplasmList =
-				this.importedGermplasmListInitializer.createImportedGermplasmList(NO_OF_ENTRIES, true);
+				this.importedGermplasmListInitializer.createImportedGermplasmList(GermplasmListParserTest.NO_OF_ENTRIES, true);
 		final List<ImportedGermplasm> importedGermplasms = importedGermplasmList.getImportedGermplasm();
 		// initialize seed amount from imported germplasm
 		Double seedAmount = 1.0D;
@@ -281,7 +280,7 @@ public class GermplasmListParserTest {
 
 	@Test
 	public void hasAtLeastOneRowWithInventoryAmountButNoDefinedStockID() {
-		this.parser.setSeedAmountVariate(SEED_AMOUNT_G);
+		this.parser.setSeedAmountVariate(GermplasmListParserTest.SEED_AMOUNT_G);
 
 		final ImportedGermplasmList importedGermplasmList = this.createImportedGermplasmListWithSeedAmount();
 		this.parser.setImportedGermplasmList(importedGermplasmList);
@@ -292,7 +291,7 @@ public class GermplasmListParserTest {
 
 	@Test
 	public void hasAtLeastOneRowWithInventoryAmountButNoDefinedStockIDReturnsFalseWhenStockIdsHasValuesForAllRows() {
-		this.parser.setSeedAmountVariate(SEED_AMOUNT_G);
+		this.parser.setSeedAmountVariate(GermplasmListParserTest.SEED_AMOUNT_G);
 
 		final ImportedGermplasmList importedGermplasmList = this.createImportedGermplasmListWithSeedAmount();
 
