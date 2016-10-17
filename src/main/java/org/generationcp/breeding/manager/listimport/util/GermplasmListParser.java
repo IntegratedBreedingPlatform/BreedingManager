@@ -3,7 +3,6 @@ package org.generationcp.breeding.manager.listimport.util;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -56,7 +55,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmListParser.class);
 	private static final int OBSERVATION_SHEET_NO = 1;
 
-	private final Map<Integer, String> observationColumnMap = new HashMap<>();
+	private final List<String> observationSheetHeaders = new ArrayList<>();
 
 	@Resource
 	private GermplasmListManager germplasmListManager;
@@ -447,7 +446,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 				hasInventoryVariate = true;
 			}
 
-			this.observationColumnMap.put(i, obsHeader);
+			this.observationSheetHeaders.add(obsHeader);
 		}
 
 		this.validateObservationHeaders();
@@ -469,7 +468,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 	protected void validateObservationHeaders() throws FileParsingException {
 		final Set<String> obsHeaders = new HashSet<>();
-		obsHeaders.addAll(this.observationColumnMap.values());
+		obsHeaders.addAll(this.observationSheetHeaders);
 		for (final String headerName : this.descriptionVariableNames) {
 			if (!obsHeaders.contains(headerName)) {
 				throw new FileParsingException("GERMPLASM_PARSE_HEADER_ERROR", 1, "", headerName);
@@ -480,7 +479,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	protected void parseObservationRows() throws FileParsingException {
 		final ParseValidationMap validationMap = this.parseObservationHeaders();
 		final ObservationRowConverter observationRowConverter = new ObservationRowConverter(this.workbook, 1, 1,
-				this.observationColumnMap.size(), this.observationColumnMap.values().toArray(new String[this.observationColumnMap.size()]));
+				this.observationSheetHeaders.size(), this.observationSheetHeaders.toArray(new String[this.observationSheetHeaders.size()]));
 		observationRowConverter.setValidationMap(validationMap);
 
 		final List<ImportedGermplasm> importedGermplasms =
@@ -703,7 +702,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		public ImportedGermplasm convertToObject(final Map<Integer, String> rowValues) throws FileParsingException {
 			final ImportedGermplasm importedGermplasm = new ImportedGermplasm();
 			for (final int colIndex : rowValues.keySet()) {
-				final String colHeader = GermplasmListParser.this.observationColumnMap.get(colIndex);
+				final String colHeader = GermplasmListParser.this.observationSheetHeaders.get(colIndex);
 				// Map cell (given a column label) with a pojo setter
 
 				final Map<FactorTypes, Command> factorBehaviors = new HashMap<>();
