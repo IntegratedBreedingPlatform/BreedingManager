@@ -12,7 +12,6 @@ import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListD
 import org.generationcp.breeding.manager.listimport.validator.StockIDValidator;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
-import org.generationcp.commons.parsing.CrossesListDescriptionSheetParser;
 import org.generationcp.commons.parsing.FileParsingException;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.data.initializer.GermplasmTestDataInitializer;
@@ -32,11 +31,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-/**
- * Created by cyrus on 5/7/15. Unit test will only cover the observation sheet parsing as we will have a separate unit test for parsing
- * Description Sheet (see the equivalent unit test for {@link CrossesListDescriptionSheetParser}) But test still
- * promises at least 50% coverage for {@link GermplasmListParser}
- */
 @RunWith(MockitoJUnitRunner.class)
 public class GermplasmListParserTest {
 
@@ -80,7 +74,7 @@ public class GermplasmListParserTest {
 				.thenReturn(false);
 		Mockito.when(this.germplasmDataManager.getGermplasmByGID(Matchers.anyInt())).thenReturn(
 				GermplasmTestDataInitializer.createGermplasm(1));
-		Mockito.when(this.inventoryDataManager.getSimilarStockIds(Matchers.anyList())).thenReturn(new ArrayList<String>());
+		Mockito.when(this.inventoryDataManager.getSimilarStockIds(Matchers.anyListOf(String.class))).thenReturn(new ArrayList<String>());
 		Mockito.when(this.germplasmListManager.getGermplasmListTypes()).thenReturn(
 				this.userDefinedFieldTestDataInitializer.getValidListType());
 
@@ -121,6 +115,16 @@ public class GermplasmListParserTest {
 		Assert.assertEquals(
 				"Header validation setup does not properly recognize the right amount of expected headers for the observation sheet",
 				EXPECTED_DESCRIPTION_SHEET_VARIABLE_COUNT, this.parser.getDescriptionVariableNames().size());
+		
+		// Check that the Description sheet variables are in ALL CAPS after parsing
+		for (final String variableName : this.parser.getDescriptionVariableNames()){
+			Assert.assertEquals(variableName, variableName.toUpperCase());
+		}
+		
+		// Check that the Observation sheet column headers are in ALL CAPS after parsing
+		for (final String columnHeader : this.parser.getObservationSheetHeaders()){
+			Assert.assertEquals(columnHeader, columnHeader.toUpperCase());
+		}
 
 	}
 

@@ -59,13 +59,13 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	public static final Integer LIST_DATA_LRECID = 0;
 
 	public static final int FCODE_TYPE_NAME = 0;
-	private static final int FCODE_TYPE_ATTRIBUTE = 1;
+	public static final int FCODE_TYPE_ATTRIBUTE = 1;
 
-	private static final String FTABLE_NAME = "NAMES";
-	private static final String FTYPE_NAME = "NAME";
-	private static final String FTABLE_ATTRIBUTE = "ATRIBUTS";
-	private static final String FTYPE_ATTRIBUTE = "ATTRIBUTE";
-	private static final String FTYPE_PASSPORT = "PASSPORT";
+	public static final String FTABLE_NAME = "NAMES";
+	public static final String FTYPE_NAME = "NAME";
+	public static final String FTABLE_ATTRIBUTE = "ATRIBUTS";
+	public static final String FTYPE_ATTRIBUTE = "ATTRIBUTE";
+	public static final String FTYPE_PASSPORT = "PASSPORT";
 
 	private static final long serialVersionUID = -6273933938066390358L;
 
@@ -257,7 +257,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	 * @param importedGermplasmList
 	 * @throws BreedingManagerException
 	 */
-	protected void processVariates(final ImportedGermplasmList importedGermplasmList) throws BreedingManagerException {
+	void processVariates(final ImportedGermplasmList importedGermplasmList) throws BreedingManagerException {
 		final List<UserDefinedField> existingUserDefinedFields = this.getUserDefinedFields(SaveGermplasmListAction.FCODE_TYPE_ATTRIBUTE);
 		final List<UserDefinedField> newUserDefinedFields = new ArrayList<UserDefinedField>();
 		final Map<String, String> attributeVariates = importedGermplasmList.getImportedGermplasm().get(0).getAttributeVariates();
@@ -285,7 +285,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	 * Add new name types, if any, as UserDefinedFields
 	 * @param importedGermplasmList : imported germplasm imported from spreadsheet
 	 */
-	protected void processFactors(final ImportedGermplasmList importedGermplasmList) {
+	void processFactors(final ImportedGermplasmList importedGermplasmList) {
 		final List<UserDefinedField> existingUserDefinedFields = this.getUserDefinedFields(SaveGermplasmListAction.FCODE_TYPE_NAME);
 		final List<UserDefinedField> newUserDefinedFields = new ArrayList<UserDefinedField>();
 		final Map<String, String> nameFactors = importedGermplasmList.getImportedGermplasm().get(0).getNameFactors();
