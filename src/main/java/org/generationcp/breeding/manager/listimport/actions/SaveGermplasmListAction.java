@@ -353,7 +353,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 	private boolean isUdfldsExist(final List<UserDefinedField> existingUdflds, final String fcode) {
 		for (final UserDefinedField udfld : existingUdflds) {
-			if (udfld.getFcode().equals(fcode)) {
+			if (udfld.getFcode().equalsIgnoreCase(fcode)) {
 				return true;
 			}
 		}
