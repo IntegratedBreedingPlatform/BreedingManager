@@ -268,14 +268,17 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 				this.processSeedStockVariate(importedVariate);
 			} else {
 				if (attributeVariates.containsKey(variate) && !this.userDefinedFieldExists(existingUserDefinedFields, variate)) {
-					final UserDefinedField newUdfld = this.createNewUserDefinedField(importedVariate);
-					newUserDefinedFields.add(newUdfld);
+					final String fieldFormat = importedVariate.getScale() + "," + importedVariate.getMethod() + "," + importedVariate.getDataType();
+					final UserDefinedField newUserDefinedField = this.createNewUserDefinedField(FTABLE_ATTRIBUTE, importedVariate.getProperty().toUpperCase(), importedVariate.getName(), importedVariate.getDescription(), fieldFormat);
+					newUserDefinedFields.add(newUserDefinedField);
 				}
 			}
 		}
 
 		// Add new attribute types as UDFLDS records
-		this.germplasmManager.addUserDefinedFields(newUserDefinedFields);
+		if (!newUserDefinedFields.isEmpty()){
+			this.germplasmManager.addUserDefinedFields(newUserDefinedFields);
+		}
 	}
 
 	/**
@@ -290,40 +293,26 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		for (final ImportedFactor importedFactor : importedGermplasmList.getImportedFactors()) {
 			final String factor = importedFactor.getName();
 			if (nameFactors.containsKey(factor) && !this.userDefinedFieldExists(existingUserDefinedFields, factor)) {
-				final UserDefinedField newUdfld = this.createNewUserDefinedField(importedFactor);
-				newUserDefinedFields.add(newUdfld);
+				final String fieldFormat = importedFactor.getScale() + "," + importedFactor.getMethod() + "," + importedFactor.getDataType();
+				final UserDefinedField newUserDefinedField = this.createNewUserDefinedField(FTABLE_NAME, FTYPE_NAME, importedFactor.getName(),
+						importedFactor.getDescription(), fieldFormat);
+				newUserDefinedFields.add(newUserDefinedField);
 			}
 		}
 
 		// Add new name types as UDFLDS records
-		this.germplasmManager.addUserDefinedFields(newUserDefinedFields);
+		if (!newUserDefinedFields.isEmpty()){
+			this.germplasmManager.addUserDefinedFields(newUserDefinedFields);
+		}
 	}
 
-	private UserDefinedField createNewUserDefinedField(final ImportedVariate importedVariate) {
-		final UserDefinedField newUserDefinedField = new UserDefinedField();
-		newUserDefinedField.setFtable(SaveGermplasmListAction.FTABLE_ATTRIBUTE);
-		newUserDefinedField.setFtype(importedVariate.getProperty().toUpperCase());
-		newUserDefinedField.setFcode(importedVariate.getName());
-		newUserDefinedField.setFname(importedVariate.getDescription());
-		final String fmt = importedVariate.getScale() + "," + importedVariate.getMethod() + "," + importedVariate.getDataType();
-		newUserDefinedField.setFfmt(fmt);
-		newUserDefinedField.setFdesc("-");
-		newUserDefinedField.setLfldno(0);
-		newUserDefinedField.setFuid(this.contextUtil.getCurrentUserLocalId());
-		newUserDefinedField.setFdate(Util.getCurrentDateAsIntegerValue());
-		newUserDefinedField.setScaleid(0);
-
-		return newUserDefinedField;
-	}
-
-	private UserDefinedField createNewUserDefinedField(final ImportedFactor importedFactor) {
+	private UserDefinedField createNewUserDefinedField(final String tableName, final String fieldType, final String name, final String description, final String fieldFormat) {
 		final UserDefinedField newUserDefinedField = new UserDefinedField();
 		newUserDefinedField.setFtable(SaveGermplasmListAction.FTABLE_NAME);
 		newUserDefinedField.setFtype(SaveGermplasmListAction.FTYPE_NAME);
-		newUserDefinedField.setFcode(importedFactor.getName());
-		newUserDefinedField.setFname(importedFactor.getDescription());
-		final String fmt = importedFactor.getScale() + "," + importedFactor.getMethod() + "," + importedFactor.getDataType();
-		newUserDefinedField.setFfmt(fmt);
+		newUserDefinedField.setFcode(name);
+		newUserDefinedField.setFname(description);
+		newUserDefinedField.setFfmt(fieldFormat);
 		newUserDefinedField.setFdesc("-");
 		newUserDefinedField.setLfldno(0);
 		newUserDefinedField.setFuid(this.contextUtil.getCurrentUserLocalId());
@@ -332,7 +321,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 		return newUserDefinedField;
 	}
-
+	
 	protected void processSeedStockVariate(final ImportedVariate importedVariate) throws BreedingManagerException {
 
 		// find stock variable via name at top of column in the sheet - should be one
