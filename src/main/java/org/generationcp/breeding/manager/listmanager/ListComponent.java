@@ -2204,7 +2204,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				MessageNotifier
 						.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS), "All reservations were saved.");
 			} else {
-				MessageNotifier.showRefreshListError(this.getWindow(), this.messageSource.getMessage(Message.REFRESH_LIST));
+				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
+						this.messageSource.getMessage(Message.COULD_NOT_MAKE_RESERVATION_REFRESH_LIST));
 			}
 		}
 	}
