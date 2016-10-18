@@ -346,6 +346,9 @@ public class DropHandlerMethodsTest {
 		Assert.assertEquals(listData.getDesignation(), desigButton.getCaption());
 		final Button gidButton = (Button) tableItem.getItemProperty(ColumnLabels.GID.getName()).getValue();
 		Assert.assertEquals(listData.getGid().toString(), gidButton.getCaption());
+
+		final Label stockIdLabel = (Label) tableItem.getItemProperty(ColumnLabels.STOCKID.getName()).getValue();
+		Assert.assertEquals(listData.getInventoryInfo().getStockIDs(), stockIdLabel.getValue().toString());
 	}
 
 	@Test

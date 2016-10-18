@@ -196,6 +196,40 @@ public class ListInventoryTableTest {
 	}
 
 	@Test
+	public void testDisplayInventoryDetailsWithNoWithdrawalAndAvailableBalance() {
+		final List<GermplasmListData> inventoryDetails = ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails();
+
+		final GermplasmListData row1InventoryDetails = inventoryDetails.get(0);
+		final LotDetails row1LotDetails = row1InventoryDetails.getInventoryInfo().getLotRows().get(0);
+
+		row1LotDetails.setWithdrawalBalance(null);
+		row1LotDetails.setAvailableLotBalance(null);
+
+		this.listInventoryTable.displayInventoryDetails(inventoryDetails);
+
+		final int expectedNoOFLotEntries = ListInventoryDataInitializer.getNumberOfEntriesInInventoryView();
+		final Table table = this.listInventoryTable.getTable();
+		Assert.assertEquals("Expecting that all entries from inventoryDetails are properly inserted in listinventory table but didn't.",
+				expectedNoOFLotEntries, table.getContainerDataSource().size());
+
+		final Item row1VaadinTable = table.getItem(row1LotDetails);
+		Assert.assertNotNull(row1VaadinTable);
+
+		Assert.assertEquals(row1InventoryDetails.getEntryId(), row1VaadinTable.getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue());
+		Assert.assertEquals(row1LotDetails.getLocationOfLot().getLname(),
+				row1VaadinTable.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).getValue());
+		Assert.assertEquals("", row1VaadinTable.getItemProperty(ColumnLabels.TOTAL.getName()).getValue());
+		Assert.assertEquals("", row1VaadinTable.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue());
+		Assert.assertEquals(row1LotDetails.getCommentOfLot(), row1VaadinTable.getItemProperty(ColumnLabels.COMMENT.getName()).getValue());
+		Assert.assertEquals(row1LotDetails.getLotId(), row1VaadinTable.getItemProperty(ColumnLabels.LOT_ID.getName()).getValue());
+		Assert.assertEquals(row1InventoryDetails.getSeedSource(),
+				row1VaadinTable.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue());
+		Assert.assertEquals(row1LotDetails.getWithdrawalStatus(),
+				row1VaadinTable.getItemProperty(ColumnLabels.STATUS.getName()).getValue());
+
+	}
+
+	@Test
 	public void testDisplayInventoryDetailsWhenLotLocationAndScaleAreNull() {
 		final List<GermplasmListData> inventoryDetails = ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails();
 
