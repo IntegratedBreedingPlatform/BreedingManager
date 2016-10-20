@@ -2278,7 +2278,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		}
 		if (this.validReservationsToCancel.size() > 0) {
 			ListComponent.this.inventoryViewMenu.setMenuInventorySaveChanges();
-			this.listInventoryTable.resetRowsForSavedCancelledReservation(this.validReservationsToCancel, this.germplasmList.getId());
 			this.setHasUnsavedChanges(true);
 		}
 		if (validReservation != this.validReservationsToSave.size()) {
