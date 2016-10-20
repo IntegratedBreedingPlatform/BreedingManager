@@ -220,6 +220,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private ReserveInventoryUtil reserveInventoryUtil;
 	private ReserveInventoryAction reserveInventoryAction;
 	private Map<ListEntryLotDetails, Double> validReservationsToSave;
+	private List<ListEntryLotDetails> validReservationsToCancel;
 	private Boolean hasChanges;
 
 	private ListDataPropertiesRenderer newColumnsRenderer;
@@ -2167,14 +2168,14 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		try {
 			this.listInventoryTable.loadInventoryData();
 		} finally {
-			monitor.stop();			
+			monitor.stop();
 		}
 		// add inventory values to the existing table
-		Monitor monitor2 = MonitorFactory.start("org.generationcp.breeding.manager.listmanager.ListComponent.viewInventoryActionConfirmed:changeToInventoryView");		
+		Monitor monitor2 = MonitorFactory.start("org.generationcp.breeding.manager.listmanager.ListComponent.viewInventoryActionConfirmed:changeToInventoryView");
 		try {
 			this.changeToInventoryView();
 		} finally {
-			monitor2.stop();			
+			monitor2.stop();
 		}
 	}
 
@@ -2202,15 +2203,13 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	public void saveReservationChangesAction() {
 		if (this.hasUnsavedChanges()) {
 			this.reserveInventoryAction = new ReserveInventoryAction(this);
-			final boolean success =
-					this.reserveInventoryAction.saveReserveTransactions(this.getValidReservationsToSave(), this.germplasmList.getId());
-			if (success) {
-				this.refreshInventoryColumns(this.getValidReservationsToSave());
-				this.resetListDataTableValues();
-				this.resetListInventoryTableValues();
-				MessageNotifier
-						.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS), "All reservations were saved.");
-			}
+			this.reserveInventoryAction.saveReserveTransactions(this.getValidReservationsToSave(), this.germplasmList.getId());
+			this.cancelReservations();
+			this.refreshInventoryColumns(this.getValidReservationsToSave());
+			this.resetListDataTableValues();
+			this.resetListInventoryTableValues();
+			MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS),this.messageSource.getMessage
+					(Message.SAVE_RESERVED_AND_CANCELLED_RESERVATION) );
 		}
 	}
 
@@ -2238,7 +2237,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 							@Override
 							public void onClose(final ConfirmDialog dialog) {
 								if (dialog.isConfirmed()) {
-									ListComponent.this.cancelReservations();
+									ListComponent.this.cancelReservationForSavedAndUnsavedInventory();
 								}
 							}
 						});
@@ -2247,19 +2246,55 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}
 
 	public void cancelReservations() {
-		final List<ListEntryLotDetails> lotDetailsGid = this.listInventoryTable.getSelectedLots();
 		this.reserveInventoryAction = new ReserveInventoryAction(this);
-		try {
-			this.reserveInventoryAction.cancelReservations(lotDetailsGid);
-		} catch (final MiddlewareQueryException e) {
-			ListComponent.LOG.error("Error with canceling reservations.", e);
+		if(this.validReservationsToCancel != null && this.validReservationsToCancel.size() > 0) {
+			this.reserveInventoryAction.cancelReservations(this.validReservationsToCancel);
+			//reset the reservation to cancel.
+			this.validReservationsToCancel.clear();
+		}
+	}
+
+
+	public void cancelReservationForSavedAndUnsavedInventory() {
+
+		final List<ListEntryLotDetails> lotDetailsGid = this.listInventoryTable.getSelectedLots();
+		this.validReservationsToCancel = lotDetailsGid;
+		Iterator<ListEntryLotDetails> listEntryLotDetailsIterator = lotDetailsGid.iterator();
+		int validReservation =this.validReservationsToSave.size();
+
+		//this will keep track of how many reservations needs to be cancelled and how many reservations needs to be undo
+		while(listEntryLotDetailsIterator.hasNext()){
+
+			ListEntryLotDetails lot = listEntryLotDetailsIterator.next();
+			final Map<ListEntryLotDetails, Double> validReservations = this.getValidReservationsToSave();
+
+			Iterator<Map.Entry<ListEntryLotDetails, Double>> entry = validReservations.entrySet().iterator();
+			if (validReservations.size() > 0) {
+
+					while (entry.hasNext()) {
+					Map.Entry<ListEntryLotDetails, Double> validReservationEntry = entry.next();
+					ListEntryLotDetails lotDetail = validReservationEntry.getKey();
+
+						if (lotDetail.getLotId().equals(lot.getLotId())) {
+						entry.remove();
+						listEntryLotDetailsIterator.remove();
+						break;
+					}
+				}
+				this.validReservationsToSave = validReservations;
+			}
+		}
+		if(this.validReservationsToCancel.size() > 0){
+			ListComponent.this.inventoryViewMenu.setMenuInventorySaveChanges();
+			this.listInventoryTable.resetRowsForSavedCancelledReservation(this.validReservationsToCancel,this.germplasmList.getId());
+			this.setHasUnsavedChanges(true);
+		}
+		if(validReservation != this.validReservationsToSave.size()){
+			this.listInventoryTable.resetRowsForCancelledReservation(this.listInventoryTable.getSelectedLots(), this.germplasmList.getId());
+			MessageNotifier.showWarning(this.getWindow(),  this.messageSource.getMessage(Message.Alert),
+					this.messageSource.getMessage(Message.UNSAVED_RESERVARTION_CANCELLED));
 		}
 
-		this.refreshInventoryColumns(this.getLrecIds(lotDetailsGid));
-		this.listInventoryTable.resetRowsForCancelledReservation(lotDetailsGid, this.germplasmList.getId());
-
-		MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
-				"All selected reservations were cancelled successfully.");
 	}
 
 	private Set<Integer> getLrecIds(final List<ListEntryLotDetails> lotDetails) {
@@ -2528,7 +2563,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		// Note we are refetching the list data as we cannot lazy load the list data in the germplasm list
 		// This is because the lazy load might be across transactions.
 		// This is not ideal but something we must do for an interim solution
-		final List<GermplasmListData> germplasmListData 
+		final List<GermplasmListData> germplasmListData
 				= this.germplasmListManager.getGermplasmListDataByListId(this.germplasmList.getId());
 		for (final GermplasmListData listEntry : germplasmListData) {
 			final Integer gid = listEntry.getGid();

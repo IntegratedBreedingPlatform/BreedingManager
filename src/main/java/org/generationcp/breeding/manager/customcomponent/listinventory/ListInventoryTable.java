@@ -256,6 +256,18 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		}
 	}
 
+	public void resetRowsForSavedCancelledReservation(final List<ListEntryLotDetails> lotDetailsToCancel, final Integer listId) {
+
+		for (final ListEntryLotDetails lotDetail : lotDetailsToCancel) {
+			final Item item = this.listInventoryTable.getItem(lotDetail);
+			item.getItemProperty(ColumnLabels.TOTAL.getName())
+					.setValue(lotDetail.getAvailableLotBalance() + lotDetail.getReservedTotal() + lotDetail.getLotScaleNameAbbr());
+			item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName())
+					.setValue(lotDetail.getWithdrawalBalance() - lotDetail.getReservedTotal() + lotDetail.getLotScaleNameAbbr());
+			item.getItemProperty(ColumnLabels.STATUS.getName()).setValue(lotDetail.getWithdrawalStatus());
+		}
+	}
+
 	public boolean isSelectedEntriesHasReservation(final List<ListEntryLotDetails> lotDetailsGid) {
 		for (final ListEntryLotDetails lotDetails : lotDetailsGid) {
 			final Item item = this.listInventoryTable.getItem(lotDetails);
