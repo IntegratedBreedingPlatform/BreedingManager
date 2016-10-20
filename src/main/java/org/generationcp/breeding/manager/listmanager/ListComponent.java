@@ -2282,7 +2282,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		}
 		if (validReservation != this.validReservationsToSave.size()) {
 			this.listInventoryTable.resetRowsForCancelledReservation(this.listInventoryTable.getSelectedLots(), this.germplasmList.getId());
-			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.Alert),
+			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
 					this.messageSource.getMessage(Message.UNSAVED_RESERVARTION_CANCELLED));
 		}
 
