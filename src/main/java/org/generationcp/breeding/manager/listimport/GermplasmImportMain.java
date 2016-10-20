@@ -1,4 +1,3 @@
-
 package org.generationcp.breeding.manager.listimport;
 
 import java.util.List;
@@ -11,6 +10,7 @@ import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.util.Util;
+import org.generationcp.commons.aspect.BMSPreAuthorize;
 import org.generationcp.commons.help.document.HelpButton;
 import org.generationcp.commons.help.document.HelpModule;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -74,6 +74,7 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 	}
 
 	@Override
+	@BMSPreAuthorize(configuredProperty = "workbench.import.germplasm.permissible.roles")
 	public void afterPropertiesSet() throws Exception {
 		this.instantiateComponents();
 		this.initializeValues();
@@ -235,8 +236,8 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 	public ComponentContainer getComponentContainer() {
 		return this.parent;
 	}
-	
-	public TabSheet getTabSheet(){
+
+	public TabSheet getTabSheet() {
 		return this.tabSheet;
 	}
 

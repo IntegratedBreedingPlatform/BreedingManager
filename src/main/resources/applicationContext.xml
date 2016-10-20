@@ -318,6 +318,8 @@
 	</bean>
 
 	<context:component-scan base-package="org.generationcp.breeding.manager.validator"/>
+	<aop:aspectj-autoproxy/>
+	<bean id="bmsPreAuthorizeAspect" class="org.generationcp.commons.aspect.BMSPreAuthorizeAspect" />
 	
 	<!-- Nested <beans> elements can only be at the end. -->
 	
