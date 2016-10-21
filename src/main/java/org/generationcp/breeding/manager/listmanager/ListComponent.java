@@ -88,6 +88,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.CollectionUtils;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
@@ -1826,6 +1827,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 			this.germplasmListManager.updateGermplasmListData(listEntries);
 			this.germplasmListManager.saveListDataColumns(this.addColumnContextMenu.getListDataCollectionFromTable(this.listDataTable));
+
+			if (!CollectionUtils.isEmpty(this.validReservationsToSave)) {
+				this.reserveInventoryAction = new ReserveInventoryAction(this);
+				this.reserveInventoryAction.saveReserveTransactions(this.getValidReservationsToSave(), this.germplasmList.getId());
+				this.validReservationsToSave.clear();
+			}
 
 			this.listDataTable.requestRepaint();
 			// reset flag to indicate unsaved changes
