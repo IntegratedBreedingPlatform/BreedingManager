@@ -1,7 +1,7 @@
-
 package org.generationcp.breeding.manager.listimport;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.commons.security.SecurityUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,11 +10,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.core.env.Environment;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Window;
 
+import com.google.common.collect.Lists;
 import junit.framework.Assert;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -22,6 +28,9 @@ public class GermplasmImportMainTest {
 
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
+
+	@Mock
+	Environment environment;
 
 	@InjectMocks
 	private final GermplasmImportMain germplasmImportMain = new GermplasmImportMain(new Window(), true, true);
@@ -76,4 +85,35 @@ public class GermplasmImportMainTest {
 		Assert.assertEquals(0, tabSheet.getHeightUnits());
 	}
 
+	@Test
+	public void testAfterPropertiesSetWithAdminUser() throws Exception {
+		Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("Admin");
+		SimpleGrantedAuthority roleAuthority = new SimpleGrantedAuthority(SecurityUtil.ROLE_PREFIX + "ADMIN");
+
+		UsernamePasswordAuthenticationToken loggedInUser =
+				new UsernamePasswordAuthenticationToken("admin", "admin", Lists.newArrayList(roleAuthority));
+		SecurityContextHolder.getContext().setAuthentication(loggedInUser);
+		try {
+			this.germplasmImportMain.afterPropertiesSet();
+		} catch (AccessDeniedException e) {
+			Assert.fail();
+		}
+
+	}
+
+	@Test
+	public void testAfterPropertiesSetWithTechnicianUser() throws Exception {
+		Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("Admin");
+		SimpleGrantedAuthority roleAuthority = new SimpleGrantedAuthority(SecurityUtil.ROLE_PREFIX + "TECHNICIAN");
+
+		UsernamePasswordAuthenticationToken loggedInUser =
+				new UsernamePasswordAuthenticationToken("admin", "admin", Lists.newArrayList(roleAuthority));
+		SecurityContextHolder.getContext().setAuthentication(loggedInUser);
+		try {
+			this.germplasmImportMain.afterPropertiesSet();
+		} catch (AccessDeniedException e) {
+			Assert.assertEquals("You have not authorized role to access this link", e.getMessage());
+		}
+
+	}
 }
