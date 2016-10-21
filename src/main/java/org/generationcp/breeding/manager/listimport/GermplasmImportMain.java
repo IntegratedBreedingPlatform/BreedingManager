@@ -13,12 +13,14 @@ import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.help.document.HelpButton;
 import org.generationcp.commons.help.document.HelpModule;
+import org.generationcp.commons.security.BMSPreAuthorizeUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.core.env.Environment;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
@@ -49,6 +51,10 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
+
+	@Autowired
+	Environment environment;
+
 	private HorizontalLayout titleLayout;
 	private Label toolTitle;
 
@@ -75,6 +81,7 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		BMSPreAuthorizeUtil.preAuthorize(environment.getProperty("workbench.import.germplasm.permissible.roles"));
 		this.instantiateComponents();
 		this.initializeValues();
 		this.addListeners();
@@ -235,7 +242,7 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 	public ComponentContainer getComponentContainer() {
 		return this.parent;
 	}
-	
+
 	public TabSheet getTabSheet(){
 		return this.tabSheet;
 	}
