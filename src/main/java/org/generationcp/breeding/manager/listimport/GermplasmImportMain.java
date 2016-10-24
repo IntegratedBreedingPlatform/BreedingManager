@@ -1,4 +1,3 @@
-
 package org.generationcp.breeding.manager.listimport;
 
 import java.util.List;
@@ -20,7 +19,7 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
@@ -52,8 +51,8 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
-	@Autowired
-	Environment environment;
+	@Value("${workbench.import.germplasm.permissible.roles}")
+	private String importGermplasmPermissibleRoles;
 
 	private HorizontalLayout titleLayout;
 	private Label toolTitle;
@@ -81,7 +80,7 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		BMSPreAuthorizeUtil.preAuthorize(environment.getProperty("workbench.import.germplasm.permissible.roles"));
+		BMSPreAuthorizeUtil.preAuthorize(importGermplasmPermissibleRoles);
 		this.instantiateComponents();
 		this.initializeValues();
 		this.addListeners();
@@ -243,8 +242,11 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 		return this.parent;
 	}
 
-	public TabSheet getTabSheet(){
+	public TabSheet getTabSheet() {
 		return this.tabSheet;
 	}
 
+	public void setImportGermplasmPermissibleRoles(String importGermplasmPermissibleRoles) {
+		this.importGermplasmPermissibleRoles = importGermplasmPermissibleRoles;
+	}
 }

@@ -29,9 +29,6 @@ public class GermplasmImportMainTest {
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
 
-	@Mock
-	Environment environment;
-
 	@InjectMocks
 	private final GermplasmImportMain germplasmImportMain = new GermplasmImportMain(new Window(), true, true);
 
@@ -87,7 +84,7 @@ public class GermplasmImportMainTest {
 
 	@Test
 	public void testAfterPropertiesSetWithAdminUser() throws Exception {
-		Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("Admin");
+		this.germplasmImportMain.setImportGermplasmPermissibleRoles("Admin");
 		SimpleGrantedAuthority roleAuthority = new SimpleGrantedAuthority(SecurityUtil.ROLE_PREFIX + "ADMIN");
 
 		UsernamePasswordAuthenticationToken loggedInUser =
@@ -103,7 +100,7 @@ public class GermplasmImportMainTest {
 
 	@Test
 	public void testAfterPropertiesSetWithTechnicianUser() throws Exception {
-		Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("Admin");
+		this.germplasmImportMain.setImportGermplasmPermissibleRoles("Admin");
 		SimpleGrantedAuthority roleAuthority = new SimpleGrantedAuthority(SecurityUtil.ROLE_PREFIX + "TECHNICIAN");
 
 		UsernamePasswordAuthenticationToken loggedInUser =
