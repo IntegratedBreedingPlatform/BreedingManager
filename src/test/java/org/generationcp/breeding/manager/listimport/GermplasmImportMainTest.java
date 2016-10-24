@@ -93,7 +93,7 @@ public class GermplasmImportMainTest {
 		try {
 			this.germplasmImportMain.afterPropertiesSet();
 		} catch (AccessDeniedException e) {
-			Assert.fail();
+			Assert.fail("Access Import germplsm link should not throw Access Denied exception.");
 		}
 
 	}
