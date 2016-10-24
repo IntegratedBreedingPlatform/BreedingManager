@@ -990,7 +990,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 					// Get reference to clicked item
 					final ContextMenuItem clickedItem = event.getClickedItem();
 					if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.SAVE_RESERVATIONS))) {
-						ListComponent.this.saveReservationChangesAction();
+						ListComponent.this.saveReservationChangesAction(ListComponent.this.getWindow());
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
 						ListComponent.this.viewListAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {
@@ -2206,7 +2206,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	// end of reserveInventoryAction
 
-	public void saveReservationChangesAction() {
+	public void saveReservationChangesAction(final Window window) {
 		if (this.hasUnsavedChanges()) {
 			this.reserveInventoryAction = new ReserveInventoryAction(this);
 			final boolean success =
@@ -2216,7 +2216,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				this.resetListDataTableValues();
 				this.resetListInventoryTableValues();
 				MessageNotifier
-						.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS), "All reservations were saved.");
+						.showMessage(window, this.messageSource.getMessage(Message.SUCCESS), "All reservations were saved.");
 			}
 		}
 	}

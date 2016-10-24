@@ -582,7 +582,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 					final ListComponent toSave = list.getKey();
 					// NOTE: the value of modeView here is the newModeView
 					if (this.modeView.equals(ModeView.LIST_VIEW)) {
-						toSave.saveReservationChangesAction();
+						toSave.saveReservationChangesAction(this.getWindow());
 					} else if (this.modeView.equals(ModeView.INVENTORY_VIEW)) {
 						toSave.saveChangesAction();
 					}
