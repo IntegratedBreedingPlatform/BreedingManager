@@ -2533,6 +2533,14 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		return columnLabels.getTermNameFromOntology(this.ontologyDataManager);
 	}
 
+	public void setValidReservationsToSave(Map<ListEntryLotDetails, Double> validReservationsToSave) {
+		this.validReservationsToSave = validReservationsToSave;
+	}
+
+	public List<ListEntryLotDetails> getValidReservationsToCancel() {
+		return validReservationsToCancel;
+	}
+
 	@Override
 	public ListManagerMain getListManagerMain() {
 		return this.source;
