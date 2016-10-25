@@ -78,12 +78,9 @@ public class ListSelectionLayout extends VerticalLayout implements International
 	private Button btnCloseAllTabs;
 	private Button browseForLists;
 	private Button searchForLists;
-	private Button importList;
 	private Label or;
 	private Label toWorkWith;
-	private Label or2;
-	private Label aNewListLabel;
-
+	
 	private HorizontalLayout headerLayout;
 	private HorizontalLayout listSelectionHeaderContainer;
 	private HorizontalLayout searchOrBrowseContainer;
@@ -159,26 +156,13 @@ public class ListSelectionLayout extends VerticalLayout implements International
 		this.searchForLists.setImmediate(true);
 		this.searchForLists.setStyleName(BaseTheme.BUTTON_LINK);
 
-		this.importList = new Button();
-		this.importList.setDebugId("importList");
-		this.importList.setImmediate(true);
-		this.importList.setStyleName(BaseTheme.BUTTON_LINK);
-
 		this.or = new Label();
 		this.or.setDebugId("or");
 		this.or.setImmediate(true);
 
-		this.or2 = new Label();
-		this.or2.setDebugId("or2");
-		this.or2.setImmediate(true);
-
 		this.toWorkWith = new Label();
 		this.toWorkWith.setDebugId("toWorkWith");
 		this.toWorkWith.setImmediate(true);
-
-		this.aNewListLabel = new Label();
-		this.aNewListLabel.setDebugId("aNewListLabel");
-		this.aNewListLabel.setImmediate(true);
 
 		this.listStatusForChanges = new HashMap<ListComponent, Boolean>();
 	}
@@ -188,11 +172,8 @@ public class ListSelectionLayout extends VerticalLayout implements International
 		this.headingLabel.setValue(this.messageSource.getMessage(Message.LIST_DETAILS));
 		this.browseForLists.setCaption(this.messageSource.getMessage(Message.BROWSE_FOR_A_LIST) + " ");
 		this.searchForLists.setCaption(this.messageSource.getMessage(Message.SEARCH_FOR_A_LIST) + " ");
-		this.importList.setCaption(this.messageSource.getMessage(Message.IMPORT_A_LIST) + " ");
 		this.or.setValue(this.messageSource.getMessage(Message.OR) + " ");
-		this.or2.setValue(this.messageSource.getMessage(Message.OR) + " ");
-		this.toWorkWith.setValue(this.messageSource.getMessage(Message.A_LIST_TO_WORK_WITH) + ", ");
-		this.aNewListLabel.setValue(this.messageSource.getMessage(Message.A_NEW_LIST) + ".");
+		this.toWorkWith.setValue(this.messageSource.getMessage(Message.A_LIST_TO_WORK_WITH) + ". ");
 	}
 
 	@Override
@@ -223,17 +204,10 @@ public class ListSelectionLayout extends VerticalLayout implements International
 		this.browseForLists.setWidth("48px");
 		this.toWorkWith.setWidth("132px");
 
-		this.or2.setWidth("16px");
-		this.importList.setWidth("44px");
-		this.aNewListLabel.setWidth("70px");
-
 		searchOrBrowseLayout.addComponent(this.browseForLists);
 		searchOrBrowseLayout.addComponent(this.or);
 		searchOrBrowseLayout.addComponent(this.searchForLists);
 		searchOrBrowseLayout.addComponent(this.toWorkWith);
-		searchOrBrowseLayout.addComponent(this.or2);
-		searchOrBrowseLayout.addComponent(this.importList);
-		searchOrBrowseLayout.addComponent(this.aNewListLabel);
 
 		this.searchOrBrowseContainer.addComponent(searchOrBrowseLayout);
 		this.searchOrBrowseContainer.addComponent(this.btnCloseAllTabs);
@@ -311,17 +285,6 @@ public class ListSelectionLayout extends VerticalLayout implements International
 				ListSelectionLayout.this.source.getListSelectionComponent().openListSearchDialog();
 			}
 		});
-
-		this.importList.addListener(new Button.ClickListener() {
-
-			private static final long serialVersionUID = 6385074843600086746L;
-
-			@Override
-			public void buttonClick(final ClickEvent event) {
-				ListSelectionLayout.this.source.getListSelectionComponent().openListImportDialog();
-			}
-		});
-
 	}
 
 	@Override

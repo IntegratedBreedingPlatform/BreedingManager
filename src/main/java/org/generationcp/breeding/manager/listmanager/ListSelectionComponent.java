@@ -178,31 +178,6 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 		return listSearchComponent;
 	}
 
-	public void openListImportDialog() {
-		final Window window = getWindow();
-		final Window popupWindow = new BaseSubWindow();
-
-		final GermplasmImportMain germplasmImportMain = new GermplasmImportMain(popupWindow, false, this);
-		germplasmImportMain.setDebugId("germplasmImportMain");
-
-		final VerticalLayout content = new VerticalLayout();
-		content.setDebugId("content");
-		content.addComponent(germplasmImportMain);
-		content.setComponentAlignment(germplasmImportMain, Alignment.TOP_CENTER);
-
-		popupWindow.setWidth("760px");
-		popupWindow.setHeight("550px");
-		popupWindow.setModal(true);
-		popupWindow.setResizable(false);
-		popupWindow.center();
-		popupWindow.setCaption(messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
-		popupWindow.setContent(content);
-		popupWindow.addStyleName(Reindeer.WINDOW_LIGHT);
-		popupWindow.addStyleName("lm-list-manager-popup");
-
-		window.addWindow(popupWindow);
-	}
-
 	@Override
 	public void openSavedGermplasmList(final GermplasmList germplasmList) {
 		studyClicked(germplasmList);
