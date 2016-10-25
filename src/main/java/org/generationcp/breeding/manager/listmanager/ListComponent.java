@@ -88,6 +88,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.CollectionUtils;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
@@ -1525,6 +1526,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}
 
 	public void exportSeedPreparationList()  {
+
+		if (!CollectionUtils.isEmpty(this.validReservationsToSave)){
+			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
+					this.messageSource.getMessage(Message.UNSAVED_RESERVATION_WARNING));
+		}
+
 		try{
 			SeedInventoryListExporter seedInventoryListExporter = new SeedInventoryListExporter(this.source,
 					this.germplasmList);
