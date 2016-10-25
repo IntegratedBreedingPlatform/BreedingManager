@@ -205,6 +205,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 					} else if (clickedItem.getName()
 							.equals(ListBuilderComponent.this.messageSource.getMessage(Message.CANCEL_RESERVATIONS))) {
 						ListBuilderComponent.this.cancelReservationsAction();
+					} else if (clickedItem.getName()
+							.equals(ListBuilderComponent.this.messageSource.getMessage(Message.SAVE_RESERVATIONS))) {
+						ListBuilderComponent.this.saveReservationChangesAction();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESET_LIST))) {
 						ListBuilderComponent.this.resetButton.click();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SAVE_LIST))) {
@@ -352,6 +355,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	private ContextMenu inventoryViewMenu;
 	private ContextMenuItem menuCopyToListFromInventory;
 	private ContextMenuItem menuReserveInventory;
+	private ContextMenuItem menuSaveReserveInventory;
 	private ContextMenuItem menuCancelReservation;
 	private ContextMenuItem listEditingOptions;
 	private ContextMenuItem listEditingOptionsForLots;
@@ -512,6 +516,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.inventoryManagementOptions =
 				this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.INVENTORY_MANAGEMENT_OPTIONS));
 		this.menuReserveInventory = this.inventoryManagementOptions.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
+		this.menuSaveReserveInventory = this.inventoryManagementOptions.addItem(this.messageSource.getMessage(Message.SAVE_RESERVATIONS));
 		this.menuCancelReservation = this.inventoryManagementOptions.addItem(this.messageSource.getMessage(Message.CANCEL_RESERVATIONS));
 
 		this.exportList = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.EXPORT_SEED_LIST));
@@ -564,6 +569,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 
 	private void resetInventoryMenuOptions() {
+
+		this.menuSaveReserveInventory.setEnabled(false);
 		// Temporarily disable to Copy to List in InventoryView
 		this.menuCopyToListFromInventory.setEnabled(false);
 
@@ -1684,6 +1691,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 		this.removeReserveInventoryWindow(this.reserveInventory);
 
+		this.setMenuInventorySaveChanges();
+
 		// update lot reservatios to save
 		this.updateLotReservationsToSave(validReservations);
 
@@ -1885,6 +1894,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	void setTotalSelectedListEntriesLabel(final Label totalSelectedListEntriesLabel) {
 		this.totalSelectedListEntriesLabel = totalSelectedListEntriesLabel;
+	}
+
+	public void setMenuInventorySaveChanges() {
+		this.menuSaveReserveInventory.setEnabled(true);
 	}
 
 }
