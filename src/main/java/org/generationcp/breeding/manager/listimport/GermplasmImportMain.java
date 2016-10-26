@@ -12,7 +12,7 @@ import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.help.document.HelpButton;
 import org.generationcp.commons.help.document.HelpModule;
-import org.generationcp.commons.security.BMSPreAuthorizeUtil;
+import org.generationcp.commons.security.AuthorizationUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -80,7 +80,7 @@ public class GermplasmImportMain extends VerticalLayout implements InitializingB
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		BMSPreAuthorizeUtil.preAuthorize(importGermplasmPermissibleRoles);
+		AuthorizationUtil.preAuthorize(importGermplasmPermissibleRoles);
 		this.instantiateComponents();
 		this.initializeValues();
 		this.addListeners();
