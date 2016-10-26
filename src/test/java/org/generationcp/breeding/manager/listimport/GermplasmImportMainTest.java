@@ -10,7 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -109,7 +108,7 @@ public class GermplasmImportMainTest {
 		try {
 			this.germplasmImportMain.afterPropertiesSet();
 		} catch (AccessDeniedException e) {
-			Assert.assertEquals("You have not authorized role to access this link", e.getMessage());
+			Assert.assertEquals("Access Denied. User does not have appropriate role to access the functionality.", e.getMessage());
 		}
 
 	}
