@@ -10,6 +10,7 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.commons.parsing.pojo.ImportedFactor;
+import org.generationcp.commons.parsing.pojo.ImportedVariate;
 import org.generationcp.middleware.data.initializer.GermplasmTestDataInitializer;
 import org.generationcp.middleware.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
@@ -132,5 +133,12 @@ public class ImportedGermplasmListDataInitializer {
 		}
 
 		return testData;
+	}
+
+	public void addImportedVariates(final ImportedGermplasmList importedGermplasmList, final String... variates) {
+		for (final String variateName : variates) {
+			importedGermplasmList
+					.addImportedVariate(new ImportedVariate(variateName, "Test Description", "ATTRIBUTE", "Scale 1", "Method 1", "C"));
+		}
 	}
 }
