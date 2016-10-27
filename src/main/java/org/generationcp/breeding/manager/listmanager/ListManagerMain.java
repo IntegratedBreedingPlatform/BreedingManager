@@ -326,7 +326,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
 		this.toolTitle.setStyleName(Bootstrap.Typography.H1.styleName());
 		this.toolTitle.setContentMode(Label.CONTENT_XHTML);
-		this.toolTitle.setWidth("185px");
+		this.toolTitle.setWidth("280px");
 
 		this.titleLayout.addComponent(this.toolTitle);
 		this.titleLayout.addComponent(new HelpButton(HelpModule.MANAGE_LIST, "View Manage Lists Tutorial"));
