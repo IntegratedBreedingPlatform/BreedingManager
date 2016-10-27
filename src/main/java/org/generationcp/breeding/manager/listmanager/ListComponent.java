@@ -2208,7 +2208,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			this.refreshInventoryColumns(this.getValidReservationsToSave());
 			this.resetListDataTableValues();
 			this.resetListInventoryTableValues();
-			MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
+			MessageNotifier.showMessage(window, this.messageSource.getMessage(Message.SUCCESS),
 					this.messageSource.getMessage(Message.SAVE_RESERVED_AND_CANCELLED_RESERVATION));
 		}
 	}
