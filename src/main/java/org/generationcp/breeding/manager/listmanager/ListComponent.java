@@ -219,7 +219,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private ReserveInventoryUtil reserveInventoryUtil;
 	private ReserveInventoryAction reserveInventoryAction;
 	private Map<ListEntryLotDetails, Double> validReservationsToSave;
-	private List<ListEntryLotDetails> validReservationsToCancel;
+	private List<ListEntryLotDetails> persistedReservationToCancel;
 	private Boolean hasChanges;
 
 	private ListDataPropertiesRenderer newColumnsRenderer;
@@ -2230,7 +2230,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 							@Override
 							public void onClose(final ConfirmDialog dialog) {
 								if (dialog.isConfirmed()) {
-									ListComponent.this.cancelReservationForSavedAndUnsavedInventory();
+									ListComponent.this.userSelectedLotEntriesToCancelReservations();
 								}
 							}
 						});
@@ -2240,46 +2240,52 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	public void cancelReservations() {
 		this.reserveInventoryAction = new ReserveInventoryAction(this);
-		if (this.validReservationsToCancel != null && this.validReservationsToCancel.size() > 0) {
-			this.reserveInventoryAction.cancelReservations(this.validReservationsToCancel);
+		if (this.persistedReservationToCancel != null && this.persistedReservationToCancel.size() > 0) {
+			this.reserveInventoryAction.cancelReservations(this.persistedReservationToCancel);
 			//reset the reservation to cancel.
-			this.validReservationsToCancel.clear();
+			this.persistedReservationToCancel.clear();
 		}
 	}
 
-	public void cancelReservationForSavedAndUnsavedInventory() {
+	public void userSelectedLotEntriesToCancelReservations() {
 
-		final List<ListEntryLotDetails> lotDetailsGid = this.listInventoryTable.getSelectedLots();
-		this.validReservationsToCancel = lotDetailsGid;
-		Iterator<ListEntryLotDetails> listEntryLotDetailsIterator = lotDetailsGid.iterator();
+		final List<ListEntryLotDetails> userSelectedLotEntriesToCancel = this.listInventoryTable.getSelectedLots();
+
+		Iterator<ListEntryLotDetails> userSelectedLotEntriesToCancelIterator = userSelectedLotEntriesToCancel.iterator();
+
 		int validReservation = this.validReservationsToSave.size();
 
 		//this will keep track of how many reservations needs to be cancelled and how many reservations needs to be undo
-		while (listEntryLotDetailsIterator.hasNext()) {
+		while (userSelectedLotEntriesToCancelIterator.hasNext()) {
 
-			ListEntryLotDetails lot = listEntryLotDetailsIterator.next();
+			ListEntryLotDetails userSelectedLot = userSelectedLotEntriesToCancelIterator.next();
 			final Map<ListEntryLotDetails, Double> validReservations = this.getValidReservationsToSave();
 
-			Iterator<Map.Entry<ListEntryLotDetails, Double>> entry = validReservations.entrySet().iterator();
+
 			if (validReservations.size() > 0) {
+				Iterator<Map.Entry<ListEntryLotDetails, Double>> validReservationEntriesIterator = validReservations.entrySet().iterator();
+				while (validReservationEntriesIterator.hasNext()) {
+					Map.Entry<ListEntryLotDetails, Double> validReservationEntry = validReservationEntriesIterator.next();
+					ListEntryLotDetails validReservationLotDetail = validReservationEntry.getKey();
 
-				while (entry.hasNext()) {
-					Map.Entry<ListEntryLotDetails, Double> validReservationEntry = entry.next();
-					ListEntryLotDetails lotDetail = validReservationEntry.getKey();
-
-					if (lotDetail.getLotId().equals(lot.getLotId())) {
-						entry.remove();
-						listEntryLotDetailsIterator.remove();
+					if (validReservationLotDetail.getLotId().equals(userSelectedLot.getLotId())) {
+						validReservationEntriesIterator.remove();
+						userSelectedLotEntriesToCancelIterator.remove();
 						break;
 					}
 				}
 				this.validReservationsToSave = validReservations;
 			}
 		}
-		if (this.validReservationsToCancel.size() > 0) {
+        //validReservationsToCancel holds the actual lot entries that needs to be canceled which is already there in database
+		this.persistedReservationToCancel = userSelectedLotEntriesToCancel;
+
+		//enables the save reservation option if there is actual lot that needs to be cancel which is already there in database
+		if (this.persistedReservationToCancel.size() > 0) {
 			ListComponent.this.inventoryViewMenu.setMenuInventorySaveChanges();
 			this.setHasUnsavedChanges(true);
 		}
+
 		if (validReservation != this.validReservationsToSave.size()) {
 			this.listInventoryTable.resetRowsForCancelledReservation(this.listInventoryTable.getSelectedLots(), this.germplasmList.getId());
 			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
@@ -2538,7 +2544,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}
 
 	public List<ListEntryLotDetails> getValidReservationsToCancel() {
-		return validReservationsToCancel;
+		return persistedReservationToCancel;
 	}
 
 	@Override
