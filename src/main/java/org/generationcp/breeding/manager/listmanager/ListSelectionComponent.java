@@ -5,7 +5,6 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.listeners.ListTreeActionsListener;
-import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
 import org.generationcp.breeding.manager.listimport.GermplasmImportPopupSource;
 import org.generationcp.commons.constant.ListTreeState;
 import org.generationcp.commons.exceptions.InternationalizableException;
@@ -21,7 +20,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.TreeTable;
@@ -57,10 +55,10 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		instantiateComponents();
-		initializeValues();
-		addListeners();
-		layoutComponents();
+		this.instantiateComponents();
+		this.initializeValues();
+		this.addListeners();
+		this.layoutComponents();
 	}
 
 	@Override
@@ -70,9 +68,9 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 
 	@Override
 	public void instantiateComponents() {
-		listSelectionLayout = new ListSelectionLayout(source, selectedListId);
-		listTreeComponent = new ListManagerTreeComponent(this, selectedListId);
-		listSearchComponent = new ListSearchComponent(source, listSelectionLayout);
+		this.listSelectionLayout = new ListSelectionLayout(this.source, this.selectedListId);
+		this.listTreeComponent = new ListManagerTreeComponent(this, this.selectedListId);
+		this.listSearchComponent = new ListSearchComponent(this.source, this.listSelectionLayout);
 	}
 
 	@Override
@@ -88,18 +86,19 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 	@Override
 	public void layoutComponents() {
 		this.removeAllComponents();
-		addComponent(listSelectionLayout);
+		this.addComponent(this.listSelectionLayout);
 		this.addStyleName("list-selection-component");
-		listSelectionLayout.addStyleName("list-selection-layout");
+		this.listSelectionLayout.addStyleName("list-selection-layout");
 	}
 
 	@Override
 	public void studyClicked(final GermplasmList list) {
 		try {
-			listSelectionLayout.createListDetailsTab(list.getId());
+			this.listSelectionLayout.createListDetailsTab(list.getId());
 		} catch (final MiddlewareQueryException e) {
-			LOG.error("Error in displaying germplasm list details.", e);
-			throw new InternationalizableException(e, Message.ERROR_DATABASE, Message.ERROR_IN_CREATING_GERMPLASMLIST_DETAILS_WINDOW);
+			ListSelectionComponent.LOG.error("Error in displaying germplasm list details.", e);
+			throw new InternationalizableException(e, Message.ERROR_DATABASE,
+					Message.ERROR_IN_CREATING_GERMPLASMLIST_DETAILS_WINDOW);
 		}
 	}
 
@@ -109,11 +108,11 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 	}
 
 	public ListSelectionLayout getListDetailsLayout() {
-		return listSelectionLayout;
+		return this.listSelectionLayout;
 	}
 
 	public ListManagerTreeComponent getListTreeComponent() {
-		return listTreeComponent;
+		return this.listTreeComponent;
 	}
 
 	private Window launchListSelectionWindow(final Window window, final Component content, final String caption) {
@@ -138,9 +137,9 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 		popupWindow.addStyleName(Reindeer.WINDOW_LIGHT);
 		popupWindow.addStyleName("lm-list-manager-popup");
 
-		if (caption.equals(messageSource.getMessage(Message.SEARCH_FOR_LISTS))) {
+		if (caption.equals(this.messageSource.getMessage(Message.SEARCH_FOR_LISTS))) {
 			popupWindow.setOverrideFocus(true);
-			listSearchComponent.focusOnSearchField();
+			this.listSearchComponent.focusOnSearchField();
 		}
 
 		window.addWindow(popupWindow);
@@ -149,19 +148,19 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 	}
 
 	public void openListBrowseDialog() {
-		listTreeComponent.showAddRenameFolderSection(false);
-		treeStateSaver =
-				new SaveTreeStateListener((TreeTable) listTreeComponent.getGermplasmListSource(), ListTreeState.GERMPLASM_LIST.name(),
-						ListSelectorComponent.LISTS);
-		launchListSelectionWindow(getWindow(), listTreeComponent, messageSource.getMessage(Message.BROWSE_FOR_LISTS)).addListener(
-				treeStateSaver);
+		this.listTreeComponent.showAddRenameFolderSection(false);
+		this.treeStateSaver = new SaveTreeStateListener((TreeTable) this.listTreeComponent.getGermplasmListSource(),
+				ListTreeState.GERMPLASM_LIST.name(), ListSelectorComponent.LISTS);
+		this.launchListSelectionWindow(this.getWindow(), this.listTreeComponent,
+				this.messageSource.getMessage(Message.BROWSE_FOR_LISTS)).addListener(this.treeStateSaver);
 
-		listTreeComponent.reinitializeTree(false);
+		this.listTreeComponent.reinitializeTree(false);
 
 	}
 
 	public void openListSearchDialog() {
-		launchListSelectionWindow(getWindow(), listSearchComponent, messageSource.getMessage(Message.SEARCH_FOR_LISTS));
+		this.launchListSelectionWindow(this.getWindow(), this.listSearchComponent,
+				this.messageSource.getMessage(Message.SEARCH_FOR_LISTS));
 	}
 
 	@Override
@@ -170,52 +169,27 @@ public class ListSelectionComponent extends VerticalLayout implements Internatio
 	}
 
 	public void showNodeOnTree(final Integer listId) {
-		listTreeComponent.setListId(listId);
-		listTreeComponent.createTree();
+		this.listTreeComponent.setListId(listId);
+		this.listTreeComponent.createTree();
 	}
 
 	public ListSearchComponent getListSearchComponent() {
-		return listSearchComponent;
-	}
-
-	public void openListImportDialog() {
-		final Window window = getWindow();
-		final Window popupWindow = new BaseSubWindow();
-
-		final GermplasmImportMain germplasmImportMain = new GermplasmImportMain(popupWindow, false, this);
-		germplasmImportMain.setDebugId("germplasmImportMain");
-
-		final VerticalLayout content = new VerticalLayout();
-		content.setDebugId("content");
-		content.addComponent(germplasmImportMain);
-		content.setComponentAlignment(germplasmImportMain, Alignment.TOP_CENTER);
-
-		popupWindow.setWidth("760px");
-		popupWindow.setHeight("550px");
-		popupWindow.setModal(true);
-		popupWindow.setResizable(false);
-		popupWindow.center();
-		popupWindow.setCaption(messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
-		popupWindow.setContent(content);
-		popupWindow.addStyleName(Reindeer.WINDOW_LIGHT);
-		popupWindow.addStyleName("lm-list-manager-popup");
-
-		window.addWindow(popupWindow);
+		return this.listSearchComponent;
 	}
 
 	@Override
 	public void openSavedGermplasmList(final GermplasmList germplasmList) {
-		studyClicked(germplasmList);
+		this.studyClicked(germplasmList);
 	}
 
 	@Override
 	public void refreshListTreeAfterListImport() {
-		listTreeComponent.refreshComponent();
+		this.listTreeComponent.refreshComponent();
 	}
 
 	@Override
 	public Window getParentWindow() {
-		return getWindow();
+		return this.getWindow();
 	}
 
 }
