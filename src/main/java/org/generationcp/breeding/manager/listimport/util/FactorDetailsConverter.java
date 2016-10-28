@@ -73,7 +73,7 @@ class FactorDetailsConverter extends WorkbookRowConverter<ImportedFactor> {
 	@Override
 	public ImportedFactor convertToObject(final Map<Integer, String> rowValues) throws FileParsingException {
 		final ImportedFactor importedFactor =
-				new ImportedFactor(rowValues.get(0), rowValues.get(1), rowValues.get(2), rowValues.get(3), rowValues.get(4),
+				new ImportedFactor(rowValues.get(0).toUpperCase(), rowValues.get(1), rowValues.get(2), rowValues.get(3), rowValues.get(4),
 						rowValues.get(5), rowValues.get(6), rowValues.get(7));
 
 		// row based validations here

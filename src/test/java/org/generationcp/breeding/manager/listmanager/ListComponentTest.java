@@ -12,9 +12,13 @@ import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
+import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
+import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
 import org.generationcp.breeding.manager.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.breeding.manager.listmanager.dialog.AssignCodesDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.GermplasmGroupingComponent;
+import org.generationcp.breeding.manager.listmanager.listcomponent.InventoryViewActionMenu;
 import org.generationcp.breeding.manager.listmanager.util.ListDataPropertiesRenderer;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -23,6 +27,7 @@ import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitial
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.domain.gms.ListDataInfo;
+import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -32,6 +37,7 @@ import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.WorkbenchRuntimeData;
@@ -90,6 +96,9 @@ public class ListComponentTest {
 	private WorkbenchDataManager workbenchDataManager;
 
 	@Mock
+	private InventoryViewActionMenu inventoryViewMenu;
+
+	@Mock
 	private OntologyDataManager ontologyDataManager;
 
 	@Mock
@@ -126,12 +135,19 @@ public class ListComponentTest {
 	private CrossExpansionProperties crossExpansionProperties;
 
 	@Mock
+	public ListInventoryTable listInventoryTable;
+
+	@Mock
+	public ListManagerInventoryTable listManagerInventoryTable;
+
+	@Mock
 	private UserDataManager userDataManager;
 	
 	@InjectMocks
 	private final ListComponent listComponent = new ListComponent();
 
 	private GermplasmList germplasmList;
+	private ImportedGermplasmListDataInitializer importedGermplasmListInitializer;
 
 	@Before
 	public void setUp() throws Exception {
@@ -139,7 +155,7 @@ public class ListComponentTest {
 		this.setUpWorkbenchDataManager();
 		this.setUpOntologyManager();
 		this.setUpListComponent();
-
+		this.importedGermplasmListInitializer = new ImportedGermplasmListDataInitializer();
 	}
 
 	@Test
@@ -268,6 +284,16 @@ public class ListComponentTest {
 	}
 
 	@Test
+	public void testUserSelectedLotEntriesToCancelReservations(){
+		List<ListEntryLotDetails> userSelectedLotEntriesToCancel = ListInventoryDataInitializer.createLotDetails(1);
+		this.listComponent.setValidReservationsToSave(this.importedGermplasmListInitializer.createReservations(2));
+		Mockito.doReturn(userSelectedLotEntriesToCancel).when(this.listManagerInventoryTable).getSelectedLots();
+		this.listComponent.userSelectedLotEntriesToCancelReservations();
+		Assert.assertEquals("Expecting Valid reservation to save should have size 0 ", 0,this.listComponent.getValidReservationsToSave().size());
+		Assert.assertEquals("Expecting Cancel reservation should have size 3 ", 3,this.listComponent.getValidReservationsToCancel().size());
+	}
+
+	@Test
 	public void testLockGermplasmList() {
 		final ContextUtil contextUtil = Mockito.mock(ContextUtil.class);
 		this.listComponent.setContextUtil(contextUtil);
@@ -323,6 +349,34 @@ public class ListComponentTest {
 
 		this.listComponent.setListDataTable(listDataTable);
 		this.listComponent.saveChangesAction(this.window, false);
+
+	}
+
+	@Test
+	public void testSaveReservationChangesAction(){
+
+		this.initializeTableWithTestData();
+		List<ListEntryLotDetails> lotDetailsGid = ListInventoryDataInitializer.createLotDetails(1);
+		this.listComponent.setHasUnsavedChanges(true);
+		this.listComponent.setValidReservationsToSave(this.importedGermplasmListInitializer.createReservations(2));
+		this.listComponent.setPersistedReservationToCancel(lotDetailsGid);
+		final ContextUtil contextUtil = Mockito.mock(ContextUtil.class);
+		this.listComponent.getReserveInventoryAction().setContextUtil(contextUtil);
+		this.listComponent.getReserveInventoryAction().setUserDataManager(this.userDataManager);
+		this.listComponent.getReserveInventoryAction().setInventoryDataManager(this.inventoryDataManager);
+		this.listComponent.getListInventoryTable().setInventoryDataManager(this.inventoryDataManager);
+		this.listComponent.setListInventoryTable(this.listManagerInventoryTable);
+		this.listComponent.setInventoryViewMenu(this.inventoryViewMenu);
+		final User user = new User();
+		user.setUserid(12);
+		user.setPersonid(123);
+		Mockito.doReturn(user).when(this.userDataManager).getUserById(Matchers.anyInt());
+		Mockito.when(this.contextUtil.getCurrentUserLocalId()).thenReturn(1);
+		this.listComponent.saveReservationChangesAction(this.window);
+
+		Assert.assertEquals("Expecting Valid reservation to save should have size 0 ", 0,this.listComponent.getValidReservationsToSave().size());
+		Assert.assertEquals("Expecting Cancel reservation should have size 0 ", 0,this.listComponent.getValidReservationsToCancel().size());
+
 
 	}
 
