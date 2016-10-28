@@ -114,9 +114,9 @@ public class ProcessImportedGermplasmAction implements Serializable {
 
 		final Map<String, Germplasm> createdGermplasm = new HashMap<>();
 		final Map<String, Integer> germplasmMatchesMap = this.mapGermplasmNameCount(this.getImportedGermplasm());
-		final Integer noOfImportedGemplasm = this.getImportedGermplasm().size();
+		final Integer noOfImportedGermplasm = this.getImportedGermplasm().size();
 
-		for (int i = 0; i < noOfImportedGemplasm; i++) {
+		for (int i = 0; i < noOfImportedGermplasm; i++) {
 
 			final ImportedGermplasm importedGermplasm = this.getImportedGermplasm().get(i);
 			final String designationName = importedGermplasm.getDesig();
@@ -129,7 +129,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 				foundGermplasm.add(this.germplasmDataManager.getGermplasmByGID(importedGermplasm.getGid()));
 			} else if (germplasmMatchesCount == 1) {
 				// If a single match is found, multiple matches will be
-				// handled by SelectGemrplasmWindow and
+				// handled by SelectGermplasmWindow and
 				// then receiveGermplasmFromWindowAndUpdateGermplasmData()
 				foundGermplasm = this.germplasmDataManager.getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
 			}
@@ -151,7 +151,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 			}
 
 			if (germplasmMatchesCount > 1) {
-				this.displaySelectGermplasmWindowIfNecessary(importedGermplasm.getDesig(), i, germplasm, noOfImportedGemplasm);
+				this.displaySelectGermplasmWindowIfNecessary(importedGermplasm.getDesig(), i, germplasm, noOfImportedGermplasm);
 			}
 		}
 	}
@@ -266,7 +266,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 
 			if (germplasmMatchesCount == 1 && this.germplasmDetailsComponent.automaticallyAcceptSingleMatchesCheckbox()) {
 				// If a single match is found, multiple matches will be
-				// handled by SelectGemrplasmWindow and
+				// handled by SelectGermplasmWindow and
 				// then receiveGermplasmFromWindowAndUpdateGermplasmData()
 				final List<Germplasm> foundGermplasm =
 						this.germplasmDataManager.getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
@@ -411,7 +411,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 
 		if (listener.getNameMatchesCount() == 1 && this.germplasmDetailsComponent.automaticallyAcceptSingleMatchesCheckbox()) {
 			// If a single match is found, multiple matches will be
-			// handled by SelectGemrplasmWindow and
+			// handled by SelectGermplasmWindow and
 			// then receiveGermplasmFromWindowAndUpdateGermplasmData()
 			final List<Germplasm> foundGermplasm = this.germplasmDataManager.getGermplasmByName(desig, 0, 1, Operation.EQUAL);
 

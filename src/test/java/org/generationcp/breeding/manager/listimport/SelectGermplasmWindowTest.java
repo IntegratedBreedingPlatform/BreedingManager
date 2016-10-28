@@ -40,7 +40,7 @@ public class SelectGermplasmWindowTest {
 	private final String germplasmName = "Germplasm Name";
 	private final int index = 2;
 	private Germplasm germplasm;
-	private final Integer noOfImportedGemplasm = 1;
+	private final Integer noOfImportedGermplasm = 1;
 
 	private SelectGermplasmWindow selectGermplasmWindow;
 
@@ -50,7 +50,7 @@ public class SelectGermplasmWindowTest {
 		this.germplasm.setGid(1);
 
 		this.selectGermplasmWindow = new SelectGermplasmWindow(this.source, this.germplasmName, this.index, this.germplasm,
-				this.parentWindow, this.noOfImportedGemplasm);
+				this.parentWindow, this.noOfImportedGermplasm);
 		this.selectGermplasmWindow.setOntologyDataManager(this.ontologyDataManager);
 		this.selectGermplasmWindow.setMessageSource(this.messageSource);
 
@@ -110,7 +110,7 @@ public class SelectGermplasmWindowTest {
 		this.selectGermplasmWindow.setSelectGermplasmLabel(selectGermplasmLabel);
 
 		Mockito.when(this.messageSource.getMessage(Message.GERMPLASM_MATCHES_LABEL,
-				new Object[] {this.index + 1, this.noOfImportedGemplasm, this.germplasmName}))
+				new Object[] {this.index + 1, this.noOfImportedGermplasm, this.germplasmName}))
 				.thenReturn(Message.GERMPLASM_MATCHES_LABEL.toString());
 
 		this.selectGermplasmWindow.initializeGuideMessage();

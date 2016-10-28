@@ -107,7 +107,7 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 	private CheckBox ignoreMatchesCheckbox;
 	private CheckBox ignoreRemainingMatchesCheckbox;
 	private final Window parentWindow;
-	private Integer noOfImportedGemplasm;
+	private Integer noOfImportedGermplasm;
 
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
@@ -125,13 +125,13 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 	}
 
 	public SelectGermplasmWindow(final ProcessImportedGermplasmAction source, final String germplasmName, final int index,
-			final Germplasm germplasm, final Window parentWindow, final Integer noOfImportedGemplasm) {
+			final Germplasm germplasm, final Window parentWindow, final Integer noOfImportedGermplasm) {
 		this.germplasmName = germplasmName;
 		this.germplasmIndex = index;
 		this.germplasm = germplasm;
 		this.source = source;
 		this.parentWindow = parentWindow;
-		this.noOfImportedGemplasm = noOfImportedGemplasm;
+		this.noOfImportedGermplasm = noOfImportedGermplasm;
 	}
 
 	protected void assemble() {
@@ -412,7 +412,7 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 	void initializeGuideMessage() {
 		// Initialize label with germplasm index + 1, total number of imported germplasm & Germplasm Name
 		this.selectGermplasmLabel.setValue(this.messageSource.getMessage(Message.GERMPLASM_MATCHES_LABEL,
-				new Object[] {this.germplasmIndex + 1, this.noOfImportedGemplasm, this.germplasmName}));
+				new Object[] {this.germplasmIndex + 1, this.noOfImportedGermplasm, this.germplasmName}));
 	}
 
 	protected void initializeTableValues() {
@@ -527,7 +527,7 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 	}
 
 	public Integer getNoOfImportedGermplasm() {
-		return this.noOfImportedGemplasm;
+		return this.noOfImportedGermplasm;
 	}
 
 	public void setSelectGermplasmLabel(final Label selectGermplasmLabel) {
