@@ -12,15 +12,18 @@ import javax.annotation.Resource;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.domain.inventory.GermplasmInventory;
+import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
+import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.ReservedInventoryKey;
 import org.generationcp.middleware.pojos.ims.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.util.CollectionUtils;
 
 @Configurable
 public class ReserveInventoryAction implements Serializable {
@@ -138,6 +141,7 @@ public class ReserveInventoryAction implements Serializable {
 	}
 
 	public boolean saveReserveTransactions(Map<ListEntryLotDetails, Double> validReservationsToSave, Integer listId) {
+		Map<Integer, Double> availableBalanceMap = this.retrieveLatestAvailableBalance(validReservationsToSave, listId);
 		List<Transaction> reserveTransactionList = new ArrayList<Transaction>();
 		for (Map.Entry<ListEntryLotDetails, Double> entry : validReservationsToSave.entrySet()) {
 			ListEntryLotDetails lotDetail = entry.getKey();
@@ -158,6 +162,13 @@ public class ReserveInventoryAction implements Serializable {
 			Double prevAmount = 0D;
 			final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
 			final User userById = this.userDataManager.getUserById(ibdbUserId);
+
+			Double availableBalance = availableBalanceMap.get(lrecId);
+			Double reservationAmount = entry.getValue();
+
+			if (availableBalance <= 0.0 || reservationAmount > availableBalance) {
+				return false;
+			}
 
 			Transaction reserveTransaction = new Transaction();
 
@@ -182,6 +193,27 @@ public class ReserveInventoryAction implements Serializable {
 
 		this.inventoryDataManager.addTransactions(reserveTransactionList);
 		return true;
+	}
+
+	private Map<Integer, Double> retrieveLatestAvailableBalance(Map<ListEntryLotDetails, Double> validReservationsToSave, Integer listId) {
+		Map<Integer, Double> availableBalanceMap = new HashMap<>();
+		List<Integer> recordIdList = new ArrayList<>();
+		for (Map.Entry<ListEntryLotDetails, Double> entry : validReservationsToSave.entrySet()) {
+			ListEntryLotDetails lotDetail = entry.getKey();
+			recordIdList.add(lotDetail.getId());
+		}
+
+		final List<GermplasmListData> inventoryData = this.inventoryDataManager.getLotCountsForListEntries(listId, recordIdList);
+
+		if (!CollectionUtils.isEmpty(inventoryData)) {
+			for (GermplasmListData germplasmListData : inventoryData) {
+				ListDataInventory inventoryInfo = germplasmListData.getInventoryInfo();
+				Double totalAvailableBalance = inventoryInfo.getTotalAvailableBalance();
+				availableBalanceMap.put(germplasmListData.getId(), totalAvailableBalance);
+			}
+		}
+
+		return availableBalanceMap;
 	}
 
 	private List<ReservedInventoryKey> getLotIdAndLrecId(List<ListEntryLotDetails> listEntries) {
