@@ -37,6 +37,7 @@ import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.WorkbenchRuntimeData;
@@ -138,7 +139,6 @@ public class ListComponentTest {
 
 	@Mock
 	public ListManagerInventoryTable listManagerInventoryTable;
-
 
 	@Mock
 	private UserDataManager userDataManager;
@@ -349,6 +349,34 @@ public class ListComponentTest {
 
 		this.listComponent.setListDataTable(listDataTable);
 		this.listComponent.saveChangesAction(this.window, false);
+
+	}
+
+	@Test
+	public void testSaveReservationChangesAction(){
+
+		this.initializeTableWithTestData();
+		List<ListEntryLotDetails> lotDetailsGid = ListInventoryDataInitializer.createLotDetails(1);
+		this.listComponent.setHasUnsavedChanges(true);
+		this.listComponent.setValidReservationsToSave(this.importedGermplasmListInitializer.createReservations(2));
+		this.listComponent.setPersistedReservationToCancel(lotDetailsGid);
+		final ContextUtil contextUtil = Mockito.mock(ContextUtil.class);
+		this.listComponent.getReserveInventoryAction().setContextUtil(contextUtil);
+		this.listComponent.getReserveInventoryAction().setUserDataManager(this.userDataManager);
+		this.listComponent.getReserveInventoryAction().setInventoryDataManager(this.inventoryDataManager);
+		this.listComponent.getListInventoryTable().setInventoryDataManager(this.inventoryDataManager);
+		this.listComponent.setListInventoryTable(this.listManagerInventoryTable);
+		this.listComponent.setInventoryViewMenu(this.inventoryViewMenu);
+		final User user = new User();
+		user.setUserid(12);
+		user.setPersonid(123);
+		Mockito.doReturn(user).when(this.userDataManager).getUserById(Matchers.anyInt());
+		Mockito.when(this.contextUtil.getCurrentUserLocalId()).thenReturn(1);
+		this.listComponent.saveReservationChangesAction(this.window);
+
+		Assert.assertEquals("Expecting Valid reservation to save should have size 0 ", 0,this.listComponent.getValidReservationsToSave().size());
+		Assert.assertEquals("Expecting Cancel reservation should have size 0 ", 0,this.listComponent.getValidReservationsToCancel().size());
+
 
 	}
 
