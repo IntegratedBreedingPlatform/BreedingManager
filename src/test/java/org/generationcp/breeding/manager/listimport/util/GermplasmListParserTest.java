@@ -72,6 +72,7 @@ public class GermplasmListParserTest {
 
 	@Mock
 	private GermplasmListManager germplasmListManager;
+
 	@Mock
 	private StockIDValidator stockIdValidator;
 
@@ -85,8 +86,7 @@ public class GermplasmListParserTest {
 	@Before
 	public void setUp() throws Exception {
 		this.initializeDescriptionVariableNames();
-		this.observationColumnMap = new ArrayList<>(this.descriptionVariableNames);
-
+		
 		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(Matchers.eq(GermplasmListParserTest.INVENTORY_AMOUNT))).thenReturn(true);
 		Mockito.when(this.ontologyDataManager
 				.isSeedAmountVariable(AdditionalMatchers.not(Matchers.eq(GermplasmListParserTest.INVENTORY_AMOUNT)))).thenReturn(false);
@@ -135,6 +135,7 @@ public class GermplasmListParserTest {
 	@Test
 	public void testProperHeaderValidationSetup() throws Exception {
 
+		this.observationColumnMap = new ArrayList<>(this.descriptionVariableNames);
 		final File workbookFile =
 				new File(ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.ADDITIONAL_NAME_FILE).toURI());
 
@@ -146,6 +147,17 @@ public class GermplasmListParserTest {
 		Assert.assertEquals(
 				"Header validation setup does not properly recognize the right amount of expected headers for the observation sheet",
 				GermplasmListParserTest.EXPECTED_DESCRIPTION_SHEET_VARIABLE_COUNT, this.parser.getDescriptionVariableNames().size());
+
+
+		// Check that the Description sheet variables are in ALL CAPS after parsing
+		for (final String variableName : this.parser.getDescriptionVariableNames()) {
+			Assert.assertEquals(variableName, variableName.toUpperCase());
+		}
+
+		// Check that the Observation sheet column headers are in ALL CAPS after parsing
+		for (final String columnHeader : this.parser.getObservationSheetHeaders()) {
+			Assert.assertEquals(columnHeader, columnHeader.toUpperCase());
+		}
 
 	}
 
@@ -333,6 +345,7 @@ public class GermplasmListParserTest {
 	@Test
 	public void testValidateObservationHeadersWithNoErrors() throws FileParsingException {
 		this.parser.setDescriptionVariableNames(this.descriptionVariableNames);
+		this.observationColumnMap = new ArrayList<>(this.descriptionVariableNames);
 		this.parser.setObservationColumnMap(this.observationColumnMap);
 		this.parser.validateObservationSheetHeaders(true, true);
 	}
@@ -341,7 +354,7 @@ public class GermplasmListParserTest {
 	public void testValidateObservationHeadersWithMissingObservationHeader() throws FileParsingException {
 		try {
 			this.parser.setDescriptionVariableNames(this.descriptionVariableNames);
-
+			this.observationColumnMap = new ArrayList<>(this.descriptionVariableNames);
 			this.observationColumnMap.remove(1);
 			this.parser.setObservationColumnMap(this.observationColumnMap);
 
@@ -359,7 +372,8 @@ public class GermplasmListParserTest {
 	public void testValidateObservationHeadersWithDuplicateHeaderError() throws FileParsingException {
 		try {
 			this.parser.setDescriptionVariableNames(this.descriptionVariableNames);
-
+			
+			this.observationColumnMap = new ArrayList<>(this.descriptionVariableNames);
 			this.observationColumnMap.add(GermplasmListParserTest.ENTRY_NO);
 			this.parser.setObservationColumnMap(this.observationColumnMap);
 
@@ -377,6 +391,7 @@ public class GermplasmListParserTest {
 	public void testValidateObservationHeadersWithMissingDesigColumnError() throws FileParsingException {
 		try {
 			this.parser.setDescriptionVariableNames(this.descriptionVariableNames);
+			this.observationColumnMap = new ArrayList<>(this.descriptionVariableNames);
 			this.parser.setObservationColumnMap(this.observationColumnMap);
 
 			this.parser.validateObservationSheetHeaders(false, false);
@@ -393,6 +408,8 @@ public class GermplasmListParserTest {
 	public void testValidateObservationHeadersWithMissingGIDColumnError() throws FileParsingException {
 		try {
 			this.parser.setDescriptionVariableNames(this.descriptionVariableNames);
+			
+			this.observationColumnMap = new ArrayList<>(this.descriptionVariableNames);
 			this.parser.setObservationColumnMap(this.observationColumnMap);
 			this.parser.setImportFileIsAdvanced(true);
 
