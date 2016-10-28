@@ -1,7 +1,7 @@
-
 package org.generationcp.breeding.manager.listimport;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.commons.security.SecurityUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,11 +10,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Window;
 
+import com.google.common.collect.Lists;
 import junit.framework.Assert;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -51,7 +56,7 @@ public class GermplasmImportMainTest {
 		selectedTab = tabSheet.getSelectedTab();
 		Assert.assertTrue("Specify Germplasm Details screen should be displayed",
 				this.germplasmImportMain.getWizardScreenTwo().equals(selectedTab));
-		Assert.assertEquals("Page height is 850px", 850.0f, tabSheet.getHeight());
+		Assert.assertEquals("Page height is 860px", 860.0f, tabSheet.getHeight());
 		Assert.assertEquals(0, tabSheet.getHeightUnits());
 	}
 
@@ -76,4 +81,35 @@ public class GermplasmImportMainTest {
 		Assert.assertEquals(0, tabSheet.getHeightUnits());
 	}
 
+	@Test
+	public void testAfterPropertiesSetWithAdminUser() throws Exception {
+		this.germplasmImportMain.setImportGermplasmPermissibleRoles("Admin");
+		SimpleGrantedAuthority roleAuthority = new SimpleGrantedAuthority(SecurityUtil.ROLE_PREFIX + "ADMIN");
+
+		UsernamePasswordAuthenticationToken loggedInUser =
+				new UsernamePasswordAuthenticationToken("admin", "admin", Lists.newArrayList(roleAuthority));
+		SecurityContextHolder.getContext().setAuthentication(loggedInUser);
+		try {
+			this.germplasmImportMain.afterPropertiesSet();
+		} catch (AccessDeniedException e) {
+			Assert.fail("Access Import germplsm link should not throw Access Denied exception.");
+		}
+
+	}
+
+	@Test
+	public void testAfterPropertiesSetWithTechnicianUser() throws Exception {
+		this.germplasmImportMain.setImportGermplasmPermissibleRoles("Admin");
+		SimpleGrantedAuthority roleAuthority = new SimpleGrantedAuthority(SecurityUtil.ROLE_PREFIX + "TECHNICIAN");
+
+		UsernamePasswordAuthenticationToken loggedInUser =
+				new UsernamePasswordAuthenticationToken("admin", "admin", Lists.newArrayList(roleAuthority));
+		SecurityContextHolder.getContext().setAuthentication(loggedInUser);
+		try {
+			this.germplasmImportMain.afterPropertiesSet();
+		} catch (AccessDeniedException e) {
+			Assert.assertEquals("Access Denied. User does not have appropriate role to access the functionality.", e.getMessage());
+		}
+
+	}
 }

@@ -106,7 +106,7 @@ public class BuildNewListDropHandlerTest {
 		Mockito.when(this.targetTable.getContainerDataSource()).thenReturn(this.mockContainer);
 		Mockito.when(this.mockContainer.addItem(Matchers.any())).thenReturn(this.mockTableItem);
 		Mockito.when(this.mockTableItem.getItemProperty(Matchers.anyString())).thenReturn(this.mockProperty);
-		Mockito.doReturn(GERMPLASM_LIST_ID).when(this.currentColumnsInfo).getListId();
+		Mockito.doReturn(BuildNewListDropHandlerTest.GERMPLASM_LIST_ID).when(this.currentColumnsInfo).getListId();
 		Mockito.doReturn(new HashMap<>()).when(this.currentColumnsInfo).getColumnValuesMap();
 		Mockito.doReturn(this.listBuilderComponent).when(this.listManagerMain).getListBuilderComponent();
 
@@ -120,6 +120,7 @@ public class BuildNewListDropHandlerTest {
 		Mockito.doReturn(itemIds).when(this.sourceTable).getValue();
 		Mockito.doReturn(itemIds).when(this.sourceTable).getItemIds();
 
+		final List<Germplasm> germplasms = new ArrayList<>();
 		for (final Integer itemId : itemIds) {
 			final Item item = Mockito.mock(Item.class);
 			Mockito.doReturn(item).when(this.sourceTable).getItem(itemId);
@@ -158,20 +159,22 @@ public class BuildNewListDropHandlerTest {
 			Mockito.doReturn(groupIdProp).when(item).getItemProperty(ColumnLabels.GROUP_ID.getName());
 			Mockito.doReturn("Seed source of GID: " + itemId).when(groupIdProp).getValue();
 
-			final Germplasm germplasm = this.germplasmInitializer.createGermplasm(itemId);
+			final Germplasm germplasm = GermplasmTestDataInitializer.createGermplasm(itemId);
 			Mockito.doReturn(germplasm).when(this.germplasmDataManager).getGermplasmByGID(itemId);
+			germplasms.add(germplasm);
 
-			final GermplasmList germplasmList =
-					this.germplasmListInitializer.createGermplasmListWithListDataAndInventoryInfo(itemId, NO_OF_ENTRIES);
+			final GermplasmList germplasmList = GermplasmListTestDataInitializer.createGermplasmListWithListDataAndInventoryInfo(itemId,
+					BuildNewListDropHandlerTest.NO_OF_ENTRIES);
 			Mockito.doReturn(germplasmList).when(this.germplasmListManager).getGermplasmListById(itemId);
 
 			this.germplasmLists.add(germplasmList);
 			Mockito.doReturn(this.currentColumnsInfo).when(this.germplasmListManager).getAdditionalColumnsForList(itemId);
 
 		}
+		Mockito.doReturn(germplasms).when(this.germplasmDataManager).getGermplasms(Matchers.anyListOf(Integer.class));
 
-		this.dropHandler = new BuildNewListDropHandler(listManagerMain, germplasmDataManager, germplasmListManager, inventoryDataManager,
-				pedigreeService, crossExpansionProperties, targetTable, transactionManager);
+		this.dropHandler = new BuildNewListDropHandler(this.listManagerMain, this.germplasmDataManager, this.germplasmListManager,
+				this.inventoryDataManager, this.pedigreeService, this.crossExpansionProperties, this.targetTable, this.transactionManager);
 
 		// other mock injections
 		this.dropHandler.setCurrentColumnsInfo(this.currentColumnsInfo);
@@ -181,7 +184,7 @@ public class BuildNewListDropHandlerTest {
 	@Test
 	public void testDropWhenTheEventIsNotATableTransferable() {
 		Mockito.doReturn(this.transferable).when(this.event).getTransferable();
-		Mockito.doReturn(GERMPLASM_LIST_ID).when(this.transferable).getData("itemId");
+		Mockito.doReturn(BuildNewListDropHandlerTest.GERMPLASM_LIST_ID).when(this.transferable).getData("itemId");
 
 		this.dropHandler.drop(this.event);
 
@@ -192,7 +195,6 @@ public class BuildNewListDropHandlerTest {
 
 	@Test
 	public void testDropWhenTheEventIsATableTransferableAndComesFromGermplasmSearchTable() {
-
 		Mockito.doReturn(DropHandlerMethods.MATCHING_GERMPLASMS_TABLE_DATA).when(this.sourceTable).getData();
 
 		this.dropHandler.drop(this.event);
@@ -229,8 +231,8 @@ public class BuildNewListDropHandlerTest {
 
 		Mockito.doReturn(this.tableWithSelectAllLayout).when(this.sourceTable).getParent();
 		Mockito.doReturn(this.listComponent).when(this.tableWithSelectAllLayout).getParent();
-		Mockito.doReturn(GERMPLASM_LIST_ID).when(this.listComponent).getGermplasmListId();
-		Mockito.doReturn(GERMPLASM_LIST_ID).when(this.currentColumnsInfo).getListId();
+		Mockito.doReturn(BuildNewListDropHandlerTest.GERMPLASM_LIST_ID).when(this.listComponent).getGermplasmListId();
+		Mockito.doReturn(BuildNewListDropHandlerTest.GERMPLASM_LIST_ID).when(this.currentColumnsInfo).getListId();
 
 		Mockito.doReturn(DropHandlerMethods.LIST_DATA_TABLE_DATA).when(this.sourceTable).getData();
 
@@ -248,15 +250,15 @@ public class BuildNewListDropHandlerTest {
 	@Test
 	public void testDropWhenTheEventIsATableTransferableAndComesFromListBuilderGermplasmTable() {
 
-		Mockito.doReturn(GID1).when(this.targetDetails).getItemIdOver();
-		Mockito.doReturn(GID2).when(this.tableTransferable).getItemId();
+		Mockito.doReturn(BuildNewListDropHandlerTest.GID1).when(this.targetDetails).getItemIdOver();
+		Mockito.doReturn(BuildNewListDropHandlerTest.GID2).when(this.tableTransferable).getItemId();
 		final Item oldItem = Mockito.mock(Item.class);
-		Mockito.doReturn(oldItem).when(this.sourceTable).getItem(GID2);
+		Mockito.doReturn(oldItem).when(this.sourceTable).getItem(BuildNewListDropHandlerTest.GID2);
 		this.addMockPropToItem(oldItem);
 
 		// new item
 		final Item newItem = Mockito.mock(Item.class);
-		Mockito.doReturn(newItem).when(this.sourceTable).addItemAfter(GID1, GID2);
+		Mockito.doReturn(newItem).when(this.sourceTable).addItemAfter(BuildNewListDropHandlerTest.GID1, BuildNewListDropHandlerTest.GID2);
 		this.addMockPropToItem(newItem);
 
 		this.dropHandler.drop(this.event);
@@ -265,7 +267,7 @@ public class BuildNewListDropHandlerTest {
 		Mockito.verify(this.tableTransferable, Mockito.times(1)).getSourceComponent();
 		Mockito.verify(this.event, Mockito.times(1)).getTargetDetails();
 
-		Mockito.verify(this.sourceTable, Mockito.times(1)).getItem(GID2);
+		Mockito.verify(this.sourceTable, Mockito.times(1)).getItem(BuildNewListDropHandlerTest.GID2);
 
 		this.verifyEachPropertyIsProperlyFilledUp(newItem);
 	}
@@ -317,7 +319,7 @@ public class BuildNewListDropHandlerTest {
 
 	private List<Integer> prepareItemIds() {
 		final List<Integer> items = new ArrayList<Integer>();
-		for (int i = 1; i <= NO_OF_ENTRIES; i++) {
+		for (int i = 1; i <= BuildNewListDropHandlerTest.NO_OF_ENTRIES; i++) {
 			items.add(i);
 		}
 		return items;

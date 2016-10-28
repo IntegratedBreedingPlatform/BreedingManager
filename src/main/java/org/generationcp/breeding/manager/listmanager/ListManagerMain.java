@@ -2,6 +2,7 @@
 package org.generationcp.breeding.manager.listmanager;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -271,12 +272,12 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 	}
 
 	/**
-	 * Add a plant to the list open in the list builder.
+	 * Add plants to the list open in the list builder.
 	 * 
-	 * @param gid ID of the germplasm to add
+	 * @param gids list of IDs of the germplasm to add
 	 */
-	public void addPlantToList(final Integer gid) {
-		this.listBuilderComponent.addGermplasm(gid);
+	public void addPlantsToList(final List<Integer> gids) {
+		this.listBuilderComponent.addGermplasm(gids);
 	}
 
 	public ListBuilderComponent getListBuilderComponent() {
@@ -325,7 +326,7 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
 		this.toolTitle.setStyleName(Bootstrap.Typography.H1.styleName());
 		this.toolTitle.setContentMode(Label.CONTENT_XHTML);
-		this.toolTitle.setWidth("185px");
+		this.toolTitle.setWidth("280px");
 
 		this.titleLayout.addComponent(this.toolTitle);
 		this.titleLayout.addComponent(new HelpButton(HelpModule.MANAGE_LIST, "View Manage Lists Tutorial"));

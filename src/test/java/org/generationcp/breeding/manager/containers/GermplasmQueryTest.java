@@ -58,7 +58,7 @@ public class GermplasmQueryTest {
 	public static final int TEST_LOCATION_ID = 5;
 	public static final int GERMPLASM_SIZE = 20;
 	private final String[] itemPropertyIds =
-			new String[] {"LOCATIONS", "GROUP ID", "GID_REF", "Tag All Column", "SEED RES", "LOTS AVAILABLE", "PARENTAGE", "METHOD NAME",
+			new String[] {"LOCATIONS", "GROUP ID", "GID_REF", "Tag All Column", "WITHDRAWAL", "LOTS", "PARENTAGE", "METHOD NAME",
 					"STOCKID", "NAMES", "GID"};
 	@Mock
 	private GermplasmDataManager germplasmDataManager;

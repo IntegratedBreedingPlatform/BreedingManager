@@ -5,12 +5,16 @@ public class ReservationRowKey {
 
 	String scale;
 	Double amountToReserve;
+	Boolean isPreapareAllSeeds = false;
 
-	public ReservationRowKey(String scale, Double amountToReserve) {
+	public ReservationRowKey(String scale, Double amountToReserve, Boolean isPreapareAllSeeds) {
 		super();
 		this.scale = scale;
 		this.amountToReserve = amountToReserve;
+		this.isPreapareAllSeeds = isPreapareAllSeeds;
 	}
+
+	public Boolean getIsPreapareAllSeeds() {return isPreapareAllSeeds;}
 
 	public String getScale() {
 		return this.scale;
