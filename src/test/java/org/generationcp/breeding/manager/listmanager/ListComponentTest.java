@@ -12,10 +12,10 @@ import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
+import org.generationcp.middleware.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
-import org.generationcp.breeding.manager.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.breeding.manager.listmanager.dialog.AssignCodesDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.GermplasmGroupingComponent;
 import org.generationcp.breeding.manager.listmanager.listcomponent.InventoryViewActionMenu;
@@ -142,7 +142,7 @@ public class ListComponentTest {
 
 	@Mock
 	private UserDataManager userDataManager;
-	
+
 	@InjectMocks
 	private final ListComponent listComponent = new ListComponent();
 
@@ -305,8 +305,9 @@ public class ListComponentTest {
 
 		this.listComponent.toggleGermplasmListStatus();
 
-		Assert.assertEquals("Expecting the that the germplasmList status was changed to locked(101) but returned ("
-				+ this.germplasmList.getStatus() + ")", Integer.valueOf(101), this.germplasmList.getStatus());
+		Assert.assertEquals(
+				"Expecting the that the germplasmList status was changed to locked(101) but returned (" + this.germplasmList.getStatus()
+						+ ")", Integer.valueOf(101), this.germplasmList.getStatus());
 		Assert.assertEquals(Integer.valueOf(101), this.listComponent.getViewListHeaderWindow().getGermplasmList().getStatus());
 		Assert.assertEquals(Integer.valueOf(101),
 				this.listComponent.getViewListHeaderWindow().getListHeaderComponent().getGermplasmList().getStatus());
@@ -326,8 +327,9 @@ public class ListComponentTest {
 
 		this.listComponent.toggleGermplasmListStatus();
 
-		Assert.assertEquals("Expecting the that the germplasmList status was changed to unlocked(1) but returned ("
-				+ this.germplasmList.getStatus() + ")", Integer.valueOf(1), this.germplasmList.getStatus());
+		Assert.assertEquals(
+				"Expecting the that the germplasmList status was changed to unlocked(1) but returned (" + this.germplasmList.getStatus()
+						+ ")", Integer.valueOf(1), this.germplasmList.getStatus());
 		Assert.assertEquals(Integer.valueOf(1), this.listComponent.getViewListHeaderWindow().getGermplasmList().getStatus());
 		Assert.assertEquals(Integer.valueOf(1), this.listComponent.getViewListHeaderWindow().getGermplasmList().getStatus());
 		Assert.assertEquals(Integer.valueOf(1),
@@ -504,7 +506,8 @@ public class ListComponentTest {
 		for (Integer gid : result) {
 			final Item selectedRowItem = table.getItem(selectedRowsIterator.next());
 			final Button gidCell = (Button) selectedRowItem.getItemProperty(ColumnLabels.GID.getName()).getValue();
-			Assert.assertEquals("The order of extracted GIDs should be same order as the entries in the table.", Integer.valueOf(gidCell.getCaption()), gid);
+			Assert.assertEquals("The order of extracted GIDs should be same order as the entries in the table.",
+					Integer.valueOf(gidCell.getCaption()), gid);
 		}
 
 	}
