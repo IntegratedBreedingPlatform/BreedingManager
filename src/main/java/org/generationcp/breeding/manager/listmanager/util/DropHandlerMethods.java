@@ -1,4 +1,3 @@
-
 package org.generationcp.breeding.manager.listmanager.util;
 
 import java.util.ArrayList;
@@ -36,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Iterables;
+
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
@@ -44,6 +44,7 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.BaseTheme;
+
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -121,8 +122,10 @@ public class DropHandlerMethods {
 			protected void doInTransactionWithoutResult(final TransactionStatus transactionStatus) {
 
 				// Load currentColumnsInfo if cached list info is null or not matching the needed list id
-				if (DropHandlerMethods.this.currentColumnsInfo == null || !DropHandlerMethods.this.currentColumnsInfo.getListId().equals(listId)) {
-					DropHandlerMethods.this.currentColumnsInfo = DropHandlerMethods.this.germplasmListManager.getAdditionalColumnsForList(listId);
+				if (DropHandlerMethods.this.currentColumnsInfo == null || !DropHandlerMethods.this.currentColumnsInfo.getListId()
+						.equals(listId)) {
+					DropHandlerMethods.this.currentColumnsInfo =
+							DropHandlerMethods.this.germplasmListManager.getAdditionalColumnsForList(listId);
 				}
 
 				final GermplasmList germplasmList = DropHandlerMethods.this.getGermplasmList(listId);
@@ -416,11 +419,11 @@ public class DropHandlerMethods {
 				}
 				newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 
-				if (forEditList) {
-					newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(germplasmListData.getInventoryInfo().getStockIDs());
-				} else {
-					newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(DropHandlerMethods.STRING_EMPTY);
+				String stockIDs = DropHandlerMethods.STRING_EMPTY;
+				if (germplasmListData.getInventoryInfo() != null && germplasmListData.getInventoryInfo().getStockIDs() != null) {
+					stockIDs = germplasmListData.getInventoryInfo().getStockIDs();
 				}
+				newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIDs);
 
 				for (final Entry<String, List<ListDataColumnValues>> columnEntry : this.currentColumnsInfo.getColumnValuesMap()
 						.entrySet()) {
@@ -763,6 +766,7 @@ public class DropHandlerMethods {
 
 		public void listUpdated(final ListUpdatedEvent event);
 	}
+
 
 	public class ListUpdatedEvent {
 

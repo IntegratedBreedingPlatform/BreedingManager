@@ -1,4 +1,3 @@
-
 package org.generationcp.breeding.manager.listmanager.util;
 
 import java.util.ArrayList;
@@ -37,11 +36,13 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.google.common.collect.Lists;
+
 import com.vaadin.data.Item;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+
 import org.springframework.transaction.PlatformTransactionManager;
 
 public class DropHandlerMethodsTest {
@@ -182,8 +183,8 @@ public class DropHandlerMethodsTest {
 		final Collection<Integer> selectedItems = (Collection<Integer>) sourceTable.getValue();
 		final List<GermplasmList> germplasmLists = new ArrayList<GermplasmList>();
 		for (final Integer listId : selectedItems) {
-			final GermplasmList germplasmList = GermplasmListTestDataInitializer.createGermplasmListWithListDataAndInventoryInfo(listId,
-					DropHandlerMethodsTest.NO_OF_ENTRIES);
+			final GermplasmList germplasmList = GermplasmListTestDataInitializer
+					.createGermplasmListWithListDataAndInventoryInfo(listId, DropHandlerMethodsTest.NO_OF_ENTRIES);
 			Mockito.doReturn(germplasmList).when(this.germplasmListManager).getGermplasmListById(listId);
 			germplasmLists.add(germplasmList);
 			Mockito.doReturn(this.currentColumnsInfo).when(this.germplasmListManager).getAdditionalColumnsForList(listId);
@@ -203,8 +204,8 @@ public class DropHandlerMethodsTest {
 
 		// Setup mocks
 		Mockito.doReturn(germplasmList).when(this.germplasmDataManager).getGermplasms(Matchers.anyListOf(Integer.class));
-		Mockito.doReturn(this.getTestCrossExpansions(gidList)).when(this.pedigreeService).getCrossExpansions(new HashSet<>(gidList), null,
-				this.crossExpansionProperties);
+		Mockito.doReturn(this.getTestCrossExpansions(gidList)).when(this.pedigreeService)
+				.getCrossExpansions(new HashSet<>(gidList), null, this.crossExpansionProperties);
 		Mockito.doReturn(this.getPreferredNames(gidList)).when(this.germplasmDataManager).getPreferredNamesByGids(gidList);
 
 		// call method to add germplasm to target table
@@ -212,8 +213,8 @@ public class DropHandlerMethodsTest {
 
 		// Verify bulk call to Middleware methods
 		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getGermplasms(Matchers.anyListOf(Integer.class));
-		Mockito.verify(this.pedigreeService, Mockito.times(1)).getCrossExpansions(Matchers.anySetOf(Integer.class), Matchers.anyInt(),
-				Matchers.any(CrossExpansionProperties.class));
+		Mockito.verify(this.pedigreeService, Mockito.times(1))
+				.getCrossExpansions(Matchers.anySetOf(Integer.class), Matchers.anyInt(), Matchers.any(CrossExpansionProperties.class));
 		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getPreferredNamesByGids(Matchers.anyListOf(Integer.class));
 
 		this.verifyEachPropertyIsProperlyFilledUpForAddedGermplasm(gidList);
@@ -239,8 +240,8 @@ public class DropHandlerMethodsTest {
 
 		// set mocks
 		Mockito.doReturn(germplasmList).when(this.germplasmDataManager).getGermplasms(selectedIDs);
-		Mockito.doReturn(this.getTestCrossExpansions(selectedIDs)).when(this.pedigreeService).getCrossExpansions(new HashSet<>(selectedIDs),
-				null, this.crossExpansionProperties);
+		Mockito.doReturn(this.getTestCrossExpansions(selectedIDs)).when(this.pedigreeService)
+				.getCrossExpansions(new HashSet<>(selectedIDs), null, this.crossExpansionProperties);
 		Mockito.doReturn(this.getPreferredNames(selectedIDs)).when(this.germplasmDataManager).getPreferredNamesByGids(selectedIDs);
 
 		// call method to add germplasm to target table
@@ -248,8 +249,8 @@ public class DropHandlerMethodsTest {
 
 		// Verify bulk call to Middleware methods
 		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getGermplasms(Matchers.anyListOf(Integer.class));
-		Mockito.verify(this.pedigreeService, Mockito.times(1)).getCrossExpansions(Matchers.anySetOf(Integer.class), Matchers.anyInt(),
-				Matchers.any(CrossExpansionProperties.class));
+		Mockito.verify(this.pedigreeService, Mockito.times(1))
+				.getCrossExpansions(Matchers.anySetOf(Integer.class), Matchers.anyInt(), Matchers.any(CrossExpansionProperties.class));
 		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getPreferredNamesByGids(Matchers.anyListOf(Integer.class));
 
 		this.verifyEachPropertyIsProperlyFilledUpForAddedGermplasm(selectedIDs);
@@ -323,8 +324,9 @@ public class DropHandlerMethodsTest {
 		this.germplasmListNewColumnsInfo.setColumnValuesMap(map);
 		this.dropHandlerMethods.setCurrentColumnsInfo(this.germplasmListNewColumnsInfo);
 
-		final GermplasmList testList = GermplasmListTestDataInitializer.createGermplasmListWithListDataAndInventoryInfo(
-				DropHandlerMethodsTest.GERMPLASM_LIST_ID, DropHandlerMethodsTest.NO_OF_ENTRIES);
+		final GermplasmList testList = GermplasmListTestDataInitializer
+				.createGermplasmListWithListDataAndInventoryInfo(DropHandlerMethodsTest.GERMPLASM_LIST_ID,
+						DropHandlerMethodsTest.NO_OF_ENTRIES);
 
 		// retrieve the first list entry from list data with inventory information
 		final GermplasmListData listData = testList.getListData().get(0);
@@ -344,12 +346,16 @@ public class DropHandlerMethodsTest {
 		Assert.assertEquals(listData.getDesignation(), desigButton.getCaption());
 		final Button gidButton = (Button) tableItem.getItemProperty(ColumnLabels.GID.getName()).getValue();
 		Assert.assertEquals(listData.getGid().toString(), gidButton.getCaption());
+
+		final Label stockIdLabel = (Label) tableItem.getItemProperty(ColumnLabels.STOCKID.getName()).getValue();
+		Assert.assertEquals(listData.getInventoryInfo().getStockIDs(), stockIdLabel.getValue().toString());
 	}
 
 	@Test
 	public void testAddGermplasmListUsingListId() {
-		final GermplasmList germplasmList = GermplasmListTestDataInitializer.createGermplasmListWithListDataAndInventoryInfo(
-				DropHandlerMethodsTest.GERMPLASM_LIST_ID, DropHandlerMethodsTest.NO_OF_ENTRIES);
+		final GermplasmList germplasmList = GermplasmListTestDataInitializer
+				.createGermplasmListWithListDataAndInventoryInfo(DropHandlerMethodsTest.GERMPLASM_LIST_ID,
+						DropHandlerMethodsTest.NO_OF_ENTRIES);
 		Mockito.doReturn(germplasmList).when(this.germplasmListManager).getGermplasmListById(DropHandlerMethodsTest.GERMPLASM_LIST_ID);
 
 		Mockito.doReturn(DropHandlerMethodsTest.GERMPLASM_LIST_ID).when(this.currentColumnsInfo).getListId();

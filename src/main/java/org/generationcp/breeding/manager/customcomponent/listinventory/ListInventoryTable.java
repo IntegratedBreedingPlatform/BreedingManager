@@ -196,13 +196,13 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
   
 
   					String available = "";
-					if(lotDetail.getAvailableLotBalance() != null && lotDetail.getAvailableLotBalance() > 0){
+					if(lotDetail.getAvailableLotBalance() != null){
 						available = lotDetail.getAvailableLotBalance() + lotDetail.getLotScaleNameAbbr();
 					}
   					newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(available);
 
 					String withdrawalBalance = "";
-					if(lotDetail.getWithdrawalBalance() != null && lotDetail.getWithdrawalBalance() > 0){
+					if(lotDetail.getWithdrawalBalance() != null){
 						withdrawalBalance = lotDetail.getWithdrawalBalance() + lotDetail.getLotScaleNameAbbr();
 					}
   					newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(withdrawalBalance);
@@ -303,5 +303,10 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 	public void setOntologyDataManager(final OntologyDataManager ontologyDataManager) {
 		this.ontologyDataManager = ontologyDataManager;
 	}
+
+	public void setInventoryDataManager(InventoryDataManager inventoryDataManager) {
+		this.inventoryDataManager = inventoryDataManager;
+	}
+
 
 }
