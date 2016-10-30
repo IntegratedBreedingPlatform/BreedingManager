@@ -40,7 +40,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 
 	private static final long serialVersionUID = -9047259985457065559L;
 	private static final int PREFERRED_NAME_STATUS = 1;
-
+	static final Integer DEFAULT_LOCATION_ID = 0;
 	private final SpecifyGermplasmDetailsComponent germplasmDetailsComponent;
 
 	private List<Integer> doNotCreateGermplasmsWithId = new ArrayList<>();
@@ -330,7 +330,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 
 		// Set the location id to the id of Unknown Location (0) if the user did not select any location
 		final String locationIdString = (String) this.getGermplasmFieldsComponent().getLocationComboBox().getValue();
-		final Integer locationID = StringUtils.isNotEmpty(locationIdString) ? Integer.valueOf(locationIdString) : new Integer(0);
+		final Integer locationID = StringUtils.isNotEmpty(locationIdString) ? Integer.valueOf(locationIdString) : ProcessImportedGermplasmAction.DEFAULT_LOCATION_ID;
 		name.setLocationId(locationID);
 
 		name.setNdate(dateIntValue);
@@ -348,7 +348,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 
 		// Set the location id to the id of Unknown Location (0) if the user did not select any location
 		final String locationIdString = (String) this.getGermplasmFieldsComponent().getLocationComboBox().getValue();
-		final Integer locationID = StringUtils.isNotEmpty(locationIdString) ? Integer.valueOf(locationIdString) : new Integer(0);
+		final Integer locationID = StringUtils.isNotEmpty(locationIdString) ? Integer.valueOf(locationIdString) : ProcessImportedGermplasmAction.DEFAULT_LOCATION_ID;
 		germplasm.setLocationId(locationID);
 
 		germplasm.setGdate(dateIntValue);
