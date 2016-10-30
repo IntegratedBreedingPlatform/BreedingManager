@@ -16,6 +16,8 @@ import org.generationcp.breeding.manager.customcomponent.listinventory.ListInven
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
 import org.generationcp.breeding.manager.data.initializer.ListInventoryDataInitializer;
+import org.generationcp.breeding.manager.inventory.SeedInventoryListExporter;
+import org.generationcp.breeding.manager.inventory.exception.SeedInventoryExportException;
 import org.generationcp.breeding.manager.listmanager.dialog.AssignCodesDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.GermplasmGroupingComponent;
 import org.generationcp.breeding.manager.listmanager.listcomponent.InventoryViewActionMenu;
@@ -635,6 +637,26 @@ public class ListComponentTest {
 
 		Mockito.doNothing().when(this.contextUtil).logProgramActivity(Mockito.anyString(), Mockito.anyString());
 
+	}
+
+	@Test
+	public void testExportSeedPreparationListWithUnsavedReservations() throws SeedInventoryExportException {
+		final Map<ListEntryLotDetails, Double> unsavedReservations = new HashMap<>();
+		unsavedReservations.put(new ListEntryLotDetails(), new Double(10));
+		this.listComponent.setValidReservationsToSave(unsavedReservations);
+		final SeedInventoryListExporter exporterMock = Mockito.mock(SeedInventoryListExporter.class);
+		this.listComponent.exportSeedPreparationList(exporterMock);
+		Mockito.verify(this.messageSource).getMessage(Message.UNSAVED_RESERVATION_WARNING);
+		Mockito.verify(exporterMock).exportSeedPreparationList();
+	}
+
+	@Test
+	public void testExportSeedPreparationListWithNoUnsavedReservations() throws SeedInventoryExportException {
+		this.listComponent.setValidReservationsToSave(null);
+		final SeedInventoryListExporter exporterMock = Mockito.mock(SeedInventoryListExporter.class);
+		this.listComponent.exportSeedPreparationList(exporterMock);
+		Mockito.verify(this.messageSource, Mockito.never()).getMessage(Message.UNSAVED_RESERVATION_WARNING);
+		Mockito.verify(exporterMock).exportSeedPreparationList();
 	}
 
 	private Project createProject() {
