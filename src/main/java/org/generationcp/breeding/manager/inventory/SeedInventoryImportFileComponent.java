@@ -1,6 +1,7 @@
 package org.generationcp.breeding.manager.inventory;
 
 import com.google.common.collect.Lists;
+
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -9,6 +10,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
+
 import org.apache.commons.io.FilenameUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
@@ -47,8 +49,8 @@ import java.util.Objects;
 import java.util.Set;
 
 @Configurable
-public class SeedInventoryImportFileComponent extends BaseSubWindow
-		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout  {
+public class SeedInventoryImportFileComponent extends BaseSubWindow implements InitializingBean, InternationalizableComponent,
+		BreedingManagerLayout {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SeedInventoryImportFileComponent.class);
 
@@ -71,7 +73,6 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 
 	private SeedInventoryImportStatusWindow seedInventoryImportStatusWindow;
 
-
 	private List<Transaction> importedTransactions = Lists.newArrayList();
 
 	private List<Transaction> processedTransactions = Lists.newArrayList();
@@ -81,7 +82,6 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 	protected GermplasmList selectedGermplsmList;
 	private Component source;
 	private Component listComponent;
-
 
 	private final Set<String> extensionSet = new HashSet<>();
 
@@ -93,17 +93,16 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 	private List<GermplasmListData> selectedListReservedInventoryDetails;
 	private ImportedSeedInventoryList importedSeedInventoryList;
 
-	public SeedInventoryImportFileComponent(){
+	public SeedInventoryImportFileComponent() {
 		super();
 	}
 
-	public SeedInventoryImportFileComponent(final Component source, Component listComponent, GermplasmList selectedGermplsmList){
+	public SeedInventoryImportFileComponent(final Component source, Component listComponent, GermplasmList selectedGermplsmList) {
 		this();
 		this.listComponent = listComponent;
 		this.source = source;
 		this.selectedGermplsmList = selectedGermplsmList;
 	}
-
 
 	@Override
 	public void instantiateComponents() {
@@ -115,7 +114,6 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 		this.importSeedTitleLayout = new HorizontalLayout();
 		this.importSeedTitleLayout.setDebugId("importSeedTitleLayout");
 		this.importSeedTitleLayout.setSpacing(true);
-
 
 		this.selectFileLabel = new Label(this.messageSource.getMessage(Message.SELECT_SEED_INVENTORY_FILE) + "&nbsp");
 		this.selectFileLabel.setDebugId("selectFileLabel");
@@ -164,7 +162,7 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 
 		selectedListReservedInventoryDetails = inventoryDetails;
 
-		for(GermplasmListData inventoryDetail : inventoryDetails){
+		for (GermplasmListData inventoryDetail : inventoryDetails) {
 			final ListDataInventory listDataInventory = inventoryDetail.getInventoryInfo();
 			final List<ListEntryLotDetails> lotDetails = (List<ListEntryLotDetails>) listDataInventory.getLotRows();
 
@@ -200,7 +198,6 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 			}
 		});
 
-
 		this.uploadSeedPreparationComponent.setDeleteButtonListener(new Button.ClickListener() {
 
 			private static final long serialVersionUID = -1357425494204377238L;
@@ -222,7 +219,6 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 		this.setResizable(false);
 		this.setHeight("225px");
 		this.setWidth("450px");
-
 
 		final HorizontalLayout downloadMessageLayout = new HorizontalLayout();
 		downloadMessageLayout.setDebugId("downloadMessageLayout");
@@ -280,8 +276,9 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 			validateImportedSeedInventoryList();
 			processImportedInventoryTransactions();
 
-			SeedInventoryImportStatusWindow seedInventoryImportStatusWindow = new SeedInventoryImportStatusWindow(this.source, this.listComponent, this.importedSeedInventoryList.getImportedSeedInventoryList(),
-					this.processedTransactions, this.closedLots);
+			SeedInventoryImportStatusWindow seedInventoryImportStatusWindow =
+					new SeedInventoryImportStatusWindow(this.source, this.listComponent,
+							this.importedSeedInventoryList.getImportedSeedInventoryList(), this.processedTransactions, this.closedLots);
 			seedInventoryImportStatusWindow.setDebugId("seedInventoryImportStatusWindow");
 			this.source.getWindow().addWindow(seedInventoryImportStatusWindow);
 
@@ -305,24 +302,25 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 	protected void validateImportedSeedInventoryList() throws InvalidFileDataException, SeedInventoryImportException {
 		List<Integer> importerTransactionsIdList = Lists.newArrayList();
 
-		if(this.selectedGermplsmList == null){
+		if (this.selectedGermplsmList == null) {
 			final String currentListEmptyError = this.messageSource.getMessage(Message.SEED_IMPORT_SELECTED_LIST_EMPTY_ERROR);
 			throw new SeedInventoryImportException(currentListEmptyError);
 		}
 
-		if(this.selectedListReservedInventoryDetails.isEmpty()){
+		if (this.selectedListReservedInventoryDetails.isEmpty()) {
 			final String currentListNoReservationsError = this.messageSource.getMessage(Message.SEED_IMPORT_SELECTED_LIST_NO_RESERVATIONS);
 			throw new SeedInventoryImportException(currentListNoReservationsError);
 		}
 		Map<Integer, String> mapTransactionComment = new HashMap<>();
 
-		if(this.importedSeedInventoryList.getImportedSeedInventoryList() != null || !this.importedSeedInventoryList.getImportedSeedInventoryList().isEmpty()){
+		if (this.importedSeedInventoryList.getImportedSeedInventoryList() != null || !this.importedSeedInventoryList
+				.getImportedSeedInventoryList().isEmpty()) {
 			// List name validation
-			if(!this.importedSeedInventoryList.getListName().equals(this.selectedGermplsmList.getName())){
+			if (!this.importedSeedInventoryList.getListName().equals(this.selectedGermplsmList.getName())) {
 				throw new InvalidFileDataException(Message.SEED_IMPORT_LIST_NAME_MISMATCH_ERROR.toString());
 			}
 
-			for(ImportedSeedInventory importedSeedInventory : this.importedSeedInventoryList.getImportedSeedInventoryList()){
+			for (ImportedSeedInventory importedSeedInventory : this.importedSeedInventoryList.getImportedSeedInventoryList()) {
 				Integer importEntryNo = importedSeedInventory.getEntry();
 				String importedDesignation = importedSeedInventory.getDesignation();
 				Integer importedGid = importedSeedInventory.getGid();
@@ -334,36 +332,35 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 				boolean entryNoMatch = false;
 				GermplasmListData matchedGermplsmListData = null;
 
-				for(GermplasmListData germplasmListData : selectedListReservedInventoryDetails){
-					if(germplasmListData.getEntryId().equals(importEntryNo)){
+				for (GermplasmListData germplasmListData : selectedListReservedInventoryDetails) {
+					if (germplasmListData.getEntryId().equals(importEntryNo)) {
 						entryNoMatch = true;
 						matchedGermplsmListData = germplasmListData;
 						break;
 					}
 				}
 
-				if(entryNoMatch){
+				if (entryNoMatch) {
 					// designation match validation
-					if(!matchedGermplsmListData.getDesignation().equals(importedDesignation)){
+					if (!matchedGermplsmListData.getDesignation().equals(importedDesignation)) {
 						throw new InvalidFileDataException(Message.SEED_IMPORT_DESIGNATION_MATCH_ERROR.toString());
 					}
 
 					// gid match validation
-					if(!matchedGermplsmListData.getGid().equals(importedGid)){
+					if (!matchedGermplsmListData.getGid().equals(importedGid)) {
 						throw new InvalidFileDataException(Message.SEED_IMPORT_GID_MATCH_ERROR.toString());
 					}
 
-				}
-				else{
+				} else {
 					throw new InvalidFileDataException(Message.SEED_IMPORT_ENTRY_MATCH_ERROR.toString());
 				}
 
 				// validation of Either withdrawal or balance amount should be present
-				if(importedWithdrawalAmount != null && importedBalanceAmount != null){
+				if (importedWithdrawalAmount != null && importedBalanceAmount != null) {
 					throw new InvalidFileDataException(Message.SEED_IMPORT_WITHDRAWAL_BALANCE_BOTH_ERROR.toString());
 				}
 
-				if(transactionID == null){
+				if (transactionID == null) {
 					throw new InvalidFileDataException(Message.SEED_IMPORT_TRANSACTION_ID_ERROR.toString());
 				}
 				importerTransactionsIdList.add(transactionID);
@@ -373,62 +370,71 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 			importedTransactions = inventoryDataManager.getTransactionsByIdList(importerTransactionsIdList);
 			Map<Integer, Transaction> transactionMap = createTransactionIdWiseMap(importedTransactions);
 
-			for(Map.Entry<Integer, String> entry : mapTransactionComment.entrySet()){
+			for (Map.Entry<Integer, String> entry : mapTransactionComment.entrySet()) {
 				Integer transactionId = entry.getKey();
 				String comment = entry.getValue();
 
 				Transaction transaction = transactionMap.get(transactionId);
 
-				if(!Objects.equals(comment, transaction.getComments())){
+				if (!Objects.equals(comment, transaction.getComments())) {
 					String changeCommentsWarningMsg = this.messageSource.getMessage(Message.SEED_IMPORT_COMMENT_WARNING);
 					MessageNotifier.showWarning(this.source.getWindow(), WARNING, changeCommentsWarningMsg);
 					break;
 				}
 			}
 
-		}
-		else{
-			final String importedListNoEmptyReservationRows = this.messageSource.getMessage(Message.SEED_IMPORT_NO_IMPORTED_RESERVATION_ERROR);
+		} else {
+			final String importedListNoEmptyReservationRows =
+					this.messageSource.getMessage(Message.SEED_IMPORT_NO_IMPORTED_RESERVATION_ERROR);
 			throw new SeedInventoryImportException(importedListNoEmptyReservationRows);
 		}
 
 	}
 
-	protected void processImportedInventoryTransactions(){
+	protected void processImportedInventoryTransactions() {
 		Map<Integer, Transaction> transactionMap = createTransactionIdWiseMap(importedTransactions);
 		List<Transaction> processedTransactions = Lists.newArrayList();
 		List<Lot> closedLots = Lists.newArrayList();
-		for(ImportedSeedInventory importedSeedInventory : this.importedSeedInventoryList.getImportedSeedInventoryList()){
-				Transaction transaction = transactionMap.get(importedSeedInventory.getTransactionId());
-				Double amountWithdrawn = importedSeedInventory.getWithdrawalAmount();
-				Double balanceAmount = importedSeedInventory.getBalanceAmount();
-				String comments = importedSeedInventory.getComments();
-				LotDetails lotDetails = mapLotDetails.get(importedSeedInventory.getLotID());
+		for (ImportedSeedInventory importedSeedInventory : this.importedSeedInventoryList.getImportedSeedInventoryList()) {
+			Transaction transaction = transactionMap.get(importedSeedInventory.getTransactionId());
+			Double amountWithdrawn = importedSeedInventory.getWithdrawalAmount();
+			Double balanceAmount = importedSeedInventory.getBalanceAmount();
+			String comments = importedSeedInventory.getComments();
+			LotDetails lotDetails = mapLotDetails.get(importedSeedInventory.getLotID());
 
-				if(lotDetails == null){
-					//Skip and process next or Cancel import
-					importedSeedInventory.setTransactionProcessingStatus(Message.SEED_IMPORT_LOT_CLOSED.toString());
-					continue;
-				}
+			if (lotDetails == null) {
+				//Skip and process next or Cancel import
+				importedSeedInventory.setTransactionProcessingStatus(Message.SEED_IMPORT_LOT_CLOSED.toString());
+				continue;
+			}
 
-				if(transaction.getStatus() == 1){
-					//Skip and process next or Cancel import
-					importedSeedInventory.setTransactionProcessingStatus(Message.SEED_IMPORT_TRANSACTION_ALREADY_COMMITTED_WARNING.toString());
-					continue;
-				}
+			if (transaction.getStatus() == 1) {
+				//Skip and process next or Cancel import
+				importedSeedInventory.setTransactionProcessingStatus(Message.SEED_IMPORT_TRANSACTION_ALREADY_COMMITTED_WARNING.toString());
+				continue;
+			}
 
-				Double availableBalance = lotDetails.getAvailableLotBalance();
+			Double availableBalance = lotDetails.getAvailableLotBalance();
 
-				if(amountWithdrawn != null && amountWithdrawn > 0){
-					Double transactionQty = transaction.getQuantity() * -1;
+			if (amountWithdrawn != null && amountWithdrawn > 0) {
+				Double transactionQty = transaction.getQuantity() * -1;
 
-					if(Objects.equals(amountWithdrawn, transactionQty)){ //Actual withdrawal is same as reservation made on lot
-						transaction.setStatus(1);
-						transaction.setCommitmentDate(DateUtil.getCurrentDateAsIntegerValue());
-						transaction.setComments(comments);
-						processedTransactions.add(transaction);
-					}
-					else if(amountWithdrawn < transactionQty){ // Actual withdrawal is less than reservation made on lot
+				if (Objects.equals(amountWithdrawn, transactionQty)) { //Actual withdrawal is same as reservation made on lot
+					transaction.setStatus(1);
+					transaction.setCommitmentDate(DateUtil.getCurrentDateAsIntegerValue());
+					transaction.setComments(comments);
+					processedTransactions.add(transaction);
+				} else if (amountWithdrawn < transactionQty) { // Actual withdrawal is less than reservation made on lot
+					transaction.setStatus(1);
+					transaction.setPreviousAmount(transactionQty);
+					Double updatedQty = amountWithdrawn * -1;
+					transaction.setQuantity(updatedQty);
+					transaction.setCommitmentDate(DateUtil.getCurrentDateAsIntegerValue());
+					transaction.setComments(comments);
+					processedTransactions.add(transaction);
+
+				} else { // Actual withdrawal is greater than reservation. Need to check if extra reservation can be made or not
+					if (amountWithdrawn <= transactionQty + availableBalance) {
 						transaction.setStatus(1);
 						transaction.setPreviousAmount(transactionQty);
 						Double updatedQty = amountWithdrawn * -1;
@@ -437,66 +443,53 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 						transaction.setComments(comments);
 						processedTransactions.add(transaction);
 
+						//Continue and process with amount withdrawn or Cancel import
+						importedSeedInventory
+								.setTransactionProcessingStatus(Message.SEED_IMPORT_WITHDRAWAL_GREATER_THAN_RESERVATION_WARNING.toString());
+
+					} else {
+						//Skip and process next or Cancel import
+						importedSeedInventory
+								.setTransactionProcessingStatus(Message.SEED_IMPORT_WITHDRAWAL_GREATER_THAN_AVAILABLE_WARNING.toString());
+						continue;
+
 					}
-					else{ // Actual withdrawal is greater than reservation. Need to check if extra reservation can be made or not
-						if(amountWithdrawn <= transactionQty + availableBalance){
+				}
+
+			}
+
+			if (balanceAmount != null && balanceAmount >= 0) {
+				Double transactionQty = transaction.getQuantity() * -1;
+				if (balanceAmount != null) {
+					if (balanceAmount > 0) {
+						Double explicitWithdrawalMade = lotDetails.getActualLotBalance() - balanceAmount;
+
+						if (explicitWithdrawalMade <= transactionQty + availableBalance) {
 							transaction.setStatus(1);
-							transaction.setPreviousAmount(transactionQty);
-							Double updatedQty = amountWithdrawn * -1;
+							transaction.setPreviousAmount(lotDetails.getActualLotBalance());
+							Double updatedQty = explicitWithdrawalMade * -1;
 							transaction.setQuantity(updatedQty);
 							transaction.setCommitmentDate(DateUtil.getCurrentDateAsIntegerValue());
-							transaction.setComments(comments);
+							String stockAdjustmentComment =
+									this.messageSource.getMessage(Message.SEED_IMPORT_STOCK_TAKING_ADJUSTMENT_COMMENT);
+							transaction.setComments(stockAdjustmentComment);
 							processedTransactions.add(transaction);
-
-							//Continue and process with amount withdrawn or Cancel import
-							importedSeedInventory.setTransactionProcessingStatus(Message.SEED_IMPORT_WITHDRAWAL_GREATER_THAN_RESERVATION_WARNING.toString());
-
-
-						}
-						else{
+						} else {
 							//Skip and process next or Cancel import
-							importedSeedInventory.setTransactionProcessingStatus(Message.SEED_IMPORT_WITHDRAWAL_GREATER_THAN_AVAILABLE_WARNING.toString());
+							importedSeedInventory.setTransactionProcessingStatus(Message.SEED_IMPORT_BALANCE_WARNING.toString());
 							continue;
 
 						}
-					}
 
-				}
-
-				if(balanceAmount != null && balanceAmount >= 0){
-					Double transactionQty = transaction.getQuantity() * -1;
-					if(balanceAmount != null){
-						if(balanceAmount > 0){
-							Double explicitWithdrawalMade = lotDetails.getActualLotBalance() - balanceAmount;
-
-							if(explicitWithdrawalMade <= transactionQty + availableBalance ){
-								transaction.setStatus(1);
-								transaction.setPreviousAmount(lotDetails.getActualLotBalance());
-								Double updatedQty = explicitWithdrawalMade * -1;
-								transaction.setQuantity(updatedQty);
-								transaction.setCommitmentDate(DateUtil.getCurrentDateAsIntegerValue());
-								String stockAdjustmentComment =
-										this.messageSource.getMessage(Message.SEED_IMPORT_STOCK_TAKING_ADJUSTMENT_COMMENT);
-								transaction.setComments(stockAdjustmentComment);
-								processedTransactions.add(transaction);
-							}
-							else{
-								//Skip and process next or Cancel import
-								importedSeedInventory.setTransactionProcessingStatus(Message.SEED_IMPORT_BALANCE_WARNING.toString());
-								continue;
-
-							}
-
-						}else if(balanceAmount == 0){
-							final String lotDiscardComment =
-									this.messageSource.getMessage(Message.SEED_IMPORT_LOT_DISCARD_COMMENT);
-							transaction.setComments(lotDiscardComment);
-							transaction.getLot().setStatus(1);
-							closedLots.add(transaction.getLot());
-							processedTransactions.add(transaction);
-						}
+					} else if (balanceAmount == 0) {
+						final String lotDiscardComment = this.messageSource.getMessage(Message.SEED_IMPORT_LOT_DISCARD_COMMENT);
+						transaction.setComments(lotDiscardComment);
+						transaction.getLot().setStatus(1);
+						closedLots.add(transaction.getLot());
+						processedTransactions.add(transaction);
 					}
 				}
+			}
 
 		}
 
@@ -504,16 +497,16 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 		this.closedLots = closedLots;
 	}
 
-	private Map<Integer, Transaction> createTransactionIdWiseMap(List<Transaction> importedTransactions){
+	private Map<Integer, Transaction> createTransactionIdWiseMap(List<Transaction> importedTransactions) {
 		Map<Integer, Transaction> mapTransaction = new HashMap<>();
 
-		if(importedTransactions != null && !importedTransactions.isEmpty()){
-			for(Transaction transaction : importedTransactions){
+		if (importedTransactions != null && !importedTransactions.isEmpty()) {
+			for (Transaction transaction : importedTransactions) {
 				mapTransaction.put(transaction.getId(), transaction);
 			}
 		}
 
-		return  mapTransaction;
+		return mapTransaction;
 	}
 
 	public Set<String> getExtensionSet() {
@@ -539,6 +532,5 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow
 	public List<Transaction> getProcessedTransactions() {
 		return processedTransactions;
 	}
-
 
 }

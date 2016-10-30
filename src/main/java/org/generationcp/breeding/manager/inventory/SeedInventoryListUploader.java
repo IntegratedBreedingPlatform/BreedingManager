@@ -37,7 +37,6 @@ public class SeedInventoryListUploader implements FileFactory {
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
-
 	@Override
 	public File createFile(final String fileName, final String mimeType) {
 		final File f = new File(SeedInventoryListUploader.TEMP_FILE_DIR + "/" + fileName);
@@ -80,8 +79,6 @@ public class SeedInventoryListUploader implements FileFactory {
 		}
 		return null;
 	}
-
-
 
 	public String getOriginalFilename() {
 		return originalFilename;
