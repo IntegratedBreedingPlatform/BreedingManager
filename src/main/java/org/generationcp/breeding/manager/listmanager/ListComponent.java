@@ -93,6 +93,8 @@ import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -123,9 +125,6 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
-
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
 
 @Configurable
 public class ListComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout,
@@ -1520,9 +1519,14 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.getWindow().addWindow(exportListAsDialog);
 	}
 
-	public void exportSeedPreparationList() {
+	public void exportSeedPreparationList(final SeedInventoryListExporter seedInventoryListExporter) {
+
+		if (!CollectionUtils.isEmpty(this.validReservationsToSave)) {
+			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
+					this.messageSource.getMessage(Message.UNSAVED_RESERVATION_WARNING));
+		}
+
 		try {
-			SeedInventoryListExporter seedInventoryListExporter = new SeedInventoryListExporter(this.source, this.germplasmList);
 			seedInventoryListExporter.exportSeedPreparationList();
 		} catch (SeedInventoryExportException ex) {
 			ListComponent.LOG.debug(ex.getMessage(), ex);
@@ -1530,6 +1534,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 					"Cannot Export Seed Preparation List :" + ex.getMessage());
 		}
 
+	}
+
+	public void exportSeedPreparationList() {
+		exportSeedPreparationList(new SeedInventoryListExporter(this.source, this.germplasmList));
 	}
 
 	private void openImportSeedPreparationDialog() {
