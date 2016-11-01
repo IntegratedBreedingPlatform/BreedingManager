@@ -394,6 +394,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 			listDataTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
 			listDataTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
 			listDataTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
+			listDataTable.addContainerProperty(ColumnLabels.FEMALE_PLOT.getName(), String.class, null);
 
 			listDataTable.setColumnHeader(SelectParentsListDataComponent.CHECKBOX_COLUMN_ID,
 					this.messageSource.getMessage(Message.CHECK_ICON));
@@ -408,6 +409,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 			listDataTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(), this.getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
 			listDataTable.setColumnHeader(ColumnLabels.GID.getName(), this.getTermNameFromOntology(ColumnLabels.GID));
 			listDataTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(), this.getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
+			listDataTable.setColumnHeader(ColumnLabels.FEMALE_PLOT.getName(), this.getTermNameFromOntology(ColumnLabels.FEMALE_PLOT));
 
 			listDataTable.setColumnWidth(SelectParentsListDataComponent.CHECKBOX_COLUMN_ID, 25);
 			listDataTable.setColumnWidth(ColumnLabels.ENTRY_ID.getName(), 25);
@@ -425,6 +427,19 @@ public class SelectParentsListDataComponent extends VerticalLayout
 					ColumnLabels.SEED_RESERVATION.getName(), ColumnLabels.STOCKID.getName(), ColumnLabels.PARENTAGE.getName(),
 					ColumnLabels.ENTRY_CODE.getName(), ColumnLabels.GID.getName(), ColumnLabels.SEED_SOURCE.getName()});
 		}
+	}
+
+	public void populatePlotNumbersInTable(final Map<String, String> plotNumbersOfEntries) {
+
+		for (Object itemId : this.listDataTable.getItemIds()) {
+			Item item = this.listDataTable.getItem(itemId);
+
+			String entryId = String.valueOf(item.getItemProperty(ColumnLabels.ENTRY_ID.getName()));
+			String plotNumber = plotNumbersOfEntries.get(entryId);
+
+			item.getItemProperty(ColumnLabels.FEMALE_PLOT.getName()).setValue(plotNumber);
+		}
+
 	}
 
 	private void initializeListInventoryTable() {

@@ -300,6 +300,25 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 		return  parentListComponentTab;
 
 	}
+
+	public void createTabForGermplasmListFromFieldbook(final Integer listId, final String listName) {
+
+		SelectParentsListDataComponent parentsListDataComponent = new SelectParentsListDataComponent(listId, listName, source.getParentsComponent());
+
+		this.populatePlotNumberOfEntries(parentsListDataComponent);
+
+		this.createTabForComponent(parentsListDataComponent);
+
+	}
+
+	void populatePlotNumberOfEntries(final SelectParentsListDataComponent parentsListDataComponent) {
+
+		Map<String, String> plotNumbersOfEntries = this.source.getNurseryWorkbook().getPlotNumbersOfTestEntries();
+
+		parentsListDataComponent.populatePlotNumbersInTable(plotNumbersOfEntries);
+
+	}
+
 	public void updateUIForDeletedList(final GermplasmList list) {
 		final String listName = list.getName();
 		for (int ctr = 0; ctr < listDetailsTabSheet.getComponentCount(); ctr++) {

@@ -110,7 +110,7 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 		this.makeCrossesComponent = new CrossingManagerMakeCrossesComponent(this);
 		this.makeCrossesComponent.setDebugId("makeCrossesComponent");
 		if (this.germplasmList != null) {
-			this.makeCrossesComponent.getSelectParentsComponent().createListDetailsTab(this.germplasmList.getId(),
+			this.makeCrossesComponent.getSelectParentsComponent().createTabForGermplasmListFromFieldbook(this.germplasmList.getId(),
 					this.germplasmList.getName());
 		}
 
