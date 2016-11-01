@@ -1,4 +1,3 @@
-
 package org.generationcp.breeding.manager.crossingmanager;
 
 import java.util.ArrayList;
@@ -15,7 +14,7 @@ import org.generationcp.breeding.manager.customcomponent.ControllableRefreshTabl
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.CrossingManagerInventoryTable;
-import org.generationcp.breeding.manager.data.initializer.ListInventoryDataInitializer;
+import org.generationcp.middleware.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
@@ -82,10 +81,10 @@ public class SelectParentsListDataComponentTest {
 	private CrossingManagerInventoryTable listInventoryTable;
 	@Mock
 	private Component component;
-	
+
 	@Mock
 	private UserDataManager userDataManager;
-	
+
 	@InjectMocks
 	private final SelectParentsListDataComponent selectParents =
 			new SelectParentsListDataComponent(SelectParentsListDataComponentTest.GERMPLASM_LIST_ID,
@@ -385,8 +384,8 @@ public class SelectParentsListDataComponentTest {
 
 		this.selectParents.viewListAction();
 
-		Mockito.verify(this.makeCrossesMain, Mockito.times(1)).showUnsavedChangesConfirmDialog(Matchers.anyString(),
-				Matchers.any(ModeView.class));
+		Mockito.verify(this.makeCrossesMain, Mockito.times(1))
+				.showUnsavedChangesConfirmDialog(Matchers.anyString(), Matchers.any(ModeView.class));
 
 		Assert.assertTrue("Expecting the mode is set to LIST VIEW when there is a change.",
 				this.makeCrossesMain.getModeView().equals(ModeView.LIST_VIEW));
@@ -412,8 +411,8 @@ public class SelectParentsListDataComponentTest {
 
 		this.selectParents.viewInventoryAction();
 
-		Mockito.verify(this.makeCrossesMain, Mockito.times(1)).showUnsavedChangesConfirmDialog(Matchers.anyString(),
-				Matchers.any(ModeView.class));
+		Mockito.verify(this.makeCrossesMain, Mockito.times(1))
+				.showUnsavedChangesConfirmDialog(Matchers.anyString(), Matchers.any(ModeView.class));
 
 		Assert.assertTrue("Expecting the mode is set to INVENTORY VIEW when there is a change.",
 				this.makeCrossesMain.getModeView().equals(ModeView.INVENTORY_VIEW));
@@ -588,8 +587,8 @@ public class SelectParentsListDataComponentTest {
 			selectedListEntries.add(this.listEntries.get(entryId - 1));
 		}
 
-		Mockito.doReturn(selectedListEntries).when(this.inventoryDataManager).getLotCountsForListEntries(this.germplasmList.getId(),
-				new ArrayList<Integer>(entryIds));
+		Mockito.doReturn(selectedListEntries).when(this.inventoryDataManager)
+				.getLotCountsForListEntries(this.germplasmList.getId(), new ArrayList<Integer>(entryIds));
 		this.selectParents.initializeValues();
 
 		this.selectParents.refreshInventoryColumns(validReservations);

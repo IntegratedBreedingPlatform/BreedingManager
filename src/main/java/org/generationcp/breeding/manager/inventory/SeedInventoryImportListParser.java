@@ -1,6 +1,7 @@
 package org.generationcp.breeding.manager.inventory;
 
 import com.google.common.collect.Lists;
+
 import org.apache.poi.ss.usermodel.Workbook;
 import org.generationcp.breeding.manager.pojos.ImportedSeedInventory;
 import org.generationcp.breeding.manager.pojos.ImportedSeedInventoryList;
@@ -42,11 +43,8 @@ public class SeedInventoryImportListParser extends AbstractExcelFileParser<Impor
 
 	private Map<Integer, String> headerRow = new HashMap<>();
 
-
-
 	@Override
-	public ImportedSeedInventoryList parseWorkbook(Workbook workbook, Map<String, Object> additionalParams)
-			throws FileParsingException {
+	public ImportedSeedInventoryList parseWorkbook(Workbook workbook, Map<String, Object> additionalParams) throws FileParsingException {
 
 		this.workbook = workbook;
 		parseDescriptionSheet();
@@ -66,16 +64,16 @@ public class SeedInventoryImportListParser extends AbstractExcelFileParser<Impor
 		boolean isRowEmpty = false;
 		int rowIndex = 0;
 		List<ImportedSeedInventory> importedSeedInventories = Lists.newArrayList();
-		while (true){
+		while (true) {
 			isRowEmpty = this.isRowEmpty(OBSERVATION_SHEET_NO, ++rowIndex, SEED_FILE_COLUMN_NO);
 
-			if(isRowEmpty){
+			if (isRowEmpty) {
 				break;
 			}
 
 			String entryCellValue = this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, ENTRY_INDEX);
 			Integer entry = null;
-			if(!StringUtil.isEmpty(entryCellValue)){
+			if (!StringUtil.isEmpty(entryCellValue)) {
 				entry = Integer.valueOf(entryCellValue);
 			}
 
@@ -86,38 +84,38 @@ public class SeedInventoryImportListParser extends AbstractExcelFileParser<Impor
 			String transactionCellValue = this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, TRN_INDEX);
 			Integer transactionId = null;
 
-			if(!StringUtil.isEmpty(transactionCellValue)){
+			if (!StringUtil.isEmpty(transactionCellValue)) {
 				transactionId = Integer.valueOf(this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, TRN_INDEX));
 			}
 
 			String reservationCellValue = this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, RESERVATION_INDEX);
 			Double reservationAmount = null;
-			if(!StringUtil.isEmpty(reservationCellValue)){
+			if (!StringUtil.isEmpty(reservationCellValue)) {
 				reservationAmount = Double.valueOf(this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, RESERVATION_INDEX));
 			}
 
 			String withdrawalCellValue = this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, WITHDRAWAL_INDEX);
 			Double withdrawalAmount = null;
-			if(!StringUtil.isEmpty(withdrawalCellValue)){
+			if (!StringUtil.isEmpty(withdrawalCellValue)) {
 				withdrawalAmount = Double.valueOf(this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, WITHDRAWAL_INDEX));
 			}
 
 			String balanceAmountCellValue = this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, BALANCE_INDEX);
 			Double balanceAmount = null;
-			if(!StringUtil.isEmpty(balanceAmountCellValue)){
+			if (!StringUtil.isEmpty(balanceAmountCellValue)) {
 				balanceAmount = Double.valueOf(this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, BALANCE_INDEX));
 			}
 
 			String comments = this.getCellStringValue(OBSERVATION_SHEET_NO, rowIndex, NOTES_INDEX);
 
-			ImportedSeedInventory importedSeedInventory = new ImportedSeedInventory(entry, designation, gid, lotID, transactionId,
-					reservationAmount, withdrawalAmount, balanceAmount, comments);
+			ImportedSeedInventory importedSeedInventory =
+					new ImportedSeedInventory(entry, designation, gid, lotID, transactionId, reservationAmount, withdrawalAmount,
+							balanceAmount, comments);
 			importedSeedInventories.add(importedSeedInventory);
 
 		}
 		this.importedSeedInventoryList.setImportedSeedInventoryList(importedSeedInventories);
 	}
-
 
 	public void setOriginalFilename(final String originalFilename) {
 		this.originalFilename = originalFilename;

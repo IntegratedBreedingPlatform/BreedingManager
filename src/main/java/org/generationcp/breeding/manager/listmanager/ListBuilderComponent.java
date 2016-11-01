@@ -207,14 +207,38 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 						ListBuilderComponent.this.resetButton.click();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SAVE_LIST))) {
 						ListBuilderComponent.this.saveButton.click();
-					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.EXPORT_SEED_LIST))){
-							ListBuilderComponent.this.exportSeedPreparationList();
-						} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.IMPORT_SEED_LIST))){
-							ListBuilderComponent.this.openImportSeedPreparationDialog();
-						}
+					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.EXPORT_SEED_LIST))) {
+						ListBuilderComponent.this.exportSeedPreparationList();
+					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.IMPORT_SEED_LIST))) {
+						ListBuilderComponent.this.openImportSeedPreparationDialog();
+					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.PRINT_LABELS))) {
+						ListBuilderComponent.this.createLabelsAction();
+					}
 				}
 			});
 
+		}
+	}
+
+	private void createLabelsAction() {
+		final Integer listId = this.currentlySavedGermplasmList.getId();
+
+		if (listId != null) {
+			// Navigate to labels printing
+			// we use this workaround using javascript for navigation, because Vaadin 6 doesn't have good ways
+			// of navigating in and out of the Vaadin application
+			final String urlRedirectionScript = "window.location = '" + getApplication().getURL().getProtocol() + "://" + getApplication().getURL().getHost() + ":"
+					+ getApplication().getURL().getPort() + "/Fieldbook/LabelPrinting/specifyLabelDetails/inventory/" + listId
+					+ "?restartApplication&loggedInUserId="
+					+ this.contextUtil.getContextInfoFromSession().getLoggedInUserId() + "&selectedProjectId="
+					+ this.contextUtil.getContextInfoFromSession().getSelectedProjectId()
+					+ "&authToken=" + this.contextUtil.getContextInfoFromSession().getAuthToken() + "';";
+
+			getApplication().getMainWindow().executeJavaScript(urlRedirectionScript);
+
+		} else {
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.PRINT_LABELS),
+					this.messageSource.getMessage(Message.ERROR_COULD_NOT_CREATE_LABELS));
 		}
 	}
 
@@ -506,13 +530,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.menuReserveInventory = this.inventoryManagementOptions.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
 		this.menuCancelReservation = this.inventoryManagementOptions.addItem(this.messageSource.getMessage(Message.CANCEL_RESERVATIONS));
 
-
 		this.exportList=this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.EXPORT_SEED_LIST));
 		this.importList=this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.IMPORT_SEED_LIST));
 		this.printLabels=this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.PRINT_LABELS));
-
-
-
 
 		// Temporarily disable to Copy to List in InventoryView
 		this.menuCopyToListFromInventory.setEnabled(false);

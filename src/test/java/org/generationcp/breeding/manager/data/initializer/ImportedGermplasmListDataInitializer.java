@@ -1,4 +1,3 @@
-
 package org.generationcp.breeding.manager.data.initializer;
 
 import java.util.ArrayList;
@@ -13,9 +12,12 @@ import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.commons.parsing.pojo.ImportedFactor;
 import org.generationcp.commons.parsing.pojo.ImportedVariate;
 import org.generationcp.middleware.data.initializer.GermplasmTestDataInitializer;
+import org.generationcp.middleware.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 
 public class ImportedGermplasmListDataInitializer {
+	
+	public static final String DESIGNATION = "(CML454 X CML451)-B-4-1-112";
 
 	public ImportedGermplasmListDataInitializer() {
 		// do nothing
@@ -63,7 +65,8 @@ public class ImportedGermplasmListDataInitializer {
 		if (withNameFactors) {
 			importedGermplasm.setNameFactors(this.createNameFactors(id, withNameFactors));
 		}
-
+		importedGermplasm.setDesig(DESIGNATION + "-" + id);
+		importedGermplasm.setGid(1);
 		importedGermplasm.setAttributeVariates(this.createAttributeVariates(id));
 
 		return importedGermplasm;

@@ -9,6 +9,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.ListComponent;
@@ -32,8 +33,8 @@ import java.util.List;
 import java.util.Map;
 
 @Configurable
-public class SeedInventoryImportStatusWindow extends BaseSubWindow
-		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+public class SeedInventoryImportStatusWindow extends BaseSubWindow implements InitializingBean, InternationalizableComponent,
+		BreedingManagerLayout {
 
 	private static final long serialVersionUID = -7800270790767272974L;
 
@@ -55,7 +56,7 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow
 	@Autowired
 	protected InventoryDataManager inventoryDataManager;
 
-	private  List<ImportedSeedInventory> importedSeedInventories;
+	private List<ImportedSeedInventory> importedSeedInventories;
 	private List<Transaction> processedTransactions;
 	private List<Lot> closedLots;
 	Component listComponent;
@@ -63,8 +64,7 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow
 	Map<String, String> importStatusMessages = new HashMap<>();
 
 	public SeedInventoryImportStatusWindow(final Component source, final Component listComponent,
-			List<ImportedSeedInventory> importedSeedInventories, List<Transaction> processedTransactions,
-			List<Lot> closedLots){
+			List<ImportedSeedInventory> importedSeedInventories, List<Transaction> processedTransactions, List<Lot> closedLots) {
 		this.source = source;
 		this.listComponent = listComponent;
 		this.importedSeedInventories = importedSeedInventories;
@@ -77,7 +77,6 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow
 		this.setCaption(this.messageSource.getMessage(Message.SEED_IMPORT_STATUS));
 		this.addStyleName(Reindeer.WINDOW_LIGHT);
 		this.setModal(true);
-
 
 		this.statusTable = new Table();
 		this.statusTable.setDebugId("statusTable");
@@ -95,14 +94,17 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow
 		this.statusTable.addContainerProperty(messageSource.getMessage(Message.IMPORT_PROCESSING_STATUS), Label.class, null);
 
 		this.statusTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), this.messageSource.getMessage(Message.HASHTAG));
-		this.statusTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(), ColumnLabels.DESIGNATION.getTermNameFromOntology(this.ontologyDataManager));
+		this.statusTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(),
+				ColumnLabels.DESIGNATION.getTermNameFromOntology(this.ontologyDataManager));
 		this.statusTable.setColumnHeader(ColumnLabels.GID.getName(), ColumnLabels.GID.getTermNameFromOntology(this.ontologyDataManager));
-		this.statusTable.setColumnHeader(ColumnLabels.LOT_ID.getName(), ColumnLabels.LOT_ID.getTermNameFromOntology(this.ontologyDataManager));
-		this.statusTable.setColumnHeader(messageSource.getMessage(Message.TRANSACTION_ID), messageSource.getMessage(Message.TRANSACTION_ID));
+		this.statusTable
+				.setColumnHeader(ColumnLabels.LOT_ID.getName(), ColumnLabels.LOT_ID.getTermNameFromOntology(this.ontologyDataManager));
+		this.statusTable
+				.setColumnHeader(messageSource.getMessage(Message.TRANSACTION_ID), messageSource.getMessage(Message.TRANSACTION_ID));
 		this.statusTable.setColumnHeader(messageSource.getMessage(Message.WITHDRAWAL), messageSource.getMessage(Message.WITHDRAWAL));
 		this.statusTable.setColumnHeader(messageSource.getMessage(Message.BALANCE), messageSource.getMessage(Message.BALANCE));
-		this.statusTable.setColumnHeader(messageSource.getMessage(Message.IMPORT_PROCESSING_STATUS), messageSource.getMessage(Message.IMPORT_PROCESSING_STATUS));
-
+		this.statusTable.setColumnHeader(messageSource.getMessage(Message.IMPORT_PROCESSING_STATUS),
+				messageSource.getMessage(Message.IMPORT_PROCESSING_STATUS));
 
 		this.continueButton = new Button(this.messageSource.getMessage(Message.CONTINUE));
 		this.continueButton.setDebugId("continueButton");
@@ -122,12 +124,9 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow
 				messageSource.getMessage(Message.SEED_IMPORT_WITHDRAWAL_GREATER_THAN_RESERVATION_WARNING));
 		importStatusMessages.put(Message.SEED_IMPORT_WITHDRAWAL_GREATER_THAN_AVAILABLE_WARNING.toString(),
 				messageSource.getMessage(Message.SEED_IMPORT_WITHDRAWAL_GREATER_THAN_AVAILABLE_WARNING));
-		importStatusMessages.put(Message.SEED_IMPORT_BALANCE_WARNING.toString(),
-				messageSource.getMessage(Message.SEED_IMPORT_BALANCE_WARNING));
-		importStatusMessages.put(Message.SEED_IMPORT_LOT_CLOSED.toString(),
-				messageSource.getMessage(Message.SEED_IMPORT_LOT_CLOSED));
-
-
+		importStatusMessages
+				.put(Message.SEED_IMPORT_BALANCE_WARNING.toString(), messageSource.getMessage(Message.SEED_IMPORT_BALANCE_WARNING));
+		importStatusMessages.put(Message.SEED_IMPORT_LOT_CLOSED.toString(), messageSource.getMessage(Message.SEED_IMPORT_LOT_CLOSED));
 
 		for (ImportedSeedInventory importedSeedInventory : this.importedSeedInventories) {
 
@@ -144,20 +143,21 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow
 			Label processingStatusLabel = null;
 			final String processingStatus = importedSeedInventory.getTransactionProcessingStatus();
 
-			if(processingStatus == null){
+			if (processingStatus == null) {
 				processingStatusLabel = new Label(messageSource.getMessage(Message.SEED_IMPORT_PROCESSING_STATUS));
 				processingStatusLabel.setDebugId("label");
-			}
-			else if(importedSeedInventory.getTransactionProcessingStatus().equals(Message.SEED_IMPORT_TRANSACTION_ALREADY_COMMITTED_WARNING.toString()) ||
-					importedSeedInventory.getTransactionProcessingStatus().equals(Message.SEED_IMPORT_WITHDRAWAL_GREATER_THAN_AVAILABLE_WARNING.toString())
-					|| importedSeedInventory.getTransactionProcessingStatus().equals(Message.SEED_IMPORT_BALANCE_WARNING.toString())
-					|| importedSeedInventory.getTransactionProcessingStatus().equals(Message.SEED_IMPORT_LOT_CLOSED.toString())){
+			} else if (importedSeedInventory.getTransactionProcessingStatus()
+					.equals(Message.SEED_IMPORT_TRANSACTION_ALREADY_COMMITTED_WARNING.toString()) ||
+					importedSeedInventory.getTransactionProcessingStatus()
+							.equals(Message.SEED_IMPORT_WITHDRAWAL_GREATER_THAN_AVAILABLE_WARNING.toString()) || importedSeedInventory
+					.getTransactionProcessingStatus().equals(Message.SEED_IMPORT_BALANCE_WARNING.toString()) || importedSeedInventory
+					.getTransactionProcessingStatus().equals(Message.SEED_IMPORT_LOT_CLOSED.toString())) {
 				processingStatusLabel = new Label(messageSource.getMessage(Message.SEED_IMPORT_SKIPPING_STATUS));
 				processingStatusLabel.setDescription(importStatusMessages.get(processingStatus));
 				processingStatusLabel.setDebugId("label");
 
-			}
-			else if(importedSeedInventory.getTransactionProcessingStatus().equals(Message.SEED_IMPORT_WITHDRAWAL_GREATER_THAN_RESERVATION_WARNING.toString())){
+			} else if (importedSeedInventory.getTransactionProcessingStatus()
+					.equals(Message.SEED_IMPORT_WITHDRAWAL_GREATER_THAN_RESERVATION_WARNING.toString())) {
 				processingStatusLabel = new Label(messageSource.getMessage(Message.SEED_IMPORT_CONTINUING_STATUS));
 				processingStatusLabel.setDescription(importStatusMessages.get(processingStatus));
 				processingStatusLabel.setDebugId("label");
@@ -189,27 +189,28 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow
 			}
 		});
 
-
 	}
 
 	public void continueAction() {
-		if(!this.processedTransactions.isEmpty() || !this.closedLots.isEmpty()){
+		if (!this.processedTransactions.isEmpty() || !this.closedLots.isEmpty()) {
 			inventoryDataManager.addTransactions(this.processedTransactions);
 			inventoryDataManager.updateLots(closedLots);
 
-			if(this.listComponent instanceof  ListComponent){
-				((ListComponent)this.listComponent).refreshInventoryListDataTabel();
-				((ListComponent)this.listComponent).resetListDataTableValues();
+			if (this.listComponent instanceof ListComponent) {
+				((ListComponent) this.listComponent).refreshInventoryListDataTabel();
+				((ListComponent) this.listComponent).resetListDataTableValues();
 			}
 
 		}
-		MessageNotifier.showMessage(this.source.getWindow(), messageSource.getMessage(Message.SUCCESS), messageSource.getMessage(Message.SEED_IMPORT_SUCCESS));
+		MessageNotifier.showMessage(this.source.getWindow(), messageSource.getMessage(Message.SUCCESS),
+				messageSource.getMessage(Message.SEED_IMPORT_SUCCESS));
 		this.close();
 
 	}
 
 	public void cancelAction() {
-		MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR), messageSource.getMessage(Message.SEED_IMPORT_CANCEL));
+		MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR),
+				messageSource.getMessage(Message.SEED_IMPORT_CANCEL));
 		this.close();
 	}
 
@@ -222,7 +223,6 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow
 		this.mainLayout = new VerticalLayout();
 		this.mainLayout.setDebugId("seedInventoryImportWarningLayout");
 		this.mainLayout.setSpacing(true);
-
 
 		final Label forSpaceLabel = new Label();
 		forSpaceLabel.setDebugId("forSpaceLabel");
