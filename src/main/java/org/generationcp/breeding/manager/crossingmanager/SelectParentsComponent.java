@@ -273,12 +273,12 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 				listDetailsTabSheet.setSelectedTab(tabToFocus);
 			}
 		} else {
-			final Tab newTab =
-					listDetailsTabSheet
-							.addTab(new SelectParentsListDataComponent(listId, listName, source.getParentsComponent()), listName);
-			newTab.setDescription(generateTabDescription(listId));
-			newTab.setClosable(true);
-			listDetailsTabSheet.setSelectedTab(newTab);
+
+			SelectParentsListDataComponent parentsListDataComponent = new SelectParentsListDataComponent(listId, listName, source.getParentsComponent());
+
+			Tab parentListComponentTab = this.createTabForComponent(parentsListDataComponent);
+
+			listDetailsTabSheet.setSelectedTab(parentListComponentTab);
 		}
 
 		if (listDetailsTabSheet.getComponentCount() >= 2) {
@@ -289,6 +289,17 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 
 	}
 
+	public Tab createTabForComponent(SelectParentsListDataComponent parentsListDataComponent) {
+
+		final Tab parentListComponentTab = this.listDetailsTabSheet.addTab(parentsListDataComponent, parentsListDataComponent.getListName());
+
+		parentListComponentTab.setDescription(generateTabDescription(parentsListDataComponent.getGermplasmListId()));
+
+		parentListComponentTab.setClosable(true);
+
+		return  parentListComponentTab;
+
+	}
 	public void updateUIForDeletedList(final GermplasmList list) {
 		final String listName = list.getName();
 		for (int ctr = 0; ctr < listDetailsTabSheet.getComponentCount(); ctr++) {
