@@ -49,7 +49,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	private List<Name> newDesignationsForExistingGermplasm = new ArrayList<>();
 
 	private Map<String, Germplasm> nameGermplasmMap = new HashMap<>();
-	private static final Integer UNKNOWN_DERIVATIVE_METHOD = 31;
+	static final Integer UNKNOWN_DERIVATIVE_METHOD = 31;
 
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
