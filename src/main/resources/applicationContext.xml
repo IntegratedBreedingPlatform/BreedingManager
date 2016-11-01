@@ -124,6 +124,11 @@
         <aop:scoped-proxy/>
     </bean>
 
+	<bean id="termDataManager" factory-bean="managerFactory"
+		  factory-method="getTermDataManager" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+
     <bean id="studyDataManager" factory-bean="managerFactory"
 		factory-method="getNewStudyDataManager" scope="request">
 		<aop:scoped-proxy />

@@ -107,8 +107,7 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 	private CheckBox ignoreMatchesCheckbox;
 	private CheckBox ignoreRemainingMatchesCheckbox;
 	private final Window parentWindow;
-	private Integer currentMatch;
-	private Integer totalMatches;
+	private Integer noOfImportedGermplasm;
 
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
@@ -126,14 +125,13 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 	}
 
 	public SelectGermplasmWindow(final ProcessImportedGermplasmAction source, final String germplasmName, final int index,
-			final Germplasm germplasm, final Window parentWindow, final Integer currentMatch, final Integer totalMatches) {
+			final Germplasm germplasm, final Window parentWindow, final Integer noOfImportedGermplasm) {
 		this.germplasmName = germplasmName;
 		this.germplasmIndex = index;
 		this.germplasm = germplasm;
 		this.source = source;
 		this.parentWindow = parentWindow;
-		this.currentMatch = currentMatch;
-		this.totalMatches = totalMatches;
+		this.noOfImportedGermplasm = noOfImportedGermplasm;
 	}
 
 	protected void assemble() {
@@ -411,12 +409,10 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 		this.setContent(this.mainLayout);
 	}
 
-	private void initializeGuideMessage() {
-		// Initialize label with Current Match, Total Match & Germplasm Name
-		this.selectGermplasmLabel.setValue(String.format(
-				"Match <b> %s of %s </b>were found with the name <b> %s </b>. " + "Click on an entry below to choose it as a match. "
-						+ "You can also choose to ignore the match and add a new entry.",
-				this.currentMatch, this.totalMatches, this.germplasmName));
+	void initializeGuideMessage() {
+		// Initialize label with germplasm index + 1, total number of imported germplasm & Germplasm Name
+		this.selectGermplasmLabel.setValue(this.messageSource.getMessage(Message.GERMPLASM_MATCHES_LABEL,
+				new Object[] {this.germplasmIndex + 1, this.noOfImportedGermplasm, this.germplasmName}));
 	}
 
 	protected void initializeTableValues() {
@@ -530,4 +526,15 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 		this.source.closeAllImportEntryListeners();
 	}
 
+	public Integer getNoOfImportedGermplasm() {
+		return this.noOfImportedGermplasm;
+	}
+
+	public void setSelectGermplasmLabel(final Label selectGermplasmLabel) {
+		this.selectGermplasmLabel = selectGermplasmLabel;
+	}
+
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
 }

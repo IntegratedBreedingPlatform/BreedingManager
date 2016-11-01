@@ -121,7 +121,7 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 		return this.germplasmDetailsTable;
 	}
 
-	public List<ImportedGermplasm> getImportedGermplasms() {
+	public List<ImportedGermplasm> getImportedGermplasm() {
 		return this.importedGermplasms;
 	}
 
@@ -550,8 +550,8 @@ public class SpecifyGermplasmDetailsComponent extends VerticalLayout
 		}
 
 		String germplasmSource;
-		for (int i = 0; i < this.getImportedGermplasms().size(); i++) {
-			final ImportedGermplasm importedGermplasm = this.getImportedGermplasms().get(i);
+		for (int i = 0; i < this.getImportedGermplasm().size(); i++) {
+			final ImportedGermplasm importedGermplasm = this.getImportedGermplasm().get(i);
 			germplasmSource = importedGermplasm.getSource();
 
 			this.getGermplasmDetailsTable()
