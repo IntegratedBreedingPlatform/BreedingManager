@@ -175,7 +175,9 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 
 				final String seedSource = this.getSeedSource(sourceTable, entryId);
 
-				final GermplasmListEntry entryObject = new GermplasmListEntry(itemId, gid, entryId, designation, seedSource);
+				final String plotNumber = (String) sourceTable.getItem(itemId).getItemProperty(ColumnLabels.FEMALE_PLOT.getName()).getValue();
+
+				final GermplasmListEntry entryObject = new GermplasmListEntry(itemId, gid, entryId, designation, seedSource, plotNumber);
 				final Item item = targetTable.addItem(entryObject);
 
 				if (item != null) {

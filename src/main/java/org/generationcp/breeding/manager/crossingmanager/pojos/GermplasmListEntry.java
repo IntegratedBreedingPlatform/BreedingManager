@@ -29,6 +29,8 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
 	private Integer entryId;
 	private String designation;
 	private String seedSource;
+
+	private String plotNumber;
 	private boolean isFromFemaleTable;
 
 	public GermplasmListEntry(Integer listDataId, Integer gid, Integer entryId) {
@@ -53,6 +55,16 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
 		this.designation = designation;
 		this.seedSource = seedSource;
 		this.isFromFemaleTable = false;
+	}
+
+	public GermplasmListEntry(Integer listDataId, Integer gid, Integer entryId, String designation, String seedSource, String plotNumber) {
+		this.listDataId = listDataId;
+		this.gid = gid;
+		this.entryId = entryId;
+		this.designation = designation;
+		this.seedSource = seedSource;
+		this.isFromFemaleTable = false;
+		this.plotNumber = plotNumber;
 	}
 
 	public GermplasmListEntry(Integer listDataId, Integer gid, Integer entryId, String designation, String seedSource,
@@ -113,6 +125,14 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
 		this.isFromFemaleTable = isFromFemaleTable;
 	}
 
+	public String getPlotNumber() {
+		return plotNumber;
+	}
+
+	public void setPlotNumber(final String plotNumber) {
+		this.plotNumber = plotNumber;
+	}
+
 	@Override
 	public int compareTo(GermplasmListEntry entry) {
 		return this.entryId - entry.getEntryId();
@@ -121,6 +141,7 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
 	public GermplasmListEntry copy() {
 		GermplasmListEntry theCopy =
 				new GermplasmListEntry(this.listDataId, this.gid, this.entryId, this.designation, this.seedSource, this.isFromFemaleTable);
+		theCopy.setPlotNumber(this.plotNumber);
 		return theCopy;
 	}
 
@@ -174,6 +195,7 @@ public class GermplasmListEntry implements Comparable<GermplasmListEntry>, Seria
 
 		return true;
 	}
+
 
 	public boolean hasEqualGidWith(GermplasmListEntry entry) {
 		if (this.gid == null) {
