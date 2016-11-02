@@ -988,7 +988,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 						@Override
 						protected void doInTransactionWithoutResult(final TransactionStatus status) {
-							ListComponent.this.saveReservationChangesAction();
+							ListComponent.this.saveReservationChangesAction(ListComponent.this.getWindow());
 						}
 					});
 				}
