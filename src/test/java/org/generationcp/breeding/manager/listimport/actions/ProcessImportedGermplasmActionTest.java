@@ -363,10 +363,10 @@ public class ProcessImportedGermplasmActionTest {
 	
 	@Test
 	public void testCreateGermplasmObjectWithNoSelectedLocation(){
-		Integer gid = 1;
+		Integer gid = 3;
 		Integer gnpgs = -1;
-		Integer gpid1= 0;
-		Integer gpid2 = 0;
+		Integer gpid1= 1;
+		Integer gpid2 = 2;
 		Integer ibdbUserId = 10001;
 		Integer date = 20163012;
 		
@@ -388,14 +388,15 @@ public class ProcessImportedGermplasmActionTest {
 	
 	@Test
 	public void testCreateGermplasmObjectWithSelectedLocation(){
-		Integer gid = 1;
+		Integer gid = 3;
 		Integer gnpgs = -1;
-		Integer gpid1= 0;
-		Integer gpid2 = 0;
+		Integer gpid1= 1;
+		Integer gpid2 = 2;
 		String locationId = "1";
-		this.processImportedGermplasmAction.getGermplasmFieldsComponent().getLocationComboBox().addItem(locationId);
-		this.processImportedGermplasmAction.getGermplasmFieldsComponent().getLocationComboBox().setItemCaption(locationId, "1");
-		this.processImportedGermplasmAction.getGermplasmFieldsComponent().getLocationComboBox().setValue(locationId);
+		ComboBox locationComboBox = this.processImportedGermplasmAction.getGermplasmFieldsComponent().getLocationComboBox();
+		locationComboBox.addItem(locationId);
+		locationComboBox.setItemCaption(locationId, "1");
+		locationComboBox.setValue(locationId);
 		Germplasm germplasm = this.processImportedGermplasmAction.createGermplasmObject(gid, gnpgs, gpid1, gpid2, IBDB_USER_ID, DATE_INT_VALUE);
 		
 		Assert.assertEquals("The gid should be " + gid, gid, germplasm.getGid());
@@ -426,9 +427,10 @@ public class ProcessImportedGermplasmActionTest {
 	@Test
 	public void testCreateNameObjectWithSelectedLocation() {
 		String locationId = "1";
-		this.processImportedGermplasmAction.getGermplasmFieldsComponent().getLocationComboBox().addItem(locationId);
-		this.processImportedGermplasmAction.getGermplasmFieldsComponent().getLocationComboBox().setItemCaption(locationId, "1");
-		this.processImportedGermplasmAction.getGermplasmFieldsComponent().getLocationComboBox().setValue(locationId);
+		ComboBox locationComboBox = this.processImportedGermplasmAction.getGermplasmFieldsComponent().getLocationComboBox();
+		locationComboBox.addItem(locationId);
+		locationComboBox.setItemCaption(locationId, "1");
+		locationComboBox.setValue(locationId);
 		Name name= this.processImportedGermplasmAction.createNameObject(IBDB_USER_ID, DATE_INT_VALUE, DESIGNATION);
 		
 		Assert.assertEquals("The user id should be " + IBDB_USER_ID, IBDB_USER_ID, name.getUserId());
