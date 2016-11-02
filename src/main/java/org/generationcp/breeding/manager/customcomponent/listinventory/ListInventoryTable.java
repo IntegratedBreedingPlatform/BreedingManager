@@ -304,4 +304,9 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		this.ontologyDataManager = ontologyDataManager;
 	}
 
+	public void setInventoryDataManager(InventoryDataManager inventoryDataManager) {
+		this.inventoryDataManager = inventoryDataManager;
+	}
+
+
 }
