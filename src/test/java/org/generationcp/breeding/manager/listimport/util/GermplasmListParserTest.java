@@ -3,8 +3,11 @@ package org.generationcp.breeding.manager.listimport.util;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
@@ -40,6 +43,11 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class GermplasmListParserTest {
 
+	private static final String GERMPLASM_PARSE_GID_COLUMN_MISSING = "GERMPLASM_PARSE_GID_COLUMN_MISSING";
+	private static final String GERMPLASM_PARSE_DESIG_COLUMN_MISSING = "GERMPLASM_PARSE_DESIG_COLUMN_MISSING";
+	private static final String ENTRY_NO = "ENTRY_NO";
+	private static final String GERMPLASM_DUPLICATE_HEADER_ERROR = "GERMPLASM_DUPLICATE_HEADER_ERROR";
+	private static final String GERMPLASM_PARSE_HEADER_ERROR = "GERMPLASM_PARSE_HEADER_ERROR";
 	private static final int NO_OF_ENTRIES = 5;
 	private static final String SEED_AMOUNT_G = "SEED_AMOUNT_G";
 	private static final String INVENTORY_AMOUNT = "INVENTORY AMOUNT";
@@ -49,8 +57,9 @@ public class GermplasmListParserTest {
 	public static final String NO_INVENTORY_COL_FILE = "GermplasmImportTemplate-StockIDs-no-inventory-column.xls";
 	public static final String DUPLICATE_STOCK_ID_FILE = "GermplasmImportTemplate-StockIDs-duplicate-stock-ids.xls";
 	public static final String ADDITIONAL_NAME_FILE = "GermplasmImportTemplate-additional-name.xls";
+	private static final String DUPLICATE_HEADERS_FILE = "GermplasmImportTemplate-DuplicateHeaders.xls";
 	private static final int EXPECTED_DESCRIPTION_SHEET_VARIABLE_COUNT = 12;
-
+	
 	@Mock
 	private OntologyDataManager ontologyDataManager;
 
@@ -75,7 +84,8 @@ public class GermplasmListParserTest {
 
 	@Before
 	public void setUp() throws Exception {
-
+		this.initializeDescriptionVariableNames();
+		
 		Mockito.when(this.ontologyDataManager.isSeedAmountVariable(Matchers.eq(GermplasmListParserTest.INVENTORY_AMOUNT))).thenReturn(true);
 		Mockito.when(this.ontologyDataManager
 				.isSeedAmountVariable(AdditionalMatchers.not(Matchers.eq(GermplasmListParserTest.INVENTORY_AMOUNT)))).thenReturn(false);
@@ -85,6 +95,20 @@ public class GermplasmListParserTest {
 		Mockito.when(this.germplasmListManager.getGermplasmListTypes())
 				.thenReturn(this.userDefinedFieldTestDataInitializer.getValidListType());
 
+	}
+
+	private Set<String> initializeDescriptionVariableNames() {
+		Set<String> descriptionVariableNames = new HashSet<>();
+		descriptionVariableNames.add(GermplasmListParserTest.ENTRY_NO);
+		descriptionVariableNames.add("GID");
+		descriptionVariableNames.add("ENTRY_CODE");
+		descriptionVariableNames.add("DESIGNATION");
+		descriptionVariableNames.add("CROSS");
+		descriptionVariableNames.add("SEED_SOURCE");
+		descriptionVariableNames.add("STOCK_ID");
+		descriptionVariableNames.add("SEED_AMOUNT_G");
+		descriptionVariableNames.add("NOTES");
+		return descriptionVariableNames;
 	}
 
 	/**
@@ -123,16 +147,11 @@ public class GermplasmListParserTest {
 				"Header validation setup does not properly recognize the right amount of expected headers for the observation sheet",
 				GermplasmListParserTest.EXPECTED_DESCRIPTION_SHEET_VARIABLE_COUNT, this.parser.getDescriptionVariableNames().size());
 
+
 		// Check that the Description sheet variables are in ALL CAPS after parsing
 		for (final String variableName : this.parser.getDescriptionVariableNames()) {
 			Assert.assertEquals(variableName, variableName.toUpperCase());
 		}
-
-		// Check that the Observation sheet column headers are in ALL CAPS after parsing
-		for (final String columnHeader : this.parser.getObservationSheetHeaders()) {
-			Assert.assertEquals(columnHeader, columnHeader.toUpperCase());
-		}
-
 	}
 
 	/**
@@ -152,8 +171,8 @@ public class GermplasmListParserTest {
 			this.importedGermplasmList = this.parser.parseWorkbook(noStockIDWorkbook, null);
 			Assert.fail("Header error not properly recognized by parser");
 		} catch (final FileParsingException e) {
-			Assert.assertEquals("A different error from the one expected was thrown by the parser", "GERMPLASM_PARSE_HEADER_ERROR",
-					e.getMessage());
+			Assert.assertEquals("A different error from the one expected was thrown by the parser",
+					GermplasmListParserTest.GERMPLASM_PARSE_HEADER_ERROR, e.getMessage());
 		}
 
 	}
@@ -193,6 +212,26 @@ public class GermplasmListParserTest {
 		} catch (final FileParsingException e) {
 			Assert.assertEquals("A different error from the one expected was thrown by the parser",
 					"GERMPLSM_PARSE_GID_MISSING_SEED_AMOUNT_VALUE", e.getMessage());
+		}
+	}
+	
+	/**
+	 * Test when the file has duplicate column headers in the Observation sheet
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testTemplateWithDuplicateHeaderError() throws Exception {
+		try {
+			final File workbookFile = new File(
+					ClassLoader.getSystemClassLoader().getResource(GermplasmListParserTest.DUPLICATE_HEADERS_FILE).toURI());
+			final Workbook missingStockIDValuesWorkbook = WorkbookFactory.create(workbookFile);
+			this.importedGermplasmList = this.parser.parseWorkbook(missingStockIDValuesWorkbook, null);
+			Assert.fail("A file parsing exception should be thrown");
+		} catch (final FileParsingException e) {
+			Assert.assertEquals(
+					"Different exception was thrown. The error should be " + GermplasmListParserTest.GERMPLASM_DUPLICATE_HEADER_ERROR,
+					GermplasmListParserTest.GERMPLASM_DUPLICATE_HEADER_ERROR, e.getMessage());
 		}
 	}
 
@@ -314,6 +353,62 @@ public class GermplasmListParserTest {
 
 		Assert.assertFalse("Returns false when all rows in stockID columns have values.",
 				this.parser.hasAtLeastOneRowWithInventoryAmountButNoDefinedStockID());
+	}
+
+	@Test
+	public void testValidateObservationHeadersWithNoErrors() throws FileParsingException {
+		this.parser.setDescriptionVariableNames(this.initializeDescriptionVariableNames());
+		Set<String> observationSheetHeaders = new LinkedHashSet<>(this.initializeDescriptionVariableNames());
+		this.parser.validateObservationSheetHeaders(observationSheetHeaders, true, true);
+	}
+
+	@Test
+	public void testValidateObservationHeadersWithMissingObservationHeader() throws FileParsingException {
+		try {
+			this.parser.setDescriptionVariableNames(this.initializeDescriptionVariableNames());
+			Set<String> observationSheetHeaders = new LinkedHashSet<>(this.initializeDescriptionVariableNames());
+			observationSheetHeaders.remove("SEED_AMOUNT_G");
+			
+			this.parser.validateObservationSheetHeaders(observationSheetHeaders, true, true);
+
+			Assert.fail("A file parsing exception should be thrown");
+		} catch (final FileParsingException e) {
+			Assert.assertEquals(
+					"Different exception was thrown. The error should be " + GermplasmListParserTest.GERMPLASM_PARSE_HEADER_ERROR,
+					GermplasmListParserTest.GERMPLASM_PARSE_HEADER_ERROR, e.getMessage());
+		}
+	}
+
+	@Test
+	public void testValidateObservationHeadersWithMissingDesigColumnError() throws FileParsingException {
+		try {
+			this.parser.setDescriptionVariableNames(this.initializeDescriptionVariableNames());
+			Set<String> observationSheetHeaders = new LinkedHashSet<>(this.initializeDescriptionVariableNames());
+			
+			this.parser.validateObservationSheetHeaders(observationSheetHeaders, false, false);
+
+			Assert.fail("A file parsing exception should be thrown");
+		} catch (final FileParsingException e) {
+			Assert.assertEquals(
+					"Different exception was thrown. The error should be " + GermplasmListParserTest.GERMPLASM_PARSE_DESIG_COLUMN_MISSING,
+					GermplasmListParserTest.GERMPLASM_PARSE_DESIG_COLUMN_MISSING, e.getMessage());
+		}
+	}
+
+	@Test
+	public void testValidateObservationHeadersWithMissingGIDColumnError() throws FileParsingException {
+		try {
+			this.parser.setDescriptionVariableNames(this.initializeDescriptionVariableNames());
+			this.parser.setImportFileIsAdvanced(true);
+			Set<String> observationSheetHeaders = new LinkedHashSet<>(this.initializeDescriptionVariableNames());
+			this.parser.validateObservationSheetHeaders(observationSheetHeaders, false, true);
+
+			Assert.fail("A file parsing exception should be thrown");
+		} catch (final FileParsingException e) {
+			Assert.assertEquals(
+					"Different exception was thrown. The error should be " + GermplasmListParserTest.GERMPLASM_PARSE_GID_COLUMN_MISSING,
+					GermplasmListParserTest.GERMPLASM_PARSE_GID_COLUMN_MISSING, e.getMessage());
+		}
 	}
 
 }
