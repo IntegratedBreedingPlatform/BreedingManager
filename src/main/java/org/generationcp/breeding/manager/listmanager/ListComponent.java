@@ -969,7 +969,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}
 
 
-	private final class InventoryViewMenuClickListner implements ContextMenu.ClickListener {
+	protected final class InventoryViewMenuClickListner implements ContextMenu.ClickListener {
 
 		private static final long serialVersionUID = -2343109406180457070L;
 
@@ -2634,4 +2634,15 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		}
 	}
 
+	public PlatformTransactionManager getTransactionManager() {
+		return transactionManager;
+	}
+
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
+
+	public void setReserveInventoryAction(ReserveInventoryAction reserveInventoryAction) {
+		this.reserveInventoryAction = reserveInventoryAction;
+	}
 }
