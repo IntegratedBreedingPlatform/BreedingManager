@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.google.common.collect.Lists;
+
 import com.vaadin.ui.Component;
 
 @Configurable
@@ -55,7 +56,6 @@ public class SeedInventoryListExporter {
 	private final int RESERVATION_INDEX = 9;
 	private final int NOTES_INDEX = 12;
 
-
 	@Autowired
 	private FileService fileService;
 
@@ -68,10 +68,9 @@ public class SeedInventoryListExporter {
 	@Autowired
 	private org.generationcp.middleware.service.api.FieldbookService fieldbookMiddlewareService;
 
-
 	protected Workbook excelWorkbook;
 
-	public SeedInventoryListExporter(){
+	public SeedInventoryListExporter() {
 
 	}
 
@@ -81,24 +80,24 @@ public class SeedInventoryListExporter {
 	}
 
 	public void exportSeedPreparationList() throws SeedInventoryExportException {
-		try{
+		try {
 			excelWorkbook = this.fileService.retrieveWorkbookTemplate(seedTemplateFile);
 			this.fillSeedPreparationExcel();
 			File excelOutputFile = this.createExcelOutputFile(germplasmList.getName(), excelWorkbook);
 
 			this.fileDownloaderUtility.initiateFileDownload(excelOutputFile.getAbsolutePath(), excelOutputFile.getName(), this.source);
-		}catch(MiddlewareException | IOException | InvalidFormatException e){
+		} catch (MiddlewareException | IOException | InvalidFormatException e) {
 			throw new SeedInventoryExportException(e.getMessage(), e);
 		}
 
 	}
 
-	public void fillSeedPreparationExcel(){
+	public void fillSeedPreparationExcel() {
 		this.writeListDetailsSection();
 		this.writeObservationSheet();
 	}
 
-	public void writeListDetailsSection(){
+	public void writeListDetailsSection() {
 		Sheet descriptionSheet = excelWorkbook.getSheetAt(0);
 
 		String listName = this.germplasmList.getName();
@@ -110,7 +109,6 @@ public class SeedInventoryListExporter {
 		final String listType = this.germplasmList.getType();
 		descriptionSheet.getRow(2).getCell(1).setCellValue(listType); //B3 cell with the list type
 
-
 		final Long listDate = this.germplasmList.getDate();
 		descriptionSheet.getRow(3).getCell(1).setCellValue(listDate); //B4 cell with the list date
 
@@ -118,7 +116,7 @@ public class SeedInventoryListExporter {
 		descriptionSheet.getRow(6).getCell(6).setCellValue(currentExportingUserName); //G7 cell with the Username
 	}
 
-	private void writeObservationSheet(){
+	private void writeObservationSheet() {
 		final List<GermplasmListData> inventoryDetails =
 				this.inventoryDataManager.getReservedLotDetailsForExportList(this.germplasmList.getId());
 
@@ -129,62 +127,58 @@ public class SeedInventoryListExporter {
 		int rowIndex = 1;
 		for (final GermplasmListData inventoryDetail : inventoryDetails) {
 
-				final ListDataInventory listDataInventory = inventoryDetail.getInventoryInfo();
+			final ListDataInventory listDataInventory = inventoryDetail.getInventoryInfo();
 
-				final List<ListEntryLotDetails> lotDetails = (List<ListEntryLotDetails>) listDataInventory.getLotRows();
+			final List<ListEntryLotDetails> lotDetails = (List<ListEntryLotDetails>) listDataInventory.getLotRows();
 
-				if (lotDetails != null) {
-					for (final ListEntryLotDetails lotDetail : lotDetails) {
-						if(lotDetail.getReservedTotalForEntry() != null && lotDetail.getReservedTotalForEntry() > 0){
+			if (lotDetails != null) {
+				for (final ListEntryLotDetails lotDetail : lotDetails) {
+					if (lotDetail.getReservedTotalForEntry() != null && lotDetail.getReservedTotalForEntry() > 0) {
 
-							reservedLotScaleSet.add(lotDetail.getLotScaleNameAbbr());
-							reservedLotMethodSet.add(lotDetail.getLotScaleMethodName());
+						reservedLotScaleSet.add(lotDetail.getLotScaleNameAbbr());
+						reservedLotMethodSet.add(lotDetail.getLotScaleMethodName());
 
-							PoiUtil.setCellValue(observationSheet,  ENTRY_INDEX , rowIndex, inventoryDetail.getEntryId());
-							PoiUtil.setCellValue(observationSheet,  DESIGNATION_INDEX , rowIndex, inventoryDetail.getDesignation());
-							PoiUtil.setCellValue(observationSheet,  GID_INDEX , rowIndex, inventoryDetail.getGid());
-							PoiUtil.setCellValue(observationSheet,  CROSS_INDEX , rowIndex, inventoryDetail.getGroupName());
-							PoiUtil.setCellValue(observationSheet,  SOURCE_INDEX , rowIndex, inventoryDetail.getSeedSource());
+						PoiUtil.setCellValue(observationSheet, ENTRY_INDEX, rowIndex, inventoryDetail.getEntryId());
+						PoiUtil.setCellValue(observationSheet, DESIGNATION_INDEX, rowIndex, inventoryDetail.getDesignation());
+						PoiUtil.setCellValue(observationSheet, GID_INDEX, rowIndex, inventoryDetail.getGid());
+						PoiUtil.setCellValue(observationSheet, CROSS_INDEX, rowIndex, inventoryDetail.getGroupName());
+						PoiUtil.setCellValue(observationSheet, SOURCE_INDEX, rowIndex, inventoryDetail.getSeedSource());
 
-							PoiUtil.setCellValue(observationSheet,  LOT_ID_INDEX , rowIndex, lotDetail.getLotId().toString());
+						PoiUtil.setCellValue(observationSheet, LOT_ID_INDEX, rowIndex, lotDetail.getLotId().toString());
 
-							String lotLocation = "";
-							if (lotDetail.getLocationOfLot() != null && lotDetail.getLocationOfLot().getLname() != null) {
-								lotLocation = lotDetail.getLocationOfLot().getLname();
-							}
-							PoiUtil.setCellValue(observationSheet,  LOT_LOCATION_INDEX , rowIndex, lotLocation);
-
-							PoiUtil.setCellValue(observationSheet,  STOCK_ID_INDEX , rowIndex, lotDetail.getStockIds());
-
-
-							PoiUtil.setCellValue(observationSheet,  TRN_INDEX , rowIndex, lotDetail.getTransactionId().toString());
-
-							String reservation = lotDetail.getReservedTotalForEntry().toString();
-							PoiUtil.setCellValue(observationSheet,  RESERVATION_INDEX , rowIndex, reservation);
-
-							Transaction transaction = transactionMap.get(lotDetail.getTransactionId());
-							PoiUtil.setCellValue(observationSheet,  NOTES_INDEX , rowIndex, transaction.getComments());
-
-							rowIndex++;
+						String lotLocation = "";
+						if (lotDetail.getLocationOfLot() != null && lotDetail.getLocationOfLot().getLname() != null) {
+							lotLocation = lotDetail.getLocationOfLot().getLname();
 						}
-						else{
-							// will skip lots having not reservation
-						}
+						PoiUtil.setCellValue(observationSheet, LOT_LOCATION_INDEX, rowIndex, lotLocation);
 
+						PoiUtil.setCellValue(observationSheet, STOCK_ID_INDEX, rowIndex, lotDetail.getStockIds());
+
+						PoiUtil.setCellValue(observationSheet, TRN_INDEX, rowIndex, lotDetail.getTransactionId().toString());
+
+						String reservation = lotDetail.getReservedTotalForEntry().toString();
+						PoiUtil.setCellValue(observationSheet, RESERVATION_INDEX, rowIndex, reservation);
+
+						Transaction transaction = transactionMap.get(lotDetail.getTransactionId());
+						PoiUtil.setCellValue(observationSheet, NOTES_INDEX, rowIndex, transaction.getComments());
+
+						rowIndex++;
+					} else {
+						// will skip lots having not reservation
 					}
+
 				}
 			}
-
+		}
 
 		Sheet descriptionSheet = excelWorkbook.getSheetAt(0);
 		String scaleName = "";
 		String methodName = "";
 
-		if(reservedLotMethodSet.size() >= 1){
-			if(reservedLotMethodSet.size() == 1){
+		if (reservedLotMethodSet.size() >= 1) {
+			if (reservedLotMethodSet.size() == 1) {
 				methodName = reservedLotMethodSet.iterator().next();
-			}
-			else{
+			} else {
 				methodName = ListDataInventory.MIXED;
 			}
 
@@ -193,11 +187,10 @@ public class SeedInventoryListExporter {
 			descriptionSheet.getRow(22).getCell(4).setCellValue(methodName); //E23 cell with withdrawal amount method
 		}
 
-		if(reservedLotScaleSet.size() >= 1){
-			if(reservedLotScaleSet.size() == 1){
+		if (reservedLotScaleSet.size() >= 1) {
+			if (reservedLotScaleSet.size() == 1) {
 				scaleName = reservedLotScaleSet.iterator().next();
-			}
-			else{
+			} else {
 				scaleName = ListDataInventory.MIXED;
 			}
 			descriptionSheet.getRow(20).getCell(3).setCellValue(scaleName); //D21 cell with withdrawal amount scale
@@ -208,9 +201,8 @@ public class SeedInventoryListExporter {
 	}
 
 	private File createExcelOutputFile(final String listName, final Workbook excelWorkbook) throws IOException {
-		String outputFileName =
-				String.format(SeedInventoryListExporter.SEED_EXPORT_FILE_NAME_FORMAT, StringUtil
-						.replaceInvalidChacaracterFileName(listName,"_"));
+		String outputFileName = String.format(SeedInventoryListExporter.SEED_EXPORT_FILE_NAME_FORMAT,
+				StringUtil.replaceInvalidChacaracterFileName(listName, "_"));
 
 		outputFileName = FileUtils.sanitizeFileName(outputFileName);
 
@@ -221,7 +213,7 @@ public class SeedInventoryListExporter {
 		return new File(outputFileName);
 	}
 
-	private Map<Integer, Transaction> createReservedTransactionMap(final List<GermplasmListData> inventoryDetails){
+	private Map<Integer, Transaction> createReservedTransactionMap(final List<GermplasmListData> inventoryDetails) {
 		final List<Integer> reservedTransactionIdList = Lists.newArrayList();
 		final Map<Integer, Transaction> reservedTransactionMap = new HashMap<>();
 
@@ -242,7 +234,7 @@ public class SeedInventoryListExporter {
 
 		List<Transaction> listTransactions = this.inventoryDataManager.getTransactionsByIdList(reservedTransactionIdList);
 
-		for(Transaction transaction : listTransactions){
+		for (Transaction transaction : listTransactions) {
 			reservedTransactionMap.put(transaction.getId(), transaction);
 		}
 		return reservedTransactionMap;

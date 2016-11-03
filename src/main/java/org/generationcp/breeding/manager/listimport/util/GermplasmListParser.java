@@ -3,11 +3,11 @@ package org.generationcp.breeding.manager.listimport.util;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -56,8 +56,6 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmListParser.class);
 	private static final int OBSERVATION_SHEET_NO = 1;
 
-	private final Map<Integer, String> observationColumnMap = new HashMap<>();
-
 	@Resource
 	private GermplasmListManager germplasmListManager;
 	@Resource
@@ -76,7 +74,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	private String seedAmountVariate = "";
 	private Set<String> nameFactors;
 	private Set<String> attributeVariates;
-	private final Set<String> descriptionVariableNames = new HashSet<>();
+	private Set<String> descriptionVariableNames = new HashSet<>();
 
 	public String getNoInventoryWarning() {
 		return this.noInventoryWarning;
@@ -95,7 +93,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 	/**
 	 * NOTE: The imported file contains 2 sheet: Description Sheet and Observation Sheet.
-	 * 
+	 *
 	 * @return true if there is an Inventory Variable in the Description Sheet (i.e SEED_AMOUNT_G) and either STOCKID is not included in the
 	 *         Description Sheet or there is no values under STOCKID column in Observation Sheet
 	 */
@@ -106,7 +104,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 	/**
 	 * NOTE: The imported file contains 2 sheet: Description Sheet and Observation Sheet.
-	 * 
+	 *
 	 * @return true if there is an Inventory Variable in the Description Sheet (i.e SEED_AMOUNT_G) and there is at least one value under the
 	 *         Inventory Variable column in Observation Sheet
 	 */
@@ -189,7 +187,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 			throw new FileParsingException("GERMPLASM_PARSE_INVENTORY_HEADER_ERROR");
 		}
 
-		final WorkbookRowConverter converter = new WorkbookRowConverter<Boolean>(this.workbook, this.currentRowIndex + 1,
+		final WorkbookRowConverter<Boolean> converter = new WorkbookRowConverter<Boolean>(this.workbook, this.currentRowIndex + 1,
 				GermplasmListParser.DESCRIPTION_SHEET_NO, InventoryHeaders.values().length, InventoryHeaders.names()) {
 
 			@Override
@@ -200,8 +198,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 				if (FactorDetailsConverter.GERMPLASM_STOCK_ID_PROPERTY.equalsIgnoreCase(property)
 						&& FactorDetailsConverter.isStockIdScale(scale)) {
 
-					final ImportedFactor importedFactor = new ImportedFactor(rowValues.get(0), rowValues.get(1), rowValues.get(2),
-							rowValues.get(3), rowValues.get(4), rowValues.get(5), rowValues.get(6), rowValues.get(7));
+					final ImportedFactor importedFactor = new ImportedFactor(rowValues.get(0).toUpperCase(), rowValues.get(1),
+							rowValues.get(2), rowValues.get(3), rowValues.get(4), rowValues.get(5), rowValues.get(6), rowValues.get(7));
 
 					// lets remove if exists just in case
 					GermplasmListParser.this.specialFactors.remove(FactorTypes.STOCK);
@@ -224,8 +222,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 				// seed amount variate parse
 				try {
 					if (GermplasmListParser.this.ontologyDataManager.isSeedAmountVariable(property)) {
-						final ImportedVariate seedAmountVariate = new ImportedVariate(rowValues.get(0), rowValues.get(1), rowValues.get(2),
-								rowValues.get(3), rowValues.get(4), rowValues.get(5));
+						final ImportedVariate seedAmountVariate = new ImportedVariate(rowValues.get(0).toUpperCase(), rowValues.get(1),
+								rowValues.get(2), rowValues.get(3), rowValues.get(4), rowValues.get(5));
 
 						seedAmountVariate.setSeedStockVariable(true);
 						GermplasmListParser.this.seedAmountVariate = seedAmountVariate.getVariate();
@@ -273,7 +271,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		// if theres a stock id factor but no inventory column variate, we have to ignore the stock ids and treet it as a normal germplasm
 		// import
 		// lets show a warning message after the import
-		if ("".equals(this.seedAmountVariate)) {
+		if (StringUtils.isBlank(this.seedAmountVariate)) {
 			this.seedAmountVariate = variateDetailsConverter.getSeedAmountVariate();
 		} else {
 			// remove seedStockVariable if already added in inventory section
@@ -289,7 +287,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 		for (final ImportedVariate variate : variateList) {
 			this.importedGermplasmList.addImportedVariate(variate);
-			this.descriptionVariableNames.add(variate.getVariate().toUpperCase());
+			this.descriptionVariableNames.add(variate.getVariate());
 		}
 	}
 
@@ -398,7 +396,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		try {
 			final String listDateCellValue = this.getCellStringValue(GermplasmListParser.DESCRIPTION_SHEET_NO, listDateColNo, 1);
 
-			if ("".equals(listDateCellValue.trim())) {
+			if (StringUtils.isBlank(listDateCellValue.trim())) {
 				listDate = DateUtil.getCurrentDate();
 			} else {
 				listDate = DateUtil.parseDate(listDateCellValue);
@@ -417,46 +415,46 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	}
 
 	/**
-	 * This validator might be too strict for germplasm list parser
-	 * 
+	 * This method parses the Observation sheet headers and adds validator for each header
+	 * @param observationSheetHeaders 
+	 *
 	 * @return ParseValidationMap
 	 */
-	protected ParseValidationMap parseObservationHeaders() throws FileParsingException {
+	protected ParseValidationMap parseObservationSheetHeaders(Set<String> observationSheetHeaders) throws FileParsingException {
 		final ParseValidationMap validationMap = new ParseValidationMap();
-
-		final int headerSize = this.importedGermplasmList.sizeOfObservationHeader();
 
 		boolean hasDesigColumn = false;
 		boolean hasGidColumn = false;
 		boolean hasInventoryVariate = false;
 		// were accounting for two additional unknown columns inserted between the headers, then we'll
 		// just ignore it
+		final int headerSize = this.importedGermplasmList.sizeOfObservationHeader();
 		for (int i = 0; i < headerSize + 2; i++) {
 			// search the current header
-			final String obsHeader = this.getCellStringValue(GermplasmListParser.OBSERVATION_SHEET_NO, 0, i);
 
-			if (this.specialFactors.get(FactorTypes.ENTRY).equals(obsHeader)) {
-				validationMap.addValidation(i, new ValueTypeValidator(Integer.class));
-				validationMap.addValidation(i, new NonEmptyValidator());
-			} else if (this.specialFactors.get(FactorTypes.DESIG).equals(obsHeader)) {
-				hasDesigColumn = true;
-			} else if (this.importFileIsAdvanced && this.specialFactors.get(FactorTypes.GID).equals(obsHeader)) {
-				hasGidColumn = true;
-			} else if (!this.seedAmountVariate.isEmpty() && this.seedAmountVariate.equalsIgnoreCase(obsHeader)) {
-				validationMap.addValidation(i, new ValueTypeValidator(Double.class));
-				hasInventoryVariate = true;
+			final String observationSheetHeader = this.getCellStringValue(GermplasmListParser.OBSERVATION_SHEET_NO, 0, i).toUpperCase();
+			if (StringUtils.isNotBlank(observationSheetHeader)) {
+				if (this.specialFactors.get(FactorTypes.ENTRY).equals(observationSheetHeader)) {
+					validationMap.addValidation(i, new ValueTypeValidator(Integer.class));
+					validationMap.addValidation(i, new NonEmptyValidator());
+				} else if (this.specialFactors.get(FactorTypes.DESIG).equals(observationSheetHeader)) {
+					hasDesigColumn = true;
+				} else if (this.importFileIsAdvanced && this.specialFactors.get(FactorTypes.GID).equals(observationSheetHeader)) {
+					hasGidColumn = true;
+				} else if (!this.seedAmountVariate.isEmpty() && this.seedAmountVariate.equalsIgnoreCase(observationSheetHeader)) {
+					validationMap.addValidation(i, new ValueTypeValidator(Double.class));
+					hasInventoryVariate = true;
+				}
+				
+				if(!observationSheetHeaders.add(observationSheetHeader)){
+					throw new FileParsingException("GERMPLASM_DUPLICATE_HEADER_ERROR", 1, "", observationSheetHeader);
+				}
 			}
-
-			this.observationColumnMap.put(i, obsHeader);
 		}
 
-		this.validateObservationHeaders();
+		this.validateObservationSheetHeaders(observationSheetHeaders, hasGidColumn, hasDesigColumn);
 
-		if (!hasGidColumn && !hasDesigColumn) {
-			throw new FileParsingException("GERMPLASM_PARSE_DESIG_COLUMN_MISSING");
-		} else if (this.importFileIsAdvanced && !hasGidColumn) {
-			throw new FileParsingException("GERMPLASM_PARSE_GID_COLUMN_MISSING");
-		} else if (this.seedAmountVariate.isEmpty() && this.specialFactors.containsKey(FactorTypes.STOCK)
+		if (this.seedAmountVariate.isEmpty() && this.specialFactors.containsKey(FactorTypes.STOCK)
 				|| !this.seedAmountVariate.isEmpty() && !hasInventoryVariate && this.specialFactors.containsKey(FactorTypes.STOCK)) {
 			this.importedGermplasmList.removeImportedFactor(this.specialFactors.get(FactorTypes.STOCK));
 			this.specialFactors.remove(FactorTypes.STOCK);
@@ -467,19 +465,27 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		return validationMap;
 	}
 
-	protected void validateObservationHeaders() throws FileParsingException {
+	protected void validateObservationSheetHeaders(Set<String> observationSheetHeaders, final boolean hasGidColumn, final boolean hasDesigColumn) throws FileParsingException {
+		// Checks if all variable names in Description Sheet are existing in the Observation sheet
 		for (final String headerName : this.descriptionVariableNames) {
-			final Collection<String> obsHeaders = this.observationColumnMap.values();
-			if (!obsHeaders.contains(headerName)) {
+			if (!observationSheetHeaders.contains(headerName)) {
 				throw new FileParsingException("GERMPLASM_PARSE_HEADER_ERROR", 1, "", headerName);
 			}
+		}
+
+		if (!hasGidColumn && !hasDesigColumn) {
+			throw new FileParsingException("GERMPLASM_PARSE_DESIG_COLUMN_MISSING");
+		} else if (this.importFileIsAdvanced && !hasGidColumn) {
+			throw new FileParsingException("GERMPLASM_PARSE_GID_COLUMN_MISSING");
 		}
 	}
 
 	protected void parseObservationRows() throws FileParsingException {
-		final ParseValidationMap validationMap = this.parseObservationHeaders();
+		Set<String> observationSheetHeaders = new LinkedHashSet<>();
+		final ParseValidationMap validationMap = this.parseObservationSheetHeaders(observationSheetHeaders);
 		final ObservationRowConverter observationRowConverter = new ObservationRowConverter(this.workbook, 1, 1,
-				this.observationColumnMap.size(), this.observationColumnMap.values().toArray(new String[this.observationColumnMap.size()]));
+				observationSheetHeaders.size(), observationSheetHeaders.toArray(new String[observationSheetHeaders.size()]));
+		
 		observationRowConverter.setValidationMap(validationMap);
 
 		final List<ImportedGermplasm> importedGermplasms =
@@ -626,8 +632,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 		@Override
 		public ImportedCondition convertToObject(final Map<Integer, String> rowValues) throws FileParsingException {
-			return new ImportedCondition(rowValues.get(0), rowValues.get(1), rowValues.get(2), rowValues.get(3), rowValues.get(4),
-					rowValues.get(5), rowValues.get(6), rowValues.get(7));
+			return new ImportedCondition(rowValues.get(0).toUpperCase(), rowValues.get(1), rowValues.get(2), rowValues.get(3),
+					rowValues.get(4), rowValues.get(5), rowValues.get(6), rowValues.get(7));
 
 		}
 	}
@@ -641,8 +647,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 		@Override
 		public ImportedConstant convertToObject(final Map<Integer, String> rowValues) throws FileParsingException {
-			return new ImportedConstant(rowValues.get(0), rowValues.get(1), rowValues.get(2), rowValues.get(3), rowValues.get(4),
-					rowValues.get(5), rowValues.get(6), rowValues.get(7));
+			return new ImportedConstant(rowValues.get(0).toUpperCase(), rowValues.get(1), rowValues.get(2), rowValues.get(3),
+					rowValues.get(4), rowValues.get(5), rowValues.get(6), rowValues.get(7));
 		}
 	}
 
@@ -659,7 +665,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		@Override
 		public ImportedVariate convertToObject(final Map<Integer, String> rowValues) throws FileParsingException {
 
-			final ImportedVariate importedVariate = new ImportedVariate(rowValues.get(0), rowValues.get(1), rowValues.get(2),
+			final ImportedVariate importedVariate = new ImportedVariate(rowValues.get(0).toUpperCase(), rowValues.get(1), rowValues.get(2),
 					rowValues.get(3), rowValues.get(4), rowValues.get(5));
 
 			final String property = importedVariate.getProperty() == null ? "" : importedVariate.getProperty().toUpperCase();
@@ -690,19 +696,21 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 	class ObservationRowConverter extends WorkbookRowConverter<ImportedGermplasm> {
 
-		// we maintain an entrySet for checking dupes
+		// we maintain set of Entry IDs for checking dupes
 		private final Set<String> entrySet = new HashSet<>();
-
+		private String[] observationSheetHeaders;
 		public ObservationRowConverter(final Workbook workbook, final int startingIndex, final int targetSheetIndex, final int columnCount,
 				final String[] columnLabels) {
 			super(workbook, startingIndex, targetSheetIndex, columnCount, columnLabels, false);
+			this.observationSheetHeaders = columnLabels;
 		}
 
 		@Override
 		public ImportedGermplasm convertToObject(final Map<Integer, String> rowValues) throws FileParsingException {
 			final ImportedGermplasm importedGermplasm = new ImportedGermplasm();
 			for (final int colIndex : rowValues.keySet()) {
-				final String colHeader = GermplasmListParser.this.observationColumnMap.get(colIndex);
+				final String colHeader = this.observationSheetHeaders[colIndex];
+
 				// Map cell (given a column label) with a pojo setter
 
 				final Map<FactorTypes, Command> factorBehaviors = new HashMap<>();
@@ -773,7 +781,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 					@Override
 					public void run() throws FileParsingException {
-						if (!"".equals(rowValues.get(colIndex)) && !GermplasmListParser.this.importedGermplasmList.isHasStockIDValues()) {
+						if (!StringUtils.isBlank(rowValues.get(colIndex))
+								&& !GermplasmListParser.this.importedGermplasmList.isHasStockIDValues()) {
 							GermplasmListParser.this.importedGermplasmList.setHasStockIDValues(true);
 						}
 						importedGermplasm.setInventoryId(rowValues.get(colIndex));
@@ -810,7 +819,8 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 			// row based validation here
 			// GID is given, but no DESIG, get value of DESIG given GID
-			if (importedGermplasm.getGid() != null && (importedGermplasm.getDesig() == null || "".equals(importedGermplasm.getDesig()))) {
+			if (importedGermplasm.getGid() != null
+					&& (importedGermplasm.getDesig() == null || StringUtils.isBlank(importedGermplasm.getDesig()))) {
 				try {
 
 					// Check if germplasm exists
@@ -883,12 +893,12 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 		public boolean executeIfIsSeedAmountVariate(final String header, final String value, final ImportedGermplasm germplasmReference)
 				throws FileParsingException {
-			if ("".equals(header)) {
+			if (StringUtils.isBlank(header)) {
 				return false;
 			}
 
 			if (GermplasmListParser.this.seedAmountVariate != null && GermplasmListParser.this.seedAmountVariate.equals(header)) {
-				final Double seedAmountValue = "".equals(value) ? 0 : Double.valueOf(value);
+				final Double seedAmountValue = StringUtils.isBlank(value) ? 0 : Double.valueOf(value);
 				germplasmReference.setSeedAmount(seedAmountValue);
 			} else {
 				return false;
@@ -925,7 +935,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 	/**
 	 * For Test Only
-	 * 
+	 *
 	 * @param seedAmountVariate
 	 */
 	void setSeedAmountVariate(final String seedAmountVariate) {
@@ -934,11 +944,29 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 
 	/**
 	 * For Test Only
-	 * 
+	 *
 	 * @param importedGermplasmList
 	 */
 	void setImportedGermplasmList(final ImportedGermplasmList importedGermplasmList) {
 		this.importedGermplasmList = importedGermplasmList;
+	}
+	
+	/**
+	 * For Test Only
+	 *
+	 * @param descriptionVariableNames
+	 */
+	void setDescriptionVariableNames(final Set<String> descriptionVariableNames) {
+		this.descriptionVariableNames = descriptionVariableNames;
+	}
+
+	/**
+	 * For Test Only
+	 *
+	 * @param importFileIsAdvanced
+	 */
+	void setImportFileIsAdvanced(final boolean importFileIsAdvanced) {
+		this.importFileIsAdvanced = importFileIsAdvanced;
 	}
 
 }
