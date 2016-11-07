@@ -32,6 +32,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Lists;
+
 @Configurable
 public class SeedInventoryImportStatusWindow extends BaseSubWindow implements InitializingBean, InternationalizableComponent,
 		BreedingManagerLayout {
@@ -61,7 +63,11 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow implements In
 	private List<Lot> closedLots;
 	Component listComponent;
 
-	Map<String, String> importStatusMessages = new HashMap<>();
+	private Map<String, String> importStatusMessages = new HashMap<>();
+
+	public SeedInventoryImportStatusWindow() {
+		super();
+	}
 
 	public SeedInventoryImportStatusWindow(final Component source, final Component listComponent,
 			List<ImportedSeedInventory> importedSeedInventories, List<Transaction> processedTransactions, List<Lot> closedLots) {
@@ -118,8 +124,8 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow implements In
 
 	@Override
 	public void initializeValues() {
-		importStatusMessages.put(Message.SEED_IMPORT_TRANSACTION_ALREADY_COMMITTED_WARNING.toString(),
-				messageSource.getMessage(Message.SEED_IMPORT_TRANSACTION_ALREADY_COMMITTED_WARNING));
+		importStatusMessages.put(Message.SEED_IMPORT_TRANSACTION_ALREADY_COMMITTED_ERROR.toString(),
+				messageSource.getMessage(Message.SEED_IMPORT_TRANSACTION_ALREADY_COMMITTED_ERROR));
 		importStatusMessages.put(Message.SEED_IMPORT_WITHDRAWAL_GREATER_THAN_RESERVATION_WARNING.toString(),
 				messageSource.getMessage(Message.SEED_IMPORT_WITHDRAWAL_GREATER_THAN_RESERVATION_WARNING));
 		importStatusMessages.put(Message.SEED_IMPORT_WITHDRAWAL_GREATER_THAN_AVAILABLE_WARNING.toString(),
@@ -147,7 +153,7 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow implements In
 				processingStatusLabel = new Label(messageSource.getMessage(Message.SEED_IMPORT_PROCESSING_STATUS));
 				processingStatusLabel.setDebugId("label");
 			} else if (importedSeedInventory.getTransactionProcessingStatus()
-					.equals(Message.SEED_IMPORT_TRANSACTION_ALREADY_COMMITTED_WARNING.toString()) ||
+					.equals(Message.SEED_IMPORT_TRANSACTION_ALREADY_COMMITTED_ERROR.toString()) ||
 					importedSeedInventory.getTransactionProcessingStatus()
 							.equals(Message.SEED_IMPORT_WITHDRAWAL_GREATER_THAN_AVAILABLE_WARNING.toString()) || importedSeedInventory
 					.getTransactionProcessingStatus().equals(Message.SEED_IMPORT_BALANCE_WARNING.toString()) || importedSeedInventory
@@ -185,7 +191,10 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow implements In
 
 			@Override
 			public void buttonClick(final Button.ClickEvent event) {
-				SeedInventoryImportStatusWindow.this.continueAction();
+				synchronized (SeedInventoryImportStatusWindow.class) {
+					SeedInventoryImportStatusWindow.this.continueAction();
+				}
+
 			}
 		});
 
@@ -193,19 +202,43 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow implements In
 
 	public void continueAction() {
 		if (!this.processedTransactions.isEmpty() || !this.closedLots.isEmpty()) {
-			inventoryDataManager.addTransactions(this.processedTransactions);
-			inventoryDataManager.updateLots(closedLots);
+			boolean flagCommittedStatus = checkAnyTransactionsAlreadyCommitted();
 
-			if (this.listComponent instanceof ListComponent) {
-				((ListComponent) this.listComponent).refreshInventoryListDataTabel();
-				((ListComponent) this.listComponent).resetListDataTableValues();
+			if (flagCommittedStatus) {
+				MessageNotifier.showError(this.source.getWindow(), messageSource.getMessage(Message.ERROR),
+						messageSource.getMessage(Message.SEED_IMPORT_TRANSACTION_ALREADY_COMMITTED_ERROR));
+				this.close();
+			} else {
+				inventoryDataManager.addTransactions(this.processedTransactions);
+				inventoryDataManager.updateLots(closedLots);
+
+				if (this.listComponent instanceof ListComponent) {
+					((ListComponent) this.listComponent).refreshInventoryListDataTabel();
+					((ListComponent) this.listComponent).resetListDataTableValues();
+				}
+
+				MessageNotifier.showMessage(this.source.getWindow(), messageSource.getMessage(Message.SUCCESS),
+						messageSource.getMessage(Message.SEED_IMPORT_SUCCESS));
+				this.close();
 			}
-
 		}
-		MessageNotifier.showMessage(this.source.getWindow(), messageSource.getMessage(Message.SUCCESS),
-				messageSource.getMessage(Message.SEED_IMPORT_SUCCESS));
-		this.close();
 
+	}
+
+	private boolean checkAnyTransactionsAlreadyCommitted() {
+		List<Integer> transactionIdList = Lists.newArrayList();
+		for (Transaction transaction : this.processedTransactions) {
+			transactionIdList.add(transaction.getId());
+		}
+
+		List<Transaction> importedTransactions = inventoryDataManager.getTransactionsByIdList(transactionIdList);
+
+		for (Transaction transaction : importedTransactions) {
+			if (transaction.getStatus() == 1) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void cancelAction() {
@@ -254,4 +287,39 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow implements In
 		this.layoutComponents();
 	}
 
+	public Table getTable() {
+		return this.statusTable;
+	}
+
+	public void setImportedSeedInventories(List<ImportedSeedInventory> importedSeedInventories) {
+		this.importedSeedInventories = importedSeedInventories;
+	}
+
+	public Map<String, String> getImportStatusMessages() {
+		return importStatusMessages;
+	}
+
+	public void setClosedLots(List<Lot> closedLots) {
+		this.closedLots = closedLots;
+	}
+
+	public void setProcessedTransactions(List<Transaction> processedTransactions) {
+		this.processedTransactions = processedTransactions;
+	}
+
+	public Button getContinueButton() {
+		return continueButton;
+	}
+
+	public void setSource(Component source) {
+		this.source = source;
+	}
+
+	public void setListComponent(Component listComponent) {
+		this.listComponent = listComponent;
+	}
+
+	public Button getCancelButton() {
+		return cancelButton;
+	}
 }
