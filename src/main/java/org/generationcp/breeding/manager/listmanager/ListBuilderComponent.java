@@ -47,6 +47,7 @@ import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandle
 import org.generationcp.breeding.manager.listmanager.util.DropHandlerMethods.ListUpdatedEvent;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
+import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
@@ -224,6 +225,15 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		final Integer listId = this.currentlySavedGermplasmList.getId();
 
 		if (listId != null) {
+			final List<GermplasmListData> germplasmListDatas =
+					this.inventoryDataManager.getLotDetailsForList(this.currentlySavedGermplasmList.getId(), 0, Integer.MAX_VALUE);
+
+			if (!ListCommonActionsUtil.hasReservationForAnyListEntries(germplasmListDatas)) {
+				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.PRINT_LABELS),
+						this.messageSource.getMessage(Message.ERROR_COULD_NOT_CREATE_LABELS_WITHOUT_RESERVATION));
+				return;
+			}
+
 			// Navigate to labels printing
 			// we use this workaround using javascript for navigation, because Vaadin 6 doesn't have good ways
 			// of navigating in and out of the Vaadin application

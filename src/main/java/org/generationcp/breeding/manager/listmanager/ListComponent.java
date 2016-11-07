@@ -1057,6 +1057,16 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		final Integer listId = this.germplasmList.getId();
 
 		if (listId != null) {
+
+			final List<GermplasmListData> germplasmListDatas =
+					this.inventoryDataManager.getLotDetailsForList(listId, 0, Integer.MAX_VALUE);
+
+			if (!ListCommonActionsUtil.hasReservationForAnyListEntries(germplasmListDatas)) {
+				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.PRINT_LABELS),
+						this.messageSource.getMessage(Message.ERROR_COULD_NOT_CREATE_LABELS_WITHOUT_RESERVATION));
+				return;
+			}
+
 			// Navigate to labels printing
 			// we use this workaround using javascript for navigation, because Vaadin 6 doesn't have good ways
 			// of navigating in and out of the Vaadin application

@@ -13,12 +13,15 @@ import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.inventory.ListDataInventory;
+import org.generationcp.middleware.domain.inventory.LotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -359,6 +362,27 @@ public class ListCommonActionsUtil {
 
 	public static void deleteExistingListEntries(final Integer listId, final GermplasmListManager dataManager) {
 		dataManager.deleteGermplasmListDataByListId(listId);
+	}
+
+	public static boolean hasReservationForAnyListEntries(final List<GermplasmListData> germplasmListDatas) {
+		boolean hasAnyReservation = false;
+
+		if (!CollectionUtils.isEmpty(germplasmListDatas)) {
+			for (GermplasmListData germplasmListData : germplasmListDatas) {
+				if (germplasmListData.getInventoryInfo() != null && germplasmListData.getInventoryInfo().getLotRows() != null) {
+					for (final LotDetails lotDetails : germplasmListData.getInventoryInfo().getLotRows()) {
+						if (ListDataInventory.RESERVED.equalsIgnoreCase(lotDetails.getWithdrawalStatus())) {
+							hasAnyReservation = true;
+							break;
+						}
+					}
+				}
+			}
+		} else {
+			hasAnyReservation = false;
+		}
+
+		return hasAnyReservation;
 	}
 
 }
