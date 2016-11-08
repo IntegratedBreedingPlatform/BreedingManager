@@ -12,6 +12,7 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
@@ -207,7 +208,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 						ListBuilderComponent.this.cancelReservationsAction();
 					} else if (clickedItem.getName()
 							.equals(ListBuilderComponent.this.messageSource.getMessage(Message.SAVE_RESERVATIONS))) {
-						ListBuilderComponent.this.saveReservationChangesAction();
+						ListBuilderComponent.this.saveReservationsAction();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESET_LIST))) {
 						ListBuilderComponent.this.resetButton.click();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SAVE_LIST))) {
@@ -1574,6 +1575,26 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		}
 	}
 
+	public void  saveReservationsAction(){
+		saveReservationsAction(new ReserveInventoryAction(this));
+	}
+
+	public void saveReservationsAction(ReserveInventoryAction reserveInventoryAction) {
+		if (this.hasUnsavedChanges()) {
+
+			    final boolean success = reserveInventoryAction.saveReserveTransactions(this.getValidReservationsToSave(), this
+						.currentlySavedGermplasmList.getId());
+
+			if(success){
+				this.refreshInventoryColumns(this.getValidReservationsToSave());
+				this.resetListInventoryTableValues();
+				MessageNotifier.showMessage(this.source.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
+						this.messageSource.getMessage(Message.SAVE_RESERVED_AND_CANCELLED_RESERVATION));
+			}
+
+		}
+	}
+
 	public void cancelReservationsAction() {
 		final List<ListEntryLotDetails> lotDetailsGid = this.listInventoryTable.getSelectedLots();
 
@@ -1675,15 +1696,21 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 			this.updateAvailInvValues(Integer.valueOf(gidString), availInv);
 
-			// Seed Reserved
+			// WITHDRAWAL
+			StringBuilder withdrawal = new StringBuilder();
+			if (listData.getInventoryInfo().getDistinctCountWithdrawalScale() == null
+					|| listData.getInventoryInfo().getDistinctCountWithdrawalScale() == 0) {
+				withdrawal.append("");
+			} else if (listData.getInventoryInfo().getDistinctCountWithdrawalScale() == 1) {
+				withdrawal.append(listData.getInventoryInfo().getWithdrawalBalance());
+				withdrawal.append(" ");
 
-			// default value
-			String seedRes = "-";
-			if (listData.getInventoryInfo().getReservedLotCount().intValue() != 0) {
-				seedRes = listData.getInventoryInfo().getReservedLotCount().toString().trim();
+				if (!StringUtils.isEmpty(listData.getInventoryInfo().getWithdrawalScale())) {
+					withdrawal.append(listData.getInventoryInfo().getWithdrawalScale());
+				}
+
 			}
-
-			item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
+			item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(withdrawal.toString());
 		}
 	}
 
@@ -1924,4 +1951,75 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.menuSaveReserveInventory.setEnabled(true);
 	}
 
+	public void setInventoryDataManager(InventoryDataManager inventoryDataManager) {
+		this.inventoryDataManager = inventoryDataManager;
+	}
+
+	public void setContextUtil(ContextUtil contextUtil) {
+		this.contextUtil = contextUtil;
+	}
+
+	public void setBreedingManagerListDetailsComponent(BreedingManagerListDetailsComponent breedingManagerListDetailsComponent) {
+		this.breedingManagerListDetailsComponent = breedingManagerListDetailsComponent;
+	}
+
+	public void setEditHeaderButton(Button editHeaderButton) {
+		this.editHeaderButton = editHeaderButton;
+	}
+
+	public void setViewHeaderButton(Button viewHeaderButton) {
+		this.viewHeaderButton = viewHeaderButton;
+	}
+
+	public void setLockButton(Button lockButton) {
+		this.lockButton = lockButton;
+	}
+
+	public void setDropHandler(BuildNewListDropHandler dropHandler) {
+		this.dropHandler = dropHandler;
+	}
+
+	public void setUnlockButton(Button unlockButton) {
+		this.unlockButton = unlockButton;
+	}
+
+	public void setFillWith(FillWith fillWith) {
+		this.fillWith = fillWith;
+	}
+
+	public void setMenuDeleteSelectedEntries(ContextMenuItem menuDeleteSelectedEntries) {
+		this.menuDeleteSelectedEntries = menuDeleteSelectedEntries;
+	}
+
+	public void setAddColumnContextMenu(AddColumnContextMenu addColumnContextMenu) {
+		this.addColumnContextMenu = addColumnContextMenu;
+	}
+
+	public void setMenuCopyToListFromInventory(ContextMenuItem menuCopyToListFromInventory) {
+		this.menuCopyToListFromInventory = menuCopyToListFromInventory;
+	}
+
+	public void setMenuReserveInventory(ContextMenuItem menuReserveInventory) {
+		this.menuReserveInventory = menuReserveInventory;
+	}
+
+	public void setListInventoryTable(ListManagerInventoryTable listInventoryTable) {
+		this.listInventoryTable = listInventoryTable;
+	}
+
+	public void setMenuSaveReserveInventory(ContextMenuItem menuSaveReserveInventory) {
+		this.menuSaveReserveInventory = menuSaveReserveInventory;
+	}
+
+	public void setReserveInventoryAction(ReserveInventoryAction reserveInventoryAction) {
+		this.reserveInventoryAction = reserveInventoryAction;
+	}
+
+	public void setValidReservationsToSave(Map<ListEntryLotDetails, Double> validReservationsToSave) {
+		this.validReservationsToSave = validReservationsToSave;
+	}
+
+	public ReserveInventoryAction getReserveInventoryAction() {
+		return reserveInventoryAction;
+	}
 }

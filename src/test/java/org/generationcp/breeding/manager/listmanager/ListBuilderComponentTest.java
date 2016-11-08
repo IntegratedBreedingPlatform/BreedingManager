@@ -7,12 +7,25 @@ import java.util.Collection;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
+import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
 import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
+import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
+import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
+import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
+import org.generationcp.breeding.manager.listmanager.util.FillWith;
+import org.generationcp.breeding.manager.listmanager.util.InventoryTableDropHandler;
 import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
+import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
+import org.generationcp.middleware.manager.api.UserDataManager;
+import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.User;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,8 +36,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.exceptions.verification.WantedButNotInvoked;
 import org.mockito.runners.MockitoJUnitRunner;
-
+import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 import com.vaadin.data.Container;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
@@ -61,6 +75,50 @@ public class ListBuilderComponentTest {
 
 	@InjectMocks
 	private ListBuilderComponent listBuilderComponent;
+
+	@Mock
+	private ListManagerMain listManagerMain;
+
+	@Mock
+	private BreedingManagerListDetailsComponent breedingManagerListDetailsComponent;
+
+	@Mock
+	private BuildNewListDropHandler dropHandler;
+
+	@Mock
+	private ListManagerInventoryTable listInventoryTable;
+
+	@Mock
+	private UserDataManager userDataManager;
+
+	@Mock
+	private ReserveInventoryAction reserveInventoryAction;
+
+	@Mock
+	private InventoryTableDropHandler inventoryTableDropHandler;
+
+	@Mock
+	private InventoryDataManager inventoryDataManager;
+
+	@Mock
+	private Button button;
+
+	@Mock
+	private GermplasmList currentlySavedGermplasmList;
+
+	private ImportedGermplasmListDataInitializer importedGermplasmListInitializer;
+
+	@Mock
+	private ContextMenuItem menuDeleteSelectedEntries;
+
+	@Mock
+	private AddColumnContextMenu addColumnContextMenu;
+
+	@Mock
+	private FillWith fillWith;
+
+	private static final Integer TEST_GERMPLASM_LIST_ID = 111;
+	private static final Integer TEST_GERMPLASM_NO_OF_ENTRIES = 5;
 
 	@Before
 	public void setUp() {
@@ -161,5 +219,80 @@ public class ListBuilderComponentTest {
 		} catch (final WantedButNotInvoked e) {
 			Assert.fail("Expecting to show 'no selected germplasm entry' error but didn't.");
 		}
+	}
+
+	@Test
+	public void testSaveReservationsAction(){
+		this.setUpCurrentlySavedGermplasmList();
+		final ListManagerMain source = Mockito.mock(ListManagerMain.class);
+		Mockito.when(source.getWindow()).thenReturn(new Window());
+		this.listBuilderComponent.setSource(source);
+
+		this.listBuilderComponent.setHasUnsavedChanges(true);
+
+		this.importedGermplasmListInitializer = new ImportedGermplasmListDataInitializer();
+		this.listBuilderComponent.setValidReservationsToSave(this.importedGermplasmListInitializer.createReservations(2));
+
+		this.listBuilderComponent.setBreedingManagerListDetailsComponent(breedingManagerListDetailsComponent);
+		this.listBuilderComponent.setDropHandler(dropHandler);
+	    this.listBuilderComponent.setListInventoryTable(listInventoryTable);
+
+		this.listBuilderComponent.setReserveInventoryAction(new ReserveInventoryAction(this.listBuilderComponent));
+		this.listBuilderComponent.setInventoryDataManager(inventoryDataManager);
+		this.listBuilderComponent.setMenuSaveReserveInventory(menuDeleteSelectedEntries);
+		this.listBuilderComponent.setMenuCopyToListFromInventory(menuDeleteSelectedEntries);
+		this.listBuilderComponent.setMenuReserveInventory(menuDeleteSelectedEntries);
+
+		final ContextUtil contextUtil = Mockito.mock(ContextUtil.class);
+		this.listBuilderComponent.getReserveInventoryAction().setContextUtil(contextUtil);
+		this.listBuilderComponent.getReserveInventoryAction().setUserDataManager(this.userDataManager);
+		this.listBuilderComponent.getReserveInventoryAction().setInventoryDataManager(this.inventoryDataManager);
+		final User user = new User();
+		user.setUserid(12);
+		user.setPersonid(123);
+		Mockito.doReturn(user).when(this.userDataManager).getUserById(Matchers.anyInt());
+		Mockito.when(contextUtil.getCurrentUserLocalId()).thenReturn(1);
+
+		Mockito.when(this.listBuilderComponent.getListInventoryTable().getInventoryTableDropHandler()).thenReturn
+				(inventoryTableDropHandler);
+		this.listBuilderComponent.saveReservationsAction(this.listBuilderComponent.getReserveInventoryAction());
+
+		Assert.assertEquals("Expecting Valid reservation to save should have size 0 ", 0,this.listBuilderComponent.getValidReservationsToSave().size());
+		Mockito.verify(this.messageSource).getMessage(Message.SAVE_RESERVED_AND_CANCELLED_RESERVATION);
+
+	}
+
+	private void setUpCurrentlySavedGermplasmList() {
+		this.currentlySavedGermplasmList =
+				GermplasmListTestDataInitializer.createGermplasmListWithListData(TEST_GERMPLASM_LIST_ID, TEST_GERMPLASM_NO_OF_ENTRIES);
+		this.currentlySavedGermplasmList.setStatus(1);
+		final ContextUtil contextUtil = Mockito.mock(ContextUtil.class);
+		this.listBuilderComponent.setContextUtil(contextUtil);
+		this.listBuilderComponent.setUnlockButton(button);
+		this.listBuilderComponent.setLockButton(button);
+		this.listBuilderComponent.setTableWithSelectAllLayout(this.tableWithSelectAllLayout);
+		final Collection<? extends Integer> selectedItems = Arrays.asList(new Integer[] {1});
+		Mockito.when(this.breedingManagerTable.getValue()).thenReturn(selectedItems);
+
+		final Table listDataTable = Mockito.mock(Table.class);
+		listDataTable.addItem(1);
+		listDataTable.addItem(2);
+		Mockito.when(listDataTable.getValue()).thenReturn(selectedItems);
+		this.listBuilderComponent.setListDataTable(listDataTable);
+
+
+
+		Mockito.when(this.tableWithSelectAllLayout.getTable()).thenReturn(this.breedingManagerTable);
+		this.listBuilderComponent.setDropHandler(dropHandler);
+
+		this.listBuilderComponent.setMenuDeleteSelectedEntries(menuDeleteSelectedEntries);
+		this.listBuilderComponent.setAddColumnContextMenu(addColumnContextMenu);
+		this.listBuilderComponent.setEditHeaderButton(button);
+		this.listBuilderComponent.setViewHeaderButton(button);
+		this.listBuilderComponent.setSaveButton(button);
+		this.listBuilderComponent.setFillWith(fillWith);
+
+		this.listBuilderComponent.setCurrentlySavedGermplasmList(this.currentlySavedGermplasmList);
+
 	}
 }
