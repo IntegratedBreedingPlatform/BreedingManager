@@ -980,7 +980,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 			if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.SAVE_RESERVATIONS))) {
 
-				synchronized (ListComponent.class) {
+				synchronized (ReserveInventoryAction.class) {
 					final TransactionTemplate transactionTemplateForSavingReservation =
 							new TransactionTemplate(ListComponent.this.transactionManager);
 
