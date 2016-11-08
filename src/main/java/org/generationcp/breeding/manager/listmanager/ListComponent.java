@@ -1053,7 +1053,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		}
 	}
 
-	private void createLabelsAction() {
+	protected void createLabelsAction() {
 		final Integer listId = this.germplasmList.getId();
 
 		if (listId != null) {

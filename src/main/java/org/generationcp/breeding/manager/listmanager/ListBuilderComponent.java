@@ -221,7 +221,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		}
 	}
 
-	private void createLabelsAction() {
+	protected void createLabelsAction() {
 		final Integer listId = this.currentlySavedGermplasmList.getId();
 
 		if (listId != null) {

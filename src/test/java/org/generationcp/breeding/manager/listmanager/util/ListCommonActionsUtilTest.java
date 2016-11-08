@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
+import org.generationcp.middleware.data.initializer.InventoryDetailsTestDataInitializer;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -163,5 +164,23 @@ public class ListCommonActionsUtilTest {
 		ListCommonActionsUtil.deleteExistingListEntries(listId, this.dataManager);
 
 		Mockito.verify(this.dataManager, Mockito.times(1)).deleteGermplasmListDataByListId(listId);
+	}
+
+	@Test
+	public void testHasReservationForAnyListEntriesReturnsTrue() {
+		List<GermplasmListData> germplasmListData = InventoryDetailsTestDataInitializer.createGermplasmListDataForReservedEntries();
+		germplasmListData.get(0).getInventoryInfo().getLotRows().get(0).setWithdrawalStatus("Reserved");
+
+		boolean hasAnyReservation = ListCommonActionsUtil.hasReservationForAnyListEntries(germplasmListData);
+		Assert.assertTrue(hasAnyReservation);
+	}
+
+	@Test
+	public void testHasReservationForAnyListEntriesReturnsFalse() {
+		List<GermplasmListData> germplasmListData = InventoryDetailsTestDataInitializer.createGermplasmListDataForReservedEntries();
+		germplasmListData.get(0).getInventoryInfo().getLotRows().get(0).setWithdrawalStatus("Committed");
+
+		boolean hasAnyReservation = ListCommonActionsUtil.hasReservationForAnyListEntries(germplasmListData);
+		Assert.assertFalse(hasAnyReservation);
 	}
 }
