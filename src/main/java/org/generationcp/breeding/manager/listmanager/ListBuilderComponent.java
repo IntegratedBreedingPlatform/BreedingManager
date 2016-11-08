@@ -180,48 +180,63 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 
 
-	private final class InventoryViewMenuClickListener implements ContextMenu.ClickListener {
+	protected final class InventoryViewMenuClickListener implements ContextMenu.ClickListener {
 
 		private static final long serialVersionUID = -2343109406180457070L;
 
 		@Override
 		public void contextItemClick(final ClickEvent event) {
-			final TransactionTemplate transactionTemplate = new TransactionTemplate(ListBuilderComponent.this.transactionManager);
-			transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+			final ContextMenuItem clickedItem = event.getClickedItem();
 
-				@Override
-				protected void doInTransactionWithoutResult(final TransactionStatus status) {
-					// Get reference to clicked item
-					final ContextMenuItem clickedItem = event.getClickedItem();
-					if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
-						ListBuilderComponent.this.viewListAction();
-					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {
-						ListBuilderComponent.this.copyToNewListFromInventoryViewAction();
-					} else if (clickedItem.getName()
-							.equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
-						ListBuilderComponent.this.reserveInventoryAction();
-					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
-						ListBuilderComponent.this.listInventoryTable.getTable()
-								.setValue(ListBuilderComponent.this.listInventoryTable.getTable().getItemIds());
-					} else if (clickedItem.getName()
-							.equals(ListBuilderComponent.this.messageSource.getMessage(Message.CANCEL_RESERVATIONS))) {
-						ListBuilderComponent.this.cancelReservationsAction();
-					} else if (clickedItem.getName()
-							.equals(ListBuilderComponent.this.messageSource.getMessage(Message.SAVE_RESERVATIONS))) {
-						ListBuilderComponent.this.saveReservationsAction();
-					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESET_LIST))) {
-						ListBuilderComponent.this.resetButton.click();
-					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SAVE_LIST))) {
-						ListBuilderComponent.this.saveButton.click();
-					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.EXPORT_SEED_LIST))) {
-						ListBuilderComponent.this.exportSeedPreparationList();
-					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.IMPORT_SEED_LIST))) {
-						ListBuilderComponent.this.openImportSeedPreparationDialog();
-					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.PRINT_LABELS))) {
-						ListBuilderComponent.this.createLabelsAction();
-					}
+			if(clickedItem.getName()
+					.equals(ListBuilderComponent.this.messageSource.getMessage(Message.SAVE_RESERVATIONS))){
+				synchronized (ReserveInventoryAction.class){
+					final TransactionTemplate transactionTemplateForSavingReservation = new TransactionTemplate(ListBuilderComponent.this
+							.transactionManager);
+					transactionTemplateForSavingReservation.execute(new TransactionCallbackWithoutResult() {
+
+						@Override
+						protected void doInTransactionWithoutResult(final TransactionStatus status) {
+							ListBuilderComponent.this.saveReservationsAction();
+						}
+					});
 				}
-			});
+
+			} else {
+				final TransactionTemplate transactionTemplate = new TransactionTemplate(ListBuilderComponent.this.transactionManager);
+				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+					@Override
+					protected void doInTransactionWithoutResult(final TransactionStatus status) {
+						// Get reference to clicked item
+
+						if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
+							ListBuilderComponent.this.viewListAction();
+						} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {
+							ListBuilderComponent.this.copyToNewListFromInventoryViewAction();
+						} else if (clickedItem.getName()
+								.equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
+							ListBuilderComponent.this.reserveInventoryAction();
+						} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
+							ListBuilderComponent.this.listInventoryTable.getTable()
+									.setValue(ListBuilderComponent.this.listInventoryTable.getTable().getItemIds());
+						} else if (clickedItem.getName()
+								.equals(ListBuilderComponent.this.messageSource.getMessage(Message.CANCEL_RESERVATIONS))) {
+							ListBuilderComponent.this.cancelReservationsAction();
+						}  else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESET_LIST))) {
+							ListBuilderComponent.this.resetButton.click();
+						} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SAVE_LIST))) {
+							ListBuilderComponent.this.saveButton.click();
+						} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.EXPORT_SEED_LIST))) {
+							ListBuilderComponent.this.exportSeedPreparationList();
+						} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.IMPORT_SEED_LIST))) {
+							ListBuilderComponent.this.openImportSeedPreparationDialog();
+						} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.PRINT_LABELS))) {
+							ListBuilderComponent.this.createLabelsAction();
+						}
+					}
+				});
+			}
 
 		}
 	}
@@ -410,10 +425,11 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	public ListBuilderComponent() {
 		super();
+		this.reserveInventoryAction =  new ReserveInventoryAction(this);
 	}
 
 	public ListBuilderComponent(final ListManagerMain source) {
-		super();
+		this();
 		this.source = source;
 		this.currentlySavedGermplasmList = null;
 		this.currentlySetGermplasmInfo = null;
@@ -1563,7 +1579,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 			this.listInventoryTable.getInventoryTableDropHandler().resetListDataAndLotDetails();
 
-			this.reserveInventoryAction = new ReserveInventoryAction(this);
+
 
 			final boolean success = this.reserveInventoryAction
 					.saveReserveTransactions(this.getValidReservationsToSave(), this.currentlySavedGermplasmList.getId());
@@ -1575,11 +1591,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		}
 	}
 
-	public void  saveReservationsAction(){
-		saveReservationsAction(new ReserveInventoryAction(this));
-	}
 
-	public void saveReservationsAction(ReserveInventoryAction reserveInventoryAction) {
+	public void saveReservationsAction() {
 		if (this.hasUnsavedChanges()) {
 
 			    final boolean success = reserveInventoryAction.saveReserveTransactions(this.getValidReservationsToSave(), this
@@ -1625,7 +1638,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	public void cancelReservations() {
 		final List<ListEntryLotDetails> lotDetailsGid = this.listInventoryTable.getSelectedLots();
-		this.reserveInventoryAction = new ReserveInventoryAction(this);
 		try {
 			this.reserveInventoryAction.cancelReservations(lotDetailsGid);
 		} catch (final MiddlewareQueryException e) {
@@ -2021,5 +2033,13 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	public ReserveInventoryAction getReserveInventoryAction() {
 		return reserveInventoryAction;
+	}
+
+	public PlatformTransactionManager getTransactionManager() {
+		return transactionManager;
+	}
+
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
 	}
 }
