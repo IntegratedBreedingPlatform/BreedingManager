@@ -980,6 +980,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 			if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.SAVE_RESERVATIONS))) {
 
+				/*
+				* Save reservation needs to be synchronized on ReserveInventoryAction lock object.
+				* This will ensure that only one instance of ReserveInventoryAction can get into save reservation action.
+				* Save reservation is called from List component and List Builder component as well. Both class will create separate
+				* instance ReserveInventoryAction so we need to synchronized on  ReserveInventoryAction lock object.
+				*/
 				synchronized (ReserveInventoryAction.class) {
 					final TransactionTemplate transactionTemplateForSavingReservation =
 							new TransactionTemplate(ListComponent.this.transactionManager);

@@ -49,6 +49,8 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow implements In
 	private VerticalLayout mainLayout;
 	private Component source;
 
+	public final static int COMMITTED_STATUS = 1;
+
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
@@ -191,6 +193,10 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow implements In
 
 			@Override
 			public void buttonClick(final Button.ClickEvent event) {
+				/*
+				* Synchronizing on SeedInventoryImportStatusWindow will only allow one instance of it to do importing.
+				* This way concurrent users can not commit same transaction again with different quantity.
+				*/
 				synchronized (SeedInventoryImportStatusWindow.class) {
 					SeedInventoryImportStatusWindow.this.continueAction();
 				}
@@ -234,7 +240,7 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow implements In
 		List<Transaction> importedTransactions = inventoryDataManager.getTransactionsByIdList(transactionIdList);
 
 		for (Transaction transaction : importedTransactions) {
-			if (transaction.getStatus() == 1) {
+			if (transaction.getStatus() == COMMITTED_STATUS) {
 				return true;
 			}
 		}
