@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -422,6 +423,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	private ReserveInventoryUtil reserveInventoryUtil;
 	private ReserveInventoryAction reserveInventoryAction;
 	private Map<ListEntryLotDetails, Double> validReservationsToSave;
+	private List<ListEntryLotDetails> persistedReservationToCancel;
 
 	public ListBuilderComponent() {
 		super();
@@ -1597,7 +1599,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 			    final boolean success = reserveInventoryAction.saveReserveTransactions(this.getValidReservationsToSave(), this
 						.currentlySavedGermplasmList.getId());
-
+			this.cancelReservations();
 			if(success){
 				this.refreshInventoryColumns(this.getValidReservationsToSave());
 				this.resetListInventoryTableValues();
@@ -1628,7 +1630,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 							@Override
 							public void onClose(final ConfirmDialog dialog) {
 								if (dialog.isConfirmed()) {
-									ListBuilderComponent.this.cancelReservations();
+									ListBuilderComponent.this.userSelectedLotEntriesToCancelReservations();
 								}
 							}
 						});
@@ -1636,19 +1638,65 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		}
 	}
 
-	public void cancelReservations() {
-		final List<ListEntryLotDetails> lotDetailsGid = this.listInventoryTable.getSelectedLots();
-		try {
-			this.reserveInventoryAction.cancelReservations(lotDetailsGid);
-		} catch (final MiddlewareQueryException e) {
-			ListBuilderComponent.LOG.error(e.getMessage(), e);
+	public void userSelectedLotEntriesToCancelReservations() {
+
+		final List<ListEntryLotDetails> userSelectedLotEntriesToCancel = this.listInventoryTable.getSelectedLots();
+
+		Iterator<ListEntryLotDetails> userSelectedLotEntriesToCancelIterator = userSelectedLotEntriesToCancel.iterator();
+
+		int validReservation = this.validReservationsToSave.size();
+
+		//this will keep track of how many reservations needs to be cancelled and how many reservations needs to be undo
+		while (userSelectedLotEntriesToCancelIterator.hasNext()) {
+
+			ListEntryLotDetails userSelectedLot = userSelectedLotEntriesToCancelIterator.next();
+			final Map<ListEntryLotDetails, Double> validReservations = this.getValidReservationsToSave();
+
+
+			if (validReservations.size() > 0) {
+				Iterator<Map.Entry<ListEntryLotDetails, Double>> validReservationEntriesIterator = validReservations.entrySet().iterator();
+				while (validReservationEntriesIterator.hasNext()) {
+					Map.Entry<ListEntryLotDetails, Double> validReservationEntry = validReservationEntriesIterator.next();
+					ListEntryLotDetails validReservationLotDetail = validReservationEntry.getKey();
+
+					if (validReservationLotDetail.getLotId().equals(userSelectedLot.getLotId())) {
+						validReservationEntriesIterator.remove();
+						userSelectedLotEntriesToCancelIterator.remove();
+						break;
+					}
+				}
+				this.validReservationsToSave = validReservations;
+			}
+		}
+		//validReservationsToCancel holds the actual lot entries that needs to be canceled which is already there in database
+		this.persistedReservationToCancel = userSelectedLotEntriesToCancel;
+
+		//enables the save reservation option if there is actual lot that needs to be cancel which is already there in database
+		if (this.persistedReservationToCancel.size() > 0) {
+			this.setMenuInventorySaveChanges();
+			this.setHasUnsavedChanges(true);
 		}
 
-		this.refreshInventoryColumns(this.getLrecIds(lotDetailsGid));
-		this.listInventoryTable.resetRowsForCancelledReservation(lotDetailsGid, this.currentlySavedGermplasmList.getId());
+		if (validReservation != this.validReservationsToSave.size()) {
+			this.listInventoryTable.resetRowsForCancelledReservation(this.listInventoryTable.getSelectedLots(), this.currentlySavedGermplasmList.getId());
+			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
+					this.messageSource.getMessage(Message.UNSAVED_RESERVARTION_CANCELLED));
+		}
 
-		MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
-				"All selected reservations were cancelled successfully.");
+	}
+
+
+
+
+
+
+	public void cancelReservations() {
+
+		if (this.persistedReservationToCancel != null && this.persistedReservationToCancel.size() > 0) {
+			this.reserveInventoryAction.cancelReservations(this.persistedReservationToCancel);
+			//reset the reservation to cancel.
+			this.persistedReservationToCancel.clear();
+		}
 	}
 
 	private Set<Integer> getLrecIds(final List<ListEntryLotDetails> lotDetails) {
