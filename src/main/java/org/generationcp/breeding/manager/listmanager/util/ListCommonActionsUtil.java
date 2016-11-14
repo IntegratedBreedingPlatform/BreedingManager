@@ -17,12 +17,14 @@ import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.LotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
+import com.vaadin.Application;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Table;
@@ -381,6 +383,35 @@ public class ListCommonActionsUtil {
 		}
 
 		return hasAnyReservation;
+	}
+
+	public static void handleCreateLabelsAction(final Integer listId, InventoryDataManager inventoryDataManager,
+			SimpleResourceBundleMessageSource messageSource, ContextUtil contextUtil, Application application, Window window) {
+		if (listId != null) {
+			final List<GermplasmListData> germplasmListDatas = inventoryDataManager.getLotDetailsForList(listId, 0, Integer.MAX_VALUE);
+
+			if (!ListCommonActionsUtil.hasReservationForAnyListEntries(germplasmListDatas)) {
+				MessageNotifier.showError(window, messageSource.getMessage(Message.PRINT_LABELS),
+						messageSource.getMessage(Message.ERROR_COULD_NOT_CREATE_LABELS_WITHOUT_RESERVATION));
+				return;
+			}
+
+			// Navigate to labels printing
+			// we use this workaround using javascript for navigation, because Vaadin 6 doesn't have good ways
+			// of navigating in and out of the Vaadin application
+			final String urlRedirectionScript =
+					"window.location = '" + application.getURL().getProtocol() + "://" + application.getURL().getHost() + ":"
+							+ application.getURL().getPort() + "/Fieldbook/LabelPrinting/specifyLabelDetails/inventory/" + listId
+							+ "?restartApplication&loggedInUserId=" + contextUtil.getContextInfoFromSession().getLoggedInUserId()
+							+ "&selectedProjectId=" + contextUtil.getContextInfoFromSession().getSelectedProjectId() + "&authToken="
+							+ contextUtil.getContextInfoFromSession().getAuthToken() + "';";
+
+			application.getMainWindow().executeJavaScript(urlRedirectionScript);
+
+		} else {
+			MessageNotifier.showError(window, messageSource.getMessage(Message.PRINT_LABELS),
+					messageSource.getMessage(Message.ERROR_COULD_NOT_CREATE_LABELS));
+		}
 	}
 
 }
