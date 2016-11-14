@@ -7,6 +7,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
@@ -15,6 +19,7 @@ import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayou
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
+import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
 import org.generationcp.breeding.manager.inventory.SeedInventoryListExporter;
 import org.generationcp.breeding.manager.inventory.exception.SeedInventoryExportException;
 import org.generationcp.breeding.manager.listmanager.dialog.AssignCodesDialog;
@@ -39,6 +44,7 @@ import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
@@ -52,6 +58,8 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.vaadin.peter.contextmenu.ContextMenu;
 
 import com.vaadin.data.Item;
 import com.vaadin.ui.Button;
@@ -141,6 +149,9 @@ public class ListComponentTest {
 
 	@Mock
 	public ListManagerInventoryTable listManagerInventoryTable;
+
+	@Mock
+	private PlatformTransactionManager transactionManager;
 
 	@Mock
 	private UserDataManager userDataManager;
@@ -357,7 +368,7 @@ public class ListComponentTest {
 	}
 
 	@Test
-	public void testSaveReservationChangesAction(){
+	public void testSaveReservationChangesAction() {
 
 		this.initializeTableWithTestData();
 		List<ListEntryLotDetails> lotDetailsGid = ListInventoryDataInitializer.createLotDetails(1);
@@ -376,11 +387,18 @@ public class ListComponentTest {
 		user.setPersonid(123);
 		Mockito.doReturn(user).when(this.userDataManager).getUserById(Matchers.anyInt());
 		Mockito.when(this.contextUtil.getCurrentUserLocalId()).thenReturn(1);
+
+		List<GermplasmListData> germplasmListData = ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails();
+
+		Mockito.when(this.inventoryDataManager.getLotCountsForListEntries(Mockito.isA(Integer.class), Mockito.isA(List.class)))
+				.thenReturn(germplasmListData);
+
 		this.listComponent.saveReservationChangesAction(this.window);
 
-		Assert.assertEquals("Expecting Valid reservation to save should have size 0 ", 0,this.listComponent.getValidReservationsToSave().size());
-		Assert.assertEquals("Expecting Cancel reservation should have size 0 ", 0,this.listComponent.getValidReservationsToCancel().size());
-
+		Assert.assertEquals("Expecting Valid reservation to save should have size 0 ", 0,
+				this.listComponent.getValidReservationsToSave().size());
+		Assert.assertEquals("Expecting Cancel reservation should have size 0 ", 0,
+				this.listComponent.getValidReservationsToCancel().size());
 
 	}
 
@@ -667,6 +685,57 @@ public class ListComponentTest {
 		this.listComponent.exportSeedPreparationList(exporterMock);
 		Mockito.verify(this.messageSource, Mockito.never()).getMessage(Message.UNSAVED_RESERVATION_WARNING);
 		Mockito.verify(exporterMock).exportSeedPreparationList();
+	}
+
+	@Test
+	public void testSaveReservationContextItemClickWithConcurrentUsersFailToSave() throws Exception {
+		final ListComponent.InventoryViewMenuClickListner inner = this.listComponent.new InventoryViewMenuClickListner();
+		final ContextMenu.ClickEvent clickEventMock = Mockito.mock(ContextMenu.ClickEvent.class);
+		final ReserveInventoryAction reserveInventoryAction = Mockito.mock(ReserveInventoryAction.class);
+
+		ContextMenu.ContextMenuItem contextMenuItem = Mockito.mock(ContextMenu.ContextMenuItem.class);
+		Mockito.when(contextMenuItem.getName()).thenReturn("Save Changes");
+
+		Mockito.when(clickEventMock.getClickedItem()).thenReturn(contextMenuItem);
+
+		Mockito.when(messageSource.getMessage(Message.SAVE_RESERVATIONS)).thenReturn("Save Changes");
+
+		int threads = 2;
+
+		this.listComponent.setHasUnsavedChanges(true);
+
+		this.listComponent.setReserveInventoryAction(reserveInventoryAction);
+
+		ExecutorService threadPool = Executors.newFixedThreadPool(threads);
+
+		final Map<ListEntryLotDetails, Double> unsavedReservations = new HashMap<>();
+		unsavedReservations.put(new ListEntryLotDetails(), new Double(10));
+		Mockito.when(reserveInventoryAction.saveReserveTransactions(Mockito.anyMap(), Mockito.anyInt())).thenReturn(false);
+
+		Future<Void> threadOne = threadPool.submit(new Callable<Void>() {
+
+			@Override
+			public Void call() {
+				inner.contextItemClick(clickEventMock);
+				return null;
+			}
+		});
+
+		Future<Void> threadTwo = threadPool.submit(new Callable<Void>() {
+
+			@Override
+			public Void call() {
+				inner.contextItemClick(clickEventMock);
+				return null;
+			}
+		});
+
+		threadPool.shutdown();
+		while (!threadPool.isTerminated()) {
+		}
+		Mockito.verify(this.messageSource, Mockito.times(2)).getMessage(Message.SAVE_RESERVATIONS);
+		Mockito.verify(this.messageSource, Mockito.times(2)).getMessage(Message.INVENTORY_NOT_AVAILABLE_BALANCE);
+		Mockito.verify(this.messageSource, Mockito.never()).getMessage(Message.SAVE_RESERVED_AND_CANCELLED_RESERVATION);
 	}
 
 	private Project createProject() {
