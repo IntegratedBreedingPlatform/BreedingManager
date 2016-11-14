@@ -188,8 +188,13 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		public void contextItemClick(final ClickEvent event) {
 			final ContextMenuItem clickedItem = event.getClickedItem();
 
-			if(clickedItem.getName()
-					.equals(ListBuilderComponent.this.messageSource.getMessage(Message.SAVE_RESERVATIONS))){
+			if(clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SAVE_RESERVATIONS))){
+
+				/*
+				* Save reservation needs to be synchronized on ListBuilderComponent lock object.
+				* This will ensure lock will apply to all instances of ListBuilderComponent invoking save reservation.
+				*/
+
 				synchronized (ListBuilderComponent.class){
 					final TransactionTemplate transactionTemplateForSavingReservation = new TransactionTemplate(ListBuilderComponent.this
 							.transactionManager);
