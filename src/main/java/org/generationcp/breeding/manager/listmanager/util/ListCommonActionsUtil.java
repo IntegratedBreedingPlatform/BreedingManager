@@ -378,8 +378,6 @@ public class ListCommonActionsUtil {
 					}
 				}
 			}
-		} else {
-			hasAnyReservation = false;
 		}
 
 		return hasAnyReservation;
