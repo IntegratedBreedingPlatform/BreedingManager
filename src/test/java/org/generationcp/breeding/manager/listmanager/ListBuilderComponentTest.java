@@ -4,6 +4,7 @@ package org.generationcp.breeding.manager.listmanager;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -25,6 +26,7 @@ import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
+import org.generationcp.middleware.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
@@ -32,6 +34,7 @@ import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.User;
 import org.junit.Assert;
 import org.junit.Before;
@@ -47,10 +50,14 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 import com.vaadin.data.Container;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
+
+import com.beust.jcommander.internal.Lists;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ListBuilderComponentTest {
@@ -69,6 +76,7 @@ public class ListBuilderComponentTest {
 	private static String DELETE_SELECTED_ENTRIES_CONFIRM = "Delete selected germplasm entries?";
 	private static String YES = "YES";
 	private static String NO = "NO";
+	private static String CAPTION = "2";
 
 	@Mock
 	private OntologyDataManager ontologyDataManager;
@@ -128,6 +136,9 @@ public class ListBuilderComponentTest {
 
 	@Mock
 	private FillWith fillWith;
+
+	@Mock
+	private Item item;
 
 	private static final Integer TEST_GERMPLASM_LIST_ID = 111;
 	private static final Integer TEST_GERMPLASM_NO_OF_ENTRIES = 5;
@@ -235,11 +246,22 @@ public class ListBuilderComponentTest {
 	}
 
 	@Test
+	public void testSaveReservationsWithNotEnoughAvailableBalance(){
+		this.setUpCurrentlySavedGermplasmList();
+		final ReserveInventoryAction reserveInventoryAction = Mockito.mock(ReserveInventoryAction.class);
+		this.listBuilderComponent.setReserveInventoryAction(reserveInventoryAction);
+		Mockito.when(reserveInventoryAction.saveReserveTransactions(Mockito.anyMap(), Mockito.anyInt())).thenReturn(false);
+		this.listBuilderComponent.saveReservationsAction();
+		Mockito.verify(this.messageSource).getMessage(Message.INVENTORY_NOT_AVAILABLE_BALANCE);
+	}
+
+
+	@Test
 	public void testSaveReservationsAction(){
 		this.setUpCurrentlySavedGermplasmList();
 
 		this.importedGermplasmListInitializer = new ImportedGermplasmListDataInitializer();
-		this.listBuilderComponent.setValidReservationsToSave(this.importedGermplasmListInitializer.createReservations(2));
+		this.listBuilderComponent.setValidReservationsToSave(this.importedGermplasmListInitializer.createReservations(1));
 
 		this.listBuilderComponent.setReserveInventoryAction(new ReserveInventoryAction(this.listBuilderComponent));
 
@@ -253,11 +275,18 @@ public class ListBuilderComponentTest {
 		Mockito.doReturn(user).when(this.userDataManager).getUserById(Matchers.anyInt());
 		Mockito.when(contextUtil.getCurrentUserLocalId()).thenReturn(1);
 
+		List<GermplasmListData> germplasmListData = Lists.newArrayList(ListInventoryDataInitializer.createGermplasmListData(1));
+
+		Mockito.when(this.inventoryDataManager.getLotCountsForListEntries(Mockito.isA(Integer.class), Mockito.isA(List.class)))
+				.thenReturn(germplasmListData);
+
 
 		this.listBuilderComponent.saveReservationsAction();
 
 		Assert.assertEquals("Expecting Valid reservation to save should have size 0 ", 0,this.listBuilderComponent.getValidReservationsToSave().size());
 		Mockito.verify(this.messageSource).getMessage(Message.SAVE_RESERVED_AND_CANCELLED_RESERVATION);
+		Mockito.verify(this.item, Mockito.times(1)).getItemProperty(ColumnLabels.SEED_RESERVATION.getName());
+		Mockito.verify(this.item, Mockito.times(1)).getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName());
 
 	}
 
@@ -278,6 +307,14 @@ public class ListBuilderComponentTest {
 		listDataTable.addItem(2);
 		Mockito.when(listDataTable.getValue()).thenReturn(selectedItems);
 		this.listBuilderComponent.setListDataTable(listDataTable);
+
+		Mockito.when(this.listBuilderComponent.getListDataTable().getItem(Mockito.anyInt())).thenReturn(this.item);
+		Property property = Mockito.mock(Property.class);
+		Mockito.when(this.item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName())).thenReturn(property);
+		Mockito.when(this.item.getItemProperty(ColumnLabels.GID.getName())).thenReturn(property);
+		Mockito.when(this.item.getItemProperty(ColumnLabels.GID.getName()).getValue()).thenReturn(button);
+		Mockito.when(button.getCaption()).thenReturn(ListBuilderComponentTest.CAPTION);
+		Mockito.when(this.item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName())).thenReturn(property);
 
 
 

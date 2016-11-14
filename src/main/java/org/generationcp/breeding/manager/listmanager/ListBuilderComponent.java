@@ -190,7 +190,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 			if(clickedItem.getName()
 					.equals(ListBuilderComponent.this.messageSource.getMessage(Message.SAVE_RESERVATIONS))){
-				synchronized (ReserveInventoryAction.class){
+				synchronized (ListBuilderComponent.class){
 					final TransactionTemplate transactionTemplateForSavingReservation = new TransactionTemplate(ListBuilderComponent.this
 							.transactionManager);
 					transactionTemplateForSavingReservation.execute(new TransactionCallbackWithoutResult() {
@@ -1603,6 +1603,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 				this.resetListInventoryTableValues();
 				MessageNotifier.showMessage(this.source.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
 						this.messageSource.getMessage(Message.SAVE_RESERVED_AND_CANCELLED_RESERVATION));
+			}else {
+				MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR),
+						this.messageSource.getMessage(Message.INVENTORY_NOT_AVAILABLE_BALANCE));
 			}
 
 		}
@@ -2041,5 +2044,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
+	}
+
+	public Table getListDataTable() {
+		return listDataTable;
 	}
 }
