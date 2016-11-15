@@ -4,11 +4,14 @@ package org.generationcp.breeding.manager.listmanager.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.data.initializer.InventoryDetailsTestDataInitializer;
+import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
+import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.junit.Assert;
@@ -19,6 +22,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Window;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ListCommonActionsUtilTest {
@@ -36,6 +40,12 @@ public class ListCommonActionsUtilTest {
 	private Component source;
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
+
+	@Mock
+	private InventoryDataManager inventoryDataManager;
+
+	@Mock
+	private Window window;
 
 	@Test
 	public void testGetNewEntriesToSaveUpdateDelete_ForNewEntries() throws MiddlewareQueryException {
@@ -182,5 +192,19 @@ public class ListCommonActionsUtilTest {
 
 		boolean hasAnyReservation = ListCommonActionsUtil.hasReservationForAnyListEntries(germplasmListData);
 		Assert.assertFalse(hasAnyReservation);
+	}
+
+	@Test
+	public void testHandleCreateLabelsActionWithNoReservation() {
+		List<GermplasmListData> germplasmListData = InventoryDetailsTestDataInitializer.createGermplasmListDataForReservedEntries();
+		germplasmListData.get(0).getInventoryInfo().getLotRows().get(0).setWithdrawalStatus(ListDataInventory.WITHDRAWN);
+
+		Mockito.when(this.inventoryDataManager.
+				getLotDetailsForList(Mockito.isA(Integer.class), Mockito.anyInt(), Mockito.anyInt())).thenReturn(germplasmListData);
+
+		ListCommonActionsUtil.handleCreateLabelsAction(1, this.inventoryDataManager, this.messageSource, null, null, this.window);
+
+		Mockito.verify(this.messageSource, Mockito.times(1)).getMessage(Message.PRINT_LABELS);
+		Mockito.verify(this.messageSource, Mockito.times(1)).getMessage(Message.ERROR_COULD_NOT_CREATE_LABELS_WITHOUT_RESERVATION);
 	}
 }
