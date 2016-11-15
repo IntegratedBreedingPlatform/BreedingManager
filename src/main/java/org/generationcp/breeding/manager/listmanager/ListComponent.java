@@ -969,43 +969,62 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}
 
 
-	private final class InventoryViewMenuClickListner implements ContextMenu.ClickListener {
+	protected final class InventoryViewMenuClickListner implements ContextMenu.ClickListener {
 
 		private static final long serialVersionUID = -2343109406180457070L;
 
 		@Override
 		public void contextItemClick(final ClickEvent event) {
 
-			final TransactionTemplate transactionTemplate = new TransactionTemplate(ListComponent.this.transactionManager);
-			transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+			final ContextMenuItem clickedItem = event.getClickedItem();
 
-				@Override
-				protected void doInTransactionWithoutResult(final TransactionStatus status) {
-					// Get reference to clicked item
-					final ContextMenuItem clickedItem = event.getClickedItem();
-					if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.SAVE_RESERVATIONS))) {
-						ListComponent.this.saveReservationChangesAction(ListComponent.this.getWindow());
-					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
-						ListComponent.this.viewListAction();
-					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {
-						ListComponent.this.copyToNewListFromInventoryViewAction();
-					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
-						ListComponent.this.reserveInventoryAction();
-					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
-						ListComponent.this.listInventoryTable.getTable()
-								.setValue(ListComponent.this.listInventoryTable.getTable().getItemIds());
-					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.CANCEL_RESERVATIONS))) {
-						ListComponent.this.cancelReservationsAction();
-					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.EXPORT_SEED_LIST))) {
-						ListComponent.this.exportSeedPreparationList();
-					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.IMPORT_SEED_LIST))) {
-						ListComponent.this.openImportSeedPreparationDialog();
-					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.PRINT_LABELS))) {
-						ListComponent.this.createLabelsAction();
-					}
+			if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.SAVE_RESERVATIONS))) {
 
+				/*
+				* Save reservation needs to be synchronized on ListComponent lock object.
+				* This will ensure lock will apply to all instances of ListComponent invoking save reservation.
+				*/
+				synchronized (ListComponent.class) {
+					final TransactionTemplate transactionTemplateForSavingReservation =
+							new TransactionTemplate(ListComponent.this.transactionManager);
+
+					transactionTemplateForSavingReservation.execute(new TransactionCallbackWithoutResult() {
+
+						@Override
+						protected void doInTransactionWithoutResult(final TransactionStatus status) {
+							ListComponent.this.saveReservationChangesAction(ListComponent.this.getWindow());
+						}
+					});
 				}
-			});
+
+			} else {
+				final TransactionTemplate transactionTemplate = new TransactionTemplate(ListComponent.this.transactionManager);
+				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+					@Override
+					protected void doInTransactionWithoutResult(final TransactionStatus status) {
+						if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
+							ListComponent.this.viewListAction();
+						} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {
+							ListComponent.this.copyToNewListFromInventoryViewAction();
+						} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
+							ListComponent.this.reserveInventoryAction();
+						} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
+							ListComponent.this.listInventoryTable.getTable()
+									.setValue(ListComponent.this.listInventoryTable.getTable().getItemIds());
+						} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.CANCEL_RESERVATIONS))) {
+							ListComponent.this.cancelReservationsAction();
+						} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.EXPORT_SEED_LIST))) {
+							ListComponent.this.exportSeedPreparationList();
+						} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.IMPORT_SEED_LIST))) {
+							ListComponent.this.openImportSeedPreparationDialog();
+						} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.PRINT_LABELS))) {
+							ListComponent.this.createLabelsAction();
+						}
+
+					}
+				});
+			}
 
 		}
 	}
@@ -2210,13 +2229,20 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	public void saveReservationChangesAction(final Window window) {
 		if (this.hasUnsavedChanges()) {
-			this.reserveInventoryAction.saveReserveTransactions(this.getValidReservationsToSave(), this.germplasmList.getId());
-			this.cancelReservations();
-			this.refreshInventoryColumns(this.getValidReservationsToSave());
-			this.resetListDataTableValues();
-			this.resetListInventoryTableValues();
-			MessageNotifier.showMessage(window, this.messageSource.getMessage(Message.SUCCESS),
-					this.messageSource.getMessage(Message.SAVE_RESERVED_AND_CANCELLED_RESERVATION));
+			boolean success = this.reserveInventoryAction.saveReserveTransactions(this.getValidReservationsToSave(), this.germplasmList.getId());
+
+			if (success) {
+				this.cancelReservations();
+				this.refreshInventoryColumns(this.getValidReservationsToSave());
+				this.resetListDataTableValues();
+				this.resetListInventoryTableValues();
+				MessageNotifier.showMessage(window, this.messageSource.getMessage(Message.SUCCESS),
+						this.messageSource.getMessage(Message.SAVE_RESERVED_AND_CANCELLED_RESERVATION));
+			} else {
+				MessageNotifier.showError(window, this.messageSource.getMessage(Message.ERROR),
+						this.messageSource.getMessage(Message.INVENTORY_NOT_AVAILABLE_BALANCE));
+			}
+
 		}
 	}
 
@@ -2274,7 +2300,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			ListEntryLotDetails userSelectedLot = userSelectedLotEntriesToCancelIterator.next();
 			final Map<ListEntryLotDetails, Double> validReservations = this.getValidReservationsToSave();
 
-
 			if (validReservations.size() > 0) {
 				Iterator<Map.Entry<ListEntryLotDetails, Double>> validReservationEntriesIterator = validReservations.entrySet().iterator();
 				while (validReservationEntriesIterator.hasNext()) {
@@ -2290,7 +2315,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 				this.validReservationsToSave = validReservations;
 			}
 		}
-        //validReservationsToCancel holds the actual lot entries that needs to be canceled which is already there in database
+		//validReservationsToCancel holds the actual lot entries that needs to be canceled which is already there in database
 		this.persistedReservationToCancel = userSelectedLotEntriesToCancel;
 
 		//enables the save reservation option if there is actual lot that needs to be cancel which is already there in database
@@ -2613,4 +2638,15 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		}
 	}
 
+	public PlatformTransactionManager getTransactionManager() {
+		return transactionManager;
+	}
+
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
+
+	public void setReserveInventoryAction(ReserveInventoryAction reserveInventoryAction) {
+		this.reserveInventoryAction = reserveInventoryAction;
+	}
 }
