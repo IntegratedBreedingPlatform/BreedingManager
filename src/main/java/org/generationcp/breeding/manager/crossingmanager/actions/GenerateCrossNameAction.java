@@ -3,9 +3,26 @@ package org.generationcp.breeding.manager.crossingmanager.actions;
 
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
+import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
+import org.generationcp.commons.parsing.pojo.ImportedCrosses;
+import org.generationcp.commons.ruleengine.ProcessCodeOrderedRule;
+import org.generationcp.commons.ruleengine.ProcessCodeRuleFactory;
+import org.generationcp.commons.ruleengine.RuleException;
+import org.generationcp.commons.ruleengine.cross.CrossingRuleExecutionContext;
+import org.generationcp.commons.settings.CrossSetting;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.PedigreeDataManager;
+import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.Method;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Utility class for generating next cross name / number given CrossNameSetting object
@@ -16,8 +33,16 @@ import org.springframework.beans.factory.annotation.Configurable;
 @Configurable
 public class GenerateCrossNameAction {
 
+	private static final Logger LOG = LoggerFactory.getLogger(GenerateCrossNameAction.class);
+
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
+
+	@Resource
+	private ProcessCodeRuleFactory processCodeRuleFactory;
+
+	@Resource
+	private PedigreeDataManager pedigreeDataManager;
 
 	private CrossNameSetting setting;
 
@@ -84,6 +109,60 @@ public class GenerateCrossNameAction {
 			sb.append(this.buildSuffixString());
 		}
 		return sb.toString();
+	}
+
+	public String buildNextNameInSequence(final CrossingManagerSetting setting, Germplasm germplasm, Integer number) {
+
+		final Pattern processCodePattern = Pattern.compile("\\[([^\\]]*)]");
+		final Pattern processCodePatternWithAlphabetPrefix = Pattern.compile("([A-Z]{1})\\[([^\\]]*)]");
+
+		StringBuilder sb = new StringBuilder();
+		sb.append(this.buildPrefixString());
+		sb.append(this.getNumberWithLeadingZeroesAsString(number));
+
+		if (setting.getBreedingMethodSetting().getMethodId() != null) {
+			final Method method = this.germplasmDataManager.getMethodByID(setting.getBreedingMethodSetting().getMethodId());
+			if (!StringUtils.isEmpty(method.getSuffix())) {
+				this.setting.setSuffix(method.getSuffix());
+			}
+		}
+
+		if (!StringUtils.isEmpty(this.setting.getSuffix())) {
+
+			String suffix = this.setting.getSuffix().trim();
+			String processCodePrefix = "";
+			final Matcher matcherProcessCode = processCodePattern.matcher(suffix);
+			final Matcher matcherProcessCodeAlphabetPrefix = processCodePatternWithAlphabetPrefix.matcher(suffix);
+
+			if (matcherProcessCode.find()) {
+				suffix = this.evaluateSuffixProcessCode(germplasm, matcherProcessCode.group());
+			}
+			if (!StringUtils.isEmpty(suffix) && matcherProcessCodeAlphabetPrefix.find()) {
+				final int processCodePrefixGroupNameIndex = 1;
+				processCodePrefix = matcherProcessCodeAlphabetPrefix.group(processCodePrefixGroupNameIndex);
+			}
+
+			sb.append(processCodePrefix + suffix);
+
+		}
+
+		return sb.toString();
+	}
+
+	protected String evaluateSuffixProcessCode(final Germplasm germplasm, final String processCode) {
+		final ProcessCodeOrderedRule rule = this.processCodeRuleFactory.getRuleByProcessCode(processCode);
+
+		final CrossingRuleExecutionContext crossingRuleExecutionContext =
+				new CrossingRuleExecutionContext(new ArrayList<String>(), null, germplasm.getGpid2() != null ? Integer.valueOf(germplasm
+						.getGpid2()) : 0, germplasm.getGpid1() != null ? Integer.valueOf(germplasm.getGpid1()) : 0,
+						this.germplasmDataManager, this.pedigreeDataManager);
+
+		try {
+			return (String) rule.runRule(crossingRuleExecutionContext);
+		} catch (final RuleException e) {
+			LOG.error(e.getMessage(), e);
+			return "";
+		}
 	}
 
 	private String getNumberWithLeadingZeroesAsString(Integer number) {
