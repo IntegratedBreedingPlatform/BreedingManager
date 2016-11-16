@@ -10,6 +10,7 @@ import org.generationcp.commons.ruleengine.ProcessCodeRuleFactory;
 import org.generationcp.commons.ruleengine.RuleException;
 import org.generationcp.commons.ruleengine.cross.CrossingRuleExecutionContext;
 import org.generationcp.commons.settings.CrossSetting;
+import org.generationcp.commons.util.ExpressionHelper;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.PedigreeDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
@@ -113,8 +114,7 @@ public class GenerateCrossNameAction {
 
 	public String buildNextNameInSequence(final CrossingManagerSetting setting, Germplasm germplasm, Integer number) {
 
-		final Pattern processCodePattern = Pattern.compile("\\[([^\\]]*)]");
-		final Pattern processCodePatternWithAlphabetPrefix = Pattern.compile("([A-Z]{1})\\[([^\\]]*)]");
+		final Pattern processCodePattern = Pattern.compile(ExpressionHelper.PROCESS_CODE_PATTERN);
 
 		StringBuilder sb = new StringBuilder();
 		sb.append(this.buildPrefixString());
@@ -129,20 +129,17 @@ public class GenerateCrossNameAction {
 
 		if (!StringUtils.isEmpty(this.setting.getSuffix())) {
 
-			String suffix = this.setting.getSuffix().trim();
-			String processCodePrefix = "";
+			final String suffix = this.setting.getSuffix().trim();
 			final Matcher matcherProcessCode = processCodePattern.matcher(suffix);
-			final Matcher matcherProcessCodeAlphabetPrefix = processCodePatternWithAlphabetPrefix.matcher(suffix);
+			String processCode = "";
+			String processCodeValue = "";
 
 			if (matcherProcessCode.find()) {
-				suffix = this.evaluateSuffixProcessCode(germplasm, matcherProcessCode.group());
-			}
-			if (!StringUtils.isEmpty(suffix) && matcherProcessCodeAlphabetPrefix.find()) {
-				final int processCodePrefixGroupNameIndex = 1;
-				processCodePrefix = matcherProcessCodeAlphabetPrefix.group(processCodePrefixGroupNameIndex);
+				processCode = matcherProcessCode.group();
+				processCodeValue = this.evaluateSuffixProcessCode(germplasm, processCode);
 			}
 
-			sb.append(processCodePrefix + suffix);
+			sb.append(replaceExpressionWithValue(new StringBuilder(suffix), processCode, processCodeValue));
 
 		}
 
@@ -163,6 +160,15 @@ public class GenerateCrossNameAction {
 			LOG.error(e.getMessage(), e);
 			return "";
 		}
+	}
+
+	protected String replaceExpressionWithValue(StringBuilder container, String processCode, String value) {
+		int startIndex = container.toString().toUpperCase().indexOf(processCode);
+		int endIndex = startIndex + processCode.length();
+
+		String replaceValue = value == null ? "" : value;
+		container.replace(startIndex, endIndex, replaceValue);
+		return container.toString();
 	}
 
 	private String getNumberWithLeadingZeroesAsString(Integer number) {
