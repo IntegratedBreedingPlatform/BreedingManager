@@ -410,7 +410,7 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow implements I
 
 			if (transaction.getStatus() == 1) {
 				//Skip and process next or Cancel import
-				importedSeedInventory.setTransactionProcessingStatus(Message.SEED_IMPORT_TRANSACTION_ALREADY_COMMITTED_WARNING.toString());
+				importedSeedInventory.setTransactionProcessingStatus(Message.SEED_IMPORT_TRANSACTION_ALREADY_COMMITTED_ERROR.toString());
 				continue;
 			}
 
