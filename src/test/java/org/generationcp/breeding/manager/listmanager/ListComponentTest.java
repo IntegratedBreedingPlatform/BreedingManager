@@ -547,6 +547,13 @@ public class ListComponentTest {
 
 	}
 
+	@Test
+	public void testCreateLabelsActionWithNoReservationForAnyListEntries() {
+		this.listComponent.createLabelsAction();
+		Mockito.verify(this.messageSource).getMessage(Message.ERROR_COULD_NOT_CREATE_LABELS_WITHOUT_RESERVATION);
+		Mockito.verify(this.messageSource).getMessage(Message.PRINT_LABELS);
+	}
+
 	private void initializeTableWithTestData() {
 
 		Mockito.when(inventoryDataManager.getLotCountsForList(TEST_GERMPLASM_LIST_ID, 0, TEST_GERMPLASM_NO_OF_ENTRIES))
