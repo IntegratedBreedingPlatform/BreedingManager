@@ -122,7 +122,7 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 		this.lotEntriesTable.addContainerProperty(InventoryViewComponent.COMMENTS, String.class, null);
 		this.lotEntriesTable.addContainerProperty(InventoryViewComponent.STOCKID, Label.class, null);
 		this.lotEntriesTable.addContainerProperty(InventoryViewComponent.LOT_ID, Integer.class, null);
-		this.lotEntriesTable.addContainerProperty(InventoryViewComponent.SEED_SOURCE, String.class, null);
+
 
 		this.lotEntriesTable.setColumnHeader(InventoryViewComponent.LOT_LOCATION, ColumnLabels.LOT_LOCATION.getTermNameFromOntology(this.ontologyDataManager));
 		this.lotEntriesTable.setColumnHeader(InventoryViewComponent.ACTUAL_BALANCE, ColumnLabels.ACTUAL_BALANCE.getTermNameFromOntology(this.ontologyDataManager));
@@ -132,7 +132,13 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 		this.lotEntriesTable.setColumnHeader(InventoryViewComponent.COMMENTS, ColumnLabels.COMMENT.getTermNameFromOntology(this.ontologyDataManager));
 		this.lotEntriesTable.setColumnHeader(InventoryViewComponent.STOCKID, ColumnLabels.STOCKID.getTermNameFromOntology(this.ontologyDataManager));
 		this.lotEntriesTable.setColumnHeader(InventoryViewComponent.LOT_ID, ColumnLabels.LOT_ID.getTermNameFromOntology(this.ontologyDataManager));
-		this.lotEntriesTable.setColumnHeader(InventoryViewComponent.SEED_SOURCE, ColumnLabels.SEED_SOURCE.getTermNameFromOntology(this.ontologyDataManager));
+
+		if(this.listId != null && this.recordId != null){
+
+			this.lotEntriesTable.addContainerProperty(InventoryViewComponent.SEED_SOURCE, String.class, null);
+			this.lotEntriesTable.setColumnHeader(InventoryViewComponent.SEED_SOURCE, ColumnLabels.SEED_SOURCE.getTermNameFromOntology(this.ontologyDataManager));
+		}
+
 	}
 
 	@Override
@@ -164,7 +170,6 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 			}
 			newItem.getItemProperty(InventoryViewComponent.AVAILABLE_BALANCE).setValue(availableBalance);
 
-			if(this.listId != null && this.recordId != null) {
 				String withdrawalBalance = "";
 				if(lotEntry.getWithdrawalBalance() != null){
 					withdrawalBalance = lotEntry.getWithdrawalBalance() + lotEntry.getLotScaleNameAbbr();
@@ -176,11 +181,6 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 					withdrawalStatus = lotEntry.getWithdrawalStatus();
 				}
 				newItem.getItemProperty(InventoryViewComponent.STATUS).setValue(withdrawalStatus);
-			}else{
-				newItem.getItemProperty(InventoryViewComponent.WITHDRAWAL).setValue("-");
-				newItem.getItemProperty(InventoryViewComponent.STATUS).setValue("-");
-			}
-
 
 
 			newItem.getItemProperty(InventoryViewComponent.COMMENTS).setValue(lotEntry.getCommentOfLot());
@@ -191,7 +191,10 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 			if(germplasmListData != null){
 				seedSource = germplasmListData.getSeedSource();
 			}
-			newItem.getItemProperty(InventoryViewComponent.SEED_SOURCE).setValue(seedSource);
+
+			if (this.listId != null && this.recordId != null) {
+				newItem.getItemProperty(InventoryViewComponent.SEED_SOURCE).setValue(seedSource);
+			}
 		}
 	}
 
