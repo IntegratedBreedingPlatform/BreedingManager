@@ -1,4 +1,3 @@
-
 package org.generationcp.breeding.manager.crossingmanager;
 
 import java.util.ArrayList;
@@ -8,7 +7,7 @@ import java.util.List;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
-import org.generationcp.breeding.manager.data.initializer.ListInventoryDataInitializer;
+import org.generationcp.middleware.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -43,7 +42,7 @@ public class MakeCrossesParentsComponentTest {
 
 	private static final int NO_OF_ENTRIES = 5;
 
-	private static final String STOCK_ID = "STOCK ID here";
+	private static final String STOCK_ID = "STOCKID:";
 	private static final String TAG_COLUMN_ID = "Tag";
 	private static final String STRING_DASH = "-";
 	private static final String CHECKBOX_COLUMN_ID = "Checkbox Column ID";
@@ -165,6 +164,8 @@ public class MakeCrossesParentsComponentTest {
 			final Button gidButton = new Button();
 			gidButton.setCaption(String.valueOf(i));
 			newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
+
+			newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(MakeCrossesParentsComponentTest.STOCK_ID + i);
 		}
 
 		return sourceTable;
@@ -270,6 +271,22 @@ public class MakeCrossesParentsComponentTest {
 	@Test
 	public void testDropToFemaleOrMaleTable_AddingPartialEntriesOfSourceTableToFemaleTable() {
 		this.testDropToFemaleOrMaleTable_AddingPartialEntriesOfSourceTable(this.femaleParent, "Female");
+		Item targetLastItem = this.femaleParent.getItem(this.femaleParent.lastItemId());
+
+		Assert.assertEquals(7, this.femaleParent.size());
+
+		Button designation = (Button) targetLastItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue();
+		Assert.assertEquals("Designation", designation.getCaption());
+
+		Button available = (Button) targetLastItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue();
+		Assert.assertEquals("2", available.getCaption().toString());
+
+		Assert.assertEquals(MakeCrossesParentsComponentTest.STRING_DASH,
+				targetLastItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue());
+
+		Label stockID = (Label) targetLastItem.getItemProperty(ColumnLabels.STOCKID.getName()).getValue();
+		Assert.assertEquals("STOCKID:2", stockID.getValue().toString());
+
 	}
 
 	@Test

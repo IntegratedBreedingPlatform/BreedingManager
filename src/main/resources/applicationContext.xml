@@ -124,6 +124,11 @@
         <aop:scoped-proxy/>
     </bean>
 
+	<bean id="termDataManager" factory-bean="managerFactory"
+		  factory-method="getTermDataManager" scope="request">
+		<aop:scoped-proxy />
+	</bean>
+
     <bean id="studyDataManager" factory-bean="managerFactory"
 		factory-method="getNewStudyDataManager" scope="request">
 		<aop:scoped-proxy />
@@ -307,6 +312,10 @@
 
     <bean id="germplasmListExporter" class="org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter"/>
     <bean id="fileDownloadUtility" class="org.generationcp.breeding.manager.util.FileDownloaderUtility"/>
+
+	<bean id="seedInventoryListExporter"
+		  class="org.generationcp.breeding.manager.inventory.SeedInventoryListExporter">
+	</bean>
 
 	<bean id="managerFactory" name="managerFactory" factory-bean="managerFactoryProvider"
 		factory-method="createInstance" scope="request">

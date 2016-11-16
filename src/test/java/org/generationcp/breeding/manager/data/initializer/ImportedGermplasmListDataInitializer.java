@@ -1,4 +1,3 @@
-
 package org.generationcp.breeding.manager.data.initializer;
 
 import java.util.ArrayList;
@@ -11,10 +10,14 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.commons.parsing.pojo.ImportedFactor;
+import org.generationcp.commons.parsing.pojo.ImportedVariate;
 import org.generationcp.middleware.data.initializer.GermplasmTestDataInitializer;
+import org.generationcp.middleware.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 
 public class ImportedGermplasmListDataInitializer {
+	
+	public static final String DESIGNATION = "(CML454 X CML451)-B-4-1-112";
 
 	public ImportedGermplasmListDataInitializer() {
 		// do nothing
@@ -62,7 +65,8 @@ public class ImportedGermplasmListDataInitializer {
 		if (withNameFactors) {
 			importedGermplasm.setNameFactors(this.createNameFactors(id, withNameFactors));
 		}
-
+		importedGermplasm.setDesig(DESIGNATION + "-" + id);
+		importedGermplasm.setGid(1);
 		importedGermplasm.setAttributeVariates(this.createAttributeVariates(id));
 
 		return importedGermplasm;
@@ -115,13 +119,12 @@ public class ImportedGermplasmListDataInitializer {
 	public List<Map<Integer, String>> createFactorsRowValuesListParserData() {
 		final List<Map<Integer, String>> testData = new ArrayList<>();
 
-		final String[][] rawData =
-				{ {"ENTRY_NO", "Germplasm entry - enumerated (number)", "GERMPLASM ENTRY", "NUMBER", "ENUMERATED"},
-						{"GID", "Germplasm identifier - assigned (DBID)", "GERMPLASM ID", "GERMPLASM ID", "ASSIGNED"},
-						{"ENTRY_CODE", "Germplasm ID - Assigned (Code)", "GERMPLASM ENTRY", "CODE OF ENTRY_CODE", "ASSIGNED"},
-						{"DESIGNATION", "Germplasm identifier - assigned (DBCV)", "GERMPLASM ID", "GERMPLASM NAME", "ASSIGNED"},
-						{"CROSS", "The pedigree string of the germplasm", "CROSS HISTORY", "TEXT", "ASSIGNED"},
-						{"SEED_SOURCE", "Seed source - Selected (Code)", "SEED SOURCE", "CODE OF SEED_SOURCE", "SELECTED"}};
+		final String[][] rawData = {{"ENTRY_NO", "Germplasm entry - enumerated (number)", "GERMPLASM ENTRY", "NUMBER", "ENUMERATED"},
+				{"GID", "Germplasm identifier - assigned (DBID)", "GERMPLASM ID", "GERMPLASM ID", "ASSIGNED"},
+				{"ENTRY_CODE", "Germplasm ID - Assigned (Code)", "GERMPLASM ENTRY", "CODE OF ENTRY_CODE", "ASSIGNED"},
+				{"DESIGNATION", "Germplasm identifier - assigned (DBCV)", "GERMPLASM ID", "GERMPLASM NAME", "ASSIGNED"},
+				{"CROSS", "The pedigree string of the germplasm", "CROSS HISTORY", "TEXT", "ASSIGNED"},
+				{"SEED_SOURCE", "Seed source - Selected (Code)", "SEED SOURCE", "CODE OF SEED_SOURCE", "SELECTED"}};
 
 		for (final String[] rowValue : rawData) {
 			final Map<Integer, String> map = new HashMap<>();
@@ -133,5 +136,12 @@ public class ImportedGermplasmListDataInitializer {
 		}
 
 		return testData;
+	}
+
+	public void addImportedVariates(final ImportedGermplasmList importedGermplasmList, final String... variates) {
+		for (final String variateName : variates) {
+			importedGermplasmList
+					.addImportedVariate(new ImportedVariate(variateName, "Test Description", "ATTRIBUTE", "Scale 1", "Method 1", "C"));
+		}
 	}
 }
