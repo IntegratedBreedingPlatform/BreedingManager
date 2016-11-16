@@ -58,7 +58,7 @@ public class GermplasmQueryTest {
 	public static final int TEST_LOCATION_ID = 5;
 	public static final int GERMPLASM_SIZE = 20;
 	private final String[] itemPropertyIds =
-			new String[] {"LOCATIONS", "GROUP ID", "GID_REF", "Tag All Column", "WITHDRAWAL", "LOTS", "PARENTAGE", "METHOD NAME",
+			new String[] {"LOCATIONS", "GROUP ID", "GID_REF", "Tag All Column", "LOTS", "PARENTAGE", "METHOD NAME",
 					"STOCKID", "NAMES", "GID"};
 	@Mock
 	private GermplasmDataManager germplasmDataManager;
@@ -127,8 +127,10 @@ public class GermplasmQueryTest {
 		Assert.assertEquals(TEST_DASH_STRING, item.getItemProperty(ColumnLabels.GROUP_ID.getName()).getValue());
 		Assert.assertEquals(TEST_GID, item.getItemProperty(ColumnLabels.GID.getName() + "_REF").getValue());
 		Assert.assertTrue(item.getItemProperty(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID).getValue() instanceof CheckBox);
-		Assert.assertEquals(TEST_SEED_RES_COUNT.toString(), item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue());
-		Assert.assertEquals(TEST_INVENTORY_COUNT.toString(), item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue());
+
+		Button availableLot = (Button) item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue();
+		Assert.assertEquals(TEST_INVENTORY_COUNT.toString(), availableLot.getCaption().toString());
+
 		Assert.assertEquals(TEST_CROSS_EXPANSION_STRING, item.getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue());
 		Assert.assertEquals("MethodName", item.getItemProperty(ColumnLabels.BREEDING_METHOD_NAME.getName()).getValue());
 		Assert.assertEquals(TEST_STOCK_ID_STRING, ((Label) item.getItemProperty(ColumnLabels.STOCKID.getName()).getValue()).getValue());
