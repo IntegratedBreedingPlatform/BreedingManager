@@ -52,15 +52,15 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 	private TableLayout lotEntriesLayout;
 	private Table lotEntriesTable;
 
-	private static final String LOT_LOCATION = "lotLocation";
-	private static final String ACTUAL_BALANCE = "actualBalance";
-	private static final String AVAILABLE_BALANCE = "availableBalance";
-	private static final String WITHDRAWAL = "withdrawal";
-	private static final String STATUS = "status";
-	private static final String COMMENTS = "comments";
-	private static final String STOCKID = "stockID";
-	private static final String LOT_ID = "lotId";
-	private static final String SEED_SOURCE = "seedSource";
+	public static final String LOT_LOCATION = "lotLocation";
+	public static final String ACTUAL_BALANCE = "actualBalance";
+	public static final String AVAILABLE_BALANCE = "availableBalance";
+	public static final String WITHDRAWAL = "withdrawal";
+	public static final String STATUS = "status";
+	public static final String COMMENTS = "comments";
+	public static final String STOCKID = "stockID";
+	public static final String LOT_ID = "lotId";
+	public static final String SEED_SOURCE = "seedSource";
 
 	private boolean isThereNoInventoryInfo;
 
@@ -110,39 +110,46 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 		this.lotEntriesLayout.setDebugId("lotEntriesLayout");
 
 		this.lotEntriesTable = this.lotEntriesLayout.getTable();
-		this.lotEntriesTable.setWidth("100%");
+		initializeLotEntriesTable(this.lotEntriesTable);
 
-		this.lotEntriesTable.addContainerProperty(InventoryViewComponent.LOT_LOCATION, String.class, null);
-		this.lotEntriesTable.addContainerProperty(InventoryViewComponent.ACTUAL_BALANCE, String.class, null);
-		this.lotEntriesTable.addContainerProperty(InventoryViewComponent.AVAILABLE_BALANCE, String.class, null);
-		this.lotEntriesTable.addContainerProperty(InventoryViewComponent.WITHDRAWAL, String.class, null);
-		this.lotEntriesTable.addContainerProperty(InventoryViewComponent.STATUS, String.class, null);
-		this.lotEntriesTable.addContainerProperty(InventoryViewComponent.COMMENTS, String.class, null);
-		this.lotEntriesTable.addContainerProperty(InventoryViewComponent.STOCKID, Label.class, null);
-		this.lotEntriesTable.addContainerProperty(InventoryViewComponent.LOT_ID, Integer.class, null);
+	}
 
-		this.lotEntriesTable.setColumnHeader(InventoryViewComponent.LOT_LOCATION,
-				ColumnLabels.LOT_LOCATION.getTermNameFromOntology(this.ontologyDataManager));
-		this.lotEntriesTable.setColumnHeader(InventoryViewComponent.ACTUAL_BALANCE,
-				ColumnLabels.ACTUAL_BALANCE.getTermNameFromOntology(this.ontologyDataManager));
-		this.lotEntriesTable.setColumnHeader(InventoryViewComponent.AVAILABLE_BALANCE,
-				ColumnLabels.TOTAL.getTermNameFromOntology(this.ontologyDataManager));
-		this.lotEntriesTable.setColumnHeader(InventoryViewComponent.WITHDRAWAL,
-				ColumnLabels.SEED_RESERVATION.getTermNameFromOntology(this.ontologyDataManager));
-		this.lotEntriesTable
-				.setColumnHeader(InventoryViewComponent.STATUS, ColumnLabels.STATUS.getTermNameFromOntology(this.ontologyDataManager));
-		this.lotEntriesTable
-				.setColumnHeader(InventoryViewComponent.COMMENTS, ColumnLabels.COMMENT.getTermNameFromOntology(this.ontologyDataManager));
-		this.lotEntriesTable
-				.setColumnHeader(InventoryViewComponent.STOCKID, ColumnLabels.STOCKID.getTermNameFromOntology(this.ontologyDataManager));
-		this.lotEntriesTable
-				.setColumnHeader(InventoryViewComponent.LOT_ID, ColumnLabels.LOT_ID.getTermNameFromOntology(this.ontologyDataManager));
+	protected void initializeLotEntriesTable(final Table table) {
+		if (table != null) {
+			table.setWidth("100%");
 
-		if (this.listId != null && this.recordId != null) {
+			table.addContainerProperty(InventoryViewComponent.LOT_LOCATION, String.class, null);
+			table.addContainerProperty(InventoryViewComponent.ACTUAL_BALANCE, String.class, null);
+			table.addContainerProperty(InventoryViewComponent.AVAILABLE_BALANCE, String.class, null);
+			table.addContainerProperty(InventoryViewComponent.WITHDRAWAL, String.class, null);
+			table.addContainerProperty(InventoryViewComponent.STATUS, String.class, null);
+			table.addContainerProperty(InventoryViewComponent.COMMENTS, String.class, null);
+			table.addContainerProperty(InventoryViewComponent.STOCKID, Label.class, null);
+			table.addContainerProperty(InventoryViewComponent.LOT_ID, Integer.class, null);
 
-			this.lotEntriesTable.addContainerProperty(InventoryViewComponent.SEED_SOURCE, String.class, null);
-			this.lotEntriesTable.setColumnHeader(InventoryViewComponent.SEED_SOURCE,
-					ColumnLabels.SEED_SOURCE.getTermNameFromOntology(this.ontologyDataManager));
+			table.setColumnHeader(InventoryViewComponent.LOT_LOCATION,
+					ColumnLabels.LOT_LOCATION.getTermNameFromOntology(this.ontologyDataManager));
+			table.setColumnHeader(InventoryViewComponent.ACTUAL_BALANCE,
+					ColumnLabels.ACTUAL_BALANCE.getTermNameFromOntology(this.ontologyDataManager));
+			table.setColumnHeader(InventoryViewComponent.AVAILABLE_BALANCE,
+					ColumnLabels.TOTAL.getTermNameFromOntology(this.ontologyDataManager));
+			table.setColumnHeader(InventoryViewComponent.WITHDRAWAL,
+					ColumnLabels.SEED_RESERVATION.getTermNameFromOntology(this.ontologyDataManager));
+			table
+					.setColumnHeader(InventoryViewComponent.STATUS, ColumnLabels.STATUS.getTermNameFromOntology(this.ontologyDataManager));
+			table.setColumnHeader(InventoryViewComponent.COMMENTS,
+					ColumnLabels.COMMENT.getTermNameFromOntology(this.ontologyDataManager));
+			table.setColumnHeader(InventoryViewComponent.STOCKID,
+					ColumnLabels.STOCKID.getTermNameFromOntology(this.ontologyDataManager));
+			table
+					.setColumnHeader(InventoryViewComponent.LOT_ID, ColumnLabels.LOT_ID.getTermNameFromOntology(this.ontologyDataManager));
+
+			if (this.listId != null && this.recordId != null) {
+
+				table.addContainerProperty(InventoryViewComponent.SEED_SOURCE, String.class, null);
+				table.setColumnHeader(InventoryViewComponent.SEED_SOURCE,
+						ColumnLabels.SEED_SOURCE.getTermNameFromOntology(this.ontologyDataManager));
+			}
 		}
 
 	}
@@ -229,6 +236,14 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 
 	public Table getTable() {
 		return this.lotEntriesTable;
+	}
+
+	public void setLotEntriesTable(Table lotEntriesTable) {
+		this.lotEntriesTable = lotEntriesTable;
+	}
+
+	public Table getLotEntriesTable() {
+		return lotEntriesTable;
 	}
 
 }
