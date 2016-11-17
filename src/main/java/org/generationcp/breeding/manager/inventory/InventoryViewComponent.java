@@ -1,4 +1,3 @@
-
 package org.generationcp.breeding.manager.inventory;
 
 import java.util.List;
@@ -10,7 +9,6 @@ import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.inventory.LotDetails;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
@@ -27,7 +25,8 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
-public class InventoryViewComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+public class InventoryViewComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
+		BreedingManagerLayout {
 
 	private static final long serialVersionUID = 1L;
 
@@ -93,14 +92,13 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 
 	@Override
 	public void instantiateComponents() {
-		if(this.listId != null && this.recordId != null){
-			germplasmListData =
-					this.germplasmListManager.getGermplasmListDataByListIdAndLrecId(this.listId, this.recordId);
+		if (this.listId != null && this.recordId != null) {
+			germplasmListData = this.germplasmListManager.getGermplasmListDataByListIdAndLrecId(this.listId, this.recordId);
 		}
 
 		String descriptionMessage = "";
 
-		if(germplasmListData != null){
+		if (germplasmListData != null) {
 			String designation = germplasmListData.getDesignation();
 			descriptionMessage = this.messageSource.getMessage(Message.LOT_DETAILS_FOR_SELECTED_ENTRIES, designation);
 		}
@@ -123,29 +121,37 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 		this.lotEntriesTable.addContainerProperty(InventoryViewComponent.STOCKID, Label.class, null);
 		this.lotEntriesTable.addContainerProperty(InventoryViewComponent.LOT_ID, Integer.class, null);
 
+		this.lotEntriesTable.setColumnHeader(InventoryViewComponent.LOT_LOCATION,
+				ColumnLabels.LOT_LOCATION.getTermNameFromOntology(this.ontologyDataManager));
+		this.lotEntriesTable.setColumnHeader(InventoryViewComponent.ACTUAL_BALANCE,
+				ColumnLabels.ACTUAL_BALANCE.getTermNameFromOntology(this.ontologyDataManager));
+		this.lotEntriesTable.setColumnHeader(InventoryViewComponent.AVAILABLE_BALANCE,
+				ColumnLabels.TOTAL.getTermNameFromOntology(this.ontologyDataManager));
+		this.lotEntriesTable.setColumnHeader(InventoryViewComponent.WITHDRAWAL,
+				ColumnLabels.SEED_RESERVATION.getTermNameFromOntology(this.ontologyDataManager));
+		this.lotEntriesTable
+				.setColumnHeader(InventoryViewComponent.STATUS, ColumnLabels.STATUS.getTermNameFromOntology(this.ontologyDataManager));
+		this.lotEntriesTable
+				.setColumnHeader(InventoryViewComponent.COMMENTS, ColumnLabels.COMMENT.getTermNameFromOntology(this.ontologyDataManager));
+		this.lotEntriesTable
+				.setColumnHeader(InventoryViewComponent.STOCKID, ColumnLabels.STOCKID.getTermNameFromOntology(this.ontologyDataManager));
+		this.lotEntriesTable
+				.setColumnHeader(InventoryViewComponent.LOT_ID, ColumnLabels.LOT_ID.getTermNameFromOntology(this.ontologyDataManager));
 
-		this.lotEntriesTable.setColumnHeader(InventoryViewComponent.LOT_LOCATION, ColumnLabels.LOT_LOCATION.getTermNameFromOntology(this.ontologyDataManager));
-		this.lotEntriesTable.setColumnHeader(InventoryViewComponent.ACTUAL_BALANCE, ColumnLabels.ACTUAL_BALANCE.getTermNameFromOntology(this.ontologyDataManager));
-		this.lotEntriesTable.setColumnHeader(InventoryViewComponent.AVAILABLE_BALANCE, ColumnLabels.TOTAL.getTermNameFromOntology(this.ontologyDataManager));
-		this.lotEntriesTable.setColumnHeader(InventoryViewComponent.WITHDRAWAL, ColumnLabels.SEED_RESERVATION.getTermNameFromOntology(this.ontologyDataManager));
-		this.lotEntriesTable.setColumnHeader(InventoryViewComponent.STATUS, ColumnLabels.STATUS.getTermNameFromOntology(this.ontologyDataManager));
-		this.lotEntriesTable.setColumnHeader(InventoryViewComponent.COMMENTS, ColumnLabels.COMMENT.getTermNameFromOntology(this.ontologyDataManager));
-		this.lotEntriesTable.setColumnHeader(InventoryViewComponent.STOCKID, ColumnLabels.STOCKID.getTermNameFromOntology(this.ontologyDataManager));
-		this.lotEntriesTable.setColumnHeader(InventoryViewComponent.LOT_ID, ColumnLabels.LOT_ID.getTermNameFromOntology(this.ontologyDataManager));
-
-		if(this.listId != null && this.recordId != null){
+		if (this.listId != null && this.recordId != null) {
 
 			this.lotEntriesTable.addContainerProperty(InventoryViewComponent.SEED_SOURCE, String.class, null);
-			this.lotEntriesTable.setColumnHeader(InventoryViewComponent.SEED_SOURCE, ColumnLabels.SEED_SOURCE.getTermNameFromOntology(this.ontologyDataManager));
+			this.lotEntriesTable.setColumnHeader(InventoryViewComponent.SEED_SOURCE,
+					ColumnLabels.SEED_SOURCE.getTermNameFromOntology(this.ontologyDataManager));
 		}
 
 	}
 
 	@Override
 	public void initializeValues() {
-		List<? extends LotDetails> lotDetailEntries =
-				this.listId != null && this.recordId != null ? this.inventoryDataManager.getLotDetailsForListEntry(this.listId,
-						this.recordId, this.gid) : this.inventoryDataManager.getLotDetailsForGermplasm(this.gid);
+		List<? extends LotDetails> lotDetailEntries = this.listId != null && this.recordId != null ?
+				this.inventoryDataManager.getLotDetailsForListEntry(this.listId, this.recordId, this.gid) :
+				this.inventoryDataManager.getLotDetailsForGermplasm(this.gid);
 
 		for (LotDetails lotEntry : lotDetailEntries) {
 			Item newItem = this.lotEntriesTable.addItem(lotEntry.getLotId());
@@ -159,36 +165,35 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 			newItem.getItemProperty(InventoryViewComponent.LOT_LOCATION).setValue(lotLocation);
 
 			String actualBalance = "";
-			if(lotEntry.getActualLotBalance() > 0){
+			if (lotEntry.getActualLotBalance() > 0) {
 				actualBalance = lotEntry.getActualLotBalance() + lotEntry.getLotScaleNameAbbr();
 			}
 			newItem.getItemProperty(InventoryViewComponent.ACTUAL_BALANCE).setValue(actualBalance);
 
 			String availableBalance = "";
-			if(lotEntry.getAvailableLotBalance() != null){
+			if (lotEntry.getAvailableLotBalance() != null) {
 				availableBalance = lotEntry.getAvailableLotBalance() + lotEntry.getLotScaleNameAbbr();
 			}
 			newItem.getItemProperty(InventoryViewComponent.AVAILABLE_BALANCE).setValue(availableBalance);
 
-				String withdrawalBalance = "";
-				if(lotEntry.getWithdrawalBalance() != null){
-					withdrawalBalance = lotEntry.getWithdrawalBalance() + lotEntry.getLotScaleNameAbbr();
-				}
-				newItem.getItemProperty(InventoryViewComponent.WITHDRAWAL).setValue(withdrawalBalance);
+			String withdrawalBalance = "";
+			if (lotEntry.getWithdrawalBalance() != null) {
+				withdrawalBalance = lotEntry.getWithdrawalBalance() + lotEntry.getLotScaleNameAbbr();
+			}
+			newItem.getItemProperty(InventoryViewComponent.WITHDRAWAL).setValue(withdrawalBalance);
 
-				String withdrawalStatus = "";
-				if(lotEntry.getWithdrawalStatus() != null){
-					withdrawalStatus = lotEntry.getWithdrawalStatus();
-				}
-				newItem.getItemProperty(InventoryViewComponent.STATUS).setValue(withdrawalStatus);
-
+			String withdrawalStatus = "";
+			if (lotEntry.getWithdrawalStatus() != null) {
+				withdrawalStatus = lotEntry.getWithdrawalStatus();
+			}
+			newItem.getItemProperty(InventoryViewComponent.STATUS).setValue(withdrawalStatus);
 
 			newItem.getItemProperty(InventoryViewComponent.COMMENTS).setValue(lotEntry.getCommentOfLot());
 			newItem.getItemProperty(InventoryViewComponent.STOCKID).setValue(lotEntry.getStockIds());
 			newItem.getItemProperty(InventoryViewComponent.LOT_ID).setValue(lotEntry.getLotId());
 
 			String seedSource = "";
-			if(germplasmListData != null){
+			if (germplasmListData != null) {
 				seedSource = germplasmListData.getSeedSource();
 			}
 

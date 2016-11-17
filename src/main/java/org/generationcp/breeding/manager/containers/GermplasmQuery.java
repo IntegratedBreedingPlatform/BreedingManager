@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
- *
+ * <p>
  * Generation Challenge Programme (GCP)
- *
- *
+ * <p>
+ * <p>
  * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
  * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
  *******************************************************************************/
@@ -52,7 +52,8 @@ import com.vaadin.ui.themes.BaseTheme;
 /**
  * An implementation of Query which is needed for using the LazyQueryContainer.
  */
-@Configurable public class GermplasmQuery implements Query {
+@Configurable
+public class GermplasmQuery implements Query {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmQuery.class);
 	private final QueryDefinition definition;
@@ -194,7 +195,6 @@ import com.vaadin.ui.themes.BaseTheme;
 		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 		return inventoryButton;
 	}
-
 
 	private GidLinkButtonClickListener createGermplasmListener(final Integer gid) {
 		return new GidLinkButtonClickListener(this.listManagerMain, String.valueOf(gid), this.viaToolUrl, this.showAddToList);
