@@ -1545,39 +1545,36 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		}
 	}
 
-	public void saveReservationChangesAction() {
+	public boolean saveListAction() {
 
-		if (this.hasUnsavedChanges()) {
+		if (this.validReservationsToSave.size() > 0) {
+			//If there are unsaved reservations,list will not be saved.
+			return false;
+		} else {
+			if (this.hasUnsavedChanges()) {
 
-			final List<Integer> alreadyAddedEntryIds = new ArrayList<Integer>();
-			final List<ListDataAndLotDetails> listDataAndLotDetails =
-					this.listInventoryTable.getInventoryTableDropHandler().getListDataAndLotDetails();
-			for (final ListDataAndLotDetails listDataAndLotDetail : listDataAndLotDetails) {
-				if (!alreadyAddedEntryIds.contains(listDataAndLotDetail.getEntryId())) {
-					this.dropHandler.addGermplasmFromList(listDataAndLotDetail.getListId(), listDataAndLotDetail.getSourceLrecId());
-					alreadyAddedEntryIds.add(listDataAndLotDetail.getEntryId());
+				final List<Integer> alreadyAddedEntryIds = new ArrayList<Integer>();
+				final List<ListDataAndLotDetails> listDataAndLotDetails =
+						this.listInventoryTable.getInventoryTableDropHandler().getListDataAndLotDetails();
+				for (final ListDataAndLotDetails listDataAndLotDetail : listDataAndLotDetails) {
+					if (!alreadyAddedEntryIds.contains(listDataAndLotDetail.getEntryId())) {
+						this.dropHandler.addGermplasmFromList(listDataAndLotDetail.getListId(), listDataAndLotDetail.getSourceLrecId());
+						alreadyAddedEntryIds.add(listDataAndLotDetail.getEntryId());
+					}
 				}
+
+				this.saveList(this.currentlySavedGermplasmList, false);
+
+				for (final ListDataAndLotDetails listDataAndLotDetail : listDataAndLotDetails) {
+					this.listInventoryTable.getInventoryTableDropHandler()
+							.assignLrecIdToRowsFromListWithEntryId(listDataAndLotDetail.getListId(), listDataAndLotDetail.getEntryId());
+				}
+
+				this.listInventoryTable.getInventoryTableDropHandler().resetListDataAndLotDetails();
 			}
-
-			this.saveList(this.currentlySavedGermplasmList, false);
-
-			for (final ListDataAndLotDetails listDataAndLotDetail : listDataAndLotDetails) {
-				this.listInventoryTable.getInventoryTableDropHandler()
-						.assignLrecIdToRowsFromListWithEntryId(listDataAndLotDetail.getListId(), listDataAndLotDetail.getEntryId());
-			}
-
-			this.listInventoryTable.getInventoryTableDropHandler().resetListDataAndLotDetails();
-
-
-
-			final boolean success = this.reserveInventoryAction
-					.saveReserveTransactions(this.getValidReservationsToSave(), this.currentlySavedGermplasmList.getId());
-
-			if (success) {
-				this.refreshInventoryColumns(this.getValidReservationsToSave());
-				this.resetListInventoryTableValues();
-			}
+			return true;
 		}
+
 	}
 
 

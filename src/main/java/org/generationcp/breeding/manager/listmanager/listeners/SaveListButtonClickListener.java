@@ -190,19 +190,30 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 					SaveListButtonClickListener.LOG.error("Error with saving Workbench activity.", ex);
 				}
 
-				if (showMessages) {
-					MessageNotifier.showMessage(SaveListButtonClickListener.this.source.getWindow(),
-							SaveListButtonClickListener.this.messageSource.getMessage(Message.SUCCESS),
-							SaveListButtonClickListener.this.messageSource.getMessage(Message.LIST_DATA_SAVED_SUCCESS), 3000);
-				}
-
+				boolean success = true;
 				if (callSaveReservation) {
-					SaveListButtonClickListener.this.source.saveReservationChangesAction();
+					success = SaveListButtonClickListener.this.source.saveListAction();
 				}
 
-				SaveListButtonClickListener.this.source.resetUnsavedChangesFlag();
+				if (success) {
+					SaveListButtonClickListener.this.source.resetUnsavedChangesFlag();
+					SaveListButtonClickListener.this.source.getSource().closeList(currentlySavedList);
+					if (showMessages) {
+						MessageNotifier.showMessage(SaveListButtonClickListener.this.source.getWindow(),
+								SaveListButtonClickListener.this.messageSource.getMessage(Message.SUCCESS),
+								SaveListButtonClickListener.this.messageSource.getMessage(Message.LIST_DATA_SAVED_SUCCESS), 3000);
+					}
+				} else {
 
-				SaveListButtonClickListener.this.source.getSource().closeList(currentlySavedList);
+					MessageNotifier.showError(SaveListButtonClickListener.this.source.getWindow(),
+							SaveListButtonClickListener.this.messageSource.getMessage(Message.ERROR),
+							SaveListButtonClickListener.this.messageSource
+									.getMessage(Message.UNSAVED_RESERVATION_WARNING_WHILE_SAVING_LIST));
+				}
+
+
+
+
 			}
 		});
 	}

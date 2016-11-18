@@ -290,7 +290,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 
 	public void saveReservationChanges() {
 		if (this.source instanceof ListBuilderComponent) {
-			((ListBuilderComponent) this.source).saveReservationChangesAction();
+			((ListBuilderComponent) this.source).saveListAction();
 		}
 	}
 
