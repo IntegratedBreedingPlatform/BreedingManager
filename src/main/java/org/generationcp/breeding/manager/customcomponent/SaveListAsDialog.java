@@ -416,7 +416,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 		return this.germplasmList != null && this.germplasmList.getStatus() >= 100;
 	}
 
-	private boolean isListNameValid(final ListNameField listNameField) {
+	protected boolean isListNameValid(final ListNameField listNameField) {
 
 		try {
 			listNameField.validate();
