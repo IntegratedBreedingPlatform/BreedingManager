@@ -457,6 +457,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 
 	private void setNeededValuesForNewListEntries(final GermplasmList list, final List<GermplasmListData> listEntries) {
 		for (final GermplasmListData listEntry : listEntries) {
+			listEntry.setId(null);
 			listEntry.setList(list);
 			listEntry.setStatus(Integer.valueOf(0));
 			listEntry.setLocalRecordId(Integer.valueOf(0));
