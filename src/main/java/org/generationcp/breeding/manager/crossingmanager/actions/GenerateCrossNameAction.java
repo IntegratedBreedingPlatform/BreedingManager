@@ -112,7 +112,7 @@ public class GenerateCrossNameAction {
 		return sb.toString();
 	}
 
-	public String buildNextNameInSequence(final CrossingManagerSetting setting, Germplasm germplasm, Integer number) {
+	public String buildNextNameInSequence(final Integer methodId, final Germplasm germplasm, final Integer number) {
 
 		final Pattern processCodePattern = Pattern.compile(ExpressionHelper.PROCESS_CODE_PATTERN);
 
@@ -120,8 +120,8 @@ public class GenerateCrossNameAction {
 		sb.append(this.buildPrefixString());
 		sb.append(this.getNumberWithLeadingZeroesAsString(number));
 
-		if (setting.getBreedingMethodSetting().getMethodId() != null) {
-			final Method method = this.germplasmDataManager.getMethodByID(setting.getBreedingMethodSetting().getMethodId());
+		if (methodId != null) {
+			final Method method = this.germplasmDataManager.getMethodByID(methodId);
 			if (!StringUtils.isEmpty(method.getSuffix())) {
 				this.setting.setSuffix(method.getSuffix());
 			}
@@ -154,12 +154,17 @@ public class GenerateCrossNameAction {
 						.getGpid2()) : 0, germplasm.getGpid1() != null ? Integer.valueOf(germplasm.getGpid1()) : 0,
 						this.germplasmDataManager, this.pedigreeDataManager);
 
-		try {
-			return (String) rule.runRule(crossingRuleExecutionContext);
-		} catch (final RuleException e) {
-			LOG.error(e.getMessage(), e);
-			return "";
+		if (rule != null) {
+			try {
+				return (String) rule.runRule(crossingRuleExecutionContext);
+			} catch (final RuleException e) {
+				LOG.error(e.getMessage(), e);
+				return "";
+			}
 		}
+
+		return "";
+
 	}
 
 	protected String replaceExpressionWithValue(StringBuilder container, String processCode, String value) {
@@ -187,6 +192,10 @@ public class GenerateCrossNameAction {
 		}
 		sb.append(number);
 		return sb.toString();
+	}
+
+	public void setSetting(final CrossNameSetting setting) {
+		this.setting = setting;
 	}
 
 }

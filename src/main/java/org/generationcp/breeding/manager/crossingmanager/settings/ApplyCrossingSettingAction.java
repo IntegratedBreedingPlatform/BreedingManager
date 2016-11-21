@@ -173,7 +173,7 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 				Germplasm germplasm = entry.getKey();
 				Name nameObject = entry.getValue();
 				String oldCrossName = nameObject.getNval();
-				String nextName = generateNameAction.buildNextNameInSequence(this.setting, germplasm, ctr++);
+				String nextName = generateNameAction.buildNextNameInSequence(this.setting.getBreedingMethodSetting().getMethodId(), germplasm, ctr++);
 				nameObject.setNval(nextName);
 
 				Integer tempGid = germplasm.getGid();

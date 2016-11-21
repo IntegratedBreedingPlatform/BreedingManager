@@ -190,7 +190,7 @@ public class SaveCrossesMadeAction implements Serializable {
 					 */
 					final Name name = currentCrossesMap.get(currentGplasm);
 					if (setting != null) {
-						name.setNval(generateAction.buildNextNameInSequence(setting, currentGplasm, nextNumberInSequence++));
+						name.setNval(generateAction.buildNextNameInSequence(setting.getBreedingMethodSetting().getMethodId(), currentGplasm, nextNumberInSequence++));
 					}
 
 					crossesToInsert.put(currentGplasm, name);
