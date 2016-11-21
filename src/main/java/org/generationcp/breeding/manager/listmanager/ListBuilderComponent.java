@@ -30,8 +30,6 @@ import org.generationcp.breeding.manager.customcomponent.UnsavedChangesSource;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
-import org.generationcp.breeding.manager.inventory.SeedInventoryImportFileComponent;
-import org.generationcp.breeding.manager.inventory.SeedInventoryListExporter;
 import org.generationcp.breeding.manager.inventory.InventoryDropTargetContainer;
 import org.generationcp.breeding.manager.inventory.ListDataAndLotDetails;
 import org.generationcp.breeding.manager.inventory.ReservationStatusWindow;
@@ -39,6 +37,8 @@ import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
 import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryUtil;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
+import org.generationcp.breeding.manager.inventory.SeedInventoryImportFileComponent;
+import org.generationcp.breeding.manager.inventory.SeedInventoryListExporter;
 import org.generationcp.breeding.manager.inventory.exception.SeedInventoryExportException;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.dialog.ListManagerCopyToListDialog;
@@ -48,6 +48,7 @@ import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandle
 import org.generationcp.breeding.manager.listmanager.util.DropHandlerMethods.ListUpdatedEvent;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
+import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
@@ -242,26 +243,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		}
 	}
 
-	private void createLabelsAction() {
-		final Integer listId = this.currentlySavedGermplasmList.getId();
-
-		if (listId != null) {
-			// Navigate to labels printing
-			// we use this workaround using javascript for navigation, because Vaadin 6 doesn't have good ways
-			// of navigating in and out of the Vaadin application
-			final String urlRedirectionScript = "window.location = '" + getApplication().getURL().getProtocol() + "://" + getApplication().getURL().getHost() + ":"
-					+ getApplication().getURL().getPort() + "/Fieldbook/LabelPrinting/specifyLabelDetails/inventory/" + listId
-					+ "?restartApplication&loggedInUserId="
-					+ this.contextUtil.getContextInfoFromSession().getLoggedInUserId() + "&selectedProjectId="
-					+ this.contextUtil.getContextInfoFromSession().getSelectedProjectId()
-					+ "&authToken=" + this.contextUtil.getContextInfoFromSession().getAuthToken() + "';";
-
-			getApplication().getMainWindow().executeJavaScript(urlRedirectionScript);
-
-		} else {
-			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.PRINT_LABELS),
-					this.messageSource.getMessage(Message.ERROR_COULD_NOT_CREATE_LABELS));
-		}
+	protected void createLabelsAction() {
+		ListCommonActionsUtil.handleCreateLabelsAction(this.currentlySavedGermplasmList.getId(), inventoryDataManager, messageSource,
+				contextUtil, getApplication(), getWindow());
 	}
 
 
