@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AddColumnContextMenuOption;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
@@ -332,10 +333,20 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 					inventoryButton.setDescription("Click to view Inventory Details");
 				}
 
-				// #2 Seed Reserved
-				String seedRes = SaveListButtonClickListener.STRING_DASH;
-				if (entry.getInventoryInfo().getReservedLotCount() != null && entry.getInventoryInfo().getReservedLotCount() != 0) {
-					seedRes = entry.getInventoryInfo().getReservedLotCount().toString().trim();
+
+				// WITHDRAWAL
+				StringBuilder withdrawal = new StringBuilder();
+				if (entry.getInventoryInfo().getDistinctCountWithdrawalScale() == null
+						|| entry.getInventoryInfo().getDistinctCountWithdrawalScale() == 0) {
+					withdrawal.append("");
+				} else if (entry.getInventoryInfo().getDistinctCountWithdrawalScale() == 1) {
+					withdrawal.append(entry.getInventoryInfo().getWithdrawalBalance());
+					withdrawal.append(" ");
+
+					if (!StringUtils.isEmpty(entry.getInventoryInfo().getWithdrawalScale())) {
+						withdrawal.append(entry.getInventoryInfo().getWithdrawalScale());
+					}
+
 				}
 
 				// GROUP ID - the maintenance group id(gid) of a germplasm
@@ -355,7 +366,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 				item.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(entry.getGroupName());
 				item.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
 				item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-				item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
+				item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(withdrawal.toString());
 				item.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIDs);
 			}
 
