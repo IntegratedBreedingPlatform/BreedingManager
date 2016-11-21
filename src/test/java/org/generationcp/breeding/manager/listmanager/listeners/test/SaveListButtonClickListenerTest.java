@@ -1,12 +1,15 @@
-
 package org.generationcp.breeding.manager.listmanager.listeners.test;
 
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
+import org.generationcp.breeding.manager.listmanager.ListManagerMain;
+import org.generationcp.breeding.manager.listmanager.ListSelectionComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.SaveListButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -22,6 +25,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
+
+import com.beust.jcommander.internal.Lists;
 
 public class SaveListButtonClickListenerTest {
 
@@ -181,7 +186,8 @@ public class SaveListButtonClickListenerTest {
 		Assert.assertTrue("CROSS-FEMALE GID is added to the newTable.", ++noOfColumnsAdded == newTable.getColumnHeaders().length);
 
 		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "CROSS-FEMALE PREFERRED NAME");
-		Assert.assertTrue("CROSS-FEMALE PREFERRED NAME is added to the newTable.", ++noOfColumnsAdded == newTable.getColumnHeaders().length);
+		Assert.assertTrue("CROSS-FEMALE PREFERRED NAME is added to the newTable.",
+				++noOfColumnsAdded == newTable.getColumnHeaders().length);
 
 		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "CROSS-MALE GID");
 		Assert.assertTrue("CROSS-MALE GID is added to the newTable.", ++noOfColumnsAdded == newTable.getColumnHeaders().length);
@@ -191,5 +197,47 @@ public class SaveListButtonClickListenerTest {
 
 		this.saveListener.createContainerPropertyOfAddedColumnToTempTable(newTable, "DUMMY COLUMN");
 		Assert.assertTrue("DUMMY COLUMN is added to the newTable.", noOfColumnsAdded == newTable.getColumnHeaders().length);
+	}
+
+	@Test
+	public void testDoSaveActionWhenUnsavedReservationThrowErrorMessageOfUnsavedReservation() {
+		ListManagerMain listManagerMain = Mockito.mock(ListManagerMain.class);
+		ListSelectionComponent listSelectionComponent = Mockito.mock(ListSelectionComponent.class);
+		BuildNewListDropHandler buildNewListDropHandler = Mockito.mock(BuildNewListDropHandler.class);
+		Mockito.when(listManagerMain.getListSelectionComponent()).thenReturn(listSelectionComponent);
+
+		Mockito.when(this.source.getSource()).thenReturn(listManagerMain);
+		GermplasmList currentlySavedGermplasmList = GermplasmListTestDataInitializer.createGermplasmListWithListData(1, 1);
+		Mockito.when(this.source.getCurrentlySavedGermplasmList()).thenReturn(currentlySavedGermplasmList);
+		Mockito.when(this.source.getCurrentlySetGermplasmListInfo()).thenReturn(this.germplasmList);
+		Mockito.when(this.source.getBuildNewListDropHandler()).thenReturn(buildNewListDropHandler);
+		Mockito.when(this.source.saveListAction()).thenReturn(false);
+		Mockito.when(this.dataManager.addGermplasmList(this.germplasmList)).thenReturn(1);
+		Mockito.when(this.dataManager.getGermplasmListById(Mockito.isA(Integer.class))).thenReturn(currentlySavedGermplasmList);
+
+		this.saveListener.doSaveAction(true, true);
+		Mockito.verify(this.messageSource).getMessage(Message.UNSAVED_RESERVATION_WARNING_WHILE_SAVING_LIST);
+	}
+
+	@Test
+	public void testDoSaveActionWithListSavedSuccessfully() {
+		ListManagerMain listManagerMain = Mockito.mock(ListManagerMain.class);
+		ListSelectionComponent listSelectionComponent = Mockito.mock(ListSelectionComponent.class);
+		BuildNewListDropHandler buildNewListDropHandler = Mockito.mock(BuildNewListDropHandler.class);
+		Mockito.when(listManagerMain.getListSelectionComponent()).thenReturn(listSelectionComponent);
+
+		Mockito.when(this.source.getSource()).thenReturn(listManagerMain);
+		GermplasmList currentlySavedGermplasmList = GermplasmListTestDataInitializer.createGermplasmListWithListData(1, 1);
+		Mockito.when(this.source.getCurrentlySavedGermplasmList()).thenReturn(currentlySavedGermplasmList);
+		Mockito.when(this.source.getCurrentlySetGermplasmListInfo()).thenReturn(this.germplasmList);
+		Mockito.when(this.source.getBuildNewListDropHandler()).thenReturn(buildNewListDropHandler);
+		Mockito.when(this.source.saveListAction()).thenReturn(true);
+
+		Mockito.when(this.dataManager.addGermplasmList(this.germplasmList)).thenReturn(1);
+		Mockito.when(this.dataManager.getGermplasmListById(Mockito.isA(Integer.class))).thenReturn(currentlySavedGermplasmList);
+
+		this.saveListener.doSaveAction(true, true);
+		Mockito.verify(this.messageSource).getMessage(Message.LIST_DATA_SAVED_SUCCESS);
+
 	}
 }
