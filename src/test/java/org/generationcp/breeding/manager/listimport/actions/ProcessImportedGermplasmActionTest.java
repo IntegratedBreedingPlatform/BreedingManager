@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.generationcp.breeding.manager.action.SaveGermplasmListActionSource;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
 import org.generationcp.breeding.manager.listimport.GermplasmFieldsComponent;
@@ -358,5 +359,84 @@ public class ProcessImportedGermplasmActionTest {
 		Mockito.doReturn(true).when(this.germplasmDetailsComponent).automaticallyAcceptSingleMatchesCheckbox();
 		Assert.assertTrue("Germplasm Selection Window should be displayed",
 				this.processImportedGermplasmAction.isNeedToDisplayGermplasmSelectionWindow(2));
+	}
+	
+	@Test
+	public void testCreateGermplasmObjectWithNoSelectedLocation(){
+		Integer gid = 3;
+		Integer gnpgs = -1;
+		Integer gpid1= 1;
+		Integer gpid2 = 2;
+		Integer ibdbUserId = 10001;
+		Integer date = 20163012;
+		
+		Germplasm germplasm = this.processImportedGermplasmAction.createGermplasmObject(gid, gnpgs, gpid1, gpid2, ibdbUserId, date);
+		
+		Assert.assertEquals("The gid should be " + gid, gid, germplasm.getGid());
+		Assert.assertEquals("The user id should be " + ibdbUserId, ibdbUserId, germplasm.getUserId());
+		Assert.assertEquals("The location id should be " + ProcessImportedGermplasmAction.DEFAULT_LOCATION_ID, ProcessImportedGermplasmAction.DEFAULT_LOCATION_ID, germplasm.getLocationId());
+		Assert.assertEquals("The date should be " + date, date, germplasm.getGdate());
+		Assert.assertEquals("The method should be " + ProcessImportedGermplasmAction.UNKNOWN_DERIVATIVE_METHOD, ProcessImportedGermplasmAction.UNKNOWN_DERIVATIVE_METHOD, germplasm.getMethodId());
+		Assert.assertEquals("The gnpgs should be " + gnpgs, gnpgs, germplasm.getGnpgs());
+		Assert.assertEquals("The gpid1 should be " + gpid1, gpid1, germplasm.getGpid1());
+		Assert.assertEquals("The gpid2 should be " + gpid2, gpid2, germplasm.getGpid2());
+		Assert.assertTrue("The lgid should be 0", 0 == germplasm.getLgid());
+		Assert.assertTrue("The grplace should be 0", 0 == germplasm.getGrplce());
+		Assert.assertTrue("The reference id should be 0", 0 == germplasm.getReferenceId());
+		Assert.assertTrue("The MGID should be 0", 0 == germplasm.getMgid());
+	}
+	
+	@Test
+	public void testCreateGermplasmObjectWithSelectedLocation(){
+		Integer gid = 3;
+		Integer gnpgs = -1;
+		Integer gpid1= 1;
+		Integer gpid2 = 2;
+		String locationId = "1";
+		ComboBox locationComboBox = this.processImportedGermplasmAction.getGermplasmFieldsComponent().getLocationComboBox();
+		locationComboBox.addItem(locationId);
+		locationComboBox.setItemCaption(locationId, "1");
+		locationComboBox.setValue(locationId);
+		Germplasm germplasm = this.processImportedGermplasmAction.createGermplasmObject(gid, gnpgs, gpid1, gpid2, IBDB_USER_ID, DATE_INT_VALUE);
+		
+		Assert.assertEquals("The gid should be " + gid, gid, germplasm.getGid());
+		Assert.assertEquals("The user id should be " + IBDB_USER_ID, IBDB_USER_ID, germplasm.getUserId());
+		Assert.assertEquals("The location id should be " + locationId, locationId, germplasm.getLocationId().toString());
+		Assert.assertEquals("The date should be " + DATE_INT_VALUE, DATE_INT_VALUE, germplasm.getGdate());
+		Assert.assertEquals("The method should be " + ProcessImportedGermplasmAction.UNKNOWN_DERIVATIVE_METHOD, ProcessImportedGermplasmAction.UNKNOWN_DERIVATIVE_METHOD, germplasm.getMethodId());
+		Assert.assertEquals("The gnpgs should be " + gnpgs, gnpgs, germplasm.getGnpgs());
+		Assert.assertEquals("The gpid1 should be " + gpid1, gpid1, germplasm.getGpid1());
+		Assert.assertEquals("The gpid2 should be " + gpid2, gpid2, germplasm.getGpid2());
+		Assert.assertTrue("The lgid should be 0", 0 == germplasm.getLgid());
+		Assert.assertTrue("The grplace should be 0", 0 == germplasm.getGrplce());
+		Assert.assertTrue("The reference id should be 0", 0 == germplasm.getReferenceId());
+		Assert.assertTrue("The MGID should be 0", 0 == germplasm.getMgid());
+	}
+	
+	@Test
+	public void testCreateNameObjectWithNoSelectedLocation() {
+		Name name= this.processImportedGermplasmAction.createNameObject(IBDB_USER_ID, DATE_INT_VALUE, DESIGNATION);
+		
+		Assert.assertEquals("The user id should be " + IBDB_USER_ID, IBDB_USER_ID, name.getUserId());
+		Assert.assertEquals("The name value should be " + DESIGNATION, DESIGNATION, name.getNval());
+		Assert.assertEquals("The location id should be " + ProcessImportedGermplasmAction.DEFAULT_LOCATION_ID, ProcessImportedGermplasmAction.DEFAULT_LOCATION_ID, name.getLocationId());
+		Assert.assertEquals("The date should be " + DATE_INT_VALUE, DATE_INT_VALUE, name.getNdate());
+		Assert.assertTrue("The reference id should be 0", 0 == name.getReferenceId());
+	}
+	
+	@Test
+	public void testCreateNameObjectWithSelectedLocation() {
+		String locationId = "1";
+		ComboBox locationComboBox = this.processImportedGermplasmAction.getGermplasmFieldsComponent().getLocationComboBox();
+		locationComboBox.addItem(locationId);
+		locationComboBox.setItemCaption(locationId, "1");
+		locationComboBox.setValue(locationId);
+		Name name= this.processImportedGermplasmAction.createNameObject(IBDB_USER_ID, DATE_INT_VALUE, DESIGNATION);
+		
+		Assert.assertEquals("The user id should be " + IBDB_USER_ID, IBDB_USER_ID, name.getUserId());
+		Assert.assertEquals("The name value should be " + DESIGNATION, DESIGNATION, name.getNval());
+		Assert.assertEquals("The location id should be " + locationId, locationId, name.getLocationId().toString());
+		Assert.assertEquals("The date should be " + DATE_INT_VALUE, DATE_INT_VALUE, name.getNdate());
+		Assert.assertTrue("The reference id should be 0", 0 == name.getReferenceId());
 	}
 }
