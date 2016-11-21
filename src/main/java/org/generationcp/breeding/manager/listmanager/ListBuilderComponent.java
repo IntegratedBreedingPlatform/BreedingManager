@@ -190,9 +190,14 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		public void contextItemClick(final ClickEvent event) {
 			final ContextMenuItem clickedItem = event.getClickedItem();
 
-			if(clickedItem.getName()
-					.equals(ListBuilderComponent.this.messageSource.getMessage(Message.SAVE_RESERVATIONS))){
-				synchronized (ReserveInventoryAction.class){
+			if(clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SAVE_RESERVATIONS))){
+
+				/*
+				* Save reservation needs to be synchronized on ListBuilderComponent lock object.
+				* This will ensure lock will apply to all instances of ListBuilderComponent invoking save reservation.
+				*/
+
+				synchronized (ListBuilderComponent.class){
 					final TransactionTemplate transactionTemplateForSavingReservation = new TransactionTemplate(ListBuilderComponent.this
 							.transactionManager);
 					transactionTemplateForSavingReservation.execute(new TransactionCallbackWithoutResult() {
@@ -1206,7 +1211,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			final Item item = this.tableWithSelectAllLayout.getTable().getItem(entryId);
 
 			final GermplasmListData listEntry = new GermplasmListData();
-
+            listEntry.setId(entryId);
 			final Button designationButton = (Button) item.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue();
 			final String designation = designationButton.getCaption();
 			if (designation != null) {
@@ -1542,39 +1547,36 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		}
 	}
 
-	public void saveReservationChangesAction() {
+	public boolean saveListAction() {
 
-		if (this.hasUnsavedChanges()) {
+		if (this.validReservationsToSave.size() > 0) {
+			//If there are unsaved reservations,list will not be saved.
+			return false;
+		} else {
+			if (this.hasUnsavedChanges()) {
 
-			final List<Integer> alreadyAddedEntryIds = new ArrayList<Integer>();
-			final List<ListDataAndLotDetails> listDataAndLotDetails =
-					this.listInventoryTable.getInventoryTableDropHandler().getListDataAndLotDetails();
-			for (final ListDataAndLotDetails listDataAndLotDetail : listDataAndLotDetails) {
-				if (!alreadyAddedEntryIds.contains(listDataAndLotDetail.getEntryId())) {
-					this.dropHandler.addGermplasmFromList(listDataAndLotDetail.getListId(), listDataAndLotDetail.getSourceLrecId());
-					alreadyAddedEntryIds.add(listDataAndLotDetail.getEntryId());
+				final List<Integer> alreadyAddedEntryIds = new ArrayList<Integer>();
+				final List<ListDataAndLotDetails> listDataAndLotDetails =
+						this.listInventoryTable.getInventoryTableDropHandler().getListDataAndLotDetails();
+				for (final ListDataAndLotDetails listDataAndLotDetail : listDataAndLotDetails) {
+					if (!alreadyAddedEntryIds.contains(listDataAndLotDetail.getEntryId())) {
+						this.dropHandler.addGermplasmFromList(listDataAndLotDetail.getListId(), listDataAndLotDetail.getSourceLrecId());
+						alreadyAddedEntryIds.add(listDataAndLotDetail.getEntryId());
+					}
 				}
+
+				this.saveList(this.currentlySavedGermplasmList, false);
+
+				for (final ListDataAndLotDetails listDataAndLotDetail : listDataAndLotDetails) {
+					this.listInventoryTable.getInventoryTableDropHandler()
+							.assignLrecIdToRowsFromListWithEntryId(listDataAndLotDetail.getListId(), listDataAndLotDetail.getEntryId());
+				}
+
+				this.listInventoryTable.getInventoryTableDropHandler().resetListDataAndLotDetails();
 			}
-
-			this.saveList(this.currentlySavedGermplasmList, false);
-
-			for (final ListDataAndLotDetails listDataAndLotDetail : listDataAndLotDetails) {
-				this.listInventoryTable.getInventoryTableDropHandler()
-						.assignLrecIdToRowsFromListWithEntryId(listDataAndLotDetail.getListId(), listDataAndLotDetail.getEntryId());
-			}
-
-			this.listInventoryTable.getInventoryTableDropHandler().resetListDataAndLotDetails();
-
-
-
-			final boolean success = this.reserveInventoryAction
-					.saveReserveTransactions(this.getValidReservationsToSave(), this.currentlySavedGermplasmList.getId());
-
-			if (success) {
-				this.refreshInventoryColumns(this.getValidReservationsToSave());
-				this.resetListInventoryTableValues();
-			}
+			return true;
 		}
+
 	}
 
 
@@ -1589,6 +1591,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 				this.resetListInventoryTableValues();
 				MessageNotifier.showMessage(this.source.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
 						this.messageSource.getMessage(Message.SAVE_RESERVED_AND_CANCELLED_RESERVATION));
+			}else {
+				MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR),
+						this.messageSource.getMessage(Message.INVENTORY_NOT_AVAILABLE_BALANCE));
 			}
 
 		}
@@ -2073,5 +2078,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
+	}
+
+	public Table getListDataTable() {
+		return listDataTable;
 	}
 }
