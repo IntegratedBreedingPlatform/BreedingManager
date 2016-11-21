@@ -94,6 +94,24 @@ public class GenerateCrossNameActionTest {
 		Assert.assertEquals("PREFIX1", designationName);
 	}
 
+	@Test
+	public void testBuildDesignationNameInSequenceMethodIsNotSpecified() throws RuleException {
+
+		final int sequenceNumber = 1;
+
+		final Germplasm germplasm = new Germplasm();
+		germplasm.setGpid1(TEST_FEMALE_GID);
+		germplasm.setGpid2(TEST_MALE_GID);
+
+		final String designationName = this.generateCrossNameAction.buildNextNameInSequence(null, germplasm,
+				sequenceNumber);
+
+		Mockito.verify(this.germplasmDataManager, Mockito.times(0)).getMethodByID(TEST_BREEDING_METHOD_ID);
+		Mockito.verify(this.processCodeOrderedRule, Mockito.times(0)).runRule(Mockito.any(RuleExecutionContext.class));
+
+		Assert.assertEquals("PREFIX1", designationName);
+	}
+
 	private CrossNameSetting createCrossNameSetting() {
 		final CrossNameSetting setting = new CrossNameSetting();
 		setting.setPrefix("PREFIX");
