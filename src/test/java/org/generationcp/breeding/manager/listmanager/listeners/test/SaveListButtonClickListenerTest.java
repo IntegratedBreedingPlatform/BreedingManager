@@ -270,5 +270,7 @@ public class SaveListButtonClickListenerTest {
 		this.saveListener.doSaveAction(true, true);
 		Mockito.verify(this.messageSource).getMessage(Message.LIST_DATA_SAVED_SUCCESS);
 		Mockito.verify(this.listDataTable).requestRepaint();
+		Mockito.verify(this.source).resetListInventoryTableValues();
+
 	}
 }
