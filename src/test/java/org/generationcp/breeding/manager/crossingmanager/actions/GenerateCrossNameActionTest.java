@@ -25,7 +25,7 @@ public class GenerateCrossNameActionTest {
 	public static final Integer TEST_MALE_GID = 54321;
 	public static final Integer TEST_BREEDING_METHOD_ID = 5;
 	public static final String TEST_PROCESS_CODE = "[BC]";
-
+	public static final String PREFIX = "PREFIX";
 
 	@Mock
 	private GermplasmDataManager germplasmDataManager;
@@ -88,7 +88,7 @@ public class GenerateCrossNameActionTest {
 		final String designationName = this.generateCrossNameAction.buildNextNameInSequence(TEST_BREEDING_METHOD_ID, germplasm,
 				sequenceNumber);
 
-		// Since there's no process code in methdod's suffix, the processCodeOrderedRule should not be invoked.
+		// Since there's no process code in method's suffix, the processCodeOrderedRule should not be invoked.
 		Mockito.verify(this.processCodeOrderedRule, Mockito.times(0)).runRule(Mockito.any(RuleExecutionContext.class));
 
 		Assert.assertEquals("PREFIX1", designationName);
@@ -98,15 +98,20 @@ public class GenerateCrossNameActionTest {
 	public void testBuildDesignationNameInSequenceMethodIsNotSpecified() throws RuleException {
 
 		final int sequenceNumber = 1;
+		// methodId is null if breeding method is not specified
+		final Integer methodId = null;
 
 		final Germplasm germplasm = new Germplasm();
 		germplasm.setGpid1(TEST_FEMALE_GID);
 		germplasm.setGpid2(TEST_MALE_GID);
 
-		final String designationName = this.generateCrossNameAction.buildNextNameInSequence(null, germplasm,
+		final String designationName = this.generateCrossNameAction.buildNextNameInSequence(methodId, germplasm,
 				sequenceNumber);
 
+		// If the method is not specified, the germplasmDataManager.getMethodByID should not be invoked.
 		Mockito.verify(this.germplasmDataManager, Mockito.times(0)).getMethodByID(TEST_BREEDING_METHOD_ID);
+
+		// Since there's no process code in method's suffix, the processCodeOrderedRule should not be invoked.
 		Mockito.verify(this.processCodeOrderedRule, Mockito.times(0)).runRule(Mockito.any(RuleExecutionContext.class));
 
 		Assert.assertEquals("PREFIX1", designationName);
@@ -114,7 +119,7 @@ public class GenerateCrossNameActionTest {
 
 	private CrossNameSetting createCrossNameSetting() {
 		final CrossNameSetting setting = new CrossNameSetting();
-		setting.setPrefix("PREFIX");
+		setting.setPrefix(PREFIX);
 		return setting;
 	}
 
