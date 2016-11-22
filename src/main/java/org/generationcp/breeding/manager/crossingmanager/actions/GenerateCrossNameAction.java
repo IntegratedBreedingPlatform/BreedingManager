@@ -114,7 +114,7 @@ public class GenerateCrossNameAction {
 
 	public String buildNextNameInSequence(final Integer methodId, final Germplasm germplasm, final Integer number) {
 
-		final Pattern processCodePattern = Pattern.compile(ExpressionHelper.PROCESS_CODE_PATTERN);
+		String suffix = "";
 
 		StringBuilder sb = new StringBuilder();
 		sb.append(this.buildPrefixString());
@@ -123,14 +123,15 @@ public class GenerateCrossNameAction {
 		if (methodId != null) {
 			final Method method = this.germplasmDataManager.getMethodByID(methodId);
 			if (!StringUtils.isEmpty(method.getSuffix())) {
-				this.setting.setSuffix(method.getSuffix());
+				suffix = method.getSuffix().trim();
 			}
 		}
 
-		if (!StringUtils.isEmpty(this.setting.getSuffix())) {
+		if (!StringUtils.isEmpty(suffix)) {
 
-			final String suffix = this.setting.getSuffix().trim();
+			final Pattern processCodePattern = Pattern.compile(ExpressionHelper.PROCESS_CODE_PATTERN);
 			final Matcher matcherProcessCode = processCodePattern.matcher(suffix);
+
 			String processCode = "";
 			String processCodeValue = "";
 
