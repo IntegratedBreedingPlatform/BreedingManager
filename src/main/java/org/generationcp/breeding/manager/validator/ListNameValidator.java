@@ -2,6 +2,7 @@
 package org.generationcp.breeding.manager.validator;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
@@ -27,6 +28,9 @@ public class ListNameValidator implements Validator {
 
 	private static final String DEFAULT_ERROR = "Please specify the name and/or location of the list";
 	private static final String SAME_PARENT_FOLDER_LIST_NAME_ERROR = "List Name and its Parent Folder must not have the same name";
+	private static final String INVALID_LIST_NAME_PATTERN = "[\\\\/:*?|<>\"\\\\.]";
+	private static final Pattern invalidListNamePattern = Pattern.compile(INVALID_LIST_NAME_PATTERN);
+
 
 	private String errorDetails;
 	private String parentFolder;
@@ -94,7 +98,9 @@ public class ListNameValidator implements Validator {
 		} else if (ListSelectorComponent.LISTS.equalsIgnoreCase(listName)) {
 			this.errorDetails = "Cannot use \"Lists\" as item name.";
 			isValid = false;
-
+		} else if (invalidListNamePattern.matcher(listName).find()) {
+			this.errorDetails = this.messageSource.getMessage(Message.INVALID_LIST_NAME);
+			isValid = false;
 		} else {
 			try {
 				List<GermplasmList> lists =
