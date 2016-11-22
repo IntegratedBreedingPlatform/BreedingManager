@@ -412,6 +412,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	private ReserveInventoryAction reserveInventoryAction;
 	private Map<ListEntryLotDetails, Double> validReservationsToSave;
 
+  	private long listEntriesCount;
+
 	public ListBuilderComponent() {
 		super();
 		this.reserveInventoryAction =  new ReserveInventoryAction(this);
@@ -1585,7 +1587,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 						.currentlySavedGermplasmList.getId());
 
 			if(success){
-				this.refreshInventoryColumns(this.getValidReservationsToSave());
+				this.resetListDataTableValues();
 				this.resetListInventoryTableValues();
 				MessageNotifier.showMessage(this.source.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
 						this.messageSource.getMessage(Message.SAVE_RESERVED_AND_CANCELLED_RESERVATION));
@@ -1725,7 +1727,101 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.refreshInventoryColumns(entryIds);
 	}
 
-	@Override
+ 	 public void resetListDataTableValues() {
+
+		this.listDataTable.setEditable(false);
+		this.loadEntriesToListDataTable();
+		this.listDataTable.refreshRowCache();
+		this.listDataTable.setImmediate(true);
+		this.listDataTable.requestRepaint();
+
+  	}
+
+  	public void loadEntriesToListDataTable() {
+		try {
+	  		this.listEntriesCount = this.germplasmListManager.countGermplasmListDataByListId(this.currentlySavedGermplasmList.getId());
+		} catch (final MiddlewareQueryException ex) {
+	  		ListBuilderComponent.LOG.error("Error with retrieving count of list entries for list: " + this.currentlySavedGermplasmList.getId(), ex);
+	 	 this.listEntriesCount = 0;
+		}
+
+		if (this.listEntriesCount > 0) {
+	  		final List<GermplasmListData> listEntries = new ArrayList<>();
+		  	this.getAllListEntries(listEntries);
+
+	  		for (final GermplasmListData entry : listEntries) {
+					this.addListEntryToTable(entry);
+	  		}
+		}
+  	}
+
+  	private void getAllListEntries(final List<GermplasmListData> listEntries) {
+		final List<GermplasmListData> entries;
+		try {
+		  entries = this.inventoryDataManager
+			  .getLotCountsForList(this.currentlySavedGermplasmList.getId(), 0, Long.valueOf(this.listEntriesCount).intValue());
+		  listEntries.addAll(entries);
+		} catch (final MiddlewareQueryException ex) {
+	 		 ListBuilderComponent.LOG.error("Error with retrieving list entries for list: " + this.currentlySavedGermplasmList.getId(), ex);
+	 		 throw ex;
+		}
+  	}
+
+ 	 void addListEntryToTable(final GermplasmListData listData) {
+			final Item item = this.listDataTable.getItem(listData.getId());
+
+			// #1 Available Inventory
+
+			// default value
+			String availInv = "-";
+			if (listData.getInventoryInfo().getLotCount().intValue() != 0) {
+	  			availInv = listData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
+			}
+
+			final Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(this.source, this.currentlySavedGermplasmList.getId(), listData.getId(),
+					listData.getGid()));
+
+			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
+			inventoryButton.setDescription("Click to view Inventory Details");
+
+				if ("-".equalsIgnoreCase(availInv)) {
+				  inventoryButton.setEnabled(false);
+				  inventoryButton.setDescription("No Lot for this Germplasm");
+				} else {
+				  inventoryButton.setDescription("Click to view Inventory Details");
+				}
+				item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
+
+
+				final Button gidButton = (Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue();
+				String gidString = "";
+
+				if (gidButton != null) {
+				  gidString = gidButton.getCaption();
+				}
+
+				this.updateAvailInvValues(Integer.valueOf(gidString), availInv);
+
+				// WITHDRAWAL
+				StringBuilder withdrawal = new StringBuilder();
+				if (listData.getInventoryInfo().getDistinctCountWithdrawalScale() == null
+						|| listData.getInventoryInfo().getDistinctCountWithdrawalScale() == 0) {
+				  withdrawal.append("");
+				} else if (listData.getInventoryInfo().getDistinctCountWithdrawalScale() == 1) {
+				  withdrawal.append(listData.getInventoryInfo().getWithdrawalBalance());
+				  withdrawal.append(" ");
+
+				  if (!StringUtils.isEmpty(listData.getInventoryInfo().getWithdrawalScale())) {
+					withdrawal.append(listData.getInventoryInfo().getWithdrawalScale());
+				  }
+
+				}
+				item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(withdrawal.toString());
+
+ 		 }
+
+
+  @Override
 	public void updateListInventoryTable(final Map<ListEntryLotDetails, Double> validReservations, final boolean withInvalidReservations) {
 		for (final Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()) {
 			final ListEntryLotDetails lot = entry.getKey();
@@ -2034,5 +2130,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	public Table getListDataTable() {
 		return listDataTable;
+	}
+
+	public void setGermplasmListManager(GermplasmListManager germplasmListManager) {
+		this.germplasmListManager = germplasmListManager;
 	}
 }
