@@ -392,7 +392,7 @@ public class ProcessImportedGermplasmActionTest {
 		Integer gnpgs = -1;
 		Integer gpid1= 1;
 		Integer gpid2 = 2;
-		String locationId = "1";
+		Integer locationId = 1;
 		ComboBox locationComboBox = this.processImportedGermplasmAction.getGermplasmFieldsComponent().getLocationComboBox();
 		locationComboBox.addItem(locationId);
 		locationComboBox.setItemCaption(locationId, "1");
@@ -401,7 +401,7 @@ public class ProcessImportedGermplasmActionTest {
 		
 		Assert.assertEquals("The gid should be " + gid, gid, germplasm.getGid());
 		Assert.assertEquals("The user id should be " + IBDB_USER_ID, IBDB_USER_ID, germplasm.getUserId());
-		Assert.assertEquals("The location id should be " + locationId, locationId, germplasm.getLocationId().toString());
+		Assert.assertEquals("The location id should be " + locationId, locationId, germplasm.getLocationId());
 		Assert.assertEquals("The date should be " + DATE_INT_VALUE, DATE_INT_VALUE, germplasm.getGdate());
 		Assert.assertEquals("The method should be " + ProcessImportedGermplasmAction.UNKNOWN_DERIVATIVE_METHOD, ProcessImportedGermplasmAction.UNKNOWN_DERIVATIVE_METHOD, germplasm.getMethodId());
 		Assert.assertEquals("The gnpgs should be " + gnpgs, gnpgs, germplasm.getGnpgs());
@@ -426,7 +426,7 @@ public class ProcessImportedGermplasmActionTest {
 	
 	@Test
 	public void testCreateNameObjectWithSelectedLocation() {
-		String locationId = "1";
+		Integer locationId = 1;
 		ComboBox locationComboBox = this.processImportedGermplasmAction.getGermplasmFieldsComponent().getLocationComboBox();
 		locationComboBox.addItem(locationId);
 		locationComboBox.setItemCaption(locationId, "1");
@@ -435,7 +435,7 @@ public class ProcessImportedGermplasmActionTest {
 		
 		Assert.assertEquals("The user id should be " + IBDB_USER_ID, IBDB_USER_ID, name.getUserId());
 		Assert.assertEquals("The name value should be " + DESIGNATION, DESIGNATION, name.getNval());
-		Assert.assertEquals("The location id should be " + locationId, locationId, name.getLocationId().toString());
+		Assert.assertEquals("The location id should be " + locationId, locationId, name.getLocationId());
 		Assert.assertEquals("The date should be " + DATE_INT_VALUE, DATE_INT_VALUE, name.getNdate());
 		Assert.assertTrue("The reference id should be 0", 0 == name.getReferenceId());
 	}
