@@ -112,6 +112,15 @@ public class GenerateCrossNameAction {
 		return sb.toString();
 	}
 
+	/**
+	 * Returns the generated next name in sequence with the given methodId and germplasm.
+	 * The suffix will come from the specified method if it's available in the database setting.
+	 *
+	 * @param methodId
+	 * @param germplasm
+	 * @param number
+	 * @return
+	 */
 	public String buildNextNameInSequence(final Integer methodId, final Germplasm germplasm, final Integer number) {
 
 		String suffix = "";
@@ -120,6 +129,7 @@ public class GenerateCrossNameAction {
 		sb.append(this.buildPrefixString());
 		sb.append(this.getNumberWithLeadingZeroesAsString(number));
 
+		// Get the suffix from method's settings.
 		if (methodId != null) {
 			final Method method = this.germplasmDataManager.getMethodByID(methodId);
 			if (!StringUtils.isEmpty(method.getSuffix())) {
@@ -135,6 +145,7 @@ public class GenerateCrossNameAction {
 			String processCode = "";
 			String processCodeValue = "";
 
+			// Process the suffix process code if it is available.
 			if (matcherProcessCode.find()) {
 				processCode = matcherProcessCode.group();
 				processCodeValue = this.evaluateSuffixProcessCode(germplasm, processCode);
