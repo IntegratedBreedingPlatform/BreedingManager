@@ -5,12 +5,15 @@ import java.util.Calendar;
 
 import junit.framework.Assert;
 
+import org.generationcp.breeding.manager.customfields.ListNameField;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import com.vaadin.ui.TextField;
 
 public class SaveListAsDialogTest {
 
@@ -184,6 +187,51 @@ public class SaveListAsDialogTest {
 		boolean result = proxy.isSelectedListAnExistingListButNotItself();
 		Assert.assertTrue("Given it is not an existing list " + "and the selected list to overwrite is not the same as the list to save, "
 				+ "the selected list will be overwritten", result);
+
+	}
+
+	@Test
+	public void testIsListNameValid() {
+		final boolean isMandatory = true;
+		final String rejectMessage = "Should reject invalid list name";
+		final SaveListAsDialog dialog = new SaveListAsDialog(source, germplasmList);
+
+		ListNameField listNameField = new ListNameField("", isMandatory);
+		TextField listNameTextField = new TextField();
+		listNameField.setListNameTextField(listNameTextField);
+
+		listNameTextField.setValue("L?");
+		Assert.assertFalse(rejectMessage, dialog.isListNameValid(listNameField));
+
+		listNameTextField.setValue("L/");
+		Assert.assertFalse(rejectMessage, dialog.isListNameValid(listNameField));
+
+		listNameTextField.setValue("L\\");
+		Assert.assertFalse(rejectMessage, dialog.isListNameValid(listNameField));
+
+		listNameTextField.setValue("L:");
+		Assert.assertFalse(rejectMessage, dialog.isListNameValid(listNameField));
+
+		listNameTextField.setValue("L*");
+		Assert.assertFalse(rejectMessage, dialog.isListNameValid(listNameField));
+
+		listNameTextField.setValue("L|");
+		Assert.assertFalse(rejectMessage, dialog.isListNameValid(listNameField));
+
+		listNameTextField.setValue("L<");
+		Assert.assertFalse(rejectMessage, dialog.isListNameValid(listNameField));
+
+		listNameTextField.setValue("L>");
+		Assert.assertFalse(rejectMessage, dialog.isListNameValid(listNameField));
+
+		listNameTextField.setValue("L\"");
+		Assert.assertFalse(rejectMessage, dialog.isListNameValid(listNameField));
+
+		listNameTextField.setValue("L.");
+		Assert.assertFalse(rejectMessage, dialog.isListNameValid(listNameField));
+
+		listNameTextField.setValue("L");
+		Assert.assertTrue("Should accept valid list name", dialog.isListNameValid(listNameField));
 
 	}
 }

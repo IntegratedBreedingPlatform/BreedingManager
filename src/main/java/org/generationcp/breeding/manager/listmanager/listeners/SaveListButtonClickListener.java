@@ -199,6 +199,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 				if (success) {
 					SaveListButtonClickListener.this.source.resetUnsavedChangesFlag();
 					SaveListButtonClickListener.this.source.getSource().closeList(currentlySavedList);
+				  	SaveListButtonClickListener.this.source.resetListInventoryTableValues();
 					if (showMessages) {
 						MessageNotifier.showMessage(SaveListButtonClickListener.this.source.getWindow(),
 								SaveListButtonClickListener.this.messageSource.getMessage(Message.SUCCESS),

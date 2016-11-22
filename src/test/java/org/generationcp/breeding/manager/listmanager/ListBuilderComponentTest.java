@@ -30,6 +30,7 @@ import org.generationcp.middleware.data.initializer.ListInventoryDataInitializer
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
@@ -140,14 +141,19 @@ public class ListBuilderComponentTest {
 	@Mock
 	private Item item;
 
+  	@Mock
+	private GermplasmListManager germplasmListManager;
+
 	private static final Integer TEST_GERMPLASM_LIST_ID = 111;
 	private static final Integer TEST_GERMPLASM_NO_OF_ENTRIES = 5;
+    private static final long LIST_ENTRIES_COUNT = 1;
 
 	@Before
 	public void setUp() {
 		this.listBuilderComponent.setOntologyDataManager(this.ontologyDataManager);
 		this.listBuilderComponent.setMessageSource(this.messageSource);
 		this.listBuilderComponent.setTransactionManager(transactionManager);
+	    this.listBuilderComponent.setGermplasmListManager(germplasmListManager);
 
 		Mockito.when(this.messageSource.getMessage(Message.CHECK_ICON)).thenReturn(ListBuilderComponentTest.CHECK);
 		Mockito.when(this.messageSource.getMessage(Message.HASHTAG)).thenReturn(ListBuilderComponentTest.HASH);
@@ -280,6 +286,11 @@ public class ListBuilderComponentTest {
 		Mockito.when(this.inventoryDataManager.getLotCountsForListEntries(Mockito.isA(Integer.class), Mockito.isA(List.class)))
 				.thenReturn(germplasmListData);
 
+	  	Mockito.when(this.inventoryDataManager.getLotCountsForList(this.currentlySavedGermplasmList.getId(), 0,1))
+			  .thenReturn(germplasmListData);
+
+	 	 Mockito.when(this.germplasmListManager.countGermplasmListDataByListId(Mockito.isA(Integer.class)))
+			  .thenReturn(ListBuilderComponentTest.LIST_ENTRIES_COUNT);
 
 		this.listBuilderComponent.saveReservationsAction();
 
