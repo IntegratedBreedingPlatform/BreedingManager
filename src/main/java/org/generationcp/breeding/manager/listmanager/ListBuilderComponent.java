@@ -1587,8 +1587,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 			    final boolean success = reserveInventoryAction.saveReserveTransactions(this.getValidReservationsToSave(), this
 						.currentlySavedGermplasmList.getId());
-			this.cancelReservations();
 			if(success){
+				this.cancelReservations();
 				this.resetListDataTableValues();
 				this.resetListInventoryTableValues();
 				MessageNotifier.showMessage(this.source.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
