@@ -185,6 +185,13 @@
 	<bean id="ruleFactory" class="org.generationcp.commons.ruleengine.RuleFactory"
 		init-method="init" />
 
+	<bean class="org.generationcp.commons.ruleengine.RulesPostProcessor">
+		<property name="ruleFactory" ref="processCodeRuleFactory" />
+	</bean>
+
+	<bean id="processCodeRuleFactory" class="org.generationcp.commons.ruleengine.ProcessCodeRuleFactory"
+		  init-method="init" />
+
 	<bean id="ruleConfigProvider"
 		class="org.generationcp.commons.ruleengine.provider.PropertyFileRuleConfigurationProvider">
 		<property name="ruleSequenceConfiguration">
@@ -200,6 +207,9 @@
 		the Rule interface into the Spring context. In conjunction with the RulesPostProcessor
 		above, this automatically populates the map in the RuleFactory -->
 	<context:component-scan base-package="org.generationcp.commons.ruleengine.stockid" />
+	<context:component-scan base-package="org.generationcp.commons.ruleengine.cross" />
+
+
 
 	<bean id="stockService" class="org.generationcp.commons.service.impl.StockServiceImpl">
 		<aop:scoped-proxy />
