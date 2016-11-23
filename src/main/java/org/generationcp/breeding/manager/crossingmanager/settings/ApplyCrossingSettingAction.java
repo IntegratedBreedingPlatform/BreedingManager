@@ -17,7 +17,6 @@ import org.generationcp.breeding.manager.crossingmanager.xml.AdditionalDetailsSe
 import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
-import org.generationcp.breeding.manager.util.BreedingManagerTransformationUtil;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.util.CrossingUtil;
 import org.generationcp.commons.util.CollectionTransformationUtil;
@@ -31,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
@@ -172,12 +170,12 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 
 			// Store old cross name and generate new names based on prefix, suffix specifications
 			for (Map.Entry<Germplasm, Name> entry : crossesMap.entrySet()) {
+				Germplasm germplasm = entry.getKey();
 				Name nameObject = entry.getValue();
 				String oldCrossName = nameObject.getNval();
-				String nextName = generateNameAction.buildNextNameInSequence(ctr++);
+				String nextName = generateNameAction.buildNextNameInSequence(this.setting.getBreedingMethodSetting().getMethodId(), germplasm, ctr++);
 				nameObject.setNval(nextName);
 
-				Germplasm germplasm = entry.getKey();
 				Integer tempGid = germplasm.getGid();
 				GermplasmListEntry oldNameEntry = new GermplasmListEntry(tempGid, tempGid, tempGid, oldCrossName);
 
