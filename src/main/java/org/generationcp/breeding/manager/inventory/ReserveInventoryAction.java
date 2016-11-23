@@ -197,19 +197,22 @@ public class ReserveInventoryAction implements Serializable {
 
 	private Map<Integer, Double> retrieveLatestAvailableBalance(Map<ListEntryLotDetails, Double> validReservationsToSave, Integer listId) {
 		Map<Integer, Double> availableBalanceMap = new HashMap<>();
-		List<Integer> recordIdList = new ArrayList<>();
-		for (Map.Entry<ListEntryLotDetails, Double> entry : validReservationsToSave.entrySet()) {
-			ListEntryLotDetails lotDetail = entry.getKey();
-			recordIdList.add(lotDetail.getId());
-		}
 
-		final List<GermplasmListData> inventoryData = this.inventoryDataManager.getLotCountsForListEntries(listId, recordIdList);
+		if(!CollectionUtils.isEmpty(validReservationsToSave)) {
+			List<Integer> recordIdList = new ArrayList<>();
+			for (Map.Entry<ListEntryLotDetails, Double> entry : validReservationsToSave.entrySet()) {
+				ListEntryLotDetails lotDetail = entry.getKey();
+				recordIdList.add(lotDetail.getId());
+			}
 
-		if (!CollectionUtils.isEmpty(inventoryData)) {
-			for (GermplasmListData germplasmListData : inventoryData) {
-				ListDataInventory inventoryInfo = germplasmListData.getInventoryInfo();
-				Double totalAvailableBalance = inventoryInfo.getTotalAvailableBalance();
-				availableBalanceMap.put(germplasmListData.getId(), totalAvailableBalance);
+			final List<GermplasmListData> inventoryData = this.inventoryDataManager.getLotCountsForListEntries(listId, recordIdList);
+
+			if (!CollectionUtils.isEmpty(inventoryData)) {
+				for (GermplasmListData germplasmListData : inventoryData) {
+					ListDataInventory inventoryInfo = germplasmListData.getInventoryInfo();
+					Double totalAvailableBalance = inventoryInfo.getTotalAvailableBalance();
+					availableBalanceMap.put(germplasmListData.getId(), totalAvailableBalance);
+				}
 			}
 		}
 

@@ -102,4 +102,23 @@ public class ListNameValidatorTest {
 		Assert.assertTrue("Expecting that the validator will return true when the list name is similar to an existing list.",
 				this.listNameValidator.validateListName(listName));
 	}
+
+	@Test
+	public void testValidateListNameForInvalidName() {
+		final String rejectMessage = "Should reject invalid list name";
+
+		Assert.assertFalse(rejectMessage, this.listNameValidator.validateListName("L?"));
+		Assert.assertFalse(rejectMessage, this.listNameValidator.validateListName("L/"));
+		Assert.assertFalse(rejectMessage, this.listNameValidator.validateListName("L\\"));
+		Assert.assertFalse(rejectMessage, this.listNameValidator.validateListName("L:"));
+		Assert.assertFalse(rejectMessage, this.listNameValidator.validateListName("L*"));
+		Assert.assertFalse(rejectMessage, this.listNameValidator.validateListName("L|"));
+		Assert.assertFalse(rejectMessage, this.listNameValidator.validateListName("L<"));
+		Assert.assertFalse(rejectMessage, this.listNameValidator.validateListName("L>"));
+		Assert.assertFalse(rejectMessage, this.listNameValidator.validateListName("L\""));
+		Assert.assertFalse(rejectMessage, this.listNameValidator.validateListName("L."));
+
+		Assert.assertTrue("Should accept valid list name", this.listNameValidator.validateListName("L"));
+
+	}
 }
