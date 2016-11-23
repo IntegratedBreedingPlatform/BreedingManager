@@ -288,9 +288,9 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 		return this.germplasmListTree;
 	}
 
-	public void saveReservationChanges() {
+	public void saveListChangesAction() {
 		if (this.source instanceof ListBuilderComponent) {
-			((ListBuilderComponent) this.source).saveReservationChangesAction();
+			((ListBuilderComponent) this.source).saveListAction();
 		}
 	}
 
@@ -339,7 +339,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 							public void onClose(final ConfirmDialog dialog) {
 								if (dialog.isConfirmed()) {
 									SaveListAsDialog.this.source.saveList(gl);
-									SaveListAsDialog.this.saveReservationChanges();
+									SaveListAsDialog.this.saveListChangesAction();
 									final Window window = event.getButton().getWindow();
 									window.getParent().removeWindow(window);
 								}
@@ -354,7 +354,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 					this.setGermplasmListDetails(gl);
 
 					this.source.saveList(gl);
-					this.saveReservationChanges();
+					this.saveListChangesAction();
 
 					final Window window = event.getButton().getWindow();
 					window.getParent().removeWindow(window);

@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.ListComponent;
 import org.generationcp.breeding.manager.pojos.ImportedSeedInventory;
 import org.generationcp.commons.constant.ColumnLabels;
@@ -123,7 +124,7 @@ public class SeedInventoryImportStatusWindowTest {
 	}
 
 	@Test
-	public void testContinueClickWithSingleThread() {
+	public void testContinueClickFromListComponent() {
 		seedInventoryImportStatusWindow.setProcessedTransactions(InventoryDetailsTestDataInitializer.createValidReservedTransactions());
 		seedInventoryImportStatusWindow.setClosedLots(Lists.<Lot>newArrayList());
 
@@ -143,6 +144,30 @@ public class SeedInventoryImportStatusWindowTest {
 		Mockito.verify(this.messageSource).getMessage(Message.SEED_IMPORT_SUCCESS);
 		Mockito.verify(source).getWindow();
 		Mockito.verify(listComponent).refreshInventoryListDataTabel();
+		Mockito.verify(listComponent).resetListDataTableValues();
+	}
+
+	@Test
+	public void testContinueClickFromListBuilderComponent() {
+		seedInventoryImportStatusWindow.setProcessedTransactions(InventoryDetailsTestDataInitializer.createValidReservedTransactions());
+		seedInventoryImportStatusWindow.setClosedLots(Lists.<Lot>newArrayList());
+
+		Component source = Mockito.mock(Component.class);
+		seedInventoryImportStatusWindow.setSource(source);
+		Window window = Mockito.mock(Window.class);
+
+		Mockito.when(source.getWindow()).thenReturn(window);
+
+		ListBuilderComponent listComponent = Mockito.mock(ListBuilderComponent.class);
+		seedInventoryImportStatusWindow.setListComponent(listComponent);
+
+		this.seedInventoryImportStatusWindow.addListeners();
+		this.seedInventoryImportStatusWindow.getContinueButton().click();
+
+		Mockito.verify(inventoryDataManager).addTransactions(InventoryDetailsTestDataInitializer.createValidReservedTransactions());
+		Mockito.verify(this.messageSource).getMessage(Message.SEED_IMPORT_SUCCESS);
+		Mockito.verify(source).getWindow();
+		Mockito.verify(listComponent).resetListInventoryTableValues();
 		Mockito.verify(listComponent).resetListDataTableValues();
 	}
 

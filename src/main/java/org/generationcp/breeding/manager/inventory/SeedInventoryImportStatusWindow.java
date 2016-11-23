@@ -12,6 +12,7 @@ import com.vaadin.ui.themes.Reindeer;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.ListComponent;
 import org.generationcp.breeding.manager.pojos.ImportedSeedInventory;
 import org.generationcp.commons.constant.ColumnLabels;
@@ -222,6 +223,11 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow implements In
 					((ListComponent) this.listComponent).refreshInventoryListDataTabel();
 					((ListComponent) this.listComponent).resetListDataTableValues();
 				}
+
+			  	if (this.listComponent instanceof ListBuilderComponent) {
+					((ListBuilderComponent) this.listComponent).resetListInventoryTableValues();
+					((ListBuilderComponent) this.listComponent).resetListDataTableValues();
+			  	}
 
 				MessageNotifier.showMessage(this.source.getWindow(), messageSource.getMessage(Message.SUCCESS),
 						messageSource.getMessage(Message.SEED_IMPORT_SUCCESS));

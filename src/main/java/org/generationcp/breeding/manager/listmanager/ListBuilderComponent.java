@@ -1,4 +1,3 @@
-
 package org.generationcp.breeding.manager.listmanager;
 
 import java.io.File;
@@ -13,6 +12,7 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
@@ -79,6 +79,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.CollectionUtils;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
@@ -134,6 +135,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		}
 	}
 
+
 	private final class UnlockButtonClickListener implements ClickListener {
 
 		private static final long serialVersionUID = 1L;
@@ -161,6 +163,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		}
 	}
 
+
 	private final class ToolsButtonClickListener implements ClickListener {
 
 		private static final long serialVersionUID = 1345004576139547723L;
@@ -178,45 +181,69 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		}
 	}
 
-	private final class InventoryViewMenuClickListener implements ContextMenu.ClickListener {
+
+	protected final class InventoryViewMenuClickListener implements ContextMenu.ClickListener {
 
 		private static final long serialVersionUID = -2343109406180457070L;
 
 		@Override
 		public void contextItemClick(final ClickEvent event) {
-			final TransactionTemplate transactionTemplate = new TransactionTemplate(ListBuilderComponent.this.transactionManager);
-			transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+			final ContextMenuItem clickedItem = event.getClickedItem();
 
-				@Override
-				protected void doInTransactionWithoutResult(final TransactionStatus status) {
-					// Get reference to clicked item
-					final ContextMenuItem clickedItem = event.getClickedItem();
-					if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
-						ListBuilderComponent.this.viewListAction();
-					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {
-						ListBuilderComponent.this.copyToNewListFromInventoryViewAction();
-					} else if (clickedItem.getName()
-							.equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
-						ListBuilderComponent.this.reserveInventoryAction();
-					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
-						ListBuilderComponent.this.listInventoryTable.getTable()
-								.setValue(ListBuilderComponent.this.listInventoryTable.getTable().getItemIds());
-					} else if (clickedItem.getName()
-							.equals(ListBuilderComponent.this.messageSource.getMessage(Message.CANCEL_RESERVATIONS))) {
-						ListBuilderComponent.this.cancelReservationsAction();
-					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESET_LIST))) {
-						ListBuilderComponent.this.resetButton.click();
-					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SAVE_LIST))) {
-						ListBuilderComponent.this.saveButton.click();
-					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.EXPORT_SEED_LIST))) {
-						ListBuilderComponent.this.exportSeedPreparationList();
-					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.IMPORT_SEED_LIST))) {
-						ListBuilderComponent.this.openImportSeedPreparationDialog();
-					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.PRINT_LABELS))) {
-						ListBuilderComponent.this.createLabelsAction();
-					}
+			if(clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SAVE_RESERVATIONS))){
+
+				/*
+				* Save reservation needs to be synchronized on ListBuilderComponent lock object.
+				* This will ensure lock will apply to all instances of ListBuilderComponent invoking save reservation.
+				*/
+
+				synchronized (ListBuilderComponent.class){
+					final TransactionTemplate transactionTemplateForSavingReservation = new TransactionTemplate(ListBuilderComponent.this
+							.transactionManager);
+					transactionTemplateForSavingReservation.execute(new TransactionCallbackWithoutResult() {
+
+						@Override
+						protected void doInTransactionWithoutResult(final TransactionStatus status) {
+							ListBuilderComponent.this.saveReservationsAction();
+						}
+					});
 				}
-			});
+
+			} else {
+				final TransactionTemplate transactionTemplate = new TransactionTemplate(ListBuilderComponent.this.transactionManager);
+				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+					@Override
+					protected void doInTransactionWithoutResult(final TransactionStatus status) {
+						// Get reference to clicked item
+
+						if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
+							ListBuilderComponent.this.viewListAction();
+						} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {
+							ListBuilderComponent.this.copyToNewListFromInventoryViewAction();
+						} else if (clickedItem.getName()
+								.equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
+							ListBuilderComponent.this.reserveInventoryAction();
+						} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
+							ListBuilderComponent.this.listInventoryTable.getTable()
+									.setValue(ListBuilderComponent.this.listInventoryTable.getTable().getItemIds());
+						} else if (clickedItem.getName()
+								.equals(ListBuilderComponent.this.messageSource.getMessage(Message.CANCEL_RESERVATIONS))) {
+							ListBuilderComponent.this.cancelReservationsAction();
+						}  else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESET_LIST))) {
+							ListBuilderComponent.this.resetButton.click();
+						} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.SAVE_LIST))) {
+							ListBuilderComponent.this.saveButton.click();
+						} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.EXPORT_SEED_LIST))) {
+							ListBuilderComponent.this.exportSeedPreparationList();
+						} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.IMPORT_SEED_LIST))) {
+							ListBuilderComponent.this.openImportSeedPreparationDialog();
+						} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.PRINT_LABELS))) {
+							ListBuilderComponent.this.createLabelsAction();
+						}
+					}
+				});
+			}
 
 		}
 	}
@@ -225,6 +252,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		ListCommonActionsUtil.handleCreateLabelsAction(this.currentlySavedGermplasmList.getId(), inventoryDataManager, messageSource,
 				contextUtil, getApplication(), getWindow());
 	}
+
 
 	private final class MenuClickListener implements ContextMenu.ClickListener {
 
@@ -252,7 +280,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 					} else if (clickedItem.getName()
 							.equals(ListBuilderComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {//changed label
 						ListBuilderComponent.this.copyToNewListAction();
-					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.PREPARE_SEED))) {//changed label
+					} else if (clickedItem.getName()
+							.equals(ListBuilderComponent.this.messageSource.getMessage(Message.PREPARE_SEED))) {//changed label
 						ListBuilderComponent.this.viewInventoryAction();
 					} else if (clickedItem.getName().equals(ListBuilderComponent.this.messageSource.getMessage(Message.RESET_LIST))) {
 						ListBuilderComponent.this.resetButton.click();
@@ -263,6 +292,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			});
 		}
 	}
+
 
 	private static final long serialVersionUID = 4997159450197570044L;
 
@@ -355,8 +385,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	private ContextMenu inventoryViewMenu;
 	private ContextMenuItem menuCopyToListFromInventory;
 	private ContextMenuItem menuReserveInventory;
+	private ContextMenuItem menuSaveReserveInventory;
 	private ContextMenuItem menuCancelReservation;
-	private  ContextMenuItem listEditingOptions;
+	private ContextMenuItem listEditingOptions;
 	private ContextMenuItem listEditingOptionsForLots;
 	private ContextMenuItem inventoryManagementOptions;
 	private ContextMenuItem importList;
@@ -382,12 +413,15 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	private ReserveInventoryAction reserveInventoryAction;
 	private Map<ListEntryLotDetails, Double> validReservationsToSave;
 
+  	private long listEntriesCount;
+
 	public ListBuilderComponent() {
 		super();
+		this.reserveInventoryAction =  new ReserveInventoryAction(this);
 	}
 
 	public ListBuilderComponent(final ListManagerMain source) {
-		super();
+		this();
 		this.source = source;
 		this.currentlySavedGermplasmList = null;
 		this.currentlySetGermplasmInfo = null;
@@ -456,8 +490,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.viewHeaderButton.setVisible(false);
 
 		if (this.currentlySavedGermplasmList != null) {
-			this.viewListHeaderWindow = new ViewListHeaderWindow(this.currentlySavedGermplasmList,
-					BreedingManagerUtil.getAllNamesAsMap(this.userDataManager), this.germplasmListManager.getGermplasmListTypes());
+			this.viewListHeaderWindow =
+					new ViewListHeaderWindow(this.currentlySavedGermplasmList, BreedingManagerUtil.getAllNamesAsMap(this.userDataManager),
+							this.germplasmListManager.getGermplasmListTypes());
 			this.viewHeaderButton.setDescription(this.viewListHeaderWindow.getListHeaderComponent().toString());
 		}
 
@@ -488,14 +523,15 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 		//re-arranging Action menu items
 		this.menu.addItem(this.messageSource.getMessage(Message.PREPARE_SEED));//changed label
-		this.listEditingOptions=this.menu.addItem(this.messageSource.getMessage(Message.LIST_EDITING_OPTIONS));
+		this.listEditingOptions = this.menu.addItem(this.messageSource.getMessage(Message.LIST_EDITING_OPTIONS));
 		this.listEditingOptions.addItem(this.messageSource.getMessage(Message.SAVE_LIST));
 		this.listEditingOptions.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
 		this.menuDeleteSelectedEntries = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.DELETE_SELECTED_ENTRIES));
 		this.menuCopyToList = this.listEditingOptions.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));//changed label
 		this.listEditingOptions.addItem(this.messageSource.getMessage(Message.RESET_LIST));
 		this.addColumnContextMenu =
-				new AddColumnContextMenu(this, this.menu, this.tableWithSelectAllLayout.getTable(), ColumnLabels.GID.getName(), true, this.listEditingOptions);//Passing new ContextMenuItem As ListEditingOption In which Add Column Will be Sub Menu
+				new AddColumnContextMenu(this, this.menu, this.tableWithSelectAllLayout.getTable(), ColumnLabels.GID.getName(), true,
+						this.listEditingOptions);//Passing new ContextMenuItem As ListEditingOption In which Add Column Will be Sub Menu
 		this.menuExportList = this.menu.addItem(this.messageSource.getMessage(Message.EXPORT_LIST));
 
 		this.inventoryViewMenu = new ContextMenu();
@@ -504,14 +540,16 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 		////Re-arranging Menu Items for Lots view
 		this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
-		this.listEditingOptionsForLots=this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.LIST_EDITING_OPTIONS));
+		this.listEditingOptionsForLots = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.LIST_EDITING_OPTIONS));
 		this.listEditingOptionsForLots.addItem(this.messageSource.getMessage(Message.SAVE_LIST));
 		this.listEditingOptionsForLots.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
 		this.menuCopyToListFromInventory = this.listEditingOptionsForLots.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
 		this.listEditingOptionsForLots.addItem(this.messageSource.getMessage(Message.RESET_LIST));
 
-		this.inventoryManagementOptions=this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.INVENTORY_MANAGEMENT_OPTIONS));
+		this.inventoryManagementOptions =
+				this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.INVENTORY_MANAGEMENT_OPTIONS));
 		this.menuReserveInventory = this.inventoryManagementOptions.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
+		this.menuSaveReserveInventory = this.inventoryManagementOptions.addItem(this.messageSource.getMessage(Message.SAVE_RESERVATIONS));
 		this.menuCancelReservation = this.inventoryManagementOptions.addItem(this.messageSource.getMessage(Message.CANCEL_RESERVATIONS));
 
 		this.exportList=this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.EXPORT_SEED_LIST));
@@ -532,9 +570,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.inventoryViewToolsButton.setDebugId("inventoryViewToolsButton");
 		this.inventoryViewToolsButton.setData(ListBuilderComponent.TOOLS_BUTTON_ID);
 
-		this.dropHandler = new BuildNewListDropHandler(this.source, this.germplasmDataManager, this.germplasmListManager,
-				this.inventoryDataManager, this.pedigreeService, this.crossExpansionProperties, this.tableWithSelectAllLayout.getTable(),
-				this.transactionManager);
+		this.dropHandler =
+				new BuildNewListDropHandler(this.source, this.germplasmDataManager, this.germplasmListManager, this.inventoryDataManager,
+						this.pedigreeService, this.crossExpansionProperties, this.tableWithSelectAllLayout.getTable(),
+						this.transactionManager);
 
 		this.saveButton = new Button();
 		this.saveButton.setDebugId("saveButton");
@@ -563,6 +602,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 
 	private void resetInventoryMenuOptions() {
+
+		this.menuSaveReserveInventory.setEnabled(false);
 		// Temporarily disable to Copy to List in InventoryView
 		this.menuCopyToListFromInventory.setEnabled(false);
 
@@ -715,8 +756,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.editHeaderButton.setVisible(false);
 		this.viewHeaderButton.setVisible(true);
 
-		this.viewListHeaderWindow = new ViewListHeaderWindow(this.currentlySavedGermplasmList,
-				BreedingManagerUtil.getAllNamesAsMap(this.userDataManager), this.germplasmListManager.getGermplasmListTypes());
+		this.viewListHeaderWindow =
+				new ViewListHeaderWindow(this.currentlySavedGermplasmList, BreedingManagerUtil.getAllNamesAsMap(this.userDataManager),
+						this.germplasmListManager.getGermplasmListTypes());
 		this.viewHeaderButton.setDescription(this.viewListHeaderWindow.getListHeaderComponent().toString());
 
 		this.saveButton.setEnabled(false);
@@ -1098,9 +1140,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		// Rename the Build New List Header
 		this.buildNewListTitle.setValue(this.messageSource.getMessage(Message.BUILD_A_NEW_LIST));
 
-		this.dropHandler = new BuildNewListDropHandler(this.source, this.germplasmDataManager, this.germplasmListManager,
-				this.inventoryDataManager, this.pedigreeService, this.crossExpansionProperties, this.tableWithSelectAllLayout.getTable(),
-				this.transactionManager);
+		this.dropHandler =
+				new BuildNewListDropHandler(this.source, this.germplasmDataManager, this.germplasmListManager, this.inventoryDataManager,
+						this.pedigreeService, this.crossExpansionProperties, this.tableWithSelectAllLayout.getTable(),
+						this.transactionManager);
 		this.initializeHandlers();
 
 		// Reset Save Listener
@@ -1116,6 +1159,11 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		// Reset the marker for changes in Build New List
 		this.resetUnsavedChangesFlag();
 		this.updateView(this.source.getModeView());
+
+		//clears unsaved reservations if there are any.
+		if(!CollectionUtils.isEmpty(this.getValidReservationsToSave())){
+			this.getValidReservationsToSave().clear();
+		}
 	}
 
 	public void updateView(final ModeView modeView) {
@@ -1169,7 +1217,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			final Item item = this.tableWithSelectAllLayout.getTable().getItem(entryId);
 
 			final GermplasmListData listEntry = new GermplasmListData();
-
+            listEntry.setId(entryId);
 			final Button designationButton = (Button) item.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue();
 			final String designation = designationButton.getCaption();
 			if (designation != null) {
@@ -1219,28 +1267,26 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.getWindow().addWindow(exportListAsDialog);
 	}
 
-	public void exportSeedPreparationList(){
-		try{
-			SeedInventoryListExporter seedInventoryListExporter = new SeedInventoryListExporter(this.source,
-					this.currentlySavedGermplasmList);
+	public void exportSeedPreparationList() {
+		try {
+			SeedInventoryListExporter seedInventoryListExporter =
+					new SeedInventoryListExporter(this.source, this.currentlySavedGermplasmList);
 			seedInventoryListExporter.exportSeedPreparationList();
-		}
-		catch (SeedInventoryExportException ex){
+		} catch (SeedInventoryExportException ex) {
 			ListBuilderComponent.LOG.debug(ex.getMessage(), ex);
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
-					"Cannot Export Seed Preparation List :"+ex.getMessage());
+					"Cannot Export Seed Preparation List :" + ex.getMessage());
 		}
 	}
 
-	private void openImportSeedPreparationDialog()  {
+	private void openImportSeedPreparationDialog() {
 		final Window window = getWindow();
-		final SeedInventoryImportFileComponent
-				seedInventoryImportFileComponent = new SeedInventoryImportFileComponent(this.source, this, this.currentlySavedGermplasmList);
+		final SeedInventoryImportFileComponent seedInventoryImportFileComponent =
+				new SeedInventoryImportFileComponent(this.source, this, this.currentlySavedGermplasmList);
 		seedInventoryImportFileComponent.setDebugId("seedInventoryImportFileComponent");
 		window.addWindow(seedInventoryImportFileComponent);
 
 	}
-
 
 	private void exportListForGenotypingOrderAction() {
 		if (this.isCurrentListSaved()) {
@@ -1253,8 +1299,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 					final String listName = this.currentlySavedGermplasmList.getName();
 
-					final FileDownloadResource fileDownloadResource = new FileDownloadResource(new File(tempFileName),
-							listName.replace(" ", "_") + "ForGenotyping.xls", this.source.getApplication());
+					final FileDownloadResource fileDownloadResource =
+							new FileDownloadResource(new File(tempFileName), listName.replace(" ", "_") + "ForGenotyping.xls",
+									this.source.getApplication());
 
 					this.source.getWindow().open(fileDownloadResource);
 
@@ -1289,9 +1336,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 				this.listManagerCopyToListDialog.addStyleName(Reindeer.WINDOW_LIGHT);
 
 				try {
-					this.listManagerCopyToListDialog.addComponent(new ListManagerCopyToListDialog(this.source.getWindow(),
-							this.listManagerCopyToListDialog, this.currentlySavedGermplasmList.getName(),
-							this.tableWithSelectAllLayout.getTable(), this.contextUtil.getCurrentUserLocalId(), this.source));
+					this.listManagerCopyToListDialog.addComponent(
+							new ListManagerCopyToListDialog(this.source.getWindow(), this.listManagerCopyToListDialog,
+									this.currentlySavedGermplasmList.getName(), this.tableWithSelectAllLayout.getTable(),
+									this.contextUtil.getCurrentUserLocalId(), this.source));
 					this.source.getWindow().addWindow(this.listManagerCopyToListDialog);
 					this.listManagerCopyToListDialog.center();
 				} catch (final MiddlewareQueryException e) {
@@ -1483,14 +1531,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	private void reserveInventoryAction() {
 		// checks if the screen is in the inventory view
 		if (!this.inventoryViewMenu.isVisible()) {
-			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
-					"Please change to Inventory View first.");
+			MessageNotifier
+					.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING), "Please change to Inventory View first.");
 		} else {
-
-			if (this.hasUnsavedChanges()) {
-				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
-						"Please save the list first before reserving an inventory.");
-			} else {
 				final List<ListEntryLotDetails> lotDetailsGid = this.listInventoryTable.getSelectedLots();
 
 				if (lotDetailsGid == null || lotDetailsGid.isEmpty()) {
@@ -1503,40 +1546,56 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 				}
 			}
 		}
+
+	public boolean saveListAction() {
+
+		if (this.validReservationsToSave.size() > 0) {
+			//If there are unsaved reservations,list will not be saved.
+			return false;
+		} else {
+			if (this.hasUnsavedChanges()) {
+
+				final List<Integer> alreadyAddedEntryIds = new ArrayList<Integer>();
+				final List<ListDataAndLotDetails> listDataAndLotDetails =
+						this.listInventoryTable.getInventoryTableDropHandler().getListDataAndLotDetails();
+				for (final ListDataAndLotDetails listDataAndLotDetail : listDataAndLotDetails) {
+					if (!alreadyAddedEntryIds.contains(listDataAndLotDetail.getEntryId())) {
+						this.dropHandler.addGermplasmFromList(listDataAndLotDetail.getListId(), listDataAndLotDetail.getSourceLrecId());
+						alreadyAddedEntryIds.add(listDataAndLotDetail.getEntryId());
+					}
+				}
+
+				this.saveList(this.currentlySavedGermplasmList, false);
+
+				for (final ListDataAndLotDetails listDataAndLotDetail : listDataAndLotDetails) {
+					this.listInventoryTable.getInventoryTableDropHandler()
+							.assignLrecIdToRowsFromListWithEntryId(listDataAndLotDetail.getListId(), listDataAndLotDetail.getEntryId());
+				}
+
+				this.listInventoryTable.getInventoryTableDropHandler().resetListDataAndLotDetails();
+			}
+			return true;
+		}
+
 	}
 
-	public void saveReservationChangesAction() {
 
+	public void saveReservationsAction() {
 		if (this.hasUnsavedChanges()) {
 
-			final List<Integer> alreadyAddedEntryIds = new ArrayList<Integer>();
-			final List<ListDataAndLotDetails> listDataAndLotDetails =
-					this.listInventoryTable.getInventoryTableDropHandler().getListDataAndLotDetails();
-			for (final ListDataAndLotDetails listDataAndLotDetail : listDataAndLotDetails) {
-				if (!alreadyAddedEntryIds.contains(listDataAndLotDetail.getEntryId())) {
-					this.dropHandler.addGermplasmFromList(listDataAndLotDetail.getListId(), listDataAndLotDetail.getSourceLrecId());
-					alreadyAddedEntryIds.add(listDataAndLotDetail.getEntryId());
-				}
-			}
+			    final boolean success = reserveInventoryAction.saveReserveTransactions(this.getValidReservationsToSave(), this
+						.currentlySavedGermplasmList.getId());
 
-			this.saveList(this.currentlySavedGermplasmList, false);
-
-			for (final ListDataAndLotDetails listDataAndLotDetail : listDataAndLotDetails) {
-				this.listInventoryTable.getInventoryTableDropHandler()
-						.assignLrecIdToRowsFromListWithEntryId(listDataAndLotDetail.getListId(), listDataAndLotDetail.getEntryId());
-			}
-
-			this.listInventoryTable.getInventoryTableDropHandler().resetListDataAndLotDetails();
-
-			this.reserveInventoryAction = new ReserveInventoryAction(this);
-
-			final boolean success = this.reserveInventoryAction.saveReserveTransactions(this.getValidReservationsToSave(),
-					this.currentlySavedGermplasmList.getId());
-
-			if (success) {
-				this.refreshInventoryColumns(this.getValidReservationsToSave());
+			if(success){
+				this.resetListDataTableValues();
 				this.resetListInventoryTableValues();
+				MessageNotifier.showMessage(this.source.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
+						this.messageSource.getMessage(Message.SAVE_RESERVED_AND_CANCELLED_RESERVATION));
+			}else {
+				MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR),
+						this.messageSource.getMessage(Message.INVENTORY_NOT_AVAILABLE_BALANCE));
 			}
+
 		}
 	}
 
@@ -1570,7 +1629,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	public void cancelReservations() {
 		final List<ListEntryLotDetails> lotDetailsGid = this.listInventoryTable.getSelectedLots();
-		this.reserveInventoryAction = new ReserveInventoryAction(this);
 		try {
 			this.reserveInventoryAction.cancelReservations(lotDetailsGid);
 		} catch (final MiddlewareQueryException e) {
@@ -1599,8 +1657,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		List<GermplasmListData> germplasmListDataEntries = new ArrayList<GermplasmListData>();
 		try {
 			if (!entryIds.isEmpty()) {
-				germplasmListDataEntries = this.inventoryDataManager.getLotCountsForListEntries(this.currentlySavedGermplasmList.getId(),
-						new ArrayList<Integer>(entryIds));
+				germplasmListDataEntries = this.inventoryDataManager
+						.getLotCountsForListEntries(this.currentlySavedGermplasmList.getId(), new ArrayList<Integer>(entryIds));
 			}
 		} catch (final MiddlewareQueryException e) {
 			ListBuilderComponent.LOG.error(e.getMessage(), e);
@@ -1617,8 +1675,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 				availInv = listData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
 			}
 
-			final Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(this.source,
-					this.currentlySavedGermplasmList.getId(), listData.getId(), listData.getGid()));
+			final Button inventoryButton = new Button(availInv,
+					new InventoryLinkButtonClickListener(this.source, this.currentlySavedGermplasmList.getId(), listData.getId(),
+							listData.getGid()));
 
 			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 			inventoryButton.setDescription("Click to view Inventory Details");
@@ -1640,15 +1699,21 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 			this.updateAvailInvValues(Integer.valueOf(gidString), availInv);
 
-			// Seed Reserved
+			// WITHDRAWAL
+			StringBuilder withdrawal = new StringBuilder();
+			if (listData.getInventoryInfo().getDistinctCountWithdrawalScale() == null
+					|| listData.getInventoryInfo().getDistinctCountWithdrawalScale() == 0) {
+				withdrawal.append("");
+			} else if (listData.getInventoryInfo().getDistinctCountWithdrawalScale() == 1) {
+				withdrawal.append(listData.getInventoryInfo().getWithdrawalBalance());
+				withdrawal.append(" ");
 
-			// default value
-			String seedRes = "-";
-			if (listData.getInventoryInfo().getReservedLotCount().intValue() != 0) {
-				seedRes = listData.getInventoryInfo().getReservedLotCount().toString().trim();
+				if (!StringUtils.isEmpty(listData.getInventoryInfo().getWithdrawalScale())) {
+					withdrawal.append(listData.getInventoryInfo().getWithdrawalScale());
+				}
+
 			}
-
-			item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
+			item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(withdrawal.toString());
 		}
 	}
 
@@ -1662,7 +1727,101 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.refreshInventoryColumns(entryIds);
 	}
 
-	@Override
+ 	 public void resetListDataTableValues() {
+
+		this.listDataTable.setEditable(false);
+		this.loadEntriesToListDataTable();
+		this.listDataTable.refreshRowCache();
+		this.listDataTable.setImmediate(true);
+		this.listDataTable.requestRepaint();
+
+  	}
+
+  	public void loadEntriesToListDataTable() {
+		try {
+	  		this.listEntriesCount = this.germplasmListManager.countGermplasmListDataByListId(this.currentlySavedGermplasmList.getId());
+		} catch (final MiddlewareQueryException ex) {
+	  		ListBuilderComponent.LOG.error("Error with retrieving count of list entries for list: " + this.currentlySavedGermplasmList.getId(), ex);
+	 	 this.listEntriesCount = 0;
+		}
+
+		if (this.listEntriesCount > 0) {
+	  		final List<GermplasmListData> listEntries = new ArrayList<>();
+		  	this.getAllListEntries(listEntries);
+
+	  		for (final GermplasmListData entry : listEntries) {
+					this.addListEntryToTable(entry);
+	  		}
+		}
+  	}
+
+  	private void getAllListEntries(final List<GermplasmListData> listEntries) {
+		final List<GermplasmListData> entries;
+		try {
+		  entries = this.inventoryDataManager
+			  .getLotCountsForList(this.currentlySavedGermplasmList.getId(), 0, Long.valueOf(this.listEntriesCount).intValue());
+		  listEntries.addAll(entries);
+		} catch (final MiddlewareQueryException ex) {
+	 		 ListBuilderComponent.LOG.error("Error with retrieving list entries for list: " + this.currentlySavedGermplasmList.getId(), ex);
+	 		 throw ex;
+		}
+  	}
+
+ 	 void addListEntryToTable(final GermplasmListData listData) {
+			final Item item = this.listDataTable.getItem(listData.getId());
+
+			// #1 Available Inventory
+
+			// default value
+			String availInv = "-";
+			if (listData.getInventoryInfo().getLotCount().intValue() != 0) {
+	  			availInv = listData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
+			}
+
+			final Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(this.source, this.currentlySavedGermplasmList.getId(), listData.getId(),
+					listData.getGid()));
+
+			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
+			inventoryButton.setDescription("Click to view Inventory Details");
+
+				if ("-".equalsIgnoreCase(availInv)) {
+				  inventoryButton.setEnabled(false);
+				  inventoryButton.setDescription("No Lot for this Germplasm");
+				} else {
+				  inventoryButton.setDescription("Click to view Inventory Details");
+				}
+				item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
+
+
+				final Button gidButton = (Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue();
+				String gidString = "";
+
+				if (gidButton != null) {
+				  gidString = gidButton.getCaption();
+				}
+
+				this.updateAvailInvValues(Integer.valueOf(gidString), availInv);
+
+				// WITHDRAWAL
+				StringBuilder withdrawal = new StringBuilder();
+				if (listData.getInventoryInfo().getDistinctCountWithdrawalScale() == null
+						|| listData.getInventoryInfo().getDistinctCountWithdrawalScale() == 0) {
+				  withdrawal.append("");
+				} else if (listData.getInventoryInfo().getDistinctCountWithdrawalScale() == 1) {
+				  withdrawal.append(listData.getInventoryInfo().getWithdrawalBalance());
+				  withdrawal.append(" ");
+
+				  if (!StringUtils.isEmpty(listData.getInventoryInfo().getWithdrawalScale())) {
+					withdrawal.append(listData.getInventoryInfo().getWithdrawalScale());
+				  }
+
+				}
+				item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(withdrawal.toString());
+
+ 		 }
+
+
+  @Override
 	public void updateListInventoryTable(final Map<ListEntryLotDetails, Double> validReservations, final boolean withInvalidReservations) {
 		for (final Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()) {
 			final ListEntryLotDetails lot = entry.getKey();
@@ -1670,14 +1829,17 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			final Double withdrawalbalance = lot.getWithdrawalBalance() + newRes;
 			final Double available = lot.getAvailableLotBalance() - newRes;
 			final Item itemToUpdate = this.listInventoryTable.getTable().getItem(lot);
-			if(newRes > 0){
-				itemToUpdate.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(withdrawalbalance + lot.getLotScaleNameAbbr());
+			if (newRes > 0) {
+				itemToUpdate.getItemProperty(ColumnLabels.SEED_RESERVATION.getName())
+						.setValue(withdrawalbalance + lot.getLotScaleNameAbbr());
 				itemToUpdate.getItemProperty(ColumnLabels.STATUS.getName()).setValue(GermplasmInventory.RESERVED);
 				itemToUpdate.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(available + lot.getLotScaleNameAbbr());
 			}
 		}
 
 		this.removeReserveInventoryWindow(this.reserveInventory);
+
+		this.setMenuInventorySaveChanges();
 
 		// update lot reservatios to save
 		this.updateLotReservationsToSave(validReservations);
@@ -1880,6 +2042,110 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	void setTotalSelectedListEntriesLabel(final Label totalSelectedListEntriesLabel) {
 		this.totalSelectedListEntriesLabel = totalSelectedListEntriesLabel;
+	}
+
+	public void setMenuInventorySaveChanges() {
+		this.menuSaveReserveInventory.setEnabled(true);
+	}
+
+	public void setInventoryDataManager(InventoryDataManager inventoryDataManager) {
+		this.inventoryDataManager = inventoryDataManager;
+	}
+
+	public void setContextUtil(ContextUtil contextUtil) {
+		this.contextUtil = contextUtil;
+	}
+
+	public void setBreedingManagerListDetailsComponent(BreedingManagerListDetailsComponent breedingManagerListDetailsComponent) {
+		this.breedingManagerListDetailsComponent = breedingManagerListDetailsComponent;
+	}
+
+	public void setEditHeaderButton(Button editHeaderButton) {
+		this.editHeaderButton = editHeaderButton;
+	}
+
+	public void setViewHeaderButton(Button viewHeaderButton) {
+		this.viewHeaderButton = viewHeaderButton;
+	}
+
+	public void setLockButton(Button lockButton) {
+		this.lockButton = lockButton;
+	}
+
+	public void setDropHandler(BuildNewListDropHandler dropHandler) {
+		this.dropHandler = dropHandler;
+	}
+
+	public void setUnlockButton(Button unlockButton) {
+		this.unlockButton = unlockButton;
+	}
+
+	public void setFillWith(FillWith fillWith) {
+		this.fillWith = fillWith;
+	}
+
+	public void setMenuDeleteSelectedEntries(ContextMenuItem menuDeleteSelectedEntries) {
+		this.menuDeleteSelectedEntries = menuDeleteSelectedEntries;
+	}
+
+	public void setAddColumnContextMenu(AddColumnContextMenu addColumnContextMenu) {
+		this.addColumnContextMenu = addColumnContextMenu;
+	}
+
+	public void setMenuCopyToListFromInventory(ContextMenuItem menuCopyToListFromInventory) {
+		this.menuCopyToListFromInventory = menuCopyToListFromInventory;
+	}
+
+	public void setMenuReserveInventory(ContextMenuItem menuReserveInventory) {
+		this.menuReserveInventory = menuReserveInventory;
+	}
+
+	public void setListInventoryTable(ListManagerInventoryTable listInventoryTable) {
+		this.listInventoryTable = listInventoryTable;
+	}
+
+	public void setMenuSaveReserveInventory(ContextMenuItem menuSaveReserveInventory) {
+		this.menuSaveReserveInventory = menuSaveReserveInventory;
+	}
+
+	public void setReserveInventoryAction(ReserveInventoryAction reserveInventoryAction) {
+		this.reserveInventoryAction = reserveInventoryAction;
+	}
+
+	public void setValidReservationsToSave(Map<ListEntryLotDetails, Double> validReservationsToSave) {
+		this.validReservationsToSave = validReservationsToSave;
+	}
+
+	public ReserveInventoryAction getReserveInventoryAction() {
+		return reserveInventoryAction;
+	}
+
+	public PlatformTransactionManager getTransactionManager() {
+		return transactionManager;
+	}
+
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
+
+	public Table getListDataTable() {
+		return listDataTable;
+	}
+
+	public void setGermplasmListManager(GermplasmListManager germplasmListManager) {
+		this.germplasmListManager = germplasmListManager;
+	}
+
+	public void setMenuExportList(ContextMenuItem menuExportList) {
+		this.menuExportList = menuExportList;
+	}
+
+	public void setMenuCopyToList(ContextMenuItem menuCopyToList) {
+		this.menuCopyToList = menuCopyToList;
+	}
+
+	public void setMenuCancelReservation(ContextMenuItem menuCancelReservation) {
+		this.menuCancelReservation = menuCancelReservation;
 	}
 
 }
