@@ -62,13 +62,8 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 	public static final String LOT_ID = "lotId";
 	public static final String SEED_SOURCE = "seedSource";
 
-	private boolean isThereNoInventoryInfo;
 
 	private GermplasmListData germplasmListData = null;
-
-	public InventoryViewComponent(Integer listId) {
-		this.listId = listId;
-	}
 
 	public InventoryViewComponent(Integer listId, Integer recordId, Integer gid) {
 		this.listId = listId;
@@ -224,9 +219,6 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 
 	}
 
-	public boolean isThereNoInventoryInfo() {
-		return this.isThereNoInventoryInfo;
-	}
 
 	@Override
 	public void attach() {
