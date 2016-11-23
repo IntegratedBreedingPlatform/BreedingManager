@@ -238,4 +238,11 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 		return lotEntriesTable;
 	}
 
+	public GermplasmListData getGermplasmListData() {
+		return germplasmListData;
+	}
+
+	public void setGermplasmListData(GermplasmListData germplasmListData) {
+		this.germplasmListData = germplasmListData;
+	}
 }
