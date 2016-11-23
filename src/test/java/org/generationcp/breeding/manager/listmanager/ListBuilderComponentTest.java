@@ -438,5 +438,22 @@ public class ListBuilderComponentTest {
 
 	}
 
+	@Test
+	public void testUserSelectedLotEntriesToCancelReservations(){
+
+		this.setUpCurrentlySavedGermplasmList();
+		List<ListEntryLotDetails> userSelectedLotEntriesToCancel = ListInventoryDataInitializer.createLotDetails(1);
+		Mockito.doReturn(userSelectedLotEntriesToCancel).when(this.listInventoryTable).getSelectedLots();
+
+		this.listBuilderComponent.userSelectedLotEntriesToCancelReservations();
+
+		Assert.assertEquals("Expecting Valid reservation to save should have size 0 ", 0,this.listBuilderComponent.getValidReservationsToSave().size());
+		Assert.assertEquals("Expecting Cancel reservation should have size 4 ", 4,this.listBuilderComponent.getPersistedReservationToCancel().size());
+		Mockito.verify(this.menuDeleteSelectedEntries).setEnabled(true);
+		Mockito.verify(this.messageSource).getMessage(Message.UNSAVED_RESERVARTION_CANCELLED);
+
+	}
+
+
 
 }
