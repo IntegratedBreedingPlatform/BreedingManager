@@ -80,6 +80,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.CollectionUtils;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
@@ -1160,6 +1161,11 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		// Reset the marker for changes in Build New List
 		this.resetUnsavedChangesFlag();
 		this.updateView(this.source.getModeView());
+
+		//clears unsaved reservations if there are any.
+		if(!CollectionUtils.isEmpty(this.getValidReservationsToSave())){
+			this.getValidReservationsToSave().clear();
+		}
 	}
 
 	public void updateView(final ModeView modeView) {
@@ -1530,11 +1536,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			MessageNotifier
 					.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING), "Please change to Inventory View first.");
 		} else {
-
-			if (this.hasUnsavedChanges()) {
-				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
-						"Please save the list first before reserving an inventory.");
-			} else {
 				final List<ListEntryLotDetails> lotDetailsGid = this.listInventoryTable.getSelectedLots();
 
 				if (lotDetailsGid == null || lotDetailsGid.isEmpty()) {
@@ -1547,7 +1548,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 				}
 			}
 		}
-	}
 
 	public boolean saveListAction() {
 
@@ -2183,4 +2183,17 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	public void setGermplasmListManager(GermplasmListManager germplasmListManager) {
 		this.germplasmListManager = germplasmListManager;
 	}
+
+	public void setMenuExportList(ContextMenuItem menuExportList) {
+		this.menuExportList = menuExportList;
+	}
+
+	public void setMenuCopyToList(ContextMenuItem menuCopyToList) {
+		this.menuCopyToList = menuCopyToList;
+	}
+
+	public void setMenuCancelReservation(ContextMenuItem menuCancelReservation) {
+		this.menuCancelReservation = menuCancelReservation;
+	}
+
 }

@@ -144,6 +144,12 @@ public class ListBuilderComponentTest {
   	@Mock
 	private GermplasmListManager germplasmListManager;
 
+	@Mock
+	private Label listEntriesLabel;
+
+	@Mock
+	private ContextMenuItem contextMenuItem;
+
 	private static final Integer TEST_GERMPLASM_LIST_ID = 111;
 	private static final Integer TEST_GERMPLASM_NO_OF_ENTRIES = 5;
     private static final long LIST_ENTRIES_COUNT = 1;
@@ -265,12 +271,7 @@ public class ListBuilderComponentTest {
 	@Test
 	public void testSaveReservationsAction(){
 		this.setUpCurrentlySavedGermplasmList();
-
-		this.importedGermplasmListInitializer = new ImportedGermplasmListDataInitializer();
-		this.listBuilderComponent.setValidReservationsToSave(this.importedGermplasmListInitializer.createReservations(1));
-
 		this.listBuilderComponent.setReserveInventoryAction(new ReserveInventoryAction(this.listBuilderComponent));
-
 		final ContextUtil contextUtil = Mockito.mock(ContextUtil.class);
 		this.listBuilderComponent.getReserveInventoryAction().setContextUtil(contextUtil);
 		this.listBuilderComponent.getReserveInventoryAction().setUserDataManager(this.userDataManager);
@@ -313,6 +314,9 @@ public class ListBuilderComponentTest {
 		final Collection<? extends Integer> selectedItems = Arrays.asList(new Integer[] {1});
 		Mockito.when(this.breedingManagerTable.getValue()).thenReturn(selectedItems);
 
+		this.importedGermplasmListInitializer = new ImportedGermplasmListDataInitializer();
+		this.listBuilderComponent.setValidReservationsToSave(this.importedGermplasmListInitializer.createReservations(1));
+
 		final Table listDataTable = Mockito.mock(Table.class);
 		listDataTable.addItem(1);
 		listDataTable.addItem(2);
@@ -343,6 +347,7 @@ public class ListBuilderComponentTest {
 
 		final ListManagerMain source = Mockito.mock(ListManagerMain.class);
 		Mockito.when(source.getWindow()).thenReturn(new Window());
+		Mockito.when(source.getModeView()).thenReturn(ModeView.LIST_VIEW);
 		this.listBuilderComponent.setSource(source);
 
 		this.listBuilderComponent.setHasUnsavedChanges(true);
@@ -355,6 +360,13 @@ public class ListBuilderComponentTest {
 		this.listBuilderComponent.setMenuSaveReserveInventory(menuDeleteSelectedEntries);
 		this.listBuilderComponent.setMenuCopyToListFromInventory(menuDeleteSelectedEntries);
 		this.listBuilderComponent.setMenuReserveInventory(menuDeleteSelectedEntries);
+
+		this.listBuilderComponent.setTotalListEntriesLabel(this.listEntriesLabel);
+		this.listBuilderComponent.setTotalSelectedListEntriesLabel(this.listEntriesLabel);
+		this.listBuilderComponent.setMenuCancelReservation(this.contextMenuItem);
+		this.listBuilderComponent.setMenuExportList(this.contextMenuItem);
+		this.listBuilderComponent.setMenuCopyToList(this.contextMenuItem);
+		this.listBuilderComponent.setBuildNewListTitle(this.listEntriesLabel);
 
 		Mockito.when(this.listBuilderComponent.getListInventoryTable().getInventoryTableDropHandler()).thenReturn
 				(inventoryTableDropHandler);
@@ -414,6 +426,17 @@ public class ListBuilderComponentTest {
 		Mockito.verify(this.messageSource, Mockito.times(1)).getMessage(Message.SAVE_RESERVED_AND_CANCELLED_RESERVATION);
 	}
 
+	@Test
+	public void testResetListWhileHavingUnsavedReservations(){
+		this.setUpCurrentlySavedGermplasmList();
+		this.listBuilderComponent.resetList();
+		Assert.assertEquals("Expecting Valid reservation to save should have size 0 ", 0,this.listBuilderComponent.getValidReservationsToSave().size());
+		Assert.assertEquals("Expecting changes to be false ", false,this.listBuilderComponent.hasUnsavedChanges());
+		Mockito.verify(this.listInventoryTable).reset();
+		Mockito.verify(this.breedingManagerListDetailsComponent).resetFields();
+		Mockito.verify(this.messageSource).getMessage(Message.BUILD_A_NEW_LIST);
+
+	}
 
 
 }

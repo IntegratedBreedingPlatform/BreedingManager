@@ -4,7 +4,6 @@ package org.generationcp.breeding.manager.customcomponent;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.regex.Pattern;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
@@ -12,7 +11,6 @@ import org.generationcp.breeding.manager.crossingmanager.ParentTabComponent;
 import org.generationcp.breeding.manager.crossingmanager.listeners.SelectTreeItemOnSaveListener;
 import org.generationcp.breeding.manager.customfields.BreedingManagerListDetailsComponent;
 import org.generationcp.breeding.manager.customfields.ListDateField;
-import org.generationcp.breeding.manager.customfields.ListNameField;
 import org.generationcp.breeding.manager.customfields.LocalListFoldersTreeComponent;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
 import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
@@ -47,8 +45,6 @@ import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class SaveListAsDialog extends BaseSubWindow implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
-
-	private static final String INVALID_LIST_NAME_PATTERN = "[\\\\/:*?|<>\"\\\\.]";
 
 	private static final String FOLDER_TYPE = "FOLDER";
 	private static final long serialVersionUID = 1L;
@@ -292,7 +288,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 		return this.germplasmListTree;
 	}
 
-	public void saveReservationChanges() {
+	public void saveListChangesAction() {
 		if (this.source instanceof ListBuilderComponent) {
 			((ListBuilderComponent) this.source).saveListAction();
 		}
@@ -317,12 +313,6 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 	private void doSaveAction(final ClickEvent event) {
 		// Call method so that the variables will be updated, values will be used for the logic below
 		this.germplasmList = this.getGermplasmListToSave();
-
-		if (!this.isListNameValid(this.listDetailsComponent.getListNameField())) {
-			MessageNotifier.showError(this.getWindow().getParent().getWindow(), this.messageSource.getMessage(Message.ERROR),
-					this.messageSource.getMessage(Message.INVALID_LIST_NAME));
-			return;
-		}
 
 		if (this.isListDateValid(this.listDetailsComponent.getListDateField())) {
 			// If target list is locked
@@ -349,7 +339,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 							public void onClose(final ConfirmDialog dialog) {
 								if (dialog.isConfirmed()) {
 									SaveListAsDialog.this.source.saveList(gl);
-									SaveListAsDialog.this.saveReservationChanges();
+									SaveListAsDialog.this.saveListChangesAction();
 									final Window window = event.getButton().getWindow();
 									window.getParent().removeWindow(window);
 								}
@@ -364,7 +354,7 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 					this.setGermplasmListDetails(gl);
 
 					this.source.saveList(gl);
-					this.saveReservationChanges();
+					this.saveListChangesAction();
 
 					final Window window = event.getButton().getWindow();
 					window.getParent().removeWindow(window);
@@ -414,22 +404,6 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 
 	protected boolean isSelectedListLocked() {
 		return this.germplasmList != null && this.germplasmList.getStatus() >= 100;
-	}
-
-	protected boolean isListNameValid(final ListNameField listNameField) {
-
-		try {
-			listNameField.validate();
-			if (Pattern.compile(INVALID_LIST_NAME_PATTERN).matcher(listNameField.getValue()).find()) {
-				return false;
-			}
-		} catch (final InvalidValueException e) {
-			SaveListAsDialog.LOG.error(e.getMessage(), e);
-			MessageNotifier.showRequiredFieldError(this.getWindow().getParent().getWindow(), e.getMessage());
-			return false;
-		}
-
-		return true;
 	}
 
 	private boolean isListDateValid(final ListDateField listDateField) {
