@@ -1670,7 +1670,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 		if (validReservation != this.validReservationsToSave.size()) {
 			this.listInventoryTable.resetRowsForCancelledReservation(this.listInventoryTable.getSelectedLots(), this.currentlySavedGermplasmList.getId());
-			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
+			MessageNotifier.showWarning(this.source.getWindow(), this.messageSource.getMessage(Message.WARNING),
 					this.messageSource.getMessage(Message.UNSAVED_RESERVARTION_CANCELLED));
 		}
 
@@ -2194,6 +2194,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	public void setMenuCancelReservation(ContextMenuItem menuCancelReservation) {
 		this.menuCancelReservation = menuCancelReservation;
+	}
+
+	public List<ListEntryLotDetails> getPersistedReservationToCancel() {
+		return persistedReservationToCancel;
 	}
 
 }
