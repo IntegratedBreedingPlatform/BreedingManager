@@ -28,7 +28,6 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntr
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.CollectionTransformationUtil;
-import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
@@ -191,7 +190,7 @@ public class SaveCrossesMadeAction implements Serializable {
 					 */
 					final Name name = currentCrossesMap.get(currentGplasm);
 					if (setting != null) {
-						name.setNval(generateAction.buildNextNameInSequence(nextNumberInSequence++));
+						name.setNval(generateAction.buildNextNameInSequence(setting.getBreedingMethodSetting().getMethodId(), currentGplasm, nextNumberInSequence++));
 					}
 
 					crossesToInsert.put(currentGplasm, name);

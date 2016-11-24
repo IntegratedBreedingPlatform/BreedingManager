@@ -167,7 +167,7 @@ public class InventoryViewComponent extends VerticalLayout implements Initializi
 			newItem.getItemProperty(InventoryViewComponent.LOT_LOCATION).setValue(lotLocation);
 
 			String actualBalance = "";
-			if (lotEntry.getActualLotBalance() > 0) {
+			if(lotEntry.getActualLotBalance() != null){
 				actualBalance = lotEntry.getActualLotBalance() + lotEntry.getLotScaleNameAbbr();
 			}
 			newItem.getItemProperty(InventoryViewComponent.ACTUAL_BALANCE).setValue(actualBalance);

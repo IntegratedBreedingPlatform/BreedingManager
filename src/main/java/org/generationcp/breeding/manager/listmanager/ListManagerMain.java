@@ -596,9 +596,14 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 			if (currentlySavedGermplasmList == null) {
 				this.listBuilderComponent.openSaveListAsDialog();
 			} else {
-				this.listBuilderComponent.getSaveListButtonListener().doSaveAction();
-				// Change ListBuilder View to List View
-				this.listBuilderComponent.viewInventoryActionConfirmed();
+				if (this.modeView.equals(ModeView.INVENTORY_VIEW)){
+					this.listBuilderComponent.getSaveListButtonListener().doSaveAction();
+					// Change ListBuilder View to List View
+					this.listBuilderComponent.viewInventoryActionConfirmed();
+				}
+				else {
+					this.listBuilderComponent.saveReservationsAction();
+				}
 			}
 		}
 
