@@ -108,8 +108,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		this.definition.addProperty(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID, CheckBox.class, null, false, false);
 		this.definition.addProperty(GermplasmSearchResultsComponent.NAMES, Button.class, null, false, false);
 		this.definition.addProperty(ColumnLabels.PARENTAGE.getName(), String.class, null, false, false);
-		this.definition.addProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), String.class, null, false, false);
-		this.definition.addProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null, false, true);
+		this.definition.addProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Button.class, null, false, false);
 		this.definition.addProperty(ColumnLabels.STOCKID.getName(), Label.class, null, false, true);
 		this.definition.addProperty(ColumnLabels.GID.getName(), Button.class, null, false, false);
 		this.definition.addProperty(ColumnLabels.GROUP_ID.getName(), String.class, null, false, true);
@@ -207,8 +206,6 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 				ColumnLabels.PARENTAGE.getTermNameFromOntology(this.ontologyDataManager));
 		this.matchingGermplasmsTable.setColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName(),
 				ColumnLabels.AVAILABLE_INVENTORY.getTermNameFromOntology(this.ontologyDataManager));
-		this.matchingGermplasmsTable.setColumnHeader(ColumnLabels.SEED_RESERVATION.getName(),
-				ColumnLabels.SEED_RESERVATION.getTermNameFromOntology(this.ontologyDataManager));
 		this.matchingGermplasmsTable.setColumnHeader(ColumnLabels.STOCKID.getName(),
 				ColumnLabels.STOCKID.getTermNameFromOntology(this.ontologyDataManager));
 		this.matchingGermplasmsTable.setColumnHeader(ColumnLabels.GID.getName(),
