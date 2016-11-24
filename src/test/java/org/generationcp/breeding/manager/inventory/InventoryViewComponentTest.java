@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.commons.util.StringUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
@@ -217,6 +218,36 @@ public class InventoryViewComponentTest {
 		Assert.assertNull(item.getItemProperty(InventoryViewComponent.SEED_SOURCE).getValue());
 
 	}
+
+	@Test
+	public void testInitializeValuesForGermplasmWithAvailableAndWithdrawalBalanceNull() {
+
+		final List<? extends LotDetails> inventoryDetails = ListInventoryDataInitializer.createLotDetails(1);
+		inventoryDetails.get(0).setWithdrawalBalance(null);
+		inventoryDetails.get(0).setAvailableLotBalance(null);
+		Mockito.when(this.inventoryDataManager.getLotDetailsForGermplasm(Mockito.anyInt())).thenReturn((List<LotDetails>) inventoryDetails);
+		Table table = new Table();
+		this.inventoryViewComponentForGermplasm.initializeLotEntriesTable(table);
+		this.inventoryViewComponentForGermplasm.setLotEntriesTable(table);
+
+		this.inventoryViewComponentForGermplasm.initializeValues();
+
+		Item item = this.inventoryViewComponentForGermplasm.getLotEntriesTable().getItem(1);
+
+		Assert.assertEquals(InventoryViewComponentTest.TABLE_SIZE, inventoryViewComponentForGermplasm.getLotEntriesTable().size());
+		Assert.assertEquals(InventoryViewComponentTest.LOT_LOCATION, item.getItemProperty(InventoryViewComponent.LOT_LOCATION).getValue());
+		Assert.assertEquals(InventoryViewComponentTest.ACTUAL_BALANCE,
+				item.getItemProperty(InventoryViewComponent.ACTUAL_BALANCE).getValue());
+		Assert.assertTrue(StringUtil.isEmpty(item.getItemProperty(InventoryViewComponent.AVAILABLE_BALANCE).getValue().toString()));
+		Assert.assertTrue(StringUtil.isEmpty(item.getItemProperty(InventoryViewComponent.WITHDRAWAL).getValue().toString()));
+		Assert.assertEquals(InventoryViewComponentTest.STATUS, item.getItemProperty(InventoryViewComponent.STATUS).getValue());
+		Assert.assertEquals(InventoryViewComponentTest.COMMENTS, item.getItemProperty(InventoryViewComponent.COMMENTS).getValue());
+		Assert.assertEquals(InventoryViewComponentTest.STOCKID, item.getItemProperty(InventoryViewComponent.STOCKID).getValue().toString());
+		Assert.assertEquals(InventoryViewComponentTest.LOT_ID, item.getItemProperty(InventoryViewComponent.LOT_ID).getValue().toString());
+		Assert.assertNull(item.getItemProperty(InventoryViewComponent.SEED_SOURCE).getValue());
+
+	}
+
 
 	@Test
 	public void testInitializeValuesForListEntry() {
