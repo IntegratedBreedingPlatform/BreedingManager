@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
- *
+ * <p>
  * Generation Challenge Programme (GCP)
- *
- *
+ * <p>
+ * <p>
  * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
  * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
  *******************************************************************************/
@@ -19,6 +19,7 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
@@ -51,7 +52,8 @@ import com.vaadin.ui.themes.BaseTheme;
 /**
  * An implementation of Query which is needed for using the LazyQueryContainer.
  */
-@Configurable public class GermplasmQuery implements Query {
+@Configurable
+public class GermplasmQuery implements Query {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmQuery.class);
 	private final QueryDefinition definition;
@@ -112,7 +114,7 @@ import com.vaadin.ui.themes.BaseTheme;
 		for (Germplasm germplasmToGeneratePedigreeStringsFor : list) {
 			gids.add(germplasmToGeneratePedigreeStringsFor.getGid());
 		}
-		
+
 		final Map<Integer, String> pedigreeStringMap = pedigreeService.getCrossExpansions(gids, null, crossExpansionProperties);
 		for (int i = 0; i < list.size(); i++) {
 			items.add(this.getGermplasmItem(list.get(i), i + startIndex, pedigreeStringMap));
@@ -152,8 +154,7 @@ import com.vaadin.ui.themes.BaseTheme;
 		propertyMap.put(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID, new ObjectProperty<>(this.getItemCheckBox(index)));
 		propertyMap.put(GermplasmSearchResultsComponent.NAMES, new ObjectProperty<>(this.getNamesButton(gid)));
 		propertyMap.put(ColumnLabels.PARENTAGE.getName(), new ObjectProperty<>(pedigreeStringMap.get(gid)));
-		propertyMap.put(ColumnLabels.AVAILABLE_INVENTORY.getName(), new ObjectProperty<>(this.getAvailableInventory(inventoryInfo)));
-		propertyMap.put(ColumnLabels.SEED_RESERVATION.getName(), new ObjectProperty<>(this.getSeedReserved(inventoryInfo)));
+		propertyMap.put(ColumnLabels.AVAILABLE_INVENTORY.getName(), new ObjectProperty<>(this.getInventoryInfoButton(germplasm)));
 		propertyMap.put(ColumnLabels.STOCKID.getName(), new ObjectProperty<>(this.getStockIDs(inventoryInfo)));
 		propertyMap.put(ColumnLabels.GID.getName(), new ObjectProperty<>(this.getGidButton(gid)));
 		propertyMap.put(ColumnLabels.GROUP_ID.getName(), new ObjectProperty<>(germplasm.getMgid() != 0 ? germplasm.getMgid() : "-"));
@@ -185,6 +186,15 @@ import com.vaadin.ui.themes.BaseTheme;
 		return gidButton;
 	}
 
+	private Button getInventoryInfoButton(final Germplasm germplasm) {
+		String availInv = "-";
+		availInv = germplasm.getInventoryInfo().getActualInventoryLotCount().toString().trim();
+		final Integer gid = germplasm.getGid();
+		final Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(this.listManagerMain, gid));
+		inventoryButton.setDebugId("inventoryButton");
+		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
+		return inventoryButton;
+	}
 
 	private GidLinkButtonClickListener createGermplasmListener(final Integer gid) {
 		return new GidLinkButtonClickListener(this.listManagerMain, String.valueOf(gid), this.viaToolUrl, this.showAddToList);
