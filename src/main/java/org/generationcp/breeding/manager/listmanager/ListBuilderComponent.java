@@ -250,8 +250,16 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 
 	protected void createLabelsAction() {
-		ListCommonActionsUtil.handleCreateLabelsAction(this.currentlySavedGermplasmList.getId(), inventoryDataManager, messageSource,
-				contextUtil, getApplication(), getWindow());
+		if (this.currentlySavedGermplasmList != null) {
+
+			ListCommonActionsUtil.handleCreateLabelsAction(this.currentlySavedGermplasmList.getId(), inventoryDataManager, messageSource,
+					contextUtil, getApplication(), getWindow());
+		} else {
+
+			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR),
+					this.messageSource.getMessage(Message.ERROR_COULD_NOT_CREATE_LABELS));
+		}
+
 	}
 
 
@@ -1270,24 +1278,47 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 
 	public void exportSeedPreparationList() {
-		try {
-			SeedInventoryListExporter seedInventoryListExporter =
-					new SeedInventoryListExporter(this.source, this.currentlySavedGermplasmList);
-			seedInventoryListExporter.exportSeedPreparationList();
-		} catch (SeedInventoryExportException ex) {
-			ListBuilderComponent.LOG.debug(ex.getMessage(), ex);
-			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
-					"Cannot Export Seed Preparation List :" + ex.getMessage());
+		exportSeedPreparationList(new SeedInventoryListExporter(this.source, this.currentlySavedGermplasmList));
+	}
+
+
+	public void exportSeedPreparationList(final SeedInventoryListExporter seedInventoryListExporter) {
+
+		if (this.currentlySavedGermplasmList != null) {
+
+			if (!CollectionUtils.isEmpty(this.validReservationsToSave)) {
+				MessageNotifier.showWarning(this.source.getWindow(), this.messageSource.getMessage(Message.WARNING),
+						this.messageSource.getMessage(Message.UNSAVED_RESERVATION_WARNING));
+			}
+
+			try {
+				seedInventoryListExporter.exportSeedPreparationList();
+			} catch (SeedInventoryExportException ex) {
+				ListBuilderComponent.LOG.debug(ex.getMessage(), ex);
+				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
+						"Cannot Export Seed Preparation List :" + ex.getMessage());
+			}
+		}
+		else {
+			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR),
+					this.messageSource.getMessage(Message.ERROR_SAVE_LIST_BEFORE_EXPORTING_LIST));
 		}
 	}
 
-	private void openImportSeedPreparationDialog() {
-		final Window window = getWindow();
-		final SeedInventoryImportFileComponent seedInventoryImportFileComponent =
-				new SeedInventoryImportFileComponent(this.source, this, this.currentlySavedGermplasmList);
-		seedInventoryImportFileComponent.setDebugId("seedInventoryImportFileComponent");
-		window.addWindow(seedInventoryImportFileComponent);
+	protected void openImportSeedPreparationDialog() {
 
+		if (this.currentlySavedGermplasmList != null) {
+
+			final Window window = getWindow();
+			final SeedInventoryImportFileComponent seedInventoryImportFileComponent =
+					new SeedInventoryImportFileComponent(this.source, this, this.currentlySavedGermplasmList);
+			seedInventoryImportFileComponent.setDebugId("seedInventoryImportFileComponent");
+			window.addWindow(seedInventoryImportFileComponent);
+		} else {
+
+			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR),
+					this.messageSource.getMessage(Message.ERROR_SAVE_LIST_BEFORE_IMPORTING_LIST));
+		}
 	}
 
 	private void exportListForGenotypingOrderAction() {

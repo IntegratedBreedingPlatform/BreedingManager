@@ -19,6 +19,8 @@ import org.generationcp.breeding.manager.customfields.BreedingManagerListDetails
 import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
+import org.generationcp.breeding.manager.inventory.SeedInventoryListExporter;
+import org.generationcp.breeding.manager.inventory.exception.SeedInventoryExportException;
 import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.InventoryTableDropHandler;
@@ -454,6 +456,52 @@ public class ListBuilderComponentTest {
 
 	}
 
+	@Test
+	public void testExportSeedPreparationListWithUnsavedList() throws SeedInventoryExportException {
+		this.setUpCurrentlySavedGermplasmList();
+		this.listBuilderComponent.setCurrentlySavedGermplasmList(null);
+		final SeedInventoryListExporter exporterMock = Mockito.mock(SeedInventoryListExporter.class);
+		this.listBuilderComponent.exportSeedPreparationList(exporterMock);
+		Mockito.verify(this.messageSource).getMessage(Message.ERROR_SAVE_LIST_BEFORE_EXPORTING_LIST);
+		Mockito.verify(this.messageSource, Mockito.never()).getMessage(Message.UNSAVED_RESERVATION_WARNING);
+		Mockito.verify(exporterMock, Mockito.never()).exportSeedPreparationList();
+	}
 
+
+
+	@Test
+	public void testExportSeedPreparationListWithUnsavedReservations() throws SeedInventoryExportException {
+		this.setUpCurrentlySavedGermplasmList();
+		final SeedInventoryListExporter exporterMock = Mockito.mock(SeedInventoryListExporter.class);
+		this.listBuilderComponent.exportSeedPreparationList(exporterMock);
+		Mockito.verify(this.messageSource).getMessage(Message.UNSAVED_RESERVATION_WARNING);
+		Mockito.verify(exporterMock).exportSeedPreparationList();
+	}
+
+	@Test
+	public void testExportSeedPreparationListWithNoUnsavedReservations() throws SeedInventoryExportException {
+		this.setUpCurrentlySavedGermplasmList();
+		this.listBuilderComponent.setValidReservationsToSave(null);
+		final SeedInventoryListExporter exporterMock = Mockito.mock(SeedInventoryListExporter.class);
+		this.listBuilderComponent.exportSeedPreparationList(exporterMock);
+		Mockito.verify(this.messageSource, Mockito.never()).getMessage(Message.UNSAVED_RESERVATION_WARNING);
+		Mockito.verify(exporterMock).exportSeedPreparationList();
+	}
+
+	@Test
+	public void testPrintLabelsWithUnsavedList(){
+		this.setUpCurrentlySavedGermplasmList();
+		this.listBuilderComponent.setCurrentlySavedGermplasmList(null);
+		this.listBuilderComponent.createLabelsAction();
+		Mockito.verify(this.messageSource).getMessage(Message.ERROR_COULD_NOT_CREATE_LABELS);
+	}
+
+	@Test
+	public void testImportSeedPreparationListWithUnsavedList(){
+		this.setUpCurrentlySavedGermplasmList();
+		this.listBuilderComponent.setCurrentlySavedGermplasmList(null);
+		this.listBuilderComponent.openImportSeedPreparationDialog();
+		Mockito.verify(this.messageSource).getMessage(Message.ERROR_SAVE_LIST_BEFORE_IMPORTING_LIST);
+	}
 
 }
