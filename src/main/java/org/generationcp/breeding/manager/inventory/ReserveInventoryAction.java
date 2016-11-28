@@ -210,8 +210,13 @@ public class ReserveInventoryAction implements Serializable {
 
 					if (lotDetails != null) {
 						for (final ListEntryLotDetails lotDetail : lotDetails) {
-							Double totalAvailableBalance = lotDetail.getAvailableLotBalance();
-							availableBalanceMap.put(lotDetail.getLotId(), totalAvailableBalance);
+							if(ListDataInventory.RESERVED.equals(lotDetail.getWithdrawalStatus())){
+								availableBalanceMap.put(lotDetail.getLotId(), 0.0);
+							} else {
+								Double totalAvailableBalance = lotDetail.getAvailableLotBalance();
+								availableBalanceMap.put(lotDetail.getLotId(), totalAvailableBalance);
+							}
+
 						}
 					}
 				}
