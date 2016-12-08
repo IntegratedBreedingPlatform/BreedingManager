@@ -57,6 +57,7 @@ import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.CrossingUtil;
+import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -77,6 +78,10 @@ import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.ims.Lot;
+import org.generationcp.middleware.pojos.ims.LotStatus;
+import org.generationcp.middleware.pojos.ims.Transaction;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.slf4j.Logger;
@@ -93,6 +98,7 @@ import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
+import com.google.common.collect.Lists;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import com.vaadin.data.Container;
@@ -173,6 +179,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	private ContextMenuItem menuReserveInventory;
 	@SuppressWarnings("unused")
 	private ContextMenuItem menuCancelReservation;
+
+	private ContextMenuItem menuCloseLots;
 
 	// Menu shown when the user right-click on the germplasm list table
 	private GermplasmListTableContextMenu tableContextMenu;
@@ -375,6 +383,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.menuCancelReservation = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.CANCEL_RESERVATIONS));
 
 		this.menuReserveInventory = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
+		this.menuCloseLots = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.CLOSE_LOTS));
 		this.menuListView = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
 		this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
 
@@ -997,6 +1006,23 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 					});
 				}
 
+			} else  if(clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.CLOSE_LOTS))) {
+				synchronized (ListComponent.class) {
+					final TransactionTemplate transactionTemplateForSavingReservation =
+							new TransactionTemplate(ListComponent.this.transactionManager);
+
+					transactionTemplateForSavingReservation.execute(new TransactionCallbackWithoutResult() {
+
+						@Override
+						protected void doInTransactionWithoutResult(final TransactionStatus status) {
+							ListComponent.this.closeLotsActions();
+						}
+					});
+
+					ListComponent.this.resetListInventoryTableValues();
+					ListComponent.this.resetListDataTableValues();
+
+				}
 			} else {
 				final TransactionTemplate transactionTemplate = new TransactionTemplate(ListComponent.this.transactionManager);
 				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
@@ -2520,6 +2546,137 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.listDataTable.requestRepaint();
 	}
 
+	public void closeLotsActions() {
+		List<ListEntryLotDetails> validLotDetails = validateSelectedCloseLots();
+
+		if (!CollectionUtils.isEmpty(validLotDetails)) {
+			processCloseLots(validLotDetails);
+
+			MessageNotifier.showMessage(ListComponent.this.getWindow(),
+					ListComponent.this.messageSource.getMessage(Message.SUCCESS),
+					ListComponent.this.messageSource.getMessage(Message.LOTS_CLOSED_SUCCESSFULLY));
+		}
+
+	}
+
+	private List<ListEntryLotDetails> validateSelectedCloseLots() {
+		final List<ListEntryLotDetails> lotsSelectedToClose = this.listInventoryTable.getSelectedLots();
+		final List<ListEntryLotDetails> validLotDetails = Lists.newArrayList();
+
+		if (CollectionUtils.isEmpty(lotsSelectedToClose)) {
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
+					this.messageSource.getMessage(Message.NO_LOTS_SELECTED_ERROR));
+			return validLotDetails;
+		}
+
+		for (ListEntryLotDetails lotDetails : lotsSelectedToClose) {
+			if (lotDetails.getReservedTotal() > 0) {
+				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
+						this.messageSource.getMessage(Message.LOTS_HAVE_AVAILABLE_BALANCE_UNCOMMITTED_RESERVATION_ERROR));
+				return validLotDetails;
+			}
+		}
+
+		for (final ListEntryLotDetails lotDetails : lotsSelectedToClose) {
+			if (lotDetails.getActualLotBalance() > 0) {
+
+				ConfirmDialog.show(this.getWindow(), this.messageSource.getMessage(Message.CLOSE_LOTS), this.messageSource
+								.getMessage(Message.LOTS_HAVE_AVAILABLE_BALANCE_NO_UNCOMMITTED_RESERVATION_ERROR, lotDetails.getLotId()),
+						this.messageSource.getMessage(Message.YES), this.messageSource.getMessage(Message.NO),
+						new ConfirmDialog.Listener() {
+
+							private static final long serialVersionUID = 1L;
+
+							@Override
+							public void onClose(final ConfirmDialog dialog) {
+								if (dialog.isConfirmed()) {
+									ListComponent.this.processCloseLots(Lists.<ListEntryLotDetails>newArrayList(lotDetails));
+
+									ListComponent.this.resetListInventoryTableValues();
+									ListComponent.this.resetListDataTableValues();
+
+									MessageNotifier.showMessage(ListComponent.this.getWindow(),
+											ListComponent.this.messageSource.getMessage(Message.SUCCESS),
+											ListComponent.this.messageSource.getMessage(Message.LOTS_CLOSED_SUCCESSFULLY));
+
+								}
+							}
+
+						});
+			} else if (lotDetails.getActualLotBalance() == 0) {
+				validLotDetails.add(lotDetails);
+				return validLotDetails;
+			}
+		}
+		return validLotDetails;
+	}
+
+	private void processCloseLots(List<ListEntryLotDetails> lotsSelectedToClose) {
+		List<Transaction> closeLotTransactions = Lists.newArrayList();
+		List<Integer> listLotIds = Lists.newArrayList();
+
+		for (ListEntryLotDetails lotDetail : lotsSelectedToClose) {
+			listLotIds.add(lotDetail.getLotId());
+		}
+
+
+		for (ListEntryLotDetails lotDetail : lotsSelectedToClose) {
+
+			Integer lotId = lotDetail.getLotId();
+			Integer transactionDate = DateUtil.getCurrentDateAsIntegerValue();
+
+			Double closingBalance = null;
+			String comments = null;
+
+			if (lotDetail.getActualLotBalance() == 0) {
+				closingBalance = 0D;
+				comments = this.messageSource.getMessage(Message.TRANSACTION_CLOSE_COMMENT);
+			} else if (lotDetail.getActualLotBalance() > 0) {
+				closingBalance = -1 * lotDetail.getActualLotBalance();
+				comments = this.messageSource.getMessage(Message.TRANSACTION_DISCARD_COMMENT);
+			}
+
+			String sourceType = this.messageSource.getMessage(Message.SOURCE_TYPE_LIST);
+			Integer listId = this.germplasmList.getId();
+			Integer lrecId = lotDetail.getId();
+			final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
+			final User userById = this.userDataManager.getUserById(ibdbUserId);
+			Double prevAmount = 0D;
+
+			Transaction closeLotTransaction = new Transaction();
+
+			closeLotTransaction.setUserId(ibdbUserId);
+
+			Lot lot = new Lot(lotId);
+			lot.setStatus(LotStatus.CLOSED.getIntValue());
+			closeLotTransaction.setLot(lot);
+
+			closeLotTransaction.setTransactionDate(transactionDate);
+			closeLotTransaction.setStatus(org.generationcp.middleware.pojos.ims.TransactionStatus.COMMITTED.getIntValue());
+			closeLotTransaction.setQuantity(closingBalance);
+			closeLotTransaction.setComments(comments);
+			closeLotTransaction.setCommitmentDate(transactionDate);
+			closeLotTransaction.setSourceType(sourceType);
+			closeLotTransaction.setSourceId(listId);
+			closeLotTransaction.setSourceRecordId(lrecId);
+			closeLotTransaction.setPreviousAmount(prevAmount);
+			closeLotTransaction.setPersonId(userById.getPersonid());
+
+			closeLotTransactions.add(closeLotTransaction);
+		}
+
+		this.inventoryDataManager.addTransactions(closeLotTransactions);
+
+		List<Lot> closeLots = this.inventoryDataManager.getLotsByIdList(listLotIds);
+
+		for(Lot lot : closeLots) {
+			lot.setStatus(LotStatus.CLOSED.getIntValue());
+		}
+
+		this.inventoryDataManager.updateLots(closeLots);
+
+	}
+
 	public ViewListHeaderWindow getViewListHeaderWindow() {
 		return this.viewListHeaderWindow;
 	}
@@ -2587,6 +2744,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	public void setPersistedReservationToCancel(List<ListEntryLotDetails> persistedReservationToCancel) {
 		this.persistedReservationToCancel = persistedReservationToCancel;
 	}
+
 	@Override
 	public ListManagerMain getListManagerMain() {
 		return this.source;
