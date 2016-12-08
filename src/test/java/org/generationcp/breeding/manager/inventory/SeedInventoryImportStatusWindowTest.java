@@ -126,7 +126,6 @@ public class SeedInventoryImportStatusWindowTest {
 	@Test
 	public void testContinueClickFromListComponent() {
 		seedInventoryImportStatusWindow.setProcessedTransactions(InventoryDetailsTestDataInitializer.createValidReservedTransactions());
-		seedInventoryImportStatusWindow.setClosedLots(Lists.<Lot>newArrayList());
 
 		Component source = Mockito.mock(Component.class);
 		seedInventoryImportStatusWindow.setSource(source);
@@ -150,7 +149,6 @@ public class SeedInventoryImportStatusWindowTest {
 	@Test
 	public void testContinueClickFromListBuilderComponent() {
 		seedInventoryImportStatusWindow.setProcessedTransactions(InventoryDetailsTestDataInitializer.createValidReservedTransactions());
-		seedInventoryImportStatusWindow.setClosedLots(Lists.<Lot>newArrayList());
 
 		Component source = Mockito.mock(Component.class);
 		seedInventoryImportStatusWindow.setSource(source);
@@ -176,7 +174,6 @@ public class SeedInventoryImportStatusWindowTest {
 		List<Transaction> validReservedTransactions = InventoryDetailsTestDataInitializer.createValidReservedTransactions();
 		validReservedTransactions.get(0).setStatus(1);
 		seedInventoryImportStatusWindow.setProcessedTransactions(validReservedTransactions);
-		seedInventoryImportStatusWindow.setClosedLots(Lists.<Lot>newArrayList());
 
 		Component source = Mockito.mock(Component.class);
 		seedInventoryImportStatusWindow.setSource(source);
