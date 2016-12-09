@@ -1823,7 +1823,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			// default value
 			String availInv = "-";
 			if (listData.getInventoryInfo().getLotCount().intValue() != 0) {
-	  			availInv = listData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
+	  			availInv = listData.getInventoryInfo().getLotCount().toString().trim();
 			}
 
 			final Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(this.source, this.currentlySavedGermplasmList.getId(), listData.getId(),

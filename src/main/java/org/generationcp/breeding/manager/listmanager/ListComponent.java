@@ -583,7 +583,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		// default value
 		String availInv = "-";
 		if (entry.getInventoryInfo().getLotCount() != 0) {
-			availInv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
+			availInv = entry.getInventoryInfo().getLotCount().toString().trim();
 		}
 		final Button inventoryButton = new Button(availInv,
 				new InventoryLinkButtonClickListener(this.parentListDetailsComponent, this.germplasmList.getId(), entry.getId(),
