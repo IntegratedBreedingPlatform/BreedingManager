@@ -30,8 +30,7 @@ import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
-import org.generationcp.breeding.manager.customcomponent.listinventory.CloseLotDiscardInventoryConfirmDialog;
-import org.generationcp.breeding.manager.customcomponent.listinventory.CloseLotDiscardInventoryListener;
+import org.generationcp.breeding.manager.customcomponent.listinventory.CloseLotDiscardInventoryAction;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
 import org.generationcp.breeding.manager.inventory.ReservationStatusWindow;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
@@ -279,7 +278,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	@Autowired
 	private UserDataManager userDataManager;
 
-	private final List<CloseLotDiscardInventoryListener> closeLotListener = new ArrayList<>();
+
 
 	public ListComponent() {
 		super();
@@ -2594,9 +2593,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		if (!CollectionUtils.isEmpty(lotWithAvailableBalanceEntryDetails)) {
 
 			for (ListEntryLotDetails lotDetails : lotWithAvailableBalanceEntryDetails) {
-				CloseLotDiscardInventoryConfirmDialog closeLotDiscardInventoryConfirmDialog =
-						new CloseLotDiscardInventoryConfirmDialog(this, lotDetails);
-				this.addCloseLotListener(closeLotDiscardInventoryConfirmDialog);
+				CloseLotDiscardInventoryAction closeLotDiscardInventoryAction = new CloseLotDiscardInventoryAction(this, lotDetails);
+				closeLotDiscardInventoryAction.processLotCloseWithDiscard();
 			}
 		}
 
@@ -2627,48 +2625,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		return selectedLotEntryDetails;
 	}
 
-	public void showClotLotListener(final CloseLotDiscardInventoryListener listener) {
-		if (listener instanceof Window) {
-			this.getWindow().addWindow((Window) listener);
-		}
 
-	}
-
-	public void addCloseLotListener(final CloseLotDiscardInventoryListener listener) {
-		if (this.closeLotListener.isEmpty()) {
-			this.showClotLotListener(listener);
-		}
-		this.closeLotListener.add(listener);
-	}
-
-	public void removeCurrentCloseLotListenerAndProcessNextItem(final CloseLotDiscardInventoryListener listener) {
-		this.removeClotLotListener(listener);
-		this.processNextClotLotListenerItems();
-	}
-
-	public void removeClotLotListener(final CloseLotDiscardInventoryListener importEntryListener) {
-		this.closeLotListener.remove(importEntryListener);
-	}
-
-	public void closeAllLotCloseListeners() {
-		for (int i = 0; i < this.closeLotListener.size(); i++) {
-			final CloseLotDiscardInventoryListener listener = this.closeLotListener.get(i);
-			if (listener instanceof Window) {
-				final Window window = (Window) listener;
-				this.getWindow().removeWindow(window);
-			}
-		}
-		this.closeLotListener.clear();
-	}
-
-	public void processNextClotLotListenerItems() {
-		final Iterator<CloseLotDiscardInventoryListener> listenersIterator = this.closeLotListener.iterator();
-		if (!listenersIterator.hasNext()) {
-			return;
-		}
-		final CloseLotDiscardInventoryListener listener = listenersIterator.next();
-		this.showClotLotListener(listener);
-	}
 
 	private Map<String, List<ListEntryLotDetails>> validateSelectedCloseLots() {
 		final List<ListEntryLotDetails> lotsSelectedToClose = this.listInventoryTable.getSelectedLots();
@@ -2885,7 +2842,5 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.reserveInventoryAction = reserveInventoryAction;
 	}
 
-	public List<CloseLotDiscardInventoryListener> getCloseLotListener() {
-		return closeLotListener;
-	}
+
 }

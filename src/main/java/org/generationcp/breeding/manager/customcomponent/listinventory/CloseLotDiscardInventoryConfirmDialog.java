@@ -41,31 +41,34 @@ public class CloseLotDiscardInventoryConfirmDialog extends BaseSubWindow impleme
 	private Button noButton;
 	private CheckBox applyAllCheckBox;
 	private ListComponent source;
+	private CloseLotDiscardInventoryAction closeLotDiscardInventoryAction;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
-	public CloseLotDiscardInventoryConfirmDialog(ListComponent source, ListEntryLotDetails listEntryLotDetails) {
+	public CloseLotDiscardInventoryConfirmDialog(ListComponent source, CloseLotDiscardInventoryAction closeLotDiscardInventoryAction,
+			ListEntryLotDetails listEntryLotDetails) {
 		this.listEntryLotDetails = listEntryLotDetails;
 		this.source = source;
+		this.closeLotDiscardInventoryAction = closeLotDiscardInventoryAction;
 	}
 
 	@Override
 	public void windowClose(CloseEvent closeEvent) {
 		super.close();
-		this.source.closeAllLotCloseListeners();
+		this.closeLotDiscardInventoryAction.closeAllLotCloseListeners();
 	}
 
 	@Override
 	protected void closeWindow() {
 		super.closeWindow();
-		this.source.closeAllLotCloseListeners();
+		this.closeLotDiscardInventoryAction.closeAllLotCloseListeners();
 	}
 
 	@Override
 	protected void close() {
 		super.close();
-		this.source.closeAllLotCloseListeners();
+		this.closeLotDiscardInventoryAction.closeAllLotCloseListeners();
 	}
 
 	@Override
@@ -173,14 +176,14 @@ public class CloseLotDiscardInventoryConfirmDialog extends BaseSubWindow impleme
 			} catch (CloseLotException e) {
 				final String errorMessage = this.messageSource.getMessage(e.getMessage(), null, Locale.getDefault());
 				MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR), errorMessage);
-				this.source.closeAllLotCloseListeners();
+				this.closeLotDiscardInventoryAction.closeAllLotCloseListeners();
 				return;
 			}
 
-			this.source.removeCurrentCloseLotListenerAndProcessNextItem(this);
+			this.closeLotDiscardInventoryAction.removeCurrentCloseLotListenerAndProcessNextItem(this);
 
 		} else {
-			List<CloseLotDiscardInventoryListener> closeLotListener = source.getCloseLotListener();
+			List<CloseLotDiscardInventoryListener> closeLotListener = this.closeLotDiscardInventoryAction.getCloseLotListener();
 
 			List<ListEntryLotDetails> listEntryLotDetails = Lists.newArrayList();
 
@@ -193,11 +196,11 @@ public class CloseLotDiscardInventoryConfirmDialog extends BaseSubWindow impleme
 			} catch (CloseLotException e) {
 				final String errorMessage = this.messageSource.getMessage(e.getMessage(), null, Locale.getDefault());
 				MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR), errorMessage);
-				this.source.closeAllLotCloseListeners();
+				this.closeLotDiscardInventoryAction.closeAllLotCloseListeners();
 				return;
 			}
 
-			this.source.closeAllLotCloseListeners();
+			this.closeLotDiscardInventoryAction.closeAllLotCloseListeners();
 
 		}
 
@@ -212,10 +215,10 @@ public class CloseLotDiscardInventoryConfirmDialog extends BaseSubWindow impleme
 
 	public void noActionListener() {
 		if (this.applyAllCheckBox.getValue().equals(false)) {
-			this.source.removeCurrentCloseLotListenerAndProcessNextItem(this);
+			this.closeLotDiscardInventoryAction.removeCurrentCloseLotListenerAndProcessNextItem(this);
 			this.getParent().removeWindow(this);
 		} else {
-			this.source.closeAllLotCloseListeners();
+			this.closeLotDiscardInventoryAction.closeAllLotCloseListeners();
 			this.source.getWindow().removeWindow(this);
 		}
 
