@@ -16,6 +16,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.UploadField;
 import org.generationcp.breeding.manager.inventory.exception.SeedInventoryImportException;
+import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.breeding.manager.pojos.ImportedSeedInventory;
 import org.generationcp.breeding.manager.pojos.ImportedSeedInventoryList;
 import org.generationcp.commons.parsing.FileParsingException;
@@ -26,8 +27,6 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.domain.inventory.ListDataInventory;
-import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.domain.inventory.LotDetails;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -161,16 +160,7 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow implements I
 
 		selectedListReservedInventoryDetails = inventoryDetails;
 
-		for (GermplasmListData inventoryDetail : inventoryDetails) {
-			final ListDataInventory listDataInventory = inventoryDetail.getInventoryInfo();
-			final List<ListEntryLotDetails> lotDetails = (List<ListEntryLotDetails>) listDataInventory.getLotRows();
-
-			if (lotDetails != null) {
-				for (final ListEntryLotDetails lotDetail : lotDetails) {
-					mapLotDetails.put(lotDetail.getLotId(), lotDetail);
-				}
-			}
-		}
+		mapLotDetails = ListCommonActionsUtil.createLotDetailsMap(inventoryDetails);
 
 	}
 

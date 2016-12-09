@@ -2613,19 +2613,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		}
 
 		final List<ListEntryLotDetails> selectedLotEntryDetails = Lists.newArrayList();
-		Map<Integer, ListEntryLotDetails> mapLotDetails = new HashMap<>();
-
-		for (final GermplasmListData inventoryDetail : inventoryDetails) {
-
-			final ListDataInventory listDataInventory = inventoryDetail.getInventoryInfo();
-			final List<ListEntryLotDetails> lotDetails = (List<ListEntryLotDetails>) listDataInventory.getLotRows();
-
-			if (lotDetails != null) {
-				for (final ListEntryLotDetails lotDetail : lotDetails) {
-					mapLotDetails.put(lotDetail.getLotId(), lotDetail);
-				}
-			}
-		}
+		Map<Integer, ListEntryLotDetails> mapLotDetails = ListCommonActionsUtil.createListEntryLotDetailsMap(inventoryDetails);
 
 		for (Integer selectedLot : lotIdList) {
 			if (mapLotDetails.containsKey(selectedLot)) {

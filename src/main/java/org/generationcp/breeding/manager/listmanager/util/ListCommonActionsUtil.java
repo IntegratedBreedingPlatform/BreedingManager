@@ -14,6 +14,7 @@ import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
+import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.domain.inventory.LotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -412,6 +413,41 @@ public class ListCommonActionsUtil {
 			MessageNotifier.showError(window, messageSource.getMessage(Message.PRINT_LABELS),
 					messageSource.getMessage(Message.ERROR_COULD_NOT_CREATE_LABELS));
 		}
+	}
+
+	public static Map<Integer, ListEntryLotDetails> createListEntryLotDetailsMap(List<GermplasmListData> inventoryDetails) {
+		Map<Integer, ListEntryLotDetails> lotDetailsMap = new HashMap<>();
+
+		for (final GermplasmListData inventoryDetail : inventoryDetails) {
+
+			final ListDataInventory listDataInventory = inventoryDetail.getInventoryInfo();
+			final List<ListEntryLotDetails> lotDetails = (List<ListEntryLotDetails>) listDataInventory.getLotRows();
+
+			if (lotDetails != null) {
+				for (final ListEntryLotDetails lotDetail : lotDetails) {
+					lotDetailsMap.put(lotDetail.getLotId(), lotDetail);
+				}
+			}
+		}
+
+		return  lotDetailsMap;
+	}
+
+	public static Map<Integer, LotDetails> createLotDetailsMap(List<GermplasmListData> inventoryDetails) {
+		Map<Integer, LotDetails> lotDetailsMap = new HashMap<>();
+
+		for (GermplasmListData inventoryDetail : inventoryDetails) {
+			final ListDataInventory listDataInventory = inventoryDetail.getInventoryInfo();
+			final List<LotDetails> lotDetails = (List<LotDetails>) listDataInventory.getLotRows();
+
+			if (lotDetails != null) {
+				for (final LotDetails lotDetail : lotDetails) {
+					lotDetailsMap.put(lotDetail.getLotId(), lotDetail);
+				}
+			}
+		}
+
+		return  lotDetailsMap;
 	}
 
 }
