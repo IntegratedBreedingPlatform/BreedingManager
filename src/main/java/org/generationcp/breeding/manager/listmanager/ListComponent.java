@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -29,6 +30,8 @@ import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
+import org.generationcp.breeding.manager.customcomponent.listinventory.CloseLotDiscardInventoryConfirmDialog;
+import org.generationcp.breeding.manager.customcomponent.listinventory.CloseLotDiscardInventoryListener;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
 import org.generationcp.breeding.manager.inventory.ReservationStatusWindow;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
@@ -37,6 +40,7 @@ import org.generationcp.breeding.manager.inventory.ReserveInventoryUtil;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
 import org.generationcp.breeding.manager.inventory.SeedInventoryImportFileComponent;
 import org.generationcp.breeding.manager.inventory.SeedInventoryListExporter;
+import org.generationcp.breeding.manager.inventory.exception.CloseLotException;
 import org.generationcp.breeding.manager.inventory.exception.SeedInventoryExportException;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
@@ -101,6 +105,7 @@ import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 import com.google.common.collect.Lists;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
+
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -217,6 +222,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	private static final String LOCK_TOOLTIP = "Click to lock or unlock this germplasm list.";
 
+	private static final String CLOSE_LOT_VALID = "CloseLotValid";
+	private static final String CLOSE_LOT_UNCOMMITTED = "CloseLotUnCommitted";
+	private static final String CLOSE_LOT_AVAILABLE_BALANCE = "CloseLotAvailableBalance";
+
 	// Value change event is fired when table is populated, so we need a flag
 	private Boolean doneInitializing = false;
 
@@ -269,6 +278,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	@Autowired
 	private UserDataManager userDataManager;
+
+	private final List<CloseLotDiscardInventoryListener> closeLotListener = new ArrayList<>();
 
 	public ListComponent() {
 		super();
@@ -1006,7 +1017,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 					});
 				}
 
-			} else  if(clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.CLOSE_LOTS))) {
+			} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.CLOSE_LOTS))) {
 				synchronized (ListComponent.class) {
 					final TransactionTemplate transactionTemplateForSavingReservation =
 							new TransactionTemplate(ListComponent.this.transactionManager);
@@ -2547,80 +2558,182 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	}
 
 	public void closeLotsActions() {
-		List<ListEntryLotDetails> validLotDetails = validateSelectedCloseLots();
 
-		if (!CollectionUtils.isEmpty(validLotDetails)) {
-			processCloseLots(validLotDetails);
+		if (CollectionUtils.isEmpty(this.listInventoryTable.getSelectedLots())) {
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
+					this.messageSource.getMessage(Message.NO_LOTS_SELECTED_ERROR));
+			return;
+		}
 
-			MessageNotifier.showMessage(ListComponent.this.getWindow(),
-					ListComponent.this.messageSource.getMessage(Message.SUCCESS),
+		Map<String, List<ListEntryLotDetails>> mapLotDetails = validateSelectedCloseLots();
+
+		if (!CollectionUtils.isEmpty(mapLotDetails.get(CLOSE_LOT_UNCOMMITTED))) {
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
+					this.messageSource.getMessage(Message.LOTS_HAVE_AVAILABLE_BALANCE_UNCOMMITTED_RESERVATION_ERROR));
+
+			return;
+		}
+
+		List<ListEntryLotDetails> validLotEntryDetails = mapLotDetails.get(CLOSE_LOT_VALID);
+
+		if (!CollectionUtils.isEmpty(validLotEntryDetails)) {
+			try {
+				processCloseLots(validLotEntryDetails);
+			} catch (CloseLotException e) {
+				final String errorMessage = this.messageSource.getMessage(e.getMessage(), null, Locale.getDefault());
+				MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR), errorMessage);
+				return;
+			}
+
+			MessageNotifier.showMessage(ListComponent.this.getWindow(), ListComponent.this.messageSource.getMessage(Message.SUCCESS),
 					ListComponent.this.messageSource.getMessage(Message.LOTS_CLOSED_SUCCESSFULLY));
 		}
 
+		List<ListEntryLotDetails> lotWithAvailableBalanceEntryDetails = mapLotDetails.get(CLOSE_LOT_AVAILABLE_BALANCE);
+
+		if (!CollectionUtils.isEmpty(lotWithAvailableBalanceEntryDetails)) {
+
+			for (ListEntryLotDetails lotDetails : lotWithAvailableBalanceEntryDetails) {
+				CloseLotDiscardInventoryConfirmDialog closeLotDiscardInventoryConfirmDialog =
+						new CloseLotDiscardInventoryConfirmDialog(this, lotDetails);
+				this.addCloseLotListener(closeLotDiscardInventoryConfirmDialog);
+			}
+		}
+
 	}
 
-	private List<ListEntryLotDetails> validateSelectedCloseLots() {
-		final List<ListEntryLotDetails> lotsSelectedToClose = this.listInventoryTable.getSelectedLots();
-		final List<ListEntryLotDetails> validLotDetails = Lists.newArrayList();
+	private List<ListEntryLotDetails> getSelectedCloseLotEntryDetails(List<ListEntryLotDetails> selectedLots) throws CloseLotException {
+		final List<GermplasmListData> inventoryDetails =
+				this.inventoryDataManager.getLotDetailsForList(this.getGermplasmListId(), 0, Integer.MAX_VALUE);
 
-		if (CollectionUtils.isEmpty(lotsSelectedToClose)) {
-			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
-					this.messageSource.getMessage(Message.NO_LOTS_SELECTED_ERROR));
-			return validLotDetails;
+		List<Integer> lotIdList = Lists.newArrayList();
+
+		for (ListEntryLotDetails lot : selectedLots) {
+			lotIdList.add(lot.getLotId());
 		}
+
+		final List<ListEntryLotDetails> selectedLotEntryDetails = Lists.newArrayList();
+		Map<Integer, ListEntryLotDetails> mapLotDetails = new HashMap<>();
+
+		for (final GermplasmListData inventoryDetail : inventoryDetails) {
+
+			final ListDataInventory listDataInventory = inventoryDetail.getInventoryInfo();
+			final List<ListEntryLotDetails> lotDetails = (List<ListEntryLotDetails>) listDataInventory.getLotRows();
+
+			if (lotDetails != null) {
+				for (final ListEntryLotDetails lotDetail : lotDetails) {
+					mapLotDetails.put(lotDetail.getLotId(), lotDetail);
+				}
+			}
+		}
+
+		for (Integer selectedLot : lotIdList) {
+			if (mapLotDetails.containsKey(selectedLot)) {
+				selectedLotEntryDetails.add(mapLotDetails.get(selectedLot));
+			} else {
+				throw new CloseLotException(Message.LOT_ALREADY_CLOSED_ERROR.toString());
+			}
+
+		}
+
+		return selectedLotEntryDetails;
+	}
+
+	public void showClotLotListener(final CloseLotDiscardInventoryListener listener) {
+		if (listener instanceof Window) {
+			this.getWindow().addWindow((Window) listener);
+		}
+
+	}
+
+	public void addCloseLotListener(final CloseLotDiscardInventoryListener listener) {
+		if (this.closeLotListener.isEmpty()) {
+			this.showClotLotListener(listener);
+		}
+		this.closeLotListener.add(listener);
+	}
+
+	public void removeCurrentCloseLotListenerAndProcessNextItem(final CloseLotDiscardInventoryListener listener) {
+		this.removeClotLotListener(listener);
+		this.processNextClotLotListenerItems();
+	}
+
+	public void removeClotLotListener(final CloseLotDiscardInventoryListener importEntryListener) {
+		this.closeLotListener.remove(importEntryListener);
+	}
+
+	public void closeAllLotCloseListeners() {
+		for (int i = 0; i < this.closeLotListener.size(); i++) {
+			final CloseLotDiscardInventoryListener listener = this.closeLotListener.get(i);
+			if (listener instanceof Window) {
+				final Window window = (Window) listener;
+				this.getWindow().removeWindow(window);
+			}
+		}
+		this.closeLotListener.clear();
+	}
+
+	public void processNextClotLotListenerItems() {
+		final Iterator<CloseLotDiscardInventoryListener> listenersIterator = this.closeLotListener.iterator();
+		if (!listenersIterator.hasNext()) {
+			return;
+		}
+		final CloseLotDiscardInventoryListener listener = listenersIterator.next();
+		this.showClotLotListener(listener);
+	}
+
+	private Map<String, List<ListEntryLotDetails>> validateSelectedCloseLots() {
+		final List<ListEntryLotDetails> lotsSelectedToClose = this.listInventoryTable.getSelectedLots();
+
+		Map<String, List<ListEntryLotDetails>> mapLotDetails = new HashMap<>();
+
+		mapLotDetails.put(CLOSE_LOT_VALID, Lists.<ListEntryLotDetails>newArrayList());
+		mapLotDetails.put(CLOSE_LOT_UNCOMMITTED, Lists.<ListEntryLotDetails>newArrayList());
+		mapLotDetails.put(CLOSE_LOT_AVAILABLE_BALANCE, Lists.<ListEntryLotDetails>newArrayList());
 
 		for (ListEntryLotDetails lotDetails : lotsSelectedToClose) {
 			if (lotDetails.getReservedTotal() > 0) {
-				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
-						this.messageSource.getMessage(Message.LOTS_HAVE_AVAILABLE_BALANCE_UNCOMMITTED_RESERVATION_ERROR));
-				return validLotDetails;
+				mapLotDetails.get(CLOSE_LOT_UNCOMMITTED).add(lotDetails);
+				continue;
 			}
-		}
 
-		for (final ListEntryLotDetails lotDetails : lotsSelectedToClose) {
 			if (lotDetails.getActualLotBalance() > 0) {
-
-				ConfirmDialog.show(this.getWindow(), this.messageSource.getMessage(Message.CLOSE_LOTS), this.messageSource
-								.getMessage(Message.LOTS_HAVE_AVAILABLE_BALANCE_NO_UNCOMMITTED_RESERVATION_ERROR, lotDetails.getLotId()),
-						this.messageSource.getMessage(Message.YES), this.messageSource.getMessage(Message.NO),
-						new ConfirmDialog.Listener() {
-
-							private static final long serialVersionUID = 1L;
-
-							@Override
-							public void onClose(final ConfirmDialog dialog) {
-								if (dialog.isConfirmed()) {
-									ListComponent.this.processCloseLots(Lists.<ListEntryLotDetails>newArrayList(lotDetails));
-
-									ListComponent.this.resetListInventoryTableValues();
-									ListComponent.this.resetListDataTableValues();
-
-									MessageNotifier.showMessage(ListComponent.this.getWindow(),
-											ListComponent.this.messageSource.getMessage(Message.SUCCESS),
-											ListComponent.this.messageSource.getMessage(Message.LOTS_CLOSED_SUCCESSFULLY));
-
-								}
-							}
-
-						});
+				mapLotDetails.get(CLOSE_LOT_AVAILABLE_BALANCE).add(lotDetails);
 			} else if (lotDetails.getActualLotBalance() == 0) {
-				validLotDetails.add(lotDetails);
-				return validLotDetails;
+				mapLotDetails.get(CLOSE_LOT_VALID).add(lotDetails);
 			}
 		}
-		return validLotDetails;
+
+		return mapLotDetails;
 	}
 
-	private void processCloseLots(List<ListEntryLotDetails> lotsSelectedToClose) {
+	public void processCloseLots(List<ListEntryLotDetails> lotsSelectedToClose) throws CloseLotException {
 		List<Transaction> closeLotTransactions = Lists.newArrayList();
 		List<Integer> listLotIds = Lists.newArrayList();
 
-		for (ListEntryLotDetails lotDetail : lotsSelectedToClose) {
+		List<ListEntryLotDetails> selectedCloseLotEntryDetails = getSelectedCloseLotEntryDetails(lotsSelectedToClose);
+
+		for (ListEntryLotDetails lotDetail : selectedCloseLotEntryDetails) {
 			listLotIds.add(lotDetail.getLotId());
 		}
 
+		List<Lot> closeLots = this.inventoryDataManager.getLotsByIdList(listLotIds);
 
-		for (ListEntryLotDetails lotDetail : lotsSelectedToClose) {
+		for (Lot lot : closeLots) {
+
+			if (lot.getStatus().equals(LotStatus.CLOSED.getIntValue())) {
+				throw new CloseLotException(Message.LOT_ALREADY_CLOSED_ERROR.toString());
+			} else {
+				lot.setStatus(LotStatus.CLOSED.getIntValue());
+			}
+
+		}
+
+		for (ListEntryLotDetails lotDetail : selectedCloseLotEntryDetails) {
+
+			if (lotDetail.getReservedTotal() > 0) {
+				throw new CloseLotException(Message.LOTS_HAVE_AVAILABLE_BALANCE_UNCOMMITTED_RESERVATION_ERROR.toString());
+			}
 
 			Integer lotId = lotDetail.getLotId();
 			Integer transactionDate = DateUtil.getCurrentDateAsIntegerValue();
@@ -2666,13 +2779,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		}
 
 		this.inventoryDataManager.addTransactions(closeLotTransactions);
-
-		List<Lot> closeLots = this.inventoryDataManager.getLotsByIdList(listLotIds);
-
-		for(Lot lot : closeLots) {
-			lot.setStatus(LotStatus.CLOSED.getIntValue());
-		}
-
 		this.inventoryDataManager.updateLots(closeLots);
 
 	}
@@ -2789,5 +2895,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	public void setReserveInventoryAction(ReserveInventoryAction reserveInventoryAction) {
 		this.reserveInventoryAction = reserveInventoryAction;
+	}
+
+	public List<CloseLotDiscardInventoryListener> getCloseLotListener() {
+		return closeLotListener;
 	}
 }
