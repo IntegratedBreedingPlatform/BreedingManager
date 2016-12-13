@@ -60,6 +60,7 @@ import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.inventory.GermplasmInventory;
+import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -108,6 +109,8 @@ import com.vaadin.ui.themes.Reindeer;
 @Configurable
 public class ListBuilderComponent extends VerticalLayout implements InitializingBean, BreedingManagerLayout, SaveListAsDialogSource,
 		ReserveInventorySource, UnsavedChangesSource, InventoryDropTargetContainer {
+
+	private static final String CLICK_TO_VIEW_INVENTORY_DETAILS = "Click to view Inventory Details";
 
 	private final class LockButtonClickListener implements ClickListener {
 
@@ -905,6 +908,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		table.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
 		table.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
 		table.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Button.class, null);
+		table.addContainerProperty(ColumnLabels.TOTAL.getName(), Button.class, null);
 		table.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
 		table.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
 		table.addContainerProperty(ColumnLabels.GROUP_ID.getName(), String.class, null);
@@ -916,6 +920,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		table.setColumnHeader(ColumnLabels.DESIGNATION.getName(), this.getTermNameFromOntology(ColumnLabels.DESIGNATION));
 		table.setColumnHeader(ColumnLabels.PARENTAGE.getName(), this.getTermNameFromOntology(ColumnLabels.PARENTAGE));
 		table.setColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName(), this.getTermNameFromOntology(ColumnLabels.AVAILABLE_INVENTORY));
+		table.setColumnHeader(ColumnLabels.TOTAL.getName(), this.getTermNameFromOntology(ColumnLabels.TOTAL));
 		table.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(), this.getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
 		table.setColumnHeader(ColumnLabels.GID.getName(), this.getTermNameFromOntology(ColumnLabels.GID));
 		table.setColumnHeader(ColumnLabels.GROUP_ID.getName(), this.getTermNameFromOntology(ColumnLabels.GROUP_ID));
@@ -1822,6 +1827,30 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 				  inventoryButton.setDescription("Click to view Inventory Details");
 				}
 				item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
+
+		 // LOTS
+		 StringBuilder available = new StringBuilder();
+
+		 if (listData.getInventoryInfo().getDistinctScaleCountForGermplsm() == 0) {
+			 available.append("-");
+		 } else if (listData.getInventoryInfo().getDistinctScaleCountForGermplsm() == 1) {
+			 available.append(listData.getInventoryInfo().getTotalAvailableBalance());
+			 available.append(" ");
+
+			 if (!StringUtils.isEmpty(listData.getInventoryInfo().getScaleForGermplsm())) {
+				 available.append(listData.getInventoryInfo().getScaleForGermplsm());
+			 }
+
+		 } else {
+			 available.append(ListDataInventory.MIXED);
+		 }
+
+		 final Button availableButton = new Button(available.toString(),
+				 new InventoryLinkButtonClickListener(this.source, this.currentlySavedGermplasmList.getId(), listData.getId(),
+						 listData.getGid()));
+		 availableButton.setStyleName(BaseTheme.BUTTON_LINK);
+		 availableButton.setDescription(ListBuilderComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
+		 item.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(availableButton);
 
 
 				final Button gidButton = (Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue();
