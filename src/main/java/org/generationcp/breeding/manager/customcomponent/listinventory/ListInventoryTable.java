@@ -101,8 +101,8 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		this.listInventoryTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.LOT_LOCATION.getName(), String.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.TOTAL.getName(), String.class, null);
+		this.listInventoryTable.addContainerProperty(ColumnLabels.RESERVATION.getName(), String.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
-		this.listInventoryTable.addContainerProperty(ColumnLabels.STATUS.getName(), String.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.COMMENT.getName(), String.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
@@ -116,10 +116,10 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 				ColumnLabels.LOT_LOCATION.getTermNameFromOntology(this.ontologyDataManager));
 		this.listInventoryTable.setColumnHeader(ColumnLabels.TOTAL.getName(),
 				ColumnLabels.TOTAL.getTermNameFromOntology(this.ontologyDataManager));
+		this.listInventoryTable.setColumnHeader(ColumnLabels.RESERVATION.getName(),
+				ColumnLabels.RESERVATION.getTermNameFromOntology(this.ontologyDataManager));
 		this.listInventoryTable.setColumnHeader(ColumnLabels.SEED_RESERVATION.getName(),
 				ColumnLabels.SEED_RESERVATION.getTermNameFromOntology(this.ontologyDataManager));
-		this.listInventoryTable.setColumnHeader(ColumnLabels.STATUS.getName(),
-				ColumnLabels.STATUS.getTermNameFromOntology(this.ontologyDataManager));
 		this.listInventoryTable.setColumnHeader(ColumnLabels.COMMENT.getName(),
 				ColumnLabels.COMMENT.getTermNameFromOntology(this.ontologyDataManager));
 		this.listInventoryTable.setColumnHeader(ColumnLabels.STOCKID.getName(),
@@ -201,17 +201,18 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 					}
   					newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(available);
 
-					String withdrawalBalance = "";
-					if(lotDetail.getWithdrawalBalance() != null){
-						withdrawalBalance = lotDetail.getWithdrawalBalance() + lotDetail.getLotScaleNameAbbr();
+					String reservedBalance = "";
+					if(lotDetail.getReservedTotalForEntry() != null){
+						reservedBalance = lotDetail.getReservedTotalForEntry() + lotDetail.getLotScaleNameAbbr();
 					}
-  					newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(withdrawalBalance);
+					newItem.getItemProperty(ColumnLabels.RESERVATION.getName()).setValue(reservedBalance);
 
-					String status = "";
-					if(lotDetail.getWithdrawalStatus() != null){
-						status = lotDetail.getWithdrawalStatus();
+					String committedBalance = "";
+					if(lotDetail.getCommittedTotalForEntry() != null){
+						committedBalance = lotDetail.getCommittedTotalForEntry() + lotDetail.getLotScaleNameAbbr();
 					}
-					newItem.getItemProperty(ColumnLabels.STATUS.getName()).setValue(status);
+  					newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(committedBalance);
+
   					newItem.getItemProperty(ColumnLabels.COMMENT.getName()).setValue(lotDetail.getCommentOfLot());
   
   					final String stockIds = lotDetail.getStockIds();
