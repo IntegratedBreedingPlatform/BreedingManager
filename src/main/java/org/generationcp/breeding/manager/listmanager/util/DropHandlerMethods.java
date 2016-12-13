@@ -396,7 +396,7 @@ public class DropHandlerMethods {
 				// #1 Available Inventory
 				String availInv = DropHandlerMethods.STRING_DASH;
 				if (germplasmListData.getInventoryInfo().getLotCount().intValue() != 0) {
-					availInv = germplasmListData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
+					availInv = germplasmListData.getInventoryInfo().getLotCount().toString().trim();
 				}
 				final Button inventoryButton =
 						new Button(availInv, new InventoryLinkButtonClickListener(this.listManagerMain, germplasmListData.getGid()));
