@@ -905,7 +905,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		table.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
 		table.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
 		table.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Button.class, null);
-		table.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
 		table.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
 		table.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
 		table.addContainerProperty(ColumnLabels.GROUP_ID.getName(), String.class, null);
@@ -917,7 +916,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		table.setColumnHeader(ColumnLabels.DESIGNATION.getName(), this.getTermNameFromOntology(ColumnLabels.DESIGNATION));
 		table.setColumnHeader(ColumnLabels.PARENTAGE.getName(), this.getTermNameFromOntology(ColumnLabels.PARENTAGE));
 		table.setColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName(), this.getTermNameFromOntology(ColumnLabels.AVAILABLE_INVENTORY));
-		table.setColumnHeader(ColumnLabels.SEED_RESERVATION.getName(), this.getTermNameFromOntology(ColumnLabels.SEED_RESERVATION));
 		table.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(), this.getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
 		table.setColumnHeader(ColumnLabels.GID.getName(), this.getTermNameFromOntology(ColumnLabels.GID));
 		table.setColumnHeader(ColumnLabels.GROUP_ID.getName(), this.getTermNameFromOntology(ColumnLabels.GROUP_ID));
@@ -1747,21 +1745,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 			this.updateAvailInvValues(Integer.valueOf(gidString), availInv);
 
-			// WITHDRAWAL
-			StringBuilder withdrawal = new StringBuilder();
-			if (listData.getInventoryInfo().getDistinctCountWithdrawalScale() == null
-					|| listData.getInventoryInfo().getDistinctCountWithdrawalScale() == 0) {
-				withdrawal.append("");
-			} else if (listData.getInventoryInfo().getDistinctCountWithdrawalScale() == 1) {
-				withdrawal.append(listData.getInventoryInfo().getWithdrawalBalance());
-				withdrawal.append(" ");
-
-				if (!StringUtils.isEmpty(listData.getInventoryInfo().getWithdrawalScale())) {
-					withdrawal.append(listData.getInventoryInfo().getWithdrawalScale());
-				}
-
-			}
-			item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(withdrawal.toString());
 		}
 	}
 
@@ -1849,22 +1832,6 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 				}
 
 				this.updateAvailInvValues(Integer.valueOf(gidString), availInv);
-
-				// WITHDRAWAL
-				StringBuilder withdrawal = new StringBuilder();
-				if (listData.getInventoryInfo().getDistinctCountWithdrawalScale() == null
-						|| listData.getInventoryInfo().getDistinctCountWithdrawalScale() == 0) {
-				  withdrawal.append("");
-				} else if (listData.getInventoryInfo().getDistinctCountWithdrawalScale() == 1) {
-				  withdrawal.append(listData.getInventoryInfo().getWithdrawalBalance());
-				  withdrawal.append(" ");
-
-				  if (!StringUtils.isEmpty(listData.getInventoryInfo().getWithdrawalScale())) {
-					withdrawal.append(listData.getInventoryInfo().getWithdrawalScale());
-				  }
-
-				}
-				item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(withdrawal.toString());
 
  		 }
 
