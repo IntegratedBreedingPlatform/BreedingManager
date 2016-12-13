@@ -410,15 +410,6 @@ public class DropHandlerMethods {
 					inventoryButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
 				}
 
-				// #2 Seed Reserved
-				String seedRes = DropHandlerMethods.STRING_DASH;
-				if (forEditList && germplasmListData.getInventoryInfo().getReservedLotCount().intValue() != 0) {
-
-					seedRes = germplasmListData.getInventoryInfo().getReservedLotCount().toString().trim();
-
-				}
-				newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
-
 				String stockIDs = DropHandlerMethods.STRING_EMPTY;
 				if (germplasmListData.getInventoryInfo() != null && germplasmListData.getInventoryInfo().getStockIDs() != null) {
 					stockIDs = germplasmListData.getInventoryInfo().getStockIDs();
