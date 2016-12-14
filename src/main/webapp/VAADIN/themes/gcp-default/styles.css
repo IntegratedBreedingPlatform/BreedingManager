@@ -902,3 +902,14 @@ div.unsaved-changes-dialog div.v-window-contents>div {
 .v-table .v-label.lst-assign-codes-results-message {
 	overflow: auto;
 }
+
+/*Used in New Lot details pop-up view */
+.v-label-lotLabel{
+	font-size: 20px;
+	font-weight: bold;
+}
+
+.lot-border {
+	border-top: 1px solid #e2e2e2;
+	border-top-width: 2px;
+}
