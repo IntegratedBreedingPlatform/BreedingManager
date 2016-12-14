@@ -26,6 +26,7 @@ import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClic
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
 import org.generationcp.middleware.domain.inventory.GermplasmInventory;
+import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.LocationDataManager;
@@ -155,6 +156,7 @@ public class GermplasmQuery implements Query {
 		propertyMap.put(GermplasmSearchResultsComponent.NAMES, new ObjectProperty<>(this.getNamesButton(gid)));
 		propertyMap.put(ColumnLabels.PARENTAGE.getName(), new ObjectProperty<>(pedigreeStringMap.get(gid)));
 		propertyMap.put(ColumnLabels.AVAILABLE_INVENTORY.getName(), new ObjectProperty<>(this.getInventoryInfoButton(germplasm)));
+		propertyMap.put(ColumnLabels.TOTAL.getName(), new ObjectProperty<>(this.getAvailableBalanceButton(germplasm)));
 		propertyMap.put(ColumnLabels.STOCKID.getName(), new ObjectProperty<>(this.getStockIDs(inventoryInfo)));
 		propertyMap.put(ColumnLabels.GID.getName(), new ObjectProperty<>(this.getGidButton(gid)));
 		propertyMap.put(ColumnLabels.GROUP_ID.getName(), new ObjectProperty<>(germplasm.getMgid() != 0 ? germplasm.getMgid() : "-"));
@@ -194,6 +196,30 @@ public class GermplasmQuery implements Query {
 		inventoryButton.setDebugId("inventoryButton");
 		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 		return inventoryButton;
+	}
+
+	private Button getAvailableBalanceButton(final Germplasm germplasm) {
+		StringBuilder available = new StringBuilder();
+
+		if (germplasm.getInventoryInfo().getScaleForGermplsm() != null) {
+			if(ListDataInventory.MIXED.equals(germplasm.getInventoryInfo().getScaleForGermplsm())) {
+				available.append(germplasm.getInventoryInfo().getScaleForGermplsm());
+			} else {
+				available.append(germplasm.getInventoryInfo().getTotalAvailableBalance());
+				available.append(" ");
+				available.append(germplasm.getInventoryInfo().getScaleForGermplsm());
+			}
+
+		} else {
+			available.append("-");
+		}
+
+		final Button inventoryButton = new Button(available.toString(), new InventoryLinkButtonClickListener(this.listManagerMain,
+				germplasm.getGid()));
+		inventoryButton.setDebugId("inventoryButton");
+		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
+		return inventoryButton;
+
 	}
 
 	private GidLinkButtonClickListener createGermplasmListener(final Integer gid) {
