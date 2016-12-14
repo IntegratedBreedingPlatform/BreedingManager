@@ -42,6 +42,7 @@ import org.generationcp.breeding.manager.inventory.SeedInventoryListExporter;
 import org.generationcp.breeding.manager.inventory.exception.CloseLotException;
 import org.generationcp.breeding.manager.inventory.exception.SeedInventoryExportException;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
+import org.generationcp.breeding.manager.listeners.LotDetailsButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource;
 import org.generationcp.breeding.manager.listmanager.dialog.AssignCodesDialog;
@@ -596,8 +597,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			availInv = entry.getInventoryInfo().getLotCount().toString().trim();
 		}
 		final Button inventoryButton = new Button(availInv,
-				new InventoryLinkButtonClickListener(this.parentListDetailsComponent, this.germplasmList.getId(), entry.getId(),
-						entry.getGid()));
+				new LotDetailsButtonClickListener(entry.getGid(),entry.getDesignation(),this.parentListDetailsComponent));
 		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 		inventoryButton.setDescription(ListComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
 		newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
