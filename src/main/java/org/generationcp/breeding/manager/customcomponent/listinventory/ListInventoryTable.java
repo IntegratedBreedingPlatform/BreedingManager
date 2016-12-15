@@ -193,23 +193,34 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
   					}
   
   					newItem.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).setValue(lotLocation);
-  
 
-  					String available = "";
+					String lotScaleAbbr = "";
+
+					if(lotDetail.getLotScaleNameAbbr() != null) {
+						lotScaleAbbr = lotDetail.getLotScaleNameAbbr();
+					}
+
+
+  					StringBuilder available = new StringBuilder("");
 					if(lotDetail.getAvailableLotBalance() != null){
-						available = lotDetail.getAvailableLotBalance() + lotDetail.getLotScaleNameAbbr();
-					}
-  					newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(available);
+						available.append(lotDetail.getAvailableLotBalance());
+						available.append(lotScaleAbbr);
 
-					String reservedBalance = "";
+					}
+  					newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(available.toString());
+
+					StringBuilder reservedBalance = new StringBuilder("");
 					if(lotDetail.getReservedTotalForEntry() != null){
-						reservedBalance = lotDetail.getReservedTotalForEntry() + lotDetail.getLotScaleNameAbbr();
-					}
-					newItem.getItemProperty(ColumnLabels.RESERVATION.getName()).setValue(reservedBalance);
+						reservedBalance.append(lotDetail.getReservedTotalForEntry());
+						reservedBalance.append(lotScaleAbbr);
 
-					String committedBalance = "";
+					}
+					newItem.getItemProperty(ColumnLabels.RESERVATION.getName()).setValue(reservedBalance.toString());
+
+					StringBuilder committedBalance = new StringBuilder("");
 					if(lotDetail.getCommittedTotalForEntry() != null){
-						committedBalance = lotDetail.getCommittedTotalForEntry() + lotDetail.getLotScaleNameAbbr();
+						committedBalance.append(lotDetail.getCommittedTotalForEntry());
+						committedBalance.append(lotScaleAbbr);
 					}
   					newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(committedBalance);
 
