@@ -174,7 +174,7 @@ public class CloseLotDiscardInventoryConfirmDialog extends BaseSubWindow impleme
 			try {
 				this.source.processCloseLots(Lists.newArrayList(this.listEntryLotDetails));
 			} catch (CloseLotException e) {
-				final String errorMessage = this.messageSource.getMessage(e.getMessage(), null, Locale.getDefault());
+				final String errorMessage = this.messageSource.getMessage(e.getMessage());
 				MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR), errorMessage);
 				this.closeLotDiscardInventoryAction.closeAllLotCloseListeners();
 				return;
@@ -194,7 +194,7 @@ public class CloseLotDiscardInventoryConfirmDialog extends BaseSubWindow impleme
 			try {
 				this.source.processCloseLots(Lists.newArrayList(listEntryLotDetails));
 			} catch (CloseLotException e) {
-				final String errorMessage = this.messageSource.getMessage(e.getMessage(), null, Locale.getDefault());
+				final String errorMessage = this.messageSource.getMessage(e.getMessage());
 				MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR), errorMessage);
 				this.closeLotDiscardInventoryAction.closeAllLotCloseListeners();
 				return;
@@ -227,5 +227,29 @@ public class CloseLotDiscardInventoryConfirmDialog extends BaseSubWindow impleme
 	@Override
 	public ListEntryLotDetails getEntryLotDetails() {
 		return this.listEntryLotDetails;
+	}
+
+	public Label getConfirmLabel() {
+		return confirmLabel;
+	}
+
+	public Button getYesButton() {
+		return yesButton;
+	}
+
+	public Button getNoButton() {
+		return noButton;
+	}
+
+	public CheckBox getApplyAllCheckBox() {
+		return applyAllCheckBox;
+	}
+
+	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	public VerticalLayout getMainLayout() {
+		return mainLayout;
 	}
 }
