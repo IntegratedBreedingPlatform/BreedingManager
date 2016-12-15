@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.util.CollectionUtils;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -158,9 +159,9 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow implements I
 		final List<GermplasmListData> inventoryDetails =
 				this.inventoryDataManager.getReservedLotDetailsForExportList(this.selectedGermplsmList.getId());
 
-		selectedListReservedInventoryDetails = inventoryDetails;
+		this.selectedListReservedInventoryDetails = inventoryDetails;
 
-		mapLotDetails = ListCommonActionsUtil.createLotDetailsMap(inventoryDetails);
+		this.mapLotDetails = ListCommonActionsUtil.createLotDetailsMap(inventoryDetails);
 
 	}
 
@@ -302,8 +303,7 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow implements I
 		}
 		Map<Integer, String> mapTransactionComment = new HashMap<>();
 
-		if (this.importedSeedInventoryList.getImportedSeedInventoryList() != null || !this.importedSeedInventoryList
-				.getImportedSeedInventoryList().isEmpty()) {
+		if (!CollectionUtils.isEmpty(this.importedSeedInventoryList.getImportedSeedInventoryList())) {
 			// List name validation
 			if (!this.importedSeedInventoryList.getListName().equals(this.selectedGermplsmList.getName())) {
 				throw new InvalidFileDataException(Message.SEED_IMPORT_LIST_NAME_MISMATCH_ERROR.toString());
@@ -524,4 +524,27 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow implements I
 		return processedTransactions;
 	}
 
+	public void setSource(Component source) {
+		this.source = source;
+	}
+
+	public VerticalLayout getMainLayout() {
+		return mainLayout;
+	}
+
+	public Button getCancelButton() {
+		return cancelButton;
+	}
+
+	public Button getFinishButton() {
+		return finishButton;
+	}
+
+	public UploadField getUploadSeedPreparationComponent() {
+		return uploadSeedPreparationComponent;
+	}
+
+	public SeedInventoryListUploader getSeedInventoryListUploader() {
+		return seedInventoryListUploader;
+	}
 }
