@@ -142,7 +142,7 @@ public class SeedInventoryImportStatusWindowTest {
 		Mockito.verify(inventoryDataManager).addTransactions(InventoryDetailsTestDataInitializer.createValidReservedTransactions());
 		Mockito.verify(this.messageSource).getMessage(Message.SEED_IMPORT_SUCCESS);
 		Mockito.verify(source).getWindow();
-		Mockito.verify(listComponent).refreshInventoryListDataTabel();
+		Mockito.verify(listComponent).resetListInventoryTableValues();
 		Mockito.verify(listComponent).resetListDataTableValues();
 	}
 

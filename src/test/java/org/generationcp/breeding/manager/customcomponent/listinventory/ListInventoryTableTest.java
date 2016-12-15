@@ -70,11 +70,11 @@ public class ListInventoryTableTest {
 		final Term totalTerm = ListInventoryDataInitializer.createTerm("Total");
 		Mockito.doReturn(totalTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.TOTAL.getTermId().getId());
 
-		final Term reservedTerm = ListInventoryDataInitializer.createTerm("WITHDRAWAL");
-		Mockito.doReturn(reservedTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.SEED_RESERVATION.getTermId().getId());
+		final Term totalWithdrawalTerm = ListInventoryDataInitializer.createTerm("TOTAL WITHDRAWAL");
+		Mockito.doReturn(totalWithdrawalTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.SEED_RESERVATION.getTermId().getId());
 
-		final Term newlyStatusTerm = ListInventoryDataInitializer.createTerm("Status");
-		Mockito.doReturn(newlyStatusTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.STATUS.getTermId().getId());
+		final Term newReservationTerm = ListInventoryDataInitializer.createTerm("RESERVATION");
+		Mockito.doReturn(newReservationTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.RESERVATION.getTermId().getId());
 
 		final Term commentTerm = ListInventoryDataInitializer.createTerm("Comment");
 		Mockito.doReturn(commentTerm).when(this.ontologyDataManager).getTermById(ColumnLabels.COMMENT.getTermId().getId());
@@ -96,8 +96,8 @@ public class ListInventoryTableTest {
 		Assert.assertEquals(desigTerm.getName(), table.getColumnHeader(ColumnLabels.DESIGNATION.getName()));
 		Assert.assertEquals(locTerm.getName(), table.getColumnHeader(ColumnLabels.LOT_LOCATION.getName()));
 		Assert.assertEquals(totalTerm.getName(), table.getColumnHeader(ColumnLabels.TOTAL.getName()));
-		Assert.assertEquals(reservedTerm.getName(), table.getColumnHeader(ColumnLabels.SEED_RESERVATION.getName()));
-		Assert.assertEquals(newlyStatusTerm.getName(), table.getColumnHeader(ColumnLabels.STATUS.getName()));
+		Assert.assertEquals(totalWithdrawalTerm.getName(), table.getColumnHeader(ColumnLabels.SEED_RESERVATION.getName()));
+		Assert.assertEquals(newReservationTerm.getName(), table.getColumnHeader(ColumnLabels.RESERVATION.getName()));
 		Assert.assertEquals(commentTerm.getName(), table.getColumnHeader(ColumnLabels.COMMENT.getName()));
 		Assert.assertEquals(stockIdTerm.getName(), table.getColumnHeader(ColumnLabels.STOCKID.getName()));
 		Assert.assertEquals(lotIdTerm.getName(), table.getColumnHeader(ColumnLabels.LOT_ID.getName()));
@@ -175,7 +175,7 @@ public class ListInventoryTableTest {
 				expectedNoOFLotEntries, table.getContainerDataSource().size());
 
 		final GermplasmListData row1InventoryDetails = inventoryDetails.get(0);
-		final LotDetails row1LotDetails = row1InventoryDetails.getInventoryInfo().getLotRows().get(0);
+		final ListEntryLotDetails row1LotDetails = ((List<ListEntryLotDetails>)row1InventoryDetails.getInventoryInfo().getLotRows()).get(0);
 		final Item row1VaadinTable = table.getItem(row1LotDetails);
 		Assert.assertNotNull(row1VaadinTable);
 
@@ -184,25 +184,26 @@ public class ListInventoryTableTest {
 				row1VaadinTable.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).getValue());
 		Assert.assertEquals(row1LotDetails.getActualLotBalance() + row1LotDetails.getLotScaleNameAbbr(),
 				row1VaadinTable.getItemProperty(ColumnLabels.TOTAL.getName()).getValue());
-		Assert.assertEquals(row1LotDetails.getWithdrawalBalance() + row1LotDetails.getLotScaleNameAbbr(),
+		Assert.assertEquals(row1LotDetails.getCommittedTotalForEntry() + row1LotDetails.getLotScaleNameAbbr(),
 				row1VaadinTable.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue());
 		Assert.assertEquals(row1LotDetails.getCommentOfLot(), row1VaadinTable.getItemProperty(ColumnLabels.COMMENT.getName()).getValue());
 		Assert.assertEquals(row1LotDetails.getLotId(), row1VaadinTable.getItemProperty(ColumnLabels.LOT_ID.getName()).getValue());
 		Assert.assertEquals(row1InventoryDetails.getSeedSource(),
 				row1VaadinTable.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue());
-		Assert.assertEquals(row1LotDetails.getWithdrawalStatus(),
-				row1VaadinTable.getItemProperty(ColumnLabels.STATUS.getName()).getValue());
+		Assert.assertEquals(row1LotDetails.getReservedTotalForEntry() + row1LotDetails.getLotScaleNameAbbr(),
+				row1VaadinTable.getItemProperty(ColumnLabels.RESERVATION.getName()).getValue());
 
 	}
 
 	@Test
-	public void testDisplayInventoryDetailsWithNoWithdrawalAndAvailableBalance() {
+	public void testDisplayInventoryDetailsWithNoReservedAndCommiitedAndAvailableBalance() {
 		final List<GermplasmListData> inventoryDetails = ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails();
 
 		final GermplasmListData row1InventoryDetails = inventoryDetails.get(0);
-		final LotDetails row1LotDetails = row1InventoryDetails.getInventoryInfo().getLotRows().get(0);
+		final ListEntryLotDetails row1LotDetails = ((List<ListEntryLotDetails>)row1InventoryDetails.getInventoryInfo().getLotRows()).get(0);
 
-		row1LotDetails.setWithdrawalBalance(null);
+		row1LotDetails.setReservedTotalForEntry(null);
+		row1LotDetails.setCommittedTotalForEntry(null);
 		row1LotDetails.setAvailableLotBalance(null);
 
 		this.listInventoryTable.displayInventoryDetails(inventoryDetails);
@@ -224,8 +225,8 @@ public class ListInventoryTableTest {
 		Assert.assertEquals(row1LotDetails.getLotId(), row1VaadinTable.getItemProperty(ColumnLabels.LOT_ID.getName()).getValue());
 		Assert.assertEquals(row1InventoryDetails.getSeedSource(),
 				row1VaadinTable.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue());
-		Assert.assertEquals(row1LotDetails.getWithdrawalStatus(),
-				row1VaadinTable.getItemProperty(ColumnLabels.STATUS.getName()).getValue());
+		Assert.assertEquals("",
+				row1VaadinTable.getItemProperty(ColumnLabels.RESERVATION.getName()).getValue());
 
 	}
 
@@ -245,7 +246,7 @@ public class ListInventoryTableTest {
 				expectedNoOFLotEntries, table.getContainerDataSource().size());
 
 		final GermplasmListData row1InventoryDetails = inventoryDetails.get(0);
-		final LotDetails row1LotDetails = row1InventoryDetails.getInventoryInfo().getLotRows().get(0);
+		final ListEntryLotDetails row1LotDetails = ((List<ListEntryLotDetails>)row1InventoryDetails.getInventoryInfo().getLotRows()).get(0);
 		final Item row1VaadinTable = table.getItem(row1LotDetails);
 		Assert.assertNotNull(row1VaadinTable);
 
@@ -254,8 +255,10 @@ public class ListInventoryTableTest {
 				row1VaadinTable.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).getValue());
 		Assert.assertEquals(row1LotDetails.getActualLotBalance() + row1LotDetails.getLotScaleNameAbbr(),
 				row1VaadinTable.getItemProperty(ColumnLabels.TOTAL.getName()).getValue());
-		Assert.assertEquals(row1LotDetails.getWithdrawalBalance() + row1LotDetails.getLotScaleNameAbbr(),
+		Assert.assertEquals(row1LotDetails.getCommittedTotalForEntry() + row1LotDetails.getLotScaleNameAbbr(),
 				row1VaadinTable.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue());
+		Assert.assertEquals(row1LotDetails.getReservedTotalForEntry() + row1LotDetails.getLotScaleNameAbbr(),
+				row1VaadinTable.getItemProperty(ColumnLabels.RESERVATION.getName()).getValue());
 		Assert.assertEquals(row1LotDetails.getCommentOfLot(), row1VaadinTable.getItemProperty(ColumnLabels.COMMENT.getName()).getValue());
 		Assert.assertEquals(row1LotDetails.getLotId(), row1VaadinTable.getItemProperty(ColumnLabels.LOT_ID.getName()).getValue());
 		Assert.assertEquals(row1InventoryDetails.getSeedSource(),
