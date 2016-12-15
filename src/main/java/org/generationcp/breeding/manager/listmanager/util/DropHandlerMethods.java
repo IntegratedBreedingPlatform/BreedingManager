@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.inventory.InventoryDropTargetContainer;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
@@ -22,6 +23,7 @@ import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClic
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
+import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -35,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -396,12 +399,34 @@ public class DropHandlerMethods {
 				// #1 Available Inventory
 				String availInv = DropHandlerMethods.STRING_DASH;
 				if (germplasmListData.getInventoryInfo().getLotCount().intValue() != 0) {
-					availInv = germplasmListData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
+					availInv = germplasmListData.getInventoryInfo().getLotCount().toString().trim();
 				}
 				final Button inventoryButton =
 						new Button(availInv, new InventoryLinkButtonClickListener(this.listManagerMain, germplasmListData.getGid()));
 				inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 				newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
+
+				StringBuilder available = new StringBuilder();
+
+				if (germplasmListData.getInventoryInfo().getDistinctScaleCountForGermplsm() == 0) {
+					available.append("-");
+				} else if (germplasmListData.getInventoryInfo().getDistinctScaleCountForGermplsm() == 1) {
+					available.append(germplasmListData.getInventoryInfo().getTotalAvailableBalance());
+					available.append(" ");
+
+					if (!StringUtils.isEmpty(germplasmListData.getInventoryInfo().getScaleForGermplsm())) {
+						available.append(germplasmListData.getInventoryInfo().getScaleForGermplsm());
+					}
+
+				} else {
+					available.append(ListDataInventory.MIXED);
+				}
+
+				final Button availableButton = new Button(available.toString(),
+						new InventoryLinkButtonClickListener(this.listManagerMain, germplasmListData.getGid()));
+				availableButton.setStyleName(BaseTheme.BUTTON_LINK);
+				availableButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
+				newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(availableButton);
 
 				if (availInv.equals(DropHandlerMethods.STRING_DASH)) {
 					inventoryButton.setEnabled(false);
@@ -409,15 +434,6 @@ public class DropHandlerMethods {
 				} else {
 					inventoryButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
 				}
-
-				// #2 Seed Reserved
-				String seedRes = DropHandlerMethods.STRING_DASH;
-				if (forEditList && germplasmListData.getInventoryInfo().getReservedLotCount().intValue() != 0) {
-
-					seedRes = germplasmListData.getInventoryInfo().getReservedLotCount().toString().trim();
-
-				}
-				newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 
 				String stockIDs = DropHandlerMethods.STRING_EMPTY;
 				if (germplasmListData.getInventoryInfo() != null && germplasmListData.getInventoryInfo().getStockIDs() != null) {
@@ -464,17 +480,8 @@ public class DropHandlerMethods {
 	}
 
 	public GermplasmListData getListDataByListIdAndLrecId(final Integer listId, final Integer lrecid, final GermplasmList germplasmList) {
-		GermplasmListData germplasmListData = null;
-
-		if (germplasmList.getListData() != null && !germplasmList.getListData().isEmpty()) {
-			for (final GermplasmListData listData : germplasmList.getListData()) {
-				if (listData.getId().equals(lrecid)) {
-					germplasmListData = listData;
-				}
-			}
-		} else {
-			germplasmListData = this.germplasmListManager.getGermplasmListDataByListIdAndLrecId(listId, lrecid);
-		}
+		GermplasmListData germplasmListData =
+				this.inventoryDataManager.getLotCountsForListEntries(listId, Lists.newArrayList(lrecid)).get(0);
 		return germplasmListData;
 	}
 

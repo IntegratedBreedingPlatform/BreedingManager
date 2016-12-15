@@ -442,8 +442,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.listDataTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Button.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.TOTAL.getName(), Button.class, null);
-		this.listDataTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
-		this.listDataTable.addContainerProperty(ColumnLabels.STATUS.getName(), String.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.GROUP_ID.getName(), String.class, null);
@@ -457,9 +455,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.listDataTable.setColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName(),
 				this.getTermNameFromOntology(ColumnLabels.AVAILABLE_INVENTORY));
 		this.listDataTable.setColumnHeader(ColumnLabels.TOTAL.getName(), this.getTermNameFromOntology(ColumnLabels.TOTAL));
-		this.listDataTable
-				.setColumnHeader(ColumnLabels.SEED_RESERVATION.getName(), this.getTermNameFromOntology(ColumnLabels.SEED_RESERVATION));
-		this.listDataTable.setColumnHeader(ColumnLabels.STATUS.getName(), this.getTermNameFromOntology(ColumnLabels.STATUS));
 		this.listDataTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(), this.getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
 		this.listDataTable.setColumnHeader(ColumnLabels.GID.getName(), this.getTermNameFromOntology(ColumnLabels.GID));
 		this.listDataTable.setColumnHeader(ColumnLabels.GROUP_ID.getName(), this.getTermNameFromOntology(ColumnLabels.GROUP_ID));
@@ -632,32 +627,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		availableButton.setStyleName(BaseTheme.BUTTON_LINK);
 		availableButton.setDescription(ListComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
 		newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(availableButton);
-
-		// WITHDRAWAL
-		StringBuilder withdrawal = new StringBuilder();
-		if (entry.getInventoryInfo().getDistinctCountWithdrawalScale() == null
-				|| entry.getInventoryInfo().getDistinctCountWithdrawalScale() == 0) {
-			withdrawal.append("");
-		} else if (entry.getInventoryInfo().getDistinctCountWithdrawalScale() == 1) {
-			withdrawal.append(entry.getInventoryInfo().getWithdrawalBalance());
-			withdrawal.append(" ");
-
-			if (!StringUtils.isEmpty(entry.getInventoryInfo().getWithdrawalScale())) {
-				withdrawal.append(entry.getInventoryInfo().getWithdrawalScale());
-			}
-
-		} else {
-			withdrawal.append(ListDataInventory.MIXED);
-		}
-
-		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(withdrawal.toString());
-
-		// STATUS
-		if (entry.getInventoryInfo().getTransactionStatus() != null) {
-			newItem.getItemProperty(ColumnLabels.STATUS.getName()).setValue(entry.getInventoryInfo().getTransactionStatus());
-		} else {
-			newItem.getItemProperty(ColumnLabels.STATUS.getName()).setValue("");
-		}
 
 		final String stockIds = entry.getInventoryInfo().getStockIDs();
 		final Label stockIdsLbl = new Label(stockIds);
