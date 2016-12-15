@@ -20,7 +20,7 @@ import java.util.Set;
 import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
-import org.generationcp.breeding.manager.listeners.LotDetailsButtonClickListener;
+import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
@@ -194,7 +194,8 @@ public class GermplasmQuery implements Query {
 		availInv = germplasm.getInventoryInfo().getActualInventoryLotCount().toString().trim();
 		final Integer gid = germplasm.getGid();
 		final String germplasmName = germplasm.getPreferredName().getNval();
-		final Button inventoryButton = new Button(availInv, new LotDetailsButtonClickListener(gid,germplasmName, this.listManagerMain));
+		final Button inventoryButton = new Button(availInv, new LotDetailsButtonClickListener(gid,germplasmName, this.listManagerMain,
+				null));
 		inventoryButton.setDebugId("inventoryButton");
 		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 		return inventoryButton;
