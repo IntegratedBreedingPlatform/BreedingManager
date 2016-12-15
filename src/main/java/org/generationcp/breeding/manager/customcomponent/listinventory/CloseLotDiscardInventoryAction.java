@@ -16,7 +16,7 @@ public class CloseLotDiscardInventoryAction implements Serializable {
 
 	private static final long serialVersionUID = -9047259985457065559L;
 
-	private final List<CloseLotDiscardInventoryListener> closeLotListener = new ArrayList<>();
+	private List<CloseLotDiscardInventoryListener> closeLotListener = new ArrayList<>();
 
 	private ListComponent source;
 	ListEntryLotDetails lotDetails;
@@ -78,5 +78,10 @@ public class CloseLotDiscardInventoryAction implements Serializable {
 	public List<CloseLotDiscardInventoryListener> getCloseLotListener() {
 		return closeLotListener;
 	}
+
+	public void setCloseLotListener(List<CloseLotDiscardInventoryListener> closeLotListener) {
+		this.closeLotListener = closeLotListener;
+	}
+
 
 }
