@@ -19,6 +19,7 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listeners.LotDetailsButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
