@@ -110,7 +110,7 @@ import com.vaadin.ui.themes.Reindeer;
 public class ListBuilderComponent extends VerticalLayout implements InitializingBean, BreedingManagerLayout, SaveListAsDialogSource,
 		ReserveInventorySource, UnsavedChangesSource, InventoryDropTargetContainer {
 
-	private static final String CLICK_TO_VIEW_INVENTORY_DETAILS = "Click to view Inventory Details";
+	public static final String CLICK_TO_VIEW_INVENTORY_DETAILS = "Click to view Inventory Details";
 
 	private final class LockButtonClickListener implements ClickListener {
 
