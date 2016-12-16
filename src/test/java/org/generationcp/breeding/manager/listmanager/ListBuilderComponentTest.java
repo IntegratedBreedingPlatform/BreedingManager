@@ -65,6 +65,7 @@ public class ListBuilderComponentTest {
 
 	private static final String SEED_RES = "SEED_RES";
 	private static final String AVAIL_INV = "AVAIL_INV";
+	private static final String TOTAL = "AVAILABLE";
 	private static final String HASH = "#";
 	private static final String CHECK = "CHECK";
 	private static final String SEED_SOURCE = "SEED_SOURCE";
@@ -195,7 +196,7 @@ public class ListBuilderComponentTest {
 		Assert.assertEquals(ListBuilderComponentTest.CHECK, table.getColumnHeader(ColumnLabels.TAG.getName()));
 		Assert.assertEquals(ListBuilderComponentTest.HASH, table.getColumnHeader(ColumnLabels.ENTRY_ID.getName()));
 		Assert.assertEquals(ListBuilderComponentTest.AVAIL_INV, table.getColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName()));
-		Assert.assertEquals(ListBuilderComponentTest.SEED_RES, table.getColumnHeader(ColumnLabels.SEED_RESERVATION.getName()));
+		Assert.assertEquals(ListBuilderComponentTest.TOTAL, table.getColumnHeader(ColumnLabels.TOTAL.getName()));
 		Assert.assertEquals(ListBuilderComponentTest.GID, table.getColumnHeader(ColumnLabels.GID.getName()));
 		Assert.assertEquals(ListBuilderComponentTest.ENTRY_CODE, table.getColumnHeader(ColumnLabels.ENTRY_CODE.getName()));
 		Assert.assertEquals(ListBuilderComponentTest.DESIG, table.getColumnHeader(ColumnLabels.DESIGNATION.getName()));

@@ -200,7 +200,7 @@ public class SelectParentsListDataComponentTest {
 		Assert.assertEquals("TAG", table.getColumnHeader(ColumnLabels.TAG.getName()));
 		Assert.assertEquals("HASHTAG", table.getColumnHeader(ColumnLabels.ENTRY_ID.getName()));
 		Assert.assertEquals("LOTS", table.getColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName()));
-		Assert.assertEquals("WITHDRAWAL", table.getColumnHeader(ColumnLabels.SEED_RESERVATION.getName()));
+		Assert.assertEquals("TOTAL WITHDRAWALS", table.getColumnHeader(ColumnLabels.SEED_RESERVATION.getName()));
 		Assert.assertEquals("STOCKID", table.getColumnHeader(ColumnLabels.STOCKID.getName()));
 		Assert.assertEquals("GID", table.getColumnHeader(ColumnLabels.GID.getName()));
 		Assert.assertEquals("ENTRY CODE", table.getColumnHeader(ColumnLabels.ENTRY_CODE.getName()));

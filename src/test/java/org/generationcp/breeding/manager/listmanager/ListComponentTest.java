@@ -73,7 +73,7 @@ import junit.framework.Assert;
 public class ListComponentTest {
 
 	private static final String STOCKID = "STOCKID";
-	private static final String SEED_RES = "SEED_RES";
+	private static final String TOTAL_AVAILBALE = "AVAILABLE";
 	private static final String AVAIL_INV = "AVAIL_INV";
 	private static final String HASH = "#";
 	private static final String CHECK = "CHECK";
@@ -286,7 +286,7 @@ public class ListComponentTest {
 		Assert.assertEquals(ListComponentTest.CHECK, table.getColumnHeader(ColumnLabels.TAG.getName()));
 		Assert.assertEquals(ListComponentTest.HASH, table.getColumnHeader(ColumnLabels.ENTRY_ID.getName()));
 		Assert.assertEquals(ListComponentTest.AVAIL_INV, table.getColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName()));
-		Assert.assertEquals(ListComponentTest.SEED_RES, table.getColumnHeader(ColumnLabels.SEED_RESERVATION.getName()));
+		Assert.assertEquals(ListComponentTest.TOTAL_AVAILBALE, table.getColumnHeader(ColumnLabels.TOTAL.getName()));
 		Assert.assertEquals(ListComponentTest.STOCKID, table.getColumnHeader(ColumnLabels.STOCKID.getName()));
 		Assert.assertEquals(ListComponentTest.GID, table.getColumnHeader(ColumnLabels.GID.getName()));
 		Assert.assertEquals(ListComponentTest.ENTRY_CODE, table.getColumnHeader(ColumnLabels.ENTRY_CODE.getName()));
@@ -574,8 +574,8 @@ public class ListComponentTest {
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.AVAILABLE_INVENTORY.getId()))
 				.thenReturn(this.createTerm(TermId.AVAILABLE_INVENTORY.getId(), ListComponentTest.AVAIL_INV));
 
-		Mockito.when(this.ontologyDataManager.getTermById(TermId.SEED_RESERVATION.getId()))
-				.thenReturn(this.createTerm(TermId.SEED_RESERVATION.getId(), ListComponentTest.SEED_RES));
+		Mockito.when(this.ontologyDataManager.getTermById(TermId.TOTAL_INVENTORY.getId()))
+				.thenReturn(this.createTerm(TermId.TOTAL_INVENTORY.getId(), ListComponentTest.TOTAL_AVAILBALE));
 
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.GID.getId()))
 				.thenReturn(this.createTerm(TermId.GID.getId(), ListComponentTest.GID));
