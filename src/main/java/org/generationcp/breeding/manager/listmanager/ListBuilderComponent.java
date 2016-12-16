@@ -1870,13 +1870,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		for (final Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()) {
 			final ListEntryLotDetails lot = entry.getKey();
 			final Double newRes = entry.getValue();
-			final Double withdrawalbalance = lot.getWithdrawalBalance() + newRes;
 			final Double available = lot.getAvailableLotBalance() - newRes;
 			final Item itemToUpdate = this.listInventoryTable.getTable().getItem(lot);
 			if (newRes > 0) {
-				itemToUpdate.getItemProperty(ColumnLabels.SEED_RESERVATION.getName())
-						.setValue(withdrawalbalance + lot.getLotScaleNameAbbr());
-				itemToUpdate.getItemProperty(ColumnLabels.STATUS.getName()).setValue(GermplasmInventory.RESERVED);
+				itemToUpdate.getItemProperty(ColumnLabels.RESERVATION.getName()).setValue(newRes + lot.getLotScaleNameAbbr());
 				itemToUpdate.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(available + lot.getLotScaleNameAbbr());
 			}
 		}
