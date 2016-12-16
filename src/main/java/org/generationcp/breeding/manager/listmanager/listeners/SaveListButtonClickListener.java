@@ -13,6 +13,7 @@ import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListen
 import org.generationcp.breeding.manager.listmanager.AddColumnContextMenu;
 import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
+import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -324,15 +325,15 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 					availInv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
 				}
 				final Button inventoryButton = new Button(availInv,
-						new InventoryLinkButtonClickListener(this.source, currentlySavedList.getId(), entry.getId(), entry.getGid()));
+						new LotDetailsButtonClickListener(entry.getGid(),entry.getDesignation(),this.source,null));
 				inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-				inventoryButton.setDescription("Click to view Inventory Details");
+				inventoryButton.setDescription("Click to view Lot Details");
 
 				if (availInv.equals(SaveListButtonClickListener.STRING_DASH)) {
 					inventoryButton.setEnabled(false);
 					inventoryButton.setDescription("No Lot for this Germplasm");
 				} else {
-					inventoryButton.setDescription("Click to view Inventory Details");
+					inventoryButton.setDescription("Click to view Lot Details");
 				}
 
 				// GROUP ID - the maintenance group id(gid) of a germplasm

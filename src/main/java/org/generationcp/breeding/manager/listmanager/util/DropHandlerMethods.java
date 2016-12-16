@@ -20,6 +20,7 @@ import org.generationcp.breeding.manager.listmanager.ListComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.ListSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
+import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
@@ -448,7 +449,7 @@ public class DropHandlerMethods {
 					availInv = germplasmListData.getInventoryInfo().getLotCount().toString().trim();
 				}
 				final Button inventoryButton =
-						new Button(availInv, new InventoryLinkButtonClickListener(this.listManagerMain, germplasmListData.getGid()));
+						new Button(availInv, new LotDetailsButtonClickListener(germplasmListData.getGid(),germplasmListData.getDesignation(),this.listManagerMain,null));
 				inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 				newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
 

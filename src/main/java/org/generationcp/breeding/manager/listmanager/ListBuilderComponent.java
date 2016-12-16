@@ -50,6 +50,7 @@ import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListExporter;
 import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
+import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -1814,9 +1815,8 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	  			availInv = listData.getInventoryInfo().getLotCount().toString().trim();
 			}
 
-			final Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(this.source, this.currentlySavedGermplasmList.getId(), listData.getId(),
-					listData.getGid()));
-
+			final Button inventoryButton = new Button(availInv, new LotDetailsButtonClickListener(listData.getGid(),listData
+					.getDesignation(),this.source, null));
 			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 			inventoryButton.setDescription("Click to view Inventory Details");
 
