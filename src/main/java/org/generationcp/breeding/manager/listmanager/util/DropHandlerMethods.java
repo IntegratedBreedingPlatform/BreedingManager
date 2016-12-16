@@ -179,6 +179,7 @@ public class DropHandlerMethods {
 		final Map<Integer, String> crossExpansions = this.getCrossExpansions(gids);
 		final Map<Integer, Germplasm> gidGermplasmMap = this.generateGidGermplasmMap(gids);
 		final Map<Integer, String> preferredNames = this.germplasmDataManager.getPreferredNamesByGids(gids);
+		final Map<Integer, Germplasm> germplsmWithAvailableBalance = this.getAvailableBalanceWithScaleForGermplasm(gidGermplasmMap);
 
 		try {
 			for (final Integer gid : gids) {
@@ -241,9 +242,36 @@ public class DropHandlerMethods {
 					inventoryButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
 				}
 
-				// #2 Seed Reserved
-				final String seedRes = DropHandlerMethods.STRING_DASH;
-				newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
+				// Available
+				final StringBuilder available = new StringBuilder();
+				final Germplasm germplasmWithAvailableBalance = germplsmWithAvailableBalance.get(gid);
+
+				if(germplasmWithAvailableBalance != null) {
+
+					if (germplasm.getInventoryInfo().getScaleForGermplsm() != null) {
+						if(ListDataInventory.MIXED.equals(germplasm.getInventoryInfo().getScaleForGermplsm())) {
+							available.append(germplasm.getInventoryInfo().getScaleForGermplsm());
+						} else {
+							available.append(germplasm.getInventoryInfo().getTotalAvailableBalance());
+							available.append(" ");
+							available.append(germplasm.getInventoryInfo().getScaleForGermplsm());
+						}
+
+					} else {
+						available.append(germplasm.getInventoryInfo().getTotalAvailableBalance());
+					}
+
+				} else {
+					available.append(DropHandlerMethods.STRING_DASH);
+				}
+
+				final Button availableButton = new Button(available.toString(),
+						new InventoryLinkButtonClickListener(this.listManagerMain, germplasmWithAvailableBalance.getGid()));
+				availableButton.setDebugId("availableButton");
+				availableButton.setStyleName(BaseTheme.BUTTON_LINK);
+				availableButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
+				newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(availableButton);
+
 
 				newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(tagCheckBox);
 				if (newItem != null && gidButton != null) {
@@ -283,6 +311,24 @@ public class DropHandlerMethods {
 			gidGermplasmMap.put(gid, germplasm);
 		}
 		return gidGermplasmMap;
+	}
+
+	private Map<Integer, Germplasm> getAvailableBalanceWithScaleForGermplasm(final Map<Integer, Germplasm> germplasmMap) {
+		Map<Integer, Germplasm> availableBalanceWithScale = new HashMap<>();
+
+		List<Germplasm> germplasmList = new ArrayList<>();
+		for(Entry<Integer, Germplasm> entry : germplasmMap.entrySet()) {
+			germplasmList.add(entry.getValue());
+		}
+
+		List<Germplasm> availableBalanceForGermplsms = this.inventoryDataManager.getAvailableBalanceForGermplasms(germplasmList);
+
+		for(Germplasm germplasm : availableBalanceForGermplsms) {
+			availableBalanceWithScale.put(germplasm.getGid(), germplasm);
+		}
+
+		return availableBalanceWithScale;
+
 	}
 
 	private Map<Integer, String> getCrossExpansions(final List<Integer> gids) {
@@ -569,8 +615,8 @@ public class DropHandlerMethods {
 			final String seedSource = (String) itemFromSourceTable.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue();
 			final Object groupId = itemFromSourceTable.getItemProperty(ColumnLabels.GROUP_ID.getName()).getValue();
 
-			// #2 Seed Reserved
-			final String seedRes = DropHandlerMethods.STRING_DASH;
+			// Available
+			final Button availableButton = this.getAvailableBalanceButton(sourceTable, itemId, gid);
 
 			newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(itemCheckBox);
 			newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
@@ -580,7 +626,7 @@ public class DropHandlerMethods {
 			newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(parentage);
 			newItem.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(entryCode);
 			newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-			newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
+			newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(availableButton);
 
 			newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(DropHandlerMethods.STRING_EMPTY);
 
@@ -712,6 +758,21 @@ public class DropHandlerMethods {
 
 		}
 		return null;
+	}
+
+	protected Button getAvailableBalanceButton(final Table table, final Integer itemId, Integer gid) {
+		final Item item = table.getItem(itemId);
+		String availableButtonCaption = DropHandlerMethods.STRING_DASH;
+		if (item != null) {
+			availableButtonCaption = ((Button)item.getItemProperty(ColumnLabels.TOTAL.getName()).getValue()).getCaption();
+		}
+
+		final Button availableButton = new Button(availableButtonCaption, new InventoryLinkButtonClickListener(this.listManagerMain, gid));
+		availableButton.setDebugId("availableButton");
+		availableButton.setStyleName(BaseTheme.BUTTON_LINK);
+		availableButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
+
+		return availableButton;
 	}
 
 	protected String getDesignationFromButtonCaption(final Table table, final Integer itemId) {
