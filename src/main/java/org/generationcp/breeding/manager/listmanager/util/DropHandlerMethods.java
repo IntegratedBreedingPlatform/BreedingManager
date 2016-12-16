@@ -266,7 +266,7 @@ public class DropHandlerMethods {
 				}
 
 				final Button availableButton = new Button(available.toString(),
-						new InventoryLinkButtonClickListener(this.listManagerMain, germplasmWithAvailableBalance.getGid()));
+						new InventoryLinkButtonClickListener(this.listManagerMain, gid));
 				availableButton.setDebugId("availableButton");
 				availableButton.setStyleName(BaseTheme.BUTTON_LINK);
 				availableButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
