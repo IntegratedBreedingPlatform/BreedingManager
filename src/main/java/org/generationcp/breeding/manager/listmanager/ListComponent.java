@@ -2221,7 +2221,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 			if (success) {
 				this.cancelReservations();
-				this.refreshInventoryColumns(this.getValidReservationsToSave());
 				this.resetListDataTableValues();
 				this.resetListInventoryTableValues();
 				MessageNotifier.showMessage(window, this.messageSource.getMessage(Message.SUCCESS),
@@ -2400,13 +2399,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		for (final Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()) {
 			final ListEntryLotDetails lot = entry.getKey();
 			final Double newRes = entry.getValue();
-			final Double withdrawalbalance = lot.getWithdrawalBalance() + newRes;
 			final Double available = lot.getAvailableLotBalance() - newRes;
 			final Item itemToUpdate = this.listInventoryTable.getTable().getItem(lot);
 			if (newRes > 0) {
-				itemToUpdate.getItemProperty(ColumnLabels.SEED_RESERVATION.getName())
-						.setValue(withdrawalbalance + lot.getLotScaleNameAbbr());
-				itemToUpdate.getItemProperty(ColumnLabels.STATUS.getName()).setValue(GermplasmInventory.RESERVED);
+				itemToUpdate.getItemProperty(ColumnLabels.RESERVATION.getName()).setValue(newRes + lot.getLotScaleNameAbbr());
 				itemToUpdate.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(available + lot.getLotScaleNameAbbr());
 			}
 		}

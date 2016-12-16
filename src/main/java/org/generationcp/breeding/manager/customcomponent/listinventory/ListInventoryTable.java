@@ -268,17 +268,21 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		for (final ListEntryLotDetails lotDetail : lotDetailsToCancel) {
 			final Item item = this.listInventoryTable.getItem(lotDetail);
 			item.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(lotDetail.getAvailableLotBalance() + lotDetail.getLotScaleNameAbbr());
-			item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(lotDetail.getWithdrawalBalance() + lotDetail.getLotScaleNameAbbr());
-			item.getItemProperty(ColumnLabels.STATUS.getName()).setValue(lotDetail.getWithdrawalStatus());
+			item.getItemProperty(ColumnLabels.RESERVATION.getName()).setValue(lotDetail.getReservedTotalForEntry() + lotDetail.getLotScaleNameAbbr());
 		}
 	}
 
 	public boolean isSelectedEntriesHasReservation(final List<ListEntryLotDetails> lotDetailsGid) {
 		for (final ListEntryLotDetails lotDetails : lotDetailsGid) {
 			final Item item = this.listInventoryTable.getItem(lotDetails);
-			final String newResColumn = (String) item.getItemProperty(ColumnLabels.STATUS.getName()).getValue();
-			if (GermplasmInventory.RESERVED.equals(newResColumn)) {
-				return true;
+			final String newResColumn = (String) item.getItemProperty(ColumnLabels.RESERVATION.getName()).getValue();
+			final String scalAbbrv = lotDetails.getLotScaleNameAbbr();
+			if (scalAbbrv != null) {
+				final String reservation = newResColumn.replace(scalAbbrv, "");
+				final double resAmounttoCancel = Double.parseDouble(reservation);
+				if (resAmounttoCancel > 0) {
+					return true;
+				}
 			}
 		}
 		return false;
