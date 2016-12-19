@@ -298,7 +298,7 @@ public class ListBuilderComponentTest {
 
 		Assert.assertEquals("Expecting Valid reservation to save should have size 0 ", 0,this.listBuilderComponent.getValidReservationsToSave().size());
 		Mockito.verify(this.messageSource).getMessage(Message.SAVE_RESERVED_AND_CANCELLED_RESERVATION);
-		Mockito.verify(this.item, Mockito.times(1)).getItemProperty(ColumnLabels.SEED_RESERVATION.getName());
+		Mockito.verify(this.item, Mockito.times(1)).getItemProperty(ColumnLabels.TOTAL.getName());
 		Mockito.verify(this.item, Mockito.times(1)).getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName());
 
 	}
@@ -330,8 +330,7 @@ public class ListBuilderComponentTest {
 		Mockito.when(this.item.getItemProperty(ColumnLabels.GID.getName())).thenReturn(property);
 		Mockito.when(this.item.getItemProperty(ColumnLabels.GID.getName()).getValue()).thenReturn(button);
 		Mockito.when(button.getCaption()).thenReturn(ListBuilderComponentTest.CAPTION);
-		Mockito.when(this.item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName())).thenReturn(property);
-
+		Mockito.when(this.item.getItemProperty(ColumnLabels.TOTAL.getName())).thenReturn(property);
 
 
 		Mockito.when(this.tableWithSelectAllLayout.getTable()).thenReturn(this.breedingManagerTable);
