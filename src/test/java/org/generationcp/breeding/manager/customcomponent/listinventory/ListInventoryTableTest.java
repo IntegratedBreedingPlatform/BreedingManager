@@ -25,6 +25,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.vaadin.data.Item;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Table;
 
@@ -187,7 +188,10 @@ public class ListInventoryTableTest {
 		Assert.assertEquals(row1LotDetails.getCommittedTotalForEntry() + row1LotDetails.getLotScaleNameAbbr(),
 				row1VaadinTable.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue());
 		Assert.assertEquals(row1LotDetails.getCommentOfLot(), row1VaadinTable.getItemProperty(ColumnLabels.COMMENT.getName()).getValue());
-		Assert.assertEquals(row1LotDetails.getLotId(), row1VaadinTable.getItemProperty(ColumnLabels.LOT_ID.getName()).getValue());
+
+		Button lotIdButton = (Button) row1VaadinTable.getItemProperty(ColumnLabels.LOT_ID.getName()).getValue();
+		Assert.assertEquals(row1LotDetails.getLotId(),Integer.valueOf(lotIdButton.getCaption().toString()));
+
 		Assert.assertEquals(row1InventoryDetails.getSeedSource(),
 				row1VaadinTable.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue());
 		Assert.assertEquals(row1LotDetails.getReservedTotalForEntry() + row1LotDetails.getLotScaleNameAbbr(),
@@ -222,7 +226,10 @@ public class ListInventoryTableTest {
 		Assert.assertEquals("", row1VaadinTable.getItemProperty(ColumnLabels.TOTAL.getName()).getValue());
 		Assert.assertEquals("", row1VaadinTable.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue());
 		Assert.assertEquals(row1LotDetails.getCommentOfLot(), row1VaadinTable.getItemProperty(ColumnLabels.COMMENT.getName()).getValue());
-		Assert.assertEquals(row1LotDetails.getLotId(), row1VaadinTable.getItemProperty(ColumnLabels.LOT_ID.getName()).getValue());
+
+		Button lotIdButton = (Button) row1VaadinTable.getItemProperty(ColumnLabels.LOT_ID.getName()).getValue();
+		Assert.assertEquals(row1LotDetails.getLotId(),Integer.valueOf(lotIdButton.getCaption().toString()));
+
 		Assert.assertEquals(row1InventoryDetails.getSeedSource(),
 				row1VaadinTable.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue());
 		Assert.assertEquals("",
@@ -260,7 +267,10 @@ public class ListInventoryTableTest {
 		Assert.assertEquals(row1LotDetails.getReservedTotalForEntry() + row1LotDetails.getLotScaleNameAbbr(),
 				row1VaadinTable.getItemProperty(ColumnLabels.RESERVATION.getName()).getValue());
 		Assert.assertEquals(row1LotDetails.getCommentOfLot(), row1VaadinTable.getItemProperty(ColumnLabels.COMMENT.getName()).getValue());
-		Assert.assertEquals(row1LotDetails.getLotId(), row1VaadinTable.getItemProperty(ColumnLabels.LOT_ID.getName()).getValue());
+
+		Button lotIdButton = (Button) row1VaadinTable.getItemProperty(ColumnLabels.LOT_ID.getName()).getValue();
+		Assert.assertEquals(row1LotDetails.getLotId(), Integer.valueOf(lotIdButton.getCaption().toString()));
+
 		Assert.assertEquals(row1InventoryDetails.getSeedSource(),
 				row1VaadinTable.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue());
 
