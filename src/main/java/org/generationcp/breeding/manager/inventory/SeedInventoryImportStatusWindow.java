@@ -118,7 +118,7 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow implements In
 
 		this.cancelButton = new Button(this.messageSource.getMessage(Message.CANCEL));
 		this.cancelButton.setDebugId("cancelButton");
-		this.cancelButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+		this.cancelButton.addStyleName(Bootstrap.Buttons.DEFAULT.styleName());
 
 	}
 
@@ -272,8 +272,8 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow implements In
 		final HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setDebugId("buttonLayout");
 		buttonLayout.setSpacing(true);
-		buttonLayout.addComponent(this.continueButton);
 		buttonLayout.addComponent(this.cancelButton);
+		buttonLayout.addComponent(this.continueButton);
 
 		this.mainLayout.addComponent(this.statusTable);
 		this.mainLayout.addComponent(buttonLayout);
