@@ -329,11 +329,12 @@ public class ListInventoryTableTest {
 			final Item item = table.getItem(lotDetail);
 			String totalVal = (String) item.getItemProperty(ColumnLabels.TOTAL.getName()).getValue();
 			totalVal = totalVal.replace("g", "");
-			String reservedVal = (String) item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue();
+			String reservedVal = (String) item.getItemProperty(ColumnLabels.RESERVATION.getName()).getValue();
 			reservedVal = reservedVal.replace("g", "");
 			Assert.assertEquals("Expecting that the total column is increased by the amount of reservation but didn't.",
 					expectedNewAvailInventory, Double.valueOf(totalVal), 0.00);
-			Assert.assertEquals("Expecting that the reservation amount is reset to 0 but didn't.", 12.0, Double.valueOf(reservedVal), 0.00);
+			Assert.assertEquals("Expecting that the reservation amount is reset to 0 but didn't.", 100D, Double.valueOf(reservedVal),
+					0.00);
 
 		}
 
@@ -369,8 +370,7 @@ public class ListInventoryTableTest {
 			final ListEntryLotDetails lotDetail = itr.next();
 			final Item item = table.getItem(lotDetail);
 			item.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(PREV_AVAIL_INVENTORY);
-			item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(reservedVal);
-			item.getItemProperty(ColumnLabels.STATUS.getName()).setValue(status);
+			item.getItemProperty(ColumnLabels.RESERVATION.getName()).setValue(reservedVal);
 			lotEntries.add(lotDetail);
 		}
 	}
