@@ -68,7 +68,6 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.domain.inventory.GermplasmInventory;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -273,17 +272,18 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	private BreedingManagerApplication breedingManagerApplication;
 
+	private CloseLotDiscardInventoryAction closeLotDiscardInventoryAction;
+
 	@Resource
 	private CrossExpansionProperties crossExpansionProperties;
 
 	@Autowired
 	private UserDataManager userDataManager;
 
-
-
 	public ListComponent() {
 		super();
 		this.reserveInventoryAction = new ReserveInventoryAction(this);
+		this.closeLotDiscardInventoryAction = new CloseLotDiscardInventoryAction(this);
 	}
 
 	public ListComponent(final ListManagerMain source, final ListTabComponent parentListDetailsComponent,
@@ -2556,11 +2556,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		List<ListEntryLotDetails> lotWithAvailableBalanceEntryDetails = mapLotDetails.get(CLOSE_LOT_AVAILABLE_BALANCE);
 
 		if (!CollectionUtils.isEmpty(lotWithAvailableBalanceEntryDetails)) {
-
-			for (ListEntryLotDetails lotDetails : lotWithAvailableBalanceEntryDetails) {
-				CloseLotDiscardInventoryAction closeLotDiscardInventoryAction = new CloseLotDiscardInventoryAction(this, lotDetails);
-				closeLotDiscardInventoryAction.processLotCloseWithDiscard();
-			}
+			this.closeLotDiscardInventoryAction.setLotDetails(lotWithAvailableBalanceEntryDetails);
+			this.closeLotDiscardInventoryAction.processLotCloseWithDiscard();
 		}
 
 	}
@@ -2807,5 +2804,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.reserveInventoryAction = reserveInventoryAction;
 	}
 
-
+	public void setCloseLotDiscardInventoryAction(CloseLotDiscardInventoryAction closeLotDiscardInventoryAction) {
+		this.closeLotDiscardInventoryAction = closeLotDiscardInventoryAction;
+	}
 }

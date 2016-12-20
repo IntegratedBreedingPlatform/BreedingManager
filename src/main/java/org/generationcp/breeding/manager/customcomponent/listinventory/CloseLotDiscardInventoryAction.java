@@ -19,17 +19,19 @@ public class CloseLotDiscardInventoryAction implements Serializable {
 	private List<CloseLotDiscardInventoryListener> closeLotListener = new ArrayList<>();
 
 	private ListComponent source;
-	ListEntryLotDetails lotDetails;
+	private List<ListEntryLotDetails> lotDetails;
 
-	public CloseLotDiscardInventoryAction(ListComponent source, ListEntryLotDetails lotDetails) {
+	public CloseLotDiscardInventoryAction(ListComponent source) {
 		this.source = source;
-		this.lotDetails = lotDetails;
 	}
 
 	public void processLotCloseWithDiscard() {
-		CloseLotDiscardInventoryConfirmDialog closeLotDiscardInventoryConfirmDialog =
-				new CloseLotDiscardInventoryConfirmDialog(this.source, this, this.lotDetails);
-		this.addCloseLotListener(closeLotDiscardInventoryConfirmDialog);
+		for (ListEntryLotDetails lotDetail : this.lotDetails) {
+			CloseLotDiscardInventoryConfirmDialog closeLotDiscardInventoryConfirmDialog =
+					new CloseLotDiscardInventoryConfirmDialog(this.source, this, lotDetail);
+			this.addCloseLotListener(closeLotDiscardInventoryConfirmDialog);
+		}
+
 	}
 
 	public void showClotLotListener(final CloseLotDiscardInventoryListener listener) {
@@ -83,5 +85,7 @@ public class CloseLotDiscardInventoryAction implements Serializable {
 		this.closeLotListener = closeLotListener;
 	}
 
-
+	public void setLotDetails(List<ListEntryLotDetails> lotDetails) {
+		this.lotDetails = lotDetails;
+	}
 }

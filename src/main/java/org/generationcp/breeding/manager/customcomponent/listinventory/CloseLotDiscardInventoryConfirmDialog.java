@@ -170,7 +170,7 @@ public class CloseLotDiscardInventoryConfirmDialog extends BaseSubWindow impleme
 	}
 
 	public void yesActionListener() {
-		if (this.applyAllCheckBox.getValue().equals(false)) {
+		if (this.applyAllCheckBox.getValue().equals(Boolean.FALSE)) {
 			try {
 				this.source.processCloseLots(Lists.newArrayList(this.listEntryLotDetails));
 			} catch (CloseLotException e) {
@@ -214,7 +214,7 @@ public class CloseLotDiscardInventoryConfirmDialog extends BaseSubWindow impleme
 	}
 
 	public void noActionListener() {
-		if (this.applyAllCheckBox.getValue().equals(false)) {
+		if (this.applyAllCheckBox.getValue().equals(Boolean.FALSE)) {
 			this.closeLotDiscardInventoryAction.removeCurrentCloseLotListenerAndProcessNextItem(this);
 			this.getParent().removeWindow(this);
 		} else {
