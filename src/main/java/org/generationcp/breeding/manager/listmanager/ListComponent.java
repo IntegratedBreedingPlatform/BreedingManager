@@ -2636,6 +2636,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		}
 
+		final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
+		final User userById = this.userDataManager.getUserById(ibdbUserId);
+
 		for (ListEntryLotDetails lotDetail : selectedCloseLotEntryDetails) {
 
 			if (lotDetail.getReservedTotal() > 0) {
@@ -2659,8 +2662,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			String sourceType = this.messageSource.getMessage(Message.SOURCE_TYPE_LIST);
 			Integer listId = this.germplasmList.getId();
 			Integer lrecId = lotDetail.getId();
-			final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
-			final User userById = this.userDataManager.getUserById(ibdbUserId);
+
 			Double prevAmount = 0D;
 
 			Transaction closeLotTransaction = new Transaction();
