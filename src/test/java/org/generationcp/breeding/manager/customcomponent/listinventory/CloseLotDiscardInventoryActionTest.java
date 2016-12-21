@@ -20,11 +20,12 @@ public class CloseLotDiscardInventoryActionTest {
 	@Mock
 	private ListEntryLotDetails lotDetails;
 
-	CloseLotDiscardInventoryAction closeLotDiscardInventoryAction = new CloseLotDiscardInventoryAction(this.source, this.lotDetails);
+	CloseLotDiscardInventoryAction closeLotDiscardInventoryAction = new CloseLotDiscardInventoryAction(this.source);
 
 	@Before
 	public void setUp() throws MiddlewareQueryException {
 		MockitoAnnotations.initMocks(this);
+		closeLotDiscardInventoryAction.setLotDetails(Lists.<ListEntryLotDetails>newArrayList(lotDetails));
 		closeLotDiscardInventoryAction.getCloseLotListener().clear();
 	}
 

@@ -443,7 +443,7 @@ public class DropHandlerMethods {
 
 				// Inventory Related Columns
 
-				// #1 Available Inventory
+				// Lots
 				String availInv = DropHandlerMethods.STRING_DASH;
 				if (germplasmListData.getInventoryInfo().getLotCount().intValue() != 0) {
 					availInv = germplasmListData.getInventoryInfo().getLotCount().toString().trim();

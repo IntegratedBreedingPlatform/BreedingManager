@@ -68,7 +68,6 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.domain.inventory.GermplasmInventory;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -273,17 +272,18 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	private BreedingManagerApplication breedingManagerApplication;
 
+	private CloseLotDiscardInventoryAction closeLotDiscardInventoryAction;
+
 	@Resource
 	private CrossExpansionProperties crossExpansionProperties;
 
 	@Autowired
 	private UserDataManager userDataManager;
 
-
-
 	public ListComponent() {
 		super();
 		this.reserveInventoryAction = new ReserveInventoryAction(this);
+		this.closeLotDiscardInventoryAction = new CloseLotDiscardInventoryAction(this);
 	}
 
 	public ListComponent(final ListManagerMain source, final ListTabComponent parentListDetailsComponent,
@@ -585,8 +585,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		// Inventory Related Columns
 
-		// #1 Available Inventory
-		// default value
+		// Lots
 		String availInv = "-";
 		if (entry.getInventoryInfo().getLotCount() != 0) {
 			availInv = entry.getInventoryInfo().getLotCount().toString().trim();
@@ -604,7 +603,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			inventoryButton.setDescription(ListComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
 		}
 
-		// LOTS
+		// Available Balance
 		StringBuilder available = new StringBuilder();
 
 		if (entry.getInventoryInfo().getDistinctScaleCountForGermplsm() == 0) {
@@ -2558,11 +2557,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		List<ListEntryLotDetails> lotWithAvailableBalanceEntryDetails = mapLotDetails.get(CLOSE_LOT_AVAILABLE_BALANCE);
 
 		if (!CollectionUtils.isEmpty(lotWithAvailableBalanceEntryDetails)) {
-
-			for (ListEntryLotDetails lotDetails : lotWithAvailableBalanceEntryDetails) {
-				CloseLotDiscardInventoryAction closeLotDiscardInventoryAction = new CloseLotDiscardInventoryAction(this, lotDetails);
-				closeLotDiscardInventoryAction.processLotCloseWithDiscard();
-			}
+			this.closeLotDiscardInventoryAction.setLotDetails(lotWithAvailableBalanceEntryDetails);
+			this.closeLotDiscardInventoryAction.processLotCloseWithDiscard();
 		}
 
 	}
@@ -2641,6 +2637,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		}
 
+		final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
+		final User userById = this.userDataManager.getUserById(ibdbUserId);
+
 		for (ListEntryLotDetails lotDetail : selectedCloseLotEntryDetails) {
 
 			if (lotDetail.getReservedTotal() > 0) {
@@ -2664,8 +2663,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			String sourceType = this.messageSource.getMessage(Message.SOURCE_TYPE_LIST);
 			Integer listId = this.germplasmList.getId();
 			Integer lrecId = lotDetail.getId();
-			final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
-			final User userById = this.userDataManager.getUserById(ibdbUserId);
+
 			Double prevAmount = 0D;
 
 			Transaction closeLotTransaction = new Transaction();
@@ -2809,5 +2807,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.reserveInventoryAction = reserveInventoryAction;
 	}
 
-
+	public void setCloseLotDiscardInventoryAction(CloseLotDiscardInventoryAction closeLotDiscardInventoryAction) {
+		this.closeLotDiscardInventoryAction = closeLotDiscardInventoryAction;
+	}
 }

@@ -1719,9 +1719,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		for (final GermplasmListData listData : germplasmListDataEntries) {
 			final Item item = this.listDataTable.getItem(listData.getId());
 
-			// #1 Available Inventory
-
-			// default value
+			// Lots
 			String availInv = "-";
 			if (listData.getInventoryInfo().getLotCount().intValue() != 0) {
 				availInv = listData.getInventoryInfo().getLotCount().toString().trim();
