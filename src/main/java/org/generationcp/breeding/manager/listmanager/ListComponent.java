@@ -585,8 +585,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		// Inventory Related Columns
 
-		// #1 Available Inventory
-		// default value
+		// Lots
 		String availInv = "-";
 		if (entry.getInventoryInfo().getLotCount() != 0) {
 			availInv = entry.getInventoryInfo().getLotCount().toString().trim();
@@ -604,7 +603,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			inventoryButton.setDescription(ListComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
 		}
 
-		// LOTS
+		// Available Balance
 		StringBuilder available = new StringBuilder();
 
 		if (entry.getInventoryInfo().getDistinctScaleCountForGermplsm() == 0) {
