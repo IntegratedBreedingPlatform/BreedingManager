@@ -318,11 +318,10 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 
 				// Inventory Related Columns
 
-				// #1 Available Inventory
-				String availInv = SaveListButtonClickListener.STRING_DASH;
-				if (entry.getInventoryInfo().getActualInventoryLotCount() != null
-						&& entry.getInventoryInfo().getActualInventoryLotCount() != 0) {
-					availInv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
+				// Lots
+				String availInv = "-";
+				if (entry.getInventoryInfo().getLotCount() != 0) {
+					availInv = entry.getInventoryInfo().getLotCount().toString().trim();
 				}
 				final Button inventoryButton = new Button(availInv,
 						new LotDetailsButtonClickListener(entry.getGid(),entry.getDesignation(),this.source,null));
