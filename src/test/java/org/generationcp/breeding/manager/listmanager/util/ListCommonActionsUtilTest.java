@@ -24,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
 
@@ -230,6 +231,13 @@ public class ListCommonActionsUtilTest {
 		Assert.assertNotNull(lotDetailsMap);
 		Assert.assertEquals(1, lotDetailsMap.size());
 
+	}
+
+	@Test
+	public void testgetLotCountButton(){
+		Button lotButton = ListCommonActionsUtil.getLotCountButton(2,  2, "Germplasm", this.source, 2);
+		Assert.assertEquals("Expecting lot count value as 2", 2, Integer.parseInt
+				(lotButton.getCaption()));
 
 	}
 }

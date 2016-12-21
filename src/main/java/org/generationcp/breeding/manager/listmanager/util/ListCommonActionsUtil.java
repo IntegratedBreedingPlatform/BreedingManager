@@ -10,6 +10,7 @@ import java.util.Map;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
+import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
@@ -30,10 +31,12 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
 
 public class ListCommonActionsUtil {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ListCommonActionsUtil.class);
+	private static final String CLICK_TO_VIEW_INVENTORY_DETAILS = "Click to view Inventory Details";
 
 	// so class cannot be instantiated
 	private ListCommonActionsUtil() {
@@ -450,4 +453,14 @@ public class ListCommonActionsUtil {
 		return  lotDetailsMap;
 	}
 
+	public static Button getLotCountButton(Integer lotCount, Integer gid, String germplasmName, Component source, Integer lotId) {
+		String lots = "-";
+		if (lotCount != 0) {
+			lots = lotCount.toString();
+		}
+		final Button inventoryButton = new Button(lots, new LotDetailsButtonClickListener(gid, germplasmName, source, lotId));
+		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
+		inventoryButton.setDescription(ListCommonActionsUtil.CLICK_TO_VIEW_INVENTORY_DETAILS);
+		return inventoryButton;
+	}
 }

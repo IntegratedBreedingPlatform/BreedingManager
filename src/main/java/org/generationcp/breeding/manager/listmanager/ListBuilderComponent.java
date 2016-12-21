@@ -1813,18 +1813,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	  			availInv = listData.getInventoryInfo().getLotCount().toString().trim();
 			}
 
-			final Button inventoryButton = new Button(availInv, new LotDetailsButtonClickListener(listData.getGid(),listData
-					.getDesignation(),this.source, null));
-			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-			inventoryButton.setDescription("Click to view Inventory Details");
-
-				if ("-".equalsIgnoreCase(availInv)) {
-				  inventoryButton.setEnabled(false);
-				  inventoryButton.setDescription("No Lot for this Germplasm");
-				} else {
-				  inventoryButton.setDescription("Click to view Inventory Details");
-				}
-				item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
+		 Button lotButton = ListCommonActionsUtil
+				 .getLotCountButton(listData.getInventoryInfo().getLotCount().intValue(), listData.getGid(), listData.getDesignation(),
+						 this.source, null);
+		 	item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(lotButton);
 
 		 // LOTS
 		 StringBuilder available = new StringBuilder();

@@ -586,22 +586,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		// Inventory Related Columns
 
 		// Lots
-		String availInv = "-";
-		if (entry.getInventoryInfo().getLotCount() != 0) {
-			availInv = entry.getInventoryInfo().getLotCount().toString().trim();
-		}
-		final Button inventoryButton = new Button(availInv,
-				new LotDetailsButtonClickListener(entry.getGid(),entry.getDesignation(),this.parentListDetailsComponent,null));
-		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-		inventoryButton.setDescription(ListComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
-		newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-
-		if ("-".equals(availInv)) {
-			inventoryButton.setEnabled(false);
-			inventoryButton.setDescription("No Lot for this Germplasm");
-		} else {
-			inventoryButton.setDescription(ListComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
-		}
+		Button lotButton = ListCommonActionsUtil
+				.getLotCountButton(entry.getInventoryInfo().getLotCount(), entry.getGid(), entry.getDesignation(),
+						this.parentListDetailsComponent, null);
+		newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(lotButton);
 
 		// Available Balance
 		StringBuilder available = new StringBuilder();
