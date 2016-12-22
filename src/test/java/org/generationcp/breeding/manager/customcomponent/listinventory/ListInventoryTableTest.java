@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
 import org.generationcp.middleware.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -351,14 +352,25 @@ public class ListInventoryTableTest {
 	}
 
 	@Test
-	public void testIsSelectedEntriesHasReservationWhenThereIsReservation() {
+	public void testIsSelectedEntriesHasReservationWhenThereIsSavedReservation() {
 		final List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
 		this.initDataToInventoryTable();
 		final Table table = this.listInventoryTable.getTable();
 		this.updateReservationForLotEntries(lotDetails, table, PREV_RESERVED_VALUE, STATUS);
 
 		Assert.assertTrue("Expecting true for at least one lot details with reservation but didn't.",
-				this.listInventoryTable.isSelectedEntriesHasReservation(lotDetails));
+				this.listInventoryTable.isSelectedEntriesHasReservation(lotDetails,null));
+	}
+
+	@Test
+	public void testIsSelectedEntriesHasReservationWhenThereIsUnSavedReservation() {
+		final List<ListEntryLotDetails> lotDetails = new ArrayList<ListEntryLotDetails>();
+		this.initDataToInventoryTable();
+		final Table table = this.listInventoryTable.getTable();
+		this.updateReservationForLotEntries(lotDetails, table, 0, "");
+		ImportedGermplasmListDataInitializer importedGermplasmListDataInitializer = new ImportedGermplasmListDataInitializer();
+		Assert.assertTrue("Expecting true for at least one lot details with reservation but didn't.",
+				this.listInventoryTable.isSelectedEntriesHasReservation(lotDetails,importedGermplasmListDataInitializer.createReservations(2)));
 	}
 
 	@Test
@@ -369,7 +381,7 @@ public class ListInventoryTableTest {
 		this.updateReservationForLotEntries(lotDetails, table, 0, "");
 
 		Assert.assertFalse("Expecting false for at least one lot details with reservation but didn't.",
-				this.listInventoryTable.isSelectedEntriesHasReservation(lotDetails));
+				this.listInventoryTable.isSelectedEntriesHasReservation(lotDetails,null));
 	}
 
 	private void updateReservationForLotEntries(final List<ListEntryLotDetails> lotEntries, final Table table, final double reservedVal,
