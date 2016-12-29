@@ -48,6 +48,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -55,6 +56,7 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -70,6 +72,8 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 		Window.CloseListener, ImportGermplasmEntryActionListener {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SelectGermplasmWindow.class);
+	private static final String USE_SAME_GID = "Use this match for other instances of this name in the import list";
+	private static final String IGNORE_MATCHES = "Ignore matches and add a new entry";
 
 	private static final long serialVersionUID = -8113004135173349534L;
 
@@ -103,11 +107,10 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 
 	private Label selectGermplasmLabel;
 
-	private CheckBox useSameGidCheckbox;
-	private CheckBox ignoreMatchesCheckbox;
 	private CheckBox ignoreRemainingMatchesCheckbox;
 	private final Window parentWindow;
 	private Integer noOfImportedGermplasm;
+	private OptionGroup groupRadioBtn;
 
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
@@ -144,13 +147,13 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 	public void doneAction() {
 		try {
 
-			if (this.useSameGidCheckbox.booleanValue()) {
+			if (this.groupRadioBtn.getValue().equals(SelectGermplasmWindow.USE_SAME_GID)) {
 				if (this.source.getNameGermplasmMap() == null) {
 					this.source.setNameGermplasmMap(new HashMap<String, Germplasm>());
 				}
 				this.source.mapGermplasmNamesToGermplasm(this.germplasmName, this.germplasm);
 			}
-			if (!this.ignoreMatchesCheckbox.booleanValue()) {
+			if (!this.groupRadioBtn.getValue().equals(SelectGermplasmWindow.IGNORE_MATCHES)) {
 				final Germplasm selectedGermplasm = this.germplasmDataManager.getGermplasmByGID((Integer) this.germplasmTable.getValue());
 				this.source.receiveGermplasmFromWindowAndUpdateGermplasmData(this.germplasmIndex, this.germplasm, selectedGermplasm);
 			}
@@ -231,16 +234,17 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 
 		this.initGermplasmTable();
 
-		this.useSameGidCheckbox = new CheckBox("Use this match for other instances of this name in the import list");
-		this.useSameGidCheckbox.setDebugId("useSameGidCheckbox");
-		this.useSameGidCheckbox.setImmediate(true);
-		this.ignoreMatchesCheckbox = new CheckBox("Ignore matches and add a new entry");
-		this.ignoreMatchesCheckbox.setDebugId("ignoreMatchesCheckbox");
-		this.ignoreMatchesCheckbox.setImmediate(true);
 		this.ignoreRemainingMatchesCheckbox = new CheckBox("Ignore remaining matches and add new entries for all");
 		this.ignoreRemainingMatchesCheckbox.setDebugId("ignoreRemainingMatchesCheckbox");
 		this.ignoreRemainingMatchesCheckbox.setImmediate(true);
 		this.ignoreRemainingMatchesCheckbox.setEnabled(false);
+
+		this.groupRadioBtn = new OptionGroup();
+		this.groupRadioBtn.setDebugId("groupRadioBtn");
+		this.groupRadioBtn.setMultiSelect(false);
+		this.groupRadioBtn.setImmediate(true);
+		this.groupRadioBtn.addItem(SelectGermplasmWindow.USE_SAME_GID);
+		this.groupRadioBtn.addItem(SelectGermplasmWindow.IGNORE_MATCHES);
 	}
 
 	protected void initGermplasmTable() {
@@ -286,25 +290,31 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 			}
 		});
 
-		this.useSameGidCheckbox.addListener(new Property.ValueChangeListener() {
+		this.groupRadioBtn.addListener(new Property.ValueChangeListener() {
 
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void valueChange(final ValueChangeEvent event) {
 				SelectGermplasmWindow.this.toggleGermplasmTable();
+				SelectGermplasmWindow.this.toggleIgnoreRemainingCheckBox();
+				SelectGermplasmWindow.this.toggleContinueButton();
 			}
 		});
 
-		this.ignoreMatchesCheckbox.addListener(new Property.ValueChangeListener() {
+		this.germplasmTable.addListener(new ItemClickEvent.ItemClickListener() {
 
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void valueChange(final ValueChangeEvent event) {
-				SelectGermplasmWindow.this.toggleContinueButton();
-				SelectGermplasmWindow.this.toggleGermplasmTable();
-				SelectGermplasmWindow.this.toggleIgnoreRemainingCheckBox();
+			public void itemClick(final ItemClickEvent event) {
+				final boolean disableSelection = SelectGermplasmWindow.this.isDisabledSelection();
+				if (!disableSelection) {
+					final Object item = event.getItemId();
+					if (item != null) {
+						SelectGermplasmWindow.this.germplasmTable.select(item);
+					}
+				}
 			}
 		});
 
@@ -315,7 +325,7 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 	}
 
 	protected void toggleGermplasmTable() {
-		final boolean disableSelection = this.ignoreMatchesCheckbox.booleanValue() && !this.useSameGidCheckbox.booleanValue();
+		final boolean disableSelection = this.isDisabledSelection();
 		if (disableSelection) {
 			this.germplasmTable.setSelectable(false);
 			this.germplasmTable.setNullSelectionAllowed(true);
@@ -334,8 +344,12 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 		}
 	}
 
+	private boolean isDisabledSelection() {
+		return this.ignoreMatchesOptionSelected() && !this.useSameGidOptionSelected();
+	}
+
 	protected void toggleContinueButton() {
-		final boolean enableButton = this.germplasmTable.getValue() != null || this.ignoreMatchesCheckbox.booleanValue();
+		final boolean enableButton = this.germplasmTable.getValue() != null || this.ignoreMatchesOptionSelected();
 		if (enableButton) {
 			this.doneButton.setEnabled(true);
 		} else {
@@ -344,7 +358,7 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 	}
 
 	public void toggleIgnoreRemainingCheckBox() {
-		final boolean enableCheckBox = this.ignoreMatchesCheckbox.booleanValue();
+		final boolean enableCheckBox = this.ignoreMatchesOptionSelected();
 		if (enableCheckBox) {
 			this.ignoreRemainingMatchesCheckbox.setEnabled(true);
 		} else {
@@ -390,8 +404,7 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 		buttonLayout.setComponentAlignment(this.cancelButton, Alignment.BOTTOM_RIGHT);
 		buttonLayout.setComponentAlignment(this.doneButton, Alignment.BOTTOM_LEFT);
 
-		this.mainLayout.addComponent(this.useSameGidCheckbox);
-		this.mainLayout.addComponent(this.ignoreMatchesCheckbox);
+		this.mainLayout.addComponent(this.groupRadioBtn);
 
 		// Display 3rd check box i.e. ignoreRemainingMatchesCheckBox as sub step of 2nd Check box i.e. ignoreMatchesCheckBox so small gap is
 		// inserted using label.
@@ -536,5 +549,13 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 
 	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
+	}
+
+	private boolean ignoreMatchesOptionSelected() {
+		return this.groupRadioBtn.getValue() != null && this.groupRadioBtn.getValue().equals(SelectGermplasmWindow.IGNORE_MATCHES);
+	}
+
+	private boolean useSameGidOptionSelected() {
+		return this.groupRadioBtn.getValue() != null && this.groupRadioBtn.getValue().equals(SelectGermplasmWindow.USE_SAME_GID);
 	}
 }
