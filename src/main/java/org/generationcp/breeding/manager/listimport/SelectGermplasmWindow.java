@@ -315,6 +315,7 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 						SelectGermplasmWindow.this.germplasmTable.select(item);
 					}
 				}
+				SelectGermplasmWindow.this.toggleContinueButton();
 			}
 		});
 
