@@ -397,7 +397,7 @@ public class ListComponentTest {
 
 		List<GermplasmListData> germplasmListData = ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails();
 
-		Mockito.when(this.inventoryDataManager.getLotCountsForListEntries(Mockito.isA(Integer.class), Mockito.isA(List.class)))
+		Mockito.when(this.inventoryDataManager.getLotDetailsForList(Mockito.isA(Integer.class), Mockito.anyInt(), Mockito.anyInt()))
 				.thenReturn(germplasmListData);
 
 		this.listComponent.saveReservationChangesAction(this.window);

@@ -8,6 +8,7 @@ import java.util.Map;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.data.initializer.ListInventoryDataInitializer;
+import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
@@ -65,7 +66,7 @@ public class ReserveInventoryActionTest {
 
 		List<GermplasmListData> germplasmListData = ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails();
 
-		Mockito.when(this.inventoryDataManager.getLotCountsForListEntries(Mockito.isA(Integer.class), Mockito.isA(List.class)))
+		Mockito.when(this.inventoryDataManager.getLotDetailsForList(Mockito.isA(Integer.class), Mockito.anyInt(), Mockito.anyInt()))
 				.thenReturn(germplasmListData);
 
 		boolean status = reserveInventoryAction.saveReserveTransactions(reservations, LIST_ID);
@@ -73,6 +74,22 @@ public class ReserveInventoryActionTest {
 		Assert.assertTrue(status);
 		Mockito.verify(inventoryDataManager, Mockito.times(1)).addTransactions(Matchers.anyList());
 	}
+
+	@Test
+	public void testSaveReserveTransactionsWithValidReservationsAndLotAlreadyReserved() {
+		Map<ListEntryLotDetails, Double> reservations = this.importedGermplasmListInitializer.createReservations(1);
+
+		List<GermplasmListData> germplasmListData = ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails();
+		germplasmListData.get(0).getInventoryInfo().getLotRows().get(0).setWithdrawalStatus(ListDataInventory.RESERVED);
+
+		Mockito.when(this.inventoryDataManager.getLotDetailsForList(Mockito.isA(Integer.class), Mockito.anyInt(), Mockito.anyInt()))
+				.thenReturn(germplasmListData);
+
+		boolean status = reserveInventoryAction.saveReserveTransactions(reservations, LIST_ID);
+
+		Assert.assertFalse(status);
+	}
+
 
 	@Test
 	public void testSaveReserveTransactionsWithNoValidReservation() {
