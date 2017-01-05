@@ -4,6 +4,7 @@ package org.generationcp.breeding.manager.customcomponent.listinventory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -29,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.util.CollectionUtils;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
@@ -272,15 +274,26 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		}
 	}
 
-	public boolean isSelectedEntriesHasReservation(final List<ListEntryLotDetails> lotDetailsGid) {
+	public boolean isSelectedEntriesHasReservation(final List<ListEntryLotDetails> lotDetailsGid,  Map<ListEntryLotDetails, Double> validReservations) {
+		if (!CollectionUtils.isEmpty(validReservations)) {
+			for (final ListEntryLotDetails lotDetails : lotDetailsGid) {
+				for (Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()) {
+					ListEntryLotDetails validReservationToSave = entry.getKey();
+					if (lotDetails.getLotId().equals(validReservationToSave.getLotId())) {
+						return true;
+					}
+				}
+			}
+		}
+
 		for (final ListEntryLotDetails lotDetails : lotDetailsGid) {
 			final Item item = this.listInventoryTable.getItem(lotDetails);
 			final String newResColumn = (String) item.getItemProperty(ColumnLabels.RESERVATION.getName()).getValue();
-			final String scalAbbrv = lotDetails.getLotScaleNameAbbr();
-			if (scalAbbrv != null) {
-				final String reservation = newResColumn.replace(scalAbbrv, "");
-				final double resAmounttoCancel = Double.parseDouble(reservation);
-				if (resAmounttoCancel > 0) {
+			final String scaleAbbrv = lotDetails.getLotScaleNameAbbr();
+			if (scaleAbbrv != null) {
+				final String reservation = newResColumn.replace(scaleAbbrv, "");
+				final double resAmountToCancel = Double.parseDouble(reservation);
+				if (resAmountToCancel > 0) {
 					return true;
 				}
 			}

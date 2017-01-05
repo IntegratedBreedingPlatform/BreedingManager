@@ -318,23 +318,10 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 
 				// Inventory Related Columns
 
-				// #1 Available Inventory
-				String availInv = SaveListButtonClickListener.STRING_DASH;
-				if (entry.getInventoryInfo().getActualInventoryLotCount() != null
-						&& entry.getInventoryInfo().getActualInventoryLotCount() != 0) {
-					availInv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
-				}
-				final Button inventoryButton = new Button(availInv,
-						new LotDetailsButtonClickListener(entry.getGid(),entry.getDesignation(),this.source,null));
-				inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-				inventoryButton.setDescription("Click to view Lot Details");
-
-				if (availInv.equals(SaveListButtonClickListener.STRING_DASH)) {
-					inventoryButton.setEnabled(false);
-					inventoryButton.setDescription("No Lot for this Germplasm");
-				} else {
-					inventoryButton.setDescription("Click to view Lot Details");
-				}
+				// Lots
+				Button lotButton = ListCommonActionsUtil
+						.getLotCountButton(entry.getInventoryInfo().getLotCount(), entry.getGid(), entry.getDesignation(), this.source,
+								null);
 
 				// GROUP ID - the maintenance group id(gid) of a germplasm
 				final String groupId = entry.getGroupId() == 0 ? "-" : entry.getGroupId().toString();
@@ -348,7 +335,7 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 				item.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entry.getEntryId());
 				item.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
 				item.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(entry.getGroupName());
-				item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
+				item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(lotButton);
 
 				// LOTS
 				StringBuilder available = new StringBuilder();

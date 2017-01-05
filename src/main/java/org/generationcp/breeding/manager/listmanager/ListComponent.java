@@ -586,22 +586,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		// Inventory Related Columns
 
 		// Lots
-		String availInv = "-";
-		if (entry.getInventoryInfo().getLotCount() != 0) {
-			availInv = entry.getInventoryInfo().getLotCount().toString().trim();
-		}
-		final Button inventoryButton = new Button(availInv,
-				new LotDetailsButtonClickListener(entry.getGid(),entry.getDesignation(),this.parentListDetailsComponent,null));
-		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-		inventoryButton.setDescription(ListComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
-		newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-
-		if ("-".equals(availInv)) {
-			inventoryButton.setEnabled(false);
-			inventoryButton.setDescription("No Lot for this Germplasm");
-		} else {
-			inventoryButton.setDescription(ListComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
-		}
+		Button lotButton = ListCommonActionsUtil
+				.getLotCountButton(entry.getInventoryInfo().getLotCount(), entry.getGid(), entry.getDesignation(),
+						this.parentListDetailsComponent, null);
+		newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(lotButton);
 
 		// Available Balance
 		StringBuilder available = new StringBuilder();
@@ -2243,7 +2231,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
 					"Please select at least 1 lot to cancel reservations.");
 		} else {
-			if (!this.listInventoryTable.isSelectedEntriesHasReservation(lotDetailsGid)) {
+			if (!this.listInventoryTable.isSelectedEntriesHasReservation(lotDetailsGid,this.getValidReservationsToSave())) {
 				MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
 						"There are no reservations on the current selected lots.");
 			} else {
@@ -2401,7 +2389,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			final Double available = lot.getAvailableLotBalance() - newRes;
 			final Item itemToUpdate = this.listInventoryTable.getTable().getItem(lot);
 			if (newRes > 0) {
-				itemToUpdate.getItemProperty(ColumnLabels.RESERVATION.getName()).setValue(newRes + lot.getLotScaleNameAbbr());
+				if(!lot.getTransactionStatus()){
+					itemToUpdate.getItemProperty(ColumnLabels.RESERVATION.getName()).setValue(newRes + lot.getLotScaleNameAbbr());
+				}
 				itemToUpdate.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(available + lot.getLotScaleNameAbbr());
 			}
 		}

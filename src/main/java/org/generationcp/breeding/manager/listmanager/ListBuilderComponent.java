@@ -1612,7 +1612,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
 					"Please select at least 1 lot to cancel reservations.");
 		} else {
-			if (!this.listInventoryTable.isSelectedEntriesHasReservation(lotDetailsGid)) {
+			if (!this.listInventoryTable.isSelectedEntriesHasReservation(lotDetailsGid,this.getValidReservationsToSave())) {
 				MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
 						"There is no reservation to the current selected lots.");
 			} else {
@@ -1813,18 +1813,10 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	  			availInv = listData.getInventoryInfo().getLotCount().toString().trim();
 			}
 
-			final Button inventoryButton = new Button(availInv, new LotDetailsButtonClickListener(listData.getGid(),listData
-					.getDesignation(),this.source, null));
-			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-			inventoryButton.setDescription("Click to view Inventory Details");
-
-				if ("-".equalsIgnoreCase(availInv)) {
-				  inventoryButton.setEnabled(false);
-				  inventoryButton.setDescription("No Lot for this Germplasm");
-				} else {
-				  inventoryButton.setDescription("Click to view Inventory Details");
-				}
-				item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
+		 Button lotButton = ListCommonActionsUtil
+				 .getLotCountButton(listData.getInventoryInfo().getLotCount().intValue(), listData.getGid(), listData.getDesignation(),
+						 this.source, null);
+		 	item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(lotButton);
 
 		 // LOTS
 		 StringBuilder available = new StringBuilder();
@@ -1871,7 +1863,9 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 			final Double available = lot.getAvailableLotBalance() - newRes;
 			final Item itemToUpdate = this.listInventoryTable.getTable().getItem(lot);
 			if (newRes > 0) {
-				itemToUpdate.getItemProperty(ColumnLabels.RESERVATION.getName()).setValue(newRes + lot.getLotScaleNameAbbr());
+				if(!lot.getTransactionStatus()){
+					itemToUpdate.getItemProperty(ColumnLabels.RESERVATION.getName()).setValue(newRes + lot.getLotScaleNameAbbr());
+				}
 				itemToUpdate.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(available + lot.getLotScaleNameAbbr());
 			}
 		}

@@ -444,14 +444,10 @@ public class DropHandlerMethods {
 				// Inventory Related Columns
 
 				// Lots
-				String availInv = DropHandlerMethods.STRING_DASH;
-				if (germplasmListData.getInventoryInfo().getLotCount().intValue() != 0) {
-					availInv = germplasmListData.getInventoryInfo().getLotCount().toString().trim();
-				}
-				final Button inventoryButton =
-						new Button(availInv, new LotDetailsButtonClickListener(germplasmListData.getGid(),germplasmListData.getDesignation(),this.listManagerMain,null));
-				inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-				newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
+				Button lotButton = ListCommonActionsUtil
+						.getLotCountButton(germplasmListData.getInventoryInfo().getLotCount().intValue(), germplasmListData.getGid(),
+								germplasmListData.getDesignation(), this.listManagerMain, null);
+				newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(lotButton);
 
 				StringBuilder available = new StringBuilder();
 
@@ -474,13 +470,6 @@ public class DropHandlerMethods {
 				availableButton.setStyleName(BaseTheme.BUTTON_LINK);
 				availableButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
 				newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(availableButton);
-
-				if (availInv.equals(DropHandlerMethods.STRING_DASH)) {
-					inventoryButton.setEnabled(false);
-					inventoryButton.setDescription(DropHandlerMethods.NO_LOT_FOR_THIS_GERMPLASM);
-				} else {
-					inventoryButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
-				}
 
 				String stockIDs = DropHandlerMethods.STRING_EMPTY;
 				if (germplasmListData.getInventoryInfo() != null && germplasmListData.getInventoryInfo().getStockIDs() != null) {
