@@ -65,6 +65,7 @@ public class ListBuilderComponentTest {
 
 	private static final String SEED_RES = "SEED_RES";
 	private static final String AVAIL_INV = "AVAIL_INV";
+	private static final String TOTAL = "AVAILABLE";
 	private static final String HASH = "#";
 	private static final String CHECK = "CHECK";
 	private static final String SEED_SOURCE = "SEED_SOURCE";
@@ -195,7 +196,7 @@ public class ListBuilderComponentTest {
 		Assert.assertEquals(ListBuilderComponentTest.CHECK, table.getColumnHeader(ColumnLabels.TAG.getName()));
 		Assert.assertEquals(ListBuilderComponentTest.HASH, table.getColumnHeader(ColumnLabels.ENTRY_ID.getName()));
 		Assert.assertEquals(ListBuilderComponentTest.AVAIL_INV, table.getColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName()));
-		Assert.assertEquals(ListBuilderComponentTest.SEED_RES, table.getColumnHeader(ColumnLabels.SEED_RESERVATION.getName()));
+		Assert.assertEquals(ListBuilderComponentTest.TOTAL, table.getColumnHeader(ColumnLabels.TOTAL.getName()));
 		Assert.assertEquals(ListBuilderComponentTest.GID, table.getColumnHeader(ColumnLabels.GID.getName()));
 		Assert.assertEquals(ListBuilderComponentTest.ENTRY_CODE, table.getColumnHeader(ColumnLabels.ENTRY_CODE.getName()));
 		Assert.assertEquals(ListBuilderComponentTest.DESIG, table.getColumnHeader(ColumnLabels.DESIGNATION.getName()));
@@ -300,7 +301,7 @@ public class ListBuilderComponentTest {
 
 		Assert.assertEquals("Expecting Valid reservation to save should have size 0 ", 0,this.listBuilderComponent.getValidReservationsToSave().size());
 		Mockito.verify(this.messageSource).getMessage(Message.SAVE_RESERVED_AND_CANCELLED_RESERVATION);
-		Mockito.verify(this.item, Mockito.times(1)).getItemProperty(ColumnLabels.SEED_RESERVATION.getName());
+		Mockito.verify(this.item, Mockito.times(1)).getItemProperty(ColumnLabels.TOTAL.getName());
 		Mockito.verify(this.item, Mockito.times(1)).getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName());
 
 	}
@@ -332,8 +333,7 @@ public class ListBuilderComponentTest {
 		Mockito.when(this.item.getItemProperty(ColumnLabels.GID.getName())).thenReturn(property);
 		Mockito.when(this.item.getItemProperty(ColumnLabels.GID.getName()).getValue()).thenReturn(button);
 		Mockito.when(button.getCaption()).thenReturn(ListBuilderComponentTest.CAPTION);
-		Mockito.when(this.item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName())).thenReturn(property);
-
+		Mockito.when(this.item.getItemProperty(ColumnLabels.TOTAL.getName())).thenReturn(property);
 
 
 		Mockito.when(this.tableWithSelectAllLayout.getTable()).thenReturn(this.breedingManagerTable);

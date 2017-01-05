@@ -31,6 +31,7 @@ public class InventoryViewActionMenu extends ContextMenu implements Initializing
 	private ContextMenuItem importList;
 	private ContextMenuItem exportList;
 	private ContextMenuItem printLabels;
+	private ContextMenuItem menuCloseLot;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -52,6 +53,7 @@ public class InventoryViewActionMenu extends ContextMenu implements Initializing
 		this.menuReserveInventory = this.inventoryManagementOptions.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
 		this.menuInventorySaveChanges = this.inventoryManagementOptions.addItem(this.messageSource.getMessage(Message.SAVE_RESERVATIONS));
 		this.menuCancelReservation = this.inventoryManagementOptions.addItem(this.messageSource.getMessage(Message.CANCEL_RESERVATIONS));
+		this.menuCloseLot = this.inventoryManagementOptions.addItem(this.messageSource.getMessage(Message.CLOSE_LOTS));
 
 		this.exportList=this.addItem(this.messageSource.getMessage(Message.EXPORT_SEED_LIST));
 		this.importList=this.addItem(this.messageSource.getMessage(Message.IMPORT_SEED_LIST));

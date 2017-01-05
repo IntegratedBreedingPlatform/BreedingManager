@@ -16,6 +16,7 @@ import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
+import org.generationcp.breeding.manager.customcomponent.listinventory.CloseLotDiscardInventoryAction;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListInventoryTable;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
@@ -46,6 +47,8 @@ import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.ims.Lot;
+import org.generationcp.middleware.pojos.ims.LotStatus;
 import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.WorkbenchRuntimeData;
@@ -67,13 +70,14 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
 
+import com.google.common.collect.Lists;
 import junit.framework.Assert;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ListComponentTest {
 
 	private static final String STOCKID = "STOCKID";
-	private static final String SEED_RES = "SEED_RES";
+	private static final String TOTAL_AVAILBALE = "AVAILABLE";
 	private static final String AVAIL_INV = "AVAIL_INV";
 	private static final String HASH = "#";
 	private static final String CHECK = "CHECK";
@@ -155,6 +159,9 @@ public class ListComponentTest {
 
 	@Mock
 	private UserDataManager userDataManager;
+
+	@Mock
+	private CloseLotDiscardInventoryAction closeLotDiscardInventoryAction;
 
 	@InjectMocks
 	private final ListComponent listComponent = new ListComponent();
@@ -286,7 +293,7 @@ public class ListComponentTest {
 		Assert.assertEquals(ListComponentTest.CHECK, table.getColumnHeader(ColumnLabels.TAG.getName()));
 		Assert.assertEquals(ListComponentTest.HASH, table.getColumnHeader(ColumnLabels.ENTRY_ID.getName()));
 		Assert.assertEquals(ListComponentTest.AVAIL_INV, table.getColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName()));
-		Assert.assertEquals(ListComponentTest.SEED_RES, table.getColumnHeader(ColumnLabels.SEED_RESERVATION.getName()));
+		Assert.assertEquals(ListComponentTest.TOTAL_AVAILBALE, table.getColumnHeader(ColumnLabels.TOTAL.getName()));
 		Assert.assertEquals(ListComponentTest.STOCKID, table.getColumnHeader(ColumnLabels.STOCKID.getName()));
 		Assert.assertEquals(ListComponentTest.GID, table.getColumnHeader(ColumnLabels.GID.getName()));
 		Assert.assertEquals(ListComponentTest.ENTRY_CODE, table.getColumnHeader(ColumnLabels.ENTRY_CODE.getName()));
@@ -574,8 +581,8 @@ public class ListComponentTest {
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.AVAILABLE_INVENTORY.getId()))
 				.thenReturn(this.createTerm(TermId.AVAILABLE_INVENTORY.getId(), ListComponentTest.AVAIL_INV));
 
-		Mockito.when(this.ontologyDataManager.getTermById(TermId.SEED_RESERVATION.getId()))
-				.thenReturn(this.createTerm(TermId.SEED_RESERVATION.getId(), ListComponentTest.SEED_RES));
+		Mockito.when(this.ontologyDataManager.getTermById(TermId.TOTAL_INVENTORY.getId()))
+				.thenReturn(this.createTerm(TermId.TOTAL_INVENTORY.getId(), ListComponentTest.TOTAL_AVAILBALE));
 
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.GID.getId()))
 				.thenReturn(this.createTerm(TermId.GID.getId(), ListComponentTest.GID));
@@ -644,6 +651,7 @@ public class ListComponentTest {
 		this.germplasmList.setStatus(1);
 		this.listComponent.setGermplasmList(this.germplasmList);
 		this.listComponent.setParent(parentComponent);
+		this.listComponent.setCloseLotDiscardInventoryAction(closeLotDiscardInventoryAction);
 
 		Mockito.when(this.germplasmListManager.countGermplasmListDataByListId(TEST_GERMPLASM_LIST_ID))
 				.thenReturn(Long.valueOf(TEST_GERMPLASM_NO_OF_ENTRIES));
@@ -737,6 +745,86 @@ public class ListComponentTest {
 		Mockito.verify(this.messageSource, Mockito.times(2)).getMessage(Message.INVENTORY_NOT_AVAILABLE_BALANCE);
 		Mockito.verify(this.messageSource, Mockito.never()).getMessage(Message.SAVE_RESERVED_AND_CANCELLED_RESERVATION);
 	}
+
+	@Test
+	public void testCloseLotsWithNoLotsSelected() throws Exception {
+		this.listComponent.closeLotsActions();
+		Mockito.verify(this.messageSource).getMessage(Message.NO_LOTS_SELECTED_ERROR);
+	}
+
+	@Test
+	public void testCloseLotsWithUnCommittedReservation() throws Exception {
+		List<ListEntryLotDetails> userSelectedLotEntriesToClose = ListInventoryDataInitializer.createLotDetails(1,1);
+		Mockito.doReturn(userSelectedLotEntriesToClose).when(this.listManagerInventoryTable).getSelectedLots();
+
+		this.listComponent.closeLotsActions();
+		Mockito.verify(this.messageSource).getMessage(Message.LOTS_HAVE_AVAILABLE_BALANCE_UNCOMMITTED_RESERVATION_ERROR);
+	}
+
+	@Test
+	public void testCloseLotsWithValidLotsHavingNoBalanceToClose() throws Exception {
+		List<ListEntryLotDetails> userSelectedLotEntriesToClose = ListInventoryDataInitializer.createLotDetails(1,1);
+		userSelectedLotEntriesToClose.get(0).setReservedTotal(0D);
+		userSelectedLotEntriesToClose.get(0).setActualLotBalance(0D);
+
+		final List<GermplasmListData> inventoryDetails = ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails(1);
+		inventoryDetails.get(0).getInventoryInfo().setLotRows(userSelectedLotEntriesToClose);
+
+		Mockito.when(this.inventoryDataManager.getLotDetailsForList(Mockito.isA(Integer.class), Mockito.anyInt(), Mockito.anyInt()))
+				.thenReturn(inventoryDetails);
+
+		Lot activeLot = new Lot();
+		activeLot.setStatus(LotStatus.ACTIVE.getIntValue());
+
+		Mockito.when(this.inventoryDataManager.getLotsByIdList(Mockito.isA(List.class))).thenReturn(Lists.newArrayList(activeLot));
+		final User user = new User();
+		user.setUserid(12);
+		user.setPersonid(123);
+
+		Mockito.doReturn(user).when(this.userDataManager).getUserById(Matchers.anyInt());
+		Mockito.when(this.contextUtil.getCurrentUserLocalId()).thenReturn(1);
+
+		Mockito.doReturn(userSelectedLotEntriesToClose).when(this.listManagerInventoryTable).getSelectedLots();
+
+		this.listComponent.closeLotsActions();
+
+		Mockito.verify(this.inventoryDataManager, Mockito.times(1)).addTransactions(Matchers.anyList());
+		Mockito.verify(this.inventoryDataManager, Mockito.times(1)).updateLots(Matchers.anyList());
+		Mockito.verify(this.messageSource).getMessage(Message.LOTS_CLOSED_SUCCESSFULLY);
+	}
+
+	@Test
+	public void testCloseLotsWithValidLotsHavingActualBalanceToClose() throws Exception {
+		List<ListEntryLotDetails> userSelectedLotEntriesToClose = ListInventoryDataInitializer.createLotDetails(1,1);
+		userSelectedLotEntriesToClose.get(0).setReservedTotal(0D);
+		userSelectedLotEntriesToClose.get(0).setActualLotBalance(5D);
+
+		final List<GermplasmListData> inventoryDetails = ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails(1);
+		inventoryDetails.get(0).getInventoryInfo().setLotRows(userSelectedLotEntriesToClose);
+
+		Mockito.when(this.inventoryDataManager.getLotDetailsForList(Mockito.isA(Integer.class), Mockito.anyInt(), Mockito.anyInt()))
+				.thenReturn(inventoryDetails);
+
+		Lot activeLot = new Lot();
+		activeLot.setStatus(LotStatus.ACTIVE.getIntValue());
+
+		Mockito.when(this.inventoryDataManager.getLotsByIdList(Mockito.isA(List.class))).thenReturn(Lists.newArrayList(activeLot));
+		final User user = new User();
+		user.setUserid(12);
+		user.setPersonid(123);
+
+		Mockito.doReturn(user).when(this.userDataManager).getUserById(Matchers.anyInt());
+		Mockito.when(this.contextUtil.getCurrentUserLocalId()).thenReturn(1);
+
+		Mockito.doReturn(userSelectedLotEntriesToClose).when(this.listManagerInventoryTable).getSelectedLots();
+
+		this.listComponent.closeLotsActions();
+
+		Mockito.verify(this.closeLotDiscardInventoryAction, Mockito.times(1)).setLotDetails(Matchers.anyList());
+		Mockito.verify(this.closeLotDiscardInventoryAction, Mockito.times(1)).processLotCloseWithDiscard();
+	}
+
+
 
 	private Project createProject() {
 

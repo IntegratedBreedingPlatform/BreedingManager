@@ -3,12 +3,15 @@ package org.generationcp.breeding.manager.listmanager.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
 import org.generationcp.middleware.data.initializer.InventoryDetailsTestDataInitializer;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
+import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
+import org.generationcp.middleware.domain.inventory.LotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -21,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
 
@@ -206,5 +210,34 @@ public class ListCommonActionsUtilTest {
 
 		Mockito.verify(this.messageSource, Mockito.times(1)).getMessage(Message.PRINT_LABELS);
 		Mockito.verify(this.messageSource, Mockito.times(1)).getMessage(Message.ERROR_COULD_NOT_CREATE_LABELS_WITHOUT_RESERVATION);
+	}
+
+	@Test
+	public void testCreateListEntryLotDetailsMap() {
+		List<GermplasmListData> germplasmListData = InventoryDetailsTestDataInitializer.createGermplasmListDataForReservedEntries();
+
+		Map<Integer, ListEntryLotDetails> listEntryLotDetailsMap = ListCommonActionsUtil.createListEntryLotDetailsMap(germplasmListData);
+
+		Assert.assertNotNull(listEntryLotDetailsMap);
+		Assert.assertEquals(1, listEntryLotDetailsMap.size());
+	}
+
+	@Test
+	public void testCreateLotDetailsMap() {
+		List<GermplasmListData> germplasmListData = InventoryDetailsTestDataInitializer.createGermplasmListDataForReservedEntries();
+
+		Map<Integer, LotDetails> lotDetailsMap = ListCommonActionsUtil.createLotDetailsMap(germplasmListData);
+
+		Assert.assertNotNull(lotDetailsMap);
+		Assert.assertEquals(1, lotDetailsMap.size());
+
+	}
+
+	@Test
+	public void testgetLotCountButton(){
+		Button lotButton = ListCommonActionsUtil.getLotCountButton(2,  2, "Germplasm", this.source, 2);
+		Assert.assertEquals("Expecting lot count value as 2", 2, Integer.parseInt
+				(lotButton.getCaption()));
+
 	}
 }
