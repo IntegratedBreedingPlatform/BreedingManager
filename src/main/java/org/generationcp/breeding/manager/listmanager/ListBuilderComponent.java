@@ -1565,12 +1565,16 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.changeToInventoryView();
 	}
 
-	private void reserveInventoryAction() {
+	protected void reserveInventoryAction() {
 		// checks if the screen is in the inventory view
 		if (!this.inventoryViewMenu.isVisible()) {
 			MessageNotifier
 					.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING), "Please change to Inventory View first.");
 		} else {
+			if (this.listInventoryTable.getInventoryTableDropHandler().isChanged()) {
+				MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.WARNING),
+						this.messageSource.getMessage(Message.ERROR_SAVE_LIST_BEFORE_RESERVING_INVENTORY));
+			} else {
 				final List<ListEntryLotDetails> lotDetailsGid = this.listInventoryTable.getSelectedLots();
 
 				if (lotDetailsGid == null || lotDetailsGid.isEmpty()) {
@@ -1583,6 +1587,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 				}
 			}
 		}
+	}
 
 	public boolean saveListAction() {
 
@@ -2214,6 +2219,14 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	public List<ListEntryLotDetails> getPersistedReservationToCancel() {
 		return persistedReservationToCancel;
+	}
+
+	public ContextMenu getInventoryViewMenu() {
+		return inventoryViewMenu;
+	}
+
+	public void setInventoryViewMenu(ContextMenu inventoryViewMenu) {
+		this.inventoryViewMenu = inventoryViewMenu;
 	}
 
 }

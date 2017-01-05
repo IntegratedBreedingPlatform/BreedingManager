@@ -507,4 +507,24 @@ public class ListBuilderComponentTest {
 		Mockito.verify(this.messageSource).getMessage(Message.ERROR_SAVE_LIST_BEFORE_IMPORTING_LIST);
 	}
 
+	@Test
+	public void testReserveInventoryActionForUnsavedList() {
+		ContextMenu inventoryViewMenu = Mockito.mock(ContextMenu.class);
+		this.listBuilderComponent.setInventoryViewMenu(inventoryViewMenu);
+		this.listBuilderComponent.setListInventoryTable(listInventoryTable);
+
+		Mockito.when(this.listBuilderComponent.getListInventoryTable().getInventoryTableDropHandler())
+				.thenReturn(inventoryTableDropHandler);
+		Mockito.doReturn(true).when(this.listBuilderComponent.getInventoryViewMenu()).isVisible();
+		Mockito.when(this.listBuilderComponent.getListInventoryTable().getInventoryTableDropHandler().isChanged()).thenReturn(true);
+
+		final ListManagerMain source = Mockito.mock(ListManagerMain.class);
+		Mockito.when(source.getWindow()).thenReturn(new Window());
+		this.listBuilderComponent.setSource(source);
+
+		this.listBuilderComponent.reserveInventoryAction();
+
+		Mockito.verify(this.messageSource).getMessage(Message.ERROR_SAVE_LIST_BEFORE_RESERVING_INVENTORY);
+
+	}
 }
