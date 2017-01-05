@@ -13,10 +13,12 @@ import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListen
 import org.generationcp.breeding.manager.listmanager.AddColumnContextMenu;
 import org.generationcp.breeding.manager.listmanager.ListBuilderComponent;
 import org.generationcp.breeding.manager.listmanager.util.ListCommonActionsUtil;
+import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -316,39 +318,10 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 
 				// Inventory Related Columns
 
-				// #1 Available Inventory
-				String availInv = SaveListButtonClickListener.STRING_DASH;
-				if (entry.getInventoryInfo().getActualInventoryLotCount() != null
-						&& entry.getInventoryInfo().getActualInventoryLotCount() != 0) {
-					availInv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
-				}
-				final Button inventoryButton = new Button(availInv,
-						new InventoryLinkButtonClickListener(this.source, currentlySavedList.getId(), entry.getId(), entry.getGid()));
-				inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-				inventoryButton.setDescription("Click to view Inventory Details");
-
-				if (availInv.equals(SaveListButtonClickListener.STRING_DASH)) {
-					inventoryButton.setEnabled(false);
-					inventoryButton.setDescription("No Lot for this Germplasm");
-				} else {
-					inventoryButton.setDescription("Click to view Inventory Details");
-				}
-
-
-				// WITHDRAWAL
-				StringBuilder withdrawal = new StringBuilder();
-				if (entry.getInventoryInfo().getDistinctCountWithdrawalScale() == null
-						|| entry.getInventoryInfo().getDistinctCountWithdrawalScale() == 0) {
-					withdrawal.append("");
-				} else if (entry.getInventoryInfo().getDistinctCountWithdrawalScale() == 1) {
-					withdrawal.append(entry.getInventoryInfo().getWithdrawalBalance());
-					withdrawal.append(" ");
-
-					if (!StringUtils.isEmpty(entry.getInventoryInfo().getWithdrawalScale())) {
-						withdrawal.append(entry.getInventoryInfo().getWithdrawalScale());
-					}
-
-				}
+				// Lots
+				Button lotButton = ListCommonActionsUtil
+						.getLotCountButton(entry.getInventoryInfo().getLotCount(), entry.getGid(), entry.getDesignation(), this.source,
+								null);
 
 				// GROUP ID - the maintenance group id(gid) of a germplasm
 				final String groupId = entry.getGroupId() == 0 ? "-" : entry.getGroupId().toString();
@@ -357,18 +330,43 @@ public class SaveListButtonClickListener implements Button.ClickListener, Initia
 				if (entry.getInventoryInfo() != null && entry.getInventoryInfo().getStockIDs() != null) {
 					stockIDs = entry.getInventoryInfo().getStockIDs();
 				}
-				
+
 				item.getItemProperty(ColumnLabels.TAG.getName()).setValue(tagCheckBox);
-				item.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
-				item.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(groupId);
-				item.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
-				item.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(entry.getEntryCode());
 				item.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entry.getEntryId());
+				item.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
 				item.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(entry.getGroupName());
-				item.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
-				item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-				item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(withdrawal.toString());
+				item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(lotButton);
+
+				// LOTS
+				StringBuilder available = new StringBuilder();
+
+				if (entry.getInventoryInfo().getDistinctScaleCountForGermplsm() == 0) {
+					available.append("-");
+				} else if (entry.getInventoryInfo().getDistinctScaleCountForGermplsm() == 1) {
+					available.append(entry.getInventoryInfo().getTotalAvailableBalance());
+					available.append(" ");
+
+					if (!StringUtils.isEmpty(entry.getInventoryInfo().getScaleForGermplsm())) {
+						available.append(entry.getInventoryInfo().getScaleForGermplsm());
+					}
+
+				} else {
+					available.append(ListDataInventory.MIXED);
+				}
+
+				final Button availableButton = new Button(available.toString(),
+						new InventoryLinkButtonClickListener(this.source, currentlySavedList.getId(), entry.getId(), entry.getGid()));
+				availableButton.setStyleName(BaseTheme.BUTTON_LINK);
+				availableButton.setDescription(ListBuilderComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
+				item.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(availableButton);
+
+				item.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(entry.getEntryCode());
+				item.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
+
+				item.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(groupId);
 				item.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIDs);
+				item.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(entry.getSeedSource());
+
 			}
 
 			this.copyAddedColumnsFromTemp(tempTable);

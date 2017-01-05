@@ -142,6 +142,10 @@ public class BuildNewListDropHandlerTest {
 			final Property availInvProp = Mockito.mock(Property.class);
 			Mockito.doReturn(availInvProp).when(item).getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName());
 			Mockito.doReturn(new Button(String.valueOf(itemId))).when(availInvProp).getValue();
+			// for AVAILABLE Balance
+			final Property availableProp = Mockito.mock(Property.class);
+			Mockito.doReturn(availInvProp).when(item).getItemProperty(ColumnLabels.TOTAL.getName());
+			Mockito.doReturn(new Button(String.valueOf(itemId))).when(availableProp).getValue();
 			// for PARENTAGE
 			final Property parentageProp = Mockito.mock(Property.class);
 			Mockito.doReturn(parentageProp).when(item).getItemProperty(ColumnLabels.PARENTAGE.getName());
@@ -173,6 +177,11 @@ public class BuildNewListDropHandlerTest {
 		}
 		Mockito.doReturn(germplasms).when(this.germplasmDataManager).getGermplasms(Matchers.anyListOf(Integer.class));
 
+		final GermplasmList germplasmList = GermplasmListTestDataInitializer.createGermplasmListWithListDataAndInventoryInfo(1, 1);
+		List<GermplasmListData> listData = germplasmList.getListData();
+
+		Mockito.doReturn(listData).when(this.inventoryDataManager).getLotCountsForListEntries(Mockito.anyInt(), Mockito.anyList());
+
 		this.dropHandler = new BuildNewListDropHandler(this.listManagerMain, this.germplasmDataManager, this.germplasmListManager,
 				this.inventoryDataManager, this.pedigreeService, this.crossExpansionProperties, this.targetTable, this.transactionManager);
 
@@ -203,7 +212,12 @@ public class BuildNewListDropHandlerTest {
 		Mockito.verify(this.tableTransferable, Mockito.times(1)).getSourceComponent();
 		Mockito.verify(this.event, Mockito.times(1)).getTargetDetails();
 		// verify that the retrieval of each column to fill after the drop are properly called
-		this.verifyEachPropertyIsProperlyFilledUp(this.mockTableItem);
+		Mockito.verify(this.mockTableItem, Mockito.atLeast(1)).getItemProperty(ColumnLabels.GROUP_ID.getName());
+		Mockito.verify(this.mockTableItem, Mockito.atLeast(1)).getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName());
+		Mockito.verify(this.mockTableItem, Mockito.atLeast(1)).getItemProperty(ColumnLabels.TOTAL.getName());
+		Mockito.verify(this.mockTableItem, Mockito.atLeast(1)).getItemProperty(ColumnLabels.SEED_SOURCE.getName());
+		Mockito.verify(this.mockTableItem, Mockito.atLeast(1)).getItemProperty(ColumnLabels.DESIGNATION.getName());
+		Mockito.verify(this.mockTableItem, Mockito.atLeast(1)).getItemProperty(ColumnLabels.PARENTAGE.getName());
 	}
 
 	@Test
@@ -223,7 +237,12 @@ public class BuildNewListDropHandlerTest {
 		}
 
 		// verify that the retrieval of each column to fill after the drop are properly called
-		this.verifyEachPropertyIsProperlyFilledUp(this.mockTableItem);
+		Mockito.verify(this.mockTableItem, Mockito.atLeast(1)).getItemProperty(ColumnLabels.GROUP_ID.getName());
+		Mockito.verify(this.mockTableItem, Mockito.atLeast(1)).getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName());
+		Mockito.verify(this.mockTableItem, Mockito.atLeast(1)).getItemProperty(ColumnLabels.TOTAL.getName());
+		Mockito.verify(this.mockTableItem, Mockito.atLeast(1)).getItemProperty(ColumnLabels.SEED_SOURCE.getName());
+		Mockito.verify(this.mockTableItem, Mockito.atLeast(1)).getItemProperty(ColumnLabels.DESIGNATION.getName());
+		Mockito.verify(this.mockTableItem, Mockito.atLeast(1)).getItemProperty(ColumnLabels.PARENTAGE.getName());
 	}
 
 	@Test
@@ -243,7 +262,12 @@ public class BuildNewListDropHandlerTest {
 		Mockito.verify(this.event, Mockito.times(1)).getTargetDetails();
 
 		// verify that the retrieval of each column to fill after the drop are properly called
-		this.verifyEachPropertyIsProperlyFilledUp(this.mockTableItem);
+		Mockito.verify(this.mockTableItem, Mockito.atLeast(1)).getItemProperty(ColumnLabels.GROUP_ID.getName());
+		Mockito.verify(this.mockTableItem, Mockito.atLeast(1)).getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName());
+		Mockito.verify(this.mockTableItem, Mockito.atLeast(1)).getItemProperty(ColumnLabels.TOTAL.getName());
+		Mockito.verify(this.mockTableItem, Mockito.atLeast(1)).getItemProperty(ColumnLabels.SEED_SOURCE.getName());
+		Mockito.verify(this.mockTableItem, Mockito.atLeast(1)).getItemProperty(ColumnLabels.DESIGNATION.getName());
+		Mockito.verify(this.mockTableItem, Mockito.atLeast(1)).getItemProperty(ColumnLabels.PARENTAGE.getName());
 
 	}
 
@@ -291,7 +315,7 @@ public class BuildNewListDropHandlerTest {
 		final Property availInvProp = Mockito.mock(Property.class);
 		Mockito.doReturn(availInvProp).when(item).getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName());
 		final Property seedResProp = Mockito.mock(Property.class);
-		Mockito.doReturn(seedResProp).when(item).getItemProperty(ColumnLabels.SEED_RESERVATION.getName());
+		Mockito.doReturn(seedResProp).when(item).getItemProperty(ColumnLabels.TOTAL.getName());
 		final Property stockIDProp = Mockito.mock(Property.class);
 		Mockito.doReturn(stockIDProp).when(item).getItemProperty(ColumnLabels.STOCKID.getName());
 	}
@@ -311,7 +335,7 @@ public class BuildNewListDropHandlerTest {
 		// Verify if that each property in item is properly filled up
 		Mockito.verify(item, Mockito.atLeast(1)).getItemProperty(ColumnLabels.GROUP_ID.getName());
 		Mockito.verify(item, Mockito.atLeast(1)).getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName());
-		Mockito.verify(item, Mockito.atLeast(1)).getItemProperty(ColumnLabels.SEED_RESERVATION.getName());
+		Mockito.verify(item, Mockito.atLeast(1)).getItemProperty(ColumnLabels.TOTAL.getName());
 		Mockito.verify(item, Mockito.atLeast(1)).getItemProperty(ColumnLabels.SEED_SOURCE.getName());
 		Mockito.verify(item, Mockito.atLeast(1)).getItemProperty(ColumnLabels.DESIGNATION.getName());
 		Mockito.verify(item, Mockito.atLeast(1)).getItemProperty(ColumnLabels.PARENTAGE.getName());

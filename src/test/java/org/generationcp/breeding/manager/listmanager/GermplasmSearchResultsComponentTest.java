@@ -66,10 +66,14 @@ public class GermplasmSearchResultsComponentTest {
 				.getTermById(ColumnLabels.GERMPLASM_LOCATION.getTermId().getId());
 		Mockito.doReturn(this.createTerm("METHOD_NAME")).when(this.ontologyDataManager)
 				.getTermById(ColumnLabels.BREEDING_METHOD_NAME.getTermId().getId());
+		Mockito.doReturn(this.createTerm("AVAILABLE")).when(this.ontologyDataManager)
+				.getTermById(ColumnLabels.TOTAL.getTermId().getId());
 
 		this.germplasmSearchResultsComponent.instantiateComponents();
 
 		final Table table = this.germplasmSearchResultsComponent.getMatchingGermplasmsTableWithSelectAll().getTable();
+
+		Assert.assertEquals(10, table.getColumnHeaders().length);
 
 		Assert.assertEquals("Tag All Column", table.getColumnHeader(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID));
 		Assert.assertEquals("NAMES", table.getColumnHeader(GermplasmSearchResultsComponent.NAMES));
@@ -78,6 +82,7 @@ public class GermplasmSearchResultsComponentTest {
 		Assert.assertEquals("GID", table.getColumnHeader(ColumnLabels.GID.getName()));
 		Assert.assertEquals("LOCATIONS", table.getColumnHeader(ColumnLabels.GERMPLASM_LOCATION.getName()));
 		Assert.assertEquals("METHOD_NAME", table.getColumnHeader(ColumnLabels.BREEDING_METHOD_NAME.getName()));
+		Assert.assertEquals("AVAILABLE", table.getColumnHeader(ColumnLabels.TOTAL.getName()));
 
 	}
 

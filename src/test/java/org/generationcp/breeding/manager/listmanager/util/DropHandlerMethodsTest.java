@@ -61,7 +61,7 @@ public class DropHandlerMethodsTest {
 
 	private static final String PARENTAGE = "A/B";
 
-	private static final String SEED_RESERVATION = "-";
+	private static final String TOTAL = "-";
 
 	private static final String STOCK_ID = "STOCK";
 
@@ -190,6 +190,16 @@ public class DropHandlerMethodsTest {
 			Mockito.doReturn(this.currentColumnsInfo).when(this.germplasmListManager).getAdditionalColumnsForList(listId);
 		}
 
+		List<GermplasmListData> listData1 = Lists.newArrayList(germplasmLists.get(0).getListData().get(0));
+		List<GermplasmListData> listData2 = Lists.newArrayList(germplasmLists.get(0).getListData().get(1));
+		List<GermplasmListData> listData3 = Lists.newArrayList(germplasmLists.get(0).getListData().get(2));
+		List<GermplasmListData> listData4 = Lists.newArrayList(germplasmLists.get(0).getListData().get(3));
+		List<GermplasmListData> listData5 = Lists.newArrayList(germplasmLists.get(0).getListData().get(4));
+
+		Mockito.when(this.inventoryDataManager.getLotCountsForListEntries(Mockito.anyInt(), Mockito.anyList())).thenReturn(listData1,
+				listData2, listData3, listData4, listData5, listData1,
+				listData2, listData3, listData4, listData5);
+
 		this.dropHandlerMethods.addSelectedGermplasmListsFromTable(sourceTable);
 
 		this.verifyGermplasmListDataFromSourceListsIsTransferredProperly(germplasmLists);
@@ -273,8 +283,8 @@ public class DropHandlerMethodsTest {
 			Assert.assertEquals(DropHandlerMethodsTest.CROSS_EXPANSION + expectedID,
 					tableItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue());
 			Assert.assertEquals(expectedID.toString(), tableItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).getValue());
-			Assert.assertEquals(DropHandlerMethodsTest.SEED_RESERVATION,
-					tableItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue());
+			Assert.assertEquals(DropHandlerMethodsTest.TOTAL,
+					((Button)tableItem.getItemProperty(ColumnLabels.TOTAL.getName()).getValue()).getCaption());
 
 			final Button gidButton = (Button) tableItem.getItemProperty(ColumnLabels.GID.getName()).getValue();
 			Assert.assertEquals(expectedID.toString(), gidButton.getCaption());
@@ -333,6 +343,8 @@ public class DropHandlerMethodsTest {
 		// MGID or group ID of Germplasm List Data has default value to 0, so this field will never be null
 		listData.setGroupId(DropHandlerMethodsTest.GROUP_ID);
 
+		Mockito.doReturn(testList.getListData()).when(this.inventoryDataManager).getLotCountsForListEntries(Mockito.anyInt(), Mockito.anyList());
+
 		this.dropHandlerMethods.addGermplasmFromList(DropHandlerMethodsTest.GERMPLASM_LIST_ID, listData.getId(), testList, false);
 
 		// Verify that new table item was added with expected values from list data object
@@ -360,6 +372,15 @@ public class DropHandlerMethodsTest {
 
 		Mockito.doReturn(DropHandlerMethodsTest.GERMPLASM_LIST_ID).when(this.currentColumnsInfo).getListId();
 		Mockito.doReturn(new HashMap<>()).when(this.currentColumnsInfo).getColumnValuesMap();
+
+		List<GermplasmListData> listData1 = Lists.newArrayList(germplasmList.getListData().get(0));
+		List<GermplasmListData> listData2 = Lists.newArrayList(germplasmList.getListData().get(1));
+		List<GermplasmListData> listData3 = Lists.newArrayList(germplasmList.getListData().get(2));
+		List<GermplasmListData> listData4 = Lists.newArrayList(germplasmList.getListData().get(3));
+		List<GermplasmListData> listData5 = Lists.newArrayList(germplasmList.getListData().get(4));
+
+		Mockito.when(this.inventoryDataManager.getLotCountsForListEntries(Mockito.anyInt(), Mockito.anyList())).thenReturn(listData1,
+				listData2, listData3, listData4, listData5);
 
 		this.dropHandlerMethods.addGermplasmList(DropHandlerMethodsTest.GERMPLASM_LIST_ID);
 
@@ -443,7 +464,7 @@ public class DropHandlerMethodsTest {
 		table.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
 		table.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
 		table.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Button.class, null);
-		table.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
+		table.addContainerProperty(ColumnLabels.TOTAL.getName(), Button.class, null);
 		table.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
 		table.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
 		table.addContainerProperty(ColumnLabels.GROUP_ID.getName(), String.class, null);
@@ -461,7 +482,7 @@ public class DropHandlerMethodsTest {
 		item.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(new Button(DropHandlerMethodsTest.GERMPLASM_NAME + itemId));
 		item.getItemProperty(ColumnLabels.GID.getName()).setValue(new Button(itemId.toString()));
 		item.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(DropHandlerMethodsTest.PARENTAGE);
-		item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(DropHandlerMethodsTest.SEED_RESERVATION);
+		item.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(new Button(DropHandlerMethodsTest.TOTAL + itemId));
 		item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(new Button("1"));
 		item.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(DropHandlerMethodsTest.GROUP_ID);
 		item.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(DropHandlerMethodsTest.STOCK_ID + itemId);

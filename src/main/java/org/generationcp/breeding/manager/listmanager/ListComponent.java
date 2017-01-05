@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -29,6 +30,7 @@ import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
+import org.generationcp.breeding.manager.customcomponent.listinventory.CloseLotDiscardInventoryAction;
 import org.generationcp.breeding.manager.customcomponent.listinventory.ListManagerInventoryTable;
 import org.generationcp.breeding.manager.inventory.ReservationStatusWindow;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
@@ -37,8 +39,10 @@ import org.generationcp.breeding.manager.inventory.ReserveInventoryUtil;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
 import org.generationcp.breeding.manager.inventory.SeedInventoryImportFileComponent;
 import org.generationcp.breeding.manager.inventory.SeedInventoryListExporter;
+import org.generationcp.breeding.manager.inventory.exception.CloseLotException;
 import org.generationcp.breeding.manager.inventory.exception.SeedInventoryExportException;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
+import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource;
 import org.generationcp.breeding.manager.listmanager.dialog.AssignCodesDialog;
@@ -57,13 +61,13 @@ import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.InternationalizableException;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.CrossingUtil;
+import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.domain.inventory.GermplasmInventory;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -77,6 +81,10 @@ import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.ims.Lot;
+import org.generationcp.middleware.pojos.ims.LotStatus;
+import org.generationcp.middleware.pojos.ims.Transaction;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.slf4j.Logger;
@@ -93,8 +101,10 @@ import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
+import com.google.common.collect.Lists;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
+
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -174,6 +184,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	@SuppressWarnings("unused")
 	private ContextMenuItem menuCancelReservation;
 
+	private ContextMenuItem menuCloseLots;
+
 	// Menu shown when the user right-click on the germplasm list table
 	private GermplasmListTableContextMenu tableContextMenu;
 
@@ -208,6 +220,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	public static final String UNLOCK_BUTTON_ID = "Unlock Germplasm List";
 
 	private static final String LOCK_TOOLTIP = "Click to lock or unlock this germplasm list.";
+
+	private static final String CLOSE_LOT_VALID = "CloseLotValid";
+	private static final String CLOSE_LOT_UNCOMMITTED = "CloseLotUnCommitted";
+	private static final String CLOSE_LOT_AVAILABLE_BALANCE = "CloseLotAvailableBalance";
 
 	// Value change event is fired when table is populated, so we need a flag
 	private Boolean doneInitializing = false;
@@ -256,6 +272,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	private BreedingManagerApplication breedingManagerApplication;
 
+	private CloseLotDiscardInventoryAction closeLotDiscardInventoryAction;
+
 	@Resource
 	private CrossExpansionProperties crossExpansionProperties;
 
@@ -265,6 +283,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	public ListComponent() {
 		super();
 		this.reserveInventoryAction = new ReserveInventoryAction(this);
+		this.closeLotDiscardInventoryAction = new CloseLotDiscardInventoryAction(this);
 	}
 
 	public ListComponent(final ListManagerMain source, final ListTabComponent parentListDetailsComponent,
@@ -375,6 +394,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.menuCancelReservation = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.CANCEL_RESERVATIONS));
 
 		this.menuReserveInventory = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
+		this.menuCloseLots = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.CLOSE_LOTS));
 		this.menuListView = this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
 		this.inventoryViewMenu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
 
@@ -422,8 +442,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.listDataTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Button.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.TOTAL.getName(), Button.class, null);
-		this.listDataTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
-		this.listDataTable.addContainerProperty(ColumnLabels.STATUS.getName(), String.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.GROUP_ID.getName(), String.class, null);
@@ -437,9 +455,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.listDataTable.setColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName(),
 				this.getTermNameFromOntology(ColumnLabels.AVAILABLE_INVENTORY));
 		this.listDataTable.setColumnHeader(ColumnLabels.TOTAL.getName(), this.getTermNameFromOntology(ColumnLabels.TOTAL));
-		this.listDataTable
-				.setColumnHeader(ColumnLabels.SEED_RESERVATION.getName(), this.getTermNameFromOntology(ColumnLabels.SEED_RESERVATION));
-		this.listDataTable.setColumnHeader(ColumnLabels.STATUS.getName(), this.getTermNameFromOntology(ColumnLabels.STATUS));
 		this.listDataTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(), this.getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
 		this.listDataTable.setColumnHeader(ColumnLabels.GID.getName(), this.getTermNameFromOntology(ColumnLabels.GID));
 		this.listDataTable.setColumnHeader(ColumnLabels.GROUP_ID.getName(), this.getTermNameFromOntology(ColumnLabels.GROUP_ID));
@@ -570,27 +585,13 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		// Inventory Related Columns
 
-		// #1 Available Inventory
-		// default value
-		String availInv = "-";
-		if (entry.getInventoryInfo().getLotCount() != 0) {
-			availInv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
-		}
-		final Button inventoryButton = new Button(availInv,
-				new InventoryLinkButtonClickListener(this.parentListDetailsComponent, this.germplasmList.getId(), entry.getId(),
-						entry.getGid()));
-		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-		inventoryButton.setDescription(ListComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
-		newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
+		// Lots
+		Button lotButton = ListCommonActionsUtil
+				.getLotCountButton(entry.getInventoryInfo().getLotCount(), entry.getGid(), entry.getDesignation(),
+						this.parentListDetailsComponent, null);
+		newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(lotButton);
 
-		if ("-".equals(availInv)) {
-			inventoryButton.setEnabled(false);
-			inventoryButton.setDescription("No Lot for this Germplasm");
-		} else {
-			inventoryButton.setDescription(ListComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
-		}
-
-		// LOTS
+		// Available Balance
 		StringBuilder available = new StringBuilder();
 
 		if (entry.getInventoryInfo().getDistinctScaleCountForGermplsm() == 0) {
@@ -613,32 +614,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		availableButton.setStyleName(BaseTheme.BUTTON_LINK);
 		availableButton.setDescription(ListComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
 		newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(availableButton);
-
-		// WITHDRAWAL
-		StringBuilder withdrawal = new StringBuilder();
-		if (entry.getInventoryInfo().getDistinctCountWithdrawalScale() == null
-				|| entry.getInventoryInfo().getDistinctCountWithdrawalScale() == 0) {
-			withdrawal.append("");
-		} else if (entry.getInventoryInfo().getDistinctCountWithdrawalScale() == 1) {
-			withdrawal.append(entry.getInventoryInfo().getWithdrawalBalance());
-			withdrawal.append(" ");
-
-			if (!StringUtils.isEmpty(entry.getInventoryInfo().getWithdrawalScale())) {
-				withdrawal.append(entry.getInventoryInfo().getWithdrawalScale());
-			}
-
-		} else {
-			withdrawal.append(ListDataInventory.MIXED);
-		}
-
-		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(withdrawal.toString());
-
-		// STATUS
-		if (entry.getInventoryInfo().getTransactionStatus() != null) {
-			newItem.getItemProperty(ColumnLabels.STATUS.getName()).setValue(entry.getInventoryInfo().getTransactionStatus());
-		} else {
-			newItem.getItemProperty(ColumnLabels.STATUS.getName()).setValue("");
-		}
 
 		final String stockIds = entry.getInventoryInfo().getStockIDs();
 		final Label stockIdsLbl = new Label(stockIds);
@@ -997,6 +972,23 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 					});
 				}
 
+			} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.CLOSE_LOTS))) {
+				synchronized (ListComponent.class) {
+					final TransactionTemplate transactionTemplateForSavingReservation =
+							new TransactionTemplate(ListComponent.this.transactionManager);
+
+					transactionTemplateForSavingReservation.execute(new TransactionCallbackWithoutResult() {
+
+						@Override
+						protected void doInTransactionWithoutResult(final TransactionStatus status) {
+							ListComponent.this.closeLotsActions();
+						}
+					});
+
+					ListComponent.this.resetListInventoryTableValues();
+					ListComponent.this.resetListDataTableValues();
+
+				}
 			} else {
 				final TransactionTemplate transactionTemplate = new TransactionTemplate(ListComponent.this.transactionManager);
 				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
@@ -2216,7 +2208,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 			if (success) {
 				this.cancelReservations();
-				this.refreshInventoryColumns(this.getValidReservationsToSave());
 				this.resetListDataTableValues();
 				this.resetListInventoryTableValues();
 				MessageNotifier.showMessage(window, this.messageSource.getMessage(Message.SUCCESS),
@@ -2240,7 +2231,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
 					"Please select at least 1 lot to cancel reservations.");
 		} else {
-			if (!this.listInventoryTable.isSelectedEntriesHasReservation(lotDetailsGid)) {
+			if (!this.listInventoryTable.isSelectedEntriesHasReservation(lotDetailsGid,this.getValidReservationsToSave())) {
 				MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
 						"There are no reservations on the current selected lots.");
 			} else {
@@ -2395,13 +2386,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		for (final Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()) {
 			final ListEntryLotDetails lot = entry.getKey();
 			final Double newRes = entry.getValue();
-			final Double withdrawalbalance = lot.getWithdrawalBalance() + newRes;
 			final Double available = lot.getAvailableLotBalance() - newRes;
 			final Item itemToUpdate = this.listInventoryTable.getTable().getItem(lot);
 			if (newRes > 0) {
-				itemToUpdate.getItemProperty(ColumnLabels.SEED_RESERVATION.getName())
-						.setValue(withdrawalbalance + lot.getLotScaleNameAbbr());
-				itemToUpdate.getItemProperty(ColumnLabels.STATUS.getName()).setValue(GermplasmInventory.RESERVED);
+				if(!lot.getTransactionStatus()){
+					itemToUpdate.getItemProperty(ColumnLabels.RESERVATION.getName()).setValue(newRes + lot.getLotScaleNameAbbr());
+				}
 				itemToUpdate.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(available + lot.getLotScaleNameAbbr());
 			}
 		}
@@ -2520,6 +2510,177 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.listDataTable.requestRepaint();
 	}
 
+	public void closeLotsActions() {
+
+		if (CollectionUtils.isEmpty(this.listInventoryTable.getSelectedLots())) {
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
+					this.messageSource.getMessage(Message.NO_LOTS_SELECTED_ERROR));
+			return;
+		}
+
+		Map<String, List<ListEntryLotDetails>> mapLotDetails = validateSelectedCloseLots();
+
+		if (!CollectionUtils.isEmpty(mapLotDetails.get(CLOSE_LOT_UNCOMMITTED))) {
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
+					this.messageSource.getMessage(Message.LOTS_HAVE_AVAILABLE_BALANCE_UNCOMMITTED_RESERVATION_ERROR));
+
+			return;
+		}
+
+		List<ListEntryLotDetails> validLotEntryDetails = mapLotDetails.get(CLOSE_LOT_VALID);
+
+		if (!CollectionUtils.isEmpty(validLotEntryDetails)) {
+			try {
+				processCloseLots(validLotEntryDetails);
+			} catch (CloseLotException e) {
+				final String errorMessage = this.messageSource.getMessage(e.getMessage(), null, Locale.getDefault());
+				MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR), errorMessage);
+				return;
+			}
+
+			MessageNotifier.showMessage(ListComponent.this.getWindow(), ListComponent.this.messageSource.getMessage(Message.SUCCESS),
+					ListComponent.this.messageSource.getMessage(Message.LOTS_CLOSED_SUCCESSFULLY));
+		}
+
+		List<ListEntryLotDetails> lotWithAvailableBalanceEntryDetails = mapLotDetails.get(CLOSE_LOT_AVAILABLE_BALANCE);
+
+		if (!CollectionUtils.isEmpty(lotWithAvailableBalanceEntryDetails)) {
+			this.closeLotDiscardInventoryAction.setLotDetails(lotWithAvailableBalanceEntryDetails);
+			this.closeLotDiscardInventoryAction.processLotCloseWithDiscard();
+		}
+
+	}
+
+	private List<ListEntryLotDetails> getSelectedCloseLotEntryDetails(List<ListEntryLotDetails> selectedLots) throws CloseLotException {
+		final List<GermplasmListData> inventoryDetails =
+				this.inventoryDataManager.getLotDetailsForList(this.getGermplasmListId(), 0, Integer.MAX_VALUE);
+
+		List<Integer> lotIdList = Lists.newArrayList();
+
+		for (ListEntryLotDetails lot : selectedLots) {
+			lotIdList.add(lot.getLotId());
+		}
+
+		final List<ListEntryLotDetails> selectedLotEntryDetails = Lists.newArrayList();
+		Map<Integer, ListEntryLotDetails> mapLotDetails = ListCommonActionsUtil.createListEntryLotDetailsMap(inventoryDetails);
+
+		for (Integer selectedLot : lotIdList) {
+			if (mapLotDetails.containsKey(selectedLot)) {
+				selectedLotEntryDetails.add(mapLotDetails.get(selectedLot));
+			} else {
+				throw new CloseLotException(Message.LOT_ALREADY_CLOSED_ERROR.toString());
+			}
+
+		}
+
+		return selectedLotEntryDetails;
+	}
+
+
+
+	private Map<String, List<ListEntryLotDetails>> validateSelectedCloseLots() {
+		final List<ListEntryLotDetails> lotsSelectedToClose = this.listInventoryTable.getSelectedLots();
+
+		Map<String, List<ListEntryLotDetails>> mapLotDetails = new HashMap<>();
+
+		mapLotDetails.put(CLOSE_LOT_VALID, Lists.<ListEntryLotDetails>newArrayList());
+		mapLotDetails.put(CLOSE_LOT_UNCOMMITTED, Lists.<ListEntryLotDetails>newArrayList());
+		mapLotDetails.put(CLOSE_LOT_AVAILABLE_BALANCE, Lists.<ListEntryLotDetails>newArrayList());
+
+		for (ListEntryLotDetails lotDetails : lotsSelectedToClose) {
+			if (lotDetails.getReservedTotal() > 0) {
+				mapLotDetails.get(CLOSE_LOT_UNCOMMITTED).add(lotDetails);
+				continue;
+			}
+
+			if (lotDetails.getActualLotBalance() > 0) {
+				mapLotDetails.get(CLOSE_LOT_AVAILABLE_BALANCE).add(lotDetails);
+			} else if (lotDetails.getActualLotBalance() == 0) {
+				mapLotDetails.get(CLOSE_LOT_VALID).add(lotDetails);
+			}
+		}
+
+		return mapLotDetails;
+	}
+
+	public void processCloseLots(List<ListEntryLotDetails> lotsSelectedToClose) throws CloseLotException {
+		List<Transaction> closeLotTransactions = Lists.newArrayList();
+		List<Integer> listLotIds = Lists.newArrayList();
+
+		List<ListEntryLotDetails> selectedCloseLotEntryDetails = getSelectedCloseLotEntryDetails(lotsSelectedToClose);
+
+		for (ListEntryLotDetails lotDetail : selectedCloseLotEntryDetails) {
+			listLotIds.add(lotDetail.getLotId());
+		}
+
+		List<Lot> closeLots = this.inventoryDataManager.getLotsByIdList(listLotIds);
+
+		for (Lot lot : closeLots) {
+
+			if (lot.getStatus().equals(LotStatus.CLOSED.getIntValue())) {
+				throw new CloseLotException(Message.LOT_ALREADY_CLOSED_ERROR.toString());
+			} else {
+				lot.setStatus(LotStatus.CLOSED.getIntValue());
+			}
+
+		}
+
+		final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
+		final User userById = this.userDataManager.getUserById(ibdbUserId);
+
+		for (ListEntryLotDetails lotDetail : selectedCloseLotEntryDetails) {
+
+			if (lotDetail.getReservedTotal() > 0) {
+				throw new CloseLotException(Message.LOTS_HAVE_AVAILABLE_BALANCE_UNCOMMITTED_RESERVATION_ERROR.toString());
+			}
+
+			Integer lotId = lotDetail.getLotId();
+			Integer transactionDate = DateUtil.getCurrentDateAsIntegerValue();
+
+			Double closingBalance = null;
+			String comments = null;
+
+			if (lotDetail.getActualLotBalance() == 0) {
+				closingBalance = 0D;
+				comments = this.messageSource.getMessage(Message.TRANSACTION_CLOSE_COMMENT);
+			} else if (lotDetail.getActualLotBalance() > 0) {
+				closingBalance = -1 * lotDetail.getActualLotBalance();
+				comments = this.messageSource.getMessage(Message.TRANSACTION_DISCARD_COMMENT);
+			}
+
+			String sourceType = this.messageSource.getMessage(Message.SOURCE_TYPE_LIST);
+			Integer listId = this.germplasmList.getId();
+			Integer lrecId = lotDetail.getId();
+
+			Double prevAmount = 0D;
+
+			Transaction closeLotTransaction = new Transaction();
+
+			closeLotTransaction.setUserId(ibdbUserId);
+
+			Lot lot = new Lot(lotId);
+			lot.setStatus(LotStatus.CLOSED.getIntValue());
+			closeLotTransaction.setLot(lot);
+
+			closeLotTransaction.setTransactionDate(transactionDate);
+			closeLotTransaction.setStatus(org.generationcp.middleware.pojos.ims.TransactionStatus.COMMITTED.getIntValue());
+			closeLotTransaction.setQuantity(closingBalance);
+			closeLotTransaction.setComments(comments);
+			closeLotTransaction.setCommitmentDate(transactionDate);
+			closeLotTransaction.setSourceType(sourceType);
+			closeLotTransaction.setSourceId(listId);
+			closeLotTransaction.setSourceRecordId(lrecId);
+			closeLotTransaction.setPreviousAmount(prevAmount);
+			closeLotTransaction.setPersonId(userById.getPersonid());
+
+			closeLotTransactions.add(closeLotTransaction);
+		}
+
+		this.inventoryDataManager.addTransactions(closeLotTransactions);
+		this.inventoryDataManager.updateLots(closeLots);
+
+	}
+
 	public ViewListHeaderWindow getViewListHeaderWindow() {
 		return this.viewListHeaderWindow;
 	}
@@ -2587,6 +2748,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	public void setPersistedReservationToCancel(List<ListEntryLotDetails> persistedReservationToCancel) {
 		this.persistedReservationToCancel = persistedReservationToCancel;
 	}
+
 	@Override
 	public ListManagerMain getListManagerMain() {
 		return this.source;
@@ -2631,5 +2793,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 	public void setReserveInventoryAction(ReserveInventoryAction reserveInventoryAction) {
 		this.reserveInventoryAction = reserveInventoryAction;
+	}
+
+	public void setCloseLotDiscardInventoryAction(CloseLotDiscardInventoryAction closeLotDiscardInventoryAction) {
+		this.closeLotDiscardInventoryAction = closeLotDiscardInventoryAction;
 	}
 }
