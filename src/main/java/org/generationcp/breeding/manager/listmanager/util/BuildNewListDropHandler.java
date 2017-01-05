@@ -120,7 +120,7 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 							final Object oldDesignation = oldItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue();
 							final Object oldParentage = oldItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue();
 							final Object oldAvailInv = oldItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue();
-							final Object oldSeedRes = oldItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue();
+							final Object oldAvailable = oldItem.getItemProperty(ColumnLabels.TOTAL.getName()).getValue();
 							sourceTable.removeItem(transferable.getItemId());
 
 							final Item newItem = sourceTable.addItemAfter(droppedOverItemId, transferable.getItemId());
@@ -133,7 +133,7 @@ public class BuildNewListDropHandler extends DropHandlerMethods implements DropH
 							newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(oldParentage);
 							newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(oldAvailInv);
 							newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue("");
-							newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(oldSeedRes);
+							newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(oldAvailable);
 
 							BuildNewListDropHandler.this.assignSerializedEntryNumber();
 

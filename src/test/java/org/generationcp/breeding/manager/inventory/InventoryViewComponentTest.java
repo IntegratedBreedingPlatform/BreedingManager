@@ -16,6 +16,7 @@ import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.pojos.ims.LotStatus;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,9 +58,7 @@ public class InventoryViewComponentTest {
 
 	private static final String AVAILABLE_BALANCE_HEADER_NAME = "AVAILABLE BALANCE";
 
-	private static final String WITHDRAWAL_HEADER_NAME = "WITHDRAWAL";
-
-	private static final String STATUS_HEADER_NAME = "STATUS";
+	private static final String LOT_STATUS = "LOT STATUS";
 
 	private static final String COMMENT_HEADER_NAME = "COMMENT";
 
@@ -69,12 +68,12 @@ public class InventoryViewComponentTest {
 
 	private static final String SEED_SOURCE_HEADER_NAME = "SEEDSOURCE";
 
+	private static final String LOT_STATUS_HEADER_NAME = "LOT STATUS";
+
 	private static final int TABLE_SIZE = 5;
 	private static final String LOT_LOCATION = "Location1";
 	private static final String ACTUAL_BALANCE = "100.0g";
 	private static final String AVAILABLE_BALANCE = "100.0g";
-	private static final String WITHDRAWAL = "12.0g";
-	private static final String STATUS = "1";
 	private static final String COMMENTS = "Lot Comment1";
 	private static final String STOCKID = "STK1-1,STK2-2,STK-3";
 	private static final String LOT_ID = "1";
@@ -89,10 +88,8 @@ public class InventoryViewComponentTest {
 				.getTermById(ColumnLabels.ACTUAL_BALANCE.getTermId().getId());
 		Mockito.doReturn(new Term(TermId.TOTAL_INVENTORY.getId(), AVAILABLE_BALANCE_HEADER_NAME, "")).when(this.ontologyDataManager)
 				.getTermById(ColumnLabels.TOTAL.getTermId().getId());
-		Mockito.doReturn(new Term(TermId.SEED_RESERVATION.getId(), WITHDRAWAL_HEADER_NAME, "")).when(this.ontologyDataManager)
-				.getTermById(ColumnLabels.SEED_RESERVATION.getTermId().getId());
-		Mockito.doReturn(new Term(TermId.STATUS.getId(), STATUS_HEADER_NAME, "")).when(this.ontologyDataManager)
-				.getTermById(ColumnLabels.STATUS.getTermId().getId());
+		Mockito.doReturn(new Term(TermId.LOT_STATUS.getId(), LOT_STATUS, "")).when(this.ontologyDataManager)
+				.getTermById(ColumnLabels.LOT_STATUS.getTermId().getId());
 		Mockito.doReturn(new Term(TermId.COMMENT_INVENTORY.getId(), COMMENT_HEADER_NAME, "")).when(this.ontologyDataManager)
 				.getTermById(ColumnLabels.COMMENT.getTermId().getId());
 		Mockito.doReturn(new Term(TermId.STOCKID.getId(), STOCKID_HEADER_NAME, "")).when(this.ontologyDataManager)
@@ -132,12 +129,11 @@ public class InventoryViewComponentTest {
 		Assert.assertNotNull(table);
 		Collection<?> columnIds = table.getContainerPropertyIds();
 
-		Assert.assertTrue(columnIds.size() == 8);
+		Assert.assertTrue(columnIds.size() == 7);
 		Assert.assertTrue(columnIds.contains(InventoryViewComponent.LOT_LOCATION));
 		Assert.assertTrue(columnIds.contains(InventoryViewComponent.ACTUAL_BALANCE));
 		Assert.assertTrue(columnIds.contains(InventoryViewComponent.AVAILABLE_BALANCE));
-		Assert.assertTrue(columnIds.contains(InventoryViewComponent.WITHDRAWAL));
-		Assert.assertTrue(columnIds.contains(InventoryViewComponent.STATUS));
+		Assert.assertTrue(columnIds.contains(InventoryViewComponent.LOT_STATUS));
 		Assert.assertTrue(columnIds.contains(InventoryViewComponent.COMMENTS));
 		Assert.assertTrue(columnIds.contains(InventoryViewComponent.STOCKID));
 		Assert.assertTrue(columnIds.contains(InventoryViewComponent.LOT_ID));
@@ -148,10 +144,8 @@ public class InventoryViewComponentTest {
 		Assert.assertTrue(columnHeaders.contains(table.getColumnHeader(InventoryViewComponentTest.LOTID_HEADER_NAME)));
 		Assert.assertTrue(columnHeaders.contains(table.getColumnHeader(InventoryViewComponentTest.ACTUAL_BALANCE_HEADER_NAME)));
 		Assert.assertTrue(columnHeaders.contains(table.getColumnHeader(InventoryViewComponentTest.AVAILABLE_BALANCE_HEADER_NAME)));
-		Assert.assertTrue(columnHeaders.contains(table.getColumnHeader(InventoryViewComponentTest.WITHDRAWAL_HEADER_NAME)));
-		Assert.assertTrue(columnHeaders.contains(table.getColumnHeader(InventoryViewComponentTest.STATUS_HEADER_NAME)));
+		Assert.assertTrue(columnHeaders.contains(table.getColumnHeader(InventoryViewComponentTest.LOT_STATUS_HEADER_NAME)));
 		Assert.assertTrue(columnHeaders.contains(table.getColumnHeader(InventoryViewComponentTest.COMMENT_HEADER_NAME)));
-		Assert.assertTrue(columnHeaders.contains(table.getColumnHeader(InventoryViewComponentTest.STATUS_HEADER_NAME)));
 		Assert.assertTrue(columnHeaders.contains(table.getColumnHeader(InventoryViewComponentTest.LOTID_HEADER_NAME)));
 		Assert.assertFalse(columnHeaders.contains(table.getColumnHeader(InventoryViewComponentTest.SEED_SOURCE_HEADER_NAME)));
 
@@ -166,12 +160,11 @@ public class InventoryViewComponentTest {
 		Assert.assertNotNull(table);
 		Collection<?> columnIds = table.getContainerPropertyIds();
 
-		Assert.assertTrue(columnIds.size() == 9);
+		Assert.assertTrue(columnIds.size() == 8);
 		Assert.assertTrue(columnIds.contains(InventoryViewComponent.LOT_LOCATION));
 		Assert.assertTrue(columnIds.contains(InventoryViewComponent.ACTUAL_BALANCE));
 		Assert.assertTrue(columnIds.contains(InventoryViewComponent.AVAILABLE_BALANCE));
-		Assert.assertTrue(columnIds.contains(InventoryViewComponent.WITHDRAWAL));
-		Assert.assertTrue(columnIds.contains(InventoryViewComponent.STATUS));
+		Assert.assertTrue(columnIds.contains(InventoryViewComponent.LOT_STATUS));
 		Assert.assertTrue(columnIds.contains(InventoryViewComponent.COMMENTS));
 		Assert.assertTrue(columnIds.contains(InventoryViewComponent.STOCKID));
 		Assert.assertTrue(columnIds.contains(InventoryViewComponent.LOT_ID));
@@ -182,10 +175,8 @@ public class InventoryViewComponentTest {
 		Assert.assertTrue(columnHeaders.contains(table.getColumnHeader(InventoryViewComponentTest.LOTID_HEADER_NAME)));
 		Assert.assertTrue(columnHeaders.contains(table.getColumnHeader(InventoryViewComponentTest.ACTUAL_BALANCE_HEADER_NAME)));
 		Assert.assertTrue(columnHeaders.contains(table.getColumnHeader(InventoryViewComponentTest.AVAILABLE_BALANCE_HEADER_NAME)));
-		Assert.assertTrue(columnHeaders.contains(table.getColumnHeader(InventoryViewComponentTest.WITHDRAWAL_HEADER_NAME)));
-		Assert.assertTrue(columnHeaders.contains(table.getColumnHeader(InventoryViewComponentTest.STATUS_HEADER_NAME)));
+		Assert.assertTrue(columnHeaders.contains(table.getColumnHeader(InventoryViewComponentTest.LOT_STATUS_HEADER_NAME)));
 		Assert.assertTrue(columnHeaders.contains(table.getColumnHeader(InventoryViewComponentTest.COMMENT_HEADER_NAME)));
-		Assert.assertTrue(columnHeaders.contains(table.getColumnHeader(InventoryViewComponentTest.STATUS_HEADER_NAME)));
 		Assert.assertTrue(columnHeaders.contains(table.getColumnHeader(InventoryViewComponentTest.LOTID_HEADER_NAME)));
 		Assert.assertTrue(columnHeaders.contains(table.getColumnHeader(InventoryViewComponentTest.SEED_SOURCE_HEADER_NAME)));
 
@@ -210,8 +201,7 @@ public class InventoryViewComponentTest {
 				item.getItemProperty(InventoryViewComponent.ACTUAL_BALANCE).getValue());
 		Assert.assertEquals(InventoryViewComponentTest.AVAILABLE_BALANCE,
 				item.getItemProperty(InventoryViewComponent.AVAILABLE_BALANCE).getValue());
-		Assert.assertEquals(InventoryViewComponentTest.WITHDRAWAL, item.getItemProperty(InventoryViewComponent.WITHDRAWAL).getValue());
-		Assert.assertEquals(InventoryViewComponentTest.STATUS, item.getItemProperty(InventoryViewComponent.STATUS).getValue());
+		Assert.assertEquals(LotStatus.ACTIVE.name(), item.getItemProperty(InventoryViewComponent.LOT_STATUS).getValue());
 		Assert.assertEquals(InventoryViewComponentTest.COMMENTS, item.getItemProperty(InventoryViewComponent.COMMENTS).getValue());
 		Assert.assertEquals(InventoryViewComponentTest.STOCKID, item.getItemProperty(InventoryViewComponent.STOCKID).getValue().toString());
 		Assert.assertEquals(InventoryViewComponentTest.LOT_ID, item.getItemProperty(InventoryViewComponent.LOT_ID).getValue().toString());
@@ -239,8 +229,7 @@ public class InventoryViewComponentTest {
 		Assert.assertEquals(InventoryViewComponentTest.ACTUAL_BALANCE,
 				item.getItemProperty(InventoryViewComponent.ACTUAL_BALANCE).getValue());
 		Assert.assertTrue(StringUtil.isEmpty(item.getItemProperty(InventoryViewComponent.AVAILABLE_BALANCE).getValue().toString()));
-		Assert.assertTrue(StringUtil.isEmpty(item.getItemProperty(InventoryViewComponent.WITHDRAWAL).getValue().toString()));
-		Assert.assertEquals(InventoryViewComponentTest.STATUS, item.getItemProperty(InventoryViewComponent.STATUS).getValue());
+		Assert.assertEquals(LotStatus.ACTIVE.name(), item.getItemProperty(InventoryViewComponent.LOT_STATUS).getValue().toString());
 		Assert.assertEquals(InventoryViewComponentTest.COMMENTS, item.getItemProperty(InventoryViewComponent.COMMENTS).getValue());
 		Assert.assertEquals(InventoryViewComponentTest.STOCKID, item.getItemProperty(InventoryViewComponent.STOCKID).getValue().toString());
 		Assert.assertEquals(InventoryViewComponentTest.LOT_ID, item.getItemProperty(InventoryViewComponent.LOT_ID).getValue().toString());
@@ -274,8 +263,7 @@ public class InventoryViewComponentTest {
 				item.getItemProperty(InventoryViewComponent.ACTUAL_BALANCE).getValue());
 		Assert.assertEquals(InventoryViewComponentTest.AVAILABLE_BALANCE,
 				item.getItemProperty(InventoryViewComponent.AVAILABLE_BALANCE).getValue());
-		Assert.assertEquals(InventoryViewComponentTest.WITHDRAWAL, item.getItemProperty(InventoryViewComponent.WITHDRAWAL).getValue());
-		Assert.assertEquals(InventoryViewComponentTest.STATUS, item.getItemProperty(InventoryViewComponent.STATUS).getValue());
+		Assert.assertEquals(LotStatus.ACTIVE.name(), item.getItemProperty(InventoryViewComponent.LOT_STATUS).getValue().toString());
 		Assert.assertEquals(InventoryViewComponentTest.COMMENTS, item.getItemProperty(InventoryViewComponent.COMMENTS).getValue());
 		Assert.assertEquals(InventoryViewComponentTest.STOCKID, item.getItemProperty(InventoryViewComponent.STOCKID).getValue().toString());
 		Assert.assertEquals(InventoryViewComponentTest.LOT_ID, item.getItemProperty(InventoryViewComponent.LOT_ID).getValue().toString());

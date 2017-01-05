@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.inventory.InventoryDropTargetContainer;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
@@ -19,9 +20,11 @@ import org.generationcp.breeding.manager.listmanager.ListComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.ListSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
+import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
+import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -35,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -176,6 +180,7 @@ public class DropHandlerMethods {
 		final Map<Integer, String> crossExpansions = this.getCrossExpansions(gids);
 		final Map<Integer, Germplasm> gidGermplasmMap = this.generateGidGermplasmMap(gids);
 		final Map<Integer, String> preferredNames = this.germplasmDataManager.getPreferredNamesByGids(gids);
+		final Map<Integer, Germplasm> germplsmWithAvailableBalance = this.getAvailableBalanceWithScaleForGermplasm(gidGermplasmMap);
 
 		try {
 			for (final Integer gid : gids) {
@@ -238,9 +243,36 @@ public class DropHandlerMethods {
 					inventoryButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
 				}
 
-				// #2 Seed Reserved
-				final String seedRes = DropHandlerMethods.STRING_DASH;
-				newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
+				// Available
+				final StringBuilder available = new StringBuilder();
+				final Germplasm germplasmWithAvailableBalance = germplsmWithAvailableBalance.get(gid);
+
+				if(germplasmWithAvailableBalance != null) {
+
+					if (germplasm.getInventoryInfo().getScaleForGermplsm() != null) {
+						if(ListDataInventory.MIXED.equals(germplasm.getInventoryInfo().getScaleForGermplsm())) {
+							available.append(germplasm.getInventoryInfo().getScaleForGermplsm());
+						} else {
+							available.append(germplasm.getInventoryInfo().getTotalAvailableBalance());
+							available.append(" ");
+							available.append(germplasm.getInventoryInfo().getScaleForGermplsm());
+						}
+
+					} else {
+						available.append(germplasm.getInventoryInfo().getTotalAvailableBalance());
+					}
+
+				} else {
+					available.append(DropHandlerMethods.STRING_DASH);
+				}
+
+				final Button availableButton = new Button(available.toString(),
+						new InventoryLinkButtonClickListener(this.listManagerMain, gid));
+				availableButton.setDebugId("availableButton");
+				availableButton.setStyleName(BaseTheme.BUTTON_LINK);
+				availableButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
+				newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(availableButton);
+
 
 				newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(tagCheckBox);
 				if (newItem != null && gidButton != null) {
@@ -280,6 +312,24 @@ public class DropHandlerMethods {
 			gidGermplasmMap.put(gid, germplasm);
 		}
 		return gidGermplasmMap;
+	}
+
+	private Map<Integer, Germplasm> getAvailableBalanceWithScaleForGermplasm(final Map<Integer, Germplasm> germplasmMap) {
+		Map<Integer, Germplasm> availableBalanceWithScale = new HashMap<>();
+
+		List<Germplasm> germplasmList = new ArrayList<>();
+		for(Entry<Integer, Germplasm> entry : germplasmMap.entrySet()) {
+			germplasmList.add(entry.getValue());
+		}
+
+		List<Germplasm> availableBalanceForGermplsms = this.inventoryDataManager.getAvailableBalanceForGermplasms(germplasmList);
+
+		for(Germplasm germplasm : availableBalanceForGermplsms) {
+			availableBalanceWithScale.put(germplasm.getGid(), germplasm);
+		}
+
+		return availableBalanceWithScale;
+
 	}
 
 	private Map<Integer, String> getCrossExpansions(final List<Integer> gids) {
@@ -393,31 +443,33 @@ public class DropHandlerMethods {
 
 				// Inventory Related Columns
 
-				// #1 Available Inventory
-				String availInv = DropHandlerMethods.STRING_DASH;
-				if (germplasmListData.getInventoryInfo().getLotCount().intValue() != 0) {
-					availInv = germplasmListData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
-				}
-				final Button inventoryButton =
-						new Button(availInv, new InventoryLinkButtonClickListener(this.listManagerMain, germplasmListData.getGid()));
-				inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-				newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
+				// Lots
+				Button lotButton = ListCommonActionsUtil
+						.getLotCountButton(germplasmListData.getInventoryInfo().getLotCount().intValue(), germplasmListData.getGid(),
+								germplasmListData.getDesignation(), this.listManagerMain, null);
+				newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(lotButton);
 
-				if (availInv.equals(DropHandlerMethods.STRING_DASH)) {
-					inventoryButton.setEnabled(false);
-					inventoryButton.setDescription(DropHandlerMethods.NO_LOT_FOR_THIS_GERMPLASM);
+				StringBuilder available = new StringBuilder();
+
+				if (germplasmListData.getInventoryInfo().getDistinctScaleCountForGermplsm() == 0) {
+					available.append("-");
+				} else if (germplasmListData.getInventoryInfo().getDistinctScaleCountForGermplsm() == 1) {
+					available.append(germplasmListData.getInventoryInfo().getTotalAvailableBalance());
+					available.append(" ");
+
+					if (!StringUtils.isEmpty(germplasmListData.getInventoryInfo().getScaleForGermplsm())) {
+						available.append(germplasmListData.getInventoryInfo().getScaleForGermplsm());
+					}
+
 				} else {
-					inventoryButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
+					available.append(ListDataInventory.MIXED);
 				}
 
-				// #2 Seed Reserved
-				String seedRes = DropHandlerMethods.STRING_DASH;
-				if (forEditList && germplasmListData.getInventoryInfo().getReservedLotCount().intValue() != 0) {
-
-					seedRes = germplasmListData.getInventoryInfo().getReservedLotCount().toString().trim();
-
-				}
-				newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
+				final Button availableButton = new Button(available.toString(),
+						new InventoryLinkButtonClickListener(this.listManagerMain, germplasmListData.getGid()));
+				availableButton.setStyleName(BaseTheme.BUTTON_LINK);
+				availableButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
+				newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(availableButton);
 
 				String stockIDs = DropHandlerMethods.STRING_EMPTY;
 				if (germplasmListData.getInventoryInfo() != null && germplasmListData.getInventoryInfo().getStockIDs() != null) {
@@ -464,17 +516,8 @@ public class DropHandlerMethods {
 	}
 
 	public GermplasmListData getListDataByListIdAndLrecId(final Integer listId, final Integer lrecid, final GermplasmList germplasmList) {
-		GermplasmListData germplasmListData = null;
-
-		if (germplasmList.getListData() != null && !germplasmList.getListData().isEmpty()) {
-			for (final GermplasmListData listData : germplasmList.getListData()) {
-				if (listData.getId().equals(lrecid)) {
-					germplasmListData = listData;
-				}
-			}
-		} else {
-			germplasmListData = this.germplasmListManager.getGermplasmListDataByListIdAndLrecId(listId, lrecid);
-		}
+		GermplasmListData germplasmListData =
+				this.inventoryDataManager.getLotCountsForListEntries(listId, Lists.newArrayList(lrecid)).get(0);
 		return germplasmListData;
 	}
 
@@ -562,8 +605,8 @@ public class DropHandlerMethods {
 			final String seedSource = (String) itemFromSourceTable.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue();
 			final Object groupId = itemFromSourceTable.getItemProperty(ColumnLabels.GROUP_ID.getName()).getValue();
 
-			// #2 Seed Reserved
-			final String seedRes = DropHandlerMethods.STRING_DASH;
+			// Available
+			final Button availableButton = this.getAvailableBalanceButton(sourceTable, itemId, gid);
 
 			newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(itemCheckBox);
 			newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
@@ -573,7 +616,7 @@ public class DropHandlerMethods {
 			newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(parentage);
 			newItem.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(entryCode);
 			newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-			newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
+			newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(availableButton);
 
 			newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(DropHandlerMethods.STRING_EMPTY);
 
@@ -705,6 +748,21 @@ public class DropHandlerMethods {
 
 		}
 		return null;
+	}
+
+	protected Button getAvailableBalanceButton(final Table table, final Integer itemId, Integer gid) {
+		final Item item = table.getItem(itemId);
+		String availableButtonCaption = DropHandlerMethods.STRING_DASH;
+		if (item != null) {
+			availableButtonCaption = ((Button)item.getItemProperty(ColumnLabels.TOTAL.getName()).getValue()).getCaption();
+		}
+
+		final Button availableButton = new Button(availableButtonCaption, new InventoryLinkButtonClickListener(this.listManagerMain, gid));
+		availableButton.setDebugId("availableButton");
+		availableButton.setStyleName(BaseTheme.BUTTON_LINK);
+		availableButton.setDescription(DropHandlerMethods.CLICK_TO_VIEW_INVENTORY_DETAILS);
+
+		return availableButton;
 	}
 
 	protected String getDesignationFromButtonCaption(final Table table, final Integer itemId) {
