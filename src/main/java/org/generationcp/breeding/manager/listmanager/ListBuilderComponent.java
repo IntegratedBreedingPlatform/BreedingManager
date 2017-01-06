@@ -1569,7 +1569,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		// checks if the screen is in the inventory view
 		if (!this.inventoryViewMenu.isVisible()) {
 			MessageNotifier
-					.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING), "Please change to Inventory View first.");
+					.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING), this.messageSource.getMessage(Message.ERROR_RESERVE_INVENTORY_CHANGE_TO_INVENTORY_VIEW));
 		} else {
 			if (this.listInventoryTable.getInventoryTableDropHandler().isChanged()) {
 				MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.WARNING),
@@ -1579,7 +1579,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 				if (lotDetailsGid == null || lotDetailsGid.isEmpty()) {
 					MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
-							"Please select at least 1 lot to reserve.");
+							this.messageSource.getMessage(Message.ERROR_RESERVE_INVENTORY_IF_NO_LOT_IS_SELECTED));
 				} else {
 					// this util handles the inventory reservation related functions
 					this.reserveInventoryUtil = new ReserveInventoryUtil(this, lotDetailsGid);

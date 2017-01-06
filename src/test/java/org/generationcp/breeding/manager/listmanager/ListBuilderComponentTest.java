@@ -525,6 +525,8 @@ public class ListBuilderComponentTest {
 		this.listBuilderComponent.reserveInventoryAction();
 
 		Mockito.verify(this.messageSource).getMessage(Message.ERROR_SAVE_LIST_BEFORE_RESERVING_INVENTORY);
+		Mockito.verify(this.messageSource, Mockito.never()).getMessage(Message.ERROR_RESERVE_INVENTORY_IF_NO_LOT_IS_SELECTED);
+
 
 	}
 }
