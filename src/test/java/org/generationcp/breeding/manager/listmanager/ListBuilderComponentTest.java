@@ -529,4 +529,22 @@ public class ListBuilderComponentTest {
 
 
 	}
+
+	@Test
+	public void testCancelReservationsActionForUnsavedList(){
+		this.listBuilderComponent.setListInventoryTable(listInventoryTable);
+		Mockito.when(this.listBuilderComponent.getListInventoryTable().getInventoryTableDropHandler())
+				.thenReturn(inventoryTableDropHandler);
+		Mockito.when(this.listBuilderComponent.getListInventoryTable().getInventoryTableDropHandler().isChanged()).thenReturn(true);
+
+		final ListManagerMain source = Mockito.mock(ListManagerMain.class);
+		Mockito.when(source.getWindow()).thenReturn(new Window());
+		this.listBuilderComponent.setSource(source);
+
+		this.listBuilderComponent.cancelReservationsAction();
+
+		Mockito.verify(this.messageSource).getMessage(Message.ERROR_SAVE_LIST_BEFORE_CANCELLING_RESERVATION);
+		Mockito.verify(this.messageSource, Mockito.never()).getMessage(Message.WARNING_CANCEL_RESERVATION_IF_NO_LOT_IS_SELECTED);
+		Mockito.verify(this.messageSource, Mockito.never()).getMessage(Message.WARNING_IF_THERE_IS_NO_RESERVATION_FOR_SELECTED_LOT);
+	}
 }

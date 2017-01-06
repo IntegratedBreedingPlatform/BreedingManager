@@ -1642,29 +1642,35 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 
 	public void cancelReservationsAction() {
-		final List<ListEntryLotDetails> lotDetailsGid = this.listInventoryTable.getSelectedLots();
 
-		if (lotDetailsGid == null || lotDetailsGid.isEmpty()) {
-			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
-					"Please select at least 1 lot to cancel reservations.");
+		if (this.listInventoryTable.getInventoryTableDropHandler().isChanged()) {
+			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.WARNING),
+					this.messageSource.getMessage(Message.ERROR_SAVE_LIST_BEFORE_CANCELLING_RESERVATION));
 		} else {
-			if (!this.listInventoryTable.isSelectedEntriesHasReservation(lotDetailsGid,this.getValidReservationsToSave())) {
+			final List<ListEntryLotDetails> lotDetailsGid = this.listInventoryTable.getSelectedLots();
+
+			if (lotDetailsGid == null || lotDetailsGid.isEmpty()) {
 				MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
-						"There is no reservation to the current selected lots.");
+						this.messageSource.getMessage(Message.WARNING_CANCEL_RESERVATION_IF_NO_LOT_IS_SELECTED));
 			} else {
-				ConfirmDialog.show(this.getWindow(), this.messageSource.getMessage(Message.CANCEL_RESERVATIONS),
-						"Are you sure you want to cancel the selected reservations?", this.messageSource.getMessage(Message.YES),
-						this.messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
+				if (!this.listInventoryTable.isSelectedEntriesHasReservation(lotDetailsGid, this.getValidReservationsToSave())) {
+					MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
+							this.messageSource.getMessage(Message.WARNING_IF_THERE_IS_NO_RESERVATION_FOR_SELECTED_LOT));
+				} else {
+					ConfirmDialog.show(this.getWindow(), this.messageSource.getMessage(Message.CANCEL_RESERVATIONS),
+							this.messageSource.getMessage(Message.CONFIRM_CANCEL_RESERVATION), this.messageSource.getMessage(Message.YES),
+							this.messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
 
-							private static final long serialVersionUID = 1L;
+								private static final long serialVersionUID = 1L;
 
-							@Override
-							public void onClose(final ConfirmDialog dialog) {
-								if (dialog.isConfirmed()) {
-									ListBuilderComponent.this.userSelectedLotEntriesToCancelReservations();
+								@Override
+								public void onClose(final ConfirmDialog dialog) {
+									if (dialog.isConfirmed()) {
+										ListBuilderComponent.this.userSelectedLotEntriesToCancelReservations();
+									}
 								}
-							}
-						});
+							});
+				}
 			}
 		}
 	}
