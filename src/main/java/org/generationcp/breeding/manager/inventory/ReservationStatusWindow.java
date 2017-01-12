@@ -69,7 +69,7 @@ public class ReservationStatusWindow extends BaseSubWindow
 		this.addStyleName(Reindeer.WINDOW_LIGHT);
 		this.setModal(true);
 
-		this.statusDescriptionLabel = new Label("Following entries have current reservation or insufficient balance");
+		this.statusDescriptionLabel = new Label(this.messageSource.getMessage(Message.RESERVATION_STATUS_TABLE_CAPTION));
 
 		this.statusTable = new Table();
 		this.statusTable.setDebugId("statusTable");
