@@ -1879,7 +1879,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 		// if there are no valid reservations
 		if (validReservations.isEmpty()) {
-			MessageNotifier.showRequiredFieldError(this.getWindow(),
+			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.RESERVATION_STATUS),
 					this.messageSource.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES)
 							+ ".");
 
