@@ -47,7 +47,7 @@ public class ReservationStatusWindow extends BaseSubWindow
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
 
-	private final Map<ListEntryLotDetails, Double> invalidLotReservations;
+	private Map<ListEntryLotDetails, Double> invalidLotReservations;
 
 	public ReservationStatusWindow(final Map<ListEntryLotDetails, Double> invalidLotReservations) {
 		super();
@@ -163,5 +163,25 @@ public class ReservationStatusWindow extends BaseSubWindow
 		}
 
 		return designation.getNval();
+	}
+
+	public Table getStatusTable() {
+		return statusTable;
+	}
+
+	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
+	}
+
+	public void setInvalidLotReservations(Map<ListEntryLotDetails, Double> invalidLotReservations) {
+		this.invalidLotReservations = invalidLotReservations;
+	}
+
+	public VerticalLayout getMainLayout() {
+		return mainLayout;
 	}
 }
