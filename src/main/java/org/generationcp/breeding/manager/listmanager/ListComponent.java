@@ -174,10 +174,6 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	// Menu for Actions button in List View
 	private ListViewActionMenu menu;
 
-	public InventoryViewActionMenu getInventoryViewMenu() {
-		return inventoryViewMenu;
-	}
-
 	// Menu for Actions button in Inventory View
 	private InventoryViewActionMenu inventoryViewMenu;
 
@@ -2808,4 +2804,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	public void setCloseLotDiscardInventoryAction(CloseLotDiscardInventoryAction closeLotDiscardInventoryAction) {
 		this.closeLotDiscardInventoryAction = closeLotDiscardInventoryAction;
 	}
+
+	public InventoryViewActionMenu getInventoryViewMenu() {
+		return inventoryViewMenu;
+	}
+
 }
