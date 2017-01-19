@@ -48,11 +48,11 @@ public class PagedTableWithSelectAllLayoutTest {
 		final List<Object> entriesList = this.createListObject();
 		this.pagedTableWithSelectAllLayout.getTable().setPageLength(pageLength);
 
-		final List<Object> result = this.pagedTableWithSelectAllLayout.getAllEntriesPerPage(entriesList, firstPage);
+		final List<Object> result = this.pagedTableWithSelectAllLayout.getAllEntriesForPage(entriesList, firstPage);
 
 		Assert.assertEquals("The number of entries per page should be equal to the table's page length.", pageLength, result.size());
 
-		final List<Object> result2 = this.pagedTableWithSelectAllLayout.getAllEntriesPerPage(entriesList, lastPage);
+		final List<Object> result2 = this.pagedTableWithSelectAllLayout.getAllEntriesForPage(entriesList, lastPage);
 
 		Assert.assertEquals("The last page should only have 1 item", 1, result2.size());
 
@@ -72,7 +72,7 @@ public class PagedTableWithSelectAllLayoutTest {
 
 		final List<Object> loadedItems = new ArrayList<>(this.pagedTableWithSelectAllLayout.getTable().getItemIds());
 
-		this.pagedTableWithSelectAllLayout.updateTagPerRowItem(selectedItems, loadedItems);
+		this.pagedTableWithSelectAllLayout.updateItemSelectCheckboxes(selectedItems, loadedItems);
 
 		final PagedBreedingManagerTable table = this.pagedTableWithSelectAllLayout.getTable();
 
@@ -181,7 +181,7 @@ public class PagedTableWithSelectAllLayoutTest {
 		final int loadedPageNumber = 21;
 
 		// Let's assume that page 21 is loaded in the screen
-		this.pagedTableWithSelectAllLayout.getLoadedPaged().add(loadedPageNumber);
+		this.pagedTableWithSelectAllLayout.getLoadedPages().add(loadedPageNumber);
 
 		final PagedBreedingManagerTable table = this.pagedTableWithSelectAllLayout.getTable();
 		// then the user changed the page length (number of items per page) to a higher number
@@ -189,10 +189,10 @@ public class PagedTableWithSelectAllLayoutTest {
 
 		// this will recalculate the number of page available, and since page 21 is now not available, we should remove it from loadedPage
 		// list.
-		this.pagedTableWithSelectAllLayout.updateLoadedPage();
+		this.pagedTableWithSelectAllLayout.updateLoadedPages();
 
 		Assert.assertFalse("Page number " + loadedPageNumber + " should be removed from loaded page", this.pagedTableWithSelectAllLayout
-				.getLoadedPaged().contains(loadedPageNumber));
+				.getLoadedPages().contains(loadedPageNumber));
 
 	}
 
@@ -204,7 +204,7 @@ public class PagedTableWithSelectAllLayoutTest {
 		final int loadedPageNumber = 5;
 
 		// Let's assume that page 5 is loaded in the screen
-		this.pagedTableWithSelectAllLayout.getLoadedPaged().add(loadedPageNumber);
+		this.pagedTableWithSelectAllLayout.getLoadedPages().add(loadedPageNumber);
 
 		final PagedBreedingManagerTable table = this.pagedTableWithSelectAllLayout.getTable();
 		// then the user changed the page length (number of items per page) to a lower number
@@ -212,10 +212,10 @@ public class PagedTableWithSelectAllLayoutTest {
 
 		// this will recalculate the number of page available, and since page 5 is still available, we should not remove it from loadedPage
 		// list.
-		this.pagedTableWithSelectAllLayout.updateLoadedPage();
+		this.pagedTableWithSelectAllLayout.updateLoadedPages();
 
 		Assert.assertTrue("Page number " + loadedPageNumber + " should be in loaded page list", this.pagedTableWithSelectAllLayout
-				.getLoadedPaged().contains(loadedPageNumber));
+				.getLoadedPages().contains(loadedPageNumber));
 
 	}
 

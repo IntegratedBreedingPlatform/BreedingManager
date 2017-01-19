@@ -37,12 +37,12 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 	/**
 	 * This will serve as a marker of pages already loaded in the paged table
 	 */
-	private final Set<Integer> loadedPaged;
+	private final Set<Integer> loadedPages;
 
 	public PagedTableWithSelectAllLayout(final int recordCount, final Object checkboxColumnId) {
 		this.recordCount = this.maxRecords = recordCount;
 		this.checkboxColumnId = checkboxColumnId;
-		this.loadedPaged = new LinkedHashSet<Integer>();
+		this.loadedPages = new LinkedHashSet<Integer>();
 	}
 
 	@Override
@@ -97,21 +97,21 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 			public void buttonClick(final Button.ClickEvent event) {
 				final boolean checkBoxValue = event.getButton().booleanValue();
 
-				final Collection<Object> entries = (Collection<Object>) PagedTableWithSelectAllLayout.this.table.getItemIds();
-				final List<Object> entriesList = new ArrayList<>(entries);
+				final Collection<Object> allEntries = (Collection<Object>) PagedTableWithSelectAllLayout.this.table.getItemIds();
+				final List<Object> allEntriesList = new ArrayList<>(allEntries);
 
-				final List<Object> entriesPerPage =
-						PagedTableWithSelectAllLayout.this.getAllEntriesPerPage(entriesList,
+				final List<Object> entriesForCurrentPage =
+						PagedTableWithSelectAllLayout.this.getAllEntriesForPage(allEntriesList,
 								PagedTableWithSelectAllLayout.this.table.getCurrentPage());
 
-				for (final Object entry : entriesPerPage) {
+				for (final Object entry : entriesForCurrentPage) {
 					final CheckBox tag =
 							(CheckBox) PagedTableWithSelectAllLayout.this.table.getItem(entry)
 									.getItemProperty(PagedTableWithSelectAllLayout.this.checkboxColumnId).getValue();
 					tag.setValue(checkBoxValue);
 				}
 
-				PagedTableWithSelectAllLayout.this.updatePagedTableSelectedEntries(entriesPerPage, checkBoxValue);
+				PagedTableWithSelectAllLayout.this.updatePagedTableSelectedEntries(entriesForCurrentPage, checkBoxValue);
 			}
 		});
 	}
@@ -134,47 +134,47 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 		final Collection<Object> selectedEntries = (Collection<Object>) this.table.getValue();
 
 		// update the loaded list of page no
-		this.updateLoadedPage();
+		this.updateLoadedPages();
 
 		// update the select all status based on the selected items within the current page of the table
 		this.updateSelectAllCheckBoxStatus(entriesList);
 
 		final List<Object> loadedItems = new ArrayList<Object>();
 		if (entries.size() > this.table.getPageLength()) {
-			for (final Integer pageNo : this.loadedPaged) {
-				final List<Object> entriesPerPage = this.getAllEntriesPerPage(entriesList, pageNo);
+			for (final Integer pageNo : this.loadedPages) {
+				final List<Object> entriesPerPage = this.getAllEntriesForPage(entriesList, pageNo);
 				loadedItems.addAll(entriesPerPage);
 			}
 		} else {
 			loadedItems.addAll(entriesList);
 		}
 
-		this.updateTagPerRowItem(selectedEntries, loadedItems);
+		this.updateItemSelectCheckboxes(selectedEntries, loadedItems);
 	}
 
 	/***
-	 * Retrieves all items per page
+	 * Retrieves all items for given page
 	 *
 	 * @param entriesList - list of all entries of the entire table
 	 * @param pageNo - current page
 	 * @return
 	 */
-	List<Object> getAllEntriesPerPage(final List<Object> entriesList, final Integer pageNo) {
-		final Integer noOfEntriesPerPage = this.table.getPageLength();
-		final Integer startIdx = pageNo * noOfEntriesPerPage - noOfEntriesPerPage;
-		Integer endIdx = startIdx + noOfEntriesPerPage;
-		endIdx = endIdx > entriesList.size() ? entriesList.size() : endIdx;
+	List<Object> getAllEntriesForPage(final List<Object> entriesList, final Integer pageNo) {
+		final Integer pageLength = this.table.getPageLength();
+		final Integer startingIndex = pageNo * pageLength - pageLength;
+		Integer endingIndex = startingIndex + pageLength;
+		endingIndex = endingIndex > entriesList.size() ? entriesList.size() : endingIndex;
 
-		return entriesList.subList(startIdx, endIdx);
+		return entriesList.subList(startingIndex, endingIndex);
 	}
 
 	/***
-	 * Make sure to update the current status of selection per page
+	 * Update the selection checkboxes per item on loaded pages
 	 *
 	 * @param selectedEntries - list of items currently selected on the table
-	 * @param loadedItems - the list of items loaded on the paged table (could be multiple entries across pages)
+	 * @param loadedItems - the list of items loaded on the paged table (entries could span across multiple pages)
 	 */
-	void updateTagPerRowItem(final Collection<Object> selectedEntries, final List<Object> loadedItems) {
+	void updateItemSelectCheckboxes(final Collection<Object> selectedEntries, final List<Object> loadedItems) {
 		for (final Object entry : loadedItems) {
 			final Property itemProperty = this.table.getItem(entry).getItemProperty(this.checkboxColumnId);
 			if (itemProperty != null) {
@@ -189,26 +189,27 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 	}
 
 	/**
-	 * Update "Select All" based on the number of selected entries from the table trigger through user selection of entries
+	 * Update "Select All" checkbox based on the number of selected entries on current page.
+	 * If at least one is unselected, then "Select All" checkbox will be unselected.
 	 *
-	 * @param entriesList - collection of all entries within the table
+	 * @param entriesList - list of all entries within the table
 	 */
 	void updateSelectAllCheckBoxStatus(final List<Object> entriesList) {
 
-		final List<Object> entriesPerPage = this.getAllEntriesPerPage(entriesList, this.table.getCurrentPage());
-		int noOfSelectedEntriesPerPage = 0;
+		final List<Object> entriesForCurrentPage = this.getAllEntriesForPage(entriesList, this.table.getCurrentPage());
+		int noOfSelectedEntriesForCurrentPage = 0;
 
-		for (final Object entry : entriesPerPage) {
+		for (final Object entry : entriesForCurrentPage) {
 			final Property itemProperty = this.table.getItem(entry).getItemProperty(this.checkboxColumnId);
 			if (itemProperty != null) {
 				final CheckBox tag = (CheckBox) itemProperty.getValue();
 				if (Boolean.valueOf(tag.getValue().toString())) {
-					noOfSelectedEntriesPerPage++;
+					noOfSelectedEntriesForCurrentPage++;
 				}
 			}
 		}
 
-		if (entriesPerPage.size() == noOfSelectedEntriesPerPage && !entriesPerPage.isEmpty()) {
+		if (entriesForCurrentPage.size() == noOfSelectedEntriesForCurrentPage && !entriesForCurrentPage.isEmpty()) {
 			this.selectAllCheckBox.setValue(true);
 		} else {
 			this.selectAllCheckBox.setValue(false);
@@ -220,37 +221,37 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 	 */
 	public void selectAllEntriesOnCurrentPage() {
 
-		final Collection<Object> entries = (Collection<Object>) this.table.getItemIds();
-		final List<Object> entriesList = new ArrayList<>(entries);
+		final Collection<Object> allEntries = (Collection<Object>) this.table.getItemIds();
+		final List<Object> allEntriesList = new ArrayList<>(allEntries);
 
-		final List<Object> entriesPerPage = this.getAllEntriesPerPage(entriesList, this.table.getCurrentPage());
+		final List<Object> entriesForCurrentPage = this.getAllEntriesForPage(allEntriesList, this.table.getCurrentPage());
 
 		// set the selected items on the table
-		this.updatePagedTableSelectedEntries(entriesPerPage, true);
+		this.updatePagedTableSelectedEntries(entriesForCurrentPage, true);
 
 		// select all entries within the current page
-		this.updateTagPerRowItem(entriesPerPage, entriesPerPage);
+		this.updateItemSelectCheckboxes(entriesForCurrentPage, entriesForCurrentPage);
 
 		// update the Select All checkbox based on the selected entries
-		this.updateSelectAllCheckBoxStatus(entriesList);
+		this.updateSelectAllCheckBoxStatus(allEntriesList);
 	}
 
 	/**
 	 * Update the selected entries from paged table
 	 *
-	 * @param entriesPerPage - to add or remove from the existing list of entries
-	 * @param addEntry - if true, add the entries, otherwise, removed the entire list from selected entries
+	 * @param entriesToAddOrRemove - entries to add or remove from the existing list of selected entries
+	 * @param addEntry - if true, add the entries. Otherwise, remove the entries from selected entries
 	 */
-	private void updatePagedTableSelectedEntries(final List<Object> entriesPerPage, final boolean addEntry) {
+	private void updatePagedTableSelectedEntries(final List<Object> entriesToAddOrRemove, final boolean addEntry) {
 		final Collection<Object> selectedEntries = (Collection<Object>) this.table.getValue();
 		final Set<Object> selectedEntriesSet = new HashSet<Object>();
 
 		selectedEntriesSet.addAll(selectedEntries);
 
 		if (addEntry) {
-			selectedEntriesSet.addAll(entriesPerPage);
+			selectedEntriesSet.addAll(entriesToAddOrRemove);
 		} else {
-			selectedEntriesSet.removeAll(entriesPerPage);
+			selectedEntriesSet.removeAll(entriesToAddOrRemove);
 		}
 
 		this.table.setValue(selectedEntriesSet);
@@ -259,7 +260,7 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 	/**
 	 * Update selected status for all entries
 	 *
-	 * @param addEntry - if true, add the entries, otherwise, removed the entire list from selected entries
+	 * @param addEntry - if true, select all entries. Otherwise, remove all entries
 	 */
 	public void updatePagedTableSelectedEntries(final boolean addEntry) {
 		@SuppressWarnings("unchecked")
@@ -282,43 +283,43 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 		 * private method we need to have a hack where we simulate clicking the previous page.
 		 */
 		this.table.previousPage();
-		this.resetLoadedPage();
+		this.resetLoadedPages();
 	}
 
 	/**
-	 * Make sure that the list of loaded page no is included to the possible no of page given the current page length
+	 * Updates the set of loaded page numbers given the current page length (which could have been changed)
 	 */
-	public void updateLoadedPage() {
-		this.loadedPaged.add(this.table.getCurrentPage());
+	public void updateLoadedPages() {
+		this.loadedPages.add(this.table.getCurrentPage());
 
 		final Integer totalNoOfTableEntries = this.table.getItemIds().size();
-		final Integer noOfEntriesPerPage = this.table.getPageLength();
+		final Integer pageLength = this.table.getPageLength();
 
-		final Iterator<Integer> loadedPagedIterator = this.loadedPaged.iterator();
-		while (loadedPagedIterator.hasNext()) {
+		final Iterator<Integer> loadedPagesIterator = this.loadedPages.iterator();
+		while (loadedPagesIterator.hasNext()) {
 
-			final Integer pageNo = loadedPagedIterator.next();
+			final Integer pageNo = loadedPagesIterator.next();
 
-			final Integer startIdx = pageNo * noOfEntriesPerPage - noOfEntriesPerPage;
-			Integer endIdx = startIdx + noOfEntriesPerPage;
-			endIdx = endIdx > totalNoOfTableEntries ? totalNoOfTableEntries : endIdx;
-			if (startIdx > endIdx) {
-				loadedPagedIterator.remove();
+			final Integer startingIndex = pageNo * pageLength - pageLength;
+			Integer endingIndex = startingIndex + pageLength;
+			endingIndex = endingIndex > totalNoOfTableEntries ? totalNoOfTableEntries : endingIndex;
+			if (startingIndex > endingIndex) {
+				loadedPagesIterator.remove();
 			}
 		}
 
 	}
 
-	public void resetLoadedPage() {
-		this.loadedPaged.clear();
+	public void resetLoadedPages() {
+		this.loadedPages.clear();
 	}
 
 	public CheckBox getSelectAllCheckBox() {
 		return this.selectAllCheckBox;
 	}
 
-	public Set<Integer> getLoadedPaged() {
-		return this.loadedPaged;
+	public Set<Integer> getLoadedPages() {
+		return this.loadedPages;
 	}
 
 }
