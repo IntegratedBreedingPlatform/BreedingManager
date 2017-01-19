@@ -25,6 +25,7 @@ import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDi
 import org.generationcp.breeding.manager.customcomponent.LinkButton;
 import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialog;
 import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialogSource;
+import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -71,6 +72,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	private final ManageCrossingSettingsMain source;
 
 	private Button backButton;
+	// TODO Is next button used somewhere?
 	private Button nextButton;
 
 	private SelectParentsComponent selectParentsComponent;
@@ -214,9 +216,13 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		}
 	}
 
-	// TODO this may not be necessary any more
+	// TODO Is next button used somewhere?
 	public void toggleNextButton() {
 		this.nextButton.setEnabled(this.isAllListsSaved());
+	}
+
+	public void toggleNurseryBackButton() {
+		this.nurseryBackButton.setEnabled(this.isCrossListMade());
 	}
 
 	public void sendToNurseryAction(final Integer id) {
@@ -237,6 +243,11 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	private boolean isAllListsSaved() {
 		return this.parentsComponent.getFemaleList() != null && this.parentsComponent.getMaleList() != null
 				&& this.crossesTableComponent.getCrossList() != null;
+	}
+
+	private boolean isCrossListMade() {
+		BreedingManagerTable tableCrossesMade = this.crossesTableComponent.getTableCrossesMade();
+		return tableCrossesMade != null && tableCrossesMade.size() > 0;
 	}
 
 	public void nextButtonClickAction() {
@@ -346,6 +357,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 			this.nurseryCancelButton = this.constructNurseryCancelButton(BreedingManagerUtil.getApplicationRequest());
 			this.nurseryBackButton = this.constructNurseryBackButton();
 			this.nurseryBackButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+			this.nurseryBackButton.setEnabled(false);
 			layoutButtonArea.addComponent(this.nurseryCancelButton);
 			layoutButtonArea.addComponent(this.nurseryBackButton);
 		} else {
