@@ -103,9 +103,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 		@Override
 		public void buttonClick(final Button.ClickEvent event) {
-			MessageNotifier.showWarning(CrossingManagerMakeCrossesComponent.this.getWindow(),
-					CrossingManagerMakeCrossesComponent.this.messageSource.getMessage(Message.WARNING),
-					CrossingManagerMakeCrossesComponent.this.messageSource.getMessage(Message.BACK_TO_NURSERY_DESCRIPTION));
+			Integer listId = CrossingManagerMakeCrossesComponent.this.crossesTableComponent.saveTemporaryList();
+			CrossingManagerMakeCrossesComponent.this.sendToNurseryAction(listId);
 		}
 	};
 
@@ -215,32 +214,24 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		}
 	}
 
+	// TODO this may not be necessary any more
 	public void toggleNextButton() {
 		this.nextButton.setEnabled(this.isAllListsSaved());
 	}
 
-	public void updateNurseryBackButton(final Integer id) {
-		if (null == id || this.nurseryBackButton == null) {
-			return;
-		}
-		this.nurseryBackButton.addListener(new Button.ClickListener() {
+	public void sendToNurseryAction(final Integer id) {
+		final BreedingMethodSetting methodSetting = CrossingManagerMakeCrossesComponent.this.getCurrentBreedingMethodSetting();
+		final Integer methodId = methodSetting.isBasedOnStatusOfParentalLines()
+				? CrossingManagerMakeCrossesComponent.BASED_ON_PARENTAGE : methodSetting.getMethodId();
 
-			@Override
-			public void buttonClick(final Button.ClickEvent event) {
-				final BreedingMethodSetting methodSetting = CrossingManagerMakeCrossesComponent.this.getCurrentBreedingMethodSetting();
-				final Integer methodId = methodSetting.isBasedOnStatusOfParentalLines()
-						? CrossingManagerMakeCrossesComponent.BASED_ON_PARENTAGE : methodSetting.getMethodId();
+		// get the cancel button returning to nursery link as a root url
+		final String urlToSpecificNurseryWithParams =
+				CrossingManagerMakeCrossesComponent.this.nurseryCancelButton.getResource().getURL() + "?"
+						+ BreedingManagerApplication.REQ_PARAM_CROSSES_LIST_ID + "=" + id + "&"
+						+ BreedingManagerApplication.REQ_PARAM_BREEDING_METHOD_ID + "=" + methodId;
 
-				// get the cancel button returning to nursery link as a root url
-				final String urlToSpecificNurseryWithParams =
-						CrossingManagerMakeCrossesComponent.this.nurseryCancelButton.getResource().getURL() + "?"
-								+ BreedingManagerApplication.REQ_PARAM_CROSSES_LIST_ID + "=" + id + "&"
-								+ BreedingManagerApplication.REQ_PARAM_BREEDING_METHOD_ID + "=" + methodId;
-
-				final ExternalResource urlToNursery = new ExternalResource(urlToSpecificNurseryWithParams);
-				CrossingManagerMakeCrossesComponent.this.getWindow().open(urlToNursery, "_self");
-			}
-		});
+		final ExternalResource urlToNursery = new ExternalResource(urlToSpecificNurseryWithParams);
+		CrossingManagerMakeCrossesComponent.this.getWindow().open(urlToNursery, "_self");
 	}
 
 	private boolean isAllListsSaved() {

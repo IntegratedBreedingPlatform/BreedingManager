@@ -47,6 +47,7 @@ import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.service.impl.SeedSourceGenerator;
 import org.generationcp.commons.util.CollectionTransformationUtil;
+import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -54,6 +55,7 @@ import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.etl.MeasurementData;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.Workbook;
+import org.generationcp.middleware.domain.gms.GermplasmListType;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -64,6 +66,7 @@ import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
+import org.generationcp.middleware.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -647,6 +650,23 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		this.getWindow().addWindow(this.saveListAsWindow);
 	}
 
+	/**
+	 * Save Temporary list
+	 */
+	public Integer saveTemporaryList() {
+		GermplasmList tempList = new GermplasmList();
+		tempList.setType(GermplasmListType.F1CRT.toString());
+		// use same pattern as deleted study
+		tempList.setName("TEMP_LIST" + "#" + Util.getCurrentDateAsStringValue("yyyyMMddHHmmssSSS"));
+		tempList.setDescription("");
+		tempList.setDate(DateUtil.getCurrentDateAsLongValue());
+		tempList.setUserId(0);
+		tempList.setNotes("");
+
+		this.saveList(tempList);
+		return this.crossList.getId();
+	}
+
 	@Override
 	public void saveList(final GermplasmList list) {
 		this.saveButton.setEnabled(false);
@@ -677,13 +697,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 			this.crossList = saveAction.saveRecords(this.makeCrossesMain.getCrossesMadeContainer().getCrossesMade(),
 					applyNewGroupToCurrentCrossOnly);
-			MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
-					this.messageSource.getMessage(Message.CROSSES_SAVED_SUCCESSFULLY), 3000);
-
-			// enable NEXT button if all lists saved
-			this.makeCrossesMain.toggleNextButton();
-			// update the link to the nursery with new parameters, if there is one on the page
-			this.makeCrossesMain.updateNurseryBackButton(this.crossList.getId());
 
 		} catch (final MiddlewareQueryException e) {
 			MakeCrossesTableComponent.LOG.error(e.getMessage(), e);

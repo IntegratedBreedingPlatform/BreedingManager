@@ -61,7 +61,9 @@ public class SaveCrossesMadeAction implements Serializable {
 
 	private static final int PEDIGREE_NAME_TYPE = 18;
 
-	public static final Integer GERMPLASM_LIST_STATUS = 1;
+	// Save temp list as deleted
+	// TODO Refactor liststatus to bit array so a list can have multiple status
+	public static final Integer GERMPLASM_LIST_STATUS = 9;
 
 	public static final Integer GERMPLASM_GNPGS = 2;
 	public static final Integer GERMPLASM_GRPLCE = 0;
