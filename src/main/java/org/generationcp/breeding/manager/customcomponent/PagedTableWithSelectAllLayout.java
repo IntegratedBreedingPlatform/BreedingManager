@@ -32,7 +32,8 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 	private int recordCount = 0;
 	private int maxRecords = 0;
 
-	private CheckBox selectAllCheckBox;
+	private CheckBox selectAllOnPageCheckBox;
+	
 
 	/**
 	 * This will serve as a marker of pages already loaded in the paged table
@@ -58,9 +59,9 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 		this.table.setDebugId("table");
 		this.table.setImmediate(true);
 
-		this.selectAllCheckBox = new CheckBox("Select All");
-		this.selectAllCheckBox.setDebugId("selectAllCheckBox");
-		this.selectAllCheckBox.setImmediate(true);
+		this.selectAllOnPageCheckBox = new CheckBox("Select All (this page)");
+		this.selectAllOnPageCheckBox.setDebugId("selectAllOnPageCheckBox");
+		this.selectAllOnPageCheckBox.setImmediate(true);
 	}
 
 	@Override
@@ -88,30 +89,15 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 			}
 		});
 
-		this.selectAllCheckBox.addListener(new Button.ClickListener() {
+		this.selectAllOnPageCheckBox.addListener(new Button.ClickListener() {
 
 			private static final long serialVersionUID = 7882379695058054587L;
 
-			@SuppressWarnings("unchecked")
 			@Override
 			public void buttonClick(final Button.ClickEvent event) {
 				final boolean checkBoxValue = event.getButton().booleanValue();
+				toggleAllEntriesSelectionOnCurrentPage(checkBoxValue);
 
-				final Collection<Object> allEntries = (Collection<Object>) PagedTableWithSelectAllLayout.this.table.getItemIds();
-				final List<Object> allEntriesList = new ArrayList<>(allEntries);
-
-				final List<Object> entriesForCurrentPage =
-						PagedTableWithSelectAllLayout.this.getAllEntriesForPage(allEntriesList,
-								PagedTableWithSelectAllLayout.this.table.getCurrentPage());
-
-				for (final Object entry : entriesForCurrentPage) {
-					final CheckBox tag =
-							(CheckBox) PagedTableWithSelectAllLayout.this.table.getItem(entry)
-									.getItemProperty(PagedTableWithSelectAllLayout.this.checkboxColumnId).getValue();
-					tag.setValue(checkBoxValue);
-				}
-
-				PagedTableWithSelectAllLayout.this.updatePagedTableSelectedEntries(entriesForCurrentPage, checkBoxValue);
 			}
 		});
 	}
@@ -123,7 +109,7 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 
 		this.addComponent(this.table);
 		this.addComponent(((PagedTable) this.table).createControls());
-		this.addComponent(this.selectAllCheckBox);
+		this.addComponent(this.selectAllOnPageCheckBox);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -136,8 +122,8 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 		// update the loaded list of page no
 		this.updateLoadedPages();
 
-		// update the select all status based on the selected items within the current page of the table
-		this.updateSelectAllCheckBoxStatus(entriesList);
+		// update the "Select all on page" status based on the selected items within the current page of the table
+		this.updateSelectAllOnPageCheckBoxStatus(entriesList);
 
 		final List<Object> loadedItems = new ArrayList<Object>();
 		if (entries.size() > this.table.getPageLength()) {
@@ -189,12 +175,12 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 	}
 
 	/**
-	 * Update "Select All" checkbox based on the number of selected entries on current page.
-	 * If at least one is unselected, then "Select All" checkbox will be unselected.
+	 * Update "Select All On Page" checkbox based on the number of selected entries on current page.
+	 * If at least one is unselected, then "Select All On Page" checkbox will be unselected.
 	 *
 	 * @param entriesList - list of all entries within the table
 	 */
-	void updateSelectAllCheckBoxStatus(final List<Object> entriesList) {
+	void updateSelectAllOnPageCheckBoxStatus(final List<Object> entriesList) {
 
 		final List<Object> entriesForCurrentPage = this.getAllEntriesForPage(entriesList, this.table.getCurrentPage());
 		int noOfSelectedEntriesForCurrentPage = 0;
@@ -210,9 +196,9 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 		}
 
 		if (entriesForCurrentPage.size() == noOfSelectedEntriesForCurrentPage && !entriesForCurrentPage.isEmpty()) {
-			this.selectAllCheckBox.setValue(true);
+			this.selectAllOnPageCheckBox.setValue(true);
 		} else {
-			this.selectAllCheckBox.setValue(false);
+			this.selectAllOnPageCheckBox.setValue(false);
 		}
 	}
 
@@ -220,20 +206,30 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 	 * Select All Entries on the Current Page of the Paged Table
 	 */
 	public void selectAllEntriesOnCurrentPage() {
+		toggleAllEntriesSelectionOnCurrentPage(true);
+	}
 
+	/**
+	 * Selects or unselects all entries on current page.
+	 * 
+	 * @param doSelectAll - if true, selects all entries on current page. Else, unselects all entries on current page.
+	 */
+	@SuppressWarnings("unchecked")
+	private void toggleAllEntriesSelectionOnCurrentPage(final boolean doSelectAll) {
 		final Collection<Object> allEntries = (Collection<Object>) this.table.getItemIds();
 		final List<Object> allEntriesList = new ArrayList<>(allEntries);
 
 		final List<Object> entriesForCurrentPage = this.getAllEntriesForPage(allEntriesList, this.table.getCurrentPage());
 
 		// set the selected items on the table
-		this.updatePagedTableSelectedEntries(entriesForCurrentPage, true);
+		this.updatePagedTableSelectedEntries(entriesForCurrentPage, doSelectAll);
 
-		// select all entries within the current page
-		this.updateItemSelectCheckboxes(entriesForCurrentPage, entriesForCurrentPage);
+		// Update checkbox of each item within the current page
+		final Collection<Object> selectedEntries = (Collection<Object>) this.table.getValue();
+		this.updateItemSelectCheckboxes(selectedEntries, entriesForCurrentPage);
 
 		// update the Select All checkbox based on the selected entries
-		this.updateSelectAllCheckBoxStatus(allEntriesList);
+		this.updateSelectAllOnPageCheckBoxStatus(allEntriesList);
 	}
 
 	/**
@@ -242,6 +238,7 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 	 * @param entriesToAddOrRemove - entries to add or remove from the existing list of selected entries
 	 * @param addEntry - if true, add the entries. Otherwise, remove the entries from selected entries
 	 */
+	@SuppressWarnings("unchecked")
 	private void updatePagedTableSelectedEntries(final List<Object> entriesToAddOrRemove, final boolean addEntry) {
 		final Collection<Object> selectedEntries = (Collection<Object>) this.table.getValue();
 		final Set<Object> selectedEntriesSet = new HashSet<Object>();
@@ -262,8 +259,8 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 	 *
 	 * @param addEntry - if true, select all entries. Otherwise, remove all entries
 	 */
+	@SuppressWarnings("unchecked")
 	public void updatePagedTableSelectedEntries(final boolean addEntry) {
-		@SuppressWarnings("unchecked")
 		final ArrayList<Object> entries = new ArrayList<Object>((Collection<Object>) this.table.getValue());
 		this.updatePagedTableSelectedEntries(entries, addEntry);
 	}
@@ -314,8 +311,8 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 		this.loadedPages.clear();
 	}
 
-	public CheckBox getSelectAllCheckBox() {
-		return this.selectAllCheckBox;
+	public CheckBox getSelectAllOnPageCheckBox() {
+		return this.selectAllOnPageCheckBox;
 	}
 
 	public Set<Integer> getLoadedPages() {
