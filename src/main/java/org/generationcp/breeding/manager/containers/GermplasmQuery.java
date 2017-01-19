@@ -111,15 +111,16 @@ public class GermplasmQuery implements Query {
 	public List<Item> loadItems(final int startIndex, final int count) {
 		LOG.info(String.format("LoadItems(%d,%d): %s", startIndex, count, this.searchParameter));
 		final List<Item> items = new ArrayList<>();
-		final List<Germplasm> list = this.getGermplasmSearchResults(startIndex, count);
+		final List<Germplasm> germplasmResults = this.getGermplasmSearchResults(startIndex, count);
 		final Set<Integer> gids = new HashSet<>();
-		for (Germplasm germplasmToGeneratePedigreeStringsFor : list) {
+		for (Germplasm germplasmToGeneratePedigreeStringsFor : germplasmResults) {
 			gids.add(germplasmToGeneratePedigreeStringsFor.getGid());
 		}
 
 		final Map<Integer, String> pedigreeStringMap = pedigreeService.getCrossExpansions(gids, null, crossExpansionProperties);
-		for (int i = 0; i < list.size(); i++) {
-			items.add(this.getGermplasmItem(list.get(i), i + startIndex, pedigreeStringMap));
+		final Map<Integer, String> preferredNamesMap = germplasmDataManager.getPreferredNamesByGids(new ArrayList<>(gids));
+		for (int i = 0; i < germplasmResults.size(); i++) {
+			items.add(this.getGermplasmItem(germplasmResults.get(i), i + startIndex, pedigreeStringMap, preferredNamesMap));
 		}
 
 		return items;
@@ -145,7 +146,8 @@ public class GermplasmQuery implements Query {
 		return this.size;
 	}
 
-	Item getGermplasmItem(final Germplasm germplasm, final int index, final Map<Integer, String> pedigreeStringMap) {
+	Item getGermplasmItem(final Germplasm germplasm, final int index, final Map<Integer, String> pedigreeStringMap,
+			final Map<Integer, String> preferredNamesMap) {
 
 		final Integer gid = germplasm.getGid();
 		final GermplasmInventory inventoryInfo = germplasm.getInventoryInfo();
@@ -156,7 +158,7 @@ public class GermplasmQuery implements Query {
 		propertyMap.put(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID, new ObjectProperty<>(this.getItemCheckBox(index)));
 		propertyMap.put(GermplasmSearchResultsComponent.NAMES, new ObjectProperty<>(this.getNamesButton(gid)));
 		propertyMap.put(ColumnLabels.PARENTAGE.getName(), new ObjectProperty<>(pedigreeStringMap.get(gid)));
-		propertyMap.put(ColumnLabels.AVAILABLE_INVENTORY.getName(), new ObjectProperty<>(this.getInventoryInfoButton(germplasm)));
+		propertyMap.put(ColumnLabels.AVAILABLE_INVENTORY.getName(), new ObjectProperty<>(this.getInventoryInfoButton(germplasm, preferredNamesMap)));
 		propertyMap.put(ColumnLabels.TOTAL.getName(), new ObjectProperty<>(this.getAvailableBalanceButton(germplasm)));
 		propertyMap.put(ColumnLabels.STOCKID.getName(), new ObjectProperty<>(this.getStockIDs(inventoryInfo)));
 		propertyMap.put(ColumnLabels.GID.getName(), new ObjectProperty<>(this.getGidButton(gid)));
@@ -189,13 +191,13 @@ public class GermplasmQuery implements Query {
 		return gidButton;
 	}
 
-	private Button getInventoryInfoButton(final Germplasm germplasm) {
+	private Button getInventoryInfoButton(final Germplasm germplasm, final Map<Integer, String> preferredNamesMap) {
 		String availInv = "-";
 		availInv = germplasm.getInventoryInfo().getActualInventoryLotCount().toString().trim();
 		final Integer gid = germplasm.getGid();
-		final String germplasmName = germplasm.getPreferredName().getNval();
-		final Button inventoryButton = new Button(availInv, new LotDetailsButtonClickListener(gid,germplasmName, this.listManagerMain,
-				null));
+		final String germplasmName = preferredNamesMap.get(gid);
+		final Button inventoryButton =
+				new Button(availInv, new LotDetailsButtonClickListener(gid, germplasmName, this.listManagerMain, null));
 		inventoryButton.setDebugId("inventoryButton");
 		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 		return inventoryButton;
