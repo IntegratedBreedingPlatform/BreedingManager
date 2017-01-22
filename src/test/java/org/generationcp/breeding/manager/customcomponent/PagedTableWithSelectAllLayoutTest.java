@@ -41,7 +41,7 @@ public class PagedTableWithSelectAllLayoutTest {
 	}
 
 	@Test
-	public void testGetAllEntriesPerPage() {
+	public void testGetAllEntriesForPage() {
 
 		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
 
@@ -62,7 +62,7 @@ public class PagedTableWithSelectAllLayoutTest {
 	}
 
 	@Test
-	public void testUpdateItemSelectCheckboxes() {
+	public void testUpdateItemSelectCheckboxesSomeSelectedOnCurrentPage() {
 
 		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
 
@@ -72,10 +72,10 @@ public class PagedTableWithSelectAllLayoutTest {
 		final List<Object> selectedItems = new ArrayList<>();
 		selectedItems.add(firstSelectedObjectItemId);
 		selectedItems.add(secondSelectedObjectItemId);
+		this.pagedTableWithSelectAllLayout.getTable().setValue(selectedItems);
 
-		final List<Object> loadedItems = new ArrayList<>(this.pagedTableWithSelectAllLayout.getTable().getItemIds());
-
-		this.pagedTableWithSelectAllLayout.updateItemSelectCheckboxes(selectedItems, loadedItems);
+		// Method to test - some entries selected on current page
+		this.pagedTableWithSelectAllLayout.updateItemSelectCheckboxes();
 
 		final PagedBreedingManagerTable table = this.pagedTableWithSelectAllLayout.getTable();
 
@@ -83,18 +83,63 @@ public class PagedTableWithSelectAllLayoutTest {
 				(CheckBox) table.getItem(firstSelectedObjectItemId).getItemProperty(PagedTableWithSelectAllLayoutTest.CHECKBOX_COLUMN_ID)
 						.getValue();
 		Assert.assertTrue("The first item in table is selected so the checkbox value should be true",
-				(Boolean) checkboxOfFirstItem.getValue());
+				checkboxOfFirstItem.booleanValue());
 
 		final CheckBox checkboxOfSecondItem =
 				(CheckBox) table.getItem(secondSelectedObjectItemId).getItemProperty(PagedTableWithSelectAllLayoutTest.CHECKBOX_COLUMN_ID)
 						.getValue();
 		Assert.assertTrue("The second item in table is selected so the checkbox value should be true",
-				(Boolean) checkboxOfSecondItem.getValue());
+				checkboxOfSecondItem.booleanValue());
 
 		// Other items that are not selected should have a checkbox with false value.
 		for (Integer i = 3; i < table.getItemIds().size(); i++) {
 			final CheckBox checkbox =
 					(CheckBox) table.getItem(i).getItemProperty(PagedTableWithSelectAllLayoutTest.CHECKBOX_COLUMN_ID).getValue();
+			Assert.assertFalse("Item is not selected, the checkbox value should be false.", checkbox.booleanValue());
+		}
+
+	}
+	
+	@Test
+	public void testUpdateItemSelectCheckboxesNoneSelectedOnCurrentPage() {
+		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
+
+		final int currentPage = 2;
+		final Integer firstSelectedObjectItemId = 1;
+		final Integer secondSelectedObjectItemId = currentPage;
+		final List<Object> selectedItems = new ArrayList<>();
+		selectedItems.add(firstSelectedObjectItemId);
+		selectedItems.add(secondSelectedObjectItemId);
+		
+		// Selected entries on first page, but current page is 2nd page
+		this.pagedTableWithSelectAllLayout.getTable().setValue(selectedItems);
+		this.pagedTableWithSelectAllLayout.getTable().setPageLength(10);
+		this.pagedTableWithSelectAllLayout.getTable().setCurrentPage(currentPage);
+
+		
+		// Method to test - update checkboxes of second page
+		this.pagedTableWithSelectAllLayout.updateItemSelectCheckboxes();
+		
+		// The selected items on first page should be unchecked as they are not on current page
+		final PagedBreedingManagerTable table = this.pagedTableWithSelectAllLayout.getTable();
+
+		final CheckBox checkboxOfFirstItem =
+				(CheckBox) table.getItem(firstSelectedObjectItemId).getItemProperty(PagedTableWithSelectAllLayoutTest.CHECKBOX_COLUMN_ID)
+						.getValue();
+		Assert.assertFalse("The first item in table is selected but not on current page so the checkbox value should be false",
+				checkboxOfFirstItem.booleanValue());
+
+		final CheckBox checkboxOfSecondItem =
+				(CheckBox) table.getItem(secondSelectedObjectItemId).getItemProperty(PagedTableWithSelectAllLayoutTest.CHECKBOX_COLUMN_ID)
+						.getValue();
+		Assert.assertFalse("The second item in table is selected but not on current page so the checkbox value should be false",
+				checkboxOfSecondItem.booleanValue());
+
+		// Items on the 2nd page are not selected
+		final List<Object> entriesForCurrentPage = this.pagedTableWithSelectAllLayout.getAllEntriesForPage(currentPage);
+		for (Object item : entriesForCurrentPage) {
+			final CheckBox checkbox =
+					(CheckBox) table.getItem(item).getItemProperty(PagedTableWithSelectAllLayoutTest.CHECKBOX_COLUMN_ID).getValue();
 			Assert.assertFalse("Item is not selected, the checkbox value should be false.", (Boolean) checkbox.getValue());
 		}
 
@@ -153,52 +198,7 @@ public class PagedTableWithSelectAllLayoutTest {
 
 	}
 
-    @Test
-	public void testUpdateLoadedPageCurrentPageDoesntExistAfterUpdate() {
-
-		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
-
-		final int loadedPageNumber = 21;
-
-		// Let's assume that page 21 is loaded in the screen
-		this.pagedTableWithSelectAllLayout.getLoadedPages().add(loadedPageNumber);
-
-		final PagedBreedingManagerTable table = this.pagedTableWithSelectAllLayout.getTable();
-		// then the user changed the page length (number of items per page) to a higher number
-		table.setPageLength(25);
-
-		// this will recalculate the number of page available, and since page 21 is now not available, we should remove it from loadedPage
-		// list.
-		this.pagedTableWithSelectAllLayout.updateLoadedPages();
-
-		Assert.assertFalse("Page number " + loadedPageNumber + " should be removed from loaded page", this.pagedTableWithSelectAllLayout
-				.getLoadedPages().contains(loadedPageNumber));
-
-	}
-
-	@Test
-	public void testUpdateLoadedPageCurrentPageStillExistAfterUpdate() {
-
-		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
-
-		final int loadedPageNumber = 5;
-
-		// Let's assume that page 5 is loaded in the screen
-		this.pagedTableWithSelectAllLayout.getLoadedPages().add(loadedPageNumber);
-
-		final PagedBreedingManagerTable table = this.pagedTableWithSelectAllLayout.getTable();
-		// then the user changed the page length (number of items per page) to a lower number
-		table.setPageLength(4);
-
-		// this will recalculate the number of page available, and since page 5 is still available, we should not remove it from loadedPage
-		// list.
-		this.pagedTableWithSelectAllLayout.updateLoadedPages();
-
-		Assert.assertTrue("Page number " + loadedPageNumber + " should be in loaded page list", this.pagedTableWithSelectAllLayout
-				.getLoadedPages().contains(loadedPageNumber));
-
-	}
-
+   
 	private List<Object> createEntriesList() {
 
 		final List<Object> entriesList = new ArrayList<>();
