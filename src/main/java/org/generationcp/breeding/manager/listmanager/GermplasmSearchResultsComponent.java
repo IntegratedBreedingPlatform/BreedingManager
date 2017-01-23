@@ -386,7 +386,9 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		this.matchingGermplasmsTable.setVisibleColumns(new ArrayList<>(this.definition.getPropertyIds()).subList(0,this.definition.getPropertyIds().size()-1).toArray());
 
 		this.updateNoOfEntries(factory.getNumberOfItems());
-
+		// update paged table controls given the latest table entries
+		this.matchingGermplasmsTableWithSelectAll.updatePagedTableControls();
+		
 		if (!this.matchingGermplasmsTable.getItemIds().isEmpty()) {
 			this.updateActionMenuOptions(true);
 		}
@@ -396,9 +398,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		}
 
 		GermplasmSearchResultsComponent.LOG.debug("" + monitor.stop());
-
-		// update controls
-		this.matchingGermplasmsTableWithSelectAll.refreshTablePagingControls();
+		
 	}
 
 	String getShortenedNames(final String germplasmFullName) {

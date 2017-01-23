@@ -8,9 +8,14 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.PagedBreedingManagerTable;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
@@ -29,12 +34,26 @@ public class PagedTableWithSelectAllLayoutTest {
 	private static final String CHECKBOX_COLUMN_ID = "CheckBoxColumnId";
 
 	private static final int DEFAULT_NO_OF_ITEMS = 101;
-
-	private final PagedTableWithSelectAllLayout pagedTableWithSelectAllLayout = new PagedTableWithSelectAllLayout(0,
+	
+	private static final String SELECT_ALL_ON_PAGE_CAPTION = "Select All (this page)";
+	private static final String SELECT_ALL_PAGES_CAPTION = "Select All (this page)";
+	
+	@Mock
+	private SimpleResourceBundleMessageSource messageSource;
+	
+	final PagedTableWithSelectAllLayout pagedTableWithSelectAllLayout = new PagedTableWithSelectAllLayout(0,
 			PagedTableWithSelectAllLayoutTest.CHECKBOX_COLUMN_ID);
 
 	@Before
 	public void init() {
+		MockitoAnnotations.initMocks(this);
+		this.pagedTableWithSelectAllLayout.setMessageSource(this.messageSource);
+		// Setup mock return values
+		Mockito.doReturn(PagedTableWithSelectAllLayoutTest.SELECT_ALL_ON_PAGE_CAPTION).when(this.messageSource)
+				.getMessage(Message.SELECT_ALL_ON_PAGE);
+		Mockito.doReturn(PagedTableWithSelectAllLayoutTest.SELECT_ALL_PAGES_CAPTION).when(this.messageSource)
+				.getMessage(Message.SELECT_ALL_PAGES);
+		
 		this.pagedTableWithSelectAllLayout.instantiateComponents();
 		this.pagedTableWithSelectAllLayout.getTable().setMultiSelect(true);
 		this.pagedTableWithSelectAllLayout.getTable().setSelectable(true);
@@ -486,6 +505,65 @@ public class PagedTableWithSelectAllLayoutTest {
 		Assert.assertFalse(this.pagedTableWithSelectAllLayout.getSelectAllEntriesCheckBox().booleanValue());
 		
 	}
+	
+	@Test
+	public void testUpdateSelectAllCheckboxesCaptionWhenEmptyTable(){
+		// Hack setting of checkboxes caption to another value to verify if they are reset later
+		this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().setCaption("ABC");
+		this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().setCaption("XYZ");
+		
+		// Method to test
+		this.pagedTableWithSelectAllLayout.updateSelectAllCheckboxesCaption();
+		
+		// Expecting select all checkboxes caption to be reset to default as table is empty
+		Assert.assertEquals(PagedTableWithSelectAllLayoutTest.SELECT_ALL_ON_PAGE_CAPTION,
+				this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().getCaption());
+		Assert.assertEquals(PagedTableWithSelectAllLayoutTest.SELECT_ALL_PAGES_CAPTION,
+				this.pagedTableWithSelectAllLayout.getSelectAllEntriesCheckBox().getCaption());
+	}
+	
+	@Test
+	public void testUpdateSelectAllCheckboxesCaptionTableHasEntries(){
+		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
+		
+		// Method to test
+		this.pagedTableWithSelectAllLayout.updateSelectAllCheckboxesCaption();
+		
+		final String selectAllOnPageCaptionSubstr = PagedTableWithSelectAllLayoutTest.SELECT_ALL_ON_PAGE_CAPTION.substring(0, 
+				PagedTableWithSelectAllLayoutTest.SELECT_ALL_ON_PAGE_CAPTION.length() - 1);
+		final String selectAllCaptionSubstr = PagedTableWithSelectAllLayoutTest.SELECT_ALL_PAGES_CAPTION.substring(0, 
+				PagedTableWithSelectAllLayoutTest.SELECT_ALL_PAGES_CAPTION.length() - 1);
+		
+		// Expecting "Select All on Page" checkbox caption to include # of entries, which is the page length
+		Assert.assertEquals(selectAllOnPageCaptionSubstr + " - " + this.pagedTableWithSelectAllLayout.getTable().getPageLength() + " entries)",
+				this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().getCaption());
+		// Expecting "Select All Pages" checkbox caption to include total # of entries
+		Assert.assertEquals(selectAllCaptionSubstr + " - " + DEFAULT_NO_OF_ITEMS + " entries)",
+				this.pagedTableWithSelectAllLayout.getSelectAllEntriesCheckBox().getCaption());
+	}
+	
+	@Test
+	public void testUpdateSelectAllCheckboxesCaptionTableEntriesLessThanPageLength(){
+		// Populate with 3 entries but default page length is 10
+		int numberOfItems = 3;
+		this.initializePagedBreedingManagerTable(numberOfItems);
+		
+		// Method to test
+		this.pagedTableWithSelectAllLayout.updateSelectAllCheckboxesCaption();
+		
+		final String selectAllOnPageCaptionSubstr = PagedTableWithSelectAllLayoutTest.SELECT_ALL_ON_PAGE_CAPTION.substring(0, 
+				PagedTableWithSelectAllLayoutTest.SELECT_ALL_ON_PAGE_CAPTION.length() - 1);
+		final String selectAllCaptionSubstr = PagedTableWithSelectAllLayoutTest.SELECT_ALL_PAGES_CAPTION.substring(0, 
+				PagedTableWithSelectAllLayoutTest.SELECT_ALL_PAGES_CAPTION.length() - 1);
+		
+		// Expecting "Select All on Page" checkbox caption to include # of entries and not the page length
+		Assert.assertEquals(selectAllOnPageCaptionSubstr + " - " + numberOfItems + " entries)",
+				this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().getCaption());
+		// Expecting "Select All Pages" checkbox caption to include total # of entries
+		Assert.assertEquals(selectAllCaptionSubstr + " - " + numberOfItems + " entries)",
+				this.pagedTableWithSelectAllLayout.getSelectAllEntriesCheckBox().getCaption());
+	}
+	
 	
 
 }

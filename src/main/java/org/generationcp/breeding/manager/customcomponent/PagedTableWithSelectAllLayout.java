@@ -8,8 +8,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
+import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.PagedBreedingManagerTable;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.jensjansson.pagedtable.PagedTable;
@@ -27,6 +30,9 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 
 	private static final long serialVersionUID = -4500578362272218341L;
 
+	@Autowired
+	private SimpleResourceBundleMessageSource messageSource;
+	
 	private PagedBreedingManagerTable table;
 	private final Object checkboxColumnId;
 
@@ -56,15 +62,15 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 		this.table.setDebugId("table");
 		this.table.setImmediate(true);
 
-		this.selectAllOnPageCheckBox = new CheckBox("Select All (this page)");
+		this.selectAllOnPageCheckBox = new CheckBox(this.messageSource.getMessage(Message.SELECT_ALL_ON_PAGE));
 		this.selectAllOnPageCheckBox.setDebugId("selectAllOnPageCheckBox");
 		this.selectAllOnPageCheckBox.setImmediate(true);
 		
-		this.selectAllEntriesCheckBox = new CheckBox("Select All (all pages)");
+		this.selectAllEntriesCheckBox = new CheckBox(this.messageSource.getMessage(Message.SELECT_ALL_PAGES));
 		this.selectAllEntriesCheckBox.setDebugId("selectAllEntriesCheckBox");
 		this.selectAllEntriesCheckBox.setImmediate(true);
 		
-		this.unselectAllEntriesBtn = new Button("Clear");
+		this.unselectAllEntriesBtn = new Button(this.messageSource.getMessage(Message.CLEAR));
 		this.unselectAllEntriesBtn.setDebugId("unselectAllEntriesBtn");
 		this.unselectAllEntriesBtn.setImmediate(true);
 		this.unselectAllEntriesBtn.setStyleName(BaseTheme.BUTTON_LINK);
@@ -339,7 +345,7 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 		this.table = table;
 	}
 
-	public void refreshTablePagingControls() {
+	void refreshTablePagingControls() {
 		this.replaceComponent(this.getComponent(1), this.table.createControls());
 		/*
 		 * Since the controls will only be disabled/enabled if a page change occurs, we need to call firePagedChangedEvent but since it is a
@@ -348,6 +354,50 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 		this.table.previousPage();
 	}
 
+	/**
+	 * Update pagination controls and the Select All Checkboxes based on number of table entries
+	 */
+	public void updatePagedTableControls(){
+		this.refreshTablePagingControls();
+		this.updateSelectAllCheckboxesCaption();
+	}
+
+	/** 
+	 * Update captions of "Select All on Page" and "Select All Pages" checkboxes
+	 * based on the entries in the paged table. If the table had entries, the 
+	 * page length and the entries size will be included in the captions.
+	 */
+	void updateSelectAllCheckboxesCaption() {
+		int allEntriesSize = this.table.getItemIds().size();
+		final String selectAllCaption = this.messageSource.getMessage(Message.SELECT_ALL_PAGES);
+		final String selectAllOnPageCaption = this.messageSource.getMessage(Message.SELECT_ALL_ON_PAGE);
+		if (allEntriesSize > 0) {
+			// Assumes that default caption's last character is ")"
+			// appends total # of entries to caption. eg. Select All (all pages - 5000 entries)
+			StringBuilder sb = new StringBuilder();
+			sb.append(selectAllCaption.substring(0, selectAllCaption.length() - 1));
+			sb.append(" - ");
+			sb.append(allEntriesSize);
+			sb.append(" entries)");
+			this.selectAllEntriesCheckBox.setCaption(sb.toString());
+			
+			sb = new StringBuilder();
+			// Assumes that default caption's last character is ")"
+			// appends total # of entries to caption. eg. Select All (this page - 5000 entries)
+			sb.append(selectAllOnPageCaption.substring(0, selectAllOnPageCaption.length() - 1));
+			sb.append(" - ");
+			final int pageLength = this.table.getPageLength();
+			// check if the items visible is less than max possible items on board
+			final int noOfEntries = Math.min(pageLength, this.table.size());
+			sb.append(noOfEntries);
+			sb.append(" entries)");
+			this.selectAllOnPageCheckBox.setCaption(sb.toString());
+			
+		} else {
+			this.selectAllEntriesCheckBox.setCaption(selectAllCaption);
+			this.selectAllOnPageCheckBox.setCaption(selectAllOnPageCaption);
+		}
+	}
 
 	public CheckBox getSelectAllOnPageCheckBox() {
 		return this.selectAllOnPageCheckBox;
@@ -359,6 +409,10 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 	
 	public Button getUnselectAllEntriesButton() {
 		return this.unselectAllEntriesBtn;
+	}
+	
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
 	}
 	
 
