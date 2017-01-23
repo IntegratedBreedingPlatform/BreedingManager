@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
@@ -17,10 +16,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
 
 import junit.framework.Assert;
 
@@ -28,8 +24,6 @@ import junit.framework.Assert;
  * Created by Aldrin Batac on 5/23/16.
  */
 public class PagedTableWithSelectAllLayoutTest {
-
-	private static final int INDEX_OF_PAGING_CONTROLS = 1;
 
 	private static final String CHECKBOX_COLUMN_ID = "CheckBoxColumnId";
 
@@ -266,75 +260,7 @@ public class PagedTableWithSelectAllLayoutTest {
 		return entriesList;
 	}
 
-	@Test
-	public void testRefreshTablePagingControlsWithOnePageOnly() {
-
-		this.pagedTableWithSelectAllLayout.layoutComponents();
-		this.initializePagedBreedingManagerTable(2);
-
-		this.pagedTableWithSelectAllLayout.refreshTablePagingControls();
-		Component pagingControlsComponent = this.pagedTableWithSelectAllLayout.getComponent(INDEX_OF_PAGING_CONTROLS);
-		Iterator<Component> pagingControlsIterator = ((HorizontalLayout) pagingControlsComponent).getComponentIterator();
-		Assert.assertNotNull("The paging controls should be displayed", pagingControlsIterator);
-
-		// first iteration: page size
-		final HorizontalLayout pageSize = (HorizontalLayout) pagingControlsIterator.next();
-		Assert.assertNotNull("The page size should be displayed", pageSize);
-		
-		// second iteration: page management
-		final HorizontalLayout pageManagement = (HorizontalLayout) pagingControlsIterator.next();
-		Assert.assertNotNull("The page management should be displayed", pageManagement);
-		final Iterator<Component> pageManagementIterator = pageManagement.getComponentIterator();
-		int numberOfButtons = 0;
-		while (pageManagementIterator.hasNext()) {
-			final Component component = pageManagementIterator.next();
-			// verify that all buttons are disabled since we only have 1 page
-			if (component instanceof Button) {
-				numberOfButtons++;
-				final Button button = (Button) component;
-				Assert.assertFalse("The button should be disabled because there is only 1 page", button.isEnabled());
-			}
-		}
-		Assert.assertEquals("There should be 4 buttons displayed for first, previous, next and last", 4, numberOfButtons);
-	}
-
-	@Test
-	public void testRefreshTablePagingControlsWithMoreThan1Page() {
-
-		this.pagedTableWithSelectAllLayout.layoutComponents();
-		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
-
-		// Method to test
-		this.pagedTableWithSelectAllLayout.refreshTablePagingControls();
-		
-		Component pagingControlsComponent = this.pagedTableWithSelectAllLayout.getComponent(INDEX_OF_PAGING_CONTROLS);
-		Iterator<Component> pagingControlsIterator = ((HorizontalLayout) pagingControlsComponent).getComponentIterator();
-		
-		// first iteration: page size
-		final HorizontalLayout pageSize = (HorizontalLayout) pagingControlsIterator.next();
-		Assert.assertNotNull("The page size should be displayed", pageSize);
-		// second iterator: page management
-		final HorizontalLayout pageManagement = (HorizontalLayout) pagingControlsIterator.next();
-		Assert.assertNotNull("The page management should be displayed", pageManagement);
-		final Iterator<Component> pageManagementIterator = pageManagement.getComponentIterator();
-		int numberOfButtons = 0;
-		while (pageManagementIterator.hasNext()) {
-			final Component component = pageManagementIterator.next();
-			// verify that the first and previous buttons are disabled while the next and last buttons are enabled
-			if (component instanceof Button) {
-				numberOfButtons++;
-				final Button button = (Button) component;
-				// first and previous button
-				if (numberOfButtons <= 2) {
-					Assert.assertFalse("The button should be disabled because the current page is 1", button.isEnabled());
-				} else {
-					Assert.assertTrue("The button should be enabled because there are more than 1 page", button.isEnabled());
-				}
-
-			}
-		}
-		Assert.assertEquals("There should be 4 buttons displayed for first, previous, next and last", 4, numberOfButtons);
-	}
+	
 	
 	@Test
 	@SuppressWarnings("unchecked")

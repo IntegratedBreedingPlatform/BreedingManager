@@ -345,29 +345,13 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 		this.table = table;
 	}
 
-	void refreshTablePagingControls() {
-		this.replaceComponent(this.getComponent(1), this.table.createControls());
-		/*
-		 * Since the controls will only be disabled/enabled if a page change occurs, we need to call firePagedChangedEvent but since it is a
-		 * private method we need to have a hack where we simulate clicking the previous page.
-		 */
-		this.table.previousPage();
-	}
-
-	/**
-	 * Update pagination controls and the Select All Checkboxes based on number of table entries
-	 */
-	public void updatePagedTableControls(){
-		this.refreshTablePagingControls();
-		this.updateSelectAllCheckboxesCaption();
-	}
 
 	/** 
 	 * Update captions of "Select All on Page" and "Select All Pages" checkboxes
 	 * based on the entries in the paged table. If the table had entries, the 
 	 * page length and the entries size will be included in the captions.
 	 */
-	void updateSelectAllCheckboxesCaption() {
+	public void updateSelectAllCheckboxesCaption() {
 		int allEntriesSize = this.table.getItemIds().size();
 		final String selectAllCaption = this.messageSource.getMessage(Message.SELECT_ALL_PAGES);
 		final String selectAllOnPageCaption = this.messageSource.getMessage(Message.SELECT_ALL_ON_PAGE);

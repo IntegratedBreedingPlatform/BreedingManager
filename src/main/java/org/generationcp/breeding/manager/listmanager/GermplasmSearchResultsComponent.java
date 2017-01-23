@@ -376,18 +376,20 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		final GermplasmQueryFactory factory = this.createGermplasmQueryFactory(searchParameter);
 		final LazyQueryContainer container = this.createContainer(factory);
 
-		// set the current page to first page before updating the entries with the new search results
-		this.matchingGermplasmsTable.setCurrentPage(1);
-
 		this.matchingGermplasmsTable.setContainerDataSource(container);
 		this.matchingGermplasmsTable.setImmediate(true);
 
+		// set the current page to first page before updating the entries with the new search results
+		// This triggers the page change listener that enables/disables pagination controls properly
+		this.matchingGermplasmsTable.setCurrentPage(1);
+		
 		// hide the internal GID reference ID
 		this.matchingGermplasmsTable.setVisibleColumns(new ArrayList<>(this.definition.getPropertyIds()).subList(0,this.definition.getPropertyIds().size()-1).toArray());
 
+
 		this.updateNoOfEntries(factory.getNumberOfItems());
 		// update paged table controls given the latest table entries
-		this.matchingGermplasmsTableWithSelectAll.updatePagedTableControls();
+		this.matchingGermplasmsTableWithSelectAll.updateSelectAllCheckboxesCaption();
 		
 		if (!this.matchingGermplasmsTable.getItemIds().isEmpty()) {
 			this.updateActionMenuOptions(true);
