@@ -661,7 +661,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		tempList.setName("TEMP_LIST" + "#" + Util.getCurrentDateAsStringValue("yyyyMMddHHmmssSSS"));
 		tempList.setDescription("");
 		tempList.setDate(DateUtil.getCurrentDateAsLongValue());
-		tempList.setUserId(0);
 		tempList.setNotes("");
 
 		this.saveList(tempList);
