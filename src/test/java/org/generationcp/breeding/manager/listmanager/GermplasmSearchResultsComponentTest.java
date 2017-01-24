@@ -84,7 +84,7 @@ public class GermplasmSearchResultsComponentTest {
 
 		this.germplasmSearchResultsComponent.initMatchingGermplasmTable();
 
-		final Table table = this.germplasmSearchResultsComponent.getMatchingGermplasmsTableWithSelectAll().getTable();
+		final Table table = this.germplasmSearchResultsComponent.getMatchingGermplasmTableWithSelectAll().getTable();
 
 		Assert.assertEquals(10, table.getColumnHeaders().length);
 
@@ -114,7 +114,7 @@ public class GermplasmSearchResultsComponentTest {
 
 		this.germplasmSearchResultsComponent.initMatchingGermplasmTable();
 
-		final Table table = this.germplasmSearchResultsComponent.getMatchingGermplasmsTableWithSelectAll().getTable();
+		final Table table = this.germplasmSearchResultsComponent.getMatchingGermplasmTableWithSelectAll().getTable();
 
 		Assert.assertEquals("Tag All Column", table.getColumnHeader(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID));
 		Assert.assertEquals("NAMES", table.getColumnHeader(GermplasmSearchResultsComponent.NAMES));

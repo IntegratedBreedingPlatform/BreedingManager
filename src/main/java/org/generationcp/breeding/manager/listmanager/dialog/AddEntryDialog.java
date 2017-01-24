@@ -195,8 +195,8 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 	}
 
 	protected void addSearchResultsListeners() {
-		this.searchResultsComponent.getMatchingGermplasmsTable().addListener(new GermplasmListValueChangeListener(this));
-		this.searchResultsComponent.getMatchingGermplasmsTable().addListener(new GermplasmListItemClickListener(this));
+		this.searchResultsComponent.getMatchingGermplasmTable().addListener(new GermplasmListValueChangeListener(this));
+		this.searchResultsComponent.getMatchingGermplasmTable().addListener(new GermplasmListItemClickListener(this));
 	}
 
 	@Override
@@ -258,7 +258,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 	}
 
 	public void resultTableValueChangeAction() {
-		this.selectedGids = this.getSelectedItemGids(this.searchResultsComponent.getMatchingGermplasmsTable());
+		this.selectedGids = this.getSelectedItemGids(this.searchResultsComponent.getMatchingGermplasmTable());
 		if (this.doneButton != null) {
 			if (!this.selectedGids.isEmpty()) {
 				this.doneButton.setEnabled(true);
@@ -323,8 +323,8 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 
 		this.searchResultsComponent = new GermplasmSearchResultsComponent(this.source.getListManagerMain(), false, false);
 		this.searchResultsComponent.setDebugId("searchResultsComponent");
-		this.searchResultsComponent.getMatchingGermplasmsTable().setHeight("150px");
-		this.searchResultsComponent.getMatchingGermplasmsTableWithSelectAll().setHeight("220px");
+		this.searchResultsComponent.getMatchingGermplasmTable().setHeight("150px");
+		this.searchResultsComponent.getMatchingGermplasmTableWithSelectAll().setHeight("220px");
 		this.searchResultsComponent.setRightClickActionHandlerEnabled(false);
 
 		this.searchBarComponent = new GermplasmSearchBarComponent(this.searchResultsComponent, this.source);
