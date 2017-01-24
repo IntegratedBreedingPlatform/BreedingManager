@@ -4,20 +4,26 @@ package org.generationcp.breeding.manager.listmanager;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.PagedTableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customfields.PagedBreedingManagerTable;
+import org.generationcp.breeding.manager.service.BreedingManagerSearchException;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 
+import com.vaadin.data.Container.Indexed;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 
 public class GermplasmSearchResultsComponentTest {
@@ -31,9 +37,20 @@ public class GermplasmSearchResultsComponentTest {
 
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
+	
+	@Mock
+	private PagedTableWithSelectAllLayout tableWithSelectAllLayout;
+	
+	@Mock
+	private PagedBreedingManagerTable pagedTable;
+	
+	@Mock
+	private Indexed dataSource;
+	
+	@Captor
+	private ArgumentCaptor<Object[]> captor;
 
 	@InjectMocks
-	@Spy
 	private GermplasmSearchResultsComponent germplasmSearchResultsComponent;
 
 	@Before
@@ -43,21 +60,17 @@ public class GermplasmSearchResultsComponentTest {
 		// menu item
 		Mockito.doReturn("MENU").when(this.messageSource).getMessage(Message.ADD_SELECTED_ENTRIES_TO_NEW_LIST);
 		Mockito.doReturn("SELECT ALL").when(this.messageSource).getMessage(Message.SELECT_ALL);
-
 		Mockito.doReturn("DUMMY MESSAGE").when(this.messageSource).getMessage("VALIDATION_INTEGER_FORMAT");
-		final PagedBreedingManagerTable pagedTable = new PagedBreedingManagerTable(1, 50);
-
-		final PagedTableWithSelectAllLayout table =
-				new PagedTableWithSelectAllLayout(10, GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID);
-		table.setTable(pagedTable);
-
-		Mockito.doReturn(table).when(this.germplasmSearchResultsComponent).getTableWithSelectAllLayout();
-
+		
+		Mockito.doReturn(this.pagedTable).when(this.tableWithSelectAllLayout).getTable();
+		Mockito.doReturn(this.dataSource).when(this.pagedTable).getContainerDataSource();
 	}
 
 	@Test
-	public void testInstantiateComponentsHeaderNameExistsFromOntology() throws MiddlewareQueryException {
-
+	public void testInitMatchingGermplasmTableHeaderNameExistsFromOntology() throws MiddlewareQueryException {
+		final PagedBreedingManagerTable actualTable = new PagedBreedingManagerTable(1, 20);
+		Mockito.doReturn(actualTable).when(this.tableWithSelectAllLayout).getTable();
+		
 		Mockito.doReturn(this.createTerm("PARENTAGE")).when(this.ontologyDataManager)
 				.getTermById(ColumnLabels.PARENTAGE.getTermId().getId());
 		Mockito.doReturn(this.createTerm("GID")).when(this.ontologyDataManager).getTermById(ColumnLabels.GID.getTermId().getId());
@@ -69,7 +82,7 @@ public class GermplasmSearchResultsComponentTest {
 		Mockito.doReturn(this.createTerm("AVAILABLE")).when(this.ontologyDataManager)
 				.getTermById(ColumnLabels.TOTAL.getTermId().getId());
 
-		this.germplasmSearchResultsComponent.instantiateComponents();
+		this.germplasmSearchResultsComponent.initMatchingGermplasmTable();
 
 		final Table table = this.germplasmSearchResultsComponent.getMatchingGermplasmsTableWithSelectAll().getTable();
 
@@ -87,8 +100,10 @@ public class GermplasmSearchResultsComponentTest {
 	}
 
 	@Test
-	public void testInstantiateComponentsHeaderNameDoesntExistFromOntology() throws MiddlewareQueryException {
-
+	public void testInitMatchingGermplasmTableHeaderNameDoesntExistFromOntology() throws MiddlewareQueryException {
+		final PagedBreedingManagerTable actualTable = new PagedBreedingManagerTable(1, 20);
+		Mockito.doReturn(actualTable).when(this.tableWithSelectAllLayout).getTable();
+		
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.PARENTAGE.getTermId().getId());
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.AVAILABLE_INVENTORY.getTermId().getId());
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.SEED_RESERVATION.getTermId().getId());
@@ -97,7 +112,7 @@ public class GermplasmSearchResultsComponentTest {
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.GERMPLASM_LOCATION.getTermId().getId());
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.BREEDING_METHOD_NAME.getTermId().getId());
 
-		this.germplasmSearchResultsComponent.instantiateComponents();
+		this.germplasmSearchResultsComponent.initMatchingGermplasmTable();
 
 		final Table table = this.germplasmSearchResultsComponent.getMatchingGermplasmsTableWithSelectAll().getTable();
 
@@ -126,6 +141,49 @@ public class GermplasmSearchResultsComponentTest {
 		final String shortenedNames = this.germplasmSearchResultsComponent.getShortenedNames(GERMPLASM_NAMES_WITH_20_CHARS);
 		Assert.assertEquals("Expecting to return the same name.", GERMPLASM_NAMES_WITH_20_CHARS, shortenedNames);
 	}
+	
+	@Test
+	public void testApplyGermplasmResultsNoMatch() {
+		// instantiate other needed components in the page
+		createDummyComponents();
+		
+		GermplasmSearchParameter searchParameter = new GermplasmSearchParameter("ABC", Operation.EQUAL);
+		try {
+			this.germplasmSearchResultsComponent.applyGermplasmResults(searchParameter);
+			Assert.fail("Expecting BreedingManagerSearchException to be thrown for empty search but wasn't.");
+			
+		} catch (BreedingManagerSearchException e) {
+			Assert.assertEquals(Message.NO_SEARCH_RESULTS, e.getErrorMessage());
+			// Verify key actions done, prior to throwing exception
+			Mockito.verify(this.pagedTable, Mockito.times(1)).setCurrentPage(1);
+			
+			// Setting of visible columns set twice
+			// 1) during table initialization and 2) in applyGermplasmResults method
+			Mockito.verify(this.pagedTable, Mockito.times(2)).setVisibleColumns(captor.capture());
+			
+			// Check that GID_REF property is not visible
+			Assert.assertEquals(10, captor.getValue().length);
+			for (Object property : captor.getValue()){
+				final String gidRefColumn = ColumnLabels.GID.getName() + "_REF";
+				if (gidRefColumn.equals(property)){
+					Assert.fail("Expecting GID_REF column to be hidden on table but was not.");
+				}
+			}
+			
+			// Check that Select All checkboxes states were updated
+			Mockito.verify(this.tableWithSelectAllLayout, Mockito.times(1)).updateSelectAllCheckboxesCaption();
+		}
+	}
+
+	private void createDummyComponents() {
+		this.germplasmSearchResultsComponent.initMatchingGermplasmTable();
+		final Label totalEntriesLabel = new Label();
+		this.germplasmSearchResultsComponent.setTotalEntriesLabel(totalEntriesLabel);
+		final Label selectedEntriesLabel = new Label();
+		this.germplasmSearchResultsComponent.setTotalSelectedEntriesLabel(selectedEntriesLabel);
+	}
+	
+	
 
 	private Term createTerm(final String name) {
 		final Term term = new Term();

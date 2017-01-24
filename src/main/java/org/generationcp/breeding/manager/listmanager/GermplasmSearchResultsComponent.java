@@ -164,6 +164,9 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		this.menuSelectAll = this.menu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
 		this.updateActionMenuOptions(false);
 
+		this.matchingGermplasmsTableWithSelectAll = this.getTableWithSelectAllLayout();
+		this.matchingGermplasmsTableWithSelectAll.setHeight("530px");
+
 		this.initMatchingGermplasmTable();
 
 		this.rightClickActionHandler = new Action.Handler() {
@@ -187,10 +190,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 	}
 
-	private void initMatchingGermplasmTable() {
-		this.matchingGermplasmsTableWithSelectAll = this.getTableWithSelectAllLayout();
-		this.matchingGermplasmsTableWithSelectAll.setHeight("530px");
-
+	void initMatchingGermplasmTable() {
 		this.matchingGermplasmsTable = this.matchingGermplasmsTableWithSelectAll.getTable();
 		this.matchingGermplasmsTable.setData(GermplasmSearchResultsComponent.MATCHING_GEMRPLASMS_TABLE_DATA);
 		this.matchingGermplasmsTable.setWidth("100%");
@@ -428,7 +428,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	public PagedTableWithSelectAllLayout getMatchingGermplasmsTableWithSelectAll() {
 		return this.matchingGermplasmsTableWithSelectAll;
 	}
-
+	
 	public Table getMatchingGermplasmsTable() {
 		return this.matchingGermplasmsTable;
 	}
@@ -485,5 +485,13 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 	public void setShowAddToList(final boolean showAddToList) {
 		this.showAddToList = showAddToList;
+	}
+	
+	public void setTotalEntriesLabel(final Label totalEntriesLabel) {
+		this.totalMatchingGermplasmsLabel = totalEntriesLabel;
+	}
+	
+	public void setTotalSelectedEntriesLabel(final Label totalSelectedEntriesLabel) {
+		this.totalSelectedMatchingGermplasmsLabel = totalSelectedEntriesLabel;
 	}
 }
