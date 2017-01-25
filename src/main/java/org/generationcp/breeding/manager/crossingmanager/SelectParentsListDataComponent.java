@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -27,12 +28,14 @@ import org.generationcp.breeding.manager.inventory.ReserveInventoryUtil;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
+import org.generationcp.breeding.manager.listmanager.ListComponent;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -366,7 +369,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 
 	void initializeListDataTable() {
 		this.tableWithSelectAllLayout =
-				new TableWithSelectAllLayout(this.count.intValue(), 9, SelectParentsListDataComponent.CHECKBOX_COLUMN_ID);
+				new TableWithSelectAllLayout(this.count.intValue(), 5, SelectParentsListDataComponent.CHECKBOX_COLUMN_ID);
 		this.tableWithSelectAllLayout.setWidth("100%");
 
 		this.listDataTable = this.tableWithSelectAllLayout.getTable();
@@ -388,42 +391,44 @@ public class SelectParentsListDataComponent extends VerticalLayout
 			listDataTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
 			listDataTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
 			listDataTable.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Button.class, null);
-			listDataTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
+//			listDataTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
+			listDataTable.addContainerProperty(ColumnLabels.TOTAL.getName(), String.class, null);
 			listDataTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, new Label(""));
 			listDataTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
 			listDataTable.addContainerProperty(ColumnLabels.ENTRY_CODE.getName(), String.class, null);
 			listDataTable.addContainerProperty(ColumnLabels.GID.getName(), Button.class, null);
+			listDataTable.addContainerProperty(ColumnLabels.GROUP_ID.getName(), String.class, null);
 			listDataTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
 
-			listDataTable.setColumnHeader(SelectParentsListDataComponent.CHECKBOX_COLUMN_ID,
-					this.messageSource.getMessage(Message.CHECK_ICON));
+			listDataTable.setColumnHeader(SelectParentsListDataComponent.CHECKBOX_COLUMN_ID, this.messageSource.getMessage(Message.CHECK_ICON));
 			listDataTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), this.messageSource.getMessage(Message.HASHTAG));
 			listDataTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(), this.getTermNameFromOntology(ColumnLabels.DESIGNATION));
-			listDataTable.setColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName(),
-					this.getTermNameFromOntology(ColumnLabels.AVAILABLE_INVENTORY));
-			listDataTable.setColumnHeader(ColumnLabels.SEED_RESERVATION.getName(),
-					this.getTermNameFromOntology(ColumnLabels.SEED_RESERVATION));
+			listDataTable.setColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName(), this.getTermNameFromOntology(ColumnLabels.AVAILABLE_INVENTORY));
+//			listDataTable.setColumnHeader(ColumnLabels.SEED_RESERVATION.getName(), this.getTermNameFromOntology(ColumnLabels.SEED_RESERVATION));
+			listDataTable.setColumnHeader(ColumnLabels.TOTAL.getName(), this.getTermNameFromOntology(ColumnLabels.TOTAL));
 			listDataTable.setColumnHeader(ColumnLabels.STOCKID.getName(), this.getTermNameFromOntology(ColumnLabels.STOCKID));
 			listDataTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(), this.getTermNameFromOntology(ColumnLabels.PARENTAGE));
 			listDataTable.setColumnHeader(ColumnLabels.ENTRY_CODE.getName(), this.getTermNameFromOntology(ColumnLabels.ENTRY_CODE));
 			listDataTable.setColumnHeader(ColumnLabels.GID.getName(), this.getTermNameFromOntology(ColumnLabels.GID));
+			listDataTable.setColumnHeader(ColumnLabels.GROUP_ID.getName(), this.getTermNameFromOntology(ColumnLabels.GROUP_ID));
 			listDataTable.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(), this.getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
 
 			listDataTable.setColumnWidth(SelectParentsListDataComponent.CHECKBOX_COLUMN_ID, 25);
 			listDataTable.setColumnWidth(ColumnLabels.ENTRY_ID.getName(), 25);
 			listDataTable.setColumnWidth(ColumnLabels.DESIGNATION.getName(), 130);
 			listDataTable.setColumnWidth(ColumnLabels.AVAILABLE_INVENTORY.getName(), 70);
-			listDataTable.setColumnWidth(ColumnLabels.SEED_RESERVATION.getName(), 70);
-			listDataTable.setColumnWidth(ColumnLabels.SEED_RESERVATION.getName(), 130);
+			listDataTable.setColumnWidth(ColumnLabels.TOTAL.getName(), 70);
+			listDataTable.setColumnWidth(ColumnLabels.TOTAL.getName(), 130);
 			listDataTable.setColumnWidth(ColumnLabels.PARENTAGE.getName(), 130);
 			listDataTable.setColumnWidth(ColumnLabels.ENTRY_CODE.getName(), 100);
 			listDataTable.setColumnWidth(ColumnLabels.GID.getName(), 60);
+			listDataTable.setColumnWidth(ColumnLabels.GROUP_ID.getName(), 60);
 			listDataTable.setColumnWidth(ColumnLabels.SEED_SOURCE.getName(), 110);
 
-			listDataTable.setVisibleColumns(new String[] {SelectParentsListDataComponent.CHECKBOX_COLUMN_ID,
-					ColumnLabels.ENTRY_ID.getName(), ColumnLabels.DESIGNATION.getName(), ColumnLabels.AVAILABLE_INVENTORY.getName(),
-					ColumnLabels.SEED_RESERVATION.getName(), ColumnLabels.STOCKID.getName(), ColumnLabels.PARENTAGE.getName(),
-					ColumnLabels.ENTRY_CODE.getName(), ColumnLabels.GID.getName(), ColumnLabels.SEED_SOURCE.getName()});
+			listDataTable.setVisibleColumns(new String[] {
+				SelectParentsListDataComponent.CHECKBOX_COLUMN_ID, ColumnLabels.ENTRY_ID.getName(), ColumnLabels.DESIGNATION.getName(),
+				ColumnLabels.PARENTAGE.getName(), ColumnLabels.ENTRY_CODE.getName(), ColumnLabels.GID.getName(), ColumnLabels.GROUP_ID.getName(),
+				ColumnLabels.AVAILABLE_INVENTORY.getName(), ColumnLabels.TOTAL.getName(), ColumnLabels.STOCKID.getName(), ColumnLabels.SEED_SOURCE.getName()});
 		}
 	}
 
@@ -512,13 +517,14 @@ public class SelectParentsListDataComponent extends VerticalLayout
 				if (entry.getInventoryInfo().getReservedLotCount().intValue() != 0) {
 					seedRes = entry.getInventoryInfo().getReservedLotCount().toString().trim();
 				}
+				final String stockIds = entry.getInventoryInfo().getStockIDs();
 
 				Item newItem = this.getListDataTable().getContainerDataSource().addItem(entry.getId());
 				newItem.getItemProperty(SelectParentsListDataComponent.CHECKBOX_COLUMN_ID).setValue(itemCheckBox);
 				newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entry.getEntryId());
 				newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(desigButton);
 				newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-				newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
+				newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(seedRes); //TODO verificar si es correcto.
 				newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(entry.getGroupName());
 				newItem.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(entry.getEntryCode());
 				newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
@@ -530,6 +536,32 @@ public class SelectParentsListDataComponent extends VerticalLayout
 					stockIdsLabel.setDescription(entry.getInventoryInfo().getStockIDs());
 					newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdsLabel);
 				}
+
+				final String groupIdDisplayValue = entry.getGroupId() == 0 ? "-" : entry.getGroupId().toString();
+				newItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).setValue(groupIdDisplayValue);
+
+				// Available Balance
+				StringBuilder available = new StringBuilder();
+
+				if (entry.getInventoryInfo().getDistinctScaleCountForGermplsm() == 0) {
+					available.append("-");
+				} else if (entry.getInventoryInfo().getDistinctScaleCountForGermplsm() == 1) {
+					available.append(entry.getInventoryInfo().getTotalAvailableBalance());
+					available.append(" ");
+
+					if (!StringUtils.isEmpty(entry.getInventoryInfo().getScaleForGermplsm())) {
+						available.append(entry.getInventoryInfo().getScaleForGermplsm());
+					}
+
+				} else {
+					available.append(ListDataInventory.MIXED);
+				}
+//				final Button availableButton = new Button(available.toString(),
+//					new InventoryLinkButtonClickListener(this.parentListDetailsComponent, this.germplasmList.getId(), entry.getId(),
+//						entry.getGid()));
+//				availableButton.setStyleName(BaseTheme.BUTTON_LINK);
+//				availableButton.setDescription(ListComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
+				newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(available);
 
 			}
 		} catch (MiddlewareQueryException ex) {
@@ -944,12 +976,12 @@ public class SelectParentsListDataComponent extends VerticalLayout
 
 			// Seed Reserved
 			// default value
-			String seedRes = SelectParentsListDataComponent.STRING_DASH;
-			if (listData.getInventoryInfo().getReservedLotCount().intValue() != 0) {
-				seedRes = listData.getInventoryInfo().getReservedLotCount().toString().trim();
-			}
-
-			item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
+//			String seedRes = SelectParentsListDataComponent.STRING_DASH;
+//			if (listData.getInventoryInfo().getReservedLotCount().intValue() != 0) {
+//				seedRes = listData.getInventoryInfo().getReservedLotCount().toString().trim();
+//			}
+//
+//			item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 		}
 	}
 

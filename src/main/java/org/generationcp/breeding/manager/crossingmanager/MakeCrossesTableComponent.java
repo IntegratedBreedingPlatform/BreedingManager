@@ -91,7 +91,7 @@ import java.util.Set;
 public class MakeCrossesTableComponent extends VerticalLayout
 		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, SaveListAsDialogSource {
 
-	private static final int PAGE_LENGTH = 12;
+	private static final int PAGE_LENGTH = 5;
 	public static final String PARENTS_DELIMITER = ",";
 	private static final long serialVersionUID = 3702324761498666369L;
 	private static final Logger LOG = LoggerFactory.getLogger(MakeCrossesTableComponent.class);
@@ -127,7 +127,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	private Label applyGroupingToNewCrossesOnlyHelpText;
 	private CheckBox applyGroupingToNewCrossesOnly;
 
-	private Button saveButton;
+//	private Button saveButton;
 
 	private SaveListAsDialog saveListAsWindow;
 	private GermplasmList crossList;
@@ -263,8 +263,8 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			return;
 		}
 
-		final boolean isCrossesInTable = !this.tableCrossesMade.getItemIds().isEmpty();
-		this.saveButton.setEnabled(isCrossesInTable);
+//		final boolean isCrossesInTable = !this.tableCrossesMade.getItemIds().isEmpty();
+//		this.saveButton.setEnabled(isCrossesInTable);
 	}
 
 	/**
@@ -472,31 +472,32 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		this.totalSelectedCrossesLabel.setContentMode(Label.CONTENT_XHTML);
 		this.totalSelectedCrossesLabel.setWidth("95px");
 
-		this.applyGroupingToNewCrossesOnly = new CheckBox(this.messageSource.getMessage(Message.APPLY_NEW_GROUP_TO_CURRENT_CROSS_ONLY));
-		this.applyGroupingToNewCrossesOnly.setDebugId("applyGroupingToNewCrossesOnly");
+//		this.applyGroupingToNewCrossesOnly = new CheckBox(this.messageSource.getMessage(Message.APPLY_NEW_GROUP_TO_CURRENT_CROSS_ONLY));
+//		this.applyGroupingToNewCrossesOnly.setDebugId("applyGroupingToNewCrossesOnly");
 
-		this.applyGroupingToNewCrossesOnlyHelpText = new Label(this.messageSource.getMessage(Message.GROUP_INHERITANCE_OPTION_MESSAGE));
-		this.applyGroupingToNewCrossesOnlyHelpText.setDebugId("applyGroupingToNewCrossesOnlyHelpText");
-		this.applyGroupingToNewCrossesOnlyHelpText.setWidth("300px");
-		this.applyGroupingToNewCrossesOnlyHelpText.addStyleName("gcp-content-help-text");
+//		this.applyGroupingToNewCrossesOnlyHelpText = new Label(this.messageSource.getMessage(Message.GROUP_INHERITANCE_OPTION_MESSAGE));
+//		this.applyGroupingToNewCrossesOnlyHelpText.setDebugId("applyGroupingToNewCrossesOnlyHelpText");
+//		this.applyGroupingToNewCrossesOnlyHelpText.setWidth("300px");
+//		this.applyGroupingToNewCrossesOnlyHelpText.addStyleName("gcp-content-help-text");
+//
+//		this.applyGroupingToNewCrossesOnlyHelpPopup = new PopupView("?", this.applyGroupingToNewCrossesOnlyHelpText);
+//		this.applyGroupingToNewCrossesOnlyHelpPopup.setDebugId("applyGroupingToNewCrossesOnlyHelpPopup");
+//		this.applyGroupingToNewCrossesOnlyHelpPopup.addStyleName(AppConstants.CssStyles.POPUP_VIEW);
+//		this.applyGroupingToNewCrossesOnlyHelpPopup.addStyleName("cs-inline-icon");
 
-		this.applyGroupingToNewCrossesOnlyHelpPopup = new PopupView("?", this.applyGroupingToNewCrossesOnlyHelpText);
-		this.applyGroupingToNewCrossesOnlyHelpPopup.setDebugId("applyGroupingToNewCrossesOnlyHelpPopup");
-		this.applyGroupingToNewCrossesOnlyHelpPopup.addStyleName(AppConstants.CssStyles.POPUP_VIEW);
-		this.applyGroupingToNewCrossesOnlyHelpPopup.addStyleName("cs-inline-icon");
-
-		this.saveButton = new Button(this.messageSource.getMessage(Message.SAVE_LABEL));
-		this.saveButton.setDebugId("saveButton");
-		this.saveButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
-		this.saveButton.setEnabled(false);
+//		this.saveButton = new Button(this.messageSource.getMessage(Message.SAVE_LABEL));
+//		this.saveButton.setDebugId("saveButton");
+//		this.saveButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
+//		this.saveButton.setEnabled(false);
 		this.initializeCrossesMadeTable();
 	}
 
 	protected void initializeCrossesMadeTable() {
 		this.setTableCrossesMade(new BreedingManagerTable(MakeCrossesTableComponent.PAGE_LENGTH, MakeCrossesTableComponent.PAGE_LENGTH));
 		this.tableCrossesMade = this.getTableCrossesMade();
-		this.tableCrossesMade.setWidth("100%");
-		this.tableCrossesMade.setHeight("407px");
+		this.tableCrossesMade.setDebugId("tableCrossesMade");
+		this.tableCrossesMade.setWidth("850");
+		this.tableCrossesMade.setHeight("365px");
 		this.tableCrossesMade.setImmediate(true);
 		this.tableCrossesMade.setSelectable(true);
 		this.tableCrossesMade.setMultiSelect(true);
@@ -550,17 +551,17 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	@Override
 	public void addListeners() {
-		this.saveButton.addListener(new Button.ClickListener() {
-
-			private static final long serialVersionUID = 5123058086826023128L;
-
-			@Override
-			public void buttonClick(final ClickEvent event) {
-				if (MakeCrossesTableComponent.this.makeCrossesMain.isValidationsBeforeSavePassed()) {
-					MakeCrossesTableComponent.this.launchSaveListAsWindow();
-				}
-			}
-		});
+//		this.saveButton.addListener(new Button.ClickListener() {
+//
+//			private static final long serialVersionUID = 5123058086826023128L;
+//
+//			@Override
+//			public void buttonClick(final ClickEvent event) {
+//				if (MakeCrossesTableComponent.this.makeCrossesMain.isValidationsBeforeSavePassed()) {
+//					MakeCrossesTableComponent.this.launchSaveListAsWindow();
+//				}
+//			}
+//		});
 
 		this.tableCrossesMade.addListener(new Property.ValueChangeListener() {
 
@@ -578,11 +579,11 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	public void layoutComponents() {
 		this.setSpacing(true);
 		this.setMargin(false, false, false, true);
-		this.setWidth("450px");
+		this.setWidth("900px");
 
 		final HorizontalLayout leftLabelContainer = new HorizontalLayout();
 		leftLabelContainer.setDebugId("leftLabelContainer");
-		leftLabelContainer.setSpacing(true);
+//		leftLabelContainer.setSpacing(true);
 		leftLabelContainer.addComponent(this.totalCrossesLabel);
 		leftLabelContainer.addComponent(this.totalSelectedCrossesLabel);
 		leftLabelContainer.setComponentAlignment(this.totalCrossesLabel, Alignment.MIDDLE_LEFT);
@@ -590,31 +591,35 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 		final HorizontalLayout labelContainer = new HorizontalLayout();
 		labelContainer.setDebugId("labelContainer");
-		labelContainer.setSpacing(true);
+//		labelContainer.setSpacing(true);
 		labelContainer.setWidth("100%");
+		labelContainer.setHeight("30px");
 		labelContainer.addComponent(leftLabelContainer);
-		labelContainer.addComponent(this.saveButton);
+//		labelContainer.addComponent(this.saveButton);
 		labelContainer.setComponentAlignment(leftLabelContainer, Alignment.MIDDLE_LEFT);
-		labelContainer.setComponentAlignment(this.saveButton, Alignment.MIDDLE_RIGHT);
+//		labelContainer.setComponentAlignment(this.saveButton, Alignment.MIDDLE_RIGHT);
 
 		final VerticalLayout makeCrossesLayout = new VerticalLayout();
 		makeCrossesLayout.setDebugId("makeCrossesLayout");
+		makeCrossesLayout.setWidth("900px"); //era 850
+		makeCrossesLayout.setHeight("300px"); //365px
 		makeCrossesLayout.setSpacing(true);
 		makeCrossesLayout.setMargin(true);
 		makeCrossesLayout.addComponent(labelContainer);
 
-		final HorizontalLayout groupInheritanceOptionsContainer = new HorizontalLayout();
-		groupInheritanceOptionsContainer.setDebugId("groupInheritanceOptionsContainer");
-		groupInheritanceOptionsContainer.setSpacing(true);
-		groupInheritanceOptionsContainer.addComponent(this.applyGroupingToNewCrossesOnly);
-		groupInheritanceOptionsContainer.addComponent(this.applyGroupingToNewCrossesOnlyHelpPopup);
-		makeCrossesLayout.addComponent(groupInheritanceOptionsContainer);
+//		final HorizontalLayout groupInheritanceOptionsContainer = new HorizontalLayout();
+//		groupInheritanceOptionsContainer.setDebugId("groupInheritanceOptionsContainer");
+//		groupInheritanceOptionsContainer.setSpacing(true);
+//		groupInheritanceOptionsContainer.addComponent(this.applyGroupingToNewCrossesOnly);
+//		groupInheritanceOptionsContainer.addComponent(this.applyGroupingToNewCrossesOnlyHelpPopup);
+//		makeCrossesLayout.addComponent(groupInheritanceOptionsContainer);
 
 		makeCrossesLayout.addComponent(this.tableCrossesMade);
 
 		final Panel makeCrossesPanel = new Panel();
 		makeCrossesPanel.setDebugId("makeCrossesPanel");
-		makeCrossesPanel.setWidth("420px");
+		makeCrossesPanel.setWidth("900px");
+		makeCrossesPanel.setHeight("530px");
 		makeCrossesPanel.setLayout(makeCrossesLayout);
 		makeCrossesPanel.addStyleName("section_panel_layout");
 
@@ -669,7 +674,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	@Override
 	public void saveList(final GermplasmList list) {
-		this.saveButton.setEnabled(false);
+//		this.saveButton.setEnabled(false);
 
 		if (this.updateCrossesMadeContainer(this.makeCrossesMain.getCrossesMadeContainer(), list)) {
 			this.saveRecords();
@@ -800,9 +805,9 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		return this.makeCrossesMain.getSource();
 	}
 
-	public Button getSaveButton() {
-		return this.saveButton;
-	}
+//	public Button getSaveButton() {
+//		return this.saveButton;
+//	}
 
 	public BreedingManagerTable getTableCrossesMade() {
 		return this.tableCrossesMade;

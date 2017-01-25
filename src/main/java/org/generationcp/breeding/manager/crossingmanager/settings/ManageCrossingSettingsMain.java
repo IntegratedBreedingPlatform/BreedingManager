@@ -43,7 +43,9 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 	private SimpleResourceBundleMessageSource messageSource;
 
 	private Label toolTitle;
-	private Label makeCrossesLabel;
+//	private Label makeCrossesLabel;
+	private Label designCrossesHeaderLabel;
+
 	private BreedingManagerWizardDisplay wizardDisplay;
 
 	private CrossingSettingsDetailComponent detailComponent;
@@ -81,15 +83,15 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 
 	@Override
 	public void instantiateComponents() {
-		this.toolTitle = new Label(this.messageSource.getMessage(Message.MANAGE_CROSSES));
+		this.toolTitle = new Label(this.messageSource.getMessage(Message.DESIGN_CROSSES));
 		this.toolTitle.setDebugId("toolTitle");
 		this.toolTitle.setStyleName(Bootstrap.Typography.H1.styleName());
 		this.toolTitle.setWidth("230px");
 
-		this.makeCrossesLabel = new Label(this.messageSource.getMessage(Message.MAKE_CROSSES));
-		this.makeCrossesLabel.setDebugId("makeCrossesLabel");
-		this.makeCrossesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
-		this.makeCrossesLabel.addStyleName(AppConstants.CssStyles.BOLD);
+		this.designCrossesHeaderLabel = new Label(this.messageSource.getMessage(Message.DESIGN_CROSSES_HEADER));
+		this.designCrossesHeaderLabel.setDebugId("designCrossesHeaderLabel");
+		this.designCrossesHeaderLabel.setStyleName("gcp-content-help-text");
+		this.designCrossesHeaderLabel.setWidth("900px");
 
 		this.instantiateWizardDisplay();
 
@@ -114,15 +116,15 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 					this.germplasmList.getName());
 		}
 
-		this.tabSheet.addTab(this.detailComponent, this.wizardStepNames[0]);
+//		this.tabSheet.addTab(this.detailComponent, this.wizardStepNames[0]);
 		this.tabSheet.addTab(this.makeCrossesComponent, this.wizardStepNames[1]);
 	}
 
 	private void instantiateWizardDisplay() {
-		this.wizardStepNames[0] = this.messageSource.getMessage(Message.CHOOSE_SETTING);
+//		this.wizardStepNames[0] = this.messageSource.getMessage(Message.CHOOSE_SETTING);
 		this.wizardStepNames[1] = this.messageSource.getMessage(Message.CREATE_CROSSES);
 		this.wizardDisplay = new BreedingManagerWizardDisplay(this.wizardStepNames);
-		this.wizardDisplay.setDebugId("wizardDisplay");
+//		this.wizardDisplay.setDebugId("wizardDisplay");
 	}
 
 	@Override
@@ -145,63 +147,63 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 		headingLayout.setSpacing(true);
 		headingLayout.setHeight("40px");
 		headingLayout.addComponent(this.toolTitle);
-		headingLayout.addComponent(new HelpButton(HelpModule.MAKE_CROSSES, "View Make Crosses tutorial"));
+		headingLayout.addComponent(new HelpButton(HelpModule.DESIGN_CROSSES, "View Design Crosses tutorial"));
 
-		HeaderLabelLayout subHeaderLabel = new HeaderLabelLayout(AppConstants.Icons.ICON_MANAGE_SETTINGS, this.makeCrossesLabel);
+		HeaderLabelLayout subHeaderLabel = new HeaderLabelLayout(null, this.designCrossesHeaderLabel);
 		subHeaderLabel.setDebugId("subHeaderLabel");
-		subHeaderLabel.setDebugId("subHeaderLabel");
+//		subHeaderLabel.setDebugId("subHeaderLabel");
 
 		HorizontalLayout subHeadingLayout = new HorizontalLayout();
 		subHeadingLayout.setDebugId("subHeadingLayout");
-		subHeadingLayout.setSpacing(true);
-		subHeadingLayout.setWidth("600px");
+//		subHeadingLayout.setSpacing(true);
+//		subHeadingLayout.setWidth("600px");
 		subHeadingLayout.addComponent(subHeaderLabel);
-		subHeadingLayout.addComponent(this.wizardDisplay);
+//		subHeadingLayout.addComponent(this.wizardDisplay);
 
 		this.addComponent(headingLayout);
 		this.addComponent(subHeadingLayout);
 		this.addComponent(this.tabSheet);
 	}
 
-	public void nextStep() {
-		Component selectedStep = this.tabSheet.getSelectedTab();
-		// abstract getting updates to crosses made from each wizard step
-		if (selectedStep instanceof CrossesMadeContainerUpdateListener) {
-			CrossesMadeContainerUpdateListener listener = (CrossesMadeContainerUpdateListener) selectedStep;
-			listener.updateCrossesMadeContainer(this);
-		}
+//	public void nextStep() {
+//		Component selectedStep = this.tabSheet.getSelectedTab();
+//		// abstract getting updates to crosses made from each wizard step
+//		if (selectedStep instanceof CrossesMadeContainerUpdateListener) {
+//			CrossesMadeContainerUpdateListener listener = (CrossesMadeContainerUpdateListener) selectedStep;
+//			listener.updateCrossesMadeContainer(this);
+//		}
+//
+//		int step = this.wizardDisplay.nextStep();
+//		this.showNextWizardStep(step);
+//		if (this.getWindow() != null) {
+//			this.getWindow().setScrollTop(0);
+//		}
+//
+//	}
 
-		int step = this.wizardDisplay.nextStep();
-		this.showNextWizardStep(step);
-		if (this.getWindow() != null) {
-			this.getWindow().setScrollTop(0);
-		}
+//	public void backStep() {
+//		int step = this.wizardDisplay.backStep();
+//		this.showNextWizardStep(step);
+//	}
 
-	}
-
-	public void backStep() {
-		int step = this.wizardDisplay.backStep();
-		this.showNextWizardStep(step);
-	}
-
-	private void showNextWizardStep(int step) {
-		Tab tab = Util.getTabAlreadyExist(this.tabSheet, this.wizardStepNames[step]);
-		if (tab != null) {
-			Component tabComponent = tab.getComponent();
-			this.tabSheet.setSelectedTab(tabComponent);
-			if (tabComponent instanceof StepChangeListener) {
-				StepChangeListener listener = (StepChangeListener) tabComponent;
-				listener.updatePage();
-			}
-		}
-	}
+//	private void showNextWizardStep(int step) {
+//		Tab tab = Util.getTabAlreadyExist(this.tabSheet, this.wizardStepNames[step]);
+//		if (tab != null) {
+//			Component tabComponent = tab.getComponent();
+//			this.tabSheet.setSelectedTab(tabComponent);
+//			if (tabComponent instanceof StepChangeListener) {
+//				StepChangeListener listener = (StepChangeListener) tabComponent;
+//				listener.updatePage();
+//			}
+//		}
+//	}
 
 	public void viewGermplasmListCreated(GermplasmList crossList, GermplasmList femaleList, GermplasmList maleList) {
 		CrossingManagerSummaryComponent summaryComponent =
 				new CrossingManagerSummaryComponent(this, crossList, femaleList, maleList,
 						this.compileCurrentSetting());
 
-		this.removeComponent(this.wizardDisplay);
+//		this.removeComponent(this.wizardDisplay);
 		this.removeComponent(this.tabSheet);
 
 		this.addComponent(summaryComponent);

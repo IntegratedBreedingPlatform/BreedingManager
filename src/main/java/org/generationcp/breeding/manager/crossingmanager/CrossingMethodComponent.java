@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.crossingmanager;
 
 import java.util.List;
 
+import com.vaadin.ui.Alignment;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -26,6 +27,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.themes.Runo;
 
 @Configurable
 public class CrossingMethodComponent extends VerticalLayout implements BreedingManagerLayout, InitializingBean,
@@ -33,19 +36,20 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 
 	private static final long serialVersionUID = -8847158352169444182L;
 
-	public static final String MAKE_CROSS_BUTTON_ID = "Make Cross Button";
+	public static final String GENERATE_CROSS_BUTTON_ID = "Generate Cross Button";
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
 	private Panel crossingMethodPanel;
 	private Label crossingMethodLabel;
+	private Label crossingMethodComboBoxLabel;
 
 	private ComboBox crossingMethodComboBox;
 	private CheckBox chkBoxMakeReciprocalCrosses;
-	private CheckBox chkBoxExcludeSelf;
+	private CheckBox chkBoxExcludeSelfs;
 
-	private Button btnMakeCross;
+	private Button btnGenerateCross;
 
 	private final CrossingManagerMakeCrossesComponent makeCrossesMain;
 	private MakeCrossesParentsComponent parentsComponent;
@@ -76,22 +80,26 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 		this.crossingMethodLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		this.crossingMethodLabel.addStyleName(AppConstants.CssStyles.BOLD);
 
+		this.crossingMethodComboBoxLabel = new Label(this.messageSource.getMessage(Message.CROSSING_METHOD_LABEL));
+		this.crossingMethodComboBoxLabel.setDebugId("crossingMethodComboBoxLabel");
+		this.crossingMethodComboBoxLabel.setWidth("310px");
+
 		this.crossingMethodComboBox = new ComboBox();
 		this.crossingMethodComboBox.setDebugId("crossingMethodComboBox");
 		this.crossingMethodComboBox.setNewItemsAllowed(false);
 		this.crossingMethodComboBox.setNullSelectionAllowed(false);
-		this.crossingMethodComboBox.setWidth("400px");
+		this.crossingMethodComboBox.setWidth("280px");
 
 		this.chkBoxMakeReciprocalCrosses = new CheckBox(this.messageSource.getMessage(Message.MAKE_CROSSES_CHECKBOX_LABEL));
 		this.chkBoxMakeReciprocalCrosses.setDebugId("chkBoxMakeReciprocalCrosses");
 		//By default set "Exclude self" checkbox as selected
-		this.chkBoxExcludeSelf = new CheckBox(this.messageSource.getMessage(Message.EXCLUDE_SELF_LABEL), true);
-		this.chkBoxExcludeSelf.setDebugId("chkBoxExcludeSelf");
+		this.chkBoxExcludeSelfs = new CheckBox(this.messageSource.getMessage(Message.EXCLUDE_SELFS_LABEL), true);
+		this.chkBoxExcludeSelfs.setDebugId("chkBoxExcludeSelfs");
 
-		this.btnMakeCross = new Button(this.messageSource.getMessage(Message.MAKE_CROSSES_BUTTON_LABEL));
-		this.btnMakeCross.setDebugId("btnMakeCross");
-		this.btnMakeCross.setData(CrossingMethodComponent.MAKE_CROSS_BUTTON_ID);
-		this.btnMakeCross.addStyleName(Bootstrap.Buttons.INFO.styleName());
+		this.btnGenerateCross = new Button(this.messageSource.getMessage(Message.GENERATE_CROSSES_BUTTON_LABEL));
+		this.btnGenerateCross.setDebugId("btnGenerateCross");
+		this.btnGenerateCross.setData(CrossingMethodComponent.GENERATE_CROSS_BUTTON_ID);
+		this.btnGenerateCross.addStyleName(Bootstrap.Buttons.INFO.styleName());
 	}
 
 	@Override
@@ -110,7 +118,7 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 
 	@Override
 	public void addListeners() {
-		this.btnMakeCross.addListener(new CrossingManagerImportButtonClickListener(this));
+		this.btnGenerateCross.addListener(new CrossingManagerImportButtonClickListener(this));
 	}
 
 	@SuppressWarnings("deprecation")
@@ -118,26 +126,41 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 	public void layoutComponents() {
 		this.setSpacing(true);
 
-		VerticalLayout layoutCrossOption = new VerticalLayout();
-		layoutCrossOption.setDebugId("layoutCrossOption");
-		layoutCrossOption.setWidth("460px");
-		layoutCrossOption.setSpacing(true);
-		layoutCrossOption.setMargin(true);
-		layoutCrossOption.addComponent(this.crossingMethodComboBox);
-		layoutCrossOption.addComponent(this.chkBoxMakeReciprocalCrosses);
-		layoutCrossOption.addComponent(this.chkBoxExcludeSelf);
-		layoutCrossOption.addComponent(this.btnMakeCross);
+		HorizontalLayout layoutCrossingMethodOption = new HorizontalLayout();
+		layoutCrossingMethodOption.setDebugId("layoutCrossingMethodOption");
+		layoutCrossingMethodOption.setWidth("640px"); //640px
+		layoutCrossingMethodOption.setSpacing(true);
+		layoutCrossingMethodOption.setMargin(true);
+		layoutCrossingMethodOption.addComponent(this.crossingMethodComboBoxLabel);
+		layoutCrossingMethodOption.addComponent(this.crossingMethodComboBox);
+//		layoutCrossingMethodOption.setComponentAlignment(this.crossingMethodComboBoxLabel, Alignment.MIDDLE_LEFT);
+//		layoutCrossingMethodOption.setComponentAlignment(this.crossingMethodComboBox, Alignment.MIDDLE_LEFT);
+
+		HorizontalLayout layoutchkBoxOption = new HorizontalLayout();
+		layoutchkBoxOption.setDebugId("layoutchkBoxOption");
+		layoutchkBoxOption.setWidth("520px"); //520px
+//		layoutchkBoxOption.setSpacing(true);
+		layoutchkBoxOption.setMargin(true);
+		layoutchkBoxOption.addComponent(this.chkBoxMakeReciprocalCrosses);
+		layoutchkBoxOption.addComponent(this.chkBoxExcludeSelfs);
+		layoutchkBoxOption.addComponent(this.btnGenerateCross);
+//		layoutchkBoxOption.setComponentAlignment(this.chkBoxMakeReciprocalCrosses, Alignment.MIDDLE_LEFT);
+//		layoutchkBoxOption.setComponentAlignment(this.chkBoxExcludeSelfs, Alignment.MIDDLE_LEFT);
+//		layoutchkBoxOption.setComponentAlignment(this.btnGenerateCross, Alignment.MIDDLE_LEFT);
 
 		this.crossingMethodPanel = new Panel();
 		this.crossingMethodPanel.setDebugId("crossingMethodPanel");
-		this.crossingMethodPanel.setWidth("460px");
-		this.crossingMethodPanel.setLayout(layoutCrossOption);
-		this.crossingMethodPanel.addStyleName("section_panel_layout");
+		this.crossingMethodPanel.setWidth("900px");
+		this.crossingMethodPanel.addStyleName(Runo.PANEL_LIGHT); //"section_panel_layout ");
 
 		// provides this slot for an icon
 		HeaderLabelLayout crossingMethodLayout = new HeaderLabelLayout(null, this.crossingMethodLabel);
 		crossingMethodLayout.setDebugId("crossingMethodLayout");
-		this.addComponent(crossingMethodLayout);
+//		crossingMethodLayout.setMargin(true);
+		this.crossingMethodPanel.addComponent(crossingMethodLayout);
+		this.crossingMethodPanel.addComponent(layoutCrossingMethodOption);
+		this.crossingMethodPanel.addComponent(layoutchkBoxOption);
+
 		this.addComponent(this.crossingMethodPanel);
 	}
 
@@ -164,7 +187,7 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 
 				this.makeCrossesMain.makeCrossButtonAction(femaleList, maleList, this.parentsComponent.getFemaleListNameForCrosses(),
 						this.parentsComponent.getMaleListNameForCrosses(), type, this.chkBoxMakeReciprocalCrosses.booleanValue(),
-						this.chkBoxExcludeSelf.booleanValue());
+						this.chkBoxExcludeSelfs.booleanValue());
 			}
 		}
 	}

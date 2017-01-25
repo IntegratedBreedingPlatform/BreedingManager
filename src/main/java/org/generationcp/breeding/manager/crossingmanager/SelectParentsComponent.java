@@ -90,6 +90,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 		this.selectParentsLabel.setDebugId("selectParentsLabel");
 		this.selectParentsLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		this.selectParentsLabel.addStyleName(AppConstants.CssStyles.BOLD);
+		this.selectParentsLabel.setWidth("230px");
 
 		this.browseForListsButton = new Button(this.messageSource.getMessage(Message.BROWSE));
 		this.browseForListsButton.setDebugId("browseForListsButton");
@@ -104,8 +105,8 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 
 		this.listDetailsTabSheet = new TabSheet();
 		this.listDetailsTabSheet.setDebugId("listDetailsTabSheet");
-		this.listDetailsTabSheet.setWidth("460px");
-		this.listDetailsTabSheet.setHeight("465px");
+		this.listDetailsTabSheet.setWidth("900px");
+		this.listDetailsTabSheet.setHeight("365px"); //465px
 		hideListDetailsTabSheet();
 
 		this.closeAllTabsButton = new Button(this.messageSource.getMessage(Message.CLOSE_ALL_TABS));
@@ -182,7 +183,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	public void layoutComponents() {
 
 		setSpacing(true);
-		setWidth("460px");
+		setWidth("900px");
 
 		final HeaderLabelLayout selectParentsHeaderLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_SELECT_PARENTS, selectParentsLabel);
 		selectParentsHeaderLayout.setDebugId("selectParentsHeaderLayout");

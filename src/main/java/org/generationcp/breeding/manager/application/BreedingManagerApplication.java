@@ -204,7 +204,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 		this.manageCrossingSettingsMain.setDebugId("manageCrossingSettingsMain");
 		manageCrossingSettings.setContent(this.manageCrossingSettingsMain);
 		this.addWindow(manageCrossingSettings);
-		this.manageCrossingSettingsMain.nextStep();
+//		this.manageCrossingSettingsMain.nextStep();
 	}
 
 	private Window getWindowWithErrorMessage(final Window manageCrossingSettings, final String description) {
@@ -212,7 +212,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 		this.manageCrossingSettingsMain.setDebugId("manageCrossingSettingsMain");
 		manageCrossingSettings.setContent(this.manageCrossingSettingsMain);
 		this.addWindow(manageCrossingSettings);
-		this.manageCrossingSettingsMain.nextStep();
+//		this.manageCrossingSettingsMain.nextStep();
 		MessageNotifier.showWarning(this.getWindow(manageCrossingSettings.getName()),
 				this.messageSource.getMessage(Message.ERROR_WITH_REQUEST_PARAMETERS),
 				description);

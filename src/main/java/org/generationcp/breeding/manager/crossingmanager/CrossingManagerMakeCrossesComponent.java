@@ -263,9 +263,9 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 			return;
 		}
 
-		if (this.source != null) {
-			this.source.backStep();
-		}
+//		if (this.source != null) {
+//			this.source.backStep();
+//		}
 	}
 
 	public void disableNextButton() {
@@ -327,25 +327,28 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		this.setMargin(true);
 		this.setSpacing(true);
 
-		final HorizontalLayout upperLayout = new HorizontalLayout();
-		upperLayout.setDebugId("upperLayout");
-		upperLayout.setSpacing(true);
-		upperLayout.setHeight("535px");
-		upperLayout.addComponent(this.selectParentsComponent);
-		upperLayout.addComponent(this.parentsComponent);
+		final VerticalLayout selectParentsLayout = new VerticalLayout();
+		selectParentsLayout.setDebugId("selectParentsLayout");
+		selectParentsLayout.setSpacing(true);
+		selectParentsLayout.setHeight("435px");
+		selectParentsLayout.addComponent(this.selectParentsComponent);
 
-		final VerticalLayout methodLayout = new VerticalLayout();
-		methodLayout.setDebugId("methodLayout");
-		methodLayout.setSpacing(true);
-		methodLayout.addComponent(this.crossingSettingsMethodComponent);
-		methodLayout.addComponent(this.crossingMethodComponent);
+		final VerticalLayout parentsListLayout = new VerticalLayout();
+		parentsListLayout.setDebugId("parentsListLayout");
+		parentsListLayout.setSpacing(true);
+		parentsListLayout.setHeight("435px");
+		parentsListLayout.addComponent(this.parentsComponent);
 
-		final HorizontalLayout lowerLayout = new HorizontalLayout();
-		lowerLayout.setDebugId("lowerLayout");
+		final VerticalLayout crossingMethodLayout = new VerticalLayout();
+		crossingMethodLayout.setDebugId("crossingMethodLayout");
+		crossingMethodLayout.setSpacing(true);
+		crossingMethodLayout.addComponent(this.crossingMethodComponent);
 
-		lowerLayout.setSpacing(true);
-		lowerLayout.addComponent(methodLayout);
-		lowerLayout.addComponent(this.crossesTableComponent);
+		final VerticalLayout crossesTableLayout = new VerticalLayout();
+		crossesTableLayout.setDebugId("crossesTableLayout");
+		crossesTableLayout.setSpacing(true);
+		crossesTableLayout.setHeight("485px");
+		crossesTableLayout.addComponent(this.crossesTableComponent);
 
 		final HorizontalLayout layoutButtonArea = new HorizontalLayout();
 		layoutButtonArea.setDebugId("layoutButtonArea");
@@ -365,8 +368,10 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 			layoutButtonArea.addComponent(this.nextButton);
 		}
 
-		this.addComponent(upperLayout);
-		this.addComponent(lowerLayout);
+		this.addComponent(selectParentsLayout);
+		this.addComponent(parentsListLayout);
+		this.addComponent(crossingMethodLayout);
+		this.addComponent(crossesTableLayout);
 		this.addComponent(layoutButtonArea);
 
 		this.setComponentAlignment(layoutButtonArea, Alignment.MIDDLE_CENTER);

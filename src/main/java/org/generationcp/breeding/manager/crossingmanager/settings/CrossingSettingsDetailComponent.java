@@ -309,7 +309,7 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 					this.saveSetting();
 				}
 			} else {
-				this.manageCrossingSettingsMain.nextStep();
+//				this.manageCrossingSettingsMain.nextStep();
 			}
 		}
 	}
@@ -396,7 +396,7 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 			this.updateSetting(currentlyDefinedSettingsInUi, thereIsAChange);
 		}
 
-		this.manageCrossingSettingsMain.nextStep();
+//		this.manageCrossingSettingsMain.nextStep();
 	}
 
 	public void confirmCrossingSettingOverwrite() {
@@ -427,7 +427,7 @@ public class CrossingSettingsDetailComponent extends CssLayout implements Initia
 
 		this.updateSetting(currentlyDefinedSettingsInUi, false);
 
-		this.manageCrossingSettingsMain.nextStep();
+//		this.manageCrossingSettingsMain.nextStep();
 	}
 
 	public void updateSetting(final CrossingManagerSetting currentlyDefinedSettingsInUi, final boolean thereIsAChange) {

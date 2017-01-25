@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.vaadin.ui.*;
 import org.generationcp.breeding.manager.action.SaveGermplasmListActionFactory;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
@@ -32,12 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.data.Item;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
@@ -50,7 +45,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	private static final Logger LOG = LoggerFactory.getLogger(MakeCrossesParentsComponent.class);
 	private static final long serialVersionUID = -4789763601080845176L;
 
-	private static final int PARENTS_TABLE_ROW_COUNT = 9;
+	private static final int PARENTS_TABLE_ROW_COUNT = 5;
 
 	private static final String TAG_COLUMN_ID = "Tag";
 
@@ -64,6 +59,11 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	private InventoryDataManager inventoryDataManager;
 
 	private TabSheet parentTabSheet;
+
+	private TabSheet femaleParentTabSheet;
+	private TabSheet maleParentTabSheet;
+
+
 	private Label parentListsLabel;
 	private Label instructionForParentLists;
 
@@ -101,6 +101,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		this.parentListsLabel.setDebugId("parentListsLabel");
 		this.parentListsLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		this.parentListsLabel.addStyleName(AppConstants.CssStyles.BOLD);
+		this.parentListsLabel.setWidth("230px");
 
 		this.instructionForParentLists = new Label(this.messageSource.getMessage(Message.INSTRUCTION_FOR_PARENT_LISTS));
 		this.instructionForParentLists.setDebugId("instructionForParentLists");
@@ -129,20 +130,35 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	public void layoutComponents() {
 		this.setSpacing(true);
 		this.setMargin(false, false, false, true);
-		this.setWidth("450px");
+		this.setWidth("900px");
 
-		this.parentTabSheet = new TabSheet();
-		this.parentTabSheet.setDebugId("parentTabSheet");
-		this.parentTabSheet.addTab(this.femaleParentTab, this.messageSource.getMessage(Message.LABEL_FEMALE_PARENTS));
-		this.parentTabSheet.addTab(this.maleParentTab, this.messageSource.getMessage(Message.LABEL_MALE_PARENTS));
-		this.parentTabSheet.setWidth("420px");
-		this.parentTabSheet.setHeight("465px");
+		this.femaleParentTabSheet = new TabSheet();
+		this.femaleParentTabSheet.setDebugId("femaleParentTabSheet");
+		this.femaleParentTabSheet.addTab(this.femaleParentTab, this.messageSource.getMessage(Message.LABEL_FEMALE_PARENTS));
+		this.femaleParentTabSheet.setWidth("420px");
+		this.femaleParentTabSheet.setHeight("365px");
+
+		this.maleParentTabSheet = new TabSheet();
+		this.maleParentTabSheet.setDebugId("maleParentTabSheet");
+		this.maleParentTabSheet.addTab(this.maleParentTab, this.messageSource.getMessage(Message.LABEL_MALE_PARENTS));
+		this.maleParentTabSheet.setWidth("420px");
+		this.maleParentTabSheet.setHeight("365px");
+
+		HorizontalLayout parentListLayout = new HorizontalLayout();
+		parentListLayout.setDebugId("parentListLayout");
+		parentListLayout.setWidth("100%");
+		parentListLayout.setSpacing(true);
+		parentListLayout.setHeight("435px");
+		parentListLayout.addComponent(femaleParentTabSheet);
+		parentListLayout.addComponent(maleParentTabSheet);
+
 
 		final HeaderLabelLayout parentLabelLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, this.parentListsLabel);
 		parentLabelLayout.setDebugId("parentLabelLayout");
 		this.addComponent(parentLabelLayout);
 		this.addComponent(this.instructionForParentLists);
-		this.addComponent(this.parentTabSheet);
+		this.addComponent(parentListLayout);
+
 	}
 
 	// end of layoutComponent
@@ -219,14 +235,14 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 					newAvailInvButton.setStyleName(BaseTheme.BUTTON_LINK);
 					newAvailInvButton.setDescription(MakeCrossesParentsComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
 
-					String seedRes = MakeCrossesParentsComponent.STRING_DASH;
-					if (sourceTable.getItemIds().size() == selectedListEntries.size()) {
-						seedRes =
-								sourceTable.getItem(itemId).getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue().toString();
-					}
+//					String seedRes = MakeCrossesParentsComponent.STRING_DASH;
+//					if (sourceTable.getItemIds().size() == selectedListEntries.size()) {
+//						seedRes =
+//								sourceTable.getItem(itemId).getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue().toString();
+//					}
 
 					item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(newAvailInvButton);
-					item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
+//					item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 
 					final Object columnValue = sourceTable.getItem(itemId).getItemProperty(ColumnLabels.STOCKID.getName()).getValue();
 					final Label stockIdLabel = (Label) columnValue;
@@ -285,10 +301,10 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	}
 
 	void clearSeedReservationValues(final Table table) {
-		for (final Object itemId : table.getItemIds()) {
-			table.getItem(itemId).getItemProperty(ColumnLabels.SEED_RESERVATION.getName())
-					.setValue(MakeCrossesParentsComponent.STRING_DASH);
-		}
+//		for (final Object itemId : table.getItemIds()) {
+//			table.getItem(itemId).getItemProperty(ColumnLabels.SEED_RESERVATION.getName())
+//					.setValue(MakeCrossesParentsComponent.STRING_DASH);
+//		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -476,7 +492,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 						item.getItemProperty(MakeCrossesParentsComponent.TAG_COLUMN_ID).setValue(tag);
 
 						item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-						item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
+//						item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 
 						final Label stockIdLabel = new Label(listData.getInventoryInfo().getStockIDs());
 						stockIdLabel.setDebugId("stockIdLabel");
@@ -513,7 +529,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		}
 
 		this.assignEntryNumber(this.maleParentTab.getListDataTable());
-		this.parentTabSheet.setSelectedTab(1);
+		this.maleParentTabSheet.setSelectedTab(1);
 
 		if (this.makeCrossesMain.getModeView().equals(ModeView.LIST_VIEW)) {
 			this.maleParentTab.updateNoOfEntries(this.maleParentTab.getListDataTable().size());
@@ -591,7 +607,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 						item.getItemProperty(MakeCrossesParentsComponent.TAG_COLUMN_ID).setValue(tag);
 
 						item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-						item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
+//						item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 
 						final Label stockIdLabel = new Label(listData.getInventoryInfo().getStockIDs());
 						stockIdLabel.setDebugId("stockIdLabel");
@@ -629,7 +645,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		}
 
 		this.assignEntryNumber(this.femaleParentTab.getListDataTable());
-		this.parentTabSheet.setSelectedTab(0);
+		this.femaleParentTabSheet.setSelectedTab(0);
 
 		if (this.makeCrossesMain.getModeView().equals(ModeView.LIST_VIEW)) {
 			this.femaleParentTab.updateNoOfEntries(this.femaleParentTab.getListDataTable().size());
