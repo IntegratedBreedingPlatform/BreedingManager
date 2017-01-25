@@ -37,16 +37,16 @@ public class GermplasmSearchResultsComponentTest {
 
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
-	
+
 	@Mock
 	private PagedTableWithSelectAllLayout tableWithSelectAllLayout;
-	
+
 	@Mock
 	private PagedBreedingManagerTable pagedTable;
-	
+
 	@Mock
 	private Indexed dataSource;
-	
+
 	@Captor
 	private ArgumentCaptor<Object[]> captor;
 
@@ -61,7 +61,7 @@ public class GermplasmSearchResultsComponentTest {
 		Mockito.doReturn("MENU").when(this.messageSource).getMessage(Message.ADD_SELECTED_ENTRIES_TO_NEW_LIST);
 		Mockito.doReturn("SELECT ALL").when(this.messageSource).getMessage(Message.SELECT_ALL);
 		Mockito.doReturn("DUMMY MESSAGE").when(this.messageSource).getMessage("VALIDATION_INTEGER_FORMAT");
-		
+
 		Mockito.doReturn(this.pagedTable).when(this.tableWithSelectAllLayout).getTable();
 		Mockito.doReturn(this.dataSource).when(this.pagedTable).getContainerDataSource();
 	}
@@ -70,7 +70,7 @@ public class GermplasmSearchResultsComponentTest {
 	public void testInitMatchingGermplasmTableHeaderNameExistsFromOntology() throws MiddlewareQueryException {
 		final PagedBreedingManagerTable actualTable = new PagedBreedingManagerTable(1, 20);
 		Mockito.doReturn(actualTable).when(this.tableWithSelectAllLayout).getTable();
-		
+
 		Mockito.doReturn(this.createTerm("PARENTAGE")).when(this.ontologyDataManager)
 				.getTermById(ColumnLabels.PARENTAGE.getTermId().getId());
 		Mockito.doReturn(this.createTerm("GID")).when(this.ontologyDataManager).getTermById(ColumnLabels.GID.getTermId().getId());
@@ -79,8 +79,7 @@ public class GermplasmSearchResultsComponentTest {
 				.getTermById(ColumnLabels.GERMPLASM_LOCATION.getTermId().getId());
 		Mockito.doReturn(this.createTerm("METHOD_NAME")).when(this.ontologyDataManager)
 				.getTermById(ColumnLabels.BREEDING_METHOD_NAME.getTermId().getId());
-		Mockito.doReturn(this.createTerm("AVAILABLE")).when(this.ontologyDataManager)
-				.getTermById(ColumnLabels.TOTAL.getTermId().getId());
+		Mockito.doReturn(this.createTerm("AVAILABLE")).when(this.ontologyDataManager).getTermById(ColumnLabels.TOTAL.getTermId().getId());
 
 		this.germplasmSearchResultsComponent.initMatchingGermplasmTable();
 
@@ -103,7 +102,7 @@ public class GermplasmSearchResultsComponentTest {
 	public void testInitMatchingGermplasmTableHeaderNameDoesntExistFromOntology() throws MiddlewareQueryException {
 		final PagedBreedingManagerTable actualTable = new PagedBreedingManagerTable(1, 20);
 		Mockito.doReturn(actualTable).when(this.tableWithSelectAllLayout).getTable();
-		
+
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.PARENTAGE.getTermId().getId());
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.AVAILABLE_INVENTORY.getTermId().getId());
 		Mockito.doReturn(null).when(this.ontologyDataManager).getTermById(ColumnLabels.SEED_RESERVATION.getTermId().getId());
@@ -124,52 +123,56 @@ public class GermplasmSearchResultsComponentTest {
 		Assert.assertEquals(ColumnLabels.STOCKID.getName(), table.getColumnHeader(ColumnLabels.STOCKID.getName()));
 		Assert.assertEquals(ColumnLabels.GID.getName(), table.getColumnHeader(ColumnLabels.GID.getName()));
 		Assert.assertEquals(ColumnLabels.GERMPLASM_LOCATION.getName(), table.getColumnHeader(ColumnLabels.GERMPLASM_LOCATION.getName()));
-		Assert.assertEquals(ColumnLabels.BREEDING_METHOD_NAME.getName(), table.getColumnHeader(ColumnLabels.BREEDING_METHOD_NAME.getName()));
+		Assert.assertEquals(ColumnLabels.BREEDING_METHOD_NAME.getName(),
+				table.getColumnHeader(ColumnLabels.BREEDING_METHOD_NAME.getName()));
 
 	}
 
 	@Test
 	public void testGetShortenedNamesIfNameLengthIsAtLeast20() {
-		final String shortenedNames = this.germplasmSearchResultsComponent.getShortenedNames(GERMPLASM_NAMES_WITH_MORE_THAN_20_CHARS);
+		final String shortenedNames = this.germplasmSearchResultsComponent
+				.getShortenedNames(GermplasmSearchResultsComponentTest.GERMPLASM_NAMES_WITH_MORE_THAN_20_CHARS);
 
 		Assert.assertEquals("Expecting to return string with only 20 characters with ellipsis(...) at the end.",
-				GERMPLASM_NAMES_WITH_MORE_THAN_20_CHARS.substring(0, 20).concat("..."), shortenedNames);
+				GermplasmSearchResultsComponentTest.GERMPLASM_NAMES_WITH_MORE_THAN_20_CHARS.substring(0, 20).concat("..."), shortenedNames);
 	}
 
 	@Test
 	public void testGetShortenedNamesIfNameLengthIsAtMost20() {
-		final String shortenedNames = this.germplasmSearchResultsComponent.getShortenedNames(GERMPLASM_NAMES_WITH_20_CHARS);
-		Assert.assertEquals("Expecting to return the same name.", GERMPLASM_NAMES_WITH_20_CHARS, shortenedNames);
+		final String shortenedNames =
+				this.germplasmSearchResultsComponent.getShortenedNames(GermplasmSearchResultsComponentTest.GERMPLASM_NAMES_WITH_20_CHARS);
+		Assert.assertEquals("Expecting to return the same name.", GermplasmSearchResultsComponentTest.GERMPLASM_NAMES_WITH_20_CHARS,
+				shortenedNames);
 	}
-	
+
 	@Test
 	public void testApplyGermplasmResultsNoMatch() {
 		// instantiate other needed components in the page
-		createDummyComponents();
-		
-		GermplasmSearchParameter searchParameter = new GermplasmSearchParameter("ABC", Operation.EQUAL);
+		this.createDummyComponents();
+
+		final GermplasmSearchParameter searchParameter = new GermplasmSearchParameter("ABC", Operation.EQUAL);
 		try {
 			this.germplasmSearchResultsComponent.applyGermplasmResults(searchParameter);
 			Assert.fail("Expecting BreedingManagerSearchException to be thrown for empty search but wasn't.");
-			
-		} catch (BreedingManagerSearchException e) {
+
+		} catch (final BreedingManagerSearchException e) {
 			Assert.assertEquals(Message.NO_SEARCH_RESULTS, e.getErrorMessage());
 			// Verify key actions done, prior to throwing exception
 			Mockito.verify(this.pagedTable, Mockito.times(1)).setCurrentPage(1);
-			
+
 			// Setting of visible columns set twice
 			// 1) during table initialization and 2) in applyGermplasmResults method
-			Mockito.verify(this.pagedTable, Mockito.times(2)).setVisibleColumns(captor.capture());
-			
+			Mockito.verify(this.pagedTable, Mockito.times(2)).setVisibleColumns(this.captor.capture());
+
 			// Check that GID_REF property is not visible
-			Assert.assertEquals(10, captor.getValue().length);
-			for (Object property : captor.getValue()){
+			Assert.assertEquals(10, this.captor.getValue().length);
+			for (final Object property : this.captor.getValue()) {
 				final String gidRefColumn = ColumnLabels.GID.getName() + "_REF";
-				if (gidRefColumn.equals(property)){
+				if (gidRefColumn.equals(property)) {
 					Assert.fail("Expecting GID_REF column to be hidden on table but was not.");
 				}
 			}
-			
+
 			// Check that Select All checkboxes states were updated
 			Mockito.verify(this.tableWithSelectAllLayout, Mockito.times(1)).updateSelectAllCheckboxesCaption();
 		}
@@ -182,8 +185,6 @@ public class GermplasmSearchResultsComponentTest {
 		final Label selectedEntriesLabel = new Label();
 		this.germplasmSearchResultsComponent.setTotalSelectedEntriesLabel(selectedEntriesLabel);
 	}
-	
-	
 
 	private Term createTerm(final String name) {
 		final Term term = new Term();

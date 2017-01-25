@@ -44,66 +44,65 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
 
 public class AddEntryDialogTest {
-	
+
 	private static final int NEW_ID = 1001;
 
 	private final List<Integer> selectedGids = Arrays.asList(1, 2, 3, 4, 5);
 
 	@Mock
 	private GermplasmSearchResultsComponent searchResultsComponent;
-	
+
 	@Mock
 	private GermplasmSearchBarComponent searchBarComponent;
-	
+
 	@Mock
 	private AddEntryDialogSource dialogSource;
-	
+
 	@Mock
 	private BreedingManagerService breedingManagerService;
-	
+
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
 
 	@Mock
 	private BreedingMethodField breedingMethodField;
-	
+
 	@Mock
 	private BreedingLocationField breedingLocationField;
 
 	@Mock
 	private Window parentWindow;
-	
+
 	@Mock
 	private ContextUtil contextUtil;
-	
+
 	@Mock
 	private GermplasmDataManager germplasmDataManager;
-	
+
 	@Captor
 	private ArgumentCaptor<List<Integer>> idsListCaptor;
-	
+
 	@Captor
 	private ArgumentCaptor<Map<Germplasm, Name>> germplasmNameMapCaptor;
 
-	
 	@InjectMocks
 	private AddEntryDialog addEntryDialog;
-	
+
 	private PagedBreedingManagerTable table;
 	private OptionGroup optionGroup;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		
+
 		this.addEntryDialog = new AddEntryDialog(this.dialogSource, this.parentWindow);
 
-		Project testProject = new Project();
+		final Project testProject = new Project();
 		testProject.setUniqueID(UUID.randomUUID().toString());
 
 		Mockito.when(this.breedingManagerService.getCurrentProject()).thenReturn(testProject);
 		this.addEntryDialog.setBreedingManagerService(this.breedingManagerService);
-		
+
 		this.initializeTable(20);
 		this.addEntryDialog.setSearchResultsComponent(this.searchResultsComponent);
 		this.addEntryDialog.setSearchBarComponent(this.searchBarComponent);
@@ -112,7 +111,7 @@ public class AddEntryDialogTest {
 
 	@Test
 	public void testValidateButtonListenersCount() throws Exception {
-		//  Initialize buttons 
+		// Initialize buttons
 		this.addEntryDialog.initializeButtonLayout();
 		this.addEntryDialog.addButtonListeners();
 
@@ -124,17 +123,17 @@ public class AddEntryDialogTest {
 		Assert.assertTrue("Cancel button has only 1 listener", listeners.size() == 1);
 
 	}
-	
+
 	private void initializeTable(final int numberOfItems) {
 		this.table = new PagedBreedingManagerTable(1, 20);
 		this.table.setSelectable(true);
 		this.table.setMultiSelect(true);
-		table.addContainerProperty(ColumnLabels.GID.getName() + "_REF", Integer.class, null);
+		this.table.addContainerProperty(ColumnLabels.GID.getName() + "_REF", Integer.class, null);
 
 		int i = 1;
 		while (i <= numberOfItems) {
-			table.addItem(i);
-			table.getItem(i).getItemProperty(ColumnLabels.GID.getName() + "_REF").setValue(i);
+			this.table.addItem(i);
+			this.table.getItem(i).getItemProperty(ColumnLabels.GID.getName() + "_REF").setValue(i);
 			i++;
 		}
 
@@ -144,62 +143,62 @@ public class AddEntryDialogTest {
 	@Test
 	public void testDoneButtonClickActionOption1() {
 		this.initializeOptionGroup();
-		optionGroup.select(AddEntryDialog.OPTION_1_ID);
-		
+		this.optionGroup.select(AddEntryDialog.OPTION_1_ID);
+
 		// Setup mocks and setup test data
-		ClickEvent event = this.setupMockButtonEvent();
+		final ClickEvent event = this.setupMockButtonEvent();
 		this.table.setValue(this.selectedGids);
 
 		// Method to test
 		this.addEntryDialog.doneButtonClickAction(event);
-		
+
 		// Verify callback function for Option 1
 		Mockito.verify(this.dialogSource).finishAddingEntry(this.selectedGids);
 		Mockito.verify(this.parentWindow).removeWindow(Matchers.any(Window.class));
 	}
-	
-	
+
 	@Test
-	public void testToggleDoneButtonStateWhenNoEntriesSelected(){
+	public void testToggleDoneButtonStateWhenNoEntriesSelected() {
 		this.addEntryDialog.initializeButtonLayout();
 		this.addEntryDialog.toggleDoneButtonState();
-		
+
 		// Check that Done button is disabled if no entries selected on table
 		Assert.assertFalse(this.addEntryDialog.getDoneButton().isEnabled());
 	}
-	
+
 	@Test
-	public void testToggleDoneButtonStateWhenEntriesSelected(){
+	public void testToggleDoneButtonStateWhenEntriesSelected() {
 		this.addEntryDialog.initializeButtonLayout();
 		this.table.setValue(this.selectedGids);
 
 		// Method to test
 		this.addEntryDialog.toggleDoneButtonState();
-		
+
 		// Check that Done button is enabled since there are entries selected
 		Assert.assertTrue(this.addEntryDialog.getDoneButton().isEnabled());
 	}
-	
+
 	@Test
-	public void testSaveNewGermplasmOption2(){
+	public void testSaveNewGermplasmOption2() {
 		this.initializeOptionGroup();
-		optionGroup.select(AddEntryDialog.OPTION_2_ID);
-		
+		this.optionGroup.select(AddEntryDialog.OPTION_2_ID);
+
 		// Setup fields for populating germplasm values
 		this.setupGermplasmDetailsFieldsAndMocks();
 		this.table.setValue(this.selectedGids);
-		
+
 		// Method to test
-		Boolean addedSuccesfully = this.addEntryDialog.saveNewGermplasm();
+		final Boolean addedSuccesfully = this.addEntryDialog.saveNewGermplasm();
 		Assert.assertTrue(addedSuccesfully);
-		
+
 		// Verify key Middleware functions were performed
 		Mockito.verify(this.germplasmDataManager).getGermplasms(this.idsListCaptor.capture());
 		Assert.assertEquals("Expecting germplasmManager.getGermplasm was called.", this.selectedGids, this.idsListCaptor.getValue());
-		
+
 		Mockito.verify(this.germplasmDataManager).getPreferredNamesByGids(this.idsListCaptor.capture());
-		Assert.assertEquals("Expecting germplasmManager.getPreferredNamesByGids was called.", this.selectedGids, this.idsListCaptor.getValue());
-		
+		Assert.assertEquals("Expecting germplasmManager.getPreferredNamesByGids was called.", this.selectedGids,
+				this.idsListCaptor.getValue());
+
 		Mockito.verify(this.germplasmDataManager).addGermplasm(this.germplasmNameMapCaptor.capture());
 		Assert.assertNotNull(this.germplasmNameMapCaptor.getValue());
 		Assert.assertEquals("Expecting " + this.selectedGids.size() + " germplasm and names was saved.", this.selectedGids.size(),
@@ -211,20 +210,20 @@ public class AddEntryDialogTest {
 		Assert.assertEquals("Expecting " + this.selectedGids.size() + "to be added back to source table.", this.selectedGids.size(),
 				this.idsListCaptor.getValue().size());
 	}
-	
+
 	@Test
-	public void testSaveNewGermplasmOption3(){
+	public void testSaveNewGermplasmOption3() {
 		this.initializeOptionGroup();
-		optionGroup.select(AddEntryDialog.OPTION_3_ID);
-		
+		this.optionGroup.select(AddEntryDialog.OPTION_3_ID);
+
 		// Setup fields for populating germplasm values
 		this.setupGermplasmDetailsFieldsAndMocks();
 		this.table.setValue(this.selectedGids);
-		
+
 		// Method to test
-		Boolean addedSuccesfully = this.addEntryDialog.saveNewGermplasm();
+		final Boolean addedSuccesfully = this.addEntryDialog.saveNewGermplasm();
 		Assert.assertTrue(addedSuccesfully);
-		
+
 		// Verify no Middleware retrieval for existing germplasm and names
 		Mockito.verify(this.germplasmDataManager, Mockito.times(0)).getGermplasms(Matchers.anyListOf(Integer.class));
 		Mockito.verify(this.germplasmDataManager, Mockito.times(0)).getPreferredNamesByGids(Matchers.anyListOf(Integer.class));
@@ -232,61 +231,60 @@ public class AddEntryDialogTest {
 		// Verify only one germplasm saved even if there are 5 selected
 		Mockito.verify(this.germplasmDataManager).addGermplasm(this.germplasmNameMapCaptor.capture());
 		Assert.assertNotNull(this.germplasmNameMapCaptor.getValue());
-		Assert.assertEquals("Expecting only one germplasm and name pair was saved.", 1,
-				this.germplasmNameMapCaptor.getValue().size());
+		Assert.assertEquals("Expecting only one germplasm and name pair was saved.", 1, this.germplasmNameMapCaptor.getValue().size());
 
 		// Expecting only 1 entry to be added to source table
-		Mockito.verify(this.dialogSource).finishAddingEntry(NEW_ID);
+		Mockito.verify(this.dialogSource).finishAddingEntry(AddEntryDialogTest.NEW_ID);
 	}
-	
 
 	@SuppressWarnings("unchecked")
 	private void setupGermplasmDetailsFieldsAndMocks() {
 		// Setup germplasm details fields and test values
-		ComboBox methodComboBox = new ComboBox();
+		final ComboBox methodComboBox = new ComboBox();
 		Mockito.doReturn(methodComboBox).when(this.breedingMethodField).getBreedingMethodComboBox();
 		this.addEntryDialog.setBreedingMethodField(this.breedingMethodField);
 
-		ComboBox locationComboBox = new ComboBox();
+		final ComboBox locationComboBox = new ComboBox();
 		Mockito.doReturn(locationComboBox).when(this.breedingLocationField).getBreedingLocationComboBox();
 		this.addEntryDialog.setBreedingLocationField(this.breedingLocationField);
 
-		ComboBox nameTypeComboBox = new ComboBox();
+		final ComboBox nameTypeComboBox = new ComboBox();
 		this.addEntryDialog.setNameTypeComboBox(nameTypeComboBox);
 
-		ListDateField listDateField = new ListDateField("", true);
+		final ListDateField listDateField = new ListDateField("", true);
 		listDateField.instantiateComponents();
 		listDateField.setValue(DateUtil.getCurrentDate());
 		this.addEntryDialog.setGermplasmDateField(listDateField);
-		
-		TextField textField = new TextField();
+
+		final TextField textField = new TextField();
 		Mockito.doReturn(textField).when(this.searchBarComponent).getSearchField();
 		this.addEntryDialog.setContextUtil(this.contextUtil);
-		
+
 		// set Middleware mocks
 		this.addEntryDialog.setGermplasmDataManager(this.germplasmDataManager);
-		List<Germplasm> listOfGermplasm = new ArrayList<>();
-		for (Integer id : this.selectedGids){
+		final List<Germplasm> listOfGermplasm = new ArrayList<>();
+		for (final Integer id : this.selectedGids) {
 			listOfGermplasm.add(GermplasmTestDataInitializer.createGermplasm(id));
 		}
 		Mockito.doReturn(listOfGermplasm).when(this.germplasmDataManager).getGermplasms(this.selectedGids);
-		
-		List<Integer> newIds = new ArrayList<>();
-		for (Integer id : this.selectedGids){
+
+		final List<Integer> newIds = new ArrayList<>();
+		for (final Integer id : this.selectedGids) {
 			newIds.add(100 + id);
 		}
 		if (AddEntryDialog.OPTION_2_ID.equals(this.optionGroup.getValue())) {
 			Mockito.doReturn(newIds).when(this.germplasmDataManager).addGermplasm(Matchers.anyMap());
 		} else {
-			Mockito.doReturn(Collections.singletonList(NEW_ID)).when(this.germplasmDataManager).addGermplasm(Matchers.anyMap());
-		} 
-		
+			Mockito.doReturn(Collections.singletonList(AddEntryDialogTest.NEW_ID)).when(this.germplasmDataManager)
+					.addGermplasm(Matchers.anyMap());
+		}
+
 	}
 
 	private ClickEvent setupMockButtonEvent() {
-		ClickEvent event = Mockito.mock(ClickEvent.class);
-		Button mockButton = Mockito.mock(Button.class);
-		Window mockWindow = Mockito.mock(Window.class);
+		final ClickEvent event = Mockito.mock(ClickEvent.class);
+		final Button mockButton = Mockito.mock(Button.class);
+		final Window mockWindow = Mockito.mock(Window.class);
 		Mockito.doReturn(mockButton).when(event).getButton();
 		Mockito.doReturn(mockWindow).when(mockButton).getWindow();
 		Mockito.doReturn(this.parentWindow).when(mockWindow).getParent();
@@ -295,9 +293,9 @@ public class AddEntryDialogTest {
 
 	private void initializeOptionGroup() {
 		this.optionGroup = new OptionGroup();
-		optionGroup.addItem(AddEntryDialog.OPTION_1_ID);
-		optionGroup.addItem(AddEntryDialog.OPTION_2_ID);
-		optionGroup.addItem(AddEntryDialog.OPTION_3_ID);
-		this.addEntryDialog.setOptionGroup(optionGroup);
+		this.optionGroup.addItem(AddEntryDialog.OPTION_1_ID);
+		this.optionGroup.addItem(AddEntryDialog.OPTION_2_ID);
+		this.optionGroup.addItem(AddEntryDialog.OPTION_3_ID);
+		this.addEntryDialog.setOptionGroup(this.optionGroup);
 	}
 }

@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.containers;
 
 import java.util.ArrayList;
@@ -62,9 +63,8 @@ public class GermplasmQueryTest {
 	public static final int GERMPLASM_SIZE = 20;
 	public static final Double AVAILABLE_BALANCE = 5.0d;
 
-	private final String[] itemPropertyIds =
-			new String[] {"LOCATIONS", "GROUP ID", "GID_REF", "Tag All Column", "LOTS","AVAILABLE","PARENTAGE", "METHOD NAME",
-					"STOCKID", "NAMES", "GID"};
+	private final String[] itemPropertyIds = new String[] {"LOCATIONS", "GROUP ID", "GID_REF", "Tag All Column", "LOTS", "AVAILABLE",
+			"PARENTAGE", "METHOD NAME", "STOCKID", "NAMES", "GID"};
 	@Mock
 	private GermplasmDataManager germplasmDataManager;
 	@Mock
@@ -73,12 +73,12 @@ public class GermplasmQueryTest {
 	private PedigreeService pedigreeService;
 	@Mock
 	private CrossExpansionProperties crossExpansionProperties;
-	private GermplasmSearchParameter germplasmSearchParameter = new GermplasmSearchParameter(SEARCH_STRING, Operation.LIKE);
-	private List<Germplasm> germplasms = new ArrayList<>();
+	private final GermplasmSearchParameter germplasmSearchParameter =
+			new GermplasmSearchParameter(GermplasmQueryTest.SEARCH_STRING, Operation.LIKE);
+	private final List<Germplasm> germplasms = new ArrayList<>();
 	@InjectMocks
-	private GermplasmQuery query =
-			new GermplasmQuery(Mockito.mock(ListManagerMain.class), false, false, germplasmSearchParameter, Mockito.mock(Table.class),
-					Mockito.mock(QueryDefinition.class));
+	private final GermplasmQuery query = new GermplasmQuery(Mockito.mock(ListManagerMain.class), false, false,
+			this.germplasmSearchParameter, Mockito.mock(Table.class), Mockito.mock(QueryDefinition.class));
 
 	@Before
 	public void setUp() throws Exception {
@@ -89,43 +89,45 @@ public class GermplasmQueryTest {
 
 			final Germplasm germplasm = GermplasmTestDataInitializer.createGermplasm(i);
 			final GermplasmInventory inventoryInfo = new GermplasmInventory(germplasm.getGid());
-			inventoryInfo.setStockIDs(TEST_STOCK_ID_STRING);
-			inventoryInfo.setActualInventoryLotCount(TEST_INVENTORY_COUNT);
-			inventoryInfo.setReservedLotCount(TEST_SEED_RES_COUNT);
-			inventoryInfo.setScaleForGermplsm(GERMPLSM_SCALE);
-			inventoryInfo.setTotalAvailableBalance(AVAILABLE_BALANCE);
+			inventoryInfo.setStockIDs(GermplasmQueryTest.TEST_STOCK_ID_STRING);
+			inventoryInfo.setActualInventoryLotCount(GermplasmQueryTest.TEST_INVENTORY_COUNT);
+			inventoryInfo.setReservedLotCount(GermplasmQueryTest.TEST_SEED_RES_COUNT);
+			inventoryInfo.setScaleForGermplsm(GermplasmQueryTest.GERMPLSM_SCALE);
+			inventoryInfo.setTotalAvailableBalance(GermplasmQueryTest.AVAILABLE_BALANCE);
 			germplasm.setInventoryInfo(inventoryInfo);
-			pedigreeString.put(germplasm.getGid(), TEST_CROSS_EXPANSION_STRING);
-			germplasms.add(germplasm);
+			pedigreeString.put(germplasm.getGid(), GermplasmQueryTest.TEST_CROSS_EXPANSION_STRING);
+			this.germplasms.add(germplasm);
 		}
 
 		// initialize middleware service calls
-		Mockito.when(this.pedigreeService.getCrossExpansions(Mockito.anySet(), Mockito.anyInt(), Mockito.eq(this.crossExpansionProperties)))
-		.thenReturn(pedigreeString);
-		Mockito.when(this.germplasmDataManager.searchForGermplasm(germplasmSearchParameter)).thenReturn(germplasms);
-		Mockito.when(this.germplasmDataManager.countSearchForGermplasm(Mockito.eq(SEARCH_STRING), Mockito.eq(Operation.LIKE),
-				Mockito.eq(germplasmSearchParameter.isIncludeParents()), Mockito.eq(germplasmSearchParameter.isWithInventoryOnly()),
-				Mockito.eq(germplasmSearchParameter.isIncludeMGMembers()))).thenReturn(germplasms.size());
+		Mockito.when(
+				this.pedigreeService.getCrossExpansions(Matchers.anySetOf(Integer.class), Matchers.anyInt(), Matchers.eq(this.crossExpansionProperties)))
+				.thenReturn(pedigreeString);
+		Mockito.when(this.germplasmDataManager.searchForGermplasm(this.germplasmSearchParameter)).thenReturn(this.germplasms);
+		Mockito.when(this.germplasmDataManager.countSearchForGermplasm(Matchers.eq(GermplasmQueryTest.SEARCH_STRING),
+				Matchers.eq(Operation.LIKE), Matchers.eq(this.germplasmSearchParameter.isIncludeParents()),
+				Matchers.eq(this.germplasmSearchParameter.isWithInventoryOnly()),
+				Matchers.eq(this.germplasmSearchParameter.isIncludeMGMembers()))).thenReturn(this.germplasms.size());
 
-		Mockito.when(this.germplasmDataManager
-				.getNamesByGID(Mockito.anyInt(), Mockito.isNull(Integer.class), Mockito.isNull(GermplasmNameType.class)))
-				.thenReturn(GermplasmTestDataInitializer.createNameList(germplasms.size()));
+		Mockito.when(this.germplasmDataManager.getNamesByGID(Matchers.anyInt(), Matchers.isNull(Integer.class),
+				Matchers.isNull(GermplasmNameType.class))).thenReturn(GermplasmTestDataInitializer.createNameList(this.germplasms.size()));
 
-		Mockito.when(this.germplasmDataManager.getMethodByID(Mockito.anyInt()))
+		Mockito.when(this.germplasmDataManager.getMethodByID(Matchers.anyInt()))
 				.thenReturn(new MethodTestDataInitializer().createMethod(1, "testMethodType"));
 
-		Mockito.when(this.locationDataManager.getLocationByID(Mockito.anyInt())).thenReturn(new Location(TEST_LOCATION_ID));
+		Mockito.when(this.locationDataManager.getLocationByID(Matchers.anyInt()))
+				.thenReturn(new Location(GermplasmQueryTest.TEST_LOCATION_ID));
 
 	}
 
 	@Test
 	public void testGetGermplasmItem() throws Exception {
-		Germplasm germplasm = germplasms.get(0);
-		Item item = this.query.getGermplasmItem(germplasms.get(0), 1,
-				Collections.<Integer, String>singletonMap(germplasm.getGid(), TEST_CROSS_EXPANSION_STRING),
-				Collections.<Integer, String>singletonMap(germplasm.getGid(), TEST_GERMPLASM_NAME));
+		final Germplasm germplasm = this.germplasms.get(0);
+		final Item item = this.query.getGermplasmItem(this.germplasms.get(0), 1,
+				Collections.<Integer, String>singletonMap(germplasm.getGid(), GermplasmQueryTest.TEST_CROSS_EXPANSION_STRING),
+				Collections.<Integer, String>singletonMap(germplasm.getGid(), GermplasmQueryTest.TEST_GERMPLASM_NAME));
 
-		final List<String> itemPropertyIDList = Arrays.asList(itemPropertyIds);
+		final List<String> itemPropertyIDList = Arrays.asList(this.itemPropertyIds);
 
 		Assert.assertNotNull("getGermplasmItem should return an item object", item);
 		Assert.assertTrue("the formed item object should contain the property ids",
@@ -133,27 +135,30 @@ public class GermplasmQueryTest {
 
 		// The following asserts should just verify the content / values of the item object given itemPropertyId
 		Assert.assertEquals("LocationName", item.getItemProperty(ColumnLabels.GERMPLASM_LOCATION.getName()).getValue());
-		Assert.assertEquals(TEST_DASH_STRING, item.getItemProperty(ColumnLabels.GROUP_ID.getName()).getValue());
-		Assert.assertEquals(TEST_GID, item.getItemProperty(ColumnLabels.GID.getName() + "_REF").getValue());
+		Assert.assertEquals(GermplasmQueryTest.TEST_DASH_STRING, item.getItemProperty(ColumnLabels.GROUP_ID.getName()).getValue());
+		Assert.assertEquals(GermplasmQueryTest.TEST_GID, item.getItemProperty(ColumnLabels.GID.getName() + "_REF").getValue());
 		Assert.assertTrue(item.getItemProperty(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID).getValue() instanceof CheckBox);
 
-		Assert.assertEquals(TEST_CROSS_EXPANSION_STRING, item.getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue());
+		Assert.assertEquals(GermplasmQueryTest.TEST_CROSS_EXPANSION_STRING,
+				item.getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue());
 		Assert.assertEquals("MethodName", item.getItemProperty(ColumnLabels.BREEDING_METHOD_NAME.getName()).getValue());
-		Assert.assertEquals(TEST_STOCK_ID_STRING, ((Label) item.getItemProperty(ColumnLabels.STOCKID.getName()).getValue()).getValue());
+		Assert.assertEquals(GermplasmQueryTest.TEST_STOCK_ID_STRING,
+				((Label) item.getItemProperty(ColumnLabels.STOCKID.getName()).getValue()).getValue());
 		Assert.assertTrue(item.getItemProperty(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID).getValue() instanceof Button);
 		Assert.assertTrue(item.getItemProperty(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID).getValue() instanceof Button);
-		
+
 		// Check value and action listener for property "LOTS" (# of lots with available inventory)
-		Button availableLot = (Button) item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue();
-		Assert.assertEquals(TEST_INVENTORY_COUNT.toString(), availableLot.getCaption().toString());
+		final Button availableLot = (Button) item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue();
+		Assert.assertEquals(GermplasmQueryTest.TEST_INVENTORY_COUNT.toString(), availableLot.getCaption().toString());
 		Collection<?> listeners = availableLot.getListeners(Button.ClickEvent.class);
 		Assert.assertNotNull(listeners);
 		Assert.assertTrue(listeners.size() == 1);
 		Assert.assertTrue(listeners.iterator().next() instanceof LotDetailsButtonClickListener);
-				
+
 		// Check value and action listener for property "AVAILABLE" (total available inventory
-		Button availableBalance = (Button) item.getItemProperty(ColumnLabels.TOTAL.getName()).getValue();
-		Assert.assertEquals(AVAILABLE_BALANCE + " " + GERMPLSM_SCALE, availableBalance.getCaption().toString());
+		final Button availableBalance = (Button) item.getItemProperty(ColumnLabels.TOTAL.getName()).getValue();
+		Assert.assertEquals(GermplasmQueryTest.AVAILABLE_BALANCE + " " + GermplasmQueryTest.GERMPLSM_SCALE,
+				availableBalance.getCaption().toString());
 		listeners = availableBalance.getListeners(Button.ClickEvent.class);
 		Assert.assertNotNull(listeners);
 		Assert.assertTrue(listeners.size() == 1);
@@ -163,10 +168,10 @@ public class GermplasmQueryTest {
 
 	@Test
 	public void testLoadItems() throws Exception {
-		assert query != null;
+		assert this.query != null;
 
-		List<Item> items = this.query.loadItems(0, GERMPLASM_SIZE);
-		
+		final List<Item> items = this.query.loadItems(0, GermplasmQueryTest.GERMPLASM_SIZE);
+
 		// Verify number of loaded items plus that key Middleware methods were called
 		Assert.assertEquals("Should return the correct number of items", 20, items.size());
 		Mockito.verify(this.pedigreeService, Mockito.times(1)).getCrossExpansions(Matchers.anySetOf(Integer.class), Matchers.anyInt(),
@@ -177,22 +182,22 @@ public class GermplasmQueryTest {
 
 	@Test
 	public void testGetGermplasmSearchResults() throws Exception {
-		Assert.assertEquals("Verify the call should return the expected list of germplasms", germplasms,
+		Assert.assertEquals("Verify the call should return the expected list of germplasms", this.germplasms,
 				this.query.getGermplasmSearchResults(1, 20));
 	}
 
 	@Test
 	public void testSize() throws Exception {
-		Assert.assertEquals("The count call should be the same with the test germplasm list", germplasms.size(), this.query.size());
+		Assert.assertEquals("The count call should be the same with the test germplasm list", this.germplasms.size(), this.query.size());
 	}
 
 	@Test
 	public void testGetShortenedNames() throws Exception {
-		String resultWithEllipses = this.query.getShortenedNames(TEST_21_LENGTH_STRING);
-		String resultWithoutElipses = this.query.getShortenedNames(TEST_SHORT_STRING);
+		final String resultWithEllipses = this.query.getShortenedNames(GermplasmQueryTest.TEST_21_LENGTH_STRING);
+		final String resultWithoutElipses = this.query.getShortenedNames(GermplasmQueryTest.TEST_SHORT_STRING);
 
-		Assert.assertEquals(resultWithEllipses, TEST_21_LENGTH_STRING.substring(0, 20) + "...");
-		Assert.assertEquals(resultWithoutElipses, TEST_SHORT_STRING);
+		Assert.assertEquals(resultWithEllipses, GermplasmQueryTest.TEST_21_LENGTH_STRING.substring(0, 20) + "...");
+		Assert.assertEquals(resultWithoutElipses, GermplasmQueryTest.TEST_SHORT_STRING);
 
 	}
 }

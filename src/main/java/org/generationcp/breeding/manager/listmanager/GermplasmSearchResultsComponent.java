@@ -52,8 +52,8 @@ import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.VerticalLayout;
 
 @Configurable
-public class GermplasmSearchResultsComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
-		BreedingManagerLayout {
+public class GermplasmSearchResultsComponent extends VerticalLayout
+		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmSearchResultsComponent.class);
 	private static final long serialVersionUID = 5314653969843976836L;
@@ -76,8 +76,8 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 
 	static final Action ACTION_COPY_TO_NEW_LIST = new Action("Add Selected Entries to New List");
 	static final Action ACTION_SELECT_ALL = new Action("Select All");
-	static final Action[] GERMPLASM_TABLE_CONTEXT_MENU = new Action[] {GermplasmSearchResultsComponent.ACTION_COPY_TO_NEW_LIST,
-			GermplasmSearchResultsComponent.ACTION_SELECT_ALL};
+	static final Action[] GERMPLASM_TABLE_CONTEXT_MENU =
+			new Action[] {GermplasmSearchResultsComponent.ACTION_COPY_TO_NEW_LIST, GermplasmSearchResultsComponent.ACTION_SELECT_ALL};
 
 	private Action.Handler rightClickActionHandler;
 
@@ -243,18 +243,20 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		this.matchingGermplasmTable.setContainerDataSource(this.createInitialContainer());
 
 		// hide the internal GID reference ID
-		this.matchingGermplasmTable.setVisibleColumns(new ArrayList<>(this.definition.getPropertyIds()).subList(0,this.definition.getPropertyIds().size()-1).toArray());
+		this.matchingGermplasmTable.setVisibleColumns(
+				new ArrayList<>(this.definition.getPropertyIds()).subList(0, this.definition.getPropertyIds().size() - 1).toArray());
 	}
 
 	/**
 	 * This will just create a container with the table properties so we can have headers when we load the table initially
+	 *
 	 * @return
 	 */
 	private Container createInitialContainer() {
-		Container container = new IndexedContainer();
-		for (Object propertyId : definition.getPropertyIds()) {
-			container.addContainerProperty(propertyId, definition.getPropertyType(propertyId),
-					definition.getPropertyDefaultValue(propertyId));
+		final Container container = new IndexedContainer();
+		for (final Object propertyId : this.definition.getPropertyIds()) {
+			container.addContainerProperty(propertyId, this.definition.getPropertyType(propertyId),
+					this.definition.getPropertyDefaultValue(propertyId));
 		}
 
 		return container;
@@ -266,14 +268,14 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		searchParameter.setNumberOfEntries(this.matchingGermplasmTable.getPageLength());
 
 		return new GermplasmQueryFactory(this.listManagerMain, this.viaToolUrl, this.showAddToList, searchParameter,
-				this.matchingGermplasmTable, definition);
+				this.matchingGermplasmTable, this.definition);
 	}
 
 	private LazyQueryContainer createContainer(final GermplasmQueryFactory factory) {
 		// update the definitions batch size to match current state of table's page entry length
 		this.definition.setBatchSize(this.matchingGermplasmTable.getPageLength());
 
-		final LazyQueryContainer container = new LazyQueryContainer(this.definition,factory);
+		final LazyQueryContainer container = new LazyQueryContainer(this.definition, factory);
 		return container;
 	}
 
@@ -313,10 +315,11 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 			public void contextItemClick(final org.vaadin.peter.contextmenu.ContextMenu.ClickEvent event) {
 				final ContextMenuItem clickedItem = event.getClickedItem();
 
-				if (clickedItem.getName().equals(
-						GermplasmSearchResultsComponent.this.messageSource.getMessage(Message.ADD_SELECTED_ENTRIES_TO_NEW_LIST))) {
+				if (clickedItem.getName()
+						.equals(GermplasmSearchResultsComponent.this.messageSource.getMessage(Message.ADD_SELECTED_ENTRIES_TO_NEW_LIST))) {
 					GermplasmSearchResultsComponent.this.addSelectedEntriesToNewList();
-				} else if (clickedItem.getName().equals(GermplasmSearchResultsComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
+				} else if (clickedItem.getName()
+						.equals(GermplasmSearchResultsComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
 					GermplasmSearchResultsComponent.this.matchingGermplasmTableWithSelectAll.selectAllEntriesOnCurrentPage();
 				}
 
@@ -382,15 +385,15 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		// set the current page to first page before updating the entries with the new search results
 		// This triggers the page change listener that enables/disables pagination controls properly
 		this.matchingGermplasmTable.setCurrentPage(1);
-		
-		// hide the internal GID reference ID
-		this.matchingGermplasmTable.setVisibleColumns(new ArrayList<>(this.definition.getPropertyIds()).subList(0,this.definition.getPropertyIds().size()-1).toArray());
 
+		// hide the internal GID reference ID
+		this.matchingGermplasmTable.setVisibleColumns(
+				new ArrayList<>(this.definition.getPropertyIds()).subList(0, this.definition.getPropertyIds().size() - 1).toArray());
 
 		this.updateNoOfEntries(factory.getNumberOfItems());
 		// update paged table controls given the latest table entries
 		this.matchingGermplasmTableWithSelectAll.updateSelectAllCheckboxesCaption();
-		
+
 		if (!this.matchingGermplasmTable.getItemIds().isEmpty()) {
 			this.updateActionMenuOptions(true);
 		}
@@ -400,7 +403,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		}
 
 		GermplasmSearchResultsComponent.LOG.debug("" + monitor.stop());
-		
+
 	}
 
 	String getShortenedNames(final String germplasmFullName) {
@@ -428,7 +431,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	public PagedTableWithSelectAllLayout getMatchingGermplasmTableWithSelectAll() {
 		return this.matchingGermplasmTableWithSelectAll;
 	}
-	
+
 	public Table getMatchingGermplasmTable() {
 		return this.matchingGermplasmTable;
 	}
@@ -438,8 +441,8 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	}
 
 	private void updateNoOfSelectedEntries(final int count) {
-		this.totalSelectedMatchingGermplasmLabel.setValue("<i>" + this.messageSource.getMessage(Message.SELECTED) + ": " + "  <b>" + count
-				+ "</b></i>");
+		this.totalSelectedMatchingGermplasmLabel
+				.setValue("<i>" + this.messageSource.getMessage(Message.SELECTED) + ": " + "  <b>" + count + "</b></i>");
 	}
 
 	private void updateNoOfSelectedEntries() {
@@ -463,8 +466,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 		} else {
 			for (final Integer id : itemIds) {
 				// retrieve the actual GID from the itemId
-				final Integer gid =
-						(Integer) this.matchingGermplasmTable.getItem(id).getItemProperty(ColumnLabels.GID + "_REF").getValue();
+				final Integer gid = (Integer) this.matchingGermplasmTable.getItem(id).getItemProperty(ColumnLabels.GID + "_REF").getValue();
 				gids.add(gid);
 			}
 			this.listManagerMain.addPlantsToList(gids);
@@ -486,11 +488,11 @@ public class GermplasmSearchResultsComponent extends VerticalLayout implements I
 	public void setShowAddToList(final boolean showAddToList) {
 		this.showAddToList = showAddToList;
 	}
-	
+
 	public void setTotalEntriesLabel(final Label totalEntriesLabel) {
 		this.totalMatchingGermplasmLabel = totalEntriesLabel;
 	}
-	
+
 	public void setTotalSelectedEntriesLabel(final Label totalSelectedEntriesLabel) {
 		this.totalSelectedMatchingGermplasmLabel = totalSelectedEntriesLabel;
 	}

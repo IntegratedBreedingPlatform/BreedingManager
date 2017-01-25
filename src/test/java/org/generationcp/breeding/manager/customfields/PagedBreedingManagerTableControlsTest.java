@@ -29,27 +29,26 @@ public class PagedBreedingManagerTableControlsTest {
 	@Mock
 	private EntrySelectSyncHandler handler;
 
-	
 	@Before
 	public void init() {
 		MockitoAnnotations.initMocks(this);
-		
-		this.pagedBreedingManagerTable = new PagedBreedingManagerTable(PAGE_LENGTH, PAGE_LENGTH);
+
+		this.pagedBreedingManagerTable = new PagedBreedingManagerTable(PagedBreedingManagerTableControlsTest.PAGE_LENGTH,
+				PagedBreedingManagerTableControlsTest.PAGE_LENGTH);
 		this.pagedBreedingManagerTable.setImmediate(true);
-		
+
 		this.pagedTableControls = new PagedBreedingManagerTableControls(this.pagedBreedingManagerTable, this.handler);
 
 	}
-	
-	private void addItems(final int numberOfItems){
+
+	private void addItems(final int numberOfItems) {
 		int i = 1;
 		while (i <= numberOfItems) {
 			this.pagedBreedingManagerTable.addItem(i);
 			i++;
 		}
 	}
-	
-	
+
 	@Test
 	public void testComponentsAreAddedToControl() throws Exception {
 		// check whether the components are added
@@ -64,22 +63,22 @@ public class PagedBreedingManagerTableControlsTest {
 		Assert.assertEquals("There should only be 2 components added to the control", 2, numberOfComponents);
 
 	}
-	
+
 	@Test
 	public void testPagingControlsStateWhenOnePageOnly() {
 		this.addItems(5);
-		
-		//Hack to fire page change event so that paging buttons will be updated
+
+		// Hack to fire page change event so that paging buttons will be updated
 		this.pagedBreedingManagerTable.previousPage();
-		
-		Iterator<Component> pagingControlsIterator = ((HorizontalLayout) this.pagedTableControls).getComponentIterator();
+
+		final Iterator<Component> pagingControlsIterator = ((HorizontalLayout) this.pagedTableControls).getComponentIterator();
 		// First Component: Page Size
 		final HorizontalLayout pageSize = (HorizontalLayout) pagingControlsIterator.next();
 		Assert.assertNotNull("The page size should be displayed", pageSize);
-		ComboBox pageSizeComboBox = (ComboBox) pageSize.getComponent(INDEX_OF_PAGE_SIZE_COMBOBOX);
-		Assert.assertEquals(String.valueOf(PAGE_LENGTH), pageSizeComboBox.getValue().toString());
-		
-		
+		final ComboBox pageSizeComboBox =
+				(ComboBox) pageSize.getComponent(PagedBreedingManagerTableControlsTest.INDEX_OF_PAGE_SIZE_COMBOBOX);
+		Assert.assertEquals(String.valueOf(PagedBreedingManagerTableControlsTest.PAGE_LENGTH), pageSizeComboBox.getValue().toString());
+
 		// Second Component: Page Navigation
 		final HorizontalLayout pageNavigationLayout = (HorizontalLayout) pagingControlsIterator.next();
 		Assert.assertNotNull("The page navigation controls should be displayed", pageNavigationLayout);
@@ -101,17 +100,18 @@ public class PagedBreedingManagerTableControlsTest {
 	public void testPagingControlsStateWhenMoreThanOnePage() {
 		// Table will span 3 pages
 		this.addItems(30);
-		
-		//Hack to fire page change event so that paging buttons will be updated
+
+		// Hack to fire page change event so that paging buttons will be updated
 		this.pagedBreedingManagerTable.previousPage();
-		
-		Iterator<Component> pagingControlsIterator = ((HorizontalLayout) this.pagedTableControls).getComponentIterator();
+
+		final Iterator<Component> pagingControlsIterator = ((HorizontalLayout) this.pagedTableControls).getComponentIterator();
 		// First Component: Page Size
 		final HorizontalLayout pageSize = (HorizontalLayout) pagingControlsIterator.next();
 		Assert.assertNotNull("The page size should be displayed", pageSize);
-		ComboBox pageSizeComboBox = (ComboBox) pageSize.getComponent(INDEX_OF_PAGE_SIZE_COMBOBOX);
-		Assert.assertEquals(String.valueOf(PAGE_LENGTH), pageSizeComboBox.getValue());
-		
+		final ComboBox pageSizeComboBox =
+				(ComboBox) pageSize.getComponent(PagedBreedingManagerTableControlsTest.INDEX_OF_PAGE_SIZE_COMBOBOX);
+		Assert.assertEquals(String.valueOf(PagedBreedingManagerTableControlsTest.PAGE_LENGTH), pageSizeComboBox.getValue());
+
 		// // Second Component: Page Navigation
 		final HorizontalLayout pageNavigationLayout = (HorizontalLayout) pagingControlsIterator.next();
 		Assert.assertNotNull("The page navigation controls should be displayed", pageNavigationLayout);

@@ -20,14 +20,13 @@ import java.util.Set;
 import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
-import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
+import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.middleware.domain.gms.search.GermplasmSearchParameter;
 import org.generationcp.middleware.domain.inventory.GermplasmInventory;
-import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.LocationDataManager;
@@ -109,16 +108,16 @@ public class GermplasmQuery implements Query {
 	 */
 	@Override
 	public List<Item> loadItems(final int startIndex, final int count) {
-		LOG.info(String.format("LoadItems(%d,%d): %s", startIndex, count, this.searchParameter));
+		GermplasmQuery.LOG.info(String.format("LoadItems(%d,%d): %s", startIndex, count, this.searchParameter));
 		final List<Item> items = new ArrayList<>();
 		final List<Germplasm> germplasmResults = this.getGermplasmSearchResults(startIndex, count);
 		final Set<Integer> gids = new HashSet<>();
-		for (Germplasm germplasmToGeneratePedigreeStringsFor : germplasmResults) {
+		for (final Germplasm germplasmToGeneratePedigreeStringsFor : germplasmResults) {
 			gids.add(germplasmToGeneratePedigreeStringsFor.getGid());
 		}
 
-		final Map<Integer, String> pedigreeStringMap = pedigreeService.getCrossExpansions(gids, null, crossExpansionProperties);
-		final Map<Integer, String> preferredNamesMap = germplasmDataManager.getPreferredNamesByGids(new ArrayList<>(gids));
+		final Map<Integer, String> pedigreeStringMap = this.pedigreeService.getCrossExpansions(gids, null, this.crossExpansionProperties);
+		final Map<Integer, String> preferredNamesMap = this.germplasmDataManager.getPreferredNamesByGids(new ArrayList<>(gids));
 		for (int i = 0; i < germplasmResults.size(); i++) {
 			items.add(this.getGermplasmItem(germplasmResults.get(i), i + startIndex, pedigreeStringMap, preferredNamesMap));
 		}
@@ -146,6 +145,7 @@ public class GermplasmQuery implements Query {
 		return this.size;
 	}
 
+	@SuppressWarnings("rawtypes")
 	Item getGermplasmItem(final Germplasm germplasm, final int index, final Map<Integer, String> pedigreeStringMap,
 			final Map<Integer, String> preferredNamesMap) {
 
@@ -158,7 +158,8 @@ public class GermplasmQuery implements Query {
 		propertyMap.put(GermplasmSearchResultsComponent.CHECKBOX_COLUMN_ID, new ObjectProperty<>(this.getItemCheckBox(index)));
 		propertyMap.put(GermplasmSearchResultsComponent.NAMES, new ObjectProperty<>(this.getNamesButton(gid)));
 		propertyMap.put(ColumnLabels.PARENTAGE.getName(), new ObjectProperty<>(pedigreeStringMap.get(gid)));
-		propertyMap.put(ColumnLabels.AVAILABLE_INVENTORY.getName(), new ObjectProperty<>(this.getInventoryInfoButton(germplasm, preferredNamesMap)));
+		propertyMap.put(ColumnLabels.AVAILABLE_INVENTORY.getName(),
+				new ObjectProperty<>(this.getInventoryInfoButton(germplasm, preferredNamesMap)));
 		propertyMap.put(ColumnLabels.TOTAL.getName(), new ObjectProperty<>(this.getAvailableBalanceButton(germplasm)));
 		propertyMap.put(ColumnLabels.STOCKID.getName(), new ObjectProperty<>(this.getStockIDs(inventoryInfo)));
 		propertyMap.put(ColumnLabels.GID.getName(), new ObjectProperty<>(this.getGidButton(gid)));
@@ -167,7 +168,7 @@ public class GermplasmQuery implements Query {
 		propertyMap.put(ColumnLabels.BREEDING_METHOD_NAME.getName(), new ObjectProperty<>(germplasm.getMethodName()));
 		propertyMap.put(ColumnLabels.GID.getName() + "_REF", new ObjectProperty<>(gid));
 
-		for (String propertyId : propertyMap.keySet()) {
+		for (final String propertyId : propertyMap.keySet()) {
 			item.addItemProperty(propertyId, propertyMap.get(propertyId));
 		}
 
@@ -204,10 +205,10 @@ public class GermplasmQuery implements Query {
 	}
 
 	private Button getAvailableBalanceButton(final Germplasm germplasm) {
-		StringBuilder available = new StringBuilder();
+		final StringBuilder available = new StringBuilder();
 
 		if (germplasm.getInventoryInfo().getScaleForGermplsm() != null) {
-			if(ListDataInventory.MIXED.equals(germplasm.getInventoryInfo().getScaleForGermplsm())) {
+			if (GermplasmInventory.MIXED.equals(germplasm.getInventoryInfo().getScaleForGermplsm())) {
 				available.append(germplasm.getInventoryInfo().getScaleForGermplsm());
 			} else {
 				available.append(germplasm.getInventoryInfo().getTotalAvailableBalance());
@@ -219,8 +220,8 @@ public class GermplasmQuery implements Query {
 			available.append("-");
 		}
 
-		final Button inventoryButton = new Button(available.toString(), new InventoryLinkButtonClickListener(this.listManagerMain,
-				germplasm.getGid()));
+		final Button inventoryButton =
+				new Button(available.toString(), new InventoryLinkButtonClickListener(this.listManagerMain, germplasm.getGid()));
 		inventoryButton.setDebugId("inventoryButton");
 		inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
 		return inventoryButton;
@@ -284,24 +285,6 @@ public class GermplasmQuery implements Query {
 		}
 
 		return germplasmNames.toString();
-	}
-
-	private String getSeedReserved(final GermplasmInventory inventoryInfo) {
-		String seedRes = "-";
-		final Integer reservedLotCount = inventoryInfo.getReservedLotCount();
-		if (reservedLotCount != null && reservedLotCount.intValue() != 0) {
-			seedRes = reservedLotCount.toString();
-		}
-		return seedRes;
-	}
-
-	private String getAvailableInventory(final GermplasmInventory inventoryInfo) {
-		String availInv = "-";
-		final Integer actualInventoryLotCount = inventoryInfo.getActualInventoryLotCount();
-		if (actualInventoryLotCount != null && actualInventoryLotCount.intValue() != 0) {
-			availInv = actualInventoryLotCount.toString();
-		}
-		return availInv;
 	}
 
 	private Label getStockIDs(final GermplasmInventory inventoryInfo) {
