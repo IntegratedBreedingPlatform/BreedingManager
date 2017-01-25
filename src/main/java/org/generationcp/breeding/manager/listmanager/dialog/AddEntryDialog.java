@@ -4,7 +4,9 @@ package org.generationcp.breeding.manager.listmanager.dialog;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -164,6 +166,10 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 
 		this.addListenerToOptionGroup();
 
+		this.addButtonListeners();
+	}
+
+	void addButtonListeners() {
 		this.cancelButton.addListener(new CloseWindowAction());
 		this.doneButton.addListener(new GermplasmListButtonClickListener(this));
 	}
@@ -260,7 +266,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		this.toggleDoneButtonState();
 	}
 
-	private void toggleDoneButtonState() {
+	void toggleDoneButtonState() {
 		this.doneButton.setEnabled(this.isTableHasEntriesSelected());
 	}
 
@@ -432,7 +438,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 					this.messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM));
 		
 		} else if (this.isTableHasEntriesSelected()) {
-			if (this.doneAction()) {
+			if (this.saveNewGermplasm()) {
 				final Window window = event.getButton().getWindow();
 				window.getParent().removeWindow(window);
 			}
@@ -452,7 +458,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 					this.messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM));
 		
 		} else if (searchValue != null && searchValue.length() != 0) {
-			this.doneAction();
+			this.saveNewGermplasm();
 			final Window window = event.getButton().getWindow();
 			window.getParent().removeWindow(window);
 		} else {
@@ -461,32 +467,31 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		}
 	}
 
-	public Boolean doneAction() {
+	/**
+	 * Creates germplasm record/s from selected germplasm (for Option 2) or from search keyword (for Option 3)
+	 * @return
+	 */
+	public Boolean saveNewGermplasm() {
 		if (!this.optionGroup.getValue().equals(AddEntryDialog.OPTION_2_ID)
 				&& !this.optionGroup.getValue().equals(AddEntryDialog.OPTION_3_ID)) {
 			return false;
 		}
 		if (this.optionGroup.getValue().equals(AddEntryDialog.OPTION_2_ID)) {
-			final List<Integer> addedGids = new ArrayList<Integer>();
-			for (final Integer selectedGid : this.getSelectedItemGids()) {
-				final Integer newlyCreatedGid = this.addGermplasm(selectedGid);
-				if (newlyCreatedGid == null) {
-					return false;
-				}
-				addedGids.add(newlyCreatedGid);
-			}
+			final List<Integer> addedGids = this.addGermplasm(this.getSelectedItemGids());
 			this.source.finishAddingEntry(addedGids);
+		
 		} else {
-			final Integer newlyCreatedGid = this.addGermplasm(null);
-			if (newlyCreatedGid == null) {
+			final List<Integer> addedGids = this.addGermplasm(new ArrayList<Integer>());
+			if (addedGids == null || addedGids.isEmpty()) {
 				return false;
 			}
-			this.source.finishAddingEntry(newlyCreatedGid);
+			// Expecting only one germplasm record to have been created
+			this.source.finishAddingEntry(addedGids.get(0));
 		}
 		return true;
 	}
 
-	private Integer addGermplasm(final Integer selectedGid) {
+	List<Integer> addGermplasm(final List<Integer> selectedGids) {
 		final Integer breedingMethodId = (Integer) this.breedingMethodField.getBreedingMethodComboBox().getValue();
 		final Integer nameTypeId = (Integer) this.nameTypeComboBox.getValue();
 		final Integer locationId = (Integer) this.breedingLocationField.getBreedingLocationComboBox().getValue();
@@ -497,15 +502,35 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		}
 
 		final Integer currentUserLocalId = this.getCurrentUserLocalId();
-		final Germplasm selectedGermplasm = this.getSelectedGermplasm(selectedGid);
-		String germplasmName = this.searchBarComponent.getSearchField().getValue().toString();
-		if (selectedGermplasm != null && selectedGermplasm.getPreferredName() != null) {
-			germplasmName = selectedGermplasm.getPreferredName().getNval();
+		
+		Map<Germplasm, Name> germplasmNamesMap = new HashMap<>();
+		if (!selectedGids.isEmpty()) {
+			// One-off DB retrieval for germplasm and preferred names for selected germplasm
+			List<Germplasm> listOfGermplasm = this.germplasmDataManager.getGermplasms(selectedGids);
+			Map<Integer, String> preferrredNamesMap = this.germplasmDataManager.getPreferredNamesByGids(selectedGids);
+			
+			// Perform one-off saving for all new germplasm and names records
+			for (Germplasm selectedGermplasm : listOfGermplasm) {
+				String germplasmName = this.searchBarComponent.getSearchField().getValue().toString();
+				final String preferredName = preferrredNamesMap.get(selectedGermplasm.getGid());
+				if (preferredName != null) {
+					germplasmName = preferredName;
+				}
+				
+				final Germplasm germplasm = this.createGermplasm(selectedGermplasm, date, locationId, breedingMethodId, currentUserLocalId);
+				final Name name = this.createName(germplasmName, locationId, date, nameTypeId, currentUserLocalId);
+				germplasmNamesMap.put(germplasm, name);
+			}
+
+		// If no selected GIDs, add new germplasm with name equals to search string	
+		} else {
+			final Germplasm germplasm = this.createGermplasm(null, date, locationId, breedingMethodId, currentUserLocalId);
+			String germplasmName = this.searchBarComponent.getSearchField().getValue().toString();
+			final Name name = this.createName(germplasmName, locationId, date, nameTypeId, currentUserLocalId);
+			germplasmNamesMap.put(germplasm, name);
 		}
 
-		final Germplasm germplasm = this.createGermplasm(selectedGermplasm, date, locationId, breedingMethodId, currentUserLocalId);
-		final Name name = this.createName(germplasmName, locationId, date, nameTypeId, currentUserLocalId);
-		return this.saveGermplasmToDatabase(germplasm, name);
+		return this.saveGermplasmToDatabase(germplasmNamesMap);
 	}
 
 	private Integer getGermplasmDate() {
@@ -534,20 +559,6 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		return currentUserLocalId;
 	}
 
-	private Germplasm getSelectedGermplasm(final Integer selectedGid) {
-		if (selectedGid == null) {
-			return null;
-		}
-		try {
-			return this.germplasmDataManager.getGermplasmWithPrefName(selectedGid);
-		} catch (final MiddlewareQueryException mex) {
-			AddEntryDialog.LOG.error("Error with getting germplasm with id: " + selectedGid, mex);
-			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
-					this.messageSource.getMessage(Message.ERROR_WITH_GETTING_GERMPLASM_WITH_ID) + ": " + selectedGid + ". "
-							+ this.messageSource.getMessage(Message.ERROR_REPORT_TO));
-		}
-		return null;
-	}
 
 	private Germplasm createGermplasm(final Germplasm selectedGermplasm, final Integer date, final Integer locationId,
 			final Integer breedingMethodId, final Integer currentUserLocalId) {
@@ -566,6 +577,8 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		germplasm.setUserId(currentUserLocalId);
 
 		if (selectedGermplasm != null) {
+			// temporarily set GID so that it can be used as key in map for saving
+			germplasm.setGid(selectedGermplasm.getGid());
 			if (selectedGermplasm.getGnpgs() < 2) {
 				germplasm.setGpid1(selectedGermplasm.getGpid1());
 			} else {
@@ -590,10 +603,9 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		return name;
 	}
 
-	private Integer saveGermplasmToDatabase(final Germplasm germplasm, final Name name) {
+	private List<Integer> saveGermplasmToDatabase(final Map<Germplasm, Name> germplasmNameMap) {
 		try {
-			this.germplasmDataManager.addGermplasm(germplasm, name);
-			return germplasm.getGid();
+			return this.germplasmDataManager.addGermplasm(germplasmNameMap);
 		} catch (final MiddlewareQueryException ex) {
 			AddEntryDialog.LOG.error("Error with saving germplasm and name records!", ex);
 			MessageNotifier.showError(
@@ -726,4 +738,41 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 	public void setSearchResultsComponent(final GermplasmSearchResultsComponent searchResultsComponent) {
 		this.searchResultsComponent = searchResultsComponent;
 	}
+
+	
+	
+	public void setSearchBarComponent(GermplasmSearchBarComponent searchBarComponent) {
+		this.searchBarComponent = searchBarComponent;
+	}
+
+	public void setBreedingMethodField(BreedingMethodField breedingMethodField) {
+		this.breedingMethodField = breedingMethodField;
+	}
+
+	
+	public void setBreedingLocationField(BreedingLocationField breedingLocationField) {
+		this.breedingLocationField = breedingLocationField;
+	}
+	
+	public void setNameTypeComboBox(ComboBox nameTypeComboBox) {
+		this.nameTypeComboBox = nameTypeComboBox;
+	}
+
+	
+	public void setGermplasmDateField(ListDateField germplasmDateField) {
+		this.germplasmDateField = germplasmDateField;
+	}
+
+	
+	public void setContextUtil(ContextUtil contextUtil) {
+		this.contextUtil = contextUtil;
+	}
+
+	
+	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
+	}
+	
+	
+	
 }
