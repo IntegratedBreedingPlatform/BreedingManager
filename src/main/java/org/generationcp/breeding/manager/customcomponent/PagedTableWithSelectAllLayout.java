@@ -28,6 +28,7 @@ import com.vaadin.ui.themes.BaseTheme;
 @Configurable
 public class PagedTableWithSelectAllLayout extends VerticalLayout implements BreedingManagerLayout, InitializingBean {
 
+	public static final int INDEX_OF_CHECKBOXES_LAYOUT = 2;
 	private static final long serialVersionUID = -4500578362272218341L;
 
 	@Autowired
@@ -142,15 +143,24 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 		this.addComponent(this.table);
 		this.addComponent(((PagedTable) this.table).createControls());
 
-		// layout for select checkboxes and clear button/link
+		final HorizontalLayout selectAllLayout = generateCheckboxesLayout();
+
+		this.addComponent(selectAllLayout);
+	}
+
+	/*
+	 * Generate  layout for select checkboxes and clear button/link
+	 */
+	private HorizontalLayout generateCheckboxesLayout() {
 		final HorizontalLayout selectAllLayout = new HorizontalLayout();
 		selectAllLayout.setDebugId("selectAllLayout");
 		selectAllLayout.setSpacing(true);
 		selectAllLayout.addComponent(this.selectAllOnPageCheckBox);
-		selectAllLayout.addComponent(this.selectAllEntriesCheckBox);
+		if (this.table.getTotalAmountOfPages() > 1) {
+			selectAllLayout.addComponent(this.selectAllEntriesCheckBox);
+		}
 		selectAllLayout.addComponent(this.unselectAllEntriesBtn);
-
-		this.addComponent(selectAllLayout);
+		return selectAllLayout;
 	}
 
 	public void syncItemCheckBoxes() {
@@ -343,9 +353,15 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 
 	/**
 	 * Update captions of "Select All on Page" and "Select All Pages" checkboxes based on the entries in the paged table. If the table had
-	 * entries, the page length and the entries size will be included in the captions.
+	 * entries, the page length and the entries size will be included in the captions. Also, if there is just
+	 * one page in the table, hide "Select All Pages" checkbox, else display it.
 	 */
-	public void updateSelectAllCheckboxesCaption() {
+	public void updateSelectAllCheckboxes() {
+		this.updateSelectAllCheckboxesCaption();
+		this.replaceComponent(this.getComponent(INDEX_OF_CHECKBOXES_LAYOUT), this.generateCheckboxesLayout());;
+	}
+
+	private void updateSelectAllCheckboxesCaption() {
 		final int allEntriesSize = this.table.getItemIds().size();
 		final String selectAllCaption = this.messageSource.getMessage(Message.SELECT_ALL_PAGES);
 		final String selectAllOnPageCaption = this.messageSource.getMessage(Message.SELECT_ALL_ON_PAGE);

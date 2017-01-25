@@ -174,7 +174,7 @@ public class GermplasmSearchResultsComponentTest {
 			}
 
 			// Check that Select All checkboxes states were updated
-			Mockito.verify(this.tableWithSelectAllLayout, Mockito.times(1)).updateSelectAllCheckboxesCaption();
+			Mockito.verify(this.tableWithSelectAllLayout, Mockito.times(1)).updateSelectAllCheckboxes();
 		}
 	}
 

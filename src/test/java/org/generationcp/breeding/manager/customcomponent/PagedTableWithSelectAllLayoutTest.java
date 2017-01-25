@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
@@ -17,8 +18,11 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
 
 import junit.framework.Assert;
+import liquibase.changelog.AbstractChangeLogHistoryService;
 
 /**
  * Created by Aldrin Batac on 5/23/16.
@@ -417,27 +421,43 @@ public class PagedTableWithSelectAllLayoutTest {
 	}
 
 	@Test
-	public void testUpdateSelectAllCheckboxesCaptionWhenEmptyTable() {
+	public void testUpdateSelectAllCheckboxesWhenEmptyTable() {
+		this.pagedTableWithSelectAllLayout.layoutComponents();
+		
 		// Hack setting of checkboxes caption to another value to verify if they are reset later
 		this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().setCaption("ABC");
 		this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().setCaption("XYZ");
 
 		// Method to test
-		this.pagedTableWithSelectAllLayout.updateSelectAllCheckboxesCaption();
+		this.pagedTableWithSelectAllLayout.updateSelectAllCheckboxes();
 
 		// Expecting select all checkboxes caption to be reset to default as table is empty
 		Assert.assertEquals(PagedTableWithSelectAllLayoutTest.SELECT_ALL_ON_PAGE_CAPTION,
 				this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().getCaption());
 		Assert.assertEquals(PagedTableWithSelectAllLayoutTest.SELECT_ALL_PAGES_CAPTION,
 				this.pagedTableWithSelectAllLayout.getSelectAllEntriesCheckBox().getCaption());
+		
+		// Check that "Select All Pages" checkbox to be hidden when table is empty
+		Component component = this.pagedTableWithSelectAllLayout.getComponent(PagedTableWithSelectAllLayout.INDEX_OF_CHECKBOXES_LAYOUT);
+		HorizontalLayout checkboxesLayout = (HorizontalLayout) component;
+		Assert.assertEquals(2, checkboxesLayout.getComponentCount());
+		Iterator<Component> componentIterator = checkboxesLayout.getComponentIterator();
+		while (componentIterator.hasNext()){
+			Component subComponent = componentIterator.next();
+			if (this.pagedTableWithSelectAllLayout.getSelectAllEntriesCheckBox().equals(subComponent)){
+				Assert.fail("Expecting \"Select All Pages\" checkbox was hidden but was not.");
+			}
+		}
+		
 	}
 
 	@Test
-	public void testUpdateSelectAllCheckboxesCaptionTableHasEntries() {
+	public void testUpdateSelectAllCheckboxesWhenTableHasEntries() {
+		this.pagedTableWithSelectAllLayout.layoutComponents();
 		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
 
 		// Method to test
-		this.pagedTableWithSelectAllLayout.updateSelectAllCheckboxesCaption();
+		this.pagedTableWithSelectAllLayout.updateSelectAllCheckboxes();
 
 		final String selectAllOnPageCaptionSubstr = PagedTableWithSelectAllLayoutTest.SELECT_ALL_ON_PAGE_CAPTION.substring(0,
 				PagedTableWithSelectAllLayoutTest.SELECT_ALL_ON_PAGE_CAPTION.length() - 1);
@@ -451,16 +471,31 @@ public class PagedTableWithSelectAllLayoutTest {
 		// Expecting "Select All Pages" checkbox caption to include total # of entries
 		Assert.assertEquals(selectAllCaptionSubstr + " - " + PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS + " entries)",
 				this.pagedTableWithSelectAllLayout.getSelectAllEntriesCheckBox().getCaption());
+		
+		// Check that "Select All Pages" checkbox to be displayed since table has multiple pages
+		Component component = this.pagedTableWithSelectAllLayout.getComponent(PagedTableWithSelectAllLayout.INDEX_OF_CHECKBOXES_LAYOUT);
+		HorizontalLayout checkboxesLayout = (HorizontalLayout) component;
+		Assert.assertEquals(3, checkboxesLayout.getComponentCount());
+		Iterator<Component> componentIterator = checkboxesLayout.getComponentIterator();
+		boolean isSelectAllCheckboxDisplayed = false;
+		while (componentIterator.hasNext()){
+			Component subComponent = componentIterator.next();
+			if (this.pagedTableWithSelectAllLayout.getSelectAllEntriesCheckBox().equals(subComponent)){
+				isSelectAllCheckboxDisplayed = true;
+			}
+		}
+		Assert.assertTrue("Expecting \"Select All Pages\" checkbox was hidden but was not.", isSelectAllCheckboxDisplayed);
 	}
 
 	@Test
-	public void testUpdateSelectAllCheckboxesCaptionTableEntriesLessThanPageLength() {
+	public void testUpdateSelectAllCheckboxesWhenTableEntriesLessThanPageLength() {
 		// Populate with 3 entries but default page length is 10
 		final int numberOfItems = 3;
 		this.initializePagedBreedingManagerTable(numberOfItems);
+		this.pagedTableWithSelectAllLayout.layoutComponents();
 
 		// Method to test
-		this.pagedTableWithSelectAllLayout.updateSelectAllCheckboxesCaption();
+		this.pagedTableWithSelectAllLayout.updateSelectAllCheckboxes();
 
 		final String selectAllOnPageCaptionSubstr = PagedTableWithSelectAllLayoutTest.SELECT_ALL_ON_PAGE_CAPTION.substring(0,
 				PagedTableWithSelectAllLayoutTest.SELECT_ALL_ON_PAGE_CAPTION.length() - 1);
@@ -473,6 +508,18 @@ public class PagedTableWithSelectAllLayoutTest {
 		// Expecting "Select All Pages" checkbox caption to include total # of entries
 		Assert.assertEquals(selectAllCaptionSubstr + " - " + numberOfItems + " entries)",
 				this.pagedTableWithSelectAllLayout.getSelectAllEntriesCheckBox().getCaption());
+		
+		// Check that "Select All Pages" checkbox to be hidden when table has only 1 page
+		Component component = this.pagedTableWithSelectAllLayout.getComponent(PagedTableWithSelectAllLayout.INDEX_OF_CHECKBOXES_LAYOUT);
+		HorizontalLayout checkboxesLayout = (HorizontalLayout) component;
+		Assert.assertEquals(2, checkboxesLayout.getComponentCount());
+		Iterator<Component> componentIterator = checkboxesLayout.getComponentIterator();
+		while (componentIterator.hasNext()){
+			Component subComponent = componentIterator.next();
+			if (this.pagedTableWithSelectAllLayout.getSelectAllEntriesCheckBox().equals(subComponent)){
+				Assert.fail("Expecting \"Select All Pages\" checkbox was hidden but was not.");
+			}
+		}
 	}
 
 }

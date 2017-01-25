@@ -392,7 +392,7 @@ public class GermplasmSearchResultsComponent extends VerticalLayout
 
 		this.updateNoOfEntries(factory.getNumberOfItems());
 		// update paged table controls given the latest table entries
-		this.matchingGermplasmTableWithSelectAll.updateSelectAllCheckboxesCaption();
+		this.matchingGermplasmTableWithSelectAll.updateSelectAllCheckboxes();
 
 		if (!this.matchingGermplasmTable.getItemIds().isEmpty()) {
 			this.updateActionMenuOptions(true);
