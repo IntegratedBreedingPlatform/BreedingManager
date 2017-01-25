@@ -19,7 +19,6 @@ import org.generationcp.breeding.manager.listmanager.GermplasmSearchResultsCompo
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListItemClickListener;
-import org.generationcp.breeding.manager.listmanager.listeners.GermplasmListValueChangeListener;
 import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.constant.ColumnLabels;
@@ -100,7 +99,6 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 	private AbsoluteLayout bottomPart;
 	private final AddEntryDialogSource source;
 	private OptionGroup optionGroup;
-	private List<Integer> selectedGids;
 
 	private BreedingMethodField breedingMethodField;
 	private BreedingLocationField breedingLocationField;
@@ -131,7 +129,6 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		this.setOverrideFocus(true);
 		this.source = source;
 		this.parentWindow = parentWindow;
-		this.selectedGids = new ArrayList<Integer>();
 	}
 
 	@Override
@@ -180,12 +177,10 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 			public void valueChange(final ValueChangeEvent event) {
 				if (AddEntryDialog.this.optionGroup.getValue().equals(AddEntryDialog.OPTION_1_ID)) {
 					AddEntryDialog.this.setSpecifyDetailsVisible(false);
-					if (AddEntryDialog.this.selectedGids.isEmpty()) {
-						AddEntryDialog.this.doneButton.setEnabled(false);
-					}
+					toggleDoneButtonState();
 				} else if (AddEntryDialog.this.optionGroup.getValue().equals(AddEntryDialog.OPTION_2_ID)) {
 					AddEntryDialog.this.setSpecifyDetailsVisible(true);
-					AddEntryDialog.this.doneButton.setEnabled(!AddEntryDialog.this.selectedGids.isEmpty());
+					toggleDoneButtonState();
 				} else if (AddEntryDialog.this.optionGroup.getValue().equals(AddEntryDialog.OPTION_3_ID)) {
 					AddEntryDialog.this.doneButton.setEnabled(true);
 					AddEntryDialog.this.setSpecifyDetailsVisible(true);
@@ -195,7 +190,16 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 	}
 
 	protected void addSearchResultsListeners() {
-		this.searchResultsComponent.getMatchingGermplasmTable().addListener(new GermplasmListValueChangeListener(this));
+		this.searchResultsComponent.getMatchingGermplasmTable().addListener(new Table.ValueChangeListener() {
+
+			private static final long serialVersionUID = 4523431033752074159L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				toggleDoneButtonState();
+			}
+			});
+
 		this.searchResultsComponent.getMatchingGermplasmTable().addListener(new GermplasmListItemClickListener(this));
 	}
 
@@ -245,29 +249,28 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 
 		this.setSpecifyDetailsVisible(false);
 	}
-
-	public void resultTableItemClickAction(final Table sourceTable) {
-
-		this.selectedGids = this.getSelectedItemGids(sourceTable);
-
-		if (!this.selectedGids.isEmpty()) {
-			this.doneButton.setEnabled(true);
-		} else {
-			this.doneButton.setEnabled(false);
-		}
+	
+	@SuppressWarnings("unchecked")
+	private Boolean isTableHasEntriesSelected(){
+		final Collection<Object> selectedEntries = (Collection<Object>) this.searchResultsComponent.getMatchingGermplasmTable().getValue();
+		return !selectedEntries.isEmpty();
 	}
 
-	public void resultTableValueChangeAction() {
-		this.selectedGids = this.getSelectedItemGids(this.searchResultsComponent.getMatchingGermplasmTable());
-		if (this.doneButton != null) {
-			if (!this.selectedGids.isEmpty()) {
-				this.doneButton.setEnabled(true);
-			} else {
-				this.doneButton.setEnabled(false);
-			}
-		}
+	public void resultTableItemClickAction() {
+		this.toggleDoneButtonState();
 	}
 
+	private void toggleDoneButtonState() {
+		this.doneButton.setEnabled(this.isTableHasEntriesSelected());
+	}
+
+	/**
+	 * Launches the Germplasm Details details on pop-up window of double-clicked item
+	 * 
+	 * @param sourceTable
+	 * @param itemId
+	 * @param item
+	 */
 	public void resultTableItemDoubleClickAction(final Table sourceTable, final Object itemId, final Item item) {
 		sourceTable.select(itemId);
 		final int gid = Integer.valueOf(item.getItemProperty(ColumnLabels.GID.getName() + "_REF").getValue().toString());
@@ -395,20 +398,23 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		this.doneButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 	}
 
-	public void nextButtonClickAction(final ClickEvent event) {
+	public void doneButtonClickAction(final ClickEvent event) {
 		if (this.optionGroup.getValue().equals(AddEntryDialog.OPTION_1_ID)) {
 			// add the germplasm selected as the list entry
 			this.validateInputForOption1(event);
+		
 		} else if (this.optionGroup.getValue().equals(AddEntryDialog.OPTION_2_ID)) {
 			this.validateInputForOption2(event);
+		
 		} else if (this.optionGroup.getValue().equals(AddEntryDialog.OPTION_3_ID)) {
 			this.validateInputForOption3(event);
 		}
 	}
 
 	private void validateInputForOption1(final ClickEvent event) {
-		if (!this.selectedGids.isEmpty()) {
-			this.source.finishAddingEntry(this.selectedGids);
+		if (this.isTableHasEntriesSelected()) {
+			final List<Integer> selectedGids = this.getSelectedItemGids();
+			this.source.finishAddingEntry(selectedGids);
 			final Window window = event.getButton().getWindow();
 			window.getParent().removeWindow(window);
 		} else {
@@ -420,10 +426,12 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 	private void validateInputForOption2(final ClickEvent event) {
 		if (this.breedingMethodField.getBreedingMethodComboBox().getValue() == null) {
 			MessageNotifier.showRequiredFieldError(this, this.messageSource.getMessage(Message.YOU_MUST_SELECT_A_METHOD_FOR_THE_GERMPLASM));
+		
 		} else if (this.breedingLocationField.getBreedingLocationComboBox().getValue() == null) {
 			MessageNotifier.showRequiredFieldError(this,
 					this.messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM));
-		} else if (!this.selectedGids.isEmpty()) {
+		
+		} else if (this.isTableHasEntriesSelected()) {
 			if (this.doneAction()) {
 				final Window window = event.getButton().getWindow();
 				window.getParent().removeWindow(window);
@@ -438,9 +446,11 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		final String searchValue = this.searchBarComponent.getSearchField().getValue().toString();
 		if (this.breedingMethodField.getBreedingMethodComboBox().getValue() == null) {
 			MessageNotifier.showRequiredFieldError(this, this.messageSource.getMessage(Message.YOU_MUST_SELECT_A_METHOD_FOR_THE_GERMPLASM));
+		
 		} else if (this.breedingLocationField.getBreedingLocationComboBox().getValue() == null) {
 			MessageNotifier.showRequiredFieldError(this,
 					this.messageSource.getMessage(Message.YOU_MUST_SELECT_A_LOCATION_FOR_THE_GERMPLASM));
+		
 		} else if (searchValue != null && searchValue.length() != 0) {
 			this.doneAction();
 			final Window window = event.getButton().getWindow();
@@ -458,7 +468,7 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		}
 		if (this.optionGroup.getValue().equals(AddEntryDialog.OPTION_2_ID)) {
 			final List<Integer> addedGids = new ArrayList<Integer>();
-			for (final Integer selectedGid : this.selectedGids) {
+			for (final Integer selectedGid : this.getSelectedItemGids()) {
 				final Integer newlyCreatedGid = this.addGermplasm(selectedGid);
 				if (newlyCreatedGid == null) {
 					return false;
@@ -631,7 +641,8 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 	 * Iterates through the whole table, gets selected item's GID's, make sure it's sorted as seen on the UI
 	 */
 	@SuppressWarnings("unchecked")
-	private List<Integer> getSelectedItemGids(final Table table) {
+	private List<Integer> getSelectedItemGids() {
+		final Table table = this.searchResultsComponent.getMatchingGermplasmTable();
 		List<Integer> itemIds = new ArrayList<Integer>();
 		final List<Integer> selectedItemIds = new ArrayList<Integer>();
 		final List<Integer> trueOrderedSelectedItemIds = new ArrayList<Integer>();
@@ -695,10 +706,6 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 		this.optionGroup = optionGroup;
 	}
 
-	public void setSelectedGids(final List<Integer> selectedGids) {
-		this.selectedGids = selectedGids;
-	}
-
 	public Button getDoneButton() {
 		return this.doneButton;
 	}
@@ -713,5 +720,10 @@ public class AddEntryDialog extends BaseSubWindow implements InitializingBean, I
 
 	public void setBreedingManagerService(final BreedingManagerService breedingManagerService) {
 		this.breedingManagerService = breedingManagerService;
+	}
+
+	
+	public void setSearchResultsComponent(final GermplasmSearchResultsComponent searchResultsComponent) {
+		this.searchResultsComponent = searchResultsComponent;
 	}
 }

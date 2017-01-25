@@ -51,7 +51,7 @@ public class GermplasmListButtonClickListener implements Button.ClickListener {
 			((ListManagerCopyToListDialog) this.source).cancelGermplasmListButtonClickAction();
 		} else if (event.getButton().getData().equals(AddEntryDialog.DONE_BUTTON_ID) && this.source instanceof AddEntryDialog) {
 			try {
-				((AddEntryDialog) this.source).nextButtonClickAction(event);
+				((AddEntryDialog) this.source).doneButtonClickAction(event);
 			} catch (final InternationalizableException e) {
 				GermplasmListButtonClickListener.LOG.error(e.toString() + "\n" + e.getStackTrace());
 				MessageNotifier.showError(event.getComponent().getWindow(), e.getCaption(), e.getDescription());
