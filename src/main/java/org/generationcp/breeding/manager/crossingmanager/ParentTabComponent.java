@@ -234,6 +234,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			}
 			ParentTabComponent.this.assignEntryNumber(ParentTabComponent.this.listDataTable);
 			ParentTabComponent.this.updateNoOfEntries(ParentTabComponent.this.listDataTable.size());
+			ParentTabComponent.this.getListDataTable().setValue(ParentTabComponent.this.listDataTable.getItemIds());
 		}
 
 		@Override

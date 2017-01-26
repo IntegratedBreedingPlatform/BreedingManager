@@ -95,14 +95,14 @@ public class SelectParentsListDataComponent extends VerticalLayout
 						SelectParentsListDataComponent.this.makeCrossesParentsComponent.getFemaleTable(), null);
 				SelectParentsListDataComponent.this.makeCrossesParentsComponent
 						.assignEntryNumber(SelectParentsListDataComponent.this.makeCrossesParentsComponent.getFemaleTable());
-				SelectParentsListDataComponent.this.makeCrossesParentsComponent.getParentTabSheet().setSelectedTab(0);
+				SelectParentsListDataComponent.this.makeCrossesParentsComponent.getFemaleParentTabSheet().setSelectedTab(0);
 			} else if (action.equals(SelectParentsListDataComponent.ACTION_ADD_TO_MALE_LIST)) {
 				SelectParentsListDataComponent.this.makeCrossesParentsComponent.dropToFemaleOrMaleTable(
 						SelectParentsListDataComponent.this.listDataTable,
 						SelectParentsListDataComponent.this.makeCrossesParentsComponent.getMaleTable(), null);
 				SelectParentsListDataComponent.this.makeCrossesParentsComponent
 						.assignEntryNumber(SelectParentsListDataComponent.this.makeCrossesParentsComponent.getMaleTable());
-				SelectParentsListDataComponent.this.makeCrossesParentsComponent.getParentTabSheet().setSelectedTab(1);
+				SelectParentsListDataComponent.this.makeCrossesParentsComponent.getMaleParentTabSheet().setSelectedTab(1);
 			}
 		}
 
@@ -137,7 +137,8 @@ public class SelectParentsListDataComponent extends VerticalLayout
 									SelectParentsListDataComponent.this.makeCrossesParentsComponent.getFemaleTable(), null);
 							SelectParentsListDataComponent.this.makeCrossesParentsComponent
 									.assignEntryNumber(SelectParentsListDataComponent.this.makeCrossesParentsComponent.getFemaleTable());
-							SelectParentsListDataComponent.this.makeCrossesParentsComponent.getParentTabSheet().setSelectedTab(0);
+							SelectParentsListDataComponent.this.makeCrossesParentsComponent.getFemaleParentTabSheet().setSelectedTab(0);
+							SelectParentsListDataComponent.this.makeCrossesParentsComponent.getFemaleParentTab().getListDataTable().setValue(SelectParentsListDataComponent.this.makeCrossesParentsComponent.getFemaleTable().getItemIds());
 						} else {
 							MessageNotifier.showWarning(SelectParentsListDataComponent.this.getWindow(),
 									SelectParentsListDataComponent.this.messageSource.getMessage(Message.WARNING),
@@ -153,7 +154,8 @@ public class SelectParentsListDataComponent extends VerticalLayout
 									SelectParentsListDataComponent.this.makeCrossesParentsComponent.getMaleTable(), null);
 							SelectParentsListDataComponent.this.makeCrossesParentsComponent
 									.assignEntryNumber(SelectParentsListDataComponent.this.makeCrossesParentsComponent.getMaleTable());
-							SelectParentsListDataComponent.this.makeCrossesParentsComponent.getParentTabSheet().setSelectedTab(1);
+							SelectParentsListDataComponent.this.makeCrossesParentsComponent.getMaleParentTabSheet().setSelectedTab(1);
+							SelectParentsListDataComponent.this.makeCrossesParentsComponent.getMaleParentTab().getListDataTable().setValue(SelectParentsListDataComponent.this.makeCrossesParentsComponent.getMaleTable().getItemIds());
 						} else {
 							MessageNotifier.showWarning(SelectParentsListDataComponent.this.getWindow(),
 									SelectParentsListDataComponent.this.messageSource.getMessage(Message.WARNING),
