@@ -330,13 +330,13 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		final VerticalLayout selectParentsLayout = new VerticalLayout();
 		selectParentsLayout.setDebugId("selectParentsLayout");
 		selectParentsLayout.setSpacing(true);
-		selectParentsLayout.setHeight("435px");
+		//selectParentsLayout.setHeight("435px");
 		selectParentsLayout.addComponent(this.selectParentsComponent);
 
 		final VerticalLayout parentsListLayout = new VerticalLayout();
 		parentsListLayout.setDebugId("parentsListLayout");
 		parentsListLayout.setSpacing(true);
-		parentsListLayout.setHeight("435px");
+		//parentsListLayout.setHeight("435px");
 		parentsListLayout.addComponent(this.parentsComponent);
 
 		final VerticalLayout crossingMethodLayout = new VerticalLayout();

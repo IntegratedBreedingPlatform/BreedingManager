@@ -148,7 +148,7 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		parentListLayout.setDebugId("parentListLayout");
 		parentListLayout.setWidth("100%");
 		parentListLayout.setSpacing(true);
-		parentListLayout.setHeight("435px");
+		//parentListLayout.setHeight("435px");
 		parentListLayout.addComponent(femaleParentTabSheet);
 		parentListLayout.addComponent(maleParentTabSheet);
 
