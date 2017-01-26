@@ -66,7 +66,7 @@ public class CrossingManagerListTreeComponent extends ListTreeTableComponent {
 									.setHasUnsavedChanges(true);
 							inventoryTableDropHandler.setHasChanges(true);
 						}
-						CrossingManagerListTreeComponent.this.source.getParentsComponent().getParentTabSheet().setSelectedTab(0);
+						CrossingManagerListTreeComponent.this.source.getParentsComponent().getFemaleParentTabSheet().setSelectedTab(0);
 					}
 
 					CrossingManagerListTreeComponent.this.closeTreeWindow(event);
@@ -104,7 +104,7 @@ public class CrossingManagerListTreeComponent extends ListTreeTableComponent {
 									.setHasUnsavedChanges(true);
 							inventoryTableDropHandler.setHasChanges(true);
 						}
-						CrossingManagerListTreeComponent.this.source.getParentsComponent().getParentTabSheet().setSelectedTab(1);
+						CrossingManagerListTreeComponent.this.source.getParentsComponent().getMaleParentTabSheet().setSelectedTab(1);
 					}
 
 					CrossingManagerListTreeComponent.this.closeTreeWindow(event);

@@ -58,8 +58,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	@Autowired
 	private InventoryDataManager inventoryDataManager;
 
-	private TabSheet parentTabSheet;
-
 	private TabSheet femaleParentTabSheet;
 	private TabSheet maleParentTabSheet;
 
@@ -182,6 +180,8 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 			if (selectedListEntries.contains(itemId)) {
 				final Integer entryId = (Integer) sourceTable.getItem(itemId).getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue();
 
+				final String parentage = (String) sourceTable.getItem(itemId).getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue();
+
 				final Button designationBtn =
 						(Button) sourceTable.getItem(itemId).getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue();
 				final String designation = designationBtn.getCaption();
@@ -223,8 +223,8 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 								new ParentsTableCheckboxListener(targetTable, entryObject, this.maleParentTab.getSelectAllCheckBox()));
 					}
 					tag.setImmediate(true);
+					tag.setValue(true);
 					item.getItemProperty(MakeCrossesParentsComponent.TAG_COLUMN_ID).setValue(tag);
-
 					final Button sourceAvailInvButton =
 							(Button) sourceTable.getItem(itemId).getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue();
 					final Button newAvailInvButton = new Button();
@@ -251,9 +251,9 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 					newStockIdLabel.setDescription(stockIdLabel.getValue().toString());
 					item.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(newStockIdLabel);
 
+					item.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(parentage);
 				}
 			}
-
 			targetTable.requestRepaint();
 		}
 
@@ -702,10 +702,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		return this.maleParentTab.getListNameForCrosses();
 	}
 
-	public TabSheet getParentTabSheet() {
-		return this.parentTabSheet;
-	}
-
 	public ParentTabComponent getFemaleParentTab() {
 		return this.femaleParentTab;
 	}
@@ -772,4 +768,13 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 
 		}
 	}
+
+	public TabSheet getFemaleParentTabSheet() {
+		return femaleParentTabSheet;
+	}
+
+	public TabSheet getMaleParentTabSheet() {
+		return maleParentTabSheet;
+	}
+
 }
