@@ -479,18 +479,19 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		this.totalSelectedCrossesLabel.setContentMode(Label.CONTENT_XHTML);
 		this.totalSelectedCrossesLabel.setWidth("95px");
 
-//		this.applyGroupingToNewCrossesOnly = new CheckBox(this.messageSource.getMessage(Message.APPLY_NEW_GROUP_TO_CURRENT_CROSS_ONLY));
-//		this.applyGroupingToNewCrossesOnly.setDebugId("applyGroupingToNewCrossesOnly");
+		// TODO Move Grouping logic to Nursery since breeding method is there now
+		this.applyGroupingToNewCrossesOnly = new CheckBox(this.messageSource.getMessage(Message.APPLY_NEW_GROUP_TO_CURRENT_CROSS_ONLY));
+		this.applyGroupingToNewCrossesOnly.setDebugId("applyGroupingToNewCrossesOnly");
 
-//		this.applyGroupingToNewCrossesOnlyHelpText = new Label(this.messageSource.getMessage(Message.GROUP_INHERITANCE_OPTION_MESSAGE));
-//		this.applyGroupingToNewCrossesOnlyHelpText.setDebugId("applyGroupingToNewCrossesOnlyHelpText");
-//		this.applyGroupingToNewCrossesOnlyHelpText.setWidth("300px");
-//		this.applyGroupingToNewCrossesOnlyHelpText.addStyleName("gcp-content-help-text");
-//
-//		this.applyGroupingToNewCrossesOnlyHelpPopup = new PopupView("?", this.applyGroupingToNewCrossesOnlyHelpText);
-//		this.applyGroupingToNewCrossesOnlyHelpPopup.setDebugId("applyGroupingToNewCrossesOnlyHelpPopup");
-//		this.applyGroupingToNewCrossesOnlyHelpPopup.addStyleName(AppConstants.CssStyles.POPUP_VIEW);
-//		this.applyGroupingToNewCrossesOnlyHelpPopup.addStyleName("cs-inline-icon");
+		this.applyGroupingToNewCrossesOnlyHelpText = new Label(this.messageSource.getMessage(Message.GROUP_INHERITANCE_OPTION_MESSAGE));
+		this.applyGroupingToNewCrossesOnlyHelpText.setDebugId("applyGroupingToNewCrossesOnlyHelpText");
+		this.applyGroupingToNewCrossesOnlyHelpText.setWidth("300px");
+		this.applyGroupingToNewCrossesOnlyHelpText.addStyleName("gcp-content-help-text");
+
+		this.applyGroupingToNewCrossesOnlyHelpPopup = new PopupView("?", this.applyGroupingToNewCrossesOnlyHelpText);
+		this.applyGroupingToNewCrossesOnlyHelpPopup.setDebugId("applyGroupingToNewCrossesOnlyHelpPopup");
+		this.applyGroupingToNewCrossesOnlyHelpPopup.addStyleName(AppConstants.CssStyles.POPUP_VIEW);
+		this.applyGroupingToNewCrossesOnlyHelpPopup.addStyleName("cs-inline-icon");
 
 //		this.saveButton = new Button(this.messageSource.getMessage(Message.SAVE_LABEL));
 //		this.saveButton.setDebugId("saveButton");
@@ -636,6 +637,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		this.addComponent(makeCrossesPanel);
 	}
 
+	// TODO Move Grouping logic to Nursery since breeding method is there now
 	public void showOrHideGroupInheritanceOptions() {
 		// Only show group inheritance options if breeding method chosen is hybrid
 		final BreedingMethodSetting currentBreedingSetting = this.makeCrossesMain.getCurrentBreedingMethodSetting();

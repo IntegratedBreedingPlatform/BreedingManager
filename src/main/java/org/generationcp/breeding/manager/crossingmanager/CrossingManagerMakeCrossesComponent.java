@@ -232,8 +232,7 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		// get the cancel button returning to nursery link as a root url
 		final String urlToSpecificNurseryWithParams =
 				CrossingManagerMakeCrossesComponent.this.nurseryCancelButton.getResource().getURL() + "?"
-						+ BreedingManagerApplication.REQ_PARAM_CROSSES_LIST_ID + "=" + id + "&"
-						+ BreedingManagerApplication.REQ_PARAM_BREEDING_METHOD_ID + "=" + methodId;
+						+ BreedingManagerApplication.REQ_PARAM_CROSSES_LIST_ID + "=" + id;
 
 		final ExternalResource urlToNursery = new ExternalResource(urlToSpecificNurseryWithParams);
 		CrossingManagerMakeCrossesComponent.this.getWindow().open(urlToNursery, "_self");
