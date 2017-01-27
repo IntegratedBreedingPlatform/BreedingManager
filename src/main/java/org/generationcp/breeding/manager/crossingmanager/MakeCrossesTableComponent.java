@@ -226,14 +226,16 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		final CrossParents parents = new CrossParents(femaleParentCopy, maleParentCopy);
 		final String seedSource = this.generateSeedSource(femaleParent.getGid(), femaleSeedSource, maleParent.getGid(), maleSeedSource);
 
-		if (!existingCrosses.contains(parents) && (excludeSelf && !this.hasSameParent(femaleParent, maleParent) || !excludeSelf)) {
-			final int entryCounter = existingCrosses.size() + 1;
+		if (shouldBeAddedToCrossesTable(parents, existingCrosses, excludeSelf, femaleParent, maleParent)) {
+			final int entryCounter = this.tableCrossesMade.size() + 1;
 			final String femalePreferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(femaleParent.getGid()));
 			final String maleParentPeferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(maleParent.getGid()));
 			final String femaleParentPedigreeString = pedigreeString.get(femaleParent.getGid());
 			final String maleParentPedigreeString = pedigreeString.get(maleParent.getGid());
 
-			this.tableCrossesMade.addItem(new Object[] {entryCounter, femaleParentPedigreeString, maleParentPedigreeString, femalePreferredName, maleParentPeferredName, seedSource}, parents);
+			this.tableCrossesMade.addItem(
+				new Object[] {entryCounter, femaleParentPedigreeString, maleParentPedigreeString, femalePreferredName,
+					maleParentPeferredName, seedSource}, parents);
 			existingCrosses.add(parents);
 		}
 
@@ -317,22 +319,27 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	}
 
 	void addItemToMakeCrossesTable(final boolean excludeSelf, final GermplasmListEntry femaleParent, final String femaleSource,
-			final GermplasmListEntry maleParent, final String maleSource, final CrossParents parents,
-			final Set<CrossParents> existingCrosses, final Map<Integer, Germplasm> germplasmWithPreferredName,
-			final Map<Integer, String> parentsPedigreeString) {
-		if (!existingCrosses.contains(parents)) {
-
-			if (excludeSelf && !this.hasSameParent(femaleParent, maleParent) || !excludeSelf) {
-				int entryCounter = existingCrosses.size() + 1;
+		final GermplasmListEntry maleParent, final String maleSource, final CrossParents parents, final Set<CrossParents> existingCrosses,
+		final Map<Integer, Germplasm> germplasmWithPreferredName, final Map<Integer, String> parentsPedigreeString) {
+		if (shouldBeAddedToCrossesTable(parents, existingCrosses, excludeSelf, femaleParent, maleParent)
+		 ) {
+				int entryCounter = this.tableCrossesMade.size() + 1;
 				final String femaleParentPedigreeString = parentsPedigreeString.get(femaleParent.getGid());
 				final String maleParentPedigreeString = parentsPedigreeString.get(maleParent.getGid());
 				final String femalePreferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(femaleParent.getGid()));
 				final String maleParentPeferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(maleParent.getGid()));
 				final String seedSource = this.generateSeedSource(femaleParent.getGid(), femaleSource, maleParent.getGid(), maleSource);
-				this.tableCrossesMade.addItem(new Object[] {entryCounter, femaleParentPedigreeString, maleParentPedigreeString, femalePreferredName, maleParentPeferredName, seedSource}, parents);
+				this.tableCrossesMade.addItem(
+					new Object[] {entryCounter, femaleParentPedigreeString, maleParentPedigreeString, femalePreferredName,
+						maleParentPeferredName, seedSource}, parents);
 				existingCrosses.add(parents);
 			}
-		}
+	}
+
+	private boolean shouldBeAddedToCrossesTable(CrossParents parents, Set<CrossParents> existingCrosses, boolean excludeSelf,
+		GermplasmListEntry femaleParent, GermplasmListEntry maleParent) {
+		return !existingCrosses.contains(parents) && (this.tableCrossesMade.size() == 0 || this.tableCrossesMade.getItem(parents) == null)
+			&& (excludeSelf && !this.hasSameParent(femaleParent, maleParent) || !excludeSelf);
 	}
 
 	String generateSeedSource(final Integer femaleParentGid, final String femaleSource, final Integer maleParentGid,

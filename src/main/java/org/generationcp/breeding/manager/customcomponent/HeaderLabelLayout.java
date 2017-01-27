@@ -19,6 +19,7 @@ public class HeaderLabelLayout extends HorizontalLayout implements InitializingB
 
 	private ThemeResource ICON;
 	private Label label;
+	/* This button was added to provide behavior to the icon. */
 	private Button button;
 
 	public HeaderLabelLayout(ThemeResource iCON, Label label) {
@@ -27,6 +28,8 @@ public class HeaderLabelLayout extends HorizontalLayout implements InitializingB
 		this.label = label;
 	}
 
+	/* This constructor permits to have a clickable image.
+	   You must define the listener of the button in your class*/
 	public HeaderLabelLayout(ThemeResource iCON, Label label, Button button) {
 		super();
 		this.button = button;
