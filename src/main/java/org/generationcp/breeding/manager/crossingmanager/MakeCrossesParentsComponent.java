@@ -126,9 +126,8 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 
 	@Override
 	public void layoutComponents() {
-		this.setSpacing(true);
 		this.setMargin(false, false, false, true);
-		this.setWidth("900px");
+		this.setWidth("100%");
 
 		this.femaleParentTabSheet = new TabSheet();
 		this.femaleParentTabSheet.setDebugId("femaleParentTabSheet");
@@ -142,21 +141,18 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		this.maleParentTabSheet.setWidth("420px");
 		this.maleParentTabSheet.setHeight("365px");
 
-		HorizontalLayout parentListLayout = new HorizontalLayout();
-		parentListLayout.setDebugId("parentListLayout");
-		parentListLayout.setWidth("100%");
-		parentListLayout.setSpacing(true);
-		//parentListLayout.setHeight("435px");
-		parentListLayout.addComponent(femaleParentTabSheet);
-		parentListLayout.addComponent(maleParentTabSheet);
-
+		HorizontalLayout parentListHLayout = new HorizontalLayout();
+		parentListHLayout.setWidth("100%");
+		parentListHLayout.setDebugId("parentListHLayout");
+		parentListHLayout.addComponent(maleParentTabSheet);
+		parentListHLayout.setSpacing(true);
+		parentListHLayout.addComponent(femaleParentTabSheet);
 
 		final HeaderLabelLayout parentLabelLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, this.parentListsLabel);
 		parentLabelLayout.setDebugId("parentLabelLayout");
 		this.addComponent(parentLabelLayout);
 		this.addComponent(this.instructionForParentLists);
-		this.addComponent(parentListLayout);
-
+		this.addComponent(parentListHLayout);
 	}
 
 	// end of layoutComponent
@@ -225,24 +221,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 					tag.setImmediate(true);
 					tag.setValue(true);
 					item.getItemProperty(MakeCrossesParentsComponent.TAG_COLUMN_ID).setValue(tag);
-					final Button sourceAvailInvButton =
-							(Button) sourceTable.getItem(itemId).getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue();
-					final Button newAvailInvButton = new Button();
-					newAvailInvButton.setDebugId("newAvailInvButton");
-
-					newAvailInvButton.setCaption(sourceAvailInvButton.getCaption());
-					newAvailInvButton.addListener((InventoryLinkButtonClickListener) sourceAvailInvButton.getData());
-					newAvailInvButton.setStyleName(BaseTheme.BUTTON_LINK);
-					newAvailInvButton.setDescription(MakeCrossesParentsComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
-
-//					String seedRes = MakeCrossesParentsComponent.STRING_DASH;
-//					if (sourceTable.getItemIds().size() == selectedListEntries.size()) {
-//						seedRes =
-//								sourceTable.getItem(itemId).getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue().toString();
-//					}
-
-					item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(newAvailInvButton);
-//					item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 
 					final Object columnValue = sourceTable.getItem(itemId).getItemProperty(ColumnLabels.STOCKID.getName()).getValue();
 					final Label stockIdLabel = (Label) columnValue;
@@ -301,10 +279,10 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	}
 
 	void clearSeedReservationValues(final Table table) {
-//		for (final Object itemId : table.getItemIds()) {
-//			table.getItem(itemId).getItemProperty(ColumnLabels.SEED_RESERVATION.getName())
-//					.setValue(MakeCrossesParentsComponent.STRING_DASH);
-//		}
+		for (final Object itemId : table.getItemIds()) {
+			table.getItem(itemId).getItemProperty(ColumnLabels.SEED_RESERVATION.getName())
+					.setValue(MakeCrossesParentsComponent.STRING_DASH);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -458,41 +436,10 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 						// if the item is already existing in the target table, remove the existing item then add a new entry
 						this.maleParentTab.getListDataTable().removeItem(entryObject);
 
-						// #1 Available Inventory
-						// default value
-						String availInv = MakeCrossesParentsComponent.STRING_DASH;
-						if (listData.getInventoryInfo().getLotCount().intValue() != 0) {
-							availInv = listData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
-						}
-
-						final InventoryLinkButtonClickListener inventoryClickListener =
-								new InventoryLinkButtonClickListener(this, germplasmListId, listData.getId(), listData.getGid());
-						final Button inventoryButton = new Button(availInv, inventoryClickListener);
-						inventoryButton.setDebugId("inventoryButton");
-						inventoryButton.setData(inventoryClickListener);
-						inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-						inventoryButton.setDescription(MakeCrossesParentsComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
-
-						if (availInv.equals(MakeCrossesParentsComponent.STRING_DASH)) {
-							inventoryButton.setEnabled(false);
-							inventoryButton.setDescription("No Lot for this Germplasm");
-						} else {
-							inventoryButton.setDescription(MakeCrossesParentsComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
-						}
-
-						// Seed Reserved
-						// default value
-						String seedRes = MakeCrossesParentsComponent.STRING_DASH;
-						if (listData.getInventoryInfo().getReservedLotCount().intValue() != 0) {
-							seedRes = listData.getInventoryInfo().getReservedLotCount().toString().trim();
-						}
-
 						final Item item = this.maleParentTab.getListDataTable().addItem(entryObject);
 						item.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(gidButton);
 						item.getItemProperty(MakeCrossesParentsComponent.TAG_COLUMN_ID).setValue(tag);
 
-						item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-//						item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 
 						final Label stockIdLabel = new Label(listData.getInventoryInfo().getStockIDs());
 						stockIdLabel.setDebugId("stockIdLabel");
@@ -573,41 +520,9 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 						// if the item is already existing in the target table, remove the existing item then add a new entry
 						this.femaleParentTab.getListDataTable().removeItem(entryObject);
 
-						// #1 Available Inventory
-						// default value
-						String availInv = MakeCrossesParentsComponent.STRING_DASH;
-						if (listData.getInventoryInfo().getLotCount().intValue() != 0) {
-							availInv = listData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
-						}
-
-						final InventoryLinkButtonClickListener inventoryClickListener =
-								new InventoryLinkButtonClickListener(this, germplasmListId, listData.getId(), listData.getGid());
-						final Button inventoryButton = new Button(availInv, inventoryClickListener);
-						inventoryButton.setDebugId("inventoryButton");
-						inventoryButton.setData(inventoryClickListener);
-						inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-						inventoryButton.setDescription(MakeCrossesParentsComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
-
-						if (availInv.equals(MakeCrossesParentsComponent.STRING_DASH)) {
-							inventoryButton.setEnabled(false);
-							inventoryButton.setDescription("No Lot for this Germplasm");
-						} else {
-							inventoryButton.setDescription(MakeCrossesParentsComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
-						}
-
-						// Seed Reserved
-						// default value
-						String seedRes = MakeCrossesParentsComponent.STRING_DASH;
-						if (listData.getInventoryInfo().getReservedLotCount().intValue() != 0) {
-							seedRes = listData.getInventoryInfo().getReservedLotCount().toString().trim();
-						}
-
 						final Item item = this.femaleParentTab.getListDataTable().addItem(entryObject);
 						item.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(gidButton);
 						item.getItemProperty(MakeCrossesParentsComponent.TAG_COLUMN_ID).setValue(tag);
-
-						item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-//						item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 
 						final Label stockIdLabel = new Label(listData.getInventoryInfo().getStockIDs());
 						stockIdLabel.setDebugId("stockIdLabel");
