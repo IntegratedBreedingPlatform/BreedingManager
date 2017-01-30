@@ -531,18 +531,12 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		this.listDataTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, Integer.valueOf(0));
 		this.listDataTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
-		this.listDataTable.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Button.class, null);
-//		this.listDataTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
 
 		this.listDataTable.setColumnHeader(ParentTabComponent.TAG_COLUMN_ID, this.messageSource.getMessage(Message.CHECK_ICON));
 		this.listDataTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), this.messageSource.getMessage(Message.HASHTAG));
 		this.listDataTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(), this.getTermNameFromOntology(ColumnLabels.DESIGNATION));
 		this.listDataTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(), this.getTermNameFromOntology(ColumnLabels.PARENTAGE));
-		this.listDataTable.setColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName(),
-				this.getTermNameFromOntology(ColumnLabels.AVAILABLE_INVENTORY));
-//		this.listDataTable.setColumnHeader(ColumnLabels.SEED_RESERVATION.getName(),
-//				this.getTermNameFromOntology(ColumnLabels.SEED_RESERVATION));
 		this.listDataTable.setColumnHeader(ColumnLabels.STOCKID.getName(), this.getTermNameFromOntology(ColumnLabels.STOCKID));
 
 		this.listDataTable.setColumnWidth(ParentTabComponent.TAG_COLUMN_ID, 25);
@@ -574,7 +568,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	/**
 	 * Exposed for testing purposed
 <<<<<<< HEAD
-	 * 
+	 *
 =======
 	 *
 >>>>>>> master
@@ -994,38 +988,9 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 			// #4
 			// default value
-			String availInv = ParentTabComponent.STRING_DASH;
-			if (entry.getInventoryInfo().getLotCount().intValue() != 0) {
-				availInv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
-			}
-
-			final InventoryLinkButtonClickListener inventoryClickListener =
-					new InventoryLinkButtonClickListener(this, germplasmListId, entry.getId(), entry.getGid());
-			final Button inventoryButton = new Button(availInv, inventoryClickListener);
-			inventoryButton.setDebugId("inventoryButton");
-			inventoryButton.setData(inventoryClickListener);
-			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-			inventoryButton.setDescription(ParentTabComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
-
-			if (availInv.equals(ParentTabComponent.STRING_DASH)) {
-				inventoryButton.setEnabled(false);
-				inventoryButton.setDescription(ParentTabComponent.NO_LOT_FOR_THIS_GERMPLASM);
-			} else {
-				inventoryButton.setDescription(ParentTabComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
-			}
-
-			// #5
-			// default value
-//			String seedRes = ParentTabComponent.STRING_DASH;
-//			if (entry.getInventoryInfo().getReservedLotCount().intValue() != 0) {
-//				seedRes = entry.getInventoryInfo().getReservedLotCount().toString().trim();
-//			}
- 			System.err.println("CROSS ="+entry.getGroupName());
 			newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entry.getEntryId());
 			newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
 			newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(entry.getGroupName());
-			newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-//			newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 			newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(entry.getInventoryInfo().getStockIDs());
 
 		}
@@ -1329,35 +1294,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			final GermplasmListEntry itemId = this.getGermplasmListEntry(listData.getEntryId(), itemIds);
 			final Item item = this.listDataTable.getItem(itemId);
 
-			// #1 Available Inventory
-			// default value
-			String availInv = ParentTabComponent.STRING_DASH;
-			if (listData.getInventoryInfo().getLotCount().intValue() != 0) {
-				availInv = listData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
-			}
-			final Button inventoryButton =
-					new Button(availInv, new InventoryLinkButtonClickListener(this.source, this.germplasmList.getId(), listData.getId(),
-							listData.getGid()));
-			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-			inventoryButton.setDescription(ParentTabComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
-
-			if (availInv.equals(ParentTabComponent.STRING_DASH)) {
-				inventoryButton.setEnabled(false);
-				inventoryButton.setDescription(ParentTabComponent.NO_LOT_FOR_THIS_GERMPLASM);
-			} else {
-				inventoryButton.setDescription(ParentTabComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
-			}
-
-			item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-
-			// Seed Reserved
-			// default value
-//			String seedRes = ParentTabComponent.STRING_DASH;
-//			if (listData.getInventoryInfo().getReservedLotCount().intValue() != 0) {
-//				seedRes = listData.getInventoryInfo().getReservedLotCount().toString().trim();
-//			}
-
-//			item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 			item.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(listData.getGroupName());
 		}
 
