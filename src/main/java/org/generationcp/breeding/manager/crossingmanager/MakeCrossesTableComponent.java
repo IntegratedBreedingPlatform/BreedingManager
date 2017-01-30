@@ -504,8 +504,8 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		this.setTableCrossesMade(new BreedingManagerTable(MakeCrossesTableComponent.PAGE_LENGTH, MakeCrossesTableComponent.PAGE_LENGTH));
 		this.tableCrossesMade = this.getTableCrossesMade();
 		this.tableCrossesMade.setDebugId("tableCrossesMade");
-		this.tableCrossesMade.setWidth("850");
-		this.tableCrossesMade.setHeight("365px");
+		this.tableCrossesMade.setWidth("100%");
+		this.tableCrossesMade.setHeight("350px");
 		this.tableCrossesMade.setImmediate(true);
 		this.tableCrossesMade.setSelectable(true);
 		this.tableCrossesMade.setMultiSelect(true);
@@ -587,11 +587,9 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	public void layoutComponents() {
 		this.setSpacing(true);
 		this.setMargin(false, false, false, true);
-		this.setWidth("900px");
 
 		final HorizontalLayout leftLabelContainer = new HorizontalLayout();
 		leftLabelContainer.setDebugId("leftLabelContainer");
-//		leftLabelContainer.setSpacing(true);
 		leftLabelContainer.addComponent(this.totalCrossesLabel);
 		leftLabelContainer.addComponent(this.totalSelectedCrossesLabel);
 		leftLabelContainer.setComponentAlignment(this.totalCrossesLabel, Alignment.MIDDLE_LEFT);
@@ -599,18 +597,13 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 		final HorizontalLayout labelContainer = new HorizontalLayout();
 		labelContainer.setDebugId("labelContainer");
-//		labelContainer.setSpacing(true);
 		labelContainer.setWidth("100%");
 		labelContainer.setHeight("30px");
 		labelContainer.addComponent(leftLabelContainer);
-//		labelContainer.addComponent(this.saveButton);
 		labelContainer.setComponentAlignment(leftLabelContainer, Alignment.MIDDLE_LEFT);
-//		labelContainer.setComponentAlignment(this.saveButton, Alignment.MIDDLE_RIGHT);
 
 		final VerticalLayout makeCrossesLayout = new VerticalLayout();
 		makeCrossesLayout.setDebugId("makeCrossesLayout");
-		makeCrossesLayout.setWidth("900px"); //era 850
-		makeCrossesLayout.setHeight("300px"); //365px
 		makeCrossesLayout.setSpacing(true);
 		makeCrossesLayout.setMargin(true);
 		makeCrossesLayout.addComponent(labelContainer);
@@ -626,8 +619,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 		final Panel makeCrossesPanel = new Panel();
 		makeCrossesPanel.setDebugId("makeCrossesPanel");
-		makeCrossesPanel.setWidth("900px");
-		makeCrossesPanel.setHeight("530px");
 		makeCrossesPanel.setLayout(makeCrossesLayout);
 		makeCrossesPanel.addStyleName("section_panel_layout");
 
