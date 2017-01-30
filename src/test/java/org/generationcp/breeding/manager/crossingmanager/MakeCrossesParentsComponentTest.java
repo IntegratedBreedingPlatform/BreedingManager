@@ -242,15 +242,6 @@ public class MakeCrossesParentsComponentTest {
 		}
 	}
 
-	@Test
-	public void testClearSeedReservationValues() {
-		final GermplasmListEntry entryObject = this.addItemToParentTable(1, this.femaleParent);
-		this.makeCrossesParentsComponent.clearSeedReservationValues(this.femaleParent);
-		final String actualValue =
-				(String) this.femaleParent.getItem(entryObject).getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue();
-		Assert.assertEquals("Expecting that the value is set to '-' but didn't.", MakeCrossesParentsComponentTest.STRING_DASH, actualValue);
-	}
-
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testAssignEntryNumber() {

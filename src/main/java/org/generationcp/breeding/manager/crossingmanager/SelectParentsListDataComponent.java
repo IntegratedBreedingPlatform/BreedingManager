@@ -138,7 +138,6 @@ public class SelectParentsListDataComponent extends VerticalLayout
 							SelectParentsListDataComponent.this.makeCrossesParentsComponent
 									.assignEntryNumber(SelectParentsListDataComponent.this.makeCrossesParentsComponent.getFemaleTable());
 							SelectParentsListDataComponent.this.makeCrossesParentsComponent.getFemaleParentTabSheet().setSelectedTab(0);
-							SelectParentsListDataComponent.this.makeCrossesParentsComponent.getFemaleParentTab().getListDataTable().setValue(SelectParentsListDataComponent.this.makeCrossesParentsComponent.getFemaleTable().getItemIds());
 						} else {
 							MessageNotifier.showWarning(SelectParentsListDataComponent.this.getWindow(),
 									SelectParentsListDataComponent.this.messageSource.getMessage(Message.WARNING),
@@ -155,7 +154,6 @@ public class SelectParentsListDataComponent extends VerticalLayout
 							SelectParentsListDataComponent.this.makeCrossesParentsComponent
 									.assignEntryNumber(SelectParentsListDataComponent.this.makeCrossesParentsComponent.getMaleTable());
 							SelectParentsListDataComponent.this.makeCrossesParentsComponent.getMaleParentTabSheet().setSelectedTab(1);
-							SelectParentsListDataComponent.this.makeCrossesParentsComponent.getMaleParentTab().getListDataTable().setValue(SelectParentsListDataComponent.this.makeCrossesParentsComponent.getMaleTable().getItemIds());
 						} else {
 							MessageNotifier.showWarning(SelectParentsListDataComponent.this.getWindow(),
 									SelectParentsListDataComponent.this.messageSource.getMessage(Message.WARNING),
@@ -393,7 +391,6 @@ public class SelectParentsListDataComponent extends VerticalLayout
 			listDataTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
 			listDataTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
 			listDataTable.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Button.class, null);
-//			listDataTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
 			listDataTable.addContainerProperty(ColumnLabels.TOTAL.getName(), String.class, null);
 			listDataTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, new Label(""));
 			listDataTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
@@ -406,7 +403,6 @@ public class SelectParentsListDataComponent extends VerticalLayout
 			listDataTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), this.messageSource.getMessage(Message.HASHTAG));
 			listDataTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(), this.getTermNameFromOntology(ColumnLabels.DESIGNATION));
 			listDataTable.setColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName(), this.getTermNameFromOntology(ColumnLabels.AVAILABLE_INVENTORY));
-//			listDataTable.setColumnHeader(ColumnLabels.SEED_RESERVATION.getName(), this.getTermNameFromOntology(ColumnLabels.SEED_RESERVATION));
 			listDataTable.setColumnHeader(ColumnLabels.TOTAL.getName(), this.getTermNameFromOntology(ColumnLabels.TOTAL));
 			listDataTable.setColumnHeader(ColumnLabels.STOCKID.getName(), this.getTermNameFromOntology(ColumnLabels.STOCKID));
 			listDataTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(), this.getTermNameFromOntology(ColumnLabels.PARENTAGE));
