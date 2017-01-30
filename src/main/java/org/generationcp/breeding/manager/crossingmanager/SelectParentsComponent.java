@@ -95,13 +95,12 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 		this.selectParentsLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		this.selectParentsLabel.addStyleName(AppConstants.CssStyles.BOLD);
 		this.selectParentsLabel.setWidth("230px");
-		
+
 		this.selectParentsButton = new Button();
 		this.selectParentsButton.setDebugId("selectParentsButton");
 		this.selectParentsButton.setImmediate(true);
 		this.selectParentsButton.setVisible(true);
 
-		
 		this.browseForListsButton = new Button(this.messageSource.getMessage(Message.BROWSE));
 		this.browseForListsButton.setDebugId("browseForListsButton");
 		this.browseForListsButton.setImmediate(true);
@@ -115,8 +114,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 
 		this.listDetailsTabSheet = new TabSheet();
 		this.listDetailsTabSheet.setDebugId("listDetailsTabSheet");
-		this.listDetailsTabSheet.setWidth("900px");
-		this.listDetailsTabSheet.setHeight("365px"); // 465px
+		this.listDetailsTabSheet.setHeight("365px");
 		hideListDetailsTabSheet();
 
 		this.closeAllTabsButton = new Button(this.messageSource.getMessage(Message.CLOSE_ALL_TABS));
@@ -187,11 +185,11 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 				openBrowseForListDialog();
 			}
 		});
-		
+
 		selectParentsButton.addListener(new Button.ClickListener() {
 
 			private static final long serialVersionUID = 6385074843600086746L;
-			
+
 
 			@Override
 			public void buttonClick(final ClickEvent event) {
@@ -217,8 +215,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	@Override
 	public void layoutComponents() {
 
-		setSpacing(true);
-		setWidth("900px");
+		setMargin(true);
 
 		final HeaderLabelLayout selectParentsHeaderLayout =
 				new HeaderLabelLayout(AppConstants.Icons.ICON_SELECT_PARENTS, selectParentsLabel, selectParentsButton);
