@@ -131,7 +131,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 						final Object oldEntryCode = oldItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue();
 						final Object oldDesignation = oldItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue();
 						final Object oldAvailInv = oldItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue();
-//						final Object oldSeedRes = oldItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue();
 						final Object oldparentage = oldItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue();
 						final Object oldStockId = oldItem.getItemProperty(ColumnLabels.STOCKID.getName()).getValue();
 
@@ -143,7 +142,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 						newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(oldDesignation);
 						newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(oldparentage);
 						newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(oldAvailInv);
-//						newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(oldSeedRes);
 						newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(oldStockId);
 
 						ParentTabComponent.this.saveActionMenu.setEnabled(true);
