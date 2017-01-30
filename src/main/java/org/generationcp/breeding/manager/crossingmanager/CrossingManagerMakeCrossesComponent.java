@@ -322,35 +322,13 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	@Override
 	public void layoutComponents() {
 		this.setWidth("950px");
-		this.setMargin(true);
-		this.setSpacing(true);
 
-		final VerticalLayout selectParentsLayout = new VerticalLayout();
-		selectParentsLayout.setDebugId("selectParentsLayout");
-		selectParentsLayout.setSpacing(true);
-		//selectParentsLayout.setHeight("435px");
-		selectParentsLayout.addComponent(this.selectParentsComponent);
-
-		final VerticalLayout parentsListLayout = new VerticalLayout();
-		parentsListLayout.setDebugId("parentsListLayout");
-		parentsListLayout.setSpacing(true);
-		//parentsListLayout.setHeight("435px");
-		parentsListLayout.addComponent(this.parentsComponent);
-
-		final VerticalLayout crossingMethodLayout = new VerticalLayout();
-		crossingMethodLayout.setDebugId("crossingMethodLayout");
-		crossingMethodLayout.setSpacing(true);
-		crossingMethodLayout.addComponent(this.crossingMethodComponent);
-
-		final VerticalLayout crossesTableLayout = new VerticalLayout();
-		crossesTableLayout.setDebugId("crossesTableLayout");
-		crossesTableLayout.setSpacing(true);
-		crossesTableLayout.setHeight("485px");
-		crossesTableLayout.addComponent(this.crossesTableComponent);
+		final VerticalLayout sheetDesignCrosses = new VerticalLayout();
+		sheetDesignCrosses.setSpacing(true);
 
 		final HorizontalLayout layoutButtonArea = new HorizontalLayout();
 		layoutButtonArea.setDebugId("layoutButtonArea");
-		layoutButtonArea.setMargin(true, true, false, true);
+		layoutButtonArea.setMargin(true, true, true, true);
 		layoutButtonArea.setSpacing(true);
 
 		// show the link to navigate back to the Crossing Manager only if we came from the Nursery Manager previously
@@ -366,13 +344,14 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 			layoutButtonArea.addComponent(this.nextButton);
 		}
 
-		this.addComponent(selectParentsLayout);
-		this.addComponent(parentsListLayout);
-		this.addComponent(crossingMethodLayout);
-		this.addComponent(crossesTableLayout);
-		this.addComponent(layoutButtonArea);
+		sheetDesignCrosses.addComponent(this.selectParentsComponent);
+		sheetDesignCrosses.addComponent(this.parentsComponent);
+		sheetDesignCrosses.addComponent(this.crossingMethodComponent);
+		sheetDesignCrosses.addComponent(this.crossesTableComponent);
+		sheetDesignCrosses.addComponent(layoutButtonArea);
+		sheetDesignCrosses.setComponentAlignment(layoutButtonArea, Alignment.MIDDLE_CENTER);
 
-		this.setComponentAlignment(layoutButtonArea, Alignment.MIDDLE_CENTER);
+		this.addComponent(sheetDesignCrosses);
 		this.setStyleName("crosses-select-parents-tab");
 	}
 
