@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.vaadin.ui.Table;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
@@ -243,10 +244,15 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 				&& this.crossesTableComponent.getCrossList() != null;
 	}
 
+//	private boolean isCrossListMade() {
+//		BreedingManagerTable tableCrossesMade = this.crossesTableComponent.getTableCrossesMade();
+//		return tableCrossesMade != null && tableCrossesMade.size() > 0;
+//	}
 	private boolean isCrossListMade() {
-		BreedingManagerTable tableCrossesMade = this.crossesTableComponent.getTableCrossesMade();
+		Table tableCrossesMade = this.crossesTableComponent.getTableCrossesMade();
 		return tableCrossesMade != null && tableCrossesMade.size() > 0;
 	}
+
 
 	public void nextButtonClickAction() {
 		if (this.crossesTableComponent.getCrossList() != null) {

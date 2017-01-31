@@ -13,8 +13,10 @@ package org.generationcp.breeding.manager.crossingmanager;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -24,7 +26,9 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PopupView;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -32,6 +36,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.actions.SaveCrossesMadeAction;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerActionHandler;
+import org.generationcp.breeding.manager.crossingmanager.listeners.MakeCrossingCheckBoxListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
@@ -42,7 +47,9 @@ import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
+import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
+import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
 import org.generationcp.breeding.manager.util.BreedingManagerTransformationUtil;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
@@ -102,7 +109,12 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	public static final String PARENTS_DELIMITER = ",";
 	private static final long serialVersionUID = 3702324761498666369L;
 	private static final Logger LOG = LoggerFactory.getLogger(MakeCrossesTableComponent.class);
-	static final String TAG_COLUMN_ID = "Tag";
+	private static final String TAG_COLUMN_ID = "Tag";
+	private static final String FEMALE_CROSS = "FEMALE CROSS";
+	private static final String MALE_CROSS = "MALE CROSS";
+
+	private static final String CLICK_TO_VIEW_GERMPLASM_INFORMATION = "Click to view Germplasm information";
+
 	@Autowired
 	private PlatformTransactionManager transactionManager;
 
@@ -128,7 +140,9 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	private PedigreeService pedigreeService;
 
 	private Label lblReviewCrosses;
-	private BreedingManagerTable tableCrossesMade;
+//	private BreedingManagerTable tableCrossesMade;
+
+
 
 	private Label totalCrossesLabel;
 	private Label totalSelectedCrossesLabel;
@@ -139,6 +153,9 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	private ContextMenu actionMenu;
 
+	// Tables
+	private TableWithSelectAllLayout tableWithSelectAllLayout;
+	private Table tableCrossesMade;
 	@SuppressWarnings("unused")
 	private CheckBox selectAll;
 
@@ -205,7 +222,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 		this.separator = this.makeCrossesMain.getSeparatorString();
 		final Set<CrossParents> existingCrosses = new HashSet<>();
-		this.tableCrossesMade.disableContentRefreshing();
+//		this.tableCrossesMade.disableContentRefreshing();
 
 		while (femaleListIterator.hasNext()) {
 			final GermplasmListEntry femaleParent = femaleListIterator.next();
@@ -214,7 +231,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 					existingCrosses, germplasmWithPreferredName, parentsPedigreeString);
 		}
 		this.updateCrossesMadeUI();
-		this.tableCrossesMade.enableContentRefreshing(true);
+//		this.tableCrossesMade.enableContentRefreshing(true);
 
 	}
 
@@ -246,31 +263,39 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		final String seedSource = this.generateSeedSource(femaleParent.getGid(), femaleSeedSource, maleParent.getGid(), maleSeedSource);
 
 		if (shouldBeAddedToCrossesTable(parents, existingCrosses, excludeSelf, femaleParent, maleParent)) {
-			final CheckBox tag = new CheckBox();
-			tag.setDebugId("tag");
+
+
+
 			final int entryCounter = this.tableCrossesMade.size() + 1;
 			final String femalePreferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(femaleParent.getGid()));
 			final String maleParentPeferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(maleParent.getGid()));
 			final String femaleParentPedigreeString = pedigreeString.get(femaleParent.getGid());
 			final String maleParentPedigreeString = pedigreeString.get(maleParent.getGid());
 
-			this.tableCrossesMade.addItem(
-				new Object[] {tag, entryCounter, femaleParentPedigreeString, maleParentPedigreeString, femalePreferredName,
-					maleParentPeferredName}, parents);
+			final Button femaleParentButton =
+				new Button(femaleParent.getDesignation(), new GidLinkClickListener(femalePreferredName
+					.toString(), true));
+			femaleParentButton.setStyleName(BaseTheme.BUTTON_LINK);
+			femaleParentButton.setDescription(this.CLICK_TO_VIEW_GERMPLASM_INFORMATION);
+			final CheckBox tag = new CheckBox();
+			tag.setDebugId("tag");
+			tag.setImmediate(true);
+			Object[] item = new Object[] {tag, entryCounter, femalePreferredName,
+				maleParentPeferredName,  femaleParentPedigreeString, maleParentPedigreeString};
+
+			tag.addListener(new MakeCrossingCheckBoxListener(tableCrossesMade, item, this.tableWithSelectAllLayout.getCheckBox()));
+
+			this.tableCrossesMade.addItem(item, parents);
 			existingCrosses.add(parents);
 		}
 
 	}
 
 	private void setMakeCrossesTableVisibleColumn() {
-		this.tableCrossesMade.addContainerProperty(ColumnLabels.FEMALE_CROSS.getName(), String.class, null);
-		this.tableCrossesMade.addContainerProperty(ColumnLabels.MALE_CROSS.getName(), String.class, null);
-
 		this.tableCrossesMade.setVisibleColumns(new Object[] {
 			TAG_COLUMN_ID, ColumnLabels.ENTRY_ID.getName(), ColumnLabels.FEMALE_PARENT.getName(),
-			ColumnLabels.MALE_PARENT.getName(), ColumnLabels.FEMALE_CROSS.getName(),
-			ColumnLabels.MALE_CROSS.getName()});
-//			"FEMALE CROSS", "MALE_CROSS"});
+			ColumnLabels.MALE_PARENT.getName(), FEMALE_CROSS,
+			MALE_CROSS});
 	}
 
 	private void updateCrossesMadeUI() {
@@ -317,7 +342,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		final Map<Integer, String> parentsPedigreeString = pedigreeService.getCrossExpansions(germplasmWithPreferredName.keySet(), null, crossExpansionProperties);
 
 		final Set<CrossParents> existingCrosses = new HashSet<>();
-		this.tableCrossesMade.disableContentRefreshing();
+//		this.tableCrossesMade.disableContentRefreshing();
 		for (final GermplasmListEntry femaleParent : femaleParents) {
 
 			final String femaleSource = listnameFemaleParent + ":" + femaleParent.getEntryId();
@@ -336,7 +361,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			}
 		}
 		this.updateCrossesMadeUI();
-		this.tableCrossesMade.enableContentRefreshing(true);
+//		this.tableCrossesMade.enableContentRefreshing(true);
 
 
 	}
@@ -346,17 +371,28 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		final Map<Integer, Germplasm> germplasmWithPreferredName, final Map<Integer, String> parentsPedigreeString) {
 		if (shouldBeAddedToCrossesTable(parents, existingCrosses, excludeSelf, femaleParent, maleParent)
 		 ) {
-			final CheckBox tag = new CheckBox();
-			tag.setDebugId("tag");
 			int entryCounter = this.tableCrossesMade.size() + 1;
 			final String femaleParentPedigreeString = parentsPedigreeString.get(femaleParent.getGid());
 			final String maleParentPedigreeString = parentsPedigreeString.get(maleParent.getGid());
 			final String femalePreferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(femaleParent.getGid()));
 			final String maleParentPeferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(maleParent.getGid()));
 			final String seedSource = this.generateSeedSource(femaleParent.getGid(), femaleSource, maleParent.getGid(), maleSource);
-				this.tableCrossesMade.addItem(
-					new Object[] {tag, entryCounter, femaleParentPedigreeString, maleParentPedigreeString, femalePreferredName,
-						maleParentPeferredName}, parents);
+
+			final Button femaleParentButton =
+				new Button(femaleParent.getDesignation(), new GidLinkClickListener(femalePreferredName
+					.toString(), true));
+			femaleParentButton.setStyleName(BaseTheme.BUTTON_LINK);
+			femaleParentButton.setDescription(this.CLICK_TO_VIEW_GERMPLASM_INFORMATION);
+
+			final CheckBox tag = new CheckBox();
+			tag.setDebugId("tag");
+			tag.setImmediate(true);
+			Object[] item = new Object[] {tag, entryCounter, femalePreferredName,
+				maleParentPeferredName,  femaleParentPedigreeString, maleParentPedigreeString};
+
+			tag.addListener(new MakeCrossingCheckBoxListener(tableCrossesMade, item, this.tableWithSelectAllLayout.getCheckBox()));
+
+			this.tableCrossesMade.addItem(item, parents);
 				existingCrosses.add(parents);
 			}
 	}
@@ -535,11 +571,16 @@ public class MakeCrossesTableComponent extends VerticalLayout
 //		this.saveButton.setDebugId("saveButton");
 //		this.saveButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 //		this.saveButton.setEnabled(false);
-		this.initializeCrossesMadeTable();
+		this.initializeCrossesMadeTable(new TableWithSelectAllLayout(5, ParentTabComponent.TAG_COLUMN_ID));
 	}
 
-	protected void initializeCrossesMadeTable() {
-		this.setTableCrossesMade(new BreedingManagerTable(MakeCrossesTableComponent.PAGE_LENGTH, MakeCrossesTableComponent.PAGE_LENGTH));
+	protected void initializeCrossesMadeTable(final TableWithSelectAllLayout tableWithSelectAllLayout) {
+		this.tableWithSelectAllLayout = tableWithSelectAllLayout;
+
+		this.tableCrossesMade = this.tableWithSelectAllLayout.getTable();
+		this.selectAll = this.tableWithSelectAllLayout.getCheckBox();
+
+//		this.setTableCrossesMade(new BreedingManagerTable(MakeCrossesTableComponent.PAGE_LENGTH, MakeCrossesTableComponent.PAGE_LENGTH));
 		this.tableCrossesMade = this.getTableCrossesMade();
 		this.tableCrossesMade.setDebugId("tableCrossesMade");
 		this.tableCrossesMade.setWidth("100%");
@@ -551,21 +592,21 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 		this.tableCrossesMade.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
 		this.tableCrossesMade.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
-		this.tableCrossesMade.addContainerProperty(ColumnLabels.FEMALE_CROSS.getName(), String.class, null);
-		this.tableCrossesMade.addContainerProperty(ColumnLabels.MALE_CROSS.getName(), String.class, null);
-		this.tableCrossesMade.addContainerProperty(ColumnLabels.FEMALE_PARENT.getName(), String.class, null);
-		this.tableCrossesMade.addContainerProperty(ColumnLabels.MALE_PARENT.getName(), String.class, null);
-//		this.tableCrossesMade.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
+		this.tableCrossesMade.addContainerProperty(ColumnLabels.FEMALE_PARENT.getName(), Button.class, null);
+		this.tableCrossesMade.addContainerProperty(ColumnLabels.MALE_PARENT.getName(), Button.class, null);
+		this.tableCrossesMade.addContainerProperty(FEMALE_CROSS, String.class, null);
+		this.tableCrossesMade.addContainerProperty(MALE_CROSS, String.class, null);
+
+		//		this.tableCrossesMade.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
 
 		this.tableCrossesMade.setColumnHeader(TAG_COLUMN_ID, this.messageSource.getMessage(Message.CHECK_ICON));
 		this.tableCrossesMade.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), this.messageSource.getMessage(Message.HASHTAG));
-		this.tableCrossesMade.setColumnHeader(ColumnLabels.FEMALE_CROSS.getName(), this.getTermNameFromOntology(ColumnLabels.FEMALE_CROSS));
-		this.tableCrossesMade.setColumnHeader(ColumnLabels.MALE_CROSS.getName(), this.getTermNameFromOntology(ColumnLabels.MALE_CROSS));
 
-		this.tableCrossesMade.setColumnHeader(ColumnLabels.FEMALE_PARENT.getName(),
-				this.getTermNameFromOntology(ColumnLabels.FEMALE_PARENT));
+		this.tableCrossesMade.setColumnHeader(ColumnLabels.FEMALE_PARENT.getName(), this.getTermNameFromOntology(ColumnLabels.FEMALE_PARENT));
 		this.tableCrossesMade.setColumnHeader(ColumnLabels.MALE_PARENT.getName(), this.getTermNameFromOntology(ColumnLabels.MALE_PARENT));
-//		this.tableCrossesMade.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(), this.getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
+		this.tableCrossesMade.setColumnHeader(FEMALE_CROSS,FEMALE_CROSS);//this.getTermNameFromOntology(ColumnLabels.CROSS_FEMALE_GID));
+		this.tableCrossesMade.setColumnHeader(MALE_CROSS, MALE_CROSS);//this.getTermNameFromOntology(ColumnLabels.CROSS_MALE_GID));
+		//		this.tableCrossesMade.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(), this.getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
 
 		this.tableCrossesMade.setColumnWidth(TAG_COLUMN_ID, 25);
 //		this.tableCrossesMade.setColumnWidth(ColumnLabels.SEED_SOURCE.getName(), 200);
@@ -573,6 +614,24 @@ public class MakeCrossesTableComponent extends VerticalLayout
 //		this.tableCrossesMade.setColumnCollapsingAllowed(true);
 //		this.tableCrossesMade.setColumnCollapsed(ColumnLabels.SEED_SOURCE.getName(), true);
 
+		this.tableCrossesMade.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
+
+			private static final long serialVersionUID = -3207714818504151649L;
+
+			@Override
+			public String generateDescription(final Component source, final Object itemId, final Object propertyId) {
+				if (propertyId != null && propertyId == ColumnLabels.FEMALE_PARENT.getName()) {
+					final Table theTable = (Table) source;
+					final Item item = theTable.getItem(itemId);
+					return (String) item.getItemProperty(ColumnLabels.FEMALE_PARENT.getName()).getValue();
+				} else if (propertyId != null && propertyId == ColumnLabels.MALE_PARENT.getName()) {
+					final Table theTable = (Table) source;
+					final Item item = theTable.getItem(itemId);
+					return (String) item.getItemProperty(ColumnLabels.MALE_PARENT.getName()).getValue();
+				}
+				return null;
+			}
+		});
 		this.tableCrossesMade.addActionHandler(new CrossingManagerActionHandler(this));
 	}
 
@@ -872,7 +931,11 @@ public class MakeCrossesTableComponent extends VerticalLayout
 //		return this.saveButton;
 //	}
 
-	public BreedingManagerTable getTableCrossesMade() {
+//	public BreedingManagerTable getTableCrossesMade() {
+//		return this.tableCrossesMade;
+//	}
+
+	public Table getTableCrossesMade() {
 		return this.tableCrossesMade;
 	}
 
@@ -928,5 +991,25 @@ public class MakeCrossesTableComponent extends VerticalLayout
 				}
 			});
 		}
+	}
+
+	public TableWithSelectAllLayout getTableWithSelectAllLayout() {
+		return this.tableWithSelectAllLayout;
+	}
+
+	public void setTableWithSelectAllLayout(final TableWithSelectAllLayout tableWithSelectAllLayout) {
+		this.tableWithSelectAllLayout = tableWithSelectAllLayout;
+	}
+
+	private void updateNoOfSelectedEntries(final int count) {
+		this.totalSelectedCrossesLabel.setValue("<i>" + this.messageSource.getMessage(Message.SELECTED) + ": " + "  <b>" + count
+			+ "</b></i>");
+	}
+
+	private void updateNoOfSelectedEntries() {
+		int count = 0;
+			final Collection<?> selectedItems = (Collection<?>) this.tableWithSelectAllLayout.getTable().getValue();
+			count = selectedItems.size();
+		this.updateNoOfSelectedEntries(count);
 	}
 }
