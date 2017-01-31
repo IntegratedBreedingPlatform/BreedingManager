@@ -36,7 +36,9 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ApplyCrossingSettingAction;
+import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUtil;
 import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
+import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
@@ -72,6 +74,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
+import org.vaadin.peter.contextmenu.ContextMenu;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -95,6 +102,9 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	public static final String PARENTS_DELIMITER = ",";
 	private static final long serialVersionUID = 3702324761498666369L;
 	private static final Logger LOG = LoggerFactory.getLogger(MakeCrossesTableComponent.class);
+	static final String TAG_COLUMN_ID = "Tag";
+	@Autowired
+	private PlatformTransactionManager transactionManager;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -126,6 +136,15 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	private PopupView applyGroupingToNewCrossesOnlyHelpPopup;
 	private Label applyGroupingToNewCrossesOnlyHelpText;
 	private CheckBox applyGroupingToNewCrossesOnly;
+
+	private ContextMenu actionMenu;
+
+	@SuppressWarnings("unused")
+	private CheckBox selectAll;
+
+	private Button actionButton;
+
+	private CrossingManagerActionHandler crossingManagerActionListener;
 
 //	private Button saveButton;
 
@@ -463,6 +482,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	@Override
 	public void instantiateComponents() {
+		this.selectAll = new CheckBox("Select All");
 		this.lblReviewCrosses = new Label(this.messageSource.getMessage(Message.REVIEW_CROSSES));
 		this.lblReviewCrosses.setDebugId("lblReviewCrosses");
 		this.lblReviewCrosses.addStyleName(Bootstrap.Typography.H4.styleName());
@@ -492,6 +512,18 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		this.applyGroupingToNewCrossesOnlyHelpPopup.setDebugId("applyGroupingToNewCrossesOnlyHelpPopup");
 		this.applyGroupingToNewCrossesOnlyHelpPopup.addStyleName(AppConstants.CssStyles.POPUP_VIEW);
 		this.applyGroupingToNewCrossesOnlyHelpPopup.addStyleName("cs-inline-icon");
+
+		this.actionButton = new ActionButton();
+		this.actionButton.setDebugId("actionButton");
+
+		this.actionMenu = new ContextMenu();
+		this.actionMenu.setDebugId("actionMenu");
+		this.actionMenu.setWidth("250px");
+		this.actionMenu.addItem(this.messageSource.getMessage(Message.CLEAR_ALL));
+		this.actionMenu.addItem(this.messageSource.getMessage(Message.REMOVE_SELECTED_ENTRIES));
+		this.actionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
+		this.actionMenu.addItem(this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES));
+		this.actionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES));
 
 //		this.saveButton = new Button(this.messageSource.getMessage(Message.SAVE_LABEL));
 //		this.saveButton.setDebugId("saveButton");
@@ -571,6 +603,19 @@ public class MakeCrossesTableComponent extends VerticalLayout
 //			}
 //		});
 
+		this.crossingManagerActionListener = new CrossingManagerActionHandler(this);
+
+		this.actionButton.addListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(final ClickEvent event) {
+				MakeCrossesTableComponent.this.actionMenu.show(event.getClientX(), event.getClientY());
+			}
+
+		});
+
 		this.tableCrossesMade.addListener(new Property.ValueChangeListener() {
 
 			private static final long serialVersionUID = 1L;
@@ -580,6 +625,8 @@ public class MakeCrossesTableComponent extends VerticalLayout
 				MakeCrossesTableComponent.this.generateTotalSelectedCrossesLabel();
 			}
 		});
+
+		this.actionMenu.addListener(new MakeCrossesTableComponent.ActionMenuClickListener());
 	}
 
 	@SuppressWarnings("deprecation")
@@ -587,20 +634,26 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	public void layoutComponents() {
 		this.setSpacing(true);
 		this.setMargin(false, false, false, true);
-
+		
+		this.addComponent(this.actionMenu);
 		final HorizontalLayout leftLabelContainer = new HorizontalLayout();
 		leftLabelContainer.setDebugId("leftLabelContainer");
 		leftLabelContainer.addComponent(this.totalCrossesLabel);
 		leftLabelContainer.addComponent(this.totalSelectedCrossesLabel);
+		leftLabelContainer.addComponent(this.actionButton);
 		leftLabelContainer.setComponentAlignment(this.totalCrossesLabel, Alignment.MIDDLE_LEFT);
 		leftLabelContainer.setComponentAlignment(this.totalSelectedCrossesLabel, Alignment.MIDDLE_LEFT);
+		leftLabelContainer.setComponentAlignment(this.actionButton, Alignment.TOP_RIGHT);
+
 
 		final HorizontalLayout labelContainer = new HorizontalLayout();
 		labelContainer.setDebugId("labelContainer");
 		labelContainer.setWidth("100%");
 		labelContainer.setHeight("30px");
 		labelContainer.addComponent(leftLabelContainer);
+		labelContainer.addComponent(this.actionButton);
 		labelContainer.setComponentAlignment(leftLabelContainer, Alignment.MIDDLE_LEFT);
+		labelContainer.setComponentAlignment(this.actionButton, Alignment.MIDDLE_RIGHT);
 
 		final VerticalLayout makeCrossesLayout = new VerticalLayout();
 		makeCrossesLayout.setDebugId("makeCrossesLayout");
@@ -621,6 +674,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		makeCrossesPanel.setDebugId("makeCrossesPanel");
 		makeCrossesPanel.setLayout(makeCrossesLayout);
 		makeCrossesPanel.addStyleName("section_panel_layout");
+		makeCrossesPanel.addComponent(selectAll);
 
 		final HeaderLabelLayout reviewCrossesLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_CROSSES, this.lblReviewCrosses);
 		reviewCrossesLayout.setDebugId("reviewCrossesLayout");
@@ -831,5 +885,39 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	public void setSeedSourceGenerator(final SeedSourceGenerator seedSourceGenerator) {
 		this.seedSourceGenerator = seedSourceGenerator;
+	}
+
+	private final class ActionMenuClickListener implements ContextMenu.ClickListener {
+
+		private static final long serialVersionUID = -2343109406180457070L;
+
+		@Override
+		public void contextItemClick(final org.vaadin.peter.contextmenu.ContextMenu.ClickEvent event) {
+			final TransactionTemplate transactionTemplate = new TransactionTemplate(MakeCrossesTableComponent.this.transactionManager);
+			transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+				@Override
+				protected void doInTransactionWithoutResult(final TransactionStatus status) {
+					final ContextMenu.ContextMenuItem clickedItem = event.getClickedItem();
+
+					if (clickedItem.getName().equals(
+						MakeCrossesTableComponent.this.messageSource.getMessage(Message.REMOVE_SELECTED_ENTRIES))) {
+						MakeCrossesTableComponent.this.crossingManagerActionListener.removeSelectedEntriesAction(MakeCrossesTableComponent.this.tableCrossesMade);
+
+					} else if (clickedItem.getName().equals(MakeCrossesTableComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
+						MakeCrossesTableComponent.this.tableCrossesMade.setValue(MakeCrossesTableComponent.this.tableCrossesMade.getItemIds());
+					} else if (clickedItem.getName().equals(MakeCrossesTableComponent.this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES))) {
+						MakeCrossesTableComponent.this.tableCrossesMade.setValue(CrossingManagerUtil
+							.getEvenEntries(MakeCrossesTableComponent.this.tableCrossesMade));
+					} else if (clickedItem.getName().equals(MakeCrossesTableComponent.this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES))) {
+						MakeCrossesTableComponent.this.tableCrossesMade.setValue(CrossingManagerUtil
+							.getOddEntries(MakeCrossesTableComponent.this.tableCrossesMade));
+					} else if (clickedItem.getName().equals(MakeCrossesTableComponent.this.messageSource.getMessage(Message.CLEAR_ALL))) {
+						MakeCrossesTableComponent.this.tableCrossesMade.setValue(MakeCrossesTableComponent.this.tableCrossesMade);
+						MakeCrossesTableComponent.this.crossingManagerActionListener.removeSelectedEntriesAction(MakeCrossesTableComponent.this.tableCrossesMade);
+					}
+				}
+			});
+		}
 	}
 }
