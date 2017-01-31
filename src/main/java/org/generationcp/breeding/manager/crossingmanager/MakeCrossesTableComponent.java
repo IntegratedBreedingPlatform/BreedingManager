@@ -586,7 +586,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		this.tableCrossesMade = this.getTableCrossesMade();
 		this.tableCrossesMade.setDebugId("tableCrossesMade");
 		this.tableCrossesMade.setWidth("100%");
-		this.tableCrossesMade.setHeight("365px");
+		this.tableCrossesMade.setHeight("183px");
 		this.tableCrossesMade.setImmediate(true);
 		this.tableCrossesMade.setSelectable(true);
 		this.tableCrossesMade.setMultiSelect(true);
