@@ -246,6 +246,8 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		final String seedSource = this.generateSeedSource(femaleParent.getGid(), femaleSeedSource, maleParent.getGid(), maleSeedSource);
 
 		if (shouldBeAddedToCrossesTable(parents, existingCrosses, excludeSelf, femaleParent, maleParent)) {
+			final CheckBox tag = new CheckBox();
+			tag.setDebugId("tag");
 			final int entryCounter = this.tableCrossesMade.size() + 1;
 			final String femalePreferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(femaleParent.getGid()));
 			final String maleParentPeferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(maleParent.getGid()));
@@ -253,20 +255,22 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			final String maleParentPedigreeString = pedigreeString.get(maleParent.getGid());
 
 			this.tableCrossesMade.addItem(
-				new Object[] {entryCounter, femaleParentPedigreeString, maleParentPedigreeString, femalePreferredName,
-					maleParentPeferredName, seedSource}, parents);
+				new Object[] {tag, entryCounter, femaleParentPedigreeString, maleParentPedigreeString, femalePreferredName,
+					maleParentPeferredName}, parents);
 			existingCrosses.add(parents);
 		}
 
 	}
 
 	private void setMakeCrossesTableVisibleColumn() {
-		this.tableCrossesMade.addContainerProperty(ColumnLabels.CROSS_FEMALE_GID.getName(), String.class, null);
-		this.tableCrossesMade.addContainerProperty(ColumnLabels.CROSS_MALE_GID.getName(), String.class, null);
+		this.tableCrossesMade.addContainerProperty(ColumnLabels.FEMALE_CROSS.getName(), String.class, null);
+		this.tableCrossesMade.addContainerProperty(ColumnLabels.MALE_CROSS.getName(), String.class, null);
 
-		this.tableCrossesMade.setVisibleColumns(new Object[] {ColumnLabels.ENTRY_ID.getName(), ColumnLabels.CROSS_FEMALE_GID.getName(),
-				ColumnLabels.CROSS_MALE_GID.getName(), ColumnLabels.FEMALE_PARENT.getName(), 
-				ColumnLabels.MALE_PARENT.getName(), ColumnLabels.SEED_SOURCE.getName()});
+		this.tableCrossesMade.setVisibleColumns(new Object[] {
+			TAG_COLUMN_ID, ColumnLabels.ENTRY_ID.getName(), ColumnLabels.FEMALE_PARENT.getName(),
+			ColumnLabels.MALE_PARENT.getName(), ColumnLabels.FEMALE_CROSS.getName(),
+			ColumnLabels.MALE_CROSS.getName()});
+//			"FEMALE CROSS", "MALE_CROSS"});
 	}
 
 	private void updateCrossesMadeUI() {
@@ -342,15 +346,17 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		final Map<Integer, Germplasm> germplasmWithPreferredName, final Map<Integer, String> parentsPedigreeString) {
 		if (shouldBeAddedToCrossesTable(parents, existingCrosses, excludeSelf, femaleParent, maleParent)
 		 ) {
-				int entryCounter = this.tableCrossesMade.size() + 1;
-				final String femaleParentPedigreeString = parentsPedigreeString.get(femaleParent.getGid());
-				final String maleParentPedigreeString = parentsPedigreeString.get(maleParent.getGid());
-				final String femalePreferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(femaleParent.getGid()));
-				final String maleParentPeferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(maleParent.getGid()));
-				final String seedSource = this.generateSeedSource(femaleParent.getGid(), femaleSource, maleParent.getGid(), maleSource);
+			final CheckBox tag = new CheckBox();
+			tag.setDebugId("tag");
+			int entryCounter = this.tableCrossesMade.size() + 1;
+			final String femaleParentPedigreeString = parentsPedigreeString.get(femaleParent.getGid());
+			final String maleParentPedigreeString = parentsPedigreeString.get(maleParent.getGid());
+			final String femalePreferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(femaleParent.getGid()));
+			final String maleParentPeferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(maleParent.getGid()));
+			final String seedSource = this.generateSeedSource(femaleParent.getGid(), femaleSource, maleParent.getGid(), maleSource);
 				this.tableCrossesMade.addItem(
-					new Object[] {entryCounter, femaleParentPedigreeString, maleParentPedigreeString, femalePreferredName,
-						maleParentPeferredName, seedSource}, parents);
+					new Object[] {tag, entryCounter, femaleParentPedigreeString, maleParentPedigreeString, femalePreferredName,
+						maleParentPeferredName}, parents);
 				existingCrosses.add(parents);
 			}
 	}
@@ -543,26 +549,29 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		this.tableCrossesMade.setMultiSelect(true);
 		this.tableCrossesMade.setPageLength(100);
 
+		this.tableCrossesMade.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
 		this.tableCrossesMade.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
-		this.tableCrossesMade.addContainerProperty(ColumnLabels.CROSS_FEMALE_GID.getName(), String.class, null);
-		this.tableCrossesMade.addContainerProperty(ColumnLabels.CROSS_MALE_GID.getName(), String.class, null);
+		this.tableCrossesMade.addContainerProperty(ColumnLabels.FEMALE_CROSS.getName(), String.class, null);
+		this.tableCrossesMade.addContainerProperty(ColumnLabels.MALE_CROSS.getName(), String.class, null);
 		this.tableCrossesMade.addContainerProperty(ColumnLabels.FEMALE_PARENT.getName(), String.class, null);
 		this.tableCrossesMade.addContainerProperty(ColumnLabels.MALE_PARENT.getName(), String.class, null);
-		this.tableCrossesMade.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
+//		this.tableCrossesMade.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
 
-		this.tableCrossesMade.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), "#");
-		this.tableCrossesMade.setColumnHeader(ColumnLabels.CROSS_FEMALE_GID.getName(), this.getTermNameFromOntology(ColumnLabels.CROSS_FEMALE_GID));
-		this.tableCrossesMade.setColumnHeader(ColumnLabels.CROSS_MALE_GID.getName(), this.getTermNameFromOntology(ColumnLabels.CROSS_MALE_GID));
+		this.tableCrossesMade.setColumnHeader(TAG_COLUMN_ID, this.messageSource.getMessage(Message.CHECK_ICON));
+		this.tableCrossesMade.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), this.messageSource.getMessage(Message.HASHTAG));
+		this.tableCrossesMade.setColumnHeader(ColumnLabels.FEMALE_CROSS.getName(), this.getTermNameFromOntology(ColumnLabels.FEMALE_CROSS));
+		this.tableCrossesMade.setColumnHeader(ColumnLabels.MALE_CROSS.getName(), this.getTermNameFromOntology(ColumnLabels.MALE_CROSS));
 
 		this.tableCrossesMade.setColumnHeader(ColumnLabels.FEMALE_PARENT.getName(),
 				this.getTermNameFromOntology(ColumnLabels.FEMALE_PARENT));
 		this.tableCrossesMade.setColumnHeader(ColumnLabels.MALE_PARENT.getName(), this.getTermNameFromOntology(ColumnLabels.MALE_PARENT));
-		this.tableCrossesMade.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(), this.getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
+//		this.tableCrossesMade.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(), this.getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
 
-		this.tableCrossesMade.setColumnWidth(ColumnLabels.SEED_SOURCE.getName(), 200);
+		this.tableCrossesMade.setColumnWidth(TAG_COLUMN_ID, 25);
+//		this.tableCrossesMade.setColumnWidth(ColumnLabels.SEED_SOURCE.getName(), 200);
 
-		this.tableCrossesMade.setColumnCollapsingAllowed(true);
-		this.tableCrossesMade.setColumnCollapsed(ColumnLabels.SEED_SOURCE.getName(), true);
+//		this.tableCrossesMade.setColumnCollapsingAllowed(true);
+//		this.tableCrossesMade.setColumnCollapsed(ColumnLabels.SEED_SOURCE.getName(), true);
 
 		this.tableCrossesMade.addActionHandler(new CrossingManagerActionHandler(this));
 	}
