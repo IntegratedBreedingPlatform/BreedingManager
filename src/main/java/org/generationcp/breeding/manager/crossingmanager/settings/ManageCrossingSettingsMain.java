@@ -82,6 +82,7 @@ public class ManageCrossingSettingsMain extends VerticalLayout implements Initia
 		this.tabSheet = new TabSheet();
 		this.tabSheet.setDebugId("tabSheet");
 		this.tabSheet.hideTabs(true);
+		this.tabSheet.setHeight("1600px");
 		this.tabSheet.setWidth("100%");
 		this.tabSheet.addStyleName(AppConstants.CssStyles.TABSHEET_WHITE);
 
