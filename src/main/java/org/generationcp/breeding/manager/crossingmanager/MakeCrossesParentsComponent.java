@@ -200,12 +200,10 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 					item.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(newGidButton);
 					if (targetTable.equals(this.femaleParentTab.getListDataTable())) {
 						entryObject.setFromFemaleTable(true);
-						this.femaleParentTab.getSaveActionMenu().setEnabled(true);
 						this.femaleParentTab.updateNoOfEntries(this.femaleParentTab.getListDataTable().size());
 						this.femaleParentTab.setHasUnsavedChanges(true);
 					} else {
 						entryObject.setFromFemaleTable(false);
-						this.maleParentTab.getSaveActionMenu().setEnabled(true);
 						this.maleParentTab.updateNoOfEntries(this.maleParentTab.getListDataTable().size());
 						this.maleParentTab.setHasUnsavedChanges(true);
 					}
@@ -257,14 +255,12 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 						((SelectParentsListDataComponent) this.makeCrossesMain.getSelectParentsComponent().getListDetailsTabSheet()
 								.getSelectedTab()).getGermplasmList();
 				this.updateFemaleParentList(femaleGermplasmList);
-				this.femaleParentTab.getSaveActionMenu().setEnabled(false);
 				this.femaleParentTab.setHasUnsavedChanges(false);
 			} else {
 				final GermplasmList maleGermplasmList =
 						((SelectParentsListDataComponent) this.makeCrossesMain.getSelectParentsComponent().getListDetailsTabSheet()
 								.getSelectedTab()).getGermplasmList();
 				this.updateMaleParentList(maleGermplasmList);
-				this.maleParentTab.getSaveActionMenu().setEnabled(false);
 				this.maleParentTab.setHasUnsavedChanges(false);
 			}
 
@@ -280,10 +276,8 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	void updateParentTabForUnsavedChanges(final Table targetTable) {
 		// just add the new entry to the parent table
 		if (targetTable.equals(this.femaleParentTab.getListDataTable())) {
-			this.femaleParentTab.getSaveActionMenu().setEnabled(true);
 			this.femaleParentTab.setHasUnsavedChanges(true);
 		} else {
-			this.maleParentTab.getSaveActionMenu().setEnabled(true);
 			this.maleParentTab.setHasUnsavedChanges(true);
 		}
 	}
@@ -324,7 +318,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	}
 
 	public void updateUIForSuccessfulSaving(final ParentTabComponent parentTab, final GermplasmList list) {
-		parentTab.getSaveActionMenu().setEnabled(false);
 		this.makeCrossesMain.toggleNextButton();
 
 		this.makeCrossesMain.getSelectParentsComponent().selectListInTree(list.getId());
@@ -459,13 +452,11 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 				itemsLeftAfterAdding.addAll(this.maleParentTab.getListDataTable().getItemIds());
 
 				if (addedCount == itemsLeftAfterAdding.size()) {
-					this.maleParentTab.getSaveActionMenu().setEnabled(false);
 					this.maleParentTab.setHasUnsavedChanges(false);
 
 					// updates the crosses made save button if both parents are save at least once
 					this.makeCrossesMain.getCrossesTableComponent().updateCrossesMadeSaveButton();
 				} else {
-					this.maleParentTab.getSaveActionMenu().setEnabled(true);
 					this.maleParentTab.setHasUnsavedChanges(true);
 				}
 			}
@@ -541,14 +532,12 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 				itemsLeftAfterAdding.addAll(this.femaleParentTab.getListDataTable().getItemIds());
 
 				if (addedCount == itemsLeftAfterAdding.size()) {
-					this.femaleParentTab.getSaveActionMenu().setEnabled(false);
 					this.femaleParentTab.setHasUnsavedChanges(false);
 
 					// updates the crosses made save button if both parents are save at least once
 					this.makeCrossesMain.getCrossesTableComponent().updateCrossesMadeSaveButton();
 
 				} else {
-					this.femaleParentTab.getSaveActionMenu().setEnabled(true);
 					this.femaleParentTab.setHasUnsavedChanges(true);
 				}
 			}
@@ -575,7 +564,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 			this.maleParentTab.setListNameForCrosses(listFromTree.getName());
 			this.updateCrossesSeedSource(this.maleParentTab, listFromTree);
 			this.maleParentTab.enableReserveInventory();
-			this.maleParentTab.enableEditListHeaderOption();
 		}
 
 		this.maleParentTab.updateNoOfEntries();
@@ -588,7 +576,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 			this.femaleParentTab.setListNameForCrosses(listFromTree.getName());
 			this.updateCrossesSeedSource(this.femaleParentTab, listFromTree);
 			this.femaleParentTab.enableReserveInventory();
-			this.femaleParentTab.enableEditListHeaderOption();
 		}
 		this.femaleParentTab.updateNoOfEntries();
 	}

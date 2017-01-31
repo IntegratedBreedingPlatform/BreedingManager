@@ -99,8 +99,6 @@ public class MakeCrossesParentsComponentTest {
 
 		this.germplasmList = this.germplasmListTestDataInitializer.createGermplasmList(MakeCrossesParentsComponentTest.GERMPLASM_LIST_ID);
 		this.sourceTable = this.createSourceTable();
-		this.createContextMenuOnParentTab(this.femaleParentTab);
-		this.createContextMenuOnParentTab(this.maleParentTab);
 
 		this.listDetailsTabSheet = new TabSheet();
 		this.listDetailsTabSheet.addComponent(this.selectedTab);
@@ -110,11 +108,6 @@ public class MakeCrossesParentsComponentTest {
 		Mockito.doReturn(this.crossesTable).when(this.makeCrossesMain).getCrossesTableComponent();
 	}
 
-	private void createContextMenuOnParentTab(final ParentTabComponent parentTab) {
-		final ContextMenu menu = new ContextMenu();
-		final ContextMenuItem saveActionMenu = menu.addItem("Save Action Menu");
-		Mockito.doReturn(saveActionMenu).when(parentTab).getSaveActionMenu();
-	}
 
 	private Table createSourceTable() {
 		final Table sourceTable = new Table();
@@ -321,8 +314,6 @@ public class MakeCrossesParentsComponentTest {
 
 		Assert.assertEquals("Expecting that the entries of sourceTable has the same number of entries of " + parentType + " table",
 				this.sourceTable.size(), parentTable.size());
-		Assert.assertFalse("Expecting that the Save List option in " + parentType + "tab is disabled but didn't. ",
-				parentTab.getSaveActionMenu().isEnabled());
 	}
 
 	@Test
