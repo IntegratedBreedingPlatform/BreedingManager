@@ -3,6 +3,7 @@ package org.generationcp.breeding.manager.crossingmanager.listeners;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Table;
+import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -14,10 +15,10 @@ import java.util.Set;
 public class MakeCrossingCheckBoxListener implements Button.ClickListener{
 
 	private final Table makeCrossTable;
-	private final Object[] entry;
+	private final CrossParents entry;
 	private final CheckBox tagAllBox;
 
-	public MakeCrossingCheckBoxListener(Table makeCrossTable, Object[] entry, CheckBox tagAllBox) {
+	public MakeCrossingCheckBoxListener(Table makeCrossTable, CrossParents entry, CheckBox tagAllBox) {
 		super();
 		this.makeCrossTable = makeCrossTable;
 		this.entry = entry;
@@ -28,8 +29,8 @@ public class MakeCrossingCheckBoxListener implements Button.ClickListener{
 	@Override
 	public void buttonClick(Button.ClickEvent event) {
 		boolean checkBoxValue = event.getButton().booleanValue();
-		Collection<Object[]> selectedEntries = (Collection<Object[]>) this.makeCrossTable.getValue();
-		Set<Object[]> entriesToSelect = new HashSet<Object[]>();
+		Collection<CrossParents> selectedEntries = (Collection<CrossParents>) this.makeCrossTable.getValue();
+		Set<CrossParents> entriesToSelect = new HashSet<CrossParents>();
 		if (selectedEntries != null) {
 			entriesToSelect.addAll(selectedEntries);
 			if (checkBoxValue) {

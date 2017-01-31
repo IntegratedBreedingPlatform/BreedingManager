@@ -37,6 +37,7 @@ import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.actions.SaveCrossesMadeAction;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerActionHandler;
 import org.generationcp.breeding.manager.crossingmanager.listeners.MakeCrossingCheckBoxListener;
+import org.generationcp.breeding.manager.crossingmanager.listeners.ParentsTableCheckboxListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
@@ -277,13 +278,14 @@ public class MakeCrossesTableComponent extends VerticalLayout
 					.toString(), true));
 			femaleParentButton.setStyleName(BaseTheme.BUTTON_LINK);
 			femaleParentButton.setDescription(this.CLICK_TO_VIEW_GERMPLASM_INFORMATION);
+
 			final CheckBox tag = new CheckBox();
-			tag.setDebugId("tag");
+			tag.setDebugId(TAG_COLUMN_ID);
+			tag.addListener(new MakeCrossingCheckBoxListener(tableCrossesMade, parents, this.tableWithSelectAllLayout.getCheckBox()));
 			tag.setImmediate(true);
+
 			Object[] item = new Object[] {tag, entryCounter, femalePreferredName,
 				maleParentPeferredName,  femaleParentPedigreeString, maleParentPedigreeString};
-
-			tag.addListener(new MakeCrossingCheckBoxListener(tableCrossesMade, item, this.tableWithSelectAllLayout.getCheckBox()));
 
 			this.tableCrossesMade.addItem(item, parents);
 			existingCrosses.add(parents);
@@ -385,12 +387,12 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			femaleParentButton.setDescription(this.CLICK_TO_VIEW_GERMPLASM_INFORMATION);
 
 			final CheckBox tag = new CheckBox();
-			tag.setDebugId("tag");
+			tag.setDebugId(TAG_COLUMN_ID);
+			tag.addListener(new MakeCrossingCheckBoxListener(tableCrossesMade, parents, this.tableWithSelectAllLayout.getCheckBox()));
 			tag.setImmediate(true);
+
 			Object[] item = new Object[] {tag, entryCounter, femalePreferredName,
 				maleParentPeferredName,  femaleParentPedigreeString, maleParentPedigreeString};
-
-			tag.addListener(new MakeCrossingCheckBoxListener(tableCrossesMade, item, this.tableWithSelectAllLayout.getCheckBox()));
 
 			this.tableCrossesMade.addItem(item, parents);
 				existingCrosses.add(parents);
@@ -584,7 +586,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		this.tableCrossesMade = this.getTableCrossesMade();
 		this.tableCrossesMade.setDebugId("tableCrossesMade");
 		this.tableCrossesMade.setWidth("100%");
-		this.tableCrossesMade.setHeight("350px");
+		this.tableCrossesMade.setHeight("365px");
 		this.tableCrossesMade.setImmediate(true);
 		this.tableCrossesMade.setSelectable(true);
 		this.tableCrossesMade.setMultiSelect(true);
