@@ -82,46 +82,46 @@ public class MakeCrossesTableComponentTest {
 		Mockito.when(this.tableCrossesMade.getItemIds()).thenReturn(new ArrayList());
 	}
 
-	@Test
-	public void testInitializeCrossesMadeTableReturnsTheValueFromColumLabelDefaultName() {
+//	@Test
+//	public void testInitializeCrossesMadeTableReturnsTheValueFromColumLabelDefaultName() {
+//
+//		final BreedingManagerTable table = new BreedingManagerTable(10, 10);
+//
+//		Mockito.when(this.makeCrossesTableComponent.getTableCrossesMade()).thenReturn(table);
+//
+//		this.makeCrossesTableComponent.initializeCrossesMadeTable();
+//
+//		Assert.assertEquals("#", table.getColumnHeader(ColumnLabels.ENTRY_ID.getName()));
+//		Assert.assertEquals("PARENTAGE", table.getColumnHeader(ColumnLabels.PARENTAGE.getName()));
+//		Assert.assertEquals("Female Parent", table.getColumnHeader(ColumnLabels.FEMALE_PARENT.getName()));
+//		Assert.assertEquals("Male Parent", table.getColumnHeader(ColumnLabels.MALE_PARENT.getName()));
+//		Assert.assertEquals("SEED SOURCE", table.getColumnHeader(ColumnLabels.SEED_SOURCE.getName()));
+//	}
 
-		final BreedingManagerTable table = new BreedingManagerTable(10, 10);
-
-		Mockito.when(this.makeCrossesTableComponent.getTableCrossesMade()).thenReturn(table);
-
-		this.makeCrossesTableComponent.initializeCrossesMadeTable();
-
-		Assert.assertEquals("#", table.getColumnHeader(ColumnLabels.ENTRY_ID.getName()));
-		Assert.assertEquals("PARENTAGE", table.getColumnHeader(ColumnLabels.PARENTAGE.getName()));
-		Assert.assertEquals("Female Parent", table.getColumnHeader(ColumnLabels.FEMALE_PARENT.getName()));
-		Assert.assertEquals("Male Parent", table.getColumnHeader(ColumnLabels.MALE_PARENT.getName()));
-		Assert.assertEquals("SEED SOURCE", table.getColumnHeader(ColumnLabels.SEED_SOURCE.getName()));
-	}
-
-	@Test
-	public void testInitializeCrossesMadeTableReturnsTheValueFromOntologyManager() throws MiddlewareQueryException {
-		final BreedingManagerTable table = new BreedingManagerTable(10, 10);
-
-		Mockito.when(this.makeCrossesTableComponent.getTableCrossesMade()).thenReturn(table);
-
-		final Term fromOntology = new Term();
-		fromOntology.setName("Ontology Name");
-
-		Mockito.when(this.ontologyDataManager.getTermById(TermId.CROSS_FEMALE_GID.getId())).thenReturn(fromOntology);
-		Mockito.when(this.ontologyDataManager.getTermById(TermId.CROSS_MALE_GID.getId())).thenReturn(fromOntology);
-		Mockito.when(this.ontologyDataManager.getTermById(TermId.SEED_SOURCE.getId())).thenReturn(fromOntology);
-		Mockito.when(this.ontologyDataManager.getTermById(TermId.FEMALE_PARENT.getId())).thenReturn(fromOntology);
-		Mockito.when(this.ontologyDataManager.getTermById(TermId.MALE_PARENT.getId())).thenReturn(fromOntology);
-
-		this.makeCrossesTableComponent.initializeCrossesMadeTable();
-
-		Assert.assertEquals("#", table.getColumnHeader(ColumnLabels.ENTRY_ID.getName()));
-		Assert.assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.CROSS_FEMALE_GID.getName()));
-		Assert.assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.CROSS_MALE_GID.getName()));
-		Assert.assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.FEMALE_PARENT.getName()));
-		Assert.assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.MALE_PARENT.getName()));
-		Assert.assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.SEED_SOURCE.getName()));
-	}
+//	@Test
+//	public void testInitializeCrossesMadeTableReturnsTheValueFromOntologyManager() throws MiddlewareQueryException {
+//		final BreedingManagerTable table = new BreedingManagerTable(10, 10);
+//
+//		Mockito.when(this.makeCrossesTableComponent.getTableCrossesMade()).thenReturn(table);
+//
+//		final Term fromOntology = new Term();
+//		fromOntology.setName("Ontology Name");
+//
+//		Mockito.when(this.ontologyDataManager.getTermById(TermId.CROSS_FEMALE_GID.getId())).thenReturn(fromOntology);
+//		Mockito.when(this.ontologyDataManager.getTermById(TermId.CROSS_MALE_GID.getId())).thenReturn(fromOntology);
+//		Mockito.when(this.ontologyDataManager.getTermById(TermId.SEED_SOURCE.getId())).thenReturn(fromOntology);
+//		Mockito.when(this.ontologyDataManager.getTermById(TermId.FEMALE_PARENT.getId())).thenReturn(fromOntology);
+//		Mockito.when(this.ontologyDataManager.getTermById(TermId.MALE_PARENT.getId())).thenReturn(fromOntology);
+//
+//		this.makeCrossesTableComponent.initializeCrossesMadeTable();
+//
+//		Assert.assertEquals("#", table.getColumnHeader(ColumnLabels.ENTRY_ID.getName()));
+//		Assert.assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.CROSS_FEMALE_GID.getName()));
+//		Assert.assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.CROSS_MALE_GID.getName()));
+//		Assert.assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.FEMALE_PARENT.getName()));
+//		Assert.assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.MALE_PARENT.getName()));
+//		Assert.assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.SEED_SOURCE.getName()));
+//	}
 
 	@Test
 	public void testHasSameParentForEqualGID() {
