@@ -647,7 +647,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			@Override
 			public void buttonClick(final ClickEvent event) {
 				MakeCrossesTableComponent.this.actionMenu.show(event.getClientX(), event.getClientY());
-				MakeCrossesTableComponent.this.updateCrossesMadeUI();
 			}
 
 		});
@@ -928,7 +927,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 					if (clickedItem.getName().equals(
 						MakeCrossesTableComponent.this.messageSource.getMessage(Message.REMOVE_SELECTED_ENTRIES))) {
 						MakeCrossesTableComponent.this.crossingManagerActionListener.removeSelectedEntriesAction(MakeCrossesTableComponent.this.tableCrossesMade);
-
+						MakeCrossesTableComponent.this.updateCrossesMadeUI();
 					} else if (clickedItem.getName().equals(MakeCrossesTableComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
 						MakeCrossesTableComponent.this.tableCrossesMade.setValue(MakeCrossesTableComponent.this.tableCrossesMade.getItemIds());
 					} else if (clickedItem.getName().equals(MakeCrossesTableComponent.this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES))) {
@@ -940,6 +939,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 					} else if (clickedItem.getName().equals(MakeCrossesTableComponent.this.messageSource.getMessage(Message.CLEAR_ALL))) {
 						MakeCrossesTableComponent.this.tableCrossesMade.setValue(MakeCrossesTableComponent.this.tableCrossesMade);
 						MakeCrossesTableComponent.this.crossingManagerActionListener.removeSelectedEntriesAction(MakeCrossesTableComponent.this.tableCrossesMade);
+						MakeCrossesTableComponent.this.updateCrossesMadeUI();
 					}
 				}
 			});
