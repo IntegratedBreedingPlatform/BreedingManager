@@ -2,7 +2,9 @@ package org.generationcp.breeding.manager.crossingmanager;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.vaadin.ui.*;
 import org.generationcp.breeding.manager.action.SaveGermplasmListActionFactory;
@@ -15,7 +17,6 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntr
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.UnsavedChangesSource;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryActionFactory;
-import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -126,9 +127,8 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 
 	@Override
 	public void layoutComponents() {
-		this.setSpacing(true);
 		this.setMargin(false, false, false, true);
-		this.setWidth("900px");
+		this.setWidth("100%");
 
 		this.femaleParentTabSheet = new TabSheet();
 		this.femaleParentTabSheet.setDebugId("femaleParentTabSheet");
@@ -142,21 +142,18 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		this.maleParentTabSheet.setWidth("420px");
 		this.maleParentTabSheet.setHeight("365px");
 
-		HorizontalLayout parentListLayout = new HorizontalLayout();
-		parentListLayout.setDebugId("parentListLayout");
-		parentListLayout.setWidth("100%");
-		parentListLayout.setSpacing(true);
-		//parentListLayout.setHeight("435px");
-		parentListLayout.addComponent(femaleParentTabSheet);
-		parentListLayout.addComponent(maleParentTabSheet);
-
+		HorizontalLayout parentListHLayout = new HorizontalLayout();
+		parentListHLayout.setWidth("100%");
+		parentListHLayout.setDebugId("parentListHLayout");
+		parentListHLayout.addComponent(maleParentTabSheet);
+		parentListHLayout.setSpacing(true);
+		parentListHLayout.addComponent(femaleParentTabSheet);
 
 		final HeaderLabelLayout parentLabelLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, this.parentListsLabel);
 		parentLabelLayout.setDebugId("parentLabelLayout");
 		this.addComponent(parentLabelLayout);
 		this.addComponent(this.instructionForParentLists);
-		this.addComponent(parentListLayout);
-
+		this.addComponent(parentListHLayout);
 	}
 
 	// end of layoutComponent
@@ -203,12 +200,10 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 					item.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(newGidButton);
 					if (targetTable.equals(this.femaleParentTab.getListDataTable())) {
 						entryObject.setFromFemaleTable(true);
-						this.femaleParentTab.getSaveActionMenu().setEnabled(true);
 						this.femaleParentTab.updateNoOfEntries(this.femaleParentTab.getListDataTable().size());
 						this.femaleParentTab.setHasUnsavedChanges(true);
 					} else {
 						entryObject.setFromFemaleTable(false);
-						this.maleParentTab.getSaveActionMenu().setEnabled(true);
 						this.maleParentTab.updateNoOfEntries(this.maleParentTab.getListDataTable().size());
 						this.maleParentTab.setHasUnsavedChanges(true);
 					}
@@ -225,24 +220,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 					tag.setImmediate(true);
 					tag.setValue(true);
 					item.getItemProperty(MakeCrossesParentsComponent.TAG_COLUMN_ID).setValue(tag);
-					final Button sourceAvailInvButton =
-							(Button) sourceTable.getItem(itemId).getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue();
-					final Button newAvailInvButton = new Button();
-					newAvailInvButton.setDebugId("newAvailInvButton");
-
-					newAvailInvButton.setCaption(sourceAvailInvButton.getCaption());
-					newAvailInvButton.addListener((InventoryLinkButtonClickListener) sourceAvailInvButton.getData());
-					newAvailInvButton.setStyleName(BaseTheme.BUTTON_LINK);
-					newAvailInvButton.setDescription(MakeCrossesParentsComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
-
-//					String seedRes = MakeCrossesParentsComponent.STRING_DASH;
-//					if (sourceTable.getItemIds().size() == selectedListEntries.size()) {
-//						seedRes =
-//								sourceTable.getItem(itemId).getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue().toString();
-//					}
-
-					item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(newAvailInvButton);
-//					item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 
 					final Object columnValue = sourceTable.getItem(itemId).getItemProperty(ColumnLabels.STOCKID.getName()).getValue();
 					final Label stockIdLabel = (Label) columnValue;
@@ -252,6 +229,17 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 					item.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(newStockIdLabel);
 
 					item.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(parentage);
+
+					Collection<GermplasmListEntry> selectedEntries = (Collection<GermplasmListEntry>) targetTable.getValue();
+					Set<GermplasmListEntry> entriesToSelect = new HashSet<GermplasmListEntry>();
+
+					if (selectedEntries != null) {
+						entriesToSelect.addAll(selectedEntries);
+						entriesToSelect.add(entryObject);
+					} else  {
+						entriesToSelect.add(entryObject);
+					}
+					targetTable.setValue(entriesToSelect);
 				}
 			}
 			targetTable.requestRepaint();
@@ -267,14 +255,12 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 						((SelectParentsListDataComponent) this.makeCrossesMain.getSelectParentsComponent().getListDetailsTabSheet()
 								.getSelectedTab()).getGermplasmList();
 				this.updateFemaleParentList(femaleGermplasmList);
-				this.femaleParentTab.getSaveActionMenu().setEnabled(false);
 				this.femaleParentTab.setHasUnsavedChanges(false);
 			} else {
 				final GermplasmList maleGermplasmList =
 						((SelectParentsListDataComponent) this.makeCrossesMain.getSelectParentsComponent().getListDetailsTabSheet()
 								.getSelectedTab()).getGermplasmList();
 				this.updateMaleParentList(maleGermplasmList);
-				this.maleParentTab.getSaveActionMenu().setEnabled(false);
 				this.maleParentTab.setHasUnsavedChanges(false);
 			}
 
@@ -290,21 +276,10 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	void updateParentTabForUnsavedChanges(final Table targetTable) {
 		// just add the new entry to the parent table
 		if (targetTable.equals(this.femaleParentTab.getListDataTable())) {
-			this.femaleParentTab.getSaveActionMenu().setEnabled(true);
 			this.femaleParentTab.setHasUnsavedChanges(true);
-			this.clearSeedReservationValues(this.femaleParentTab.getListDataTable());
 		} else {
-			this.maleParentTab.getSaveActionMenu().setEnabled(true);
 			this.maleParentTab.setHasUnsavedChanges(true);
-			this.clearSeedReservationValues(this.maleParentTab.getListDataTable());
 		}
-	}
-
-	void clearSeedReservationValues(final Table table) {
-//		for (final Object itemId : table.getItemIds()) {
-//			table.getItem(itemId).getItemProperty(ColumnLabels.SEED_RESERVATION.getName())
-//					.setValue(MakeCrossesParentsComponent.STRING_DASH);
-//		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -343,7 +318,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 	}
 
 	public void updateUIForSuccessfulSaving(final ParentTabComponent parentTab, final GermplasmList list) {
-		parentTab.getSaveActionMenu().setEnabled(false);
 		this.makeCrossesMain.toggleNextButton();
 
 		this.makeCrossesMain.getSelectParentsComponent().selectListInTree(list.getId());
@@ -458,41 +432,10 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 						// if the item is already existing in the target table, remove the existing item then add a new entry
 						this.maleParentTab.getListDataTable().removeItem(entryObject);
 
-						// #1 Available Inventory
-						// default value
-						String availInv = MakeCrossesParentsComponent.STRING_DASH;
-						if (listData.getInventoryInfo().getLotCount().intValue() != 0) {
-							availInv = listData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
-						}
-
-						final InventoryLinkButtonClickListener inventoryClickListener =
-								new InventoryLinkButtonClickListener(this, germplasmListId, listData.getId(), listData.getGid());
-						final Button inventoryButton = new Button(availInv, inventoryClickListener);
-						inventoryButton.setDebugId("inventoryButton");
-						inventoryButton.setData(inventoryClickListener);
-						inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-						inventoryButton.setDescription(MakeCrossesParentsComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
-
-						if (availInv.equals(MakeCrossesParentsComponent.STRING_DASH)) {
-							inventoryButton.setEnabled(false);
-							inventoryButton.setDescription("No Lot for this Germplasm");
-						} else {
-							inventoryButton.setDescription(MakeCrossesParentsComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
-						}
-
-						// Seed Reserved
-						// default value
-						String seedRes = MakeCrossesParentsComponent.STRING_DASH;
-						if (listData.getInventoryInfo().getReservedLotCount().intValue() != 0) {
-							seedRes = listData.getInventoryInfo().getReservedLotCount().toString().trim();
-						}
-
 						final Item item = this.maleParentTab.getListDataTable().addItem(entryObject);
 						item.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(gidButton);
 						item.getItemProperty(MakeCrossesParentsComponent.TAG_COLUMN_ID).setValue(tag);
 
-						item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-//						item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 
 						final Label stockIdLabel = new Label(listData.getInventoryInfo().getStockIDs());
 						stockIdLabel.setDebugId("stockIdLabel");
@@ -509,15 +452,12 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 				itemsLeftAfterAdding.addAll(this.maleParentTab.getListDataTable().getItemIds());
 
 				if (addedCount == itemsLeftAfterAdding.size()) {
-					this.maleParentTab.getSaveActionMenu().setEnabled(false);
 					this.maleParentTab.setHasUnsavedChanges(false);
 
 					// updates the crosses made save button if both parents are save at least once
 					this.makeCrossesMain.getCrossesTableComponent().updateCrossesMadeSaveButton();
 				} else {
-					this.maleParentTab.getSaveActionMenu().setEnabled(true);
 					this.maleParentTab.setHasUnsavedChanges(true);
-					this.clearSeedReservationValues(this.maleParentTab.getListDataTable());
 				}
 			}
 
@@ -573,41 +513,9 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 						// if the item is already existing in the target table, remove the existing item then add a new entry
 						this.femaleParentTab.getListDataTable().removeItem(entryObject);
 
-						// #1 Available Inventory
-						// default value
-						String availInv = MakeCrossesParentsComponent.STRING_DASH;
-						if (listData.getInventoryInfo().getLotCount().intValue() != 0) {
-							availInv = listData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
-						}
-
-						final InventoryLinkButtonClickListener inventoryClickListener =
-								new InventoryLinkButtonClickListener(this, germplasmListId, listData.getId(), listData.getGid());
-						final Button inventoryButton = new Button(availInv, inventoryClickListener);
-						inventoryButton.setDebugId("inventoryButton");
-						inventoryButton.setData(inventoryClickListener);
-						inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-						inventoryButton.setDescription(MakeCrossesParentsComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
-
-						if (availInv.equals(MakeCrossesParentsComponent.STRING_DASH)) {
-							inventoryButton.setEnabled(false);
-							inventoryButton.setDescription("No Lot for this Germplasm");
-						} else {
-							inventoryButton.setDescription(MakeCrossesParentsComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
-						}
-
-						// Seed Reserved
-						// default value
-						String seedRes = MakeCrossesParentsComponent.STRING_DASH;
-						if (listData.getInventoryInfo().getReservedLotCount().intValue() != 0) {
-							seedRes = listData.getInventoryInfo().getReservedLotCount().toString().trim();
-						}
-
 						final Item item = this.femaleParentTab.getListDataTable().addItem(entryObject);
 						item.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(gidButton);
 						item.getItemProperty(MakeCrossesParentsComponent.TAG_COLUMN_ID).setValue(tag);
-
-						item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-//						item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 
 						final Label stockIdLabel = new Label(listData.getInventoryInfo().getStockIDs());
 						stockIdLabel.setDebugId("stockIdLabel");
@@ -624,16 +532,13 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 				itemsLeftAfterAdding.addAll(this.femaleParentTab.getListDataTable().getItemIds());
 
 				if (addedCount == itemsLeftAfterAdding.size()) {
-					this.femaleParentTab.getSaveActionMenu().setEnabled(false);
 					this.femaleParentTab.setHasUnsavedChanges(false);
 
 					// updates the crosses made save button if both parents are save at least once
 					this.makeCrossesMain.getCrossesTableComponent().updateCrossesMadeSaveButton();
 
 				} else {
-					this.femaleParentTab.getSaveActionMenu().setEnabled(true);
 					this.femaleParentTab.setHasUnsavedChanges(true);
-					this.clearSeedReservationValues(this.femaleParentTab.getListDataTable());
 				}
 			}
 
@@ -659,7 +564,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 			this.maleParentTab.setListNameForCrosses(listFromTree.getName());
 			this.updateCrossesSeedSource(this.maleParentTab, listFromTree);
 			this.maleParentTab.enableReserveInventory();
-			this.maleParentTab.enableEditListHeaderOption();
 		}
 
 		this.maleParentTab.updateNoOfEntries();
@@ -672,7 +576,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 			this.femaleParentTab.setListNameForCrosses(listFromTree.getName());
 			this.updateCrossesSeedSource(this.femaleParentTab, listFromTree);
 			this.femaleParentTab.enableReserveInventory();
-			this.femaleParentTab.enableEditListHeaderOption();
 		}
 		this.femaleParentTab.updateNoOfEntries();
 	}

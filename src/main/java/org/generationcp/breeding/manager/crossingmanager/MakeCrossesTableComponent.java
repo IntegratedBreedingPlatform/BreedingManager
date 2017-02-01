@@ -13,8 +13,10 @@ package org.generationcp.breeding.manager.crossingmanager;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -24,7 +26,9 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PopupView;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
@@ -32,15 +36,20 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.actions.SaveCrossesMadeAction;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerActionHandler;
+import org.generationcp.breeding.manager.crossingmanager.listeners.MakeCrossingCheckBoxListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ApplyCrossingSettingAction;
+import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUtil;
 import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
+import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
+import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
+import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
 import org.generationcp.breeding.manager.util.BreedingManagerTransformationUtil;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
@@ -72,6 +81,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
+import org.vaadin.peter.contextmenu.ContextMenu;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -95,6 +109,14 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	public static final String PARENTS_DELIMITER = ",";
 	private static final long serialVersionUID = 3702324761498666369L;
 	private static final Logger LOG = LoggerFactory.getLogger(MakeCrossesTableComponent.class);
+	private static final String TAG_COLUMN_ID = "Tag";
+	private static final String FEMALE_CROSS = "FEMALE CROSS";
+	private static final String MALE_CROSS = "MALE CROSS";
+
+	private static final String CLICK_TO_VIEW_GERMPLASM_INFORMATION = "Click to view Germplasm information";
+
+	@Autowired
+	private PlatformTransactionManager transactionManager;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -118,7 +140,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	private PedigreeService pedigreeService;
 
 	private Label lblReviewCrosses;
-	private BreedingManagerTable tableCrossesMade;
 
 	private Label totalCrossesLabel;
 	private Label totalSelectedCrossesLabel;
@@ -127,7 +148,17 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	private Label applyGroupingToNewCrossesOnlyHelpText;
 	private CheckBox applyGroupingToNewCrossesOnly;
 
-//	private Button saveButton;
+	private ContextMenu actionMenu;
+
+	// Tables
+	private TableWithSelectAllLayout tableWithSelectAllLayout;
+	private Table tableCrossesMade;
+	@SuppressWarnings("unused")
+	private CheckBox selectAll;
+
+	private Button actionButton;
+
+	private CrossingManagerActionHandler crossingManagerActionListener;
 
 	private SaveListAsDialog saveListAsWindow;
 	private GermplasmList crossList;
@@ -186,7 +217,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 		this.separator = this.makeCrossesMain.getSeparatorString();
 		final Set<CrossParents> existingCrosses = new HashSet<>();
-		this.tableCrossesMade.disableContentRefreshing();
 
 		while (femaleListIterator.hasNext()) {
 			final GermplasmListEntry femaleParent = femaleListIterator.next();
@@ -195,7 +225,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 					existingCrosses, germplasmWithPreferredName, parentsPedigreeString);
 		}
 		this.updateCrossesMadeUI();
-		this.tableCrossesMade.enableContentRefreshing(true);
 
 	}
 
@@ -212,9 +241,10 @@ public class MakeCrossesTableComponent extends VerticalLayout
 				.addAll(BreedingManagerTransformationUtil.getAllGidsFromGermplasmEntry(maleParents)).build();
 	}
 
-	void addItemToMakeCrossesTable(final String listnameFemaleParent, final String listnameMaleParent, final boolean excludeSelf,
-			final GermplasmListEntry femaleParent, final GermplasmListEntry maleParent, final Set<CrossParents> existingCrosses,
-			final Map<Integer, Germplasm> germplasmWithPreferredName, final Map<Integer, String> pedigreeString ) {
+	void addItemToMakeCrossesTable(
+		final String listnameFemaleParent, final String listnameMaleParent, final boolean excludeSelf,
+		final GermplasmListEntry femaleParent, final GermplasmListEntry maleParent, final Set<CrossParents> existingCrosses,
+		final Map<Integer, Germplasm> germplasmWithPreferredName, final Map<Integer, String> pedigreeString) {
 
 		final String femaleSeedSource = listnameFemaleParent + ":" + femaleParent.getEntryId();
 		final String maleSeedSource = listnameMaleParent + ":" + maleParent.getEntryId();
@@ -229,25 +259,38 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		if (shouldBeAddedToCrossesTable(parents, existingCrosses, excludeSelf, femaleParent, maleParent)) {
 			final int entryCounter = this.tableCrossesMade.size() + 1;
 			final String femalePreferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(femaleParent.getGid()));
-			final String maleParentPeferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(maleParent.getGid()));
+			final String maleParentPreferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(maleParent.getGid()));
 			final String femaleParentPedigreeString = pedigreeString.get(femaleParent.getGid());
 			final String maleParentPedigreeString = pedigreeString.get(maleParent.getGid());
 
-			this.tableCrossesMade.addItem(
-				new Object[] {entryCounter, femaleParentPedigreeString, maleParentPedigreeString, femalePreferredName,
-					maleParentPeferredName, seedSource}, parents);
+			final Button designationFemaleParentButton = new Button(femalePreferredName, new GidLinkClickListener(femaleParent.getGid().toString(), true));
+			designationFemaleParentButton.setStyleName(BaseTheme.BUTTON_LINK);
+			designationFemaleParentButton.setDescription(CLICK_TO_VIEW_GERMPLASM_INFORMATION);
+
+			final Button designationMaleParentMaleButton = new Button(maleParentPreferredName, new GidLinkClickListener(maleParent.getGid().toString(), true));
+			designationMaleParentMaleButton.setStyleName(BaseTheme.BUTTON_LINK);
+			designationMaleParentMaleButton.setDescription(CLICK_TO_VIEW_GERMPLASM_INFORMATION);
+
+			final CheckBox tag = new CheckBox();
+			tag.setDebugId(TAG_COLUMN_ID);
+			tag.addListener(new MakeCrossingCheckBoxListener(tableCrossesMade, parents, this.tableWithSelectAllLayout.getCheckBox()));
+			tag.setImmediate(true);
+
+			Object[] item = new Object[] {
+				tag, entryCounter, designationFemaleParentButton,
+				designationMaleParentMaleButton, femaleParentPedigreeString, maleParentPedigreeString};
+
+			this.tableCrossesMade.addItem(item, parents);
 			existingCrosses.add(parents);
 		}
 
 	}
 
 	private void setMakeCrossesTableVisibleColumn() {
-		this.tableCrossesMade.addContainerProperty(ColumnLabels.CROSS_FEMALE_GID.getName(), String.class, null);
-		this.tableCrossesMade.addContainerProperty(ColumnLabels.CROSS_MALE_GID.getName(), String.class, null);
-
-		this.tableCrossesMade.setVisibleColumns(new Object[] {ColumnLabels.ENTRY_ID.getName(), ColumnLabels.CROSS_FEMALE_GID.getName(),
-				ColumnLabels.CROSS_MALE_GID.getName(), ColumnLabels.FEMALE_PARENT.getName(), 
-				ColumnLabels.MALE_PARENT.getName(), ColumnLabels.SEED_SOURCE.getName()});
+		this.tableCrossesMade.setVisibleColumns(new Object[] {
+			TAG_COLUMN_ID, ColumnLabels.ENTRY_ID.getName(), ColumnLabels.FEMALE_PARENT.getName(),
+			ColumnLabels.MALE_PARENT.getName(), FEMALE_CROSS,
+			MALE_CROSS});
 	}
 
 	private void updateCrossesMadeUI() {
@@ -265,8 +308,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			return;
 		}
 
-//		final boolean isCrossesInTable = !this.tableCrossesMade.getItemIds().isEmpty();
-//		this.saveButton.setEnabled(isCrossesInTable);
 	}
 
 	/**
@@ -294,7 +335,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		final Map<Integer, String> parentsPedigreeString = pedigreeService.getCrossExpansions(germplasmWithPreferredName.keySet(), null, crossExpansionProperties);
 
 		final Set<CrossParents> existingCrosses = new HashSet<>();
-		this.tableCrossesMade.disableContentRefreshing();
 		for (final GermplasmListEntry femaleParent : femaleParents) {
 
 			final String femaleSource = listnameFemaleParent + ":" + femaleParent.getEntryId();
@@ -313,27 +353,42 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			}
 		}
 		this.updateCrossesMadeUI();
-		this.tableCrossesMade.enableContentRefreshing(true);
-
-
 	}
 
-	void addItemToMakeCrossesTable(final boolean excludeSelf, final GermplasmListEntry femaleParent, final String femaleSource,
+	void addItemToMakeCrossesTable(
+		final boolean excludeSelf, final GermplasmListEntry femaleParent, final String femaleSource,
 		final GermplasmListEntry maleParent, final String maleSource, final CrossParents parents, final Set<CrossParents> existingCrosses,
 		final Map<Integer, Germplasm> germplasmWithPreferredName, final Map<Integer, String> parentsPedigreeString) {
+
 		if (shouldBeAddedToCrossesTable(parents, existingCrosses, excludeSelf, femaleParent, maleParent)
-		 ) {
-				int entryCounter = this.tableCrossesMade.size() + 1;
-				final String femaleParentPedigreeString = parentsPedigreeString.get(femaleParent.getGid());
-				final String maleParentPedigreeString = parentsPedigreeString.get(maleParent.getGid());
-				final String femalePreferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(femaleParent.getGid()));
-				final String maleParentPeferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(maleParent.getGid()));
-				final String seedSource = this.generateSeedSource(femaleParent.getGid(), femaleSource, maleParent.getGid(), maleSource);
-				this.tableCrossesMade.addItem(
-					new Object[] {entryCounter, femaleParentPedigreeString, maleParentPedigreeString, femalePreferredName,
-						maleParentPeferredName, seedSource}, parents);
-				existingCrosses.add(parents);
-			}
+			) {
+			int entryCounter = this.tableCrossesMade.size() + 1;
+			final String femaleParentPedigreeString = parentsPedigreeString.get(femaleParent.getGid());
+			final String maleParentPedigreeString = parentsPedigreeString.get(maleParent.getGid());
+			final String femalePreferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(femaleParent.getGid()));
+			final String maleParentPreferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(maleParent.getGid()));
+			final String seedSource = this.generateSeedSource(femaleParent.getGid(), femaleSource, maleParent.getGid(), maleSource);
+
+			final Button designationFemaleParentButton = new Button(femalePreferredName, new GidLinkClickListener(femaleParent.getGid().toString(), true));
+			designationFemaleParentButton.setStyleName(BaseTheme.BUTTON_LINK);
+			designationFemaleParentButton.setDescription(CLICK_TO_VIEW_GERMPLASM_INFORMATION);
+
+			final Button designationMaleParentMaleButton = new Button(maleParentPreferredName, new GidLinkClickListener(maleParent.getGid().toString(), true));
+			designationMaleParentMaleButton.setStyleName(BaseTheme.BUTTON_LINK);
+			designationMaleParentMaleButton.setDescription(CLICK_TO_VIEW_GERMPLASM_INFORMATION);
+
+			final CheckBox tag = new CheckBox();
+			tag.setDebugId(TAG_COLUMN_ID);
+			tag.addListener(new MakeCrossingCheckBoxListener(tableCrossesMade, parents, this.tableWithSelectAllLayout.getCheckBox()));
+			tag.setImmediate(true);
+
+			Object[] item = new Object[] {
+				tag, entryCounter, designationFemaleParentButton,
+				designationMaleParentMaleButton, femaleParentPedigreeString, maleParentPedigreeString};
+
+			this.tableCrossesMade.addItem(item, parents);
+			existingCrosses.add(parents);
+		}
 	}
 
 	private boolean shouldBeAddedToCrossesTable(CrossParents parents, Set<CrossParents> existingCrosses, boolean excludeSelf,
@@ -463,6 +518,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	@Override
 	public void instantiateComponents() {
+		this.selectAll = new CheckBox("Select All");
 		this.lblReviewCrosses = new Label(this.messageSource.getMessage(Message.REVIEW_CROSSES));
 		this.lblReviewCrosses.setDebugId("lblReviewCrosses");
 		this.lblReviewCrosses.addStyleName(Bootstrap.Typography.H4.styleName());
@@ -493,45 +549,67 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		this.applyGroupingToNewCrossesOnlyHelpPopup.addStyleName(AppConstants.CssStyles.POPUP_VIEW);
 		this.applyGroupingToNewCrossesOnlyHelpPopup.addStyleName("cs-inline-icon");
 
-//		this.saveButton = new Button(this.messageSource.getMessage(Message.SAVE_LABEL));
-//		this.saveButton.setDebugId("saveButton");
-//		this.saveButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
-//		this.saveButton.setEnabled(false);
-		this.initializeCrossesMadeTable();
+		this.actionButton = new ActionButton();
+		this.actionButton.setDebugId("actionButton");
+
+		this.actionMenu = new ContextMenu();
+		this.actionMenu.setDebugId("actionMenu");
+		this.actionMenu.setWidth("250px");
+		this.actionMenu.addItem(this.messageSource.getMessage(Message.CLEAR_ALL));
+		this.actionMenu.addItem(this.messageSource.getMessage(Message.REMOVE_SELECTED_ENTRIES));
+		this.actionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
+		this.actionMenu.addItem(this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES));
+		this.actionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES));
+
+		this.initializeCrossesMadeTable(new TableWithSelectAllLayout(5, ParentTabComponent.TAG_COLUMN_ID));
 	}
 
-	protected void initializeCrossesMadeTable() {
-		this.setTableCrossesMade(new BreedingManagerTable(MakeCrossesTableComponent.PAGE_LENGTH, MakeCrossesTableComponent.PAGE_LENGTH));
+	protected void initializeCrossesMadeTable(final TableWithSelectAllLayout tableWithSelectAllLayout) {
+		this.tableWithSelectAllLayout = tableWithSelectAllLayout;
+
+		this.tableCrossesMade = this.tableWithSelectAllLayout.getTable();
+		this.selectAll = this.tableWithSelectAllLayout.getCheckBox();
+
 		this.tableCrossesMade = this.getTableCrossesMade();
 		this.tableCrossesMade.setDebugId("tableCrossesMade");
-		this.tableCrossesMade.setWidth("850");
-		this.tableCrossesMade.setHeight("365px");
+		this.tableCrossesMade.setWidth("100%");
+		this.tableCrossesMade.setHeight("183px");
 		this.tableCrossesMade.setImmediate(true);
 		this.tableCrossesMade.setSelectable(true);
 		this.tableCrossesMade.setMultiSelect(true);
 		this.tableCrossesMade.setPageLength(100);
 
+		this.tableCrossesMade.addContainerProperty(TAG_COLUMN_ID, CheckBox.class, null);
 		this.tableCrossesMade.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, null);
-		this.tableCrossesMade.addContainerProperty(ColumnLabels.CROSS_FEMALE_GID.getName(), String.class, null);
-		this.tableCrossesMade.addContainerProperty(ColumnLabels.CROSS_MALE_GID.getName(), String.class, null);
-		this.tableCrossesMade.addContainerProperty(ColumnLabels.FEMALE_PARENT.getName(), String.class, null);
-		this.tableCrossesMade.addContainerProperty(ColumnLabels.MALE_PARENT.getName(), String.class, null);
-		this.tableCrossesMade.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
+		this.tableCrossesMade.addContainerProperty(ColumnLabels.FEMALE_PARENT.getName(), Button.class, null);
+		this.tableCrossesMade.addContainerProperty(ColumnLabels.MALE_PARENT.getName(), Button.class, null);
+		this.tableCrossesMade.addContainerProperty(FEMALE_CROSS, String.class, null);
+		this.tableCrossesMade.addContainerProperty(MALE_CROSS, String.class, null);
 
-		this.tableCrossesMade.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), "#");
-		this.tableCrossesMade.setColumnHeader(ColumnLabels.CROSS_FEMALE_GID.getName(), this.getTermNameFromOntology(ColumnLabels.CROSS_FEMALE_GID));
-		this.tableCrossesMade.setColumnHeader(ColumnLabels.CROSS_MALE_GID.getName(), this.getTermNameFromOntology(ColumnLabels.CROSS_MALE_GID));
+		this.tableCrossesMade.setColumnHeader(TAG_COLUMN_ID, this.messageSource.getMessage(Message.CHECK_ICON));
+		this.tableCrossesMade.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), this.messageSource.getMessage(Message.HASHTAG));
 
-		this.tableCrossesMade.setColumnHeader(ColumnLabels.FEMALE_PARENT.getName(),
-				this.getTermNameFromOntology(ColumnLabels.FEMALE_PARENT));
+		this.tableCrossesMade.setColumnHeader(ColumnLabels.FEMALE_PARENT.getName(), this.getTermNameFromOntology(ColumnLabels.FEMALE_PARENT));
 		this.tableCrossesMade.setColumnHeader(ColumnLabels.MALE_PARENT.getName(), this.getTermNameFromOntology(ColumnLabels.MALE_PARENT));
-		this.tableCrossesMade.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(), this.getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
+		this.tableCrossesMade.setColumnHeader(FEMALE_CROSS,FEMALE_CROSS);
+		this.tableCrossesMade.setColumnHeader(MALE_CROSS, MALE_CROSS);
 
-		this.tableCrossesMade.setColumnWidth(ColumnLabels.SEED_SOURCE.getName(), 200);
+		this.tableCrossesMade.setColumnWidth(TAG_COLUMN_ID, 25);
 
-		this.tableCrossesMade.setColumnCollapsingAllowed(true);
-		this.tableCrossesMade.setColumnCollapsed(ColumnLabels.SEED_SOURCE.getName(), true);
+		this.tableCrossesMade.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
 
+			private static final long serialVersionUID = -3207714818504151649L;
+
+			@Override
+			public String generateDescription(final Component source, final Object itemId, final Object propertyId) {
+				if (propertyId != null && propertyId == ColumnLabels.FEMALE_PARENT.getName()) {
+					final Table theTable = (Table) source;
+					final Item item = theTable.getItem(itemId);
+					return (String) item.getItemProperty(ColumnLabels.FEMALE_PARENT.getName()).getValue();
+				}
+				return null;
+			}
+		});
 		this.tableCrossesMade.addActionHandler(new CrossingManagerActionHandler(this));
 	}
 
@@ -559,17 +637,20 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	@Override
 	public void addListeners() {
-//		this.saveButton.addListener(new Button.ClickListener() {
-//
-//			private static final long serialVersionUID = 5123058086826023128L;
-//
-//			@Override
-//			public void buttonClick(final ClickEvent event) {
-//				if (MakeCrossesTableComponent.this.makeCrossesMain.isValidationsBeforeSavePassed()) {
-//					MakeCrossesTableComponent.this.launchSaveListAsWindow();
-//				}
-//			}
-//		});
+
+		this.crossingManagerActionListener = new CrossingManagerActionHandler(this);
+
+		this.actionButton.addListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(final ClickEvent event) {
+				MakeCrossesTableComponent.this.actionMenu.show(event.getClientX(), event.getClientY());
+				MakeCrossesTableComponent.this.updateCrossesMadeUI();
+			}
+
+		});
 
 		this.tableCrossesMade.addListener(new Property.ValueChangeListener() {
 
@@ -580,6 +661,8 @@ public class MakeCrossesTableComponent extends VerticalLayout
 				MakeCrossesTableComponent.this.generateTotalSelectedCrossesLabel();
 			}
 		});
+
+		this.actionMenu.addListener(new MakeCrossesTableComponent.ActionMenuClickListener());
 	}
 
 	@SuppressWarnings("deprecation")
@@ -587,49 +670,41 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	public void layoutComponents() {
 		this.setSpacing(true);
 		this.setMargin(false, false, false, true);
-		this.setWidth("900px");
-
+		
+		this.addComponent(this.actionMenu);
 		final HorizontalLayout leftLabelContainer = new HorizontalLayout();
 		leftLabelContainer.setDebugId("leftLabelContainer");
-//		leftLabelContainer.setSpacing(true);
 		leftLabelContainer.addComponent(this.totalCrossesLabel);
 		leftLabelContainer.addComponent(this.totalSelectedCrossesLabel);
+		leftLabelContainer.addComponent(this.actionButton);
 		leftLabelContainer.setComponentAlignment(this.totalCrossesLabel, Alignment.MIDDLE_LEFT);
 		leftLabelContainer.setComponentAlignment(this.totalSelectedCrossesLabel, Alignment.MIDDLE_LEFT);
+		leftLabelContainer.setComponentAlignment(this.actionButton, Alignment.TOP_RIGHT);
+
 
 		final HorizontalLayout labelContainer = new HorizontalLayout();
 		labelContainer.setDebugId("labelContainer");
-//		labelContainer.setSpacing(true);
 		labelContainer.setWidth("100%");
 		labelContainer.setHeight("30px");
 		labelContainer.addComponent(leftLabelContainer);
-//		labelContainer.addComponent(this.saveButton);
+		labelContainer.addComponent(this.actionButton);
 		labelContainer.setComponentAlignment(leftLabelContainer, Alignment.MIDDLE_LEFT);
-//		labelContainer.setComponentAlignment(this.saveButton, Alignment.MIDDLE_RIGHT);
+		labelContainer.setComponentAlignment(this.actionButton, Alignment.MIDDLE_RIGHT);
 
 		final VerticalLayout makeCrossesLayout = new VerticalLayout();
 		makeCrossesLayout.setDebugId("makeCrossesLayout");
-		makeCrossesLayout.setWidth("900px"); //era 850
-		makeCrossesLayout.setHeight("300px"); //365px
 		makeCrossesLayout.setSpacing(true);
 		makeCrossesLayout.setMargin(true);
 		makeCrossesLayout.addComponent(labelContainer);
-
-//		final HorizontalLayout groupInheritanceOptionsContainer = new HorizontalLayout();
-//		groupInheritanceOptionsContainer.setDebugId("groupInheritanceOptionsContainer");
-//		groupInheritanceOptionsContainer.setSpacing(true);
-//		groupInheritanceOptionsContainer.addComponent(this.applyGroupingToNewCrossesOnly);
-//		groupInheritanceOptionsContainer.addComponent(this.applyGroupingToNewCrossesOnlyHelpPopup);
-//		makeCrossesLayout.addComponent(groupInheritanceOptionsContainer);
-
+		makeCrossesLayout.setWidth("100%");
 		makeCrossesLayout.addComponent(this.tableCrossesMade);
 
 		final Panel makeCrossesPanel = new Panel();
 		makeCrossesPanel.setDebugId("makeCrossesPanel");
-		makeCrossesPanel.setWidth("900px");
-		makeCrossesPanel.setHeight("530px");
 		makeCrossesPanel.setLayout(makeCrossesLayout);
 		makeCrossesPanel.addStyleName("section_panel_layout");
+		makeCrossesPanel.addComponent(selectAll);
+		makeCrossesPanel.setWidth("890px");
 
 		final HeaderLabelLayout reviewCrossesLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_CROSSES, this.lblReviewCrosses);
 		reviewCrossesLayout.setDebugId("reviewCrossesLayout");
@@ -683,7 +758,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	@Override
 	public void saveList(final GermplasmList list) {
-//		this.saveButton.setEnabled(false);
 
 		if (this.updateCrossesMadeContainer(this.makeCrossesMain.getCrossesMadeContainer(), list)) {
 			this.saveRecords();
@@ -814,11 +888,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		return this.makeCrossesMain.getSource();
 	}
 
-//	public Button getSaveButton() {
-//		return this.saveButton;
-//	}
-
-	public BreedingManagerTable getTableCrossesMade() {
+	public Table getTableCrossesMade() {
 		return this.tableCrossesMade;
 	}
 
@@ -840,5 +910,59 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	public void setSeedSourceGenerator(final SeedSourceGenerator seedSourceGenerator) {
 		this.seedSourceGenerator = seedSourceGenerator;
+	}
+
+	private final class ActionMenuClickListener implements ContextMenu.ClickListener {
+
+		private static final long serialVersionUID = -2343109406180457070L;
+
+		@Override
+		public void contextItemClick(final org.vaadin.peter.contextmenu.ContextMenu.ClickEvent event) {
+			final TransactionTemplate transactionTemplate = new TransactionTemplate(MakeCrossesTableComponent.this.transactionManager);
+			transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+				@Override
+				protected void doInTransactionWithoutResult(final TransactionStatus status) {
+					final ContextMenu.ContextMenuItem clickedItem = event.getClickedItem();
+
+					if (clickedItem.getName().equals(
+						MakeCrossesTableComponent.this.messageSource.getMessage(Message.REMOVE_SELECTED_ENTRIES))) {
+						MakeCrossesTableComponent.this.crossingManagerActionListener.removeSelectedEntriesAction(MakeCrossesTableComponent.this.tableCrossesMade);
+
+					} else if (clickedItem.getName().equals(MakeCrossesTableComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
+						MakeCrossesTableComponent.this.tableCrossesMade.setValue(MakeCrossesTableComponent.this.tableCrossesMade.getItemIds());
+					} else if (clickedItem.getName().equals(MakeCrossesTableComponent.this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES))) {
+						MakeCrossesTableComponent.this.tableCrossesMade.setValue(CrossingManagerUtil
+							.getEvenEntries(MakeCrossesTableComponent.this.tableCrossesMade));
+					} else if (clickedItem.getName().equals(MakeCrossesTableComponent.this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES))) {
+						MakeCrossesTableComponent.this.tableCrossesMade.setValue(CrossingManagerUtil
+							.getOddEntries(MakeCrossesTableComponent.this.tableCrossesMade));
+					} else if (clickedItem.getName().equals(MakeCrossesTableComponent.this.messageSource.getMessage(Message.CLEAR_ALL))) {
+						MakeCrossesTableComponent.this.tableCrossesMade.setValue(MakeCrossesTableComponent.this.tableCrossesMade);
+						MakeCrossesTableComponent.this.crossingManagerActionListener.removeSelectedEntriesAction(MakeCrossesTableComponent.this.tableCrossesMade);
+					}
+				}
+			});
+		}
+	}
+
+	public TableWithSelectAllLayout getTableWithSelectAllLayout() {
+		return this.tableWithSelectAllLayout;
+	}
+
+	public void setTableWithSelectAllLayout(final TableWithSelectAllLayout tableWithSelectAllLayout) {
+		this.tableWithSelectAllLayout = tableWithSelectAllLayout;
+	}
+
+	private void updateNoOfSelectedEntries(final int count) {
+		this.totalSelectedCrossesLabel.setValue("<i>" + this.messageSource.getMessage(Message.SELECTED) + ": " + "  <b>" + count
+			+ "</b></i>");
+	}
+
+	private void updateNoOfSelectedEntries() {
+		int count = 0;
+			final Collection<?> selectedItems = (Collection<?>) this.tableWithSelectAllLayout.getTable().getValue();
+			count = selectedItems.size();
+		this.updateNoOfSelectedEntries(count);
 	}
 }

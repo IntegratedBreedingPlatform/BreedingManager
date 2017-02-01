@@ -82,7 +82,6 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 
 		this.crossingMethodComboBoxLabel = new Label(this.messageSource.getMessage(Message.CROSSING_METHOD_LABEL));
 		this.crossingMethodComboBoxLabel.setDebugId("crossingMethodComboBoxLabel");
-		this.crossingMethodComboBoxLabel.setWidth("310px");
 
 		this.crossingMethodComboBox = new ComboBox();
 		this.crossingMethodComboBox.setDebugId("crossingMethodComboBox");
@@ -125,38 +124,35 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 	@Override
 	public void layoutComponents() {
 		this.setSpacing(true);
+		this.setWidth("950px");
 
 		HorizontalLayout layoutCrossingMethodOption = new HorizontalLayout();
 		layoutCrossingMethodOption.setDebugId("layoutCrossingMethodOption");
-		layoutCrossingMethodOption.setWidth("640px"); //640px
 		layoutCrossingMethodOption.setSpacing(true);
-		layoutCrossingMethodOption.setMargin(true);
+		layoutCrossingMethodOption.setHeight("40px");
 		layoutCrossingMethodOption.addComponent(this.crossingMethodComboBoxLabel);
 		layoutCrossingMethodOption.addComponent(this.crossingMethodComboBox);
-//		layoutCrossingMethodOption.setComponentAlignment(this.crossingMethodComboBoxLabel, Alignment.MIDDLE_LEFT);
-//		layoutCrossingMethodOption.setComponentAlignment(this.crossingMethodComboBox, Alignment.MIDDLE_LEFT);
 
 		HorizontalLayout layoutchkBoxOption = new HorizontalLayout();
 		layoutchkBoxOption.setDebugId("layoutchkBoxOption");
-		layoutchkBoxOption.setWidth("520px"); //520px
-//		layoutchkBoxOption.setSpacing(true);
-		layoutchkBoxOption.setMargin(true);
+		layoutchkBoxOption.setSpacing(true);
+		layoutchkBoxOption.setHeight("40px");
 		layoutchkBoxOption.addComponent(this.chkBoxMakeReciprocalCrosses);
 		layoutchkBoxOption.addComponent(this.chkBoxExcludeSelfs);
 		layoutchkBoxOption.addComponent(this.btnGenerateCross);
-//		layoutchkBoxOption.setComponentAlignment(this.chkBoxMakeReciprocalCrosses, Alignment.MIDDLE_LEFT);
-//		layoutchkBoxOption.setComponentAlignment(this.chkBoxExcludeSelfs, Alignment.MIDDLE_LEFT);
-//		layoutchkBoxOption.setComponentAlignment(this.btnGenerateCross, Alignment.MIDDLE_LEFT);
+
 
 		this.crossingMethodPanel = new Panel();
 		this.crossingMethodPanel.setDebugId("crossingMethodPanel");
-		this.crossingMethodPanel.setWidth("900px");
 		this.crossingMethodPanel.addStyleName(Runo.PANEL_LIGHT); //"section_panel_layout ");
+		this.crossingMethodPanel.setHeight("160px");
 
-		// provides this slot for an icon
-		HeaderLabelLayout crossingMethodLayout = new HeaderLabelLayout(null, this.crossingMethodLabel);
+		HorizontalLayout crossingMethodLayout = new HorizontalLayout();
 		crossingMethodLayout.setDebugId("crossingMethodLayout");
-//		crossingMethodLayout.setMargin(true);
+		crossingMethodLayout.setSpacing(true);
+		crossingMethodLayout.setHeight("40px");
+		crossingMethodLayout.addComponent(this.crossingMethodLabel);
+
 		this.crossingMethodPanel.addComponent(crossingMethodLayout);
 		this.crossingMethodPanel.addComponent(layoutCrossingMethodOption);
 		this.crossingMethodPanel.addComponent(layoutchkBoxOption);
