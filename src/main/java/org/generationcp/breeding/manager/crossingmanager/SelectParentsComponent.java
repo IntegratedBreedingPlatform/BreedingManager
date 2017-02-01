@@ -115,6 +115,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 		this.listDetailsTabSheet = new TabSheet();
 		this.listDetailsTabSheet.setDebugId("listDetailsTabSheet");
 		this.listDetailsTabSheet.setHeight("365px");
+		this.listDetailsTabSheet.setWidth("890px");
 		hideListDetailsTabSheet();
 
 		this.closeAllTabsButton = new Button(this.messageSource.getMessage(Message.CLOSE_ALL_TABS));
@@ -214,7 +215,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 
 	@Override
 	public void layoutComponents() {
-
+		setWidth("100%");
 		setMargin(true);
 
 		final HeaderLabelLayout selectParentsHeaderLayout =
