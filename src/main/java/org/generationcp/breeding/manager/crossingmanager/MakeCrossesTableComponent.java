@@ -744,7 +744,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	 */
 	public Integer saveTemporaryList() {
 		GermplasmList tempList = new GermplasmList();
-		tempList.setType(GermplasmListType.F1CRT.toString());
+		tempList.setType(GermplasmListType.F1.toString());
 		// use same pattern as deleted study
 		tempList.setName("TEMP_LIST" + "#" + Util.getCurrentDateAsStringValue("yyyyMMddHHmmssSSS"));
 		tempList.setDescription("");
