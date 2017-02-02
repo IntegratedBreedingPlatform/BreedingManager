@@ -291,6 +291,7 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow implements I
 
 	protected void validateImportedSeedInventoryList() throws InvalidFileDataException, SeedInventoryImportException {
 		List<Integer> importerTransactionsIdList = Lists.newArrayList();
+		Boolean isValidWithdrawalAmountForAllReservations = false;
 
 		if (this.selectedGermplsmList == null) {
 			final String currentListEmptyError = this.messageSource.getMessage(Message.SEED_IMPORT_SELECTED_LIST_EMPTY_ERROR);
@@ -317,6 +318,14 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow implements I
 				Double importedBalanceAmount = importedSeedInventory.getBalanceAmount();
 				Integer transactionID = importedSeedInventory.getTransactionId();
 				String transactionComment = importedSeedInventory.getComments();
+
+				if(importedBalanceAmount == null){
+					if(importedWithdrawalAmount != null && importedWithdrawalAmount != 0){
+						isValidWithdrawalAmountForAllReservations=true;
+					}
+				}else{
+					isValidWithdrawalAmountForAllReservations = true;
+				}
 
 				boolean entryNoMatch = false;
 				GermplasmListData matchedGermplsmListData = null;
@@ -354,6 +363,10 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow implements I
 				}
 				importerTransactionsIdList.add(transactionID);
 				mapTransactionComment.put(transactionID, transactionComment);
+			}
+
+			if(!isValidWithdrawalAmountForAllReservations){
+				throw new InvalidFileDataException(Message.SEED_IMPORT_WITHDRAWAL_AMOUNT_EMPTY_ERROR.toString());
 			}
 
 			importedTransactions = inventoryDataManager.getTransactionsByIdList(importerTransactionsIdList);
