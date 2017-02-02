@@ -26,7 +26,7 @@ import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Window;
 
-@Ignore("test commented until finish the ticket BMS-3785")
+
 public class CrossingManagerMakeCrossesComponentTest {
 
 	public static final String LOCALHOST = "localhost";
@@ -194,24 +194,6 @@ public class CrossingManagerMakeCrossesComponentTest {
 				this.makeCrosses.getNurseryCancelButton());
 		Assert.assertNull("Expecting nursery back button to not be initialized when not navigating to crossing manager from a Nursery.",
 				this.makeCrosses.getNurseryBackButton());
-	}
-
-	@Test
-	public void testBreedingMethodIsValidated() {
-		final CrossingSettingsMethodComponent breedingMethodComponent = Mockito.mock(CrossingSettingsMethodComponent.class);
-		this.makeCrosses.setCrossingSettingsMethodComponent(breedingMethodComponent);
-
-		// For now, only validation on screen is on breeding method
-		// Validation should fail when breeding method validation fails
-		Mockito.when(breedingMethodComponent.validateInputFields()).thenReturn(false);
-		boolean isValidationsPassed = this.makeCrosses.isValidationsBeforeSavePassed();
-		Mockito.verify(breedingMethodComponent).validateInputFields();
-		Assert.assertEquals("Expecting that validation fails when breeding method validation fails", false, isValidationsPassed);
-
-		// Validation should succeed when breeding method validation succeeds
-		Mockito.when(breedingMethodComponent.validateInputFields()).thenReturn(true);
-		isValidationsPassed = this.makeCrosses.isValidationsBeforeSavePassed();
-		Assert.assertEquals("Expecting that validation succeeds when breeding method validation succeeds", true, isValidationsPassed);
 	}
 
 }
