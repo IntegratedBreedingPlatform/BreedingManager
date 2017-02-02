@@ -36,7 +36,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.actions.SaveCrossesMadeAction;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerActionHandler;
-import org.generationcp.breeding.manager.crossingmanager.listeners.MakeCrossingCheckBoxListener;
+import org.generationcp.breeding.manager.crossingmanager.listeners.PreviewCrossesTabCheckBoxListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossParents;
 import org.generationcp.breeding.manager.crossingmanager.pojos.CrossesMade;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
@@ -48,7 +48,6 @@ import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
-import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmCross;
 import org.generationcp.breeding.manager.util.BreedingManagerTransformationUtil;
@@ -106,6 +105,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, SaveListAsDialogSource {
 
 	private static final int PAGE_LENGTH = 5;
+	private static final int PARENTS_TABLE_ROW_COUNT = 5;
 	public static final String PARENTS_DELIMITER = ",";
 	private static final long serialVersionUID = 3702324761498666369L;
 	private static final Logger LOG = LoggerFactory.getLogger(MakeCrossesTableComponent.class);
@@ -160,7 +160,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	private CrossingManagerActionHandler crossingManagerActionListener;
 
-	private SaveListAsDialog saveListAsWindow;
 	private GermplasmList crossList;
 
 	private String separator;
@@ -273,7 +272,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 			final CheckBox tag = new CheckBox();
 			tag.setDebugId(TAG_COLUMN_ID);
-			tag.addListener(new MakeCrossingCheckBoxListener(tableCrossesMade, parents, this.tableWithSelectAllLayout.getCheckBox()));
+			tag.addListener(new PreviewCrossesTabCheckBoxListener(tableCrossesMade, parents, this.tableWithSelectAllLayout.getCheckBox()));
 			tag.setImmediate(true);
 
 			Object[] item = new Object[] {
@@ -379,7 +378,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 			final CheckBox tag = new CheckBox();
 			tag.setDebugId(TAG_COLUMN_ID);
-			tag.addListener(new MakeCrossingCheckBoxListener(tableCrossesMade, parents, this.tableWithSelectAllLayout.getCheckBox()));
+			tag.addListener(new PreviewCrossesTabCheckBoxListener(tableCrossesMade, parents, this.tableWithSelectAllLayout.getCheckBox()));
 			tag.setImmediate(true);
 
 			Object[] item = new Object[] {
@@ -561,16 +560,16 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		this.actionMenu.addItem(this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES));
 		this.actionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES));
 
-		this.initializeCrossesMadeTable(new TableWithSelectAllLayout(5, ParentTabComponent.TAG_COLUMN_ID));
+		this.initializeCrossesMadeTable(new TableWithSelectAllLayout(PARENTS_TABLE_ROW_COUNT, TAG_COLUMN_ID));
 	}
 
 	protected void initializeCrossesMadeTable(final TableWithSelectAllLayout tableWithSelectAllLayout) {
 		this.tableWithSelectAllLayout = tableWithSelectAllLayout;
 
-		this.tableCrossesMade = this.tableWithSelectAllLayout.getTable();
-		this.selectAll = this.tableWithSelectAllLayout.getCheckBox();
+		this.tableCrossesMade = tableWithSelectAllLayout.getTable();
+		this.selectAll = tableWithSelectAllLayout.getCheckBox();
 
-		this.tableCrossesMade = this.getTableCrossesMade();
+//		this.tableCrossesMade = this.getTableCrossesMade();
 		this.tableCrossesMade.setDebugId("tableCrossesMade");
 		this.tableCrossesMade.setWidth("100%");
 		this.tableCrossesMade.setHeight("183px");
@@ -725,20 +724,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		}
 	}
 
-	void launchSaveListAsWindow() {
-		this.saveListAsWindow = null;
-		if (this.crossList != null) {
-			this.saveListAsWindow = new SaveCrossListAsDialog(this, this.crossList);
-			this.saveListAsWindow.setDebugId("saveListAsWindow");
-		} else {
-			this.saveListAsWindow = new SaveCrossListAsDialog(this, null);
-			this.saveListAsWindow.setDebugId("saveListAsWindow");
-		}
-
-		this.saveListAsWindow.addStyleName(Reindeer.WINDOW_LIGHT);
-		this.getWindow().addWindow(this.saveListAsWindow);
-	}
-
 	/**
 	 * Save Temporary list
 	 */
@@ -891,7 +876,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		return this.tableCrossesMade;
 	}
 
-	public void setTableCrossesMade(final BreedingManagerTable tableCrossesMade) {
+	public void setTableCrossesMade(final Table tableCrossesMade) {
 		this.tableCrossesMade = tableCrossesMade;
 	}
 

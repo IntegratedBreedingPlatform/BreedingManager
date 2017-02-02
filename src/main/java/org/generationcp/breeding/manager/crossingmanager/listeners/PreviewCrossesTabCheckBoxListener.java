@@ -9,16 +9,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Created by cuenyad on 31/01/17.
- */
-public class MakeCrossingCheckBoxListener implements Button.ClickListener{
+public class PreviewCrossesTabCheckBoxListener implements Button.ClickListener{
 
 	private final Table makeCrossTable;
 	private final CrossParents entry;
 	private final CheckBox tagAllBox;
 
-	public MakeCrossingCheckBoxListener(Table makeCrossTable, CrossParents entry, CheckBox tagAllBox) {
+	public PreviewCrossesTabCheckBoxListener(Table makeCrossTable, CrossParents entry, CheckBox tagAllBox) {
 		super();
 		this.makeCrossTable = makeCrossTable;
 		this.entry = entry;
