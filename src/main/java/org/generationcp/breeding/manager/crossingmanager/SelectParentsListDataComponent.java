@@ -521,7 +521,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 				newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entry.getEntryId());
 				newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(desigButton);
 				newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-				newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(seedRes); //TODO verificar si es correcto.
+				newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(seedRes);
 				newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(entry.getGroupName());
 				newItem.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).setValue(entry.getEntryCode());
 				newItem.getItemProperty(ColumnLabels.GID.getName()).setValue(gidButton);
