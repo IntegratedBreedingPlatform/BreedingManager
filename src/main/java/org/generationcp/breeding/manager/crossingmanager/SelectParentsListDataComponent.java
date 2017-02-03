@@ -553,11 +553,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 				} else {
 					available.append(ListDataInventory.MIXED);
 				}
-//				final Button availableButton = new Button(available.toString(),
-//					new InventoryLinkButtonClickListener(this.parentListDetailsComponent, this.germplasmList.getId(), entry.getId(),
-//						entry.getGid()));
-//				availableButton.setStyleName(BaseTheme.BUTTON_LINK);
-//				availableButton.setDescription(ListComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
+
 				newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(available);
 
 			}
@@ -914,15 +910,6 @@ public class SelectParentsListDataComponent extends VerticalLayout
 				inventoryButton.setDescription(SelectParentsListDataComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
 			}
 			item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-
-			// Seed Reserved
-			// default value
-//			String seedRes = SelectParentsListDataComponent.STRING_DASH;
-//			if (listData.getInventoryInfo().getReservedLotCount().intValue() != 0) {
-//				seedRes = listData.getInventoryInfo().getReservedLotCount().toString().trim();
-//			}
-//
-//			item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
 		}
 	}
 

@@ -544,11 +544,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	/**
 	 * Exposed for testing purposed
-	 * <<<<<<< HEAD
-	 * <p>
-	 * =======
-	 * <p>
-	 * >>>>>>> master
 	 *
 	 * @param listInventoryTable
 	 */
@@ -694,7 +689,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		try {
 			this.germplasmList = saveListAction.saveRecords();
 			this.updateCrossesSeedSource(this.germplasmList);
-			this.source.updateUIForSuccessfulSaving(this, this.germplasmList); //TODO ACA PINCHA
+			this.source.updateUIForSuccessfulSaving(this, this.germplasmList);
 
 			if (this.source.getMakeCrossesMain().getModeView().equals(ModeView.INVENTORY_VIEW) && !this.validReservationsToSave.isEmpty()) {
 
