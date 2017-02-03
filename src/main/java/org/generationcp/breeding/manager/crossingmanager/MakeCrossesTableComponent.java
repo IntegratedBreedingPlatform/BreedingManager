@@ -29,7 +29,6 @@ import com.vaadin.ui.PopupView;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
-import com.vaadin.ui.themes.Reindeer;
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
@@ -45,7 +44,6 @@ import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUti
 import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
 import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
-import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
@@ -60,11 +58,7 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.domain.etl.MeasurementData;
-import org.generationcp.middleware.domain.etl.MeasurementRow;
-import org.generationcp.middleware.domain.etl.Workbook;
 import org.generationcp.middleware.domain.gms.GermplasmListType;
-import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -253,7 +247,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		maleParentCopy.setSeedSource(maleSeedSource);
 
 		final CrossParents parents = new CrossParents(femaleParentCopy, maleParentCopy);
-		final String seedSource = this.generateSeedSource(femaleParent.getGid(), femaleSeedSource, maleParent.getGid(), maleSeedSource);
 
 		if (shouldBeAddedToCrossesTable(parents, existingCrosses, excludeSelf, femaleParent, maleParent)) {
 			final int entryCounter = this.tableCrossesMade.size() + 1;
@@ -366,7 +359,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			final String maleParentPedigreeString = parentsPedigreeString.get(maleParent.getGid());
 			final String femalePreferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(femaleParent.getGid()));
 			final String maleParentPreferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(maleParent.getGid()));
-			final String seedSource = this.generateSeedSource(femaleParent.getGid(), femaleSource, maleParent.getGid(), maleSource);
 
 			final Button designationFemaleParentButton = new Button(femalePreferredName, new GidLinkClickListener(femaleParent.getGid().toString(), true));
 			designationFemaleParentButton.setStyleName(BaseTheme.BUTTON_LINK);
@@ -378,10 +370,10 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 			final CheckBox tag = new CheckBox();
 			tag.setDebugId(TAG_COLUMN_ID);
-			tag.addListener(new PreviewCrossesTabCheckBoxListener(tableCrossesMade, parents, this.tableWithSelectAllLayout.getCheckBox()));
+			tag.addListener(new PreviewCrossesTabCheckBoxListener(this.tableCrossesMade, parents, this.tableWithSelectAllLayout.getCheckBox()));
 			tag.setImmediate(true);
 
-			Object[] item = new Object[] {
+			final Object[] item = new Object[] {
 				tag, entryCounter, designationFemaleParentButton,
 				designationMaleParentMaleButton, femaleParentPedigreeString, maleParentPedigreeString};
 
@@ -394,44 +386,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		GermplasmListEntry femaleParent, GermplasmListEntry maleParent) {
 		return !existingCrosses.contains(parents) && (this.tableCrossesMade.size() == 0 || this.tableCrossesMade.getItem(parents) == null)
 			&& (excludeSelf && !this.hasSameParent(femaleParent, maleParent) || !excludeSelf);
-	}
-
-	String generateSeedSource(final Integer femaleParentGid, final String femaleSource, final Integer maleParentGid,
-			final String maleSource) {
-
-		// Default as before
-		String seedSource = this.appendWithSeparator(femaleSource, maleSource);
-
-		// If crossing for a Nursery, use the seed source generation service.
-		final Workbook nurseryWorkbook = this.makeCrossesMain.getNurseryWorkbook();
-		if (nurseryWorkbook != null) {
-			String malePlotNo = "";
-			String femalePlotNo = "";
-
-			// Look at the observation rows of Nursery to find plot number assigned to the male/female parent germplasm of the cross.
-			for (final MeasurementRow row : nurseryWorkbook.getObservations()) {
-				final MeasurementData gidData = row.getMeasurementData(TermId.GID.getId());
-				final MeasurementData plotNumberData = row.getMeasurementData(TermId.PLOT_NO.getId());
-
-				if (gidData != null && gidData.getValue().equals(femaleParentGid.toString())) {
-					if (plotNumberData != null) {
-						femalePlotNo = plotNumberData.getValue();
-					}
-				}
-
-				if (gidData != null && gidData.getValue().equals(maleParentGid.toString())) {
-					if (plotNumberData != null) {
-						malePlotNo = plotNumberData.getValue();
-					}
-				}
-			}
-
-			// Single nursery is in context here, so set the same study name as both male/female parts. For import crosses case, these
-			// could be different Nurseries.
-			seedSource = this.seedSourceGenerator.generateSeedSourceForCross(nurseryWorkbook, malePlotNo, femalePlotNo,
-					nurseryWorkbook.getStudyName(), nurseryWorkbook.getStudyName());
-		}
-		return seedSource;
 	}
 
 	boolean hasSameParent(final GermplasmListEntry femaleParent, final GermplasmListEntry maleParent) {
@@ -565,11 +519,9 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 	protected void initializeCrossesMadeTable(final TableWithSelectAllLayout tableWithSelectAllLayout) {
 		this.tableWithSelectAllLayout = tableWithSelectAllLayout;
-
-		this.tableCrossesMade = tableWithSelectAllLayout.getTable();
 		this.selectAll = tableWithSelectAllLayout.getCheckBox();
 
-//		this.tableCrossesMade = this.getTableCrossesMade();
+		this.tableCrossesMade = tableWithSelectAllLayout.getTable();
 		this.tableCrossesMade.setDebugId("tableCrossesMade");
 		this.tableCrossesMade.setWidth("100%");
 		this.tableCrossesMade.setHeight("183px");
