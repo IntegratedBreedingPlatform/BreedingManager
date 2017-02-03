@@ -2195,7 +2195,13 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			} else {
 				// this util handles the inventory reservation related functions
 				this.reserveInventoryUtil = new ReserveInventoryUtil(this, lotDetailsGid);
-				this.reserveInventoryUtil.viewReserveInventoryWindow();
+				if (reserveInventoryUtil.isLotsContainsScale(lotDetailsGid)) {
+					this.reserveInventoryUtil.viewReserveInventoryWindow();
+				} else {
+					MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.RESERVATION_STATUS),
+							this.messageSource
+									.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES) + ".");
+				}
 			}
 		}
 	}
@@ -2798,4 +2804,9 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 	public void setCloseLotDiscardInventoryAction(CloseLotDiscardInventoryAction closeLotDiscardInventoryAction) {
 		this.closeLotDiscardInventoryAction = closeLotDiscardInventoryAction;
 	}
+
+	public InventoryViewActionMenu getInventoryViewMenu() {
+		return inventoryViewMenu;
+	}
+
 }

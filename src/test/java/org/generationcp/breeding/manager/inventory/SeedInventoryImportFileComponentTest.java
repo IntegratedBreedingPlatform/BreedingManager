@@ -579,6 +579,27 @@ public class SeedInventoryImportFileComponentTest {
 	}
 
 
+	@Test
+	public void testvalidateImportedSeedInventoryListWhenWithdrawalAmountAndBalanceIsEmpty()
+			throws SeedInventoryImportException, InvalidFileDataException {
+		this.seedInventoryImportFileComponent
+				.setSelectedListReservedInventoryDetails(InventoryDetailsTestDataInitializer.createGermplasmListDataForReservedEntries());
+
+		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Mockito.isA(List.class)))
+				.thenReturn(InventoryDetailsTestDataInitializer.createValidReservedTransactions());
+
+		ImportedSeedInventoryList inValidImportedInventoryList = createValidImportedInventoryList();
+		inValidImportedInventoryList.getImportedSeedInventoryList().get(0).setBalanceAmount(null);
+		inValidImportedInventoryList.getImportedSeedInventoryList().get(0).setWithdrawalAmount(0.0);
+
+		this.seedInventoryImportFileComponent.setImportedSeedInventoryList(inValidImportedInventoryList);
+
+		try {
+			this.seedInventoryImportFileComponent.validateImportedSeedInventoryList();
+		} catch (InvalidFileDataException e) {
+			Assert.assertEquals(e.getMessage(), Message.SEED_IMPORT_WITHDRAWAL_AMOUNT_EMPTY_ERROR.toString());
+		}
+	}
 
 	private ImportedSeedInventoryList createValidImportedInventoryList() {
 		ImportedSeedInventoryList importedSeedInventoryList = new ImportedSeedInventoryList("ListName-Seed Prep.xls");

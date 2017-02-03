@@ -61,4 +61,13 @@ public class ReserveInventoryUtil implements Serializable {
 		return true;
 	}
 
+	public static boolean isLotsContainsScale(List<ListEntryLotDetails> lotDetailList){
+		for (ListEntryLotDetails lot : lotDetailList) {
+			if(!(lot.getScaleId() != null)){
+				return false;
+			}
+		}
+		return true;
+	}
+
 }

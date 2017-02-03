@@ -824,7 +824,20 @@ public class ListComponentTest {
 		Mockito.verify(this.closeLotDiscardInventoryAction, Mockito.times(1)).processLotCloseWithDiscard();
 	}
 
+	@Test
+	public void testReserveInventoryActionForLotsWithoutScale() {
 
+		this.listComponent.setInventoryViewMenu(this.inventoryViewMenu);
+		this.listComponent.setListInventoryTable(this.listManagerInventoryTable);
+		List<ListEntryLotDetails> userSelectedLotEntriesToCancel = ListInventoryDataInitializer.createLotDetails(1);
+		userSelectedLotEntriesToCancel.get(0).setScaleId(null);
+		Mockito.doReturn(userSelectedLotEntriesToCancel).when(this.listManagerInventoryTable).getSelectedLots();
+		Mockito.doReturn(true).when(this.listComponent.getInventoryViewMenu()).isVisible();
+		this.listComponent.reserveInventoryAction();
+
+		Mockito.verify(this.messageSource).getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES);
+
+	}
 
 	private Project createProject() {
 
