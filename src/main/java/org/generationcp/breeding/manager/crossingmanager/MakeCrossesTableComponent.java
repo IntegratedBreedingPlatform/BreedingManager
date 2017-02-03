@@ -58,7 +58,11 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.middleware.domain.etl.MeasurementData;
+import org.generationcp.middleware.domain.etl.MeasurementRow;
+import org.generationcp.middleware.domain.etl.Workbook;
 import org.generationcp.middleware.domain.gms.GermplasmListType;
+import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -282,7 +286,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		this.tableCrossesMade.setVisibleColumns(new Object[] {
 			TAG_COLUMN_ID, ColumnLabels.ENTRY_ID.getName(), ColumnLabels.FEMALE_PARENT.getName(),
 			ColumnLabels.MALE_PARENT.getName(), FEMALE_CROSS,
-			MALE_CROSS});
+			MALE_CROSS, ColumnLabels.SEED_SOURCE.getName()});
 	}
 
 	private void updateCrossesMadeUI() {
@@ -359,6 +363,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 			final String maleParentPedigreeString = parentsPedigreeString.get(maleParent.getGid());
 			final String femalePreferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(femaleParent.getGid()));
 			final String maleParentPreferredName = getGermplasmPreferredName(germplasmWithPreferredName.get(maleParent.getGid()));
+			final String seedSource = this.generateSeedSource(femaleParent.getGid(), femaleSource, maleParent.getGid(), maleSource);
 
 			final Button designationFemaleParentButton = new Button(femalePreferredName, new GidLinkClickListener(femaleParent.getGid().toString(), true));
 			designationFemaleParentButton.setStyleName(BaseTheme.BUTTON_LINK);
@@ -375,7 +380,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 			final Object[] item = new Object[] {
 				tag, entryCounter, designationFemaleParentButton,
-				designationMaleParentMaleButton, femaleParentPedigreeString, maleParentPedigreeString};
+				designationMaleParentMaleButton, femaleParentPedigreeString, maleParentPedigreeString, seedSource};
 
 			this.tableCrossesMade.addItem(item, parents);
 			existingCrosses.add(parents);
@@ -386,6 +391,44 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		GermplasmListEntry femaleParent, GermplasmListEntry maleParent) {
 		return !existingCrosses.contains(parents) && (this.tableCrossesMade.size() == 0 || this.tableCrossesMade.getItem(parents) == null)
 			&& (excludeSelf && !this.hasSameParent(femaleParent, maleParent) || !excludeSelf);
+	}
+
+	String generateSeedSource(final Integer femaleParentGid, final String femaleSource, final Integer maleParentGid,
+		final String maleSource) {
+
+		// Default as before
+		String seedSource = this.appendWithSeparator(femaleSource, maleSource);
+
+		// If crossing for a Nursery, use the seed source generation service.
+		final Workbook nurseryWorkbook = this.makeCrossesMain.getNurseryWorkbook();
+		if (nurseryWorkbook != null) {
+			String malePlotNo = "";
+			String femalePlotNo = "";
+
+			// Look at the observation rows of Nursery to find plot number assigned to the male/female parent germplasm of the cross.
+			for (final MeasurementRow row : nurseryWorkbook.getObservations()) {
+				final MeasurementData gidData = row.getMeasurementData(TermId.GID.getId());
+				final MeasurementData plotNumberData = row.getMeasurementData(TermId.PLOT_NO.getId());
+
+				if (gidData != null && gidData.getValue().equals(femaleParentGid.toString())) {
+					if (plotNumberData != null) {
+						femalePlotNo = plotNumberData.getValue();
+					}
+				}
+
+				if (gidData != null && gidData.getValue().equals(maleParentGid.toString())) {
+					if (plotNumberData != null) {
+						malePlotNo = plotNumberData.getValue();
+					}
+				}
+			}
+
+			// Single nursery is in context here, so set the same study name as both male/female parts. For import crosses case, these
+			// could be different Nurseries.
+			seedSource = this.seedSourceGenerator.generateSeedSourceForCross(nurseryWorkbook, malePlotNo, femalePlotNo,
+				nurseryWorkbook.getStudyName(), nurseryWorkbook.getStudyName());
+		}
+		return seedSource;
 	}
 
 	boolean hasSameParent(final GermplasmListEntry femaleParent, final GermplasmListEntry maleParent) {
@@ -536,12 +579,19 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		this.tableCrossesMade.addContainerProperty(ColumnLabels.MALE_PARENT.getName(), Button.class, null);
 		this.tableCrossesMade.addContainerProperty(FEMALE_CROSS, String.class, null);
 		this.tableCrossesMade.addContainerProperty(MALE_CROSS, String.class, null);
+		this.tableCrossesMade.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
 
 		this.tableCrossesMade.setColumnHeader(TAG_COLUMN_ID, this.messageSource.getMessage(Message.CHECK_ICON));
 		this.tableCrossesMade.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), this.messageSource.getMessage(Message.HASHTAG));
 
 		this.tableCrossesMade.setColumnHeader(ColumnLabels.FEMALE_PARENT.getName(), this.getTermNameFromOntology(ColumnLabels.FEMALE_PARENT));
 		this.tableCrossesMade.setColumnHeader(ColumnLabels.MALE_PARENT.getName(), this.getTermNameFromOntology(ColumnLabels.MALE_PARENT));
+		this.tableCrossesMade.setColumnHeader(ColumnLabels.SEED_SOURCE.getName(), this.getTermNameFromOntology(ColumnLabels.SEED_SOURCE));
+		this.tableCrossesMade.setColumnWidth(ColumnLabels.SEED_SOURCE.getName(), 200);
+
+		this.tableCrossesMade.setColumnCollapsingAllowed(true);
+		this.tableCrossesMade.setColumnCollapsed(ColumnLabels.SEED_SOURCE.getName(), true);
+
 		this.tableCrossesMade.setColumnHeader(FEMALE_CROSS,FEMALE_CROSS);
 		this.tableCrossesMade.setColumnHeader(MALE_CROSS, MALE_CROSS);
 
