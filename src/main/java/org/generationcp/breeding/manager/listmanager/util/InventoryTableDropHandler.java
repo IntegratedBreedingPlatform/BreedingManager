@@ -398,7 +398,13 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(itemCheckBox);
 		newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entryId);
 		newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(targetDesignationButton);
-		newItem.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).setValue(lotDetail.getLocationOfLot().getLname());
+
+		StringBuilder lotLocation = new StringBuilder("");
+		if (lotDetail.getLocationOfLot() != null) {
+			lotLocation.append(lotDetail.getLocationOfLot().getLname());
+		}
+
+		newItem.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).setValue(lotLocation.toString());
 		newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(lotDetail.getActualLotBalance());
 		newItem.getItemProperty(ColumnLabels.RESERVATION.getName()).setValue(lotDetail.getReservedTotalForEntry());
 		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(lotDetail.getCommittedTotalForEntry());

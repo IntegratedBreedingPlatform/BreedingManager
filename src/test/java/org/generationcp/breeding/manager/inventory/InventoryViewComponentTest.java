@@ -73,7 +73,9 @@ public class InventoryViewComponentTest {
 	private static final int TABLE_SIZE = 5;
 	private static final String LOT_LOCATION = "Location1";
 	private static final String ACTUAL_BALANCE = "100.0g";
+	private static final String ACTUAL_BALANCE_WITHOUT_SCALE = "100.0";
 	private static final String AVAILABLE_BALANCE = "100.0g";
+	private static final String AVAILABLE_BALANCE_WITHOUT_SCALE = "100.0";
 	private static final String COMMENTS = "Lot Comment1";
 	private static final String STOCKID = "STK1-1,STK2-2,STK-3";
 	private static final String LOT_ID = "1";
@@ -272,4 +274,24 @@ public class InventoryViewComponentTest {
 
 	}
 
+	@Test
+	public void testInitializeValuesForGermplasmWithNoScale() {
+		final List<? extends LotDetails> inventoryDetails = ListInventoryDataInitializer.createLotDetails(1);
+		inventoryDetails.get(0).setLotScaleNameAbbr(null);
+
+		Mockito.when(this.inventoryDataManager.getLotDetailsForGermplasm(Mockito.anyInt())).thenReturn((List<LotDetails>) inventoryDetails);
+		Table table = new Table();
+		this.inventoryViewComponentForGermplasm.initializeLotEntriesTable(table);
+		this.inventoryViewComponentForGermplasm.setLotEntriesTable(table);
+
+		this.inventoryViewComponentForGermplasm.initializeValues();
+
+		Item item = this.inventoryViewComponentForGermplasm.getLotEntriesTable().getItem(1);
+
+		Assert.assertEquals(InventoryViewComponentTest.ACTUAL_BALANCE_WITHOUT_SCALE,
+				item.getItemProperty(InventoryViewComponent.ACTUAL_BALANCE).getValue());
+		Assert.assertEquals(InventoryViewComponentTest.AVAILABLE_BALANCE_WITHOUT_SCALE,
+				item.getItemProperty(InventoryViewComponent.AVAILABLE_BALANCE).getValue());
+
+	}
 }
