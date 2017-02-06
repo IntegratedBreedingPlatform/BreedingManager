@@ -515,7 +515,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 	@Override
 	public void instantiateComponents() {
 		this.selectAll = new CheckBox("Select All");
-		this.lblReviewCrosses = new Label(this.messageSource.getMessage(Message.REVIEW_CROSSES));
+		this.lblReviewCrosses = new Label(this.messageSource.getMessage(Message.PREVIEW_CROSSES));
 		this.lblReviewCrosses.setDebugId("lblReviewCrosses");
 		this.lblReviewCrosses.addStyleName(Bootstrap.Typography.H4.styleName());
 		this.lblReviewCrosses.addStyleName(AppConstants.CssStyles.BOLD);
@@ -706,7 +706,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		makeCrossesPanel.addComponent(selectAll);
 		makeCrossesPanel.setWidth("890px");
 
-		final HeaderLabelLayout reviewCrossesLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_REVIEW_CROSSES, this.lblReviewCrosses);
+		final HeaderLabelLayout reviewCrossesLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_PREVIEW_CROSSES, this.lblReviewCrosses);
 		reviewCrossesLayout.setDebugId("reviewCrossesLayout");
 		this.addComponent(reviewCrossesLayout);
 		this.addComponent(makeCrossesPanel);

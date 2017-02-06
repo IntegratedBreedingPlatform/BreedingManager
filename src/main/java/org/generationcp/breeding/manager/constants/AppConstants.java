@@ -57,7 +57,7 @@ public final class AppConstants {
 		public static final ThemeResource ICON_TOGGLE_LEFT = new ThemeResource("images/toggle-left.png");
 		public static final ThemeResource ICON_TOGGLE_RIGHT = new ThemeResource("images/toggle-right.png");
 		public static final ThemeResource ICON_SELECT_PARENTS = new ThemeResource("images/select-parents.png");
-		public static final ThemeResource ICON_REVIEW_CROSSES = new ThemeResource("images/review-crosses.png");
+		public static final ThemeResource ICON_PREVIEW_CROSSES = new ThemeResource("images/review-crosses.png");
 	}
 
 	public static class DB {
