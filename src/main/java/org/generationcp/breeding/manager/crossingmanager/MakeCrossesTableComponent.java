@@ -251,6 +251,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		maleParentCopy.setSeedSource(maleSeedSource);
 
 		final CrossParents parents = new CrossParents(femaleParentCopy, maleParentCopy);
+		final String seedSource = this.generateSeedSource(femaleParent.getGid(), femaleSeedSource, maleParent.getGid(), maleSeedSource);
 
 		if (shouldBeAddedToCrossesTable(parents, existingCrosses, excludeSelf, femaleParent, maleParent)) {
 			final int entryCounter = this.tableCrossesMade.size() + 1;
@@ -274,7 +275,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 			Object[] item = new Object[] {
 				tag, entryCounter, designationFemaleParentButton,
-				designationMaleParentMaleButton, femaleParentPedigreeString, maleParentPedigreeString};
+				designationMaleParentMaleButton, femaleParentPedigreeString, maleParentPedigreeString, seedSource};
 
 			this.tableCrossesMade.addItem(item, parents);
 			existingCrosses.add(parents);
