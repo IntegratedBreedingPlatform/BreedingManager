@@ -552,11 +552,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		this.actionMenu = new ContextMenu();
 		this.actionMenu.setDebugId("actionMenu");
 		this.actionMenu.setWidth("250px");
-		this.actionMenu.addItem(this.messageSource.getMessage(Message.CLEAR_ALL));
 		this.actionMenu.addItem(this.messageSource.getMessage(Message.REMOVE_SELECTED_ENTRIES));
-		this.actionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
-		this.actionMenu.addItem(this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES));
-		this.actionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES));
 
 		this.initializeCrossesMadeTable(new TableWithSelectAllLayout(PARENTS_TABLE_ROW_COUNT, TAG_COLUMN_ID));
 	}
@@ -914,18 +910,6 @@ public class MakeCrossesTableComponent extends VerticalLayout
 
 					if (clickedItem.getName().equals(
 						MakeCrossesTableComponent.this.messageSource.getMessage(Message.REMOVE_SELECTED_ENTRIES))) {
-						MakeCrossesTableComponent.this.crossingManagerActionListener.removeSelectedEntriesAction(MakeCrossesTableComponent.this.tableCrossesMade);
-						MakeCrossesTableComponent.this.updateCrossesMadeUI();
-					} else if (clickedItem.getName().equals(MakeCrossesTableComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
-						MakeCrossesTableComponent.this.tableCrossesMade.setValue(MakeCrossesTableComponent.this.tableCrossesMade.getItemIds());
-					} else if (clickedItem.getName().equals(MakeCrossesTableComponent.this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES))) {
-						MakeCrossesTableComponent.this.tableCrossesMade.setValue(CrossingManagerUtil
-							.getEvenEntries(MakeCrossesTableComponent.this.tableCrossesMade));
-					} else if (clickedItem.getName().equals(MakeCrossesTableComponent.this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES))) {
-						MakeCrossesTableComponent.this.tableCrossesMade.setValue(CrossingManagerUtil
-							.getOddEntries(MakeCrossesTableComponent.this.tableCrossesMade));
-					} else if (clickedItem.getName().equals(MakeCrossesTableComponent.this.messageSource.getMessage(Message.CLEAR_ALL))) {
-						MakeCrossesTableComponent.this.tableCrossesMade.setValue(MakeCrossesTableComponent.this.tableCrossesMade);
 						MakeCrossesTableComponent.this.crossingManagerActionListener.removeSelectedEntriesAction(MakeCrossesTableComponent.this.tableCrossesMade);
 						MakeCrossesTableComponent.this.updateCrossesMadeUI();
 					}
