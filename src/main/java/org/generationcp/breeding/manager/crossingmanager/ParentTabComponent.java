@@ -94,13 +94,14 @@ import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class ParentTabComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout,
-		SaveGermplasmListActionSource, SaveListAsDialogSource, ReserveInventorySource, InventoryDropTargetContainer {
+	SaveGermplasmListActionSource, SaveListAsDialogSource, ReserveInventorySource, InventoryDropTargetContainer {
 
 	@Autowired
 	private OntologyDataManager ontologyDataManager;
 
 	@Autowired
 	private PlatformTransactionManager transactionManager;
+
 
 	private final class ListDataTableDropHandler implements DropHandler {
 
@@ -131,7 +132,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 						final Object oldEntryCode = oldItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue();
 						final Object oldDesignation = oldItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue();
 						final Object oldAvailInv = oldItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue();
-						final Object oldSeedRes = oldItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue();
+						final Object oldparentage = oldItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue();
 						final Object oldStockId = oldItem.getItemProperty(ColumnLabels.STOCKID.getName()).getValue();
 
 						sourceTable.removeItem(transferable.getItemId());
@@ -140,11 +141,10 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 						newItem.getItemProperty(ParentTabComponent.TAG_COLUMN_ID).setValue(oldCheckBox);
 						newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(oldEntryCode);
 						newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(oldDesignation);
+						newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(oldparentage);
 						newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(oldAvailInv);
-						newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(oldSeedRes);
 						newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(oldStockId);
 
-						ParentTabComponent.this.saveActionMenu.setEnabled(true);
 						ParentTabComponent.this.setHasUnsavedChanges(true);
 
 						// Checker if list is modified and list is central, force new list to be saved
@@ -155,7 +155,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 					}
 				} else if (sourceTable.getData().equals(SelectParentsListDataComponent.LIST_DATA_TABLE_ID)) {
 					ParentTabComponent.this.source.dropToFemaleOrMaleTable(sourceTable, ParentTabComponent.this.listDataTable,
-							(Integer) transferable.getItemId());
+						(Integer) transferable.getItemId());
 				}
 
 				// Dragged from the tree
@@ -165,7 +165,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 				try {
 					final GermplasmList draggedListFromTree =
-							ParentTabComponent.this.germplasmListManager.getGermplasmListById((Integer) transferable.getData("itemId"));
+						ParentTabComponent.this.germplasmListManager.getGermplasmListById((Integer) transferable.getData("itemId"));
 					if (draggedListFromTree != null) {
 						final List<GermplasmListData> germplasmListDataFromListFromTree = draggedListFromTree.getListData();
 
@@ -176,7 +176,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 								final String parentValue = listData.getDesignation();
 
 								final Button gidButton =
-										new Button(parentValue, new GidLinkClickListener(listData.getGid().toString(), true));
+									new Button(parentValue, new GidLinkClickListener(listData.getGid().toString(), true));
 								gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 								gidButton.setDescription(ListDataTableDropHandler.CLICK_TO_VIEW_GERMPLASM_INFORMATION);
 
@@ -184,12 +184,12 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 								tag.setDebugId("tag");
 
 								final GermplasmListEntry entryObject =
-										new GermplasmListEntry(listData.getId(), listData.getGid(), listData.getEntryId(),
-												listData.getDesignation(), draggedListFromTree.getName() + ":" + listData.getEntryId());
+									new GermplasmListEntry(listData.getId(), listData.getGid(), listData.getEntryId(),
+										listData.getDesignation(), draggedListFromTree.getName() + ":" + listData.getEntryId());
 
 								if (targetTable.equals(ParentTabComponent.this.listDataTable)) {
 									tag.addListener(new ParentsTableCheckboxListener(targetTable, entryObject,
-											ParentTabComponent.this.getSelectAllCheckBox()));
+										ParentTabComponent.this.getSelectAllCheckBox()));
 									ParentTabComponent.this.listNameForCrosses = draggedListFromTree.getName();
 									ParentTabComponent.this.updateCrossesSeedSource(draggedListFromTree);
 								}
@@ -214,14 +214,12 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 						itemsAfterAdding.addAll(targetTable.getItemIds());
 
 						if (addedCount == itemsAfterAdding.size()) {
-							ParentTabComponent.this.saveActionMenu.setEnabled(false);
 							ParentTabComponent.this.setHasUnsavedChanges(false);
 
 							// updates the crossesMade save button if both parents are save at least once
 							ParentTabComponent.this.makeCrossesMain.getCrossesTableComponent().updateCrossesMadeSaveButton();
 
 						} else {
-							ParentTabComponent.this.saveActionMenu.setEnabled(true);
 							ParentTabComponent.this.setHasUnsavedChanges(true);
 							ParentTabComponent.this.isTreatAsNewList = true;
 						}
@@ -253,25 +251,19 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 				protected void doInTransactionWithoutResult(final TransactionStatus status) {
 					// Get reference to clicked item
 					final ContextMenuItem clickedItem = event.getClickedItem();
-					if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.SAVE_CHANGES))) {
-						ParentTabComponent.this.doSaveAction();
-					} else
-						if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
+					if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW))) {
 						ParentTabComponent.this.viewListAction();
 					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.COPY_TO_LIST))) {
 						// no implementation yet for this condition
-					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.RESERVE_INVENTORY))) {
-						ParentTabComponent.this.reserveInventoryAction();
 					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
 						ParentTabComponent.this.listInventoryTable.getTable()
-								.setValue(ParentTabComponent.this.listInventoryTable.getTable().getItemIds());
-					} else
-						if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES))) {
+							.setValue(ParentTabComponent.this.listInventoryTable.getTable().getItemIds());
+					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES))) {
 						ParentTabComponent.this.listInventoryTable.getTable()
-								.setValue(CrossingManagerUtil.getEvenEntries(ParentTabComponent.this.listInventoryTable.getTable()));
+							.setValue(CrossingManagerUtil.getEvenEntries(ParentTabComponent.this.listInventoryTable.getTable()));
 					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES))) {
 						ParentTabComponent.this.listInventoryTable.getTable()
-								.setValue(CrossingManagerUtil.getOddEntries(ParentTabComponent.this.listInventoryTable.getTable()));
+							.setValue(CrossingManagerUtil.getOddEntries(ParentTabComponent.this.listInventoryTable.getTable()));
 					}
 				}
 			});
@@ -295,18 +287,16 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 						ParentTabComponent.this.viewInventoryAction();
 
 					} else if (clickedItem.getName().equals(
-							ParentTabComponent.this.messageSource.getMessage(Message.REMOVE_SELECTED_ENTRIES))) {
+						ParentTabComponent.this.messageSource.getMessage(Message.REMOVE_SELECTED_ENTRIES))) {
 						ParentTabComponent.this.parentActionListener.removeSelectedEntriesAction(ParentTabComponent.this.listDataTable);
-					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.SAVE_LIST))) {
-						ParentTabComponent.this.doSaveAction();
 					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.SELECT_ALL))) {
 						ParentTabComponent.this.listDataTable.setValue(ParentTabComponent.this.listDataTable.getItemIds());
 					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES))) {
 						ParentTabComponent.this.listDataTable.setValue(CrossingManagerUtil
-								.getEvenEntries(ParentTabComponent.this.listDataTable));
+							.getEvenEntries(ParentTabComponent.this.listDataTable));
 					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES))) {
 						ParentTabComponent.this.listDataTable.setValue(CrossingManagerUtil
-								.getOddEntries(ParentTabComponent.this.listDataTable));
+							.getOddEntries(ParentTabComponent.this.listDataTable));
 					} else if (clickedItem.getName().equals(ParentTabComponent.this.messageSource.getMessage(Message.CLEAR_ALL))) {
 						ParentTabComponent.this.listDataTable.setValue(ParentTabComponent.this.listDataTable);
 						ParentTabComponent.this.parentActionListener.removeSelectedEntriesAction(ParentTabComponent.this.listDataTable);
@@ -323,7 +313,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	private static final Logger LOG = LoggerFactory.getLogger(ParentTabComponent.class);
 	private static final long serialVersionUID = 2124522470629189449L;
 
-	private Button editHeaderButton;
 	private Label listEntriesLabel;
 	private Label totalListEntriesLabel;
 	private Label totalSelectedListEntriesLabel;
@@ -345,7 +334,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	// Actions
 	private ContextMenu actionMenu;
-	private ContextMenuItem saveActionMenu;
 
 	private ContextMenu inventoryViewActionMenu;
 	private ContextMenuItem menuCopyToListFromInventory;
@@ -406,9 +394,10 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	private InventoryTableDropHandler inventoryTableDropHandler;
 
-	public ParentTabComponent(final CrossingManagerMakeCrossesComponent makeCrossesMain, final MakeCrossesParentsComponent source,
-			final String parentLabel, final Integer rowCount, final SaveGermplasmListActionFactory saveGermplasmListActionFactory,
-			final ReserveInventoryActionFactory reserveInventoryActionFactory) {
+	public ParentTabComponent(
+		final CrossingManagerMakeCrossesComponent makeCrossesMain, final MakeCrossesParentsComponent source,
+		final String parentLabel, final Integer rowCount, final SaveGermplasmListActionFactory saveGermplasmListActionFactory,
+		final ReserveInventoryActionFactory reserveInventoryActionFactory) {
 		super();
 		this.makeCrossesMain = makeCrossesMain;
 		this.source = source;
@@ -433,7 +422,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 		this.initializeParentTable(new TableWithSelectAllLayout(this.rowCount, ParentTabComponent.TAG_COLUMN_ID));
 		this.initializeListInventoryTable(
-				new CrossingManagerInventoryTable(this.germplasmList != null ? this.germplasmList.getId() : null));
+			new CrossingManagerInventoryTable(this.germplasmList != null ? this.germplasmList.getId() : null));
 
 		// Inventory Related Variables
 		this.validReservationsToSave = new HashMap<ListEntryLotDetails, Double>();
@@ -448,14 +437,8 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		this.listEntriesLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		this.listEntriesLabel.setWidth("160px");
 
-		this.editHeaderButton = new Button(this.messageSource.getMessage(Message.EDIT_HEADER));
-		this.editHeaderButton.setDebugId("editHeaderButton");
-		this.editHeaderButton.setImmediate(true);
-		this.editHeaderButton.setStyleName(BaseTheme.BUTTON_LINK);
-		this.editHeaderButton.setVisible(false);
-
 		this.totalListEntriesLabel =
-				new Label(this.messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " + "  <b>0</b>", Label.CONTENT_XHTML);
+			new Label(this.messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " + "  <b>0</b>", Label.CONTENT_XHTML);
 		this.totalListEntriesLabel.setWidth("120px");
 
 		this.totalSelectedListEntriesLabel = new Label("", Label.CONTENT_XHTML);
@@ -470,10 +453,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		this.actionMenu.setDebugId("actionMenu");
 		this.actionMenu.setWidth("250px");
 		this.actionMenu.addItem(this.messageSource.getMessage(Message.CLEAR_ALL));
-		this.actionMenu.addItem(this.messageSource.getMessage(Message.INVENTORY_VIEW));
 		this.actionMenu.addItem(this.messageSource.getMessage(Message.REMOVE_SELECTED_ENTRIES));
-		this.saveActionMenu = this.actionMenu.addItem(this.messageSource.getMessage(Message.SAVE_LIST));
-		this.saveActionMenu.setEnabled(false);
 		this.actionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
 		this.actionMenu.addItem(this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES));
 		this.actionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES));
@@ -527,17 +507,13 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		this.listDataTable.addContainerProperty(ParentTabComponent.TAG_COLUMN_ID, CheckBox.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.ENTRY_ID.getName(), Integer.class, Integer.valueOf(0));
 		this.listDataTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
-		this.listDataTable.addContainerProperty(ColumnLabels.AVAILABLE_INVENTORY.getName(), Button.class, null);
-		this.listDataTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
+		this.listDataTable.addContainerProperty(ColumnLabels.PARENTAGE.getName(), String.class, null);
 		this.listDataTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
 
 		this.listDataTable.setColumnHeader(ParentTabComponent.TAG_COLUMN_ID, this.messageSource.getMessage(Message.CHECK_ICON));
 		this.listDataTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), this.messageSource.getMessage(Message.HASHTAG));
 		this.listDataTable.setColumnHeader(ColumnLabels.DESIGNATION.getName(), this.getTermNameFromOntology(ColumnLabels.DESIGNATION));
-		this.listDataTable.setColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName(),
-				this.getTermNameFromOntology(ColumnLabels.AVAILABLE_INVENTORY));
-		this.listDataTable.setColumnHeader(ColumnLabels.SEED_RESERVATION.getName(),
-				this.getTermNameFromOntology(ColumnLabels.SEED_RESERVATION));
+		this.listDataTable.setColumnHeader(ColumnLabels.PARENTAGE.getName(), this.getTermNameFromOntology(ColumnLabels.PARENTAGE));
 		this.listDataTable.setColumnHeader(ColumnLabels.STOCKID.getName(), this.getTermNameFromOntology(ColumnLabels.STOCKID));
 
 		this.listDataTable.setColumnWidth(ParentTabComponent.TAG_COLUMN_ID, 25);
@@ -568,11 +544,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	/**
 	 * Exposed for testing purposed
-<<<<<<< HEAD
-	 * 
-=======
 	 *
->>>>>>> master
 	 * @param listInventoryTable
 	 */
 	public void initializeListInventoryTable(final CrossingManagerInventoryTable listInventoryTable) {
@@ -607,28 +579,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 		this.actionMenu.addListener(new ActionMenuClickListener());
 
-		this.inventoryViewActionButton.addListener(new ClickListener() {
-
-			private static final long serialVersionUID = 272707576878821700L;
-
-			@Override
-			public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
-				ParentTabComponent.this.inventoryViewActionMenu.show(event.getClientX(), event.getClientY());
-			}
-		});
-
-		this.inventoryViewActionMenu.addListener(new InventoryViewActionMenClickListener());
-
-		this.editHeaderButton.addListener(new ClickListener() {
-
-			private static final long serialVersionUID = -6306973449416812850L;
-
-			@Override
-			public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
-				ParentTabComponent.this.openSaveListAsDialog();
-			}
-		});
-
 		this.tableWithSelectAllLayout.getTable().addListener(new Property.ValueChangeListener() {
 
 			private static final long serialVersionUID = 1L;
@@ -650,40 +600,9 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		});
 	}
 
-	public void doSaveAction() {
-		this.doSave(this.source.getMakeCrossesMain().getModeView());
-	}
-
-	public void doSaveActionFromMain() {
-		this.doSave(this.prevModeView);
-		if (this.isOnlyReservationsMade(this.prevModeView)) {
-			this.makeCrossesMain.updateView(this.makeCrossesMain.getModeView());
-		}
-	}
-
-	private void doSave(final ModeView modeView) {
-		// do nothing if there were no unsaved changes
-		if (!this.hasUnsavedChanges()) {
-			return;
-		}
-
-		if (this.germplasmList == null || this.isTreatAsNewList) {
-			this.openSaveListAsDialog();
-		} else {
-			if (modeView.equals(ModeView.LIST_VIEW) || modeView.equals(ModeView.INVENTORY_VIEW)
-					&& this.inventoryTableDropHandler.hasChanges()) {
-				this.saveList(this.germplasmList);
-			}
-		}
-
-		if (this.isOnlyReservationsMade(modeView)) {
-			this.saveReservationChangesAction(true);
-		}
-	}
-
 	private boolean isOnlyReservationsMade(final ModeView modeView) {
 		return this.hasUnsavedChanges() && modeView.equals(ModeView.INVENTORY_VIEW) && this.germplasmList != null
-				&& !this.inventoryTableDropHandler.hasChanges();
+			&& !this.inventoryTableDropHandler.hasChanges();
 	}
 
 	private void updateListDataTableBeforeSaving() {
@@ -696,16 +615,17 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 				try {
 
 					final GermplasmListData germplasmListData =
-							this.germplasmListManager.getGermplasmListDataByListIdAndLrecId(listDataAndLotDetail.getListId(),
-									listDataAndLotDetail.getSourceLrecId());
+						this.germplasmListManager.getGermplasmListDataByListIdAndLrecId(
+							listDataAndLotDetail.getListId(),
+							listDataAndLotDetail.getSourceLrecId());
 
 					if (germplasmListData != null) {
 
 						final Integer entryId = this.getListDataTableNextEntryId();
 						final GermplasmListEntry entryObject =
-								new GermplasmListEntry(germplasmListData.getId(), germplasmListData.getGid(),
-										this.listDataTable.size() + 1, germplasmListData.getDesignation(),
-										germplasmListData.getSeedSource());
+							new GermplasmListEntry(germplasmListData.getId(), germplasmListData.getGid(),
+								this.listDataTable.size() + 1, germplasmListData.getDesignation(),
+								germplasmListData.getSeedSource());
 
 						final Item newItem = this.listDataTable.getContainerDataSource().addItem(entryObject);
 
@@ -720,8 +640,8 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 							newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entryId);
 
 							final Button desigButton =
-									new Button(germplasmListData.getDesignation(), new GidLinkClickListener(germplasmListData.getGid()
-											.toString(), true));
+								new Button(germplasmListData.getDesignation(), new GidLinkClickListener(germplasmListData.getGid()
+									.toString(), true));
 							desigButton.setStyleName(BaseTheme.BUTTON_LINK);
 							desigButton.setDescription(ParentTabComponent.CLICK_TO_VIEW_GERMPLASM_INFORMATION);
 							newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(desigButton);
@@ -792,12 +712,9 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			// Reserve Inventory Action will now be available after saving the list for the first time
 			this.menuReserveInventory.setEnabled(true);
 
-			// Edit Header Section will also be visible to the user
-			this.editHeaderButton.setVisible(true);
-
 			// show success message for saving
 			MessageNotifier.showMessage(this.source.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
-					this.messageSource.getMessage(this.getSuccessMessage()), 3000);
+				this.messageSource.getMessage(this.getSuccessMessage()), 3000);
 		} catch (final MiddlewareQueryException e) {
 			ParentTabComponent.LOG.error(e.getMessage(), e);
 		}
@@ -807,7 +724,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		this.listDataTable.setDropHandler(new ListDataTableDropHandler());
 
 		this.inventoryTableDropHandler = new InventoryTableDropHandler(this, this.germplasmDataManager, this.germplasmListManager,
-				this.inventoryDataManager, this.pedigreeService, this.crossExpansionProperties, this.listInventoryTable.getTable());
+			this.inventoryDataManager, this.pedigreeService, this.crossExpansionProperties, this.listInventoryTable.getTable());
 		this.listInventoryTable.getTable().setDropHandler(this.inventoryTableDropHandler);
 	}
 
@@ -834,7 +751,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	private void updateNoOfSelectedEntries(final int count) {
 		this.totalSelectedListEntriesLabel.setValue("<i>" + this.messageSource.getMessage(Message.SELECTED) + ": " + "  <b>" + count
-				+ "</b></i>");
+			+ "</b></i>");
 	}
 
 	private void updateNoOfSelectedEntries() {
@@ -892,7 +809,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			List<GermplasmListData> entries = null;
 			try {
 				entries = this.inventoryDataManager.getLotCountsForList(this.germplasmList.getId(), 0,
-						Long.valueOf(this.listEntriesCount).intValue());
+					Long.valueOf(this.listEntriesCount).intValue());
 
 				this.listEntries.addAll(entries);
 			} catch (final MiddlewareQueryException ex) {
@@ -908,7 +825,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		this.setSpacing(true);
 
 		this.addComponent(this.actionMenu);
-		this.addComponent(this.inventoryViewActionMenu);
 
 		final HeaderLabelLayout headingLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, this.listEntriesLabel);
 		headingLayout.setDebugId("headingLayout");
@@ -917,9 +833,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		this.headerLayout.setDebugId("headerLayout");
 		this.headerLayout.setWidth("100%");
 		this.headerLayout.addComponent(headingLayout);
-		this.headerLayout.addComponent(this.editHeaderButton);
 		this.headerLayout.setComponentAlignment(headingLayout, Alignment.MIDDLE_LEFT);
-		this.headerLayout.setComponentAlignment(this.editHeaderButton, Alignment.BOTTOM_RIGHT);
 
 		final HorizontalLayout leftSubHeaderLayout = new HorizontalLayout();
 		leftSubHeaderLayout.setDebugId("leftSubHeaderLayout");
@@ -952,7 +866,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 		try {
 			final List<GermplasmListData> germplasmListDataFromListFromTree =
-					this.inventoryDataManager.getLotCountsForList(germplasmListId, 0, Integer.MAX_VALUE);
+				this.inventoryDataManager.getLotCountsForList(germplasmListId, 0, Integer.MAX_VALUE);
 			this.updateListDataTable(germplasmListId, germplasmListDataFromListFromTree);
 		} catch (final MiddlewareQueryException e) {
 			ParentTabComponent.LOG.error("Error in retrieving list data entries with lot counts", e);
@@ -967,7 +881,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 		for (final GermplasmListData entry : savedListEntries) {
 			final GermplasmListEntry itemId =
-					new GermplasmListEntry(entry.getId(), entry.getGid(), entry.getEntryId(), entry.getDesignation(), entry.getSeedSource());
+				new GermplasmListEntry(entry.getId(), entry.getGid(), entry.getEntryId(), entry.getDesignation(), entry.getSeedSource());
 
 			final Item newItem = this.listDataTable.getContainerDataSource().addItem(itemId);
 
@@ -989,37 +903,9 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 			// #4
 			// default value
-			String availInv = ParentTabComponent.STRING_DASH;
-			if (entry.getInventoryInfo().getLotCount().intValue() != 0) {
-				availInv = entry.getInventoryInfo().getActualInventoryLotCount().toString().trim();
-			}
-
-			final InventoryLinkButtonClickListener inventoryClickListener =
-					new InventoryLinkButtonClickListener(this, germplasmListId, entry.getId(), entry.getGid());
-			final Button inventoryButton = new Button(availInv, inventoryClickListener);
-			inventoryButton.setDebugId("inventoryButton");
-			inventoryButton.setData(inventoryClickListener);
-			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-			inventoryButton.setDescription(ParentTabComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
-
-			if (availInv.equals(ParentTabComponent.STRING_DASH)) {
-				inventoryButton.setEnabled(false);
-				inventoryButton.setDescription(ParentTabComponent.NO_LOT_FOR_THIS_GERMPLASM);
-			} else {
-				inventoryButton.setDescription(ParentTabComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
-			}
-
-			// #5
-			// default value
-			String seedRes = ParentTabComponent.STRING_DASH;
-			if (entry.getInventoryInfo().getReservedLotCount().intValue() != 0) {
-				seedRes = entry.getInventoryInfo().getReservedLotCount().toString().trim();
-			}
-
 			newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entry.getEntryId());
 			newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(designationButton);
-			newItem.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-			newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
+			newItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(entry.getGroupName());
 			newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(entry.getInventoryInfo().getStockIDs());
 
 		}
@@ -1035,7 +921,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	@SuppressWarnings("unchecked")
 	private void preserveSelectedEntriesBeforeSaving(final List<Integer> selectedEntryIds) {
 		final Collection<GermplasmListEntry> entries =
-				(Collection<GermplasmListEntry>) this.listDataTable.getContainerDataSource().getItemIds();
+			(Collection<GermplasmListEntry>) this.listDataTable.getContainerDataSource().getItemIds();
 		for (final GermplasmListEntry entry : entries) {
 			if (selectedEntryIds.contains(entry.getEntryId())) {
 				this.listDataTable.select(entry);
@@ -1061,8 +947,8 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			this.source.getMakeCrossesMain().setModeView(ModeView.LIST_VIEW);
 		} else {
 			final String message =
-					"You have unsaved reservations for this list. " + "You will need to save them before changing views. "
-							+ "Do you want to save your changes?";
+				"You have unsaved reservations for this list. " + "You will need to save them before changing views. "
+					+ "Do you want to save your changes?";
 			this.source.getMakeCrossesMain().showUnsavedChangesConfirmDialog(message, ModeView.LIST_VIEW);
 		}
 	}
@@ -1108,9 +994,9 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 				MessageNotifier.showError(this.getWindow(), "Unsaved Parent Lists", "Please save parent lists first before changing view.");
 			} else {
 				this.source.getMakeCrossesMain().showUnsavedChangesConfirmDialog(
-						"You have unsaved changes to the male/female list you are "
-								+ "editing. You will need to save them before changing views. Do you want to save your changes?",
-						ModeView.INVENTORY_VIEW);
+					"You have unsaved changes to the male/female list you are "
+						+ "editing. You will need to save them before changing views. Do you want to save your changes?",
+					ModeView.INVENTORY_VIEW);
 			}
 		} else {
 			this.source.getMakeCrossesMain().setModeView(ModeView.INVENTORY_VIEW);
@@ -1166,32 +1052,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		}
 	}
 
-	public void reserveInventoryAction() {
-		// checks if the screen is in the inventory view
-		if (!this.inventoryViewActionMenu.isVisible()) {
-			// checks if the screen is in the inventory view
-			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
-					"Please change to Inventory View first.");
-		} else {
-			if (this.hasUnsavedChanges()) {
-				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
-						"Please save the list first before reserving an inventory.");
-			} else {
-				final List<ListEntryLotDetails> lotDetailsGid = this.listInventoryTable.getSelectedLots();
-
-				if (lotDetailsGid == null || lotDetailsGid.isEmpty()) {
-					MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
-							"Please select at least 1 lot to reserve.");
-				} else {
-					// this util handles the inventory reservation related functions
-					this.reserveInventoryUtil = new ReserveInventoryUtil(this, lotDetailsGid);
-					this.reserveInventoryUtil.viewReserveInventoryWindow();
-				}
-			}
-
-		}
-	}
-
 	@Override
 	public void updateListInventoryTable(final Map<ListEntryLotDetails, Double> validReservations, final boolean withInvalidReservations) {
 		for (final Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()) {
@@ -1215,13 +1075,13 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		// if there are no valid reservations
 		if (validReservations.isEmpty()) {
 			MessageNotifier
-					.showRequiredFieldError(
-							this.getWindow(),
-							this.messageSource
-									.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES) + ".");
+				.showRequiredFieldError(
+					this.getWindow(),
+					this.messageSource
+						.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES) + ".");
 		} else if (!withInvalidReservations) {
 			MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
-					"All selected entries will be reserved in their respective lots.", 3000);
+				"All selected entries will be reserved in their respective lots.", 3000);
 		}
 	}
 
@@ -1284,16 +1144,16 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 				if (displayReservationSuccessMessage) {
 					MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
-							"All reservations were saved.");
+						"All reservations were saved.");
 				}
 			} else {
 				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
-						"The reservations were not saved " + "due to and error in the system.");
+					"The reservations were not saved " + "due to and error in the system.");
 			}
 		} catch (final MiddlewareQueryException e) {
 			ParentTabComponent.LOG.error(e.getMessage(), e);
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
-					"The reservations were not saved " + "due to and error in the system.");
+				"The reservations were not saved " + "due to and error in the system.");
 			success = false;
 		}
 		return success;
@@ -1312,7 +1172,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		try {
 			if (!entryIds.isEmpty()) {
 				germplasmListDataEntries =
-						this.inventoryDataManager.getLotCountsForListEntries(this.germplasmList.getId(), new ArrayList<Integer>(entryIds));
+					this.inventoryDataManager.getLotCountsForListEntries(this.germplasmList.getId(), new ArrayList<Integer>(entryIds));
 			}
 		} catch (final MiddlewareQueryException e) {
 			ParentTabComponent.LOG.error(e.getMessage(), e);
@@ -1323,35 +1183,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 			final GermplasmListEntry itemId = this.getGermplasmListEntry(listData.getEntryId(), itemIds);
 			final Item item = this.listDataTable.getItem(itemId);
 
-			// #1 Available Inventory
-			// default value
-			String availInv = ParentTabComponent.STRING_DASH;
-			if (listData.getInventoryInfo().getLotCount().intValue() != 0) {
-				availInv = listData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
-			}
-			final Button inventoryButton =
-					new Button(availInv, new InventoryLinkButtonClickListener(this.source, this.germplasmList.getId(), listData.getId(),
-							listData.getGid()));
-			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-			inventoryButton.setDescription(ParentTabComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
-
-			if (availInv.equals(ParentTabComponent.STRING_DASH)) {
-				inventoryButton.setEnabled(false);
-				inventoryButton.setDescription(ParentTabComponent.NO_LOT_FOR_THIS_GERMPLASM);
-			} else {
-				inventoryButton.setDescription(ParentTabComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
-			}
-
-			item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-
-			// Seed Reserved
-			// default value
-			String seedRes = ParentTabComponent.STRING_DASH;
-			if (listData.getInventoryInfo().getReservedLotCount().intValue() != 0) {
-				seedRes = listData.getInventoryInfo().getReservedLotCount().toString().trim();
-			}
-
-			item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(seedRes);
+			item.getItemProperty(ColumnLabels.PARENTAGE.getName()).setValue(listData.getGroupName());
 		}
 
 	}
@@ -1373,10 +1205,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	public void setValidReservationsToSave(final Map<ListEntryLotDetails, Double> validReservationsToSave) {
 		this.validReservationsToSave = validReservationsToSave;
-	}
-
-	public ContextMenuItem getSaveActionMenu() {
-		return this.saveActionMenu;
 	}
 
 	public Table getListDataTable() {
@@ -1513,10 +1341,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	public void enableReserveInventory() {
 		this.menuReserveInventory.setEnabled(true);
-	}
-
-	public void enableEditListHeaderOption() {
-		this.editHeaderButton.setVisible(true);
 	}
 
 	protected String getTermNameFromOntology(final ColumnLabels columnLabels) {

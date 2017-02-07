@@ -44,8 +44,8 @@ import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
-public class SelectParentsComponent extends VerticalLayout implements BreedingManagerLayout, InitializingBean,
-		InternationalizableComponent, CrossingManagerTreeActionsListener, UnsavedChangesSource {
+public class SelectParentsComponent extends VerticalLayout implements BreedingManagerLayout, InitializingBean, InternationalizableComponent,
+		CrossingManagerTreeActionsListener, UnsavedChangesSource {
 
 	private static final long serialVersionUID = -5109231715662648484L;
 
@@ -63,12 +63,16 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	private Label instructionForSelectParents;
 	private TabSheet listDetailsTabSheet;
 	private Button closeAllTabsButton;
+	private boolean hidden;
 
 	private Map<SelectParentsListDataComponent, Boolean> listStatusForChanges;
+
+	private Button selectParentsButton;
 
 	public SelectParentsComponent(final CrossingManagerMakeCrossesComponent source) {
 		super();
 		this.source = source;
+		this.hidden = false;
 	}
 
 	@Override
@@ -90,6 +94,12 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 		this.selectParentsLabel.setDebugId("selectParentsLabel");
 		this.selectParentsLabel.setStyleName(Bootstrap.Typography.H4.styleName());
 		this.selectParentsLabel.addStyleName(AppConstants.CssStyles.BOLD);
+		this.selectParentsLabel.setWidth("230px");
+
+		this.selectParentsButton = new Button();
+		this.selectParentsButton.setDebugId("selectParentsButton");
+		this.selectParentsButton.setImmediate(true);
+		this.selectParentsButton.setVisible(true);
 
 		this.browseForListsButton = new Button(this.messageSource.getMessage(Message.BROWSE));
 		this.browseForListsButton.setDebugId("browseForListsButton");
@@ -104,8 +114,8 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 
 		this.listDetailsTabSheet = new TabSheet();
 		this.listDetailsTabSheet.setDebugId("listDetailsTabSheet");
-		this.listDetailsTabSheet.setWidth("460px");
-		this.listDetailsTabSheet.setHeight("465px");
+		this.listDetailsTabSheet.setHeight("365px");
+		this.listDetailsTabSheet.setWidth("890px");
 		hideListDetailsTabSheet();
 
 		this.closeAllTabsButton = new Button(this.messageSource.getMessage(Message.CLOSE_ALL_TABS));
@@ -118,10 +128,15 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 
 	private void hideListDetailsTabSheet() {
 		this.listDetailsTabSheet.addStyleName(AppConstants.CssStyles.NO_TAB);
+		this.listDetailsTabSheet.setVisible(false);
 	}
 
 	private void showListDetailsTabSheet() {
 		this.listDetailsTabSheet.removeStyleName(AppConstants.CssStyles.NO_TAB);
+		this.showOrHideCloseAllTabsButton();
+		this.browseForListsButton.setVisible(true);
+		this.instructionForSelectParents.setVisible(true);
+		this.listDetailsTabSheet.setVisible(true);
 	}
 
 	@Override
@@ -171,20 +186,40 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 				openBrowseForListDialog();
 			}
 		});
+
+		selectParentsButton.addListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = 6385074843600086746L;
+
+
+			@Override
+			public void buttonClick(final ClickEvent event) {
+				if (hidden) {
+					showListDetailsTabSheet();
+					hidden = false;
+				} else {
+					hideDetailsTabsheet();
+					hidden = true;
+				}
+			}
+		});
+
 	}
 
 	protected void hideDetailsTabsheet() {
 		closeAllTabsButton.setVisible(false);
+		browseForListsButton.setVisible(false);
+		this.instructionForSelectParents.setVisible(false);
 		hideListDetailsTabSheet();
 	}
 
 	@Override
 	public void layoutComponents() {
+		setWidth("100%");
+		setMargin(true);
 
-		setSpacing(true);
-		setWidth("460px");
-
-		final HeaderLabelLayout selectParentsHeaderLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_SELECT_PARENTS, selectParentsLabel);
+		final HeaderLabelLayout selectParentsHeaderLayout =
+				new HeaderLabelLayout(AppConstants.Icons.ICON_SELECT_PARENTS, selectParentsLabel, selectParentsButton);
 		selectParentsHeaderLayout.setDebugId("selectParentsHeaderLayout");
 
 		final HorizontalLayout leftLayout = new HorizontalLayout();
@@ -218,13 +253,12 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	}
 
 	public void openBrowseForListDialog() {
-		final SaveTreeStateListener saveTreeStateListener =
-				new SaveTreeStateListener((TreeTable) listTreeComponent.getGermplasmListSource(), ListTreeState.GERMPLASM_LIST.name(),
-						ListSelectorComponent.LISTS);
+		final SaveTreeStateListener saveTreeStateListener = new SaveTreeStateListener(
+				(TreeTable) listTreeComponent.getGermplasmListSource(), ListTreeState.GERMPLASM_LIST.name(), ListSelectorComponent.LISTS);
 		listTreeComponent.showAddRenameFolderSection(false);
 		listTreeComponent.reinitializeTree(false);
-		launchListSelectionWindow(getWindow(), listTreeComponent, messageSource.getMessage(Message.BROWSE_FOR_LISTS)).addListener(
-				saveTreeStateListener);
+		launchListSelectionWindow(getWindow(), listTreeComponent, messageSource.getMessage(Message.BROWSE_FOR_LISTS))
+				.addListener(saveTreeStateListener);
 	}
 
 	private Window launchListSelectionWindow(final Window window, final Component content, final String caption) {
@@ -273,20 +307,23 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 				listDetailsTabSheet.setSelectedTab(tabToFocus);
 			}
 		} else {
-			final Tab newTab =
-					listDetailsTabSheet
-							.addTab(new SelectParentsListDataComponent(listId, listName, source.getParentsComponent()), listName);
+			final Tab newTab = listDetailsTabSheet
+					.addTab(new SelectParentsListDataComponent(listId, listName, source.getParentsComponent()), listName);
 			newTab.setDescription(generateTabDescription(listId));
 			newTab.setClosable(true);
 			listDetailsTabSheet.setSelectedTab(newTab);
 		}
 
-		if (listDetailsTabSheet.getComponentCount() >= 2) {
-			closeAllTabsButton.setVisible(true);
-		} else {
-			closeAllTabsButton.setVisible(false);
-		}
+		this.showOrHideCloseAllTabsButton();
 
+	}
+
+	private void showOrHideCloseAllTabsButton() {
+		if (this.listDetailsTabSheet.getComponentCount() >= 2) {
+			this.closeAllTabsButton.setVisible(true);
+		} else {
+			this.closeAllTabsButton.setVisible(false);
+		}
 	}
 
 	public void updateUIForDeletedList(final GermplasmList list) {
@@ -360,7 +397,8 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 		return listStatusForChanges;
 	}
 
-	public void addUpdateListStatusForChanges(final SelectParentsListDataComponent selectParentsListDataComponent, final boolean hasChanges) {
+	public void addUpdateListStatusForChanges(final SelectParentsListDataComponent selectParentsListDataComponent,
+			final boolean hasChanges) {
 		removeListStatusForChanges(selectParentsListDataComponent);
 		listStatusForChanges.put(selectParentsListDataComponent, hasChanges);
 

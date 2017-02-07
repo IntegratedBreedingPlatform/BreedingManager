@@ -30,6 +30,7 @@ import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -45,6 +46,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
+
 
 @RunWith(MockitoJUnitRunner.class)
 public class SelectParentsListDataComponentTest {
@@ -221,14 +223,15 @@ public class SelectParentsListDataComponentTest {
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.ENTRY_NO.getId())).thenReturn(fromOntology);
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.DESIG.getId())).thenReturn(fromOntology);
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.AVAILABLE_INVENTORY.getId())).thenReturn(fromOntology);
-		Mockito.when(this.ontologyDataManager.getTermById(TermId.SEED_RESERVATION.getId())).thenReturn(fromOntology);
+		Mockito.when(this.ontologyDataManager.getTermById(TermId.TOTAL_INVENTORY.getId())).thenReturn(fromOntology);
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.STOCKID.getId())).thenReturn(fromOntology);
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.CROSS.getId())).thenReturn(fromOntology);
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.ENTRY_CODE.getId())).thenReturn(fromOntology);
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.GID.getId())).thenReturn(fromOntology);
+		Mockito.when(this.ontologyDataManager.getTermById(TermId.GROUP_ID.getId())).thenReturn(fromOntology);
 		Mockito.when(this.ontologyDataManager.getTermById(TermId.SEED_SOURCE.getId())).thenReturn(fromOntology);
 
-		final TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout(ColumnLabels.TAG.getName());
+		final TableWithSelectAllLayout tableWithSelectAll = new TableWithSelectAllLayout("Tag");
 		tableWithSelectAll.instantiateComponents();
 		final Table table = tableWithSelectAll.getTable();
 
@@ -236,13 +239,14 @@ public class SelectParentsListDataComponentTest {
 
 		Assert.assertEquals("TAG", table.getColumnHeader(ColumnLabels.TAG.getName()));
 		Assert.assertEquals("HASHTAG", table.getColumnHeader(ColumnLabels.ENTRY_ID.getName()));
-		Assert.assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName()));
-		Assert.assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.SEED_RESERVATION.getName()));
-		Assert.assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.STOCKID.getName()));
-		Assert.assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.GID.getName()));
-		Assert.assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.ENTRY_CODE.getName()));
 		Assert.assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.DESIGNATION.getName()));
+		Assert.assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName()));
+		Assert.assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.TOTAL.getName()));
+		Assert.assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.STOCKID.getName()));
 		Assert.assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.PARENTAGE.getName()));
+		Assert.assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.ENTRY_CODE.getName()));
+		Assert.assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.GID.getName()));
+		Assert.assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.GROUP_ID.getName()));
 		Assert.assertEquals("Ontology Name", table.getColumnHeader(ColumnLabels.SEED_SOURCE.getName()));
 	}
 
@@ -568,42 +572,4 @@ public class SelectParentsListDataComponentTest {
 		}
 	}
 
-	@Test
-	public void testRefreshInventoryColumns() {
-		final Map<ListEntryLotDetails, Double> validReservations = new HashMap<ListEntryLotDetails, Double>();
-
-		Double reservationAmount = 1.5D;
-		for (final ListEntryLotDetails lotDetail : this.selectedLotEntries) {
-			validReservations.put(lotDetail, reservationAmount++);
-		}
-
-		final Set<Integer> entryIds = new HashSet<Integer>();
-		for (final Entry<ListEntryLotDetails, Double> details : validReservations.entrySet()) {
-			entryIds.add(details.getKey().getId());
-		}
-
-		final List<GermplasmListData> selectedListEntries = new ArrayList<GermplasmListData>();
-		for (final Integer entryId : entryIds) {
-			selectedListEntries.add(this.listEntries.get(entryId - 1));
-		}
-
-		Mockito.doReturn(selectedListEntries).when(this.inventoryDataManager)
-				.getLotCountsForListEntries(this.germplasmList.getId(), new ArrayList<Integer>(entryIds));
-		this.selectParents.initializeValues();
-
-		this.selectParents.refreshInventoryColumns(validReservations);
-
-		for (final GermplasmListData listData : selectedListEntries) {
-			final Item item = this.listDataTable.getItem(listData.getId());
-
-			final Button inventoryButton = (Button) item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).getValue();
-			final String expectedAvailInv = listData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
-			final String actualAvailInv = inventoryButton.getCaption();
-			Assert.assertEquals("Unable to set the available inventory value to " + expectedAvailInv, expectedAvailInv, actualAvailInv);
-
-			final String expectedSeedRes = listData.getInventoryInfo().getReservedLotCount().toString().trim();
-			final String actualSeedRes = (String) item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue();
-			Assert.assertEquals("Unable to set the seed reservation value to " + expectedSeedRes, expectedSeedRes, actualSeedRes);
-		}
-	}
 }

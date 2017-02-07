@@ -33,7 +33,7 @@ public class CrossingManagerImportButtonClickListener implements Button.ClickLis
 				&& this.source instanceof CrossingManagerMakeCrossesComponent) {
 			((CrossingManagerMakeCrossesComponent) this.source).nextButtonClickAction();
 
-		} else if (CrossingMethodComponent.MAKE_CROSS_BUTTON_ID.equals(eventButtonData) && this.source instanceof CrossingMethodComponent) {
+		} else if (CrossingMethodComponent.GENERATE_CROSS_BUTTON_ID.equals(eventButtonData) && this.source instanceof CrossingMethodComponent) {
 			((CrossingMethodComponent) this.source).makeCrossButtonAction();
 
 		} else if (AdditionalDetailsCrossNameComponent.GENERATE_BUTTON_ID.equals(eventButtonData)
