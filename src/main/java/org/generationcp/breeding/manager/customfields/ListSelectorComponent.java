@@ -33,6 +33,7 @@ import org.generationcp.commons.service.UserTreeStateService;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.fields.SanitizedTextField;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -57,7 +58,6 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 
@@ -111,7 +111,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 	protected HorizontalLayout addRenameFolderLayout;
 	protected Label folderLabel;
-	protected TextField folderTextField;
+	protected SanitizedTextField folderTextField;
 	protected Button saveFolderButton;
 	protected Button cancelFolderButton;
 
@@ -241,7 +241,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		this.folderLabel.addStyleName(AppConstants.CssStyles.BOLD);
 		final Label mandatoryMarkLabel = new MandatoryMarkLabel();
 
-		this.folderTextField = new TextField();
+		this.folderTextField = new SanitizedTextField();
 		this.folderTextField.setDebugId("folderTextField");
 		this.folderTextField.setMaxLength(50);
 		this.folderTextField.setValidationVisible(false);
@@ -985,7 +985,7 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		this.germplasmListManager = germplasmListManager;
 	}
 
-	public void setFolderTextField(final TextField folderTextField) {
+	public void setFolderTextField(final SanitizedTextField folderTextField) {
 		this.folderTextField = folderTextField;
 	}
 

@@ -4,6 +4,7 @@ package org.generationcp.breeding.manager.customfields;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.validator.ListNameValidator;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
+import org.generationcp.commons.vaadin.ui.fields.SanitizedTextField;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -12,7 +13,6 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
 
 @Configurable
 public class ListNameField extends HorizontalLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
@@ -21,7 +21,7 @@ public class ListNameField extends HorizontalLayout implements InitializingBean,
 
 	private Label captionLabel;
 	private final String caption;
-	private TextField listNameTextField;
+	private SanitizedTextField listNameTextField;
 	private final boolean isMandatory;
 	private Label mandatoryMark;
 	private ListNameValidator listNameValidator;
@@ -39,7 +39,7 @@ public class ListNameField extends HorizontalLayout implements InitializingBean,
 		this.captionLabel.setDebugId("captionLabel");
 		this.captionLabel.addStyleName("bold");
 
-		this.listNameTextField = new TextField();
+		this.listNameTextField = new SanitizedTextField();
 		this.listNameTextField.setDebugId("listNameTextField");
 		this.listNameTextField.setWidth("180px");
 		this.listNameTextField.setImmediate(true);
@@ -104,11 +104,11 @@ public class ListNameField extends HorizontalLayout implements InitializingBean,
 		this.layoutComponents();
 	}
 
-	public TextField getListNameTextField() {
+	public SanitizedTextField getListNameTextField() {
 		return this.listNameTextField;
 	}
 
-	public void setListNameTextField(TextField listNameTextField) {
+	public void setListNameTextField(SanitizedTextField listNameTextField) {
 		this.listNameTextField = listNameTextField;
 	}
 
