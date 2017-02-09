@@ -306,7 +306,7 @@ public class SeedInventoryImportFileComponent extends BaseSubWindow implements I
 
 		if (!CollectionUtils.isEmpty(this.importedSeedInventoryList.getImportedSeedInventoryList())) {
 			// List name validation
-			if (!this.importedSeedInventoryList.getListName().equals(this.selectedGermplsmList.getName())) {
+			if (!this.importedSeedInventoryList.getListName().trim().equals(this.selectedGermplsmList.getName().trim())) {
 				throw new InvalidFileDataException(Message.SEED_IMPORT_LIST_NAME_MISMATCH_ERROR.toString());
 			}
 
