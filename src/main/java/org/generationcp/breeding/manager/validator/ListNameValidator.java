@@ -4,6 +4,7 @@ package org.generationcp.breeding.manager.validator;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -90,31 +91,37 @@ public class ListNameValidator implements Validator {
 	}
 
 	protected boolean validateListName(String listName) {
+		final String newName = listName.trim();
 		boolean isValid = true;
-		if (listName.isEmpty()) {
+		if (StringUtils.isEmpty(newName)) {
 			this.errorDetails = this.messageSource.getMessage(Message.INVALID_ITEM_NAME);
 			isValid = false;
 
-		} else if (ListSelectorComponent.LISTS.equalsIgnoreCase(listName)) {
+		} else if (ListSelectorComponent.LISTS.equalsIgnoreCase(newName)) {
 			this.errorDetails = "Cannot use \"Lists\" as item name.";
 			isValid = false;
-		} else if (invalidListNamePattern.matcher(listName).find()) {
+		} else if (invalidListNamePattern.matcher(newName).find()) {
 			this.errorDetails = this.messageSource.getMessage(Message.INVALID_LIST_NAME);
 			isValid = false;
+			
 		} else {
-			try {
-				List<GermplasmList> lists =
-						this.germplasmListManager.getGermplasmListByName(listName, this.getCurrentProgramUUID(), 0, 5, Operation.EQUAL);
+			// Check if given list name is already taken by other lists for new list or only when list name changed from old value
+			if (StringUtils.isEmpty(this.currentListName) || !newName.equals(this.currentListName.trim())) {
+				
+				try {
+					List<GermplasmList> lists =
+							this.germplasmListManager.getGermplasmListByName(newName, this.getCurrentProgramUUID(), 0, 1, Operation.EQUAL);
+					
+					if (!lists.isEmpty()) {
+						this.errorDetails = this.messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE);
+						isValid = false;
+					}
 
-				if (!lists.isEmpty() && (this.currentListName == null || !lists.get(0).getName().trim().equals(this.currentListName))) {
-					this.errorDetails = this.messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE);
+				} catch (MiddlewareQueryException ex) {
+					ListNameValidator.LOG.error("Error with getting germplasm list by list name - " + listName, ex);
+					this.errorDetails = this.messageSource.getMessage(Message.ERROR_VALIDATING_LIST);
 					isValid = false;
 				}
-
-			} catch (MiddlewareQueryException ex) {
-				ListNameValidator.LOG.error("Error with getting germplasm list by list name - " + listName, ex);
-				this.errorDetails = this.messageSource.getMessage(Message.ERROR_VALIDATING_LIST);
-				isValid = false;
 			}
 		}
 		return isValid;
