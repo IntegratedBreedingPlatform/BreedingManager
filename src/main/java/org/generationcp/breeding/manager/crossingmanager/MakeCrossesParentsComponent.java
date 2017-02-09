@@ -149,9 +149,9 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		HorizontalLayout parentListHLayout = new HorizontalLayout();
 		parentListHLayout.setWidth("100%");
 		parentListHLayout.setDebugId("parentListHLayout");
-		parentListHLayout.addComponent(maleParentTabSheet);
-		parentListHLayout.setSpacing(true);
 		parentListHLayout.addComponent(femaleParentTabSheet);
+		parentListHLayout.setSpacing(true);
+		parentListHLayout.addComponent(maleParentTabSheet);
 
 		final HeaderLabelLayout parentLabelLayout = new HeaderLabelLayout(AppConstants.Icons.ICON_LIST_TYPES, this.parentListsLabel);
 		parentLabelLayout.setDebugId("parentLabelLayout");
