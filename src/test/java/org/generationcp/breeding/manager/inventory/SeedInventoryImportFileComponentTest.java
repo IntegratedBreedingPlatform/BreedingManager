@@ -1,6 +1,9 @@
 package org.generationcp.breeding.manager.inventory;
 
 
+import java.util.List;
+import java.util.Set;
+
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.inventory.exception.SeedInventoryImportException;
 import org.generationcp.breeding.manager.pojos.ImportedSeedInventory;
@@ -26,14 +29,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.List;
-import java.util.Set;
-
+import com.google.common.collect.Lists;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
-
-import com.google.common.collect.Lists;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SeedInventoryImportFileComponentTest {
@@ -131,11 +130,7 @@ public class SeedInventoryImportFileComponentTest {
 
 	@Test
 	public void testValidateImportedSeedInventoryListSuccess() throws SeedInventoryImportException, InvalidFileDataException {
-		this.seedInventoryImportFileComponent
-				.setSelectedListReservedInventoryDetails(InventoryDetailsTestDataInitializer.createGermplasmListDataForReservedEntries());
-
-		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Mockito.isA(List.class)))
-				.thenReturn(InventoryDetailsTestDataInitializer.createValidReservedTransactions());
+		this.createInventoryTestData();
 
 		this.seedInventoryImportFileComponent.setImportedSeedInventoryList(createValidImportedInventoryList());
 
@@ -147,11 +142,7 @@ public class SeedInventoryImportFileComponentTest {
 	@Test
 	public void testInvalidValidateImportedSeedInventoryListWithListNameDoesNotMatch()
 			throws SeedInventoryImportException, InvalidFileDataException {
-		this.seedInventoryImportFileComponent
-				.setSelectedListReservedInventoryDetails(InventoryDetailsTestDataInitializer.createGermplasmListDataForReservedEntries());
-
-		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Mockito.isA(List.class)))
-				.thenReturn(InventoryDetailsTestDataInitializer.createValidReservedTransactions());
+		this.createInventoryTestData();
 
 		ImportedSeedInventoryList inValidImportedInventoryList = createValidImportedInventoryList();
 		inValidImportedInventoryList.setListName("incorrectListName");
@@ -164,15 +155,53 @@ public class SeedInventoryImportFileComponentTest {
 			Assert.assertEquals(e.getMessage(), Message.SEED_IMPORT_LIST_NAME_MISMATCH_ERROR.toString());
 		}
 	}
+	
+	@Test
+	public void testValidateImportedSeedInventoryListWithTrailingSpaceInImportedName()
+			throws SeedInventoryImportException, InvalidFileDataException {
+		this.createInventoryTestData();
+
+		ImportedSeedInventoryList inValidImportedInventoryList = createValidImportedInventoryList();
+		inValidImportedInventoryList.setListName(this.germplasmList.getName() + "   ");
+
+		this.seedInventoryImportFileComponent.setImportedSeedInventoryList(inValidImportedInventoryList);
+
+		try {
+			this.seedInventoryImportFileComponent.validateImportedSeedInventoryList();
+			// No assertion to put as if test case run without exception means data is valid
+			
+		} catch (InvalidFileDataException e) {
+			Assert.fail("Expecting list name matching to trim trailing space but did not.");
+		}
+	}
+	
+	@Test
+	public void testValidateImportedSeedInventoryListWithTrailingSpaceInListName()
+			throws SeedInventoryImportException, InvalidFileDataException {
+		this.createInventoryTestData();
+
+		
+		final String originalListName = this.germplasmList.getName();
+		ImportedSeedInventoryList inValidImportedInventoryList = createValidImportedInventoryList();
+		inValidImportedInventoryList.setListName(originalListName);
+		this.germplasmList.setName(originalListName + "   ");
+
+		this.seedInventoryImportFileComponent.setImportedSeedInventoryList(inValidImportedInventoryList);
+
+		try {
+			this.seedInventoryImportFileComponent.validateImportedSeedInventoryList();
+			// No assertion to put as if test case run without exception means data is valid
+			
+		} catch (InvalidFileDataException e) {
+			Assert.fail("Expecting list name matching to trim trailing space but did not.");
+		}
+	}
+
 
 	@Test
 	public void testInvalidValidateImportedSeedInventoryListWithGIDDoesNotMatch()
 			throws SeedInventoryImportException, InvalidFileDataException {
-		this.seedInventoryImportFileComponent
-				.setSelectedListReservedInventoryDetails(InventoryDetailsTestDataInitializer.createGermplasmListDataForReservedEntries());
-
-		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Mockito.isA(List.class)))
-				.thenReturn(InventoryDetailsTestDataInitializer.createValidReservedTransactions());
+		this.createInventoryTestData();
 
 		ImportedSeedInventoryList inValidImportedInventoryList = createValidImportedInventoryList();
 		inValidImportedInventoryList.getImportedSeedInventoryList().get(0).setGid(0);
@@ -186,14 +215,18 @@ public class SeedInventoryImportFileComponentTest {
 		}
 	}
 
-	@Test
-	public void testInvalidValidateImportedSeedInventoryListWithDesignationDoesNotMatch()
-			throws SeedInventoryImportException, InvalidFileDataException {
+	private void createInventoryTestData() {
 		this.seedInventoryImportFileComponent
 				.setSelectedListReservedInventoryDetails(InventoryDetailsTestDataInitializer.createGermplasmListDataForReservedEntries());
 
-		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Mockito.isA(List.class)))
+		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Matchers.anyListOf(Integer.class)))
 				.thenReturn(InventoryDetailsTestDataInitializer.createValidReservedTransactions());
+	}
+
+	@Test
+	public void testInvalidValidateImportedSeedInventoryListWithDesignationDoesNotMatch()
+			throws SeedInventoryImportException, InvalidFileDataException {
+		this.createInventoryTestData();
 
 		ImportedSeedInventoryList inValidImportedInventoryList = createValidImportedInventoryList();
 		inValidImportedInventoryList.getImportedSeedInventoryList().get(0).setDesignation("updatedDesignation");
@@ -210,11 +243,7 @@ public class SeedInventoryImportFileComponentTest {
 	@Test
 	public void testInvalidValidateImportedSeedInventoryListWithWithdrawalAndBalanceBothGiven()
 			throws SeedInventoryImportException, InvalidFileDataException {
-		this.seedInventoryImportFileComponent
-				.setSelectedListReservedInventoryDetails(InventoryDetailsTestDataInitializer.createGermplasmListDataForReservedEntries());
-
-		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Mockito.isA(List.class)))
-				.thenReturn(InventoryDetailsTestDataInitializer.createValidReservedTransactions());
+		this.createInventoryTestData();
 
 		ImportedSeedInventoryList inValidImportedInventoryList = createValidImportedInventoryList();
 		inValidImportedInventoryList.getImportedSeedInventoryList().get(0).setBalanceAmount(12.0);
@@ -263,14 +292,7 @@ public class SeedInventoryImportFileComponentTest {
 	@Test
 	public void testValidateImportedSeedInventoryListThrowTransactionNotFoundException()
 			throws SeedInventoryImportException, InvalidFileDataException {
-		List<GermplasmListData> germplasmListDataForReservedEntries =
-				InventoryDetailsTestDataInitializer.createGermplasmListDataForReservedEntries();
-
-		this.seedInventoryImportFileComponent.setSelectedListReservedInventoryDetails(germplasmListDataForReservedEntries);
-
-		List<Transaction> validReservedTransactions = InventoryDetailsTestDataInitializer.createValidReservedTransactions();
-
-		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Mockito.isA(List.class))).thenReturn(validReservedTransactions);
+		this.createInventoryTestData();
 
 		ImportedSeedInventoryList validImportedInventoryList = createValidImportedInventoryList();
 		validImportedInventoryList.getImportedSeedInventoryList().get(0).setTransactionId(null);
@@ -288,15 +310,8 @@ public class SeedInventoryImportFileComponentTest {
 	@Test
 	public void testValidateImportedSeedInventoryListThrowNoImportedReservationException()
 			throws SeedInventoryImportException, InvalidFileDataException {
-		List<GermplasmListData> germplasmListDataForReservedEntries =
-				InventoryDetailsTestDataInitializer.createGermplasmListDataForReservedEntries();
-
-		this.seedInventoryImportFileComponent.setSelectedListReservedInventoryDetails(germplasmListDataForReservedEntries);
-
-		List<Transaction> validReservedTransactions = InventoryDetailsTestDataInitializer.createValidReservedTransactions();
-
-		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Mockito.isA(List.class))).thenReturn(validReservedTransactions);
-
+		this.createInventoryTestData();
+		
 		ImportedSeedInventoryList validImportedInventoryList = createValidImportedInventoryList();
 		validImportedInventoryList.setImportedSeedInventoryList(Lists.<ImportedSeedInventory>newArrayList());
 		this.seedInventoryImportFileComponent.setImportedSeedInventoryList(validImportedInventoryList);
@@ -324,7 +339,7 @@ public class SeedInventoryImportFileComponentTest {
 		List<Transaction> validReservedTransactions = InventoryDetailsTestDataInitializer.createValidReservedTransactions();
 		validReservedTransactions.get(0).setComments("changedComments");
 
-		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Mockito.isA(List.class))).thenReturn(validReservedTransactions);
+		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Matchers.anyListOf(Integer.class))).thenReturn(validReservedTransactions);
 
 		ImportedSeedInventoryList validImportedInventoryList = createValidImportedInventoryList();
 		Mockito.when(this.messageSource.getMessage(Message.SEED_IMPORT_COMMENT_WARNING))
@@ -347,7 +362,7 @@ public class SeedInventoryImportFileComponentTest {
 		ImportedSeedInventoryList validImportedInventoryList = createValidImportedInventoryList();
 		this.seedInventoryImportFileComponent.setImportedSeedInventoryList(validImportedInventoryList);
 
-		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Mockito.isA(List.class)))
+		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Matchers.anyListOf(Integer.class)))
 				.thenReturn(InventoryDetailsTestDataInitializer.createValidReservedTransactions());
 
 		this.seedInventoryImportFileComponent.validateImportedSeedInventoryList();
@@ -374,7 +389,7 @@ public class SeedInventoryImportFileComponentTest {
 
 		this.seedInventoryImportFileComponent.setImportedSeedInventoryList(validImportedInventoryList);
 
-		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Mockito.isA(List.class)))
+		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Matchers.anyListOf(Integer.class)))
 				.thenReturn(InventoryDetailsTestDataInitializer.createValidReservedTransactions());
 
 		this.seedInventoryImportFileComponent.validateImportedSeedInventoryList();
@@ -401,7 +416,7 @@ public class SeedInventoryImportFileComponentTest {
 
 		this.seedInventoryImportFileComponent.setImportedSeedInventoryList(validImportedInventoryList);
 
-		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Mockito.isA(List.class)))
+		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Matchers.anyListOf(Integer.class)))
 				.thenReturn(InventoryDetailsTestDataInitializer.createValidReservedTransactions());
 
 		this.seedInventoryImportFileComponent.validateImportedSeedInventoryList();
@@ -421,7 +436,7 @@ public class SeedInventoryImportFileComponentTest {
 
 		this.seedInventoryImportFileComponent.setImportedSeedInventoryList(validImportedInventoryList);
 
-		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Mockito.isA(List.class)))
+		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Matchers.anyListOf(Integer.class)))
 				.thenReturn(InventoryDetailsTestDataInitializer.createValidReservedTransactions());
 
 		this.seedInventoryImportFileComponent.validateImportedSeedInventoryList();
@@ -449,7 +464,7 @@ public class SeedInventoryImportFileComponentTest {
 		validImportedInventoryList.getImportedSeedInventoryList().get(0).setBalanceAmount(2.0);
 		this.seedInventoryImportFileComponent.setImportedSeedInventoryList(validImportedInventoryList);
 
-		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Mockito.isA(List.class)))
+		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Matchers.anyListOf(Integer.class)))
 				.thenReturn(InventoryDetailsTestDataInitializer.createValidReservedTransactions());
 
 		Mockito.when(this.messageSource.getMessage(Matchers.any(Message.class))).thenReturn("StockTakingAdjustment");
@@ -476,7 +491,7 @@ public class SeedInventoryImportFileComponentTest {
 		validImportedInventoryList.getImportedSeedInventoryList().get(0).setBalanceAmount(0.0);
 		this.seedInventoryImportFileComponent.setImportedSeedInventoryList(validImportedInventoryList);
 
-		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Mockito.isA(List.class)))
+		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Matchers.anyListOf(Integer.class)))
 				.thenReturn(InventoryDetailsTestDataInitializer.createValidReservedTransactions());
 		Mockito.when(this.messageSource.getMessage(Message.TRANSACTION_DISCARD_COMMENT))
 				.thenReturn(Message.TRANSACTION_DISCARD_COMMENT.name());
@@ -503,7 +518,7 @@ public class SeedInventoryImportFileComponentTest {
 		validImportedInventoryList.getImportedSeedInventoryList().get(0).setLotID(100);
 		this.seedInventoryImportFileComponent.setImportedSeedInventoryList(validImportedInventoryList);
 
-		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Mockito.isA(List.class)))
+		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Matchers.anyListOf(Integer.class)))
 				.thenReturn(InventoryDetailsTestDataInitializer.createValidReservedTransactions());
 
 		this.seedInventoryImportFileComponent.validateImportedSeedInventoryList();
@@ -531,7 +546,7 @@ public class SeedInventoryImportFileComponentTest {
 		List<Transaction> validReservedTransactions = InventoryDetailsTestDataInitializer.createValidReservedTransactions();
 		validReservedTransactions.get(0).setStatus(TransactionStatus.COMMITTED.getIntValue());
 
-		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Mockito.isA(List.class)))
+		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Matchers.anyListOf(Integer.class)))
 				.thenReturn(validReservedTransactions);
 
 		this.seedInventoryImportFileComponent.validateImportedSeedInventoryList();
@@ -562,7 +577,7 @@ public class SeedInventoryImportFileComponentTest {
 
 		List<Transaction> validReservedTransactions = InventoryDetailsTestDataInitializer.createValidReservedTransactions();
 
-		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Mockito.isA(List.class)))
+		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Matchers.anyListOf(Integer.class)))
 				.thenReturn(validReservedTransactions);
 
 		this.seedInventoryImportFileComponent.validateImportedSeedInventoryList();
@@ -582,11 +597,7 @@ public class SeedInventoryImportFileComponentTest {
 	@Test
 	public void testvalidateImportedSeedInventoryListWhenWithdrawalAmountAndBalanceIsEmpty()
 			throws SeedInventoryImportException, InvalidFileDataException {
-		this.seedInventoryImportFileComponent
-				.setSelectedListReservedInventoryDetails(InventoryDetailsTestDataInitializer.createGermplasmListDataForReservedEntries());
-
-		Mockito.when(this.inventoryDataManager.getTransactionsByIdList(Mockito.isA(List.class)))
-				.thenReturn(InventoryDetailsTestDataInitializer.createValidReservedTransactions());
+		createInventoryTestData();
 
 		ImportedSeedInventoryList inValidImportedInventoryList = createValidImportedInventoryList();
 		inValidImportedInventoryList.getImportedSeedInventoryList().get(0).setBalanceAmount(null);
