@@ -89,15 +89,16 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 
 			@Override
 			public void valueChange(final com.vaadin.data.Property.ValueChangeEvent event) {
-				PagedTableWithSelectAllLayout.this.syncItemCheckBoxes();
+				PagedTableWithSelectAllLayout.this.syncSelectionCheckBoxes();
 			}
 		});
+		
 
 		this.table.registerTableSelectHandler(new PagedBreedingManagerTable.EntrySelectSyncHandler() {
 
 			@Override
 			public void dispatch() {
-				PagedTableWithSelectAllLayout.this.syncItemCheckBoxes();
+				PagedTableWithSelectAllLayout.this.syncSelectionCheckBoxes();
 			}
 		});
 
@@ -163,7 +164,7 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 		return selectAllLayout;
 	}
 
-	public void syncItemCheckBoxes() {
+	void syncSelectionCheckBoxes() {
 		// Update checkboxes only on current page as other pages are refreshed upon loading them
 		// "Selected" items are not affected - Actual table selection is determined by table.getValue()
 		this.updateItemSelectCheckboxes();
@@ -171,6 +172,10 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 		// update the "Select all on page" and "Select All Pages" checkboxes status based on the selected items
 		this.updateSelectAllOnPageCheckBoxStatus();
 		this.updateSelectAllEntriesCheckboxStatus();
+		
+		// Update also the caption of "Select all on page" checkbox
+		// in case the page length changed or size of current page is less than page length
+		this.updateSelectAllCheckboxesCaption();
 	}
 
 	/***
@@ -361,7 +366,7 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 		this.replaceComponent(this.getComponent(INDEX_OF_CHECKBOXES_LAYOUT), this.generateCheckboxesLayout());;
 	}
 
-	private void updateSelectAllCheckboxesCaption() {
+	void updateSelectAllCheckboxesCaption() {
 		final int allEntriesSize = this.table.getItemIds().size();
 		final String selectAllCaption = this.messageSource.getMessage(Message.SELECT_ALL_PAGES);
 		final String selectAllOnPageCaption = this.messageSource.getMessage(Message.SELECT_ALL_ON_PAGE);
@@ -372,19 +377,27 @@ public class PagedTableWithSelectAllLayout extends VerticalLayout implements Bre
 			sb.append(selectAllCaption.substring(0, selectAllCaption.length() - 1));
 			sb.append(" - ");
 			sb.append(allEntriesSize);
-			sb.append(" entries)");
+			if (allEntriesSize > 1){
+				sb.append(" entries)");
+			} else {
+				sb.append(" entry)");
+			}
 			this.selectAllEntriesCheckBox.setCaption(sb.toString());
 
 			sb = new StringBuilder();
 			// Assumes that default caption's last character is ")"
-			// appends total # of entries to caption. eg. Select All (this page - 5000 entries)
+			// appends # of entries on page to caption. eg. Select All (this page - 20 entries)
 			sb.append(selectAllOnPageCaption.substring(0, selectAllOnPageCaption.length() - 1));
 			sb.append(" - ");
 			final int pageLength = this.table.getPageLength();
 			// check if the items visible is less than max possible items on board
 			final int noOfEntries = Math.min(pageLength, this.table.size());
 			sb.append(noOfEntries);
-			sb.append(" entries)");
+			if (noOfEntries > 1){
+				sb.append(" entries)");
+			} else {
+				sb.append(" entry)");
+			}
 			this.selectAllOnPageCheckBox.setCaption(sb.toString());
 
 		} else {
