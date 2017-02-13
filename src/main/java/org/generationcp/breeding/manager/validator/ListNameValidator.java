@@ -9,7 +9,6 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -107,18 +106,11 @@ public class ListNameValidator implements Validator {
 			// Check if given list name is already taken by other lists for new list or only when list name changed from old value
 			if (StringUtils.isEmpty(this.currentListName) || !newName.equals(this.currentListName.trim())) {
 
-				try {
-					final List<GermplasmList> lists =
-							this.germplasmListManager.getGermplasmListByName(newName, this.getCurrentProgramUUID(), 0, 1, Operation.EQUAL);
+				final List<GermplasmList> lists =
+						this.germplasmListManager.getGermplasmListByName(newName, this.getCurrentProgramUUID(), 0, 1, Operation.EQUAL);
 
-					if (!lists.isEmpty()) {
-						this.errorDetails = this.messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE);
-						isValid = false;
-					}
-
-				} catch (final MiddlewareQueryException ex) {
-					ListNameValidator.LOG.error("Error with getting germplasm list by list name - " + listName, ex);
-					this.errorDetails = this.messageSource.getMessage(Message.ERROR_VALIDATING_LIST);
+				if (!lists.isEmpty()) {
+					this.errorDetails = this.messageSource.getMessage(Message.EXISTING_LIST_ERROR_MESSAGE);
 					isValid = false;
 				}
 			}
