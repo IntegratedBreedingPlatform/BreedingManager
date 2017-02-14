@@ -22,7 +22,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 
 import junit.framework.Assert;
-import liquibase.changelog.AbstractChangeLogHistoryService;
 
 /**
  * Created by Aldrin Batac on 5/23/16.
@@ -520,6 +519,57 @@ public class PagedTableWithSelectAllLayoutTest {
 				Assert.fail("Expecting \"Select All Pages\" checkbox was hidden but was not.");
 			}
 		}
+	}
+	
+	@Test
+	public void testUpdateSelectAllCheckboxesWhenTableHasJustOneEntry() {
+		// Populate with 1 entry but default page length is 10
+		final int numberOfItems = 1;
+		this.initializePagedBreedingManagerTable(numberOfItems);
+		this.pagedTableWithSelectAllLayout.layoutComponents();
+
+		// Method to test
+		this.pagedTableWithSelectAllLayout.updateSelectAllCheckboxes();
+
+		final String selectAllOnPageCaptionSubstr = PagedTableWithSelectAllLayoutTest.SELECT_ALL_ON_PAGE_CAPTION.substring(0,
+				PagedTableWithSelectAllLayoutTest.SELECT_ALL_ON_PAGE_CAPTION.length() - 1);
+		final String selectAllCaptionSubstr = PagedTableWithSelectAllLayoutTest.SELECT_ALL_PAGES_CAPTION.substring(0,
+				PagedTableWithSelectAllLayoutTest.SELECT_ALL_PAGES_CAPTION.length() - 1);
+
+		// Expecting "Select All on Page" checkbox caption to say "entry" instead of "entries"
+		Assert.assertEquals(selectAllOnPageCaptionSubstr + " - " + numberOfItems + " entry)",
+				this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().getCaption());
+		// Expecting "Select All Pages" checkbox caption to say "entry" instead of "entries"
+		Assert.assertEquals(selectAllCaptionSubstr + " - " + numberOfItems + " entry)",
+				this.pagedTableWithSelectAllLayout.getSelectAllEntriesCheckBox().getCaption());
+	}
+	
+	@Test
+	public void testSyncSelectionCheckboxesWhenPageLengthChanged() {
+		// Initialize table and checkboxes state and caption
+		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
+		this.pagedTableWithSelectAllLayout.updateSelectAllCheckboxesCaption();
+
+		// Store the "Select All on Page" checkbox caption before changing page length
+		final String selectAllOnPageCaptionSubstr = PagedTableWithSelectAllLayoutTest.SELECT_ALL_ON_PAGE_CAPTION.substring(0,
+				PagedTableWithSelectAllLayoutTest.SELECT_ALL_ON_PAGE_CAPTION.length() - 1);
+		final int defaultPageLength = this.pagedTableWithSelectAllLayout.getTable().getPageLength();
+		final String oldSelectAllOnPageCheckboxCaption = selectAllOnPageCaptionSubstr + " - " + defaultPageLength + " entries)";
+		Assert.assertEquals(oldSelectAllOnPageCheckboxCaption, this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().getCaption());
+
+		// Change page length first
+		final int newPageLength = 5;
+		this.pagedTableWithSelectAllLayout.getTable().setCurrentPage(1);
+		this.pagedTableWithSelectAllLayout.getTable().setPageLength(newPageLength);
+		
+		// Method to test
+		this.pagedTableWithSelectAllLayout.syncSelectionCheckBoxes();
+
+		
+		// Check that the "Select All on Page" checkbox caption changed
+		final String newSelectAllOnPageCheckboxCaption = selectAllOnPageCaptionSubstr + " - " + newPageLength + " entries)";
+		Assert.assertEquals(newSelectAllOnPageCheckboxCaption, this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().getCaption());
+		
 	}
 
 }
