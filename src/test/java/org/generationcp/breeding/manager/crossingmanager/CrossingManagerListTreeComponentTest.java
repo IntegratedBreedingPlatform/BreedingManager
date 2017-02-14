@@ -4,6 +4,7 @@ import junit.framework.Assert;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,8 +21,12 @@ public class CrossingManagerListTreeComponentTest {
 	public static final String OPEN_FOR_REVIEW = "Open for review";
 	public static final String ADD_TO_FEMALE = "Add to Female";
 	public static final String ADD_TO_MALE = "Add to Male";
+
 	@Mock
 	private GermplasmListManager germplasmListManager;
+
+	@Mock
+	private GermplasmDataManager germplasmDataManager;
 
 	@Mock
 	private ContextUtil util;
