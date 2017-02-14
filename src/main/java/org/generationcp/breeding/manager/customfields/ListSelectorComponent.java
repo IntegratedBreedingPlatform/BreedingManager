@@ -35,7 +35,9 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.fields.SanitizedTextField;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.commons.workbook.generator.RowColumnType;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -80,6 +82,9 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 	@Autowired
 	protected GermplasmListManager germplasmListManager;
+
+	@Autowired
+	private GermplasmDataManager germplasmDataManager;
 
 	@Autowired
 	private ContextUtil util;
@@ -750,9 +755,11 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 		final Monitor monitor = MonitorFactory.start(
 				"org.generationcp.breeding.manager.customfields.ListSelectorComponent.addGermplasmListNodeToComponent(List<GermplasmList>, int)");
 		try {
-			final List<UserDefinedField> listTypes = this.germplasmListManager.getGermplasmListTypes();
-			final Map<Integer, GermplasmListMetadata> allListMetaData =
-					this.germplasmListManager.getGermplasmListMetadata(germplasmListChildren);
+			final List<UserDefinedField> listTypes =
+					this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(RowColumnType.LIST_TYPE.getFtable(),
+							RowColumnType.LIST_TYPE.getFtype());
+			final Map<Integer, GermplasmListMetadata> allListMetaData = germplasmListManager.getGermplasmListMetadata(germplasmListChildren);
+
 			final Collection<?> existingItems = this.germplasmListSource.getItemIds();
 
 			for (final GermplasmList listChild : germplasmListChildren) {
@@ -927,9 +934,13 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 				ListSelectorComponent.LISTS);
 		this.setNodeItemIcon(ListSelectorComponent.LISTS, true);
 		this.getGermplasmListSource().setItemCaption(ListSelectorComponent.LISTS, ListSelectorComponent.LISTS);
-		final List<UserDefinedField> listTypes = this.germplasmListManager.getGermplasmListTypes();
 
-		final Map<Integer, GermplasmListMetadata> allListMetaData = this.germplasmListManager.getGermplasmListMetadata(germplasmListParent);
+		final List<UserDefinedField> listTypes =
+				this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(RowColumnType.LIST_TYPE.getFtable(),
+						RowColumnType.LIST_TYPE.getFtype());
+		
+		
+		final Map<Integer, GermplasmListMetadata> allListMetaData = germplasmListManager.getGermplasmListMetadata(germplasmListParent);
 
 		for (final GermplasmList parentList : germplasmListParent) {
 			if (this.doAddItem(parentList)) {
@@ -981,6 +992,10 @@ public abstract class ListSelectorComponent extends CssLayout implements Initial
 
 	public void setGermplasmListManager(final GermplasmListManager germplasmListManager) {
 		this.germplasmListManager = germplasmListManager;
+	}
+
+	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
 	}
 
 	public void setFolderTextField(final SanitizedTextField folderTextField) {

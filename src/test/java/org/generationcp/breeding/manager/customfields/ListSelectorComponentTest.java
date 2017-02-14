@@ -20,6 +20,7 @@ import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.ui.fields.SanitizedTextField;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -53,6 +54,9 @@ public class ListSelectorComponentTest {
 
 	@Mock
 	private GermplasmListManager germplasmListManager;
+
+	@Mock
+	private GermplasmDataManager germplasmDataManager;
 
 	@Mock
 	private ContextUtil contextUtil;
@@ -129,6 +133,7 @@ public class ListSelectorComponentTest {
 
 		listManagerTreeComponent.instantiateGermplasmListSourceComponent();
 		listManagerTreeComponent.setGermplasmListManager(this.germplasmListManager);
+		listManagerTreeComponent.setGermplasmDataManager(this.germplasmDataManager);
 		listManagerTreeComponent.setUserDataManager(this.userDataManager);
 		listManagerTreeComponent.addGermplasmListNode(parentGermplasmListId);
 
@@ -163,6 +168,7 @@ public class ListSelectorComponentTest {
 
 		listManagerTreeComponent.instantiateGermplasmListSourceComponent();
 		listManagerTreeComponent.setGermplasmListManager(this.germplasmListManager);
+		listManagerTreeComponent.setGermplasmDataManager(this.germplasmDataManager);
 		listManagerTreeComponent.setUserDataManager(this.userDataManager);
 		listManagerTreeComponent.addGermplasmListNode(parentGermplasmListId);
 		final Item item = listManagerTreeComponent.getGermplasmListSource().getItem(childGermplasmListId);
@@ -190,6 +196,7 @@ public class ListSelectorComponentTest {
 		listManagerTreeComponent.instantiateGermplasmListSourceComponent();
 		listManagerTreeComponent.setGermplasmListSource(treeTable);
 		listManagerTreeComponent.setGermplasmListManager(this.germplasmListManager);
+		listManagerTreeComponent.setGermplasmDataManager(this.germplasmDataManager);
 		listManagerTreeComponent.setMessageSource(this.messageSource);
 
 		listManagerTreeComponent.setFolderSaveMode(FolderSaveMode.RENAME);
@@ -215,6 +222,7 @@ public class ListSelectorComponentTest {
 		germplasmList.setId(germplasmListId);
 		final ListManagerTreeComponent listManagerTreeComponent = new ListManagerTreeComponent();
 		listManagerTreeComponent.setGermplasmListManager(this.germplasmListManager);
+		listManagerTreeComponent.setGermplasmDataManager(this.germplasmDataManager);
 		listManagerTreeComponent.setMessageSource(this.messageSource);
 		listManagerTreeComponent.setUtil(this.contextUtil);
 		listManagerTreeComponent.instantiateComponents();
@@ -263,6 +271,7 @@ public class ListSelectorComponentTest {
 		final ListManagerTreeComponent listManagerTreeComponent = Mockito.spy(new ListManagerTreeComponent());
 		listManagerTreeComponent.setMessageSource(this.messageSource);
 		listManagerTreeComponent.setGermplasmListManager(this.germplasmListManager);
+		listManagerTreeComponent.setGermplasmDataManager(this.germplasmDataManager);
 		listManagerTreeComponent.setUtil(this.contextUtil);
 		Mockito.doReturn("All Lists").when(listManagerTreeComponent).getTreeHeading();
 		listManagerTreeComponent.instantiateComponents();
@@ -284,6 +293,7 @@ public class ListSelectorComponentTest {
 		final ListManagerTreeComponent listManagerTreeComponent = Mockito.spy(new ListManagerTreeComponent());
 		listManagerTreeComponent.setMessageSource(this.messageSource);
 		listManagerTreeComponent.setGermplasmListManager(this.germplasmListManager);
+		listManagerTreeComponent.setGermplasmDataManager(this.germplasmDataManager);
 		listManagerTreeComponent.setUtil(this.contextUtil);
 		Mockito.doReturn("All Lists").when(listManagerTreeComponent).getTreeHeading();
 		listManagerTreeComponent.instantiateComponents();
@@ -301,6 +311,7 @@ public class ListSelectorComponentTest {
 		final UserDataManager userDataManager = Mockito.mock(UserDataManager.class);
 		final ListManagerTreeComponent listManagerTreeComponent = new ListManagerTreeComponent();
 		listManagerTreeComponent.setGermplasmListManager(this.germplasmListManager);
+		listManagerTreeComponent.setGermplasmDataManager(this.germplasmDataManager);
 		listManagerTreeComponent.setUtil(this.contextUtil);
 
 		final Integer childGermplasmListId = 50;
