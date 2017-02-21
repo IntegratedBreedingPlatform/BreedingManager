@@ -11,8 +11,10 @@
 
 package org.generationcp.breeding.manager.listimport;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -31,10 +33,8 @@ import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
-import org.generationcp.middleware.manager.api.LocationDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
-import org.generationcp.middleware.pojos.Location;
 import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.service.api.PedigreeService;
@@ -89,11 +89,8 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 	@Autowired
 	private PedigreeService pedigreeService;
 
-	@Autowired
-	private LocationDataManager locationDataManager;
-
 	private String germplasmName;
-	private List<Germplasm> germplasms;
+	private List<Germplasm> germplasmMatches;
 	private int germplasmCount;
 	private Table germplasmTable;
 	private int germplasmIndex;
@@ -139,26 +136,23 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 	}
 
 	public void doneAction() {
-		try {
 
-			if (this.useSameGidCheckbox.booleanValue()) {
-				this.source.mapDesignationToGermplasmForReuse(this.germplasmName, this.germplasmIndex);
-			}
-			if (!this.ignoreMatchesCheckbox.booleanValue()) {
-				final Germplasm selectedGermplasm = this.germplasmDataManager.getGermplasmByGID((Integer) this.germplasmTable.getValue());
-				this.source.receiveGermplasmFromWindowAndUpdateGermplasmData(this.germplasmIndex, selectedGermplasm);
-			}
-			this.source.removeListener(this);
-			if (this.ignoreRemainingMatchesCheckbox.booleanValue()) {
-				this.source.ignoreRemainingMatches();
-			} else {
-				this.source.processNextItems();
-			}
-
-			this.removeWindow(this);
-		} catch (final MiddlewareQueryException e) {
-			SelectGermplasmWindow.LOG.error(e.getMessage(), e);
+		if (this.useSameGidCheckbox.booleanValue()) {
+			this.source.mapDesignationToGermplasmForReuse(this.germplasmName, this.germplasmIndex);
 		}
+		if (!this.ignoreMatchesCheckbox.booleanValue()) {
+			final Germplasm selectedGermplasm = this.germplasmDataManager.getGermplasmByGID((Integer) this.germplasmTable.getValue());
+			this.source.receiveGermplasmFromWindowAndUpdateGermplasmData(this.germplasmIndex, selectedGermplasm);
+		}
+		this.source.removeListener(this);
+		if (this.ignoreRemainingMatchesCheckbox.booleanValue()) {
+			this.source.ignoreRemainingMatches();
+		} else {
+			this.source.processNextItems();
+		}
+
+		this.removeWindow(this);
+		
 	}
 
 	@Override
@@ -350,7 +344,6 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 	@Override
 	public void initializeValues() {
 		this.initializeGuideMessage();
-		this.initializeTableValues();
 	}
 
 	@Override
@@ -409,71 +402,59 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 				new Object[] {this.germplasmIndex + 1, this.noOfImportedGermplasm, this.germplasmName}));
 	}
 
-	protected void initializeTableValues() {
-		try {
-			this.germplasmCount = (int) this.germplasmDataManager.countGermplasmByName(this.germplasmName, Operation.EQUAL);
-			this.germplasms = this.germplasmDataManager.getGermplasmByName(this.germplasmName, 0, this.germplasmCount, Operation.EQUAL);
-			for (int i = 0; i < this.germplasms.size(); i++) {
+	public void initializeTableValues() {
+		this.germplasmCount = (int) this.germplasmDataManager.countGermplasmByName(this.germplasmName, Operation.EQUAL);
+		this.germplasmMatches = this.germplasmDataManager.getGermplasmByName(this.germplasmName, 0, this.germplasmCount, Operation.EQUAL);
 
-				final Germplasm currentGermplasm = this.germplasms.get(i);
-				final Location location = this.locationDataManager.getLocationByID(currentGermplasm.getLocationId());
-				final Method method = this.germplasmDataManager.getMethodByID(currentGermplasm.getMethodId());
-				final Name preferredName = this.germplasmDataManager.getPreferredNameByGID(currentGermplasm.getGid());
+		List<Integer> gids = new ArrayList<>();
+		for (final Germplasm germplasm : this.germplasmMatches) {
+			gids.add(germplasm.getGid());
+		}
+		final Map<Integer, String> preferredNamesMap = this.germplasmDataManager.getPreferredNamesByGids(gids);
+		final Map<Integer, String> crossExpansionsMap =
+				this.pedigreeService.getCrossExpansions(new HashSet<>(gids), null, this.crossExpansionProperties);
+		final Map<Integer, String> locationNamesMap = this.germplasmDataManager.getLocationNamesByGids(gids);
+		final Map<Integer, Object> methodsMap = this.germplasmDataManager.getMethodsByGids(gids);
 
-				final Button gidButton = new Button(String.format("%s", currentGermplasm.getGid().toString()),
-						new GidLinkClickListener(currentGermplasm.getGid().toString(), this.parentWindow));
-				gidButton.setStyleName(BaseTheme.BUTTON_LINK);
+		for (int i = 0; i < this.germplasmMatches.size(); i++) {
+			final Integer gid = this.germplasmMatches.get(i).getGid();
 
-				final Button desigButton = new Button(preferredName.getNval(),
-						new GidLinkClickListener(currentGermplasm.getGid().toString(), this.parentWindow));
-				desigButton.setStyleName(BaseTheme.BUTTON_LINK);
+			final Button gidButton =
+					new Button(String.format("%s", gid.toString()), new GidLinkClickListener(gid.toString(), this.parentWindow));
+			gidButton.setStyleName(BaseTheme.BUTTON_LINK);
 
-				String crossExpansion = "";
-				if (currentGermplasm != null) {
-					try {
-						if (this.germplasmDataManager != null) {
-							crossExpansion =
-									this.pedigreeService.getCrossExpansion(currentGermplasm.getGid(), this.crossExpansionProperties);
-						}
-					} catch (final MiddlewareQueryException ex) {
-						crossExpansion = "-";
-					}
-				}
+			final String preferredName = preferredNamesMap.get(gid);
+			final Button desigButton = new Button(preferredName, new GidLinkClickListener(gid.toString(), this.parentWindow));
+			desigButton.setStyleName(BaseTheme.BUTTON_LINK);
 
-				String locationName = "";
-				if (location != null && location.getLname() != null) {
-					locationName = location.getLname();
-				}
-
-				String methodName = "";
-				if (method != null && method.getMname() != null) {
-					methodName = method.getMname();
-				}
-
-				this.germplasmTable.addItem(new Object[] {desigButton, gidButton, locationName, methodName, crossExpansion},
-						currentGermplasm.getGid());
+			String crossExpansion = crossExpansionsMap.get(gid);
+			String locationName = locationNamesMap.get(gid);
+			String methodName = "";
+			final Method method = (Method) methodsMap.get(gid);
+			if (method != null && method.getMname() != null) {
+				methodName = method.getMname();
 			}
 
-			this.germplasmTable.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
-
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public String generateDescription(final Component source, final Object itemId, final Object propertyId) {
-					if (propertyId == ColumnLabels.DESIGNATION.getName()) {
-						final Item item = SelectGermplasmWindow.this.germplasmTable.getItem(itemId);
-						final Integer gid =
-								Integer.valueOf(((Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue()).getCaption());
-						return SelectGermplasmWindow.this.getGermplasmNames(gid);
-					} else {
-						return null;
-					}
-				}
-			});
-
-		} catch (final MiddlewareQueryException e) {
-			SelectGermplasmWindow.LOG.error(e.getMessage(), e);
+			this.germplasmTable.addItem(new Object[] {desigButton, gidButton, locationName, methodName, crossExpansion}, gid);
 		}
+
+		this.germplasmTable.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public String generateDescription(final Component source, final Object itemId, final Object propertyId) {
+				if (propertyId == ColumnLabels.DESIGNATION.getName()) {
+					final Item item = SelectGermplasmWindow.this.germplasmTable.getItem(itemId);
+					final Integer gid =
+							Integer.valueOf(((Button) item.getItemProperty(ColumnLabels.GID.getName()).getValue()).getCaption());
+					return SelectGermplasmWindow.this.getGermplasmNames(gid);
+				} else {
+					return null;
+				}
+			}
+		});
+
 	}
 
 	@Override

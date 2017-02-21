@@ -523,6 +523,9 @@ public class ProcessImportedGermplasmAction implements Serializable {
 
 	protected void showImportEntryListener(final ImportGermplasmEntryActionListener listener) {
 		if (listener instanceof Window) {
+			if (listener instanceof SelectGermplasmWindow){
+				((SelectGermplasmWindow) listener).initializeTableValues();
+			}  
 			this.getWindow().addWindow((Window) listener);
 		}
 
