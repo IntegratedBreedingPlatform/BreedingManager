@@ -406,6 +406,7 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 		this.germplasmCount = (int) this.germplasmDataManager.countGermplasmByName(this.germplasmName, Operation.EQUAL);
 		this.germplasmMatches = this.germplasmDataManager.getGermplasmByName(this.germplasmName, 0, this.germplasmCount, Operation.EQUAL);
 
+		// Collect gids of matched germplasm and make one-off lookup to cross expansions, locations, methods, preferred names
 		List<Integer> gids = new ArrayList<>();
 		for (final Germplasm germplasm : this.germplasmMatches) {
 			gids.add(germplasm.getGid());
@@ -485,6 +486,14 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 
 	public void setOntologyDataManager(final OntologyDataManager ontologyDataManager) {
 		this.ontologyDataManager = ontologyDataManager;
+	}
+	
+	public void setGermplasmDataManager(final  GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
+	}
+	
+	public void setPedigreeService(final PedigreeService pedigreeService) {
+		this.pedigreeService = pedigreeService;
 	}
 
 	@Override
