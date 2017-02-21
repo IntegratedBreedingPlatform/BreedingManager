@@ -210,7 +210,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 			name.setNid(null);
 			// Nstat = name status
 			name.setNstat(Integer.valueOf(1));
-			final Integer gid =  germplasmName.getGermplasm().getGid();
+			final Integer gid = germplasmName.getGermplasm().getGid();
 			Integer finalGid = null;
 			final Germplasm germplasm;
 
@@ -220,8 +220,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 				germplasmName.setGermplasm(germplasm);
 				name.setGermplasmId(gid);
 				finalGid = gid;
-			
-			//  Save new germplasm record
+
+				// Save new germplasm record
 			} else {
 				// a local GID of zero reflects no previous known GID from other systems
 				germplasmName.getGermplasm().setLgid(Integer.valueOf(0));
@@ -241,8 +241,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 						final Date today = new Date();
 						germplasm.setGdate(Integer.valueOf(dateFormat.format(today)));
 					}
-					
-					// For now have to do saving of germplasm one at a time for setting of final GIDs to duplicate entries 
+
+					// For now have to do saving of germplasm one at a time for setting of final GIDs to duplicate entries
 					finalGid = this.germplasmManager.addGermplasm(germplasm, name);
 
 					createdGermplasmMap.put(finalGid, germplasm);
@@ -375,7 +375,6 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		return 0;
 	}
 
-	
 	private GermplasmList saveGermplasmListRecord(final GermplasmList germplasmList) {
 		germplasmList.setUserId(this.contextUtil.getCurrentUserLocalId());
 		germplasmList.setProgramUUID(this.contextUtil.getCurrentProgramUUID());

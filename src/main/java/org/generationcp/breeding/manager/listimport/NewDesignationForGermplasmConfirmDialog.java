@@ -23,15 +23,12 @@ import com.vaadin.ui.themes.Reindeer;
 public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow
 		implements BreedingManagerLayout, InitializingBean, ImportGermplasmEntryActionListener, Window.CloseListener {
 
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = -2742268286525936983L;
 	public static final String WINDOW_NAME = "New Name";
 	public static final String ADD_NAME_TO_GID = "Add name to GID";
 	public static final String SEARCH_OR_CREATE_NEW = "Search/create another germplasm record";
 
-	private String germplasmName;
+	private String designation;
 	private int germplasmIndex;
 	private Integer ibdbUserId;
 	private Integer dateIntValue;
@@ -45,11 +42,11 @@ public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow
 
 	private final ProcessImportedGermplasmAction source;
 
-	public NewDesignationForGermplasmConfirmDialog(final ProcessImportedGermplasmAction source, final String germplasmName,
+	public NewDesignationForGermplasmConfirmDialog(final ProcessImportedGermplasmAction source, final String designation,
 			final int germplasmIndex, final Integer gid, final Integer ibdbUserId, final Integer dateIntValue,
 			final Integer nameMatchesCount) {
 		super();
-		this.germplasmName = germplasmName;
+		this.designation = designation;
 		this.germplasmIndex = germplasmIndex;
 		this.ibdbUserId = ibdbUserId;
 		this.dateIntValue = dateIntValue;
@@ -100,9 +97,6 @@ public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow
 	public void addListeners() {
 		this.searchCreateButton.addListener(new Button.ClickListener() {
 
-			/**
-			 *
-			 */
 			private static final long serialVersionUID = -373965708464005849L;
 
 			@Override
@@ -113,9 +107,6 @@ public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow
 
 		this.addNameButton.addListener(new Button.ClickListener() {
 
-			/**
-			 *
-			 */
 			private static final long serialVersionUID = -8698652015248607854L;
 
 			@Override
@@ -169,8 +160,8 @@ public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow
 	}
 
 	@Override
-	public String getGermplasmName() {
-		return this.germplasmName;
+	public String getDesignation() {
+		return this.designation;
 	}
 
 	@Override
@@ -186,8 +177,8 @@ public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow
 		this.nameMatchesCount = nameMatchesCount;
 	}
 
-	public void setGermplasmName(final String germplasmName) {
-		this.germplasmName = germplasmName;
+	public void setDesignation(final String designation) {
+		this.designation = designation;
 	}
 
 	public void setGermplasmIndex(final int germplasmIndex) {
@@ -207,7 +198,7 @@ public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow
 	}
 
 	private void addGermplasmName() {
-		final Name name = this.source.createNameObject(this.ibdbUserId, this.dateIntValue, this.germplasmName);
+		final Name name = this.source.createNameObject(this.ibdbUserId, this.dateIntValue, this.designation);
 
 		name.setNid(null);
 		name.setNstat(Integer.valueOf(0));
@@ -220,7 +211,7 @@ public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow
 	}
 
 	private String getConfirmationMessage() {
-		return "The name \"" + this.getGermplasmName() + "\" is not recorded as a name of GID " + this.getGid() + "."
+		return "The name \"" + this.getDesignation() + "\" is not recorded as a name of GID " + this.getGid() + "."
 				+ " Do you want to add the name to the GID or search/create another germplasm record?";
 	}
 

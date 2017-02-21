@@ -127,7 +127,7 @@ public class ProcessImportedGermplasmActionTest {
 	}
 
 	@Test
-	public void testPerformFirstPedigreeActionWithDuplicateDesignationsInFile() {
+	public void testCreateNewRecordsWithNoPedigreeConnectionWithDuplicateDesignationsInFile() {
 		// Create 10 imported germplasm with first 5 entries having duplicate designations within the file
 		final List<ImportedGermplasm> importedGermplasm = ImportedGermplasmListDataInitializer.createListOfImportedGermplasm(5, false);
 		importedGermplasm.addAll(ImportedGermplasmListDataInitializer.createListOfImportedGermplasm(5, false));
@@ -146,7 +146,7 @@ public class ProcessImportedGermplasmActionTest {
 	}
 
 	@Test
-	public void testPerformSecondPedigreeActionWithDuplicateDesignationsInFile() {
+	public void testCreateNewRecordsWithPedigreeConnectionsWithDuplicateDesignationsInFile() {
 		// Create 10 imported germplasm with first 5 entries having duplicate designations within the file
 		final List<ImportedGermplasm> importedGermplasm = ImportedGermplasmListDataInitializer.createListOfImportedGermplasm(5, false);
 		importedGermplasm.addAll(ImportedGermplasmListDataInitializer.createListOfImportedGermplasm(5, false));
@@ -165,7 +165,7 @@ public class ProcessImportedGermplasmActionTest {
 	}
 
 	@Test
-	public void testPerformThirdPedigreeActionWithDuplicateDesignationsInFile() {
+	public void testSelectMatchingGermplasmWheneverFoundWithDuplicateDesignationsInFile() {
 		// Create 10 imported germplasm with first 5 entries having duplicate designations within the file, no GIDs specified
 		final boolean gidsSpecifiedInFile = false;
 		final List<ImportedGermplasm> importedGermplasm =
@@ -186,7 +186,7 @@ public class ProcessImportedGermplasmActionTest {
 	}
 
 	@Test
-	public void testPerformSecondPedigreeActionIfGidSpecified() {
+	public void testCreateNewRecordsWithPedigreeConnectionsIfGidSpecified() {
 		this.processImportedGermplasmAction.performSecondPedigreeAction();
 
 		Mockito.verify(this.contextUtil).getCurrentUserLocalId();
@@ -200,7 +200,7 @@ public class ProcessImportedGermplasmActionTest {
 	}
 
 	@Test
-	public void testPerformSecondPedigreeActionIfSingleDesignationMatchForAllGermplasm() {
+	public void testCreateNewRecordsWithPedigreeConnectionsIfSingleDesignationMatchForAllGermplasm() {
 		final List<Germplasm> germplasm = new ArrayList<>();
 		germplasm.add(GermplasmTestDataInitializer.createGermplasm(1));
 		Mockito.when(this.germplasmDataManager.getGermplasmByName(Matchers.anyString(), Matchers.anyInt(), Matchers.anyInt(),
@@ -228,7 +228,7 @@ public class ProcessImportedGermplasmActionTest {
 	 * Test to verify that SelectGermplasmWindow is created for multiple matches
 	 */
 	@Test
-	public void testPerformSecondPedigreeActionIfMultipleMatchesOnDesignation() {
+	public void testCreateNewRecordsWithPedigreeConnectionsIfMultipleMatchesOnDesignation() {
 		// Create 3 germplasm to be imported, with multiple designation matches for 2nd germplasm
 		final List<Germplasm> germplasmList = new ArrayList<>();
 		germplasmList.add(GermplasmTestDataInitializer.createGermplasm(1));
@@ -265,7 +265,7 @@ public class ProcessImportedGermplasmActionTest {
 	}
 
 	@Test
-	public void testPerformThirdPedigreeActionIfSingleDesignationMatchForAllGermplasm() {
+	public void testSelectMatchingGermplasmWheneverFoundIfSingleDesignationMatchForAllGermplasm() {
 		final List<Name> names = new ArrayList<>();
 		names.add(NameTestDataInitializer.createName(1, 1, ProcessImportedGermplasmActionTest.DESIGNATION + "-" + 1));
 
@@ -291,7 +291,7 @@ public class ProcessImportedGermplasmActionTest {
 	}
 
 	@Test
-	public void testPerformThirdPedigreeActionIfMultipleMatchesOnDesignation() {
+	public void testSelectMatchingGermplasmWheneverFoundIfMultipleMatchesOnDesignation() {
 		final List<Name> names = new ArrayList<>();
 		names.add(NameTestDataInitializer.createName(1, 1, ProcessImportedGermplasmActionTest.DESIGNATION + "-" + 1));
 
