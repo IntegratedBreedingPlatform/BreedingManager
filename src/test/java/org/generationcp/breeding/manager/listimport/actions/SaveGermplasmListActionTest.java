@@ -2,6 +2,7 @@
 package org.generationcp.breeding.manager.listimport.actions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -375,7 +376,50 @@ public class SaveGermplasmListActionTest {
 		Assert.assertEquals(1, newUserDefinedFields.size());
 		Assert.assertEquals(newAttributeType, newUserDefinedFields.get(0).getFcode());
 	}
+	
+	@Test
+	public void testProcessGermplasmNamesAndLotsAllEntriesMatchedToExistingGermplasm() {
+		final List<GermplasmName> germplasmNameObjects = this.importedGermplasmListInitializer.createGermplasmNameObjects(10);
+		final List<Integer> matchedGids = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+		
+		// Method to test
+		this.action.processGermplasmNamesAndLots(germplasmNameObjects, matchedGids, SEED_STORAGE_LOCATION);
 
+		// Verify that no new germplasm was saved
+		Mockito.verify(this.germplasmManager, Mockito.times(0)).addGermplasm(Matchers.any(Germplasm.class), Matchers.any(Name.class));
+	}
+	
+	@Test
+	public void testProcessGermplasmNamesAndLotsCreateNewGermplasmForAllEntries() {
+		final int noOfEntries = 10;
+		final List<GermplasmName> germplasmNameObjects = this.importedGermplasmListInitializer.createGermplasmNameObjects(noOfEntries);
+		
+		// Method to test
+		this.action.processGermplasmNamesAndLots(germplasmNameObjects, new ArrayList<Integer>(), SEED_STORAGE_LOCATION);
+
+		// Verify that new germplasm record was saved per each entry
+		Mockito.verify(this.germplasmManager, Mockito.times(noOfEntries)).addGermplasm(Matchers.any(Germplasm.class), Matchers.any(Name.class));
+	}
+	
+	@Test
+	public void testProcessGermplasmNamesAndLotsReuseGermplasmForSomeEntries() {
+		final int noOfEntries = 10;
+		final int originalIndex1 = 0;
+		final int originalIndex2 = 1;
+		final int dupeIndex1 = 5;
+		final int dupeIndex2 = 6;
+		final List<GermplasmName> germplasmNameObjects = this.importedGermplasmListInitializer.createGermplasmNameObjects(noOfEntries);
+		// Mark two entries as duplicate of prevous entries
+		germplasmNameObjects.get(dupeIndex1).getGermplasm().setGid(germplasmNameObjects.get(originalIndex1).getGermplasm().getGid());
+		germplasmNameObjects.get(dupeIndex2).getGermplasm().setGid(germplasmNameObjects.get(originalIndex2).getGermplasm().getGid());
+		
+		// Method to test
+		this.action.processGermplasmNamesAndLots(germplasmNameObjects, new ArrayList<Integer>(), SEED_STORAGE_LOCATION);
+
+		// Verify that no unique germplasm record was created for duplicate entries
+		Mockito.verify(this.germplasmManager, Mockito.times(noOfEntries - 2)).addGermplasm(Matchers.any(Germplasm.class), Matchers.any(Name.class));
+	}
+	
 	private void setUpExistingUserDefinedFieldsMocks() {
 		final List<UserDefinedField> attributeTypeFields = new ArrayList<>();
 		attributeTypeFields.add(new UserDefinedField(1, SaveGermplasmListAction.FTABLE_ATTRIBUTE, SaveGermplasmListAction.FTYPE_ATTRIBUTE,
