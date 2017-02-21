@@ -49,24 +49,34 @@ public class ImportedGermplasmListDataInitializer {
 	}
 
 	public List<ImportedGermplasm> createListOfImportedGermplasm(final int noOfEntries, final boolean withNameFactors) {
+		return createListOfImportedGermplasm(noOfEntries, withNameFactors, true);
+	}
+
+	public List<ImportedGermplasm> createListOfImportedGermplasm(final int noOfEntries, final boolean withNameFactors, final boolean withGid) {
 		final List<ImportedGermplasm> importedGermplasmList = new ArrayList<ImportedGermplasm>();
 
 		for (int i = 1; i <= noOfEntries; i++) {
 
-			importedGermplasmList.add(this.createImportedGermplasm(i, withNameFactors));
+			importedGermplasmList.add(this.createImportedGermplasm(i, withNameFactors, withGid));
 		}
 
 		return importedGermplasmList;
 	}
-
+	
 	public ImportedGermplasm createImportedGermplasm(final int id, final boolean withNameFactors) {
+		return createImportedGermplasm(id, withNameFactors, true);
+	}
+	
+	public ImportedGermplasm createImportedGermplasm(final int id, final boolean withNameFactors, final boolean withGid) {
 		final ImportedGermplasm importedGermplasm = new ImportedGermplasm();
 
 		if (withNameFactors) {
 			importedGermplasm.setNameFactors(this.createNameFactors(id, withNameFactors));
 		}
 		importedGermplasm.setDesig(DESIGNATION + "-" + id);
-		importedGermplasm.setGid(1);
+		if (withGid) {
+			importedGermplasm.setGid(id);
+		}
 		importedGermplasm.setAttributeVariates(this.createAttributeVariates(id));
 
 		return importedGermplasm;

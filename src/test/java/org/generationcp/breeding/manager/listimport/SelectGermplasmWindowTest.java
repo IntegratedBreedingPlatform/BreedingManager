@@ -9,7 +9,6 @@ import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
-import org.generationcp.middleware.pojos.Germplasm;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,17 +38,13 @@ public class SelectGermplasmWindowTest {
 
 	private final String germplasmName = "Germplasm Name";
 	private final int index = 2;
-	private Germplasm germplasm;
 	private final Integer noOfImportedGermplasm = 1;
 
 	private SelectGermplasmWindow selectGermplasmWindow;
 
 	@Before
 	public void setUp() {
-		this.germplasm = new Germplasm();
-		this.germplasm.setGid(1);
-
-		this.selectGermplasmWindow = new SelectGermplasmWindow(this.source, this.germplasmName, this.index, this.germplasm,
+		this.selectGermplasmWindow = new SelectGermplasmWindow(this.source, this.germplasmName, this.index,
 				this.parentWindow, this.noOfImportedGermplasm);
 		this.selectGermplasmWindow.setOntologyDataManager(this.ontologyDataManager);
 		this.selectGermplasmWindow.setMessageSource(this.messageSource);

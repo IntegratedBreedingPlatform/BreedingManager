@@ -97,7 +97,6 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 	private int germplasmCount;
 	private Table germplasmTable;
 	private int germplasmIndex;
-	private Germplasm germplasm;
 
 	private final ProcessImportedGermplasmAction source;
 
@@ -116,19 +115,17 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 	private CrossExpansionProperties crossExpansionProperties;
 
 	public SelectGermplasmWindow(final ProcessImportedGermplasmAction source, final String germplasmName, final int index,
-			final Germplasm germplasm, final Window parentWindow) {
+			final Window parentWindow) {
 		this.germplasmName = germplasmName;
 		this.germplasmIndex = index;
-		this.germplasm = germplasm;
 		this.source = source;
 		this.parentWindow = parentWindow;
 	}
 
 	public SelectGermplasmWindow(final ProcessImportedGermplasmAction source, final String germplasmName, final int index,
-			final Germplasm germplasm, final Window parentWindow, final Integer noOfImportedGermplasm) {
+			final Window parentWindow, final Integer noOfImportedGermplasm) {
 		this.germplasmName = germplasmName;
 		this.germplasmIndex = index;
-		this.germplasm = germplasm;
 		this.source = source;
 		this.parentWindow = parentWindow;
 		this.noOfImportedGermplasm = noOfImportedGermplasm;
@@ -145,14 +142,11 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 		try {
 
 			if (this.useSameGidCheckbox.booleanValue()) {
-				if (this.source.getNameGermplasmMap() == null) {
-					this.source.setNameGermplasmMap(new HashMap<String, Germplasm>());
-				}
-				this.source.mapGermplasmNamesToGermplasm(this.germplasmName, this.germplasm);
+				this.source.mapDesignationToGermplasmForReuse(this.germplasmName, this.germplasmIndex);
 			}
 			if (!this.ignoreMatchesCheckbox.booleanValue()) {
 				final Germplasm selectedGermplasm = this.germplasmDataManager.getGermplasmByGID((Integer) this.germplasmTable.getValue());
-				this.source.receiveGermplasmFromWindowAndUpdateGermplasmData(this.germplasmIndex, this.germplasm, selectedGermplasm);
+				this.source.receiveGermplasmFromWindowAndUpdateGermplasmData(this.germplasmIndex, selectedGermplasm);
 			}
 			this.source.removeListener(this);
 			if (this.ignoreRemainingMatchesCheckbox.booleanValue()) {
@@ -489,14 +483,6 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 
 	public void setGermplasmName(final String germplasmName) {
 		this.germplasmName = germplasmName;
-	}
-
-	public Germplasm getGermplasm() {
-		return this.germplasm;
-	}
-
-	public void setGermplasm(final Germplasm germplasm) {
-		this.germplasm = germplasm;
 	}
 
 	@Override

@@ -4,10 +4,12 @@ package org.generationcp.breeding.manager.listimport.actions;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.generationcp.breeding.manager.action.SaveGermplasmListActionSource;
+import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
 import org.generationcp.breeding.manager.listimport.GermplasmFieldsComponent;
 import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
@@ -129,6 +131,65 @@ public class ProcessImportedGermplasmActionTest {
 
 	}
 
+	@Test
+	public void testPerformFirstPedigreeActionWithDuplicateDesignationsInFile() {
+		// Create 10 imported germplasm with first 5 entries having duplicate designations within the file
+		final List<ImportedGermplasm> importedGermplasm = this.importedGermplasmListInitializer.createListOfImportedGermplasm(5, false);
+		importedGermplasm.addAll(this.importedGermplasmListInitializer.createListOfImportedGermplasm(5, false));
+		Mockito.doReturn(importedGermplasm).when(this.germplasmDetailsComponent).getImportedGermplasm();
+		
+		// Method to test
+		this.processImportedGermplasmAction.performFirstPedigreeAction();
+		
+		// Check that there are 10 unique germplasm (gid) to be saved, despite duplicate designations
+		Assert.assertEquals(10, this.processImportedGermplasmAction.getGermplasmNameObjects().size());
+		Set<Integer> uniqueGids = new HashSet<>();
+		for (GermplasmName germplasmNamePair : this.processImportedGermplasmAction.getGermplasmNameObjects()) {
+			uniqueGids.add(germplasmNamePair.getGermplasm().getGid());
+		}
+		Assert.assertEquals(10, uniqueGids.size());
+	}
+	
+	@Test
+	public void testPerformSecondPedigreeActionWithDuplicateDesignationsInFile() {
+		// Create 10 imported germplasm with first 5 entries having duplicate designations within the file
+		final List<ImportedGermplasm> importedGermplasm = this.importedGermplasmListInitializer.createListOfImportedGermplasm(5, false);
+		importedGermplasm.addAll(this.importedGermplasmListInitializer.createListOfImportedGermplasm(5, false));
+		Mockito.doReturn(importedGermplasm).when(this.germplasmDetailsComponent).getImportedGermplasm();
+		
+		// Method to test
+		this.processImportedGermplasmAction.performSecondPedigreeAction();
+		
+		// Check that there are 10 unique germplasm (gid) to be saved, despite duplicate designations
+		Assert.assertEquals(10, this.processImportedGermplasmAction.getGermplasmNameObjects().size());
+		Set<Integer> uniqueGids = new HashSet<>();
+		for (GermplasmName germplasmNamePair : this.processImportedGermplasmAction.getGermplasmNameObjects()) {
+			uniqueGids.add(germplasmNamePair.getGermplasm().getGid());
+		}
+		Assert.assertEquals(10, uniqueGids.size());
+	}
+	
+	@Test
+	public void testPerformThirdPedigreeActionWithDuplicateDesignationsInFile() {
+		// Create 10 imported germplasm with first 5 entries having duplicate designations within the file, no GIDs specified
+		final boolean gidsSpecifiedInFile = false;
+		final List<ImportedGermplasm> importedGermplasm = this.importedGermplasmListInitializer.createListOfImportedGermplasm(5, false, gidsSpecifiedInFile);
+		importedGermplasm.addAll(this.importedGermplasmListInitializer.createListOfImportedGermplasm(5, false, gidsSpecifiedInFile));
+		Mockito.doReturn(importedGermplasm).when(this.germplasmDetailsComponent).getImportedGermplasm();
+		
+		// Method to test
+		this.processImportedGermplasmAction.performThirdPedigreeAction();
+		
+		// Check that there are 10 unique germplasm (gid) to be saved, despite duplicate designations
+		Assert.assertEquals(10, this.processImportedGermplasmAction.getGermplasmNameObjects().size());
+		Set<Integer> uniqueGids = new HashSet<>();
+		for (GermplasmName germplasmNamePair : this.processImportedGermplasmAction.getGermplasmNameObjects()) {
+			uniqueGids.add(germplasmNamePair.getGermplasm().getGid());
+		}
+		Assert.assertEquals(10, uniqueGids.size());
+	}
+	
+	
 	/**
 	 * Test to verify performSecondPedigreeAction method works properly if gid is specified
 	 */
@@ -282,7 +343,6 @@ public class ProcessImportedGermplasmActionTest {
 		importedGermplasm.setDesig("Name" + gid);
 
 		final int germplasmMatchesCount = 1;
-		final boolean searchByNameOrNewGermplasmIsNeeded = true;
 		Germplasm germplasm = GermplasmTestDataInitializer.createGermplasm(0);
 
 		Mockito.doReturn(true).when(this.germplasmDetailsComponent).automaticallyAcceptSingleMatchesCheckbox();
@@ -293,9 +353,8 @@ public class ProcessImportedGermplasmActionTest {
 		Mockito.doReturn(germplasms).when(this.germplasmDataManager).getGermplasmByName(importedGermplasm.getDesig(), 0, 1,
 				Operation.EQUAL);
 
-		germplasm = this.processImportedGermplasmAction.updateGidForSingleMatch(ProcessImportedGermplasmActionTest.IBDB_USER_ID,
-				ProcessImportedGermplasmActionTest.DATE_INT_VALUE, importedGermplasm, germplasmMatchesCount, germplasm,
-				searchByNameOrNewGermplasmIsNeeded);
+		germplasm = this.processImportedGermplasmAction.createGermplasmAndUpdateGidForSingleMatch(gid, ProcessImportedGermplasmActionTest.IBDB_USER_ID,
+				ProcessImportedGermplasmActionTest.DATE_INT_VALUE, importedGermplasm, germplasmMatchesCount, germplasm);
 
 		Assert.assertEquals("Expecting that the gid set is from the existing germplasm.", gid, germplasm.getGid().intValue());
 	}
@@ -307,12 +366,10 @@ public class ProcessImportedGermplasmActionTest {
 		importedGermplasm.setDesig("Name" + gid);
 
 		final int germplasmMatchesCount = 0;
-		final boolean searchByNameOrNewGermplasmIsNeeded = true;
 		Germplasm germplasm = GermplasmTestDataInitializer.createGermplasm(0);
 
-		germplasm = this.processImportedGermplasmAction.updateGidForSingleMatch(ProcessImportedGermplasmActionTest.IBDB_USER_ID,
-				ProcessImportedGermplasmActionTest.DATE_INT_VALUE, importedGermplasm, germplasmMatchesCount, germplasm,
-				searchByNameOrNewGermplasmIsNeeded);
+		germplasm = this.processImportedGermplasmAction.createGermplasmAndUpdateGidForSingleMatch(gid, ProcessImportedGermplasmActionTest.IBDB_USER_ID,
+				ProcessImportedGermplasmActionTest.DATE_INT_VALUE, importedGermplasm, germplasmMatchesCount, germplasm);
 
 		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(0)).automaticallyAcceptSingleMatchesCheckbox();
 		Mockito.verify(this.germplasmDataManager, Mockito.times(0)).getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
@@ -438,5 +495,77 @@ public class ProcessImportedGermplasmActionTest {
 		Assert.assertEquals("The location id should be " + locationId, locationId, name.getLocationId().toString());
 		Assert.assertEquals("The date should be " + DATE_INT_VALUE, DATE_INT_VALUE, name.getNdate());
 		Assert.assertTrue("The reference id should be 0", 0 == name.getReferenceId());
+	}
+	
+	@Test
+	public void testProcessNextItemsNoListenerRemaining(){
+		this.processImportedGermplasmAction.processNextItems();
+		
+		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(1)).saveTheList();
+	}
+	
+	@Test
+	public void testProcessNextItemsReuseGermplasmForPedigreeOptionTwo(){
+		Mockito.doReturn("2").when(this.germplasmDetailsComponent).getPedigreeOption();
+		// Create list of germplasm-name pairs, with duplicate designations
+		final int noOfEntries = 10;
+		final int indexOfEntryForReuse = 0;
+		final int indexOfDupeEntry = 5;
+		List<GermplasmName> germplasmNameObjects = createGermplasmNamePairsWithDuplicateDesignations(noOfEntries);
+		this.processImportedGermplasmAction.setGermplasmNameObjects(germplasmNameObjects);
+		// flag germplasm for reuse by entry with duplicate designation
+		this.processImportedGermplasmAction.mapDesignationToGermplasmForReuse(germplasmNameObjects.get(indexOfEntryForReuse).getName().getNval(), indexOfEntryForReuse);
+		this.processImportedGermplasmAction.addSelectGermplasmWindowImportListener(germplasmNameObjects.get(indexOfDupeEntry).getName().getNval(), indexOfDupeEntry, noOfEntries);
+		
+		// Set values of gpid1 and gpid2 to verify they were changed later
+		final Germplasm germplasmOfDuplicateEntry = this.processImportedGermplasmAction.getGermplasmNameObjects().get(indexOfDupeEntry).getGermplasm();
+		germplasmOfDuplicateEntry.setGpid1(0);
+		germplasmOfDuplicateEntry.setGpid2(0);
+		
+		// Method to test
+		this.processImportedGermplasmAction.processNextItems();
+		
+		// Check that GIDs remain unchanged, only pedigree connections
+		final Integer gidOfEntryToReuse = this.processImportedGermplasmAction.getGermplasmNameObjects().get(indexOfEntryForReuse).getGermplasm().getGid();
+		Assert.assertFalse(gidOfEntryToReuse.equals(germplasmOfDuplicateEntry.getGid()));
+		Assert.assertEquals(gidOfEntryToReuse, germplasmOfDuplicateEntry.getGpid1());
+		Assert.assertEquals(gidOfEntryToReuse, germplasmOfDuplicateEntry.getGpid2());
+	}
+
+	@Test
+	public void testProcessNextItemsReuseGermplasmForPedigreeOptionThree(){
+		Mockito.doReturn("3").when(this.germplasmDetailsComponent).getPedigreeOption();
+		// Create list of germplasm-name pairs, with duplicate designations
+		final int noOfEntries = 10;
+		final int indexOfEntryForReuse = 0;
+		final int indexOfDupeEntry = 5;
+		List<GermplasmName> germplasmNameObjects = createGermplasmNamePairsWithDuplicateDesignations(noOfEntries);
+		this.processImportedGermplasmAction.setGermplasmNameObjects(germplasmNameObjects);
+		// flag germplasm for reuse by entry with duplicate designation
+		this.processImportedGermplasmAction.mapDesignationToGermplasmForReuse(germplasmNameObjects.get(indexOfEntryForReuse).getName().getNval(), indexOfEntryForReuse);
+		this.processImportedGermplasmAction.addSelectGermplasmWindowImportListener(germplasmNameObjects.get(indexOfDupeEntry).getName().getNval(), indexOfDupeEntry, noOfEntries);
+		
+		// Verify that GIDs are unique prior to processing
+		Assert.assertFalse(this.processImportedGermplasmAction.getGermplasmNameObjects().get(indexOfEntryForReuse).getGermplasm().getGid().equals(
+				this.processImportedGermplasmAction.getGermplasmNameObjects().get(indexOfDupeEntry).getGermplasm().getGid()));
+
+		
+		// Method to test
+		this.processImportedGermplasmAction.processNextItems();
+		
+		// Check that germplasm for reuse was used on duplicate entry
+		Assert.assertTrue(this.processImportedGermplasmAction.getGermplasmNameObjects().get(indexOfEntryForReuse).getGermplasm().getGid().equals(
+				this.processImportedGermplasmAction.getGermplasmNameObjects().get(indexOfDupeEntry).getGermplasm().getGid()));
+
+	}
+
+	private List<GermplasmName> createGermplasmNamePairsWithDuplicateDesignations(final int noOfEntries) {
+		List<GermplasmName> germplasmNameObjects = this.importedGermplasmListInitializer.createGermplasmNameObjects(noOfEntries);
+		final int middleIndex = noOfEntries / 2;
+		for (int i = 0; i < noOfEntries / 2; i++){
+			final String newDesignation = germplasmNameObjects.get(i).getName().getNval();
+			germplasmNameObjects.get(middleIndex + i).getName().setNval(newDesignation);
+		}
+		return germplasmNameObjects;
 	}
 }
