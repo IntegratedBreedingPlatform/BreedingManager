@@ -79,7 +79,7 @@ public class SaveCrossesMadeActionTest {
 
 		this.setUpReturnValueForSaveRecordsMethods();
 
-		this.action.saveRecords(this.crossesMade, true);
+		this.action.saveRecords(this.crossesMade);
 		try {
 			Mockito.verify(this.action, Mockito.times(1)).savePedigreeDesignationName(this.crossesMade, this.germplasmIDs);
 		} catch (TooLittleActualInvocations e) {
@@ -96,7 +96,7 @@ public class SaveCrossesMadeActionTest {
 
 		this.setUpReturnValueForSaveRecordsMethods();
 
-		this.action.saveRecords(this.crossesMade, true);
+		this.action.saveRecords(this.crossesMade);
 		try {
 			Mockito.verify(this.action, Mockito.times(0)).savePedigreeDesignationName(this.crossesMade, this.germplasmIDs);
 		} catch (NeverWantedButInvoked e) {
