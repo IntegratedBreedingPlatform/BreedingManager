@@ -391,7 +391,6 @@ public class ListCommonActionsUtil {
 
 	public static void handleCreateLabelsAction(final Integer listId, InventoryDataManager inventoryDataManager,
 			SimpleResourceBundleMessageSource messageSource, ContextUtil contextUtil, Application application, Window window) {
-		if (listId != null) {
 			final List<GermplasmListData> germplasmListDatas = inventoryDataManager.getLotDetailsForList(listId, 0, Integer.MAX_VALUE);
 
 			if (!ListCommonActionsUtil.hasReservationForAnyListEntries(germplasmListDatas)) {
@@ -412,10 +411,6 @@ public class ListCommonActionsUtil {
 
 			application.getMainWindow().executeJavaScript(urlRedirectionScript);
 
-		} else {
-			MessageNotifier.showError(window, messageSource.getMessage(Message.PRINT_LABELS),
-					messageSource.getMessage(Message.ERROR_COULD_NOT_CREATE_LABELS));
-		}
 	}
 
 	public static Map<Integer, ListEntryLotDetails> createListEntryLotDetailsMap(List<GermplasmListData> inventoryDetails) {
