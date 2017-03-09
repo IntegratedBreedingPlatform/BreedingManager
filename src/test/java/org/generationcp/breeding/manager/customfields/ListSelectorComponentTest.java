@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.Assert;
-
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.customcomponent.GermplasmListSource;
@@ -20,6 +18,7 @@ import org.generationcp.commons.constant.ListTreeState;
 import org.generationcp.commons.service.UserTreeStateService;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
+import org.generationcp.commons.vaadin.ui.fields.SanitizedTextField;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -35,7 +34,8 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.vaadin.data.Item;
-import com.vaadin.ui.TextField;
+
+import junit.framework.Assert;
 
 /**
  * Created by EfficioDaniel on 9/29/2014.
@@ -185,7 +185,7 @@ public class ListSelectorComponentTest {
 		final ListManagerTreeComponent listManagerTreeComponent = new ListManagerTreeComponent();
 		listManagerTreeComponent.setUtil(this.contextUtil);
 
-		final TextField folderTextField = new TextField();
+		final SanitizedTextField folderTextField = new SanitizedTextField();
 		folderTextField.setValue(newFolderName);
 		final GermplasmList germplasmList = Mockito.mock(GermplasmList.class);
 		final GermplasmListTreeTable treeTable = Mockito.mock(GermplasmListTreeTable.class);
