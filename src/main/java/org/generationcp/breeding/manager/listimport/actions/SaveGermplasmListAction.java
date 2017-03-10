@@ -254,7 +254,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 			if (this.seedAmountScaleId != null) {
 				final Lot lot = new Lot(null, this.contextUtil.getCurrentUserLocalId(), EntityType.GERMPLSM.name(), finalGid,
 						seedStorageLocation, this.seedAmountScaleId, 0, 0, SaveGermplasmListAction.INVENTORY_COMMENT);
-				this.gidLotMap.put(gid, lot);
+				this.gidLotMap.put(finalGid, lot);
 			}
 		}
 	}
