@@ -254,8 +254,16 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 
 	protected void createLabelsAction() {
-		ListCommonActionsUtil.handleCreateLabelsAction(this.currentlySavedGermplasmList.getId(), inventoryDataManager, messageSource,
-				contextUtil, getApplication(), getWindow());
+		if (this.currentlySavedGermplasmList != null) {
+
+			ListCommonActionsUtil.handleCreateLabelsAction(this.currentlySavedGermplasmList.getId(), inventoryDataManager, messageSource,
+					contextUtil, getApplication(), getWindow());
+		} else {
+
+			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR),
+					this.messageSource.getMessage(Message.ERROR_COULD_NOT_CREATE_LABELS));
+		}
+
 	}
 
 
@@ -1274,24 +1282,47 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 
 	public void exportSeedPreparationList() {
-		try {
-			SeedInventoryListExporter seedInventoryListExporter =
-					new SeedInventoryListExporter(this.source, this.currentlySavedGermplasmList);
-			seedInventoryListExporter.exportSeedPreparationList();
-		} catch (SeedInventoryExportException ex) {
-			ListBuilderComponent.LOG.debug(ex.getMessage(), ex);
-			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
-					"Cannot Export Seed Preparation List :" + ex.getMessage());
+		exportSeedPreparationList(new SeedInventoryListExporter(this.source, this.currentlySavedGermplasmList));
+	}
+
+
+	public void exportSeedPreparationList(final SeedInventoryListExporter seedInventoryListExporter) {
+
+		if (this.currentlySavedGermplasmList != null) {
+
+			if (!CollectionUtils.isEmpty(this.validReservationsToSave)) {
+				MessageNotifier.showWarning(this.source.getWindow(), this.messageSource.getMessage(Message.WARNING),
+						this.messageSource.getMessage(Message.UNSAVED_RESERVATION_WARNING));
+			}
+
+			try {
+				seedInventoryListExporter.exportSeedPreparationList();
+			} catch (SeedInventoryExportException ex) {
+				ListBuilderComponent.LOG.debug(ex.getMessage(), ex);
+				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR),
+						"Cannot Export Seed Preparation List :" + ex.getMessage());
+			}
+		}
+		else {
+			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR),
+					this.messageSource.getMessage(Message.ERROR_SAVE_LIST_BEFORE_EXPORTING_LIST));
 		}
 	}
 
-	private void openImportSeedPreparationDialog() {
-		final Window window = getWindow();
-		final SeedInventoryImportFileComponent seedInventoryImportFileComponent =
-				new SeedInventoryImportFileComponent(this.source, this, this.currentlySavedGermplasmList);
-		seedInventoryImportFileComponent.setDebugId("seedInventoryImportFileComponent");
-		window.addWindow(seedInventoryImportFileComponent);
+	protected void openImportSeedPreparationDialog() {
 
+		if (this.currentlySavedGermplasmList != null) {
+
+			final Window window = getWindow();
+			final SeedInventoryImportFileComponent seedInventoryImportFileComponent =
+					new SeedInventoryImportFileComponent(this.source, this, this.currentlySavedGermplasmList);
+			seedInventoryImportFileComponent.setDebugId("seedInventoryImportFileComponent");
+			window.addWindow(seedInventoryImportFileComponent);
+		} else {
+
+			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.ERROR),
+					this.messageSource.getMessage(Message.ERROR_SAVE_LIST_BEFORE_IMPORTING_LIST));
+		}
 	}
 
 	private void exportListForGenotypingOrderAction() {
@@ -1534,17 +1565,21 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 		this.changeToInventoryView();
 	}
 
-	private void reserveInventoryAction() {
+	protected void reserveInventoryAction() {
 		// checks if the screen is in the inventory view
 		if (!this.inventoryViewMenu.isVisible()) {
 			MessageNotifier
-					.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING), "Please change to Inventory View first.");
+					.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING), this.messageSource.getMessage(Message.ERROR_RESERVE_INVENTORY_CHANGE_TO_INVENTORY_VIEW));
 		} else {
+			if (this.listInventoryTable.getInventoryTableDropHandler().isChanged()) {
+				MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.WARNING),
+						this.messageSource.getMessage(Message.ERROR_SAVE_LIST_BEFORE_RESERVING_INVENTORY));
+			} else {
 				final List<ListEntryLotDetails> lotDetailsGid = this.listInventoryTable.getSelectedLots();
 
 				if (lotDetailsGid == null || lotDetailsGid.isEmpty()) {
 					MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
-							"Please select at least 1 lot to reserve.");
+							this.messageSource.getMessage(Message.ERROR_RESERVE_INVENTORY_IF_NO_LOT_IS_SELECTED));
 				} else {
 					// this util handles the inventory reservation related functions
 					this.reserveInventoryUtil = new ReserveInventoryUtil(this, lotDetailsGid);
@@ -1559,6 +1594,7 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 				}
 			}
 		}
+	}
 
 	public boolean saveListAction() {
 
@@ -1613,29 +1649,35 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 	}
 
 	public void cancelReservationsAction() {
-		final List<ListEntryLotDetails> lotDetailsGid = this.listInventoryTable.getSelectedLots();
 
-		if (lotDetailsGid == null || lotDetailsGid.isEmpty()) {
-			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
-					"Please select at least 1 lot to cancel reservations.");
+		if (this.listInventoryTable.getInventoryTableDropHandler().isChanged()) {
+			MessageNotifier.showError(this.source.getWindow(), this.messageSource.getMessage(Message.WARNING),
+					this.messageSource.getMessage(Message.ERROR_SAVE_LIST_BEFORE_CANCELLING_RESERVATION));
 		} else {
-			if (!this.listInventoryTable.isSelectedEntriesHasReservation(lotDetailsGid,this.getValidReservationsToSave())) {
+			final List<ListEntryLotDetails> lotDetailsGid = this.listInventoryTable.getSelectedLots();
+
+			if (lotDetailsGid == null || lotDetailsGid.isEmpty()) {
 				MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
-						"There is no reservation to the current selected lots.");
+						this.messageSource.getMessage(Message.WARNING_CANCEL_RESERVATION_IF_NO_LOT_IS_SELECTED));
 			} else {
-				ConfirmDialog.show(this.getWindow(), this.messageSource.getMessage(Message.CANCEL_RESERVATIONS),
-						"Are you sure you want to cancel the selected reservations?", this.messageSource.getMessage(Message.YES),
-						this.messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
+				if (!this.listInventoryTable.isSelectedEntriesHasReservation(lotDetailsGid, this.getValidReservationsToSave())) {
+					MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
+							this.messageSource.getMessage(Message.WARNING_IF_THERE_IS_NO_RESERVATION_FOR_SELECTED_LOT));
+				} else {
+					ConfirmDialog.show(this.getWindow(), this.messageSource.getMessage(Message.CANCEL_RESERVATIONS),
+							this.messageSource.getMessage(Message.CONFIRM_CANCEL_RESERVATION), this.messageSource.getMessage(Message.YES),
+							this.messageSource.getMessage(Message.NO), new ConfirmDialog.Listener() {
 
-							private static final long serialVersionUID = 1L;
+								private static final long serialVersionUID = 1L;
 
-							@Override
-							public void onClose(final ConfirmDialog dialog) {
-								if (dialog.isConfirmed()) {
-									ListBuilderComponent.this.userSelectedLotEntriesToCancelReservations();
+								@Override
+								public void onClose(final ConfirmDialog dialog) {
+									if (dialog.isConfirmed()) {
+										ListBuilderComponent.this.userSelectedLotEntriesToCancelReservations();
+									}
 								}
-							}
-						});
+							});
+				}
 			}
 		}
 	}
@@ -2190,6 +2232,14 @@ public class ListBuilderComponent extends VerticalLayout implements Initializing
 
 	public List<ListEntryLotDetails> getPersistedReservationToCancel() {
 		return persistedReservationToCancel;
+	}
+
+	public ContextMenu getInventoryViewMenu() {
+		return inventoryViewMenu;
+	}
+
+	public void setInventoryViewMenu(ContextMenu inventoryViewMenu) {
+		this.inventoryViewMenu = inventoryViewMenu;
 	}
 
 }
