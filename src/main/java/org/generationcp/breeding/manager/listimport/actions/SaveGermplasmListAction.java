@@ -52,7 +52,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 @Configurable
 public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
-	private static final String INVENTORY_COMMENT = "From List Import";
+	public static final String INVENTORY_COMMENT = "From List Import";
 	public static final String WB_ACTIVITY_NAME = "Imported a Germplasm List";
 	public static final String WB_ACTIVITY_DESCRIPTION = "Imported list from file ";
 	public static final Integer LIST_DATA_STATUS = 0;
@@ -254,7 +254,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 			if (this.seedAmountScaleId != null) {
 				final Lot lot = new Lot(null, this.contextUtil.getCurrentUserLocalId(), EntityType.GERMPLSM.name(), finalGid,
 						seedStorageLocation, this.seedAmountScaleId, 0, 0, SaveGermplasmListAction.INVENTORY_COMMENT);
-				this.gidLotMap.put(gid, lot);
+				this.gidLotMap.put(finalGid, lot);
 			}
 		}
 	}
@@ -660,6 +660,10 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 	public Map<Integer, List<Transaction>> getGidTransactionSetMap() {
 		return this.gidTransactionSetMap;
+	}
+
+	public void setSeedAmountScaleId(final Integer seedAmountScaleId) {
+		this.seedAmountScaleId = seedAmountScaleId;
 	}
 
 }

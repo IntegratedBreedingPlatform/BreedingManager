@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
@@ -28,6 +29,7 @@ import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.UserDefinedField;
+import org.generationcp.middleware.pojos.ims.EntityType;
 import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.Transaction;
 import org.generationcp.middleware.service.api.FieldbookService;
@@ -51,10 +53,11 @@ import org.springframework.transaction.PlatformTransactionManager;
 @RunWith(MockitoJUnitRunner.class)
 public class SaveGermplasmListActionTest {
 
+	private static final Integer SEED_AMOUNT_SCALE_ID = 1001;
 	private static final int TEST_GID = 1;
 	private static final int SAVED_GERMPLASM_LIST_ID = 1;
 	private static final int NO_OF_ENTRIES = 10;
-	private static final int CURRENT_LOCAL_ID = 1;
+	private static final Integer CURRENT_LOCAL_ID = 1;
 	private static final String PROGRAM_UUID = "1234567890";
 	private static final int LIST_ID = 1;
 	private static final Integer SEED_STORAGE_LOCATION = 2;
@@ -411,6 +414,54 @@ public class SaveGermplasmListActionTest {
 		// Verify that no unique germplasm record was created for duplicate entries
 		Mockito.verify(this.germplasmManager, Mockito.times(SaveGermplasmListActionTest.NO_OF_ENTRIES - 2))
 				.addGermplasm(Matchers.any(Germplasm.class), Matchers.any(Name.class));
+	}
+
+	@Test
+	public void testProcessGermplasmNamesAndLotsForNewGermplasmWithInventory() {
+		// Indicate that inventory is present
+		this.action.setSeedAmountScaleId(SaveGermplasmListActionTest.SEED_AMOUNT_SCALE_ID);
+
+		Mockito.when(this.germplasmManager.addGermplasm(Matchers.any(Germplasm.class), Matchers.any(Name.class))).thenReturn(101, 102, 103,
+				104, 105, 106, 107, 108, 109, 110);
+
+		// Method to test
+		this.action.processGermplasmNamesAndLots(this.germplasmNameObjects, new ArrayList<Integer>(),
+				SaveGermplasmListActionTest.SEED_STORAGE_LOCATION);
+
+		final Map<Integer, Lot> gidLotMap = this.action.getGidLotMap();
+		Assert.assertNotNull(gidLotMap);
+		Assert.assertEquals(SaveGermplasmListActionTest.NO_OF_ENTRIES, gidLotMap.size());
+		for (final Entry<Integer, Lot> entry : gidLotMap.entrySet()) {
+			// check that the entity IDS of the lots created are for dummy GIDS of created germplasm
+			final Integer gid = entry.getKey();
+			final Lot lot = entry.getValue();
+			Assert.assertEquals(gid, lot.getEntityId());
+		}
+	}
+
+	@Test
+	public void testProcessGermplasmNamesAndLotsForExistingGermplasmAddingInventory() {
+		// Indicate that inventory is present
+		this.action.setSeedAmountScaleId(SaveGermplasmListActionTest.SEED_AMOUNT_SCALE_ID);
+
+		final List<Integer> matchedGids = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+		// Method to test
+		this.action.processGermplasmNamesAndLots(this.germplasmNameObjects, matchedGids, SaveGermplasmListActionTest.SEED_STORAGE_LOCATION);
+
+		final Map<Integer, Lot> gidLotMap = this.action.getGidLotMap();
+		Assert.assertNotNull(gidLotMap);
+		Assert.assertEquals(SaveGermplasmListActionTest.NO_OF_ENTRIES, gidLotMap.size());
+		for (final Entry<Integer, Lot> entry : gidLotMap.entrySet()) {
+			final Integer gid = entry.getKey();
+			final Lot lot = entry.getValue();
+			Assert.assertEquals(gid, lot.getEntityId());
+			Assert.assertEquals(SaveGermplasmListActionTest.SEED_AMOUNT_SCALE_ID, lot.getScaleId());
+			Assert.assertEquals(EntityType.GERMPLSM.name(), lot.getEntityType());
+			Assert.assertEquals(SaveGermplasmListActionTest.SEED_STORAGE_LOCATION, lot.getLocationId());
+			Assert.assertEquals(SaveGermplasmListAction.INVENTORY_COMMENT, lot.getComments());
+			Assert.assertEquals(SaveGermplasmListActionTest.CURRENT_LOCAL_ID, lot.getUserId());
+			Assert.assertEquals(new Integer("0"), lot.getStatus());
+		}
 	}
 
 	private void setUpExistingUserDefinedFieldsMocks() {
