@@ -1,12 +1,15 @@
 
 package org.generationcp.breeding.manager.listmanager.listcomponent;
 
+import com.vaadin.ui.Alignment;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.vaadin.peter.contextmenu.ContextMenu;
 
 /**
@@ -32,6 +35,7 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 	private ContextMenuItem menuSelectAll;
 	private  ContextMenuItem listEditingOptions;
 	private ContextMenuItem codingAndFixingOptions;
+	private ContextMenuItem removeSelectedGermplasm;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -59,6 +63,12 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		this.codingAndFixingOptions=this.addItem(this.messageSource.getMessage(Message.CODING_AND_FIXING_OPTIONS));
 		this.menuAssignCodes = this.codingAndFixingOptions.addItem(this.messageSource.getMessage(Message.ASSIGN_CODES));
 		this.menuMarkLinesAsFixed = this.codingAndFixingOptions.addItem(this.messageSource.getMessage(Message.MARK_LINES_AS_FIXED));
+
+		try {
+			this.layoutAdminLink();
+		} catch (final AccessDeniedException e) {
+			// do nothing if the user is not authorized to access Admin link
+		}
 
 
 	}
@@ -114,6 +124,8 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 
 	public ContextMenuItem getListEditingOptions() {return listEditingOptions;}
 
+	public ContextMenuItem getRemoveSelectedGermplasm() {return this.removeSelectedGermplasm;}
+
 
 	/**
 	 * When the Germplasm List is not locked, and when not accessed directly from URL or popup window
@@ -127,7 +139,20 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		this.menuSaveChanges.setVisible(true);
 		this.menuAddEntry.setVisible(true);
 		this.menuAssignCodes.setVisible(true);
-		this.codingAndFixingOptions.setVisible(true);//need to show when List is unlocked
+		this.codingAndFixingOptions.setVisible(true);
+		//need to show when List is unlocked
+		try {
+			this.setRemoveSelectedGermplasmWhenListIsLocked(true);
+		} catch (final AccessDeniedException e) {
+			// do nothing if the user is not authorized to access Admin button
+		}
+	}
+
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	private void setRemoveSelectedGermplasmWhenListIsLocked(boolean visible) {
+		if(this.removeSelectedGermplasm != null){
+			this.removeSelectedGermplasm.setVisible(visible);
+		}
 	}
 
 	public void setActionMenuWhenListIsUnlocked() {
@@ -138,7 +163,12 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		this.menuSaveChanges.setVisible(false);
 		this.menuAddEntry.setVisible(false);
 		this.menuAssignCodes.setVisible(false);
-		this.codingAndFixingOptions.setVisible(false);//need to hide when List is locked
+		this.codingAndFixingOptions.setVisible(false);
+		try {
+			this.setRemoveSelectedGermplasmWhenListIsLocked(false);
+		} catch (final AccessDeniedException e) {
+			// do nothing if the user is not authorized to access Admin button
+		}
 	}
 
 	/**
@@ -166,4 +196,9 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 		this.messageSource = messageSource;
 	}
 
+
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	private void layoutAdminLink() {
+		this.removeSelectedGermplasm = this.addItem(this.messageSource.getMessage(Message.REMOVE_SELECTED_GERMPLASM));
+	}
 }
