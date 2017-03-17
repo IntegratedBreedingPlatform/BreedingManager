@@ -130,7 +130,7 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 	/**
 	 * When the Germplasm List is not locked, and when not accessed directly from URL or popup window
 	 */
-	public void setActionMenuWhenListIsLocked(final boolean isLocalUserListOwner) {
+	public void setActionMenuWhenListIsUnlocked(final boolean isLocalUserListOwner) {
 		this.menuEditList.setVisible(true);
 		this.menuDeleteEntries.setVisible(true);
 		// show only Delete List when user is owner
@@ -150,12 +150,12 @@ public class ListViewActionMenu extends ContextMenu implements InitializingBean,
 
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	private void setRemoveSelectedGermplasmWhenListIsLocked(boolean visible) {
-		if(this.removeSelectedGermplasm != null){
+		if (this.removeSelectedGermplasm != null) {
 			this.removeSelectedGermplasm.setVisible(visible);
 		}
 	}
 
-	public void setActionMenuWhenListIsUnlocked() {
+	public void setActionMenuWhenListIsLocked() {
 		this.menuEditList.setVisible(false);
 		this.menuDeleteList.setVisible(false);
 		this.menuDeleteEntries.setVisible(false);

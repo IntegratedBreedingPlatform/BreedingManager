@@ -22,6 +22,8 @@ public class ListViewActionMenuTest {
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
+
+
 		this.menu = new ListViewActionMenu();
 		this.menu.setMessageSource(this.messageSource);
 
@@ -34,8 +36,8 @@ public class ListViewActionMenuTest {
 	}
 
 	@Test
-	public void testSetActionMenuWhenListIsLockedWhenLocalUserIsTheListOwner() {
-		this.menu.setActionMenuWhenListIsLocked(true);
+	public void testSetActionMenuWhenListIsUnlockedWhenLocalUserIsTheListOwner() {
+		this.menu.setActionMenuWhenListIsUnlocked(true);
 
 		// The following options from the context menu must be visible
 		Assert.assertTrue(this.menu.getMenuEditList().isVisible());
@@ -45,11 +47,14 @@ public class ListViewActionMenuTest {
 		Assert.assertTrue(this.menu.getMenuSaveChanges().isVisible());
 		Assert.assertTrue(this.menu.getMenuAddEntry().isVisible());
 		Assert.assertTrue(this.menu.getMenuAssignCodes().isVisible());
+		Assert.assertTrue(this.menu.getRemoveSelectedGermplasm().isVisible());
 	}
 
+
+
 	@Test
-	public void testSetActionMenuWhenListIsLockedWhenLocalUserIsNotTheListOwner() {
-		this.menu.setActionMenuWhenListIsLocked(false);
+	public void testSetActionMenuWhenListIsUnlockedWhenLocalUserIsNotTheListOwner() {
+		this.menu.setActionMenuWhenListIsUnlocked(false);
 
 		// verify if the menu option are properly displayed in the context menu
 		Assert.assertTrue(this.menu.getMenuEditList().isVisible());
@@ -60,11 +65,12 @@ public class ListViewActionMenuTest {
 		Assert.assertTrue(this.menu.getMenuSaveChanges().isVisible());
 		Assert.assertTrue(this.menu.getMenuAddEntry().isVisible());
 		Assert.assertTrue(this.menu.getMenuAssignCodes().isVisible());
+		Assert.assertTrue(this.menu.getRemoveSelectedGermplasm().isVisible());
 	}
 
 	@Test
-	public void testSetActionMenuWhenListIsUnlocked() {
-		this.menu.setActionMenuWhenListIsUnlocked();
+	public void testSetActionMenuWhenListIsLocked() {
+		this.menu.setActionMenuWhenListIsLocked();
 
 		// The following options from the context menu must be invisible
 		Assert.assertFalse(this.menu.getMenuEditList().isVisible());
@@ -74,6 +80,7 @@ public class ListViewActionMenuTest {
 		Assert.assertFalse(this.menu.getMenuSaveChanges().isVisible());
 		Assert.assertFalse(this.menu.getMenuAddEntry().isVisible());
 		Assert.assertFalse(this.menu.getMenuAssignCodes().isVisible());
+		Assert.assertFalse(this.menu.getRemoveSelectedGermplasm().isVisible());
 	}
 
 	@Test

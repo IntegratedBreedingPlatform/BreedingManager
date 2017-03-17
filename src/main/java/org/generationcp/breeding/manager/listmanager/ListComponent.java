@@ -1,20 +1,38 @@
 package org.generationcp.breeding.manager.listmanager;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import javax.annotation.Resource;
-
+import com.google.common.collect.Lists;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
+import com.vaadin.data.Container;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.event.FieldEvents.BlurEvent;
+import com.vaadin.event.FieldEvents.BlurListener;
+import com.vaadin.event.FieldEvents.FocusEvent;
+import com.vaadin.event.FieldEvents.FocusListener;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.event.ShortcutListener;
+import com.vaadin.terminal.Sizeable;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Field;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.TableDragMode;
+import com.vaadin.ui.TableFieldFactory;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.ui.themes.Reindeer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
@@ -42,7 +60,6 @@ import org.generationcp.breeding.manager.inventory.SeedInventoryListExporter;
 import org.generationcp.breeding.manager.inventory.exception.CloseLotException;
 import org.generationcp.breeding.manager.inventory.exception.SeedInventoryExportException;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
-import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialog;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource;
 import org.generationcp.breeding.manager.listmanager.dialog.AssignCodesDialog;
@@ -101,40 +118,19 @@ import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
-import com.google.common.collect.Lists;
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
-
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.event.FieldEvents.BlurEvent;
-import com.vaadin.event.FieldEvents.BlurListener;
-import com.vaadin.event.FieldEvents.FocusEvent;
-import com.vaadin.event.FieldEvents.FocusListener;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.event.ShortcutListener;
-import com.vaadin.terminal.Sizeable;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Field;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.TableDragMode;
-import com.vaadin.ui.TableFieldFactory;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
-import com.vaadin.ui.themes.BaseTheme;
-import com.vaadin.ui.themes.Reindeer;
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 @Configurable
 public class ListComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout,
@@ -1088,10 +1084,10 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 			// when the Germplasm List is not locked, and when not accessed
 			// directly from URL or popup window
 			if (!ListComponent.this.germplasmList.isLockedList() && !ListComponent.this.fromUrl) {
-				ListComponent.this.menu.setActionMenuWhenListIsLocked(ListComponent.this.localUserIsListOwner());
+				ListComponent.this.menu.setActionMenuWhenListIsUnlocked(ListComponent.this.localUserIsListOwner());
 				ListComponent.this.addColumnContextMenu.showHideAddColumnMenu(true);
 			} else {
-				ListComponent.this.menu.setActionMenuWhenListIsUnlocked();
+				ListComponent.this.menu.setActionMenuWhenListIsLocked();
 				ListComponent.this.addColumnContextMenu.showHideAddColumnMenu(false);
 			}
 		}
