@@ -23,7 +23,7 @@ import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
-import org.generationcp.middleware.data.initializer.ListInventoryDataInitializer;
+import org.generationcp.middleware.domain.etl.Workbook;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -35,10 +35,10 @@ import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.service.api.FieldbookService;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -106,6 +106,9 @@ public class ParentTabComponentTest {
 	@Mock
 	private ReserveInventorySource reserveInventorySource;
 
+	@Mock
+	private FieldbookService fieldbookMiddlewareService;
+
 	@Spy
 	private final Window window = new Window();
 
@@ -130,8 +133,8 @@ public class ParentTabComponentTest {
 		Mockito.when(this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES)).thenReturn("SELECT_EVEN_ENTRIES");
 		Mockito.when(this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES)).thenReturn("SELECT_ODD_ENTRIES");
 
-
 		this.makeCrossesMain = new CrossingManagerMakeCrossesComponent(this.makeCrossesSettingsMain);
+		this.makeCrossesMain.setFieldbookMiddlewareService(fieldbookMiddlewareService);
 
 		final SelectParentsComponent selectParentsComponent = new SelectParentsComponent(this.makeCrossesMain);
 		selectParentsComponent.setMessageSource(this.messageSource);

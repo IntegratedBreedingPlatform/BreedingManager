@@ -294,6 +294,8 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 		this.modeView = ModeView.LIST_VIEW;
 		this.hasChanges = false;
+
+		fieldbookMiddlewareService.loadAllObservations(nurseryWorkbook);
 	}
 
 	@Override
