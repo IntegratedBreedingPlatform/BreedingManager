@@ -44,6 +44,7 @@ import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.ExportListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.IconButton;
+import org.generationcp.breeding.manager.customcomponent.RemoveSelectedGermplasmAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
 import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
@@ -1054,6 +1055,8 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 						ListComponent.this.deleteListButtonClickAction();
 					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.INVENTORY_VIEW))) {
 						ListComponent.this.viewInventoryAction();
+					} else if (clickedItem.getName().equals(ListComponent.this.messageSource.getMessage(Message.REMOVE_SELECTED_GERMPLASM))) {
+						ListComponent.this.removeSelectedGermplasmButtonClickAction();
 					}
 				}
 			});
@@ -1507,6 +1510,22 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		final ExportListAsDialog exportListAsDialog = new ExportListAsDialog(this.source, this.germplasmList, this.listDataTable);
 		exportListAsDialog.setDebugId("exportListAsDialog");
 		this.getWindow().addWindow(exportListAsDialog);
+	}
+
+	private void removeSelectedGermplasmButtonClickAction() {
+
+		final Collection<?> selectedIdsToDelete = (Collection<?>) this.listDataTable.getValue();
+
+		if (!selectedIdsToDelete.isEmpty()) {
+			final RemoveSelectedGermplasmAsDialog removeSelectedGermplasmAsDialog =
+				new RemoveSelectedGermplasmAsDialog(this.source, this.germplasmList, this.listDataTable);
+			removeSelectedGermplasmAsDialog.setDebugId("removeSelectedGermplasmAsDialog");
+			this.getWindow().addWindow(removeSelectedGermplasmAsDialog);
+
+		} else {
+			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_REMOVING_GERMPLASM),
+				this.messageSource.getMessage(Message.ERROR_GERMPLASM_MUST_BE_SELECTED));
+		}
 	}
 
 	public void exportSeedPreparationList(final SeedInventoryListExporter seedInventoryListExporter) {
