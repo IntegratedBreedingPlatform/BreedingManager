@@ -35,8 +35,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Configurable
-public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow
-	implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow 	implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final Logger LOG = LoggerFactory.getLogger(RemoveSelectedGermplasmAsDialog.class);
 
@@ -50,15 +49,20 @@ public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow
 
 	private final GermplasmList germplasmList;
 
-	private final Table listDataTable;
+	private Table listDataTable;
 
-	@Resource private SimpleResourceBundleMessageSource messageSource;
+	@Resource
+	private SimpleResourceBundleMessageSource messageSource;
 
-	@Resource private PlatformTransactionManager transactionManager;
+	@Resource
+	private PlatformTransactionManager transactionManager;
 
-	@Autowired private GermplasmDataManager germplasmDataManager;
+	@Autowired
+	private GermplasmDataManager germplasmDataManager;
 
-	@Autowired private GermplasmListManager germplasmListManager;
+	@Autowired
+	private GermplasmListManager germplasmListManager;
+
 
 	public RemoveSelectedGermplasmAsDialog(final Component source, final GermplasmList germplasmList, final Table listDataTable) {
 		this.source = source;
@@ -150,10 +154,6 @@ public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow
 		return germplasmList;
 	}
 
-	public Table getListDataTable() {
-		return listDataTable;
-	}
-
 	public SimpleResourceBundleMessageSource getMessageSource() {
 		return messageSource;
 	}
@@ -164,6 +164,14 @@ public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow
 
 	public void setTransactionManager(final PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
+	}
+
+	public Table getListDataTable() {
+		return this.listDataTable;
+	}
+
+	public void setListDataTable(final Table listDataTable) {
+		this.listDataTable = listDataTable;
 	}
 
 	public GermplasmDataManager getGermplasmDataManager() {
@@ -194,53 +202,62 @@ public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow
 
 		@Override
 		public void buttonClick(final Button.ClickEvent event) {
-			this.removeSelectedGermplasmAsDialog.deleteGermplasmsAction(this.removeSelectedGermplasmAsDialog.getListDataTable());
-			this.removeSelectedGermplasmAsDialog.getParent().removeWindow(this.removeSelectedGermplasmAsDialog);
+			final Collection<?> selectedIdsToDelete = (Collection<?>) this.removeSelectedGermplasmAsDialog.listDataTable.getValue();
+
+			if (!selectedIdsToDelete.isEmpty()) {
+				this.removeSelectedGermplasmAsDialog.deleteGermplasmsAction(this.removeSelectedGermplasmAsDialog.getListDataTable());
+				this.removeSelectedGermplasmAsDialog.setDebugId("removeSelectedGermplasmAsDialog");
+				this.removeSelectedGermplasmAsDialog.getWindow().addWindow(removeSelectedGermplasmAsDialog);
+				this.removeSelectedGermplasmAsDialog.getParent().removeWindow(this.removeSelectedGermplasmAsDialog);
+
+			} else {
+				MessageNotifier.showError(this.removeSelectedGermplasmAsDialog.getWindow(),
+					this.removeSelectedGermplasmAsDialog.messageSource.getMessage(Message.ERROR_REMOVING_GERMPLASM),
+					this.removeSelectedGermplasmAsDialog.messageSource.getMessage(Message.ERROR_GERMPLASM_MUST_BE_SELECTED));
+			}
 		}
 	}
 
 	protected void deleteGermplasmsAction(final Table table) {
-
 		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
 		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
 			@Override
 			protected void doInTransactionWithoutResult(final TransactionStatus status) {
-
-				final List<Integer> selectedDeleteGids = new ArrayList<>();
-				final Collection<?> selectedIdsToDelete =
-					(Collection<?>) RemoveSelectedGermplasmAsDialog.this.getListDataTable().getValue();
-
-				for (final Object itemId : selectedIdsToDelete) {
-					final Button desigButton = (Button) RemoveSelectedGermplasmAsDialog.this.getListDataTable().getItem(itemId)
-						.getItemProperty(ColumnLabels.GID.getName()).getValue();
-					final String gid = desigButton.getCaption();
-					selectedDeleteGids.add(Integer.valueOf(gid));
-
-				}
-
-				final String message;
-				List<Integer> deletedGids =
-					RemoveSelectedGermplasmAsDialog.this.getGermplasmDataManager().deleteGermplasms(selectedDeleteGids);
-				RemoveSelectedGermplasmAsDialog.this.getGermplasmListManager()
-					.performListEntriesDeletion(deletedGids, RemoveSelectedGermplasmAsDialog.this.getGermplasmList().getId());
-
-				if (selectedDeleteGids.size() == deletedGids.size()) {
-					message = deletedGids.size() + " germplasm were deteled successfully!";
-					MessageNotifier.showMessage(RemoveSelectedGermplasmAsDialog.this.getParent().getWindow(), null, message);
-				} else if (deletedGids.size() != 0) {
-					final Integer gidsNotDeleted = selectedDeleteGids.size() - deletedGids.size();
-					message = deletedGids.size() + " germplasm were deteled successfully and " + gidsNotDeleted
-						+ " can not be deleted due to internal validations (has inventory, it is used in other lists or it is fixed). For further information please contact support.";
-					MessageNotifier.showWarning(RemoveSelectedGermplasmAsDialog.this.getParent().getWindow(), "Warning!", message);
-				} else {
-					message = selectedDeleteGids.size()
-						+ " germplasm can not be deleted due to internal validations (has inventory, it is used in other lists or it is fixed). For further information please contact support.";
-					MessageNotifier.showError(RemoveSelectedGermplasmAsDialog.this.getParent().getWindow(),
-						RemoveSelectedGermplasmAsDialog.this.getMessageSource().getMessage(Message.REMOVE_SELECTED_GERMPLASM), message);
-				}
+				RemoveSelectedGermplasmAsDialog.this.deleteGermplasms(table);
 			}
 		});
+	}
+
+	protected void deleteGermplasms(final Table table){
+		final String message;
+		final List<Integer> selecteDeleteGids = new ArrayList<>();
+		final Collection<?> selectedIdsToDelete = (Collection<?>) RemoveSelectedGermplasmAsDialog.this.getListDataTable().getValue();
+
+		for (final Object itemId : selectedIdsToDelete) {
+			final Button desigButton = (Button) RemoveSelectedGermplasmAsDialog.this.getListDataTable().getItem(itemId)
+				.getItemProperty(ColumnLabels.GID.getName()).getValue();
+			final String gid = desigButton.getCaption();
+			selecteDeleteGids.add(Integer.valueOf(gid));
+
+		}
+
+		List<Integer> deletedGids = getGermplasmDataManager().deleteGermplasms(selecteDeleteGids);
+
+		if (selecteDeleteGids.size() == deletedGids.size()) {
+			message = deletedGids.size() + " germplasm were deteled successfully!";
+			MessageNotifier.showMessage(RemoveSelectedGermplasmAsDialog.this.getParent().getWindow(), null, message);
+		} else if (deletedGids.size() != 0) {
+			final Integer gidsNotDeleted = selecteDeleteGids.size() - deletedGids.size();
+			message = deletedGids.size() + " germplasm were deteled successfully and " + gidsNotDeleted
+				+ " can not be deleted due to internal validations (has inventory, it is used in other lists or it is fixed). For further information please contact support.";
+			MessageNotifier.showWarning(RemoveSelectedGermplasmAsDialog.this.getParent().getWindow(), "Warning!", message);
+		} else {
+			message = selecteDeleteGids.size()
+				+ " germplasm can not be deleted due to internal validations (has inventory, it is used in other lists or it is fixed). For further information please contact support.";
+			MessageNotifier.showError(RemoveSelectedGermplasmAsDialog.this.getParent().getWindow(),
+				RemoveSelectedGermplasmAsDialog.this.getMessageSource().getMessage(Message.REMOVE_SELECTED_GERMPLASM), message);
+		}
 	}
 }
 

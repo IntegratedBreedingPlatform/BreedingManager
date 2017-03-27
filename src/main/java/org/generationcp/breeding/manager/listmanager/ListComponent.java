@@ -1512,20 +1512,12 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 		this.getWindow().addWindow(exportListAsDialog);
 	}
 
-	private void removeSelectedGermplasmButtonClickAction() {
+	protected void removeSelectedGermplasmButtonClickAction() {
+		final RemoveSelectedGermplasmAsDialog removeSelectedGermplasmAsDialog =
+			new RemoveSelectedGermplasmAsDialog(this.source, this.germplasmList, this.listDataTable);
+		removeSelectedGermplasmAsDialog.setDebugId("removeSelectedGermplasmAsDialog");
+		this.getWindow().addWindow(removeSelectedGermplasmAsDialog);
 
-		final Collection<?> selectedIdsToDelete = (Collection<?>) this.listDataTable.getValue();
-
-		if (!selectedIdsToDelete.isEmpty()) {
-			final RemoveSelectedGermplasmAsDialog removeSelectedGermplasmAsDialog =
-				new RemoveSelectedGermplasmAsDialog(this.source, this.germplasmList, this.listDataTable);
-			removeSelectedGermplasmAsDialog.setDebugId("removeSelectedGermplasmAsDialog");
-			this.getWindow().addWindow(removeSelectedGermplasmAsDialog);
-
-		} else {
-			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_REMOVING_GERMPLASM),
-				this.messageSource.getMessage(Message.ERROR_GERMPLASM_MUST_BE_SELECTED));
-		}
 	}
 
 	public void exportSeedPreparationList(final SeedInventoryListExporter seedInventoryListExporter) {
