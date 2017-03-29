@@ -280,6 +280,7 @@ public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow
 		this.getListDataTable().setValue(null);
 
 		this.updateNoOfEntries();
+		this.source.getListSelectionComponent().getListTreeComponent().refreshComponent();
 	}
 
 	/**
