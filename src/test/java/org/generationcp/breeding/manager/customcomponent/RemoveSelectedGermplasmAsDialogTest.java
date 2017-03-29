@@ -231,17 +231,6 @@ public class RemoveSelectedGermplasmAsDialogTest {
 
 
     @Test
-    public void testAcceptButtonListener() {
-        RemoveSelectedGermplasmAsDialog.AcceptButtonListener acceptButtonListener = new RemoveSelectedGermplasmAsDialog.AcceptButtonListener(this.dialog);
-        acceptButtonListener.removeSelectedGermplasmAsDialog.setListDataTable(this.dialog.getListDataTable());
-        acceptButtonListener.buttonClick(null);
-
-        Mockito.verify(messageSource).getMessage(Message.ERROR_REMOVING_GERMPLASM);
-        assertThat((Collection<?>) acceptButtonListener.removeSelectedGermplasmAsDialog.getListDataTable().getValue(), is(empty()));
-
-    }
-
-    @Test
     public void testRemovedAllSelectedGermplasm() {
         List<?> deletedGids = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         Mockito.when(this.dialog.getGermplasmDataManager().deleteGermplasms(Mockito.anyList())).thenReturn(deletedGids);
@@ -256,7 +245,6 @@ public class RemoveSelectedGermplasmAsDialogTest {
         this.dialog.deleteGermplasmsAction(RemoveSelectedGermplasmAsDialogTest.listDataTable.getItemIds());
         Mockito.verify(messageSource).getMessage(Message.WARNING);
     }
-
 
     @Test
     public void testCouldNotRemovedAnyGermplasms() {
