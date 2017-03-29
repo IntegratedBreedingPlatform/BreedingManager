@@ -1517,7 +1517,7 @@ public class ListComponent extends VerticalLayout implements InitializingBean, I
 
 		if (!selectedIdsToDelete.isEmpty()) {
 			final RemoveSelectedGermplasmAsDialog removeSelectedGermplasmAsDialog =
-					new RemoveSelectedGermplasmAsDialog(this.source, this.germplasmList, this.listDataTable);
+					new RemoveSelectedGermplasmAsDialog(this.source, this.germplasmList, this.listDataTable, this.totalListEntriesLabel);
 			removeSelectedGermplasmAsDialog.setDebugId("removeSelectedGermplasmAsDialog");
 			this.getWindow().addWindow(removeSelectedGermplasmAsDialog);
 

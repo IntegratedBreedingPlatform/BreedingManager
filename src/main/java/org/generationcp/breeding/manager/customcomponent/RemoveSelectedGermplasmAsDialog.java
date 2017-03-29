@@ -1,14 +1,15 @@
+
 package org.generationcp.breeding.manager.customcomponent;
 
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import javax.annotation.Resource;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -16,11 +17,8 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -29,15 +27,17 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
 
 @Configurable
-public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow 	implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
-
-	private static final Logger LOG = LoggerFactory.getLogger(RemoveSelectedGermplasmAsDialog.class);
+public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow
+		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private VerticalLayout mainRemoveGermplasmLayout;
 	private Label titleRemoveGermplasmLabel;
@@ -45,11 +45,13 @@ public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow 	implements I
 	private Button acceptButton;
 	private Button cancelButton;
 
-	private final Component source;
+	private final ListManagerMain source;
 
 	private final GermplasmList germplasmList;
 
 	private Table listDataTable;
+
+	private final Label totalListEntriesLabel;
 
 	@Resource
 	private SimpleResourceBundleMessageSource messageSource;
@@ -58,16 +60,14 @@ public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow 	implements I
 	private PlatformTransactionManager transactionManager;
 
 	@Autowired
-	private GermplasmDataManager germplasmDataManager;
-
-	@Autowired
 	private GermplasmListManager germplasmListManager;
 
-
-	public RemoveSelectedGermplasmAsDialog(final Component source, final GermplasmList germplasmList, final Table listDataTable) {
+	public RemoveSelectedGermplasmAsDialog(final ListManagerMain source, final GermplasmList germplasmList, final Table listDataTable,
+			final Label totalListEntriesLabel) {
 		this.source = source;
 		this.germplasmList = germplasmList;
 		this.listDataTable = listDataTable;
+		this.totalListEntriesLabel = totalListEntriesLabel;
 	}
 
 	@Override
@@ -135,7 +135,7 @@ public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow 	implements I
 		this.mainRemoveGermplasmLayout = new VerticalLayout();
 		this.mainRemoveGermplasmLayout.setDebugId("mainRemoveGermplasmLayout");
 		this.mainRemoveGermplasmLayout.setSpacing(true);
-		this.mainRemoveGermplasmLayout.addComponent(warningTextRemoveGermplasmLabel);
+		this.mainRemoveGermplasmLayout.addComponent(this.warningTextRemoveGermplasmLabel);
 		this.mainRemoveGermplasmLayout.addComponent(buttonLayout);
 
 		this.addComponent(this.mainRemoveGermplasmLayout);
@@ -147,18 +147,18 @@ public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow 	implements I
 	}
 
 	public Component getSource() {
-		return source;
+		return this.source;
 	}
 
 	public GermplasmList getGermplasmList() {
-		return germplasmList;
+		return this.germplasmList;
 	}
 
 	public SimpleResourceBundleMessageSource getMessageSource() {
-		return messageSource;
+		return this.messageSource;
 	}
 
-	public void setMessageSource(SimpleResourceBundleMessageSource messageSource) {
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 
@@ -174,35 +174,27 @@ public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow 	implements I
 		this.listDataTable = listDataTable;
 	}
 
-	public GermplasmDataManager getGermplasmDataManager() {
-		return germplasmDataManager;
-	}
-
-	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
-		this.germplasmDataManager = germplasmDataManager;
-	}
-
 	public GermplasmListManager getGermplasmListManager() {
-		return germplasmListManager;
+		return this.germplasmListManager;
 	}
 
-	public void setGermplasmListManager(GermplasmListManager germplasmListManager) {
+	public void setGermplasmListManager(final GermplasmListManager germplasmListManager) {
 		this.germplasmListManager = germplasmListManager;
 	}
 
 	public Button getAcceptButton() {
-		return acceptButton;
+		return this.acceptButton;
 	}
 
-	public void setAcceptButton(Button acceptButton) {
+	public void setAcceptButton(final Button acceptButton) {
 		this.acceptButton = acceptButton;
 	}
 
 	public Button getCancelButton() {
-		return cancelButton;
+		return this.cancelButton;
 	}
 
-	public void setCancelButton(Button cancelButton) {
+	public void setCancelButton(final Button cancelButton) {
 		this.cancelButton = cancelButton;
 	}
 
@@ -222,7 +214,7 @@ public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow 	implements I
 			this.removeSelectedGermplasmAsDialog.setDebugId("removeSelectedGermplasmAsDialog");
 			this.removeSelectedGermplasmAsDialog.deleteGermplasmsAction(selectedIdsToDelete);
 			this.removeSelectedGermplasmAsDialog.getParent().removeWindow(this.removeSelectedGermplasmAsDialog);
-
+			this.removeSelectedGermplasmAsDialog.refreshTable();
 		}
 	}
 
@@ -236,7 +228,8 @@ public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow 	implements I
 				final List<Integer> selectedDeleteGids = new ArrayList<>();
 
 				for (final Object itemId : selectedIdsToDelete) {
-					final Button desigButton = (Button) RemoveSelectedGermplasmAsDialog.this.getListDataTable().getItem(itemId).getItemProperty(ColumnLabels.GID.getName()).getValue();
+					final Button desigButton = (Button) RemoveSelectedGermplasmAsDialog.this.getListDataTable().getItem(itemId)
+							.getItemProperty(ColumnLabels.GID.getName()).getValue();
 					final String gid = desigButton.getCaption();
 					selectedDeleteGids.add(Integer.valueOf(gid));
 
@@ -248,24 +241,82 @@ public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow 	implements I
 	}
 
 	protected void deleteGermplasmsByGids(final List<Integer> selectedDeleteGids) {
-        final List<Integer> deletedGids = getGermplasmListManager().deleteGermplasms(selectedDeleteGids, this.getGermplasmList().getId());
+		final List<Integer> deletedGids =
+				this.getGermplasmListManager().deleteGermplasms(selectedDeleteGids, this.getGermplasmList().getId());
 		final String totalDeletedGids = String.valueOf(deletedGids.size());
 		final String totalSelectedDeleteGids = String.valueOf(selectedDeleteGids.size());
 
 		if (selectedDeleteGids.size() == deletedGids.size()) {
 			MessageNotifier.showMessage(this.source.getWindow(),
 					RemoveSelectedGermplasmAsDialog.this.getMessageSource().getMessage(Message.SUCCESS),
-					RemoveSelectedGermplasmAsDialog.this.getMessageSource().getMessage(Message.SUCCESS_DELETED_GERMPLASM, totalDeletedGids));
+					RemoveSelectedGermplasmAsDialog.this.getMessageSource().getMessage(Message.SUCCESS_DELETED_GERMPLASM,
+							totalDeletedGids));
 		} else if (deletedGids.size() != 0) {
 			final Integer gidsNotDeleted = selectedDeleteGids.size() - deletedGids.size();
 			MessageNotifier.showWarning(this.source.getWindow(),
 					RemoveSelectedGermplasmAsDialog.this.getMessageSource().getMessage(Message.WARNING),
-					RemoveSelectedGermplasmAsDialog.this.getMessageSource().getMessage(Message.WARNING_DELETED_GERMPLASM, totalDeletedGids, gidsNotDeleted.toString()));
+					RemoveSelectedGermplasmAsDialog.this.getMessageSource().getMessage(Message.WARNING_DELETED_GERMPLASM, totalDeletedGids,
+							gidsNotDeleted.toString()));
 		} else {
 			MessageNotifier.showError(this.source.getWindow(),
-					RemoveSelectedGermplasmAsDialog.this.getMessageSource().getMessage(Message.ERROR),
-					RemoveSelectedGermplasmAsDialog.this.getMessageSource().getMessage(Message.GERMPLASM_COULD_NOT_BE_DELETED, totalSelectedDeleteGids));
+					RemoveSelectedGermplasmAsDialog.this.getMessageSource().getMessage(Message.ERROR), RemoveSelectedGermplasmAsDialog.this
+							.getMessageSource().getMessage(Message.GERMPLASM_COULD_NOT_BE_DELETED, totalSelectedDeleteGids));
 		}
 	}
-}
 
+	@SuppressWarnings("unchecked")
+	private void refreshTable() {
+		final Collection<? extends Integer> selectedIdsToDelete = (Collection<? extends Integer>) this.getListDataTable().getValue();
+		if (this.listDataTable.getItemIds().size() == selectedIdsToDelete.size()) {
+			this.getListDataTable().getContainerDataSource().removeAllItems();
+		} else {
+			for (final Integer selectedItemId : selectedIdsToDelete) {
+				this.getListDataTable().getContainerDataSource().removeItem(selectedItemId);
+			}
+		}
+		this.assignSerializedEntryNumber();
+		this.listDataTable.focus();
+		// reset value
+		this.getListDataTable().setValue(null);
+
+		this.updateNoOfEntries();
+	}
+
+	/**
+	 * Iterates through the whole table, and sets the entry number from 1 to n based on the row position
+	 */
+	private void assignSerializedEntryNumber() {
+		final List<Integer> itemIds = this.getItemIds(this.listDataTable);
+
+		int id = 1;
+		for (final Integer itemId : itemIds) {
+			this.listDataTable.getItem(itemId).getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(id);
+			id++;
+		}
+	}
+
+	/**
+	 * Get item id's of a table, and return it as a list
+	 *
+	 * @param table
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private List<Integer> getItemIds(final Table table) {
+		final List<Integer> itemIds = new ArrayList<>();
+		itemIds.addAll((Collection<? extends Integer>) table.getItemIds());
+
+		return itemIds;
+	}
+
+	public void updateNoOfEntries() {
+		int count = 0;
+		count = this.listDataTable.getItemIds().size();
+		this.updateNoOfEntries(count);
+	}
+
+	private void updateNoOfEntries(final long count) {
+		final String countLabel = "  <b>" + count + "</b>";
+		this.totalListEntriesLabel.setValue(this.messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " + countLabel);
+	}
+}
