@@ -248,9 +248,7 @@ public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow 	implements I
 	}
 
 	protected void deleteGermplasmsByGids(final List<Integer> selectedDeleteGids) {
-		final List<Integer> deletedGids = getGermplasmDataManager().deleteGermplasms(selectedDeleteGids);
-		this.getGermplasmListManager().performGermplasmListEntriesDeletion(deletedGids, this.getGermplasmList().getId());
-		this.getGermplasmListManager().performListDataProjectEntriesDeletion(deletedGids, this.getGermplasmList().getId());
+        final List<Integer> deletedGids = getGermplasmListManager().deleteGermplasms(selectedDeleteGids, this.getGermplasmList().getId());
 		final String totalDeletedGids = String.valueOf(deletedGids.size());
 		final String totalSelectedDeleteGids = String.valueOf(selectedDeleteGids.size());
 
