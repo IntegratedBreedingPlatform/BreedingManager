@@ -233,7 +233,7 @@ public class RemoveSelectedGermplasmAsDialogTest {
     @Test
     public void testRemovedAllSelectedGermplasm() {
         List<?> deletedGids = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-        Mockito.when(this.dialog.getGermplasmDataManager().deleteGermplasms(Mockito.anyList())).thenReturn(deletedGids);
+        Mockito.when(this.dialog.getGermplasmListManager().deleteGermplasms(Mockito.anyList(),1)).thenReturn(deletedGids);
         this.dialog.deleteGermplasmsAction(RemoveSelectedGermplasmAsDialogTest.listDataTable.getItemIds());
         Mockito.verify(messageSource).getMessage(Message.SUCCESS);
     }
@@ -241,7 +241,7 @@ public class RemoveSelectedGermplasmAsDialogTest {
     @Test
     public void testCouldNotRemovedAllGermplasms() {
         List<?> deletedGids = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
-        Mockito.when(this.dialog.getGermplasmDataManager().deleteGermplasms(Mockito.anyList())).thenReturn(deletedGids);
+        Mockito.when(this.dialog.getGermplasmListManager().deleteGermplasms(Mockito.anyList(),1)).thenReturn(deletedGids);
         this.dialog.deleteGermplasmsAction(RemoveSelectedGermplasmAsDialogTest.listDataTable.getItemIds());
         Mockito.verify(messageSource).getMessage(Message.WARNING);
     }
@@ -249,7 +249,7 @@ public class RemoveSelectedGermplasmAsDialogTest {
     @Test
     public void testCouldNotRemovedAnyGermplasms() {
         List<?> deletedGids = new ArrayList<>();
-        Mockito.when(this.dialog.getGermplasmDataManager().deleteGermplasms(Mockito.anyList())).thenReturn(deletedGids);
+        Mockito.when(this.dialog.getGermplasmListManager().deleteGermplasms(Mockito.anyList(),1)).thenReturn(deletedGids);
         this.dialog.deleteGermplasmsAction(RemoveSelectedGermplasmAsDialogTest.listDataTable.getItemIds());
         Mockito.verify(messageSource).getMessage(Message.ERROR);
     }
