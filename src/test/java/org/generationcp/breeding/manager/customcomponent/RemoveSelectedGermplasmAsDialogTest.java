@@ -10,7 +10,10 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listmanager.ListComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
+import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
+import org.generationcp.breeding.manager.listmanager.ListSelectionComponent;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
+import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -40,7 +43,6 @@ import com.vaadin.ui.themes.BaseTheme;
 
 import static org.mockito.Mockito.doReturn;
 
-@Ignore
 public class RemoveSelectedGermplasmAsDialogTest {
 
     private static final int NO_OF_LIST_ENTRIES = 10;
@@ -84,6 +86,12 @@ public class RemoveSelectedGermplasmAsDialogTest {
 
         MockitoAnnotations.initMocks(this);
         RemoveSelectedGermplasmAsDialogTest.listDataTable = RemoveSelectedGermplasmAsDialogTest.generateTestTable();
+        ListSelectionComponent listSelectionComponent = Mockito.mock(ListSelectionComponent.class);
+        ListManagerTreeComponent listManagerTreeComponent = Mockito.mock(ListManagerTreeComponent.class);
+
+        Mockito.when(this.source.getListSelectionComponent()).thenReturn(listSelectionComponent);
+        Mockito.when(this.source.getListSelectionComponent().getListTreeComponent()).thenReturn(listManagerTreeComponent);
+
         this.dialog = new RemoveSelectedGermplasmAsDialog(this.source, RemoveSelectedGermplasmAsDialogTest.getGermplasmList(),
                 RemoveSelectedGermplasmAsDialogTest.listDataTable, this.totalListEntriesLabel);
 
@@ -246,6 +254,11 @@ public class RemoveSelectedGermplasmAsDialogTest {
 
     @Test
     public void testRemovedAllSelectedGermplasm() {
+        /*ListSelectionComponent listSelectionComponent;
+        listSelectionComponent = new ListSelectionComponent(this.source, 2);
+        listSelectionComponent.setDebugId("listSelectionComponent");
+        listSelectionComponent.setDebugId("listSelectionComponent");*/
+
         final List<Integer> SelectedDeletdGids = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         doReturn(SelectedDeletdGids).when(this.dialog.getGermplasmListManager()).deleteGermplasms(Mockito.anyList(), Mockito.anyInt());
         this.dialog.deleteGermplasmsAction((Collection<? extends Integer>) RemoveSelectedGermplasmAsDialogTest.listDataTable.getItemIds());
