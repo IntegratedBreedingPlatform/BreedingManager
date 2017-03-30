@@ -847,4 +847,14 @@ public class ListComponentTest {
 
 	}
 
+
+	@Test
+	public void testRemoveSelectedGermplasmButtonClickAction() {
+		this.initializeTableWithTestData();
+		this.listComponent.removeSelectedGermplasmButtonClickAction();
+		Mockito.verify(this.messageSource).getMessage(Message.ERROR_REMOVING_GERMPLASM);
+		Mockito.verify(window).showNotification(Mockito.any(Window.Notification.class));
+
+	}
+
 }
