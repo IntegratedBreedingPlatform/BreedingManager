@@ -21,6 +21,7 @@ import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -39,6 +40,7 @@ import com.vaadin.ui.themes.BaseTheme;
 
 import static org.mockito.Mockito.doReturn;
 
+@Ignore
 public class RemoveSelectedGermplasmAsDialogTest {
 
     private static final int NO_OF_LIST_ENTRIES = 10;
