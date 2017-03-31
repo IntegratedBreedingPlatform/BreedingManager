@@ -1,12 +1,12 @@
-
 package org.generationcp.breeding.manager.customcomponent;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.annotation.Resource;
-
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
@@ -27,17 +27,14 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Configurable
 public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow
-		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
+	implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private VerticalLayout mainRemoveGermplasmLayout;
 	private Label titleRemoveGermplasmLabel;
@@ -63,7 +60,7 @@ public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow
 	private GermplasmListManager germplasmListManager;
 
 	public RemoveSelectedGermplasmAsDialog(final ListManagerMain source, final GermplasmList germplasmList, final Table listDataTable,
-			final Label totalListEntriesLabel) {
+		final Label totalListEntriesLabel) {
 		this.source = source;
 		this.germplasmList = germplasmList;
 		this.listDataTable = listDataTable;
@@ -210,87 +207,100 @@ public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow
 
 		@Override
 		public void buttonClick(final Button.ClickEvent event) {
-			final Collection<? extends Integer> selectedIdsToDelete = (Collection<? extends Integer>) this.removeSelectedGermplasmAsDialog.listDataTable.getValue();
+			final Collection<? extends Integer> selectedIdsToDelete =
+				(Collection<? extends Integer>) this.removeSelectedGermplasmAsDialog.listDataTable.getValue();
 			this.removeSelectedGermplasmAsDialog.setDebugId("removeSelectedGermplasmAsDialog");
 			this.removeSelectedGermplasmAsDialog.deleteGermplasmsAction(selectedIdsToDelete);
 			this.removeSelectedGermplasmAsDialog.getParent().removeWindow(this.removeSelectedGermplasmAsDialog);
 		}
 	}
 
-	protected void deleteGermplasmsAction(final  Collection<? extends Integer> selectedIdsToDelete) {
+	protected void deleteGermplasmsAction(final Collection<? extends Integer> selectedIdsToDelete) {
 		final TransactionTemplate transactionTemplate = new TransactionTemplate(RemoveSelectedGermplasmAsDialog.this.transactionManager);
 		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
 			@Override
 			protected void doInTransactionWithoutResult(final TransactionStatus status) {
 
-				final List<Integer> selectedDeleteGids = new ArrayList<>();
-				for (final Integer itemId : selectedIdsToDelete) {
-					final Integer gid = getGidByDataTable(itemId);
-					selectedDeleteGids.add(gid);
+				final List<Integer> selectedDeleteGids = getDeleteGids(selectedIdsToDelete);
+				final List<Integer> deletedGids = RemoveSelectedGermplasmAsDialog.this.deleteGermplasmsByGids(selectedDeleteGids);
+				final List<Integer> deletedIds = new ArrayList<>();
 
-				}
-
-				List<Integer> deletedGids = RemoveSelectedGermplasmAsDialog.this.deleteGermplasmsByGids(selectedDeleteGids);
-
-				final List<Integer> selectedIdsNotDeleted = new ArrayList<>();
-				for (final Integer itemId : selectedIdsToDelete) {
-					final Integer gid = getGidByDataTable(itemId);
-					if(deletedGids.isEmpty() || !deletedGids.contains(Integer.valueOf(gid))){
-						selectedIdsNotDeleted.add(itemId);
+				if (!deletedGids.isEmpty()) {
+					if (selectedIdsToDelete.size() == deletedGids.size()) {
+						deletedIds.addAll(selectedIdsToDelete);
+					} else {
+						getDeletedIds(deletedIds, deletedGids);
 					}
 				}
 
-				RemoveSelectedGermplasmAsDialog.this.refreshTable(selectedIdsNotDeleted);
+				RemoveSelectedGermplasmAsDialog.this.refreshTable(deletedIds);
 			}
 
 			Integer getGidByDataTable(Integer itemId) {
 				final Button desigButton = (Button) RemoveSelectedGermplasmAsDialog.this.getListDataTable().getItem(itemId)
-						.getItemProperty(ColumnLabels.GID.getName()).getValue();
+					.getItemProperty(ColumnLabels.GID.getName()).getValue();
 				final String gid = desigButton.getCaption();
 				return Integer.valueOf(gid);
+			}
+
+			void getDeletedIds(final List<Integer> selectedIdsDeleted, final List<Integer> deletedGids) {
+				for (final Integer itemId : selectedIdsToDelete) {
+					final Integer gid = getGidByDataTable(itemId);
+					if (deletedGids.contains(Integer.valueOf(gid))) {
+						selectedIdsDeleted.add(itemId);
+
+					}
+				}
+			}
+
+			List<Integer> getDeleteGids(final Collection<? extends Integer> selectedIdsToDelete) {
+				final List<Integer> selectedDeleteGids = new ArrayList<>();
+				for (final Integer itemId : selectedIdsToDelete) {
+					final Integer gid = getGidByDataTable(itemId);
+					selectedDeleteGids.add(gid);
+				}
+				return selectedDeleteGids;
 			}
 		});
 	}
 
 	protected List<Integer> deleteGermplasmsByGids(final List<Integer> selectedDeleteGids) {
-		final List<Integer> deletedGids = this.getGermplasmListManager().deleteGermplasms(selectedDeleteGids, this.getGermplasmList().getId());
+		final List<Integer> deletedGids =
+			this.getGermplasmListManager().deleteGermplasms(selectedDeleteGids, this.getGermplasmList().getId());
 		final String totalDeletedGids = String.valueOf(deletedGids.size());
 		final String totalSelectedDeleteGids = String.valueOf(selectedDeleteGids.size());
 
 		if (selectedDeleteGids.size() == deletedGids.size()) {
-			MessageNotifier.showMessage(this.source.getWindow(),
-					RemoveSelectedGermplasmAsDialog.this.getMessageSource().getMessage(Message.SUCCESS),
-					RemoveSelectedGermplasmAsDialog.this.getMessageSource().getMessage(Message.SUCCESS_DELETED_GERMPLASM,
-							totalDeletedGids));
+			MessageNotifier
+				.showMessage(this.source.getWindow(), RemoveSelectedGermplasmAsDialog.this.getMessageSource().getMessage(Message.SUCCESS),
+					RemoveSelectedGermplasmAsDialog.this.getMessageSource()
+						.getMessage(Message.SUCCESS_DELETED_GERMPLASM, totalDeletedGids));
 
 		} else if (deletedGids.size() != 0) {
 			final Integer gselectedIdsNotDeleted = selectedDeleteGids.size() - deletedGids.size();
-			MessageNotifier.showWarning(this.source.getWindow(),
-					RemoveSelectedGermplasmAsDialog.this.getMessageSource().getMessage(Message.WARNING),
-					RemoveSelectedGermplasmAsDialog.this.getMessageSource().getMessage(Message.WARNING_DELETED_GERMPLASM, totalDeletedGids,
-							gselectedIdsNotDeleted.toString()));
+			MessageNotifier
+				.showWarning(this.source.getWindow(), RemoveSelectedGermplasmAsDialog.this.getMessageSource().getMessage(Message.WARNING),
+					RemoveSelectedGermplasmAsDialog.this.getMessageSource()
+						.getMessage(Message.WARNING_DELETED_GERMPLASM, totalDeletedGids, gselectedIdsNotDeleted.toString()));
 
 		} else {
-			MessageNotifier.showError(this.source.getWindow(),
-					RemoveSelectedGermplasmAsDialog.this.getMessageSource().getMessage(Message.ERROR), RemoveSelectedGermplasmAsDialog.this
-							.getMessageSource().getMessage(Message.GERMPLASM_COULD_NOT_BE_DELETED, totalSelectedDeleteGids));
+			MessageNotifier
+				.showError(this.source.getWindow(), RemoveSelectedGermplasmAsDialog.this.getMessageSource().getMessage(Message.ERROR),
+					RemoveSelectedGermplasmAsDialog.this.getMessageSource()
+						.getMessage(Message.GERMPLASM_COULD_NOT_BE_DELETED, totalSelectedDeleteGids));
 		}
 
 		return deletedGids;
 	}
 
 	@SuppressWarnings("unchecked")
-	private void refreshTable(List<Integer> selectedIdsNotDeleted) {
-		final Collection<? extends Integer> selectedIdsToDelete = (Collection<? extends Integer>) this.getListDataTable().getValue();
-
-		if (this.listDataTable.getItemIds().size() == selectedIdsNotDeleted.size()) {
+	private void refreshTable(final List<Integer> deletedIds) {
+		if (this.listDataTable.getItemIds().size() == deletedIds.size()) {
 			this.getListDataTable().getContainerDataSource().removeAllItems();
-		} else {
-			for (final Integer selectedItemId : selectedIdsToDelete) {
-				if (!selectedIdsNotDeleted.contains(selectedItemId)) {
-					this.getListDataTable().getContainerDataSource().removeItem(selectedItemId);
-				}
+		} else if (!deletedIds.isEmpty()) {
+			for (final Integer selectedItemId : deletedIds) {
+				this.getListDataTable().getContainerDataSource().removeItem(selectedItemId);
 			}
 		}
 
