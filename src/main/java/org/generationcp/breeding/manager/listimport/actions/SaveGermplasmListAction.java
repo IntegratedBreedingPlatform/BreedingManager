@@ -322,8 +322,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	private UserDefinedField createNewUserDefinedField(final String tableName, final String fieldType, final String name,
 			final String description, final String fieldFormat) {
 		final UserDefinedField newUserDefinedField = new UserDefinedField();
-		newUserDefinedField.setFtable(SaveGermplasmListAction.FTABLE_NAME);
-		newUserDefinedField.setFtype(SaveGermplasmListAction.FTYPE_NAME);
+		newUserDefinedField.setFtable(tableName);
+		newUserDefinedField.setFtype(fieldType);
 		newUserDefinedField.setFcode(name);
 		newUserDefinedField.setFname(description);
 		newUserDefinedField.setFfmt(fieldFormat);
