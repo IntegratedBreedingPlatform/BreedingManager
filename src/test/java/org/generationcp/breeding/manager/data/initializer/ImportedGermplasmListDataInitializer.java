@@ -150,4 +150,11 @@ public class ImportedGermplasmListDataInitializer {
 					.addImportedVariate(new ImportedVariate(variateName, "Test Description", "ATTRIBUTE", "Scale 1", "Method 1", "C"));
 		}
 	}
+	
+	public static void addNameFactors(final ImportedGermplasmList importedGermplasmList, final String[] factors) {
+		for (final String factorName : factors) {
+			importedGermplasmList
+					.addImportedFactor(new ImportedFactor(factorName, "Test Factor", "Germplasm ID", "Name", "Assigned", "C", "STUDY"));
+		}
+	}
 }
