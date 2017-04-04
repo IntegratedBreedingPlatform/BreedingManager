@@ -36,6 +36,7 @@ import java.util.List;
 public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow
 	implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
+	private static final Integer MAX_GIDS_ALLOWED = new Integer(500);
 	private VerticalLayout mainRemoveGermplasmLayout;
 	private Label titleRemoveGermplasmLabel;
 	private Label warningTextRemoveGermplasmLabel;
@@ -223,18 +224,29 @@ public class RemoveSelectedGermplasmAsDialog extends BaseSubWindow
 			protected void doInTransactionWithoutResult(final TransactionStatus status) {
 
 				final List<Integer> selectedDeleteGids = getDeleteGids(selectedIdsToDelete);
-				final List<Integer> deletedGids = RemoveSelectedGermplasmAsDialog.this.deleteGermplasmsByGids(selectedDeleteGids);
-				final List<Integer> deletedIds = new ArrayList<>();
 
-				if (!deletedGids.isEmpty()) {
-					if (selectedIdsToDelete.size() == deletedGids.size()) {
-						deletedIds.addAll(selectedIdsToDelete);
-					} else {
-						getDeletedIds(deletedIds, deletedGids);
+				final int size = selectedDeleteGids.size();
+				if(MAX_GIDS_ALLOWED.compareTo(size) < 0) {
+					MessageNotifier
+						.showError(RemoveSelectedGermplasmAsDialog.this.source.getWindow(), RemoveSelectedGermplasmAsDialog.this.getMessageSource().getMessage(Message.ERROR),
+							RemoveSelectedGermplasmAsDialog.this.getMessageSource()
+								.getMessage(Message.GERMPLASM_NUMBER_EXCEEDED, size));
+				}
+				else {
+					final List<Integer> deletedGids = RemoveSelectedGermplasmAsDialog.this.deleteGermplasmsByGids(selectedDeleteGids);
+					final List<Integer> deletedIds = new ArrayList<>();
+
+					if (!deletedGids.isEmpty()) {
+						if (selectedIdsToDelete.size() == deletedGids.size()) {
+							deletedIds.addAll(selectedIdsToDelete);
+						} else {
+							getDeletedIds(deletedIds, deletedGids);
+						}
 					}
+
+					RemoveSelectedGermplasmAsDialog.this.refreshTable(deletedIds);
 				}
 
-				RemoveSelectedGermplasmAsDialog.this.refreshTable(deletedIds);
 			}
 
 			Integer getGidByDataTable(Integer itemId) {
