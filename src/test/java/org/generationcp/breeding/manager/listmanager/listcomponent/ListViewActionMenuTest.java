@@ -23,7 +23,6 @@ public class ListViewActionMenuTest {
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 
-
 		this.menu = new ListViewActionMenu();
 		this.menu.setMessageSource(this.messageSource);
 
