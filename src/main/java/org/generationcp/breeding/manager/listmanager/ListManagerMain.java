@@ -208,8 +208,8 @@ public class ListManagerMain extends VerticalLayout implements Internationalizab
 
 			@Override
 			public void listUpdated(final ListUpdatedEvent event) {
-				ListManagerMain.this.getPlantSelectionComponent().getSearchResultsComponent().getMatchingGermplasmsTableWithSelectAll()
-						.updatePagedTableSelectedEntries(false);
+				ListManagerMain.this.getPlantSelectionComponent().getSearchResultsComponent().getMatchingGermplasmTableWithSelectAll()
+						.clearAllSelectedEntries();
 			}
 		});
 	}

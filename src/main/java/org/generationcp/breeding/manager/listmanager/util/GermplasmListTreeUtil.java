@@ -20,7 +20,9 @@ import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
+import org.generationcp.commons.workbook.generator.RowColumnType;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -50,6 +52,9 @@ public class GermplasmListTreeUtil implements Serializable {
 
 	@Autowired
 	private GermplasmListManager germplasmListManager;
+
+	@Autowired
+	private GermplasmDataManager germplasmDataManager;
 
 	@Autowired
 	private UserDataManager userDataManager;
@@ -386,7 +391,9 @@ public class GermplasmListTreeUtil implements Serializable {
 	public void addFolderToTree(final Object parentItemId, String folderName, Integer newFolderId, GermplasmList newFolder,
 			GermplasmList parentList) {
 		if (newFolderId != null) {
-			List<UserDefinedField> listTypes = germplasmListManager.getGermplasmListTypes();
+			final List<UserDefinedField> listTypes =
+					this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(RowColumnType.LIST_TYPE.getFtable(),
+							RowColumnType.LIST_TYPE.getFtype());
 			this.targetListSource.addItem(
 					this.source.generateCellInfo(folderName,
 							BreedingManagerUtil.getOwnerListName(newFolder.getUserId(), this.userDataManager),
@@ -462,4 +469,7 @@ public class GermplasmListTreeUtil implements Serializable {
 		this.contextUtil = contextUtil;
 	}
 
+	public void setGermplasmDataManager(GermplasmDataManager germplasmDataManager) {
+		this.germplasmDataManager = germplasmDataManager;
+	}
 }

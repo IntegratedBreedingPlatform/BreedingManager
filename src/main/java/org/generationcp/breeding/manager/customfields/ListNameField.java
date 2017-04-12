@@ -4,6 +4,7 @@ package org.generationcp.breeding.manager.customfields;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.validator.ListNameValidator;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
+import org.generationcp.commons.vaadin.ui.fields.SanitizedTextField;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -12,7 +13,6 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
 
 @Configurable
 public class ListNameField extends HorizontalLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
@@ -21,13 +21,13 @@ public class ListNameField extends HorizontalLayout implements InitializingBean,
 
 	private Label captionLabel;
 	private final String caption;
-	private TextField listNameTextField;
+	private SanitizedTextField listNameTextField;
 	private final boolean isMandatory;
 	private Label mandatoryMark;
 	private ListNameValidator listNameValidator;
 	private boolean changed;
 
-	public ListNameField(String caption, boolean isMandatory) {
+	public ListNameField(final String caption, final boolean isMandatory) {
 		this.caption = caption + ": ";
 		this.isMandatory = isMandatory;
 		this.changed = false;
@@ -39,7 +39,7 @@ public class ListNameField extends HorizontalLayout implements InitializingBean,
 		this.captionLabel.setDebugId("captionLabel");
 		this.captionLabel.addStyleName("bold");
 
-		this.listNameTextField = new TextField();
+		this.listNameTextField = new SanitizedTextField();
 		this.listNameTextField.setDebugId("listNameTextField");
 		this.listNameTextField.setWidth("180px");
 		this.listNameTextField.setImmediate(true);
@@ -59,7 +59,6 @@ public class ListNameField extends HorizontalLayout implements InitializingBean,
 
 	@Override
 	public void initializeValues() {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -70,7 +69,7 @@ public class ListNameField extends HorizontalLayout implements InitializingBean,
 			private static final long serialVersionUID = 2323698194362809907L;
 
 			@Override
-			public void valueChange(ValueChangeEvent event) {
+			public void valueChange(final ValueChangeEvent event) {
 				ListNameField.this.changed = true;
 			}
 
@@ -92,7 +91,6 @@ public class ListNameField extends HorizontalLayout implements InitializingBean,
 
 	@Override
 	public void updateLabels() {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -104,15 +102,15 @@ public class ListNameField extends HorizontalLayout implements InitializingBean,
 		this.layoutComponents();
 	}
 
-	public TextField getListNameTextField() {
+	public SanitizedTextField getListNameTextField() {
 		return this.listNameTextField;
 	}
 
-	public void setListNameTextField(TextField listNameTextField) {
+	public void setListNameTextField(final SanitizedTextField listNameTextField) {
 		this.listNameTextField = listNameTextField;
 	}
 
-	public void setValue(String listName) {
+	public void setValue(final String listName) {
 		this.listNameTextField.setValue(listName);
 	}
 
@@ -124,7 +122,7 @@ public class ListNameField extends HorizontalLayout implements InitializingBean,
 		return this.listNameValidator;
 	}
 
-	public void setListNameValidator(ListNameValidator listNameValidator) {
+	public void setListNameValidator(final ListNameValidator listNameValidator) {
 		this.listNameTextField.removeValidator(this.listNameValidator);
 		this.listNameValidator = listNameValidator;
 		this.listNameTextField.addValidator(this.listNameValidator);
@@ -138,7 +136,7 @@ public class ListNameField extends HorizontalLayout implements InitializingBean,
 		return this.changed;
 	}
 
-	public void setChanged(boolean changed) {
+	public void setChanged(final boolean changed) {
 		this.changed = changed;
 	}
 

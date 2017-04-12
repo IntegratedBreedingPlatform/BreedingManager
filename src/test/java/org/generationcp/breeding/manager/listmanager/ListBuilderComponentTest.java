@@ -19,6 +19,8 @@ import org.generationcp.breeding.manager.customfields.BreedingManagerListDetails
 import org.generationcp.breeding.manager.customfields.BreedingManagerTable;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
+import org.generationcp.breeding.manager.inventory.SeedInventoryListExporter;
+import org.generationcp.breeding.manager.inventory.exception.SeedInventoryExportException;
 import org.generationcp.breeding.manager.listmanager.util.BuildNewListDropHandler;
 import org.generationcp.breeding.manager.listmanager.util.FillWith;
 import org.generationcp.breeding.manager.listmanager.util.InventoryTableDropHandler;
@@ -65,6 +67,7 @@ public class ListBuilderComponentTest {
 
 	private static final String SEED_RES = "SEED_RES";
 	private static final String AVAIL_INV = "AVAIL_INV";
+	private static final String TOTAL = "AVAILABLE";
 	private static final String HASH = "#";
 	private static final String CHECK = "CHECK";
 	private static final String SEED_SOURCE = "SEED_SOURCE";
@@ -195,7 +198,7 @@ public class ListBuilderComponentTest {
 		Assert.assertEquals(ListBuilderComponentTest.CHECK, table.getColumnHeader(ColumnLabels.TAG.getName()));
 		Assert.assertEquals(ListBuilderComponentTest.HASH, table.getColumnHeader(ColumnLabels.ENTRY_ID.getName()));
 		Assert.assertEquals(ListBuilderComponentTest.AVAIL_INV, table.getColumnHeader(ColumnLabels.AVAILABLE_INVENTORY.getName()));
-		Assert.assertEquals(ListBuilderComponentTest.SEED_RES, table.getColumnHeader(ColumnLabels.SEED_RESERVATION.getName()));
+		Assert.assertEquals(ListBuilderComponentTest.TOTAL, table.getColumnHeader(ColumnLabels.TOTAL.getName()));
 		Assert.assertEquals(ListBuilderComponentTest.GID, table.getColumnHeader(ColumnLabels.GID.getName()));
 		Assert.assertEquals(ListBuilderComponentTest.ENTRY_CODE, table.getColumnHeader(ColumnLabels.ENTRY_CODE.getName()));
 		Assert.assertEquals(ListBuilderComponentTest.DESIG, table.getColumnHeader(ColumnLabels.DESIGNATION.getName()));
@@ -290,6 +293,9 @@ public class ListBuilderComponentTest {
 	  	Mockito.when(this.inventoryDataManager.getLotCountsForList(this.currentlySavedGermplasmList.getId(), 0,1))
 			  .thenReturn(germplasmListData);
 
+		Mockito.when(this.inventoryDataManager.getLotDetailsForList(Mockito.isA(Integer.class), Mockito.anyInt(), Mockito.anyInt()))
+				.thenReturn(germplasmListData);
+
 	 	 Mockito.when(this.germplasmListManager.countGermplasmListDataByListId(Mockito.isA(Integer.class)))
 			  .thenReturn(ListBuilderComponentTest.LIST_ENTRIES_COUNT);
 
@@ -297,7 +303,7 @@ public class ListBuilderComponentTest {
 
 		Assert.assertEquals("Expecting Valid reservation to save should have size 0 ", 0,this.listBuilderComponent.getValidReservationsToSave().size());
 		Mockito.verify(this.messageSource).getMessage(Message.SAVE_RESERVED_AND_CANCELLED_RESERVATION);
-		Mockito.verify(this.item, Mockito.times(1)).getItemProperty(ColumnLabels.SEED_RESERVATION.getName());
+		Mockito.verify(this.item, Mockito.times(1)).getItemProperty(ColumnLabels.TOTAL.getName());
 		Mockito.verify(this.item, Mockito.times(1)).getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName());
 
 	}
@@ -329,8 +335,7 @@ public class ListBuilderComponentTest {
 		Mockito.when(this.item.getItemProperty(ColumnLabels.GID.getName())).thenReturn(property);
 		Mockito.when(this.item.getItemProperty(ColumnLabels.GID.getName()).getValue()).thenReturn(button);
 		Mockito.when(button.getCaption()).thenReturn(ListBuilderComponentTest.CAPTION);
-		Mockito.when(this.item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName())).thenReturn(property);
-
+		Mockito.when(this.item.getItemProperty(ColumnLabels.TOTAL.getName())).thenReturn(property);
 
 
 		Mockito.when(this.tableWithSelectAllLayout.getTable()).thenReturn(this.breedingManagerTable);
@@ -454,6 +459,92 @@ public class ListBuilderComponentTest {
 
 	}
 
+	@Test
+	public void testExportSeedPreparationListWithUnsavedList() throws SeedInventoryExportException {
+		this.setUpCurrentlySavedGermplasmList();
+		this.listBuilderComponent.setCurrentlySavedGermplasmList(null);
+		final SeedInventoryListExporter exporterMock = Mockito.mock(SeedInventoryListExporter.class);
+		this.listBuilderComponent.exportSeedPreparationList(exporterMock);
+		Mockito.verify(this.messageSource).getMessage(Message.ERROR_SAVE_LIST_BEFORE_EXPORTING_LIST);
+		Mockito.verify(this.messageSource, Mockito.never()).getMessage(Message.UNSAVED_RESERVATION_WARNING);
+		Mockito.verify(exporterMock, Mockito.never()).exportSeedPreparationList();
+	}
 
 
+
+	@Test
+	public void testExportSeedPreparationListWithUnsavedReservations() throws SeedInventoryExportException {
+		this.setUpCurrentlySavedGermplasmList();
+		final SeedInventoryListExporter exporterMock = Mockito.mock(SeedInventoryListExporter.class);
+		this.listBuilderComponent.exportSeedPreparationList(exporterMock);
+		Mockito.verify(this.messageSource).getMessage(Message.UNSAVED_RESERVATION_WARNING);
+		Mockito.verify(exporterMock).exportSeedPreparationList();
+	}
+
+	@Test
+	public void testExportSeedPreparationListWithNoUnsavedReservations() throws SeedInventoryExportException {
+		this.setUpCurrentlySavedGermplasmList();
+		this.listBuilderComponent.setValidReservationsToSave(null);
+		final SeedInventoryListExporter exporterMock = Mockito.mock(SeedInventoryListExporter.class);
+		this.listBuilderComponent.exportSeedPreparationList(exporterMock);
+		Mockito.verify(this.messageSource, Mockito.never()).getMessage(Message.UNSAVED_RESERVATION_WARNING);
+		Mockito.verify(exporterMock).exportSeedPreparationList();
+	}
+
+	@Test
+	public void testPrintLabelsWithUnsavedList(){
+		this.setUpCurrentlySavedGermplasmList();
+		this.listBuilderComponent.setCurrentlySavedGermplasmList(null);
+		this.listBuilderComponent.createLabelsAction();
+		Mockito.verify(this.messageSource).getMessage(Message.ERROR_COULD_NOT_CREATE_LABELS);
+	}
+
+	@Test
+	public void testImportSeedPreparationListWithUnsavedList(){
+		this.setUpCurrentlySavedGermplasmList();
+		this.listBuilderComponent.setCurrentlySavedGermplasmList(null);
+		this.listBuilderComponent.openImportSeedPreparationDialog();
+		Mockito.verify(this.messageSource).getMessage(Message.ERROR_SAVE_LIST_BEFORE_IMPORTING_LIST);
+	}
+
+	@Test
+	public void testReserveInventoryActionForUnsavedList() {
+		ContextMenu inventoryViewMenu = Mockito.mock(ContextMenu.class);
+		this.listBuilderComponent.setInventoryViewMenu(inventoryViewMenu);
+		this.listBuilderComponent.setListInventoryTable(listInventoryTable);
+
+		Mockito.when(this.listBuilderComponent.getListInventoryTable().getInventoryTableDropHandler())
+				.thenReturn(inventoryTableDropHandler);
+		Mockito.doReturn(true).when(this.listBuilderComponent.getInventoryViewMenu()).isVisible();
+		Mockito.when(this.listBuilderComponent.getListInventoryTable().getInventoryTableDropHandler().isChanged()).thenReturn(true);
+
+		final ListManagerMain source = Mockito.mock(ListManagerMain.class);
+		Mockito.when(source.getWindow()).thenReturn(new Window());
+		this.listBuilderComponent.setSource(source);
+
+		this.listBuilderComponent.reserveInventoryAction();
+
+		Mockito.verify(this.messageSource).getMessage(Message.ERROR_SAVE_LIST_BEFORE_RESERVING_INVENTORY);
+		Mockito.verify(this.messageSource, Mockito.never()).getMessage(Message.ERROR_RESERVE_INVENTORY_IF_NO_LOT_IS_SELECTED);
+
+
+	}
+
+	@Test
+	public void testCancelReservationsActionForUnsavedList(){
+		this.listBuilderComponent.setListInventoryTable(listInventoryTable);
+		Mockito.when(this.listBuilderComponent.getListInventoryTable().getInventoryTableDropHandler())
+				.thenReturn(inventoryTableDropHandler);
+		Mockito.when(this.listBuilderComponent.getListInventoryTable().getInventoryTableDropHandler().isChanged()).thenReturn(true);
+
+		final ListManagerMain source = Mockito.mock(ListManagerMain.class);
+		Mockito.when(source.getWindow()).thenReturn(new Window());
+		this.listBuilderComponent.setSource(source);
+
+		this.listBuilderComponent.cancelReservationsAction();
+
+		Mockito.verify(this.messageSource).getMessage(Message.ERROR_SAVE_LIST_BEFORE_CANCELLING_RESERVATION);
+		Mockito.verify(this.messageSource, Mockito.never()).getMessage(Message.WARNING_CANCEL_RESERVATION_IF_NO_LOT_IS_SELECTED);
+		Mockito.verify(this.messageSource, Mockito.never()).getMessage(Message.WARNING_IF_THERE_IS_NO_RESERVATION_FOR_SELECTED_LOT);
+	}
 }

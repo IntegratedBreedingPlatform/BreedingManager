@@ -2,22 +2,26 @@
 package org.generationcp.breeding.manager.customcomponent;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.Assert;
-
+import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customfields.PagedBreedingManagerTable;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
-import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
+
+import junit.framework.Assert;
 
 /**
  * Created by Aldrin Batac on 5/23/16.
@@ -28,16 +32,32 @@ public class PagedTableWithSelectAllLayoutTest {
 
 	private static final int DEFAULT_NO_OF_ITEMS = 101;
 
-	private final PagedTableWithSelectAllLayout pagedTableWithSelectAllLayout = new PagedTableWithSelectAllLayout(0,
-			PagedTableWithSelectAllLayoutTest.CHECKBOX_COLUMN_ID);
+	private static final String SELECT_ALL_ON_PAGE_CAPTION = "Select All (this page)";
+	private static final String SELECT_ALL_PAGES_CAPTION = "Select All (this page)";
+
+	@Mock
+	private SimpleResourceBundleMessageSource messageSource;
+
+	final PagedTableWithSelectAllLayout pagedTableWithSelectAllLayout =
+			new PagedTableWithSelectAllLayout(0, PagedTableWithSelectAllLayoutTest.CHECKBOX_COLUMN_ID);
 
 	@Before
 	public void init() {
+		MockitoAnnotations.initMocks(this);
+		this.pagedTableWithSelectAllLayout.setMessageSource(this.messageSource);
+		// Setup mock return values
+		Mockito.doReturn(PagedTableWithSelectAllLayoutTest.SELECT_ALL_ON_PAGE_CAPTION).when(this.messageSource)
+				.getMessage(Message.SELECT_ALL_ON_PAGE);
+		Mockito.doReturn(PagedTableWithSelectAllLayoutTest.SELECT_ALL_PAGES_CAPTION).when(this.messageSource)
+				.getMessage(Message.SELECT_ALL_PAGES);
+
 		this.pagedTableWithSelectAllLayout.instantiateComponents();
+		this.pagedTableWithSelectAllLayout.getTable().setMultiSelect(true);
+		this.pagedTableWithSelectAllLayout.getTable().setSelectable(true);
 	}
 
 	@Test
-	public void testGetAllEntriesPerPage() {
+	public void testGetAllEntriesForPage() {
 
 		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
 
@@ -45,21 +65,20 @@ public class PagedTableWithSelectAllLayoutTest {
 		final int firstPage = 1;
 		final int lastPage = 21;
 
-		final List<Object> entriesList = this.createListObject();
 		this.pagedTableWithSelectAllLayout.getTable().setPageLength(pageLength);
 
-		final List<Object> result = this.pagedTableWithSelectAllLayout.getAllEntriesPerPage(entriesList, firstPage);
+		final List<Object> result = this.pagedTableWithSelectAllLayout.getAllEntriesForPage(firstPage);
 
 		Assert.assertEquals("The number of entries per page should be equal to the table's page length.", pageLength, result.size());
 
-		final List<Object> result2 = this.pagedTableWithSelectAllLayout.getAllEntriesPerPage(entriesList, lastPage);
+		final List<Object> result2 = this.pagedTableWithSelectAllLayout.getAllEntriesForPage(lastPage);
 
 		Assert.assertEquals("The last page should only have 1 item", 1, result2.size());
 
 	}
 
 	@Test
-	public void testUpdateTagPerRowItem() {
+	public void testUpdateItemSelectCheckboxesSomeSelectedOnCurrentPage() {
 
 		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
 
@@ -69,153 +88,122 @@ public class PagedTableWithSelectAllLayoutTest {
 		final List<Object> selectedItems = new ArrayList<>();
 		selectedItems.add(firstSelectedObjectItemId);
 		selectedItems.add(secondSelectedObjectItemId);
+		this.pagedTableWithSelectAllLayout.getTable().setValue(selectedItems);
 
-		final List<Object> loadedItems = new ArrayList<>(this.pagedTableWithSelectAllLayout.getTable().getItemIds());
-
-		this.pagedTableWithSelectAllLayout.updateTagPerRowItem(selectedItems, loadedItems);
+		// Method to test - some entries selected on current page
+		this.pagedTableWithSelectAllLayout.updateItemSelectCheckboxes();
 
 		final PagedBreedingManagerTable table = this.pagedTableWithSelectAllLayout.getTable();
 
-		final CheckBox checkboxOfFirstItem =
-				(CheckBox) table.getItem(firstSelectedObjectItemId).getItemProperty(PagedTableWithSelectAllLayoutTest.CHECKBOX_COLUMN_ID)
-						.getValue();
-		Assert.assertTrue("The first item in table is selected so the checkbox value should be true",
-				(Boolean) checkboxOfFirstItem.getValue());
+		final CheckBox checkboxOfFirstItem = (CheckBox) table.getItem(firstSelectedObjectItemId)
+				.getItemProperty(PagedTableWithSelectAllLayoutTest.CHECKBOX_COLUMN_ID).getValue();
+		Assert.assertTrue("The first item in table is selected so the checkbox value should be true", checkboxOfFirstItem.booleanValue());
 
-		final CheckBox checkboxOfSecondItem =
-				(CheckBox) table.getItem(secondSelectedObjectItemId).getItemProperty(PagedTableWithSelectAllLayoutTest.CHECKBOX_COLUMN_ID)
-						.getValue();
-		Assert.assertTrue("The second item in table is selected so the checkbox value should be true",
-				(Boolean) checkboxOfSecondItem.getValue());
+		final CheckBox checkboxOfSecondItem = (CheckBox) table.getItem(secondSelectedObjectItemId)
+				.getItemProperty(PagedTableWithSelectAllLayoutTest.CHECKBOX_COLUMN_ID).getValue();
+		Assert.assertTrue("The second item in table is selected so the checkbox value should be true", checkboxOfSecondItem.booleanValue());
 
 		// Other items that are not selected should have a checkbox with false value.
 		for (Integer i = 3; i < table.getItemIds().size(); i++) {
 			final CheckBox checkbox =
 					(CheckBox) table.getItem(i).getItemProperty(PagedTableWithSelectAllLayoutTest.CHECKBOX_COLUMN_ID).getValue();
+			Assert.assertFalse("Item is not selected, the checkbox value should be false.", checkbox.booleanValue());
+		}
+
+	}
+
+	@Test
+	public void testUpdateItemSelectCheckboxesNoneSelectedOnCurrentPage() {
+		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
+
+		final int currentPage = 2;
+		final Integer firstSelectedObjectItemId = 1;
+		final Integer secondSelectedObjectItemId = currentPage;
+		final List<Object> selectedItems = new ArrayList<>();
+		selectedItems.add(firstSelectedObjectItemId);
+		selectedItems.add(secondSelectedObjectItemId);
+
+		// Selected entries on first page, but current page is 2nd page
+		this.pagedTableWithSelectAllLayout.getTable().setValue(selectedItems);
+		this.pagedTableWithSelectAllLayout.getTable().setPageLength(10);
+		this.pagedTableWithSelectAllLayout.getTable().setCurrentPage(currentPage);
+
+		// Method to test - update checkboxes of second page
+		this.pagedTableWithSelectAllLayout.updateItemSelectCheckboxes();
+
+		// The selected items on first page should be unchecked as they are not on current page
+		final PagedBreedingManagerTable table = this.pagedTableWithSelectAllLayout.getTable();
+
+		final CheckBox checkboxOfFirstItem = (CheckBox) table.getItem(firstSelectedObjectItemId)
+				.getItemProperty(PagedTableWithSelectAllLayoutTest.CHECKBOX_COLUMN_ID).getValue();
+		Assert.assertFalse("The first item in table is selected but not on current page so the checkbox value should be false",
+				checkboxOfFirstItem.booleanValue());
+
+		final CheckBox checkboxOfSecondItem = (CheckBox) table.getItem(secondSelectedObjectItemId)
+				.getItemProperty(PagedTableWithSelectAllLayoutTest.CHECKBOX_COLUMN_ID).getValue();
+		Assert.assertFalse("The second item in table is selected but not on current page so the checkbox value should be false",
+				checkboxOfSecondItem.booleanValue());
+
+		// Items on the 2nd page are not selected
+		final List<Object> entriesForCurrentPage = this.pagedTableWithSelectAllLayout.getAllEntriesForPage(currentPage);
+		for (final Object item : entriesForCurrentPage) {
+			final CheckBox checkbox =
+					(CheckBox) table.getItem(item).getItemProperty(PagedTableWithSelectAllLayoutTest.CHECKBOX_COLUMN_ID).getValue();
 			Assert.assertFalse("Item is not selected, the checkbox value should be false.", (Boolean) checkbox.getValue());
 		}
 
 	}
 
 	@Test
-	public void testUpdateSelectAllCheckBoxStatusEmptyList() {
+	public void testUpdateSelectAllOnPageCheckBoxStatusEmptyList() {
 
 		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
 
 		// Set the select all checkbox to true so we can verify that it's changed later
-		this.pagedTableWithSelectAllLayout.getSelectAllCheckBox().setValue(true);
+		this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().setValue(true);
 
-		this.pagedTableWithSelectAllLayout.updateSelectAllCheckBoxStatus(new ArrayList<>());
+		this.pagedTableWithSelectAllLayout.updateSelectAllOnPageCheckBoxStatus();
 
-		Assert.assertFalse("There entry list is empty so the select all checkbox value should be false",
-				(Boolean) this.pagedTableWithSelectAllLayout.getSelectAllCheckBox().getValue());
+		Assert.assertFalse("There entry list is empty so the \"Select All On Page\" checkbox value should be false",
+				this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().booleanValue());
 
 	}
 
 	@Test
-	public void testUpdateSelectAllCheckBoxStatusAllEntriesInAPageAreSelected() {
-
+	public void testUpdateSelectAllOnPageCheckBoxStatusAllEntriesInAPageAreSelected() {
+		// Initialize table with page length = 5
 		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
-
 		this.pagedTableWithSelectAllLayout.getTable().setCurrentPage(1);
+		this.pagedTableWithSelectAllLayout.getTable().setPageLength(5);
 
+		// Select each item on current page
 		final List<Object> entriesList = this.createEntriesList();
-
 		this.markCheckboxItemsInTable(entriesList, true);
 
-		this.pagedTableWithSelectAllLayout.updateSelectAllCheckBoxStatus(entriesList);
+		// Method to test
+		this.pagedTableWithSelectAllLayout.updateSelectAllOnPageCheckBoxStatus();
 
-		Assert.assertTrue("All entries in page are selected, the select all checkbox value should be true",
-				(Boolean) this.pagedTableWithSelectAllLayout.getSelectAllCheckBox().getValue());
+		Assert.assertTrue("All entries in page are selected, the \"Select All On Page\" checkbox value should be true",
+				this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().booleanValue());
 
 	}
 
 	@Test
-	public void testUpdateSelectAllCheckBoxStatusSomeEntriesInAPageAreSelected() {
+	public void testUpdateSelectAllOnPageCheckBoxStatusSomeEntriesInAPageAreSelected() {
 
 		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
 
 		this.pagedTableWithSelectAllLayout.getTable().setCurrentPage(1);
-
-		final List<Object> entriesList = this.createEntriesList();
 
 		// Mark the first item as selected
 		final PagedBreedingManagerTable table = this.pagedTableWithSelectAllLayout.getTable();
 		final CheckBox cb = (CheckBox) table.getItem(1).getItemProperty(PagedTableWithSelectAllLayoutTest.CHECKBOX_COLUMN_ID).getValue();
 		cb.setValue(true);
 
-		this.pagedTableWithSelectAllLayout.updateSelectAllCheckBoxStatus(entriesList);
+		this.pagedTableWithSelectAllLayout.updateSelectAllOnPageCheckBoxStatus();
 
 		Assert.assertFalse("Some entries in page are selected, the select all checkbox value should be false",
-				(Boolean) this.pagedTableWithSelectAllLayout.getSelectAllCheckBox().getValue());
-
-	}
-
-	@Test
-	public void testUpdatePagedTableSelectedEntries() {
-		final List<Object> entriesList = this.createEntriesList();
-		final ArgumentCaptor<List<Object>> captor = ArgumentCaptor.forClass((Class) List.class);
-		final PagedBreedingManagerTable table = Mockito.mock(PagedBreedingManagerTable.class);
-		Mockito.when(table.getValue()).thenReturn(entriesList);
-
-		this.pagedTableWithSelectAllLayout.setTable(table);
-
-		this.pagedTableWithSelectAllLayout.updatePagedTableSelectedEntries(true);
-
-		Mockito.verify(table, Mockito.atLeast(1)).setValue(captor.capture());
-		Assert.assertTrue("updatePagedTableSelectedEntries(true) should select all entries",
-				entriesList.equals(new ArrayList<Object>(captor.getValue())));
-
-		this.pagedTableWithSelectAllLayout.updatePagedTableSelectedEntries(false);
-
-		Mockito.verify(table, Mockito.atLeast(1)).setValue(captor.capture());
-		Assert.assertTrue("updatePagedTableSelectedEntries(false) should deselect all entries",
-				new ArrayList<Object>(captor.getValue()).isEmpty());
-	}
-
-    @Test
-	public void testUpdateLoadedPageCurrentPageDoesntExistAfterUpdate() {
-
-		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
-
-		final int loadedPageNumber = 21;
-
-		// Let's assume that page 21 is loaded in the screen
-		this.pagedTableWithSelectAllLayout.getLoadedPaged().add(loadedPageNumber);
-
-		final PagedBreedingManagerTable table = this.pagedTableWithSelectAllLayout.getTable();
-		// then the user changed the page length (number of items per page) to a higher number
-		table.setPageLength(25);
-
-		// this will recalculate the number of page available, and since page 21 is now not available, we should remove it from loadedPage
-		// list.
-		this.pagedTableWithSelectAllLayout.updateLoadedPage();
-
-		Assert.assertFalse("Page number " + loadedPageNumber + " should be removed from loaded page", this.pagedTableWithSelectAllLayout
-				.getLoadedPaged().contains(loadedPageNumber));
-
-	}
-
-	@Test
-	public void testUpdateLoadedPageCurrentPageStillExistAfterUpdate() {
-
-		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
-
-		final int loadedPageNumber = 5;
-
-		// Let's assume that page 5 is loaded in the screen
-		this.pagedTableWithSelectAllLayout.getLoadedPaged().add(loadedPageNumber);
-
-		final PagedBreedingManagerTable table = this.pagedTableWithSelectAllLayout.getTable();
-		// then the user changed the page length (number of items per page) to a lower number
-		table.setPageLength(4);
-
-		// this will recalculate the number of page available, and since page 5 is still available, we should not remove it from loadedPage
-		// list.
-		this.pagedTableWithSelectAllLayout.updateLoadedPage();
-
-		Assert.assertTrue("Page number " + loadedPageNumber + " should be in loaded page list", this.pagedTableWithSelectAllLayout
-				.getLoadedPaged().contains(loadedPageNumber));
+				this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().booleanValue());
 
 	}
 
@@ -268,85 +256,320 @@ public class PagedTableWithSelectAllLayoutTest {
 	}
 
 	@Test
-	public void testRefreshTablePagingControlsWithOnePageOnly() {
+	@SuppressWarnings("unchecked")
+	public void testSelectAllOnPageCheckboxClick() {
+		// Initialize test table listeners and properties
+		this.pagedTableWithSelectAllLayout.addListeners();
 
-		this.pagedTableWithSelectAllLayout.layoutComponents();
-		this.initializePagedBreedingManagerTable(2);
+		// Populate test table and set page length = 10. Set 2nd page as current page
+		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
+		this.pagedTableWithSelectAllLayout.getTable().setPageLength(10);
+		this.pagedTableWithSelectAllLayout.getTable().setCurrentPage(2);
 
-		this.pagedTableWithSelectAllLayout.refreshTablePagingControls();
-		final Iterator<Component> componentIterator = this.pagedTableWithSelectAllLayout.getComponentIterator();
-		Iterator<Component> pagingControlsIterator = null;
-		while (componentIterator.hasNext()) {
-			final Component component = componentIterator.next();
-			// use this to get the paging controls
-			// because we're sure that the paging controls is the only HorizontalLayout
-			if (component instanceof HorizontalLayout) {
-				pagingControlsIterator = ((HorizontalLayout) component).getComponentIterator();
-			}
-		}
-		Assert.assertNotNull("The paging controls should be displayed", pagingControlsIterator);
-		// first iteration: page size
-		final HorizontalLayout pageSize = (HorizontalLayout) pagingControlsIterator.next();
-		Assert.assertNotNull("The page size should be displayed", pageSize);
-		// second iterator: page management
-		final HorizontalLayout pageManagement = (HorizontalLayout) pagingControlsIterator.next();
-		Assert.assertNotNull("The page management should be displayed", pageManagement);
-		final Iterator<Component> pageManagementIterator = pageManagement.getComponentIterator();
-		int numberOfButtons = 0;
-		while (pageManagementIterator.hasNext()) {
-			final Component component = pageManagementIterator.next();
-			// verify that all buttons are disabled since we only have 1 page
-			if (component instanceof Button) {
-				numberOfButtons++;
-				final Button button = (Button) component;
-				Assert.assertFalse("The button should be disabled because there is only 1 page", button.isEnabled());
-			}
-		}
-		Assert.assertEquals("There should be 4 buttons displayed for first, previous, next and last", 4, numberOfButtons);
+		// Method to test - Check "Select All on Page" checkbox on 2nd page
+		// Have to hack setting checkbox value to true before firing click event
+		this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().setValue(true);
+		this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().click();
+
+		// Entries 11-20 should be selected (they are all entries on the 2nd page)
+		final Integer[] ids = new Integer[] {11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
+		final List<Integer> expectedIdsList = Arrays.asList(ids);
+		Collection<Integer> selectedEntries = (Collection<Integer>) this.pagedTableWithSelectAllLayout.getTable().getValue();
+		Assert.assertNotNull(selectedEntries);
+		final List<Integer> selectedEntriesList = new ArrayList<>();
+		selectedEntriesList.addAll(selectedEntries);
+		Collections.sort(selectedEntriesList);
+		Assert.assertEquals(expectedIdsList, selectedEntriesList);
+
+		// Method to test - now uncheck "Select All on Page" checkbox on 2nd page
+		// Have to hack setting checkbox value to false before firing click event
+		this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().setValue(false);
+		this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().click();
+
+		// Check that no selected entries on table
+		selectedEntries = (Collection<Integer>) this.pagedTableWithSelectAllLayout.getTable().getValue();
+		Assert.assertNotNull(selectedEntries);
+		Assert.assertTrue(selectedEntries.isEmpty());
+
 	}
 
 	@Test
-	public void testRefreshTablePagingControlsWithMoreThan1Page() {
+	@SuppressWarnings("unchecked")
+	public void testSelectAllEntriesOnCurrentPage() {
+		// Populate test table and set page length = 10. Set 2nd page as current page
+		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
+		this.pagedTableWithSelectAllLayout.getTable().setPageLength(10);
+		this.pagedTableWithSelectAllLayout.getTable().setCurrentPage(2);
 
+		// Method to test - select all entries on 2nd page
+		this.pagedTableWithSelectAllLayout.selectAllEntriesOnCurrentPage();
+
+		// Entries 11-20 should be selected (they are all entries on the 2nd page)
+		final Integer[] ids = new Integer[] {11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
+		final List<Integer> expectedIdsList = Arrays.asList(ids);
+		final Collection<Integer> selectedEntries = (Collection<Integer>) this.pagedTableWithSelectAllLayout.getTable().getValue();
+		Assert.assertNotNull(selectedEntries);
+		final List<Integer> selectedEntriesList = new ArrayList<>();
+		selectedEntriesList.addAll(selectedEntries);
+		Collections.sort(selectedEntriesList);
+		Assert.assertEquals(expectedIdsList, selectedEntriesList);
+
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testSelectAllEntriesCheckboxClick() {
+		// Initialize test table listeners and properties
+		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
+		this.pagedTableWithSelectAllLayout.addListeners();
+
+		// Method to test - Check "Select All Pages" checkbox
+		// Have to hack setting checkbox value to true before firing click event
+		this.pagedTableWithSelectAllLayout.getSelectAllEntriesCheckBox().setValue(true);
+		this.pagedTableWithSelectAllLayout.getSelectAllEntriesCheckBox().click();
+
+		// Check that all entries on all pages were selected
+		final Collection<Integer> allEntries = (Collection<Integer>) this.pagedTableWithSelectAllLayout.getTable().getItemIds();
+		Collection<Integer> selectedEntries = (Collection<Integer>) this.pagedTableWithSelectAllLayout.getTable().getValue();
+		Assert.assertNotNull(selectedEntries);
+		Assert.assertEquals("Expecting size of selected entries equals size of table entries", allEntries.size(), selectedEntries.size());
+		// "Select All on Page" checkbox should have been checked too
+		Assert.assertTrue(this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().booleanValue());
+
+		// Method to test - now uncheck "Select All Pages" checkbox
+		// Have to hack setting checkbox value to false before firing click event
+		this.pagedTableWithSelectAllLayout.getSelectAllEntriesCheckBox().setValue(false);
+		this.pagedTableWithSelectAllLayout.getSelectAllEntriesCheckBox().click();
+
+		// Check that there are no selected entries on table
+		selectedEntries = (Collection<Integer>) this.pagedTableWithSelectAllLayout.getTable().getValue();
+		Assert.assertNotNull(selectedEntries);
+		Assert.assertTrue(selectedEntries.isEmpty());
+		// "Select All on Page" checkbox should have been unchecked too
+		Assert.assertFalse(this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().booleanValue());
+
+	}
+
+	@Test
+	public void testUpdateSelectAllEntriesCheckBoxStatusEmptyList() {
+		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
+
+		// Set the "Select all Pages" checkbox to true so we can verify that it's changed later
+		this.pagedTableWithSelectAllLayout.getSelectAllEntriesCheckBox().setValue(true);
+
+		this.pagedTableWithSelectAllLayout.updateSelectAllEntriesCheckboxStatus();
+
+		Assert.assertFalse("There entry list is empty so the \"Select All Entries\" checkbox value should be false",
+				this.pagedTableWithSelectAllLayout.getSelectAllEntriesCheckBox().booleanValue());
+
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testUpdateSelectAllEntriesCheckBoxStatusAllEntriesAreSelected() {
+		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
+
+		// Select all entries on table
+		final Collection<Object> allEntries = (Collection<Object>) this.pagedTableWithSelectAllLayout.getTable().getItemIds();
+		this.pagedTableWithSelectAllLayout.getTable().setValue(allEntries);
+
+		// Method to test
+		this.pagedTableWithSelectAllLayout.updateSelectAllEntriesCheckboxStatus();
+
+		Assert.assertTrue("All entries in table are selected, the \"Select All Entries\" checkbox value should be true",
+				this.pagedTableWithSelectAllLayout.getSelectAllEntriesCheckBox().booleanValue());
+
+	}
+
+	@Test
+	public void testUpdateSelectAllEntriesCheckBoxStatusOnlyFirstPageSelected() {
+		// Initialize test table with page length = 5
+		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
+		this.pagedTableWithSelectAllLayout.getTable().setCurrentPage(1);
+		this.pagedTableWithSelectAllLayout.getTable().setPageLength(5);
+
+		// Select items on current page
+		final List<Object> entriesList = this.createEntriesList();
+		this.markCheckboxItemsInTable(entriesList, true);
+
+		// Method to test
+		this.pagedTableWithSelectAllLayout.updateSelectAllEntriesCheckboxStatus();
+
+		Assert.assertFalse("Only entries on first page are selected, the \"Select All Entries\" checkbox value should be false",
+				this.pagedTableWithSelectAllLayout.getSelectAllEntriesCheckBox().booleanValue());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testClearAllSelectedEntries() {
+		// Initialize table and select all entries in the table
+		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
+		this.pagedTableWithSelectAllLayout.selectAllEntries();
+
+		// Method to test
+		this.pagedTableWithSelectAllLayout.clearAllSelectedEntries();
+
+		// Check that there are no selected entries on table
+		final Collection<Integer> selectedEntries = (Collection<Integer>) this.pagedTableWithSelectAllLayout.getTable().getValue();
+		Assert.assertNotNull(selectedEntries);
+		Assert.assertTrue(selectedEntries.isEmpty());
+		// "Select All on Page" and "Select All Pages" checkbox should have been unchecked too
+		Assert.assertFalse(this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().booleanValue());
+		Assert.assertFalse(this.pagedTableWithSelectAllLayout.getSelectAllEntriesCheckBox().booleanValue());
+
+	}
+
+	@Test
+	public void testUpdateSelectAllCheckboxesWhenEmptyTable() {
+		this.pagedTableWithSelectAllLayout.layoutComponents();
+		
+		// Hack setting of checkboxes caption to another value to verify if they are reset later
+		this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().setCaption("ABC");
+		this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().setCaption("XYZ");
+
+		// Method to test
+		this.pagedTableWithSelectAllLayout.updateSelectAllCheckboxes();
+
+		// Expecting select all checkboxes caption to be reset to default as table is empty
+		Assert.assertEquals(PagedTableWithSelectAllLayoutTest.SELECT_ALL_ON_PAGE_CAPTION,
+				this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().getCaption());
+		Assert.assertEquals(PagedTableWithSelectAllLayoutTest.SELECT_ALL_PAGES_CAPTION,
+				this.pagedTableWithSelectAllLayout.getSelectAllEntriesCheckBox().getCaption());
+		
+		// Check that "Select All Pages" checkbox to be hidden when table is empty
+		Component component = this.pagedTableWithSelectAllLayout.getComponent(PagedTableWithSelectAllLayout.INDEX_OF_CHECKBOXES_LAYOUT);
+		HorizontalLayout checkboxesLayout = (HorizontalLayout) component;
+		Assert.assertEquals(2, checkboxesLayout.getComponentCount());
+		Iterator<Component> componentIterator = checkboxesLayout.getComponentIterator();
+		while (componentIterator.hasNext()){
+			Component subComponent = componentIterator.next();
+			if (this.pagedTableWithSelectAllLayout.getSelectAllEntriesCheckBox().equals(subComponent)){
+				Assert.fail("Expecting \"Select All Pages\" checkbox was hidden but was not.");
+			}
+		}
+		
+	}
+
+	@Test
+	public void testUpdateSelectAllCheckboxesWhenTableHasEntries() {
 		this.pagedTableWithSelectAllLayout.layoutComponents();
 		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
 
-		this.pagedTableWithSelectAllLayout.refreshTablePagingControls();
-		final Iterator<Component> componentIterator = this.pagedTableWithSelectAllLayout.getComponentIterator();
-		Iterator<Component> pagingControlsIterator = null;
-		while (componentIterator.hasNext()) {
-			final Component component = componentIterator.next();
-			// use this to get the paging controls
-			// because we're sure that the paging controls is the only HorizontalLayout
-			if (component instanceof HorizontalLayout) {
-				pagingControlsIterator = ((HorizontalLayout) component).getComponentIterator();
-			}
-		}
-		Assert.assertNotNull("The paging controls should be displayed", pagingControlsIterator);
-		// first iteration: page size
-		final HorizontalLayout pageSize = (HorizontalLayout) pagingControlsIterator.next();
-		Assert.assertNotNull("The page size should be displayed", pageSize);
-		// second iterator: page management
-		final HorizontalLayout pageManagement = (HorizontalLayout) pagingControlsIterator.next();
-		Assert.assertNotNull("The page management should be displayed", pageManagement);
-		final Iterator<Component> pageManagementIterator = pageManagement.getComponentIterator();
-		int numberOfButtons = 0;
-		while (pageManagementIterator.hasNext()) {
-			final Component component = pageManagementIterator.next();
-			// verify that the first and previous buttons are disabled while the next and last buttons are enabled
-			if (component instanceof Button) {
-				numberOfButtons++;
-				final Button button = (Button) component;
-				// first and previous button
-				if (numberOfButtons <= 2) {
-					Assert.assertFalse("The button should be disabled because the current page is 1", button.isEnabled());
-				} else {
-					Assert.assertTrue("The button should be enabled because there are more than 1 page", button.isEnabled());
-				}
+		// Method to test
+		this.pagedTableWithSelectAllLayout.updateSelectAllCheckboxes();
 
+		final String selectAllOnPageCaptionSubstr = PagedTableWithSelectAllLayoutTest.SELECT_ALL_ON_PAGE_CAPTION.substring(0,
+				PagedTableWithSelectAllLayoutTest.SELECT_ALL_ON_PAGE_CAPTION.length() - 1);
+		final String selectAllCaptionSubstr = PagedTableWithSelectAllLayoutTest.SELECT_ALL_PAGES_CAPTION.substring(0,
+				PagedTableWithSelectAllLayoutTest.SELECT_ALL_PAGES_CAPTION.length() - 1);
+
+		// Expecting "Select All on Page" checkbox caption to include # of entries, which is the page length
+		Assert.assertEquals(
+				selectAllOnPageCaptionSubstr + " - " + this.pagedTableWithSelectAllLayout.getTable().getPageLength() + " entries)",
+				this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().getCaption());
+		// Expecting "Select All Pages" checkbox caption to include total # of entries
+		Assert.assertEquals(selectAllCaptionSubstr + " - " + PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS + " entries)",
+				this.pagedTableWithSelectAllLayout.getSelectAllEntriesCheckBox().getCaption());
+		
+		// Check that "Select All Pages" checkbox to be displayed since table has multiple pages
+		Component component = this.pagedTableWithSelectAllLayout.getComponent(PagedTableWithSelectAllLayout.INDEX_OF_CHECKBOXES_LAYOUT);
+		HorizontalLayout checkboxesLayout = (HorizontalLayout) component;
+		Assert.assertEquals(3, checkboxesLayout.getComponentCount());
+		Iterator<Component> componentIterator = checkboxesLayout.getComponentIterator();
+		boolean isSelectAllCheckboxDisplayed = false;
+		while (componentIterator.hasNext()){
+			Component subComponent = componentIterator.next();
+			if (this.pagedTableWithSelectAllLayout.getSelectAllEntriesCheckBox().equals(subComponent)){
+				isSelectAllCheckboxDisplayed = true;
 			}
 		}
-		Assert.assertEquals("There should be 4 buttons displayed for first, previous, next and last", 4, numberOfButtons);
+		Assert.assertTrue("Expecting \"Select All Pages\" checkbox was hidden but was not.", isSelectAllCheckboxDisplayed);
+	}
+
+	@Test
+	public void testUpdateSelectAllCheckboxesWhenTableEntriesLessThanPageLength() {
+		// Populate with 3 entries but default page length is 10
+		final int numberOfItems = 3;
+		this.initializePagedBreedingManagerTable(numberOfItems);
+		this.pagedTableWithSelectAllLayout.layoutComponents();
+
+		// Method to test
+		this.pagedTableWithSelectAllLayout.updateSelectAllCheckboxes();
+
+		final String selectAllOnPageCaptionSubstr = PagedTableWithSelectAllLayoutTest.SELECT_ALL_ON_PAGE_CAPTION.substring(0,
+				PagedTableWithSelectAllLayoutTest.SELECT_ALL_ON_PAGE_CAPTION.length() - 1);
+		final String selectAllCaptionSubstr = PagedTableWithSelectAllLayoutTest.SELECT_ALL_PAGES_CAPTION.substring(0,
+				PagedTableWithSelectAllLayoutTest.SELECT_ALL_PAGES_CAPTION.length() - 1);
+
+		// Expecting "Select All on Page" checkbox caption to include # of entries and not the page length
+		Assert.assertEquals(selectAllOnPageCaptionSubstr + " - " + numberOfItems + " entries)",
+				this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().getCaption());
+		// Expecting "Select All Pages" checkbox caption to include total # of entries
+		Assert.assertEquals(selectAllCaptionSubstr + " - " + numberOfItems + " entries)",
+				this.pagedTableWithSelectAllLayout.getSelectAllEntriesCheckBox().getCaption());
+		
+		// Check that "Select All Pages" checkbox to be hidden when table has only 1 page
+		Component component = this.pagedTableWithSelectAllLayout.getComponent(PagedTableWithSelectAllLayout.INDEX_OF_CHECKBOXES_LAYOUT);
+		HorizontalLayout checkboxesLayout = (HorizontalLayout) component;
+		Assert.assertEquals(2, checkboxesLayout.getComponentCount());
+		Iterator<Component> componentIterator = checkboxesLayout.getComponentIterator();
+		while (componentIterator.hasNext()){
+			Component subComponent = componentIterator.next();
+			if (this.pagedTableWithSelectAllLayout.getSelectAllEntriesCheckBox().equals(subComponent)){
+				Assert.fail("Expecting \"Select All Pages\" checkbox was hidden but was not.");
+			}
+		}
+	}
+	
+	@Test
+	public void testUpdateSelectAllCheckboxesWhenTableHasJustOneEntry() {
+		// Populate with 1 entry but default page length is 10
+		final int numberOfItems = 1;
+		this.initializePagedBreedingManagerTable(numberOfItems);
+		this.pagedTableWithSelectAllLayout.layoutComponents();
+
+		// Method to test
+		this.pagedTableWithSelectAllLayout.updateSelectAllCheckboxes();
+
+		final String selectAllOnPageCaptionSubstr = PagedTableWithSelectAllLayoutTest.SELECT_ALL_ON_PAGE_CAPTION.substring(0,
+				PagedTableWithSelectAllLayoutTest.SELECT_ALL_ON_PAGE_CAPTION.length() - 1);
+		final String selectAllCaptionSubstr = PagedTableWithSelectAllLayoutTest.SELECT_ALL_PAGES_CAPTION.substring(0,
+				PagedTableWithSelectAllLayoutTest.SELECT_ALL_PAGES_CAPTION.length() - 1);
+
+		// Expecting "Select All on Page" checkbox caption to say "entry" instead of "entries"
+		Assert.assertEquals(selectAllOnPageCaptionSubstr + " - " + numberOfItems + " entry)",
+				this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().getCaption());
+		// Expecting "Select All Pages" checkbox caption to say "entry" instead of "entries"
+		Assert.assertEquals(selectAllCaptionSubstr + " - " + numberOfItems + " entry)",
+				this.pagedTableWithSelectAllLayout.getSelectAllEntriesCheckBox().getCaption());
+	}
+	
+	@Test
+	public void testSyncSelectionCheckboxesWhenPageLengthChanged() {
+		// Initialize table and checkboxes state and caption
+		this.initializePagedBreedingManagerTable(PagedTableWithSelectAllLayoutTest.DEFAULT_NO_OF_ITEMS);
+		this.pagedTableWithSelectAllLayout.updateSelectAllCheckboxesCaption();
+
+		// Store the "Select All on Page" checkbox caption before changing page length
+		final String selectAllOnPageCaptionSubstr = PagedTableWithSelectAllLayoutTest.SELECT_ALL_ON_PAGE_CAPTION.substring(0,
+				PagedTableWithSelectAllLayoutTest.SELECT_ALL_ON_PAGE_CAPTION.length() - 1);
+		final int defaultPageLength = this.pagedTableWithSelectAllLayout.getTable().getPageLength();
+		final String oldSelectAllOnPageCheckboxCaption = selectAllOnPageCaptionSubstr + " - " + defaultPageLength + " entries)";
+		Assert.assertEquals(oldSelectAllOnPageCheckboxCaption, this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().getCaption());
+
+		// Change page length first
+		final int newPageLength = 5;
+		this.pagedTableWithSelectAllLayout.getTable().setCurrentPage(1);
+		this.pagedTableWithSelectAllLayout.getTable().setPageLength(newPageLength);
+		
+		// Method to test
+		this.pagedTableWithSelectAllLayout.syncSelectionCheckBoxes();
+
+		
+		// Check that the "Select All on Page" checkbox caption changed
+		final String newSelectAllOnPageCheckboxCaption = selectAllOnPageCaptionSubstr + " - " + newPageLength + " entries)";
+		Assert.assertEquals(newSelectAllOnPageCheckboxCaption, this.pagedTableWithSelectAllLayout.getSelectAllOnPageCheckBox().getCaption());
+		
 	}
 
 }

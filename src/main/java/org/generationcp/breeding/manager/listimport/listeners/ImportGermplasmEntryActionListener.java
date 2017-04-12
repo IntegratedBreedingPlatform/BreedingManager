@@ -3,7 +3,7 @@ package org.generationcp.breeding.manager.listimport.listeners;
 
 public interface ImportGermplasmEntryActionListener {
 
-	String getGermplasmName();
+	String getDesignation();
 
 	int getGermplasmIndex();
 

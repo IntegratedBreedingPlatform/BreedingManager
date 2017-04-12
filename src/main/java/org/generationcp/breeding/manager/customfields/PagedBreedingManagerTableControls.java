@@ -150,6 +150,7 @@ public class PagedBreedingManagerTableControls extends HorizontalLayout {
 
 				lastValue = value;
 				pagedBreedingManagerTable.setCurrentPage(Integer.valueOf(value));
+				PagedBreedingManagerTableControls.this.entrySelectSyncHandler.dispatch();
 			}
 		});
 

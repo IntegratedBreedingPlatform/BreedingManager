@@ -2,9 +2,11 @@
 package org.generationcp.breeding.manager.listimport.actions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
@@ -27,6 +29,7 @@ import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.UserDefinedField;
+import org.generationcp.middleware.pojos.ims.EntityType;
 import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.Transaction;
 import org.generationcp.middleware.service.api.FieldbookService;
@@ -50,10 +53,11 @@ import org.springframework.transaction.PlatformTransactionManager;
 @RunWith(MockitoJUnitRunner.class)
 public class SaveGermplasmListActionTest {
 
+	private static final Integer SEED_AMOUNT_SCALE_ID = 1001;
 	private static final int TEST_GID = 1;
 	private static final int SAVED_GERMPLASM_LIST_ID = 1;
-	private static final int NO_OF_ENTRIES = 5;
-	private static final int CURRENT_LOCAL_ID = 1;
+	private static final int NO_OF_ENTRIES = 10;
+	private static final Integer CURRENT_LOCAL_ID = 1;
 	private static final String PROGRAM_UUID = "1234567890";
 	private static final int LIST_ID = 1;
 	private static final Integer SEED_STORAGE_LOCATION = 2;
@@ -99,24 +103,17 @@ public class SaveGermplasmListActionTest {
 	private GermplasmList germplasmList;
 	private List<GermplasmName> germplasmNameObjects;
 	private List<Name> newNames;
-	private List<Integer> doNotCreateGermplasmsWithId;
+	private List<Integer> excludeGermplasmCreateIds;
 	private ImportedGermplasmList importedGermplasmList;
-
-	private ImportedGermplasmListDataInitializer importedGermplasmListInitializer;
-	private NameTestDataInitializer nameTDI;
 
 	@Before
 	public void setup() {
-		// initializer
-		this.importedGermplasmListInitializer = new ImportedGermplasmListDataInitializer();
-		this.nameTDI = new NameTestDataInitializer();
-
 		this.germplasmList = GermplasmListTestDataInitializer.createGermplasmList(SaveGermplasmListActionTest.LIST_ID);
 		this.importedGermplasmList =
-				this.importedGermplasmListInitializer.createImportedGermplasmList(SaveGermplasmListActionTest.NO_OF_ENTRIES, true);
+				ImportedGermplasmListDataInitializer.createImportedGermplasmList(SaveGermplasmListActionTest.NO_OF_ENTRIES, true);
 		this.germplasmNameObjects =
-				this.importedGermplasmListInitializer.createGermplasmNameObjects(SaveGermplasmListActionTest.NO_OF_ENTRIES);
-		this.doNotCreateGermplasmsWithId = this.importedGermplasmListInitializer.createListOfGemplasmIds(2);
+				ImportedGermplasmListDataInitializer.createGermplasmNameObjects(SaveGermplasmListActionTest.NO_OF_ENTRIES);
+		this.excludeGermplasmCreateIds = ImportedGermplasmListDataInitializer.createListOfGemplasmIds(2);
 		this.newNames = GermplasmTestDataInitializer.createNameList(SaveGermplasmListActionTest.NO_OF_ENTRIES);
 
 		Mockito.doReturn(SaveGermplasmListActionTest.PROGRAM_UUID).when(this.contextUtil).getCurrentProgramUUID();
@@ -162,7 +159,7 @@ public class SaveGermplasmListActionTest {
 	@Test
 	public void testSaveRecordsWhenOverridingExistingListUsingTheImportedGermplasmList() throws BreedingManagerException {
 		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, SaveGermplasmListActionTest.SOURCE_LIST_XLS,
-				this.doNotCreateGermplasmsWithId, this.importedGermplasmList, SaveGermplasmListActionTest.SEED_STORAGE_LOCATION);
+				this.excludeGermplasmCreateIds, this.importedGermplasmList, SaveGermplasmListActionTest.SEED_STORAGE_LOCATION);
 
 		try {
 			Mockito.verify(this.germplasmListManager, Mockito.times(1))
@@ -177,7 +174,7 @@ public class SaveGermplasmListActionTest {
 	@Test
 	public void testGermplasmListDataSaving() throws BreedingManagerException {
 		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, SaveGermplasmListActionTest.SOURCE_LIST_XLS,
-				this.doNotCreateGermplasmsWithId, this.importedGermplasmList, SaveGermplasmListActionTest.SEED_STORAGE_LOCATION);
+				this.excludeGermplasmCreateIds, this.importedGermplasmList, SaveGermplasmListActionTest.SEED_STORAGE_LOCATION);
 		Mockito.verify(this.germplasmListManager, Mockito.atLeastOnce()).addGermplasmListData(Matchers.anyListOf(GermplasmListData.class));
 	}
 
@@ -185,7 +182,7 @@ public class SaveGermplasmListActionTest {
 	public void testSaveRecordsWhenOverridingNewListUsingTheImportedGermplasmList() throws BreedingManagerException {
 		this.germplasmList.setId(null);
 		this.action.saveRecords(this.germplasmList, this.germplasmNameObjects, this.newNames, SaveGermplasmListActionTest.SOURCE_LIST_XLS,
-				this.doNotCreateGermplasmsWithId, this.importedGermplasmList, SaveGermplasmListActionTest.SEED_STORAGE_LOCATION);
+				this.excludeGermplasmCreateIds, this.importedGermplasmList, SaveGermplasmListActionTest.SEED_STORAGE_LOCATION);
 
 		try {
 			Mockito.verify(this.germplasmListManager, Mockito.times(0))
@@ -201,7 +198,7 @@ public class SaveGermplasmListActionTest {
 		final String preferredNameCode = "DRVNM";
 		final int noOfEntries = 10;
 		final ImportedGermplasmList importedGermplasmList =
-				this.importedGermplasmListInitializer.createImportedGermplasmList(noOfEntries, true);
+				ImportedGermplasmListDataInitializer.createImportedGermplasmList(noOfEntries, true);
 		this.action.updateExportedGermplasmPreferredName(preferredNameCode, importedGermplasmList.getImportedGermplasm());
 
 		try {
@@ -217,7 +214,7 @@ public class SaveGermplasmListActionTest {
 		final String preferredNameCode = "DRVNM";
 		final int noOfEntries = 10;
 		final ImportedGermplasmList importedGermplasmList =
-				this.importedGermplasmListInitializer.createImportedGermplasmList(noOfEntries, false);
+				ImportedGermplasmListDataInitializer.createImportedGermplasmList(noOfEntries, false);
 		this.action.updateExportedGermplasmPreferredName(preferredNameCode, importedGermplasmList.getImportedGermplasm());
 
 		try {
@@ -287,7 +284,7 @@ public class SaveGermplasmListActionTest {
 		final ImportedGermplasm importedGermplasm = this.importedGermplasmList.getImportedGermplasm().get(0);
 		final List<UserDefinedField> existingNameUdflds = this.action.getUserDefinedFields(SaveGermplasmListAction.FCODE_TYPE_NAME);
 		final Germplasm germplasm = this.germplasmNameObjects.get(0).getGermplasm();
-		final List<Name> existingNames = this.nameTDI.createNameList(1);
+		final List<Name> existingNames = NameTestDataInitializer.createNameList(1);
 		final List<Name> names = this.action.prepareAllNamesToAdd(importedGermplasm, existingNameUdflds, germplasm, existingNames);
 
 		Assert.assertTrue("The imported name is already existing in the database so the names list should be empty", names.isEmpty());
@@ -297,7 +294,7 @@ public class SaveGermplasmListActionTest {
 	public void testSaveGermplasmListDataRecordsWhereImportedNamesNotExistingInTheDB() {
 		final List<ImportedGermplasm> importedGermplasms = this.importedGermplasmList.getImportedGermplasm();
 		this.action.saveGermplasmListDataRecords(this.germplasmNameObjects, this.germplasmList, importedGermplasms,
-				this.doNotCreateGermplasmsWithId);
+				this.excludeGermplasmCreateIds);
 		Mockito.verify(this.germplasmManager, Mockito.times(1)).addGermplasmName(Matchers.anyListOf(Name.class));
 	}
 
@@ -307,7 +304,7 @@ public class SaveGermplasmListActionTest {
 		Mockito.doReturn(this.createNamesMap(importedGermplasms.size())).when(this.germplasmManager)
 				.getNamesByGidsAndNTypeIdsInMap(Matchers.anyListOf(Integer.class), Matchers.anyListOf(Integer.class));
 		this.action.saveGermplasmListDataRecords(this.germplasmNameObjects, this.germplasmList, importedGermplasms,
-				this.doNotCreateGermplasmsWithId);
+				this.excludeGermplasmCreateIds);
 		Mockito.verify(this.germplasmManager, Mockito.times(0)).addGermplasmName(Matchers.anyListOf(Name.class));
 	}
 
@@ -341,7 +338,7 @@ public class SaveGermplasmListActionTest {
 		attributeTypesMap.put("MATURITY", "immature");
 		attributeTypesMap.put("ANCEST", "long lineage");
 		this.importedGermplasmList.getImportedGermplasm().get(0).setAttributeVariates(attributeTypesMap);
-		this.importedGermplasmListInitializer.addImportedVariates(this.importedGermplasmList, "NOTES", "MATURITY", "ANCEST");
+		ImportedGermplasmListDataInitializer.addImportedVariates(this.importedGermplasmList, "NOTES", "MATURITY", "ANCEST");
 
 		// Mock UserDefinedFields of attribute types from DB. Matching should be case insensitive
 		this.setUpExistingUserDefinedFieldsMocks();
@@ -361,7 +358,7 @@ public class SaveGermplasmListActionTest {
 		attributeTypesMap.put("NOTES", "note for germplasm 1");
 		attributeTypesMap.put(newAttributeType, "sample value for test attribute");
 		this.importedGermplasmList.getImportedGermplasm().get(0).setAttributeVariates(attributeTypesMap);
-		this.importedGermplasmListInitializer.addImportedVariates(this.importedGermplasmList, "NOTES", newAttributeType);
+		ImportedGermplasmListDataInitializer.addImportedVariates(this.importedGermplasmList, "NOTES", newAttributeType);
 
 		// Mock UserDefinedFields of attribute types from DB. Matching should be case insensitive
 		this.setUpExistingUserDefinedFieldsMocks();
@@ -374,6 +371,97 @@ public class SaveGermplasmListActionTest {
 		final List<UserDefinedField> newUserDefinedFields = this.userDefinedFieldsCaptor.getValue();
 		Assert.assertEquals(1, newUserDefinedFields.size());
 		Assert.assertEquals(newAttributeType, newUserDefinedFields.get(0).getFcode());
+	}
+
+	@Test
+	public void testProcessGermplasmNamesAndLotsAllEntriesMatchedToExistingGermplasm() {
+		final List<Integer> matchedGids = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
+		// Method to test
+		this.action.processGermplasmNamesAndLots(this.germplasmNameObjects, matchedGids, SaveGermplasmListActionTest.SEED_STORAGE_LOCATION);
+
+		// Verify that no new germplasm was saved
+		Mockito.verify(this.germplasmManager, Mockito.times(0)).addGermplasm(Matchers.any(Germplasm.class), Matchers.any(Name.class));
+	}
+
+	@Test
+	public void testProcessGermplasmNamesAndLotsCreateNewGermplasmForAllEntries() {
+		// Method to test
+		this.action.processGermplasmNamesAndLots(this.germplasmNameObjects, new ArrayList<Integer>(),
+				SaveGermplasmListActionTest.SEED_STORAGE_LOCATION);
+
+		// Verify that new germplasm record was saved per each entry
+		Mockito.verify(this.germplasmManager, Mockito.times(SaveGermplasmListActionTest.NO_OF_ENTRIES))
+				.addGermplasm(Matchers.any(Germplasm.class), Matchers.any(Name.class));
+	}
+
+	@Test
+	public void testProcessGermplasmNamesAndLotsReuseGermplasmForSomeEntries() {
+		final int originalIndex1 = 0;
+		final int originalIndex2 = 1;
+		final int dupeIndex1 = 5;
+		final int dupeIndex2 = 6;
+		// Mark two entries as duplicate of previous entries
+		this.germplasmNameObjects.get(dupeIndex1).getGermplasm()
+				.setGid(this.germplasmNameObjects.get(originalIndex1).getGermplasm().getGid());
+		this.germplasmNameObjects.get(dupeIndex2).getGermplasm()
+				.setGid(this.germplasmNameObjects.get(originalIndex2).getGermplasm().getGid());
+
+		// Method to test
+		this.action.processGermplasmNamesAndLots(this.germplasmNameObjects, new ArrayList<Integer>(),
+				SaveGermplasmListActionTest.SEED_STORAGE_LOCATION);
+
+		// Verify that no unique germplasm record was created for duplicate entries
+		Mockito.verify(this.germplasmManager, Mockito.times(SaveGermplasmListActionTest.NO_OF_ENTRIES - 2))
+				.addGermplasm(Matchers.any(Germplasm.class), Matchers.any(Name.class));
+	}
+
+	@Test
+	public void testProcessGermplasmNamesAndLotsForNewGermplasmWithInventory() {
+		// Indicate that inventory is present
+		this.action.setSeedAmountScaleId(SaveGermplasmListActionTest.SEED_AMOUNT_SCALE_ID);
+
+		Mockito.when(this.germplasmManager.addGermplasm(Matchers.any(Germplasm.class), Matchers.any(Name.class))).thenReturn(101, 102, 103,
+				104, 105, 106, 107, 108, 109, 110);
+
+		// Method to test
+		this.action.processGermplasmNamesAndLots(this.germplasmNameObjects, new ArrayList<Integer>(),
+				SaveGermplasmListActionTest.SEED_STORAGE_LOCATION);
+
+		final Map<Integer, Lot> gidLotMap = this.action.getGidLotMap();
+		Assert.assertNotNull(gidLotMap);
+		Assert.assertEquals(SaveGermplasmListActionTest.NO_OF_ENTRIES, gidLotMap.size());
+		for (final Entry<Integer, Lot> entry : gidLotMap.entrySet()) {
+			// check that the entity IDS of the lots created are for dummy GIDS of created germplasm
+			final Integer gid = entry.getKey();
+			final Lot lot = entry.getValue();
+			Assert.assertEquals(gid, lot.getEntityId());
+		}
+	}
+
+	@Test
+	public void testProcessGermplasmNamesAndLotsForExistingGermplasmAddingInventory() {
+		// Indicate that inventory is present
+		this.action.setSeedAmountScaleId(SaveGermplasmListActionTest.SEED_AMOUNT_SCALE_ID);
+
+		final List<Integer> matchedGids = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+		// Method to test
+		this.action.processGermplasmNamesAndLots(this.germplasmNameObjects, matchedGids, SaveGermplasmListActionTest.SEED_STORAGE_LOCATION);
+
+		final Map<Integer, Lot> gidLotMap = this.action.getGidLotMap();
+		Assert.assertNotNull(gidLotMap);
+		Assert.assertEquals(SaveGermplasmListActionTest.NO_OF_ENTRIES, gidLotMap.size());
+		for (final Entry<Integer, Lot> entry : gidLotMap.entrySet()) {
+			final Integer gid = entry.getKey();
+			final Lot lot = entry.getValue();
+			Assert.assertEquals(gid, lot.getEntityId());
+			Assert.assertEquals(SaveGermplasmListActionTest.SEED_AMOUNT_SCALE_ID, lot.getScaleId());
+			Assert.assertEquals(EntityType.GERMPLSM.name(), lot.getEntityType());
+			Assert.assertEquals(SaveGermplasmListActionTest.SEED_STORAGE_LOCATION, lot.getLocationId());
+			Assert.assertEquals(SaveGermplasmListAction.INVENTORY_COMMENT, lot.getComments());
+			Assert.assertEquals(SaveGermplasmListActionTest.CURRENT_LOCAL_ID, lot.getUserId());
+			Assert.assertEquals(new Integer("0"), lot.getStatus());
+		}
 	}
 
 	private void setUpExistingUserDefinedFieldsMocks() {
@@ -394,7 +482,7 @@ public class SaveGermplasmListActionTest {
 
 	private Map<Integer, List<Name>> createNamesMap(final int size) {
 		final Map<Integer, List<Name>> namesMap = new HashMap<Integer, List<Name>>();
-		final List<Name> existingNames = this.nameTDI.createNameList(size);
+		final List<Name> existingNames = NameTestDataInitializer.createNameList(size);
 		for (int i = 0; i < size; i++) {
 			namesMap.put(i + 1, existingNames);
 		}

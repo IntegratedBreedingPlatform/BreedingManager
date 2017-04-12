@@ -173,18 +173,6 @@ public class GenerateStockIDsDialog extends BaseSubWindow implements Initializin
 			}
 		});
 
-		this.txtSpecifyPrefix.setTextChangeEventMode(TextChangeEventMode.EAGER);
-		this.txtSpecifyPrefix.addListener(new TextChangeListener() {
-
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void textChange(TextChangeEvent event) {
-
-				GenerateStockIDsDialog.this.updateSampleStockId(event.getText());
-
-			}
-		});
 		this.txtSpecifyPrefix.addListener(new TextField.ValueChangeListener() {
 
 			private static final long serialVersionUID = 1L;

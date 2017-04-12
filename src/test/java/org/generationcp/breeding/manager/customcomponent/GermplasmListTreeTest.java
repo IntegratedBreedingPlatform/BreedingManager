@@ -5,6 +5,7 @@ import java.util.Collections;
 
 import org.generationcp.breeding.manager.customfields.ListTreeComponent;
 import org.generationcp.breeding.manager.customfields.LocalListFoldersTreeComponent;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.junit.Before;
@@ -31,6 +32,7 @@ public class GermplasmListTreeTest {
 	public void testLocalTreeItemDescription() {
 		listTreeComponent.setGermplasmListManager(Mockito.mock(GermplasmListManager.class));
 		listTreeComponent.setUserDataManager(Mockito.mock(UserDataManager.class));
+		listTreeComponent.setGermplasmDataManager(Mockito.mock(GermplasmDataManager.class));
 		listTreeComponent.addGermplasmListNodeToComponent(Collections.EMPTY_LIST, 1);
 		Mockito.verify(this.listTree).setItemDescriptionGenerator(Matchers.any(AbstractSelect.ItemDescriptionGenerator.class));
 	}

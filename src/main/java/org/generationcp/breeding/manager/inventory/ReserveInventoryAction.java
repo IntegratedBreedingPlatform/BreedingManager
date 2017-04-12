@@ -163,7 +163,7 @@ public class ReserveInventoryAction implements Serializable {
 			final Integer ibdbUserId = this.contextUtil.getCurrentUserLocalId();
 			final User userById = this.userDataManager.getUserById(ibdbUserId);
 
-			Double availableBalance = availableBalanceMap.get(lrecId);
+			Double availableBalance = availableBalanceMap.get(lotId);
 			Double reservationAmount = entry.getValue();
 
 			if (availableBalance <= 0.0 || reservationAmount > availableBalance) {
@@ -199,19 +199,26 @@ public class ReserveInventoryAction implements Serializable {
 		Map<Integer, Double> availableBalanceMap = new HashMap<>();
 
 		if(!CollectionUtils.isEmpty(validReservationsToSave)) {
-			List<Integer> recordIdList = new ArrayList<>();
-			for (Map.Entry<ListEntryLotDetails, Double> entry : validReservationsToSave.entrySet()) {
-				ListEntryLotDetails lotDetail = entry.getKey();
-				recordIdList.add(lotDetail.getId());
-			}
 
-			final List<GermplasmListData> inventoryData = this.inventoryDataManager.getLotCountsForListEntries(listId, recordIdList);
+			final List<GermplasmListData> inventoryData = this.inventoryDataManager.getLotDetailsForList(listId, 0, Integer.MAX_VALUE);
 
 			if (!CollectionUtils.isEmpty(inventoryData)) {
 				for (GermplasmListData germplasmListData : inventoryData) {
-					ListDataInventory inventoryInfo = germplasmListData.getInventoryInfo();
-					Double totalAvailableBalance = inventoryInfo.getTotalAvailableBalance();
-					availableBalanceMap.put(germplasmListData.getId(), totalAvailableBalance);
+
+					final ListDataInventory listDataInventory = germplasmListData.getInventoryInfo();
+					final List<ListEntryLotDetails> lotDetails = (List<ListEntryLotDetails>) listDataInventory.getLotRows();
+
+					if (lotDetails != null) {
+						for (final ListEntryLotDetails lotDetail : lotDetails) {
+							if(ListDataInventory.RESERVED.equals(lotDetail.getWithdrawalStatus())){
+								availableBalanceMap.put(lotDetail.getLotId(), 0.0);
+							} else {
+								Double totalAvailableBalance = lotDetail.getAvailableLotBalance();
+								availableBalanceMap.put(lotDetail.getLotId(), totalAvailableBalance);
+							}
+
+						}
+					}
 				}
 			}
 		}

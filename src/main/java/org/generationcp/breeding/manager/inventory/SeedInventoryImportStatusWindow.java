@@ -23,7 +23,6 @@ import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
-import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.Transaction;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +62,6 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow implements In
 
 	private List<ImportedSeedInventory> importedSeedInventories;
 	private List<Transaction> processedTransactions;
-	private List<Lot> closedLots;
 	Component listComponent;
 
 	private Map<String, String> importStatusMessages = new HashMap<>();
@@ -73,12 +71,11 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow implements In
 	}
 
 	public SeedInventoryImportStatusWindow(final Component source, final Component listComponent,
-			List<ImportedSeedInventory> importedSeedInventories, List<Transaction> processedTransactions, List<Lot> closedLots) {
+			List<ImportedSeedInventory> importedSeedInventories, List<Transaction> processedTransactions) {
 		this.source = source;
 		this.listComponent = listComponent;
 		this.importedSeedInventories = importedSeedInventories;
 		this.processedTransactions = processedTransactions;
-		this.closedLots = closedLots;
 	}
 
 	@Override
@@ -121,7 +118,7 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow implements In
 
 		this.cancelButton = new Button(this.messageSource.getMessage(Message.CANCEL));
 		this.cancelButton.setDebugId("cancelButton");
-		this.cancelButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
+		this.cancelButton.addStyleName(Bootstrap.Buttons.DEFAULT.styleName());
 
 	}
 
@@ -208,7 +205,7 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow implements In
 	}
 
 	public void continueAction() {
-		if (!this.processedTransactions.isEmpty() || !this.closedLots.isEmpty()) {
+		if (!this.processedTransactions.isEmpty()) {
 			boolean flagCommittedStatus = checkAnyTransactionsAlreadyCommitted();
 
 			if (flagCommittedStatus) {
@@ -217,11 +214,10 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow implements In
 				this.close();
 			} else {
 				inventoryDataManager.addTransactions(this.processedTransactions);
-				inventoryDataManager.updateLots(closedLots);
 
 				if (this.listComponent instanceof ListComponent) {
-					((ListComponent) this.listComponent).refreshInventoryListDataTabel();
 					((ListComponent) this.listComponent).resetListDataTableValues();
+					((ListComponent) this.listComponent).resetListInventoryTableValues();
 				}
 
 			  	if (this.listComponent instanceof ListBuilderComponent) {
@@ -276,8 +272,8 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow implements In
 		final HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setDebugId("buttonLayout");
 		buttonLayout.setSpacing(true);
-		buttonLayout.addComponent(this.continueButton);
 		buttonLayout.addComponent(this.cancelButton);
+		buttonLayout.addComponent(this.continueButton);
 
 		this.mainLayout.addComponent(this.statusTable);
 		this.mainLayout.addComponent(buttonLayout);
@@ -309,10 +305,6 @@ public class SeedInventoryImportStatusWindow extends BaseSubWindow implements In
 
 	public Map<String, String> getImportStatusMessages() {
 		return importStatusMessages;
-	}
-
-	public void setClosedLots(List<Lot> closedLots) {
-		this.closedLots = closedLots;
 	}
 
 	public void setProcessedTransactions(List<Transaction> processedTransactions) {

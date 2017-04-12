@@ -12,6 +12,7 @@ import org.generationcp.breeding.manager.inventory.ListDataAndLotDetails;
 import org.generationcp.breeding.manager.listmanager.ListComponent;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
+import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
@@ -397,13 +398,24 @@ public class InventoryTableDropHandler extends DropHandlerMethods implements Dro
 		newItem.getItemProperty(ColumnLabels.TAG.getName()).setValue(itemCheckBox);
 		newItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).setValue(entryId);
 		newItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).setValue(targetDesignationButton);
-		newItem.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).setValue(lotDetail.getLocationOfLot().getLname());
+
+		StringBuilder lotLocation = new StringBuilder("");
+		if (lotDetail.getLocationOfLot() != null) {
+			lotLocation.append(lotDetail.getLocationOfLot().getLname());
+		}
+
+		newItem.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).setValue(lotLocation.toString());
 		newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(lotDetail.getActualLotBalance());
-		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(lotDetail.getWithdrawalBalance());
-		newItem.getItemProperty(ColumnLabels.STATUS.getName()).setValue(lotDetail.getWithdrawalStatus());
+		newItem.getItemProperty(ColumnLabels.RESERVATION.getName()).setValue(lotDetail.getReservedTotalForEntry());
+		newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(lotDetail.getCommittedTotalForEntry());
 		newItem.getItemProperty(ColumnLabels.COMMENT.getName()).setValue(lotDetail.getCommentOfLot());
 		newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(lotDetail.getStockIds());
-		newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotDetail.getLotId());
+
+		final Button lotButton = new Button(lotDetail.getLotId().toString(),
+				new LotDetailsButtonClickListener(lotDetail.getEntityIdOfLot(), targetDesignationButton.toString(), this.targetTable, lotDetail.getLotId()));
+		lotButton.setStyleName(BaseTheme.BUTTON_LINK);
+		newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotButton);
+
 		newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(seedSource);
 		
 

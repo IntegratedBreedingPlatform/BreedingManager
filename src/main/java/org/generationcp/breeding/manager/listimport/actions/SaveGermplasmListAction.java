@@ -52,7 +52,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 @Configurable
 public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
-	private static final String INVENTORY_COMMENT = "From List Import";
+	public static final String INVENTORY_COMMENT = "From List Import";
 	public static final String WB_ACTIVITY_NAME = "Imported a Germplasm List";
 	public static final String WB_ACTIVITY_DESCRIPTION = "Imported list from file ";
 	public static final Integer LIST_DATA_STATUS = 0;
@@ -203,51 +203,58 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		this.gidLotMap.clear();
 		this.gidTransactionSetMap.clear();
 
-		final Map<Integer, GermplasmName> addedGermplasmNameMap = new HashMap<Integer, GermplasmName>();
+		final Map<Integer, Integer> tempGidToRealGidMap = new HashMap<>();
+		final Map<Integer, Germplasm> createdGermplasmMap = new HashMap<>();
 		for (final GermplasmName germplasmName : germplasmNameObjects) {
 			final Name name = germplasmName.getName();
 			name.setNid(null);
 			// Nstat = name status
 			name.setNstat(Integer.valueOf(1));
-			Integer gid = null;
+			final Integer gid = germplasmName.getGermplasm().getGid();
+			Integer finalGid = null;
 			final Germplasm germplasm;
 
+			// If entry was matched to existing germplasm and germplasm record should not be created
 			if (excludeGermplasmCreateIds.contains(germplasmName.getGermplasm().getGid())) {
-				// If germplasm record should not be created
-				gid = germplasmName.getGermplasm().getGid();
 				germplasm = this.germplasmManager.getGermplasmByGID(gid);
 				germplasmName.setGermplasm(germplasm);
 				name.setGermplasmId(gid);
+				finalGid = gid;
+
+				// Save new germplasm record
 			} else {
-				// create germplasm record
 				// a local GID of zero reflects no previous known GID from other systems
 				germplasmName.getGermplasm().setLgid(Integer.valueOf(0));
 
-				final Germplasm addedGermplasmMatch = this.getAlreadyAddedGermplasm(germplasmName, addedGermplasmNameMap);
-				if (addedGermplasmMatch != null) {
-					// we have an existing record
-					germplasm = addedGermplasmMatch;
-					germplasmName.setGermplasm(addedGermplasmMatch);
-					gid = addedGermplasmMatch.getGid();
+				final Integer realGid = tempGidToRealGidMap.get(gid);
+				if (createdGermplasmMap.containsKey(realGid)) {
+					// we have a previous entry in the same import with the same gid
+					final Germplasm createdGermplasm = createdGermplasmMap.get(realGid);
+					germplasmName.setGermplasm(createdGermplasm);
+					finalGid = createdGermplasm.getGid();
 				} else {
-					// not yet added, create new germplasm record
+					// not yet added, save new germplasm record
 					germplasm = germplasmName.getGermplasm();
-					germplasmName.getGermplasm().setGid(null);
+					germplasm.setGid(null);
 					if (germplasm.getGdate().equals(Integer.valueOf(0))) {
 						final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 						final Date today = new Date();
 						germplasm.setGdate(Integer.valueOf(dateFormat.format(today)));
 					}
-					gid = this.germplasmManager.addGermplasm(germplasm, name);
-					addedGermplasmNameMap.put(germplasmName.getGermplasm().getGid(), germplasmName);
+
+					// For now have to do saving of germplasm one at a time for setting of final GIDs to duplicate entries
+					finalGid = this.germplasmManager.addGermplasm(germplasm, name);
+
+					createdGermplasmMap.put(finalGid, germplasm);
+					tempGidToRealGidMap.put(gid, finalGid);
 				}
 			}
 
 			// process inventory
 			if (this.seedAmountScaleId != null) {
-				final Lot lot = new Lot(null, this.contextUtil.getCurrentUserLocalId(), EntityType.GERMPLSM.name(), gid,
+				final Lot lot = new Lot(null, this.contextUtil.getCurrentUserLocalId(), EntityType.GERMPLSM.name(), finalGid,
 						seedStorageLocation, this.seedAmountScaleId, 0, 0, SaveGermplasmListAction.INVENTORY_COMMENT);
-				this.gidLotMap.put(gid, lot);
+				this.gidLotMap.put(finalGid, lot);
 			}
 		}
 	}
@@ -366,18 +373,6 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 			}
 		}
 		return 0;
-	}
-
-	private Germplasm getAlreadyAddedGermplasm(final GermplasmName germplasmName, final Map<Integer, GermplasmName> addedGermplasmNameMap) {
-		final Germplasm germplasm = germplasmName.getGermplasm();
-		for (final Integer gid : addedGermplasmNameMap.keySet()) {
-			final Germplasm addedGermplasm = addedGermplasmNameMap.get(gid).getGermplasm();
-			if (addedGermplasm.getGpid1().equals(germplasm.getGpid1()) && addedGermplasm.getGpid2().equals(germplasm.getGpid2())
-					&& addedGermplasmNameMap.get(gid).getName().getNval().equals(germplasmName.getName().getNval())) {
-				return addedGermplasm;
-			}
-		}
-		return null;
 	}
 
 	private GermplasmList saveGermplasmListRecord(final GermplasmList germplasmList) {
@@ -665,6 +660,10 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 	public Map<Integer, List<Transaction>> getGidTransactionSetMap() {
 		return this.gidTransactionSetMap;
+	}
+
+	public void setSeedAmountScaleId(final Integer seedAmountScaleId) {
+		this.seedAmountScaleId = seedAmountScaleId;
 	}
 
 }

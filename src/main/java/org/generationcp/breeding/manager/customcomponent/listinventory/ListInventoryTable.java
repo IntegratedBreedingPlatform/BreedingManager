@@ -4,6 +4,7 @@ package org.generationcp.breeding.manager.customcomponent.listinventory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -11,6 +12,7 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.customcomponent.ControllableRefreshTable;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.listmanager.listeners.GidLinkButtonClickListener;
+import org.generationcp.commons.Listener.LotDetailsButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.inventory.GermplasmInventory;
@@ -28,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.util.CollectionUtils;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
@@ -101,12 +104,12 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		this.listInventoryTable.addContainerProperty(ColumnLabels.DESIGNATION.getName(), Button.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.LOT_LOCATION.getName(), String.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.TOTAL.getName(), String.class, null);
+		this.listInventoryTable.addContainerProperty(ColumnLabels.RESERVATION.getName(), String.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.SEED_RESERVATION.getName(), String.class, null);
-		this.listInventoryTable.addContainerProperty(ColumnLabels.STATUS.getName(), String.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.COMMENT.getName(), String.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.STOCKID.getName(), Label.class, null);
 		this.listInventoryTable.addContainerProperty(ColumnLabels.SEED_SOURCE.getName(), String.class, null);
-		this.listInventoryTable.addContainerProperty(ColumnLabels.LOT_ID.getName(), Integer.class, null);
+		this.listInventoryTable.addContainerProperty(ColumnLabels.LOT_ID.getName(), Button.class, null);
 
 		this.listInventoryTable.setColumnHeader(ColumnLabels.TAG.getName(), this.messageSource.getMessage(Message.CHECK_ICON));
 		this.listInventoryTable.setColumnHeader(ColumnLabels.ENTRY_ID.getName(), this.messageSource.getMessage(Message.HASHTAG));
@@ -116,10 +119,10 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 				ColumnLabels.LOT_LOCATION.getTermNameFromOntology(this.ontologyDataManager));
 		this.listInventoryTable.setColumnHeader(ColumnLabels.TOTAL.getName(),
 				ColumnLabels.TOTAL.getTermNameFromOntology(this.ontologyDataManager));
+		this.listInventoryTable.setColumnHeader(ColumnLabels.RESERVATION.getName(),
+				ColumnLabels.RESERVATION.getTermNameFromOntology(this.ontologyDataManager));
 		this.listInventoryTable.setColumnHeader(ColumnLabels.SEED_RESERVATION.getName(),
 				ColumnLabels.SEED_RESERVATION.getTermNameFromOntology(this.ontologyDataManager));
-		this.listInventoryTable.setColumnHeader(ColumnLabels.STATUS.getName(),
-				ColumnLabels.STATUS.getTermNameFromOntology(this.ontologyDataManager));
 		this.listInventoryTable.setColumnHeader(ColumnLabels.COMMENT.getName(),
 				ColumnLabels.COMMENT.getTermNameFromOntology(this.ontologyDataManager));
 		this.listInventoryTable.setColumnHeader(ColumnLabels.STOCKID.getName(),
@@ -193,32 +196,48 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
   					}
   
   					newItem.getItemProperty(ColumnLabels.LOT_LOCATION.getName()).setValue(lotLocation);
-  
 
-  					String available = "";
+					String lotScaleAbbr = "";
+
+					if(lotDetail.getLotScaleNameAbbr() != null) {
+						lotScaleAbbr = lotDetail.getLotScaleNameAbbr();
+					}
+
+
+  					StringBuilder available = new StringBuilder("");
 					if(lotDetail.getAvailableLotBalance() != null){
-						available = lotDetail.getAvailableLotBalance() + lotDetail.getLotScaleNameAbbr();
-					}
-  					newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(available);
+						available.append(lotDetail.getAvailableLotBalance());
+						available.append(lotScaleAbbr);
 
-					String withdrawalBalance = "";
-					if(lotDetail.getWithdrawalBalance() != null){
-						withdrawalBalance = lotDetail.getWithdrawalBalance() + lotDetail.getLotScaleNameAbbr();
 					}
-  					newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(withdrawalBalance);
+  					newItem.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(available.toString());
 
-					String status = "";
-					if(lotDetail.getWithdrawalStatus() != null){
-						status = lotDetail.getWithdrawalStatus();
+					StringBuilder reservedBalance = new StringBuilder("");
+					if(lotDetail.getReservedTotalForEntry() != null){
+						reservedBalance.append(lotDetail.getReservedTotalForEntry());
+						reservedBalance.append(lotScaleAbbr);
+
 					}
-					newItem.getItemProperty(ColumnLabels.STATUS.getName()).setValue(status);
+					newItem.getItemProperty(ColumnLabels.RESERVATION.getName()).setValue(reservedBalance.toString());
+
+					StringBuilder committedBalance = new StringBuilder("");
+					if(lotDetail.getCommittedTotalForEntry() != null){
+						committedBalance.append(lotDetail.getCommittedTotalForEntry());
+						committedBalance.append(lotScaleAbbr);
+					}
+  					newItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(committedBalance);
+
   					newItem.getItemProperty(ColumnLabels.COMMENT.getName()).setValue(lotDetail.getCommentOfLot());
   
   					final String stockIds = lotDetail.getStockIds();
   					final Label stockIdsLbl = new Label(stockIds);
   					stockIdsLbl.setDescription(stockIds);
   					newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(stockIdsLbl);
-  					newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotDetail.getLotId());
+					final Button lotButton = new Button(lotDetail.getLotId().toString(),
+							new LotDetailsButtonClickListener(lotDetail.getEntityIdOfLot(), designation, this.listInventoryTable,
+									lotDetail.getLotId()));
+					lotButton.setStyleName(BaseTheme.BUTTON_LINK);
+					newItem.getItemProperty(ColumnLabels.LOT_ID.getName()).setValue(lotButton);
   					newItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).setValue(inventoryDetail.getSeedSource());
   					
   					
@@ -251,17 +270,32 @@ public class ListInventoryTable extends TableWithSelectAllLayout implements Init
 		for (final ListEntryLotDetails lotDetail : lotDetailsToCancel) {
 			final Item item = this.listInventoryTable.getItem(lotDetail);
 			item.getItemProperty(ColumnLabels.TOTAL.getName()).setValue(lotDetail.getAvailableLotBalance() + lotDetail.getLotScaleNameAbbr());
-			item.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).setValue(lotDetail.getWithdrawalBalance() + lotDetail.getLotScaleNameAbbr());
-			item.getItemProperty(ColumnLabels.STATUS.getName()).setValue(lotDetail.getWithdrawalStatus());
+			item.getItemProperty(ColumnLabels.RESERVATION.getName()).setValue(lotDetail.getReservedTotalForEntry() + lotDetail.getLotScaleNameAbbr());
 		}
 	}
 
-	public boolean isSelectedEntriesHasReservation(final List<ListEntryLotDetails> lotDetailsGid) {
+	public boolean isSelectedEntriesHasReservation(final List<ListEntryLotDetails> lotDetailsGid,  Map<ListEntryLotDetails, Double> validReservations) {
+		if (!CollectionUtils.isEmpty(validReservations)) {
+			for (final ListEntryLotDetails lotDetails : lotDetailsGid) {
+				for (Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()) {
+					ListEntryLotDetails validReservationToSave = entry.getKey();
+					if (lotDetails.getLotId().equals(validReservationToSave.getLotId())) {
+						return true;
+					}
+				}
+			}
+		}
+
 		for (final ListEntryLotDetails lotDetails : lotDetailsGid) {
 			final Item item = this.listInventoryTable.getItem(lotDetails);
-			final String newResColumn = (String) item.getItemProperty(ColumnLabels.STATUS.getName()).getValue();
-			if (GermplasmInventory.RESERVED.equals(newResColumn)) {
-				return true;
+			final String newResColumn = (String) item.getItemProperty(ColumnLabels.RESERVATION.getName()).getValue();
+			final String scaleAbbrv = lotDetails.getLotScaleNameAbbr();
+			if (scaleAbbrv != null) {
+				final String reservation = newResColumn.replace(scaleAbbrv, "");
+				final double resAmountToCancel = Double.parseDouble(reservation);
+				if (resAmountToCancel > 0) {
+					return true;
+				}
 			}
 		}
 		return false;
