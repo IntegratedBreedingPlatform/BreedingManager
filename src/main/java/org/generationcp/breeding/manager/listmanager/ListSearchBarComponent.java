@@ -2,14 +2,17 @@
 package org.generationcp.breeding.manager.listmanager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.listmanager.util.SearchType;
 import org.generationcp.breeding.manager.service.BreedingManagerSearchException;
 import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
+import org.generationcp.commons.vaadin.ui.ConfirmDialog;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -21,13 +24,12 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.TextField;
@@ -43,17 +45,15 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 			+ " <br/><br/><b>The search results will show lists in which: </b>" + " <ul>"
 			+ "  <li>The list name contains the search term </li>"
 			+ "  <li>The list contains germplasm with names that contain the search term </li>"
-			+ "  <li>The list contains germplasm with GIDs that contain the search term </li>" + " </ul>"
-			+ " The <b>Exact matches only</b> checkbox shows results that match the search "
-			+ " term exactly when checked. If you uncheck this option, the search  "
-			+ " will show results that contain the search term you enter.";
+			+ "  <li>The list contains germplasm with GIDs that contain the search term </li>" + " </ul>";
 
-	private HorizontalLayout searchBarLayout;
+	private HorizontalLayout searchBarLayoutLeft;
+	private CssLayout searchBarLayoutRight;
 	private TextField searchField;
 	private final ListSearchResultsComponent searchResultsComponent;
 	private Button searchButton;
-	private CheckBox exactMatchesOnlyCheckBox;
 	private PopupView popup;
+	private OptionGroup searchTypeOptions;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -97,10 +97,15 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 		this.popup.setDebugId("popup");
 		this.popup.setStyleName("gcp-popup-view");
 
-		this.exactMatchesOnlyCheckBox = new CheckBox();
-		this.exactMatchesOnlyCheckBox.setDebugId("exactMatchesOnlyCheckBox");
-		this.exactMatchesOnlyCheckBox.setValue(false);
-		this.exactMatchesOnlyCheckBox.setCaption(this.messageSource.getMessage(Message.EXACT_MATCHES_ONLY));
+		this.searchTypeOptions = new OptionGroup();
+		this.searchTypeOptions.setDebugId("searchTypeOptions");
+		for (final SearchType searchType : SearchType.values()) {
+			this.searchTypeOptions.addItem(searchType);
+			this.searchTypeOptions.setItemCaption(searchType, this.messageSource.getMessage(searchType.getLabel()));
+		}
+
+		this.searchTypeOptions.setValue(SearchType.STARTS_WITH_KEYWORD);
+		this.searchTypeOptions.setStyleName("v-select-optiongroup-horizontal");
 	}
 
 	@Override
@@ -137,23 +142,24 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 	public void layoutComponents() {
 		final CssLayout panelLayout = new CssLayout();
 		panelLayout.setDebugId("panelLayout");
+
 		panelLayout.setMargin(true);
 		panelLayout.addStyleName("lm-search-bar");
 
-		this.searchBarLayout = new HorizontalLayout();
-		this.searchBarLayout.setDebugId("searchBarLayout");
-		this.searchBarLayout.setHeight("24px");
-		this.searchBarLayout.setSpacing(true);
+		this.searchBarLayoutLeft = new HorizontalLayout();
+		this.searchBarLayoutLeft.setDebugId("searchBarLayoutLeft");
+		this.searchBarLayoutLeft.setSpacing(true);
+		this.searchBarLayoutLeft.addComponent(this.searchField);
+		this.searchBarLayoutLeft.addComponent(this.searchButton);
+		this.searchBarLayoutLeft.addComponent(this.popup);
 
-		this.searchBarLayout.addComponent(this.searchField);
-		this.searchBarLayout.addComponent(this.searchButton);
-		this.searchBarLayout.addComponent(this.popup);
-		this.searchBarLayout.addComponent(this.exactMatchesOnlyCheckBox);
+		this.searchBarLayoutRight = new CssLayout();
+		this.searchBarLayoutRight.setDebugId("searchBarLayoutRight");
+		this.searchBarLayoutRight.addComponent(this.searchTypeOptions);
 
-		this.searchBarLayout.setComponentAlignment(this.exactMatchesOnlyCheckBox, Alignment.MIDDLE_CENTER);
-		this.searchBarLayout.setComponentAlignment(this.popup, Alignment.MIDDLE_CENTER);
+		panelLayout.addComponent(this.searchBarLayoutLeft);
+		panelLayout.addComponent(this.searchBarLayoutRight);
 
-		panelLayout.addComponent(this.searchBarLayout);
 		this.setContent(panelLayout);
 	}
 
@@ -162,17 +168,40 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 		// Auto-generated method stub
 	}
 
-	public void searchButtonClickAction() {
-		final String q = this.searchField.getValue().toString();
-		this.doSearch(q);
+	void searchButtonClickAction() {
+		final String queryString = ListSearchBarComponent.this.searchField.getValue().toString();
+		final SearchType searchType = this.getSelectedSearchType();
+		// Show a warning message that search could be slow if search type = "Contains keyword"
+		if (SearchType.CONTAINS_KEYWORD.equals(searchType)) {
+			ConfirmDialog.show(this.getWindow().getParent(), ListSearchBarComponent.this.messageSource.getMessage(Message.WARNING),
+					ListSearchBarComponent.this.messageSource.getMessage(Message.SEARCH_TAKE_TOO_LONG_WARNING),
+					ListSearchBarComponent.this.messageSource.getMessage(Message.OK),
+					ListSearchBarComponent.this.messageSource.getMessage(Message.CANCEL), new ConfirmDialog.Listener() {
+
+						private static final long serialVersionUID = 1L;
+
+						@Override
+						public void onClose(final ConfirmDialog dialog) {
+							if (dialog.isConfirmed()) {
+								ListSearchBarComponent.this.doSearch(queryString);
+							}
+						}
+					});
+		} else {
+			ListSearchBarComponent.this.doSearch(queryString);
+		}
 	}
 
-	public void doSearch(final String q) {
-		final boolean exactMatchedOnly = (Boolean) this.exactMatchesOnlyCheckBox.getValue();
+	public void doSearch(final String query) {
 
 		try {
-			this.searchResultsComponent.applyGermplasmListResults(this.breedingManagerService.doGermplasmListSearch(q,
-					exactMatchedOnly ? Operation.EQUAL : Operation.LIKE));
+
+			final SearchType searchType = this.getSelectedSearchType();
+			final Operation operation = searchType.getOperation();
+			final String searchKeyword = SearchType.getSearchKeyword(query, searchType);
+
+			final List<GermplasmList> matchingLists = this.breedingManagerService.doGermplasmListSearch(searchKeyword, operation);
+			this.searchResultsComponent.applyGermplasmListResults(matchingLists);
 
 		} catch (final BreedingManagerSearchException e) {
 			if (Message.NO_SEARCH_RESULTS.equals(e.getErrorMessage())) {
@@ -190,12 +219,12 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 		}
 	}
 
-	public TextField getSearchField() {
-		return this.searchField;
+	private SearchType getSelectedSearchType() {
+		return (SearchType) ListSearchBarComponent.this.searchTypeOptions.getValue();
 	}
 
-	public void setExactMatchesOnlyCheckBox(final CheckBox exactMatchesOnlyCheckBox) {
-		this.exactMatchesOnlyCheckBox = exactMatchesOnlyCheckBox;
+	public TextField getSearchField() {
+		return this.searchField;
 	}
 
 	public void setBreedingManagerService(final BreedingManagerService breedingManagerService) {
@@ -204,6 +233,10 @@ public class ListSearchBarComponent extends Panel implements Internationalizable
 
 	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
+	}
+
+	public void setSearchType(final SearchType searchType) {
+		this.searchTypeOptions.setValue(searchType);
 	}
 
 }

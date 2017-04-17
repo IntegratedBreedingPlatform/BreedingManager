@@ -1,12 +1,10 @@
 
 package org.generationcp.breeding.manager.listmanager;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listmanager.dialog.AddEntryDialogSource;
+import org.generationcp.breeding.manager.listmanager.util.SearchType;
 import org.generationcp.breeding.manager.service.BreedingManagerSearchException;
 import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -57,7 +55,6 @@ public class GermplasmSearchBarComponent extends CssLayout
 					+ "<li>Parents of the matching germplasm (if selected)</li>" + "</ul>";
 
 	public static final String LM_COMPONENT_WRAP = "lm-component-wrap";
-	private static final String PERCENT = "%";
 
 	private final AddEntryDialogSource source;
 	private HorizontalLayout searchBarLayoutLeft;
@@ -69,9 +66,6 @@ public class GermplasmSearchBarComponent extends CssLayout
 	private CheckBox includeParentsCheckBox;
 	private CheckBox includeMGMembersCheckbox;
 	private PopupView popup;
-	private String matchesStartingWith;
-	private String exactMatches;
-	private String matchesContaining;
 	private OptionGroup searchTypeOptions;
 
 	@Autowired
@@ -113,18 +107,15 @@ public class GermplasmSearchBarComponent extends CssLayout
 
 		this.searchField = new TextField();
 		this.searchField.setDebugId("searchField");
-		this.searchField.setDebugId("searchId");
 		this.searchField.setImmediate(true);
 
 		this.searchButton = new Button(this.messageSource.getMessage(Message.SEARCH));
-		this.searchButton.setDebugId("searchButton");
 		this.searchButton.setDebugId("searchButton");
 		this.searchButton.setHeight("24px");
 		this.searchButton.addStyleName(Bootstrap.Buttons.INFO.styleName());
 		this.searchButton.setData(GermplasmSearchBarComponent.SEARCH_BUTTON);
 
 		final Label descLbl = new Label(GermplasmSearchBarComponent.GUIDE, Label.CONTENT_XHTML);
-		descLbl.setDebugId("descLbl");
 		descLbl.setDebugId("descLbl");
 		descLbl.setWidth("300px");
 		this.popup = new PopupView(" ? ", descLbl);
@@ -133,13 +124,11 @@ public class GermplasmSearchBarComponent extends CssLayout
 
 		this.withInventoryOnlyCheckBox = new CheckBox();
 		this.withInventoryOnlyCheckBox.setDebugId("withInventoryOnlyCheckBox");
-		this.withInventoryOnlyCheckBox.setDebugId("withInventoryOnlyCheckBox");
 
 		this.withInventoryOnlyCheckBox.setValue(false);
 		this.withInventoryOnlyCheckBox.setCaption(this.messageSource.getMessage(Message.WITH_INVENTORY_ONLY));
 
 		this.includeParentsCheckBox = new CheckBox();
-		this.includeParentsCheckBox.setDebugId("includeParentsCheckBox");
 		this.includeParentsCheckBox.setDebugId("includeParentsCheckBox");
 
 		this.includeParentsCheckBox.setValue(false);
@@ -147,21 +136,18 @@ public class GermplasmSearchBarComponent extends CssLayout
 
 		this.includeMGMembersCheckbox = new CheckBox();
 		this.includeMGMembersCheckbox.setDebugId("includeMGMembersCheckbox");
-		this.includeMGMembersCheckbox.setDebugId("includeMGMembersCheckbox");
 
 		this.includeMGMembersCheckbox.setValue(false);
 		this.includeMGMembersCheckbox.setCaption(this.messageSource.getMessage(Message.INCLUDE_GROUP_MEMBERS));
 
-		this.matchesStartingWith = this.messageSource.getMessage(Message.MATCHES_STARTING_WITH);
-		this.exactMatches = this.messageSource.getMessage(Message.EXACT_MATCHES);
-		this.matchesContaining = this.messageSource.getMessage(Message.MATCHES_CONTAINING);
-
-		final List<String> searchTypes = Arrays.asList(new String[] {this.matchesStartingWith, this.exactMatches, this.matchesContaining});
-		this.searchTypeOptions = new OptionGroup(null, searchTypes);
+		this.searchTypeOptions = new OptionGroup();
 		this.searchTypeOptions.setDebugId("searchTypeOptions");
-		this.searchTypeOptions.setDebugId("searchTypeOptions");
+		for (final SearchType searchType : SearchType.values()) {
+			this.searchTypeOptions.addItem(searchType);
+			this.searchTypeOptions.setItemCaption(searchType, this.messageSource.getMessage(searchType.getLabel()));
+		}
 
-		this.searchTypeOptions.setValue(this.matchesStartingWith);
+		this.searchTypeOptions.setValue(SearchType.STARTS_WITH_KEYWORD);
 		this.searchTypeOptions.setStyleName("v-select-optiongroup-horizontal");
 	}
 
@@ -223,7 +209,6 @@ public class GermplasmSearchBarComponent extends CssLayout
 
 		this.searchBarLayoutLeft = new HorizontalLayout();
 		this.searchBarLayoutLeft.setDebugId("searchBarLayoutLeft");
-		this.searchBarLayoutLeft.setDebugId("searchBarLayoutLeft");
 
 		this.searchBarLayoutLeft.setSpacing(true);
 		this.searchBarLayoutLeft.addComponent(this.searchField);
@@ -232,7 +217,6 @@ public class GermplasmSearchBarComponent extends CssLayout
 
 		this.searchBarLayoutRight = new CssLayout();
 		this.searchBarLayoutRight.setDebugId("searchBarLayoutRight");
-		this.searchBarLayoutLeft.setDebugId("searchBarLayoutRight");
 
 		this.searchBarLayoutRight.addComponent(this.withInventoryOnlyCheckBox);
 		this.searchBarLayoutRight.addComponent(this.includeParentsCheckBox);
@@ -244,7 +228,6 @@ public class GermplasmSearchBarComponent extends CssLayout
 		this.includeMGMembersCheckbox.addStyleName(GermplasmSearchBarComponent.LM_COMPONENT_WRAP);
 
 		final CssLayout firstRow = new CssLayout();
-		firstRow.setDebugId("firstRow");
 		firstRow.setDebugId("firstRow");
 
 		firstRow.addComponent(this.searchBarLayoutLeft);
@@ -269,9 +252,9 @@ public class GermplasmSearchBarComponent extends CssLayout
 
 	public void searchButtonClickAction() {
 
-		final String q = GermplasmSearchBarComponent.this.searchField.getValue().toString();
-		final String searchType = (String) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
-		if (GermplasmSearchBarComponent.this.matchesContaining.equals(searchType)) {
+		final String queryString = GermplasmSearchBarComponent.this.searchField.getValue().toString();
+		final SearchType searchType = this.getSelectedSearchType();
+		if (SearchType.CONTAINS_KEYWORD.equals(searchType)) {
 			ConfirmDialog.show(this.getSourceWindow(), GermplasmSearchBarComponent.this.messageSource.getMessage(Message.WARNING),
 					GermplasmSearchBarComponent.this.messageSource.getMessage(Message.SEARCH_TAKE_TOO_LONG_WARNING),
 					GermplasmSearchBarComponent.this.messageSource.getMessage(Message.OK),
@@ -282,12 +265,12 @@ public class GermplasmSearchBarComponent extends CssLayout
 						@Override
 						public void onClose(final ConfirmDialog dialog) {
 							if (dialog.isConfirmed()) {
-								GermplasmSearchBarComponent.this.doSearch(q);
+								GermplasmSearchBarComponent.this.doSearch(queryString);
 							}
 						}
 					});
 		} else {
-			GermplasmSearchBarComponent.this.doSearch(q);
+			GermplasmSearchBarComponent.this.doSearch(queryString);
 		}
 	}
 
@@ -312,10 +295,10 @@ public class GermplasmSearchBarComponent extends CssLayout
 					// validate first the keyword, if it is empty this will raise exception
 					GermplasmSearchBarComponent.this.breedingManagerService.validateEmptySearchString(q);
 
-					final String searchType = (String) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
-					final String searchKeyword = GermplasmSearchBarComponent.this.getSearchKeyword(q, searchType);
-					final Operation operation =
-							GermplasmSearchBarComponent.this.exactMatches.equals(searchType) ? Operation.EQUAL : Operation.LIKE;
+					final SearchType searchType = GermplasmSearchBarComponent.this.getSelectedSearchType();
+					final Operation operation = searchType.getOperation();
+					final String searchKeyword = SearchType.getSearchKeyword(q, searchType);
+
 					final boolean includeParents = (boolean) GermplasmSearchBarComponent.this.includeParentsCheckBox.getValue();
 					final boolean withInventoryOnly = (boolean) GermplasmSearchBarComponent.this.withInventoryOnlyCheckBox.getValue();
 					final boolean includeMGMembers = (boolean) GermplasmSearchBarComponent.this.includeMGMembersCheckbox.getValue();
@@ -344,17 +327,12 @@ public class GermplasmSearchBarComponent extends CssLayout
 					GermplasmSearchBarComponent.LOG.debug("" + monitor.stop());
 				}
 			}
+
 		});
 	}
 
-	private String getSearchKeyword(final String query, final String searchType) {
-		String searchKeyword = query;
-		if (this.matchesStartingWith.equals(searchType)) {
-			searchKeyword = searchKeyword + GermplasmSearchBarComponent.PERCENT;
-		} else if (this.matchesContaining.equals(searchType)) {
-			searchKeyword = GermplasmSearchBarComponent.PERCENT + searchKeyword + GermplasmSearchBarComponent.PERCENT;
-		}
-		return searchKeyword;
+	private SearchType getSelectedSearchType() {
+		return (SearchType) GermplasmSearchBarComponent.this.searchTypeOptions.getValue();
 	}
 
 	public SimpleResourceBundleMessageSource getMessageSource() {
@@ -371,5 +349,9 @@ public class GermplasmSearchBarComponent extends CssLayout
 
 	protected void setTransactionManager(final PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
+	}
+
+	public void setSearchType(final SearchType searchType) {
+		this.searchTypeOptions.setValue(searchType);
 	}
 }
