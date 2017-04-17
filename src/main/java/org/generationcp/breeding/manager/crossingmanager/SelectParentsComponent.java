@@ -208,8 +208,6 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 
 	protected void hideDetailsTabsheet() {
 		closeAllTabsButton.setVisible(false);
-		browseForListsButton.setVisible(false);
-		this.instructionForSelectParents.setVisible(false);
 		hideListDetailsTabSheet();
 	}
 
