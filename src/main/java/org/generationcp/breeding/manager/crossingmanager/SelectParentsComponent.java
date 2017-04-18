@@ -63,16 +63,14 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	private Label instructionForSelectParents;
 	private TabSheet listDetailsTabSheet;
 	private Button closeAllTabsButton;
-	private boolean hidden;
 
 	private Map<SelectParentsListDataComponent, Boolean> listStatusForChanges;
 
-	private Button selectParentsButton;
+	private Button toggleTabsheetButton;
 
 	public SelectParentsComponent(final CrossingManagerMakeCrossesComponent source) {
 		super();
 		this.source = source;
-		this.hidden = false;
 	}
 
 	@Override
@@ -96,10 +94,10 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 		this.selectParentsLabel.addStyleName(AppConstants.CssStyles.BOLD);
 		this.selectParentsLabel.setWidth("230px");
 
-		this.selectParentsButton = new Button();
-		this.selectParentsButton.setDebugId("selectParentsButton");
-		this.selectParentsButton.setImmediate(true);
-		this.selectParentsButton.setVisible(true);
+		this.toggleTabsheetButton = new Button();
+		this.toggleTabsheetButton.setDebugId("selectParentsButton");
+		this.toggleTabsheetButton.setImmediate(true);
+		this.toggleTabsheetButton.setVisible(true);
 
 		this.browseForListsButton = new Button(this.messageSource.getMessage(Message.BROWSE));
 		this.browseForListsButton.setDebugId("browseForListsButton");
@@ -187,19 +185,17 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 			}
 		});
 
-		selectParentsButton.addListener(new Button.ClickListener() {
+		toggleTabsheetButton.addListener(new Button.ClickListener() {
 
 			private static final long serialVersionUID = 6385074843600086746L;
 
 
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				if (hidden) {
+				if (!listDetailsTabSheet.isVisible()) {
 					showListDetailsTabSheet();
-					hidden = false;
 				} else {
 					hideDetailsTabsheet();
-					hidden = true;
 				}
 			}
 		});
@@ -217,7 +213,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 		setMargin(true);
 
 		final HeaderLabelLayout selectParentsHeaderLayout =
-				new HeaderLabelLayout(AppConstants.Icons.ICON_SELECT_PARENTS, selectParentsLabel, selectParentsButton);
+				new HeaderLabelLayout(AppConstants.Icons.ICON_SELECT_PARENTS, selectParentsLabel, toggleTabsheetButton);
 		selectParentsHeaderLayout.setDebugId("selectParentsHeaderLayout");
 
 		final HorizontalLayout leftLayout = new HorizontalLayout();
@@ -470,5 +466,9 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	
 	public Button getBrowseForListsButton() {
 		return this.browseForListsButton;
+	}
+	
+	public Button getToggleTabsheetButton() {
+		return this.toggleTabsheetButton;
 	}
 }
