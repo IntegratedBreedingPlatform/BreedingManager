@@ -1,15 +1,11 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
-import com.vaadin.data.Item;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.BaseTheme;
-import org.generationcp.breeding.manager.action.SaveGermplasmListActionFactory;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -17,7 +13,6 @@ import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.crossingmanager.listeners.ParentsTableCheckboxListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
-import org.generationcp.breeding.manager.customcomponent.UnsavedChangesSource;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryActionFactory;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
@@ -35,19 +30,21 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import com.vaadin.data.Item;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
 public class MakeCrossesParentsComponent extends VerticalLayout implements BreedingManagerLayout, InitializingBean,
-	InternationalizableComponent, UnsavedChangesSource {
+	InternationalizableComponent {
 
 	private static final String CLICK_TO_VIEW_GERMPLASM_INFORMATION = "Click to view Germplasm information";
-	private static final String CLICK_TO_VIEW_INVENTORY_DETAILS = "Click to view Inventory Details";
-	private static final String STRING_DASH = "-";
 	private static final Logger LOG = LoggerFactory.getLogger(MakeCrossesParentsComponent.class);
 	private static final long serialVersionUID = -4789763601080845176L;
 
@@ -111,12 +108,10 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 
 		this.femaleParentTab =
 			new ParentTabComponent(this.makeCrossesMain, this, this.messageSource.getMessage(Message.LABEL_FEMALE_PARENTS),
-				MakeCrossesParentsComponent.PARENTS_TABLE_ROW_COUNT, new SaveGermplasmListActionFactory(),
-				new ReserveInventoryActionFactory());
+				MakeCrossesParentsComponent.PARENTS_TABLE_ROW_COUNT, new ReserveInventoryActionFactory());
 
 		this.maleParentTab = new ParentTabComponent(this.makeCrossesMain, this, this.messageSource.getMessage(Message.LABEL_MALE_PARENTS),
-			MakeCrossesParentsComponent.PARENTS_TABLE_ROW_COUNT, new SaveGermplasmListActionFactory(),
-			new ReserveInventoryActionFactory());
+			MakeCrossesParentsComponent.PARENTS_TABLE_ROW_COUNT, new ReserveInventoryActionFactory());
 	}
 
 	@Override
@@ -402,7 +397,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 		return sortedSelectedValues;
 	}
 
-	@SuppressWarnings("unchecked")
 	public void addListToMaleTable(final Integer germplasmListId) {
 
 		try {
@@ -480,7 +474,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 
 	}
 
-	@SuppressWarnings("unchecked")
 	public void addListToFemaleTable(final Integer germplasmListId) {
 
 		try {
@@ -640,24 +633,6 @@ public class MakeCrossesParentsComponent extends VerticalLayout implements Breed
 
 	public CrossingManagerMakeCrossesComponent getMakeCrossesMain() {
 		return this.makeCrossesMain;
-	}
-
-	public Boolean hasUnsavedChanges() {
-		return this.femaleParentTab.hasUnsavedChanges() || this.maleParentTab.hasUnsavedChanges();
-	}
-
-	@Override
-	public void setHasUnsavedChangesMain(final boolean hasChanges) {
-		if (this.hasUnsavedChanges()) {
-			this.makeCrossesMain.setHasUnsavedChangesMain(true);
-		} else {
-			this.makeCrossesMain.setHasUnsavedChangesMain(hasChanges);
-		}
-	}
-
-	public void updateHasChangesForAllParentList() {
-		this.femaleParentTab.resetUnsavedChangesFlag();
-		this.maleParentTab.resetUnsavedChangesFlag();
 	}
 
 	public void updateUIForDeletedList(final GermplasmList germplasmList) {

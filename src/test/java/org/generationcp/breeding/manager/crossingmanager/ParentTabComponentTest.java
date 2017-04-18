@@ -23,7 +23,6 @@ import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
-import org.generationcp.middleware.domain.etl.Workbook;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -156,7 +155,7 @@ public class ParentTabComponentTest {
 		this.makeCrossesMain.setSelectParentsComponent(selectParentsComponent);
 
 		this.parentTabComponent = new ParentTabComponent(this.makeCrossesMain, source, parentLabel, rowCount,
-			this.saveGermplasmListActionFactory, this.reserveInventoryActionFactory);
+			this.reserveInventoryActionFactory);
 		source.setMaleParentTab(this.parentTabComponent);
 		source.setFemaleParentTab(this.parentTabComponent);
 		Mockito.doReturn(this.window).when(source).getWindow();

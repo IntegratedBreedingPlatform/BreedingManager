@@ -3,7 +3,6 @@ package org.generationcp.breeding.manager.crossingmanager.listeners;
 
 import java.util.ArrayList;
 
-import org.generationcp.breeding.manager.action.SaveGermplasmListActionFactory;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
 import org.generationcp.breeding.manager.crossingmanager.MakeCrossesParentsComponent;
@@ -64,7 +63,7 @@ public class CrossingManagerActionHandlerTest {
 		final MakeCrossesParentsComponent makeCrossesParentsComponent =
 				new MakeCrossesParentsComponent(Mockito.mock(CrossingManagerMakeCrossesComponent.class));
 		final ParentTabComponent parentTabComponent = new ParentTabComponent(Mockito.mock(CrossingManagerMakeCrossesComponent.class),
-				makeCrossesParentsComponent, "test", 10, new SaveGermplasmListActionFactory(), new ReserveInventoryActionFactory());
+				makeCrossesParentsComponent, "test", 10, new ReserveInventoryActionFactory());
 		parentTabComponent.setMessageSource(this.messageSource);
 		parentTabComponent.setOntologyDataManager(this.ontologyDataManager);
 		parentTabComponent.initializeMainComponents();
@@ -91,7 +90,6 @@ public class CrossingManagerActionHandlerTest {
 
 		Assert.assertTrue(this.crossingManagerActionHandler.getSource() instanceof MakeCrossesParentsComponent);
 		final MakeCrossesParentsComponent makeCrosses = (MakeCrossesParentsComponent) this.crossingManagerActionHandler.getSource();
-		Assert.assertTrue(makeCrosses.getMakeCrossesMain().hasUnsavedChangesMain());
 		Assert.assertNotNull(makeCrosses.getFemaleList());
 		Assert.assertNotNull(makeCrosses.getMaleList());
 	}

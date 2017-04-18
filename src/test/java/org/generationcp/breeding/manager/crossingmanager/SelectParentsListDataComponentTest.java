@@ -2,11 +2,8 @@ package org.generationcp.breeding.manager.crossingmanager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ModeView;
@@ -14,10 +11,10 @@ import org.generationcp.breeding.manager.customcomponent.ControllableRefreshTabl
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.customcomponent.listinventory.CrossingManagerInventoryTable;
-import org.generationcp.middleware.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
+import org.generationcp.middleware.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
@@ -30,11 +27,9 @@ import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.exceptions.verification.NeverWantedButInvoked;
@@ -42,7 +37,6 @@ import org.mockito.exceptions.verification.TooLittleActualInvocations;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.vaadin.data.Item;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
@@ -371,58 +365,7 @@ public class SelectParentsListDataComponentTest {
 				selectedEntriesLabel.contains(String.valueOf(SelectParentsListDataComponentTest.NO_OF_SELECTED)));
 	}
 
-	@Test
-	public void testViewListAction_WhenThereIsNoChanges() {
-		this.selectParents.setHasUnsavedChanges(false);
-
-		this.selectParents.viewListAction();
-
-		Assert.assertTrue("Expecting the mode is still in LIST VIEW when there is no change.",
-				this.makeCrossesMain.getModeView().equals(ModeView.LIST_VIEW));
-
-	}
-
-	@Test
-	public void testViewListAction_WhenThereIsChanges() {
-		this.selectParents.setHasUnsavedChanges(true);
-
-		this.selectParents.viewListAction();
-
-		Mockito.verify(this.makeCrossesMain, Mockito.times(1))
-				.showUnsavedChangesConfirmDialog(Matchers.anyString(), Matchers.any(ModeView.class));
-
-		Assert.assertTrue("Expecting the mode is set to LIST VIEW when there is a change.",
-				this.makeCrossesMain.getModeView().equals(ModeView.LIST_VIEW));
-
-	}
-
-	@Test
-	public void testViewInventoryAction_WhenThereIsNoChanges() {
-		Mockito.doReturn(ModeView.INVENTORY_VIEW).when(this.makeCrossesMain).getModeView();
-		this.selectParents.setHasUnsavedChanges(false);
-
-		this.selectParents.viewInventoryAction();
-
-		Assert.assertTrue("Expecting the mode is still in INVENTORY VIEW when there is no change.",
-				this.makeCrossesMain.getModeView().equals(ModeView.INVENTORY_VIEW));
-
-	}
-
-	@Test
-	public void testViewInventoryAction_WhenThereIsChanges() {
-		Mockito.doReturn(ModeView.INVENTORY_VIEW).when(this.makeCrossesMain).getModeView();
-		this.selectParents.setHasUnsavedChanges(true);
-
-		this.selectParents.viewInventoryAction();
-
-		Mockito.verify(this.makeCrossesMain, Mockito.times(1))
-				.showUnsavedChangesConfirmDialog(Matchers.anyString(), Matchers.any(ModeView.class));
-
-		Assert.assertTrue("Expecting the mode is set to INVENTORY VIEW when there is a change.",
-				this.makeCrossesMain.getModeView().equals(ModeView.INVENTORY_VIEW));
-
-	}
-
+	
 	@Test
 	public void testChangeToListView_WhenListInventoryTableIsVisible() {
 		Mockito.doReturn(true).when(this.listInventoryTable).isVisible();

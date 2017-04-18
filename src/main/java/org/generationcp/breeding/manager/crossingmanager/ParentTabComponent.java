@@ -12,8 +12,6 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
-import org.generationcp.breeding.manager.action.SaveGermplasmListAction;
-import org.generationcp.breeding.manager.action.SaveGermplasmListActionFactory;
 import org.generationcp.breeding.manager.action.SaveGermplasmListActionSource;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
@@ -25,8 +23,6 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntr
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUtil;
 import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
-import org.generationcp.breeding.manager.customcomponent.SaveListAsDialog;
-import org.generationcp.breeding.manager.customcomponent.SaveListAsDialogSource;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.listinventory.CrossingManagerInventoryTable;
 import org.generationcp.breeding.manager.inventory.InventoryDropTargetContainer;
@@ -37,7 +33,6 @@ import org.generationcp.breeding.manager.inventory.ReserveInventoryActionFactory
 import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryUtil;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
-import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.listmanager.util.InventoryTableDropHandler;
 import org.generationcp.commons.constant.ColumnLabels;
@@ -90,14 +85,13 @@ import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.Table.TableTransferable;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
-import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class ParentTabComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent, BreedingManagerLayout,
-	SaveGermplasmListActionSource, SaveListAsDialogSource, ReserveInventorySource, InventoryDropTargetContainer {
-
+	SaveGermplasmListActionSource, ReserveInventorySource, InventoryDropTargetContainer {
+	
 	@Autowired
-	private OntologyDataManager ontologyDataManager;
+    private OntologyDataManager ontologyDataManager;
 
 	@Autowired
 	private PlatformTransactionManager transactionManager;
@@ -146,11 +140,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 						newItem.getItemProperty(ColumnLabels.STOCKID.getName()).setValue(oldStockId);
 
 						ParentTabComponent.this.setHasUnsavedChanges(true);
-
-						// Checker if list is modified and list is central, force new list to be saved
-						if (ParentTabComponent.this.germplasmList != null && ParentTabComponent.this.germplasmList.getId() > 0) {
-							ParentTabComponent.this.isTreatAsNewList = true;
-						}
 
 					}
 				} else if (sourceTable.getData().equals(SelectParentsListDataComponent.LIST_DATA_TABLE_ID)) {
@@ -219,10 +208,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 							// updates the crossesMade save button if both parents are save at least once
 							ParentTabComponent.this.makeCrossesMain.getCrossesTableComponent().updateCrossesMadeSaveButton();
 
-						} else {
-							ParentTabComponent.this.setHasUnsavedChanges(true);
-							ParentTabComponent.this.isTreatAsNewList = true;
-						}
+						} 
 					}
 				} catch (final MiddlewareQueryException e) {
 					ParentTabComponent.LOG.error("Error in getting list by GID", e);
@@ -338,8 +324,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	private ContextMenu inventoryViewActionMenu;
 	private ContextMenuItem menuCopyToListFromInventory;
 	private ContextMenuItem menuInventorySaveChanges;
-	@SuppressWarnings("unused")
-	private ContextMenuItem menuListView;
 	private ContextMenuItem menuReserveInventory;
 
 	private static final String NO_LOT_FOR_THIS_GERMPLASM = "No Lot for this Germplasm";
@@ -374,15 +358,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	private final MakeCrossesParentsComponent source;
 	private CrossingManagerActionHandler parentActionListener;
 	private String listNameForCrosses;
-	private final SaveGermplasmListActionFactory saveGermplasmListActionFactory;
 	private final ReserveInventoryActionFactory reserveInventoryActionFactory;
-
-	private SaveListAsDialog saveListAsWindow;
-
-	private boolean hasChanges = false;
-
-	// if a germplasm list should be treated as new during saving
-	private boolean isTreatAsNewList = false;
 
 	// Inventory Related Variables
 	private ReserveInventoryWindow reserveInventory;
@@ -396,14 +372,12 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	public ParentTabComponent(
 		final CrossingManagerMakeCrossesComponent makeCrossesMain, final MakeCrossesParentsComponent source,
-		final String parentLabel, final Integer rowCount, final SaveGermplasmListActionFactory saveGermplasmListActionFactory,
-		final ReserveInventoryActionFactory reserveInventoryActionFactory) {
+		final String parentLabel, final Integer rowCount, final ReserveInventoryActionFactory reserveInventoryActionFactory) {
 		super();
 		this.makeCrossesMain = makeCrossesMain;
 		this.source = source;
 		this.parentLabel = parentLabel;
 		this.rowCount = rowCount;
-		this.saveGermplasmListActionFactory = saveGermplasmListActionFactory;
 		this.reserveInventoryActionFactory = reserveInventoryActionFactory;
 	}
 
@@ -466,7 +440,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		this.inventoryViewActionMenu.setWidth("295px");
 		this.menuCopyToListFromInventory = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
 		this.menuReserveInventory = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
-		this.menuListView = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
 		this.menuInventorySaveChanges = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SAVE_CHANGES));
 		this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
 		this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES));
@@ -600,11 +573,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		});
 	}
 
-	private boolean isOnlyReservationsMade(final ModeView modeView) {
-		return this.hasUnsavedChanges() && modeView.equals(ModeView.INVENTORY_VIEW) && this.germplasmList != null
-			&& !this.inventoryTableDropHandler.hasChanges();
-	}
-
 	private void updateListDataTableBeforeSaving() {
 		final List<Integer> alreadyAddedEntryIds = new ArrayList<Integer>();
 		final List<ListDataAndLotDetails> listDataAndLotDetails = this.inventoryTableDropHandler.getListDataAndLotDetails();
@@ -654,69 +622,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 				alreadyAddedEntryIds.add(listDataAndLotDetail.getEntryId());
 			}
-		}
-	}
-
-	protected void openSaveListAsDialog() {
-		this.saveListAsWindow = new SaveListAsDialog(this, this.germplasmList);
-		this.saveListAsWindow.setDebugId("saveListAsWindow");
-		this.saveListAsWindow.addStyleName(Reindeer.WINDOW_LIGHT);
-		this.saveListAsWindow.setData(this);
-		this.getWindow().addWindow(this.saveListAsWindow);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void saveList(final GermplasmList list) {
-		// update the listDataTable when the user tries to change list view but has unsaved changes in inventory view
-		if (this.prevModeView != null) {
-			if (this.prevModeView.equals(ModeView.INVENTORY_VIEW)) {
-				this.updateListDataTableBeforeSaving();
-			}
-		} else {
-			// update the listdatatable in inventory view w/o changing mode
-			if (this.source.getMakeCrossesMain().getModeView().equals(ModeView.INVENTORY_VIEW)) {
-				this.updateListDataTableBeforeSaving();
-			}
-		}
-
-		final List<GermplasmListEntry> currentListEntries = new ArrayList<GermplasmListEntry>();
-		currentListEntries.addAll((Collection<GermplasmListEntry>) this.listDataTable.getItemIds());
-
-		// Please correct the entryID, get from the parent table
-		// Create Map <Key: "GID+ENTRYID">, <Value:CheckBox Obj>
-		final SaveGermplasmListAction saveListAction = this.saveGermplasmListActionFactory.createInstance(this, list, currentListEntries);
-		try {
-			this.germplasmList = saveListAction.saveRecords();
-			this.updateCrossesSeedSource(this.germplasmList);
-			this.source.updateUIForSuccessfulSaving(this, this.germplasmList);
-
-			if (this.source.getMakeCrossesMain().getModeView().equals(ModeView.INVENTORY_VIEW) && !this.validReservationsToSave.isEmpty()) {
-
-				this.saveReservationChangesAction(false);
-				this.inventoryTableDropHandler.resetListDataAndLotDetails();
-
-			}
-
-			// <------- Reset Markers after save is complete ----------->
-			this.setHasUnsavedChanges(false);
-			this.isTreatAsNewList = false;
-
-			if (this.prevModeView != null) {
-				this.source.getMakeCrossesMain().updateView(this.source.getMakeCrossesMain().getModeView());
-
-				// reset the marker
-				this.prevModeView = null;
-			}
-
-			// Reserve Inventory Action will now be available after saving the list for the first time
-			this.menuReserveInventory.setEnabled(true);
-
-			// show success message for saving
-			MessageNotifier.showMessage(this.source.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
-				this.messageSource.getMessage(this.getSuccessMessage()), 3000);
-		} catch (final MiddlewareQueryException e) {
-			ParentTabComponent.LOG.error(e.getMessage(), e);
 		}
 	}
 
@@ -942,15 +847,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	/*--------------------------------------INVENTORY RELATED FUNCTIONS---------------------------------------*/
 
 	private void viewListAction() {
-
-		if (!this.hasUnsavedChanges()) {
-			this.source.getMakeCrossesMain().setModeView(ModeView.LIST_VIEW);
-		} else {
-			final String message =
-				"You have unsaved reservations for this list. " + "You will need to save them before changing views. "
-					+ "Do you want to save your changes?";
-			this.source.getMakeCrossesMain().showUnsavedChangesConfirmDialog(message, ModeView.LIST_VIEW);
-		}
+		this.source.getMakeCrossesMain().setModeView(ModeView.LIST_VIEW);
 	}
 
 	public void resetListInventoryTableValues() {
@@ -989,18 +886,7 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 	}
 
 	private void viewInventoryAction() {
-		if (this.hasChanges) {
-			if (this.makeCrossesMain.areBothParentsNewListWithUnsavedChanges()) {
-				MessageNotifier.showError(this.getWindow(), "Unsaved Parent Lists", "Please save parent lists first before changing view.");
-			} else {
-				this.source.getMakeCrossesMain().showUnsavedChangesConfirmDialog(
-					"You have unsaved changes to the male/female list you are "
-						+ "editing. You will need to save them before changing views. Do you want to save your changes?",
-					ModeView.INVENTORY_VIEW);
-			}
-		} else {
-			this.source.getMakeCrossesMain().setModeView(ModeView.INVENTORY_VIEW);
-		}
+		this.source.getMakeCrossesMain().setModeView(ModeView.INVENTORY_VIEW);
 	}
 
 	public void resetList() {
@@ -1130,10 +1016,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	public boolean saveReservationChangesAction(final boolean displayReservationSuccessMessage) {
 		boolean success;
-		// do nothing if there were no unsaved changes
-		if (!this.hasUnsavedChanges()) {
-			return false;
-		}
 
 		final ReserveInventoryAction reserveInventoryAction = this.reserveInventoryActionFactory.createInstance(this);
 		try {
@@ -1227,16 +1109,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 		this.germplasmList = germplasmList;
 	}
 
-	@Override
-	public void setCurrentlySavedGermplasmList(final GermplasmList list) {
-		this.germplasmList = list;
-	}
-
-	@Override
-	public Component getParentComponent() {
-		return this.makeCrossesMain.getSource();
-	}
-
 	private void updateCrossesSeedSource(final GermplasmList germplasmList) {
 		this.source.updateCrossesSeedSource(this, germplasmList);
 	}
@@ -1252,8 +1124,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	@Override
 	public void setHasUnsavedChanges(final Boolean hasChanges) {
-		this.hasChanges = hasChanges;
-
 		if (hasChanges) {
 			this.menuInventorySaveChanges.setEnabled(true);
 		} else {
@@ -1262,33 +1132,10 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 		this.inventoryTableDropHandler.setHasChanges(false);
 
-		this.source.setHasUnsavedChangesMain(this.hasChanges);
-	}
-
-	public boolean hasUnsavedChanges() {
-		if (this.inventoryTableDropHandler.hasChanges()) {
-			this.hasChanges = true;
-		}
-
-		return this.hasChanges;
-	}
-
-	public void setHasChanges(final boolean hasChanges) {
-		this.hasChanges = hasChanges;
 	}
 
 	public CheckBox getSelectAllCheckBox() {
 		return this.tableWithSelectAllLayout.getCheckBox();
-	}
-
-	public void discardChangesInListView() {
-		this.updateListDataTable(this.germplasmList);
-		this.viewInventoryActionConfirmed();
-	}
-
-	public void discardChangesInInventoryView() {
-		this.resetListInventoryTableValues();
-		this.changeToListView();
 	}
 
 	@Override
@@ -1317,10 +1164,8 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	public void updateUIforDeletedList(final GermplasmList germplasmList) {
 		if (this.germplasmList.getName().equals(germplasmList.getName())) {
-			this.getWindow().removeWindow(this.saveListAsWindow);
 			// refresh the list tree in select parents
 			this.makeCrossesMain.showNodeOnTree(germplasmList.getId());
-			this.saveListAsWindow = null;
 			this.setGermplasmList(null);
 			this.resetList();
 
@@ -1361,18 +1206,6 @@ public class ParentTabComponent extends VerticalLayout implements InitializingBe
 
 	public void setOntologyDataManager(final OntologyDataManager ontologyDataManager) {
 		this.ontologyDataManager = ontologyDataManager;
-	}
-
-	public boolean isTreatAsNewList() {
-		return this.isTreatAsNewList;
-	}
-
-	public void setIsTreatAsNewList(final boolean isTreatAsNewList) {
-		this.isTreatAsNewList = isTreatAsNewList;
-	}
-
-	public SaveListAsDialog getSaveListAsWindow() {
-		return this.saveListAsWindow;
 	}
 
 	public void setInventoryDataManager(final InventoryDataManager inventoryDataManager) {

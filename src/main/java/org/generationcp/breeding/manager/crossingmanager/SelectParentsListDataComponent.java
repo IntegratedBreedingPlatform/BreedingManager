@@ -28,7 +28,6 @@ import org.generationcp.breeding.manager.inventory.ReserveInventoryUtil;
 import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
-import org.generationcp.breeding.manager.listmanager.ListComponent;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
@@ -207,9 +206,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 	private ContextMenu inventoryViewActionMenu;
 	private ContextMenuItem menuCopyToListFromInventory;
 	private ContextMenuItem menuInventorySaveChanges;
-	@SuppressWarnings("unused")
 	private ContextMenuItem menuListView;
-	@SuppressWarnings("unused")
 	private ContextMenuItem menuReserveInventory;
 
 	public static final String ACTIONS_BUTTON_ID = "Actions";
@@ -222,8 +219,6 @@ public class SelectParentsListDataComponent extends VerticalLayout
 	// Layout variables
 	private HorizontalLayout headerLayout;
 	private HorizontalLayout subHeaderLayout;
-
-	private boolean hasChanges = false;
 
 	// Inventory Related Variables
 	private ReserveInventoryWindow reserveInventory;
@@ -342,12 +337,6 @@ public class SelectParentsListDataComponent extends VerticalLayout
 		// Inventory Related Variables
 		this.validReservationsToSave = new HashMap<ListEntryLotDetails, Double>();
 
-		// ListSelectionComponent is null when tool launched from BMS dashboard
-		if (this.makeCrossesParentsComponent.getMakeCrossesMain() != null && this.makeCrossesParentsComponent.getMakeCrossesMain() != null) {
-			SelectParentsComponent selectParentComponent =
-					this.makeCrossesParentsComponent.getMakeCrossesMain().getSelectParentsComponent();
-			selectParentComponent.addUpdateListStatusForChanges(this, this.hasChanges);
-		}
 	}
 
 	private String retrieveViewListHeaderButtonDescription() {
@@ -700,15 +689,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 	/*--------------------------------------INVENTORY RELATED FUNCTIONS---------------------------------------*/
 
 	void viewListAction() {
-
-		if (!this.hasUnsavedChanges()) {
-			this.makeCrossesParentsComponent.getMakeCrossesMain().setModeView(ModeView.LIST_VIEW);
-		} else {
-			String message =
-					"You have unsaved reservations for this list. You will need to save them before changing views. Do you want to save your changes?";
-
-			this.makeCrossesParentsComponent.getMakeCrossesMain().showUnsavedChangesConfirmDialog(message, ModeView.LIST_VIEW);
-		}
+		this.makeCrossesParentsComponent.getMakeCrossesMain().setModeView(ModeView.LIST_VIEW);
 	}
 
 	public void changeToListView() {
@@ -732,13 +713,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 	}
 
 	void viewInventoryAction() {
-		if (!this.hasUnsavedChanges()) {
-			this.makeCrossesParentsComponent.getMakeCrossesMain().setModeView(ModeView.INVENTORY_VIEW);
-		} else {
-			String message = "You have unsaved changes to the list you are currently editing.. "
-					+ "You will need to save them before changing views. " + "Do you want to save your changes?";
-			this.makeCrossesParentsComponent.getMakeCrossesMain().showUnsavedChangesConfirmDialog(message, ModeView.INVENTORY_VIEW);
-		}
+		this.makeCrossesParentsComponent.getMakeCrossesMain().setModeView(ModeView.INVENTORY_VIEW);
 	}
 
 	public void viewInventoryActionConfirmed() {
@@ -827,9 +802,6 @@ public class SelectParentsListDataComponent extends VerticalLayout
 			this.validReservationsToSave.put(lot, amountToReserve);
 		}
 
-		if (!this.validReservationsToSave.isEmpty()) {
-			this.setHasUnsavedChanges(true);
-		}
 	}
 
 	@Override
@@ -858,16 +830,14 @@ public class SelectParentsListDataComponent extends VerticalLayout
 	}
 
 	public void saveReservationChangesAction() {
-		if (this.hasUnsavedChanges()) {
-			this.reserveInventoryAction = new ReserveInventoryAction(this);
-			boolean success =
-					this.reserveInventoryAction.saveReserveTransactions(this.getValidReservationsToSave(), this.germplasmList.getId());
-			if (success) {
-				this.refreshInventoryColumns(this.getValidReservationsToSave());
-				this.resetListInventoryTableValues();
-				MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
-						"All reservations were saved.");
-			}
+		this.reserveInventoryAction = new ReserveInventoryAction(this);
+		boolean success =
+				this.reserveInventoryAction.saveReserveTransactions(this.getValidReservationsToSave(), this.germplasmList.getId());
+		if (success) {
+			this.refreshInventoryColumns(this.getValidReservationsToSave());
+			this.resetListInventoryTableValues();
+			MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
+					"All reservations were saved.");
 		}
 	}
 
@@ -925,17 +895,12 @@ public class SelectParentsListDataComponent extends VerticalLayout
 		// reset the reservations to save.
 		this.validReservationsToSave.clear();
 
-		this.setHasUnsavedChanges(false);
 	}
 
 	/*--------------------------------END OF INVENTORY RELATED FUNCTIONS--------------------------------------*/
 
 	public Map<ListEntryLotDetails, Double> getValidReservationsToSave() {
 		return this.validReservationsToSave;
-	}
-
-	public boolean hasUnsavedChanges() {
-		return this.hasChanges;
 	}
 
 	private void openViewListHeaderWindow() {
@@ -952,19 +917,6 @@ public class SelectParentsListDataComponent extends VerticalLayout
 
 	public GermplasmList getGermplasmList() {
 		return this.germplasmList;
-	}
-
-	public void setHasUnsavedChanges(Boolean hasChanges) {
-		this.hasChanges = hasChanges;
-
-		if (hasChanges) {
-			this.menuInventorySaveChanges.setEnabled(true);
-		} else {
-			this.menuInventorySaveChanges.setEnabled(false);
-		}
-
-		SelectParentsComponent selectParentComponent = this.makeCrossesParentsComponent.getMakeCrossesMain().getSelectParentsComponent();
-		selectParentComponent.addUpdateListStatusForChanges(this, this.hasChanges);
 	}
 
 	public Integer getGermplasmListId() {
