@@ -463,4 +463,12 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
+	
+	public Button getCloseAllTabsButton(){
+		return this.closeAllTabsButton;
+	}
+	
+	public Button getBrowseForListsButton() {
+		return this.browseForListsButton;
+	}
 }
