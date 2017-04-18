@@ -9,8 +9,6 @@ import org.generationcp.breeding.manager.crossingmanager.MakeCrossesParentsCompo
 import org.generationcp.breeding.manager.crossingmanager.ParentTabComponent;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
-import org.generationcp.breeding.manager.customcomponent.listinventory.CrossingManagerInventoryTable;
-import org.generationcp.breeding.manager.inventory.ReserveInventoryActionFactory;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
@@ -43,12 +41,8 @@ public class CrossingManagerActionHandlerTest {
 
 	private CrossingManagerActionHandler crossingManagerActionHandler;
 
-	private GermplasmListTestDataInitializer germplasmListTestDataInitializer;
-
 	@Before
 	public void setUp() {
-		this.germplasmListTestDataInitializer = new GermplasmListTestDataInitializer();
-
 		Mockito.doReturn("TestString").when(this.messageSource).getMessage(Matchers.any(Message.class));
 		final Term fromOntology = new Term();
 		fromOntology.setName("Ontology Name");
@@ -63,18 +57,14 @@ public class CrossingManagerActionHandlerTest {
 		final MakeCrossesParentsComponent makeCrossesParentsComponent =
 				new MakeCrossesParentsComponent(Mockito.mock(CrossingManagerMakeCrossesComponent.class));
 		final ParentTabComponent parentTabComponent = new ParentTabComponent(Mockito.mock(CrossingManagerMakeCrossesComponent.class),
-				makeCrossesParentsComponent, "test", 10, new ReserveInventoryActionFactory());
+				makeCrossesParentsComponent, "test", 10);
 		parentTabComponent.setMessageSource(this.messageSource);
 		parentTabComponent.setOntologyDataManager(this.ontologyDataManager);
 		parentTabComponent.initializeMainComponents();
 		parentTabComponent.initializeParentTable(tableWithSelectAll);
-		final CrossingManagerInventoryTable inventoryTable = new CrossingManagerInventoryTable(null);
-		inventoryTable.setMessageSource(this.messageSource);
-		inventoryTable.setOntologyDataManager(this.ontologyDataManager);
-		inventoryTable.instantiateComponents();
-		parentTabComponent.initializeListInventoryTable(inventoryTable);
 		parentTabComponent.addListeners();
-		parentTabComponent.setGermplasmList(this.germplasmListTestDataInitializer.createGermplasmList(10));
+		
+		parentTabComponent.setGermplasmList(GermplasmListTestDataInitializer.createGermplasmList(10));
 		makeCrossesParentsComponent.setFemaleParentTab(parentTabComponent);
 		makeCrossesParentsComponent.setMaleParentTab(parentTabComponent);
 		makeCrossesParentsComponent

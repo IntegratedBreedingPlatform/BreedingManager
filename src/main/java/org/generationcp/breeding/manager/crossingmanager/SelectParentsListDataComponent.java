@@ -1,31 +1,18 @@
 
 package org.generationcp.breeding.manager.crossingmanager;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
-import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUtil;
 import org.generationcp.breeding.manager.customcomponent.ActionButton;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
 import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
-import org.generationcp.breeding.manager.customcomponent.listinventory.CrossingManagerInventoryTable;
-import org.generationcp.breeding.manager.inventory.ReservationStatusWindow;
-import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
-import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
-import org.generationcp.breeding.manager.inventory.ReserveInventoryUtil;
-import org.generationcp.breeding.manager.inventory.ReserveInventoryWindow;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.breeding.manager.listimport.listeners.GidLinkClickListener;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
@@ -35,7 +22,6 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
-import org.generationcp.middleware.domain.inventory.ListEntryLotDetails;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -73,7 +59,7 @@ import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
 public class SelectParentsListDataComponent extends VerticalLayout
-		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, ReserveInventorySource {
+		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout {
 
 	private static final String NO_LOT_FOR_THIS_GERMPLASM = "No Lot for this Germplasm";
 	private static final String CLICK_TO_VIEW_INVENTORY_DETAILS = "Click to view Inventory Details";
@@ -160,9 +146,6 @@ public class SelectParentsListDataComponent extends VerticalLayout
 											.getMessage(Message.ERROR_LIST_ENTRIES_MUST_BE_SELECTED));
 						}
 					} else if (clickedItem.getName()
-							.equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.INVENTORY_VIEW))) {
-						SelectParentsListDataComponent.this.viewInventoryAction();
-					} else if (clickedItem.getName()
 							.equals(SelectParentsListDataComponent.this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES))) {
 						SelectParentsListDataComponent.this.listDataTable
 								.setValue(CrossingManagerUtil.getEvenEntries(SelectParentsListDataComponent.this.listDataTable));
@@ -202,30 +185,15 @@ public class SelectParentsListDataComponent extends VerticalLayout
 	private Button actionButton;
 	private ContextMenu actionMenu;
 
-	private Button inventoryViewActionButton;
-	private ContextMenu inventoryViewActionMenu;
-	private ContextMenuItem menuCopyToListFromInventory;
-	private ContextMenuItem menuInventorySaveChanges;
-	private ContextMenuItem menuListView;
-	private ContextMenuItem menuReserveInventory;
-
 	public static final String ACTIONS_BUTTON_ID = "Actions";
 
 	private ViewListHeaderWindow viewListHeaderWindow;
 
 	private TableWithSelectAllLayout tableWithSelectAllLayout;
-	private CrossingManagerInventoryTable listInventoryTable;
 
 	// Layout variables
 	private HorizontalLayout headerLayout;
 	private HorizontalLayout subHeaderLayout;
-
-	// Inventory Related Variables
-	private ReserveInventoryWindow reserveInventory;
-	private ReservationStatusWindow reservationStatus;
-	private ReserveInventoryUtil reserveInventoryUtil;
-	private ReserveInventoryAction reserveInventoryAction;
-	private Map<ListEntryLotDetails, Double> validReservationsToSave;
 
 	private MakeCrossesParentsComponent makeCrossesParentsComponent;
 
@@ -259,11 +227,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 		this.addListeners();
 		this.layoutComponents();
 
-		if (this.makeCrossesParentsComponent.getMakeCrossesMain().getModeView().equals(ModeView.LIST_VIEW)) {
-			this.changeToListView();
-		} else if (this.makeCrossesParentsComponent.getMakeCrossesMain().getModeView().equals(ModeView.INVENTORY_VIEW)) {
-			this.viewInventoryActionConfirmed();
-		}
+		this.initializeListView();
 	}
 
 	@Override
@@ -302,10 +266,6 @@ public class SelectParentsListDataComponent extends VerticalLayout
 		this.actionButton.setDebugId("actionButton");
 		this.actionButton.setData(SelectParentsListDataComponent.ACTIONS_BUTTON_ID);
 
-		this.inventoryViewActionButton = new ActionButton();
-		this.inventoryViewActionButton.setDebugId("inventoryViewActionButton");
-		this.inventoryViewActionButton.setData(SelectParentsListDataComponent.ACTIONS_BUTTON_ID);
-
 		this.actionMenu = new ContextMenu();
 		this.actionMenu.setDebugId("actionMenu");
 		this.actionMenu.setWidth("250px");
@@ -315,27 +275,11 @@ public class SelectParentsListDataComponent extends VerticalLayout
 		this.actionMenu.addItem(this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES));
 		this.actionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES));
 
-		this.inventoryViewActionMenu = new ContextMenu();
-		this.inventoryViewActionMenu.setDebugId("inventoryViewActionMenu");
-		this.inventoryViewActionMenu.setWidth("295px");
-		this.menuCopyToListFromInventory = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.COPY_TO_LIST));
-		this.menuReserveInventory = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.RESERVE_INVENTORY));
-		this.menuListView = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.RETURN_TO_LIST_VIEW));
-		this.menuInventorySaveChanges = this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SAVE_CHANGES));
-		this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ALL));
-		this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SELECT_EVEN_ENTRIES));
-		this.inventoryViewActionMenu.addItem(this.messageSource.getMessage(Message.SELECT_ODD_ENTRIES));
-		this.resetInventoryMenuOptions();
-
 		this.initializeListDataTable();
-		this.initializeListInventoryTable();
 
 		this.viewListHeaderButton = new Button(this.messageSource.getMessage(Message.VIEW_LIST_HEADERS));
 		this.viewListHeaderButton.setDebugId("viewListHeaderButton");
 		this.viewListHeaderButton.setStyleName(BaseTheme.BUTTON_LINK);
-
-		// Inventory Related Variables
-		this.validReservationsToSave = new HashMap<ListEntryLotDetails, Double>();
 
 	}
 
@@ -345,14 +289,6 @@ public class SelectParentsListDataComponent extends VerticalLayout
 		}
 
 		return "";
-	}
-
-	private void resetInventoryMenuOptions() {
-		// disable the save button at first since there are no reservations yet
-		this.menuInventorySaveChanges.setEnabled(false);
-
-		// Temporarily disable to Copy to List in InventoryView
-		this.menuCopyToListFromInventory.setEnabled(false);
 	}
 
 	void initializeListDataTable() {
@@ -417,19 +353,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 				ColumnLabels.AVAILABLE_INVENTORY.getName(), ColumnLabels.TOTAL.getName(), ColumnLabels.STOCKID.getName(), ColumnLabels.SEED_SOURCE.getName()});
 		}
 	}
-
-	private void initializeListInventoryTable() {
-		this.listInventoryTable = new CrossingManagerInventoryTable(this.germplasmList.getId());
-		this.listInventoryTable.setDebugId("listInventoryTable");
-		this.listInventoryTable.setVisible(false);
-		if (this.listInventoryTable.getTable() != null) {
-			this.listInventoryTable.setMaxRows(9);
-			this.listInventoryTable.setTableHeight(null);
-			this.listInventoryTable.getTable().setDragMode(TableDragMode.ROW);
-			this.listInventoryTable.getTable().setData(SelectParentsListDataComponent.CROSSING_MANAGER_PARENT_TAB_INVENTORY_TABLE);
-		}
-	}
-
+	
 	private void retrieveListDetails() {
 		try {
 			this.germplasmList = this.germplasmListManager.getGermplasmListById(this.germplasmListId);
@@ -503,7 +427,6 @@ public class SelectParentsListDataComponent extends VerticalLayout
 				if (entry.getInventoryInfo().getReservedLotCount().intValue() != 0) {
 					seedRes = entry.getInventoryInfo().getReservedLotCount().toString().trim();
 				}
-				final String stockIds = entry.getInventoryInfo().getStockIDs();
 
 				Item newItem = this.getListDataTable().getContainerDataSource().addItem(entry.getId());
 				newItem.getItemProperty(SelectParentsListDataComponent.CHECKBOX_COLUMN_ID).setValue(itemCheckBox);
@@ -590,15 +513,6 @@ public class SelectParentsListDataComponent extends VerticalLayout
 			}
 		});
 
-		this.listInventoryTable.getTable().addListener(new Property.ValueChangeListener() {
-
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				SelectParentsListDataComponent.this.updateNoOfSelectedEntries();
-			}
-		});
 	}
 
 	@Override
@@ -637,34 +551,20 @@ public class SelectParentsListDataComponent extends VerticalLayout
 		this.addComponent(this.headerLayout);
 		this.addComponent(this.subHeaderLayout);
 		this.addComponent(this.tableWithSelectAllLayout);
-		this.addComponent(this.listInventoryTable);
 
 	}
 
 	void updateNoOfEntries(long count) {
-		if (this.makeCrossesParentsComponent.getMakeCrossesMain().getModeView().equals(ModeView.LIST_VIEW)) {
-			if (count == 0) {
-				this.totalListEntriesLabel.setValue(this.messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
-			} else {
-				this.totalListEntriesLabel
-						.setValue(this.messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " + "  <b>" + count + "</b>");
-			}
-			// Inventory View
+		if (count == 0) {
+			this.totalListEntriesLabel.setValue(this.messageSource.getMessage(Message.NO_LISTDATA_RETRIEVED_LABEL));
 		} else {
-			this.totalListEntriesLabel.setValue(this.messageSource.getMessage(Message.TOTAL_LOTS) + ": " + "  <b>" + count + "</b>");
+			this.totalListEntriesLabel
+					.setValue(this.messageSource.getMessage(Message.TOTAL_LIST_ENTRIES) + ": " + "  <b>" + count + "</b>");
 		}
 	}
 
 	void updateNoOfEntries() {
-		int entryCount = 0;
-		if (this.makeCrossesParentsComponent.getMakeCrossesMain().getModeView().equals(ModeView.LIST_VIEW)) {
-			entryCount = this.getListDataTable().getItemIds().size();
-
-			// Inventory View
-		} else {
-			entryCount = this.listInventoryTable.getTable().size();
-		}
-		this.updateNoOfEntries(entryCount);
+		this.updateNoOfEntries(this.getListDataTable().getItemIds().size());
 	}
 
 	private void updateNoOfSelectedEntries(int count) {
@@ -674,233 +574,25 @@ public class SelectParentsListDataComponent extends VerticalLayout
 
 	void updateNoOfSelectedEntries() {
 		int entryCount = 0;
-
-		if (this.makeCrossesParentsComponent.getMakeCrossesMain().getModeView().equals(ModeView.LIST_VIEW)) {
-			Collection<?> selectedItems = (Collection<?>) this.getListDataTable().getValue();
-			entryCount = selectedItems.size();
-		} else {
-			Collection<?> selectedItems = (Collection<?>) this.listInventoryTable.getTable().getValue();
-			entryCount = selectedItems.size();
-		}
+		Collection<?> selectedItems = (Collection<?>) this.getListDataTable().getValue();
+		entryCount = selectedItems.size();
 
 		this.updateNoOfSelectedEntries(entryCount);
 	}
 
-	/*--------------------------------------INVENTORY RELATED FUNCTIONS---------------------------------------*/
-
-	void viewListAction() {
-		this.makeCrossesParentsComponent.getMakeCrossesMain().setModeView(ModeView.LIST_VIEW);
-	}
-
-	public void changeToListView() {
-		if (this.listInventoryTable.isVisible()) {
-			this.tableWithSelectAllLayout.setVisible(true);
-			this.listInventoryTable.setVisible(false);
-
-			this.subHeaderLayout.removeComponent(this.inventoryViewActionButton);
-			this.subHeaderLayout.addComponent(this.actionButton);
-			this.subHeaderLayout.setComponentAlignment(this.actionButton, Alignment.MIDDLE_RIGHT);
-
-			this.listEntriesLabel.setValue(this.messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
-			this.updateNoOfEntries();
-			this.updateNoOfSelectedEntries();
-
-			this.removeComponent(this.listInventoryTable);
-			this.addComponent(this.tableWithSelectAllLayout);
-
-			this.requestRepaint();
-		}
-	}
-
-	void viewInventoryAction() {
-		this.makeCrossesParentsComponent.getMakeCrossesMain().setModeView(ModeView.INVENTORY_VIEW);
-	}
-
-	public void viewInventoryActionConfirmed() {
-		this.resetListInventoryTableValues();
-		this.changeToInventoryView();
-	}
-
-	public void changeToInventoryView() {
-		if (this.tableWithSelectAllLayout.isVisible()) {
-			this.tableWithSelectAllLayout.setVisible(false);
-			this.listInventoryTable.setVisible(true);
-
-			this.subHeaderLayout.removeComponent(this.actionButton);
-			this.subHeaderLayout.addComponent(this.inventoryViewActionButton);
-			this.subHeaderLayout.setComponentAlignment(this.inventoryViewActionButton, Alignment.MIDDLE_RIGHT);
-
-			this.listEntriesLabel.setValue(this.messageSource.getMessage(Message.INVENTORY));
-			this.updateNoOfEntries();
-			this.updateNoOfSelectedEntries();
-
-			this.removeComponent(this.tableWithSelectAllLayout);
-			this.addComponent(this.listInventoryTable);
-
-			this.requestRepaint();
-		}
-	}
-
-	public void reserveInventoryAction() {
-		// checks if the screen is in the inventory view
-		if (!this.listInventoryTable.isVisible()) {
-			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
-					"Please change to Inventory View first.");
-		} else {
-			List<ListEntryLotDetails> lotDetailsGid = this.listInventoryTable.getSelectedLots();
-
-			if (lotDetailsGid == null || lotDetailsGid.isEmpty()) {
-				MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
-						"Please select at least 1 lot to reserve.");
-			} else {
-				// this util handles the inventory reservation related functions
-				this.reserveInventoryUtil = new ReserveInventoryUtil(this, lotDetailsGid);
-				this.reserveInventoryUtil.viewReserveInventoryWindow();
-			}
-		}
-	}
-
-	@Override
-	public void updateListInventoryTable(Map<ListEntryLotDetails, Double> validReservations, boolean withInvalidReservations) {
-		for (Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()) {
-			ListEntryLotDetails lot = entry.getKey();
-			Double newRes = entry.getValue();
-
-			Item itemToUpdate = this.listInventoryTable.getTable().getItem(lot);
-			itemToUpdate.getItemProperty(ColumnLabels.NEWLY_RESERVED.getName()).setValue(newRes);
-		}
-
-		this.removeReserveInventoryWindow(this.reserveInventory);
-
-		// update lot reservatios to save
-		this.updateLotReservationsToSave(validReservations);
-
-		// enable now the Save Changes option
-		this.menuInventorySaveChanges.setEnabled(true);
-
-		// if there are no valid reservations
-		if (validReservations.isEmpty()) {
-			MessageNotifier.showRequiredFieldError(this.getWindow(),
-					this.messageSource.getMessage(Message.COULD_NOT_MAKE_ANY_RESERVATION_ALL_SELECTED_LOTS_HAS_INSUFFICIENT_BALANCES)
-							+ ".");
-		} else if (!withInvalidReservations) {
-			MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
-					"All selected entries will be reserved in their respective lots.", 3000);
-		}
-	}
-
-	private void updateLotReservationsToSave(Map<ListEntryLotDetails, Double> validReservations) {
-		for (Map.Entry<ListEntryLotDetails, Double> entry : validReservations.entrySet()) {
-			ListEntryLotDetails lot = entry.getKey();
-			Double amountToReserve = entry.getValue();
-
-			if (this.validReservationsToSave.containsKey(lot)) {
-				this.validReservationsToSave.remove(lot);
-
-			}
-
-			this.validReservationsToSave.put(lot, amountToReserve);
-		}
-
-	}
-
-	@Override
-	public void addReserveInventoryWindow(ReserveInventoryWindow reserveInventory) {
-		this.reserveInventory = reserveInventory;
-		this.makeCrossesParentsComponent.getWindow().addWindow(this.reserveInventory);
-	}
-
-	@Override
-	public void addReservationStatusWindow(ReservationStatusWindow reservationStatus) {
-		this.reservationStatus = reservationStatus;
-		this.removeReserveInventoryWindow(this.reserveInventory);
-		this.makeCrossesParentsComponent.getWindow().addWindow(this.reservationStatus);
-	}
-
-	@Override
-	public void removeReserveInventoryWindow(ReserveInventoryWindow reserveInventory) {
-		this.reserveInventory = reserveInventory;
-		this.makeCrossesParentsComponent.getWindow().removeWindow(this.reserveInventory);
-	}
-
-	@Override
-	public void removeReservationStatusWindow(ReservationStatusWindow reservationStatus) {
-		this.reservationStatus = reservationStatus;
-		this.makeCrossesParentsComponent.getWindow().removeWindow(this.reservationStatus);
-	}
-
-	public void saveReservationChangesAction() {
-		this.reserveInventoryAction = new ReserveInventoryAction(this);
-		boolean success =
-				this.reserveInventoryAction.saveReserveTransactions(this.getValidReservationsToSave(), this.germplasmList.getId());
-		if (success) {
-			this.refreshInventoryColumns(this.getValidReservationsToSave());
-			this.resetListInventoryTableValues();
-			MessageNotifier.showMessage(this.getWindow(), this.messageSource.getMessage(Message.SUCCESS),
-					"All reservations were saved.");
-		}
-	}
-
-	public void refreshInventoryColumns(Map<ListEntryLotDetails, Double> validReservationsToSave) {
-
-		Set<Integer> entryIds = new HashSet<Integer>();
-		for (Entry<ListEntryLotDetails, Double> details : validReservationsToSave.entrySet()) {
-			entryIds.add(details.getKey().getId());
-		}
-
-		List<GermplasmListData> germplasmListDataEntries = new ArrayList<GermplasmListData>();
-
-		try {
-			if (!entryIds.isEmpty()) {
-				germplasmListDataEntries =
-						this.inventoryDataManager.getLotCountsForListEntries(this.germplasmList.getId(), new ArrayList<Integer>(entryIds));
-			}
-		} catch (MiddlewareQueryException e) {
-			SelectParentsListDataComponent.LOG.error(e.getMessage(), e);
-		}
-
-		for (GermplasmListData listData : germplasmListDataEntries) {
-			Item item = this.getListDataTable().getItem(listData.getId());
-
-			// #1 Available Inventory
-			// default value
-			String availInv = SelectParentsListDataComponent.STRING_DASH;
-			if (listData.getInventoryInfo().getLotCount().intValue() != 0) {
-				availInv = listData.getInventoryInfo().getActualInventoryLotCount().toString().trim();
-			}
-			Button inventoryButton = new Button(availInv, new InventoryLinkButtonClickListener(this.makeCrossesParentsComponent,
-					this.germplasmList.getId(), listData.getId(), listData.getGid()));
-			inventoryButton.setStyleName(BaseTheme.BUTTON_LINK);
-			inventoryButton.setDescription(SelectParentsListDataComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
-
-			if (availInv.equals(SelectParentsListDataComponent.STRING_DASH)) {
-				inventoryButton.setEnabled(false);
-				inventoryButton.setDescription(SelectParentsListDataComponent.NO_LOT_FOR_THIS_GERMPLASM);
-			} else {
-				inventoryButton.setDescription(SelectParentsListDataComponent.CLICK_TO_VIEW_INVENTORY_DETAILS);
-			}
-			item.getItemProperty(ColumnLabels.AVAILABLE_INVENTORY.getName()).setValue(inventoryButton);
-		}
-	}
-
-	public void resetListInventoryTableValues() {
-		if (this.germplasmList != null) {
-			this.listInventoryTable.updateListInventoryTableAfterSave();
-		} else {
-			this.listInventoryTable.reset();
-		}
-
-		this.resetInventoryMenuOptions();
-
-		// reset the reservations to save.
-		this.validReservationsToSave.clear();
-
-	}
-
-	/*--------------------------------END OF INVENTORY RELATED FUNCTIONS--------------------------------------*/
-
-	public Map<ListEntryLotDetails, Double> getValidReservationsToSave() {
-		return this.validReservationsToSave;
+	public void initializeListView() {
+		this.tableWithSelectAllLayout.setVisible(true);
+	
+		this.subHeaderLayout.addComponent(this.actionButton);
+		this.subHeaderLayout.setComponentAlignment(this.actionButton, Alignment.MIDDLE_RIGHT);
+	
+		this.listEntriesLabel.setValue(this.messageSource.getMessage(Message.LIST_ENTRIES_LABEL));
+		this.updateNoOfEntries();
+		this.updateNoOfSelectedEntries();
+	
+		this.addComponent(this.tableWithSelectAllLayout);
+	
+		this.requestRepaint();
 	}
 
 	private void openViewListHeaderWindow() {
@@ -933,14 +625,6 @@ public class SelectParentsListDataComponent extends VerticalLayout
 
 	protected TableWithSelectAllLayout getListDataTableWithSelectAll() {
 		return this.tableWithSelectAllLayout;
-	}
-
-	protected void setListInventoryTable(CrossingManagerInventoryTable listInventoryTable) {
-		this.listInventoryTable = listInventoryTable;
-	}
-
-	protected CrossingManagerInventoryTable getListInventoryTable() {
-		return this.listInventoryTable;
 	}
 
 	public void setCount(Long count) {

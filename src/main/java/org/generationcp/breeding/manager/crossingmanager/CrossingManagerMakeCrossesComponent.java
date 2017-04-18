@@ -10,7 +10,6 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.crossingmanager.constants.CrossType;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
@@ -77,8 +76,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	private MakeCrossesTableComponent crossesTableComponent;
 	private CrossingSettingsMethodComponent crossingSettingsMethodComponent;
 
-	// Handles Universal Mode View for ListManagerMain
-	private ModeView modeView;
 	private LinkButton nurseryCancelButton;
 
 	@Autowired
@@ -287,8 +284,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		this.nextButton.setEnabled(false);
 		this.nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 
-		this.modeView = ModeView.LIST_VIEW;
-
 		fieldbookMiddlewareService.loadAllObservations(nurseryWorkbook);
 	}
 
@@ -450,28 +445,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 	public Component getSource() {
 		return this.source;
-	}
-
-	public ModeView getModeView() {
-		return this.modeView;
-	}
-
-	public void setModeViewOnly(final ModeView newModeView) {
-		this.modeView = newModeView;
-	}
-
-	public void setModeView(final ModeView newModeView) {
-
-		if (this.modeView != newModeView) {
-			this.modeView = newModeView;
-			this.updateView(this.modeView);
-		}
-
-	}
-
-	public void updateView(final ModeView modeView) {
-		this.selectParentsComponent.updateViewForAllLists(modeView);
-		this.parentsComponent.updateViewForAllParentLists(modeView);
 	}
 
 	public void showNodeOnTree(final Integer listId) {

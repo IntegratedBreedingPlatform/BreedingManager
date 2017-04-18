@@ -1,13 +1,9 @@
 
 package org.generationcp.breeding.manager.crossingmanager;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
-import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerTreeActionsListener;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
@@ -99,7 +95,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 		this.browseForListsButton.setImmediate(true);
 		this.browseForListsButton.setStyleName(Reindeer.BUTTON_LINK);
 
-		this.listTreeComponent = new CrossingManagerListTreeComponent(this, this.source);
+		this.listTreeComponent = new CrossingManagerListTreeComponent(this);
 		this.listTreeComponent.setDebugId("listTreeComponent");
 
 		this.instructionForSelectParents = new Label("for a list to work with.");
@@ -366,30 +362,8 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 		source.getParentsComponent().addListToMaleTable(germplasmListId);
 	}
 
-	public void updateViewForAllLists(final ModeView modeView) {
-		final List<SelectParentsListDataComponent> selectParentComponents = new ArrayList<SelectParentsListDataComponent>();
-
-		if (modeView.equals(ModeView.LIST_VIEW)) {
-			for (final SelectParentsListDataComponent selectParentComponent : selectParentComponents) {
-				selectParentComponent.changeToListView();
-			}
-		} else if (modeView.equals(ModeView.INVENTORY_VIEW)) {
-			for (final SelectParentsListDataComponent selectParentComponent : selectParentComponents) {
-				selectParentComponent.viewInventoryActionConfirmed();
-			}
-		}
-	}
-
 	public CrossingManagerMakeCrossesComponent getCrossingManagerMakeCrossesComponent() {
 		return source;
-	}
-
-	public void resetInventoryViewForCancelledChanges() {
-		final List<SelectParentsListDataComponent> listDataComponents = new ArrayList<SelectParentsListDataComponent>();
-
-		for (final SelectParentsListDataComponent listDataComponent : listDataComponents) {
-			listDataComponent.resetListInventoryTableValues();
-		}
 	}
 
 	public static String generateTabDescription(final Integer listId) {
