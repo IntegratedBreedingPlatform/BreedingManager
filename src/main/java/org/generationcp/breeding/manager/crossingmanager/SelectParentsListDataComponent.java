@@ -580,7 +580,7 @@ public class SelectParentsListDataComponent extends VerticalLayout
 		this.updateNoOfSelectedEntries(entryCount);
 	}
 
-	public void initializeListView() {
+	private void initializeListView() {
 		this.tableWithSelectAllLayout.setVisible(true);
 	
 		this.subHeaderLayout.addComponent(this.actionButton);
