@@ -361,22 +361,6 @@ public class SaveListAsDialog extends BaseSubWindow implements InitializingBean,
 				}
 			}
 
-			this.updateInventoryColumnsOnListDataAndListInventoryTables();
-		}
-	}
-
-	private void updateInventoryColumnsOnListDataAndListInventoryTables() {
-		if (this.source instanceof ReserveInventorySource) {
-			final ReserveInventoryAction reserveInventoryAction = new ReserveInventoryAction((ReserveInventorySource) this.source);
-			if (this.source instanceof ParentTabComponent) {
-				final boolean success = reserveInventoryAction.saveReserveTransactions(
-						((ParentTabComponent) this.source).getValidReservationsToSave(), this.germplasmList.getId());
-				if (success) {
-					((ParentTabComponent) this.source)
-							.refreshInventoryColumns(((ParentTabComponent) this.source).getValidReservationsToSave());
-					((ParentTabComponent) this.source).resetListInventoryTableValues();
-				}
-			}
 		}
 	}
 

@@ -1,18 +1,11 @@
 
 package org.generationcp.breeding.manager.crossingmanager;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
-import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerTreeActionsListener;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
-import org.generationcp.breeding.manager.customcomponent.UnsavedChangesSource;
 import org.generationcp.breeding.manager.customfields.ListSelectorComponent;
 import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.constant.ListTreeState;
@@ -45,7 +38,7 @@ import com.vaadin.ui.themes.Reindeer;
 
 @Configurable
 public class SelectParentsComponent extends VerticalLayout implements BreedingManagerLayout, InitializingBean, InternationalizableComponent,
-		CrossingManagerTreeActionsListener, UnsavedChangesSource {
+		CrossingManagerTreeActionsListener {
 
 	private static final long serialVersionUID = -5109231715662648484L;
 
@@ -63,16 +56,12 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 	private Label instructionForSelectParents;
 	private TabSheet listDetailsTabSheet;
 	private Button closeAllTabsButton;
-	private boolean hidden;
 
-	private Map<SelectParentsListDataComponent, Boolean> listStatusForChanges;
-
-	private Button selectParentsButton;
+	private Button toggleTabsheetButton;
 
 	public SelectParentsComponent(final CrossingManagerMakeCrossesComponent source) {
 		super();
 		this.source = source;
-		this.hidden = false;
 	}
 
 	@Override
@@ -96,17 +85,17 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 		this.selectParentsLabel.addStyleName(AppConstants.CssStyles.BOLD);
 		this.selectParentsLabel.setWidth("230px");
 
-		this.selectParentsButton = new Button();
-		this.selectParentsButton.setDebugId("selectParentsButton");
-		this.selectParentsButton.setImmediate(true);
-		this.selectParentsButton.setVisible(true);
+		this.toggleTabsheetButton = new Button();
+		this.toggleTabsheetButton.setDebugId("selectParentsButton");
+		this.toggleTabsheetButton.setImmediate(true);
+		this.toggleTabsheetButton.setVisible(true);
 
 		this.browseForListsButton = new Button(this.messageSource.getMessage(Message.BROWSE));
 		this.browseForListsButton.setDebugId("browseForListsButton");
 		this.browseForListsButton.setImmediate(true);
 		this.browseForListsButton.setStyleName(Reindeer.BUTTON_LINK);
 
-		this.listTreeComponent = new CrossingManagerListTreeComponent(this, this.source);
+		this.listTreeComponent = new CrossingManagerListTreeComponent(this);
 		this.listTreeComponent.setDebugId("listTreeComponent");
 
 		this.instructionForSelectParents = new Label("for a list to work with.");
@@ -123,7 +112,6 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 		this.closeAllTabsButton.setStyleName(BaseTheme.BUTTON_LINK);
 		this.closeAllTabsButton.setVisible(false);
 
-		this.listStatusForChanges = new HashMap<SelectParentsListDataComponent, Boolean>();
 	}
 
 	private void hideListDetailsTabSheet() {
@@ -187,19 +175,17 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 			}
 		});
 
-		selectParentsButton.addListener(new Button.ClickListener() {
+		toggleTabsheetButton.addListener(new Button.ClickListener() {
 
 			private static final long serialVersionUID = 6385074843600086746L;
 
 
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				if (hidden) {
+				if (!listDetailsTabSheet.isVisible()) {
 					showListDetailsTabSheet();
-					hidden = false;
 				} else {
 					hideDetailsTabsheet();
-					hidden = true;
 				}
 			}
 		});
@@ -208,8 +194,6 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 
 	protected void hideDetailsTabsheet() {
 		closeAllTabsButton.setVisible(false);
-		browseForListsButton.setVisible(false);
-		this.instructionForSelectParents.setVisible(false);
 		hideListDetailsTabSheet();
 	}
 
@@ -219,7 +203,7 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 		setMargin(true);
 
 		final HeaderLabelLayout selectParentsHeaderLayout =
-				new HeaderLabelLayout(AppConstants.Icons.ICON_SELECT_PARENTS, selectParentsLabel, selectParentsButton);
+				new HeaderLabelLayout(AppConstants.Icons.ICON_SELECT_PARENTS, selectParentsLabel, toggleTabsheetButton);
 		selectParentsHeaderLayout.setDebugId("selectParentsHeaderLayout");
 
 		final HorizontalLayout leftLayout = new HorizontalLayout();
@@ -378,84 +362,8 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 		source.getParentsComponent().addListToMaleTable(germplasmListId);
 	}
 
-	public void updateViewForAllLists(final ModeView modeView) {
-		final List<SelectParentsListDataComponent> selectParentComponents = new ArrayList<SelectParentsListDataComponent>();
-		selectParentComponents.addAll(listStatusForChanges.keySet());
-
-		if (modeView.equals(ModeView.LIST_VIEW)) {
-			for (final SelectParentsListDataComponent selectParentComponent : selectParentComponents) {
-				selectParentComponent.changeToListView();
-			}
-		} else if (modeView.equals(ModeView.INVENTORY_VIEW)) {
-			for (final SelectParentsListDataComponent selectParentComponent : selectParentComponents) {
-				selectParentComponent.viewInventoryActionConfirmed();
-			}
-		}
-	}
-
-	public Map<SelectParentsListDataComponent, Boolean> getListStatusForChanges() {
-		return listStatusForChanges;
-	}
-
-	public void addUpdateListStatusForChanges(final SelectParentsListDataComponent selectParentsListDataComponent,
-			final boolean hasChanges) {
-		removeListStatusForChanges(selectParentsListDataComponent);
-		listStatusForChanges.put(selectParentsListDataComponent, hasChanges);
-
-		if (hasUnsavedChanges()) {
-			setHasUnsavedChangesMain(true);
-		} else {
-			setHasUnsavedChangesMain(false);
-		}
-	}
-
-	public boolean hasUnsavedChanges() {
-		final List<Boolean> listOfStatus = new ArrayList<Boolean>();
-
-		listOfStatus.addAll(listStatusForChanges.values());
-
-		for (final Boolean status : listOfStatus) {
-			if (status) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	public void removeListStatusForChanges(final SelectParentsListDataComponent selectParentsListDataComponent) {
-		if (listStatusForChanges.containsKey(selectParentsListDataComponent)) {
-			listStatusForChanges.remove(selectParentsListDataComponent);
-		}
-	}
-
-	@Override
-	public void setHasUnsavedChangesMain(final boolean hasChanges) {
-		source.setHasUnsavedChangesMain(hasChanges);
-	}
-
-	public void updateHasChangesForAllList(final boolean hasChanges) {
-		final List<SelectParentsListDataComponent> selectParentComponents = new ArrayList<SelectParentsListDataComponent>();
-		selectParentComponents.addAll(listStatusForChanges.keySet());
-
-		for (final SelectParentsListDataComponent selectParentComponent : selectParentComponents) {
-			selectParentComponent.setHasUnsavedChanges(hasChanges);
-		}
-	}
-
 	public CrossingManagerMakeCrossesComponent getCrossingManagerMakeCrossesComponent() {
 		return source;
-	}
-
-	public void resetInventoryViewForCancelledChanges() {
-		final List<SelectParentsListDataComponent> listDataComponents = new ArrayList<SelectParentsListDataComponent>();
-		listDataComponents.addAll(listStatusForChanges.keySet());
-
-		for (final SelectParentsListDataComponent listDataComponent : listDataComponents) {
-			if (listDataComponent.hasUnsavedChanges()) {
-				listDataComponent.resetListInventoryTableValues();
-			}
-		}
 	}
 
 	public static String generateTabDescription(final Integer listId) {
@@ -464,5 +372,17 @@ public class SelectParentsComponent extends VerticalLayout implements BreedingMa
 
 	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
+	}
+	
+	public Button getCloseAllTabsButton(){
+		return this.closeAllTabsButton;
+	}
+	
+	public Button getBrowseForListsButton() {
+		return this.browseForListsButton;
+	}
+	
+	public Button getToggleTabsheetButton() {
+		return this.toggleTabsheetButton;
 	}
 }

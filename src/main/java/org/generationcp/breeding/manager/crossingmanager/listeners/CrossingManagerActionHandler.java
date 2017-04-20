@@ -12,12 +12,6 @@ import com.vaadin.event.Action;
 import com.vaadin.event.Action.Handler;
 import com.vaadin.ui.Table;
 
-/**
- * Action handler (context menu options) for Crossing Manager tables
- *
- * @author Darla Ani
- *
- */
 public class CrossingManagerActionHandler implements Handler {
 
 	private static final long serialVersionUID = 5470824414143199719L;
@@ -59,7 +53,6 @@ public class CrossingManagerActionHandler implements Handler {
 			if (this.source instanceof MakeCrossesParentsComponent) {
 				final MakeCrossesParentsComponent makeCrosses = (MakeCrossesParentsComponent) this.source;
 				makeCrosses.assignEntryNumber((Table) sender);
-				makeCrosses.setHasUnsavedChangesMain(true);
 			}
 		} else if (CrossingManagerActionHandler.ACTION_DELETE_CROSSES.equals(action)) {
 			((MakeCrossesTableComponent) this.source).deleteCrossAction();
@@ -105,35 +98,13 @@ public class CrossingManagerActionHandler implements Handler {
 		itemsLeftAfterDelete.addAll(table.getItemIds());
 
 		if(this.source instanceof MakeCrossesParentsComponent) {
-			// If an item has been deleted, enable save option from action buttons
-			if (itemsBeforeDelete.size() != itemsLeftAfterDelete.size() && !itemsLeftAfterDelete.isEmpty()) {
-				if (((MakeCrossesParentsComponent) this.source).getFemaleTable().equals(table)) {
-					((MakeCrossesParentsComponent) this.source).getFemaleParentTab().setHasUnsavedChanges(true);
-				} else if (((MakeCrossesParentsComponent) this.source).getMaleTable().equals(table)) {
-					((MakeCrossesParentsComponent) this.source).getMaleParentTab().setHasUnsavedChanges(true);
-				}
-				// Add checker, if table is male/female tables in crossing manager, and disable save if used deleted all entries
-			} else if (this.source instanceof MakeCrossesParentsComponent && itemsLeftAfterDelete.isEmpty()) {
-				if (((MakeCrossesParentsComponent) this.source).getFemaleTable().equals(table)) {
-					((MakeCrossesParentsComponent) this.source).getFemaleParentTab().setHasUnsavedChanges(false);
-				} else if (((MakeCrossesParentsComponent) this.source).getMaleTable().equals(table)) {
-					((MakeCrossesParentsComponent) this.source).getMaleParentTab().setHasUnsavedChanges(false);
-				}
-			}
-
 			// update the number of entries of male/female after delete
 			if (((MakeCrossesParentsComponent) this.source).getFemaleTable().equals(table)) {
 				((MakeCrossesParentsComponent) this.source).getFemaleParentTab().updateNoOfEntries(table.size());
-				if (((MakeCrossesParentsComponent) this.source).getFemaleList().getId() > 0) {
-					// if we've deleted something from the list, we should treat it as a new list during saving
-					((MakeCrossesParentsComponent) this.source).getFemaleParentTab().setIsTreatAsNewList(true);
-				}
+				
 			} else if (((MakeCrossesParentsComponent) this.source).getMaleTable().equals(table)) {
 				((MakeCrossesParentsComponent) this.source).getMaleParentTab().updateNoOfEntries(table.size());
-				if (((MakeCrossesParentsComponent) this.source).getMaleList().getId() > 0) {
-					// if we've deleted something from the list, we should treat it as a new list during saving
-					((MakeCrossesParentsComponent) this.source).getMaleParentTab().setIsTreatAsNewList(true);
-				}
+				
 			}
 		}
 	}

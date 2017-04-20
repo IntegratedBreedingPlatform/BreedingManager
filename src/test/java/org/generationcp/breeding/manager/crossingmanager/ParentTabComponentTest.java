@@ -8,22 +8,16 @@ import org.generationcp.breeding.manager.action.SaveGermplasmListAction;
 import org.generationcp.breeding.manager.action.SaveGermplasmListActionFactory;
 import org.generationcp.breeding.manager.action.SaveGermplasmListActionSource;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
 import org.generationcp.breeding.manager.customcomponent.TableWithSelectAllLayout;
-import org.generationcp.breeding.manager.customcomponent.listinventory.CrossingManagerInventoryTable;
 import org.generationcp.breeding.manager.data.initializer.GermplasmListDataTestDataInitializer;
 import org.generationcp.breeding.manager.data.initializer.GermplasmListEntryTestDataInitializer;
-import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
-import org.generationcp.breeding.manager.inventory.ReserveInventoryAction;
-import org.generationcp.breeding.manager.inventory.ReserveInventoryActionFactory;
 import org.generationcp.breeding.manager.inventory.ReserveInventorySource;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.GermplasmListTestDataInitializer;
-import org.generationcp.middleware.domain.etl.Workbook;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -61,9 +55,6 @@ public class ParentTabComponentTest {
 
 	private static final int GERMPLASM_LIST_ID = 1;
 
-//	@Mock
-//	TableWithSelectAllLayout tableWithSelectAllLayout;
-
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
 
@@ -78,9 +69,6 @@ public class ParentTabComponentTest {
 
 	@Mock
 	private SaveGermplasmListActionFactory saveGermplasmListActionFactory;
-
-	@Mock
-	private ReserveInventoryActionFactory reserveInventoryActionFactory;
 
 	@Mock
 	private ContextUtil contextUtil;
@@ -118,8 +106,6 @@ public class ParentTabComponentTest {
 	private ParentTabComponent parentTabComponent;
 	private CrossingManagerMakeCrossesComponent makeCrossesMain;
 
-	private ImportedGermplasmListDataInitializer importedGermplasmListInitializer;
-
 	@Before
 	public void setUp() {
 		ManagerFactory.getCurrentManagerFactoryThreadLocal().set(Mockito.mock(ManagerFactory.class));
@@ -142,7 +128,6 @@ public class ParentTabComponentTest {
 		selectParentsComponent.setListTreeComponent(this.crossingManagerListTreeComponent);
 
 		this.makeCrossesMain.instantiateComponents();
-		this.makeCrossesMain.setModeViewOnly(ModeView.LIST_VIEW);
 
 		final MakeCrossesParentsComponent source = Mockito.spy(new MakeCrossesParentsComponent(this.makeCrossesMain));
 		final String parentLabel = "Female Parents";
@@ -155,8 +140,7 @@ public class ParentTabComponentTest {
 		this.makeCrossesMain.setCrossesTableComponent(crossesTableComponent);
 		this.makeCrossesMain.setSelectParentsComponent(selectParentsComponent);
 
-		this.parentTabComponent = new ParentTabComponent(this.makeCrossesMain, source, parentLabel, rowCount,
-			this.saveGermplasmListActionFactory, this.reserveInventoryActionFactory);
+		this.parentTabComponent = new ParentTabComponent(this.makeCrossesMain, source, parentLabel, rowCount);
 		source.setMaleParentTab(this.parentTabComponent);
 		source.setFemaleParentTab(this.parentTabComponent);
 		Mockito.doReturn(this.window).when(source).getWindow();
@@ -181,22 +165,13 @@ public class ParentTabComponentTest {
 		Mockito.doReturn(saveGermplasmListAction)
 				.when(this.saveGermplasmListActionFactory)
 				.createInstance(Matchers.any(SaveGermplasmListActionSource.class), Matchers.any(GermplasmList.class),
-						Matchers.any(List.class));
-
-		final ReserveInventoryAction reserveInventoryAction = new ReserveInventoryAction(this.reserveInventorySource);
-		reserveInventoryAction.setContextUtil(this.contextUtil);
-		reserveInventoryAction.setInventoryDataManager(this.inventoryDataManager);
-		reserveInventoryAction.setUserDataManager(this.userDataManager);
-		Mockito.doReturn(reserveInventoryAction).when(this.reserveInventoryActionFactory)
-				.createInstance(Matchers.any(ReserveInventorySource.class));
+						Matchers.anyListOf(GermplasmListEntry.class));
 
 		final User user = new User();
 		user.setUserid(12);
 		user.setPersonid(123);
 		Mockito.doReturn(user).when(this.userDataManager).getUserById(Matchers.anyInt());
 
-		// initializer
-		this.importedGermplasmListInitializer = new ImportedGermplasmListDataInitializer();
 	}
 
 	@Test
@@ -290,11 +265,6 @@ public class ParentTabComponentTest {
 		tableWithSelectAll.addListeners();
 		this.parentTabComponent.initializeMainComponents();
 		this.parentTabComponent.initializeParentTable(tableWithSelectAll);
-		final CrossingManagerInventoryTable inventoryTable = new CrossingManagerInventoryTable(null);
-		inventoryTable.setMessageSource(this.messageSource);
-		inventoryTable.setOntologyDataManager(this.ontologyDataManager);
-		inventoryTable.instantiateComponents();
-		this.parentTabComponent.initializeListInventoryTable(inventoryTable);
 		this.parentTabComponent.addListeners();
 		return tableWithSelectAll;
 	}

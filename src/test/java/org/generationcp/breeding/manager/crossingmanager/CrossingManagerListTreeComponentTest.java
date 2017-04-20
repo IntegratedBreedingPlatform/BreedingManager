@@ -1,6 +1,5 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
-import junit.framework.Assert;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -13,6 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import junit.framework.Assert;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CrossingManagerListTreeComponentTest {
@@ -35,7 +36,7 @@ public class CrossingManagerListTreeComponentTest {
 	private SimpleResourceBundleMessageSource messageSource;
 
 	@InjectMocks
-	private final CrossingManagerListTreeComponent crossingManagerListTreeComponent = new CrossingManagerListTreeComponent(null, null);
+	private final CrossingManagerListTreeComponent crossingManagerListTreeComponent = new CrossingManagerListTreeComponent(null);
 
 	@Before
 	public void init() {

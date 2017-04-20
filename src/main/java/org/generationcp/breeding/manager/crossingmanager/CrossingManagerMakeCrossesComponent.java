@@ -1,20 +1,15 @@
 
 package org.generationcp.breeding.manager.crossingmanager;
 
-import com.vaadin.data.Property;
-import com.vaadin.terminal.ExternalResource;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerApplication;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.crossingmanager.constants.CrossType;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
@@ -25,8 +20,6 @@ import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.breeding.manager.customcomponent.BreedingManagerWizardDisplay.StepChangeListener;
 import org.generationcp.breeding.manager.customcomponent.LinkButton;
-import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialog;
-import org.generationcp.breeding.manager.customcomponent.UnsavedChangesConfirmDialogSource;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -44,14 +37,18 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.vaadin.data.Property;
+import com.vaadin.terminal.ExternalResource;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
 
 @Configurable
 public class CrossingManagerMakeCrossesComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent,
-	BreedingManagerLayout, StepChangeListener, UnsavedChangesConfirmDialogSource {
+	BreedingManagerLayout, StepChangeListener {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CrossingManagerMakeCrossesComponent.class);
 
@@ -79,11 +76,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	private MakeCrossesTableComponent crossesTableComponent;
 	private CrossingSettingsMethodComponent crossingSettingsMethodComponent;
 
-	// Handles Universal Mode View for ListManagerMain
-	private ModeView modeView;
-	// marks if there are unsaved changes in List from ListSelectorComponent and ListBuilderComponent
-	private boolean hasChanges;
-	private UnsavedChangesConfirmDialog unsavedChangesDialog;
 	private LinkButton nurseryCancelButton;
 
 	@Autowired
@@ -292,9 +284,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 		this.nextButton.setEnabled(false);
 		this.nextButton.addStyleName(Bootstrap.Buttons.PRIMARY.styleName());
 
-		this.modeView = ModeView.LIST_VIEW;
-		this.hasChanges = false;
-
 		fieldbookMiddlewareService.loadAllObservations(nurseryWorkbook);
 	}
 
@@ -456,177 +445,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 
 	public Component getSource() {
 		return this.source;
-	}
-
-	public ModeView getModeView() {
-		return this.modeView;
-	}
-
-	public void setModeViewOnly(final ModeView newModeView) {
-		this.modeView = newModeView;
-	}
-
-	public void setModeView(final ModeView newModeView) {
-		String message = "";
-
-		if (this.modeView != newModeView) {
-			if (this.hasChanges) {
-				if (this.modeView.equals(ModeView.LIST_VIEW) && newModeView.equals(ModeView.INVENTORY_VIEW)) {
-					message = "You have unsaved changes to a parent list you are creating."
-						+ " Do you want to save them before changing views?";
-				} else if (this.modeView.equals(ModeView.INVENTORY_VIEW) && newModeView.equals(ModeView.LIST_VIEW)) {
-					message = "You have unsaved reservations to one or more lists. Do you want to save them before changing views?";
-				}
-				// both parents are not yet saved and has unsaved changes
-				if (this.areBothParentsNewListWithUnsavedChanges()) {
-					MessageNotifier.showError(this.getWindow(), "Unsaved Parent Lists",
-						"Please save parent lists first before changing view.");
-				} else {
-					this.showUnsavedChangesConfirmDialog(message, newModeView);
-				}
-			} else {
-				this.modeView = newModeView;
-				this.updateView(this.modeView);
-			}
-		}
-
-	}
-
-	public boolean areBothParentsNewListWithUnsavedChanges() {
-		// for female and male parent lists
-		final ParentTabComponent femaleParentTab = this.parentsComponent.getFemaleParentTab();
-		final ParentTabComponent maleParentTab = this.parentsComponent.getMaleParentTab();
-
-		return femaleParentTab.getGermplasmList() == null && femaleParentTab.hasUnsavedChanges() && maleParentTab.getGermplasmList() == null
-			&& maleParentTab.hasUnsavedChanges();
-	}
-
-	public void updateView(final ModeView modeView) {
-		this.selectParentsComponent.updateViewForAllLists(modeView);
-		this.parentsComponent.updateViewForAllParentLists(modeView);
-	}
-
-	public void showUnsavedChangesConfirmDialog(final String message, final ModeView newModeView) {
-		this.modeView = newModeView;
-		this.unsavedChangesDialog = new UnsavedChangesConfirmDialog(this, message);
-		this.unsavedChangesDialog.setDebugId("unsavedChangesDialog");
-		this.getWindow().addWindow(this.unsavedChangesDialog);
-	}
-
-	@Override
-	public void saveAllListChangesAction() {
-
-		if (this.selectParentsComponent.hasUnsavedChanges()) {
-			final Map<SelectParentsListDataComponent, Boolean> listToUpdate = new HashMap<>();
-			listToUpdate.putAll(this.selectParentsComponent.getListStatusForChanges());
-
-			for (final Map.Entry<SelectParentsListDataComponent, Boolean> list : listToUpdate.entrySet()) {
-				final Boolean isListHasUnsavedChanges = list.getValue();
-				if (isListHasUnsavedChanges) {
-					final SelectParentsListDataComponent toSave = list.getKey();
-					toSave.saveReservationChangesAction();
-				}
-			}
-		}
-
-		if (this.parentsComponent.hasUnsavedChanges()) {
-			// for female and male parent lists
-			final ParentTabComponent femaleParentTab = this.parentsComponent.getFemaleParentTab();
-			final ParentTabComponent maleParentTab = this.parentsComponent.getMaleParentTab();
-
-			final ModeView prevModeView;
-			if (this.modeView.equals(ModeView.LIST_VIEW)) {
-				prevModeView = ModeView.INVENTORY_VIEW;
-			} else {
-				prevModeView = ModeView.LIST_VIEW;
-			}
-
-			if (femaleParentTab.hasUnsavedChanges() && !maleParentTab.hasUnsavedChanges()) {
-				femaleParentTab.setPreviousModeView(prevModeView);
-			} else if (maleParentTab.hasUnsavedChanges() && !femaleParentTab.hasUnsavedChanges()) {
-				maleParentTab.setPreviousModeView(prevModeView);
-			} else {
-				// keep track the unsaved changes due to reservation and dragging lots given that the parents have existing lists.
-				if (femaleParentTab.getGermplasmList() != null && maleParentTab.getGermplasmList() != null) {
-
-					femaleParentTab.setPreviousModeView(prevModeView);
-					maleParentTab.setPreviousModeView(prevModeView);
-				}
-			}
-		} else {
-			this.updateView(this.modeView);
-		}
-
-		this.resetUnsavedStatus();
-
-		this.getWindow().removeWindow(this.unsavedChangesDialog);
-	}
-
-	private void resetUnsavedStatus() {
-		this.selectParentsComponent.updateHasChangesForAllList(false);
-		this.parentsComponent.updateHasChangesForAllParentList();
-	}
-
-	@Override
-	public void discardAllListChangesAction() {
-		// cancel all the unsaved changes
-		if (this.modeView.equals(ModeView.INVENTORY_VIEW)) {
-			this.selectParentsComponent.resetInventoryViewForCancelledChanges();
-		}
-		this.selectParentsComponent.updateViewForAllLists(this.modeView);
-
-		// for female parent list
-		final ParentTabComponent femaleTabComponent = this.parentsComponent.getFemaleParentTab();
-		if (femaleTabComponent.getGermplasmList() != null) {
-			if (this.modeView.equals(ModeView.INVENTORY_VIEW)) {
-				femaleTabComponent.discardChangesInListView();
-			} else if (this.modeView.equals(ModeView.LIST_VIEW)) {
-				femaleTabComponent.discardChangesInInventoryView();
-			}
-		} else {
-			// if no list save, just reset the list
-			femaleTabComponent.resetList();
-		}
-
-		// for male parent list
-		final ParentTabComponent maleTabComponent = this.parentsComponent.getMaleParentTab();
-		if (maleTabComponent.getGermplasmList() != null) {
-			if (this.modeView.equals(ModeView.INVENTORY_VIEW)) {
-				maleTabComponent.discardChangesInListView();
-			} else if (this.modeView.equals(ModeView.LIST_VIEW)) {
-				maleTabComponent.discardChangesInInventoryView();
-			}
-		} else {
-			// if no list save, just reset the list
-			maleTabComponent.resetList();
-		}
-
-		this.resetUnsavedStatus();
-		this.updateView(this.modeView);
-		this.getWindow().removeWindow(this.unsavedChangesDialog);
-		// end of discardAllListChangesAction()
-	}
-
-	@Override
-	public void cancelAllListChangesAction() {
-
-		// Return to Previous Mode View
-		if (this.modeView.equals(ModeView.LIST_VIEW)) {
-			this.setModeViewOnly(ModeView.INVENTORY_VIEW);
-		} else if (this.modeView.equals(ModeView.INVENTORY_VIEW)) {
-			this.setModeViewOnly(ModeView.LIST_VIEW);
-		}
-
-		this.getWindow().removeWindow(this.unsavedChangesDialog);
-		// end of cancelAllListChangesAction()
-	}
-
-	public void setHasUnsavedChangesMain(final boolean hasChanges) {
-		this.hasChanges = hasChanges;
-	}
-
-	public Boolean hasUnsavedChangesMain() {
-		return this.hasChanges;
 	}
 
 	public void showNodeOnTree(final Integer listId) {

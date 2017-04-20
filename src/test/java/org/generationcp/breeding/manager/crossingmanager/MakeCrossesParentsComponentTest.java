@@ -1,14 +1,10 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
-import com.vaadin.data.Item;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.themes.BaseTheme;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
 import org.generationcp.breeding.manager.listeners.InventoryLinkButtonClickListener;
 import org.generationcp.commons.constant.ColumnLabels;
@@ -28,9 +24,13 @@ import org.mockito.Mockito;
 import org.mockito.exceptions.verification.TooLittleActualInvocations;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import com.vaadin.data.Item;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.themes.BaseTheme;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MakeCrossesParentsComponentTest {
@@ -72,11 +72,9 @@ public class MakeCrossesParentsComponentTest {
 	private Table maleParent;
 	private Table sourceTable;
 	private TabSheet listDetailsTabSheet;
-	private GermplasmListTestDataInitializer germplasmListTestDataInitializer;
 
 	@Before
 	public void setUp() {
-		this.germplasmListTestDataInitializer = new GermplasmListTestDataInitializer();
 		Mockito.doReturn("Parent List").when(this.messageSource).getMessage(Message.PARENTS_LISTS);
 		Mockito.doReturn("Reserve Inventory").when(this.messageSource).getMessage(Message.RESERVE_INVENTORY);
 
@@ -92,7 +90,7 @@ public class MakeCrossesParentsComponentTest {
 		this.makeCrossesParentsComponent.setMaleParentTab(this.maleParentTab);
 		this.makeCrossesParentsComponent.setFemaleParentTab(this.femaleParentTab);
 
-		this.germplasmList = this.germplasmListTestDataInitializer.createGermplasmList(MakeCrossesParentsComponentTest.GERMPLASM_LIST_ID);
+		this.germplasmList = GermplasmListTestDataInitializer.createGermplasmList(MakeCrossesParentsComponentTest.GERMPLASM_LIST_ID);
 		this.sourceTable = this.createSourceTable();
 
 		this.listDetailsTabSheet = new TabSheet();
@@ -212,31 +210,6 @@ public class MakeCrossesParentsComponentTest {
 		}
 	}
 
-	@Test
-	public void testUpdateParentTabForUnsavedChangesForFemaleParent() {
-		this.testUpdateParentTabForUnsavedChanges(this.femaleParentTab, this.femaleParent, "Female");
-	}
-
-	@Test
-	public void testUpdateParentTabForUnsavedChangesForMaleParent() {
-		this.testUpdateParentTabForUnsavedChanges(this.maleParentTab, this.maleParent, "Male");
-	}
-
-	private void testUpdateParentTabForUnsavedChanges(
-		final ParentTabComponent parentTab, final Table parentTable,
-		final String parentType) {
-		Mockito.doNothing().when(parentTab).setHasUnsavedChanges(true);
-
-		// test method
-		this.makeCrossesParentsComponent.updateParentTabForUnsavedChanges(parentTable);
-
-		try {
-			Mockito.verify(parentTab, Mockito.times(1)).setHasUnsavedChanges(true);
-		} catch (final TooLittleActualInvocations e) {
-			Assert.fail("Expecting that the " + parentType + "ParentTab's Save List option is enabled but didn't.");
-		}
-	}
-
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testAssignEntryNumber() {
@@ -341,7 +314,6 @@ public class MakeCrossesParentsComponentTest {
 
 	@Test
 	public void testAddListToMaleTable() {
-		Mockito.doReturn(ModeView.LIST_VIEW).when(this.makeCrossesMain).getModeView();
 		Mockito.doReturn(this.germplasmList).when(this.germplasmListManager)
 			.getGermplasmListById(MakeCrossesParentsComponentTest.GERMPLASM_LIST_ID);
 		Mockito.doReturn(ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails()).when(this.inventoryDataManager)
@@ -357,7 +329,6 @@ public class MakeCrossesParentsComponentTest {
 
 	@Test
 	public void testAddListToFemaleTable() {
-		Mockito.doReturn(ModeView.LIST_VIEW).when(this.makeCrossesMain).getModeView();
 		Mockito.doReturn(this.germplasmList).when(this.germplasmListManager)
 			.getGermplasmListById(MakeCrossesParentsComponentTest.GERMPLASM_LIST_ID);
 		Mockito.doReturn(ListInventoryDataInitializer.createGermplasmListDataWithInventoryDetails()).when(this.inventoryDataManager)
@@ -373,7 +344,7 @@ public class MakeCrossesParentsComponentTest {
 
 	private GermplasmListEntry addItemToParentTable(final int id, final Table parentTable) {
 		final GermplasmListEntry entryObject = new GermplasmListEntry(id, id, id, "Designation", "List Name: " + id);
-		final Item newItem = parentTable.addItem(entryObject);
+		parentTable.addItem(entryObject);
 		return entryObject;
 	}
 }

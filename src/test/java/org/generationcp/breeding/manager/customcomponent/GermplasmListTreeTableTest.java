@@ -2,7 +2,6 @@
 package org.generationcp.breeding.manager.customcomponent;
 
 import org.generationcp.breeding.manager.crossingmanager.CrossingManagerListTreeComponent;
-import org.generationcp.breeding.manager.crossingmanager.CrossingManagerMakeCrossesComponent;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerTreeActionsListener;
 import org.generationcp.breeding.manager.listmanager.ListManagerTreeComponent;
 import org.junit.Before;
@@ -35,9 +34,8 @@ public class GermplasmListTreeTableTest {
 	@Test
 	public void testCrossingManagerItemDescription() {
 		CrossingManagerTreeActionsListener listener = Mockito.mock(CrossingManagerTreeActionsListener.class);
-		CrossingManagerMakeCrossesComponent crossesComponent = Mockito.mock(CrossingManagerMakeCrossesComponent.class);
 
-		this.crossManagerTreeComponent = new CrossingManagerListTreeComponent(listener, crossesComponent);
+		this.crossManagerTreeComponent = new CrossingManagerListTreeComponent(listener);
 		this.crossManagerTreeComponent.setGermplasmListSource(this.listTreeTable);
 
 		Mockito.verify(this.listTreeTable, Mockito.never()).setItemDescriptionGenerator(

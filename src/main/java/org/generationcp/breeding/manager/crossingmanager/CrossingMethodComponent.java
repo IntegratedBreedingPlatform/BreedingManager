@@ -3,15 +3,12 @@ package org.generationcp.breeding.manager.crossingmanager;
 
 import java.util.List;
 
-import com.vaadin.ui.Alignment;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
-import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.crossingmanager.constants.CrossType;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerImportButtonClickListener;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
-import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -23,11 +20,11 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.Runo;
 
 @Configurable
@@ -161,30 +158,24 @@ public class CrossingMethodComponent extends VerticalLayout implements BreedingM
 	}
 
 	public void makeCrossButtonAction() {
-		// TODO temporary fix, will have a new fix approach soon
-		if (this.makeCrossesMain.getModeView().equals(ModeView.INVENTORY_VIEW)) {
-			String message = "Please switch to list view first before making crosses.";
-			MessageNotifier.showError(this.getWindow(), "Warning!", message);
+		CrossType type = (CrossType) this.crossingMethodComboBox.getValue();
+		if (CrossType.PLEASE_CHOOSE.equals(type)) {
+			MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
+					this.messageSource.getMessage(Message.PLEASE_CHOOSE_CROSSING_METHOD));
 		} else {
-			CrossType type = (CrossType) this.crossingMethodComboBox.getValue();
-			if (CrossType.PLEASE_CHOOSE.equals(type)) {
-				MessageNotifier.showWarning(this.getWindow(), this.messageSource.getMessage(Message.WARNING),
-						this.messageSource.getMessage(Message.PLEASE_CHOOSE_CROSSING_METHOD));
-			} else {
-				this.parentsComponent = this.makeCrossesMain.getParentsComponent();
+			this.parentsComponent = this.makeCrossesMain.getParentsComponent();
 
-				Table femaleParents = this.parentsComponent.getFemaleTable();
-				Table maleParents = this.parentsComponent.getMaleTable();
+			Table femaleParents = this.parentsComponent.getFemaleTable();
+			Table maleParents = this.parentsComponent.getMaleTable();
 
-				List<GermplasmListEntry> femaleList = this.parentsComponent.getCorrectSortedValue(femaleParents);
-				List<GermplasmListEntry> maleList = this.parentsComponent.getCorrectSortedValue(maleParents);
-				this.parentsComponent.updateFemaleListNameForCrosses();
-				this.parentsComponent.updateMaleListNameForCrosses();
+			List<GermplasmListEntry> femaleList = this.parentsComponent.getCorrectSortedValue(femaleParents);
+			List<GermplasmListEntry> maleList = this.parentsComponent.getCorrectSortedValue(maleParents);
+			this.parentsComponent.updateFemaleListNameForCrosses();
+			this.parentsComponent.updateMaleListNameForCrosses();
 
-				this.makeCrossesMain.makeCrossButtonAction(femaleList, maleList, this.parentsComponent.getFemaleListNameForCrosses(),
-						this.parentsComponent.getMaleListNameForCrosses(), type, this.chkBoxMakeReciprocalCrosses.booleanValue(),
-						this.chkBoxExcludeSelfs.booleanValue());
-			}
+			this.makeCrossesMain.makeCrossButtonAction(femaleList, maleList, this.parentsComponent.getFemaleListNameForCrosses(),
+					this.parentsComponent.getMaleListNameForCrosses(), type, this.chkBoxMakeReciprocalCrosses.booleanValue(),
+					this.chkBoxExcludeSelfs.booleanValue());
 		}
 	}
 }

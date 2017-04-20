@@ -2,10 +2,8 @@
 package org.generationcp.breeding.manager.crossingmanager;
 
 import org.generationcp.breeding.manager.application.Message;
-import org.generationcp.breeding.manager.constants.ModeView;
 import org.generationcp.breeding.manager.crossingmanager.listeners.CrossingManagerTreeActionsListener;
 import org.generationcp.breeding.manager.customfields.ListTreeTableComponent;
-import org.generationcp.breeding.manager.listmanager.util.InventoryTableDropHandler;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -26,14 +24,11 @@ public class CrossingManagerListTreeComponent extends ListTreeTableComponent {
 	private Button cancelButton;
 	private Button addToMaleListButton;
 	private Button openForReviewButton;
-	private final CrossingManagerMakeCrossesComponent source;
 	private final CrossingManagerTreeActionsListener crossingTreeActionsListener;
 
-	public CrossingManagerListTreeComponent(final CrossingManagerTreeActionsListener treeActionsListener,
-			final CrossingManagerMakeCrossesComponent source) {
+	public CrossingManagerListTreeComponent(final CrossingManagerTreeActionsListener treeActionsListener) {
 		super(treeActionsListener);
 		this.crossingTreeActionsListener = treeActionsListener;
-		this.source = source;
 	}
 
 	@Override
@@ -49,31 +44,9 @@ public class CrossingManagerListTreeComponent extends ListTreeTableComponent {
 			public void buttonClick(final ClickEvent event) {
 
 				final Integer germplasmListId = (Integer) CrossingManagerListTreeComponent.this.getGermplasmListSource().getValue();
-
-				if (CrossingManagerListTreeComponent.this.source.getModeView().equals(ModeView.INVENTORY_VIEW)) {
-					if (CrossingManagerListTreeComponent.this.crossingTreeActionsListener instanceof SelectParentsComponent) {
-						final MakeCrossesParentsComponent parentsComponent =
-								((SelectParentsComponent) CrossingManagerListTreeComponent.this.crossingTreeActionsListener)
-										.getCrossingManagerMakeCrossesComponent().getParentsComponent();
-						final InventoryTableDropHandler inventoryTableDropHandler =
-								parentsComponent.getFemaleParentTab().getInventoryTableDropHandler();
-						inventoryTableDropHandler.addGermplasmListInventoryData(germplasmListId);
-
-						if (parentsComponent.getFemaleTable().getItemIds().isEmpty()) {
-							CrossingManagerListTreeComponent.this.crossingTreeActionsListener.addListToFemaleList(germplasmListId);
-						} else {
-							CrossingManagerListTreeComponent.this.source.getParentsComponent().getFemaleParentTab()
-									.setHasUnsavedChanges(true);
-							inventoryTableDropHandler.setHasChanges(true);
-						}
-						CrossingManagerListTreeComponent.this.source.getParentsComponent().getFemaleParentTabSheet().setSelectedTab(0);
-					}
-
-					CrossingManagerListTreeComponent.this.closeTreeWindow(event);
-				} else {
-					CrossingManagerListTreeComponent.this.crossingTreeActionsListener.addListToFemaleList(germplasmListId);
-					CrossingManagerListTreeComponent.this.closeTreeWindow(event);
-				}
+				
+				CrossingManagerListTreeComponent.this.crossingTreeActionsListener.addListToFemaleList(germplasmListId);
+				CrossingManagerListTreeComponent.this.closeTreeWindow(event);
 			}
 
 		});
@@ -87,31 +60,8 @@ public class CrossingManagerListTreeComponent extends ListTreeTableComponent {
 
 				final Integer germplasmListId = (Integer) CrossingManagerListTreeComponent.this.getGermplasmListSource().getValue();
 
-				if (CrossingManagerListTreeComponent.this.source.getModeView().equals(ModeView.INVENTORY_VIEW)) {
-
-					if (CrossingManagerListTreeComponent.this.crossingTreeActionsListener instanceof SelectParentsComponent) {
-						final MakeCrossesParentsComponent parentsComponent =
-								((SelectParentsComponent) CrossingManagerListTreeComponent.this.crossingTreeActionsListener)
-										.getCrossingManagerMakeCrossesComponent().getParentsComponent();
-						final InventoryTableDropHandler inventoryTableDropHandler =
-								parentsComponent.getMaleParentTab().getInventoryTableDropHandler();
-						inventoryTableDropHandler.addGermplasmListInventoryData(germplasmListId);
-
-						if (parentsComponent.getMaleTable().getItemIds().isEmpty()) {
-							CrossingManagerListTreeComponent.this.crossingTreeActionsListener.addListToMaleList(germplasmListId);
-						} else {
-							CrossingManagerListTreeComponent.this.source.getParentsComponent().getMaleParentTab()
-									.setHasUnsavedChanges(true);
-							inventoryTableDropHandler.setHasChanges(true);
-						}
-						CrossingManagerListTreeComponent.this.source.getParentsComponent().getMaleParentTabSheet().setSelectedTab(1);
-					}
-
-					CrossingManagerListTreeComponent.this.closeTreeWindow(event);
-				} else {
-					CrossingManagerListTreeComponent.this.crossingTreeActionsListener.addListToMaleList(germplasmListId);
-					CrossingManagerListTreeComponent.this.closeTreeWindow(event);
-				}
+				CrossingManagerListTreeComponent.this.crossingTreeActionsListener.addListToMaleList(germplasmListId);
+				CrossingManagerListTreeComponent.this.closeTreeWindow(event);
 			}
 
 		});
