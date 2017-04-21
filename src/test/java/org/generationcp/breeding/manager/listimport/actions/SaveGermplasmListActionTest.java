@@ -53,6 +53,10 @@ import org.springframework.transaction.PlatformTransactionManager;
 @RunWith(MockitoJUnitRunner.class)
 public class SaveGermplasmListActionTest {
 
+	private static final String DERIVED_NAME_CODE = "DRVNM";
+	private static final String MATURITY_NAME = "Maturity Name";
+	private static final String MATURITY_CODE = "MATURITY";
+	private static final String DERIVED_NAME = "Derived Name";
 	private static final Integer SEED_AMOUNT_SCALE_ID = 1001;
 	private static final int TEST_GID = 1;
 	private static final int SAVED_GERMPLASM_LIST_ID = 1;
@@ -195,7 +199,7 @@ public class SaveGermplasmListActionTest {
 
 	@Test
 	public void testUpdateExportedGermplasmPreferredNameWhenImportGermplasmListHasNameFactors() {
-		final String preferredNameCode = "DRVNM";
+		final String preferredNameCode = SaveGermplasmListActionTest.DERIVED_NAME_CODE;
 		final int noOfEntries = 10;
 		final ImportedGermplasmList importedGermplasmList =
 				ImportedGermplasmListDataInitializer.createImportedGermplasmList(noOfEntries, true);
@@ -211,7 +215,7 @@ public class SaveGermplasmListActionTest {
 
 	@Test
 	public void testUpdateExportedGermplasmPreferredNameWhenImportGermplasmListHasNoNameFactors() {
-		final String preferredNameCode = "DRVNM";
+		final String preferredNameCode = SaveGermplasmListActionTest.DERIVED_NAME_CODE;
 		final int noOfEntries = 10;
 		final ImportedGermplasmList importedGermplasmList =
 				ImportedGermplasmListDataInitializer.createImportedGermplasmList(noOfEntries, false);
@@ -341,12 +345,12 @@ public class SaveGermplasmListActionTest {
 		ImportedGermplasmListDataInitializer.addImportedVariates(this.importedGermplasmList, "NOTES", "MATURITY", "ANCEST");
 
 		// Mock UserDefinedFields of attribute types from DB. Matching should be case insensitive
-		this.setUpExistingUserDefinedFieldsMocks();
+		this.setupAttributeTypeUserDefinedFieldsMocks();
 
 		// Call method to test
 		this.action.processVariates(this.importedGermplasmList);
 
-		// Verify that new new attribute types were added to UDFLDS table
+		// Verify that no new attribute types were added to UDFLDS table
 		Mockito.verify(this.germplasmManager, Mockito.times(0)).addUserDefinedFields(Matchers.anyListOf(UserDefinedField.class));
 	}
 
@@ -361,7 +365,7 @@ public class SaveGermplasmListActionTest {
 		ImportedGermplasmListDataInitializer.addImportedVariates(this.importedGermplasmList, "NOTES", newAttributeType);
 
 		// Mock UserDefinedFields of attribute types from DB. Matching should be case insensitive
-		this.setUpExistingUserDefinedFieldsMocks();
+		this.setupAttributeTypeUserDefinedFieldsMocks();
 
 		// Call method to test
 		this.action.processVariates(this.importedGermplasmList);
@@ -370,6 +374,8 @@ public class SaveGermplasmListActionTest {
 		Mockito.verify(this.germplasmManager, Mockito.times(1)).addUserDefinedFields(this.userDefinedFieldsCaptor.capture());
 		final List<UserDefinedField> newUserDefinedFields = this.userDefinedFieldsCaptor.getValue();
 		Assert.assertEquals(1, newUserDefinedFields.size());
+		Assert.assertEquals(SaveGermplasmListAction.FTABLE_ATTRIBUTE, newUserDefinedFields.get(0).getFtable());
+		Assert.assertEquals(SaveGermplasmListAction.FTYPE_ATTRIBUTE, newUserDefinedFields.get(0).getFtype());
 		Assert.assertEquals(newAttributeType, newUserDefinedFields.get(0).getFcode());
 	}
 
@@ -464,12 +470,74 @@ public class SaveGermplasmListActionTest {
 		}
 	}
 
-	private void setUpExistingUserDefinedFieldsMocks() {
+	@Test
+	public void testCreateNewUserDefinedField() {
+		final String fieldFormat = "Text,Observed,C";
+
+		// Test creation of new passport attribute type UDFLD
+		final UserDefinedField newAttributeType =
+				this.action.createNewUserDefinedField(SaveGermplasmListAction.FTABLE_ATTRIBUTE, SaveGermplasmListAction.FTYPE_PASSPORT,
+						SaveGermplasmListActionTest.MATURITY_CODE, SaveGermplasmListActionTest.MATURITY_NAME, fieldFormat);
+		Assert.assertEquals(SaveGermplasmListAction.FTABLE_ATTRIBUTE, newAttributeType.getFtable());
+		Assert.assertEquals(SaveGermplasmListAction.FTYPE_PASSPORT, newAttributeType.getFtype());
+		Assert.assertEquals(SaveGermplasmListActionTest.MATURITY_CODE, newAttributeType.getFcode());
+		Assert.assertEquals(SaveGermplasmListActionTest.MATURITY_NAME, newAttributeType.getFname());
+		Assert.assertEquals(fieldFormat, newAttributeType.getFfmt());
+
+		// Test creation of new name type UDFLD
+		final String nameTypeFieldFormat = SaveGermplasmListActionTest.DERIVED_NAME + "," + fieldFormat;
+		final UserDefinedField newNametype =
+				this.action.createNewUserDefinedField(SaveGermplasmListAction.FTABLE_NAME, SaveGermplasmListAction.FTYPE_NAME,
+						SaveGermplasmListActionTest.DERIVED_NAME_CODE, SaveGermplasmListActionTest.DERIVED_NAME, nameTypeFieldFormat);
+		Assert.assertEquals(SaveGermplasmListAction.FTABLE_NAME, newNametype.getFtable());
+		Assert.assertEquals(SaveGermplasmListAction.FTYPE_NAME, newNametype.getFtype());
+		Assert.assertEquals(SaveGermplasmListActionTest.DERIVED_NAME_CODE, newNametype.getFcode());
+		Assert.assertEquals(SaveGermplasmListActionTest.DERIVED_NAME, newNametype.getFname());
+		Assert.assertEquals(nameTypeFieldFormat, newNametype.getFfmt());
+	}
+
+	@Test
+	public void testProcessFactorsNoNewNameTypeToSave() {
+		// Mock that name types in file already exists in DB
+		this.setupNameTypeUserDefinedFieldsMocks();
+
+		// Add name factors DRVNM and TESTNAME to imported list
+		this.action.processFactors(this.importedGermplasmList);
+
+		// Verify that no new name type was saved
+		Mockito.verify(this.germplasmManager, Mockito.times(0)).addUserDefinedFields(Matchers.anyListOf(UserDefinedField.class));
+	}
+
+	@Test
+	public void testProcessFactorsWithNewNameTypeToSave() {
+		// Add name factors DRVNM and TESTNAME to imported list
+		final String newNameType = "TESTNAME";
+		final Map<String, String> nameFactors = new HashMap<>();
+		nameFactors.put(SaveGermplasmListActionTest.DERIVED_NAME_CODE, "DRVNM-1");
+		nameFactors.put(newNameType, newNameType + "-1");
+		this.importedGermplasmList.getImportedGermplasm().get(0).setNameFactors(nameFactors);
+		ImportedGermplasmListDataInitializer.addNameFactors(this.importedGermplasmList, nameFactors.keySet().toArray(new String[0]));
+
+		// Mock that DRVNM name type already exists in DB, but not TESTNAME
+		this.setupNameTypeUserDefinedFieldsMocks();
+
+		this.action.processFactors(this.importedGermplasmList);
+
+		// Verify that TESTNAME was added as new name type to UDFLDS table
+		Mockito.verify(this.germplasmManager, Mockito.times(1)).addUserDefinedFields(this.userDefinedFieldsCaptor.capture());
+		final List<UserDefinedField> newUserDefinedFields = this.userDefinedFieldsCaptor.getValue();
+		Assert.assertEquals(1, newUserDefinedFields.size());
+		Assert.assertEquals(SaveGermplasmListAction.FTABLE_NAME, newUserDefinedFields.get(0).getFtable());
+		Assert.assertEquals(SaveGermplasmListAction.FTYPE_NAME, newUserDefinedFields.get(0).getFtype());
+		Assert.assertEquals(newNameType, newUserDefinedFields.get(0).getFcode());
+	}
+
+	private void setupAttributeTypeUserDefinedFieldsMocks() {
 		final List<UserDefinedField> attributeTypeFields = new ArrayList<>();
 		attributeTypeFields.add(new UserDefinedField(1, SaveGermplasmListAction.FTABLE_ATTRIBUTE, SaveGermplasmListAction.FTYPE_ATTRIBUTE,
 				"Notes", "Notes Name", "", "", 1, 1, 1, 1));
 		attributeTypeFields.add(new UserDefinedField(2, SaveGermplasmListAction.FTABLE_ATTRIBUTE, SaveGermplasmListAction.FTYPE_ATTRIBUTE,
-				"Maturity", "Maturity Name", "", "", 1, 1, 1, 1));
+				SaveGermplasmListActionTest.MATURITY_CODE, SaveGermplasmListActionTest.MATURITY_NAME, "", "", 1, 1, 1, 1));
 		attributeTypeFields.add(new UserDefinedField(3, SaveGermplasmListAction.FTABLE_ATTRIBUTE, SaveGermplasmListAction.FTYPE_ATTRIBUTE,
 				"IPSTAT", "IP Status", "", "", 1, 1, 1, 1));
 		attributeTypeFields.add(new UserDefinedField(4, SaveGermplasmListAction.FTABLE_ATTRIBUTE, SaveGermplasmListAction.FTYPE_PASSPORT,
@@ -478,6 +546,14 @@ public class SaveGermplasmListActionTest {
 				"GROWER", "Grower's name", "", "", 1, 1, 1, 1));
 		Mockito.doReturn(attributeTypeFields).when(this.germplasmManager).getUserDefinedFieldByFieldTableNameAndType(Matchers.anyString(),
 				Matchers.anyString());
+	}
+
+	private void setupNameTypeUserDefinedFieldsMocks() {
+		final List<UserDefinedField> nameTypes = new ArrayList<>();
+		nameTypes.add(new UserDefinedField(1, SaveGermplasmListAction.FTABLE_NAME, SaveGermplasmListAction.FTYPE_NAME,
+				SaveGermplasmListActionTest.DERIVED_NAME_CODE, SaveGermplasmListActionTest.DERIVED_NAME, "", "", 1, 1, 1, 1));
+		Mockito.doReturn(nameTypes).when(this.germplasmManager)
+				.getUserDefinedFieldByFieldTableNameAndType(SaveGermplasmListAction.FTABLE_NAME, SaveGermplasmListAction.FTYPE_NAME);
 	}
 
 	private Map<Integer, List<Name>> createNamesMap(final int size) {

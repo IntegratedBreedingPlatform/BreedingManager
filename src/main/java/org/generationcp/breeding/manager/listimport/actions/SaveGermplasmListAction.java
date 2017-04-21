@@ -319,13 +319,13 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		}
 	}
 
-	private UserDefinedField createNewUserDefinedField(final String tableName, final String fieldType, final String name,
-			final String description, final String fieldFormat) {
+	UserDefinedField createNewUserDefinedField(final String tableName, final String fieldType, final String code,
+			final String name, final String fieldFormat) {
 		final UserDefinedField newUserDefinedField = new UserDefinedField();
-		newUserDefinedField.setFtable(SaveGermplasmListAction.FTABLE_NAME);
-		newUserDefinedField.setFtype(SaveGermplasmListAction.FTYPE_NAME);
-		newUserDefinedField.setFcode(name);
-		newUserDefinedField.setFname(description);
+		newUserDefinedField.setFtable(tableName);
+		newUserDefinedField.setFtype(fieldType);
+		newUserDefinedField.setFcode(code);
+		newUserDefinedField.setFname(name);
 		newUserDefinedField.setFfmt(fieldFormat);
 		newUserDefinedField.setFdesc("-");
 		newUserDefinedField.setLfldno(0);
