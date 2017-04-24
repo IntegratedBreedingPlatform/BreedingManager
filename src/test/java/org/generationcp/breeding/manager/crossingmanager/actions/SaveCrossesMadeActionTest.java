@@ -16,7 +16,6 @@ import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.Name;
-import org.generationcp.middleware.service.api.GermplasmGroupingService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.generationcp.middleware.util.Util;
 import org.junit.Assert;
@@ -42,10 +41,7 @@ public class SaveCrossesMadeActionTest {
 
 	@Mock
 	private PlatformTransactionManager transactionManager;
-
-	@Mock
-	private GermplasmGroupingService germplasmGroupingService;
-
+	
 	@Mock
 	private CrossExpansionProperties crossExpansionProperties;
 
@@ -62,7 +58,6 @@ public class SaveCrossesMadeActionTest {
 		this.action.setContextUtil(this.contextUtil);
 		this.action.setTransactionManager(this.transactionManager);
 		this.action.setGermplasmListManager(this.germplasmListManager);
-		this.action.setGermplasmGroupingService(this.germplasmGroupingService);
 		this.action.setCrossExpansionProperties(this.crossExpansionProperties);
 
 		this.crossesMade = new CrossesMade();
@@ -79,15 +74,12 @@ public class SaveCrossesMadeActionTest {
 
 		this.setUpReturnValueForSaveRecordsMethods();
 
-		this.action.saveRecords(this.crossesMade, true);
+		this.action.saveRecords(this.crossesMade);
 		try {
 			Mockito.verify(this.action, Mockito.times(1)).savePedigreeDesignationName(this.crossesMade, this.germplasmIDs);
 		} catch (TooLittleActualInvocations e) {
 			Assert.fail("Expecting to save parentage designation namebut didn't.");
 		}
-
-		Mockito.verify(this.germplasmGroupingService).processGroupInheritanceForCrosses(Mockito.anyList(), Mockito.anyBoolean(),
-				Mockito.anySet());
 	}
 
 	@Test
@@ -96,15 +88,12 @@ public class SaveCrossesMadeActionTest {
 
 		this.setUpReturnValueForSaveRecordsMethods();
 
-		this.action.saveRecords(this.crossesMade, true);
+		this.action.saveRecords(this.crossesMade);
 		try {
 			Mockito.verify(this.action, Mockito.times(0)).savePedigreeDesignationName(this.crossesMade, this.germplasmIDs);
 		} catch (NeverWantedButInvoked e) {
 			Assert.fail("Expecting to NOT save parentage designation names but didn't.");
 		}
-		
-		Mockito.verify(this.germplasmGroupingService).processGroupInheritanceForCrosses(Mockito.anyList(), Mockito.anyBoolean(),
-				Mockito.anySet());
 	}
 
 	private void setUpReturnValueForSaveRecordsMethods() {

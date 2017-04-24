@@ -34,7 +34,6 @@ import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.generationcp.middleware.pojos.Name;
-import org.generationcp.middleware.service.api.GermplasmGroupingService;
 import org.generationcp.middleware.service.api.PedigreeService;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.generationcp.middleware.util.Util;
@@ -95,9 +94,6 @@ public class SaveCrossesMadeAction implements Serializable {
 	private PlatformTransactionManager transactionManager;
 
 	@Autowired
-	private GermplasmGroupingService germplasmGroupingService;
-
-	@Autowired
 	private CrossExpansionProperties crossExpansionProperties;
 	
 	@Autowired
@@ -126,7 +122,7 @@ public class SaveCrossesMadeAction implements Serializable {
 	 * @param crossesMade where crosses information is defined
 	 * @return id of new Germplasm List created
 	 */
-	public GermplasmList saveRecords(final CrossesMade crossesMade, final boolean applyNewGroupToCurrentCrossOnly) {
+	public GermplasmList saveRecords(final CrossesMade crossesMade) {
 		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
 		return transactionTemplate.execute(new TransactionCallback<GermplasmList>() {
 
@@ -135,9 +131,6 @@ public class SaveCrossesMadeAction implements Serializable {
 				SaveCrossesMadeAction.this.updateConstantFields(crossesMade);
 
 				final List<Integer> germplasmIDs = SaveCrossesMadeAction.this.saveGermplasmsAndNames(crossesMade);
-
-				SaveCrossesMadeAction.this.germplasmGroupingService.processGroupInheritanceForCrosses(germplasmIDs,
-						!applyNewGroupToCurrentCrossOnly, SaveCrossesMadeAction.this.crossExpansionProperties.getHybridBreedingMethods());
 
 				if (crossesMade.getSetting().getCrossNameSetting().isSaveParentageDesignationAsAString()) {
 					SaveCrossesMadeAction.this.savePedigreeDesignationName(crossesMade, germplasmIDs);
@@ -488,10 +481,6 @@ public class SaveCrossesMadeAction implements Serializable {
 
 	protected void setTransactionManager(final PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
-	}
-
-	void setGermplasmGroupingService(final GermplasmGroupingService germplasmGroupingService) {
-		this.germplasmGroupingService = germplasmGroupingService;
 	}
 
 	void setCrossExpansionProperties(final CrossExpansionProperties crossExpansionProperties) {

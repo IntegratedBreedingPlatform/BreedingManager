@@ -765,11 +765,7 @@ public class MakeCrossesTableComponent extends VerticalLayout
 		final SaveCrossesMadeAction saveAction = new SaveCrossesMadeAction(this.getCrossList());
 
 		try {
-			final boolean applyNewGroupToCurrentCrossOnly = this.applyGroupingToNewCrossesOnly.booleanValue();
-
-			this.crossList = saveAction.saveRecords(this.makeCrossesMain.getCrossesMadeContainer().getCrossesMade(),
-					applyNewGroupToCurrentCrossOnly);
-
+			this.crossList = saveAction.saveRecords(this.makeCrossesMain.getCrossesMadeContainer().getCrossesMade());
 		} catch (final MiddlewareQueryException e) {
 			MakeCrossesTableComponent.LOG.error(e.getMessage(), e);
 			MessageNotifier.showError(this.getWindow(), this.messageSource.getMessage(Message.ERROR_DATABASE),
