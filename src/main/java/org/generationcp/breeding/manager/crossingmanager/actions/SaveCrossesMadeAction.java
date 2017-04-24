@@ -95,9 +95,6 @@ public class SaveCrossesMadeAction implements Serializable {
 	private PlatformTransactionManager transactionManager;
 
 	@Autowired
-	private GermplasmGroupingService germplasmGroupingService;
-
-	@Autowired
 	private CrossExpansionProperties crossExpansionProperties;
 	
 	@Autowired
@@ -485,10 +482,6 @@ public class SaveCrossesMadeAction implements Serializable {
 
 	protected void setTransactionManager(final PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
-	}
-
-	void setGermplasmGroupingService(final GermplasmGroupingService germplasmGroupingService) {
-		this.germplasmGroupingService = germplasmGroupingService;
 	}
 
 	void setCrossExpansionProperties(final CrossExpansionProperties crossExpansionProperties) {
