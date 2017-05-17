@@ -12,14 +12,13 @@ import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainer;
 import org.generationcp.breeding.manager.crossingmanager.CrossesMadeContainerUpdateListener;
 import org.generationcp.breeding.manager.crossingmanager.actions.GenerateCrossNameAction;
 import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmListEntry;
-import org.generationcp.breeding.manager.crossingmanager.util.CrossingManagerUtil;
 import org.generationcp.breeding.manager.crossingmanager.xml.AdditionalDetailsSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossNameSetting;
 import org.generationcp.breeding.manager.crossingmanager.xml.CrossingManagerSetting;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
-import org.generationcp.commons.util.CrossingUtil;
 import org.generationcp.commons.util.CollectionTransformationUtil;
+import org.generationcp.commons.util.CrossingUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
@@ -99,9 +98,8 @@ public class ApplyCrossingSettingAction implements CrossesMadeContainerUpdateLis
 							motherOfMale = gidAncestry.get(male.getGpid1());
 							fatherOfMale = gidAncestry.get(male.getGpid2());
 						}
-						CrossingManagerUtil.setCrossingBreedingMethod(germplasm, female, male, motherOfFemale, fatherOfFemale,
-								motherOfMale, fatherOfMale);
-
+						
+						germplasm.setMethodId(CrossingUtil.determineBreedingMethodBasedOnParentalLine(female, male, motherOfFemale, fatherOfFemale, motherOfMale, fatherOfMale));
 					} catch (MiddlewareQueryException e) {
 						LOG.error(e.getMessage(), e);
 						return false;
