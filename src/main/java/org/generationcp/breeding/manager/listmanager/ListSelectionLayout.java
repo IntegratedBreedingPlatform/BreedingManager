@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
@@ -105,6 +106,7 @@ public class ListSelectionLayout extends VerticalLayout
 		this.initializeValues();
 		this.layoutComponents();
 		this.addListeners();
+		this.openRequestLists();
 
 		if (this.listId != null) {
 			try {
@@ -236,6 +238,21 @@ public class ListSelectionLayout extends VerticalLayout
 		this.addComponent(this.searchOrBrowseContainer);
 		this.addComponent(this.detailsTabSheet);
 		this.displayDefault();
+	}
+
+	/**
+	 * Try to open list from url params
+	 */
+	private void openRequestLists() {
+		try {
+			String lists = BreedingManagerUtil.getApplicationRequest().getParameter("lists");
+			String[] listArray = StringUtils.split(lists, ",");
+			for (String listId : listArray) {
+				this.createListDetailsTab(Integer.valueOf(listId));
+			}
+		} catch (Exception e) {
+			this.LOG.error("Error opening lists: " + e.getMessage());
+		}
 	}
 
 	public void setDetailsTabSheetHeight() {
