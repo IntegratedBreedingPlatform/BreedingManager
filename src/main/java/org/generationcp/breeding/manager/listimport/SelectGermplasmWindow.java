@@ -525,13 +525,11 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 		return this.groupRadioBtn.getValue() != null && this.groupRadioBtn.getValue().equals(SelectGermplasmWindow.USE_SAME_GID);
 	}
 
-	
 	public OptionGroup getGroupRadioBtn() {
-		return groupRadioBtn;
+		return this.groupRadioBtn;
 	}
 
-	
 	public CheckBox getIgnoreRemainingMatchesCheckbox() {
-		return ignoreRemainingMatchesCheckbox;
+		return this.ignoreRemainingMatchesCheckbox;
 	}
 }
