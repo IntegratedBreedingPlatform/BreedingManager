@@ -412,7 +412,72 @@ public class DropHandlerMethodsTest {
 
 		this.dropHandlerMethods.addFromListDataTable(sourceTbl);
 
+		Mockito.verify(germplasmDataManager, Mockito.times(1)).getPreferredNamesByGids(Mockito.anyList());
 		this.verifyGermplasmListDataFromListDataTableIsTransferredProperly(selectedIDs, sourceTbl);
+
+	}
+
+
+	@Test
+	public void testAddFromListDataTableUsePreferredNameInDesignationIfAvailable() {
+
+		final Integer gid = 1;
+		final String preferredName = "BST1111";
+
+		final Table sourceTable = this.createListDataTable();
+		final List<Germplasm> germplasmList = new ArrayList<>();
+
+		// Add one list entry to the table
+		this.prepareGermplasmPerGid(gid, germplasmList);
+		this.addItemToTestTable(sourceTable, gid);
+
+		sourceTable.setParent(this.tableWithSelectAllLayout);
+
+		// Select the first item in the table
+		final List<Integer> selectedIDs = Arrays.asList(gid);
+		sourceTable.setValue(selectedIDs);
+
+		// Setup mocks
+		Mockito.doReturn(this.listComponent).when(this.tableWithSelectAllLayout).getParent();
+		Mockito.doReturn(DropHandlerMethodsTest.GERMPLASM_LIST_ID).when(this.listComponent).getGermplasmListId();
+		Mockito.doReturn(DropHandlerMethodsTest.GERMPLASM_LIST_ID).when(this.currentColumnsInfo).getListId();
+		Mockito.doReturn(new HashMap<>()).when(this.currentColumnsInfo).getColumnValuesMap();
+
+
+		// Create preferred name map for gid in the table
+		final Map<Integer, String> preferredNames = new HashMap<>();
+		preferredNames.put(gid, preferredName);
+		Mockito.doReturn(preferredNames).when(germplasmDataManager).getPreferredNamesByGids(Mockito.anyList());
+
+		for (final Integer itemId : selectedIDs) {
+			Mockito.doReturn(this.currentColumnsInfo).when(this.germplasmListManager).getAdditionalColumnsForList(itemId);
+		}
+
+		this.dropHandlerMethods.addFromListDataTable(sourceTable);
+
+		Mockito.verify(germplasmDataManager, Mockito.times(1)).getPreferredNamesByGids(Mockito.anyList());
+
+		final Item targetTableItem = this.targetTable.getItem(gid);
+		final Item sourceTableItem = sourceTable.getItem(gid);
+
+		Assert.assertEquals(sourceTableItem.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).getValue(),
+				targetTableItem.getItemProperty(ColumnLabels.ENTRY_CODE.getName()).getValue());
+		Assert.assertEquals(sourceTableItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue(),
+				targetTableItem.getItemProperty(ColumnLabels.ENTRY_ID.getName()).getValue());
+		Assert.assertEquals(sourceTableItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue(),
+				targetTableItem.getItemProperty(ColumnLabels.SEED_SOURCE.getName()).getValue());
+		Assert.assertEquals(sourceTableItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue(),
+				targetTableItem.getItemProperty(ColumnLabels.PARENTAGE.getName()).getValue());
+		Assert.assertEquals(sourceTableItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).getValue(),
+				targetTableItem.getItemProperty(ColumnLabels.GROUP_ID.getName()).getValue());
+		Assert.assertEquals(sourceTableItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue(),
+				targetTableItem.getItemProperty(ColumnLabels.SEED_RESERVATION.getName()).getValue());
+		final Button gidButton = (Button) targetTableItem.getItemProperty(ColumnLabels.GID.getName()).getValue();
+		Assert.assertEquals(String.valueOf(gid), gidButton.getCaption());
+
+		// designation should be preferred name of germplasm
+		final Button targetDesigButton = (Button) targetTableItem.getItemProperty(ColumnLabels.DESIGNATION.getName()).getValue();
+		Assert.assertEquals(preferredName, targetDesigButton.getCaption());
 
 	}
 

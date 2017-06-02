@@ -521,8 +521,24 @@ public class DropHandlerMethods {
 		return germplasmListData;
 	}
 
+	List<Integer> extractGidsFromTable(final Table sourceTable, final List<Integer> selectedGermplasmIds) {
+
+		final List<Integer> gids = new ArrayList<>();
+		for (final Integer itemId : selectedGermplasmIds) {
+			Integer gid = getGidFromButtonCaption(sourceTable, itemId);
+			gids.add(gid);
+		}
+
+		return gids;
+
+	}
+
 	public void addFromListDataTable(final Table sourceTable) {
 		final List<Integer> itemIds = this.getSelectedItemIds(sourceTable);
+
+		final List<Integer> gids = extractGidsFromTable(sourceTable, itemIds);
+
+		final Map<Integer, String> preferredNames = germplasmDataManager.getPreferredNamesByGids(gids);
 
 		Integer listId = null;
 		if (sourceTable.getParent() instanceof TableWithSelectAllLayout && sourceTable.getParent().getParent() instanceof ListComponent) {
@@ -578,7 +594,7 @@ public class DropHandlerMethods {
 
 			});
 
-			final String designation = this.getDesignationFromButtonCaption(sourceTable, itemId);
+			final String designation = preferredNames.get(gid) != null ? preferredNames.get(gid) : this.getDesignationFromButtonCaption(sourceTable, itemId);
 			final Button designationButton =
 					new Button(designation, new GidLinkButtonClickListener(this.listManagerMain, gid.toString(), true, true));
 			designationButton.setStyleName(BaseTheme.BUTTON_LINK);
