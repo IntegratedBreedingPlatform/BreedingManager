@@ -135,10 +135,10 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 
 	public void doneAction() {
 
-		if (this.groupRadioBtn.getValue().equals(SelectGermplasmWindow.USE_SAME_GID)) {
+		if (this.useSameGidOptionSelected()) {
 			this.source.mapDesignationToGermplasmForReuse(this.designation, this.germplasmIndex);
 		}
-		if (!this.groupRadioBtn.getValue().equals(SelectGermplasmWindow.IGNORE_MATCHES)) {
+		if (!this.ignoreMatchesOptionSelected()) {
 			final Germplasm selectedGermplasm = this.germplasmDataManager.getGermplasmByGID((Integer) this.germplasmTable.getValue());
 			this.source.receiveGermplasmFromWindowAndUpdateGermplasmData(this.germplasmIndex, selectedGermplasm);
 		}
