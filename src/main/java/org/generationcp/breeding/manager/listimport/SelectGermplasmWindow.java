@@ -518,11 +518,11 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 	}
 
 	private boolean ignoreMatchesOptionSelected() {
-		return this.groupRadioBtn.getValue() != null && this.groupRadioBtn.getValue().equals(SelectGermplasmWindow.IGNORE_MATCHES);
+		return SelectGermplasmWindow.IGNORE_MATCHES.equals(this.groupRadioBtn.getValue());
 	}
 
 	private boolean useSameGidOptionSelected() {
-		return this.groupRadioBtn.getValue() != null && this.groupRadioBtn.getValue().equals(SelectGermplasmWindow.USE_SAME_GID);
+		return SelectGermplasmWindow.USE_SAME_GID.equals(this.groupRadioBtn.getValue());
 	}
 
 	public OptionGroup getGroupRadioBtn() {
