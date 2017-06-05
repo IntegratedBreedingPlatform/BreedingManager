@@ -108,7 +108,7 @@ public class ListSelectionLayout extends VerticalLayout
 		this.initializeValues();
 		this.layoutComponents();
 		this.addListeners();
-		this.requestListIds();
+		this.OpenrequestListIds();
 
 		if (this.listId != null) {
 			try {
@@ -245,7 +245,7 @@ public class ListSelectionLayout extends VerticalLayout
 	/**
 	 * Try to open list from url params
 	 */
-	private void requestListIds() {
+	private void OpenrequestListIds() {
 		try {
 			final String lists = BreedingManagerUtil.getApplicationRequest().getParameter("lists");
 			String[] listArray = StringUtils.split(lists, ",");
