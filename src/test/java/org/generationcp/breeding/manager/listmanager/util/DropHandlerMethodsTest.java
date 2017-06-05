@@ -481,6 +481,31 @@ public class DropHandlerMethodsTest {
 
 	}
 
+	@Test
+	public void test() {
+
+		final Table sourceTable = this.createListDataTable();
+		final List<Germplasm> germplasmList = new ArrayList<>();
+
+		for (int gid = 1; gid <= DropHandlerMethodsTest.NO_OF_ENTRIES; gid++) {
+			this.prepareGermplasmPerGid(gid, germplasmList);
+			this.addItemToTestTable(sourceTable, gid);
+		}
+		sourceTable.setParent(this.tableWithSelectAllLayout);
+		final List<Integer> selectedItemIds = Arrays.asList(1, 2);
+		sourceTable.setValue(selectedItemIds);
+
+		final List<Integer> itemIds = this.dropHandlerMethods.getSelectedItemIds(sourceTable);
+
+		List<Integer> gids = this.dropHandlerMethods.extractGidsFromTable(sourceTable, itemIds);
+
+		Assert.assertEquals("Only 2 entries are selected so the gids extracted should oly be 2", 2, gids.size());
+		Assert.assertTrue("Gid 1 should be in the extracted gid list", gids.contains(1));
+		Assert.assertTrue("Gid 2 should be in the extracted gid list", gids.contains(2));
+
+
+	}
+
 	private void verifyGermplasmListDataFromListIsTransferredProperly(final GermplasmList germplasmList) {
 		Assert.assertTrue(this.targetTable.size() == germplasmList.getListData().size());
 		final Iterator<GermplasmListData> listDataIterator = germplasmList.getListData().iterator();

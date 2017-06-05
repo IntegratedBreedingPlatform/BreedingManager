@@ -521,10 +521,10 @@ public class DropHandlerMethods {
 		return germplasmListData;
 	}
 
-	List<Integer> extractGidsFromTable(final Table sourceTable, final List<Integer> selectedGermplasmIds) {
+	List<Integer> extractGidsFromTable(final Table sourceTable, final List<Integer> selectedTableItemIds) {
 
 		final List<Integer> gids = new ArrayList<>();
-		for (final Integer itemId : selectedGermplasmIds) {
+		for (final Integer itemId : selectedTableItemIds) {
 			Integer gid = getGidFromButtonCaption(sourceTable, itemId);
 			gids.add(gid);
 		}
