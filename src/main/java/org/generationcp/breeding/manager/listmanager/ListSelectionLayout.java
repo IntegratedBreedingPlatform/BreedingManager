@@ -71,6 +71,9 @@ public class ListSelectionLayout extends VerticalLayout
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
+	@Autowired
+	private UserDataManager userDataManager;
+
 	private final ListManagerMain source;
 
 	private Label headingLabel;
@@ -91,8 +94,7 @@ public class ListSelectionLayout extends VerticalLayout
 
 	private final Integer listId;
 
-	@Autowired
-	private UserDataManager userDataManager;
+
 
 	public ListSelectionLayout(final ListManagerMain source, final Integer listId) {
 		super();
@@ -106,13 +108,13 @@ public class ListSelectionLayout extends VerticalLayout
 		this.initializeValues();
 		this.layoutComponents();
 		this.addListeners();
-		this.openRequestLists();
+		this.requestListIds();
 
 		if (this.listId != null) {
 			try {
 				this.createListDetailsTab(this.listId);
 			} catch (final MiddlewareQueryException ex) {
-				ListSelectionLayout.LOG.error("Error with opening list details tab of list with id: " + this.listId);
+				ListSelectionLayout.LOG.error("Error with opening list details tab of list with id: " + this.listId,ex);
 			}
 		} else {
 			this.displayDefault();
@@ -166,7 +168,7 @@ public class ListSelectionLayout extends VerticalLayout
 		this.toWorkWith.setDebugId("toWorkWith");
 		this.toWorkWith.setImmediate(true);
 
-		this.listStatusForChanges = new HashMap<ListComponent, Boolean>();
+		this.listStatusForChanges = new HashMap<>();
 	}
 
 	@Override
@@ -243,15 +245,15 @@ public class ListSelectionLayout extends VerticalLayout
 	/**
 	 * Try to open list from url params
 	 */
-	private void openRequestLists() {
+	private void requestListIds() {
 		try {
-			String lists = BreedingManagerUtil.getApplicationRequest().getParameter("lists");
+			final String lists = BreedingManagerUtil.getApplicationRequest().getParameter("lists");
 			String[] listArray = StringUtils.split(lists, ",");
-			for (String listId : listArray) {
+			for (final String listId : listArray) {
 				this.createListDetailsTab(Integer.valueOf(listId));
 			}
-		} catch (Exception e) {
-			this.LOG.error("Error opening lists: " + e.getMessage());
+		} catch (final Exception e) {
+			LOG.error("Error opening lists: " + e.getMessage(),e);
 		}
 	}
 
@@ -323,12 +325,12 @@ public class ListSelectionLayout extends VerticalLayout
 		} else {
 			this.noListLabel.setVisible(false);
 			final String tabName = germplasmList.getName();
-			this.createTab(listId, germplasmList, tabName);
+			this.createTab(germplasmList, tabName);
 			this.showDetailsTabsheet();
 		}
 	}
 
-	private void createTab(final int id, final GermplasmList germplasmList, final String tabName) {
+	private void createTab(final GermplasmList germplasmList, final String tabName) {
 
 		final boolean tabExists = Util.isTabDescriptionExist(this.detailsTabSheet,
 				this.generateTabDescription(germplasmList.getId()));
@@ -443,7 +445,7 @@ public class ListSelectionLayout extends VerticalLayout
 	}
 
 	public boolean hasUnsavedChanges() {
-		final List<Boolean> listOfStatus = new ArrayList<Boolean>();
+		final List<Boolean> listOfStatus = new ArrayList<>();
 
 		listOfStatus.addAll(this.listStatusForChanges.values());
 
@@ -463,7 +465,7 @@ public class ListSelectionLayout extends VerticalLayout
 	}
 
 	public void updateViewForAllLists(final ModeView modeView) {
-		final List<ListComponent> listComponents = new ArrayList<ListComponent>();
+		final List<ListComponent> listComponents = new ArrayList<>();
 		listComponents.addAll(this.listStatusForChanges.keySet());
 
 		if (modeView.equals(ModeView.LIST_VIEW)) {
@@ -478,7 +480,7 @@ public class ListSelectionLayout extends VerticalLayout
 	}
 
 	public void updateHasChangesForAllList(final Boolean hasChanges) {
-		final List<ListComponent> listComponents = new ArrayList<ListComponent>();
+		final List<ListComponent> listComponents = new ArrayList<>();
 		listComponents.addAll(this.listStatusForChanges.keySet());
 
 		for (final ListComponent listComponent : listComponents) {
@@ -487,7 +489,7 @@ public class ListSelectionLayout extends VerticalLayout
 	}
 
 	public void resetListViewForCancelledChanges() {
-		final List<ListComponent> listComponents = new ArrayList<ListComponent>();
+		final List<ListComponent> listComponents = new ArrayList<>();
 		listComponents.addAll(this.listStatusForChanges.keySet());
 
 		for (final ListComponent listComponent : listComponents) {
@@ -498,7 +500,7 @@ public class ListSelectionLayout extends VerticalLayout
 	}
 
 	public void resetInventoryViewForCancelledChanges() {
-		final List<ListComponent> listComponents = new ArrayList<ListComponent>();
+		final List<ListComponent> listComponents = new ArrayList<>();
 		listComponents.addAll(this.listStatusForChanges.keySet());
 
 		for (final ListComponent listComponent : listComponents) {
