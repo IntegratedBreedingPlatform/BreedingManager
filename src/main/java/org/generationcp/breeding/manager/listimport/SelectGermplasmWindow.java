@@ -66,9 +66,9 @@ import com.vaadin.ui.themes.Reindeer;
 public class SelectGermplasmWindow extends BaseSubWindow implements InitializingBean, InternationalizableComponent, BreedingManagerLayout,
 		Window.CloseListener, ImportGermplasmEntryActionListener {
 
+	public static final String USE_SAME_GID = "Use this match for other instances of this name in the import list";
+	public static final String IGNORE_MATCHES = "Ignore matches and add a new entry";
 	private static final Logger LOG = LoggerFactory.getLogger(SelectGermplasmWindow.class);
-	private static final String USE_SAME_GID = "Use this match for other instances of this name in the import list";
-	private static final String IGNORE_MATCHES = "Ignore matches and add a new entry";
 
 	private static final long serialVersionUID = -8113004135173349534L;
 
@@ -135,10 +135,10 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 
 	public void doneAction() {
 
-		if (this.groupRadioBtn.getValue().equals(SelectGermplasmWindow.USE_SAME_GID)) {
+		if (this.useSameGidOptionSelected()) {
 			this.source.mapDesignationToGermplasmForReuse(this.designation, this.germplasmIndex);
 		}
-		if (!this.groupRadioBtn.getValue().equals(SelectGermplasmWindow.IGNORE_MATCHES)) {
+		if (!this.ignoreMatchesOptionSelected()) {
 			final Germplasm selectedGermplasm = this.germplasmDataManager.getGermplasmByGID((Integer) this.germplasmTable.getValue());
 			this.source.receiveGermplasmFromWindowAndUpdateGermplasmData(this.germplasmIndex, selectedGermplasm);
 		}
@@ -518,10 +518,18 @@ public class SelectGermplasmWindow extends BaseSubWindow implements Initializing
 	}
 
 	private boolean ignoreMatchesOptionSelected() {
-		return this.groupRadioBtn.getValue() != null && this.groupRadioBtn.getValue().equals(SelectGermplasmWindow.IGNORE_MATCHES);
+		return SelectGermplasmWindow.IGNORE_MATCHES.equals(this.groupRadioBtn.getValue());
 	}
 
 	private boolean useSameGidOptionSelected() {
-		return this.groupRadioBtn.getValue() != null && this.groupRadioBtn.getValue().equals(SelectGermplasmWindow.USE_SAME_GID);
+		return SelectGermplasmWindow.USE_SAME_GID.equals(this.groupRadioBtn.getValue());
+	}
+
+	public OptionGroup getGroupRadioBtn() {
+		return this.groupRadioBtn;
+	}
+
+	public CheckBox getIgnoreRemainingMatchesCheckbox() {
+		return this.ignoreRemainingMatchesCheckbox;
 	}
 }

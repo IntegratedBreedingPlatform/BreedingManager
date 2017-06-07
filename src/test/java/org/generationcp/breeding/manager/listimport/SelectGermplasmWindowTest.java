@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.listimport.actions.ProcessImportedGermplasmAction;
+import org.generationcp.breeding.manager.listimport.listeners.ImportGermplasmEntryActionListener;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.GermplasmTestDataInitializer;
@@ -21,6 +22,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -70,7 +72,7 @@ public class SelectGermplasmWindowTest {
 	}
 
 	@Test
-	public void testInitGermplasmTable_returnsTheValueFromColumLabelDefaultName() throws MiddlewareQueryException {
+	public void testInitGermplasmTableReturnsTheValueFromColumLabelDefaultName() throws MiddlewareQueryException {
 		final Table germplasmTable = new Table();
 		this.selectGermplasmWindow.setGermplasmTable(germplasmTable);
 
@@ -93,7 +95,7 @@ public class SelectGermplasmWindowTest {
 	}
 
 	@Test
-	public void testInitGermplasmTable_returnsTheValueFromOntology() throws MiddlewareQueryException {
+	public void testInitGermplasmTableReturnsTheValueFromOntology() throws MiddlewareQueryException {
 		final Table germplasmTable = new Table();
 		this.selectGermplasmWindow.setGermplasmTable(germplasmTable);
 
@@ -151,5 +153,125 @@ public class SelectGermplasmWindowTest {
 
 		final Table germplasmTable = this.selectGermplasmWindow.getGermplasmTable();
 		Assert.assertEquals(nameMatchCount, germplasmTable.size());
+	}
+
+	@Test
+	public void testDoneActionNoCheckboxOptionSelected() {
+		// Initialize UI elements
+		this.selectGermplasmWindow.instantiateComponents();
+
+		// Setup mocks
+		final Integer selectedGid = 101;
+		final Table table = Mockito.mock(Table.class);
+		Mockito.when(table.getValue()).thenReturn(selectedGid);
+		this.selectGermplasmWindow.setGermplasmTable(table);
+		final Germplasm germplasm = new Germplasm();
+		germplasm.setGid(selectedGid);
+		Mockito.when(this.germplasmManager.getGermplasmByGID(selectedGid)).thenReturn(germplasm);
+
+		// Method to test
+		this.selectGermplasmWindow.doneAction();
+
+		// Check that GID of selected table row was used for updating as germplasm selected
+		final ArgumentCaptor<Integer> gidCaptor = ArgumentCaptor.forClass(Integer.class);
+		Mockito.verify(this.germplasmManager, Mockito.times(1)).getGermplasmByGID(gidCaptor.capture());
+		Assert.assertEquals("Expecting GID selected in table is used in Middleware query to get germplasm.", selectedGid,
+				gidCaptor.getValue());
+		final ArgumentCaptor<Integer> indexCaptor = ArgumentCaptor.forClass(Integer.class);
+		final ArgumentCaptor<Germplasm> germplasmCaptor = ArgumentCaptor.forClass(Germplasm.class);
+		Mockito.verify(this.source, Mockito.times(1)).receiveGermplasmFromWindowAndUpdateGermplasmData(indexCaptor.capture(),
+				germplasmCaptor.capture());
+		Assert.assertEquals("Expecting right import index to be used.", this.selectGermplasmWindow.getGermplasmIndex(),
+				indexCaptor.getValue().intValue());
+		Assert.assertEquals("Expecting retrieved germplasm to be used.", germplasm, germplasmCaptor.getValue());
+
+		// Verify other interactions with mocks
+		Mockito.verify(this.source, Mockito.never()).mapDesignationToGermplasmForReuse(Matchers.anyString(), Matchers.anyInt());
+		Mockito.verify(this.source, Mockito.times(1)).removeListener(Matchers.any(ImportGermplasmEntryActionListener.class));
+		Mockito.verify(this.source, Mockito.times(1)).processNextItems();
+	}
+
+	@Test
+	public void testDoneActionUseSameGidOptionSelected() {
+		// Initialize UI elements
+		this.selectGermplasmWindow.instantiateComponents();
+		this.selectGermplasmWindow.getGroupRadioBtn().select(SelectGermplasmWindow.USE_SAME_GID);
+
+		// Setup mocks
+		final Integer selectedGid = 101;
+		final Table table = Mockito.mock(Table.class);
+		Mockito.when(table.getValue()).thenReturn(selectedGid);
+		this.selectGermplasmWindow.setGermplasmTable(table);
+		final Germplasm germplasm = new Germplasm();
+		germplasm.setGid(selectedGid);
+		Mockito.when(this.germplasmManager.getGermplasmByGID(selectedGid)).thenReturn(germplasm);
+
+		// Method to test
+		this.selectGermplasmWindow.doneAction();
+
+		// Check that GID of selected table row was used for updating as germplasm selected
+		final ArgumentCaptor<Integer> gidCaptor = ArgumentCaptor.forClass(Integer.class);
+		Mockito.verify(this.germplasmManager, Mockito.times(1)).getGermplasmByGID(gidCaptor.capture());
+		Assert.assertEquals("Expecting GID selected in table is used in Middleware query to get germplasm.", selectedGid,
+				gidCaptor.getValue());
+		final ArgumentCaptor<Integer> indexCaptor = ArgumentCaptor.forClass(Integer.class);
+		final ArgumentCaptor<Germplasm> germplasmCaptor = ArgumentCaptor.forClass(Germplasm.class);
+		Mockito.verify(this.source, Mockito.times(1)).receiveGermplasmFromWindowAndUpdateGermplasmData(indexCaptor.capture(),
+				germplasmCaptor.capture());
+		Assert.assertEquals("Expecting right import index to be used.", this.selectGermplasmWindow.getGermplasmIndex(),
+				indexCaptor.getValue().intValue());
+		Assert.assertEquals("Expecting retrieved germplasm to be used.", germplasm, germplasmCaptor.getValue());
+
+		// Check that GID is added to map for reuse
+		final ArgumentCaptor<String> designationCaptor = ArgumentCaptor.forClass(String.class);
+		final ArgumentCaptor<Integer> reusedGidCaptor = ArgumentCaptor.forClass(Integer.class);
+		Mockito.verify(this.source, Mockito.times(1)).mapDesignationToGermplasmForReuse(designationCaptor.capture(),
+				reusedGidCaptor.capture());
+		Assert.assertEquals("Expecting correct designation added to map for reuse.", this.selectGermplasmWindow.getDesignation(),
+				designationCaptor.getValue());
+		Assert.assertEquals("Expecting correct import index added to map for reuse.", this.selectGermplasmWindow.getGermplasmIndex(),
+				reusedGidCaptor.getValue().intValue());
+	}
+
+	@Test
+	public void testDoneActionIgnoreMatchOptionSelected() {
+		// Initialize UI elements
+		this.selectGermplasmWindow.instantiateComponents();
+		this.selectGermplasmWindow.getGroupRadioBtn().select(SelectGermplasmWindow.IGNORE_MATCHES);
+
+		// Method to test
+		this.selectGermplasmWindow.doneAction();
+
+		// Check that no germplasm was selected
+		Mockito.verify(this.germplasmManager, Mockito.never()).getGermplasmByGID(Matchers.anyInt());
+		Mockito.verify(this.source, Mockito.never()).receiveGermplasmFromWindowAndUpdateGermplasmData(Matchers.anyInt(),
+				Matchers.any(Germplasm.class));
+
+		// Verify other interactions with mocks
+		Mockito.verify(this.source, Mockito.never()).mapDesignationToGermplasmForReuse(Matchers.anyString(), Matchers.anyInt());
+		Mockito.verify(this.source, Mockito.times(1)).removeListener(Matchers.any(ImportGermplasmEntryActionListener.class));
+		Mockito.verify(this.source, Mockito.times(1)).processNextItems();
+	}
+
+	@Test
+	public void testDoneActionIgnoreRemainingMatchesSelected() {
+		// Initialize UI elements
+		this.selectGermplasmWindow.instantiateComponents();
+		this.selectGermplasmWindow.getGroupRadioBtn().select(SelectGermplasmWindow.IGNORE_MATCHES);
+		this.selectGermplasmWindow.getIgnoreRemainingMatchesCheckbox().setValue(true);
+
+		// Method to test
+		this.selectGermplasmWindow.doneAction();
+
+		// Check that no germplasm was selected for current entry and next items are not processed
+		Mockito.verify(this.germplasmManager, Mockito.never()).getGermplasmByGID(Matchers.anyInt());
+		Mockito.verify(this.source, Mockito.never()).receiveGermplasmFromWindowAndUpdateGermplasmData(Matchers.anyInt(),
+				Matchers.any(Germplasm.class));
+		Mockito.verify(this.source, Mockito.times(1)).ignoreRemainingMatches();
+		Mockito.verify(this.source, Mockito.never()).processNextItems();
+
+		// Verify other interactions with mocks
+		Mockito.verify(this.source, Mockito.never()).mapDesignationToGermplasmForReuse(Matchers.anyString(), Matchers.anyInt());
+		Mockito.verify(this.source, Mockito.times(1)).removeListener(Matchers.any(ImportGermplasmEntryActionListener.class));
 	}
 }
