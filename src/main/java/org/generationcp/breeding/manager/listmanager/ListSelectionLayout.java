@@ -27,6 +27,7 @@ import org.generationcp.breeding.manager.customcomponent.ViewListHeaderWindow;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.breeding.manager.util.ListManagerDetailsTabCloseHandler;
 import org.generationcp.breeding.manager.util.Util;
+import org.generationcp.commons.util.StringUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
@@ -248,7 +249,7 @@ public class ListSelectionLayout extends VerticalLayout
 	private void openRequestListIds() {
 		try {
 			final String lists = BreedingManagerUtil.getApplicationRequest().getParameter("lists");
-			String[] listArray = StringUtils.split(lists, ",");
+			final String[] listArray = StringUtil.isEmpty(lists) ? new String[] {} : StringUtils.split(lists, ",");
 			for (final String listId : listArray) {
 				this.createListDetailsTab(Integer.valueOf(listId));
 			}
