@@ -22,10 +22,12 @@ public class GermplasmName implements Comparable<GermplasmName>, Serializable {
 
 	private Germplasm germplasm;
 	private Name name;
+	private Boolean isGidMatched;
 
 	public GermplasmName(Germplasm germplasm, Name name) {
 		this.germplasm = germplasm;
 		this.name = name;
+		this.isGidMatched = false;
 	}
 
 	public Germplasm getGermplasm() {
@@ -79,6 +81,16 @@ public class GermplasmName implements Comparable<GermplasmName>, Serializable {
 			return false;
 		}
 		return true;
+	}
+
+	
+	public Boolean isGidMatched() {
+		return isGidMatched;
+	}
+
+	
+	public void setIsGidMatched(Boolean isGidMatched) {
+		this.isGidMatched = isGidMatched;
 	}
 
 }
