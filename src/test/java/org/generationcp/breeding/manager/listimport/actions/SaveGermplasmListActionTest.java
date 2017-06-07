@@ -381,8 +381,12 @@ public class SaveGermplasmListActionTest {
 
 	@Test
 	public void testProcessGermplasmNamesAndLotsAllEntriesMatchedToExistingGermplasm() {
+		// Set existing GIDs as "finalized" (or flagged as real GIDs in DB versus just a temporary GID)
+		for (final GermplasmName germplasmName : this.germplasmNameObjects) {
+			germplasmName.setIsGidMatched(true);
+		}
+				
 		final List<Integer> matchedGids = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-
 		// Method to test
 		this.action.processGermplasmNamesAndLots(this.germplasmNameObjects, matchedGids, SaveGermplasmListActionTest.SEED_STORAGE_LOCATION);
 
@@ -442,6 +446,8 @@ public class SaveGermplasmListActionTest {
 			final Integer gid = entry.getKey();
 			final Lot lot = entry.getValue();
 			Assert.assertEquals(gid, lot.getEntityId());
+			// Check that GID used for lots is the one generated from Middleware mock when germplasm was added
+			Assert.assertTrue(gid > 100);
 		}
 	}
 
@@ -449,6 +455,10 @@ public class SaveGermplasmListActionTest {
 	public void testProcessGermplasmNamesAndLotsForExistingGermplasmAddingInventory() {
 		// Indicate that inventory is present
 		this.action.setSeedAmountScaleId(SaveGermplasmListActionTest.SEED_AMOUNT_SCALE_ID);
+		// Set existing GIDs as "finalized" (or flagged as real GIDs in DB versus just a temporary GID)
+		for (final GermplasmName germplasmName : this.germplasmNameObjects) {
+			germplasmName.setIsGidMatched(true);
+		}
 
 		final List<Integer> matchedGids = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 		// Method to test
@@ -468,6 +478,28 @@ public class SaveGermplasmListActionTest {
 			Assert.assertEquals(SaveGermplasmListActionTest.CURRENT_LOCAL_ID, lot.getUserId());
 			Assert.assertEquals(new Integer("0"), lot.getStatus());
 		}
+	}
+	
+	@Test
+	public void testProcessGermplasmNamesAndLotsWhenTemporaryGidInMatchedGids(){
+		// Set 1st entry as matched to GID 10. The 10th entry will have temporary GID = 10
+		final int gidMatched = 10;
+		this.germplasmNameObjects.get(0).getGermplasm().setGid(gidMatched);
+		final List<Integer> matchedGids = Arrays.asList(gidMatched, 2, 3, 4, 5, 6, 7, 8, 9);
+		// Set all entries to have "finalized" GID (or flagged as real GIDs in DB versus just a temporary GID) except for last entry
+		for (int i = 0; i < this.germplasmNameObjects.size() - 1; i++) {
+			final GermplasmName germplasmName = this.germplasmNameObjects.get(i);
+			germplasmName.setIsGidMatched(true);
+		}
+		
+		// Method to test
+		this.action.processGermplasmNamesAndLots(this.germplasmNameObjects, matchedGids, SaveGermplasmListActionTest.SEED_STORAGE_LOCATION);
+		
+		// Verify that new germplasm record was created for 10th entry
+		final ArgumentCaptor<Germplasm> germplasmCaptor = ArgumentCaptor.forClass(Germplasm.class);
+		Mockito.verify(this.germplasmManager, Mockito.times(1))
+				.addGermplasm(germplasmCaptor.capture(), Matchers.any(Name.class));
+		
 	}
 
 	@Test

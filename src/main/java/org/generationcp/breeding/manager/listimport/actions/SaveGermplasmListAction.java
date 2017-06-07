@@ -215,7 +215,9 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 			final Germplasm germplasm;
 
 			// If entry was matched to existing germplasm and germplasm record should not be created
-			if (excludeGermplasmCreateIds.contains(germplasmName.getGermplasm().getGid())) {
+			// Check also if GID was matched to actual GID in DB to distinguish temporary GIDs (eg. an entry could have temporary, 
+			// unmatched GID = 10 while the actual GID 10 could be in list of matched GIDs as matched to another entry
+			if (excludeGermplasmCreateIds.contains(gid) && germplasmName.isGidMatched()) {
 				germplasm = this.germplasmManager.getGermplasmByGID(gid);
 				germplasmName.setGermplasm(germplasm);
 				name.setGermplasmId(gid);
