@@ -294,11 +294,8 @@ public class ProcessImportedGermplasmAction implements Serializable {
 	}
 
 	protected boolean isNeedToDisplayGermplasmSelectionWindow(final int germplasmMatchesCount) {
-		if (germplasmMatchesCount > 1
-				|| germplasmMatchesCount == 1 && !this.germplasmDetailsComponent.automaticallyAcceptSingleMatchesCheckbox()) {
-			return true;
-		}
-		return false;
+		return (germplasmMatchesCount > 1
+				|| germplasmMatchesCount == 1 && !this.germplasmDetailsComponent.automaticallyAcceptSingleMatchesCheckbox());
 	}
 
 	protected boolean isGidSpecified(final ImportedGermplasm importedGermplasm) {
@@ -553,7 +550,7 @@ public class ProcessImportedGermplasmAction implements Serializable {
 
 	public void mapDesignationToGermplasmForReuse(final String designation, final Integer index) {
 		if (this.designationToGermplasmForReuseMap == null) {
-			this.designationToGermplasmForReuseMap = new HashMap<String, Germplasm>();
+			this.designationToGermplasmForReuseMap = new HashMap<>();
 		}
 		final String nameInImportFile = designation.toLowerCase();
 		final String standardizedNameInImportFile = GermplasmDataManagerUtil.standardizeName(nameInImportFile).toLowerCase();
