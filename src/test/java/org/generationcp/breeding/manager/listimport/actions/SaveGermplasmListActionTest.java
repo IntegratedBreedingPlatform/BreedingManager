@@ -385,7 +385,7 @@ public class SaveGermplasmListActionTest {
 		for (final GermplasmName germplasmName : this.germplasmNameObjects) {
 			germplasmName.setIsGidMatched(true);
 		}
-				
+
 		final List<Integer> matchedGids = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 		// Method to test
 		this.action.processGermplasmNamesAndLots(this.germplasmNameObjects, matchedGids, SaveGermplasmListActionTest.SEED_STORAGE_LOCATION);
@@ -479,9 +479,9 @@ public class SaveGermplasmListActionTest {
 			Assert.assertEquals(new Integer("0"), lot.getStatus());
 		}
 	}
-	
+
 	@Test
-	public void testProcessGermplasmNamesAndLotsWhenTemporaryGidInMatchedGids(){
+	public void testProcessGermplasmNamesAndLotsWhenTemporaryGidInMatchedGids() {
 		// Set 1st entry as matched to GID 10. The 10th entry will have temporary GID = 10
 		final int gidMatched = 10;
 		this.germplasmNameObjects.get(0).getGermplasm().setGid(gidMatched);
@@ -491,15 +491,14 @@ public class SaveGermplasmListActionTest {
 			final GermplasmName germplasmName = this.germplasmNameObjects.get(i);
 			germplasmName.setIsGidMatched(true);
 		}
-		
+
 		// Method to test
 		this.action.processGermplasmNamesAndLots(this.germplasmNameObjects, matchedGids, SaveGermplasmListActionTest.SEED_STORAGE_LOCATION);
-		
+
 		// Verify that new germplasm record was created for 10th entry
 		final ArgumentCaptor<Germplasm> germplasmCaptor = ArgumentCaptor.forClass(Germplasm.class);
-		Mockito.verify(this.germplasmManager, Mockito.times(1))
-				.addGermplasm(germplasmCaptor.capture(), Matchers.any(Name.class));
-		
+		Mockito.verify(this.germplasmManager, Mockito.times(1)).addGermplasm(germplasmCaptor.capture(), Matchers.any(Name.class));
+
 	}
 
 	@Test

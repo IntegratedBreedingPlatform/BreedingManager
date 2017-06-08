@@ -215,7 +215,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 			final Germplasm germplasm;
 
 			// If entry was matched to existing germplasm and germplasm record should not be created
-			// Check also if GID was matched to actual GID in DB to distinguish temporary GIDs (eg. an entry could have temporary, 
+			// Check also if GID was matched to actual GID in DB to distinguish temporary GIDs (eg. an entry could have temporary,
 			// unmatched GID = 10 while the actual GID 10 could be in list of matched GIDs as matched to another entry
 			if (excludeGermplasmCreateIds.contains(gid) && germplasmName.isGidMatched()) {
 				germplasm = this.germplasmManager.getGermplasmByGID(gid);
@@ -321,8 +321,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		}
 	}
 
-	UserDefinedField createNewUserDefinedField(final String tableName, final String fieldType, final String code,
-			final String name, final String fieldFormat) {
+	UserDefinedField createNewUserDefinedField(final String tableName, final String fieldType, final String code, final String name,
+			final String fieldFormat) {
 		final UserDefinedField newUserDefinedField = new UserDefinedField();
 		newUserDefinedField.setFtable(tableName);
 		newUserDefinedField.setFtype(fieldType);
