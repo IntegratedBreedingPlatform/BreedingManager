@@ -221,4 +221,14 @@ public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow
 		this.source.closeAllImportEntryListeners();
 	}
 
+	
+	public Button getSearchCreateButton() {
+		return searchCreateButton;
+	}
+
+	
+	public Button getAddNameButton() {
+		return addNameButton;
+	}
+
 }
