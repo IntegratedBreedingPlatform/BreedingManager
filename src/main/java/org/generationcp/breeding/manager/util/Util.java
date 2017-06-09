@@ -23,6 +23,8 @@ import java.util.Map;
 import org.dellroad.stuff.vaadin.ContextApplication;
 import org.generationcp.breeding.manager.exception.BreedingManagerException;
 import org.generationcp.breeding.manager.listmanager.util.GermplasmListTreeUtil;
+import org.generationcp.commons.context.ContextConstants;
+import org.generationcp.commons.security.SecurityUtil;
 import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -362,7 +364,7 @@ public class Util {
 	 public static String generateListFolderPathLabel(GermplasmListManager germplasmListManager, GermplasmList folder)
 			throws MiddlewareQueryException {
 
-		Deque<GermplasmList> parentFolders = new ArrayDeque<GermplasmList>();
+		Deque<GermplasmList> parentFolders = new ArrayDeque<>();
 		GermplasmListTreeUtil.traverseParentsOfList(germplasmListManager, folder, parentFolders);
 
 		StringBuilder locationFolderString = new StringBuilder();
@@ -394,8 +396,8 @@ public class Util {
 	 }
 
 	public static Map<Integer, GermplasmList> getGermplasmLists(GermplasmListManager germplasmListManager, List<Integer> germplasmListIds) {
-		 Map<Integer, GermplasmList> germplasmListsMap = new HashMap<Integer, GermplasmList>();
-		 List<GermplasmList> lists = new ArrayList<GermplasmList>();
+		 Map<Integer, GermplasmList> germplasmListsMap = new HashMap<>();
+		 List<GermplasmList> lists = new ArrayList<>();
 
 		try {
 			 lists = germplasmListManager.getAllGermplasmLists(0, Integer.MAX_VALUE);
@@ -417,8 +419,10 @@ public class Util {
 		try {
 			Long projectId = ContextUtil.getProjectInContext(workbenchDataManager, ContextApplication.currentRequest()).getProjectId();
 			Integer userId = ContextUtil.getCurrentWorkbenchUserId(workbenchDataManager, ContextApplication.currentRequest());
+			String authenticationTokenString =
+				ContextUtil.addQueryParameter(ContextConstants.PARAM_AUTH_TOKEN, SecurityUtil.getEncodedToken());
 
-			addtlParams = ContextUtil.getContextParameterString(userId, projectId);
+			addtlParams = ContextUtil.getContextParameterString(userId, projectId) + authenticationTokenString;
 		 } catch (MiddlewareQueryException e) {
 			 Util.LOG.error("Error occured while resolving context parameters: " + e.getMessage(), e);
 		 }
