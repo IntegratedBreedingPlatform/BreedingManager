@@ -97,8 +97,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	private final Map<Integer, List<Transaction>> gidTransactionSetMap;
 
 	public SaveGermplasmListAction() {
-		this.gidLotMap = new HashMap<Integer, Lot>();
-		this.gidTransactionSetMap = new HashMap<Integer, List<Transaction>>();
+		this.gidLotMap = new HashMap<>();
+		this.gidTransactionSetMap = new HashMap<>();
 	}
 
 	@Override
@@ -215,7 +215,9 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 			final Germplasm germplasm;
 
 			// If entry was matched to existing germplasm and germplasm record should not be created
-			if (excludeGermplasmCreateIds.contains(germplasmName.getGermplasm().getGid())) {
+			// Check also if GID was matched to actual GID in DB to distinguish temporary GIDs (eg. an entry could have temporary,
+			// unmatched GID = 10 while the actual GID 10 could be in list of matched GIDs as matched to another entry
+			if (excludeGermplasmCreateIds.contains(gid) && germplasmName.isGidMatched()) {
 				germplasm = this.germplasmManager.getGermplasmByGID(gid);
 				germplasmName.setGermplasm(germplasm);
 				name.setGermplasmId(gid);
@@ -266,7 +268,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	 */
 	void processVariates(final ImportedGermplasmList importedGermplasmList) throws BreedingManagerException {
 		final List<UserDefinedField> existingUserDefinedFields = this.getUserDefinedFields(SaveGermplasmListAction.FCODE_TYPE_ATTRIBUTE);
-		final List<UserDefinedField> newUserDefinedFields = new ArrayList<UserDefinedField>();
+		final List<UserDefinedField> newUserDefinedFields = new ArrayList<>();
 		final Map<String, String> attributeVariates = importedGermplasmList.getImportedGermplasm().get(0).getAttributeVariates();
 
 		for (final ImportedVariate importedVariate : importedGermplasmList.getImportedVariates()) {
@@ -299,7 +301,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	 */
 	protected void processFactors(final ImportedGermplasmList importedGermplasmList) {
 		final List<UserDefinedField> existingUserDefineFields = this.getUserDefinedFields(SaveGermplasmListAction.FCODE_TYPE_NAME);
-		final List<UserDefinedField> newUserDefinedFields = new ArrayList<UserDefinedField>();
+		final List<UserDefinedField> newUserDefinedFields = new ArrayList<>();
 		final Map<String, String> nameFactors = importedGermplasmList.getImportedGermplasm().get(0).getNameFactors();
 
 		for (final ImportedFactor importedFactor : importedGermplasmList.getImportedFactors()) {
@@ -319,8 +321,8 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		}
 	}
 
-	UserDefinedField createNewUserDefinedField(final String tableName, final String fieldType, final String code,
-			final String name, final String fieldFormat) {
+	UserDefinedField createNewUserDefinedField(final String tableName, final String fieldType, final String code, final String name,
+			final String fieldFormat) {
 		final UserDefinedField newUserDefinedField = new UserDefinedField();
 		newUserDefinedField.setFtable(tableName);
 		newUserDefinedField.setFtype(fieldType);
@@ -347,7 +349,6 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 			importedVariate.setScaleId(stdVariable.getId());
 			this.seedAmountScaleId = importedVariate.getScaleId();
 		} else {
-			// TODO
 			// sorry non-i18N message
 			throw new BreedingManagerException("The BMS does not contain a Variable called " + importedVariate.getVariate()
 					+ ". Please create it in the Ontology Manager or change your import sheet.");
@@ -384,7 +385,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	}
 
 	public List<UserDefinedField> getUserDefinedFields(final int fcodeType) {
-		List<UserDefinedField> userDefinedFields = new ArrayList<UserDefinedField>();
+		List<UserDefinedField> userDefinedFields = new ArrayList<>();
 		if (SaveGermplasmListAction.FCODE_TYPE_ATTRIBUTE == fcodeType) {
 			final List<UserDefinedField> list = this.germplasmManager.getUserDefinedFieldByFieldTableNameAndType(
 					SaveGermplasmListAction.FTABLE_ATTRIBUTE, SaveGermplasmListAction.FTYPE_ATTRIBUTE);
@@ -419,9 +420,9 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 		final Map<Integer, List<Name>> namesMap = this.getNamesMap(importedGermplasmList, excludeGermplasmCreateIds, existingNameUdflds);
 
 		// set up names, attributes, and germplasmlistdata collections to collect from the imported data rows and then persist
-		final List<Name> names = new ArrayList<Name>();
-		final List<Attribute> attrs = new ArrayList<Attribute>();
-		final List<GermplasmListData> germplasmListDataList = new ArrayList<GermplasmListData>();
+		final List<Name> names = new ArrayList<>();
+		final List<Attribute> attrs = new ArrayList<>();
+		final List<GermplasmListData> germplasmListDataList = new ArrayList<>();
 
 		// iterate through the imported names to process
 		for (int ctr = 0; ctr < germplasmNameObjects.size(); ctr++) {
@@ -498,12 +499,12 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	 */
 	private Map<Integer, List<Name>> getNamesMap(final List<ImportedGermplasm> importedGermplasmList,
 			final List<Integer> excludeGermplasmCreateIds, final List<UserDefinedField> existingUdflds) {
-		final Map<Integer, List<Name>> namesMap = new HashMap<Integer, List<Name>>();
+		final Map<Integer, List<Name>> namesMap = new HashMap<>();
 		// if there are imported germplasm present and exclusions
 		if (!importedGermplasmList.isEmpty() && !excludeGermplasmCreateIds.isEmpty()) {
 			// get all the name type ids present in the imported germplasm list
 			final Map<String, String> nameFactors = importedGermplasmList.get(0).getNameFactors();
-			final List<Integer> nameTypeIds = new ArrayList<Integer>();
+			final List<Integer> nameTypeIds = new ArrayList<>();
 			for (final Entry<String, String> factor : nameFactors.entrySet()) {
 				nameTypeIds.add(this.getUserDefinedFieldId(existingUdflds, factor.getKey()));
 			}
@@ -554,7 +555,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 
 	private List<Attribute> prepareAllAttributesToAdd(final ImportedGermplasm importedGermplasm,
 			final List<UserDefinedField> existingUserDefinedFields, final Germplasm germplasm) {
-		final List<Attribute> attributes = new ArrayList<Attribute>();
+		final List<Attribute> attributes = new ArrayList<>();
 
 		final Map<String, String> otherAttributes = importedGermplasm.getAttributeVariates();
 		if (otherAttributes != null) {
@@ -592,7 +593,7 @@ public class SaveGermplasmListAction implements Serializable, InitializingBean {
 	 */
 	public List<Name> prepareAllNamesToAdd(final ImportedGermplasm importedGermplasm, final List<UserDefinedField> existingUdflds,
 			final Germplasm germplasm, final List<Name> existingNames) {
-		final List<Name> names = new ArrayList<Name>();
+		final List<Name> names = new ArrayList<>();
 		final Map<String, String> otherNames = importedGermplasm.getNameFactors();
 
 		if (otherNames != null) {

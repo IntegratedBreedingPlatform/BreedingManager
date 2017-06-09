@@ -29,7 +29,7 @@ public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow
 	public static final String SEARCH_OR_CREATE_NEW = "Search/create another germplasm record";
 
 	private String designation;
-	private int germplasmIndex;
+	private Integer germplasmIndex;
 	private Integer ibdbUserId;
 	private Integer dateIntValue;
 	private Integer gid;
@@ -43,7 +43,7 @@ public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow
 	private final ProcessImportedGermplasmAction source;
 
 	public NewDesignationForGermplasmConfirmDialog(final ProcessImportedGermplasmAction source, final String designation,
-			final int germplasmIndex, final Integer gid, final Integer ibdbUserId, final Integer dateIntValue,
+			final Integer germplasmIndex, final Integer gid, final Integer ibdbUserId, final Integer dateIntValue,
 			final Integer nameMatchesCount) {
 		super();
 		this.designation = designation;
@@ -204,7 +204,7 @@ public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow
 		name.setNstat(Integer.valueOf(0));
 		name.setGermplasmId(this.gid);
 
-		this.source.addNameToGermplasm(name, this.gid);
+		this.source.addNameToGermplasm(name, this.gid, this.germplasmIndex);
 
 		this.source.removeCurrentListenerAndProcessNextItem(this);
 		this.getParent().removeWindow(this);
@@ -219,6 +219,14 @@ public class NewDesignationForGermplasmConfirmDialog extends BaseSubWindow
 	public void windowClose(final CloseEvent e) {
 		super.close();
 		this.source.closeAllImportEntryListeners();
+	}
+
+	public Button getSearchCreateButton() {
+		return this.searchCreateButton;
+	}
+
+	public Button getAddNameButton() {
+		return this.addNameButton;
 	}
 
 }

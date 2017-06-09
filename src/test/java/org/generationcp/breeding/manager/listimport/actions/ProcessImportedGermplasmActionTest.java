@@ -13,6 +13,7 @@ import org.generationcp.breeding.manager.crossingmanager.pojos.GermplasmName;
 import org.generationcp.breeding.manager.data.initializer.ImportedGermplasmListDataInitializer;
 import org.generationcp.breeding.manager.listimport.GermplasmFieldsComponent;
 import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
+import org.generationcp.breeding.manager.listimport.NewDesignationForGermplasmConfirmDialog;
 import org.generationcp.breeding.manager.listimport.SelectGermplasmWindow;
 import org.generationcp.breeding.manager.listimport.SpecifyGermplasmDetailsComponent;
 import org.generationcp.breeding.manager.listimport.listeners.ImportGermplasmEntryActionListener;
@@ -31,6 +32,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -265,63 +267,241 @@ public class ProcessImportedGermplasmActionTest {
 	}
 
 	@Test
-	public void testSelectMatchingGermplasmWheneverFoundIfSingleDesignationMatchForAllGermplasm() {
-		final List<Name> names = new ArrayList<>();
-		names.add(NameTestDataInitializer.createName(1, 1, ProcessImportedGermplasmActionTest.DESIGNATION + "-" + 1));
-
-		Mockito.when(this.germplasmDataManager.getNamesByGID(Matchers.isA(Integer.class), Matchers.anyInt(),
-				(GermplasmNameType) Matchers.isNull())).thenReturn(names);
-
-		this.processImportedGermplasmAction.performThirdPedigreeAction();
-
-		Mockito.verify(this.contextUtil).getCurrentUserLocalId();
-		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(3)).getGermplasmFieldsComponent();
-		Mockito.verify(this.germplasmFieldsComponent).getGermplasmDateField();
-		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(3)).getImportedGermplasm();
-		Mockito.verify(this.germplasmDataManager).getGermplasmByGID(Matchers.isA(Integer.class));
-		Mockito.verify(this.germplasmDataManager).getNamesByGID(Matchers.isA(Integer.class), Matchers.anyInt(),
-				(GermplasmNameType) Matchers.isNull());
-		Mockito.verify(this.germplasmFieldsComponent).getNameTypeComboBox();
-		Mockito.verify(this.germplasmFieldsComponent).getLocationComboBox();
-
-		// Verify that no instance of SelectGermplasmWindow was added to list of listeners, as it's only done for multiple matches
-		final List<ImportGermplasmEntryActionListener> importEntryListeners = this.processImportedGermplasmAction.getImportEntryListeners();
-		Assert.assertNotNull(importEntryListeners);
-		Assert.assertTrue(importEntryListeners.isEmpty());
-	}
-
-	@Test
-	public void testSelectMatchingGermplasmWheneverFoundIfMultipleMatchesOnDesignation() {
-		final List<Name> names = new ArrayList<>();
-		names.add(NameTestDataInitializer.createName(1, 1, ProcessImportedGermplasmActionTest.DESIGNATION + "-" + 1));
-
-		Mockito.when(this.germplasmDetailsComponent.getImportedGermplasm())
-				.thenReturn(ImportedGermplasmListDataInitializer.createListOfImportedGermplasm(3, false));
-
-		Mockito.when(this.germplasmDataManager.getNamesByGID(Matchers.isA(Integer.class), Matchers.anyInt(),
-				(GermplasmNameType) Matchers.isNull())).thenReturn(names);
-		Mockito.when(this.germplasmDataManager.getGermplasmByGID(Matchers.anyInt())).thenReturn(null);
-
-		// Simulate 3 matches when searching by second germplasm's designation
-		Mockito.when(
-				this.germplasmDataManager.countGermplasmByName(ImportedGermplasmListDataInitializer.DESIGNATION + "-" + 2, Operation.EQUAL))
-				.thenReturn(3L);
-
-		// Hack - add an initial dummy import entry listener so that the table Select Germplasm window
-		// that will be added will not be populated (out of scope for this test) and cause NPE
-		final ArrayList<ImportGermplasmEntryActionListener> importListeners = new ArrayList<ImportGermplasmEntryActionListener>();
-		importListeners.add(Mockito.mock(SelectGermplasmWindow.class));
-		this.processImportedGermplasmAction.setImportEntryListener(importListeners);
+	public void testSelectMatchingGermplasmAutomaticallyAcceptSingleDesignationMatch() {
+		final boolean withGidInFile = false;
+		final List<ImportedGermplasm> importedGermplasm =
+				ImportedGermplasmListDataInitializer.createListOfImportedGermplasm(1, false, withGidInFile);
+		Mockito.when(this.germplasmDetailsComponent.getImportedGermplasm()).thenReturn(importedGermplasm);
+		Mockito.when(this.germplasmDataManager.countGermplasmByName(importedGermplasm.get(0).getDesig(), Operation.EQUAL)).thenReturn(1L);
+		final List<Germplasm> germplasms = new ArrayList<Germplasm>();
+		final Integer gidMatched = 10;
+		germplasms.add(GermplasmTestDataInitializer.createGermplasm(gidMatched));
+		Mockito.doReturn(germplasms).when(this.germplasmDataManager).getGermplasmByName(importedGermplasm.get(0).getDesig(), 0, 1,
+				Operation.EQUAL);
+		final boolean automaticallyAcceptSingleMatch = true;
+		Mockito.doReturn(automaticallyAcceptSingleMatch).when(this.germplasmDetailsComponent).automaticallyAcceptSingleMatchesCheckbox();
 
 		// Method to test
 		this.processImportedGermplasmAction.performThirdPedigreeAction();
 
 		Mockito.verify(this.contextUtil).getCurrentUserLocalId();
 		Mockito.verify(this.germplasmFieldsComponent).getGermplasmDateField();
-		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(5)).getImportedGermplasm();
-		Mockito.verify(this.germplasmDataManager, Mockito.times(3)).getGermplasmByGID(Matchers.isA(Integer.class));
-		Mockito.verify(this.germplasmFieldsComponent, Mockito.times(3)).getNameTypeComboBox();
-		Mockito.verify(this.germplasmFieldsComponent, Mockito.times(6)).getLocationComboBox();
+		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(3)).getImportedGermplasm();
+		Mockito.verify(this.germplasmFieldsComponent).getNameTypeComboBox();
+		Mockito.verify(this.germplasmFieldsComponent, Mockito.times(2)).getLocationComboBox();
+
+		// Verify Middleware interactions
+		Mockito.verify(this.germplasmDataManager, Mockito.never()).getGermplasmByGID(Matchers.isA(Integer.class));
+		Mockito.verify(this.germplasmDataManager, Mockito.never()).getNamesByGID(Matchers.isA(Integer.class), Matchers.anyInt(),
+				(GermplasmNameType) Matchers.isNull());
+		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getGermplasmByName(Matchers.isA(String.class), Matchers.anyInt(),
+				Matchers.anyInt(), Matchers.isA(Operation.class));
+
+		// Verify that no instance of SelectGermplasmWindow was added to list of listeners since germplasm was automatically accepted
+		final List<ImportGermplasmEntryActionListener> importEntryListeners = this.processImportedGermplasmAction.getImportEntryListeners();
+		Assert.assertNotNull(importEntryListeners);
+		Assert.assertTrue(importEntryListeners.isEmpty());
+		// Verify that GID of germplasm matched by designation was added to list of IDs matched and GID was updated
+		final List<Integer> matchedGIDs = this.processImportedGermplasmAction.getMatchedGermplasmIds();
+		Assert.assertNotNull(matchedGIDs);
+		Assert.assertFalse(matchedGIDs.isEmpty());
+		Assert.assertEquals("Expecting GID of germplasm matched to designation as added to list of GIDs matched.", gidMatched,
+				matchedGIDs.get(0));
+		Assert.assertTrue("Expecting flag for tracking if GID is matched is true.",
+				this.processImportedGermplasmAction.getGermplasmNameObjects().get(0).isGidMatched());
+		Assert.assertEquals("Expecting GID of germplasm to be imported was updated with matched GID.", gidMatched,
+				this.processImportedGermplasmAction.getGermplasmNameObjects().get(0).getGermplasm().getGid());
+	}
+
+	@Test
+	public void testSelectMatchingGermplasmDoNotAutomaticallyAcceptSingleDesignationMatch() {
+		final boolean withGidInFile = false;
+		final List<ImportedGermplasm> importedGermplasm =
+				ImportedGermplasmListDataInitializer.createListOfImportedGermplasm(1, false, withGidInFile);
+		Mockito.when(this.germplasmDetailsComponent.getImportedGermplasm()).thenReturn(importedGermplasm);
+		Mockito.when(this.germplasmDataManager.countGermplasmByName(importedGermplasm.get(0).getDesig(), Operation.EQUAL)).thenReturn(1L);
+		final boolean automaticallyAcceptSingleMatch = false;
+		Mockito.doReturn(automaticallyAcceptSingleMatch).when(this.germplasmDetailsComponent).automaticallyAcceptSingleMatchesCheckbox();
+
+		// Hack - need to add initial listener to prevent NPE when adding new listener
+		this.addInitialImportEntryListener();
+
+		// Method to test
+		this.processImportedGermplasmAction.performThirdPedigreeAction();
+
+		// Verify Middleware interactions
+		Mockito.verify(this.germplasmDataManager, Mockito.never()).getGermplasmByGID(Matchers.isA(Integer.class));
+		Mockito.verify(this.germplasmDataManager, Mockito.never()).getNamesByGID(Matchers.isA(Integer.class), Matchers.anyInt(),
+				(GermplasmNameType) Matchers.isNull());
+		Mockito.verify(this.germplasmDataManager, Mockito.never()).getGermplasmByName(Matchers.isA(String.class), Matchers.anyInt(),
+				Matchers.anyInt(), Matchers.isA(Operation.class));
+
+		// Verify that one instance of SelectGermplasmWindow was added to list of listeners since user chose not to accept automatically
+		final List<ImportGermplasmEntryActionListener> importEntryListeners = this.processImportedGermplasmAction.getImportEntryListeners();
+		Assert.assertNotNull(importEntryListeners);
+		// 2 import entry listeners including dummy one created earlier
+		Assert.assertTrue(importEntryListeners.size() == 2);
+	}
+
+	@Test
+	public void testSelectMatchingGermplasmNoDesignationMatch() {
+		final boolean withGidInFile = false;
+		final List<ImportedGermplasm> importedGermplasm =
+				ImportedGermplasmListDataInitializer.createListOfImportedGermplasm(1, false, withGidInFile);
+		Mockito.when(this.germplasmDetailsComponent.getImportedGermplasm()).thenReturn(importedGermplasm);
+		Mockito.when(this.germplasmDataManager.countGermplasmByName(importedGermplasm.get(0).getDesig(), Operation.EQUAL)).thenReturn(0L);
+		final boolean automaticallyAcceptSingleMatch = true;
+		Mockito.doReturn(automaticallyAcceptSingleMatch).when(this.germplasmDetailsComponent).automaticallyAcceptSingleMatchesCheckbox();
+
+		// Method to test
+		this.processImportedGermplasmAction.performThirdPedigreeAction();
+
+		// Verify Middleware interactions
+		Mockito.verify(this.germplasmDataManager, Mockito.never()).getGermplasmByGID(Matchers.isA(Integer.class));
+		Mockito.verify(this.germplasmDataManager, Mockito.never()).getNamesByGID(Matchers.isA(Integer.class), Matchers.anyInt(),
+				(GermplasmNameType) Matchers.isNull());
+		Mockito.verify(this.germplasmDataManager, Mockito.never()).getGermplasmByName(Matchers.isA(String.class), Matchers.anyInt(),
+				Matchers.anyInt(), Matchers.isA(Operation.class));
+
+		// Verify that no instance of SelectGermplasmWindow was added to list of listeners since no germplasm was matched
+		final List<ImportGermplasmEntryActionListener> importEntryListeners = this.processImportedGermplasmAction.getImportEntryListeners();
+		Assert.assertNotNull(importEntryListeners);
+		Assert.assertTrue(importEntryListeners.isEmpty());
+	}
+
+	@Test
+	public void testSelectMatchingGermplasmGIDAndDesignationInFileWereMatched() {
+		final boolean withGidInFile = true;
+		final List<ImportedGermplasm> importedGermplasmList =
+				ImportedGermplasmListDataInitializer.createListOfImportedGermplasm(1, false, withGidInFile);
+		Mockito.when(this.germplasmDetailsComponent.getImportedGermplasm()).thenReturn(importedGermplasmList);
+		final ImportedGermplasm importedGermplasm = importedGermplasmList.get(0);
+		Mockito.when(this.germplasmDataManager.countGermplasmByName(importedGermplasm.getDesig(), Operation.EQUAL)).thenReturn(0L);
+		final Integer gidInFile = importedGermplasm.getGid();
+		Mockito.when(this.germplasmDataManager.getGermplasmByGID(gidInFile))
+				.thenReturn(GermplasmTestDataInitializer.createGermplasm(gidInFile));
+		final List<Name> names = new ArrayList<>();
+		names.add(NameTestDataInitializer.createName(1, 1, ProcessImportedGermplasmActionTest.DESIGNATION + "-" + 1));
+		Mockito.when(this.germplasmDataManager.getNamesByGID(gidInFile, 0, null)).thenReturn(names);
+
+		// Method to test
+		this.processImportedGermplasmAction.performThirdPedigreeAction();
+
+		// Verify Middleware interactions
+		final ArgumentCaptor<Integer> gidCaptor = ArgumentCaptor.forClass(Integer.class);
+		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getGermplasmByGID(gidCaptor.capture());
+		Assert.assertEquals(gidInFile, gidCaptor.getValue());
+		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getNamesByGID(gidCaptor.capture(), Matchers.eq(0),
+				(GermplasmNameType) Matchers.isNull());
+		Mockito.verify(this.germplasmDataManager, Mockito.never()).getGermplasmByName(Matchers.isA(String.class), Matchers.anyInt(),
+				Matchers.anyInt(), Matchers.isA(Operation.class));
+
+		// Verify that no instance of SelectGermplasmWindow was added to list of listeners since GID and Designation in file was matched
+		final List<ImportGermplasmEntryActionListener> importEntryListeners = this.processImportedGermplasmAction.getImportEntryListeners();
+		Assert.assertNotNull(importEntryListeners);
+		Assert.assertTrue(importEntryListeners.isEmpty());
+	}
+
+	@Test
+	public void testSelectMatchingGermplasmDesignationInFileNotANameOfGIDSpecified() {
+		final boolean withGidInFile = true;
+		final List<ImportedGermplasm> importedGermplasmList =
+				ImportedGermplasmListDataInitializer.createListOfImportedGermplasm(1, false, withGidInFile);
+		Mockito.when(this.germplasmDetailsComponent.getImportedGermplasm()).thenReturn(importedGermplasmList);
+		final ImportedGermplasm importedGermplasm = importedGermplasmList.get(0);
+		Mockito.when(this.germplasmDataManager.countGermplasmByName(importedGermplasm.getDesig(), Operation.EQUAL)).thenReturn(0L);
+		final Integer gidInFile = importedGermplasm.getGid();
+		Mockito.when(this.germplasmDataManager.getGermplasmByGID(gidInFile))
+				.thenReturn(GermplasmTestDataInitializer.createGermplasm(gidInFile));
+		final List<Name> names = new ArrayList<>();
+		names.add(NameTestDataInitializer.createName(1, 1, "Some Other Name"));
+		Mockito.when(this.germplasmDataManager.getNamesByGID(gidInFile, 0, null)).thenReturn(names);
+
+		// Hack - need to add initial listener to prevent NPE when adding new listener
+		this.addInitialImportEntryListener();
+
+		// Method to test
+		this.processImportedGermplasmAction.performThirdPedigreeAction();
+
+		// Verify Middleware interactions
+		final ArgumentCaptor<Integer> gidCaptor = ArgumentCaptor.forClass(Integer.class);
+		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getGermplasmByGID(gidCaptor.capture());
+		Assert.assertEquals(gidInFile, gidCaptor.getValue());
+		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getNamesByGID(gidCaptor.capture(), Matchers.eq(0),
+				(GermplasmNameType) Matchers.isNull());
+		Mockito.verify(this.germplasmDataManager, Mockito.never()).getGermplasmByName(Matchers.isA(String.class), Matchers.anyInt(),
+				Matchers.anyInt(), Matchers.isA(Operation.class));
+
+		// Verify that one instance of SelectGermplasmWindow was added to list of listeners
+		final List<ImportGermplasmEntryActionListener> importEntryListeners = this.processImportedGermplasmAction.getImportEntryListeners();
+		Assert.assertNotNull(importEntryListeners);
+		// 2 import entry listeners including dummy one created earlier
+		Assert.assertTrue(importEntryListeners.size() == 2);
+		Assert.assertTrue(importEntryListeners.get(1) instanceof NewDesignationForGermplasmConfirmDialog);
+		final NewDesignationForGermplasmConfirmDialog newDesignationDialog =
+				(NewDesignationForGermplasmConfirmDialog) importEntryListeners.get(1);
+		Assert.assertEquals(importedGermplasm.getGid(), newDesignationDialog.getGid());
+		Assert.assertEquals(importedGermplasm.getDesig(), newDesignationDialog.getDesignation());
+	}
+
+	@Test
+	public void testSelectMatchingGermplasmGIDInFileDoesNotExistInDB() {
+		final boolean withGidInFile = true;
+		final List<ImportedGermplasm> importedGermplasmList =
+				ImportedGermplasmListDataInitializer.createListOfImportedGermplasm(1, false, withGidInFile);
+		Mockito.when(this.germplasmDetailsComponent.getImportedGermplasm()).thenReturn(importedGermplasmList);
+		final ImportedGermplasm importedGermplasm = importedGermplasmList.get(0);
+		Mockito.when(this.germplasmDataManager.countGermplasmByName(importedGermplasm.getDesig(), Operation.EQUAL)).thenReturn(0L);
+		final Integer gidInFile = importedGermplasm.getGid();
+		Mockito.when(this.germplasmDataManager.getGermplasmByGID(gidInFile)).thenReturn(null);
+
+		// Method to test
+		this.processImportedGermplasmAction.performThirdPedigreeAction();
+
+		// Verify Middleware interactions
+		final ArgumentCaptor<Integer> gidCaptor = ArgumentCaptor.forClass(Integer.class);
+		Mockito.verify(this.germplasmDataManager, Mockito.times(1)).getGermplasmByGID(gidCaptor.capture());
+		Assert.assertEquals(gidInFile, gidCaptor.getValue());
+		Mockito.verify(this.germplasmDataManager, Mockito.never()).getNamesByGID(gidCaptor.capture(), Matchers.eq(0),
+				(GermplasmNameType) Matchers.isNull());
+		Mockito.verify(this.germplasmDataManager, Mockito.never()).getGermplasmByName(Matchers.isA(String.class), Matchers.anyInt(),
+				Matchers.anyInt(), Matchers.isA(Operation.class));
+
+		// Verify that no instance of SelectGermplasmWindow was added to list of listeners since GID and Designation in file was matched
+		final List<ImportGermplasmEntryActionListener> importEntryListeners = this.processImportedGermplasmAction.getImportEntryListeners();
+		Assert.assertNotNull(importEntryListeners);
+		Assert.assertTrue(importEntryListeners.isEmpty());
+		// Verify that GID in file was NOT added to list of GIDs matched
+		final List<Integer> matchedGIDs = this.processImportedGermplasmAction.getMatchedGermplasmIds();
+		Assert.assertNotNull(matchedGIDs);
+		Assert.assertTrue(matchedGIDs.isEmpty());
+		// Warning was shown that GID does not exist
+		Mockito.verify(this.germplasmDetailsComponent).getWindow();
+	}
+
+	@Test
+	public void testSelectMatchingGermplasmWheneverFoundIfMultipleMatchesOnDesignation() {
+		final int noOfEntries = 3;
+		final boolean withGidInFile = false;
+		final List<ImportedGermplasm> importedGermplasmList =
+				ImportedGermplasmListDataInitializer.createListOfImportedGermplasm(noOfEntries, false, withGidInFile);
+		Mockito.when(this.germplasmDetailsComponent.getImportedGermplasm()).thenReturn(importedGermplasmList);
+
+		// Simulate 3 matches when searching by second germplasm's designation
+		Mockito.when(
+				this.germplasmDataManager.countGermplasmByName(ImportedGermplasmListDataInitializer.DESIGNATION + "-" + 2, Operation.EQUAL))
+				.thenReturn(3L);
+
+		// Hack - need to add initial listener to prevent NPE when adding new listener
+		this.addInitialImportEntryListener();
+
+		// Method to test
+		this.processImportedGermplasmAction.performThirdPedigreeAction();
+
+		Mockito.verify(this.contextUtil).getCurrentUserLocalId();
+		Mockito.verify(this.germplasmFieldsComponent).getGermplasmDateField();
+		Mockito.verify(this.germplasmFieldsComponent, Mockito.times(noOfEntries)).getNameTypeComboBox();
+		Mockito.verify(this.germplasmFieldsComponent, Mockito.times(noOfEntries * 2)).getLocationComboBox();
 
 		// Verify that one instance of SelectGermplasmWindow was added to list of listeners
 		final List<ImportGermplasmEntryActionListener> importEntryListeners = this.processImportedGermplasmAction.getImportEntryListeners();
@@ -331,49 +511,95 @@ public class ProcessImportedGermplasmActionTest {
 		final SelectGermplasmWindow selectGermplasmWindow = (SelectGermplasmWindow) importEntryListeners.get(1);
 		// Check that the window was created for 2nd entry and that total # of entries displayed equals # of imported germplasm
 		Assert.assertTrue(selectGermplasmWindow.getGermplasmIndex() == 1);
-		Assert.assertTrue(selectGermplasmWindow.getNoOfImportedGermplasm() == 3);
+		Assert.assertTrue(selectGermplasmWindow.getNoOfImportedGermplasm() == noOfEntries);
 	}
 
 	@Test
-	public void testUpdateGidWhenGermplasmIdIsExisting() {
-		final int gid = 100;
+	public void testUpdateGidForSingleMatchWhenAutomaticallyAcceptSingleMatch() {
+		final Integer gid = 100;
 		final ImportedGermplasm importedGermplasm = ImportedGermplasmListDataInitializer.createImportedGermplasm(gid, true);
 		importedGermplasm.setDesig("Name" + gid);
-
-		final int germplasmMatchesCount = 1;
-		Germplasm germplasm = GermplasmTestDataInitializer.createGermplasm(0);
-
-		Mockito.doReturn(true).when(this.germplasmDetailsComponent).automaticallyAcceptSingleMatchesCheckbox();
-
 		final List<Germplasm> germplasms = new ArrayList<Germplasm>();
 		germplasms.add(GermplasmTestDataInitializer.createGermplasm(gid));
 
+		this.initializeAndSetGermplasmNameObjects();
+
+		Mockito.doReturn(true).when(this.germplasmDetailsComponent).automaticallyAcceptSingleMatchesCheckbox();
 		Mockito.doReturn(germplasms).when(this.germplasmDataManager).getGermplasmByName(importedGermplasm.getDesig(), 0, 1,
 				Operation.EQUAL);
 
-		germplasm = this.processImportedGermplasmAction.createGermplasmAndUpdateGidForSingleMatch(gid,
-				ProcessImportedGermplasmActionTest.IBDB_USER_ID, ProcessImportedGermplasmActionTest.DATE_INT_VALUE, importedGermplasm,
-				germplasmMatchesCount, germplasm);
+		// Method to test
+		final int germplasmMatchesCount = 1;
+		final Integer index = 0;
+		this.processImportedGermplasmAction.updateGidForSingleMatch(index, importedGermplasm, germplasmMatchesCount);
 
-		Assert.assertEquals("Expecting that the gid set is from the existing germplasm.", gid, germplasm.getGid().intValue());
+		final GermplasmName updatedGermplasmName = this.processImportedGermplasmAction.getGermplasmNameObjects().get(0);
+		Assert.assertEquals("Expecting that the gid set is from the existing germplasm.", gid,
+				updatedGermplasmName.getGermplasm().getGid());
+		Assert.assertNotNull(this.processImportedGermplasmAction.getMatchedGermplasmIds());
+		Assert.assertEquals(1, this.processImportedGermplasmAction.getMatchedGermplasmIds().size());
+		Assert.assertEquals("Expecting matched germplasm to be in list of matched GIDs", gid,
+				this.processImportedGermplasmAction.getMatchedGermplasmIds().get(0));
+		Assert.assertTrue("Expecting flag for tracking if GID is matched is true.", updatedGermplasmName.isGidMatched());
 	}
 
 	@Test
-	public void testUpdateGidWhenNoGermplasmIdIsExisting() {
-		final int gid = 0;
+	public void testUpdateGidForSingleMatchWhenNoDesignationMatch() {
+		final Integer gid = 10;
 		final ImportedGermplasm importedGermplasm = ImportedGermplasmListDataInitializer.createImportedGermplasm(gid, true);
 		importedGermplasm.setDesig("Name" + gid);
+		final GermplasmName germplasmToName = new GermplasmName(GermplasmTestDataInitializer.createGermplasm(gid), new Name());
 
+		// Method to Test
 		final int germplasmMatchesCount = 0;
-		Germplasm germplasm = GermplasmTestDataInitializer.createGermplasm(0);
-
-		germplasm = this.processImportedGermplasmAction.createGermplasmAndUpdateGidForSingleMatch(gid,
-				ProcessImportedGermplasmActionTest.IBDB_USER_ID, ProcessImportedGermplasmActionTest.DATE_INT_VALUE, importedGermplasm,
-				germplasmMatchesCount, germplasm);
+		final int index = 0;
+		this.processImportedGermplasmAction.updateGidForSingleMatch(index, importedGermplasm, germplasmMatchesCount);
 
 		Mockito.verify(this.germplasmDetailsComponent, Mockito.times(0)).automaticallyAcceptSingleMatchesCheckbox();
 		Mockito.verify(this.germplasmDataManager, Mockito.times(0)).getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
-		Assert.assertEquals("Expecting that the gid is set to 0 when there is no existing germplasm.", 0, germplasm.getGid().intValue());
+		Assert.assertEquals("Expecting that the temporary gid is used when there is no designation match.", gid,
+				germplasmToName.getGermplasm().getGid());
+		Assert.assertFalse("Expecting flag for tracking if GID is matched is false.", germplasmToName.isGidMatched());
+	}
+
+	@Test
+	public void testUpdateGidForSingleMatchDoNotAutomaticallyAcceptSingleMatch() {
+		final Integer gid = 10;
+		final ImportedGermplasm importedGermplasm = ImportedGermplasmListDataInitializer.createImportedGermplasm(gid, true);
+		importedGermplasm.setDesig("Name" + gid);
+		final GermplasmName germplasmToName = new GermplasmName(GermplasmTestDataInitializer.createGermplasm(gid), new Name());
+		// Do not automatically accept single match
+		Mockito.doReturn(false).when(this.germplasmDetailsComponent).automaticallyAcceptSingleMatchesCheckbox();
+
+		// Method to test
+		final int germplasmMatchesCount = 1;
+		final Integer index = 0;
+		this.processImportedGermplasmAction.updateGidForSingleMatch(index, importedGermplasm, germplasmMatchesCount);
+
+		Mockito.verify(this.germplasmDataManager, Mockito.times(0)).getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
+		Assert.assertEquals("Expecting that the temporary gid is used when single match is not automatically accepted.", gid,
+				germplasmToName.getGermplasm().getGid());
+		Assert.assertFalse("Expecting flag for tracking if GID is matched is false.", germplasmToName.isGidMatched());
+	}
+
+	@Test
+	public void testUpdateGidForSingleMatchWhenMultipleDesignationMatches() {
+		final Integer gid = 10;
+		final ImportedGermplasm importedGermplasm = ImportedGermplasmListDataInitializer.createImportedGermplasm(gid, true);
+		importedGermplasm.setDesig("Name" + gid);
+		final GermplasmName germplasmToName = new GermplasmName(GermplasmTestDataInitializer.createGermplasm(gid), new Name());
+
+		Mockito.doReturn(true).when(this.germplasmDetailsComponent).automaticallyAcceptSingleMatchesCheckbox();
+
+		// Method to test
+		final int germplasmMatchesCount = 3;
+		final Integer index = 0;
+		this.processImportedGermplasmAction.updateGidForSingleMatch(index, importedGermplasm, germplasmMatchesCount);
+
+		Mockito.verify(this.germplasmDataManager, Mockito.times(0)).getGermplasmByName(importedGermplasm.getDesig(), 0, 1, Operation.EQUAL);
+		Assert.assertEquals("Expecting that the temporary gid is used when there are multiple matched germplasm for designation.", gid,
+				germplasmToName.getGermplasm().getGid());
+		Assert.assertFalse("Expecting flag for tracking if GID is matched is false.", germplasmToName.isGidMatched());
 	}
 
 	@Test
@@ -521,7 +747,8 @@ public class ProcessImportedGermplasmActionTest {
 
 	@Test
 	public void testProcessNextItemsReuseGermplasmForPedigreeOptionTwo() {
-		Mockito.doReturn("2").when(this.germplasmDetailsComponent).getPedigreeOption();
+		Mockito.doReturn(ProcessImportedGermplasmAction.CREATE_NEW_RECORD_WITH_PEDIGREE_CONN).when(this.germplasmDetailsComponent)
+				.getPedigreeOption();
 		// Create list of germplasm-name pairs, with duplicate designations
 		final int noOfEntries = 10;
 		final int indexOfEntryForReuse = 0;
@@ -557,7 +784,7 @@ public class ProcessImportedGermplasmActionTest {
 
 	@Test
 	public void testProcessNextItemsReuseGermplasmForPedigreeOptionThree() {
-		Mockito.doReturn("3").when(this.germplasmDetailsComponent).getPedigreeOption();
+		Mockito.doReturn(ProcessImportedGermplasmAction.SELECT_MATCHING_GERMPLASM).when(this.germplasmDetailsComponent).getPedigreeOption();
 		// Create list of germplasm-name pairs, with duplicate designations
 		final int noOfEntries = 10;
 		final int indexOfEntryForReuse = 0;
@@ -598,6 +825,243 @@ public class ProcessImportedGermplasmActionTest {
 		Mockito.verify(selectGermplasmWindow).initializeTableValues();
 	}
 
+	@Test
+	public void testAddNameToGermplasm() {
+		final Integer gid = 1001;
+		final Integer index = 0;
+		final Name name = new Name();
+		name.setNid(101);
+		this.initializeAndSetGermplasmNameObjects();
+
+		// Method to test
+		this.processImportedGermplasmAction.addNameToGermplasm(name, gid, index);
+
+		// Verify that new name was added to matched germplasm
+		final List<Name> newNames = this.processImportedGermplasmAction.getNewNames();
+		Assert.assertNotNull(newNames);
+		Assert.assertFalse(newNames.isEmpty());
+		Assert.assertEquals("Expecting new name was added to matched germplasm.", name, newNames.get(0));
+
+		// Verify that GID of germplasm matched by designation was added to list of IDs matched
+		final List<Integer> matchedGIDs = this.processImportedGermplasmAction.getMatchedGermplasmIds();
+		Assert.assertNotNull(matchedGIDs);
+		Assert.assertFalse(matchedGIDs.isEmpty());
+		Assert.assertEquals("Expecting GID of germplasm matched to designation as added to list of GIDs matched.", gid, matchedGIDs.get(0));
+		Assert.assertTrue("Expecting flag for tracking if GID is matched is true.",
+				this.processImportedGermplasmAction.getGermplasmNameObjects().get(0).isGidMatched());
+	}
+
+	@Test
+	public void testReceiveGermplasmFromWindowWhenSelectMatchingGermplasmOption() {
+		Mockito.doReturn(ProcessImportedGermplasmAction.SELECT_MATCHING_GERMPLASM).when(this.germplasmDetailsComponent).getPedigreeOption();
+
+		final int oldGid = 1;
+		final GermplasmName germplasmToName = new GermplasmName(GermplasmTestDataInitializer.createGermplasm(oldGid), new Name());
+		final List<GermplasmName> germplasmNameObjects = new ArrayList<>();
+		germplasmNameObjects.add(germplasmToName);
+		this.processImportedGermplasmAction.setGermplasmNameObjects(germplasmNameObjects);
+
+		// Method to test
+		final Integer newGid = 101;
+		this.processImportedGermplasmAction.receiveGermplasmFromWindowAndUpdateGermplasmData(0,
+				GermplasmTestDataInitializer.createGermplasm(newGid));
+
+		// Verify that GID of germplasm matched by designation was added to list of IDs matched
+		final List<Integer> matchedGIDs = this.processImportedGermplasmAction.getMatchedGermplasmIds();
+		Assert.assertNotNull(matchedGIDs);
+		Assert.assertFalse(matchedGIDs.isEmpty());
+		Assert.assertEquals("Expecting GID of germplasm selected was added to list of GIDs matched.", newGid, matchedGIDs.get(0));
+		Assert.assertTrue("Expecting flag for tracking if GID is matched is true.",
+				this.processImportedGermplasmAction.getGermplasmNameObjects().get(0).isGidMatched());
+		// Verify that GID was copied from selected germplasm
+		Assert.assertEquals("Expecting GID of germplasm selected was added to list of GIDs matched.", newGid,
+				this.processImportedGermplasmAction.getGermplasmNameObjects().get(0).getGermplasm().getGid());
+	}
+
+	@Test
+	public void testReceiveGermplasmFromWindowCreateNewRecordWithPedigreeConnectionOption() {
+		Mockito.doReturn(ProcessImportedGermplasmAction.CREATE_NEW_RECORD_WITH_PEDIGREE_CONN).when(this.germplasmDetailsComponent)
+				.getPedigreeOption();
+
+		final Integer gid = 1;
+		final Germplasm germplasm = GermplasmTestDataInitializer.createGermplasm(gid);
+		germplasm.setGpid1(0);
+		germplasm.setGpid2(0);
+		germplasm.setGnpgs(-1);
+		final GermplasmName germplasmToName = new GermplasmName(germplasm, new Name());
+		final List<GermplasmName> germplasmNameObjects = new ArrayList<>();
+		germplasmNameObjects.add(germplasmToName);
+		this.processImportedGermplasmAction.setGermplasmNameObjects(germplasmNameObjects);
+
+		// Method to test
+		final Integer newGid = 101;
+		final Germplasm selectedGermplasm = GermplasmTestDataInitializer.createGermplasm(newGid);
+		selectedGermplasm.setGpid1(0);
+		selectedGermplasm.setGpid2(0);
+		selectedGermplasm.setGnpgs(-1);
+		this.processImportedGermplasmAction.receiveGermplasmFromWindowAndUpdateGermplasmData(0, selectedGermplasm);
+
+		// Verify that GPID1 and GPID2 of germplasm were changed but GID should have been retained
+		final Germplasm updatedGermplasm = this.processImportedGermplasmAction.getGermplasmNameObjects().get(0).getGermplasm();
+		Assert.assertEquals("Expecting GPID1 of germplasm to be imported was updated.", newGid, updatedGermplasm.getGpid1());
+		Assert.assertEquals("Expecting GPID2 of germplasm to be imported was updated.", newGid, updatedGermplasm.getGpid2());
+		Assert.assertEquals("Expecting GID of germplasm to be imported remained the same.", gid, updatedGermplasm.getGid());
+		// Verify that GID of germplasm selected was not added to list of IDs matched
+		Assert.assertTrue(this.processImportedGermplasmAction.getMatchedGermplasmIds().isEmpty());
+	}
+
+	@Test
+	public void testSearchOrAddANewGermplasmAutomaticallyAcceptSingleDesignationMatch() {
+		final boolean automaticallyAcceptSingleMatch = true;
+		Mockito.doReturn(automaticallyAcceptSingleMatch).when(this.germplasmDetailsComponent).automaticallyAcceptSingleMatchesCheckbox();
+
+		final int nameMatchesCount = 1;
+		final String designation = "WOW 001";
+		final NewDesignationForGermplasmConfirmDialog newDesignationDialog = new NewDesignationForGermplasmConfirmDialog(
+				this.processImportedGermplasmAction, designation, 0, 100, 0, 0, nameMatchesCount);
+		final List<Germplasm> germplasms = new ArrayList<Germplasm>();
+		final Integer gidMatched = 10;
+		germplasms.add(GermplasmTestDataInitializer.createGermplasm(gidMatched));
+		Mockito.doReturn(germplasms).when(this.germplasmDataManager).getGermplasmByName(designation, 0, 1, Operation.EQUAL);
+
+		final int oldGid = 1;
+		final GermplasmName germplasmToName = new GermplasmName(GermplasmTestDataInitializer.createGermplasm(oldGid), new Name());
+		final List<GermplasmName> germplasmNameObjects = new ArrayList<>();
+		germplasmNameObjects.add(germplasmToName);
+		this.processImportedGermplasmAction.setGermplasmNameObjects(germplasmNameObjects);
+
+		// Method to test
+		this.processImportedGermplasmAction.searchOrAddANewGermplasm(newDesignationDialog);
+
+		// Verify that GID of germplasm matched by designation was added to list of IDs matched and GID was updated
+		final List<Integer> matchedGIDs = this.processImportedGermplasmAction.getMatchedGermplasmIds();
+		Assert.assertNotNull(matchedGIDs);
+		Assert.assertFalse(matchedGIDs.isEmpty());
+		Assert.assertEquals("Expecting GID of germplasm matched to designation as added to list of GIDs matched.", gidMatched,
+				matchedGIDs.get(0));
+		Assert.assertTrue("Expecting flag for tracking if GID is matched is true.",
+				this.processImportedGermplasmAction.getGermplasmNameObjects().get(0).isGidMatched());
+		Assert.assertEquals("Expecting GID of germplasm to be imported was updated with matched GID.", gidMatched,
+				this.processImportedGermplasmAction.getGermplasmNameObjects().get(0).getGermplasm().getGid());
+		// Verify that no SelectGermplasmWindow was created
+		Assert.assertTrue(this.processImportedGermplasmAction.getImportEntryListeners().isEmpty());
+	}
+
+	@Test
+	public void testSearchOrAddANewGermplasmDoNotAutomaticallyAcceptSingleDesignationMatch() {
+		// Sorry have to spy for preventing NPE when "showing" new SelectGermplasmWindow to be added
+		final ProcessImportedGermplasmAction spyAction = Mockito.spy(this.processImportedGermplasmAction);
+		Mockito.doNothing().when(spyAction).showImportEntryListener(Matchers.any(ImportGermplasmEntryActionListener.class));
+
+		final boolean automaticallyAcceptSingleMatch = false;
+		Mockito.doReturn(automaticallyAcceptSingleMatch).when(this.germplasmDetailsComponent).automaticallyAcceptSingleMatchesCheckbox();
+
+		final int nameMatchesCount = 1;
+		final String designation = "WOW 001";
+		final Integer germplasmIndex = 0;
+		final NewDesignationForGermplasmConfirmDialog newDesignationDialog = new NewDesignationForGermplasmConfirmDialog(spyAction,
+				designation, germplasmIndex, 100, germplasmIndex, germplasmIndex, nameMatchesCount);
+
+		final int oldGid = 1;
+		final GermplasmName germplasmToName = new GermplasmName(GermplasmTestDataInitializer.createGermplasm(oldGid), new Name());
+		final List<GermplasmName> germplasmNameObjects = new ArrayList<>();
+		germplasmNameObjects.add(germplasmToName);
+		spyAction.setGermplasmNameObjects(germplasmNameObjects);
+		// Check that no import listeners prior in order to verify that new one was created and added in invocation of method to test
+		Assert.assertTrue(spyAction.getImportEntryListeners().isEmpty());
+
+		// Method to test
+		spyAction.searchOrAddANewGermplasm(newDesignationDialog);
+
+		Mockito.verify(this.germplasmDataManager, Mockito.never()).getGermplasmByName(designation, germplasmIndex, 1, Operation.EQUAL);
+		// Verify that GID of germplasm selected was not added to list of IDs matched
+		Assert.assertTrue(spyAction.getMatchedGermplasmIds().isEmpty());
+		final GermplasmName updatedGermplasmName = spyAction.getGermplasmNameObjects().get(germplasmIndex);
+		Assert.assertFalse("Expecting flag for tracking if GID is matched is false.", updatedGermplasmName.isGidMatched());
+		// Verify the new Select Germplasm Window was added and "shown" immediately
+		final ArgumentCaptor<ImportGermplasmEntryActionListener> listenerCaptor =
+				ArgumentCaptor.forClass(ImportGermplasmEntryActionListener.class);
+		Mockito.verify(spyAction).showImportEntryListener(listenerCaptor.capture());
+		Assert.assertTrue("Expecting new SelectGermplasmWindow object was created.",
+				listenerCaptor.getValue() instanceof SelectGermplasmWindow);
+	}
+
+	@Test
+	public void testSearchOrAddANewGermplasmMultipleMatchesOnDesignation() {
+		// Sorry have to spy for preventing NPE when "showing" new SelectGermplasmWindow to be added
+		final ProcessImportedGermplasmAction spyAction = Mockito.spy(this.processImportedGermplasmAction);
+		Mockito.doNothing().when(spyAction).showImportEntryListener(Matchers.any(ImportGermplasmEntryActionListener.class));
+
+		final int nameMatchesCount = 3;
+		final String designation = "WOW 001";
+		final Integer germplasmIndex = 0;
+		final NewDesignationForGermplasmConfirmDialog newDesignationDialog = new NewDesignationForGermplasmConfirmDialog(spyAction,
+				designation, germplasmIndex, 100, germplasmIndex, germplasmIndex, nameMatchesCount);
+
+		final int oldGid = 1;
+		final GermplasmName germplasmToName = new GermplasmName(GermplasmTestDataInitializer.createGermplasm(oldGid), new Name());
+		final List<GermplasmName> germplasmNameObjects = new ArrayList<>();
+		germplasmNameObjects.add(germplasmToName);
+		spyAction.setGermplasmNameObjects(germplasmNameObjects);
+		// Check that no import listeners prior in order to verify that new one was created and added in invocation of method to test
+		Assert.assertTrue(spyAction.getImportEntryListeners().isEmpty());
+
+		// Method to test
+		spyAction.searchOrAddANewGermplasm(newDesignationDialog);
+
+		Mockito.verify(this.germplasmDataManager, Mockito.never()).getGermplasmByName(designation, germplasmIndex, 1, Operation.EQUAL);
+		// Verify that GID of germplasm selected was not added to list of IDs matched
+		Assert.assertTrue(spyAction.getMatchedGermplasmIds().isEmpty());
+		final GermplasmName updatedGermplasmName = spyAction.getGermplasmNameObjects().get(germplasmIndex);
+		Assert.assertFalse("Expecting flag for tracking if GID is matched is false.", updatedGermplasmName.isGidMatched());
+		// Verify the new Select Germplasm Window was added and "shown" immediately
+		final ArgumentCaptor<ImportGermplasmEntryActionListener> listenerCaptor =
+				ArgumentCaptor.forClass(ImportGermplasmEntryActionListener.class);
+		Mockito.verify(spyAction).showImportEntryListener(listenerCaptor.capture());
+		Assert.assertTrue("Expecting new SelectGermplasmWindow object was created.",
+				listenerCaptor.getValue() instanceof SelectGermplasmWindow);
+	}
+
+	@Test
+	public void testSearchOrAddANewGermplasmNoDesignationMatch() {
+		final int nameMatchesCount = 0;
+		final String designation = "WOW 001";
+		final NewDesignationForGermplasmConfirmDialog newDesignationDialog = new NewDesignationForGermplasmConfirmDialog(
+				this.processImportedGermplasmAction, designation, 0, 100, 0, 0, nameMatchesCount);
+		final List<Germplasm> germplasms = new ArrayList<Germplasm>();
+		final Integer gidMatched = 10;
+		germplasms.add(GermplasmTestDataInitializer.createGermplasm(gidMatched));
+		Mockito.doReturn(germplasms).when(this.germplasmDataManager).getGermplasmByName(designation, 0, 1, Operation.EQUAL);
+
+		final int oldGid = 1;
+		final GermplasmName germplasmToName = new GermplasmName(GermplasmTestDataInitializer.createGermplasm(oldGid), new Name());
+		final List<GermplasmName> germplasmNameObjects = new ArrayList<>();
+		germplasmNameObjects.add(germplasmToName);
+		this.processImportedGermplasmAction.setGermplasmNameObjects(germplasmNameObjects);
+
+		// Method to test
+		this.processImportedGermplasmAction.searchOrAddANewGermplasm(newDesignationDialog);
+
+		// Verify that there was no matched GID
+		final List<Integer> matchedGIDs = this.processImportedGermplasmAction.getMatchedGermplasmIds();
+		Assert.assertNotNull(matchedGIDs);
+		Assert.assertTrue(matchedGIDs.isEmpty());
+		Assert.assertFalse("Expecting flag for tracking if GID is matched is false.",
+				this.processImportedGermplasmAction.getGermplasmNameObjects().get(0).isGidMatched());
+		// Verify that no SelectGermplasmWindow was created
+		Assert.assertTrue(this.processImportedGermplasmAction.getImportEntryListeners().isEmpty());
+	}
+
+	/*
+	 * Add an initial dummy import entry listener so that the table Select Germplasm window that will be added will not be populated (out of
+	 * scope for this test) and cause NPE
+	 */
+	private void addInitialImportEntryListener() {
+		final ArrayList<ImportGermplasmEntryActionListener> importListeners = new ArrayList<>();
+		importListeners.add(Mockito.mock(NewDesignationForGermplasmConfirmDialog.class));
+		this.processImportedGermplasmAction.setImportEntryListener(importListeners);
+	}
+
 	private List<GermplasmName> createGermplasmNamePairsWithDuplicateDesignations(final int noOfEntries) {
 		final List<GermplasmName> germplasmNameObjects = ImportedGermplasmListDataInitializer.createGermplasmNameObjects(noOfEntries);
 		final int middleIndex = noOfEntries / 2;
@@ -606,5 +1070,12 @@ public class ProcessImportedGermplasmActionTest {
 			germplasmNameObjects.get(middleIndex + i).getName().setNval(newDesignation);
 		}
 		return germplasmNameObjects;
+	}
+
+	private void initializeAndSetGermplasmNameObjects() {
+		final GermplasmName germplasmToName = new GermplasmName(new Germplasm(), new Name());
+		final List<GermplasmName> germplasmNameObjects = new ArrayList<>();
+		germplasmNameObjects.add(germplasmToName);
+		this.processImportedGermplasmAction.setGermplasmNameObjects(germplasmNameObjects);
 	}
 }
