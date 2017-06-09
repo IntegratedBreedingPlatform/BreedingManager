@@ -482,7 +482,7 @@ public class DropHandlerMethodsTest {
 	}
 
 	@Test
-	public void test() {
+	public void testExtractGidsFromTable() {
 
 		final Table sourceTable = this.createListDataTable();
 		final List<Germplasm> germplasmList = new ArrayList<>();
@@ -499,7 +499,7 @@ public class DropHandlerMethodsTest {
 
 		List<Integer> gids = this.dropHandlerMethods.extractGidsFromTable(sourceTable, itemIds);
 
-		Assert.assertEquals("Only 2 entries are selected so the gids extracted should oly be 2", 2, gids.size());
+		Assert.assertEquals("Only 2 entries are selected so the gids extracted should only be 2", 2, gids.size());
 		Assert.assertTrue("Gid 1 should be in the extracted gid list", gids.contains(1));
 		Assert.assertTrue("Gid 2 should be in the extracted gid list", gids.contains(2));
 
