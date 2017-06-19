@@ -404,6 +404,7 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.1.1</version>
 				<configuration>
+					<packagingExcludes>WEB-INF/lib/itextpdf*.jar,itext-pdfa*.jar</packagingExcludes>
 					<archive>
 						<manifest>
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
