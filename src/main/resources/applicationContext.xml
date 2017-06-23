@@ -229,9 +229,7 @@
 		<aop:scoped-proxy />
 	</bean>
 
-	<bean id="germplasmExportService" class="org.generationcp.commons.service.impl.GermplasmExportServiceImpl">
-         <property name="templateFile" value="GermplasmListCode.xls"/>
-    </bean>
+	<bean id="germplasmExportService" class="org.generationcp.commons.service.impl.GermplasmExportServiceImpl"/>
 
 	<bean id="germplasmExportedWorkbook" class="org.generationcp.commons.parsing.GermplasmExportedWorkbook">
 		<aop:scoped-proxy />
