@@ -57,8 +57,6 @@ public class CrossingManagerMakeCrossesComponentTest {
 		this.makeCrosses = Mockito.spy(new CrossingManagerMakeCrossesComponent(this.manageCrossingSettingsMain));
 
 		Mockito.doReturn("Return to Nursery").when(this.messageSource).getMessage(Message.BACK_TO_NURSERY);
-		Mockito.doReturn("Please save your Crosses List before returning to the Nursery").when(this.messageSource)
-				.getMessage(Message.BACK_TO_NURSERY_DESCRIPTION);
 		this.makeCrosses.setMessageSource(this.messageSource);
 		this.makeCrosses.setFieldbookMiddlewareService(this.fieldbookMiddlewareService);
 		Mockito.doReturn(this.window).when(this.makeCrosses).getWindow();
@@ -122,7 +120,6 @@ public class CrossingManagerMakeCrossesComponentTest {
 
 		Assert.assertNotNull(testNurseryBackButton);
 		Assert.assertEquals("Return to Nursery", testNurseryBackButton.getCaption());
-		Assert.assertEquals("Please save your Crosses List before returning to the Nursery", testNurseryBackButton.getDescription());
 		Assert.assertNotNull(testNurseryBackButton.getListeners(Button.ClickEvent.class));
 		Assert.assertEquals(1, testNurseryBackButton.getListeners(Button.ClickEvent.class).size());
 	}
