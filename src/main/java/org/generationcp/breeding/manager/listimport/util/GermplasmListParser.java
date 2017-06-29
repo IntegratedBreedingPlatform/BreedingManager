@@ -72,7 +72,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	private String noInventoryWarning = "";
 	private boolean importFileIsAdvanced = false;
 	private String seedAmountVariate = "";
-	private Set<String> nameFactors;
+	private List<String> nameFactors;
 	private Set<String> attributeVariates;
 	private Set<String> descriptionVariableNames = new HashSet<>();
 
@@ -162,7 +162,7 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 		return this.importFileIsAdvanced;
 	}
 	
-	public Set<String> getNameFactors() {
+	public List<String> getNameFactors() {
 		return this.nameFactors;
 	}
 

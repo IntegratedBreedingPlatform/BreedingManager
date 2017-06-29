@@ -1,14 +1,16 @@
 package org.generationcp.breeding.manager.listimport.util;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.apache.poi.ss.usermodel.Workbook;
 import org.generationcp.commons.parsing.FileParsingException;
 import org.generationcp.commons.parsing.WorkbookRowConverter;
 import org.generationcp.commons.parsing.pojo.ImportedFactor;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Converts parsed factors into ImportedFactor object
@@ -32,7 +34,7 @@ class FactorDetailsConverter extends WorkbookRowConverter<ImportedFactor> {
 	public static final String GERMPLASM_ID = "GERMPLASM ID";
 
 	private final Map<GermplasmListParser.FactorTypes, String> specialFactors = new HashMap<>();
-	private final Set<String> nameFactors = new HashSet<>();
+	private final Set<String> nameFactors = new TreeSet<>();
 
 	private boolean importFileIsAdvanced = false;
 
@@ -107,8 +109,8 @@ class FactorDetailsConverter extends WorkbookRowConverter<ImportedFactor> {
 		return this.specialFactors;
 	}
 
-	public Set<String> getNameFactors() {
-		return this.nameFactors;
+	public List<String> getNameFactors() {
+		return new ArrayList<>(this.nameFactors);
 	}
 
 	public boolean isImportFileIsAdvanced() {

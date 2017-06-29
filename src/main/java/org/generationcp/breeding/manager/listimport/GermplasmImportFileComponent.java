@@ -1,6 +1,5 @@
 package org.generationcp.breeding.manager.listimport;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -22,7 +21,6 @@ import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.components.validator.ErrorCollection;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -145,7 +143,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 		
 		if (validationErrorMessages.isEmpty()) {
 			//if there were no namefactors then the showNameHandlingPopUpValidationRule would have failed already.
-			NameHandlingDialog nameHandlingDialog = new NameHandlingDialog(this, new ArrayList<>(this.germplasmListUploader.getNameFactors()));
+			NameHandlingDialog nameHandlingDialog = new NameHandlingDialog(this, this.germplasmListUploader.getNameFactors());
 			nameHandlingDialog.setDebugId("nameHandlingDialog");
 			// If not from popup
 			if (this.getWindow() != null && this.source.getGermplasmImportPopupSource() == null) {
