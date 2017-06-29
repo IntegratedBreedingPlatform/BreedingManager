@@ -78,7 +78,7 @@ public class GermplasmListUploader implements FileFactory {
 	public boolean importFileIsAdvanced() {
 		return this.germplasmListParser.importFileIsAdvanced();
 	}
-	
+
 	public List<String> getNameFactors() {
 		return this.germplasmListParser.getNameFactors();
 	}
@@ -110,7 +110,7 @@ public class GermplasmListUploader implements FileFactory {
 		try {
 			return this.createWorkbookFromFactory(tempFileName);
 		} catch (IOException | InvalidFormatException e) {
-			LOG.error(e.getMessage(), e);
+			GermplasmListUploader.LOG.error(e.getMessage(), e);
 			throw new InvalidFileTypeImportException("Please upload a properly formatted XLS or XLSX file.");
 		}
 	}
@@ -123,7 +123,7 @@ public class GermplasmListUploader implements FileFactory {
 		try {
 			return new FileInputStream(tempFileName);
 		} catch (final FileNotFoundException e) {
-			LOG.error(e.getMessage(), e);
+			GermplasmListUploader.LOG.error(e.getMessage(), e);
 		}
 		return null;
 	}

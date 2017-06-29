@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.listimport;
 
 import java.util.HashSet;
@@ -39,8 +40,8 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 
 @Configurable
-public class GermplasmImportFileComponent extends AbsoluteLayout implements InitializingBean, InternationalizableComponent,
-		BreedingManagerLayout, NameHandlingDialogSource {
+public class GermplasmImportFileComponent extends AbsoluteLayout
+		implements InitializingBean, InternationalizableComponent, BreedingManagerLayout, NameHandlingDialogSource {
 
 	private static final String ERROR_IMPORTING = "Error importing ";
 	private static final String ERROR = "Error";
@@ -102,7 +103,8 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 		// Valid File Extensions are .xls and .xlsx
 		final String extension = FilenameUtils.getExtension(this.germplasmListUploader.getOriginalFilename()).toLowerCase();
 		if (!this.extensionSet.contains(extension)) {
-			MessageNotifier.showError(this.getWindow(), ERROR, this.messageSource.getMessage("GERMPLSM_INVALID_FILE_EXTENSION_ERROR"));
+			MessageNotifier.showError(this.getWindow(), GermplasmImportFileComponent.ERROR,
+					this.messageSource.getMessage("GERMPLSM_INVALID_FILE_EXTENSION_ERROR"));
 			return;
 		}
 
@@ -118,17 +120,17 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 			this.proceedToNextScreen();
 
 		} catch (final GermplasmImportException e) {
-			GermplasmImportFileComponent.LOG.debug(ERROR_IMPORTING + e.getMessage(), e);
+			GermplasmImportFileComponent.LOG.debug(GermplasmImportFileComponent.ERROR_IMPORTING + e.getMessage(), e);
 			MessageNotifier.showError(this.getWindow(), e.getCaption(), e.getMessage());
 		} catch (final FileParsingException e) {
-			GermplasmImportFileComponent.LOG.debug(ERROR_IMPORTING + e.getMessage(), e);
+			GermplasmImportFileComponent.LOG.debug(GermplasmImportFileComponent.ERROR_IMPORTING + e.getMessage(), e);
 			final String message = this.messageSource.getMessage(e.getMessage(), e.getMessageParameters(), Locale.getDefault());
-			MessageNotifier.showError(this.getWindow(), ERROR, message);
+			MessageNotifier.showError(this.getWindow(), GermplasmImportFileComponent.ERROR, message);
 		} catch (final InvalidFileDataException e) {
 			// Display Error message if Observations is empty and disable Next Button.
-			GermplasmImportFileComponent.LOG.debug(ERROR_IMPORTING + e.getMessage(), e);
+			GermplasmImportFileComponent.LOG.debug(GermplasmImportFileComponent.ERROR_IMPORTING + e.getMessage(), e);
 			final String message = this.messageSource.getMessage(e.getMessage(), e.getMessageParameters(), Locale.getDefault());
-			MessageNotifier.showError(this.getWindow(), ERROR, message);
+			MessageNotifier.showError(this.getWindow(), GermplasmImportFileComponent.ERROR, message);
 			this.nextButton.setEnabled(false);
 		}
 	}
@@ -137,12 +139,12 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 	 * Will display a pop up for Name Handling Dialog, if the imported germplasm list has name types, if not proceed to the next screen
 	 */
 	void proceedToNextScreen() {
-		List<ImportedGermplasm> importedGermplasms = getGermplasmListUploader().getImportedGermplasmList().getImportedGermplasm();
-		//TODO review showNameHandlingPopUpValidator logic
-		ErrorCollection validationErrorMessages = showNameHandlingPopUpValidator.validate(importedGermplasms);
-		
+		final List<ImportedGermplasm> importedGermplasms =
+				this.getGermplasmListUploader().getImportedGermplasmList().getImportedGermplasm();
+		final ErrorCollection validationErrorMessages = this.showNameHandlingPopUpValidator.validate(importedGermplasms);
+
 		if (validationErrorMessages.isEmpty()) {
-			NameHandlingDialog nameHandlingDialog = new NameHandlingDialog(this, this.germplasmListUploader.getNameFactors());
+			final NameHandlingDialog nameHandlingDialog = new NameHandlingDialog(this, this.germplasmListUploader.getNameFactors());
 			nameHandlingDialog.setDebugId("nameHandlingDialog");
 			// If from main BMS window, called from sidebar
 			if (this.getWindow() != null && this.source.getGermplasmImportPopupSource() == null) {
@@ -151,7 +153,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 				this.source.getGermplasmImportPopupSource().getParentWindow().addWindow(nameHandlingDialog);
 			}
 		} else {
-			//no need to show the name handling window.
+			// no need to show the name handling window.
 			this.source.nextStep();
 		}
 	}
@@ -260,9 +262,9 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 			public void buttonClick(final ClickEvent event) {
 				// Just download the new expanded template
 				try {
-					(new GermplasmListTemplateDownloader()).exportGermplasmTemplate(event.getComponent());
+					new GermplasmListTemplateDownloader().exportGermplasmTemplate(event.getComponent());
 				} catch (final GermplasmListTemplateDownloader.FileDownloadException e) {
-					LOG.error(e.getMessage(), e);
+					GermplasmImportFileComponent.LOG.error(e.getMessage(), e);
 					MessageNotifier.showError(GermplasmImportFileComponent.this.getWindow(),
 							GermplasmImportFileComponent.this.messageSource.getMessage(Message.ERROR), e.getMessage());
 				}
@@ -324,7 +326,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 		this.source.nextStep();
 	}
 
-	public void setShowNameHandlingPopUpValidationRule(ShowNameHandlingPopUpValidator showNameHandlingPopUpValidator) {
+	public void setShowNameHandlingPopUpValidationRule(final ShowNameHandlingPopUpValidator showNameHandlingPopUpValidator) {
 		this.showNameHandlingPopUpValidator = showNameHandlingPopUpValidator;
 	}
 }

@@ -116,7 +116,7 @@ public class NameHandlingDialog extends BaseSubWindow implements BreedingManager
 		}
 
 		// Select the first value in dropdown
-		if (!this.importedNameFactors.isEmpty()){
+		if (!this.importedNameFactors.isEmpty()) {
 			this.nameTypesComboBox.setValue(this.importedNameFactors.get(0));
 		}
 	}
@@ -181,28 +181,25 @@ public class NameHandlingDialog extends BaseSubWindow implements BreedingManager
 	public void windowClose(final CloseEvent e) {
 		// do nothing
 	}
-	
+
 	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 
-	
 	public ComboBox getNameTypesComboBox() {
-		return nameTypesComboBox;
+		return this.nameTypesComboBox;
 	}
-	
-	
+
 	public List<String> getImportedNameFactors() {
-		return importedNameFactors;
+		return this.importedNameFactors;
 	}
 
 	public void setImportedNameFactors(final List<String> importedNameFactors) {
 		this.importedNameFactors = importedNameFactors;
 	}
 
-	
 	public NameHandlingDialogSource getSource() {
-		return source;
+		return this.source;
 	}
 
 }

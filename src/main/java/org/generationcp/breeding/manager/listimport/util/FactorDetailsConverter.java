@@ -1,3 +1,4 @@
+
 package org.generationcp.breeding.manager.listimport.util;
 
 import java.util.ArrayList;
@@ -38,45 +39,44 @@ class FactorDetailsConverter extends WorkbookRowConverter<ImportedFactor> {
 
 	private boolean importFileIsAdvanced = false;
 
-	public FactorDetailsConverter(final Workbook workbook, final int startingIndex,
-			final int targetSheetIndex, final int columnCount, final String[] columnLabels) {
+	public FactorDetailsConverter(final Workbook workbook, final int startingIndex, final int targetSheetIndex, final int columnCount,
+			final String[] columnLabels) {
 		super(workbook, startingIndex, targetSheetIndex, columnCount, columnLabels);
 	}
 
-	public static boolean isGermplasmNameScale(String scale) {
+	public static boolean isGermplasmNameScale(final String scale) {
 		return FactorDetailsConverter.DBCV_SCALE.equals(scale) || FactorDetailsConverter.GERMPLASM_NAME.equals(scale);
 	}
 
-	public static boolean isGermplasmIdScale(String scale) {
+	public static boolean isGermplasmIdScale(final String scale) {
 		return FactorDetailsConverter.DBID_SCALE.equals(scale) || FactorDetailsConverter.GERMPLASM_ID.equals(scale);
 	}
 
-	public static boolean isStockIdScale(String scale) {
+	public static boolean isStockIdScale(final String scale) {
 		return FactorDetailsConverter.DBCV_SCALE.equals(scale) || FactorDetailsConverter.GERMPLASM_ID.equals(scale);
 	}
 
-	public static boolean isCrossScale(String scale) {
+	public static boolean isCrossScale(final String scale) {
 		return FactorDetailsConverter.NAME_SCALE.equals(scale) || FactorDetailsConverter.TEXT_SCALE.equals(scale);
 	}
 
-	public static boolean isSeedSourceScale(String scale) {
+	public static boolean isSeedSourceScale(final String scale) {
 		return FactorDetailsConverter.NAME_SCALE.equals(scale) || FactorDetailsConverter.isCodeScale(scale);
 	}
 
-	public static boolean isCrossNameProperty(String property) {
-		return FactorDetailsConverter.CROSS_NAME_PROPERTY.equals(property) || FactorDetailsConverter.CROSS_HISTORY_PROPERTY.equals(property);
+	public static boolean isCrossNameProperty(final String property) {
+		return FactorDetailsConverter.CROSS_NAME_PROPERTY.equals(property)
+				|| FactorDetailsConverter.CROSS_HISTORY_PROPERTY.equals(property);
 	}
 
-
-	public static boolean isCodeScale(String scale) {
+	public static boolean isCodeScale(final String scale) {
 		return scale != null && scale.contains(FactorDetailsConverter.CODE_SCALE);
 	}
 
 	@Override
 	public ImportedFactor convertToObject(final Map<Integer, String> rowValues) throws FileParsingException {
-		final ImportedFactor importedFactor =
-				new ImportedFactor(rowValues.get(0).toUpperCase(), rowValues.get(1), rowValues.get(2), rowValues.get(3), rowValues.get(4),
-						rowValues.get(5), rowValues.get(6), rowValues.get(7));
+		final ImportedFactor importedFactor = new ImportedFactor(rowValues.get(0).toUpperCase(), rowValues.get(1), rowValues.get(2),
+				rowValues.get(3), rowValues.get(4), rowValues.get(5), rowValues.get(6), rowValues.get(7));
 
 		// row based validations here
 		final String property = importedFactor.getProperty() == null ? "" : importedFactor.getProperty().toUpperCase();
@@ -117,7 +117,7 @@ class FactorDetailsConverter extends WorkbookRowConverter<ImportedFactor> {
 		return this.importFileIsAdvanced;
 	}
 
-	public boolean hasSpecialFactor(GermplasmListParser.FactorTypes factorType) {
+	public boolean hasSpecialFactor(final GermplasmListParser.FactorTypes factorType) {
 		return this.specialFactors.containsKey(factorType);
 	}
 }
