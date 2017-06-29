@@ -161,6 +161,10 @@ public class GermplasmListParser extends AbstractExcelFileParser<ImportedGermpla
 	public boolean importFileIsAdvanced() {
 		return this.importFileIsAdvanced;
 	}
+	
+	public Set<String> getNameFactors() {
+		return this.nameFactors;
+	}
 
 	@Override
 	public ImportedGermplasmList parseWorkbook(final Workbook workbook, final Map<String, Object> additionalParams)

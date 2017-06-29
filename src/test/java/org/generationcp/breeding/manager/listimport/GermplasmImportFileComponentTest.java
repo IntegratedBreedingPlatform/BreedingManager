@@ -13,7 +13,6 @@ import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.validator.ShowNameHandlingPopUpValidator;
-import org.generationcp.commons.parsing.pojo.ImportedFactor;
 import org.generationcp.commons.workbook.generator.RowColumnType;
 import org.generationcp.middleware.components.validator.ErrorCollection;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -44,23 +43,17 @@ public class GermplasmImportFileComponentTest {
 	@Mock
 	private ShowNameHandlingPopUpValidator showNameHandlingPopUpValidator;
 
-	private ImportedGermplasmListDataInitializer importedGermplasmListInitializer;
-
 	@Before
 	public void setUp() {
 
 		MockitoAnnotations.initMocks(this);
 
 		this.importFileComponent = new GermplasmImportFileComponent(this.importMain);
-		this.importFileComponent.setGermplasmDataManager(this.germplasmDataManager);
 		this.importFileComponent.setGermplasmListUploader(this.germplasmListUploader);
 		this.importFileComponent.setShowNameHandlingPopUpValidationRule(this.showNameHandlingPopUpValidator);
 
 		this.importWindow = new Window();
 		doReturn(this.importWindow).when(this.importMain).getWindow();
-
-		// initializer
-		this.importedGermplasmListInitializer = new ImportedGermplasmListDataInitializer();
 	}
 
 	@Test
@@ -99,23 +92,6 @@ public class GermplasmImportFileComponentTest {
 		verify(this.importWindow).executeJavaScript(GermplasmImportFileComponent.FB_CLOSE_WINDOW_JS_CALL);
 	}
 
-	@Test
-	public void testExtractListOfImportedNamesWithNoNameFactors() {
-		this.initImportedGermplasmList(false);
-		final List<ImportedFactor> importedNameFactors = this.importFileComponent.extractListOfImportedNames();
-		Assert.assertTrue(
-				"Expected to return an empty list for name factors since there is no name factors included from the imported file.",
-				importedNameFactors.isEmpty());
-	}
-
-	@Test
-	public void testExtractListOfImportedNamesWithNameFactors() {
-		this.initImportedGermplasmList(true);
-		final List<ImportedFactor> importedNameFactors = this.importFileComponent.extractListOfImportedNames();
-		Assert.assertTrue("Expected to return a list with name factors since there is name factors included from the imported file.",
-				!importedNameFactors.isEmpty());
-	}
-
 	private List<UserDefinedField> createUserDefinedFieldsForNameType() {
 		final List<UserDefinedField> validNameTypes = new ArrayList<UserDefinedField>();
 		validNameTypes.add(new UserDefinedField(5, "NAMES", "NAME", "DRVNM", "DERIVATIVE NAMES", "", "", 0, 0, 0, 0));
@@ -124,7 +100,7 @@ public class GermplasmImportFileComponentTest {
 
 	private ImportedGermplasmList initImportedGermplasmList(final boolean withNameFactors) {
 		final ImportedGermplasmList importedGermplasmList =
-				this.importedGermplasmListInitializer.createImportedGermplasmList(10, withNameFactors);
+				ImportedGermplasmListDataInitializer.createImportedGermplasmList(10, withNameFactors);
 
 		doReturn(this.createUserDefinedFieldsForNameType()).when(this.germplasmDataManager).getUserDefinedFieldByFieldTableNameAndType(
 				RowColumnType.NAME_TYPES.getFtable(), RowColumnType.NAME_TYPES.getFtype());

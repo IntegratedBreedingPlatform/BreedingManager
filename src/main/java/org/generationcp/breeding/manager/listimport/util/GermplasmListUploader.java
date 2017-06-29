@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Set;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -76,6 +77,10 @@ public class GermplasmListUploader implements FileFactory {
 
 	public boolean importFileIsAdvanced() {
 		return this.germplasmListParser.importFileIsAdvanced();
+	}
+	
+	public Set<String> getNameFactors() {
+		return this.germplasmListParser.getNameFactors();
 	}
 
 	public void doParseWorkbook() throws FileParsingException, InvalidFileDataException {

@@ -17,15 +17,12 @@ import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.validator.ShowNameHandlingPopUpValidator;
 import org.generationcp.commons.parsing.FileParsingException;
 import org.generationcp.commons.parsing.InvalidFileDataException;
-import org.generationcp.commons.parsing.pojo.ImportedFactor;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.util.MessageNotifier;
-import org.generationcp.commons.workbook.generator.RowColumnType;
 import org.generationcp.middleware.components.validator.ErrorCollection;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
-import org.generationcp.middleware.pojos.UserDefinedField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -67,9 +64,6 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
-
-	@Autowired
-	private GermplasmDataManager germplasmDataManager;
 
 	@Autowired
 	private ShowNameHandlingPopUpValidator showNameHandlingPopUpValidator;
@@ -146,11 +140,12 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 	 */
 	void nextStep() {
 		List<ImportedGermplasm> importedGermplasms = getGermplasmListUploader().getImportedGermplasmList().getImportedGermplasm();
+		//TODO review showNameHandlingPopUpValidator logic
 		ErrorCollection validationErrorMessages = showNameHandlingPopUpValidator.validate(importedGermplasms);
+		
 		if (validationErrorMessages.isEmpty()) {
-			List<ImportedFactor> importedNameFactors = this.extractListOfImportedNames();
 			//if there were no namefactors then the showNameHandlingPopUpValidationRule would have failed already.
-			NameHandlingDialog nameHandlingDialog = new NameHandlingDialog(this, importedNameFactors);
+			NameHandlingDialog nameHandlingDialog = new NameHandlingDialog(this, new ArrayList<>(this.germplasmListUploader.getNameFactors()));
 			nameHandlingDialog.setDebugId("nameHandlingDialog");
 			// If not from popup
 			if (this.getWindow() != null && this.source.getGermplasmImportPopupSource() == null) {
@@ -162,28 +157,6 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 			//no need to show the name handling window.
 			this.source.nextStep();
 		}
-	}
-
-	List<ImportedFactor> extractListOfImportedNames() {
-
-		final List<UserDefinedField> nameFields =
-				this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(RowColumnType.NAME_TYPES.getFtable(),
-						RowColumnType.NAME_TYPES.getFtype());
-
-		final List<String> validNameTypes = new ArrayList<String>();
-		for (final UserDefinedField nameField : nameFields) {
-			validNameTypes.add(nameField.getFcode().trim());
-		}
-
-		final List<ImportedFactor> importedFactors = this.germplasmListUploader.getImportedGermplasmList().getImportedFactors();
-
-		final List<ImportedFactor> importedNameFactors = new ArrayList<ImportedFactor>();
-		for (final ImportedFactor factor : importedFactors) {
-			if (validNameTypes.contains(factor.getFactor())) {
-				importedNameFactors.add(factor);
-			}
-		}
-		return importedNameFactors;
 	}
 
 	public GermplasmImportMain getSource() {
@@ -352,15 +325,6 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 		this.germplasmListUploader.getImportedGermplasmList().setSetImportedNameAsPreferredName(setImportedNameAsPreferredName);
 		this.germplasmListUploader.getImportedGermplasmList().setPreferredNameCode(preferredNameType);
 		this.source.nextStep();
-	}
-
-	/**
-	 * FOR TEST ONLY
-	 * 
-	 * @param germplasmDataManager
-	 */
-	void setGermplasmDataManager(final GermplasmDataManager germplasmDataManager) {
-		this.germplasmDataManager = germplasmDataManager;
 	}
 
 	public void setShowNameHandlingPopUpValidationRule(ShowNameHandlingPopUpValidator showNameHandlingPopUpValidator) {
