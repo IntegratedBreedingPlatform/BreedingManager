@@ -42,7 +42,7 @@ public class NameHandlingDialog extends BaseSubWindow implements BreedingManager
 	private Button continueBtn;
 
 	private final NameHandlingDialogSource source;
-	private final List<String> importedNameFactors;
+	private List<String> importedNameFactors;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
@@ -180,6 +180,29 @@ public class NameHandlingDialog extends BaseSubWindow implements BreedingManager
 	@Override
 	public void windowClose(final CloseEvent e) {
 		// do nothing
+	}
+	
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	
+	public ComboBox getNameTypesComboBox() {
+		return nameTypesComboBox;
+	}
+	
+	
+	public List<String> getImportedNameFactors() {
+		return importedNameFactors;
+	}
+
+	public void setImportedNameFactors(final List<String> importedNameFactors) {
+		this.importedNameFactors = importedNameFactors;
+	}
+
+	
+	public NameHandlingDialogSource getSource() {
+		return source;
 	}
 
 }

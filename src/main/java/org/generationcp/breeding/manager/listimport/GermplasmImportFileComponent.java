@@ -115,7 +115,7 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 				MessageNotifier.showWarning(this.source.getWindow(), "Warning", this.germplasmListUploader.hasWarnings());
 			}
 
-			this.nextStep();
+			this.proceedToNextScreen();
 
 		} catch (final GermplasmImportException e) {
 			GermplasmImportFileComponent.LOG.debug(ERROR_IMPORTING + e.getMessage(), e);
@@ -136,16 +136,15 @@ public class GermplasmImportFileComponent extends AbsoluteLayout implements Init
 	/**
 	 * Will display a pop up for Name Handling Dialog, if the imported germplasm list has name types, if not proceed to the next screen
 	 */
-	void nextStep() {
+	void proceedToNextScreen() {
 		List<ImportedGermplasm> importedGermplasms = getGermplasmListUploader().getImportedGermplasmList().getImportedGermplasm();
 		//TODO review showNameHandlingPopUpValidator logic
 		ErrorCollection validationErrorMessages = showNameHandlingPopUpValidator.validate(importedGermplasms);
 		
 		if (validationErrorMessages.isEmpty()) {
-			//if there were no namefactors then the showNameHandlingPopUpValidationRule would have failed already.
 			NameHandlingDialog nameHandlingDialog = new NameHandlingDialog(this, this.germplasmListUploader.getNameFactors());
 			nameHandlingDialog.setDebugId("nameHandlingDialog");
-			// If not from popup
+			// If from main BMS window, called from sidebar
 			if (this.getWindow() != null && this.source.getGermplasmImportPopupSource() == null) {
 				this.getWindow().addWindow(nameHandlingDialog);
 			} else {
