@@ -7,7 +7,6 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.ConfirmOption;
 import org.generationcp.breeding.manager.listmanager.listeners.CloseWindowAction;
-import org.generationcp.commons.parsing.pojo.ImportedFactor;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
@@ -43,12 +42,12 @@ public class NameHandlingDialog extends BaseSubWindow implements BreedingManager
 	private Button continueBtn;
 
 	private final NameHandlingDialogSource source;
-	private final List<ImportedFactor> importedNameFactors;
+	private List<String> importedNameFactors;
 
 	@Autowired
 	private SimpleResourceBundleMessageSource messageSource;
 
-	public NameHandlingDialog(final NameHandlingDialogSource source, final List<ImportedFactor> importedNameFactors) {
+	public NameHandlingDialog(final NameHandlingDialogSource source, final List<String> importedNameFactors) {
 		this.source = source;
 		this.importedNameFactors = importedNameFactors;
 	}
@@ -107,12 +106,19 @@ public class NameHandlingDialog extends BaseSubWindow implements BreedingManager
 		this.setAsPreferredNameOption.setItemCaption(ConfirmOption.NO, this.messageSource.getMessage(Message.NO));
 		this.setAsPreferredNameOption.select(ConfirmOption.NO);
 
-		for (final ImportedFactor nameFactor : this.importedNameFactors) {
-			this.nameTypesComboBox.addItem(nameFactor.getFactor());
+		this.populateNameTypesComboBox();
+
+	}
+
+	void populateNameTypesComboBox() {
+		for (final String nameFactor : this.importedNameFactors) {
+			this.nameTypesComboBox.addItem(nameFactor);
 		}
 
-		this.nameTypesComboBox.setValue(this.importedNameFactors.get(0).getFactor());
-
+		// Select the first value in dropdown
+		if (!this.importedNameFactors.isEmpty()) {
+			this.nameTypesComboBox.setValue(this.importedNameFactors.get(0));
+		}
 	}
 
 	@Override
@@ -174,6 +180,26 @@ public class NameHandlingDialog extends BaseSubWindow implements BreedingManager
 	@Override
 	public void windowClose(final CloseEvent e) {
 		// do nothing
+	}
+
+	public void setMessageSource(final SimpleResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	public ComboBox getNameTypesComboBox() {
+		return this.nameTypesComboBox;
+	}
+
+	public List<String> getImportedNameFactors() {
+		return this.importedNameFactors;
+	}
+
+	public void setImportedNameFactors(final List<String> importedNameFactors) {
+		this.importedNameFactors = importedNameFactors;
+	}
+
+	public NameHandlingDialogSource getSource() {
+		return this.source;
 	}
 
 }

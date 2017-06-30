@@ -116,7 +116,6 @@ public class GermplasmListExporterTest {
 
 		MockitoAnnotations.initMocks(this);
 
-		germplasmExportService.setTemplateFile(FILE_NAME);
 		this._germplasmListExporter.setGermplasmExportService(this.germplasmExportService);
 		this._germplasmListExporter.setGermplasmListManager(this.germplasmListManager);
 		this._germplasmListExporter.setUserDataManager(this.userDataManager);
