@@ -346,7 +346,6 @@ public class CrossingManagerMakeCrossesComponent extends VerticalLayout implemen
 	protected Button constructNurseryBackButton() {
 		final Button nurseryBackButton = new Button();
 		nurseryBackButton.setDebugId("nurseryBackButton");
-		nurseryBackButton.setDescription(this.messageSource.getMessage(Message.BACK_TO_NURSERY_DESCRIPTION));
 		nurseryBackButton.setCaption(this.messageSource.getMessage(Message.BACK_TO_NURSERY));
 		nurseryBackButton.addListener(this.nurseryBackButtonDefaultClickListener);
 		return nurseryBackButton;
