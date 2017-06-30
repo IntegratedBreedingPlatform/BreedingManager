@@ -1,10 +1,6 @@
 
 package org.generationcp.breeding.manager.listimport;
 
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +9,6 @@ import org.generationcp.breeding.manager.listimport.util.GermplasmListUploader;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasm;
 import org.generationcp.breeding.manager.pojos.ImportedGermplasmList;
 import org.generationcp.breeding.manager.validator.ShowNameHandlingPopUpValidator;
-import org.generationcp.commons.parsing.pojo.ImportedFactor;
 import org.generationcp.commons.workbook.generator.RowColumnType;
 import org.generationcp.middleware.components.validator.ErrorCollection;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -21,10 +16,12 @@ import org.generationcp.middleware.pojos.UserDefinedField;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Window;
 
 public class GermplasmImportFileComponentTest {
@@ -44,29 +41,23 @@ public class GermplasmImportFileComponentTest {
 	@Mock
 	private ShowNameHandlingPopUpValidator showNameHandlingPopUpValidator;
 
-	private ImportedGermplasmListDataInitializer importedGermplasmListInitializer;
-
 	@Before
 	public void setUp() {
 
 		MockitoAnnotations.initMocks(this);
 
 		this.importFileComponent = new GermplasmImportFileComponent(this.importMain);
-		this.importFileComponent.setGermplasmDataManager(this.germplasmDataManager);
 		this.importFileComponent.setGermplasmListUploader(this.germplasmListUploader);
 		this.importFileComponent.setShowNameHandlingPopUpValidationRule(this.showNameHandlingPopUpValidator);
 
 		this.importWindow = new Window();
-		doReturn(this.importWindow).when(this.importMain).getWindow();
-
-		// initializer
-		this.importedGermplasmListInitializer = new ImportedGermplasmListDataInitializer();
+		Mockito.doReturn(this.importWindow).when(this.importMain).getWindow();
 	}
 
 	@Test
 	public void testCancelActionFromMainImportTool() {
 		this.importFileComponent.cancelButtonAction();
-		verify(this.importMain).reset();
+		Mockito.verify(this.importMain).reset();
 	}
 
 	@Test
@@ -77,9 +68,9 @@ public class GermplasmImportFileComponentTest {
 		Assert.assertNotNull(listManagerWindow.getChildWindows());
 		Assert.assertTrue("List Manager Window has Germplasm Import sub-window", !listManagerWindow.getChildWindows().isEmpty());
 
-		doReturn(popupSource).when(this.importMain).getGermplasmImportPopupSource();
-		doReturn(this.importWindow).when(this.importMain).getComponentContainer();
-		doReturn(listManagerWindow).when(popupSource).getParentWindow();
+		Mockito.doReturn(popupSource).when(this.importMain).getGermplasmImportPopupSource();
+		Mockito.doReturn(this.importWindow).when(this.importMain).getComponentContainer();
+		Mockito.doReturn(listManagerWindow).when(popupSource).getParentWindow();
 
 		this.importFileComponent.cancelButtonAction();
 		Assert.assertNotNull(listManagerWindow.getChildWindows());
@@ -90,30 +81,13 @@ public class GermplasmImportFileComponentTest {
 	@Test
 	public void testCancelActionFromFieldbook() {
 		this.importWindow = Mockito.mock(Window.class);
-		doReturn(this.importWindow).when(this.importMain).getWindow();
+		Mockito.doReturn(this.importWindow).when(this.importMain).getWindow();
 
-		doReturn(true).when(this.importMain).isViaPopup();
+		Mockito.doReturn(true).when(this.importMain).isViaPopup();
 
 		this.importFileComponent.cancelButtonAction();
-		verify(this.importMain).reset();
-		verify(this.importWindow).executeJavaScript(GermplasmImportFileComponent.FB_CLOSE_WINDOW_JS_CALL);
-	}
-
-	@Test
-	public void testExtractListOfImportedNamesWithNoNameFactors() {
-		this.initImportedGermplasmList(false);
-		final List<ImportedFactor> importedNameFactors = this.importFileComponent.extractListOfImportedNames();
-		Assert.assertTrue(
-				"Expected to return an empty list for name factors since there is no name factors included from the imported file.",
-				importedNameFactors.isEmpty());
-	}
-
-	@Test
-	public void testExtractListOfImportedNamesWithNameFactors() {
-		this.initImportedGermplasmList(true);
-		final List<ImportedFactor> importedNameFactors = this.importFileComponent.extractListOfImportedNames();
-		Assert.assertTrue("Expected to return a list with name factors since there is name factors included from the imported file.",
-				!importedNameFactors.isEmpty());
+		Mockito.verify(this.importMain).reset();
+		Mockito.verify(this.importWindow).executeJavaScript(GermplasmImportFileComponent.FB_CLOSE_WINDOW_JS_CALL);
 	}
 
 	private List<UserDefinedField> createUserDefinedFieldsForNameType() {
@@ -124,40 +98,53 @@ public class GermplasmImportFileComponentTest {
 
 	private ImportedGermplasmList initImportedGermplasmList(final boolean withNameFactors) {
 		final ImportedGermplasmList importedGermplasmList =
-				this.importedGermplasmListInitializer.createImportedGermplasmList(10, withNameFactors);
+				ImportedGermplasmListDataInitializer.createImportedGermplasmList(10, withNameFactors);
 
-		doReturn(this.createUserDefinedFieldsForNameType()).when(this.germplasmDataManager).getUserDefinedFieldByFieldTableNameAndType(
-				RowColumnType.NAME_TYPES.getFtable(), RowColumnType.NAME_TYPES.getFtype());
-		doReturn(importedGermplasmList).when(this.germplasmListUploader).getImportedGermplasmList();
+		Mockito.doReturn(this.createUserDefinedFieldsForNameType()).when(this.germplasmDataManager)
+				.getUserDefinedFieldByFieldTableNameAndType(RowColumnType.NAME_TYPES.getFtable(), RowColumnType.NAME_TYPES.getFtype());
+		Mockito.doReturn(importedGermplasmList).when(this.germplasmListUploader).getImportedGermplasmList();
 
 		return importedGermplasmList;
 	}
 
 	@Test
-	public void testNextStepShowsNameHandlingDialogWhenThereIsImportedNameFactor() {
+	public void testProceedToNextScreenWhenThereIsImportedNameFactor() {
 		final ImportedGermplasmList importedGermplasmList = this.initImportedGermplasmList(true);
-		final GermplasmImportPopupSource importPopupSource = Mockito.mock(GermplasmImportPopupSource.class);
-		doReturn(importPopupSource).when(this.importMain).getGermplasmImportPopupSource();
-		doReturn(new Window()).when(importPopupSource).getParentWindow();
+		final HorizontalLayout parent = Mockito.mock(HorizontalLayout.class);
+		this.importFileComponent.setParent(parent);
+		final Window mockWindow = Mockito.mock(Window.class);
+		Mockito.doReturn(mockWindow).when(parent).getWindow();
+
 		final List<ImportedGermplasm> list = importedGermplasmList.getImportedGermplasm();
 		final ErrorCollection success = new ErrorCollection();
-		when(this.showNameHandlingPopUpValidator.validate(list)).thenReturn(success);
+		Mockito.when(this.showNameHandlingPopUpValidator.validate(list)).thenReturn(success);
+		Mockito.when(this.germplasmListUploader.getNameFactors()).thenReturn(NameHandlingDialogTest.NAME_FACTORS);
 
-		this.importFileComponent.nextStep();
+		// Method to test
+		this.importFileComponent.proceedToNextScreen();
 
-		verify(this.importMain, Mockito.times(0)).nextStep();
+		// Verify that new NameHandingDialog window was created and added to parent window
+		final ArgumentCaptor<Window> windowCaptor = ArgumentCaptor.forClass(Window.class);
+		Mockito.verify(mockWindow, Mockito.times(1)).addWindow(windowCaptor.capture());
+		Assert.assertTrue(windowCaptor.getValue() instanceof NameHandlingDialog);
+		final NameHandlingDialog nameHandlingDialog = (NameHandlingDialog) windowCaptor.getValue();
+		Assert.assertEquals(NameHandlingDialogTest.NAME_FACTORS, nameHandlingDialog.getImportedNameFactors());
+		Assert.assertEquals(this.importFileComponent, nameHandlingDialog.getSource());
+		Mockito.verify(this.importMain, Mockito.never()).nextStep();
 	}
 
 	@Test
-	public void testNextStepGoesDirectlyToNextScreenWhenThereIsNoImportedNameFactor() {
+	public void testProceedToNextScreenWhenThereIsNoImportedNameFactor() {
 		final ImportedGermplasmList importedGermplasmList = this.initImportedGermplasmList(false);
 		final List<ImportedGermplasm> list = importedGermplasmList.getImportedGermplasm();
 		final ErrorCollection error = new ErrorCollection();
-		error.add(DUMMY_MESSAGE);
-		when(this.showNameHandlingPopUpValidator.validate(list)).thenReturn(error);
+		error.add(GermplasmImportFileComponentTest.DUMMY_MESSAGE);
+		Mockito.when(this.showNameHandlingPopUpValidator.validate(list)).thenReturn(error);
 
-		this.importFileComponent.nextStep();
+		this.importFileComponent.proceedToNextScreen();
 
-		verify(this.importMain, Mockito.times(1)).nextStep();
+		Mockito.verify(this.importMain, Mockito.times(1)).nextStep();
+		Mockito.verify(this.germplasmListUploader, Mockito.never()).getNameFactors();
+		Mockito.verify(this.importMain, Mockito.never()).getGermplasmImportPopupSource();
 	}
 }
