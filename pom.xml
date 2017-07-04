@@ -200,12 +200,30 @@
 					<groupId>com.google.gwt</groupId>
 					<artifactId>gwt-user</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>com.itextpdf</groupId>
+					<artifactId>itext-pdfa</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.itextpdf</groupId>
+					<artifactId>itextpdf</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.generationcp</groupId>
 			<artifactId>middleware</artifactId>
 			<version>${ibpcommons.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.itextpdf</groupId>
+					<artifactId>itext-pdfa</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.itextpdf</groupId>
+					<artifactId>itextpdf</artifactId>
+				</exclusion>
+			</exclusions>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
