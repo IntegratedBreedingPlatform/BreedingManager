@@ -7,9 +7,9 @@ import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.application.BreedingManagerWindowGenerator;
 import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
-import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -86,6 +86,9 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 
 	@Autowired
 	private BreedingManagerService breedingManagerService;
+
+	@Autowired
+	private BreedingManagerWindowGenerator breedingManagerWindowGenerator;
 
 	@Autowired
 	private WorkbenchDataManager workbenchDataManager;
@@ -397,7 +400,7 @@ public class BreedingLocationField extends AbsoluteLayout implements Initializin
 			final Project project = this.contextUtil.getProjectInContext();
 
 			final Window window = this.attachToWindow != null ? this.attachToWindow : this.getWindow();
-			final Window manageFavoriteLocationsWindow = Util.launchLocationManager(this.workbenchDataManager, project.getProjectId(),
+			final Window manageFavoriteLocationsWindow = breedingManagerWindowGenerator.openLocationManagerPopupWindow(project.getProjectId(),
 					window, this.messageSource.getMessage(Message.MANAGE_LOCATIONS));
 			manageFavoriteLocationsWindow.addListener(new CloseListener() {
 

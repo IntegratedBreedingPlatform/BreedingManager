@@ -51,12 +51,6 @@ public class Util {
 
 	public static final String USER_HOME = "user.home";
 
-	public static final String LOCATION_MANAGER_TOOL_NAME = "locationmanager";
-	public static final String LOCATION_MANAGER_DEFAULT_URL = "/ibpworkbench/content/ProgramLocations?programId=";
-
-	public static final String METHOD_MANAGER_TOOL_NAME = "methodmanager";
-	public static final String METHOD_MANAGER_DEFAULT_URL = "/ibpworkbench/content/ProgramMethods?programId=";
-
 	private Util() {
 		// do nothing
 	}
@@ -246,110 +240,6 @@ public class Util {
 		return newPath;
 
 	}
-
-	/**
-	 * Opens and attaches a modal window containing the location manager
-	 * 
-	 * @param workbenchDataManager - workbenchDataManager, this is used by this method to get tool URL (if available)
-	 * @param programId - used to load the locations for the given programId
-	 * @param window - modal window will be attached to this window
-	 * @return
-	 */
-	public static Window launchLocationManager(WorkbenchDataManager workbenchDataManager, Long programId, Window window, String caption) {
-
-		Tool tool = null;
-		try {
-			tool = workbenchDataManager.getToolWithName(Util.LOCATION_MANAGER_TOOL_NAME);
-		} catch (MiddlewareQueryException qe) {
-			Util.LOG.error("QueryException", qe);
-		}
-
-		ExternalResource listBrowserLink = null;
-		if (tool == null) {
-			listBrowserLink = new ExternalResource(Util.LOCATION_MANAGER_DEFAULT_URL + programId);
-		} else {
-			listBrowserLink = new ExternalResource(tool.getPath() + programId);
-		}
-
-		VerticalLayout layout = new VerticalLayout();
-		layout.setDebugId("layout");
-		layout.setMargin(false);
-		layout.setSpacing(false);
-		layout.setSizeFull();
-
-		Embedded listInfoPage = new Embedded("", listBrowserLink);
-		listInfoPage.setDebugId("listInfoPage");
-		listInfoPage.setType(Embedded.TYPE_BROWSER);
-		listInfoPage.setSizeFull();
-
-		layout.addComponent(listInfoPage);
-
-		Window popupWindow = new BaseSubWindow();
-		popupWindow.setWidth("95%");
-		popupWindow.setHeight("97%");
-		popupWindow.setModal(true);
-		popupWindow.setResizable(false);
-		popupWindow.center();
-		popupWindow.setCaption(caption);
-		popupWindow.setContent(layout);
-		popupWindow.addStyleName(Reindeer.WINDOW_LIGHT);
-
-		window.addWindow(popupWindow);
-
-		return popupWindow;
-	 }
-
-	 /**
-	  * Opens and attaches a modal window containing the method manager
-	  * 
-	 * @param workbenchDataManager - workbenchDataManager, this is used by this method to get tool URL (if available)
-	  * @param programId - used to load the locations for the given programId
-	  * @param window - modal window will be attached to this window
-	  * @return
-	  */
-	 public static Window launchMethodManager(WorkbenchDataManager workbenchDataManager, Long programId, Window window, String caption) {
-
-		Tool tool = null;
-		try {
-			tool = workbenchDataManager.getToolWithName(Util.METHOD_MANAGER_TOOL_NAME);
-		} catch (MiddlewareQueryException qe) {
-			Util.LOG.error("QueryException", qe);
-		}
-
-		ExternalResource listBrowserLink = null;
-		if (tool == null) {
-			listBrowserLink = new ExternalResource(Util.METHOD_MANAGER_DEFAULT_URL + programId);
-		} else {
-			listBrowserLink = new ExternalResource(tool.getPath() + programId);
-		}
-
-		VerticalLayout layout = new VerticalLayout();
-		layout.setDebugId("layout");
-		layout.setMargin(false);
-		layout.setSpacing(false);
-		layout.setSizeFull();
-
-		Embedded listInfoPage = new Embedded("", listBrowserLink);
-		listInfoPage.setDebugId("listInfoPage");
-		listInfoPage.setType(Embedded.TYPE_BROWSER);
-		listInfoPage.setSizeFull();
-
-		layout.addComponent(listInfoPage);
-
-		Window popupWindow = new BaseSubWindow();
-		popupWindow.setWidth("95%");
-		popupWindow.setHeight("97%");
-		popupWindow.setModal(true);
-		popupWindow.setResizable(false);
-		popupWindow.center();
-		popupWindow.setCaption(caption);
-		popupWindow.setContent(layout);
-		popupWindow.addStyleName(Reindeer.WINDOW_LIGHT);
-
-		window.addWindow(popupWindow);
-
-		return popupWindow;
-	 }
 
 	/**
 	  * Generates a string concatenation of full path of a folder eg. output "Program Lists > Folder 1 > Sub Folder 1 >"

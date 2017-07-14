@@ -10,9 +10,9 @@ import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.application.BreedingManagerWindowGenerator;
 import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
-import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -80,6 +80,9 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 
 	@Autowired
 	private BreedingManagerService breedingManagerService;
+
+	@Autowired
+	private BreedingManagerWindowGenerator breedingManagerWindowGenerator;
 
 	@Resource
 	private ContextUtil contextUtil;
@@ -380,7 +383,7 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 		try {
 			final Project project = this.contextUtil.getProjectInContext();
 			final Window window = this.attachToWindow != null ? this.attachToWindow : this.getWindow();
-			final Window manageFavoriteMethodsWindow = Util.launchMethodManager(this.workbenchDataManager, project.getProjectId(), window,
+			final Window manageFavoriteMethodsWindow = breedingManagerWindowGenerator.openMethodManagerPopupWindow(project.getProjectId(), window,
 					this.messageSource.getMessage(Message.MANAGE_METHODS));
 			manageFavoriteMethodsWindow.addListener(new CloseListener() {
 

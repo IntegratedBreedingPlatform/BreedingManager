@@ -35,7 +35,6 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String GERMPLASM_IMPORT_WINDOW_NAME = "germplasm-import";
 	public static final String GERMPLASM_IMPORT_WINDOW_NAME_POPUP = "germplasm-import-popup";
 	public static final String CROSSING_MANAGER_WINDOW_NAME = "crosses";
 	public static final String NURSERY_TEMPLATE_WINDOW_NAME = "nursery-template";
@@ -59,6 +58,9 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 
 	@Autowired
 	private GermplasmListManager germplasmListManager;
+
+	@Autowired
+	private BreedingManagerWindowGenerator breedingManagerWindowGenerator;
 
 	private ApplicationContext applicationContext;
 
@@ -93,33 +95,10 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 		// dynamically create other application-level windows which is associated with specific URLs
 		// these windows are the jumping on points to parts of the application
 		if (super.getWindow(name) == null) {
-			if (name.equals(BreedingManagerApplication.GERMPLASM_IMPORT_WINDOW_NAME)) {
-				final Window germplasmImportWindow = new Window(this.messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
-				germplasmImportWindow.setDebugId("germplasmImportWindow");
-				germplasmImportWindow.setName(BreedingManagerApplication.GERMPLASM_IMPORT_WINDOW_NAME);
-				germplasmImportWindow.setSizeUndefined();
-				germplasmImportWindow.setContent(new GermplasmImportMain(germplasmImportWindow, false));
 
-				// Resize the popup windows (SubWindow) when the parent window is resized
-				germplasmImportWindow.addListener(new Window.ResizeListener(){
+			if (name.equals(BreedingManagerWindowGenerator.GERMPLASM_IMPORT_WINDOW_NAME)) {
 
-					@Override
-					public void windowResized(final Window.ResizeEvent resizeEvent) {
-						Set<Window> childWindows = germplasmImportWindow.getChildWindows();
-						for (Window childWindow : childWindows) {
-							childWindow.setWidth("95%");
-							childWindow.setHeight("97%");
-						}
-					}
-				});
-
-				// Set immediate as true so that everytime the browser resizes,
-				// it will fire the ResizeEvent Listener
-				germplasmImportWindow.setImmediate(true);
-
-				// Set ResizeLazy to true so that only one event is fired when resizing
-				germplasmImportWindow.setResizeLazy(true);
-
+				Window germplasmImportWindow = breedingManagerWindowGenerator.createGermplasmImportWindow();
 				this.addWindow(germplasmImportWindow);
 				return germplasmImportWindow;
 
@@ -256,6 +235,7 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 		listManagerWindow.setDebugId("listManagerWindow");
 		listManagerWindow.setName(name);
 		listManagerWindow.setSizeFull();
+		listManagerWindow.setResizable(true);
 
 		this.listManagerMain = new org.generationcp.breeding.manager.listmanager.ListManagerMain();
 		listManagerMain.setDebugId("listManagerMain");

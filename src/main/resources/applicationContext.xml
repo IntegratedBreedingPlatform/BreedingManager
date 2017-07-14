@@ -330,6 +330,8 @@
 		<aop:scoped-proxy />
 	</bean>
 
+	<bean id="breedingManagerWindowGenerator" class="org.generationcp.breeding.manager.application.BreedingManagerWindowGenerator" />
+
 	<context:component-scan base-package="org.generationcp.breeding.manager.validator"/>
 	
 	<!-- Nested <beans> elements can only be at the end. -->

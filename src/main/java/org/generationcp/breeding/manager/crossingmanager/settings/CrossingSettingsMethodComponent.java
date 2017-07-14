@@ -10,9 +10,9 @@ import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.constants.AppConstants;
 import org.generationcp.breeding.manager.crossingmanager.xml.BreedingMethodSetting;
 import org.generationcp.breeding.manager.customcomponent.HeaderLabelLayout;
+import org.generationcp.breeding.manager.application.BreedingManagerWindowGenerator;
 import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
-import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -63,6 +63,9 @@ public class CrossingSettingsMethodComponent extends VerticalLayout
 
 	@Autowired
 	private WorkbenchDataManager workbenchDataManager;
+
+	@Autowired
+	private BreedingManagerWindowGenerator breedingManagerWindowGenerator;
 
 	@Resource
 	private ContextUtil contextUtil;
@@ -261,7 +264,7 @@ public class CrossingSettingsMethodComponent extends VerticalLayout
 				try {
 					final Project project = CrossingSettingsMethodComponent.this.contextUtil.getProjectInContext();
 					final Window manageFavoriteMethodsWindow =
-							Util.launchMethodManager(CrossingSettingsMethodComponent.this.workbenchDataManager, project.getProjectId(),
+							breedingManagerWindowGenerator.openMethodManagerPopupWindow(project.getProjectId(),
 									CrossingSettingsMethodComponent.this.getWindow(),
 									CrossingSettingsMethodComponent.this.messageSource.getMessage(Message.MANAGE_METHODS));
 					manageFavoriteMethodsWindow.addListener(new CloseListener() {
