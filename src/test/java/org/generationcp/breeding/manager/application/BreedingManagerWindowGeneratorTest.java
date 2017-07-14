@@ -55,7 +55,7 @@ public class BreedingManagerWindowGeneratorTest {
 	@Test
 	public void testCreateGermplasmImportWindow() {
 
-		Window window = this.breedingManagerWindowGenerator.createGermplasmImportWindow();
+		final Window window = this.breedingManagerWindowGenerator.createGermplasmImportWindow();
 
 		Assert.assertEquals("germplasmImportWindow", window.getDebugId());
 		Assert.assertEquals(BreedingManagerWindowGenerator.GERMPLASM_IMPORT_WINDOW_NAME, window.getName());
@@ -69,15 +69,15 @@ public class BreedingManagerWindowGeneratorTest {
 	@Test
 	public void testOpenLocationManagerPopupWindow() {
 
-		Window parentWindow = new Window();
+		final Window parentWindow = new Window();
 
-		Window popupWindow = this.breedingManagerWindowGenerator.openLocationManagerPopupWindow(PROGRAM_ID, parentWindow, CAPTION);
+		final Window popupWindow = this.breedingManagerWindowGenerator.openLocationManagerPopupWindow(PROGRAM_ID, parentWindow, CAPTION);
 
 		Assert.assertEquals("Popup window should be added to the parent window", popupWindow,
 				parentWindow.getChildWindows().iterator().next());
 
-		Embedded embeddedBrowser = (Embedded) popupWindow.getContent().getComponentIterator().next();
-		ExternalResource externalResource = (ExternalResource) embeddedBrowser.getSource();
+		final Embedded embeddedBrowser = (Embedded) popupWindow.getContent().getComponentIterator().next();
+		final ExternalResource externalResource = (ExternalResource) embeddedBrowser.getSource();
 
 		Assert.assertEquals("The embedded resource should be pointed to the Location Manager URL", LOCATION_MANAGER_PATH + PROGRAM_ID,
 				externalResource.getURL());
@@ -87,15 +87,15 @@ public class BreedingManagerWindowGeneratorTest {
 	@Test
 	public void testOpenMethodManagerPopupWindow() {
 
-		Window parentWindow = new Window();
+		final Window parentWindow = new Window();
 
-		Window popupWindow = this.breedingManagerWindowGenerator.openMethodManagerPopupWindow(PROGRAM_ID, parentWindow, CAPTION);
+		final Window popupWindow = this.breedingManagerWindowGenerator.openMethodManagerPopupWindow(PROGRAM_ID, parentWindow, CAPTION);
 
 		Assert.assertEquals("Popup window should be added to the parent window", popupWindow,
 				parentWindow.getChildWindows().iterator().next());
 
-		Embedded embeddedBrowser = (Embedded) popupWindow.getContent().getComponentIterator().next();
-		ExternalResource externalResource = (ExternalResource) embeddedBrowser.getSource();
+		final Embedded embeddedBrowser = (Embedded) popupWindow.getContent().getComponentIterator().next();
+		final ExternalResource externalResource = (ExternalResource) embeddedBrowser.getSource();
 
 		Assert.assertEquals("The embedded resource should be pointed to the Method Manager URL", METHOD_MANAGER_PATH + PROGRAM_ID,
 				externalResource.getURL());

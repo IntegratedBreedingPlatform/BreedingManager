@@ -19,7 +19,6 @@ import java.util.Set;
 @Configurable
 public class BreedingManagerWindowGenerator {
 
-
 	public static final String GERMPLASM_IMPORT_WINDOW_NAME = "germplasm-import";
 
 	public static final String LOCATION_MANAGER_TOOL_NAME = "locationmanager";
@@ -36,7 +35,6 @@ public class BreedingManagerWindowGenerator {
 	@Resource
 	private SimpleResourceBundleMessageSource messageSource;
 
-
 	public Window createGermplasmImportWindow() {
 
 		final Window germplasmImportWindow = new Window(this.messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
@@ -46,12 +44,12 @@ public class BreedingManagerWindowGenerator {
 		germplasmImportWindow.setContent(new GermplasmImportMain(germplasmImportWindow, false));
 
 		// Resize the popup windows (SubWindow) when the parent window is resized
-		germplasmImportWindow.addListener(new Window.ResizeListener(){
+		germplasmImportWindow.addListener(new Window.ResizeListener() {
 
 			@Override
 			public void windowResized(final Window.ResizeEvent resizeEvent) {
-				Set<Window> childWindows = germplasmImportWindow.getChildWindows();
-				for (Window childWindow : childWindows) {
+				final Set<Window> childWindows = germplasmImportWindow.getChildWindows();
+				for (final Window childWindow : childWindows) {
 					childWindow.setWidth(POPUP_WINDOW_WIDTH);
 					childWindow.setHeight(HEIGHTPOPUP_WINDOW_HEIGHT);
 				}
@@ -69,17 +67,16 @@ public class BreedingManagerWindowGenerator {
 
 	}
 
-
 	/**
 	 * Opens and attaches a modal popup containing the location manager to a parent window
 	 *
-	 * @param programId - used to load the locations for the given programId
+	 * @param programId    - used to load the locations for the given programId
 	 * @param parentWindow - modal parentWindow will be attached to this parentWindow
 	 * @return
 	 */
-	public Window openLocationManagerPopupWindow(Long programId, Window parentWindow, String caption) {
+	public Window openLocationManagerPopupWindow(final Long programId, final Window parentWindow, final String caption) {
 
-		Tool tool = this.workbenchDataManager.getToolWithName(BreedingManagerWindowGenerator.LOCATION_MANAGER_TOOL_NAME);
+		final Tool tool = this.workbenchDataManager.getToolWithName(BreedingManagerWindowGenerator.LOCATION_MANAGER_TOOL_NAME);
 
 		ExternalResource listBrowserLink = null;
 		if (tool == null) {
@@ -88,8 +85,8 @@ public class BreedingManagerWindowGenerator {
 			listBrowserLink = new ExternalResource(tool.getPath() + programId);
 		}
 
-		Layout popupContent = this.createPopupWindowContent(listBrowserLink);
-		Window popupWindow = this.createPopupWindow(caption, popupContent);
+		final Layout popupContent = this.createPopupWindowContent(listBrowserLink);
+		final Window popupWindow = this.createPopupWindow(caption, popupContent);
 
 		parentWindow.addWindow(popupWindow);
 
@@ -99,13 +96,13 @@ public class BreedingManagerWindowGenerator {
 	/**
 	 * Opens and attaches a modal popup containing the method manager to a parent window
 	 *
-	 * @param programId - used to load the locations for the given programId
+	 * @param programId    - used to load the locations for the given programId
 	 * @param parentWindow - modal window will be attached to this window
 	 * @return
 	 */
-	public Window openMethodManagerPopupWindow(Long programId, Window parentWindow, String caption) {
+	public Window openMethodManagerPopupWindow(final Long programId, final Window parentWindow, final String caption) {
 
-		Tool tool = workbenchDataManager.getToolWithName(BreedingManagerWindowGenerator.METHOD_MANAGER_TOOL_NAME);
+		final Tool tool = workbenchDataManager.getToolWithName(BreedingManagerWindowGenerator.METHOD_MANAGER_TOOL_NAME);
 
 		ExternalResource listBrowserLink = null;
 		if (tool == null) {
@@ -114,17 +111,17 @@ public class BreedingManagerWindowGenerator {
 			listBrowserLink = new ExternalResource(tool.getPath() + programId);
 		}
 
-		Layout popupContent = this.createPopupWindowContent(listBrowserLink);
-		Window popupWindow = this.createPopupWindow(caption, popupContent);
+		final Layout popupContent = this.createPopupWindowContent(listBrowserLink);
+		final Window popupWindow = this.createPopupWindow(caption, popupContent);
 
 		parentWindow.addWindow(popupWindow);
 
 		return popupWindow;
 	}
 
-	protected Window createPopupWindow(String caption, Layout content) {
+	protected Window createPopupWindow(final String caption, final Layout content) {
 
-		Window popupWindow = new BaseSubWindow();
+		final Window popupWindow = new BaseSubWindow();
 		popupWindow.setWidth(POPUP_WINDOW_WIDTH);
 		popupWindow.setHeight(HEIGHTPOPUP_WINDOW_HEIGHT);
 		popupWindow.setModal(true);
@@ -138,15 +135,15 @@ public class BreedingManagerWindowGenerator {
 
 	}
 
-	protected Layout createPopupWindowContent(ExternalResource listBrowserLink) {
+	protected Layout createPopupWindowContent(final ExternalResource listBrowserLink) {
 
-		VerticalLayout layout = new VerticalLayout();
+		final VerticalLayout layout = new VerticalLayout();
 		layout.setDebugId("layout");
 		layout.setMargin(false);
 		layout.setSpacing(false);
 		layout.setSizeFull();
 
-		Embedded listInfoPage = new Embedded("", listBrowserLink);
+		final Embedded listInfoPage = new Embedded("", listBrowserLink);
 		listInfoPage.setDebugId("listInfoPage");
 		listInfoPage.setType(Embedded.TYPE_BROWSER);
 		listInfoPage.setSizeFull();
@@ -156,6 +153,5 @@ public class BreedingManagerWindowGenerator {
 		return layout;
 
 	}
-
 
 }
