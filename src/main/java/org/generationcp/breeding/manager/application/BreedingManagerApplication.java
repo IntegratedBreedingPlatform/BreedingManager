@@ -27,6 +27,8 @@ import com.vaadin.terminal.Terminal;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
 
+import java.util.Set;
+
 public class BreedingManagerApplication extends SpringContextApplication implements ApplicationContextAware {
 
 	private static final Logger LOG = LoggerFactory.getLogger(BreedingManagerApplication.class);
@@ -97,6 +99,27 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 				germplasmImportWindow.setName(BreedingManagerApplication.GERMPLASM_IMPORT_WINDOW_NAME);
 				germplasmImportWindow.setSizeUndefined();
 				germplasmImportWindow.setContent(new GermplasmImportMain(germplasmImportWindow, false));
+
+				// Resize the popup windows (SubWindow) when the parent window is resized
+				germplasmImportWindow.addListener(new Window.ResizeListener(){
+
+					@Override
+					public void windowResized(final Window.ResizeEvent resizeEvent) {
+						Set<Window> childWindows = germplasmImportWindow.getChildWindows();
+						for (Window childWindow : childWindows) {
+							childWindow.setWidth("95%");
+							childWindow.setHeight("97%");
+						}
+					}
+				});
+
+				// Set immediate as true so that everytime the browser resizes,
+				// it will fire the ResizeEvent Listener
+				germplasmImportWindow.setImmediate(true);
+
+				// Set ResizeLazy to true so that only one event is fired when resizing
+				germplasmImportWindow.setResizeLazy(true);
+
 				this.addWindow(germplasmImportWindow);
 				return germplasmImportWindow;
 
