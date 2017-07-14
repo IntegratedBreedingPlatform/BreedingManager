@@ -275,7 +275,7 @@ public class Util {
 		layout.setDebugId("layout");
 		layout.setMargin(false);
 		layout.setSpacing(false);
-		layout.setHeight("500px");
+		layout.setSizeFull();
 
 		Embedded listInfoPage = new Embedded("", listBrowserLink);
 		listInfoPage.setDebugId("listInfoPage");
@@ -327,7 +327,7 @@ public class Util {
 		layout.setDebugId("layout");
 		layout.setMargin(false);
 		layout.setSpacing(false);
-		layout.setHeight("500px");
+		layout.setSizeFull();
 
 		Embedded listInfoPage = new Embedded("", listBrowserLink);
 		listInfoPage.setDebugId("listInfoPage");
