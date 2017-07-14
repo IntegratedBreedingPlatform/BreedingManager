@@ -2,6 +2,7 @@ package org.generationcp.breeding.manager.application;
 
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Embedded;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
@@ -87,7 +88,8 @@ public class BreedingManagerWindowGenerator {
 			listBrowserLink = new ExternalResource(tool.getPath() + programId);
 		}
 
-		Window popupWindow = this.createPopupWindow(caption, listBrowserLink);
+		Layout popupContent = this.createPopupWindowContent(listBrowserLink);
+		Window popupWindow = this.createPopupWindow(caption, popupContent);
 
 		parentWindow.addWindow(popupWindow);
 
@@ -112,14 +114,31 @@ public class BreedingManagerWindowGenerator {
 			listBrowserLink = new ExternalResource(tool.getPath() + programId);
 		}
 
-		Window popupWindow = this.createPopupWindow(caption, listBrowserLink);
+		Layout popupContent = this.createPopupWindowContent(listBrowserLink);
+		Window popupWindow = this.createPopupWindow(caption, popupContent);
 
 		parentWindow.addWindow(popupWindow);
 
 		return popupWindow;
 	}
 
-	protected Window createPopupWindow(String caption, ExternalResource listBrowserLink) {
+	protected Window createPopupWindow(String caption, Layout content) {
+
+		Window popupWindow = new BaseSubWindow();
+		popupWindow.setWidth(POPUP_WINDOW_WIDTH);
+		popupWindow.setHeight(HEIGHTPOPUP_WINDOW_HEIGHT);
+		popupWindow.setModal(true);
+		popupWindow.setResizable(false);
+		popupWindow.center();
+		popupWindow.setCaption(caption);
+		popupWindow.setContent(content);
+		popupWindow.addStyleName(Reindeer.WINDOW_LIGHT);
+
+		return popupWindow;
+
+	}
+
+	protected Layout createPopupWindowContent(ExternalResource listBrowserLink) {
 
 		VerticalLayout layout = new VerticalLayout();
 		layout.setDebugId("layout");
@@ -134,17 +153,7 @@ public class BreedingManagerWindowGenerator {
 
 		layout.addComponent(listInfoPage);
 
-		Window popupWindow = new BaseSubWindow();
-		popupWindow.setWidth(POPUP_WINDOW_WIDTH);
-		popupWindow.setHeight(HEIGHTPOPUP_WINDOW_HEIGHT);
-		popupWindow.setModal(true);
-		popupWindow.setResizable(false);
-		popupWindow.center();
-		popupWindow.setCaption(caption);
-		popupWindow.setContent(layout);
-		popupWindow.addStyleName(Reindeer.WINDOW_LIGHT);
-
-		return popupWindow;
+		return layout;
 
 	}
 
