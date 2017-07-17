@@ -379,12 +379,16 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 
 	}
 
-	private void launchManageWindow() {
-		try {
+	protected void launchManageWindow() {
+
 			final Project project = this.contextUtil.getProjectInContext();
 			final Window window = this.attachToWindow != null ? this.attachToWindow : this.getWindow();
+
+
 			final Window manageFavoriteMethodsWindow = breedingManagerWindowGenerator.openMethodManagerPopupWindow(project.getProjectId(), window,
 					this.messageSource.getMessage(Message.MANAGE_METHODS));
+
+
 			manageFavoriteMethodsWindow.addListener(new CloseListener() {
 
 				private static final long serialVersionUID = 1L;
@@ -398,9 +402,7 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 					BreedingMethodField.this.breedingMethodComboBox.setValue(lastValue);
 				}
 			});
-		} catch (final MiddlewareQueryException e) {
-			BreedingMethodField.LOG.error("Error on manageFavoriteMethods click", e);
-		}
+
 	}
 
 	@Override
