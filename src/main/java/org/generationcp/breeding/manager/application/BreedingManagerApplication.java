@@ -8,7 +8,6 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.dellroad.stuff.vaadin.ContextApplication;
 import org.dellroad.stuff.vaadin.SpringContextApplication;
 import org.generationcp.breeding.manager.crossingmanager.settings.ManageCrossingSettingsMain;
-import org.generationcp.breeding.manager.listimport.GermplasmImportMain;
 import org.generationcp.breeding.manager.listmanager.ListManagerMain;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
 import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
@@ -27,27 +26,17 @@ import com.vaadin.terminal.Terminal;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
 
-import java.util.Set;
-
 public class BreedingManagerApplication extends SpringContextApplication implements ApplicationContextAware {
 
 	private static final Logger LOG = LoggerFactory.getLogger(BreedingManagerApplication.class);
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String GERMPLASM_IMPORT_WINDOW_NAME_POPUP = "germplasm-import-popup";
-	public static final String CROSSING_MANAGER_WINDOW_NAME = "crosses";
-	public static final String NURSERY_TEMPLATE_WINDOW_NAME = "nursery-template";
 	public static final String LIST_MANAGER_WINDOW_NAME = "list-manager";
-	public static final String LIST_MANAGER_WITH_OPEN_LIST_WINDOW_NAME = "listmanager-";
-	public static final String LIST_MANAGER_SIDEBYSIDE = "list-manager-sidebyside";
-	public static final String MANAGE_SETTINGS_CROSSING_MANAGER = "crosses-settings";
 	public static final String NAVIGATION_FROM_NURSERY_PREFIX = "createcrosses";
-	public static final String ID_PREFIX = "-";
 	public static final String REQ_PARAM_NURSERY_ID = "nurseryid";
 	public static final String REQ_PARAM_LIST_ID = "germplasmlistid";
 	public static final String REQ_PARAM_CROSSES_LIST_ID = "crosseslistid";
-    public static final String REQ_PARAM_BREEDING_METHOD_ID = "breedingmethodid";
 	public static final String PATH_TO_NURSERY = "/Fieldbook/NurseryManager/";
 	public static final String PATH_TO_EDIT_NURSERY = "/Fieldbook/NurseryManager/editNursery/";
 
@@ -102,55 +91,16 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 				this.addWindow(germplasmImportWindow);
 				return germplasmImportWindow;
 
-			} else if (name.equals(BreedingManagerApplication.GERMPLASM_IMPORT_WINDOW_NAME_POPUP)) {
-				final Window germplasmImportWindow = new Window(this.messageSource.getMessage(Message.IMPORT_GERMPLASM_LIST_TAB_LABEL));
-				germplasmImportWindow.setDebugId("germplasmImportWindow");
-
-				germplasmImportWindow.setName(BreedingManagerApplication.GERMPLASM_IMPORT_WINDOW_NAME_POPUP);
-				germplasmImportWindow.setSizeUndefined();
-				germplasmImportWindow.setContent(new GermplasmImportMain(germplasmImportWindow, false, true));
-				this.addWindow(germplasmImportWindow);
-				return germplasmImportWindow;
-
 			} else if (name.equals(BreedingManagerApplication.LIST_MANAGER_WINDOW_NAME)) {
+
 				final Window listManagerWindow = this.instantiateListManagerWindow(name);
 				listManagerWindow.setDebugId("listManagerWindow");
 				this.addWindow(listManagerWindow);
 
 				return listManagerWindow;
 
-			} else if (name.startsWith(BreedingManagerApplication.LIST_MANAGER_WITH_OPEN_LIST_WINDOW_NAME)) {
-				String listIdPart = name.substring(name.indexOf(ID_PREFIX) + 1);
-				try {
-					final Integer listId = Integer.parseInt(listIdPart);
-					final Window listManagerWindow = new Window(this.messageSource.getMessage(Message.LIST_MANAGER_TAB_LABEL));
-					listManagerWindow.setDebugId("listManagerWindow");
-					listManagerWindow.setName(name);
-					listManagerWindow.setSizeFull();
-
-					this.listManagerMain = new org.generationcp.breeding.manager.listmanager.ListManagerMain(listId);
-
-					listManagerWindow.setContent(this.listManagerMain);
-					this.addWindow(listManagerWindow);
-
-					return listManagerWindow;
-				} catch (final NumberFormatException ex) {
-					return getEmptyWindowWithErrorMessage();
-				}
-
-			} else if (name.equals(BreedingManagerApplication.CROSSING_MANAGER_WINDOW_NAME)) {
-				final Window manageCrossingSettings = new Window(this.messageSource.getMessage(Message.MANAGE_CROSSES));
-				manageCrossingSettings.setDebugId("manageCrossingSettings");
-				manageCrossingSettings.setName(BreedingManagerApplication.CROSSING_MANAGER_WINDOW_NAME);
-				manageCrossingSettings.setSizeUndefined();
-
-				this.manageCrossingSettingsMain = new ManageCrossingSettingsMain(manageCrossingSettings);
-				this.manageCrossingSettingsMain.setDebugId("manageCrossingSettingsMain");
-
-				manageCrossingSettings.setContent(this.manageCrossingSettingsMain);
-				this.addWindow(manageCrossingSettings);
-				return manageCrossingSettings;
 			} else if (name.startsWith(NAVIGATION_FROM_NURSERY_PREFIX)) {
+
 				final Window manageCrossingSettings = new Window(this.messageSource.getMessage(Message.MANAGE_CROSSES));
 				manageCrossingSettings.setDebugId("manageCrossingSettings");
 				try {
@@ -206,7 +156,6 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 		this.manageCrossingSettingsMain.setDebugId("manageCrossingSettingsMain");
 		manageCrossingSettings.setContent(this.manageCrossingSettingsMain);
 		this.addWindow(manageCrossingSettings);
-//		this.manageCrossingSettingsMain.nextStep();
 	}
 
 	private Window getWindowWithErrorMessage(final Window manageCrossingSettings, final String description) {
@@ -214,7 +163,6 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 		this.manageCrossingSettingsMain.setDebugId("manageCrossingSettingsMain");
 		manageCrossingSettings.setContent(this.manageCrossingSettingsMain);
 		this.addWindow(manageCrossingSettings);
-//		this.manageCrossingSettingsMain.nextStep();
 		MessageNotifier.showWarning(this.getWindow(manageCrossingSettings.getName()),
 				this.messageSource.getMessage(Message.ERROR_WITH_REQUEST_PARAMETERS),
 				description);
@@ -251,7 +199,6 @@ public class BreedingManagerApplication extends SpringContextApplication impleme
 	@Override
 	public void terminalError(final Terminal.ErrorEvent event) {
 		BreedingManagerApplication.LOG.error("An unchecked exception occurred: ", event.getThrowable());
-		event.getThrowable().printStackTrace();
 		// Some custom behaviour.
 		if (this.getMainWindow() != null) {
 			MessageNotifier.showError(this.getMainWindow(), this.messageSource.getMessage(Message.ERROR_INTERNAL), // TESTED
