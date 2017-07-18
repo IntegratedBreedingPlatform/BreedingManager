@@ -388,20 +388,7 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 			final Window manageFavoriteMethodsWindow = breedingManagerWindowGenerator.openMethodManagerPopupWindow(project.getProjectId(), window,
 					this.messageSource.getMessage(Message.MANAGE_METHODS));
 
-
-			manageFavoriteMethodsWindow.addListener(new CloseListener() {
-
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void windowClose(final CloseEvent e) {
-					final Object lastValue = BreedingMethodField.this.breedingMethodComboBox.getValue();
-					BreedingMethodField.this.populateMethods(
-							((Boolean) BreedingMethodField.this.showFavoritesCheckBox.getValue()).equals(true),
-							BreedingMethodField.this.programUniqueId);
-					BreedingMethodField.this.breedingMethodComboBox.setValue(lastValue);
-				}
-			});
+			manageFavoriteMethodsWindow.addListener(new ManageFavoriteMethodsWindowCloseListener());
 
 	}
 
@@ -447,5 +434,22 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 
 	public void setBreedingManagerService(final BreedingManagerService breedingManagerService) {
 		this.breedingManagerService = breedingManagerService;
+	}
+
+
+	protected class ManageFavoriteMethodsWindowCloseListener implements CloseListener {
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void windowClose(final CloseEvent closeEvent) {
+
+			final Object lastValue = BreedingMethodField.this.breedingMethodComboBox.getValue();
+			BreedingMethodField.this.populateMethods(
+					((Boolean) BreedingMethodField.this.showFavoritesCheckBox.getValue()).equals(true),
+					BreedingMethodField.this.programUniqueId);
+			BreedingMethodField.this.breedingMethodComboBox.setValue(lastValue);
+
+		}
 	}
 }

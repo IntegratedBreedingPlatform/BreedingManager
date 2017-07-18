@@ -6,8 +6,11 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import com.vaadin.ui.Window;
+import org.generationcp.breeding.manager.application.BreedingManagerWindowGenerator;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.service.BreedingManagerServiceImpl;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.data.initializer.LocationTestDataInitializer;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -38,6 +41,8 @@ public class BreedingLocationFieldTest {
 
 	private static final String ALL_LOCATIONS = "All locations";
 
+	private static final java.lang.String MANAGE_LOCATIONS_LABEL = "Manage Locations";
+
 	private static final String DUMMY_UNIQUE_ID = "1234567890";
 
 	private static final Integer NON_BREEDING_NON_STORAGE_LOCATION_ID = 100;
@@ -47,17 +52,30 @@ public class BreedingLocationFieldTest {
 	private static final Integer BREEDING_LOCATION_ID2 = 250;
 
 	private static final Integer STORAGE_LOCATION_ID = 300;
+	public static final long PROJECT_ID = 1L;
+
 
 	@Mock
 	private SimpleResourceBundleMessageSource messageSource;
+
 	@Mock
 	private GermplasmDataManager germplasmDataManager;
+
 	@Mock
 	private LocationDataManager locationDataManager;
+
 	@Mock
 	private WorkbenchDataManager workbenchDataManager;
+
+	@Mock
+	private ContextUtil contextUtil;
+
 	@Mock
 	private BreedingManagerServiceImpl breedingManagerService;
+
+	@Mock
+	private BreedingManagerWindowGenerator breedingManagerWindowGenerator;
+
 	@InjectMocks
 	private BreedingLocationField breedingLocationField;
 
@@ -68,12 +86,17 @@ public class BreedingLocationFieldTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		Mockito.doReturn(this.getProject(1L)).when(this.breedingManagerService).getCurrentProject();
+
+		final Project project = this.getProject(PROJECT_ID);
+
+		Mockito.when(this.breedingManagerService.getCurrentProject()).thenReturn(project);
+		Mockito.when(this.contextUtil.getProjectInContext()).thenReturn(project);
 
 		Mockito.when(this.messageSource.getMessage(Message.SHOW_ALL_LOCATIONS)).thenReturn(BreedingLocationFieldTest.ALL_LOCATIONS);
 		Mockito.when(this.messageSource.getMessage(Message.SHOW_BREEDING_LOCATIONS))
 				.thenReturn(BreedingLocationFieldTest.BREEDING_LOCATIONS);
 		Mockito.when(this.messageSource.getMessage(Message.SHOW_STORAGE_LOCATIONS)).thenReturn(BreedingLocationFieldTest.STORAGE_LOCATIONS);
+		Mockito.when(this.messageSource.getMessage(Message.MANAGE_LOCATIONS)).thenReturn(MANAGE_LOCATIONS_LABEL);
 
 		this.breedingLocationField.instantiateComponents();
 		this.locationTestDataInitializer = new LocationTestDataInitializer();
@@ -285,6 +308,29 @@ public class BreedingLocationFieldTest {
 				"LOCATION" + BreedingLocationFieldTest.STORAGE_LOCATION_ID, BreedingLocationField.STORAGE_LOCATION_TYPEID,
 				"ABBR" + BreedingLocationFieldTest.STORAGE_LOCATION_ID, DUMMY_UNIQUE_ID));
 		return locationList;
+	}
+
+	@Test
+	public void testLaunchManageWindow() {
+
+		final Window manageFavoriteLocationsWindow = new Window();
+
+		Mockito.when(breedingManagerWindowGenerator
+				.openLocationManagerPopupWindow(PROJECT_ID, breedingLocationField.getWindow(), MANAGE_LOCATIONS_LABEL))
+				.thenReturn(manageFavoriteLocationsWindow);
+
+		breedingLocationField.launchManageWindow();
+
+		Mockito.verify(breedingManagerWindowGenerator)
+				.openLocationManagerPopupWindow(PROJECT_ID, breedingLocationField.getWindow(), MANAGE_LOCATIONS_LABEL);
+
+		Assert.assertFalse(manageFavoriteLocationsWindow.getListeners(Window.CloseEvent.class).isEmpty());
+
+		final Window.CloseListener closeListener =
+				(Window.CloseListener) manageFavoriteLocationsWindow.getListeners(Window.CloseEvent.class).iterator().next();
+
+		Assert.assertTrue(closeListener instanceof BreedingLocationField.ManageFavoriteLocationsWindowCloseListener);
+
 	}
 
 }
