@@ -1,6 +1,7 @@
 package org.generationcp.breeding.manager.application;
 
 import com.vaadin.terminal.ExternalResource;
+import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
@@ -136,6 +137,49 @@ public class BreedingManagerWindowGeneratorTest {
 		Assert.assertEquals("listInfoPage", embedded.getDebugId());
 		Assert.assertEquals(Embedded.TYPE_BROWSER, embedded.getType());
 		Assert.assertEquals(externalResource, embedded.getSource());
+
+	}
+
+	@Test
+	public void testAdjustWindowContentBasedOnBrowserScreenSizeBrowserScreenSizeIsTooSmall() {
+
+		final Window window = Mockito.mock(Window.class);
+		final Layout content = Mockito.mock(Layout.class);
+
+		final int browserWindowHeight = 768;
+
+		Mockito.when(window.getContent()).thenReturn(content);
+		Mockito.when(window.getBrowserWindowHeight()).thenReturn(browserWindowHeight);
+
+		breedingManagerWindowGenerator.adjustWindowContentBasedOnBrowserScreenSize(window);
+
+		// Verify that the content height is set to minimum height
+		Mockito.verify(content).setHeight(BreedingManagerWindowGenerator.WINDOW_CONTENT_MINIMUM_HEIGHT, Sizeable.UNITS_PIXELS);
+
+		// and the content size is NOT set to full
+		Mockito.verify(content, Mockito.times(0)).setSizeFull();
+
+	}
+
+	@Test
+	public void testAdjustWindowContentBasedOnBrowserScreenSizeBrowserScreenSizeIsBig() {
+
+		final Window window = Mockito.mock(Window.class);
+		final Layout content = Mockito.mock(Layout.class);
+
+		final int browserWindowHeight = 801;
+
+		Mockito.when(window.getContent()).thenReturn(content);
+		Mockito.when(window.getBrowserWindowHeight()).thenReturn(browserWindowHeight);
+
+		breedingManagerWindowGenerator.adjustWindowContentBasedOnBrowserScreenSize(window);
+
+		// Verify that content size is set to full
+		Mockito.verify(content).setSizeFull();
+
+		// Verify that the content height is NOT set to minimum height
+		Mockito.verify(content, Mockito.times(0))
+				.setHeight(BreedingManagerWindowGenerator.WINDOW_CONTENT_MINIMUM_HEIGHT, Sizeable.UNITS_PIXELS);
 
 	}
 

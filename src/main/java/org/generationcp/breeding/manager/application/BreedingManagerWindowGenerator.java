@@ -1,6 +1,7 @@
 package org.generationcp.breeding.manager.application;
 
 import com.vaadin.terminal.ExternalResource;
+import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
@@ -27,7 +28,9 @@ public class BreedingManagerWindowGenerator {
 	public static final String METHOD_MANAGER_DEFAULT_URL = "/ibpworkbench/content/ProgramMethods?programId=";
 
 	public static final String POPUP_WINDOW_WIDTH = "95%";
-	public static final String HEIGHTPOPUP_WINDOW_HEIGHT = "97%";
+	public static final String POPUP_WINDOW_HEIGHT = "97%";
+	public static final int WINDOW_CONTENT_MINIMUM_HEIGHT = 900;
+	public static final int BROWSER_WINDOW_HEIGHT_THRESHOLD = 800;
 
 	@Resource
 	private WorkbenchDataManager workbenchDataManager;
@@ -51,7 +54,9 @@ public class BreedingManagerWindowGenerator {
 				final Set<Window> childWindows = germplasmImportWindow.getChildWindows();
 				for (final Window childWindow : childWindows) {
 					childWindow.setWidth(POPUP_WINDOW_WIDTH);
-					childWindow.setHeight(HEIGHTPOPUP_WINDOW_HEIGHT);
+					childWindow.setHeight(POPUP_WINDOW_HEIGHT);
+
+					adjustWindowContentBasedOnBrowserScreenSize(childWindow);
 				}
 			}
 		});
@@ -123,14 +128,13 @@ public class BreedingManagerWindowGenerator {
 
 		final Window popupWindow = new BaseSubWindow();
 		popupWindow.setWidth(POPUP_WINDOW_WIDTH);
-		popupWindow.setHeight(HEIGHTPOPUP_WINDOW_HEIGHT);
+		popupWindow.setHeight(POPUP_WINDOW_HEIGHT);
 		popupWindow.setModal(true);
 		popupWindow.setResizable(false);
 		popupWindow.center();
 		popupWindow.setCaption(caption);
 		popupWindow.setContent(content);
 		popupWindow.addStyleName(Reindeer.WINDOW_LIGHT);
-
 		return popupWindow;
 
 	}
@@ -141,7 +145,7 @@ public class BreedingManagerWindowGenerator {
 		layout.setDebugId("layout");
 		layout.setMargin(false);
 		layout.setSpacing(false);
-		layout.setSizeFull();
+		layout.setHeight(WINDOW_CONTENT_MINIMUM_HEIGHT, Sizeable.UNITS_PIXELS);
 
 		final Embedded listInfoPage = new Embedded("", listBrowserLink);
 		listInfoPage.setDebugId("listInfoPage");
@@ -151,6 +155,27 @@ public class BreedingManagerWindowGenerator {
 		layout.addComponent(listInfoPage);
 
 		return layout;
+
+	}
+
+	protected void adjustWindowContentBasedOnBrowserScreenSize(Window window) {
+
+		final int browserHeight = window.getBrowserWindowHeight();
+
+		final Layout content = (Layout) window.getContent();
+
+		// if the browser screen height is too small (less than or equal to 800 pixels) we should not try to
+		// fit the content on the screen, as components will be cramped and difficult to use.
+		if (browserHeight <= BROWSER_WINDOW_HEIGHT_THRESHOLD) {
+
+			// So we set the content with a practical height so that the locations/methods tables are usable
+			// and the components can all be seen through a scrollbar
+			content.setHeight(WINDOW_CONTENT_MINIMUM_HEIGHT, Sizeable.UNITS_PIXELS);
+
+		} else {
+			// Otherwise if the screen is big, we adjust the content based on the size of its container (window)
+			content.setSizeFull();
+		}
 
 	}
 
