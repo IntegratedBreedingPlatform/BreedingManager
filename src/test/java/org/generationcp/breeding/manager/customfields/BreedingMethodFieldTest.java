@@ -1,9 +1,12 @@
-
 package org.generationcp.breeding.manager.customfields;
 
 import java.util.ArrayList;
 
+import com.vaadin.ui.Window;
+import org.generationcp.breeding.manager.application.BreedingManagerWindowGenerator;
+import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.service.BreedingManagerServiceImpl;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -14,98 +17,129 @@ import org.generationcp.middleware.pojos.workbench.Project;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class BreedingMethodFieldTest {
 
-	private static final String DUMMY_UNIQUE_ID = "1234567890";
+	private static final String PROGRAM_UUID = "1234567890";
+	public static final long PROJECT_ID = 1L;
+	public static final String MANAGE_METHODS_LABEL = "Manage Methods";
+
+	@Mock
+	GermplasmDataManager germplasmDataManager;
+
+	@Mock
+	WorkbenchDataManager workbenchDataManager;
+
+	@Mock
+	SimpleResourceBundleMessageSource messageSource;
+
+	@Mock
+	ContextUtil contextUtil;
 
 	@Mock
 	private BreedingManagerServiceImpl service;
 
+	@Mock
+	private BreedingManagerWindowGenerator breedingManagerWindowGenerator;
+
+	@InjectMocks
+	BreedingMethodField breedingMethodField = new BreedingMethodField();
+
 	@Before
 	public void setUp() throws MiddlewareQueryException {
 		MockitoAnnotations.initMocks(this);
-		Mockito.when(this.service.getCurrentProject()).thenReturn(this.getProject(1L));
+
+		final Project project = this.getProject(PROJECT_ID);
+
+		Mockito.when(this.service.getCurrentProject()).thenReturn(project);
+		Mockito.when(this.contextUtil.getProjectInContext()).thenReturn(project);
+		Mockito.when(this.messageSource.getMessage(Message.MANAGE_METHODS)).thenReturn(MANAGE_METHODS_LABEL);
+
+		breedingMethodField.instantiateComponents();
 	}
 
 	private Project getProject(long id) {
 		Project project = new Project();
 		project.setProjectId(id);
-		project.setUniqueID(BreedingMethodFieldTest.DUMMY_UNIQUE_ID);
+		project.setUniqueID(BreedingMethodFieldTest.PROGRAM_UUID);
 		return project;
 	}
 
 	@Test
 	public void testinitPopulateFavMethodReturnsFalseWhenThereHasDefaultValue() throws MiddlewareQueryException {
 
-		BreedingMethodField bmf = new BreedingMethodField();
-		bmf.setHasDefaultValue(true);
+		breedingMethodField.setHasDefaultValue(true);
 		Assert.assertFalse("Expecting a false return when there is default value.",
-				bmf.initPopulateFavMethod(BreedingMethodFieldTest.DUMMY_UNIQUE_ID));
+				breedingMethodField.initPopulateFavMethod(BreedingMethodFieldTest.PROGRAM_UUID));
 	}
 
 	@Test
 	public void testinitPopulateFavMethodReturnsFalseWhenThereAreNoFavouriteMethodAndHasNoDefaultValue() throws MiddlewareQueryException {
 
-		BreedingMethodField bmf = new BreedingMethodField();
-
-		GermplasmDataManager gpdm = Mockito.mock(GermplasmDataManager.class);
 		ArrayList<ProgramFavorite> favouriteMethods = new ArrayList<ProgramFavorite>();
-		Mockito.when(gpdm.getProgramFavorites(FavoriteType.METHOD, 1000, BreedingMethodFieldTest.DUMMY_UNIQUE_ID)).thenReturn(
-				favouriteMethods);
-		bmf.setGermplasmDataManager(gpdm);
-		bmf.setHasDefaultValue(false);
+		Mockito.when(germplasmDataManager.getProgramFavorites(FavoriteType.METHOD, 1000, BreedingMethodFieldTest.PROGRAM_UUID))
+				.thenReturn(favouriteMethods);
+		breedingMethodField.setHasDefaultValue(false);
 		Assert.assertFalse("Expecting a false return value when there are no favourite method and no default value.",
-				bmf.initPopulateFavMethod(BreedingMethodFieldTest.DUMMY_UNIQUE_ID));
+				breedingMethodField.initPopulateFavMethod(BreedingMethodFieldTest.PROGRAM_UUID));
 	}
 
 	@Test
 	public void testinitPopulateFavMethodReturnsFalseWhenThereAreFavouriteMethodAndHasDefaultValue() throws MiddlewareQueryException {
-		GermplasmDataManager gpdm = Mockito.mock(GermplasmDataManager.class);
-		WorkbenchDataManager wdm = Mockito.mock(WorkbenchDataManager.class);
 
 		ArrayList<ProgramFavorite> favouriteMethods = new ArrayList<ProgramFavorite>();
 		favouriteMethods.add(Mockito.mock(ProgramFavorite.class));
-		Mockito.when(gpdm.getProgramFavorites(FavoriteType.METHOD, 1000, BreedingMethodFieldTest.DUMMY_UNIQUE_ID)).thenReturn(
-				favouriteMethods);
+		Mockito.when(germplasmDataManager.getProgramFavorites(FavoriteType.METHOD, 1000, BreedingMethodFieldTest.PROGRAM_UUID))
+				.thenReturn(favouriteMethods);
 
-		BreedingMethodField bmf = new BreedingMethodField();
-		bmf.setGermplasmDataManager(gpdm);
-		bmf.setWorkbenchDataManager(wdm);
-		bmf.setMessageSource(Mockito.mock(SimpleResourceBundleMessageSource.class));
-		bmf.setBreedingManagerService(this.service);
-
-		bmf.instantiateComponents();
-		bmf.setHasDefaultValue(true);
+		breedingMethodField.setHasDefaultValue(true);
 
 		Assert.assertFalse("Expecting a false return value when there are favourite method but has default value.",
-				bmf.initPopulateFavMethod(BreedingMethodFieldTest.DUMMY_UNIQUE_ID));
+				breedingMethodField.initPopulateFavMethod(BreedingMethodFieldTest.PROGRAM_UUID));
 	}
 
 	@Test
 	public void testinitPopulateFavMethodReturnsTrueWhenThereAreFavouriteMethodAndHasNoDefaultValue() throws MiddlewareQueryException {
-		GermplasmDataManager gpdm = Mockito.mock(GermplasmDataManager.class);
-		WorkbenchDataManager wdm = Mockito.mock(WorkbenchDataManager.class);
 
 		ArrayList<ProgramFavorite> favouriteMethods = new ArrayList<ProgramFavorite>();
 		favouriteMethods.add(Mockito.mock(ProgramFavorite.class));
-		Mockito.when(gpdm.getProgramFavorites(FavoriteType.METHOD, 1000, BreedingMethodFieldTest.DUMMY_UNIQUE_ID)).thenReturn(
-				favouriteMethods);
+		Mockito.when(germplasmDataManager.getProgramFavorites(FavoriteType.METHOD, 1000, BreedingMethodFieldTest.PROGRAM_UUID))
+				.thenReturn(favouriteMethods);
 
-		BreedingMethodField bmf = new BreedingMethodField();
-		bmf.setGermplasmDataManager(gpdm);
-		bmf.setWorkbenchDataManager(wdm);
-		bmf.setMessageSource(Mockito.mock(SimpleResourceBundleMessageSource.class));
-		bmf.setBreedingManagerService(this.service);
-
-		bmf.instantiateComponents();
-		bmf.setHasDefaultValue(false);
+		breedingMethodField.setHasDefaultValue(false);
 
 		Assert.assertTrue("Expecting a true return value when there are favourite method and no default value.",
-				bmf.initPopulateFavMethod(BreedingMethodFieldTest.DUMMY_UNIQUE_ID));
+				breedingMethodField.initPopulateFavMethod(BreedingMethodFieldTest.PROGRAM_UUID));
+	}
+
+	@Test
+	public void testLaunchManageWindow() {
+
+		final Window manageFavoriteMethodsWindow = new Window();
+
+		Mockito.when(breedingManagerWindowGenerator
+				.openMethodManagerPopupWindow(PROJECT_ID, breedingMethodField.getWindow(), MANAGE_METHODS_LABEL))
+				.thenReturn(manageFavoriteMethodsWindow);
+
+		breedingMethodField.launchManageWindow();
+
+		Mockito.verify(breedingManagerWindowGenerator)
+				.openMethodManagerPopupWindow(PROJECT_ID, breedingMethodField.getWindow(), MANAGE_METHODS_LABEL);
+
+		Assert.assertFalse(manageFavoriteMethodsWindow.getListeners(Window.CloseEvent.class).isEmpty());
+
+		final Window.CloseListener closeListener =
+				(Window.CloseListener) manageFavoriteMethodsWindow.getListeners(Window.CloseEvent.class).iterator().next();
+
+		Assert.assertTrue(closeListener instanceof BreedingMethodField.ManageFavoriteMethodsWindowCloseListener);
+
 	}
 
 }

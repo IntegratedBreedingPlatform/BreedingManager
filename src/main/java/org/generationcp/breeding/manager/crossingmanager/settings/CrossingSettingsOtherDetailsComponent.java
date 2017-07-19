@@ -13,9 +13,9 @@ import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
 import org.generationcp.breeding.manager.crossingmanager.xml.AdditionalDetailsSetting;
 import org.generationcp.breeding.manager.customfields.HarvestDateField;
+import org.generationcp.breeding.manager.application.BreedingManagerWindowGenerator;
 import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
-import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -73,6 +73,9 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout implements 
 
 	@Autowired
 	private LocationDataManager locationDataManager;
+
+	@Autowired
+	private BreedingManagerWindowGenerator breedingManagerWindowGenerator;
 
 	@Resource
 	private ContextUtil contextUtil;
@@ -211,7 +214,7 @@ public class CrossingSettingsOtherDetailsComponent extends CssLayout implements 
 				try {
 					final Project project = CrossingSettingsOtherDetailsComponent.this.contextUtil.getProjectInContext();
 					final Window manageFavoriteLocationsWindow =
-							Util.launchLocationManager(CrossingSettingsOtherDetailsComponent.this.workbenchDataManager,
+							breedingManagerWindowGenerator.openLocationManagerPopupWindow(
 									project.getProjectId(), CrossingSettingsOtherDetailsComponent.this.getWindow(),
 									CrossingSettingsOtherDetailsComponent.this.messageSource.getMessage(Message.MANAGE_LOCATIONS));
 					manageFavoriteLocationsWindow.addListener(new CloseListener() {

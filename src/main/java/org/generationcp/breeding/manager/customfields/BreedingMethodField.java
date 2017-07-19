@@ -10,9 +10,9 @@ import javax.annotation.Resource;
 
 import org.generationcp.breeding.manager.application.BreedingManagerLayout;
 import org.generationcp.breeding.manager.application.Message;
+import org.generationcp.breeding.manager.application.BreedingManagerWindowGenerator;
 import org.generationcp.breeding.manager.service.BreedingManagerService;
 import org.generationcp.breeding.manager.util.BreedingManagerUtil;
-import org.generationcp.breeding.manager.util.Util;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
@@ -80,6 +80,9 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 
 	@Autowired
 	private BreedingManagerService breedingManagerService;
+
+	@Autowired
+	private BreedingManagerWindowGenerator breedingManagerWindowGenerator;
 
 	@Resource
 	private ContextUtil contextUtil;
@@ -376,28 +379,17 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 
 	}
 
-	private void launchManageWindow() {
-		try {
+	protected void launchManageWindow() {
+
 			final Project project = this.contextUtil.getProjectInContext();
 			final Window window = this.attachToWindow != null ? this.attachToWindow : this.getWindow();
-			final Window manageFavoriteMethodsWindow = Util.launchMethodManager(this.workbenchDataManager, project.getProjectId(), window,
+
+
+			final Window manageFavoriteMethodsWindow = breedingManagerWindowGenerator.openMethodManagerPopupWindow(project.getProjectId(), window,
 					this.messageSource.getMessage(Message.MANAGE_METHODS));
-			manageFavoriteMethodsWindow.addListener(new CloseListener() {
 
-				private static final long serialVersionUID = 1L;
+			manageFavoriteMethodsWindow.addListener(new ManageFavoriteMethodsWindowCloseListener());
 
-				@Override
-				public void windowClose(final CloseEvent e) {
-					final Object lastValue = BreedingMethodField.this.breedingMethodComboBox.getValue();
-					BreedingMethodField.this.populateMethods(
-							((Boolean) BreedingMethodField.this.showFavoritesCheckBox.getValue()).equals(true),
-							BreedingMethodField.this.programUniqueId);
-					BreedingMethodField.this.breedingMethodComboBox.setValue(lastValue);
-				}
-			});
-		} catch (final MiddlewareQueryException e) {
-			BreedingMethodField.LOG.error("Error on manageFavoriteMethods click", e);
-		}
 	}
 
 	@Override
@@ -442,5 +434,22 @@ public class BreedingMethodField extends AbsoluteLayout implements InitializingB
 
 	public void setBreedingManagerService(final BreedingManagerService breedingManagerService) {
 		this.breedingManagerService = breedingManagerService;
+	}
+
+
+	protected class ManageFavoriteMethodsWindowCloseListener implements CloseListener {
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void windowClose(final CloseEvent closeEvent) {
+
+			final Object lastValue = BreedingMethodField.this.breedingMethodComboBox.getValue();
+			BreedingMethodField.this.populateMethods(
+					((Boolean) BreedingMethodField.this.showFavoritesCheckBox.getValue()).equals(true),
+					BreedingMethodField.this.programUniqueId);
+			BreedingMethodField.this.breedingMethodComboBox.setValue(lastValue);
+
+		}
 	}
 }
